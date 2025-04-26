@@ -112,6 +112,7 @@ add_library(zrythm::juce_libs ALIAS _juce_libs)
 add_subdirectory(kissfft)
 add_subdirectory(midilib)
 add_subdirectory(qm-dsp)
+add_subdirectory(rubberband)
 
 set(WITH_OPENMP OFF)
 add_subdirectory(soxr)

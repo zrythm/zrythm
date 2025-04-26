@@ -522,3 +522,8 @@ SPDX-License-Identifier = "BSL-1.0"
 path = "ext/soxr/**"
 SPDX-FileCopyrightText = "Copyright (c) 2007-18 robs@users.sourceforge.net"
 SPDX-License-Identifier = "LGPL-2.1-or-later"
+
+[[annotations]]
+path = "ext/rubberband/**"
+SPDX-FileCopyrightText = "Copyright (c) 2007-18 robs@users.sourceforge.net"
+SPDX-License-Identifier = "GPL-2.0-or-later"

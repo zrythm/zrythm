@@ -1,0 +1,209 @@
+
+CXX		:= clang++ -stdlib=libc++ -std=c++11
+CC		:= clang
+
+OPTFLAGS	:= -DNDEBUG -ffast-math -O3 -ftree-vectorize
+
+ARCHFLAGS	:= -mmacosx-version-min=10.7
+
+CXXFLAGS	:= $(ARCHFLAGS) $(OPTFLAGS) -I. -Isrc -Irubberband -DUSE_BQRESAMPLER -DHAVE_VDSP -DNO_THREAD_CHECKS -DUSE_PTHREADS -DNO_TIMING -DMALLOC_IS_ALIGNED -DNDEBUG
+
+CFLAGS		:= $(ARCHFLAGS) $(OPTFLAGS)
+
+AR		:= ar
+MKDIR		:= mkdir -p
+
+LIBNAME		:= librubberband
+
+STATIC_TARGET  	:= lib/$(LIBNAME).a
+
+default:	lib $(STATIC_TARGET)
+all:		lib $(STATIC_TARGET)
+static:		lib $(STATIC_TARGET)
+
+PUBLIC_INCLUDES := \
+	rubberband/rubberband-c.h \
+	rubberband/RubberBandStretcher.h
+
+LIBRARY_SOURCES := \
+	src/rubberband-c.cpp \
+	src/RubberBandStretcher.cpp \
+	src/faster/AudioCurveCalculator.cpp \
+	src/faster/CompoundAudioCurve.cpp \
+	src/faster/HighFrequencyAudioCurve.cpp \
+	src/faster/SilentAudioCurve.cpp \
+	src/faster/PercussiveAudioCurve.cpp \
+	src/faster/R2Stretcher.cpp \
+	src/faster/StretcherChannelData.cpp \
+	src/faster/StretcherProcess.cpp \
+	src/common/Allocators.cpp \
+	src/common/BQResampler.cpp \
+	src/common/FFT.cpp \
+	src/common/Log.cpp \
+	src/common/Profiler.cpp \
+	src/common/Resampler.cpp \
+	src/common/StretchCalculator.cpp \
+	src/common/sysutils.cpp \
+	src/common/mathmisc.cpp \
+	src/common/Thread.cpp \
+	src/finer/R3Stretcher.cpp 
+
+LIBRARY_OBJECTS := $(LIBRARY_SOURCES:.cpp=.o)
+LIBRARY_OBJECTS := $(LIBRARY_OBJECTS:.c=.o)
+
+$(STATIC_TARGET):	$(LIBRARY_OBJECTS)
+	rm -f $@
+	$(AR) rsc $@ $^
+
+lib:
+	$(MKDIR) $@
+
+clean:
+	rm -f $(LIBRARY_OBJECTS)
+
+distclean:	clean
+	rm -f $(STATIC_TARGET)
+
+depend:
+	makedepend -f otherbuilds/Makefile.macos -Y $(LIBRARY_SOURCES) $(PROGRAM_SOURCES)
+
+
+# DO NOT DELETE
+
+src/rubberband-c.o: rubberband/rubberband-c.h
+src/rubberband-c.o: rubberband/RubberBandStretcher.h
+src/RubberBandStretcher.o: src/faster/R2Stretcher.h
+src/RubberBandStretcher.o: rubberband/RubberBandStretcher.h
+src/RubberBandStretcher.o: src/common/Window.h src/common/sysutils.h
+src/RubberBandStretcher.o: src/common/VectorOps.h src/common/Allocators.h
+src/RubberBandStretcher.o: src/common/FFT.h src/common/RingBuffer.h
+src/RubberBandStretcher.o: src/common/Scavenger.h src/common/Thread.h
+src/RubberBandStretcher.o: src/common/Thread.h src/common/Log.h
+src/RubberBandStretcher.o: src/common/sysutils.h src/faster/SincWindow.h
+src/RubberBandStretcher.o: src/common/VectorOps.h src/common/Allocators.h
+src/RubberBandStretcher.o: src/faster/CompoundAudioCurve.h
+src/RubberBandStretcher.o: src/faster/PercussiveAudioCurve.h
+src/RubberBandStretcher.o: src/faster/AudioCurveCalculator.h
+src/RubberBandStretcher.o: src/faster/HighFrequencyAudioCurve.h
+src/RubberBandStretcher.o: src/common/SampleFilter.h src/finer/R3Stretcher.h
+src/RubberBandStretcher.o: src/finer/BinSegmenter.h src/finer/BinClassifier.h
+src/RubberBandStretcher.o: src/common/MovingMedian.h
+src/RubberBandStretcher.o: src/common/SampleFilter.h src/common/FixedVector.h
+src/RubberBandStretcher.o: src/common/SingleThreadRingBuffer.h
+src/RubberBandStretcher.o: src/common/HistogramFilter.h src/common/mathmisc.h
+src/RubberBandStretcher.o: src/finer/Guide.h src/finer/Peak.h
+src/RubberBandStretcher.o: src/finer/PhaseAdvance.h
+src/RubberBandStretcher.o: src/common/StretchCalculator.h src/common/Log.h
+src/RubberBandStretcher.o: src/common/Resampler.h src/common/FixedVector.h
+src/RubberBandStretcher.o: src/common/VectorOpsComplex.h
+src/faster/AudioCurveCalculator.o: src/faster/AudioCurveCalculator.h
+src/faster/AudioCurveCalculator.o: src/common/sysutils.h
+src/faster/CompoundAudioCurve.o: src/faster/CompoundAudioCurve.h
+src/faster/CompoundAudioCurve.o: src/faster/PercussiveAudioCurve.h
+src/faster/CompoundAudioCurve.o: src/faster/AudioCurveCalculator.h
+src/faster/CompoundAudioCurve.o: src/common/sysutils.h
+src/faster/CompoundAudioCurve.o: src/faster/HighFrequencyAudioCurve.h
+src/faster/CompoundAudioCurve.o: src/common/SampleFilter.h
+src/faster/CompoundAudioCurve.o: src/common/MovingMedian.h
+src/faster/CompoundAudioCurve.o: src/common/SampleFilter.h
+src/faster/CompoundAudioCurve.o: src/common/FixedVector.h
+src/faster/CompoundAudioCurve.o: src/common/Allocators.h
+src/faster/CompoundAudioCurve.o: src/common/VectorOps.h src/common/sysutils.h
+src/faster/CompoundAudioCurve.o: src/common/SingleThreadRingBuffer.h
+src/faster/HighFrequencyAudioCurve.o: src/faster/HighFrequencyAudioCurve.h
+src/faster/HighFrequencyAudioCurve.o: src/faster/AudioCurveCalculator.h
+src/faster/HighFrequencyAudioCurve.o: src/common/sysutils.h
+src/faster/SilentAudioCurve.o: src/faster/SilentAudioCurve.h
+src/faster/SilentAudioCurve.o: src/faster/AudioCurveCalculator.h
+src/faster/SilentAudioCurve.o: src/common/sysutils.h
+src/faster/PercussiveAudioCurve.o: src/faster/PercussiveAudioCurve.h
+src/faster/PercussiveAudioCurve.o: src/faster/AudioCurveCalculator.h
+src/faster/PercussiveAudioCurve.o: src/common/sysutils.h
+src/faster/PercussiveAudioCurve.o: src/common/Allocators.h
+src/faster/PercussiveAudioCurve.o: src/common/VectorOps.h
+src/faster/R2Stretcher.o: src/faster/R2Stretcher.h
+src/faster/R2Stretcher.o: rubberband/RubberBandStretcher.h
+src/faster/R2Stretcher.o: src/common/Window.h src/common/sysutils.h
+src/faster/R2Stretcher.o: src/common/VectorOps.h src/common/Allocators.h
+src/faster/R2Stretcher.o: src/common/FFT.h src/common/RingBuffer.h
+src/faster/R2Stretcher.o: src/common/Scavenger.h src/common/Thread.h
+src/faster/R2Stretcher.o: src/common/Thread.h src/common/Log.h
+src/faster/R2Stretcher.o: src/common/sysutils.h src/faster/SincWindow.h
+src/faster/R2Stretcher.o: src/common/VectorOps.h src/common/Allocators.h
+src/faster/R2Stretcher.o: src/faster/CompoundAudioCurve.h
+src/faster/R2Stretcher.o: src/faster/PercussiveAudioCurve.h
+src/faster/R2Stretcher.o: src/faster/AudioCurveCalculator.h
+src/faster/R2Stretcher.o: src/faster/HighFrequencyAudioCurve.h
+src/faster/R2Stretcher.o: src/common/SampleFilter.h
+src/faster/R2Stretcher.o: src/faster/SilentAudioCurve.h
+src/faster/R2Stretcher.o: src/faster/StretcherChannelData.h
+src/faster/R2Stretcher.o: src/common/StretchCalculator.h src/common/Log.h
+src/faster/R2Stretcher.o: src/common/Resampler.h src/common/Profiler.h
+src/faster/StretcherChannelData.o: src/faster/StretcherChannelData.h
+src/faster/StretcherChannelData.o: src/faster/R2Stretcher.h
+src/faster/StretcherChannelData.o: rubberband/RubberBandStretcher.h
+src/faster/StretcherChannelData.o: src/common/Window.h src/common/sysutils.h
+src/faster/StretcherChannelData.o: src/common/VectorOps.h
+src/faster/StretcherChannelData.o: src/common/Allocators.h src/common/FFT.h
+src/faster/StretcherChannelData.o: src/common/RingBuffer.h
+src/faster/StretcherChannelData.o: src/common/Scavenger.h src/common/Thread.h
+src/faster/StretcherChannelData.o: src/common/Thread.h src/common/Log.h
+src/faster/StretcherChannelData.o: src/common/sysutils.h
+src/faster/StretcherChannelData.o: src/faster/SincWindow.h
+src/faster/StretcherChannelData.o: src/common/VectorOps.h
+src/faster/StretcherChannelData.o: src/common/Allocators.h
+src/faster/StretcherChannelData.o: src/faster/CompoundAudioCurve.h
+src/faster/StretcherChannelData.o: src/faster/PercussiveAudioCurve.h
+src/faster/StretcherChannelData.o: src/faster/AudioCurveCalculator.h
+src/faster/StretcherChannelData.o: src/faster/HighFrequencyAudioCurve.h
+src/faster/StretcherChannelData.o: src/common/SampleFilter.h
+src/faster/StretcherChannelData.o: src/common/Resampler.h
+src/faster/StretcherProcess.o: src/faster/R2Stretcher.h
+src/faster/StretcherProcess.o: rubberband/RubberBandStretcher.h
+src/faster/StretcherProcess.o: src/common/Window.h src/common/sysutils.h
+src/faster/StretcherProcess.o: src/common/VectorOps.h src/common/Allocators.h
+src/faster/StretcherProcess.o: src/common/FFT.h src/common/RingBuffer.h
+src/faster/StretcherProcess.o: src/common/Scavenger.h src/common/Thread.h
+src/faster/StretcherProcess.o: src/common/Thread.h src/common/Log.h
+src/faster/StretcherProcess.o: src/common/sysutils.h src/faster/SincWindow.h
+src/faster/StretcherProcess.o: src/common/VectorOps.h src/common/Allocators.h
+src/faster/StretcherProcess.o: src/faster/CompoundAudioCurve.h
+src/faster/StretcherProcess.o: src/faster/PercussiveAudioCurve.h
+src/faster/StretcherProcess.o: src/faster/AudioCurveCalculator.h
+src/faster/StretcherProcess.o: src/faster/HighFrequencyAudioCurve.h
+src/faster/StretcherProcess.o: src/common/SampleFilter.h
+src/faster/StretcherProcess.o: src/faster/StretcherChannelData.h
+src/faster/StretcherProcess.o: src/common/StretchCalculator.h
+src/faster/StretcherProcess.o: src/common/Log.h src/common/Resampler.h
+src/faster/StretcherProcess.o: src/common/Profiler.h src/common/mathmisc.h
+src/common/Allocators.o: src/common/Allocators.h src/common/VectorOps.h
+src/common/Allocators.o: src/common/sysutils.h
+src/common/BQResampler.o: src/common/BQResampler.h src/common/Allocators.h
+src/common/BQResampler.o: src/common/VectorOps.h src/common/sysutils.h
+src/common/FFT.o: src/common/FFT.h src/common/sysutils.h src/common/Thread.h
+src/common/FFT.o: src/common/Profiler.h src/common/Allocators.h
+src/common/FFT.o: src/common/VectorOps.h src/common/VectorOpsComplex.h
+src/common/Log.o: src/common/Log.h
+src/common/Profiler.o: src/common/Profiler.h src/common/sysutils.h
+src/common/Profiler.o: src/common/Thread.h
+src/common/Resampler.o: src/common/Resampler.h src/common/sysutils.h
+src/common/Resampler.o: src/common/Allocators.h src/common/VectorOps.h
+src/common/StretchCalculator.o: src/common/StretchCalculator.h
+src/common/StretchCalculator.o: src/common/Log.h src/common/sysutils.h
+src/common/sysutils.o: src/common/sysutils.h
+src/common/Thread.o: src/common/Thread.h
+src/finer/R3Stretcher.o: src/finer/R3Stretcher.h src/finer/BinSegmenter.h
+src/finer/R3Stretcher.o: src/finer/BinClassifier.h src/common/Allocators.h
+src/finer/R3Stretcher.o: src/common/MovingMedian.h src/common/SampleFilter.h
+src/finer/R3Stretcher.o: src/common/FixedVector.h src/common/Allocators.h
+src/finer/R3Stretcher.o: src/common/VectorOps.h src/common/sysutils.h
+src/finer/R3Stretcher.o: src/common/SingleThreadRingBuffer.h
+src/finer/R3Stretcher.o: src/common/RingBuffer.h src/common/HistogramFilter.h
+src/finer/R3Stretcher.o: src/common/mathmisc.h src/finer/Guide.h
+src/finer/R3Stretcher.o: src/common/Log.h src/finer/Peak.h
+src/finer/R3Stretcher.o: src/finer/PhaseAdvance.h
+src/finer/R3Stretcher.o: src/common/StretchCalculator.h src/common/Log.h
+src/finer/R3Stretcher.o: src/common/Resampler.h src/common/FFT.h
+src/finer/R3Stretcher.o: src/common/FixedVector.h src/common/Window.h
+src/finer/R3Stretcher.o: src/common/VectorOpsComplex.h
+src/finer/R3Stretcher.o: rubberband/RubberBandStretcher.h

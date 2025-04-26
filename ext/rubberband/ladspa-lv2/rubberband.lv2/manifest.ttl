@@ -1,0 +1,34 @@
+@prefix lv2: <http://lv2plug.in/ns/lv2core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rubberband: <http://breakfastquay.com/rdf/lv2-rubberband#> .
+
+rubberband:mono
+        a lv2:Plugin ;
+        lv2:binary <lv2-rubberband.so> ;
+        rdfs:seeAlso <lv2-rubberband.ttl> .
+
+rubberband:r3mono
+        a lv2:Plugin ;
+        lv2:binary <lv2-rubberband.so> ;
+        rdfs:seeAlso <lv2-rubberband.ttl> .
+
+rubberband:livemono
+        a lv2:Plugin ;
+        lv2:binary <lv2-rubberband.so> ;
+        rdfs:seeAlso <lv2-rubberband.ttl> .
+
+rubberband:stereo
+        a lv2:Plugin ;
+        lv2:binary <lv2-rubberband.so> ;
+        rdfs:seeAlso <lv2-rubberband.ttl> .
+
+rubberband:r3stereo
+        a lv2:Plugin ;
+        lv2:binary <lv2-rubberband.so> ;
+        rdfs:seeAlso <lv2-rubberband.ttl> .
+
+rubberband:livestereo
+        a lv2:Plugin ;
+        lv2:binary <lv2-rubberband.so> ;
+        rdfs:seeAlso <lv2-rubberband.ttl> .
+

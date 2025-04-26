@@ -1,0 +1,39 @@
+FROM ubuntu:22.04
+MAINTAINER Chris Cannam <cannam@all-day-breakfast.com>
+
+RUN apt-get update && \
+    apt-get install -y \
+    software-properties-common \
+    build-essential \
+    pkg-config \
+    libsamplerate0-dev \
+    libsndfile1-dev \
+    libfftw3-dev \
+    ladspa-sdk \
+    lv2-dev \
+    vamp-plugin-sdk \
+    libboost-test-dev \
+    mercurial \
+    ninja-build \
+    plocate
+    
+RUN apt-get install -y \
+    openjdk-21-jdk
+
+WORKDIR /root
+
+ADD https://github.com/mesonbuild/meson/releases/download/1.5.2/meson-1.5.2.tar.gz .
+RUN tar xvf meson-1.5.2.tar.gz
+RUN ln -s $(pwd)/meson-1.5.2/meson.py /usr/bin/meson
+
+RUN hg clone -u [[REVISION]] https://hg.sr.ht/~breakfastquay/rubberband
+
+WORKDIR rubberband
+
+RUN meson setup build
+RUN ninja -C build
+RUN meson test -C build
+
+WORKDIR build
+
+RUN java -Djava.library.path=$(pwd) -cp rubberband-test.jar com.breakfastquay.rubberband.test.RubberBandTest

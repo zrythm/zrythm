@@ -1,0 +1,22 @@
+[constants]
+sysroot = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk'
+common_args = [ '-isysroot', sysroot, '-arch', 'x86_64', '-mios-version-min=8' ]
+
+[host_machine]
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+system = 'darwin'
+endian = 'little'
+
+[properties]
+needs_exe_wrapper = true
+
+[binaries]
+c = 'cc'
+cpp = 'c++'
+strip = 'strip'
+
+[built-in options]
+c_args = common_args
+cpp_args = common_args + [ '-stdlib=libc++' ]
+cpp_link_args = cpp_args

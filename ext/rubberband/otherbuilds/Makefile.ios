@@ -1,0 +1,113 @@
+
+CXX		:= clang++ -stdlib=libc++ -std=c++11
+CC		:= clang
+
+OPTFLAGS	:= -DNDEBUG -ffast-math -O3 -ftree-vectorize 
+
+# For the device
+ARCHFLAGS_DEV	:= -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk -miphoneos-version-min=6 -arch armv7 -arch arm64 -fembed-bitcode
+
+# Or for the simulator
+ARCHFLAGS_SIM	:= -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk -miphoneos-version-min=6 -arch x86_64 -fembed-bitcode
+
+CXXFLAGS_ANY	:= $(OPTFLAGS) -I. -Isrc -Irubberband -DUSE_BQRESAMPLER -DHAVE_VDSP -DNO_THREAD_CHECKS -DUSE_PTHREADS -DNO_TIMING -DMALLOC_IS_ALIGNED -DNDEBUG
+
+CXXFLAGS_DEV	:= $(ARCHFLAGS_DEV) $(CXXFLAGS_ANY)
+CXXFLAGS_SIM	:= $(ARCHFLAGS_SIM) $(CXXFLAGS_ANY)
+
+CFLAGS_DEV	:= $(ARCHFLAGS_DEV) $(OPTFLAGS)
+CFLAGS_SIM	:= $(ARCHFLAGS_SIM) $(OPTFLAGS)
+
+AR			:= ar
+LIPO			:= lipo
+MKDIR			:= mkdir -p
+
+LIBNAME			:= librubberband
+
+STATIC_TARGET  		:= lib/$(LIBNAME).a
+STATIC_TARGET_DEV	:= lib/$(LIBNAME).dev.a
+STATIC_TARGET_SIM	:= lib/$(LIBNAME).sim.a
+
+default:	lib $(STATIC_TARGET)
+all:		lib $(STATIC_TARGET)
+static:		lib $(STATIC_TARGET)
+
+PUBLIC_INCLUDES := \
+	rubberband/rubberband-c.h \
+	rubberband/RubberBandStretcher.h
+
+LIBRARY_SOURCES := \
+	src/rubberband-c.cpp \
+	src/RubberBandStretcher.cpp \
+	src/faster/AudioCurveCalculator.cpp \
+	src/faster/CompoundAudioCurve.cpp \
+	src/faster/HighFrequencyAudioCurve.cpp \
+	src/faster/SilentAudioCurve.cpp \
+	src/faster/PercussiveAudioCurve.cpp \
+	src/faster/R2Stretcher.cpp \
+	src/faster/StretcherChannelData.cpp \
+	src/faster/StretcherProcess.cpp \
+	src/common/Allocators.cpp \
+	src/common/BQResampler.cpp \
+	src/common/FFT.cpp \
+	src/common/Log.cpp \
+	src/common/Profiler.cpp \
+	src/common/Resampler.cpp \
+	src/common/StretchCalculator.cpp \
+	src/common/sysutils.cpp \
+	src/common/mathmisc.cpp \
+	src/common/Thread.cpp \
+	src/finer/R3Stretcher.cpp 
+
+LIBRARY_OBJECTS_DEV := $(LIBRARY_SOURCES:.cpp=.dev.o)
+LIBRARY_OBJECTS_DEV := $(LIBRARY_OBJECTS_DEV:.c=.dev.o)
+
+LIBRARY_OBJECTS_SIM := $(LIBRARY_SOURCES:.cpp=.sim.o)
+LIBRARY_OBJECTS_SIM := $(LIBRARY_OBJECTS_SIM:.c=.sim.o)
+
+$(STATIC_TARGET):	$(STATIC_TARGET_DEV) $(STATIC_TARGET_SIM)
+	rm -f $@
+	$(LIPO) -create -output $@ $^
+	@echo 
+	@echo "Build complete."
+	@echo 
+	@echo "Please note that you cannot legally distribute the Rubber Band Library in an"
+	@echo "iOS app on the App Store, unless you have first obtained a commercial licence."
+	@echo
+
+$(STATIC_TARGET_DEV):	$(LIBRARY_OBJECTS_DEV)
+	rm -f $@
+	$(AR) rsc $@ $^
+
+$(STATIC_TARGET_SIM):	$(LIBRARY_OBJECTS_SIM)
+	rm -f $@
+	$(AR) rsc $@ $^
+
+%.dev.o: %.c
+	 $(CC) -c $(CFLAGS_DEV) -o $@ $<
+
+%.dev.o: %.cpp
+	 $(CXX) -c $(CXXFLAGS_DEV) -o $@ $<
+
+%.sim.o: %.c
+	 $(CC) -c $(CFLAGS_SIM) -o $@ $<
+
+%.sim.o: %.cpp
+	 $(CXX) -c $(CXXFLAGS_SIM) -o $@ $<
+
+lib:
+	$(MKDIR) $@
+
+clean:
+	rm -f $(LIBRARY_OBJECTS_DEV) $(LIBRARY_OBJECTS_SIM)
+
+distclean:	clean
+	rm -f $(STATIC_TARGET_DEV) $(STATIC_TARGET_SIM)
+
+depend:
+	touch otherbuilds/Makefile.dev_depends otherbuilds/Makefile.sim_depends
+	makedepend -f otherbuilds/Makefile.dev_depends -o.dev.o -Y $(LIBRARY_SOURCES)
+	makedepend -f otherbuilds/Makefile.sim_depends -o.sim.o -Y $(LIBRARY_SOURCES)
+
+-include otherbuilds/Makefile.dev_depends
+-include otherbuilds/Makefile.sim_depends

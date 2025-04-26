@@ -1,0 +1,53 @@
+image: ubuntu/22.04
+packages:
+  - pkg-config
+  - libsamplerate0-dev
+  - libsndfile1-dev
+  - libfftw3-dev
+  - ladspa-sdk
+  - lv2-dev
+  - vamp-plugin-sdk
+  - libboost-test-dev
+  - ninja-build
+  - openjdk-21-jdk
+  - wget
+sources:
+  - hg+https://hg.sr.ht/~breakfastquay/rubberband
+tasks:
+  - install-meson: |
+      mkdir -p tmp/meson
+      cd tmp/meson
+      wget https://github.com/mesonbuild/meson/releases/download/1.5.2/meson-1.5.2.tar.gz
+      tar xvf meson-1.5.2.tar.gz
+      sudo ln -s $(pwd)/meson-1.5.2/meson.py /usr/bin/meson
+  - setup: |
+      cd rubberband
+      meson setup build
+      meson setup build_speex -Dresampler=speex
+      meson setup build_libsamplerate -Dresampler=libsamplerate
+      meson setup build_fftw -Dfft=fftw
+      meson setup build_kissfft -Dfft=kissfft
+  - build: |
+      cd rubberband
+      ninja -C build
+      meson test -C build
+      java -Djava.library.path=build -cp build/rubberband-test.jar com.breakfastquay.rubberband.test.RubberBandTest
+      build/rubberband -V
+      ninja -C build_speex
+      meson test -C build_speex
+      build_speex/rubberband -V
+      ninja -C build_libsamplerate
+      meson test -C build_libsamplerate
+      build_libsamplerate/rubberband -V
+      ninja -C build_fftw
+      meson test -C build_fftw
+      build_fftw/rubberband -V
+      ninja -C build_kissfft
+      meson test -C build_kissfft
+      build_kissfft/rubberband -V
+      ./otherbuilds/check.sh
+triggers:
+  - action: email
+    condition: always
+    to: chris.cannam@breakfastquay.com
+    

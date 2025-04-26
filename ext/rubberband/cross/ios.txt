@@ -1,0 +1,23 @@
+[constants]
+sysroot = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk'
+common_args = [ '-isysroot', sysroot, '-arch', 'arm64', '-arch', 'armv7', '-mios-version-min=8' ]
+
+[host_machine]
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+system = 'darwin'
+endian = 'little'
+
+[properties]
+needs_exe_wrapper = true
+
+[binaries]
+c = 'cc'
+cpp = 'c++'
+strip = 'strip'
+
+[built-in options]
+b_bitcode = true
+c_args = common_args
+cpp_args = common_args + [ '-stdlib=libc++' ]
+cpp_link_args = cpp_args

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>rubberband-sharp</id>
+    <version>1.0.0</version>
+    <title>Rubber Band Library .NET Wrapper</title>
+    <authors>JonathanG@iQmetrix.com</authors>
+    <description>C# wrapper for the Rubber Band Library audio time-stretching and pitch-shifting library.</description>
+  </metadata>
+  <files>
+    <!-- Content files the new way: With the new .csproj format, NuGet will import project definition from rubberband-sharp.targets, which sets up the files -->
+    <file src="rubberband-sharp.targets" target="build" />
+    <file src="..\Release\rubberband-dll-Win32.dll" target="build" />
+    <file src="..\x64\Release\rubberband-dll-x64.dll" target="build" />
+
+    <!-- Content files the old way: NuGet will add the .dll files as Content items, then Install.ps1 script converts them to None items with a CopyToOutputDirectory attribute. -->
+    <file src="Install.ps1" target="tools\Install.ps1" />
+    <file src="..\Release\rubberband-dll-Win32.dll" target="content" />
+    <file src="..\x64\Release\rubberband-dll-x64.dll" target="content" />
+  </files>
+</package>

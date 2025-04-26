@@ -746,6 +746,8 @@ add_library(zrythm::lv2 ALIAS lv2_lib)
 # pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
 
 # include(FindFFTW3)
+set(ENABLE_THREADS ON)
+set(WITH_COMBINED_THREADS ON)
 FetchContent_Declare(
   fftw3
   URL       http://fftw.org/fftw-3.3.10.tar.gz
@@ -910,7 +912,7 @@ else()
 endif()
 add_library(zrythm::spdlog ALIAS spdlog_lib)
 
-pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
 if(MSVC)
   find_package(Boost REQUIRED)
@@ -965,7 +967,7 @@ list(APPEND zrythm_link_libs
   PkgConfig::RTMIDI
   zrythm::zstd
   Threads::Threads
-  PkgConfig::RUBBERBAND
+  zrythm::rubberband
   ${CMAKE_DL_LIBS}
   zrythm::fftw3_libs
   xxHash::xxhash

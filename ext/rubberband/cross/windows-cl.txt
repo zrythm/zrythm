@@ -1,0 +1,9 @@
+
+[properties]
+needs_exe_wrapper = false
+
+[binaries]
+c = 'cl'
+cpp = 'cl'
+
+

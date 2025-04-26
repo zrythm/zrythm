@@ -1,0 +1,397 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix lv2: <http://lv2plug.in/ns/lv2core#> .
+@prefix pg: <http://lv2plug.in/ns/ext/port-groups#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix rubberband: <http://breakfastquay.com/rdf/lv2-rubberband#> .
+@prefix : <#> .
+
+:maker
+        a foaf:Agent, foaf:Person ;
+        foaf:name "Breakfast Quay" ;
+        foaf:homepage <https://breakfastquay.com/> ;
+        foaf:mbox <mailto:chris.cannam@breakfastquay.com> .
+
+:latencyPort
+        a lv2:ControlPort, lv2:OutputPort ;
+        lv2:index 0 ;
+        lv2:symbol "latency" ;
+        lv2:name "latency" ;
+        units:unit units:frame ;
+        lv2:designation lv2:latency ;
+        lv2:portProperty lv2:integer, lv2:reportsLatency .
+
+:centsPort
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 1 ;
+        lv2:symbol "cents" ;
+        lv2:name "Cents" ;
+        lv2:default 0 ;
+        lv2:minimum -100 ;
+        lv2:maximum 100 ;
+        lv2:portProperty lv2:integer .
+
+:semitonesPort
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 2 ;
+        lv2:symbol "semitones" ;
+        lv2:name "Semitones" ;
+        lv2:default 0 ;
+        lv2:minimum -12 ;
+        lv2:maximum 12 ;
+        lv2:portProperty lv2:integer .
+
+:octavesPort
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 3 ;
+        lv2:symbol "octaves" ;
+        lv2:name "Octaves" ;
+        lv2:default 0 ;
+        lv2:minimum -2 ;
+        lv2:maximum 2 ;
+        lv2:portProperty lv2:integer .
+
+:crispnessPort
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 4 ;
+        lv2:symbol "crispness" ;
+        lv2:name "Crispness" ;
+        lv2:default 3 ;
+        lv2:minimum 0 ;
+        lv2:maximum 3 ;
+        lv2:portProperty lv2:integer, lv2:enumeration ;
+        lv2:scalePoint [ rdfs:label "0. Smooth"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "1. Multitimbral"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "2. Two sources"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "3. Standard"; rdf:value 3 ] .
+
+:formantPort
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 5 ;
+        lv2:symbol "formant" ;
+        lv2:name "Formant Preserving" ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+        lv2:portProperty lv2:integer, lv2:toggled .
+
+:formantPortR3
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 4 ;
+        lv2:symbol "formant" ;
+        lv2:name "Formant Preserving" ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+        lv2:portProperty lv2:integer, lv2:toggled .
+
+:wetDryPort
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 6 ;
+        lv2:symbol "wetdry" ;
+        lv2:name "Wet-Dry Mix" ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 .
+
+:wetDryPortR3
+        a lv2:ControlPort, lv2:InputPort ;
+        lv2:index 5 ;
+        lv2:symbol "wetdry" ;
+        lv2:name "Wet-Dry Mix" ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 .
+
+rubberband:mono_in_group
+        a pg:MonoGroup, pg:InputGroup ;
+        lv2:symbol "mono_in" ;
+        rdfs:label "Mono Input" .
+
+rubberband:mono_out_group
+        a pg:MonoGroup, pg:OutputGroup ;
+        lv2:symbol "mono_out" ;
+        rdfs:label "Mono Output" .
+
+rubberband:stereo_in_group
+        a pg:StereoGroup, pg:InputGroup ;
+        lv2:symbol "stereo_in" ;
+        rdfs:label "Stereo Input" .
+
+rubberband:stereo_out_group
+        a pg:StereoGroup, pg:OutputGroup ;
+        lv2:symbol "stereo_out" ;
+        rdfs:label "Stereo Output" .
+
+rubberband:mono
+        a doap:Project, lv2:Plugin, lv2:PitchPlugin ;
+        doap:name "Rubber Band Mono Pitch Shifter" ;
+        doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+        foaf:maker :maker ;
+        doap:developer :maker ;
+        doap:maintainer :maker ;
+        # Minor version will be 2x the Rubber Band API minor version
+        lv2:minorVersion 6 ;
+        lv2:microVersion 1 ;
+        lv2:optionalFeature lv2:hardRTCapable ;
+	pg:mainInput rubberband:mono_in_group ;
+	pg:mainOutput rubberband:mono_out_group ;
+        dc:replaces <urn:ladspa:2979> ;
+        lv2:port :latencyPort ,
+                 :centsPort ,
+                 :semitonesPort ,
+                 :octavesPort ,
+                 :crispnessPort ,
+                 :formantPort ,
+                 :wetDryPort ,
+                 [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 7 ;
+                   lv2:symbol "input" ;
+                   lv2:name "Input" ;
+                   lv2:shortName "Input" ;
+                   pg:group rubberband:mono_in_group ;
+                   lv2:designation pg:center ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 8 ;
+                   lv2:symbol "output" ;
+                   lv2:name "Output" ;
+                   lv2:shortName "Output" ;
+                   pg:group rubberband:mono_out_group ;
+                   lv2:designation pg:center ;
+                 ] .
+
+rubberband:r3mono
+        a doap:Project, lv2:Plugin, lv2:PitchPlugin ;
+        doap:name "Rubber Band R3 Mono Pitch Shifter" ;
+        doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+        foaf:maker :maker ;
+        doap:developer :maker ;
+        doap:maintainer :maker ;
+        # Minor version will be 2x the Rubber Band API minor version
+        lv2:minorVersion 6 ;
+        lv2:microVersion 1 ;
+        lv2:optionalFeature lv2:hardRTCapable ;
+	pg:mainInput rubberband:mono_in_group ;
+	pg:mainOutput rubberband:mono_out_group ;
+        dc:replaces <urn:ladspa:29790> ;
+        lv2:port :latencyPort ,
+                 :centsPort ,
+                 :semitonesPort ,
+                 :octavesPort ,
+                 :formantPortR3 ,
+                 :wetDryPortR3 ,
+                 [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 6 ;
+                   lv2:symbol "input" ;
+                   lv2:name "Input" ;
+                   lv2:shortName "Input" ;
+                   pg:group rubberband:mono_in_group ;
+                   lv2:designation pg:center ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 7 ;
+                   lv2:symbol "output" ;
+                   lv2:name "Output" ;
+                   lv2:shortName "Output" ;
+                   pg:group rubberband:mono_out_group ;
+                   lv2:designation pg:center ;
+                 ] .
+
+rubberband:livemono
+        a doap:Project, lv2:Plugin, lv2:PitchPlugin ;
+        doap:name "Rubber Band Live Mono Pitch Shifter" ;
+        doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+        foaf:maker :maker ;
+        doap:developer :maker ;
+        doap:maintainer :maker ;
+        # Minor version will be 2x the Rubber Band API minor version
+        lv2:minorVersion 6 ;
+        lv2:microVersion 1 ;
+        lv2:optionalFeature lv2:hardRTCapable ;
+	pg:mainInput rubberband:mono_in_group ;
+	pg:mainOutput rubberband:mono_out_group ;
+        dc:replaces <urn:ladspa:29791> ;
+        lv2:port :latencyPort ,
+                 :centsPort ,
+                 :semitonesPort ,
+                 :octavesPort ,
+                 :formantPortR3 ,
+                 :wetDryPortR3 ,
+                 [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 6 ;
+                   lv2:symbol "input" ;
+                   lv2:name "Input" ;
+                   lv2:shortName "Input" ;
+                   pg:group rubberband:mono_in_group ;
+                   lv2:designation pg:center ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 7 ;
+                   lv2:symbol "output" ;
+                   lv2:name "Output" ;
+                   lv2:shortName "Output" ;
+                   pg:group rubberband:mono_out_group ;
+                   lv2:designation pg:center ;
+                 ] .
+
+rubberband:stereo
+        a doap:Project, lv2:Plugin, lv2:PitchPlugin ;
+        doap:name "Rubber Band Stereo Pitch Shifter" ;
+        doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+        foaf:maker :maker ;
+        doap:developer :maker ;
+        doap:maintainer :maker ;
+        # Minor version will be 2x the Rubber Band API minor version
+        lv2:minorVersion 6 ;
+        lv2:microVersion 1 ;
+        lv2:optionalFeature lv2:hardRTCapable ;
+	pg:mainInput rubberband:stereo_in_group ;
+	pg:mainOutput rubberband:stereo_out_group ;
+        dc:replaces <urn:ladspa:9792> ;
+        lv2:port :latencyPort ,
+                 :centsPort ,
+                 :semitonesPort ,
+                 :octavesPort ,
+                 :crispnessPort ,
+                 :formantPort ,
+                 :wetDryPort ,
+                 [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 7 ;
+                   lv2:symbol "input_l" ;
+                   lv2:name "Input L" ;
+                   lv2:shortName "Input L" ;
+                   pg:group rubberband:stereo_in_group ;
+                   lv2:designation pg:left ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 8 ;
+                   lv2:symbol "output_l" ;
+                   lv2:name "Output L" ;
+                   lv2:shortName "Output L" ;
+                   pg:group rubberband:stereo_out_group ;
+                   lv2:designation pg:left ;
+                 ], [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 9 ;
+                   lv2:symbol "input_r" ;
+                   lv2:name "Input R" ;
+                   lv2:shortName "Input R" ;
+                   pg:group rubberband:stereo_in_group ;
+                   lv2:designation pg:right ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 10 ;
+                   lv2:symbol "output_r" ;
+                   lv2:name "Output R" ;
+                   lv2:shortName "Output R" ;
+                   pg:group rubberband:stereo_out_group ;
+                   lv2:designation pg:right ;
+                 ] .
+
+rubberband:r3stereo
+        a doap:Project, lv2:Plugin, lv2:PitchPlugin ;
+        doap:name "Rubber Band R3 Stereo Pitch Shifter" ;
+        doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+        foaf:maker :maker ;
+        doap:developer :maker ;
+        doap:maintainer :maker ;
+        # Minor version will be 2x the Rubber Band API minor version
+        lv2:minorVersion 6 ;
+        lv2:microVersion 1 ;
+        lv2:optionalFeature lv2:hardRTCapable ;
+	pg:mainInput rubberband:stereo_in_group ;
+	pg:mainOutput rubberband:stereo_out_group ;
+        dc:replaces <urn:ladspa:97920> ;
+        lv2:port :latencyPort ,
+                 :centsPort ,
+                 :semitonesPort ,
+                 :octavesPort ,
+                 :formantPortR3 ,
+                 :wetDryPortR3 ,
+                 [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 6 ;
+                   lv2:symbol "input_l" ;
+                   lv2:name "Input L" ;
+                   lv2:shortName "Input L" ;
+                   pg:group rubberband:stereo_in_group ;
+                   lv2:designation pg:left ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 7 ;
+                   lv2:symbol "output_l" ;
+                   lv2:name "Output L" ;
+                   lv2:shortName "Output L" ;
+                   pg:group rubberband:stereo_out_group ;
+                   lv2:designation pg:left ;
+                 ], [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 8 ;
+                   lv2:symbol "input_r" ;
+                   lv2:name "Input R" ;
+                   lv2:shortName "Input R" ;
+                   pg:group rubberband:stereo_in_group ;
+                   lv2:designation pg:right ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 9 ;
+                   lv2:symbol "output_r" ;
+                   lv2:name "Output R" ;
+                   lv2:shortName "Output R" ;
+                   pg:group rubberband:stereo_out_group ;
+                   lv2:designation pg:right ;
+                 ] .
+
+rubberband:livestereo
+        a doap:Project, lv2:Plugin, lv2:PitchPlugin ;
+        doap:name "Rubber Band Live Stereo Pitch Shifter" ;
+        doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+        foaf:maker :maker ;
+        doap:developer :maker ;
+        doap:maintainer :maker ;
+        # Minor version will be 2x the Rubber Band API minor version
+        lv2:minorVersion 6 ;
+        lv2:microVersion 1 ;
+        lv2:optionalFeature lv2:hardRTCapable ;
+	pg:mainInput rubberband:stereo_in_group ;
+	pg:mainOutput rubberband:stereo_out_group ;
+        dc:replaces <urn:ladspa:97921> ;
+        lv2:port :latencyPort ,
+                 :centsPort ,
+                 :semitonesPort ,
+                 :octavesPort ,
+                 :formantPortR3 ,
+                 :wetDryPortR3 ,
+                 [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 6 ;
+                   lv2:symbol "input_l" ;
+                   lv2:name "Input L" ;
+                   lv2:shortName "Input L" ;
+                   pg:group rubberband:stereo_in_group ;
+                   lv2:designation pg:left ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 7 ;
+                   lv2:symbol "output_l" ;
+                   lv2:name "Output L" ;
+                   lv2:shortName "Output L" ;
+                   pg:group rubberband:stereo_out_group ;
+                   lv2:designation pg:left ;
+                 ], [ a lv2:AudioPort, lv2:InputPort ;
+                   lv2:index 8 ;
+                   lv2:symbol "input_r" ;
+                   lv2:name "Input R" ;
+                   lv2:shortName "Input R" ;
+                   pg:group rubberband:stereo_in_group ;
+                   lv2:designation pg:right ;
+                 ], [
+                   a lv2:AudioPort, lv2:OutputPort ;
+                   lv2:index 9 ;
+                   lv2:symbol "output_r" ;
+                   lv2:name "Output R" ;
+                   lv2:shortName "Output R" ;
+                   pg:group rubberband:stereo_out_group ;
+                   lv2:designation pg:right ;
+                 ] .
+

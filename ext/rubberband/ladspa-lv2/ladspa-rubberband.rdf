@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!DOCTYPE rdf:RDF [
+       <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+       <!ENTITY ladspa 'http://ladspa.org/ontology#'>
+]>
+
+<rdf:RDF xmlns:rdf="&rdf;" xmlns:ladspa="&ladspa;">
+
+<ladspa:PitchPlugin rdf:about="&ladspa;2979"/>
+<ladspa:PitchPlugin rdf:about="&ladspa;9792"/>
+<ladspa:PitchPlugin rdf:about="&ladspa;29790"/>
+<ladspa:PitchPlugin rdf:about="&ladspa;97920"/>
+<ladspa:PitchPlugin rdf:about="&ladspa;29791"/>
+<ladspa:PitchPlugin rdf:about="&ladspa;97921"/>
+
+</rdf:RDF>
+

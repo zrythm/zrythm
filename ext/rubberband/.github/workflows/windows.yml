@@ -1,0 +1,41 @@
+name: Windows CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: microsoft/setup-msbuild@v2
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: pipdeps
+      run: |
+        pip install meson
+        pip install ninja
+    - name: chocodeps
+      uses: crazy-max/ghaction-chocolatey@v3
+      with:
+        args: install libsndfile
+    - name: make
+      run: |
+        meson setup build
+        ninja -C build
+    - name: test
+      run: |
+        meson test -C build
+    - name: vcstatic
+      run: |
+        msbuild otherbuilds\rubberband-library.vcxproj /t:Build /p:Configuration=Release
+    - name: dotnet
+      run: |
+        msbuild dotnet\rubberband.sln "/t:Restore;Build"
+
+## (Commented out as cl not in path - to fix)
+#    - name: single
+#      run: |
+#        cl main\main.cpp single\RubberBandSingle.cpp .\src\ext\getopt\getopt.c src\ext\getopt\getopt_long.c "C:\Program Files\libsndfile\lib\sndfile.lib" /O2 /std:c++14 /D_USE_MATH_DEFINES /DNOMINMAX /EHs /I"C:\Program Files\libsndfile\include" /link /out:test_single.exe

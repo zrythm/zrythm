@@ -1,0 +1,4 @@
+{
+	global: lv2_descriptor;
+	local: *;
+};

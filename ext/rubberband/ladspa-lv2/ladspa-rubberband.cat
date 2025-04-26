@@ -1,0 +1,6 @@
+ladspa:ladspa-rubberband:rubberband-pitchshifter-mono::Frequency > Pitch shifters
+ladspa:ladspa-rubberband:rubberband-pitchshifter-stereo::Frequency > Pitch shifters
+ladspa:ladspa-rubberband:rubberband-r3-pitchshifter-mono::Frequency > Pitch shifters
+ladspa:ladspa-rubberband:rubberband-r3-pitchshifter-stereo::Frequency > Pitch shifters
+ladspa:ladspa-rubberband:rubberband-live-pitchshifter-mono::Frequency > Pitch shifters
+ladspa:ladspa-rubberband:rubberband-live-pitchshifter-stereo::Frequency > Pitch shifters

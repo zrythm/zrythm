@@ -1,0 +1,29 @@
+name: macOS and iOS CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: deps
+      run: brew install libsndfile libsamplerate vamp-plugin-sdk meson ninja
+    - name: configure macos
+      run: meson setup build_macos
+    - name: configure ios
+      run: meson setup build_ios --cross-file cross/ios.txt
+    - name: make macos
+      run: ninja -C build_macos
+    - name: make ios
+      run: ninja -C build_ios
+    - name: unit test macos
+      run: meson test -C build_macos
+    - name: check otherbuilds
+      run: otherbuilds/check.sh
+
+

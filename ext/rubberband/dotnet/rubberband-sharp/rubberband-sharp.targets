@@ -1,0 +1,12 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+ <ItemGroup>
+   <None Include="$(MSBuildThisFileDirectory)rubberband-dll-Win32.dll">
+     <Link>rubberband-dll-Win32.dll</Link>
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+   </None>
+   <None Include="$(MSBuildThisFileDirectory)rubberband-dll-x64.dll">
+     <Link>rubberband-dll-x64.dll</Link>
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+   </None>
+ </ItemGroup>
+</Project>

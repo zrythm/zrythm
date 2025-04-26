@@ -1,0 +1,34 @@
+
+option('fft',
+       type: 'combo',
+       choices: ['auto', 'builtin', 'kissfft', 'fftw', 'sleef', 'vdsp', 'ipp'],
+       value: 'auto',
+       description: 'FFT library to use. The default (auto) will use vDSP if available, the builtin implementation otherwise.')
+
+option('resampler',
+       type: 'combo',
+       choices: ['auto', 'builtin', 'libsamplerate', 'speex', 'libspeexdsp', 'ipp'],
+       value: 'auto',
+       description: 'Resampler library to use. The default (auto) simply uses the builtin implementation.')
+
+option('ipp_path',
+       type: 'string',
+       value: '',
+       description: 'Path to Intel IPP libraries, if selected for any of the other options.')
+
+option('extra_include_dirs',
+       type: 'array',
+       value: [],
+       description: 'Additional local header directories to search for dependencies.')
+
+option('extra_lib_dirs',
+       type: 'array',
+       value: [],
+       description: 'Additional local library directories to search for dependencies.')
+
+option('jni', type: 'feature', value: 'auto')
+option('ladspa', type: 'feature', value: 'auto')
+option('lv2', type: 'feature', value: 'auto')
+option('vamp', type: 'feature', value: 'auto')
+option('cmdline', type: 'feature', value: 'auto')
+option('tests', type: 'feature', value: 'auto')
