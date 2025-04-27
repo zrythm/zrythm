@@ -776,7 +776,6 @@ add_library(zrythm::lv2 ALIAS PkgConfig::LV2)
 
 # include(FindFFTW3)
 set(ENABLE_THREADS ON)
-set(ENABLE_FLOAT ON)
 set(WITH_COMBINED_THREADS ON)
 set(BUILD_TESTS OFF)
 FetchContent_Declare(
@@ -784,6 +783,12 @@ FetchContent_Declare(
   URL       http://fftw.org/fftw-3.3.10.tar.gz
   URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
 FetchContent_MakeAvailable(fftw3)
+set(ENABLE_FLOAT ON)
+FetchContent_Declare(
+  fftw3f
+  URL       http://fftw.org/fftw-3.3.10.tar.gz
+  URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
+FetchContent_MakeAvailable(fftw3f)
 add_library(fftw3_libs INTERFACE)
 target_link_libraries(fftw3_libs INTERFACE fftw3 fftw3f)
 target_include_directories(fftw3_libs SYSTEM INTERFACE ${fftw3_SOURCE_DIR}/api)
