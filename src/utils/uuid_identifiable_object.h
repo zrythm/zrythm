@@ -725,7 +725,7 @@ public:
         return iterator (*registry_, uuids_.end ());
       }
   }
-  auto size () const { return uuids_.size (); }
+  auto             size () const { return uuids_.size (); }
   bool             empty () const { return uuids_.empty (); }
   const ValueType &operator[] (size_t index) const
   {

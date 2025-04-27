@@ -111,9 +111,7 @@ Channel::init_after_cloning (const Channel &other, ObjectCloneType clone_type)
   else if (clone_type == ObjectCloneType::NewIdentity)
     {
       const auto clone_from_registry = [] (auto &vec, const auto &other_vec) {
-        for (
-          const auto &[index, other_el] :
-          utils::views::enumerate (other_vec))
+        for (const auto &[index, other_el] : utils::views::enumerate (other_vec))
           {
             if (other_el)
               {
