@@ -1628,8 +1628,8 @@ AudioEngine::reset_bounce_mode ()
 void
 AudioEngine::set_default_backends (bool reset_to_dummy)
 {
-  bool audio_set = false;
-  bool midi_set = false;
+  // bool audio_set = false;
+  // bool midi_set = false;
 
   if (reset_to_dummy)
     {
@@ -1663,39 +1663,39 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
       audio_set = true;
     }
 #  endif
-#endif
 
   /* default to RtAudio if above failed */
   if (!audio_set)
     {
-#ifdef _WIN32
+#  ifdef _WIN32
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "audio-backend",
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO));
       audio_set = true;
-#elifdef __APPLE__
+#  elifdef __APPLE__
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "audio-backend",
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO));
       audio_set = true;
-#endif
+#  endif
     }
 
   /* default to RtMidi if above failed */
   if (!midi_set)
     {
-#ifdef _WIN32
+#  ifdef _WIN32
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "midi-backend",
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI));
       audio_set = true;
-#elifdef __APPLE__
+#  elifdef __APPLE__
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "midi-backend",
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI));
       audio_set = true;
-#endif
+#  endif
     }
+#endif
 }
 
 void

@@ -19,7 +19,7 @@ if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
-  set(CMAKE_XCODE_ATTRIBUTE_CLANG_WARN_DOCUMENTATION_COMMENTS "NO")
+  # set(CMAKE_XCODE_ATTRIBUTE_CLANG_WARN_DOCUMENTATION_COMMENTS "NO")
   set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")
   set(CMAKE_XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wno-documentation")
 endif()
@@ -724,6 +724,9 @@ FetchContent_MakeAvailable(yyjson)
 if(NOT TARGET yyjson::yyjson)
   add_library(yyjson::yyjson ALIAS yyjson)
 endif()
+# yyjson CMakeLists.txt sets these... override them
+set_property(TARGET yyjson PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_DOCUMENTATION_COMMENTS "NO")
+set_property(TARGET yyjson PROPERTY XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH[variant=Debug] "NO")
 
 add_subdirectory(ext)
 

@@ -414,8 +414,8 @@ audio_function_apply (
         size_t frames_read = 0;
         while (frames_read < num_frames)
           {
-            unsigned int samples_required =
-              std::min (num_frames - samples_fed, max_process_size);
+            unsigned int samples_required = std::min (
+              static_cast<size_t> (num_frames) - samples_fed, max_process_size);
             /*rubberband_get_samples_required (*/
             /*rubberband_state));*/
             std::array<const float * const, 2> tmp_in_arrays = {
