@@ -105,8 +105,8 @@ configure:gnu/linux:
     paths:
       - $BUILDDIR
     exclude:
-      - "**/.git"
-    expire_in: 3 days
+      - $BUILDDIR/**/.git/**/*
+    expire_in: 1 day
 
 configure:mac-arm:
   extends: .mac-arm-template
@@ -124,8 +124,8 @@ configure:mac-arm:
     paths:
       - $BUILDDIR
     exclude:
-      - "**/.git"
-    expire_in: 3 days
+      - $BUILDDIR/**/.git/**/*
+    expire_in: 1 day
 
 configure:windows:
   extends: .windows-template
@@ -153,8 +153,8 @@ configure:windows:
     paths:
       - $BUILDDIR
     exclude:
-      - "**/.git"
-    expire_in: 3 days
+      - $BUILDDIR/**/.git/**/*
+    expire_in: 1 day
 
 clang-format-check:
   extends: .gnu-linux-template
@@ -201,7 +201,7 @@ build:gnu/linux:
   artifacts:
     paths:
       - $BUILDDIR
-    expire_in: 3 days
+    expire_in: 1 day
 
 build:mac-arm:
   extends: .mac-arm-template
