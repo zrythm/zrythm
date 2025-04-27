@@ -28,6 +28,7 @@
 #include "utils/objects.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
+#include "utils/views.h"
 
 namespace zrythm::gui
 {
@@ -110,7 +111,9 @@ Channel::init_after_cloning (const Channel &other, ObjectCloneType clone_type)
   else if (clone_type == ObjectCloneType::NewIdentity)
     {
       const auto clone_from_registry = [] (auto &vec, const auto &other_vec) {
-        for (const auto &[index, other_el] : std::views::enumerate (other_vec))
+        for (
+          const auto &[index, other_el] :
+          utils::views::enumerate (other_vec))
           {
             if (other_el)
               {
@@ -1142,7 +1145,7 @@ Channel::init ()
   prefader_->setParent (this);
 
   /* init sends */
-  for (const auto &[i, send] : std::views::enumerate (sends_))
+  for (const auto &[i, send] : utils::views::enumerate (sends_))
     {
       send = std::make_unique<ChannelSend> (
         *track_, get_track_registry (), get_port_registry (), i);

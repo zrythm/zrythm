@@ -18,6 +18,7 @@
 #include "gui/dsp/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
+#include "utils/views.h"
 
 using namespace zrythm::gui::actions;
 
@@ -832,10 +833,12 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
    * point */
   std::map<AutomationPoint *, AutomationPoint *> ap_map;
 
+// TODO
+#if 0
   // this essentially sets the NonProject flag if not performing on first run
   for (
     const auto &[index, own_obj_var] :
-    sel_after_span | std::views::enumerate | std::views::reverse)
+    std::views::reverse (utils::views::enumerate (sel_after_span)))
     {
       std::visit (
         [&] (auto &&own_obj) {
@@ -879,7 +882,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                         *own_obj->index_in_prev_lane_);
 
 // TODO
-#if 0
+#  if 0
                       /* since the object moved outside of its lane,
                        * decrement
                        * the index inside the lane for all of our cached objects
@@ -896,7 +899,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                               own_obj->idx_--;
                             }
                         }
-#endif
+#  endif
                     }
                 }
 
@@ -948,6 +951,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
         },
         own_obj_var);
     }
+#endif
 
   for (
     const auto &[own_obj_var, own_orig_obj_var] :
@@ -1753,7 +1757,7 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
 void
 ArrangerSelectionsAction::do_or_undo_split (bool do_it)
 {
-  for (const auto &[index, own_obj_var] : std::views::enumerate (*sel_))
+  for (const auto &[index, own_obj_var] : utils::views::enumerate (*sel_))
     {
       std::visit (
         [&] (auto &&own_obj) {

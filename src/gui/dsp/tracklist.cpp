@@ -19,6 +19,7 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
+#include "utils/views.h"
 
 Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
 
@@ -405,7 +406,7 @@ Tracklist::validate () const
   std::vector<std::future<bool>> ret_vals;
   ret_vals.reserve (tracks_.size ());
   auto span = get_track_span ();
-  for (const auto [index, track_var] : std::views::enumerate (span))
+  for (const auto [index, track_var] : utils::views::enumerate (span))
     {
       ret_vals.emplace_back (std::async ([this, index, &track_var] () {
         // z_return_val_if_fail (track && track->is_in_active_project (), false);
@@ -415,7 +416,7 @@ Tracklist::validate () const
         if (!tr->validate ())
           return false;
 
-        if (tr->get_index () != index)
+        if (tr->get_index () != static_cast<int> (index))
           {
             return false;
           }
@@ -470,7 +471,7 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 
   /* no track with given options found, select the last */
   if (span.empty ())
-    return tracks_.size () - 1;
+    return static_cast<int> (tracks_.size ()) - 1;
 
   return std::visit (
     [&] (const auto &track) { return track->get_index (); }, span.front ());

@@ -87,6 +87,7 @@ target_sources(zrythm_utils_lib
     # vamp.h
     # vamp.cpp
     variant_helpers.h
+    views.h
     yaml.h
     yaml.cpp)
 

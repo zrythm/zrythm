@@ -14,6 +14,7 @@
 #include "gui/dsp/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
+#include "utils/views.h"
 #ifdef HAVE_JACK
 #  include "gui/dsp/engine_jack.h"
 #endif
@@ -382,7 +383,7 @@ Exporter::export_midi (Settings &info)
         }
 
       auto track_span = TRACKLIST->get_track_span ();
-      for (const auto &[index, track_var] : std::views::enumerate (track_span))
+      for (const auto &[index, track_var] : utils::views::enumerate (track_span))
         {
           std::visit (
             [&] (auto &&track) {

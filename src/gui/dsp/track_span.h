@@ -5,6 +5,7 @@
 
 #include "gui/dsp/track_all.h"
 #include "utils/uuid_identifiable_object.h"
+#include "utils/views.h"
 
 static_assert (
   std::ranges::random_access_range<
@@ -143,7 +144,7 @@ public:
   void print_tracks () const
   {
     z_info ("----- tracklist tracks ------");
-    for (const auto [index, track_var] : std::views::enumerate (*this))
+    for (const auto [index, track_var] : utils::views::enumerate (*this))
       {
         std::visit (
           [&] (auto &&track_ref) {

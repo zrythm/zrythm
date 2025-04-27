@@ -22,6 +22,7 @@
 #include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/progress_info.h"
+#include "utils/views.h"
 
 #include "juce_wrapper.h"
 #include <fmt/printf.h>
@@ -987,7 +988,7 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
       plugins.push_back (pl_var);
     }
 
-  for (const auto &[i, pl_var] : std::views::enumerate (plugins))
+  for (const auto &[i, pl_var] : utils::views::enumerate (plugins))
     {
       z_debug ("plugin {}: {}", i, PluginSpan::state_dir_projection (pl_var));
     }

@@ -17,6 +17,7 @@
 #include "utils/io.h"
 #include "utils/traits.h"
 #include "utils/types.h"
+#include "utils/views.h"
 
 using namespace zrythm::gui::actions;
 
@@ -1081,7 +1082,7 @@ TracklistSelectionsAction::
           std::vector<Track *> new_tracks;
           for (
             const auto &[index, own_track_var] :
-            std::views::enumerate (TrackSpan{ *tls_before_ }))
+            utils::views::enumerate (TrackSpan{ *tls_before_ }))
             {
               std::visit (
                 [&] (auto &&own_track_ptr) {
@@ -1132,7 +1133,8 @@ TracklistSelectionsAction::
             }
 
           /* reroute new tracks to correct outputs & sends */
-          for (const auto &[i, track_base] : std::views::enumerate (new_tracks))
+          for (
+            const auto &[i, track_base] : utils::views::enumerate (new_tracks))
             {
               std::visit (
                 [&] (auto &&track) {

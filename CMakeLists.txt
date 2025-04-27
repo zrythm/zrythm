@@ -776,6 +776,7 @@ add_library(zrythm::lv2 ALIAS PkgConfig::LV2)
 
 # include(FindFFTW3)
 set(ENABLE_THREADS ON)
+set(ENABLE_FLOAT ON)
 set(WITH_COMBINED_THREADS ON)
 set(BUILD_TESTS OFF)
 FetchContent_Declare(

@@ -701,36 +701,32 @@ public:
   };
 
   using iterator = Iterator<typename SpanType::iterator>;
-  using const_iterator = Iterator<typename SpanType::const_iterator>;
 
   // Range interface
-  // iterator         begin () { return iterator (registry_, uuids_.begin ()); }
-  // iterator         end () { return iterator (registry_, uuids_.end ()); }
-  const_iterator begin () const
+  iterator begin () const
   {
     if constexpr (is_uuid_ref)
       {
-        return const_iterator (uuids_.cbegin ());
+        return iterator (uuids_.begin ());
       }
     else
       {
-        return const_iterator (*registry_, uuids_.cbegin ());
+        return iterator (*registry_, uuids_.begin ());
       }
   }
-  const_iterator end () const
+  iterator end () const
   {
     if constexpr (is_uuid_ref)
       {
-        return const_iterator (uuids_.cend ());
+        return iterator (uuids_.end ());
       }
     else
       {
-        return const_iterator (*registry_, uuids_.cend ());
+        return iterator (*registry_, uuids_.end ());
       }
   }
   auto size () const { return uuids_.size (); }
-  bool empty () const { return uuids_.empty (); }
-  // ValueType       &operator[] (size_t index) { return *(begin () + index); }
+  bool             empty () const { return uuids_.empty (); }
   const ValueType &operator[] (size_t index) const
   {
     return *(begin () + index);
@@ -744,13 +740,8 @@ public:
       }
     return (*this)[index];
   }
-  // ValueType       &front () { return at (0); }
-  // ValueType       &back () { return at (size () - 1); }
   const ValueType &front () const { return at (0); }
   const ValueType &back () const { return at (size () - 1); }
-
-  // void add_uuid (const UuidType &id) { uuids_.push_back (id); }
-  // void clear () { uuids_.clear (); }
 
   /**
    * @brief Gets the UUID list.
@@ -770,7 +761,6 @@ private:
   OptionalRef<const RegistryT> registry_;
   SpanType                     uuids_;
   static_assert (std::random_access_iterator<iterator>);
-  static_assert (std::random_access_iterator<const_iterator>);
 };
 
 /**
@@ -804,7 +794,7 @@ public:
   using value_type =
     typename std::iterator_traits<typename Range::iterator>::value_type;
   using iterator = Range::iterator;
-  using const_iterator = Range::const_iterator;
+  using const_iterator = Range::iterator;
 
   /// std::span constructor
   explicit UuidIdentifiableObjectCompatibleSpan (Range &&range)

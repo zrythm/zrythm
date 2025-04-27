@@ -8,6 +8,7 @@
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/automation_region.h"
+#include "utils/views.h"
 
 AutomationRegion::AutomationRegion (
   ArrangerObjectRegistry &obj_registry,
@@ -24,7 +25,7 @@ AutomationRegion::AutomationRegion (
 void
 AutomationRegion::print_automation () const
 {
-  for (const auto &[index, ap] : std::views::enumerate (get_children_view ()))
+  for (const auto &[index, ap] : utils::views::enumerate (get_children_view ()))
     {
       z_debug ("[{}] {} : {}", index, ap->fvalue_, ap->get_position ());
     }
@@ -235,7 +236,7 @@ AutomationRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick)
   const
 {
 #if 0
-  for (const auto &[index, ap] : std::views::enumerate (get_children_view ()))
+  for (const auto &[index, ap] : utils::views::enumerate (get_children_view ()))
     {
       z_return_val_if_fail (ap->index_ == index, false);
     }

@@ -15,6 +15,7 @@
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/rt_thread_id.h"
+#include "utils/views.h"
 
 AutomationTracklist::AutomationTracklist (
   const DeserializationDependencyHolder &dh)
@@ -624,7 +625,7 @@ AutomationTracklist::print_regions () const
     "Automation regions for track {} (total automation tracks {}):",
     track->get_name (), ats_.size ());
 
-  for (const auto &[index, at] : std::views::enumerate (ats_))
+  for (const auto &[index, at] : utils::views::enumerate (ats_))
     {
       if (at->get_children_vector ().empty ())
         continue;

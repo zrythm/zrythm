@@ -26,6 +26,7 @@ add_executable(utils_unit_tests
   uuid_identifiable_object_test.h
   uuid_identifiable_object_test.cpp
   variant_helpers_test.cpp
+  views_test.cpp
 )
 
 if(ZRYTHM_TESTS_WITH_INTERNET_ACCESS)

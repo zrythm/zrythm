@@ -56,4 +56,6 @@ target_link_libraries(zrythm_dsp_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )
-add_library(zrythm::dsp_lib ALIAS zrythm_dsp_lib)
+
+# this breaks things on MSVC (:: in path names)
+# add_library(zrythm::dsp_lib ALIAS zrythm_dsp_lib)
