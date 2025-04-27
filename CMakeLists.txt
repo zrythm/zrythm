@@ -717,6 +717,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/ibireme/yyjson.git
   # 0.10.0
   GIT_TAG 9ddba001a4ea88e93b46932e5c5b87b222e19a5f
+  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES yyjson
 )
 FetchContent_MakeAvailable(yyjson)
@@ -741,6 +742,7 @@ if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
       libcyaml
       GIT_REPOSITORY https://gitlab.zrythm.org/zrythm/zrythm-libcyaml.git
       GIT_TAG 6cae0db42e28900a9c5bbba11816fb1c5caf0f7b
+      GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(libcyaml)
   endif()
@@ -755,6 +757,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/libsndfile/libsndfile
   # 1.2.2
   GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
+  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES SndFile 1.0.29 REQUIRED
 )
 FetchContent_MakeAvailable(sndfile)
@@ -782,6 +785,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fftw3)
 add_library(fftw3_libs INTERFACE)
 target_link_libraries(fftw3_libs INTERFACE fftw3 fftw3f)
+target_include_directories(fftw3_libs SYSTEM INTERFACE ${fftw3_SOURCE_DIR}/api)
 add_library(zrythm::fftw3_libs ALIAS fftw3_libs)
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
@@ -858,6 +862,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/facebook/zstd
     # 1.5.7
     GIT_TAG f8745da6ff1ad1e7bab384bd1f9d742439278e99
+    GIT_SHALLOW TRUE
     SOURCE_SUBDIR build/cmake
     FIND_PACKAGE_ARGS zstd REQUIRED
 )
@@ -871,6 +876,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/Cyan4973/xxHash
   # 0.8.2
   GIT_TAG bbb27a5efb85b92a0486cf361a8635715a53f6ba
+  GIT_SHALLOW TRUE
   SOURCE_SUBDIR cmake_unofficial
   FIND_PACKAGE_ARGS NAMES xxHash 0.8 REQUIRED
 )
@@ -887,6 +893,7 @@ if(0)
       GIT_REPOSITORY https://github.com/vamp-plugins/vamp-plugin-sdk.git
       # master on 2024-10-01
       GIT_TAG 703438d8e55dbfd1c2021d0bc12e36edd1e227e2
+      GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(vamp-sdk)
   else()
@@ -901,6 +908,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
   # 0.9.6
   GIT_TAG dd6a39d0ba1852cf06907e0f0573a2a10d23c2ad
+  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES magic_enum 0.9.5 REQUIRED
 )
 FetchContent_MakeAvailable(magic_enum)
@@ -911,6 +919,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
   # 11.0.2
   GIT_TAG 0c9fce2ffefecfdce794e1859584e25877b7b592
+  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES fmt REQUIRED
 )
 FetchContent_MakeAvailable(fmt)
@@ -921,6 +930,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
   # 1.15.0
   GIT_TAG 8e5613379f5140fefb0b60412fbf1f5406e7c7f8
+  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES spdlog REQUIRED
 )
 FetchContent_MakeAvailable(spdlog)
@@ -954,6 +964,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/google/googletest
   # 1.16.0
   GIT_TAG 6910c9d9165801d8827d628cb72eb7ea9dd538c5
+  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES GTest REQUIRED
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
@@ -971,6 +982,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/google/benchmark
   # 1.9.2
   GIT_TAG afa23b7699c17f1e26c88cbf95257b20d78d6247
+  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES benchmark REQUIRED
 )
 set(BENCHMARK_ENABLE_TESTING OFF)

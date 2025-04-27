@@ -141,7 +141,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
             static_cast<float> (std::fabs (curviness_)), 0.01f, 1.f - bound)
           * 10.f;
         float curviness_for_calc =
-          std::clamp ((10.f - s) / (std::pow<float> (s, s)), bound, 10.f);
+          std::clamp ((10.f - s) / (std::pow (s, s)), bound, 10.f);
 
         if (!start_higher)
           x = 1.0 - x;

@@ -17,6 +17,7 @@ FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
   GIT_TAG 10a589619b452c261b2940767eb253171eb5a823  # 8.0.7
+  GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(juce)
 
@@ -25,6 +26,7 @@ if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
     clap
     GIT_REPOSITORY https://github.com/free-audio/clap.git
     GIT_TAG 27f20f81dec40b930d79ef429fd35dcc2d45db5b # 1.2.2
+    GIT_SHALLOW TRUE
   )
   FetchContent_MakeAvailable(clap)
   FetchContent_Declare(
