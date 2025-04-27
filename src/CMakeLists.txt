@@ -52,32 +52,18 @@ target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_dsp_lib)
 target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_gui_lib)
 target_link_options(zrythm PRIVATE ${zrythm_link_args})
-add_dependencies(zrythm appdata-xml-merged)
 
 if(OS_GNU)
+  add_dependencies(zrythm appdata-xml-merged)
   add_dependencies(zrythm desktop-file)
 endif()
 
 if(WIN32)
-  set_target_properties(zrythm PROPERTIES
-    WIN32_EXECUTABLE TRUE
-    VS_DEBUGGER_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
-  )
   if(MSVC)
     target_link_options(zrythm PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
   endif()
   target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
 endif()
-
-set_target_properties(zrythm PROPERTIES
-  VS_DEBUGGER_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
-  XCODE_SCHEME_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
-  MACOSX_BUNDLE_GUI_IDENTIFIER "org.zrythm.Zrythm"
-  MACOSX_BUNDLE_BUNDLE_VERSION ${ZRYTHM_VERSION_STRING_FULL}
-  MACOSX_BUNDLE_SHORT_VERSION_STRING ${ZRYTHM_VERSION}
-  MACOSX_BUNDLE TRUE
-  WIN32_EXECUTABLE TRUE
-)
 
 install(TARGETS zrythm
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
