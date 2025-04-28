@@ -559,12 +559,20 @@ public:
 
   // Proxy iterator implementation using Boost.STLInterfaces
   class Iterator
-      : public boost::stl_interfaces::
-          proxy_iterator_interface<std::random_access_iterator_tag, VariantType>
+      : public boost::stl_interfaces::proxy_iterator_interface<
+#if !BOOST_STL_INTERFACES_USE_DEDUCED_THIS
+          Iterator,
+#endif
+          std::random_access_iterator_tag,
+          VariantType>
   {
   public:
-    using base_type = boost::stl_interfaces::
-      proxy_iterator_interface<std::random_access_iterator_tag, VariantType>;
+    using base_type = boost::stl_interfaces::proxy_iterator_interface<
+#if !BOOST_STL_INTERFACES_USE_DEDUCED_THIS
+      Iterator,
+#endif
+      std::random_access_iterator_tag,
+      VariantType>;
     using difference_type = base_type::difference_type;
 
     constexpr Iterator () noexcept = default;
