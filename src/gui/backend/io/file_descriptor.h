@@ -91,6 +91,8 @@ public:
 
   bool is_supported () const { return is_type_supported (type_); }
 
+  auto get_label () const { return label_; }
+
   /**
    * Returns whether the given file should auto-play (shorter than 1 min).
    */

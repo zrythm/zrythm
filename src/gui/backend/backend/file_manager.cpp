@@ -186,7 +186,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
     fd.type_ = FileType::ParentDirectory;
     fd.hidden_ = false;
     fd.label_ = "..";
-    if (fd.abs_path_.length () > 1)
+    if (fd.abs_path_.string ().length () > 1)
       {
         files.push_back (fd);
       }
@@ -198,7 +198,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 
       /* set absolute path & label */
       auto absolute_path = file.path ();
-      fd.abs_path_ = absolute_path.string ();
+      fd.abs_path_ = absolute_path;
       fd.label_ = file.path ().filename ().string ();
 
       fd.hidden_ = utils::io::is_file_hidden (absolute_path);
@@ -218,9 +218,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
     }
 
   /* sort alphabetically */
-  std::sort (files.begin (), files.end (), [] (const auto &a, const auto &b) {
-    return a.label_ < b.label_;
-  });
+  std::ranges::sort (files, std::less{}, &FileDescriptor::get_label);
   z_info ("Total files: {}", files.size ());
 }
 

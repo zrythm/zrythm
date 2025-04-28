@@ -199,19 +199,19 @@ AudioClip::enough_time_elapsed_since_last_write () const
 }
 
 void
-AudioClip::write_to_file (const std::string &filepath, bool parts)
+AudioClip::write_to_file (const fs::path &filepath, bool parts)
 {
   z_return_if_fail (samplerate_ > 0);
   z_return_if_fail (frames_written_ < SIZE_MAX);
 
   auto create_writer_for_filepath = [&] () {
-    juce::File file (filepath);
+    juce::File file (filepath.string ());
     auto       out_stream = std::make_unique<juce::FileOutputStream> (file);
 
     if (!out_stream || !out_stream->openedOk ())
       {
-        throw ZrythmException (
-          fmt::format ("Failed to open file '{}' for writing", filepath));
+        throw ZrythmException (fmt::format (
+          "Failed to open file '{}' for writing", filepath.string ()));
       }
 
     auto format = std::unique_ptr<juce::AudioFormat> (
@@ -227,7 +227,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
     if (writer == nullptr)
       {
         throw ZrythmException (
-          "Failed to create audio writer for file: " + filepath);
+          "Failed to create audio writer for file: " + filepath.string ());
       }
     return writer;
   };

@@ -146,7 +146,7 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  void write_to_file (const std::string &filepath, bool parts);
+  void write_to_file (const fs::path &filepath, bool parts);
 
   auto        get_bit_depth () const { return bit_depth_; }
   auto        get_name () const { return name_; }

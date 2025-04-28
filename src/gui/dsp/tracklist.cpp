@@ -1204,7 +1204,7 @@ Tracklist::import_files (
   StringArray filepaths;
   for (const auto &file : file_arr)
     {
-      filepaths.add (file.abs_path_);
+      filepaths.add (file.abs_path_.string ());
     }
 
     // TODO

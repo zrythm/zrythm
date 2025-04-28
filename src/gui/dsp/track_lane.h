@@ -252,10 +252,7 @@ public:
   std::unique_ptr<TrackLaneT> gen_snapshot () const;
 
   ArrangerObjectOwner<RegionT>::Location
-  get_location (const RegionT &) const override
-  {
-    return { .track_id_ = track_->get_uuid (), .owner_ = get_index_in_track () };
-  }
+  get_location (const RegionT &) const override;
 
   std::string get_field_name_for_serialization (const RegionT *) const override
   {

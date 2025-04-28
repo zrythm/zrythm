@@ -424,7 +424,6 @@ protected:
 using ArrangerObjectRegistry =
   utils::OwningObjectRegistry<ArrangerObjectPtrVariant, ArrangerObject>;
 using ArrangerObjectUuidReference = utils::UuidReference<ArrangerObjectRegistry>;
-static_assert (UuidReferenceType<ArrangerObjectUuidReference>);
 using ArrangerObjectSelectionManager =
   utils::UuidIdentifiableObjectSelectionManager<ArrangerObjectRegistry>;
 

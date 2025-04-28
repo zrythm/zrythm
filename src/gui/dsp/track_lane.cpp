@@ -4,6 +4,7 @@
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/laned_track.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/track_lane.h"
 #include "gui/dsp/tracklist.h"
@@ -139,6 +140,13 @@ TrackLaneImpl<RegionT>::after_remove_region ()
     {
       track->remove_empty_last_lanes ();
     }
+}
+
+template <typename RegionT>
+ArrangerObjectOwner<RegionT>::Location
+TrackLaneImpl<RegionT>::get_location (const RegionT &) const
+{
+  return { .track_id_ = track_->get_uuid (), .owner_ = get_index_in_track () };
 }
 
 template <typename RegionT>

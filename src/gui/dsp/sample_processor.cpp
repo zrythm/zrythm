@@ -423,7 +423,8 @@ SampleProcessor::queue_file_or_chord_preset (
           auto * ar =
             ArrangerObjectFactory::get_instance ()->addAudioRegionFromFile (
               &audio_track->get_lane_at (0),
-              QString::fromStdString (file->abs_path_), start_pos.ticks_);
+              QString::fromStdString (file->abs_path_.string ()),
+              start_pos.ticks_);
           file_end_pos_ = *ar->end_pos_;
         }
       catch (const ZrythmException &e)
@@ -494,7 +495,7 @@ SampleProcessor::queue_file_or_chord_preset (
                         ArrangerObjectFactory::get_instance ()
                           ->addMidiRegionFromMidiFile (
                             &midi_track->get_lane_at (0),
-                            QString::fromStdString (file->abs_path_),
+                            QString::fromStdString (file->abs_path_.string ()),
                             start_pos.ticks_, i);
                       file_end_pos_ = std::max (
                         file_end_pos_, *static_cast<Position *> (mr->end_pos_));
