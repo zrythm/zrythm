@@ -11,6 +11,10 @@ add_subdirectory(dsp)
 add_subdirectory(gui)
 
 target_sources(zrythm_gui_lib PRIVATE globals.cpp)
+if(MSVC)
+  # some files are too big - this increases the section limit in object files
+  target_compile_options(zrythm_gui_lib PRIVATE /bigobj)
+endif()
 
 if(0) # TODO
   # Add the translators C string header to the sources

@@ -12,11 +12,11 @@
 using namespace zrythm;
 
 FileDescriptor::FileDescriptor (const fs::path &_abs_path)
+    : type_ (get_type_from_path (_abs_path))
 {
   // z_debug ("creating new FileDescriptor for {}", path);
   abs_path_ = _abs_path;
-  type_ = get_type_from_path (_abs_path.c_str ());
-  label_ = utils::io::path_get_basename (_abs_path);
+  label_ = utils::io::path_get_basename (_abs_path.string ());
 }
 
 std::unique_ptr<FileDescriptor>
@@ -165,7 +165,7 @@ FileDescriptor::should_autoplay () const
         }
       catch (const ZrythmException &e)
         {
-          e.handle ("Error reading metadata from {}", abs_path_);
+          e.handle ("Error reading metadata from {}", abs_path_.string ());
           return false;
         }
     }
@@ -199,10 +199,12 @@ FileDescriptor::get_info_text_for_label () const
         }
       catch (const ZrythmException &e)
         {
-          z_warning ("Error reading metadata from {}: {}", abs_path_, e.what ());
+          z_warning (
+            "Error reading metadata from {}: {}", abs_path_.string (),
+            e.what ());
           return format_str (
             QObject::tr ("Failed reading metadata for {}").toStdString (),
-            abs_path_);
+            abs_path_.string ());
         }
     }
   else

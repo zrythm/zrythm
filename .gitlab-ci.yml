@@ -115,7 +115,6 @@ configure:mac-arm:
     - python3 -m venv venv
     - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
-    - export PATH="/opt/homebrew/Cellar/ccache/4.11.2/bin:$PATH"
   script:
     - >-
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS

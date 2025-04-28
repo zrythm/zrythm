@@ -108,7 +108,7 @@ public:
 
 public:
   /** Absolute path. */
-  std::string abs_path_;
+  fs::path abs_path_;
 
   /** Type of file. */
   FileType type_ = {};

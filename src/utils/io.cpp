@@ -248,15 +248,15 @@ static void
 append_files_from_dir_ending_in (
   StringArray                      &files,
   bool                              recursive,
-  const std::string                &_dir,
+  const fs::path                   &_dir,
   const std::optional<std::string> &opt_end_string)
 {
-  juce::File directory (_dir);
+  juce::File directory (_dir.string ());
 
   if (!directory.isDirectory ())
     {
-      throw ZrythmException (
-        fmt::format ("'{}' is not a directory (or doesn't exist)", _dir));
+      throw ZrythmException (fmt::format (
+        "'{}' is not a directory (or doesn't exist)", _dir.string ()));
     }
 
   for (
@@ -374,10 +374,10 @@ std::string
 get_next_available_filepath (const fs::path &filepath)
 {
   int  i = 1;
-  auto file_without_ext = file_strip_ext (filepath);
-  auto file_ext = file_get_ext (filepath);
-  auto new_path = filepath;
-  while (path_exists (new_path))
+  auto file_without_ext = file_strip_ext (filepath.string ());
+  auto file_ext = file_get_ext (filepath.string ());
+  auto new_path = filepath.string ();
+  while (path_exists (fs::path (new_path)))
     {
       if (fs::is_directory (new_path))
         {

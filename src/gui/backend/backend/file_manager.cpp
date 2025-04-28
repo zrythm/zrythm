@@ -243,7 +243,7 @@ FileManager::set_selection (
   bool                 _load_files,
   bool                 save_to_settings)
 {
-  z_debug ("setting selection to {}", sel.path_.c_str ());
+  z_debug ("setting selection to {}", sel.path_.string ());
 
   selection = std::make_unique<FileBrowserLocation> (sel);
   if (_load_files)
@@ -314,7 +314,7 @@ void
 FileBrowserLocation::print () const
 {
   z_info (
-    "[FileBrowserLocation] {}: '{}', special: {}", label_, path_.c_str (),
+    "[FileBrowserLocation] {}: '{}', special: {}", label_, path_.string (),
     ENUM_NAME (special_location_));
 }
 
