@@ -11,7 +11,7 @@
 
 using namespace zrythm;
 
-FileDescriptor::FileDescriptor (const std::string &_abs_path)
+FileDescriptor::FileDescriptor (const fs::path &_abs_path)
 {
   // z_debug ("creating new FileDescriptor for {}", path);
   abs_path_ = _abs_path;
@@ -226,7 +226,6 @@ FileDescriptor::get_icon_name () const
     case FileType::Wav:
       return "gnome-icon-library-sound-wave-symbolic";
     case FileType::Directory:
-      return "folder";
     case FileType::ParentDirectory:
       return "folder";
     case FileType::Other:

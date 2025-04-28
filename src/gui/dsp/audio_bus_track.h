@@ -14,7 +14,7 @@ class AudioBusTrack final
       public ChannelTrack,
       public ICloneable<AudioBusTrack>,
       public zrythm::utils::serialization::ISerializable<AudioBusTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<AudioBusTrack>
 {
 public:
   Q_OBJECT

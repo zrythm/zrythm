@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -92,7 +92,7 @@ get_dir (const std::string &filename)
 }
 
 void
-mkdir (const std::string &dir)
+mkdir (const fs::path &dir)
 {
   // this is called during logger instantiation so check if logger exists
   if (LoggerProvider::has_logger ())
@@ -123,9 +123,9 @@ file_get_ext (const std::string &filename)
 }
 
 bool
-touch_file (const std::string &file_path)
+touch_file (const fs::path &file_path)
 {
-  juce::File file (file_path);
+  juce::File file (file_path.string ());
   if (file.exists ())
     {
       // Update the file's modification time to the current time
@@ -175,9 +175,9 @@ path_get_basename_without_ext (const std::string &filename)
 }
 
 qint64
-file_get_last_modified_datetime (const std::string &filename)
+file_get_last_modified_datetime (const fs::path &filename)
 {
-  juce::File file (filename);
+  juce::File file (filename.string ());
   if (file.exists ())
     {
       return file.getLastModificationTime ().toMilliseconds () / 1000;
@@ -187,7 +187,7 @@ file_get_last_modified_datetime (const std::string &filename)
 }
 
 std::string
-file_get_last_modified_datetime_as_str (const std::string &filename)
+file_get_last_modified_datetime_as_str (const fs::path &filename)
 {
   qint64 secs = file_get_last_modified_datetime (filename);
   if (secs == -1)
@@ -197,11 +197,11 @@ file_get_last_modified_datetime_as_str (const std::string &filename)
 }
 
 bool
-remove (const std::string &path)
+remove (const fs::path &path)
 {
-  z_debug ("Removing {}...", path);
+  z_debug ("Removing {}...", path.string ());
 
-  juce::File file (path);
+  juce::File file (path.string ());
   if (!file.exists ())
     return false;
 
@@ -270,7 +270,7 @@ append_files_from_dir_ending_in (
 }
 
 StringArray
-get_files_in_dir (const std::string &_dir)
+get_files_in_dir (const fs::path &_dir)
 {
   return get_files_in_dir_ending_in (_dir, false, std::nullopt);
 }
@@ -346,7 +346,7 @@ copy_file (const fs::path &destfile, const fs::path &srcfile)
 }
 
 StringArray
-get_files_in_dir_as_basenames (const std::string &_dir)
+get_files_in_dir_as_basenames (const fs::path &_dir)
 {
   StringArray files = get_files_in_dir (_dir);
 
@@ -361,7 +361,7 @@ get_files_in_dir_as_basenames (const std::string &_dir)
 
 StringArray
 get_files_in_dir_ending_in (
-  const std::string                &_dir,
+  const fs::path                   &_dir,
   bool                              recursive,
   const std::optional<std::string> &end_string)
 {
@@ -371,7 +371,7 @@ get_files_in_dir_ending_in (
 }
 
 std::string
-get_next_available_filepath (const std::string &filepath)
+get_next_available_filepath (const fs::path &filepath)
 {
   int  i = 1;
   auto file_without_ext = file_strip_ext (filepath);
@@ -572,14 +572,6 @@ set_file_contents (const fs::path &file_path, const std::string &data)
     }
 }
 
-/**
- * @brief Splits a string of paths separated by the system's list separator
- * character.
- *
- * This function takes a string of paths separated by the system's list
- * separator character (e.g. ';' on Windows, ':' on Unix-like systems) and
- * splits it into a
- */
 QStringList
 split_paths (const QString &paths)
 {

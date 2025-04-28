@@ -221,11 +221,8 @@ public:
    *
    * @throw ZrythmException If the project cannot be saved.
    */
-  void save (
-    const std::string &_dir,
-    bool               is_backup,
-    bool               show_notification,
-    bool               async);
+  void
+  save (const fs::path &_dir, bool is_backup, bool show_notification, bool async);
 
   /**
    * Autosave callback.

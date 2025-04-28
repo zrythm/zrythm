@@ -18,7 +18,7 @@ class AudioGroupTrack final
       public GroupTargetTrack,
       public ICloneable<AudioGroupTrack>,
       public zrythm::utils::serialization::ISerializable<AudioGroupTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<AudioGroupTrack>
 {
   Q_OBJECT
   QML_ELEMENT

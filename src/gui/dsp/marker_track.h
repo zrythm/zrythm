@@ -22,7 +22,7 @@ class MarkerTrack final
       public ArrangerObjectOwner<Marker>,
       public ICloneable<MarkerTrack>,
       public zrythm::utils::serialization::ISerializable<MarkerTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<MarkerTrack>
 {
   Q_OBJECT
   QML_ELEMENT

@@ -42,7 +42,7 @@ class FileDescriptor
 public:
   FileDescriptor () = default;
 
-  FileDescriptor (const std::string &abs_path);
+  FileDescriptor (const fs::path &abs_path);
 
   /**
    * @brief Creates a new FileDescriptor from a URI.

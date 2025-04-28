@@ -23,7 +23,7 @@ class AudioTrack final
       public RecordableTrack,
       public ICloneable<AudioTrack>,
       public zrythm::utils::serialization::ISerializable<AudioTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<AudioTrack>
 {
   Q_OBJECT
   QML_ELEMENT

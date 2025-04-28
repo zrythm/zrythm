@@ -25,7 +25,7 @@ class MasterTrack final
       public GroupTargetTrack,
       public ICloneable<MasterTrack>,
       public zrythm::utils::serialization::ISerializable<MasterTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<MasterTrack>
 {
   Q_OBJECT
   QML_ELEMENT

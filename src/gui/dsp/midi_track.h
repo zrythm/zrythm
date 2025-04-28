@@ -21,7 +21,7 @@ class MidiTrack final
       public ChannelTrack,
       public ICloneable<MidiTrack>,
       public zrythm::utils::serialization::ISerializable<MidiTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<MidiTrack>
 {
   Q_OBJECT
   QML_ELEMENT

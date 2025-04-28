@@ -26,7 +26,7 @@ class ModulatorTrack final
       public ProcessableTrack,
       public ICloneable<ModulatorTrack>,
       public zrythm::utils::serialization::ISerializable<ModulatorTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<ModulatorTrack>
 {
   Q_OBJECT
   QML_ELEMENT

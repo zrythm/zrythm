@@ -126,6 +126,8 @@ configure:mac-arm:
     exclude:
       - $BUILDDIR/**/.git/**/*
     expire_in: 1 day
+  variables:
+    PATH: /opt/homebrew/Cellar/ccache/4.11.2/bin:$PATH
 
 configure:windows:
   extends: .windows-template

@@ -13,7 +13,7 @@ class MidiGroupTrack final
       public GroupTargetTrack,
       public ICloneable<MidiGroupTrack>,
       public zrythm::utils::serialization::ISerializable<MidiGroupTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<MidiGroupTrack>
 {
   Q_OBJECT
   QML_ELEMENT

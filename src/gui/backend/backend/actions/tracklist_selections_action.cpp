@@ -72,7 +72,7 @@ TracklistSelectionsAction::copy_track_positions_from_selections (
   std::vector<int> &track_positions,
   TrackSpan         selections_var)
 {
-  num_tracks_ = selections_var.size ();
+  num_tracks_ = static_cast<int> (selections_var.size ());
   for (const auto &track_var : selections_var)
     {
       track_positions.push_back (
@@ -479,7 +479,7 @@ TracklistSelectionsAction::create_track (int idx)
       std::string name{};
       if (track_type_ == Track::Type::Audio && pool_id_.has_value ())
         {
-          track = AudioTrack::create_unique<AudioTrack> (
+          track = AudioTrack::create_unique (
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
             PROJECT->get_port_registry (),
             PROJECT->get_arranger_object_registry (), true);
@@ -489,7 +489,7 @@ TracklistSelectionsAction::create_track (int idx)
       /* else if creating MIDI track from file */
       else if (track_type_ == Track::Type::Midi && !base64_midi_.empty ())
         {
-          track = MidiTrack::create_unique<MidiTrack> (
+          track = MidiTrack::create_unique (
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
             PROJECT->get_port_registry (),
             PROJECT->get_arranger_object_registry (), true);

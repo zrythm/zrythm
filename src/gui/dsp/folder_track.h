@@ -16,7 +16,7 @@ class FolderTrack final
       // public ChannelTrack,
       public ICloneable<FolderTrack>,
       public zrythm::utils::serialization::ISerializable<FolderTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<FolderTrack>
 {
   Q_OBJECT
   QML_ELEMENT

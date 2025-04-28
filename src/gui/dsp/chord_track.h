@@ -42,7 +42,7 @@ class ChordTrack final
       public ArrangerObjectOwner<ScaleObject>,
       public ICloneable<ChordTrack>,
       public zrythm::utils::serialization::ISerializable<ChordTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<ChordTrack>
 {
   Q_OBJECT
   QML_ELEMENT

@@ -1142,11 +1142,11 @@ public:
       {
         if constexpr (ConstructibleWithDependencyHolder<T>)
           {
-            obj = T::template create_unique<T> (ctx.dependency_holder_);
+            obj = T::create_unique (ctx.dependency_holder_);
           }
         else
           {
-            obj = T::template create_unique<T> ();
+            obj = T::create_unique ();
           }
       }
     else

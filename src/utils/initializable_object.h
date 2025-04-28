@@ -21,12 +21,15 @@ concept Initializable = requires (T t) {
 
 /// @brief A factory class for creating initializable objects using static
 /// polymorphism.
-class InitializableObject
+template <typename Derived> class InitializableObject
 {
+protected:
+  /// @brief Protected constructor to prevent instantiation.
+  InitializableObject () = default;
+
 public:
   /// @brief Creates a shared pointer to initialized object.
-  template <typename Derived, typename... Args>
-    requires InitializableObjectDetail::Initializable<Derived>
+  template <typename... Args>
   static std::shared_ptr<Derived> create_shared (Args &&... args)
   {
     auto obj =
@@ -35,18 +38,19 @@ public:
   }
 
   /// @brief Creates a unique pointer to initialized object.
-  template <typename Derived, typename... Args>
-    requires InitializableObjectDetail::Initializable<Derived>
+  template <typename... Args>
   static std::unique_ptr<Derived> create_unique (Args &&... args)
   {
     auto obj =
       std::unique_ptr<Derived> (new Derived (std::forward<Args> (args)...));
     return obj->initialize () ? std::move (obj) : nullptr;
   }
+
+  Z_DISABLE_COPY_MOVE (InitializableObject);
 };
 
 template <typename T>
-concept Initializable = std::derived_from<T, InitializableObject>;
+concept Initializable = DerivedFromCRTPBase<T, InitializableObject>;
 
 } // namespace zrythm::utils
 

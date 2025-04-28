@@ -10,5 +10,11 @@ target_link_libraries(plugin-scanner
 )
 target_include_directories(plugin-scanner
   PRIVATE
-    ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_BINARY_DIR}/src
+)
+set_target_properties(plugin-scanner PROPERTIES
+  WIN32_EXECUTABLE TRUE
+)
+
 install(TARGETS plugin-scanner RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

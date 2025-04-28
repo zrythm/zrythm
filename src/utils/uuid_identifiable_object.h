@@ -277,10 +277,10 @@ public:
     requires std::derived_from<CreateType, BaseT>
   {
     CreateType * obj{};
-    if constexpr (std::derived_from<CreateType, InitializableObject>)
+    if constexpr (utils::Initializable<CreateType>)
       {
-        auto obj_unique_ptr = CreateType::template create_unique<CreateType> (
-          std::forward<Args> (args)...);
+        auto obj_unique_ptr =
+          CreateType::create_unique (std::forward<Args> (args)...);
         obj = obj_unique_ptr.release ();
       }
     else

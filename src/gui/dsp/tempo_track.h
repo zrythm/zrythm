@@ -37,7 +37,7 @@ class TempoTrack final
       public AutomatableTrack,
       public ICloneable<TempoTrack>,
       public zrythm::utils::serialization::ISerializable<TempoTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<TempoTrack>
 {
   Q_OBJECT
   QML_ELEMENT

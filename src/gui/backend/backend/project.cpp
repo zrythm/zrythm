@@ -462,7 +462,7 @@ Project::add_default_tracks ()
 
     z_debug ("adding {} track...", typeid (TrackT).name ());
     TrackT * track =
-      TrackT::template create_unique<TrackT> (
+      TrackT::create_unique (
         get_track_registry (), get_plugin_registry (), get_port_registry (),
         get_arranger_object_registry (), true)
         .release ();
@@ -1027,14 +1027,14 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 
 void
 Project::save (
-  const std::string &_dir,
-  const bool         is_backup,
-  const bool         show_notification,
-  const bool         async)
+  const fs::path &_dir,
+  const bool      is_backup,
+  const bool      show_notification,
+  const bool      async)
 {
   z_info (
     "Saving project at {}, is backup: {}, show notification: {}, async: {}",
-    _dir, is_backup, show_notification, async);
+    _dir.string (), is_backup, show_notification, async);
 
   /* pause engine */
   AudioEngine::State state{};
@@ -1058,14 +1058,14 @@ Project::save (
   dir_ = _dir;
   try
     {
-      utils::io::mkdir (dir_);
+      utils::io::mkdir (dir_.string ());
     }
 
   catch (const ZrythmException &e)
     {
       throw ZrythmException (
 
-        fmt::format ("Failed to create project directory {}", dir_));
+        fmt::format ("Failed to create project directory {}", dir_.string ()));
     }
 
   /* set the title */

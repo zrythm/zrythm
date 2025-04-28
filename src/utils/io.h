@@ -54,7 +54,7 @@ get_dir (const std::string &filename);
  * @throw ZrythmException Failed to make directory with parents.
  */
 void
-mkdir (const std::string &dir);
+mkdir (const fs::path &dir);
 
 /**
  * @brief Touches a file similar to UNIX touch.
@@ -62,7 +62,7 @@ mkdir (const std::string &dir);
  * @return Whether successful.
  */
 bool
-touch_file (const std::string &file_path);
+touch_file (const fs::path &file_path);
 
 fs::path
 uri_to_file (const std::string &uri);
@@ -111,10 +111,10 @@ path_get_basename_without_ext (const std::string &filename);
  * -1 if failed.
  */
 qint64
-file_get_last_modified_datetime (const std::string &filename);
+file_get_last_modified_datetime (const fs::path &filename);
 
 std::string
-file_get_last_modified_datetime_as_str (const std::string &filename);
+file_get_last_modified_datetime_as_str (const fs::path &filename);
 
 /**
  * Removes the given file.
@@ -127,7 +127,7 @@ file_get_last_modified_datetime_as_str (const std::string &filename);
  * @return True if the file was deleted, false if it didn't exist.
  */
 bool
-remove (const std::string &path);
+remove (const fs::path &path);
 
 /**
  * @brief Creates a temporary directory in the system's default temp directory.
@@ -195,7 +195,7 @@ rmdir (const fs::path &path, bool force);
  * @return StringArray
  */
 StringArray
-get_files_in_dir_as_basenames (const std::string &_dir);
+get_files_in_dir_as_basenames (const fs::path &_dir);
 
 /**
  * Returns a list of the files in the given directory as absolute paths.
@@ -208,7 +208,7 @@ get_files_in_dir_as_basenames (const std::string &_dir);
  */
 StringArray
 get_files_in_dir_ending_in (
-  const std::string                &_dir,
+  const fs::path                   &_dir,
   bool                              recursive,
   const std::optional<std::string> &end_string);
 
@@ -219,7 +219,7 @@ get_files_in_dir_ending_in (
  * @throw ZrythmException If @ref dir cannot be opened.
  */
 StringArray
-get_files_in_dir (const std::string &_dir);
+get_files_in_dir (const fs::path &_dir);
 
 /**
  * Copies a directory.
@@ -262,7 +262,7 @@ copy_file (const fs::path &destfile, const fs::path &srcfile);
  * Example: "myfile" -> "myfile (1)"
  */
 std::string
-get_next_available_filepath (const std::string &filepath);
+get_next_available_filepath (const fs::path &filepath);
 
 /**
  * Returns the given file name with any illegal characters removed.
@@ -341,6 +341,14 @@ set_file_contents (const fs::path &path, const char * contents, size_t size);
 void
 set_file_contents (const fs::path &file_path, const std::string &data);
 
+/**
+ * @brief Splits a string of paths separated by the system's list separator
+ * character.
+ *
+ * This function takes a string of paths separated by the system's list
+ * separator character (e.g. ';' on Windows, ':' on Unix-like systems) and
+ * splits it into a
+ */
 QStringList
 split_paths (const QString &paths);
 

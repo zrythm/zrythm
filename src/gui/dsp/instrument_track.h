@@ -20,7 +20,7 @@ class InstrumentTrack final
       public PianoRollTrack,
       public ICloneable<InstrumentTrack>,
       public zrythm::utils::serialization::ISerializable<InstrumentTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<InstrumentTrack>
 {
   Q_OBJECT
   QML_ELEMENT

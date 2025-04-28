@@ -19,7 +19,7 @@ class MidiBusTrack final
       public ChannelTrack,
       public ICloneable<MidiBusTrack>,
       public zrythm::utils::serialization::ISerializable<MidiBusTrack>,
-      public utils::InitializableObject
+      public utils::InitializableObject<MidiBusTrack>
 {
   Q_OBJECT
   QML_ELEMENT

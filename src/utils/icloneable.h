@@ -77,8 +77,7 @@ public:
     std::unique_ptr<Derived> cloned;
     if constexpr (utils::Initializable<Derived>)
       {
-        auto result = Derived::template create_unique<Derived> (
-          std::forward<Args> (args)...);
+        auto result = Derived::create_unique (std::forward<Args> (args)...);
         if (!result)
           return nullptr;
         cloned = std::move (result);
