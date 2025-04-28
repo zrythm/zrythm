@@ -945,7 +945,7 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
                   /* TODO add "listen" buffer on fader struct and add listened
                    * tracks to it during processing instead of looping here */
                   float listen_amp = CONTROL_ROOM->listen_fader_->get_amp ();
-                  for (auto &cur_t : TRACKLIST->get_track_span ())
+                  for (const auto &cur_t : TRACKLIST->get_track_span ())
                     {
                       std::visit (
                         [&] (auto &&t) {

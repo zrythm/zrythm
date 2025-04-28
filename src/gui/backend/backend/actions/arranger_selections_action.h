@@ -163,7 +163,7 @@ protected:
    *
    * @param before_sel Selections before the change.
    */
-  ArrangerSelectionsAction (ArrangerObjectSpanVariant before_sel, Type type)
+  ArrangerSelectionsAction (ArrangerObjectSpan before_sel, Type type)
       : UndoableAction (UndoableAction::Type::ArrangerSelections), type_ (type),
         first_run_ (true)
   {
@@ -175,14 +175,14 @@ protected:
    *
    * @param src
    */
-  void set_before_selections (ArrangerObjectSpanVariant src_var);
+  void set_before_selections (ArrangerObjectSpan src_var);
 
   /**
    * @brief Sets @ref sel_after_ to a clone of @p src.
    *
    * @param src
    */
-  void set_after_selections (ArrangerObjectSpanVariant src_var);
+  void set_after_selections (ArrangerObjectSpan src_var);
 
 private:
   /** Common logic for perform/undo. */
@@ -318,15 +318,15 @@ protected:
    * it will delete them.
    */
   CreateOrDeleteArrangerSelectionsAction (
-    ArrangerObjectSpanVariant sel_var,
-    bool                      create);
+    ArrangerObjectSpan sel_var,
+    bool               create);
 };
 
 class CreateArrangerSelectionsAction
   final : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
-  CreateArrangerSelectionsAction (ArrangerObjectSpanVariant sel)
+  CreateArrangerSelectionsAction (ArrangerObjectSpan sel)
       : CreateOrDeleteArrangerSelectionsAction (sel, true) { };
 };
 
@@ -334,7 +334,7 @@ class DeleteArrangerSelectionsAction
   final : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
-  DeleteArrangerSelectionsAction (ArrangerObjectSpanVariant sel)
+  DeleteArrangerSelectionsAction (ArrangerObjectSpan sel)
       : CreateOrDeleteArrangerSelectionsAction (sel, false) { };
 };
 
@@ -349,9 +349,9 @@ public:
    * @param already_recorded
    */
   RecordAction (
-    ArrangerObjectSpanVariant sel_before,
-    ArrangerObjectSpanVariant sel_after,
-    bool                      already_recorded);
+    ArrangerObjectSpan sel_before,
+    ArrangerObjectSpan sel_after,
+    bool               already_recorded);
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateAction
@@ -366,7 +366,7 @@ public:
    * automation point normalized value.
    */
   MoveOrDuplicateAction (
-    ArrangerObjectSpanVariant               sel_var,
+    ArrangerObjectSpan                      sel_var,
     bool                                    move,
     double                                  ticks,
     int                                     delta_chords,
@@ -383,7 +383,7 @@ class ArrangerSelectionsAction::MoveOrDuplicateTimelineAction
 {
 public:
   MoveOrDuplicateTimelineAction (
-    ArrangerObjectSpanVariant               sel,
+    ArrangerObjectSpan                      sel,
     bool                                    move,
     double                                  ticks,
     int                                     delta_tracks,
@@ -408,11 +408,11 @@ class ArrangerSelectionsAction::MoveOrDuplicateMidiAction
 {
 public:
   MoveOrDuplicateMidiAction (
-    ArrangerObjectSpanVariant sel,
-    bool                      move,
-    double                    ticks,
-    int                       delta_pitch,
-    bool                      already_moved)
+    ArrangerObjectSpan sel,
+    bool               move,
+    double             ticks,
+    int                delta_pitch,
+    bool               already_moved)
       : MoveOrDuplicateAction (
           sel,
           move,
@@ -431,11 +431,11 @@ class ArrangerSelectionsAction::MoveOrDuplicateChordAction
 {
 public:
   MoveOrDuplicateChordAction (
-    ArrangerObjectSpanVariant sel,
-    bool                      move,
-    double                    ticks,
-    int                       delta_chords,
-    bool                      already_moved)
+    ArrangerObjectSpan sel,
+    bool               move,
+    double             ticks,
+    int                delta_chords,
+    bool               already_moved)
       : MoveOrDuplicateAction (
           sel,
           move,
@@ -454,11 +454,11 @@ class ArrangerSelectionsAction::MoveOrDuplicateAutomationAction
 {
 public:
   MoveOrDuplicateAutomationAction (
-    ArrangerObjectSpanVariant sel,
-    bool                      move,
-    double                    ticks,
-    int                       delta_normalized_amount,
-    bool                      already_moved)
+    ArrangerObjectSpan sel,
+    bool               move,
+    double             ticks,
+    int                delta_normalized_amount,
+    bool               already_moved)
       : MoveOrDuplicateAction (
           sel,
           move,
@@ -490,10 +490,10 @@ class ArrangerSelectionsAction::MoveMidiAction
 {
 public:
   MoveMidiAction (
-    ArrangerObjectSpanVariant sel,
-    double                    ticks,
-    int                       delta_pitch,
-    bool                      already_moved)
+    ArrangerObjectSpan sel,
+    double             ticks,
+    int                delta_pitch,
+    bool               already_moved)
       : MoveOrDuplicateAction (sel, true, ticks, 0, delta_pitch, 0, 0, 0, std::nullopt, already_moved)
   {
   }
@@ -504,10 +504,10 @@ class ArrangerSelectionsAction::MoveChordAction
 {
 public:
   MoveChordAction (
-    ArrangerObjectSpanVariant sel,
-    double                    ticks,
-    int                       delta_chords,
-    bool                      already_moved)
+    ArrangerObjectSpan sel,
+    double             ticks,
+    int                delta_chords,
+    bool               already_moved)
       : MoveOrDuplicateAction (sel, true, ticks, delta_chords, 0, 0, 0, 0, std::nullopt, already_moved)
   {
   }
@@ -524,12 +524,12 @@ public:
    * @param sel_after Selections after duplication.
    */
   LinkAction (
-    ArrangerObjectSpanVariant sel_before,
-    ArrangerObjectSpanVariant sel_after,
-    double                    ticks,
-    int                       delta_tracks,
-    int                       delta_lanes,
-    bool                      already_moved);
+    ArrangerObjectSpan sel_before,
+    ArrangerObjectSpan sel_after,
+    double             ticks,
+    int                delta_tracks,
+    int                delta_lanes,
+    bool               already_moved);
 };
 
 class EditArrangerSelectionsAction : public ArrangerSelectionsAction
@@ -543,34 +543,34 @@ public:
    * @param type Indication of which field has changed.
    */
   EditArrangerSelectionsAction (
-    ArrangerObjectSpanVariant                sel_before,
-    std::optional<ArrangerObjectSpanVariant> sel_after,
-    EditType                                 type,
-    bool                                     already_edited);
+    ArrangerObjectSpan                sel_before,
+    std::optional<ArrangerObjectSpan> sel_after,
+    EditType                          type,
+    bool                              already_edited);
 
   /**
    * @brief Wrapper for a single object.
    */
   static std::unique_ptr<EditArrangerSelectionsAction> create (
-    ArrangerObjectSpanVariant sel_before,
-    ArrangerObjectSpanVariant sel_after,
-    EditType                  type,
-    bool                      already_edited);
+    ArrangerObjectSpan sel_before,
+    ArrangerObjectSpan sel_after,
+    EditType           type,
+    bool               already_edited);
 
   /**
    * @brief Wrapper for MIDI functions.
    */
   EditArrangerSelectionsAction (
-    ArrangerObjectSpanVariant sel_before,
-    MidiFunction::Type        midi_func_type,
-    MidiFunction::Options     opts);
+    ArrangerObjectSpan    sel_before,
+    MidiFunction::Type    midi_func_type,
+    MidiFunction::Options opts);
 
   /**
    * @brief Wrapper for automation functions.
    */
   EditArrangerSelectionsAction (
-    ArrangerObjectSpanVariant sel_before,
-    AutomationFunction::Type  automation_func_type);
+    ArrangerObjectSpan       sel_before,
+    AutomationFunction::Type automation_func_type);
 
   /**
    * @brief Wrapper for audio functions.
@@ -610,7 +610,7 @@ public:
    *
    * @param pos Global position to split at.
    */
-  SplitAction (ArrangerObjectSpanVariant sel, Position pos);
+  SplitAction (ArrangerObjectSpan sel, Position pos);
 };
 
 class ArrangerSelectionsAction::MergeAction : public ArrangerSelectionsAction
@@ -619,7 +619,7 @@ public:
   /**
    * Creates a new action for merging objects.
    */
-  MergeAction (ArrangerObjectSpanVariant sel)
+  MergeAction (ArrangerObjectSpan sel)
       : ArrangerSelectionsAction (sel, Type::Merge)
   {
   }
@@ -635,10 +635,10 @@ public:
    * @param ticks How many ticks to add to the resizing edge.
    */
   ResizeAction (
-    ArrangerObjectSpanVariant                sel_before,
-    std::optional<ArrangerObjectSpanVariant> sel_after,
-    ResizeType                               type,
-    double                                   ticks);
+    ArrangerObjectSpan                sel_before,
+    std::optional<ArrangerObjectSpan> sel_after,
+    ResizeType                        type,
+    double                            ticks);
 };
 
 class ArrangerSelectionsAction::QuantizeAction : public ArrangerSelectionsAction
@@ -649,9 +649,7 @@ public:
    *
    * @param opts Quantize options.
    */
-  QuantizeAction (
-    ArrangerObjectSpanVariant       sel,
-    const old_dsp::QuantizeOptions &opts)
+  QuantizeAction (ArrangerObjectSpan sel, const old_dsp::QuantizeOptions &opts)
       : ArrangerSelectionsAction (sel, Type::Quantize)
   {
     opts_ = std::make_unique<old_dsp::QuantizeOptions> (opts);

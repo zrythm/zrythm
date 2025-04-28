@@ -28,19 +28,15 @@ ArrangerSelectionsAction::ArrangerSelectionsAction ()
 }
 
 CreateOrDeleteArrangerSelectionsAction::CreateOrDeleteArrangerSelectionsAction (
-  ArrangerObjectSpanVariant sel_var,
-  bool                      create)
+  ArrangerObjectSpan sel_var,
+  bool               create)
     : ArrangerSelectionsAction (sel_var, create ? Type::Create : Type::Delete)
 {
-  std::visit (
-    [&] (auto &&sel) {
-      if (sel.contains_undeletable_object ())
-        {
-          throw ZrythmException (
-            QObject::tr ("Arranger selections contain an undeletable object"));
-        }
-    },
-    sel_var);
+  if (sel_var.contains_undeletable_object ())
+    {
+      throw ZrythmException (
+        QObject::tr ("Arranger selections contain an undeletable object"));
+    }
 }
 
 void
@@ -171,27 +167,17 @@ ArrangerSelectionsAction::init_loaded_impl ()
 }
 
 void
-ArrangerSelectionsAction::set_before_selections (
-  ArrangerObjectSpanVariant src_var)
+ArrangerSelectionsAction::set_before_selections (ArrangerObjectSpan src_var)
 {
-  std::visit (
-    [&] (auto &&src) {
-      sel_ =
-        src.create_snapshots (*ArrangerObjectFactory::get_instance (), *this);
-    },
-    src_var);
+  sel_ =
+    src_var.create_snapshots (*ArrangerObjectFactory::get_instance (), *this);
 }
 
 void
-ArrangerSelectionsAction::set_after_selections (
-  ArrangerObjectSpanVariant src_var)
+ArrangerSelectionsAction::set_after_selections (ArrangerObjectSpan src_var)
 {
-  std::visit (
-    [&] (auto &&src) {
-      sel_after_ =
-        src.create_snapshots (*ArrangerObjectFactory::get_instance (), *this);
-    },
-    src_var);
+  sel_after_ =
+    src_var.create_snapshots (*ArrangerObjectFactory::get_instance (), *this);
 }
 
 bool
@@ -219,7 +205,7 @@ ArrangerSelectionsAction::get_project_arranger_objects () const
 }
 
 ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
-  ArrangerObjectSpanVariant               sel_var,
+  ArrangerObjectSpan                      sel_var,
   bool                                    move,
   double                                  ticks,
   int                                     delta_chords,
@@ -231,43 +217,39 @@ ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
   bool                                    already_moved)
     : ArrangerSelectionsAction (sel_var, move ? Type::Move : Type::Duplicate)
 {
-  std::visit (
-    [&] (auto &&sel) {
-      first_run_ = already_moved;
-      ticks_ = ticks;
-      delta_chords_ = delta_chords;
-      delta_pitch_ = delta_pitch;
-      delta_tracks_ = delta_tracks;
-      delta_lanes_ = delta_lanes;
-      delta_normalized_amount_ = delta_normalized_amount;
+  first_run_ = already_moved;
+  ticks_ = ticks;
+  delta_chords_ = delta_chords;
+  delta_pitch_ = delta_pitch;
+  delta_tracks_ = delta_tracks;
+  delta_lanes_ = delta_lanes;
+  delta_normalized_amount_ = delta_normalized_amount;
 
-      /* validate */
-      if (!move)
+  /* validate */
+  if (!move)
+    {
+      if (sel_var.contains_unclonable_object ())
         {
-          if (sel.contains_unclonable_object ())
-            {
-              throw ZrythmException (QObject::tr (
-                "Arranger selections contain an object that cannot be duplicated"));
-            }
+          throw ZrythmException (QObject::tr (
+            "Arranger selections contain an object that cannot be duplicated"));
         }
+    }
 
-      if (!move)
-        {
-          set_after_selections (sel);
-        }
+  if (!move)
+    {
+      set_after_selections (sel_var);
+    }
 
-      target_port_ = tgt_port_id;
-    },
-    sel_var);
+  target_port_ = tgt_port_id;
 }
 
 ArrangerSelectionsAction::LinkAction::LinkAction (
-  ArrangerObjectSpanVariant sel_before,
-  ArrangerObjectSpanVariant sel_after,
-  double                    ticks,
-  int                       delta_tracks,
-  int                       delta_lanes,
-  bool                      already_moved)
+  ArrangerObjectSpan sel_before,
+  ArrangerObjectSpan sel_after,
+  double             ticks,
+  int                delta_tracks,
+  int                delta_lanes,
+  bool               already_moved)
     : ArrangerSelectionsAction (sel_before, Type::Link)
 {
   first_run_ = already_moved;
@@ -279,9 +261,9 @@ ArrangerSelectionsAction::LinkAction::LinkAction (
 }
 
 ArrangerSelectionsAction::RecordAction::RecordAction (
-  ArrangerObjectSpanVariant sel_before,
-  ArrangerObjectSpanVariant sel_after,
-  bool                      already_recorded)
+  ArrangerObjectSpan sel_before,
+  ArrangerObjectSpan sel_after,
+  bool               already_recorded)
     : ArrangerSelectionsAction (sel_before, Type::Record)
 {
   first_run_ = !already_recorded;
@@ -289,23 +271,18 @@ ArrangerSelectionsAction::RecordAction::RecordAction (
 }
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
-  ArrangerObjectSpanVariant                sel_before_var,
-  std::optional<ArrangerObjectSpanVariant> sel_after,
-  EditType                                 type,
-  bool                                     already_edited)
+  ArrangerObjectSpan                sel_before_var,
+  std::optional<ArrangerObjectSpan> sel_after,
+  EditType                          type,
+  bool                              already_edited)
     : ArrangerSelectionsAction (sel_before_var, Type::Edit)
 {
   first_run_ = already_edited;
   edit_type_ = type;
-  std::visit (
-    [&] (auto &&sel_before) {
-      if (type == EditType::Name && sel_before.contains_unrenamable_object ())
-        {
-          throw ZrythmException (
-            QObject::tr ("Cannot rename selected object(s)"));
-        }
-    },
-    sel_before_var);
+  if (type == EditType::Name && sel_before_var.contains_unrenamable_object ())
+    {
+      throw ZrythmException (QObject::tr ("Cannot rename selected object(s)"));
+    }
 
   set_before_selections (sel_before_var);
 
@@ -326,25 +303,19 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
 
 std::unique_ptr<EditArrangerSelectionsAction>
 EditArrangerSelectionsAction::create (
-  ArrangerObjectSpanVariant sel_before_var,
-  ArrangerObjectSpanVariant sel_after_var,
-  EditType                  type,
-  bool                      already_edited)
+  ArrangerObjectSpan sel_before_var,
+  ArrangerObjectSpan sel_after_var,
+  EditType           type,
+  bool               already_edited)
 {
-  return std::visit (
-    [&] (auto &&sel_before) -> std::unique_ptr<EditArrangerSelectionsAction> {
-      using SpanT = base_type<decltype (sel_before)>;
-      auto sel_after = std::get<SpanT> (sel_after_var);
-      return std::make_unique<EditArrangerSelectionsAction> (
-        sel_before, sel_after, type, already_edited);
-    },
-    sel_before_var);
+  return std::make_unique<EditArrangerSelectionsAction> (
+    sel_before_var, sel_after_var, type, already_edited);
 }
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
-  ArrangerObjectSpanVariant sel_before_var,
-  MidiFunction::Type        midi_func_type,
-  MidiFunction::Options     opts)
+  ArrangerObjectSpan    sel_before_var,
+  MidiFunction::Type    midi_func_type,
+  MidiFunction::Options opts)
     : EditArrangerSelectionsAction (
         sel_before_var,
         std::nullopt,
@@ -356,8 +327,8 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
 }
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
-  ArrangerObjectSpanVariant sel_before_var,
-  AutomationFunction::Type  automation_func_type)
+  ArrangerObjectSpan       sel_before_var,
+  AutomationFunction::Type automation_func_type)
     : EditArrangerSelectionsAction (
         sel_before_var,
         std::nullopt,
@@ -377,8 +348,9 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
   AudioFunctionOpts          opts,
   std::optional<std::string> uri)
     : EditArrangerSelectionsAction (
-        ArrangerObjectRegistrySpan{
-          PROJECT->get_arranger_object_registry (), region_id },
+        ArrangerObjectSpan{
+          PROJECT->get_arranger_object_registry ().find_by_id_or_throw (
+            region_id) },
         std::nullopt,
         EditType::EditorFunction,
         false)
@@ -394,13 +366,13 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
   audio_function_apply (
     region_id, sel_start, sel_end, audio_func_type, opts, uri);
 
-  set_after_selections (ArrangerObjectRegistrySpan{
-    PROJECT->get_arranger_object_registry (), region_id });
+  set_after_selections (ArrangerObjectSpan{
+    PROJECT->get_arranger_object_registry ().find_by_id_or_throw (region_id) });
 }
 
 ArrangerSelectionsAction::SplitAction::SplitAction (
-  ArrangerObjectSpanVariant sel,
-  Position                  pos)
+  ArrangerObjectSpan sel,
+  Position           pos)
     : ArrangerSelectionsAction (sel, Type::Split)
 {
   pos_ = pos;
@@ -408,10 +380,10 @@ ArrangerSelectionsAction::SplitAction::SplitAction (
 }
 
 ArrangerSelectionsAction::ResizeAction::ResizeAction (
-  ArrangerObjectSpanVariant                sel_before,
-  std::optional<ArrangerObjectSpanVariant> sel_after,
-  ResizeType                               type,
-  double                                   ticks)
+  ArrangerObjectSpan                sel_before,
+  std::optional<ArrangerObjectSpan> sel_after,
+  ResizeType                        type,
+  double                            ticks)
     : ArrangerSelectionsAction (sel_before, Type::Resize)
 {
   resize_type_ = type;
@@ -1791,9 +1763,9 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
                     {
                       for (
                         const auto &[r1_var, r2_var] : std::views::zip (
-                          ArrangerObjectRegistrySpan{
+                          ArrangerObjectSpan{
                             get_arranger_object_registry (), r1_ },
-                          ArrangerObjectRegistrySpan{
+                          ArrangerObjectSpan{
                             get_arranger_object_registry (), r2_ }))
                         {
                           auto * r1 = std::get<ObjT *> (r1_var);
@@ -2200,10 +2172,10 @@ ArrangerSelectionsAction::contains_clip (const AudioClip &clip) const
     }
 
   if (
-    ArrangerObjectRegistrySpan{ get_arranger_object_registry (), r1_ }
-      .contains_clip (clip)
-    || ArrangerObjectRegistrySpan{ get_arranger_object_registry (), r2_ }
-         .contains_clip (clip))
+    ArrangerObjectSpan{ get_arranger_object_registry (), r1_ }.contains_clip (
+      clip)
+    || ArrangerObjectSpan{ get_arranger_object_registry (), r2_ }.contains_clip (
+      clip))
     {
       return true;
     }

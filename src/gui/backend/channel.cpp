@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -747,13 +747,13 @@ void
 Channel::connect_plugins ()
 {
   /* loop through each slot in each of MIDI FX, instrument, inserts */
-  for (int i = 0; i < 3; i++)
+  for (const auto i : std::views::iota (0, 3))
     {
       zrythm::dsp::PluginSlotType slot_type;
-      for (size_t j = 0; j < dsp::STRIP_SIZE; j++)
+      for (const auto j : std::views::iota (0zu, dsp::STRIP_SIZE))
         {
           Channel::Plugin *                  plugin = nullptr;
-          int                                slot = j;
+          const auto                         slot = j;
           std::optional<PluginUuidReference> pl_uuid;
           if (i == 0)
             {
@@ -859,7 +859,7 @@ Channel::connect_plugins ()
           /* else if not instrument, check previous plugins before this slot */
           else
             {
-              for (int k = slot - 1; k >= 0; k--)
+              for (int k = static_cast<int> (slot) - 1; k >= 0; k--)
                 {
                   prev_pl_id = prev_plugins[k];
                   if (prev_pl_id.has_value ())
@@ -1515,7 +1515,7 @@ struct PluginImportData
 {
   Channel *                                  ch{};
   const Channel::Plugin *                    pl{};
-  std::optional<PluginSpanVariant>           sel;
+  std::optional<PluginSpan>                  sel;
   const old_dsp::plugins::PluginDescriptor * descr{};
   dsp::PluginSlot                            slot;
   bool                                       copy{};
@@ -1646,7 +1646,7 @@ overwrite_plugin_response_cb (
 void
 Channel::handle_plugin_import (
   const Channel::Plugin *                    pl,
-  std::optional<PluginSpanVariant>           plugins,
+  std::optional<PluginSpan>                  plugins,
   const old_dsp::plugins::PluginDescriptor * descr,
   dsp::PluginSlot                            slot,
   bool                                       copy,

@@ -494,14 +494,15 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
             {
               initial_processor_node->connect_to (*track_node);
 
-              for (auto &pl_var : tr->get_modulator_span ())
+              for (const auto &pl_var : tr->get_modulator_span ())
                 {
                   std::visit (
                     [&] (auto &&pl) {
                       if (pl && !pl->deleting_)
                         {
                           connect_plugin (*pl);
-                          for (auto &pl_port_var : pl->get_input_port_span ())
+                          for (
+                            const auto &pl_port_var : pl->get_input_port_span ())
                             {
                               std::visit (
                                 [&] (auto &&pl_port) {

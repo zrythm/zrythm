@@ -674,7 +674,7 @@ Region::get_at_pos (
                   using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
                   auto lane = std::get<TrackLaneT *> (lane_var);
                   auto ret_var =
-                    ArrangerObjectUuidReferenceSpan{ lane->get_children_vector () }
+                    ArrangerObjectSpan{ lane->get_children_vector () }
                       .get_bounded_object_at_pos (pos, include_region_end);
                   if (ret_var)
                     return std::get<typename TrackLaneT::RegionT *> (*ret_var);

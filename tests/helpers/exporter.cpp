@@ -29,13 +29,13 @@ test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)
   if (mode == Exporter::Mode::Full)
     {
       settings.mode_ = Exporter::Mode::Full;
-      TRACKLIST->get_track_span ().mark_all_tracks_for_bounce (false);
+      TRACKLIST->mark_all_tracks_for_bounce (false);
       settings.bounce_with_parents_ = false;
     }
   else
     {
       settings.mode_ = Exporter::Mode::Tracks;
-      TRACKLIST->get_track_span ().mark_all_tracks_for_bounce (true);
+      TRACKLIST->mark_all_tracks_for_bounce (true);
       settings.bounce_with_parents_ = true;
     }
   auto exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);

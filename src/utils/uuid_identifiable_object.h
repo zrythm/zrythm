@@ -11,6 +11,7 @@
 #include <QUuid>
 
 #include "type_safe/strong_typedef.hpp"
+#include <boost/stl_interfaces/iterator_interface.hpp>
 
 namespace zrythm::utils
 {
@@ -542,323 +543,313 @@ private:
 };
 
 /**
- * @brief A list of UUID-identified objects that provides iteration via
- * registry lookups.
- *
- * @tparam RegistryT The registry type (must implement find_by_id_or_throw())
- * @tparam SpanElementT The element type (must be a Uuid or UuidReference).
+ * @brief A unified view over UUID-identified objects that supports:
+ * - Range of VariantType (direct object pointers)
+ * - Range of UuidReference
+ * - Range of Uuid + Registry
  */
-template <typename RegistryT, typename SpanElementT = RegistryT::UuidType>
-class UuidIdentifiableObjectSpan
+template <typename RegistryT>
+class UuidIdentifiableObjectView
+    : public std::ranges::view_interface<UuidIdentifiableObjectView<RegistryT>>
 {
 public:
   using UuidType = typename RegistryT::UuidType;
-  using ValueType = typename RegistryT::VariantType;
-  using SpanType = std::span<const SpanElementT>;
+  using VariantType = typename RegistryT::VariantType;
+  using UuidRefType = UuidReference<RegistryT>;
 
-private:
-  static constexpr auto is_uuid_ref =
-    std::is_same_v<SpanElementT, UuidReference<RegistryT>>;
-
-public:
-  /// constructor from single element
-  explicit UuidIdentifiableObjectSpan (
-    const RegistryT &registry,
-    const UuidType  &uuid)
-      : registry_ (registry),
-        uuids_ (std::span<const UuidType>{ std::addressof (uuid), 1 })
-  {
-  }
-
-  /// constructor from span of elements
-  explicit UuidIdentifiableObjectSpan (const RegistryT &registry, SpanType uuids)
-      : registry_ (registry), uuids_ (uuids)
-  {
-  }
-
-  /// constructor from span of elements
-  explicit UuidIdentifiableObjectSpan (SpanType uuids)
-    requires std::is_same_v<SpanElementT, UuidReference<RegistryT>>
-      : uuids_ (uuids)
-  {
-  }
-
-  template <typename Iter> class Iterator
+  // Proxy iterator implementation using Boost.STLInterfaces
+  class Iterator
+      : public boost::stl_interfaces::
+          proxy_iterator_interface<std::random_access_iterator_tag, VariantType>
   {
   public:
-    using iterator_category = std::contiguous_iterator_tag;
-    using value_type = ValueType;
-    using difference_type = std::ptrdiff_t;
-    using const_pointer = const value_type *;
-    using const_reference = const value_type &;
+    using base_type = boost::stl_interfaces::
+      proxy_iterator_interface<std::random_access_iterator_tag, VariantType>;
+    using difference_type = base_type::difference_type;
 
-    // Default constructor is required to pass forward_iterator assertion
-    Iterator () { throw std::runtime_error ("Not implemented"); }
+    constexpr Iterator () noexcept = default;
 
-    Iterator (const RegistryT &registry, Iter pos)
-        : registry_ (registry), pos_ (pos)
+    // Constructor for direct object range
+    constexpr Iterator (std::span<const VariantType>::iterator it) noexcept
+        : it_var_ (it)
     {
-    }
-    Iterator (Iter pos) : pos_ (pos) { }
-
-    const_reference operator* () const
-    {
-      if constexpr (is_uuid_ref)
-        {
-          return *(*pos_).get_iterator_in_registry ();
-        }
-      else
-        {
-          return *registry_->get_iterator_for_id (*pos_);
-        }
     }
 
-    const_pointer operator->() const { return &(**this); }
-
-    // Increment and Decrement
-    Iterator &operator++ ()
+    // Constructor for UuidReference range
+    constexpr Iterator (std::span<const UuidRefType>::iterator it) noexcept
+        : it_var_ (it)
     {
-      ++pos_;
-      return *this;
-    }
-    Iterator operator++ (int)
-    {
-      Iterator tmp = *this;
-      ++pos_;
-      return tmp;
-    }
-    Iterator &operator-- ()
-    {
-      --pos_;
-      return *this;
-    }
-    Iterator operator-- (int)
-    {
-      Iterator tmp = *this;
-      --pos_;
-      return tmp;
     }
 
-    // Arithmetic operations
-    Iterator operator+ (difference_type n) const
+    // Constructor for Uuid + Registry range
+    constexpr Iterator (
+      std::span<const UuidType>::iterator it,
+      const RegistryT *                   registry) noexcept
+        : it_var_ (std::pair{ it, registry })
     {
-      if constexpr (is_uuid_ref)
-        {
-          return Iterator (pos_ + n);
-        }
-      else
-        {
-          return Iterator (*registry_, pos_ + n);
-        }
     }
-    Iterator operator- (difference_type n) const
+
+    constexpr VariantType operator* () const
     {
-      if constexpr (is_uuid_ref)
-        {
-          return Iterator (pos_ - n);
-        }
-      else
-        {
-          return Iterator (*registry_, pos_ - n);
-        }
+      return std::visit (
+        [] (auto &&arg) {
+          using T = std::decay_t<decltype (arg)>;
+          if constexpr (
+            std::is_same_v<T, typename std::span<const VariantType>::iterator>)
+            {
+              return *arg;
+            }
+          else if constexpr (
+            std::is_same_v<T, typename std::span<const UuidRefType>::iterator>)
+            {
+              return arg->get_object ();
+            }
+          else if constexpr (
+            std::is_same_v<
+              T,
+              std::pair<
+                typename std::span<const UuidType>::iterator, const RegistryT *>>)
+            {
+              return arg.second->find_by_id_or_throw (*arg.first);
+            }
+        },
+        it_var_);
     }
-    Iterator &operator+= (difference_type n)
+
+    constexpr Iterator &operator+= (difference_type n) noexcept
     {
-      pos_ += n;
-      return *this;
-    }
-    Iterator &operator-= (difference_type n)
-    {
-      pos_ -= n;
+      std::visit (
+        [n] (auto &&arg) {
+          using T = std::decay_t<decltype (arg)>;
+          if constexpr (
+            std::is_same_v<T, typename std::span<const VariantType>::iterator>)
+            {
+              arg += n;
+            }
+          else if constexpr (
+            std::is_same_v<T, typename std::span<const UuidRefType>::iterator>)
+            {
+              arg += n;
+            }
+          else if constexpr (
+            std::is_same_v<
+              T,
+              std::pair<
+                typename std::span<const UuidType>::iterator, const RegistryT *>>)
+            {
+              arg.first += n;
+            }
+        },
+        it_var_);
       return *this;
     }
 
-    // Difference between iterators
-    difference_type operator- (const Iterator &other) const
+    constexpr difference_type operator- (Iterator other) const
     {
-      return pos_ - other.pos_;
+      return std::visit (
+        [] (auto &&arg, auto &&other_arg) -> difference_type {
+          using T = std::decay_t<decltype (arg)>;
+          using OtherT = std::decay_t<decltype (other_arg)>;
+          if constexpr (!std::is_same_v<T, OtherT>)
+            {
+              throw std::runtime_error (
+                "Comparing iterators of different types");
+            }
+          else if constexpr (
+            std::is_same_v<T, typename std::span<const VariantType>::iterator>)
+            {
+              return arg - other_arg;
+            }
+          else if constexpr (
+            std::is_same_v<T, typename std::span<const UuidRefType>::iterator>)
+            {
+              return arg - other_arg;
+            }
+          else if constexpr (
+            std::is_same_v<
+              T,
+              std::pair<
+                typename std::span<const UuidType>::iterator, const RegistryT *>>)
+            {
+              return arg.first - other_arg.first;
+            }
+          else
+            {
+              return 0;
+            }
+        },
+        it_var_, other.it_var_);
     }
 
-    // Friend non-member operators for (n + iterator)
-    friend Iterator operator+ (difference_type n, const Iterator &it)
+    constexpr auto operator<=> (const Iterator &other) const
     {
-      return it + n;
-    }
-
-    // Subscript operator
-    const_reference operator[] (difference_type n) const { return pos_[n]; }
-
-    // Comparisons
-    bool operator== (const Iterator &other) const { return pos_ == other.pos_; }
-    std::strong_ordering operator<=> (const Iterator &other) const
-    {
-      return pos_ <=> other.pos_;
+      return std::visit (
+        [] (auto &&arg, auto &&other_arg) -> std::strong_ordering {
+          using T = std::decay_t<decltype (arg)>;
+          using OtherT = std::decay_t<decltype (other_arg)>;
+          if constexpr (!std::is_same_v<T, OtherT>)
+            {
+              throw std::runtime_error (
+                "Comparing iterators of different types");
+            }
+          else if constexpr (
+            std::is_same_v<T, typename std::span<const VariantType>::iterator>)
+            {
+              return arg <=> other_arg;
+            }
+          else if constexpr (
+            std::is_same_v<T, typename std::span<const UuidRefType>::iterator>)
+            {
+              return arg <=> other_arg;
+            }
+          else if constexpr (
+            std::is_same_v<
+              T,
+              std::pair<
+                typename std::span<const UuidType>::iterator, const RegistryT *>>)
+            {
+              return arg.first <=> other_arg.first;
+            }
+          else
+            {
+              return std::strong_ordering::equal;
+            }
+        },
+        it_var_, other.it_var_);
     }
 
   private:
-    OptionalRef<const RegistryT> registry_;
-    Iter                         pos_;
+    std::variant<
+      typename std::span<const VariantType>::iterator,
+      typename std::span<const UuidRefType>::iterator,
+      std::pair<typename std::span<const UuidType>::iterator, const RegistryT *>>
+      it_var_;
   };
 
-  using iterator = Iterator<typename SpanType::iterator>;
-
-  // Range interface
-  iterator begin () const
+  /// Constructor for direct object range
+  explicit UuidIdentifiableObjectView (std::span<const VariantType> objects)
+      : objects_ (objects)
   {
-    if constexpr (is_uuid_ref)
+  }
+
+  /// Constructor for UuidReference range
+  explicit UuidIdentifiableObjectView (std::span<const UuidRefType> refs)
+      : refs_ (refs)
+  {
+  }
+
+  /// Constructor for Uuid + Registry
+  explicit UuidIdentifiableObjectView (
+    const RegistryT          &registry,
+    std::span<const UuidType> uuids)
+      : uuids_ (uuids), registry_ (&registry)
+  {
+  }
+
+  /// Single object constructor
+  explicit UuidIdentifiableObjectView (const VariantType &obj)
+      : objects_ (std::span<const VariantType> (&obj, 1))
+  {
+  }
+
+  Iterator begin () const
+  {
+    if (objects_)
       {
-        return iterator (uuids_.begin ());
+        return Iterator (objects_->begin ());
+      }
+    else if (refs_)
+      {
+        return Iterator (refs_->begin ());
       }
     else
       {
-        return iterator (*registry_, uuids_.begin ());
+        return Iterator (uuids_->begin (), registry_);
       }
   }
-  iterator end () const
+
+  Iterator end () const
   {
-    if constexpr (is_uuid_ref)
+    if (objects_)
       {
-        return iterator (uuids_.end ());
+        return Iterator (objects_->end ());
+      }
+    else if (refs_)
+      {
+        return Iterator (refs_->end ());
       }
     else
       {
-        return iterator (*registry_, uuids_.end ());
+        return Iterator (uuids_->end (), registry_);
       }
-  }
-  auto             size () const { return uuids_.size (); }
-  bool             empty () const { return uuids_.empty (); }
-  const ValueType &operator[] (size_t index) const
-  {
-    return *(begin () + index);
   }
 
-  const ValueType &at (size_t index) const
+  VariantType operator[] (size_t index) const
   {
-    if (index >= uuids_.size ())
-      {
-        throw std::out_of_range ("ObjectList::at index out of range");
-      }
+    if (objects_)
+      return (*objects_)[index];
+    if (refs_)
+      return (*refs_)[index].get_object ();
+    return registry_->find_by_id_or_throw ((*uuids_)[index]);
+  }
+
+  VariantType front () const { return *begin (); }
+  VariantType back () const
+  {
+    if (empty ())
+      throw std::out_of_range ("Cannot get back() of empty view");
+
+    auto it = end ();
+    --it;
+    return *it;
+  }
+  VariantType at (size_t index) const
+  {
+    if (index >= size ())
+      throw std::out_of_range (
+        "UuidIdentifiableObjectView::at index out of range");
+
     return (*this)[index];
   }
-  const ValueType &front () const { return at (0); }
-  const ValueType &back () const { return at (size () - 1); }
 
-  /**
-   * @brief Gets the UUID list.
-   */
-  SpanType get_uuids () const { return uuids_; }
-
-  /**
-   * @brief Returns the index of the ID in this collection.
-   */
-  auto get_index (UuidType id)
+  size_t size () const
   {
-    auto it = std::ranges::find (get_uuids (), id);
-    return std::distance (get_uuids ().begin (), it);
+    if (objects_)
+      return objects_->size ();
+    if (refs_)
+      return refs_->size ();
+    return uuids_->size ();
   }
 
-private:
-  OptionalRef<const RegistryT> registry_;
-  SpanType                     uuids_;
-  static_assert (std::random_access_iterator<iterator>);
-};
+  bool empty () const { return size () == 0; }
 
-/**
- * @brief A range of std::variant's of pointers to UuidIdentifiableObject's.
- */
-template <typename Range>
-concept UuidIdentifiableObjectPtrVariantRange =
-  std::ranges::random_access_range<Range>
-  && std::derived_from<
-    std::remove_pointer_t<std::variant_alternative_t<
-      0,
-      typename std::iterator_traits<typename Range::iterator>::value_type>>,
-    QObject>;
-
-/**
- * @brief A base class to be used for iterating over either:
- *
- * - a plain std::span of std::variant's of pointers to UuidIdentifiableObject's
- * - a UuidIdentifiableObjectSpan
- *
- * @tparam Range The range type to iterate over (either std::span or
- * UuidIdentifiableObjectSpan)
- * @tparam RegistryT The registry type to use for resolving the UUIDs.
- */
-template <UuidIdentifiableObjectPtrVariantRange Range, typename RegistryT>
-class UuidIdentifiableObjectCompatibleSpan
-{
-public:
-  using UuidType = RegistryT::UuidType;
-  using HasRegistry = std::true_type;
-  using value_type =
-    typename std::iterator_traits<typename Range::iterator>::value_type;
-  using iterator = Range::iterator;
-  using const_iterator = Range::iterator;
-
-  /// std::span constructor
-  explicit UuidIdentifiableObjectCompatibleSpan (Range &&range)
-      : range_ (std::move (range))
-  {
-  }
-  // constructor from contiguous range
-  explicit UuidIdentifiableObjectCompatibleSpan (
-    const std::ranges::range auto &range)
-    requires (
-      std::is_same_v<std::ranges::range_value_t<decltype (range)>, value_type>)
-      : range_ (std::span<const value_type> (range))
-  {
-  }
-  /// constructor from single element
-  explicit UuidIdentifiableObjectCompatibleSpan (const value_type &object)
-      : range_ (std::span<const value_type> (std::addressof (object), 1))
-  {
-  }
-  /// UuidIdentifiableObjectSpan constructor
-  explicit UuidIdentifiableObjectCompatibleSpan (
-    const RegistryT                              &registry,
-    std::span<const typename RegistryT::UuidType> uuids)
-    requires std::is_same_v<Range, utils::UuidIdentifiableObjectSpan<RegistryT>>
-      : range_ (UuidIdentifiableObjectSpan<RegistryT> (registry, uuids))
-  {
-  }
-  /// UuidIdentifiableObjectSpan constructor
-  explicit UuidIdentifiableObjectCompatibleSpan (
-    std::span<const UuidReference<RegistryT>> uuid_refs)
-    requires std::is_same_v<
-      Range,
-      utils::UuidIdentifiableObjectSpan<RegistryT, UuidReference<RegistryT>>>
-      : range_ (UuidIdentifiableObjectSpan<RegistryT, UuidReference<RegistryT>> (
-          uuid_refs))
-  {
-  }
-  /// UuidIdentifiableObjectSpan single element constructor
-  explicit UuidIdentifiableObjectCompatibleSpan (
-    const RegistryT           &registry,
-    const RegistryT::UuidType &uuid)
-    requires std::is_same_v<Range, utils::UuidIdentifiableObjectSpan<RegistryT>>
-      : range_ (UuidIdentifiableObjectSpan<RegistryT> (registry, uuid))
-  {
-  }
-
-  iterator       begin () { return range_.begin (); }
-  iterator       end () { return range_.end (); }
-  const_iterator begin () const { return range_.begin (); }
-  const_iterator end () const { return range_.end (); }
-  auto           at (size_t index) const { return range_.at (index); }
-  auto           size () const { return range_.size (); }
-  auto           operator[] (size_t index) const { return range_[index]; }
-  auto           empty () const { return range_.empty (); }
-  // auto           data () const { return range_.data (); }
-  auto front () const { return range_.front (); }
-  auto back () const { return range_.back (); }
-
-  static UuidType uuid_projection (const value_type &var)
+  // Projections and transformations
+  static UuidType uuid_projection (const VariantType &var)
   {
     return std::visit ([] (const auto &obj) { return obj->get_uuid (); }, var);
   }
 
-  template <typename T> static auto type_projection (const value_type &var)
+  template <typename T> auto get_elements_by_type () const
+  {
+    return *this | std::views::filter ([] (const auto &var) {
+      return std::holds_alternative<T *> (var);
+    }) | std::views::transform ([] (const auto &var) {
+      return std::get<T *> (var);
+    });
+  }
+
+  static RegistryT::BaseType * base_projection (const VariantType &var)
+  {
+    return std::visit (
+      [] (const auto &ptr) -> RegistryT::BaseType * { return ptr; }, var);
+  }
+
+  auto as_base_type () const
+  {
+    return std::views::transform (*this, base_projection);
+  }
+
+  template <typename T> static auto type_projection (const VariantType &var)
   {
     return std::holds_alternative<T *> (var);
   }
@@ -869,7 +860,7 @@ public:
   }
 
   template <typename BaseType>
-  static auto derived_from_type_projection (const value_type &var)
+  static auto derived_from_type_projection (const VariantType &var)
   {
     return std::visit (
       [] (const auto &ptr) {
@@ -882,13 +873,13 @@ public:
    * @note Assumes the range has already been filtered to only contain the type
    * T.
    */
-  template <typename T> static auto type_transformation (const value_type &var)
+  template <typename T> static auto type_transformation (const VariantType &var)
   {
     return std::get<T *> (var);
   }
 
   template <typename T>
-  static auto derived_from_type_transformation (const value_type &var)
+  static auto derived_from_type_transformation (const VariantType &var)
   {
     return std::visit (
       [] (const auto &ptr) -> T * {
@@ -898,17 +889,6 @@ public:
         throw std::runtime_error ("Not derived from type");
       },
       var);
-  }
-
-  static RegistryT::BaseType * base_projection (const value_type &var)
-  {
-    return std::visit (
-      [] (const auto &ptr) -> RegistryT::BaseType * { return ptr; }, var);
-  }
-
-  auto as_base_type () const
-  {
-    return std::views::transform (*this, base_projection);
   }
 
   // note: assumes all objects are of this type
@@ -923,14 +903,11 @@ public:
            | std::views::transform (derived_from_type_transformation<T>);
   }
 
-  template <typename T> auto get_elements_by_type () const
-  {
-    return *this | std::views::filter (type_projection<T>)
-           | std::views::transform (type_transformation<T>);
-  }
-
-protected:
-  Range range_;
+private:
+  std::optional<std::span<const VariantType>> objects_;
+  std::optional<std::span<const UuidRefType>> refs_;
+  std::optional<std::span<const UuidType>>    uuids_;
+  const RegistryT *                           registry_ = nullptr;
 };
 
 } // namespace zrythm::utils

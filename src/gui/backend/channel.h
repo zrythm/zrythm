@@ -174,7 +174,7 @@ public:
    */
   void handle_plugin_import (
     const zrythm::gui::old_dsp::plugins::Plugin *           pl,
-    std::optional<PluginSpanVariant>                        plugins,
+    std::optional<PluginSpan>                               plugins,
     const zrythm::gui::old_dsp::plugins::PluginDescriptor * descr,
     dsp::PluginSlot                                         slot,
     bool                                                    copy,

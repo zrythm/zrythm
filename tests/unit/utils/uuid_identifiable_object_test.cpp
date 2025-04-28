@@ -93,10 +93,10 @@ TEST_F (UuidIdentifiableObjectRegistryTest, ObjectLookup)
   EXPECT_THROW (registry_.find_by_id_or_throw (TestUuid{}), std::runtime_error);
 }
 
-TEST_F (UuidIdentifiableObjectRegistryTest, SpanIteration)
+TEST_F (UuidIdentifiableObjectRegistryTest, ViewIteration)
 {
   std::vector<TestUuid> uuids{ obj3_->get_uuid (), obj1_->get_uuid () };
-  auto span = utils::UuidIdentifiableObjectSpan<TestRegistry> (registry_, uuids);
+  auto span = utils::UuidIdentifiableObjectView<TestRegistry> (registry_, uuids);
 
   // Test iteration order and content
   std::vector<std::string> names;
@@ -117,10 +117,14 @@ TEST_F (UuidIdentifiableObjectRegistryTest, UuidListRetrieval)
   EXPECT_TRUE (std::ranges::find (uuids, obj2_->get_uuid ()) != uuids.end ());
 }
 
-TEST_F (UuidIdentifiableObjectRegistryTest, SpanAccessors)
+TEST_F (UuidIdentifiableObjectRegistryTest, ViewAccessors)
 {
   std::vector<TestUuid> uuids{ obj2_->get_uuid (), obj3_->get_uuid () };
-  auto span = utils::UuidIdentifiableObjectSpan<TestRegistry> (registry_, uuids);
+  auto span = utils::UuidIdentifiableObjectView<TestRegistry> (registry_, uuids);
+
+  BOOST_STL_INTERFACES_STATIC_ASSERT_CONCEPT (
+    utils::UuidIdentifiableObjectView<TestRegistry>::Iterator,
+    std::random_access_iterator)
 
   EXPECT_FALSE (span.empty ());
   EXPECT_EQ (span.size (), 2);
@@ -165,22 +169,22 @@ TEST_F (UuidIdentifiableObjectRegistryTest, ObjectParentManagement)
   // LeakSanitizer should complain if the object still exists when tests finishes
 }
 
-TEST_F (UuidIdentifiableObjectRegistryTest, SpanEdgeCases)
+TEST_F (UuidIdentifiableObjectRegistryTest, ViewEdgeCases)
 {
   // Empty span
   std::vector<TestUuid> empty;
   auto                  empty_span =
-    utils::UuidIdentifiableObjectSpan<TestRegistry> (registry_, empty);
+    utils::UuidIdentifiableObjectView<TestRegistry> (registry_, empty);
   EXPECT_TRUE (empty_span.empty ());
 
   // Invalid access
   std::vector<TestUuid> single{ obj1_->get_uuid () };
   auto                  span =
-    utils::UuidIdentifiableObjectSpan<TestRegistry> (registry_, single);
+    utils::UuidIdentifiableObjectView<TestRegistry> (registry_, single);
   EXPECT_THROW (span.at (1), std::out_of_range);
 }
 
-TEST_F (UuidIdentifiableObjectRegistryTest, CompatibleSpanWithUuidReferences)
+TEST_F (UuidIdentifiableObjectRegistryTest, ViewWithUuidReferences)
 {
   // Create vector of UuidReferences
   std::vector<utils::UuidReference<TestRegistry>> refs;
@@ -188,13 +192,8 @@ TEST_F (UuidIdentifiableObjectRegistryTest, CompatibleSpanWithUuidReferences)
   refs.emplace_back (obj2_->get_uuid (), registry_);
   refs.emplace_back (obj3_->get_uuid (), registry_);
 
-  // Create span wrapper
-  using TestUuidRefSpan = utils::UuidIdentifiableObjectSpan<
-    TestRegistry, utils::UuidReference<TestRegistry>>;
-
   // Create compatible span
-  utils::UuidIdentifiableObjectCompatibleSpan<TestUuidRefSpan, TestRegistry>
-    compatible_span (refs);
+  utils::UuidIdentifiableObjectView<TestRegistry> compatible_span (refs);
 
   // Verify basic span properties
   EXPECT_EQ (compatible_span.size (), 3);

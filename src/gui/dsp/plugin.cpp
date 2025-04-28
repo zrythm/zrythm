@@ -1165,7 +1165,7 @@ Plugin::set_caches ()
   cv_in_ports_.clear ();
   midi_in_ports_.clear ();
 
-  for (auto &port_var : get_input_port_span ())
+  for (const auto &port_var : get_input_port_span ())
     {
       std::visit (
         [&] (auto &&port) {
@@ -1415,7 +1415,7 @@ Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
   size_t last_audio_idx = 0;
   size_t last_midi_idx = 0;
   auto   output_port_span = get_output_port_span ();
-  for (auto &in_port_var : get_input_port_span ())
+  for (const auto &in_port_var : get_input_port_span ())
     {
       std::visit (
         [&] (auto &&in_port) {
@@ -1666,7 +1666,7 @@ Plugin::disconnect_from_prefader (Channel &ch)
   const auto type = track.get_output_signal_type ();
 
   auto * port_connections_mgr = PORT_CONNECTIONS_MGR;
-  for (auto &out_port_var : get_output_port_span ())
+  for (const auto &out_port_var : get_output_port_span ())
     {
       std::visit (
         [&] (auto &&out_port) {

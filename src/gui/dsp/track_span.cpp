@@ -9,9 +9,9 @@
 
 using namespace zrythm;
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-TrackSpanImpl<Range>::mark_for_bounce (bool with_parents, bool mark_master)
+TrackSpan::
+  mark_for_bounce (Tracklist &tracklist, bool with_parents, bool mark_master)
 {
   // FIXME: dependency on audio_engine
   AUDIO_ENGINE->reset_bounce_mode ();
@@ -23,20 +23,32 @@ TrackSpanImpl<Range>::mark_for_bounce (bool with_parents, bool mark_master)
           {
             tr->bounce_to_master_ = true;
           }
-        tr->mark_for_bounce (true, true, true, with_parents);
+        tracklist.mark_track_for_bounce (tr, true, true, true, with_parents);
       },
       track_var);
   });
 
   if (mark_master)
     {
-      get_master_track ().mark_for_bounce (true, false, false, false);
+      tracklist.mark_track_for_bounce (
+        &get_master_track (), true, false, false, false);
     }
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-TrackSpanImpl<Range>::expose_ports_to_backend (AudioEngine &engine)
+TrackSpan::mark_all_tracks_for_bounce (Tracklist &tracklist, bool bounce)
+{
+  std::ranges::for_each (*this, [&] (const auto &track_var) {
+    std::visit (
+      [&] (auto &&track) {
+        tracklist.mark_track_for_bounce (track, bounce, true, false, false);
+      },
+      track_var);
+  });
+}
+
+void
+TrackSpan::expose_ports_to_backend (AudioEngine &engine)
 {
   std::ranges::for_each (*this, [&] (auto &&track_var) {
     std::visit (
@@ -51,9 +63,8 @@ TrackSpanImpl<Range>::expose_ports_to_backend (AudioEngine &engine)
   });
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-TrackSpanImpl<Range>::reconnect_ext_input_ports (AudioEngine &engine)
+TrackSpan::reconnect_ext_input_ports (AudioEngine &engine)
 {
   std::ranges::for_each (*this, [&] (auto &&track_var) {
     std::visit (
@@ -68,9 +79,8 @@ TrackSpanImpl<Range>::reconnect_ext_input_ports (AudioEngine &engine)
   });
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 bool
-TrackSpanImpl<Range>::fix_audio_regions (dsp::FramesPerTick frames_per_tick)
+TrackSpan::fix_audio_regions (dsp::FramesPerTick frames_per_tick)
 {
   z_debug ("fixing audio region positions...");
 
@@ -96,9 +106,8 @@ TrackSpanImpl<Range>::fix_audio_regions (dsp::FramesPerTick frames_per_tick)
   return num_fixed > 0;
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-TrackSpanImpl<Range>::move_after_copying_or_moving_inside (
+TrackSpan::move_after_copying_or_moving_inside (
   int diff_between_track_below_and_parent)
 {
   const auto &lowest_cloned_track = *(std::ranges::max_element (
@@ -138,8 +147,3 @@ TrackSpan::paste_to_pos (int pos)
     new gui::actions::CopyTracksAction (*this, *PORT_CONNECTIONS_MGR, pos));
 }
 #endif
-
-template class TrackSpanImpl<std::span<const TrackPtrVariant>>;
-template class TrackSpanImpl<utils::UuidIdentifiableObjectSpan<TrackRegistry>>;
-template class TrackSpanImpl<
-  utils::UuidIdentifiableObjectSpan<TrackRegistry, TrackUuidReference>>;

@@ -61,7 +61,7 @@ private:
   void perform_impl () override;
   void undo_impl () override;
 
-  ArrangerObjectRegistrySpan get_before_objects () const;
+  ArrangerObjectSpan get_before_objects () const;
 
 public:
   /** Range positions. */

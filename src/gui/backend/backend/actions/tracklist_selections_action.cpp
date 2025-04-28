@@ -70,19 +70,15 @@ TracklistSelectionsAction::init_after_cloning (
 void
 TracklistSelectionsAction::copy_track_positions_from_selections (
   std::vector<int> &track_positions,
-  TrackSpanVariant  selections_var)
+  TrackSpan         selections_var)
 {
-  std::visit (
-    [&] (auto &&selections) {
-      num_tracks_ = selections.size ();
-      for (const auto &track_var : selections)
-        {
-          track_positions.push_back (
-            std::visit (TrackSpan::position_projection, track_var));
-        }
-      std::ranges::sort (track_positions);
-    },
-    selections_var);
+  num_tracks_ = selections_var.size ();
+  for (const auto &track_var : selections_var)
+    {
+      track_positions.push_back (
+        std::visit (TrackSpan::position_projection, track_var));
+    }
+  std::ranges::sort (track_positions);
 }
 
 void
@@ -133,25 +129,25 @@ TracklistSelectionsAction::validate () const
 }
 
 TracklistSelectionsAction::TracklistSelectionsAction (
-  Type                            type,
-  std::optional<TrackSpanVariant> tls_before_var,
-  std::optional<TrackSpanVariant> tls_after_var,
-  const PortConnectionsManager *  port_connections_mgr,
-  std::optional<TrackPtrVariant>  track_var,
-  Track::Type                     track_type,
-  const PluginSetting *           pl_setting,
-  const FileDescriptor *          file_descr,
-  int                             track_pos,
-  int                             lane_pos,
-  const Position *                pos,
-  int                             num_tracks,
-  EditType                        edit_type,
-  int                             ival_after,
-  const Color *                   color_new,
-  float                           val_before,
-  float                           val_after,
-  const std::string *             new_txt,
-  bool                            already_edited)
+  Type                           type,
+  std::optional<TrackSpan>       tls_before_var,
+  std::optional<TrackSpan>       tls_after_var,
+  const PortConnectionsManager * port_connections_mgr,
+  std::optional<TrackPtrVariant> track_var,
+  Track::Type                    track_type,
+  const PluginSetting *          pl_setting,
+  const FileDescriptor *         file_descr,
+  int                            track_pos,
+  int                            lane_pos,
+  const Position *               pos,
+  int                            num_tracks,
+  EditType                       edit_type,
+  int                            ival_after,
+  const Color *                  color_new,
+  float                          val_before,
+  float                          val_after,
+  const std::string *            new_txt,
+  bool                           already_edited)
     : UndoableAction (
         UndoableAction::Type::TracklistSelections,
         AUDIO_ENGINE->frames_per_tick_,
@@ -177,13 +173,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     type == TracklistSelectionsAction::Type::Copy
     || type == TracklistSelectionsAction::Type::CopyInside;
 
-  if (
-    is_copy_action
-    && std::visit (
-      [&] (const auto &tls_before) {
-        return tls_before.contains_uncopyable_track ();
-      },
-      *tls_before_var))
+  if (is_copy_action && tls_before_var->contains_uncopyable_track ())
     {
       throw ZrythmException (QObject::tr (
         "Cannot copy tracks: selection contains an uncopyable track"));
@@ -191,11 +181,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 
   if (
     tracklist_selections_action_type_ == Type::Delete
-    && std::visit (
-      [&] (const auto &tls_before) {
-        return tls_before.contains_undeletable_track ();
-      },
-      *tls_before_var))
+    && tls_before_var->contains_undeletable_track ())
     {
       throw ZrythmException (QObject::tr (
         "Cannot delete tracks: selection contains an undeletable track"));
@@ -292,17 +278,16 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 
   if (tls_before_var)
     {
-      std::visit (
-        [&] (const auto &tls_before) {
-          if (tls_before.empty ())
-            {
-              throw ZrythmException (QObject::tr ("No tracks selected"));
-            }
+      const auto &tls_before = *tls_before_var;
+      if (tls_before.empty ())
+        {
+          throw ZrythmException (QObject::tr ("No tracks selected"));
+        }
 
-          if (need_full_selections)
+      if (need_full_selections)
+        {
+          if (is_copy_action)
             {
-              if (is_copy_action)
-                {
 // TODO
 #if 0
                   tls_before_ = tls_before.create_new_identities (
@@ -311,44 +296,40 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry ());
 #endif
-                }
-              else
-                {
-                  // FIXME: this QObject is not initialized yet
-                  tls_before_ = tls_before.create_snapshots (
-                    *this, PROJECT->get_track_registry (),
-                    PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry (),
-                    PROJECT->get_arranger_object_registry ());
-                }
-              TrackCollections::sort_by_position (*tls_before_);
-
-              // FIXME: need new identities?
-              const auto foldable_tracks = std::ranges::to<std::vector> (
-                TRACKLIST->get_track_span ()
-                | std::views::filter (TrackSpan::foldable_projection));
-              foldable_tls_before_ = TrackSpan{ foldable_tracks }.create_snapshots (
+            }
+          else
+            {
+              // FIXME: this QObject is not initialized yet
+              tls_before_ = tls_before.create_snapshots (
                 *this, PROJECT->get_track_registry (),
                 PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
                 PROJECT->get_arranger_object_registry ());
             }
-          else
-            {
-              copy_track_positions_from_selections (
-                track_positions_before_, tls_before);
-            }
-        },
-        tls_before_var.value ());
+          TrackCollections::sort_by_position (*tls_before_);
+
+          // FIXME: need new identities?
+          const auto foldable_tracks = std::ranges::to<std::vector> (
+            TRACKLIST->get_track_span ()
+            | std::views::filter (TrackSpan::foldable_projection));
+          foldable_tls_before_ = TrackSpan{ foldable_tracks }.create_snapshots (
+            *this, PROJECT->get_track_registry (),
+            PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
+            PROJECT->get_arranger_object_registry ());
+        }
+      else
+        {
+          copy_track_positions_from_selections (
+            track_positions_before_, tls_before);
+        }
     }
 
   if (tls_after_var.has_value ())
     {
-      std::visit (
-        [&] (const auto &tls_after) {
-          if (need_full_selections)
+      const auto &tls_after = tls_after_var.value ();
+      if (need_full_selections)
+        {
+          if (is_copy_action)
             {
-              if (is_copy_action)
-                {
 // TODO
 #if 0
                   tls_after_ = tls_after.create_new_identities (
@@ -357,26 +338,23 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry ());
 #endif
-                }
-              else
-                {
-                  // FIXME: this QObject is not initialized yet
-                  tls_after_ = tls_after.create_snapshots (
-                    *this, PROJECT->get_track_registry (),
-                    PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry (),
-                    PROJECT->get_arranger_object_registry ());
-                }
-
-              TrackCollections::sort_by_position (*tls_after_);
             }
           else
             {
-              copy_track_positions_from_selections (
-                track_positions_after_, tls_after);
+              // FIXME: this QObject is not initialized yet
+              tls_after_ = tls_after.create_snapshots (
+                *this, PROJECT->get_track_registry (),
+                PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
+                PROJECT->get_arranger_object_registry ());
             }
-        },
-        *tls_after_var);
+
+          TrackCollections::sort_by_position (*tls_after_);
+        }
+      else
+        {
+          copy_track_positions_from_selections (
+            track_positions_after_, tls_after);
+        }
     }
 
   /* if need to clone tls_before */

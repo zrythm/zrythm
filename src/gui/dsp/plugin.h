@@ -169,14 +169,8 @@ public:
     return std::visit ([&] (auto &&val) { return val->get_name (); }, var);
   }
 
-  auto get_input_port_span () const
-  {
-    return PortUuidReferenceSpan{ in_ports_ };
-  }
-  auto get_output_port_span () const
-  {
-    return PortUuidReferenceSpan{ out_ports_ };
-  }
+  auto get_input_port_span () const { return PortSpan{ in_ports_ }; }
+  auto get_output_port_span () const { return PortSpan{ out_ports_ }; }
 
   /**
    * @brief Initializes a plugin after deserialization.

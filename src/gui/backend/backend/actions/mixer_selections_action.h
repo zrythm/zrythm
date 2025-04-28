@@ -63,7 +63,7 @@ public:
    * @param num_plugins The number of plugins to create, if creating plugins.
    */
   MixerSelectionsAction (
-    std::optional<PluginSpanVariant>               ms,
+    std::optional<PluginSpan>                      ms,
     const PortConnectionsManager *                 connections_mgr,
     Type                                           type,
     std::optional<Track::TrackUuid>                to_track_id,
@@ -101,7 +101,7 @@ private:
    * @param deleted Use deleted_ats.
    * @param start_slot Slot in @p ms to start processing.
    */
-  void clone_ats (PluginSpanVariant plugins, bool deleted, int start_slot);
+  void clone_ats (PluginSpan plugins, bool deleted, int start_slot);
 
   void copy_at_regions (AutomationTrack &dest, const AutomationTrack &src);
 
@@ -223,7 +223,7 @@ class MixerSelectionsTargetedAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsTargetedAction (
-    PluginSpanVariant             plugins,
+    PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr,
     MixerSelectionsAction::Type   type,
     const Track *                 to_track,
@@ -246,7 +246,7 @@ class MixerSelectionsCopyAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsCopyAction (
-    PluginSpanVariant             plugins,
+    PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr,
     const Track *                 to_track,
     dsp::PluginSlot               to_slot)
@@ -264,7 +264,7 @@ class MixerSelectionsPasteAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsPasteAction (
-    PluginSpanVariant             plugins,
+    PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr,
     const Track *                 to_track,
     dsp::PluginSlot               to_slot)
@@ -282,7 +282,7 @@ class MixerSelectionsMoveAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsMoveAction (
-    PluginSpanVariant             plugins,
+    PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr,
     const Track *                 to_track,
     dsp::PluginSlot               to_slot)
@@ -300,7 +300,7 @@ class MixerSelectionsDeleteAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsDeleteAction (
-    PluginSpanVariant             plugins,
+    PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr)
       : MixerSelectionsAction (
           plugins,
@@ -319,7 +319,7 @@ public:
 class MixerSelectionsChangeStatusAction : public MixerSelectionsAction
 {
 public:
-  MixerSelectionsChangeStatusAction (PluginSpanVariant plugins, int new_val)
+  MixerSelectionsChangeStatusAction (PluginSpan plugins, int new_val)
       : MixerSelectionsAction (
           plugins,
           nullptr,
@@ -338,7 +338,7 @@ class MixerSelectionsChangeLoadBehaviorAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsChangeLoadBehaviorAction (
-    PluginSpanVariant                              plugins,
+    PluginSpan                                     plugins,
     zrythm::gui::old_dsp::plugins::CarlaBridgeMode new_bridge_mode)
       : MixerSelectionsAction (
           plugins,

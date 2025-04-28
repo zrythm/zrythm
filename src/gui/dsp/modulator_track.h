@@ -87,10 +87,7 @@ public:
     return std::span (modulator_macro_processors_);
   }
 
-  auto get_modulator_span () const
-  {
-    return PluginUuidReferenceSpan{ modulators_ };
-  }
+  auto get_modulator_span () const { return PluginSpan{ modulators_ }; }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

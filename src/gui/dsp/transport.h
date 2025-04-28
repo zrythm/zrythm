@@ -227,8 +227,8 @@ public:
    *   are used. If non-nullptr, only the regions in the
    *   selections are used.
    */
-  void prepare_audio_regions_for_stretch (
-    std::optional<ArrangerObjectSpanVariant> sel_var);
+  void
+  prepare_audio_regions_for_stretch (std::optional<ArrangerObjectSpan> sel_var);
 
   /**
    * Stretches regions.
@@ -246,10 +246,10 @@ public:
    * @throw ZrythmException if stretching fails.
    */
   void stretch_regions (
-    std::optional<ArrangerObjectSpanVariant> sel_var,
-    bool                                     with_fixed_ratio,
-    double                                   time_ratio,
-    bool                                     force);
+    std::optional<ArrangerObjectSpan> sel_var,
+    bool                              with_fixed_ratio,
+    double                            time_ratio,
+    bool                              force);
 
   void set_punch_mode_enabled (bool enabled);
 
@@ -467,7 +467,7 @@ frames_add_frames (
    * FIXME: use signals to update the total bars.
    */
   void recalculate_total_bars (
-    std::optional<ArrangerObjectSpanVariant> objects = std::nullopt);
+    std::optional<ArrangerObjectSpan> objects = std::nullopt);
 
   /**
    * Updates the total bars.

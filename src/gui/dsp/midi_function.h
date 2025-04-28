@@ -72,7 +72,7 @@ public:
    * @param type Function type.
    * @throw ZrythmException on error.
    */
-  static void apply (ArrangerObjectSpanVariant sel, Type type, Options opts);
+  static void apply (ArrangerObjectSpan sel, Type type, Options opts);
 };
 
 DEFINE_ENUM_FORMATTER (

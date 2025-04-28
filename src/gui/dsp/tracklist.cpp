@@ -56,7 +56,7 @@ Tracklist::init_loaded (
   sample_processor_ = sample_processor;
 
   z_debug ("initializing loaded Tracklist...");
-  for (auto &track_var : get_track_span ())
+  for (const auto &track_var : get_track_span ())
     {
       std::visit (
         [&] (auto &track) {
@@ -147,6 +147,89 @@ Tracklist::setExclusivelySelectedTrack (QVariant track)
 
 // ========================================================================
 
+void
+Tracklist::mark_track_for_bounce (
+  TrackPtrVariant track_var,
+  bool            bounce,
+  bool            mark_regions,
+  bool            mark_children,
+  bool            mark_parents)
+{
+  std::visit (
+    [&] (auto &&track) {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (!std::derived_from<TrackT, ChannelTrack>)
+        return;
+
+      z_debug (
+        "marking {} for bounce {}, mark regions {}", track->get_name (), bounce,
+        mark_regions);
+
+      track->bounce_ = bounce;
+
+      if (mark_regions)
+        {
+          if constexpr (std::derived_from<TrackT, LanedTrack>)
+            {
+              for (auto &lane_var : track->lanes_)
+                {
+                  using LaneT = TrackT::TrackLaneType;
+                  auto lane = std::get<LaneT *> (lane_var);
+                  for (auto * region : lane->get_children_view ())
+                    {
+                      region->bounce_ = bounce;
+                    }
+                }
+            }
+
+          if constexpr (std::is_same_v<TrackT, ChordTrack>)
+            for (
+              auto * region :
+              track->ArrangerObjectOwner<ChordRegion>::get_children_view ())
+              {
+                region->bounce_ = bounce;
+              }
+        }
+
+      if constexpr (std::derived_from<TrackT, ChannelTrack>)
+        {
+          auto * direct_out = track->get_channel ()->get_output_track ();
+          if (direct_out && mark_parents)
+            {
+              std::visit (
+                [&] (auto &&direct_out_derived) {
+                  mark_track_for_bounce (
+                    direct_out_derived, bounce, false, false, true);
+                },
+                convert_to_variant<TrackPtrVariant> (direct_out));
+            }
+        }
+
+      if (mark_children)
+        {
+          if constexpr (std::derived_from<TrackT, GroupTargetTrack>)
+            {
+              for (auto child_id : track->children_)
+                {
+                  if (
+                    auto child_var =
+                      track->get_tracklist ()->get_track (child_id))
+                    {
+                      std::visit (
+                        [&] (auto &&c) {
+                          c->bounce_to_master_ = track->bounce_to_master_;
+                          mark_track_for_bounce (
+                            c, bounce, mark_regions, true, false);
+                        },
+                        *child_var);
+                    }
+                }
+            }
+        }
+    },
+    track_var);
+}
+
 int
 Tracklist::get_visible_track_diff (
   Track::TrackUuid src_track,
@@ -166,8 +249,7 @@ Tracklist::get_visible_track_diff (
   // Count visible tracks in the range (exclusive upper bound)
   auto       span = get_track_span ();
   const auto count = std::ranges::count_if (
-    span.begin () + lower, span.begin () + upper,
-    TrackRegistrySpan::visible_projection);
+    span.begin () + lower, span.begin () + upper, TrackSpan::visible_projection);
 
   // Apply direction modifier
   return sign * count;
@@ -408,7 +490,7 @@ Tracklist::validate () const
   auto span = get_track_span ();
   for (const auto [index, track_var] : utils::views::enumerate (span))
     {
-      ret_vals.emplace_back (std::async ([this, index, &track_var] () {
+      ret_vals.emplace_back (std::async ([this, index, track_var] () {
         // z_return_val_if_fail (track && track->is_in_active_project (), false);
         auto * tr = Track::from_variant (track_var);
         z_return_val_if_fail (tr, false);
@@ -489,10 +571,9 @@ Tracklist::get_visible_track_after_delta (Track::TrackUuid track_id, int delta)
   const
 {
   auto span =
-    get_track_span ()
-    | std::views::filter (TrackRegistrySpan::visible_projection);
+    get_track_span () | std::views::filter (TrackSpan::visible_projection);
   auto current_it =
-    std::ranges::find (span, track_id, TrackRegistrySpan::uuid_projection);
+    std::ranges::find (span, track_id, TrackSpan::uuid_projection);
   auto found = std::ranges::next (current_it, delta);
   if (found == span.end ())
     return std::nullopt;
@@ -785,8 +866,7 @@ Tracklist::track_name_is_unique (
 {
   auto track_ids_to_check = std::ranges::to<std::vector> (std::views::filter (
     tracks_, [&] (const auto &id) { return id.id () != track_to_skip; }));
-  return !TrackUuidReferenceSpan{ track_ids_to_check }.contains_track_name (
-    name);
+  return !TrackSpan{ track_ids_to_check }.contains_track_name (name);
 }
 
 void
@@ -1460,7 +1540,7 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
   z_return_if_fail (track_var_opt.has_value ());
   auto span = get_track_span ();
   auto selected_tracks =
-    std::views::filter (span, TrackRegistrySpan::selected_projection)
+    std::views::filter (span, TrackSpan::selected_projection)
     | std::ranges::to<std::vector> ();
   bool is_selected = get_selection_manager ().is_selected (track_id);
   if (is_selected)

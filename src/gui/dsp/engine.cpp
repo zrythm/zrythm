@@ -1622,7 +1622,7 @@ AudioEngine::reset_bounce_mode ()
 {
   bounce_mode_ = BounceMode::BOUNCE_OFF;
 
-  TRACKLIST->get_track_span ().mark_all_tracks_for_bounce (false);
+  TRACKLIST->mark_all_tracks_for_bounce (false);
 }
 
 void

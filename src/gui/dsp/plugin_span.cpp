@@ -8,10 +8,8 @@
 
 using namespace zrythm;
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-PluginSpanImpl<Range>::paste_to_slot (Plugin::Channel &ch, dsp::PluginSlot slot)
-  const
+PluginSpan::paste_to_slot (Plugin::Channel &ch, dsp::PluginSlot slot) const
 {
   try
     {
@@ -24,9 +22,8 @@ PluginSpanImpl<Range>::paste_to_slot (Plugin::Channel &ch, dsp::PluginSlot slot)
     }
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 bool
-PluginSpanImpl<Range>::can_be_pasted (const dsp::PluginSlot &slot) const
+PluginSpan::can_be_pasted (const dsp::PluginSlot &slot) const
 {
   if (std::ranges::distance (*this) == 0)
     return false;
@@ -46,8 +43,3 @@ PluginSpanImpl<Range>::can_be_pasted (const dsp::PluginSlot &slot) const
   // non-indexed slots not supported yet
   return false;
 }
-
-template class PluginSpanImpl<std::span<const PluginSpan::VariantType>>;
-template class PluginSpanImpl<utils::UuidIdentifiableObjectSpan<PluginRegistry>>;
-template class PluginSpanImpl<
-  utils::UuidIdentifiableObjectSpan<PluginRegistry, PluginUuidReference>>;

@@ -108,7 +108,7 @@ public:
   std::optional<RegionPtrVariant> get_region () const;
   std::optional<Region::Uuid>     get_region_id () const { return region_id_; }
 
-  // ArrangerObjectRegistrySpan get_arranger_selections ();
+  // ArrangerObjectSpan get_arranger_selections ();
 
   std::optional<TrackPtrVariant> get_track () const;
 

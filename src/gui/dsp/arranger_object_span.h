@@ -10,15 +10,12 @@
 /**
  * @brief Track span that offers helper methods on a range of tracks.
  */
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
-class ArrangerObjectSpanImpl
-    : public utils::
-        UuidIdentifiableObjectCompatibleSpan<Range, ArrangerObjectRegistry>
+class ArrangerObjectSpan
+    : public utils::UuidIdentifiableObjectView<ArrangerObjectRegistry>
 {
 public:
-  using Base =
-    utils::UuidIdentifiableObjectCompatibleSpan<Range, ArrangerObjectRegistry>;
-  using VariantType = typename Base::value_type;
+  using Base = utils::UuidIdentifiableObjectView<ArrangerObjectRegistry>;
+  using VariantType = typename Base::VariantType;
   using ArrangerObjectUuid = typename Base::UuidType;
   using Base::Base; // Inherit constructors
 
@@ -346,7 +343,7 @@ public:
    * Sets the listen status of notes on and off based on changes in the previous
    * selections and the current selections.
    */
-  void unlisten_note_diff (const ArrangerObjectSpanImpl &prev) const
+  void unlisten_note_diff (const ArrangerObjectSpan &prev) const
   {
     // Check for notes in prev that are not in objects_ and stop listening to
     // them
@@ -605,28 +602,4 @@ public:
     const VariantType &src);
 };
 
-using ArrangerObjectSpan =
-  ArrangerObjectSpanImpl<std::span<const ArrangerObjectPtrVariant>>;
-using ArrangerObjectRegistrySpan = ArrangerObjectSpanImpl<
-  utils::UuidIdentifiableObjectSpan<ArrangerObjectRegistry>>;
-using ArrangerObjectUuidReferenceSpan =
-  ArrangerObjectSpanImpl<utils::UuidIdentifiableObjectSpan<
-    ArrangerObjectRegistry,
-    ArrangerObjectUuidReference>>;
-extern template class ArrangerObjectSpanImpl<
-  std::span<const ArrangerObjectSpan::VariantType>>;
-extern template class ArrangerObjectSpanImpl<
-  utils::UuidIdentifiableObjectSpan<ArrangerObjectRegistry>>;
-extern template class ArrangerObjectSpanImpl<utils::UuidIdentifiableObjectSpan<
-  ArrangerObjectRegistry,
-  ArrangerObjectUuidReference>>;
-
 static_assert (std::ranges::random_access_range<ArrangerObjectSpan>);
-static_assert (std::ranges::random_access_range<ArrangerObjectRegistrySpan>);
-static_assert (
-  std::ranges::random_access_range<ArrangerObjectUuidReferenceSpan>);
-
-using ArrangerObjectSpanVariant = std::variant<
-  ArrangerObjectSpan,
-  ArrangerObjectRegistrySpan,
-  ArrangerObjectUuidReferenceSpan>;

@@ -7,20 +7,14 @@
 #include "utils/uuid_identifiable_object.h"
 #include "utils/views.h"
 
-static_assert (
-  std::ranges::random_access_range<
-    utils::UuidIdentifiableObjectSpan<TrackRegistry>>);
-
 /**
  * @brief Track span that offers helper methods on a range of tracks.
  */
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
-class TrackSpanImpl
-    : public utils::UuidIdentifiableObjectCompatibleSpan<Range, TrackRegistry>
+class TrackSpan : public utils::UuidIdentifiableObjectView<TrackRegistry>
 {
 public:
-  using Base = utils::UuidIdentifiableObjectCompatibleSpan<Range, TrackRegistry>;
-  using VariantType = typename Base::value_type;
+  using Base = utils::UuidIdentifiableObjectView<TrackRegistry>;
+  using VariantType = typename Base::VariantType;
   using TrackUuid = typename Base::UuidType;
   using Base::Base; // Inherit constructors
 
@@ -191,7 +185,13 @@ public:
    * @param mark_master Also mark the master track.
    *   Set to true when exporting the mixdown, false otherwise.
    */
-  void mark_for_bounce (bool with_parents, bool mark_master);
+  void
+  mark_for_bounce (Tracklist &tracklist, bool with_parents, bool mark_master);
+
+  /**
+   * Marks or unmarks all tracks for bounce.
+   */
+  void mark_all_tracks_for_bounce (Tracklist &tracklist, bool bounce);
 
   /**
    * Toggle visibility of the tracks in this collection.
@@ -275,7 +275,7 @@ public:
    */
   template <typename T> void get_plugins (T &container)
   {
-    std::ranges::for_each (*this, [&container] (auto &track_var) {
+    std::ranges::for_each (*this, [&container] (const auto &track_var) {
       std::visit (
         [&container] (auto &&track) { track->get_plugins (container); },
         track_var);
@@ -325,7 +325,7 @@ public:
    */
   int get_total_bars (const Transport &transport, int total_bars) const
   {
-    std::ranges::for_each (*this, [&] (auto &track_var) {
+    std::ranges::for_each (*this, [&] (const auto &track_var) {
       std::visit (
         [&] (auto &&track) {
           total_bars = track->get_total_bars (transport, total_bars);
@@ -341,7 +341,7 @@ public:
    */
   void set_caches (CacheType types)
   {
-    std::ranges::for_each (*this, [&] (auto &track_var) {
+    std::ranges::for_each (*this, [&] (const auto &track_var) {
       std::visit ([&] (auto &&track) { track->set_caches (types); }, track_var);
     });
   }
@@ -371,23 +371,9 @@ public:
    */
   void activate_all_plugins (bool activate)
   {
-    std::ranges::for_each (*this, [&] (auto &track_var) {
+    std::ranges::for_each (*this, [&] (const auto &track_var) {
       std::visit (
         [&] (auto &&track) { track->activate_all_plugins (activate); },
-        track_var);
-    });
-  }
-
-  /**
-   * Marks or unmarks all tracks for bounce.
-   */
-  void mark_all_tracks_for_bounce (bool bounce)
-  {
-    std::ranges::for_each (*this, [&] (auto &track_var) {
-      std::visit (
-        [&] (auto &&track) {
-          track->mark_for_bounce (bounce, true, false, false);
-        },
         track_var);
     });
   }
@@ -396,7 +382,7 @@ public:
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
     PortRegistry                          &port_registry)
   {
-    std::ranges::for_each (*this, [&] (auto &track_var) {
+    std::ranges::for_each (*this, [&] (const auto &track_var) {
       std::visit (
         [&] (auto &&track) {
           track->init_loaded (plugin_registry, port_registry);
@@ -453,23 +439,7 @@ public:
   }
 };
 
-using TrackSpan = TrackSpanImpl<std::span<const TrackPtrVariant>>;
-using TrackRegistrySpan =
-  TrackSpanImpl<utils::UuidIdentifiableObjectSpan<TrackRegistry>>;
-using TrackUuidReferenceSpan = TrackSpanImpl<
-  utils::UuidIdentifiableObjectSpan<TrackRegistry, TrackUuidReference>>;
-extern template class TrackSpanImpl<std::span<const TrackSpan::VariantType>>;
-extern template class TrackSpanImpl<
-  utils::UuidIdentifiableObjectSpan<TrackRegistry>>;
-extern template class TrackSpanImpl<
-  utils::UuidIdentifiableObjectSpan<TrackRegistry, TrackUuidReference>>;
-
 static_assert (std::ranges::random_access_range<TrackSpan>);
-static_assert (std::ranges::random_access_range<TrackRegistrySpan>);
-static_assert (std::ranges::random_access_range<TrackUuidReferenceSpan>);
-
-using TrackSpanVariant =
-  std::variant<TrackSpan, TrackRegistrySpan, TrackUuidReferenceSpan>;
 
 namespace TrackCollections
 {

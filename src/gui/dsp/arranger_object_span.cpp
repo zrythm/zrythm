@@ -8,9 +8,8 @@
 
 #include "./arranger_object_span.h"
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 auto
-ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
+ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
   -> ArrangerObjectUuidReference
 {
   bool is_timeline = std::ranges::all_of (
@@ -48,7 +47,7 @@ ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
                       .with_start_ticks (pos.ticks_)
                       .with_end_ticks (end_pos.ticks_)
                       .build ();
-                  for (auto &obj : *this)
+                  for (const auto &obj : *this)
                     {
                       auto * r = std::get<MidiRegion *> (obj);
                       double ticks_diff =
@@ -78,7 +77,7 @@ ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
                   };
                   auto max_depth = first_r_clip->get_bit_depth ();
                   assert (!first_r_clip->get_name ().empty ());
-                  for (auto &obj : *this)
+                  for (const auto &obj : *this)
                     {
                       auto * r = std::get<AudioRegion *> (obj);
                       long   frames_diff =
@@ -167,9 +166,8 @@ ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
     }
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 bool
-ArrangerObjectSpanImpl<Range>::all_on_same_lane () const
+ArrangerObjectSpan::all_on_same_lane () const
 {
   if (this->empty ())
     return true;
@@ -206,9 +204,8 @@ ArrangerObjectSpanImpl<Range>::all_on_same_lane () const
     first_obj_var);
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 std::pair<TrackPtrVariant, TrackPtrVariant>
-ArrangerObjectSpanImpl<Range>::get_first_and_last_track () const
+ArrangerObjectSpan::get_first_and_last_track () const
 {
   auto tracks = *this | std::views::transform (track_projection);
   auto [min_it, max_it] =
@@ -216,13 +213,10 @@ ArrangerObjectSpanImpl<Range>::get_first_and_last_track () const
   return std::make_pair (*min_it, *max_it);
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-ArrangerObjectSpanImpl<Range>::init_loaded (
-  bool               project,
-  dsp::FramesPerTick frames_per_tick)
+ArrangerObjectSpan::init_loaded (bool project, dsp::FramesPerTick frames_per_tick)
 {
-  for (auto &obj_variant : *this)
+  for (const auto &obj_variant : *this)
     {
       std::visit (
         [&] (auto &&o) {
@@ -255,9 +249,8 @@ ArrangerObjectSpanImpl<Range>::init_loaded (
     }
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 auto
-ArrangerObjectSpanImpl<Range>::get_first_object_and_pos (bool global) const
+ArrangerObjectSpan::get_first_object_and_pos (bool global) const
   -> std::pair<VariantType, Position>
 {
   auto ret_obj = *std::ranges::min_element (*this, {}, position_projection);
@@ -280,11 +273,9 @@ ArrangerObjectSpanImpl<Range>::get_first_object_and_pos (bool global) const
   return { ret_obj, ret_pos };
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 auto
-ArrangerObjectSpanImpl<Range>::get_last_object_and_pos (
-  bool global,
-  bool ends_last) const -> std::pair<VariantType, Position>
+ArrangerObjectSpan::get_last_object_and_pos (bool global, bool ends_last) const
+  -> std::pair<VariantType, Position>
 {
   const auto proj =
     ends_last
@@ -310,9 +301,8 @@ ArrangerObjectSpanImpl<Range>::get_last_object_and_pos (
   return { ret_obj, ret_pos };
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 bool
-ArrangerObjectSpanImpl<Range>::can_be_merged () const
+ArrangerObjectSpan::can_be_merged () const
 {
   return this->size () > 1
          && std::ranges::all_of (
@@ -320,9 +310,8 @@ ArrangerObjectSpanImpl<Range>::can_be_merged () const
          && all_on_same_lane () && std::ranges::none_of (*this, looped_projection);
 }
 
-template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-ArrangerObjectSpanImpl<Range>::copy_arranger_object_identifier (
+ArrangerObjectSpan::copy_arranger_object_identifier (
   const VariantType &dest_var,
   const VariantType &src_var)
 {
@@ -352,11 +341,3 @@ ArrangerObjectSpanImpl<Range>::copy_arranger_object_identifier (
     },
     dest_var);
 }
-
-template class ArrangerObjectSpanImpl<
-  std::span<const ArrangerObjectSpan::VariantType>>;
-template class ArrangerObjectSpanImpl<
-  utils::UuidIdentifiableObjectSpan<ArrangerObjectRegistry>>;
-template class ArrangerObjectSpanImpl<utils::UuidIdentifiableObjectSpan<
-  ArrangerObjectRegistry,
-  ArrangerObjectUuidReference>>;

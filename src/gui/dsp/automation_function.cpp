@@ -12,54 +12,51 @@
 using namespace zrythm;
 
 void
-AutomationFunction::apply (ArrangerObjectSpanVariant sel_var, Type type)
+AutomationFunction::apply (ArrangerObjectSpan sel_var, Type type)
 {
   z_debug ("applying {}...", AutomationFunctionType_to_string (type));
 
-  std::visit (
-    [&] (auto &&sel) {
-      const auto flip = [&] (const bool vertical) {
-        for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+  const auto &sel = sel_var;
+  const auto  flip = [&] (const bool vertical) {
+    for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+      {
+        if (vertical)
           {
-            if (vertical)
-              {
-                ap->set_fvalue (1.f - ap->normalized_val_, true);
-                ap->curve_opts_.curviness_ = -ap->curve_opts_.curviness_;
-              }
-            else
-              {
-                /* TODO */
-              }
+            ap->set_fvalue (1.f - ap->normalized_val_, true);
+            ap->curve_opts_.curviness_ = -ap->curve_opts_.curviness_;
           }
-      };
-
-      const auto flatten = [&] () {
-        for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+        else
           {
-
-            ap->curve_opts_.curviness_ = 1.0;
-            ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
+            /* TODO */
           }
-      };
+      }
+  };
 
-      switch (type)
-        {
-        case Type::FlipHorizontal:
-          /* TODO */
-          break;
-        case Type::FlipVertical:
-          flip (true);
-          break;
-        case Type::Flatten:
-          flatten ();
-          break;
-        }
+  const auto flatten = [&] () {
+    for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+      {
 
-      /* set last action */
-      gui::SettingsManager::get_instance ()->set_lastAutomationFunction (
-        ENUM_VALUE_TO_INT (type));
+        ap->curve_opts_.curviness_ = 1.0;
+        ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
+      }
+  };
 
-      // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
-    },
-    sel_var);
+  switch (type)
+    {
+    case Type::FlipHorizontal:
+      /* TODO */
+      break;
+    case Type::FlipVertical:
+      flip (true);
+      break;
+    case Type::Flatten:
+      flatten ();
+      break;
+    }
+
+  /* set last action */
+  gui::SettingsManager::get_instance ()->set_lastAutomationFunction (
+    ENUM_VALUE_TO_INT (type));
+
+  // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

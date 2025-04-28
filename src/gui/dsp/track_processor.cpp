@@ -1197,7 +1197,7 @@ TrackProcessor::disconnect_from_plugin (
   auto * mgr = get_port_connections_manager ();
   z_return_if_fail (mgr);
 
-  for (auto &in_port_var : pl.get_input_port_span ())
+  for (const auto &in_port_var : pl.get_input_port_span ())
     {
       std::visit (
         [&] (auto &&in_port) {

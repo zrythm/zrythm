@@ -53,10 +53,10 @@ RangeAction::init_after_cloning (
   first_run_ = other.first_run_;
 }
 
-ArrangerObjectRegistrySpan
+ArrangerObjectSpan
 RangeAction::get_before_objects () const
 {
-  return ArrangerObjectRegistrySpan{
+  return ArrangerObjectSpan{
     PROJECT->get_arranger_object_registry (), affected_objects_before_
   };
 }
@@ -65,8 +65,7 @@ bool
 RangeAction::contains_clip (const AudioClip &clip) const
 {
   return get_before_objects ().contains_clip (clip)
-         || ArrangerObjectRegistrySpan{ PROJECT->get_arranger_object_registry (),
-                                        objects_added_ }
+         || ArrangerObjectSpan{ PROJECT->get_arranger_object_registry (), objects_added_ }
               .contains_clip (clip);
 }
 
@@ -74,9 +73,7 @@ void
 RangeAction::init_loaded_impl ()
 {
   get_before_objects ().init_loaded (false, frames_per_tick_);
-  ArrangerObjectRegistrySpan{
-    PROJECT->get_arranger_object_registry (), objects_added_
-  }
+  ArrangerObjectSpan{ PROJECT->get_arranger_object_registry (), objects_added_ }
     .init_loaded (false, frames_per_tick_);
   transport_->init_loaded (nullptr, nullptr);
 }
@@ -161,7 +158,7 @@ RangeAction::perform_impl ()
         case Type::InsertSilence:
           for (
             const auto &obj_var :
-            ArrangerObjectRegistrySpan{
+            ArrangerObjectSpan{
               PROJECT->get_arranger_object_registry (), affected_objects_before_ }
               | std::views::reverse)
             {
@@ -407,7 +404,7 @@ RangeAction::undo_impl ()
 
   /* remove all objects added during perform() */
   for (
-    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectRegistrySpan{
+    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectSpan{
       PROJECT->get_arranger_object_registry (), objects_added_ }))
     {
       std::visit (
@@ -416,7 +413,7 @@ RangeAction::undo_impl ()
 
   // move all moved objects backwards
   for (
-    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectRegistrySpan{
+    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectSpan{
       PROJECT->get_arranger_object_registry (), objects_moved_ }))
     {
       std::visit (
@@ -427,7 +424,7 @@ RangeAction::undo_impl ()
     }
   // add back objects taht were removed
   for (
-    const auto &obj_var : ArrangerObjectRegistrySpan{
+    const auto &obj_var : ArrangerObjectSpan{
       PROJECT->get_arranger_object_registry (), objects_removed_ })
     {
       std::visit (

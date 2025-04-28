@@ -106,7 +106,7 @@ public:
     Track::Type::Modulator
   };
 
-  auto get_track_span () const { return TrackUuidReferenceSpan{ tracks_ }; }
+  auto get_track_span () const { return TrackSpan{ tracks_ }; }
 
   bool is_in_active_project () const;
 
@@ -189,7 +189,7 @@ public:
   std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
   {
     auto span = get_track_span ();
-    auto it = std::ranges::find (span, id, TrackRegistrySpan::uuid_projection);
+    auto it = std::ranges::find (span, id, TrackSpan::uuid_projection);
     if (it == span.end ()) [[unlikely]]
       {
         return std::nullopt;
@@ -432,8 +432,8 @@ public:
    */
   void select_foldable_children_of_current_selections ()
   {
-    auto selected_vec = std::ranges::to<std::vector> (selected_tracks_);
-    TrackRegistrySpan span{ *track_registry_, selected_vec };
+    auto      selected_vec = std::ranges::to<std::vector> (selected_tracks_);
+    TrackSpan span{ *track_registry_, selected_vec };
     std::ranges::for_each (span, [&] (auto &&track_var) {
       std::visit (
         [&] (auto &&track_ref) {
@@ -460,6 +460,26 @@ public:
     pinned_tracks_cutoff_ = index;
   }
   auto track_count () const { return tracks_.size (); }
+
+  /**
+   * Marks the track for bouncing.
+   *
+   * @param mark_children Whether to mark all children tracks as well. Used
+   * when exporting stems on the specific track stem only. IMPORTANT:
+   * Track.bounce_to_master must be set beforehand if this is true.
+   * @param mark_parents Whether to mark all parent tracks as well.
+   */
+  void mark_track_for_bounce (
+    TrackPtrVariant track_var,
+    bool            bounce,
+    bool            mark_regions,
+    bool            mark_children,
+    bool            mark_parents);
+
+  void mark_all_tracks_for_bounce (bool bounce)
+  {
+    get_track_span ().mark_all_tracks_for_bounce (*this, bounce);
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

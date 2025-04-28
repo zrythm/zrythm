@@ -56,7 +56,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
   // TODO: selection logic
   // TL_SELECTIONS->clear (false);
   for (
-    auto &region_var : ArrangerObjectRegistrySpan{
+    const auto &region_var : ArrangerObjectSpan{
       PROJECT->get_arranger_object_registry (), recorded_ids_ })
     {
       std::visit (
@@ -99,7 +99,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
   /* update frame caches and write audio clips to pool */
   for (
-    auto &region_var : ArrangerObjectRegistrySpan{
+    const auto &region_var : ArrangerObjectSpan{
       PROJECT->get_arranger_object_registry (), recorded_ids_ })
     {
       std::visit (

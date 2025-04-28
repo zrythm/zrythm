@@ -134,9 +134,7 @@ ChordObject *
 ChordTrack::get_chord_at_pos (const Position pos) const
 {
   auto region_var =
-    ArrangerObjectUuidReferenceSpan{
-      ArrangerObjectOwner<ChordRegion>::get_children_vector ()
-    }
+    ArrangerObjectSpan{ ArrangerObjectOwner<ChordRegion>::get_children_vector () }
       .get_bounded_object_at_pos (pos, false);
   if (!region_var)
     {
