@@ -145,6 +145,7 @@ endif()
 # Options
 option(ZRYTHM_TESTS "Enable/build tests" OFF)
 if(ZRYTHM_TESTS)
+  include(CTest)
   enable_testing()
 endif()
 cmake_dependent_option(ZRYTHM_BENCHMARKS "Build benchmarks" OFF "ZRYTHM_TESTS" OFF)

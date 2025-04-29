@@ -165,7 +165,8 @@ FileDescriptor::should_autoplay () const
         }
       catch (const ZrythmException &e)
         {
-          e.handle ("Error reading metadata from {}", abs_path_.string ());
+          e.handle (fmt::format (
+            "Error reading metadata from {}", abs_path_.string ()));
           return false;
         }
     }
