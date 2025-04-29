@@ -67,7 +67,8 @@ set(BUILD_SHARED_LIBS OFF)
 # dependencies against the release runtime library first)
 # Note: only DLL is allowed, and it must not be redistributed
 # See https://opensource.stackexchange.com/a/7187
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+cmake_policy(SET CMP0091 NEW)  # Ensures CMAKE_MSVC_RUNTIME_LIBRARY is respected
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS YES)
 
