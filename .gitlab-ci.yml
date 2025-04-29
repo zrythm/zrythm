@@ -82,7 +82,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-12-$CI_RUNNER_DESCRIPTION
+  - key: cache-13-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - "$BUILDDIR/_deps/*-src"
