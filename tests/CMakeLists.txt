@@ -10,6 +10,19 @@ if("${BUNDLED_PLUGINS_FOR_TESTS_TGTS}" STREQUAL "")
   return()
 endif()
 
+include(GoogleTest)
+function(zrythm_discover_tests TARGET_NAME)
+  # see https://discourse.cmake.org/t/googletest-crash-when-using-cmake-xcode-arm64/5766/11
+  if(XCODE)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND codesign -s - "$<TARGET_FILE:${TARGET_NAME}>"
+        COMMENT "Signing ${TARGET_NAME} for Xcode POST_BUILD"
+    )
+  endif()
+
+  gtest_discover_tests(${TARGET_NAME})
+endfunction()
+
 set(test_lv2_plugins)
 set(test_lv2_plugin_libs)
 add_subdirectory(lv2plugins)

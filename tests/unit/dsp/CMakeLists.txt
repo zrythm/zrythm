@@ -33,5 +33,4 @@ target_compile_definitions(dsp_unit_tests PRIVATE
   TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
 )
 
-include(GoogleTest)
-gtest_discover_tests(dsp_unit_tests)
+zrythm_discover_tests(dsp_unit_tests)
