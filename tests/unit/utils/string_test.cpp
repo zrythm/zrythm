@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/gtest_wrapper.h"
 #include "utils/string.h"
+
+#include <QtEnvironmentVariables>
 
 using namespace zrythm::utils::string;
 
@@ -81,7 +83,7 @@ TEST (StringTest, CStringRAII)
 
 TEST (StringTest, EnvironmentVariables)
 {
-  setenv ("TEST_VAR", "test_value", 1);
+  qputenv ("TEST_VAR", "test_value");
   EXPECT_EQ (expand_env_vars ("${TEST_VAR}"), "test_value");
-  unsetenv ("TEST_VAR");
+  qunsetenv ("TEST_VAR");
 }

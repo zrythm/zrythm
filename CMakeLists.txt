@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 cmake_minimum_required(VERSION 3.24)
@@ -779,24 +779,35 @@ add_library(zrythm::lv2 ALIAS PkgConfig::LV2)
 # pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
 # pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
 
-# include(FindFFTW3)
-set(ENABLE_THREADS ON)
-set(WITH_COMBINED_THREADS ON)
-set(BUILD_TESTS OFF)
-FetchContent_Declare(
-  fftw3
-  URL       http://fftw.org/fftw-3.3.10.tar.gz
-  URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
-FetchContent_MakeAvailable(fftw3)
-set(ENABLE_FLOAT ON)
-FetchContent_Declare(
-  fftw3f
-  URL       http://fftw.org/fftw-3.3.10.tar.gz
-  URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
-FetchContent_MakeAvailable(fftw3f)
-add_library(fftw3_libs INTERFACE)
-target_link_libraries(fftw3_libs INTERFACE fftw3 fftw3f)
-target_include_directories(fftw3_libs SYSTEM INTERFACE ${fftw3_SOURCE_DIR}/api)
+# We only use FFTW to solve this issue:
+# https://github.com/FFTW/fftw3/issues/16
+# This is only an issue on GNU/Linux when using distro-built plugins as they
+# are usually dynamically linked to system FFTW
+if(OS_GNU)
+  # include(FindFFTW3)
+  set(ENABLE_THREADS ON)
+  set(WITH_COMBINED_THREADS ON)
+  set(BUILD_TESTS OFF)
+  set(BUILD_SHARED_LIBS ON)
+  FetchContent_Declare(
+    fftw3
+    URL       http://fftw.org/fftw-3.3.10.tar.gz
+    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
+  FetchContent_MakeAvailable(fftw3)
+  set(ENABLE_FLOAT ON)
+  FetchContent_Declare(
+    fftw3f
+    URL       http://fftw.org/fftw-3.3.10.tar.gz
+    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
+  FetchContent_MakeAvailable(fftw3f)
+  add_library(fftw3_libs INTERFACE)
+  target_link_libraries(fftw3_libs INTERFACE fftw3 fftw3f)
+  target_include_directories(fftw3_libs SYSTEM INTERFACE ${fftw3_SOURCE_DIR}/api)
+  set(HAVE_FFTW3 TRUE)
+  set(BUILD_SHARED_LIBS OFF)
+else()
+  add_library(fftw3_libs INTERFACE)
+endif()
 add_library(zrythm::fftw3_libs ALIAS fftw3_libs)
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
@@ -1268,6 +1279,7 @@ add_custom_target(clang-format
 )
 
 if(ZRYTHM_TESTS)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_CURRENT_BINARY_DIR} @ONLY)
   add_subdirectory(tests)
 endif()
 add_subdirectory(doc)

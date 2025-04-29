@@ -82,6 +82,8 @@
 
 #cmakedefine01 HAVE_CYAML
 
+#cmakedefine01 HAVE_FFTW3
+
 #cmakedefine01 HAVE_MLOCK
 
 #cmakedefine01 HAVE_OPUS
