@@ -8,7 +8,6 @@
 #include <QCoreApplication>
 
 #include "engine/audio_engine_application.h"
-#include <fftw3.h>
 
 #if 0
 /**
