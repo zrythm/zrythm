@@ -20,6 +20,11 @@ if(APPLE)
 
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
   set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")
+
+  if(XCODE)
+    # see https://discourse.cmake.org/t/googletest-crash-when-using-cmake-xcode-arm64/5766/11
+    set(CMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
+  endif()
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -58,6 +63,9 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.24)
 # Enable precompiled headers
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 # set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
+
+# Prefer static libraries for easier linking
+set(BUILD_SHARED_LIBS OFF)
 
 # Set the release runtime library for all targets to make our life easier
 # (all dependencies must use the same runtime library, so build all

@@ -951,7 +951,7 @@ Project::idle_saved_callback (SaveContext * ctx)
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
         {
           zrythm::gui::ProjectManager::get_instance ()->add_to_recent_projects (
-            QString::fromStdString (ctx->project_file_path_));
+            QString::fromStdString (ctx->project_file_path_.string ()));
         }
       if (ctx->show_notification_)
         {

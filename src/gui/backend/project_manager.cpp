@@ -10,6 +10,7 @@
 #include "utils/io.h"
 
 using namespace zrythm::gui;
+using namespace std::chrono_literals;
 
 ProjectManager::ProjectManager (QObject * parent)
     : QObject (parent), recent_projects_model_ (new RecentProjectsModel (this))
@@ -186,60 +187,37 @@ ProjectManager::createNewProject (
   z_debug (
     "Creating new project in {} (template {})", directory_file, template_file);
 
-  auto promise = std::make_shared<std::promise<ProjectLoadResult>> ();
-  auto future = promise->get_future ();
-
-  std::thread ([directory_file, name, template_file, this, promise] () {
+  std::thread ([directory_file, name, template_file, this] {
     try
       {
-        Project * project = nullptr;
-        if (template_file.isEmpty ())
-          {
-            project = create_default (
-              directory_file.toStdString (), name.toStdString (), true);
-          }
-        else
-          {
-            // TODO create from template
-          }
+        auto project =
+          template_file.isEmpty ()
+            ? create_default (
+                directory_file.toStdString (), name.toStdString (), true)
+            : nullptr; // TODO: template handling
 
         project->moveToThread (this->thread ());
         project->save (project->dir_, false, false, false);
 
         QMetaObject::invokeMethod (
-          this, [this, project] () { project->setParent (this); },
+          this,
+          [this, project] {
+            project->setParent (this);
+            setActiveProject (project);
+            project->audio_engine_->router_->recalc_graph (false);
+            project->audio_engine_->run_.store (true);
+            Q_EMIT projectLoaded (project);
+          },
           Qt::BlockingQueuedConnection);
-
-        promise->set_value (ProjectLoadResult (project));
       }
     catch (const ZrythmException &e)
       {
         z_warning ("Failed to create project: {}", e.what ());
-        promise->set_value (ProjectLoadResult (QString::fromUtf8 (e.what ())));
+        QMetaObject::invokeMethod (
+          this, [this, msg = QString::fromUtf8 (e.what ())] {
+            Q_EMIT projectLoadingFailed (msg);
+          });
       }
-  }).detach ();
-
-  // Handle the result when ready
-  std::thread ([this, future = std::move (future)] () mutable {
-    auto project_res = future.get ();
-    QMetaObject::invokeMethod (this, [this, project_res] () {
-      if (project_res.index () == 0)
-        {
-          auto * project = std::get<Project *> (project_res);
-          setActiveProject (project);
-
-          /* recalculate the routing graph & kick off engine processing */
-          project->audio_engine_->router_->recalc_graph (false);
-          project->audio_engine_->run_.store (true);
-
-          Q_EMIT projectLoaded (project);
-        }
-      else
-        {
-          auto error_msg = std::get<QString> (project_res);
-          Q_EMIT projectLoadingFailed (error_msg);
-        }
-    });
   }).detach ();
 }
 
@@ -248,38 +226,10 @@ ProjectManager::loadProject (const QString &filepath)
 {
   z_debug ("Loading project from {}", filepath);
 
-  auto promise = std::make_shared<std::promise<ProjectLoadResult>> ();
-  auto future = promise->get_future ();
-
-  std::thread ([filepath, this, promise] () {
-    Project * project = nullptr;
-    (void) this;
-    // Simulate long-running operation
-    std::this_thread::sleep_for (std::chrono::seconds (3));
-    if (project)
-      {
-        promise->set_value (ProjectLoadResult (project));
-      }
-    else
-      {
-        promise->set_value (ProjectLoadResult (tr ("Failed to load project")));
-      }
-  }).detach ();
-
-  std::thread ([this, future = std::move (future)] () mutable {
-    auto project_res = future.get ();
-    QMetaObject::invokeMethod (this, [this, project_res] () {
-      if (project_res.index () == 0)
-        {
-          auto * project = std::get<Project *> (project_res);
-          setActiveProject (project);
-          Q_EMIT projectLoaded (project);
-        }
-      else
-        {
-          auto error_msg = std::get<QString> (project_res);
-          Q_EMIT projectLoadingFailed (error_msg);
-        }
+  std::thread ([filepath, this] {
+    std::this_thread::sleep_for (3s); // Simulate loading
+    QMetaObject::invokeMethod (this, [this] {
+      Q_EMIT projectLoadingFailed (tr ("Failed to load project"));
     });
   }).detach ();
 }
