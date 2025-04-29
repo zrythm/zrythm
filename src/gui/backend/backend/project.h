@@ -316,9 +316,9 @@ public:
    * Returns the filepath of a backup (directory), if any, if it has a newer
    * timestamp than main project file.
    *
-   * Returns an empty string if there were errors or no backup was found.
+   * Returns nullopt if there were errors or no backup was found.
    */
-  std::string get_newer_backup ();
+  std::optional<fs::path> get_newer_backup ();
 
   /**
    * @brief Connects things up, exposes ports to the backend, calculates the
@@ -436,7 +436,7 @@ private:
     Project * main_project_;
 
     /** Full path to save to. */
-    std::string project_file_path_;
+    fs::path project_file_path_;
 
     bool is_backup_ = false;
 
@@ -494,7 +494,7 @@ public:
    *
    * For example, @ref Project.dir /backups/myproject.bak3.
    */
-  fs::path backup_dir_;
+  std::optional<fs::path> backup_dir_;
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
 

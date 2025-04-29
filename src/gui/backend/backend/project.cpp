@@ -197,11 +197,11 @@ Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) con
   return false;
 }
 
-std::string
+std::optional<fs::path>
 Project::get_newer_backup ()
 {
-  std::string filepath = get_path (ProjectPath::ProjectFile, false);
-  z_return_val_if_fail (!filepath.empty (), "");
+  const auto filepath = get_path (ProjectPath::ProjectFile, false);
+  z_return_val_if_fail (!filepath.empty (), std::nullopt);
 
   std::filesystem::file_time_type original_time;
   if (std::filesystem::exists (filepath))
@@ -210,13 +210,12 @@ Project::get_newer_backup ()
     }
   else
     {
-      z_warning ("Failed to get last modified for {}", filepath);
-      return {};
+      z_warning ("Failed to get last modified for {}", filepath.string ());
+      return std::nullopt;
     }
 
-  std::string result;
-  std::string backups_dir = get_path (ProjectPath::BACKUPS, false);
-
+  fs::path   result;
+  const auto backups_dir = get_path (ProjectPath::BACKUPS, false);
   try
     {
       for (const auto &entry : std::filesystem::directory_iterator (backups_dir))
@@ -237,14 +236,14 @@ Project::get_newer_backup ()
             {
               z_warning (
                 "Failed to get last modified for {}", full_path.string ());
-              return {};
+              return std::nullopt;
             }
         }
     }
   catch (const std::filesystem::filesystem_error &e)
     {
       z_warning ("Error accessing backup directory: {}", e.what ());
-      return {};
+      return std::nullopt;
     }
 
   return result;
@@ -259,8 +258,8 @@ Project::make_project_dirs (bool is_backup)
       ProjectPath::POOL, ProjectPath::PluginStates,
       ProjectPath::PLUGIN_EXT_COPIES, ProjectPath::PLUGIN_EXT_LINKS })
     {
-      std::string dir = get_path (type, is_backup);
-      assert (!dir.empty ());
+      const auto dir = get_path (type, is_backup);
+      assert (!dir.string ().empty ());
       try
         {
           utils::io::mkdir (dir);
@@ -268,7 +267,7 @@ Project::make_project_dirs (bool is_backup)
       catch (ZrythmException &e)
         {
           throw ZrythmException (
-            fmt::format ("Failed to create directory {}", dir));
+            fmt::format ("Failed to create directory {}", dir.string ()));
         }
     }
 }
@@ -405,11 +404,12 @@ Project::set_and_create_next_available_backup_dir ()
         }
       i++;
     }
-  while (utils::io::path_exists (backup_dir_));
+  while (
+    backup_dir_.has_value () && utils::io::path_exists (backup_dir_.value ()));
 
   try
     {
-      utils::io::mkdir (backup_dir_);
+      utils::io::mkdir (*backup_dir_);
     }
   catch (ZrythmException &e)
     {
@@ -668,8 +668,8 @@ std::string
 Project::get_existing_uncompressed_text (bool backup)
 {
   /* get file contents */
-  std::string project_file_path = get_path (ProjectPath::ProjectFile, backup);
-  z_debug ("getting text for project file {}", project_file_path);
+  const auto project_file_path = get_path (ProjectPath::ProjectFile, backup);
+  z_debug ("getting text for project file {}", project_file_path.string ());
 
   QByteArray compressed_pj{};
   try
@@ -679,8 +679,8 @@ Project::get_existing_uncompressed_text (bool backup)
   catch (const ZrythmException &e)
     {
       throw ZrythmException (format_qstr (
-        QObject::tr ("Unable to read file at {}: {}"), project_file_path,
-        e.what ()));
+        QObject::tr ("Unable to read file at {}: {}"),
+        project_file_path.string (), e.what ()));
     }
 
   /* decompress */
@@ -815,7 +815,7 @@ Project::autosave_cb (void * data)
 fs::path
 Project::get_path (ProjectPath path, bool backup)
 {
-  auto &dir = backup ? backup_dir_ : dir_;
+  const auto dir = backup ? *backup_dir_ : dir_;
   switch (path)
     {
     case ProjectPath::BACKUPS:
@@ -1216,7 +1216,8 @@ Project::save (
 
   /* write FINISHED file */
   {
-    auto finished_file_path = get_path (ProjectPath::FINISHED_FILE, is_backup);
+    const auto finished_file_path =
+      get_path (ProjectPath::FINISHED_FILE, is_backup);
     utils::io::touch_file (finished_file_path);
   }
 
@@ -1305,7 +1306,7 @@ Project::setTitle (const QString &title)
 QString
 Project::getDirectory () const
 {
-  return QString::fromStdString (dir_);
+  return QString::fromStdString (dir_.string ());
 }
 
 void

@@ -1484,7 +1484,9 @@ Channel::get_plugin_slot (const PluginUuid &plugin_id) const
       return dsp::PluginSlot{ dsp::PluginSlotType::Instrument };
     }
   {
-    const auto * it =
+    // note: for some reason `it` is not a pointer on msvc so `const auto * it`
+    // won't work
+    const auto it =
       std::ranges::find (inserts_, plugin_id, &PluginUuidReference::id);
     if (it != inserts_.end ())
       {
@@ -1496,7 +1498,7 @@ Channel::get_plugin_slot (const PluginUuid &plugin_id) const
       }
   }
   {
-    const auto * it =
+    const auto it =
       std::ranges::find (midi_fx_, plugin_id, &PluginUuidReference::id);
     if (it != midi_fx_.end ())
       {

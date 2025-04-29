@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/midi_note.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/velocity.h"

@@ -807,15 +807,15 @@ ProjectInitFlowManager::load_from_file ()
     {
       PROJECT->backup_dir_.clear ();
       PROJECT->backup_dir_ = PROJECT->get_newer_backup ();
-      if (!PROJECT->backup_dir_.empty ())
+      if (PROJECT->backup_dir_)
         {
-          z_debug ("newer backup found {}", PROJECT->backup_dir_);
+          z_debug ("newer backup found {}", PROJECT->backup_dir_->string ());
 
           if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
             {
               if (!gZrythm->open_newer_backup_)
                 {
-                  PROJECT->backup_dir_.clear ();
+                  PROJECT->backup_dir_->clear ();
                 }
             }
           else
