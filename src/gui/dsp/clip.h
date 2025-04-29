@@ -44,9 +44,9 @@ public:
    * @throw ZrythmException on error.
    */
   AudioClip (
-    const std::string &full_path,
-    sample_rate_t      project_sample_rate,
-    bpm_t              current_bpm);
+    const fs::path &full_path,
+    sample_rate_t   project_sample_rate,
+    bpm_t           current_bpm);
 
   /**
    * Creates an audio clip by copying the given buffer.

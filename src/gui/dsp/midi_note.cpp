@@ -48,7 +48,7 @@ MidiNote::insert_clone_to_project () const
 std::string
 MidiNote::gen_human_friendly_name () const
 {
-  return get_val_as_string (PianoRoll::NoteNotation::Musical, false);
+  return get_val_as_string (Notation::Musical, false);
 }
 
 void
@@ -107,13 +107,12 @@ MidiNote::listen (bool listen)
 }
 
 std::string
-MidiNote::get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup)
-  const
+MidiNote::get_val_as_string (Notation notation, bool use_markup) const
 {
   const auto note_str_musical = dsp::ChordDescriptor::note_to_string (
     ENUM_INT_TO_VALUE (dsp::MusicalNote, pitch_ % 12));
   std::string note_str;
-  if (notation == PianoRoll::NoteNotation::Musical)
+  if (notation == Notation::Musical)
     {
       note_str = note_str_musical;
     }

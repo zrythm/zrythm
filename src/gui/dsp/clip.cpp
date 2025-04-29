@@ -13,9 +13,9 @@
 using namespace zrythm;
 
 AudioClip::AudioClip (
-  const std::string &full_path,
-  sample_rate_t      project_sample_rate,
-  bpm_t              current_bpm)
+  const fs::path &full_path,
+  sample_rate_t   project_sample_rate,
+  bpm_t           current_bpm)
 {
   init_from_file (full_path, project_sample_rate, std::nullopt);
 

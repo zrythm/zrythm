@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "dsp/position.h"
-#include "gui/backend/backend/piano_roll.h"
 #include "gui/dsp/bounded_object.h"
 #include "gui/dsp/muteable_object.h"
 #include "gui/dsp/velocity.h"
@@ -46,6 +45,12 @@ public:
   Q_DISABLE_COPY_MOVE (MidiNote)
   ~MidiNote () override = default;
 
+  enum class Notation
+  {
+    Musical,
+    Pitch,
+  };
+
   // ========================================================================
   // QML Interface
   // ========================================================================
@@ -72,8 +77,7 @@ public:
    *
    * @param use_markup Use markup to show the octave as a superscript.
    */
-  std::string
-  get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup) const;
+  std::string get_val_as_string (Notation notation, bool use_markup) const;
 
   /**
    * Listen to the given MidiNote.

@@ -11,7 +11,7 @@
 #define __GUI_BACKEND_PIANO_ROLL_H__
 
 #include "gui/backend/backend/editor_settings.h"
-#include "gui/dsp/arranger_object.h"
+#include "gui/dsp/arranger_object_all.h"
 #include "utils/icloneable.h"
 
 class Track;
@@ -109,12 +109,6 @@ public:
     Chord,
     Scale,
     Both,
-  };
-
-  enum class NoteNotation
-  {
-    Musical,
-    Pitch,
   };
 
   PianoRoll (QObject * parent = nullptr) : QObject (parent) { }
