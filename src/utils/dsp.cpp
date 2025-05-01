@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include <ranges>
+
 #include "utils/dsp.h"
 #include "utils/math.h"
 

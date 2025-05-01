@@ -5,7 +5,9 @@
 #define UTILS_INITIALIZABLE_OBJECT_H
 
 #include <memory>
-#include <optional>
+
+#include "utils/traits.h"
+#include "utils/types.h"
 
 namespace zrythm::utils
 {
