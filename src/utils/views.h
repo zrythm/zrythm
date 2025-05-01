@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <iterator>
+#include <ranges>
 #include <utility>
 
 namespace zrythm::utils::views
