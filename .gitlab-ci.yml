@@ -150,6 +150,7 @@ configure:windows:
       "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0\bin"
       -DCMAKE_BUILD_TYPE=Debug
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
+      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
   artifacts:
     paths:
       - $BUILDDIR
