@@ -24,7 +24,7 @@ variables:
 stages:
   - setup
   - check
-  - build # also test/install
+  - build # also test
   - deploy
 
 .unix-activate-venv: &unix-activate-venv
@@ -228,6 +228,16 @@ build:windows:
   script:
     - cmake --build ${env:BUILDDIR} --config Debug --verbose
     - ctest --test-dir ${env:BUILDDIR} -V; if (-not $?) { Get-Content ${env:BUILDDIR}/Testing/Temporary/LastTest.log; exit 1 }
+
+package:windows:
+  extends: .windows-template
+  stage: deploy
+  needs:
+    - job: build:windows
+      artifacts: true
+  script:
+    - cmake --build ${env:BUILDDIR} --config Release --verbose
+    - windeployqt ${env:BUILDDIR}/src/gui/zrythm.exe
 
 update-manual:
   stage: deploy

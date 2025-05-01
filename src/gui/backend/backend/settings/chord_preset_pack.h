@@ -70,17 +70,12 @@ public:
 
   int get_preset_index (const ChordPreset &pset) const
   {
-    auto it = std::find (presets_.begin (), presets_.end (), pset);
+    auto it = std::ranges::find (presets_, &pset);
     z_return_val_if_fail (it != presets_.end (), -1);
-    return std::distance (presets_.begin (), it);
+    return static_cast<int> (std::distance (presets_.begin (), it));
   }
 
   // GMenuModel * generate_context_menu () const;
-
-  /**
-   * @brief Used in GTK callbacks.
-   */
-  static void destroy_cb (void * data) { delete (ChordPresetPack *) data; };
 
 public:
   /** Pack name. */

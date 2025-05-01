@@ -27,7 +27,7 @@ elseif(WIN32)
   # Note: only DLL is allowed, and it must not be redistributed
   # See https://opensource.stackexchange.com/a/7187
   cmake_policy(SET CMP0091 NEW)  # Ensures CMAKE_MSVC_RUNTIME_LIBRARY is respected
-  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")

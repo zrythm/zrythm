@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-add_executable(utils_unit_tests
+add_executable(zrythm_utils_unit_tests
   algorithms_test.cpp
   audio_file_test.cpp
   audio_test.cpp
@@ -30,19 +30,19 @@ add_executable(utils_unit_tests
 )
 
 if(ZRYTHM_TESTS_WITH_INTERNET_ACCESS)
-  target_sources(utils_unit_tests PRIVATE networking_test.cpp)
+  target_sources(zrythm_utils_unit_tests PRIVATE networking_test.cpp)
 endif()
 
-set_target_properties(utils_unit_tests PROPERTIES
+set_target_properties(zrythm_utils_unit_tests PROPERTIES
   AUTOMOC ON
 )
 
-target_link_libraries(utils_unit_tests PRIVATE
+target_link_libraries(zrythm_utils_unit_tests PRIVATE
   zrythm::gtest_for_tests
   zrythm::utils_lib
 )
-target_compile_definitions(utils_unit_tests PRIVATE
+target_compile_definitions(zrythm_utils_unit_tests PRIVATE
   TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
 )
 
-zrythm_discover_tests(utils_unit_tests)
+zrythm_discover_tests(zrythm_utils_unit_tests)

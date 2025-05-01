@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_TRAITS_H__
-#define __UTILS_TRAITS_H__
+#pragma once
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <type_traits>
 #include <variant>
@@ -167,6 +167,8 @@ namespace detail_test
 {
 template <typename T> class CRTPBase
 {
+  CRTPBase () = default;
+  friend T;
 };
 class Derived : public CRTPBase<Derived>
 {
@@ -195,5 +197,3 @@ concept IsVariant = requires {
 template <typename R, typename T>
 concept RangeOf =
   std::ranges::range<R> && std::same_as<std::ranges::range_value_t<R>, T>;
-
-#endif // __UTILS_TRAITS_H__

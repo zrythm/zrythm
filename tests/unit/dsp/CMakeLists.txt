@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-add_executable(dsp_unit_tests
+add_executable(zrythm_dsp_unit_tests
   chord_descriptor_test.cpp
   curve_test.cpp
   ditherer_test.cpp
@@ -21,16 +21,16 @@ add_executable(dsp_unit_tests
   true_peak_dsp_test.cpp
 )
 
-set_target_properties(dsp_unit_tests PROPERTIES
+set_target_properties(zrythm_dsp_unit_tests PROPERTIES
   AUTOMOC OFF
 )
 
-target_link_libraries(dsp_unit_tests PRIVATE
+target_link_libraries(zrythm_dsp_unit_tests PRIVATE
   zrythm::gtest_for_tests
   zrythm_dsp_lib
 )
-target_compile_definitions(dsp_unit_tests PRIVATE
+target_compile_definitions(zrythm_dsp_unit_tests PRIVATE
   TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
 )
 
-zrythm_discover_tests(dsp_unit_tests)
+zrythm_discover_tests(zrythm_dsp_unit_tests)
