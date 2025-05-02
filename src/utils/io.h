@@ -70,14 +70,14 @@ uri_to_file (const std::string &uri);
 /**
  * Strips extensions from given filename.
  */
-std::string
-file_strip_ext (const std::string &filename);
+fs::path
+file_strip_ext (const fs::path &filename);
 
 /**
  * Returns file extension or empty string if none.
  */
-std::string
-file_get_ext (const std::string &file);
+fs::path
+file_get_ext (const fs::path &file);
 
 /**
  * @brief Get the base name of a file path with the file extension.
@@ -89,8 +89,8 @@ file_get_ext (const std::string &file);
  * @param filename The file path to get the base name for.
  * @return The base name of the file with the extension.
  */
-std::string
-path_get_basename (const std::string &filename);
+fs::path
+path_get_basename (const fs::path &filename);
 
 /**
  * @brief Returns the base name of the given file path, without the last file
@@ -103,8 +103,8 @@ path_get_basename (const std::string &filename);
  * @param filename The file path to extract the base name from.
  * @return The base name of the file, without the last file extension.
  */
-std::string
-path_get_basename_without_ext (const std::string &filename);
+fs::path
+path_get_basename_without_ext (const fs::path &filename);
 
 /**
  * Returns the number of seconds since the epoch, or
@@ -261,7 +261,7 @@ copy_file (const fs::path &destfile, const fs::path &srcfile);
  *
  * Example: "myfile" -> "myfile (1)"
  */
-std::string
+fs::path
 get_next_available_filepath (const fs::path &filepath);
 
 /**
@@ -328,11 +328,18 @@ reflink_file (const fs::path &dest, const fs::path &src);
 QByteArray
 read_file_contents (const fs::path &path);
 
+/**
+ * @brief Write arbitrary data to a file atomically (all at once).
+ *
+ * @param path
+ * @param contents
+ * @param size
+ */
 void
 set_file_contents (const fs::path &path, const char * contents, size_t size);
 
 /**
- * @brief Writes the data to @p file_path atomically (all at once).
+ * @brief Writes the string to the file.
  *
  * @param file_path
  * @param data
@@ -351,6 +358,34 @@ set_file_contents (const fs::path &file_path, const std::string &data);
  */
 QStringList
 split_paths (const QString &paths);
+
+/**
+ * @brief Converts a QString to a fs::path.
+ *
+ * This is needed because .toStdString() breaks on localized text.
+ *
+ * @param path
+ * @return fs::path
+ */
+static inline fs::path
+to_fs_path (const QString &path)
+{
+#ifdef _WIN32
+  return { path.toStdWString () };
+#else
+  return { path.toStdString () };
+#endif
+}
+
+static inline QString
+to_qstring (const fs::path &path)
+{
+#ifdef _WIN32
+  return QString::fromStdWString (path.wstring ());
+#else
+  return QString::fromStdString (path.string ());
+#endif
+}
 
 }; // namespace zrythm::utils::io
 

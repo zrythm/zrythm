@@ -133,6 +133,7 @@ set(rel_qml_file_paths
   components/LeftDock.qml
   components/MainMenuBar.qml
   components/Meter.qml
+  components/PluginBrowserPage.qml
   components/RightDock.qml
   components/Ruler.qml
   components/ToolBox.qml

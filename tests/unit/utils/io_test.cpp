@@ -6,6 +6,8 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 
+using namespace zrythm;
+
 TEST (IoTest, PathSeparator)
 {
   auto sep = zrythm::utils::io::get_path_separator_string ();
@@ -116,9 +118,38 @@ TEST (IoTest, GetFilesInDirectory)
   auto files = zrythm::utils::io::get_files_in_dir_ending_in (
     tmp_dir->path ().toStdString (), false, ".wav");
   EXPECT_EQ (files.size (), 1);
-  EXPECT_EQ (files[0], tmp_file.string ());
+  EXPECT_EQ (files[0], tmp_file);
 
   // Test non-existent directory
-  EXPECT_ANY_THROW (zrythm::utils::io::get_files_in_dir_ending_in (
-    "/non-existent", true, ".wav"));
+  EXPECT_ANY_THROW (
+    utils::io::get_files_in_dir_ending_in ("/non-existent", true, ".wav"));
+}
+
+TEST (IoTest, QStringConversions)
+{
+  {
+    QString  qstr = "test";
+    fs::path path = utils::io::to_fs_path (qstr);
+    EXPECT_EQ (path, fs::path ("test"));
+  }
+
+  // Test with non-ASCII characters
+  {
+    QString  qstr = "C:/テスト";
+    fs::path path = utils::io::to_fs_path (qstr);
+    EXPECT_EQ (path, fs::path (u"C:/テスト"));
+  }
+
+  {
+    fs::path path = fs::path ("test");
+    QString  qstr = utils::io::to_qstring (path);
+    EXPECT_EQ (qstr, "test");
+  }
+
+  // Test with non-ASCII characters
+  {
+    fs::path path = fs::path (u"C:/テスト");
+    QString  qstr = utils::io::to_qstring (path);
+    EXPECT_EQ (qstr, "C:/テスト");
+  }
 }

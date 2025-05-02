@@ -136,7 +136,6 @@ configure:windows:
     - *windows-activate-venv
     - python -m pip install -r requirements.txt
   script:
-    # TODO: enable strict flags & tests
     - >-
       cmake -B "${env:BUILDDIR}"
       -DZRYTHM_STRICT=ON
@@ -150,7 +149,12 @@ configure:windows:
       "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-debug\bin"
       -DCMAKE_BUILD_TYPE=Debug
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
-      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+    # copy DLLs and resources needed at runtime for tests, etc.
+    - >-
+      C:\Qt\Qt-6.9.0-debug\bin\windeployqt.exe
+      --qmldir "${env:BUILDDIR}" --pdb --force -qml -widgets -quick -quickwidgets
+      ${env:BUILDDIR}\Debug\zrythm.exe
+
   artifacts:
     paths:
       - $BUILDDIR
@@ -192,7 +196,7 @@ clang-tidy-check:
     - >-
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
-      -path ./builddir_cmake -config-file .clang-tidy
+      -path $BUILDDIR -config-file .clang-tidy
       -use-color
 
 build:gnu/linux:
@@ -212,11 +216,6 @@ build:gnu/linux:
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata"
       || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
-
-  artifacts:
-    paths:
-      - $BUILDDIR
-    expire_in: 1 day
 
 build:mac-arm:
   extends: .mac-arm-template

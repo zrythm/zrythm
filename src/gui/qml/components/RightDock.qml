@@ -55,21 +55,8 @@ ColumnLayout {
         Layout.fillHeight: true
         currentIndex: tabBar.currentIndex
 
-        ZrythmResizablePanel {
-            title: "Other"
-            vertical: false
-
-            content: Rectangle {
-                color: "#2C2C2C"
-
-                Label {
-                    anchors.centerIn: parent
-                    text: "Browser content"
-                    color: "white"
-                }
-
-            }
-
+        PluginBrowserPage {
+          id: pluginBrowserPage
         }
 
         Repeater {

@@ -58,9 +58,9 @@ AudioPool::get_clip_path_from_name (
       z_error ("{} does not exist", prj_pool_dir);
       return "";
     }
-  std::string basename =
-    utils::io::file_strip_ext (name) + (use_flac ? ".FLAC" : ".wav");
-  return prj_pool_dir / basename;
+  const auto basename =
+    utils::io::file_strip_ext (name).string () + (use_flac ? ".FLAC" : ".wav");
+  return prj_pool_dir / fs::path (basename);
 }
 
 fs::path

@@ -1002,13 +1002,13 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
       const auto entries =
         srcdir.entryInfoList (QDir::Files | QDir::NoDotAndDotDot);
 
-      for (auto filename : entries)
+      for (const auto &filename : entries)
         {
-          auto filename_str = filename.fileName ().toStdString ();
+          const auto filename_str = utils::io::to_fs_path (filename.fileName ());
           auto full_path = plugin_states_path / filename_str;
 
           bool found = std::ranges::contains (
-            plugins, filename_str, PluginSpan::state_dir_projection);
+            plugins, filename_str.string (), PluginSpan::state_dir_projection);
           if (!found)
             {
               z_debug ("removing unused plugin state in {}", full_path);
@@ -1306,16 +1306,17 @@ Project::setTitle (const QString &title)
 QString
 Project::getDirectory () const
 {
-  return QString::fromStdString (dir_.string ());
+  return utils::io::to_qstring (dir_);
 }
 
 void
 Project::setDirectory (const QString &directory)
 {
-  if (dir_ == directory.toStdString ())
+  const auto dir_path = utils::io::to_fs_path (directory);
+  if (dir_ == dir_path)
     return;
 
-  dir_ = directory.toStdString ();
+  dir_ = dir_path;
   Q_EMIT directoryChanged (directory);
 }
 

@@ -32,6 +32,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 
 #include "utils/exceptions.h"
 #include "utils/logger.h"
@@ -111,13 +112,14 @@ mkdir (const fs::path &dir)
     }
 }
 
-std::string
-file_get_ext (const std::string &filename)
+fs::path
+file_get_ext (const fs::path &filename)
 {
-  if (
-    auto pos = filename.find_last_of ('.'); pos != std::string::npos && pos > 0)
+  if (filename.has_extension ())
     {
-      return filename.substr (pos + 1);
+      auto ret = filename.extension ();
+      // remove the dot
+      return { ret.string ().substr (1) };
     }
   return "";
 }
@@ -138,40 +140,21 @@ touch_file (const fs::path &file_path)
     }
 }
 
-std::string
-file_strip_ext (const std::string &filename)
+fs::path
+file_strip_ext (const fs::path &filename)
 {
-  /* if last char is a dot, return the string without the dot */
-  if (filename.ends_with ('.'))
-    {
-      return filename.substr (0, filename.size () - 1);
-    }
-
-  const auto dot = file_get_ext (filename);
-  z_debug ("file: {} | ext: {}", filename, dot);
-
-  /* if no dot, return filename */
-  if (dot.empty ())
-    {
-      return filename;
-    }
-
-  // Calculate the position of the dot
-  auto pos = filename.size () - dot.size () - 1;
-  return filename.substr (0, pos);
+  return filename.parent_path () / filename.stem ();
 }
-std::string
-path_get_basename (const std::string &filename)
+fs::path
+path_get_basename (const fs::path &filename)
 {
-  return QFileInfo (QString::fromStdString (filename)).fileName ().toStdString ();
+  return filename.filename ();
 }
 
-std::string
-path_get_basename_without_ext (const std::string &filename)
+fs::path
+path_get_basename_without_ext (const fs::path &filename)
 {
-  return QFileInfo (QString::fromStdString (filename))
-    .completeBaseName ()
-    .toStdString ();
+  return filename.stem ();
 }
 
 qint64
@@ -370,22 +353,23 @@ get_files_in_dir_ending_in (
   return arr;
 }
 
-std::string
+fs::path
 get_next_available_filepath (const fs::path &filepath)
 {
   int  i = 1;
-  auto file_without_ext = file_strip_ext (filepath.string ());
-  auto file_ext = file_get_ext (filepath.string ());
-  auto new_path = filepath.string ();
-  while (path_exists (fs::path (new_path)))
+  auto file_without_ext = file_strip_ext (filepath);
+  auto file_ext = file_get_ext (filepath);
+  auto new_path = filepath;
+  while (path_exists (new_path))
     {
       if (fs::is_directory (new_path))
         {
-          new_path = fmt::format ("{} ({})", filepath, i++);
+          new_path = fs::path (fmt::format ("{} ({})", filepath, i++));
         }
       else
         {
-          new_path = fmt::format ("{} ({}).{}", file_without_ext, i++, file_ext);
+          new_path = fs::path (
+            fmt::format ("{} ({}).{}", file_without_ext, i++, file_ext));
         }
     }
 
@@ -560,16 +544,13 @@ set_file_contents (const fs::path &path, const char * contents, size_t size)
 void
 set_file_contents (const fs::path &file_path, const std::string &data)
 {
-  juce::File file (file_path.string ());
-  if (!file.create ())
+  std::ofstream file (file_path);
+  if (!file.is_open ())
     {
-      throw ZrythmException ("Failed to create file");
+      throw ZrythmException (
+        fmt::format ("Failed to open file: {}", file_path.string ()));
     }
-
-  if (!file.replaceWithText (data))
-    {
-      throw ZrythmException ("Failed to write file contents");
-    }
+  file << data;
 }
 
 QStringList

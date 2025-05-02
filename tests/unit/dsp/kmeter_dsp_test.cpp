@@ -1,5 +1,9 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include <cmath>
+#include <numbers>
+#include <ranges>
 
 #include "dsp/kmeter_dsp.h"
 #include "utils/gtest_wrapper.h"

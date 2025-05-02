@@ -52,14 +52,13 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   settings_manager_ = new SettingsManager (this);
   dir_manager_ = std::make_unique<DirectoryManager> (
     [&] () {
-      return fs::path (
-        settings_manager_->get_zrythm_user_path ().toStdString ());
+      return utils::io::to_fs_path (settings_manager_->get_zrythm_user_path ());
     },
     [&] () {
-      return fs::path (
-        SettingsManager::get_default_zrythm_user_path ().toStdString ());
+      return utils::io::to_fs_path (
+        SettingsManager::get_default_zrythm_user_path ());
     },
-    [&] () { return fs::path (applicationDirPath ().toStdString ()); });
+    [&] () { return utils::io::to_fs_path (applicationDirPath ()); });
   utils::LoggerProvider::set_logger (
     std::make_shared<utils::Logger> (utils::Logger::LoggerType::GUI));
 
@@ -80,7 +79,8 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   launch_engine_process ();
 
   Zrythm::getInstance ()->pre_init (
-    applicationFilePath ().toStdString ().c_str (), true, true);
+    utils::io::to_fs_path (applicationFilePath ()).string ().c_str (), true,
+    true);
 
   AudioEngine::set_default_backends (false);
 
@@ -311,11 +311,11 @@ ZrythmApplication::launch_engine_process ()
     QProcessEnvironment::systemEnvironment ().value (u"ZRYTHM_ENGINE_PATH"_s);
   if (!path_from_env.isEmpty ())
     {
-      path = fs::path (path_from_env.toStdString ());
+      path = utils::io::to_fs_path (path_from_env);
     }
   else
     {
-      path = fs::path (applicationDirPath ().toStdString ()) / "zrythm-engine";
+      path = utils::io::to_fs_path (applicationDirPath ()) / "zrythm-engine";
     }
   z_info (
     "Starting engine process at {} (application file path: {})", path,

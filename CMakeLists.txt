@@ -1249,6 +1249,17 @@ if(ZRYTHM_TESTS)
   endif()
 endif()
 
+# Copy DLLs needed for the target at runtime to the target's directory
+# (currently unused)
+function(copy_dlls_to_target TARGET_NAME)
+  if(WIN32)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${TARGET_NAME}> $<TARGET_RUNTIME_DLLS:${TARGET_NAME}>
+      COMMAND_EXPAND_LISTS
+    )
+  endif()
+endfunction()
+
 # Add subdirectories
 add_subdirectory(po)
 add_subdirectory(data)

@@ -62,7 +62,7 @@ OutOfProcessPluginScanner::SubprocessCoordinator::SubprocessCoordinator ()
   else
     {
       path = juce::File (
-        (fs::path (qApp->applicationDirPath ().toStdString ()) / "plugin-scanner")
+        (utils::io::to_fs_path (qApp->applicationDirPath ()) / "plugin-scanner")
           .string ());
     }
   z_trace ("Scanning plugins with {}", path.getFullPathName ());

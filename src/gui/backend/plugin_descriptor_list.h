@@ -34,7 +34,7 @@ public:
 
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override
   {
-    return descriptors_.size ();
+    return static_cast<int> (descriptors_.size ());
   }
 
   int columnCount (const QModelIndex &parent = QModelIndex ()) const override
@@ -53,27 +53,29 @@ public:
   }
 
 public:
-  void addDescriptor (
-    const zrythm::gui::old_dsp::plugins::PluginDescriptor &descriptor)
+  void addDescriptor (const gui::old_dsp::plugins::PluginDescriptor &descriptor)
   {
-    beginInsertRows (QModelIndex (), descriptors_.size (), descriptors_.size ());
-    descriptors_.append (descriptor.clone_raw_ptr ());
+    beginInsertRows (
+      QModelIndex (), static_cast<int> (descriptors_.size ()),
+      static_cast<int> (descriptors_.size ()));
+    auto * new_obj = descriptor.clone_qobject (this);
+    descriptors_.push_back (new_obj);
     endInsertRows ();
   }
 
   void clear ()
   {
     beginResetModel ();
+    std::ranges::for_each (descriptors_, [] (auto * descriptor) {
+      delete descriptor;
+    });
     descriptors_.clear ();
     endResetModel ();
   }
 
-  zrythm::gui::old_dsp::plugins::PluginDescriptor * at (int index) const
-  {
-    return descriptors_.at (index);
-  }
+  auto at (int index) const { return descriptors_.at (index); }
 
 private:
-  QList<zrythm::gui::old_dsp::plugins::PluginDescriptor *> descriptors_;
+  QList<gui::old_dsp::plugins::PluginDescriptor *> descriptors_;
 };
 }

@@ -157,7 +157,7 @@ PluginManager::get_known_plugins_xml_path ()
   QString local_app_data_path =
     QStandardPaths::writableLocation (QStandardPaths::AppLocalDataLocation);
   QDir dir (local_app_data_path);
-  return dir.absoluteFilePath (u"known_plugins.xml"_s).toStdString ();
+  return utils::io::to_fs_path (dir.absoluteFilePath (u"known_plugins.xml"_s));
 }
 
 void

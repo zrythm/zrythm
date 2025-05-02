@@ -49,11 +49,11 @@ ProjectInfo::getLastSavedAt () const
 void
 ProjectInfo::setPath (const QString &name)
 {
-  auto converted_path = fs::path (name.toStdString ());
+  auto converted_path = utils::io::to_fs_path (name);
   if (converted_path == path_)
     return;
 
-  path_ = fs::path (name.toStdString ());
+  path_ = utils::io::to_fs_path (name);
   Q_EMIT pathChanged ();
 }
 

@@ -108,9 +108,10 @@ ProjectManager::getNextAvailableProjectName (
     directory.toString (), directory.toLocalFile (),
     directory.toDisplayString ());
   auto tmp =
-    fs::path (directory.toLocalFile ().toStdString ()) / name.toStdString ();
-  auto dir = utils::io::get_next_available_filepath (tmp.string ());
-  auto ret = QString::fromStdString (fs::path (dir).filename ().string ());
+    utils::io::to_fs_path (directory.toLocalFile ())
+    / utils::io::to_fs_path (name);
+  auto dir = utils::io::get_next_available_filepath (tmp);
+  auto ret = utils::io::to_qstring (fs::path (dir).filename ());
   z_debug ("Next available untitled project name for '{}': {}", tmp, ret);
   return ret;
 }
@@ -193,7 +194,7 @@ ProjectManager::createNewProject (
         auto project =
           template_file.isEmpty ()
             ? create_default (
-                directory_file.toStdString (), name.toStdString (), true)
+                utils::io::to_fs_path (directory_file), name.toStdString (), true)
             : nullptr; // TODO: template handling
 
         project->moveToThread (this->thread ());
