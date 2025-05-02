@@ -4,6 +4,7 @@
 #include "dsp/graph_node.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
+#include "utils/dsp.h"
 
 #include <benchmark/benchmark.h>
 #include <gmock/gmock.h>

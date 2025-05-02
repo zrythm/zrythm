@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -14,6 +14,8 @@
 #include <mutex>
 #include <string>
 #include <utility>
+
+#include "utils/debug.h"
 
 /**
  * @addtogroup utils
@@ -91,13 +93,13 @@ public:
 
 private:
   /** Progress done (0.0 to 1.0). */
-  double progress_ = 0;
+  double progress_{};
 
   /** Current running status. */
-  Status status_ = (Status) 0;
+  Status status_{};
 
   /** Status to be checked after completion. */
-  CompletionType completion_type_ = (CompletionType) 0;
+  CompletionType completion_type_{};
 
   /** Message to show after completion (error or warning or
    * success message). */

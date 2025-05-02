@@ -144,10 +144,10 @@ configure:windows:
       -DZRYTHM_BENCHMARKS=ON
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
-      "-DCMAKE_PREFIX_PATH=C:\Qt\Qt-6.9.0;C:\lv2"
+      "-DCMAKE_PREFIX_PATH=C:\Qt\Qt-6.9.0-debug;C:\lv2"
       -G "Visual Studio 17 2022"
       -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL"
-      "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0\bin"
+      "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-debug\bin"
       -DCMAKE_BUILD_TYPE=Debug
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
       -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
@@ -182,6 +182,19 @@ exif-check:
 .unix_test_cmd: &unix_test_cmd
   - ctest --test-dir $BUILDDIR -V || (cat "$BUILDDIR/Testing/Temporary/LastTest.log" && exit 1)
 
+clang-tidy-check:
+  extends: .gnu-linux-template
+  stage: check
+  needs:
+    - job: configure:gnu/linux
+      artifacts: true
+  script:
+    - >-
+      git diff -U0 HEAD^
+      | python3 /usr/share/clang/clang-tidy-diff.py -p1
+      -path ./builddir_cmake -config-file .clang-tidy
+      -use-color
+
 build:gnu/linux:
   extends: .gnu-linux-template
   stage: build
@@ -199,11 +212,7 @@ build:gnu/linux:
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata"
       || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
-    - >-
-      git diff -U0 HEAD^
-      | python3 /usr/share/clang/clang-tidy-diff.py -p1
-      -path ./builddir_cmake -config-file .clang-tidy
-      -use-color || true # ignore errors for now
+
   artifacts:
     paths:
       - $BUILDDIR

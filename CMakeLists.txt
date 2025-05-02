@@ -494,7 +494,7 @@ if(ZRYTHM_STRICT)
 
     target_compile_options(_zrythm_strict_warning_flags INTERFACE
       -Werror=alloca
-      #-Werror=cast-qual
+      # -Werror=cast-qual
 
       # TODO: re-enable and fix errors
       # -Werror=conversion
@@ -502,15 +502,13 @@ if(ZRYTHM_STRICT)
       -Werror=disabled-optimization
       -Werror=pointer-arith
       -Werror=enum-conversion
-      # this interferes with gresources generated C file
-      # and I don't know how to turn this off just for that file
-      # -Werror=overlength-strings
+      -Werror=overlength-strings
 
       # errors on qml/intermediate files
       # -Werror=missing-declarations
       # -Werror=float-equal
 
-      # -Werror=int-to-pointer-cast
+      -Werror=int-to-pointer-cast
 
       # maybe not needed but keep for future reference
       #-Werror=double-promotion

@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_DEBUG_H__
-#define __UTILS_DEBUG_H__
+#pragma once
+
+#include "utils/logger.h"
 
 /**
  * @addtogroup utils
@@ -54,5 +55,3 @@
 /**
  * @}
  */
-
-#endif
