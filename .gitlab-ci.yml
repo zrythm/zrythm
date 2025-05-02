@@ -149,11 +149,6 @@ configure:windows:
       "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-debug\bin"
       -DCMAKE_BUILD_TYPE=Debug
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
-    # copy DLLs and resources needed at runtime for tests, etc.
-    - >-
-      C:\Qt\Qt-6.9.0-debug\bin\windeployqt.exe
-      --qmldir "${env:BUILDDIR}" --pdb --force -qml -widgets -quick -quickwidgets
-      ${env:BUILDDIR}\Debug\zrythm.exe
 
   artifacts:
     paths:
@@ -235,6 +230,11 @@ build:windows:
       artifacts: true
   script:
     - cmake --build ${env:BUILDDIR} --config Debug --verbose
+    # copy DLLs and resources needed at runtime for tests, etc.
+    - >-
+      C:\Qt\Qt-6.9.0-debug\bin\windeployqt.exe
+      --qmldir "${env:BUILDDIR}" --pdb --force -qml -widgets -quick -quickwidgets
+      ${env:BUILDDIR}\Debug\zrythm.exe
     - ctest --test-dir ${env:BUILDDIR} -V; if (-not $?) { Get-Content ${env:BUILDDIR}/Testing/Temporary/LastTest.log; exit 1 }
 
 package:windows:
