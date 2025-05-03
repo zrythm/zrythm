@@ -16,7 +16,7 @@ FileDescriptor::FileDescriptor (const fs::path &_abs_path)
 {
   // z_debug ("creating new FileDescriptor for {}", path);
   abs_path_ = _abs_path;
-  label_ = utils::io::path_get_basename (_abs_path.string ());
+  label_ = utils::io::path_get_basename (_abs_path).string ();
 }
 
 std::unique_ptr<FileDescriptor>
@@ -83,7 +83,7 @@ FileDescriptor::get_type_description (FileType type)
 FileType
 FileDescriptor::get_type_from_path (const fs::path &file)
 {
-  const auto ext = utils::io::file_get_ext (file.string ());
+  const auto ext = utils::io::file_get_ext (file).string ();
   FileType   type = FileType::Other;
 
   if (fs::is_directory (file))

@@ -336,7 +336,8 @@ get_files_in_dir_as_basenames (const fs::path &_dir)
   StringArray files_as_basenames;
   for (const auto &filename : files)
     {
-      files_as_basenames.add (path_get_basename (filename.toStdString ()));
+      files_as_basenames.add (
+        path_get_basename (filename.toStdString ()).string ());
     }
 
   return files_as_basenames;

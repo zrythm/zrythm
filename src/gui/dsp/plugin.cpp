@@ -1321,7 +1321,9 @@ Plugin::ensure_state_dir (bool is_backup)
         utils::io::make_tmp_dir_at_path (abs_state_dir_template);
       abs_state_dir->setAutoRemove (false);
       state_dir_ =
-        utils::io::path_get_basename (abs_state_dir->path ().toStdString ());
+        utils::io::path_get_basename (
+          utils::io::to_fs_path (abs_state_dir->path ()))
+          .string ();
       z_debug ("set plugin state dir to {}", state_dir_);
     }
   catch (const ZrythmException &e)

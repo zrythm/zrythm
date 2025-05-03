@@ -156,7 +156,7 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
   constexpr bool is_backup = false;
   auto orig_name_without_ext = utils::io::file_strip_ext (clip.get_name ());
   auto orig_path_in_pool = get_clip_path (clip, is_backup);
-  std::string new_name = orig_name_without_ext;
+  std::string new_name = orig_name_without_ext.string ();
   z_return_if_fail (!new_name.empty ());
 
   bool changed = false;

@@ -274,7 +274,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         }
 
       file_basename_ =
-        utils::io::path_get_basename (file_descr->abs_path_.string ());
+        utils::io::path_get_basename (file_descr->abs_path_).string ();
     }
 
   if (tls_before_var)

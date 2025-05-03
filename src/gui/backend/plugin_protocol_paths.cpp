@@ -18,7 +18,7 @@ add_expanded_paths (auto &arr, const QStringList &paths_from_settings)
   for (const auto &path : paths_from_settings)
     {
       auto expanded_cur_path =
-        utils::string::expand_env_vars (utils::io::to_fs_path (path));
+        utils::string::expand_env_vars (path.toStdString ());
       /* split because the env might contain multiple paths */
       auto expanded_paths =
         utils::io::split_paths (QString::fromStdString (expanded_cur_path));

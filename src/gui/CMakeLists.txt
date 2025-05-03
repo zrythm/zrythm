@@ -9,7 +9,9 @@
 qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
 
 set_target_properties(zrythm PROPERTIES
-  VS_DEBUGGER_ENVIRONMENT "ZRYTHM_SAMPLES_PATH=${CMAKE_SOURCE_DIR}/data/samples;G_DEBUG=fatal_criticals"
+  # note: separate variables by \n
+  VS_DEBUGGER_ENVIRONMENT "ZRYTHM_SAMPLES_PATH=${CMAKE_SOURCE_DIR}/data/samples\nG_DEBUG=fatal_criticals"
+  # note: separate variables by ;
   XCODE_SCHEME_ENVIRONMENT "ZRYTHM_SAMPLES_PATH=${CMAKE_SOURCE_DIR}/data/samples;G_DEBUG=fatal_criticals"
   MACOSX_BUNDLE_GUI_IDENTIFIER "${bundle_identifier}"
   MACOSX_BUNDLE_BUNDLE_VERSION ${ZRYTHM_VERSION_STRING_FULL}

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <cstring>
 #include <regex>
 
@@ -57,7 +58,7 @@ contains_substr_case_insensitive (const char * str, const char * substr)
 void
 to_upper_ascii (std::string &str)
 {
-  std::transform (str.begin (), str.end (), str.begin (), [] (unsigned char c) {
+  std::ranges::transform (str, str.begin (), [] (unsigned char c) {
     return std::toupper (c);
   });
 }
@@ -65,7 +66,7 @@ to_upper_ascii (std::string &str)
 void
 to_lower_ascii (std::string &str)
 {
-  std::transform (str.begin (), str.end (), str.begin (), [] (unsigned char c) {
+  std::ranges::transform (str, str.begin (), [] (unsigned char c) {
     return std::tolower (c);
   });
 }
