@@ -33,7 +33,7 @@ SampleProcessor::load_instrument_if_empty ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       auto _setting_json = gui::SettingsManager::fileBrowserInstrument ();
-      std::string setting_json = _setting_json.toStdString ();
+      std::string setting_json = utils::qstring_to_std_string (_setting_json);
       std::unique_ptr<PluginSetting> setting;
       bool                           json_read = false;
       if (!setting_json.empty ())
@@ -423,7 +423,7 @@ SampleProcessor::queue_file_or_chord_preset (
           auto * ar =
             ArrangerObjectFactory::get_instance ()->addAudioRegionFromFile (
               &audio_track->get_lane_at (0),
-              QString::fromStdString (file->abs_path_.string ()),
+              utils::std_string_to_qstring (file->abs_path_.string ()),
               start_pos.ticks_);
           file_end_pos_ = *ar->end_pos_;
         }
@@ -495,7 +495,8 @@ SampleProcessor::queue_file_or_chord_preset (
                         ArrangerObjectFactory::get_instance ()
                           ->addMidiRegionFromMidiFile (
                             &midi_track->get_lane_at (0),
-                            QString::fromStdString (file->abs_path_.string ()),
+                            utils::std_string_to_qstring (
+                              file->abs_path_.string ()),
                             start_pos.ticks_, i);
                       file_end_pos_ = std::max (
                         file_end_pos_, *static_cast<Position *> (mr->end_pos_));

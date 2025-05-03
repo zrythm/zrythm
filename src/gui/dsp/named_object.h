@@ -14,13 +14,14 @@ public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
-    return QString::fromStdString (name_); \
+    return utils::std_string_to_qstring (name_); \
   } \
   void setName (const QString &name) \
   { \
-    if (name_ == name.toStdString ()) \
+    const auto name_str = utils::qstring_to_std_string (name); \
+    if (name_ == name_str) \
       return; \
-    set_name_with_action (name.toStdString ()); \
+    set_name_with_action (name_str); \
     Q_EMIT nameChanged (name); \
   } \
   Q_SIGNAL void nameChanged (const QString &name);
@@ -72,7 +73,7 @@ public:
   {
     self.name_ = name;
     self.gen_escaped_name ();
-    Q_EMIT self.nameChanged (QString::fromStdString (name));
+    Q_EMIT self.nameChanged (utils::std_string_to_qstring (name));
   }
 
   void generate_name_from_automation_track (

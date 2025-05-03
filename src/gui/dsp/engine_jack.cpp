@@ -602,8 +602,8 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
   int num_connected = 0;
   for (const auto &device : devices)
     {
-      ExtPort * ext_port =
-        self->hw_out_processor_->find_ext_port (device.toStdString ());
+      ExtPort * ext_port = self->hw_out_processor_->find_ext_port (
+        utils::qstring_to_std_string (device));
       if (ext_port)
         {
           /*z_return_val_if_reached (-1);*/

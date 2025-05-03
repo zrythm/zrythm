@@ -237,7 +237,7 @@ public:
         {
           if constexpr (std::derived_from<ObjT, NamedObject>)
             {
-              obj->set_name ((*name_).toStdString ());
+              obj->set_name (utils::qstring_to_std_string (*name_));
             }
         }
 
@@ -528,7 +528,8 @@ public:
     double         startTicks)
   {
     auto clip = std::make_shared<AudioClip> (
-      absPath.toStdString (), sample_rate_provider_ (), bpm_provider_ ());
+      utils::qstring_to_std_string (absPath), sample_rate_provider_ (),
+      bpm_provider_ ());
     new_clip_registration_func_ (clip);
     auto ar_ref =
       create_audio_region_with_clip (*lane, clip->get_uuid (), startTicks);

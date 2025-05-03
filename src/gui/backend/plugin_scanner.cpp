@@ -57,12 +57,13 @@ OutOfProcessPluginScanner::SubprocessCoordinator::SubprocessCoordinator ()
   juce::File path;
   if (!path_from_env.isEmpty ())
     {
-      path = juce::File (path_from_env.toStdString ());
+      path = juce::File (utils::qstring_to_std_string (path_from_env));
     }
   else
     {
       path = juce::File (
-        (utils::io::to_fs_path (qApp->applicationDirPath ()) / "plugin-scanner")
+        (utils::io::qstring_to_fs_path (qApp->applicationDirPath ())
+         / "plugin-scanner")
           .string ());
     }
   z_trace ("Scanning plugins with {}", path.getFullPathName ());
@@ -234,7 +235,7 @@ Worker::process ()
       for (const auto &identifier : identifiers)
         {
           scanner_.set_currently_scanning_plugin (
-            QString::fromStdString (identifier.toStdString ()));
+            utils::juce_string_to_qstring (identifier));
           juce::OwnedArray<juce::PluginDescription> types;
           bool has_new = scanner_.known_plugin_list_->scanAndAddFile (
             identifier, true, types, *format);

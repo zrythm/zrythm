@@ -7,6 +7,7 @@
 
 #include <filesystem>
 
+#include "utils/string.h"
 #include "utils/traits.h"
 
 #include <QObject>
@@ -23,6 +24,8 @@
  *
  * @{
  */
+
+using namespace zrythm;
 
 #define DEFINE_FORMATTER_PRELUDE \
   bool                                            translate_ = false; \
@@ -106,7 +109,9 @@
       const char * str = enum_strings.at (static_cast<int> (val)); \
       return format_to ( \
         ctx.out (), FMT_STRING ("{}"), \
-        translate_ ? QObject::tr (str).toStdString ().c_str () : str); \
+        translate_ \
+          ? utils::qstring_to_std_string (QObject::tr (str)).c_str () \
+          : str); \
     } \
   }; \
   } \
@@ -158,7 +163,8 @@ template <typename... Args>
 QString
 format_qstr (const QString &format, Args &&... args)
 {
-  return QString::fromStdString (format_str (format.toStdString (), args...));
+  return utils::std_string_to_qstring (
+    format_str (utils::qstring_to_std_string (format), args...));
 }
 
 // Formatter for std::filesystem::path
@@ -179,7 +185,8 @@ struct fmt::formatter<juce::String> : fmt::formatter<std::string_view>
   template <typename FormatContext>
   auto format (const juce::String &s, FormatContext &ctx) const
   {
-    return fmt::formatter<std::string_view>::format (s.toStdString (), ctx);
+    return fmt::formatter<std::string_view>::format (
+      utils::juce_string_to_std_string (s), ctx);
   }
 };
 
@@ -189,7 +196,8 @@ template <> struct fmt::formatter<QString> : fmt::formatter<std::string_view>
   template <typename FormatContext>
   auto format (const QString &s, FormatContext &ctx) const
   {
-    return fmt::formatter<std::string_view>::format (s.toStdString (), ctx);
+    return fmt::formatter<std::string_view>::format (
+      utils::qstring_to_std_string (s), ctx);
   }
 };
 

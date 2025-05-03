@@ -118,14 +118,14 @@ Tracklist::data (const QModelIndex &index, int role) const
 
   z_trace (
     "getting role {} for track {}", role,
-    QString::fromStdString (TrackSpan::name_projection (track)));
+    utils::std_string_to_qstring (TrackSpan::name_projection (track)));
 
   switch (role)
     {
     case TrackPtrRole:
       return QVariant::fromStdVariant (track);
     case TrackNameRole:
-      return QString::fromStdString (TrackSpan::name_projection (track));
+      return utils::std_string_to_qstring (TrackSpan::name_projection (track));
     default:
       return {};
     }
@@ -1160,7 +1160,8 @@ Tracklist::import_files (
           if (!uri.contains ("file://"))
             continue;
 
-          auto file = FileDescriptor::new_from_uri (uri.toStdString ());
+          auto file = FileDescriptor::new_from_uri (
+            utils::juce_string_to_std_string (uri));
           file_arr.push_back (*file);
         }
     }
@@ -1219,14 +1220,14 @@ Tracklist::import_files (
       for (const auto &filepath : filepaths)
         {
 
-          auto     fi = file_import_new (filepath.toStdString (), &nfo);
+          auto     fi = file_import_new (filepath, &nfo);
           GError * err = nullptr;
           auto     regions = file_import_sync (fi, &err);
           if (err != nullptr)
             {
               throw ZrythmException (format_str (
                 QObject::tr ("Failed to import file {}: {}"),
-                filepath.toStdString (), err->message));
+                filepath, err->message));
             }
           std::vector<std::vector<std::shared_ptr<Region>>> region_arrays;
           region_arrays.push_back (regions);

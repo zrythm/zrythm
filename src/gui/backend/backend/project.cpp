@@ -508,7 +508,8 @@ Project::add_default_tracks ()
         dsp::Position pos;
         pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
         auto * marker = factory->addMarker (
-          marker_track_inner, QString::fromStdString (marker_name), pos.ticks_);
+          marker_track_inner, utils::std_string_to_qstring (marker_name),
+          pos.ticks_);
         marker->marker_type_ = Marker::Type::Start;
       }
 
@@ -517,7 +518,8 @@ Project::add_default_tracks ()
         dsp::Position pos;
         pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
         auto * marker = factory->addMarker (
-          marker_track_inner, QString::fromStdString (marker_name), pos.ticks_);
+          marker_track_inner, utils::std_string_to_qstring (marker_name),
+          pos.ticks_);
         marker->marker_type_ = Marker::Type::End;
       }
     };
@@ -951,7 +953,7 @@ Project::idle_saved_callback (SaveContext * ctx)
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
         {
           zrythm::gui::ProjectManager::get_instance ()->add_to_recent_projects (
-            QString::fromStdString (ctx->project_file_path_.string ()));
+            utils::std_string_to_qstring (ctx->project_file_path_.string ()));
         }
       if (ctx->show_notification_)
         {
@@ -998,13 +1000,14 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 
   try
     {
-      QDir       srcdir (QString::fromStdString (plugin_states_path.string ()));
+      QDir srcdir (utils::std_string_to_qstring (plugin_states_path.string ()));
       const auto entries =
         srcdir.entryInfoList (QDir::Files | QDir::NoDotAndDotDot);
 
       for (const auto &filename : entries)
         {
-          const auto filename_str = utils::io::to_fs_path (filename.fileName ());
+          const auto filename_str =
+            utils::io::qstring_to_fs_path (filename.fileName ());
           auto full_path = plugin_states_path / filename_str;
 
           bool found = std::ranges::contains (
@@ -1290,29 +1293,30 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
 QString
 Project::getTitle () const
 {
-  return QString::fromStdString (title_);
+  return utils::std_string_to_qstring (title_);
 }
 
 void
 Project::setTitle (const QString &title)
 {
-  if (title_ == title.toStdString ())
+  const auto std_str = utils::qstring_to_std_string (title);
+  if (title_ == std_str)
     return;
 
-  title_ = title.toStdString ();
+  title_ = std_str;
   Q_EMIT titleChanged (title);
 }
 
 QString
 Project::getDirectory () const
 {
-  return utils::io::to_qstring (dir_);
+  return utils::io::fs_path_to_qstring (dir_);
 }
 
 void
 Project::setDirectory (const QString &directory)
 {
-  const auto dir_path = utils::io::to_fs_path (directory);
+  const auto dir_path = utils::io::qstring_to_fs_path (directory);
   if (dir_ == dir_path)
     return;
 

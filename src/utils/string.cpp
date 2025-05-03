@@ -8,13 +8,16 @@
 #include "utils/logger.h"
 #include "utils/string.h"
 
-namespace zrythm::utils::string
+namespace zrythm::utils
+{
+
+namespace string
 {
 
 std::string
 escape_html (const std::string &str)
 {
-  return QString::fromStdString (str).toHtmlEscaped ().toStdString ();
+  return qstring_to_std_string (std_string_to_qstring (str).toHtmlEscaped ());
 }
 
 juce::String
@@ -83,13 +86,13 @@ std::string
 get_substr_before_suffix (const std::string &str, const std::string &suffix)
 {
   /* get the part without the suffix */
-  auto qstr = QString::fromStdString (str);
-  auto idx = qstr.indexOf (QString::fromStdString (suffix));
+  auto qstr = utils::std_string_to_qstring (str);
+  auto idx = qstr.indexOf (utils::std_string_to_qstring (suffix));
   if (idx == -1)
     {
       return str;
     }
-  return qstr.left (idx).toStdString ();
+  return qstring_to_std_string (qstr.left (idx));
 }
 
 std::string
@@ -235,3 +238,17 @@ join (const std::vector<std::string> &strings, std::string_view delimiter)
 }
 
 }; // namespace zrythm::utils::string
+
+std::string
+juce_string_to_std_string (const juce::String &str)
+{
+  return str.toStdString ();
+}
+
+QString
+juce_string_to_qstring (const juce::String &str)
+{
+  return std_string_to_qstring (juce_string_to_std_string (str));
+}
+
+}; // namespace zrythm::utils

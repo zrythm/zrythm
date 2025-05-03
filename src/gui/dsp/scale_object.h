@@ -43,7 +43,7 @@ public:
 
   QString getName () const
   {
-    return QString::fromStdString (gen_human_friendly_name ());
+    return utils::std_string_to_qstring (gen_human_friendly_name ());
   }
   Q_SIGNAL void nameChanged (const QString &name);
 

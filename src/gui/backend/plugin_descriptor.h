@@ -25,7 +25,7 @@ public:
 
   [[nodiscard]] QString getName () const
   {
-    return QString::fromStdString (wrapped_.name_);
+    return utils::std_string_to_qstring (wrapped_.name_);
   }
 
 private:

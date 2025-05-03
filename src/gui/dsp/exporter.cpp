@@ -336,10 +336,9 @@ Exporter::export_audio (Settings &info)
       if (clipped)
         {
           float       max_db = utils::math::amp_to_dbfs (clip_amp);
-          std::string warn_str = format_str (
-            QObject::tr (
-              "The exported audio contains segments louder than 0 dB (max detected %.1f dB).")
-              .toStdString (),
+          const auto  warn_str = format_str (
+            utils::qstring_to_std_string (QObject::tr (
+              "The exported audio contains segments louder than 0 dB (max detected %.1f dB).")),
             max_db);
           progress_info_->mark_completed (
             ProgressInfo::CompletionType::HAS_WARNING, warn_str);
@@ -487,7 +486,7 @@ Exporter::Settings::set_bounce_defaults (
       const char * ext = format_get_ext (format_);
       std::string  filename = bounce_name + "." + ext;
       file_uri_ =
-        (fs::path (tmp_dir->path ().toStdString ()) / filename).string ();
+        (utils::io::qstring_to_fs_path (tmp_dir->path ()) / filename).string ();
     }
 }
 
@@ -718,7 +717,7 @@ Exporter::export_to_file ()
         {
           progress_info_->mark_completed (
             ProgressInfo::CompletionType::HAS_ERROR,
-            QObject::tr ("Invalid time range").toStdString ());
+            utils::qstring_to_std_string (QObject::tr ("Invalid time range")));
           z_warning ("invalid time range");
           return; // FIXME: throw exception?
         }

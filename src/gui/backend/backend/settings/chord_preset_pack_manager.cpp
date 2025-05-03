@@ -484,17 +484,16 @@ ChordPresetPackManager::add_user_packs ()
         {
           for (const auto &pack_path : pack_paths)
             {
-              QFileInfo file_info (
-                QString::fromStdString (pack_path.toStdString ()));
+              QFileInfo file_info (utils::juce_string_to_qstring (pack_path));
               if (!file_info.exists () || file_info.isDir ())
                 {
                   continue;
                 }
 
-              z_debug ("checking file {}", pack_path.toStdString ());
+              z_debug ("checking file {}", pack_path);
 
               QFile f (file_info.absoluteFilePath ());
-              auto  json = f.readAll ().toStdString ();
+              auto  json = utils::qstring_to_std_string (f.readAll ());
 
               try
                 {
@@ -668,7 +667,8 @@ ChordPresetPackManager::serialize ()
 
       z_return_if_fail (!pack->name_.isEmpty ());
 
-      const auto pack_dir = main_path / fs::path (pack->name_.toStdString ());
+      const auto pack_dir =
+        main_path / utils::io::qstring_to_fs_path (pack->name_);
       const auto pack_path = pack_dir / UserPackJsonFilename;
       try
         {

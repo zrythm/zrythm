@@ -21,16 +21,16 @@ StringArray::StringArray (const QStringList &qlist)
 {
   for (const auto &s : qlist)
     {
-      add (s.toStdString ());
+      add (utils::qstring_to_std_string (s));
     }
 }
 void
 StringArray::print (std::string title) const
 {
   std::string str = title + ":";
-  for (auto &cur_str : arr_)
+  for (const auto &cur_str : arr_)
     {
-      str += " " + cur_str.toStdString () + " |";
+      str += " " + utils::juce_string_to_std_string (cur_str) + " |";
     }
   str.erase (str.size () - 1);
   z_info ("{}", str);
@@ -39,21 +39,13 @@ StringArray::print (std::string title) const
 QStringList
 StringArray::toQStringList () const
 {
-  QStringList ret;
-  for (const auto &s : arr_)
-    {
-      ret.append (QString::fromStdString (s.toStdString ()));
-    }
-  return ret;
+  return arr_ | std::views::transform (utils::juce_string_to_qstring)
+         | std::ranges::to<QStringList> ();
 }
 
 std::vector<std::string>
 StringArray::toStdStringVector () const
 {
-  std::vector<std::string> ret;
-  for (const auto &s : arr_)
-    {
-      ret.push_back (s.toStdString ());
-    }
-  return ret;
+  return arr_ | std::views::transform (utils::juce_string_to_std_string)
+         | std::ranges::to<std::vector> ();
 }

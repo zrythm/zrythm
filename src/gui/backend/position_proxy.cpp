@@ -71,7 +71,7 @@ PositionProxy::getStringDisplay (
   const Transport *  transport,
   const TempoTrack * tempo_track) const
 {
-  return QString::fromStdString (to_string (
+  return utils::std_string_to_qstring (to_string (
     tempo_track->get_beats_per_bar (), transport->sixteenths_per_beat_,
     transport->project_->audio_engine_->frames_per_tick_, 0));
 }

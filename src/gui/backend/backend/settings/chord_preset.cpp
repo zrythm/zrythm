@@ -27,7 +27,7 @@ ChordPreset::init_after_cloning (
 std::string
 ChordPreset::get_info_text () const
 {
-  std::string str = QObject::tr ("Chords").toStdString ();
+  auto str = utils::qstring_to_std_string (QObject::tr ("Chords"));
   str += ":\n";
   bool have_any = false;
   for (const auto &descr : descr_)

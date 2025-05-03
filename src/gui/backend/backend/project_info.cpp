@@ -23,7 +23,8 @@ ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
       modified_ = utils::io::file_get_last_modified_datetime (filename);
       if (modified_ == -1)
         {
-          modified_str_ = PROJECT_INFO_FILE_NOT_FOUND_STR.toStdString ();
+          modified_str_ =
+            utils::qstring_to_std_string (PROJECT_INFO_FILE_NOT_FOUND_STR);
           modified_ = std::numeric_limits<int64_t>::max ();
         }
       else

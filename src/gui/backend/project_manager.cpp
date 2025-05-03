@@ -36,7 +36,7 @@ ProjectManager::init_templates ()
             utils::io::get_files_in_dir (user_templates_dir.string ());
           std::ranges::transform (
             files, std::back_inserter (templates_),
-            [] (const auto &p) { return fs::path (p.toStdString ()); });
+            utils::io::juce_string_to_fs_path);
         }
       catch (const ZrythmException &e)
         {
@@ -57,7 +57,7 @@ ProjectManager::init_templates ()
                 utils::io::get_files_in_dir (system_templates_dir.string ());
               std::ranges::transform (
                 files, std::back_inserter (templates_),
-                [] (const auto &p) { return fs::path (p.toStdString ()); });
+                utils::io::juce_string_to_fs_path);
             }
           catch (const ZrythmException &e)
             {
@@ -108,10 +108,10 @@ ProjectManager::getNextAvailableProjectName (
     directory.toString (), directory.toLocalFile (),
     directory.toDisplayString ());
   auto tmp =
-    utils::io::to_fs_path (directory.toLocalFile ())
-    / utils::io::to_fs_path (name);
+    utils::io::qstring_to_fs_path (directory.toLocalFile ())
+    / utils::io::qstring_to_fs_path (name);
   auto dir = utils::io::get_next_available_filepath (tmp);
-  auto ret = utils::io::to_qstring (fs::path (dir).filename ());
+  auto ret = utils::io::fs_path_to_qstring (dir.filename ());
   z_debug ("Next available untitled project name for '{}': {}", tmp, ret);
   return ret;
 }
@@ -138,7 +138,7 @@ ProjectManager::create_default (
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
   auto * prj = new Project ();
-  prj->setTitle (QString::fromStdString (name));
+  prj->setTitle (utils::std_string_to_qstring (name));
   prj->add_default_tracks ();
 
   /* pre-setup engine */
@@ -191,10 +191,11 @@ ProjectManager::createNewProject (
   std::thread ([directory_file, name, template_file, this] {
     try
       {
-        auto project =
+        auto * project =
           template_file.isEmpty ()
             ? create_default (
-                utils::io::to_fs_path (directory_file), name.toStdString (), true)
+                utils::io::qstring_to_fs_path (directory_file),
+                utils::qstring_to_std_string (name), true)
             : nullptr; // TODO: template handling
 
         project->moveToThread (this->thread ());

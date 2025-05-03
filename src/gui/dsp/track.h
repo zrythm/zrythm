@@ -53,14 +53,15 @@ public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
-    return QString::fromStdString (name_); \
+    return utils::std_string_to_qstring (name_); \
   } \
   void setName (const QString &name) \
   { \
-    if (name_ == name.toStdString ()) \
+    const auto name_str = utils::qstring_to_std_string (name); \
+    if (name_ == name_str) \
       return; \
 \
-    name_ = name.toStdString (); \
+    name_ = name_str; \
     Q_EMIT nameChanged (name); \
   } \
 \
@@ -94,14 +95,15 @@ public: \
 \
   QString getComment () const \
   { \
-    return QString::fromStdString (comment_); \
+    return utils::std_string_to_qstring (comment_); \
   } \
   void setComment (const QString &comment) \
   { \
-    if (QString::fromStdString (comment_) == comment) \
+    const auto comment_str = utils::qstring_to_std_string (comment); \
+    if (comment_ == comment_str) \
       return; \
 \
-    comment_ = comment.toStdString (); \
+    comment_ = comment_str; \
     Q_EMIT commentChanged (comment); \
   } \
 \
@@ -250,15 +252,16 @@ public: \
   Q_PROPERTY (QString icon READ getIcon WRITE setIcon NOTIFY iconChanged) \
   QString getIcon () const \
   { \
-    return QString::fromStdString (icon_name_); \
+    return utils::std_string_to_qstring (icon_name_); \
   } \
   void setIcon (const QString &icon) \
   { \
-    if (icon.toStdString () == icon_name_) \
+    const auto icon_str = utils::qstring_to_std_string (icon); \
+    if (icon_name_ == icon_str) \
       { \
         return; \
       } \
-    icon_name_ = icon.toStdString (); \
+    icon_name_ = icon_str; \
     Q_EMIT iconChanged (icon); \
   } \
   Q_SIGNAL void iconChanged (const QString &icon);

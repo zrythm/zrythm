@@ -204,7 +204,7 @@ SnapGrid::stringize () const
 {
   if (snap_adaptive_)
     {
-      return QObject::tr ("Adaptive").toStdString ();
+      return utils::qstring_to_std_string (QObject::tr ("Adaptive"));
     }
   else
     {

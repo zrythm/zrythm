@@ -48,7 +48,8 @@ public:
     if (index.row () < 0 || index.row () >= descriptors_.size ())
       return {};
     if (role == Qt::DisplayRole)
-      return QString::fromStdString (descriptors_.at (index.row ())->name_);
+      return utils::std_string_to_qstring (
+        descriptors_.at (index.row ())->name_);
     return {};
   }
 

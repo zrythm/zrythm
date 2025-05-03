@@ -24,7 +24,8 @@ RecentProjectsModel::get_recent_projects ()
   std::vector<std::unique_ptr<ProjectInfo>> ret;
   std::ranges::transform (
     list, std::back_inserter (ret), [] (const auto &pathstr) {
-      return std::make_unique<ProjectInfo> (utils::io::to_fs_path (pathstr));
+      return std::make_unique<ProjectInfo> (
+        utils::io::qstring_to_fs_path (pathstr));
     });
 
   return ret;

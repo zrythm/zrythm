@@ -37,8 +37,8 @@ epoch_to_str (qint64 epoch, const std::string &format)
 {
   QDateTime dt = QDateTime::fromSecsSinceEpoch (epoch);
   z_return_val_if_fail (!dt.isNull (), "");
-  QString str = dt.toString (QString::fromStdString (format));
-  return str.toStdString ();
+  QString str = dt.toString (utils::std_string_to_qstring (format));
+  return utils::qstring_to_std_string (str);
 }
 
 std::string
@@ -48,7 +48,7 @@ get_for_filename ()
   QString   str_datetime =
     datetime.toString (QString::fromUtf8 ("yyyy-MM-dd_HH-mm-ss"));
 
-  return str_datetime.toStdString ();
+  return utils::qstring_to_std_string (str_datetime);
 }
 
 }; // zrythm::utils::datetime

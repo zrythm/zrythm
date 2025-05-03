@@ -45,8 +45,8 @@ get_temp_path ();
  * @param filename The file path to get the directory for.
  * @return The directory portion of the file path.
  */
-std::string
-get_dir (const std::string &filename);
+fs::path
+get_dir (const fs::path &filename);
 
 /**
  * @brief Makes directory with parents if doesn't exist.
@@ -159,7 +159,7 @@ inline std::unique_ptr<QTemporaryDir>
 make_tmp_dir_at_path (const fs::path &absolute_template_path)
 {
   return make_tmp_dir (
-    QString::fromStdString (absolute_template_path.string ()), false);
+    utils::std_string_to_qstring (absolute_template_path.string ()), false);
 }
 
 /**
@@ -368,7 +368,7 @@ split_paths (const QString &paths);
  * @return fs::path
  */
 static inline fs::path
-to_fs_path (const QString &path)
+qstring_to_fs_path (const QString &path)
 {
 #ifdef _WIN32
   return { path.toStdWString () };
@@ -377,15 +377,21 @@ to_fs_path (const QString &path)
 #endif
 }
 
+fs::path
+juce_string_to_fs_path (const juce::String &path);
+
 static inline QString
-to_qstring (const fs::path &path)
+fs_path_to_qstring (const fs::path &path)
 {
 #ifdef _WIN32
   return QString::fromStdWString (path.wstring ());
 #else
-  return QString::fromStdString (path.string ());
+  return utils::std_string_to_qstring (path.string ());
 #endif
 }
+
+juce::String
+fs_path_to_juce_string (const fs::path &path);
 
 }; // namespace zrythm::utils::io
 

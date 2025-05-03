@@ -15,7 +15,8 @@ using namespace zrythm;
 void
 NamedObject::gen_escaped_name ()
 {
-  escaped_name_ = QString::fromStdString (name_).toHtmlEscaped ().toStdString ();
+  escaped_name_ = utils::qstring_to_std_string (
+    utils::std_string_to_qstring (name_).toHtmlEscaped ());
 }
 
 void

@@ -251,7 +251,7 @@ FileManager::set_selection (
   if (save_to_settings)
     {
       gui::SettingsManager::get_instance ()->set_fileBrowserLastLocation (
-        QString::fromStdString (selection->path_.string ()));
+        utils::std_string_to_qstring (selection->path_.string ()));
     }
 }
 
@@ -264,7 +264,7 @@ FileManager::save_locations ()
       if (loc.special_location_ > FileManagerSpecialLocation::FILE_MANAGER_NONE)
         continue;
 
-      strv_builder.append (QString::fromStdString (loc.path_.string ()));
+      strv_builder.append (utils::std_string_to_qstring (loc.path_.string ()));
     }
 
   gui::SettingsManager::get_instance ()->set_fileBrowserBookmarks (strv_builder);

@@ -72,7 +72,7 @@ public:
 
   QString getVersion () const
   {
-    return QString::fromStdString (get_version (false));
+    return utils::std_string_to_qstring (get_version (false));
   }
 
   /**

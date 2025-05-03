@@ -18,9 +18,11 @@ class String;
 /**
  * @brief String utilities.
  */
-namespace zrythm::utils::string
+namespace zrythm::utils
 {
 
+namespace string
+{
 std::string
 escape_html (const std::string &str);
 
@@ -212,5 +214,25 @@ std::string
 join (const std::vector<std::string> &strings, std::string_view delimiter);
 
 }; // namespace zrythm::utils::string
+
+static inline std::string
+qstring_to_std_string (const QString &str)
+{
+  return str.toLocal8Bit ().toStdString ();
+}
+
+std::string
+juce_string_to_std_string (const juce::String &str);
+
+static inline QString
+std_string_to_qstring (const std::string &str)
+{
+  return QString::fromStdString (str);
+}
+
+QString
+juce_string_to_qstring (const juce::String &str);
+
+}; // namespace zrythm::utils
 
 #endif

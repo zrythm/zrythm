@@ -18,13 +18,13 @@ add_expanded_paths (auto &arr, const QStringList &paths_from_settings)
   for (const auto &path : paths_from_settings)
     {
       auto expanded_cur_path =
-        utils::string::expand_env_vars (path.toStdString ());
+        utils::string::expand_env_vars (utils::qstring_to_std_string (path));
       /* split because the env might contain multiple paths */
-      auto expanded_paths =
-        utils::io::split_paths (QString::fromStdString (expanded_cur_path));
+      auto expanded_paths = utils::io::split_paths (
+        utils::std_string_to_qstring (expanded_cur_path));
       for (auto &expanded_path : expanded_paths)
         {
-          arr->add_path (utils::io::to_fs_path (expanded_path));
+          arr->add_path (utils::io::qstring_to_fs_path (expanded_path));
         }
     }
 }
@@ -67,10 +67,9 @@ PluginProtocolPaths::get_for_protocol_separated (
   auto paths = get_for_protocol (protocol);
   if (!paths->empty ())
     {
-      std::vector<std::string> path_strings;
-      std::ranges::transform (
-        paths->getPaths (), std::back_inserter (path_strings),
-        [] (const auto &path) { return path.toStdString (); });
+      std::vector<std::string> path_strings =
+        std::views::transform (paths->getPaths (), utils::qstring_to_std_string)
+        | std::ranges::to<std::vector> ();
       auto paths_separated = utils::string::join (
         path_strings, utils::io::get_path_separator_string ());
       return paths_separated;
@@ -93,9 +92,9 @@ PluginProtocolPaths::get_lv2_paths ()
       z_return_val_if_fail (!root_builddir.isEmpty (), nullptr);
 
       auto test_lv2_plugins =
-        utils::io::to_fs_path (tests_builddir) / "lv2plugins";
+        utils::io::qstring_to_fs_path (tests_builddir) / "lv2plugins";
       auto test_root_plugins =
-        utils::io::to_fs_path (root_builddir) / "data" / "plugins";
+        utils::io::qstring_to_fs_path (root_builddir) / "data" / "plugins";
       ret->add_path (test_lv2_plugins.string ());
       ret->add_path (test_root_plugins.string ());
 
@@ -121,7 +120,8 @@ PluginProtocolPaths::get_lv2_paths ()
       ret->add_path ("/app/extensions/Plugins/lv2");
 #else /* non-flatpak UNIX */
       {
-        auto home_lv2 = utils::io::to_fs_path (QDir::homePath ()) / ".lv2";
+        auto home_lv2 =
+          utils::io::qstring_to_fs_path (QDir::homePath ()) / ".lv2";
         ret->add_path (home_lv2);
       }
       ret->add_path ("/usr/lib/lv2");

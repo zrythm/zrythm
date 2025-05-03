@@ -23,10 +23,10 @@ Metronome::Metronome (AudioEngine &engine)
       auto src_root = env.value (u"G_TEST_SRC_ROOT_DIR"_s);
       z_return_if_fail (!src_root.isEmpty ());
       emphasis_path_ =
-        fs::path (src_root.toStdString ()) / "data" / "samples" / "klick"
+        utils::io::qstring_to_fs_path (src_root) / "data" / "samples" / "klick"
         / "square_emphasis.wav";
       normal_path_ =
-        fs::path (src_root.toStdString ()) / "data" / "samples" / "klick"
+        utils::io::qstring_to_fs_path (src_root) / "data" / "samples" / "klick"
         / "square_normal.wav";
     }
   else
@@ -34,7 +34,8 @@ Metronome::Metronome (AudioEngine &engine)
       const auto path_from_env = env.value (u"ZRYTHM_SAMPLES_PATH"_s);
       if (!path_from_env.isEmpty ())
         {
-          const auto fs_path_from_env = fs::path (path_from_env.toStdString ());
+          const auto fs_path_from_env =
+            utils::io::qstring_to_fs_path (path_from_env);
           emphasis_path_ = fs_path_from_env / "klick" / "square_emphasis.wav";
           normal_path_ = fs_path_from_env / "klick" / "square_normal.wav";
         }
@@ -54,9 +55,9 @@ Metronome::Metronome (AudioEngine &engine)
   emphasis_ = std::make_shared<zrythm::utils::audio::AudioBuffer> ();
   normal_ = std::make_unique<zrythm::utils::audio::AudioBuffer> ();
 
-  utils::audio::AudioFile file (emphasis_path_.string ());
+  utils::audio::AudioFile file (emphasis_path_);
   file.read_full (*emphasis_, engine.sample_rate_);
-  file = utils::audio::AudioFile (normal_path_.string ());
+  file = utils::audio::AudioFile (normal_path_);
   file.read_full (*normal_, engine.sample_rate_);
 
   /* set volume */

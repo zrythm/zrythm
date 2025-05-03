@@ -253,7 +253,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
 
           /* rename group */
           auto name = format_str (
-            QObject::tr ("{} Output").toStdString (), descr_->name_);
+            utils::qstring_to_std_string (QObject::tr ("{} Output")),
+            descr_->name_);
           UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
             convert_to_variant<TrackPtrVariant> (group), *PORT_CONNECTIONS_MGR,
             name));
@@ -491,7 +492,7 @@ PluginSettings::read_or_new ()
   std::string json;
   try
     {
-      json = utils::io::read_file_contents (path).toStdString ();
+      json = utils::qstring_to_std_string (utils::io::read_file_contents (path));
     }
   catch (const ZrythmException &e)
     {

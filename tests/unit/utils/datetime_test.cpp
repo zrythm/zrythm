@@ -26,7 +26,7 @@ TEST (DateTimeTest, GetCurrentAsStringFormat)
   auto time_t_now = std::chrono::system_clock::to_time_t (now);
   auto time_t_str =
     QDateTime::fromString (
-      QString::fromStdString (datetime_str),
+      utils::std_string_to_qstring (datetime_str),
       QString::fromUtf8 ("yyyy-MM-dd hh:mm:ss"))
       .toSecsSinceEpoch ();
 

@@ -758,7 +758,7 @@ public:
       {
         if (!value.isNull ())
           {
-            const auto str = value.toString ().toStdString ();
+            const auto str = utils::qstring_to_std_string (value.toString ());
             yyjson_mut_obj_add_strncpy (
               doc, obj, key, str.c_str (), str.length ());
           }
@@ -909,7 +909,7 @@ public:
       {
         if (!value.isEmpty ())
           {
-            const auto value_str = value.toStdString ();
+            const auto value_str = utils::qstring_to_std_string (value);
             yyjson_mut_obj_add_strncpy (
               doc, obj, key, value_str.data (), value_str.size ());
           }

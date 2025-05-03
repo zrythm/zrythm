@@ -71,7 +71,8 @@ Channel::Channel (
         case PortType::Event:
           {
             midi_out_id_ = get_port_registry ().create_object<MidiPort> (
-              QObject::tr ("MIDI out").toStdString (), dsp::PortFlow::Output);
+              utils::qstring_to_std_string (QObject::tr ("MIDI out")),
+              dsp::PortFlow::Output);
             get_midi_out_port ().id_->sym_ = "midi_out";
           }
           break;

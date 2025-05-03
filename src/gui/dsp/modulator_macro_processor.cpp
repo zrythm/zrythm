@@ -33,7 +33,8 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   if (new_identity)
     {
       assert (idx.has_value ());
-      name_ = format_str (QObject::tr ("Macro {}").toStdString (), *idx + 1);
+      name_ = format_str (
+        utils::qstring_to_std_string (QObject::tr ("Macro {}")), *idx + 1);
       {
         macro_id_ = port_registry.create_object<ControlPort> (name_);
         auto &macro = get_macro_port ();
@@ -49,7 +50,9 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 
       {
         cv_in_id_ = port_registry.create_object<CVPort> (
-          format_str (QObject::tr ("Macro CV In {}").toStdString (), *idx + 1),
+          format_str (
+            utils::qstring_to_std_string (QObject::tr ("Macro CV In {}")),
+            *idx + 1),
           dsp::PortFlow::Input);
         auto &cv_in = get_cv_in_port ();
         cv_in.set_owner (*this);
@@ -60,7 +63,9 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 
       {
         cv_out_id_ = port_registry.create_object<CVPort> (
-          format_str (QObject::tr ("Macro CV Out {}").toStdString (), *idx + 1),
+          format_str (
+            utils::qstring_to_std_string (QObject::tr ("Macro CV Out {}")),
+            *idx + 1),
           dsp::PortFlow::Output);
         auto &cv_out = get_cv_out_port ();
         cv_out.set_owner (*this);

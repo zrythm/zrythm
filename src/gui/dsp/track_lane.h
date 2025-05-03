@@ -29,11 +29,11 @@ public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
-    return QString::fromStdString (name_); \
+    return utils::std_string_to_qstring (name_); \
   } \
   void setName (const QString &name) \
   { \
-    auto std_name = name.toStdString (); \
+    const auto std_name = utils::qstring_to_std_string (name); \
     if (name_ == std_name) \
       return; \
 \
@@ -81,7 +81,8 @@ public:
 
   void generate_name (int pos)
   {
-    name_ = format_str (QObject::tr ("Lane {}").toStdString (), pos + 1);
+    name_ = format_str (
+      utils::qstring_to_std_string (QObject::tr ("Lane {}")), pos + 1);
   }
 
   bool get_soloed () const { return solo_; }

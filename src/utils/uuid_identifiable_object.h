@@ -7,6 +7,7 @@
 #include "utils/icloneable.h"
 #include "utils/initializable_object.h"
 #include "utils/iserializable.h"
+#include "utils/string.h"
 
 #include <QUuid>
 
@@ -939,7 +940,9 @@ struct fmt::formatter<T> : fmt::formatter<std::string_view>
   auto format (const T &uuid, FormatContext &ctx) const
   {
     return fmt::formatter<std::string_view>::format (
-      type_safe::get (uuid).toString (QUuid::WithoutBraces).toStdString (), ctx);
+      utils::qstring_to_std_string (
+        type_safe::get (uuid).toString (QUuid::WithoutBraces)),
+      ctx);
   }
 };
 

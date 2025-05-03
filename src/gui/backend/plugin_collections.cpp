@@ -144,7 +144,7 @@ PluginCollections::read_or_new ()
   std::string json;
   try
     {
-      json = utils::io::read_file_contents (path).toStdString ();
+      json = utils::qstring_to_std_string (utils::io::read_file_contents (path));
     }
   catch (const ZrythmException &e)
     {

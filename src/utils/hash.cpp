@@ -38,7 +38,7 @@ get_file_hash (const std::filesystem::path &path)
 {
   StreamingHash hasher;
 
-  QFile file (QString::fromStdString (path.string ()));
+  QFile file (utils::std_string_to_qstring (path.string ()));
   if (!file.open (QIODevice::ReadOnly))
     {
       z_warning ("Failed to open file: {}", path.string ());

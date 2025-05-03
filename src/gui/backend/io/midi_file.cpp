@@ -118,8 +118,8 @@ MidiFile::into_region (
         }
 
       // set a temp name
-      region.set_name (
-        format_str (QObject::tr ("Untitled Track {}").toStdString (), i));
+      region.set_name (format_str (
+        utils::qstring_to_std_string (QObject::tr ("Untitled Track {}")), i));
 
       const auto * track = midi_file_.getTrack (i);
       for (const auto * event : *track)
@@ -127,7 +127,7 @@ MidiFile::into_region (
           const auto &msg = event->message;
 
           /* convert time to zrythm time */
-          double ticks = ((double) msg.getTimeStamp () * transport_ppqn) / ppqn;
+          double   ticks = (msg.getTimeStamp () * transport_ppqn) / ppqn;
           Position pos{ ticks, AUDIO_ENGINE->frames_per_tick_ };
           auto     global_pos = region.get_position ();
           global_pos.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
@@ -169,7 +169,7 @@ MidiFile::into_region (
               auto name = msg.getTextFromTextMetaEvent ();
               if (!name.isEmpty ())
                 {
-                  region.set_name (name.toStdString ());
+                  region.set_name (utils::juce_string_to_std_string (name));
                 }
             }
         }

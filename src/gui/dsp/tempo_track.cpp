@@ -58,7 +58,7 @@ TempoTrack::initialize ()
   {
     /* create bpm port */
     bpm_port_ = port_registry_.create_object<ControlPort> (
-      QObject::tr ("BPM").toStdString ());
+      utils::qstring_to_std_string (QObject::tr ("BPM")));
     auto &bpm_port = get_bpm_port ();
     bpm_port.set_owner (*this);
     bpm_port.id_->sym_ = "bpm";
@@ -72,7 +72,7 @@ TempoTrack::initialize ()
   {
     /* create time sig ports */
     beats_per_bar_port_ = port_registry_.create_object<ControlPort> (
-      QObject::tr ("Beats per bar").toStdString ());
+      utils::qstring_to_std_string (QObject::tr ("Beats per bar")));
     auto &beats_per_bar_port = get_beats_per_bar_port ();
     beats_per_bar_port.set_owner (*this);
     beats_per_bar_port.id_->sym_ = ("beats_per_bar");
@@ -89,7 +89,7 @@ TempoTrack::initialize ()
 
   {
     beat_unit_port_ = port_registry_.create_object<ControlPort> (
-      QObject::tr ("Beat unit").toStdString ());
+      utils::qstring_to_std_string (QObject::tr ("Beat unit")));
     auto &beat_unit_port = get_beat_unit_port ();
     beat_unit_port.set_owner (*this);
     beat_unit_port.id_->sym_ = ("beat_unit");

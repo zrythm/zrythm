@@ -175,7 +175,7 @@ Zrythm::get_system_info ()
   if (file.open (QIODevice::ReadOnly | QIODevice::Text))
     {
       QTextStream in (&file);
-      gstr += in.readAll ().toStdString () + "\n";
+      gstr += utils::qstring_to_std_string (in.readAll ()) + "\n";
     }
 
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();

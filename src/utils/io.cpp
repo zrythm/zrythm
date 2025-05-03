@@ -75,21 +75,20 @@ get_path_separator_string ()
 fs::path
 get_home_path ()
 {
-  return { QDir::homePath ().toStdString () };
+  return qstring_to_fs_path (QDir::homePath ());
 }
 
 fs::path
 get_temp_path ()
 {
-  return { QDir::tempPath ().toStdString () };
+  return qstring_to_fs_path (QDir::tempPath ());
 }
 
-std::string
-get_dir (const std::string &filename)
+fs::path
+get_dir (const fs::path &filename)
 {
-  return QFileInfo (QString::fromStdString (filename))
-    .absolutePath ()
-    .toStdString ();
+  return qstring_to_fs_path (
+    QFileInfo (fs_path_to_qstring (filename)).absolutePath ());
 }
 
 void
@@ -101,7 +100,7 @@ mkdir (const fs::path &dir)
       z_debug ("Creating directory: {}", dir);
     }
   std::error_code ec;
-  if (!std::filesystem::create_directories (dir, ec))
+  if (!fs::create_directories (dir, ec))
     {
       if (ec.value () == 0) // Directory already exists
         {
@@ -248,7 +247,7 @@ append_files_from_dir_ending_in (
       opt_end_string ? std::string ("*") + *opt_end_string : "*",
       juce::File::findFiles))
     {
-      files.add (file.getFile ().getFullPathName ().toStdString ());
+      files.add (juce_string_to_std_string (file.getFile ().getFullPathName ()));
     }
 }
 
@@ -269,8 +268,8 @@ copy_dir (
     "attempting to copy dir '{}' to '{}' (recursive: {})", srcdir, destdir,
     recursive);
 
-  QDir src_dir (QString::fromStdString (srcdir.string ()));
-  QDir dest_dir (QString::fromStdString (destdir.string ()));
+  QDir src_dir (utils::std_string_to_qstring (srcdir.string ()));
+  QDir dest_dir (utils::std_string_to_qstring (destdir.string ()));
 
   if (!src_dir.exists ())
     {
@@ -297,7 +296,7 @@ copy_dir (
           if (recursive)
             {
               copy_dir (
-                dest_path.toStdString (), src_path.toStdString (),
+                qstring_to_fs_path (dest_path), qstring_to_fs_path (src_path),
                 follow_symlinks, recursive);
             }
         }
@@ -319,8 +318,8 @@ copy_dir (
 void
 copy_file (const fs::path &destfile, const fs::path &srcfile)
 {
-  auto src_file = QFile (QString::fromStdString (srcfile.string ()));
-  if (!src_file.copy (QString::fromStdString (destfile.string ())))
+  auto src_file = QFile (utils::std_string_to_qstring (srcfile.string ()));
+  if (!src_file.copy (utils::std_string_to_qstring (destfile.string ())))
     {
       throw ZrythmException (fmt::format (
         "Failed to copy '{}' to '{}': {}", srcfile.string (),
@@ -337,7 +336,7 @@ get_files_in_dir_as_basenames (const fs::path &_dir)
   for (const auto &filename : files)
     {
       files_as_basenames.add (
-        path_get_basename (filename.toStdString ()).string ());
+        path_get_basename (juce_string_to_fs_path (filename)).string ());
     }
 
   return files_as_basenames;
@@ -407,7 +406,7 @@ make_tmp_file (std::optional<std::string> template_path, bool in_temp_dir)
       QString path =
         in_temp_dir ? QDir::tempPath () + QDir::separator () : QString ();
       ret = std::make_unique<QTemporaryFile> (
-        path + QString::fromStdString (*template_path));
+        path + utils::std_string_to_qstring (*template_path));
     }
   else
     {
@@ -423,13 +422,13 @@ make_tmp_file (std::optional<std::string> template_path, bool in_temp_dir)
 std::string
 get_legal_file_name (const std::string &file_name)
 {
-  return juce::File::createLegalFileName (file_name).toStdString ();
+  return juce_string_to_std_string (juce::File::createLegalFileName (file_name));
 }
 
 std::string
 get_legal_path_name (const std::string &path)
 {
-  return juce::File::createLegalPathName (path).toStdString ();
+  return juce_string_to_std_string (juce::File::createLegalPathName (path));
 }
 
 #ifdef _WIN32
@@ -443,8 +442,8 @@ get_registry_string_val (const std::string &key)
 
   if (!value.isEmpty ())
     {
-      z_info ("reg value: {}", value.toStdString ());
-      return value.toStdString ();
+      z_info ("reg value: {}", value);
+      return juce_string_to_std_string (value);
     }
 
   z_warning ("reg value not found: {}", full_path);
@@ -563,12 +562,24 @@ split_paths (const QString &paths)
 fs::path
 uri_to_file (const std::string &uri)
 {
-  auto url = QUrl (QString::fromStdString (uri));
+  auto url = QUrl (utils::std_string_to_qstring (uri));
   if (!url.isValid ())
     {
       throw ZrythmException (fmt::format ("Failed to parse URI '{}'", uri));
     }
-  return { url.toLocalFile ().toStdString () };
+  return qstring_to_fs_path (url.toLocalFile ());
+}
+
+fs::path
+juce_string_to_fs_path (const juce::String &path)
+{
+  return { path.toStdString () };
+}
+
+juce::String
+fs_path_to_juce_string (const fs::path &path)
+{
+  return { path.string () };
 }
 
 }; // namespace zrythm::utils::io

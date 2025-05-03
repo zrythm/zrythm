@@ -133,7 +133,7 @@ PluginManager::supports_protocol (Protocol::ProtocolType protocol)
       // Check if the corresponding feature is supported by Carla
       return std::ranges::any_of (
         carla_supported_features, [&] (const auto &feature) {
-          return feature.toStdString () == it->second;
+          return utils::to_std_string (feature) == it->second;
         });
     }
 #endif
@@ -157,7 +157,8 @@ PluginManager::get_known_plugins_xml_path ()
   QString local_app_data_path =
     QStandardPaths::writableLocation (QStandardPaths::AppLocalDataLocation);
   QDir dir (local_app_data_path);
-  return utils::io::to_fs_path (dir.absoluteFilePath (u"known_plugins.xml"_s));
+  return utils::io::qstring_to_fs_path (
+    dir.absoluteFilePath (u"known_plugins.xml"_s));
 }
 
 void

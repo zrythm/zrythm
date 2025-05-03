@@ -173,7 +173,7 @@ public:
 
   [[nodiscard]] QString getName () const
   {
-    return QString::fromStdString (name_);
+    return utils::std_string_to_qstring (name_);
   }
 
   void

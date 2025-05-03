@@ -451,8 +451,8 @@ MusicalScale::type_to_string (Type type)
     QT_TR_NOOP_UTF8 ("Japanese 1"),
     QT_TR_NOOP_UTF8 ("Japanese 2"),
   };
-  return QObject::tr (musical_scale_type_strings[(int) type].data ())
-    .toStdString ();
+  return utils::qstring_to_std_string (
+    QObject::tr (musical_scale_type_strings[(int) type].data ()));
 }
 
 std::string

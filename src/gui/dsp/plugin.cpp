@@ -310,11 +310,11 @@ Plugin::init ()
   {
     /* add enabled port */
     auto port_ref = port_registry_->create_object<ControlPort> (
-      QObject::tr ("Enabled").toStdString ());
+      utils::qstring_to_std_string (QObject::tr ("Enabled")));
     auto * port = std::get<ControlPort *> (port_ref.get_object ());
     port->id_->sym_ = "enabled";
-    port->id_->comment_ =
-      QObject::tr ("Enables or disables the plugin").toStdString ();
+    port->id_->comment_ = utils::qstring_to_std_string (
+      QObject::tr ("Enables or disables the plugin"));
     port->id_->port_group_ = "[Zrythm]";
     port->id_->flags_ |= PortIdentifier::Flags::PluginEnabled;
     port->id_->flags_ |= PortIdentifier::Flags::Toggle;
@@ -332,10 +332,11 @@ Plugin::init ()
   {
     /* add gain port */
     auto port_ref = port_registry_->create_object<ControlPort> (
-      QObject::tr ("Gain").toStdString ());
+      utils::qstring_to_std_string (QObject::tr ("Gain")));
     auto * port = std::get<ControlPort *> (port_ref.get_object ());
     port->id_->sym_ = "gain";
-    port->id_->comment_ = QObject::tr ("Plugin gain").toStdString ();
+    port->id_->comment_ =
+      utils::qstring_to_std_string (QObject::tr ("Plugin gain"));
     port->id_->flags_ |= PortIdentifier::Flags::PluginGain;
     port->id_->flags_ |= PortIdentifier::Flags::Automatable;
     port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
@@ -1322,7 +1323,7 @@ Plugin::ensure_state_dir (bool is_backup)
       abs_state_dir->setAutoRemove (false);
       state_dir_ =
         utils::io::path_get_basename (
-          utils::io::to_fs_path (abs_state_dir->path ()))
+          utils::io::qstring_to_fs_path (abs_state_dir->path ()))
           .string ();
       z_debug ("set plugin state dir to {}", state_dir_);
     }

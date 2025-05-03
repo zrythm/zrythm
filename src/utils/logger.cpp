@@ -202,9 +202,9 @@ Logger::get_log_file_path () const
   auto user_log_dir =
     QStandardPaths::writableLocation (QStandardPaths::CacheLocation);
   auto log_filepath =
-    fs::path (user_log_dir.toStdString ())
+    io::qstring_to_fs_path (user_log_dir)
     / (std::string ("log_") + (type_ == LoggerType::Engine ? std::string ("engine_") : std::string ()) + str_datetime);
-  utils::io::mkdir (user_log_dir.toStdString ()); // note: throws
+  utils::io::mkdir (io::qstring_to_fs_path (user_log_dir)); // note: throws
   return log_filepath.string ();
 }
 

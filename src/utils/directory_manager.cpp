@@ -182,7 +182,7 @@ TestingDirectoryManager::get_testing_dir ()
       auto new_testing_dir =
         utils::io::make_tmp_dir (QString::fromUtf8 ("zrythm_test_dir_XXXXXX"));
       new_testing_dir->setAutoRemove (false);
-      testing_dir_ = { new_testing_dir->path ().toStdString () };
+      testing_dir_ = utils::io::qstring_to_fs_path (new_testing_dir->path ());
     }
   return testing_dir_;
 }

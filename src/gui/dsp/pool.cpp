@@ -293,7 +293,9 @@ AudioPool::remove_unused (bool backup)
           if (!clip)
             continue;
 
-          if (get_clip_path (*clip, backup) == fs::path (path.toStdString ()))
+          if (
+            get_clip_path (*clip, backup)
+            == utils::io::juce_string_to_fs_path (path))
             {
               found = true;
               break;
@@ -303,7 +305,7 @@ AudioPool::remove_unused (bool backup)
       /* if file not found in pool clips, delete */
       if (!found)
         {
-          utils::io::remove (path.toStdString ());
+          utils::io::remove (utils::io::juce_string_to_fs_path (path));
         }
     }
 

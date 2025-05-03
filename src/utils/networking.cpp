@@ -41,7 +41,7 @@ URL::get_page_contents (int timeout)
           throw ZrythmException (fmt::format (
             "Failed to get page contents for {}.", url_.toString (true)));
         }
-      return res.toStdString ();
+      return utils::juce_string_to_std_string (res);
     }
 
   throw ZrythmException (fmt::format (

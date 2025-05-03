@@ -252,7 +252,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
             {
               auto contents =
                 utils::io::read_file_contents (file_descr->abs_path_);
-              base64_midi_ = utils::base64::encode (contents).toStdString ();
+              base64_midi_ =
+                utils::qstring_to_std_string (utils::base64::encode (contents));
             }
           catch (const std::exception &e)
             {
@@ -458,8 +459,8 @@ TracklistSelectionsAction::create_track (int idx)
     {
       auto track_type_str = Track_Type_to_string (track_type_, true);
       auto label = format_qstr (QObject::tr ("{} Track"), track_type_str);
-      auto unique_track_var =
-        Track::create_track (track_type_, label.toStdString (), pos);
+      auto unique_track_var = Track::create_track (
+        track_type_, utils::qstring_to_std_string (label), pos);
       std::visit (
         [&] (auto &&unique_track) {
           auto track = unique_track.release ();
@@ -514,7 +515,7 @@ TracklistSelectionsAction::create_track (int idx)
           TrackUuidReference added_track_ref{
             added_track->get_uuid (), PROJECT->get_track_registry ()
           };
-          added_track->setName (QString::fromStdString (name));
+          added_track->setName (utils::std_string_to_qstring (name));
           added_track->set_index (pos);
 
           std::optional<PluginUuidReference> added_plugin_if_has_plugin;
@@ -570,8 +571,8 @@ TracklistSelectionsAction::create_track (int idx)
                   /* create a temporary midi file */
                   auto full_path_file = utils::io::make_tmp_file (
                     std::make_optional<std::string> ("data.MID"));
-                  fs::path full_path (
-                    full_path_file->fileName ().toStdString ());
+                  const auto full_path =
+                    utils::io::qstring_to_fs_path (full_path_file->fileName ());
                   auto data = utils::base64::decode (
                     QByteArray::fromStdString (base64_midi_));
                   utils::io::set_file_contents (
@@ -580,8 +581,8 @@ TracklistSelectionsAction::create_track (int idx)
                   /* create a MIDI region from the MIDI file & add to track */
                   ArrangerObjectFactory::get_instance ()->addMidiRegionFromMidiFile (
                     &added_track->get_lane_at (0),
-                    QString::fromStdString (full_path.string ()), pos_.ticks_,
-                    idx);
+                    utils::std_string_to_qstring (full_path.string ()),
+                    pos_.ticks_, idx);
                 }
             }
 

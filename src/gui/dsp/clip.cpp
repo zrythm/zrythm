@@ -90,8 +90,8 @@ AudioClip::init_from_file (
         fmt::format ("Failed to read frames from file '{}'", full_path));
     }
 
-  name_ =
-    juce::File (full_path.string ()).getFileNameWithoutExtension ().toStdString ();
+  name_ = utils::juce_string_to_std_string (
+    juce::File (full_path.string ()).getFileNameWithoutExtension ());
   if (bpm_to_set.has_value ())
     {
       bpm_ = bpm_to_set.value ();

@@ -185,14 +185,13 @@ FileDescriptor::get_info_text_for_label () const
           utils::audio::AudioFile af (abs_path_);
           auto                    metadata = af.read_metadata ();
           return format_str (
-            QObject::tr (
+            utils::qstring_to_std_string (QObject::tr (
               "<b>{}</b>\n"
               "Sample rate: {}\n"
               "Length: {}s "
               "{} ms | BPM: {:.1f}\n"
               "Channel(s): {} | Bitrate: {:L}.{} kb/s\n"
-              "Bit depth: {} bits")
-              .toStdString (),
+              "Bit depth: {} bits")),
             utils::string::escape_html (label_), metadata.samplerate,
             metadata.length / 1000, metadata.length % 1000,
             (double) metadata.bpm, metadata.channels, metadata.bit_rate / 1000,
@@ -204,7 +203,8 @@ FileDescriptor::get_info_text_for_label () const
             "Error reading metadata from {}: {}", abs_path_.string (),
             e.what ());
           return format_str (
-            QObject::tr ("Failed reading metadata for {}").toStdString (),
+            utils::qstring_to_std_string (
+              QObject::tr ("Failed reading metadata for {}")),
             abs_path_.string ());
         }
     }
