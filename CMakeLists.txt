@@ -650,16 +650,9 @@ add_library(zrythm::all_compile_options ALIAS _zrythm_all_compile_options)
 # Linker libs/flags
 set(zrythm_link_args)
 if(WIN32)
-  # use MgwHelp if found, otherwise regular DbgHelp
-  find_library(DBGHELP_LIB NAMES mgwhelp DbgHelp REQUIRED)
-  list(APPEND zrythm_link_libs ${DBGHELP_LIB} ws2_32 winmm)
-
-  if (NOT MSVC)
-    list(APPEND zrythm_link_args
-      -fno-stack-protector
-      -static-libgcc
-      -static-libstdc++)
-  endif()
+  # DbgHelp is needed for stack traces (fallback to mgwhelp)
+  find_library(DBGHELP_LIB NAMES DbgHelp mgwhelp REQUIRED)
+  list(APPEND zrythm_link_libs ${DBGHELP_LIB})
 endif()
 
 # Sanitizers

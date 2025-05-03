@@ -204,7 +204,7 @@ build:gnu/linux:
     - job: reuse-check
     - job: clang-format-check
   script:
-    - cmake --build $BUILDDIR
+    - cmake --build $BUILDDIR --parallel
     - *unix_test_cmd
     - >-
       ctest --test-dir $BUILDDIR -V
@@ -219,7 +219,7 @@ build:mac-arm:
     - job: configure:mac-arm
       artifacts: true
   script:
-    - cmake --build $BUILDDIR --config Debug
+    - cmake --build $BUILDDIR --config Debug --parallel
     - *unix_test_cmd
 
 build:windows:
@@ -229,7 +229,7 @@ build:windows:
     - job: configure:windows
       artifacts: true
   script:
-    - cmake --build ${env:BUILDDIR} --config Debug --verbose
+    - cmake --build ${env:BUILDDIR} --config Debug --verbose --parallel
     # copy DLLs and resources needed at runtime for tests, etc.
     - >-
       C:\Qt\Qt-6.9.0-debug\bin\windeployqt.exe
@@ -241,10 +241,12 @@ package:windows:
   extends: .windows-template
   stage: deploy
   needs:
+    - job: configure:windows
+      artifacts: true
     - job: build:windows
       artifacts: true
   script:
-    - cmake --build ${env:BUILDDIR} --config Release --verbose
+    - cmake --build ${env:BUILDDIR} --config Release --verbose --parallel
     - windeployqt ${env:BUILDDIR}/src/gui/zrythm.exe
 
 update-manual:
