@@ -212,7 +212,7 @@ build:gnu/linux:
       artifacts: true
       parallel:
         matrix:
-          - BUILD_TYPE: [Debug, Release]
+          - BUILD_TYPE: ${BUILD_TYPE}
     - job: exif-check
     - job: reuse-check
     - job: clang-format-check
@@ -236,7 +236,7 @@ build:mac-arm:
       artifacts: true
       parallel:
         matrix:
-          - BUILD_TYPE: [Debug, Release]
+          - BUILD_TYPE: ${BUILD_TYPE}
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
     - *unix_test_cmd
@@ -252,7 +252,7 @@ build:windows:
       artifacts: true
       parallel:
         matrix:
-          - BUILD_TYPE: [Debug, Release]
+          - BUILD_TYPE: ${BUILD_TYPE}
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --verbose --parallel
     # copy DLLs and resources needed at runtime for tests, etc.
