@@ -256,11 +256,8 @@ build:windows:
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --verbose --parallel
     # copy DLLs and resources needed at runtime for tests, etc.
-    - >-
-      "C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe"
-      --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets
-      ${env:BUILDDIR}\Debug\zrythm.exe
-    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -V; if (-not $?) { Get-Content ${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log; exit 1 }
+    - '& "C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe" --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets "${env:BUILDDIR}\Debug\zrythm.exe"'
+    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -V; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
