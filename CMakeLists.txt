@@ -649,11 +649,6 @@ add_library(zrythm::all_compile_options ALIAS _zrythm_all_compile_options)
 
 # Linker libs/flags
 set(zrythm_link_args)
-if(WIN32)
-  # DbgHelp is needed for stack traces (fallback to mgwhelp)
-  find_library(DBGHELP_LIB NAMES DbgHelp mgwhelp REQUIRED)
-  list(APPEND zrythm_link_libs ${DBGHELP_LIB})
-endif()
 
 # Sanitizers
 add_library(_sanitizers_lib INTERFACE)
