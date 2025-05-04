@@ -51,6 +51,7 @@ stages:
   variables:
     BUILDDIR: "build_gnu_linux"
     QT_QPA_PLATFORM: "offscreen"
+    GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - *unix-activate-venv
 
@@ -254,14 +255,15 @@ build:windows:
       - BUILD_TYPE: [Debug, Release]
 
 update-manual:
+  extends: .gnu-linux-template
   stage: deploy
   only:
     - master
     - tags
-  tags:
-    - archlinux
   needs:
     - job: build:gnu/linux
+    - job: configure:gnu/linux
+      artifacts: true
   script:
     - ninja -C ${BUILDDIR}-Debug manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times --exclude '*.zip' "${BUILDDIR}-Debug"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
@@ -274,12 +276,11 @@ update-manual:
     - *unix-activate-venv
 
 update-dev-docs:
+  extends: .gnu-linux-template
   stage: deploy
   only:
     - master
     - tags
-  tags:
-    - archlinux
   needs:
     - update-manual
   script:
@@ -292,5 +293,3 @@ update-dev-docs:
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - *unix-activate-venv
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
