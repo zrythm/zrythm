@@ -145,7 +145,7 @@ configure:windows:
     - python -m pip install -r requirements.txt
   script:
     - >-
-      cmake -B "${env:BUILDDIR}"
+      cmake -B "${env:BUILDDIR}-${env:BUILD_TYPE}"
       -DZRYTHM_STRICT=ON
       -DZRYTHM_TESTS=ON
       -DZRYTHM_BENCHMARKS=ON
@@ -155,7 +155,7 @@ configure:windows:
       -G "Visual Studio 17 2022"
       -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL"
       "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin"
-      -DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}
+      "-DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}"
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
   parallel:
     matrix:
@@ -254,13 +254,13 @@ build:windows:
         matrix:
           - BUILD_TYPE: [Debug, Release]
   script:
-    - cmake --build ${env:BUILDDIR}-${env:BUILD_TYPE} --config ${env:BUILD_TYPE} --verbose --parallel
+    - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --verbose --parallel
     # copy DLLs and resources needed at runtime for tests, etc.
     - >-
-      C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe
+      "C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe"
       --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets
       ${env:BUILDDIR}\Debug\zrythm.exe
-    - ctest --test-dir ${env:BUILDDIR}-${env:BUILD_TYPE} -V; if (-not $?) { Get-Content ${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log; exit 1 }
+    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -V; if (-not $?) { Get-Content ${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log; exit 1 }
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
