@@ -210,9 +210,6 @@ build:gnu/linux:
   needs:
     - job: configure:gnu/linux
       artifacts: true
-      parallel:
-        matrix:
-          - BUILD_TYPE: ${BUILD_TYPE}
     - job: exif-check
     - job: reuse-check
     - job: clang-format-check
@@ -234,9 +231,6 @@ build:mac-arm:
   needs:
     - job: configure:mac-arm
       artifacts: true
-      parallel:
-        matrix:
-          - BUILD_TYPE: ${BUILD_TYPE}
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
     - *unix_test_cmd
@@ -250,9 +244,6 @@ build:windows:
   needs:
     - job: configure:windows
       artifacts: true
-      parallel:
-        matrix:
-          - BUILD_TYPE: ${BUILD_TYPE}
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel
     # copy DLLs and resources needed at runtime for tests, etc.
