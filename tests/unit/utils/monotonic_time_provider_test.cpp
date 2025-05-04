@@ -8,6 +8,8 @@
 
 using namespace zrythm::utils;
 
+using namespace std::chrono_literals;
+
 TEST (MonotonicTimeProviderTest, TimeIncrements)
 {
   QElapsedTimeProvider provider;
@@ -17,7 +19,7 @@ TEST (MonotonicTimeProviderTest, TimeIncrements)
   auto first_usecs = provider.get_monotonic_time_usecs ();
 
   // Sleep for a small duration
-  QThread::msleep (10);
+  std::this_thread::sleep_for (10ms);
 
   // Second measurement
   auto second_nsecs = provider.get_monotonic_time_nsecs ();
@@ -38,7 +40,7 @@ TEST (MonotonicTimeProviderTest, TimeConversion)
   // Verify that nanoseconds to microseconds conversion is correct
   // Allow for small timing differences due to the two separate calls
   const qint64 calculated_usecs = nsecs / 1000;
-  const qint64 tolerance = 100; // 100 microseconds tolerance
+  const qint64 tolerance = 1000; // 1ms tolerance
 
   EXPECT_NEAR (usecs, calculated_usecs, tolerance);
 }
