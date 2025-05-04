@@ -91,6 +91,10 @@ target_sources(zrythm_utils_lib
     yaml.h
     yaml.cpp)
 
+set_target_properties(zrythm_utils_lib PROPERTIES
+  UNITY_BUILD ON
+)
+
 target_precompile_headers(zrythm_utils_lib PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/utils.h>)
 

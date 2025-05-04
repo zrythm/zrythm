@@ -46,6 +46,10 @@ target_sources(zrythm_dsp_lib
   true_peak_dsp.cpp
 )
 
+set_target_properties(zrythm_dsp_lib PROPERTIES
+  UNITY_BUILD ON
+)
+
 target_precompile_headers(zrythm_dsp_lib PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/dsp.h>)
 
