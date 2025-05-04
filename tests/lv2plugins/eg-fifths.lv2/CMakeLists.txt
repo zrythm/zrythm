@@ -16,7 +16,9 @@ add_library(eg_fifths_lv2 MODULE
 
 set_target_properties(eg_fifths_lv2 PROPERTIES
   PREFIX ""
-  OUTPUT_NAME "fifths")
+  OUTPUT_NAME "fifths"
+  AUTOMOC OFF
+)
 
 target_link_libraries(eg_fifths_lv2 PRIVATE
   zrythm::lv2)

@@ -16,7 +16,9 @@ add_library(sigabrt_lv2 MODULE
 
 set_target_properties(sigabrt_lv2 PROPERTIES
   PREFIX ""
-  OUTPUT_NAME "sigabrt")
+  OUTPUT_NAME "sigabrt"
+  AUTOMOC OFF
+)
 
 target_link_libraries(sigabrt_lv2 PRIVATE
   zrythm::lv2)

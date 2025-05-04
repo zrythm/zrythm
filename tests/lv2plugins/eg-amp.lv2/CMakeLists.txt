@@ -16,7 +16,9 @@ add_library(eg_amp_lv2 MODULE
 
 set_target_properties(eg_amp_lv2 PROPERTIES
   PREFIX ""
-  OUTPUT_NAME "amp")
+  OUTPUT_NAME "amp"
+  AUTOMOC OFF
+)
 
 target_link_libraries(eg_amp_lv2 PRIVATE
   zrythm::lv2)

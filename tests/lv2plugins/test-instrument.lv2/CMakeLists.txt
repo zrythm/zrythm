@@ -16,7 +16,9 @@ add_library(test_instrument_lv2 MODULE
 
 set_target_properties(test_instrument_lv2 PROPERTIES
   PREFIX ""
-  OUTPUT_NAME "test-instrument")
+  OUTPUT_NAME "test-instrument"
+  AUTOMOC OFF
+)
 
 target_link_libraries(test_instrument_lv2 PRIVATE
   zrythm::lv2)

@@ -20,6 +20,7 @@ set_target_properties(plumbing_lv2 PROPERTIES
   PREFIX ""
   OUTPUT_NAME "plumbing"
   UNITY_BUILD OFF
+  AUTOMOC OFF
 )
 
 target_link_libraries(plumbing_lv2 PRIVATE
