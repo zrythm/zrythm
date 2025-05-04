@@ -191,7 +191,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     tracklist_selections_action_type_ == Type::MoveInside
     || tracklist_selections_action_type_ == Type::CopyInside)
     {
-      auto _foldable_tr = TRACKLIST->get_track_at_index (track_pos);
+      [[maybe_unused]] auto _foldable_tr =
+        TRACKLIST->get_track_at_index (track_pos);
       assert (
         TrackSpan::derived_from_type_projection<FoldableTrack> (_foldable_tr));
     }
