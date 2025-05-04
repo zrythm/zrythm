@@ -28,7 +28,7 @@ AudioEngineApplication::AudioEngineApplication ()
   qt_app_ = std::make_unique<QCoreApplication> (argc, nullptr);
 
   qt_app_->setApplicationName (u"ZrythmEngine"_s);
-  qt_app_->setApplicationVersion (QString::fromUtf8 ("1.0"));
+  qt_app_->setApplicationVersion (u"1.0"_s);
   qt_app_->setOrganizationName (u"Zrythm.org"_s);
   qt_app_->setOrganizationDomain (u"zrythm.org"_s);
 

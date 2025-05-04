@@ -7,6 +7,7 @@
 #include "utils/traits.h"
 
 #include <QString>
+#include <QUrl>
 
 #include <fmt/format.h>
 
@@ -39,10 +40,10 @@ is_ascii (std::string_view string);
  * Returns if the given string contains the given substring.
  */
 bool
-contains_substr (const char * str, const char * substr);
+contains_substr (std::string_view str, std::string_view substr);
 
 bool
-contains_substr_case_insensitive (const char * str, const char * substr);
+contains_substr_case_insensitive (std::string_view str, std::string_view substr);
 
 /**
  * @brief Converts only ASCII characters to uppercase.
@@ -213,6 +214,9 @@ private:
 std::string
 join (const std::vector<std::string> &strings, std::string_view delimiter);
 
+QString
+qurl_to_path_qstring (const QUrl &url);
+
 }; // namespace zrythm::utils::string
 
 static inline std::string
@@ -227,7 +231,7 @@ juce_string_to_std_string (const juce::String &str);
 static inline QString
 std_string_to_qstring (const std::string &str)
 {
-  return QString::fromStdString (str);
+  return QString::fromLocal8Bit (str);
 }
 
 QString

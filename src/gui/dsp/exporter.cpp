@@ -335,8 +335,8 @@ Exporter::export_audio (Settings &info)
 
       if (clipped)
         {
-          float       max_db = utils::math::amp_to_dbfs (clip_amp);
-          const auto  warn_str = format_str (
+          float      max_db = utils::math::amp_to_dbfs (clip_amp);
+          const auto warn_str = format_str (
             utils::qstring_to_std_string (QObject::tr (
               "The exported audio contains segments louder than 0 dB (max detected %.1f dB).")),
             max_db);

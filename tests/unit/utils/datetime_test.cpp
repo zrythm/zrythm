@@ -9,6 +9,8 @@
 
 #include <QDateTime>
 
+using namespace Qt::StringLiterals;
+
 TEST (DateTimeTest, GetCurrentAsStringFormat)
 {
   // Define regex pattern for YYYY-MM-DD HH:MM:SS
@@ -26,8 +28,7 @@ TEST (DateTimeTest, GetCurrentAsStringFormat)
   auto time_t_now = std::chrono::system_clock::to_time_t (now);
   auto time_t_str =
     QDateTime::fromString (
-      utils::std_string_to_qstring (datetime_str),
-      QString::fromUtf8 ("yyyy-MM-dd hh:mm:ss"))
+      utils::std_string_to_qstring (datetime_str), u"yyyy-MM-dd hh:mm:ss"_s)
       .toSecsSinceEpoch ();
 
   // Allow 2 second difference to account for processing time

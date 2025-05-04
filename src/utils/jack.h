@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -7,7 +7,11 @@
 
 #ifdef HAVE_JACK
 
+#  include <QString>
+
 #  include "weakjack/weak_libjack.h"
+
+using namespace Qt::StringLiterals;
 
 namespace zrythm::utils::jack
 {
@@ -22,53 +26,53 @@ get_error_message (jack_status_t status)
           /* TRANSLATORS: JACK failure messages */
           QObject::tr ("Overall operation failed");
       }
-    else if (status & JackInvalidOption)
+    if (status & JackInvalidOption)
       {
         return QObject::tr (
           "The operation contained an invalid or unsupported option");
       }
-    else if (status & JackNameNotUnique)
+    if (status & JackNameNotUnique)
       {
         return QObject::tr ("The desired client name was not unique");
       }
-    else if (status & JackServerFailed)
+    if (status & JackServerFailed)
       {
         return QObject::tr ("Unable to connect to the JACK server");
       }
-    else if (status & JackServerError)
+    if (status & JackServerError)
       {
         return QObject::tr ("Communication error with the JACK server");
       }
-    else if (status & JackNoSuchClient)
+    if (status & JackNoSuchClient)
       {
         return QObject::tr ("Requested client does not exist");
       }
-    else if (status & JackLoadFailure)
+    if (status & JackLoadFailure)
       {
         return QObject::tr ("Unable to load internal client");
       }
-    else if (status & JackInitFailure)
+    if (status & JackInitFailure)
       {
         return QObject::tr ("Unable to initialize client");
       }
-    else if (status & JackShmFailure)
+    if (status & JackShmFailure)
       {
         return QObject::tr ("Unable to access shared memory");
       }
-    else if (status & JackVersionError)
+    if (status & JackVersionError)
       {
         return QObject::tr ("Client's protocol version does not match");
       }
-    else if (status & JackBackendError)
+    if (status & JackBackendError)
       {
         return QObject::tr ("Backend error");
       }
-    else if (status & JackClientZombie)
+    if (status & JackClientZombie)
       {
         return QObject::tr ("Client zombie");
       }
 
-    z_return_val_if_reached (QString::fromUtf8 ("unknown JACK error"));
+    z_return_val_if_reached (u"unknown JACK error"_s);
   }());
 }
 }

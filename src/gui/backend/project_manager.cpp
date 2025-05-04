@@ -216,7 +216,7 @@ ProjectManager::createNewProject (
       {
         z_warning ("Failed to create project: {}", e.what ());
         QMetaObject::invokeMethod (
-          this, [this, msg = QString::fromUtf8 (e.what ())] {
+          this, [this, msg = utils::std_string_to_qstring (e.what ())] {
             Q_EMIT projectLoadingFailed (msg);
           });
       }

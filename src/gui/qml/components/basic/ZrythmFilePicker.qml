@@ -6,6 +6,7 @@ import QtQuick
 import ZrythmStyle 1.0
 import QtQuick.Dialogs
 import QtQuick.Layouts
+import Zrythm 1.0
 
 RowLayout {
     id: control
@@ -43,7 +44,7 @@ RowLayout {
         readonly property url currentUrl: control.pickFolder ? folderDialog.currentFolder : fileDialog.currentFile
 
         Layout.fillWidth: true
-        text: currentUrl ? currentUrl.toString().replace("file://", "") : "(no path selected)"
+        text: currentUrl ? QmlUtils.toPathString(currentUrl) : "(no path selected)"
         readOnly: true
     }
 

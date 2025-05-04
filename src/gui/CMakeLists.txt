@@ -194,17 +194,21 @@ qt_add_qml_module(zrythm
     backend/cursor_manager.cpp
     backend/global_state.h
     backend/global_state.cpp
-    backend/recent_projects_model.h
-    backend/recent_projects_model.cpp
+    backend/meter.h
+    backend/meter.cpp
     backend/position_proxy.h
     backend/position_proxy.cpp
     backend/project_info.h
     backend/project_info.cpp
     backend/project_templates_model.h
     backend/project_templates_model.cpp
+    backend/qml_utils.h
+    backend/qml_utils.cpp
     backend/realtime_property.h
     backend/realtime_updater.h
     backend/realtime_updater.cpp
+    backend/recent_projects_model.h
+    backend/recent_projects_model.cpp
     backend/resource_manager.h
     backend/resource_manager.cpp
     backend/tool.h
@@ -213,8 +217,6 @@ qt_add_qml_module(zrythm
     backend/track_filter_proxy_model.cpp
     backend/translation_manager.h
     backend/translation_manager.cpp
-    backend/meter.h
-    backend/meter.cpp
     backend/zrythm_application.h
     backend/zrythm_application.cpp
 

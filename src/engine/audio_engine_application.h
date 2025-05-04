@@ -10,6 +10,8 @@
 #include "engine/ipc_message.h"
 #include "juce_wrapper.h"
 
+using namespace Qt::StringLiterals;
+
 namespace zrythm::engine
 {
 class AudioEngineJuceApplicationWrapper : public juce::JUCEApplicationBase
@@ -40,7 +42,7 @@ public:
 
   static bool is_audio_engine_process ()
   {
-    return qApp->applicationName () == QString::fromUtf8 ("ZrythmEngine");
+    return qApp->applicationName () == u"ZrythmEngine"_s;
   }
 
 private:

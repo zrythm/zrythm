@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/gtest_wrapper.h"
 #include "utils/string_array.h"
+
+using namespace Qt::StringLiterals;
 
 TEST (StringArrayTest, Construction)
 {
@@ -13,7 +15,7 @@ TEST (StringArrayTest, Construction)
 
   // Test QStringList construction
   QStringList qlist;
-  qlist << QString::fromUtf8 ("four") << QString::fromUtf8 ("five");
+  qlist << u"four"_s << u"five"_s;
   StringArray arr2 (qlist);
   EXPECT_EQ (arr2.size (), 2);
 }
@@ -50,7 +52,7 @@ TEST (StringArrayTest, Conversion)
 
   auto qlist = arr.toQStringList ();
   EXPECT_EQ (qlist.size (), 2);
-  EXPECT_EQ (qlist[0], QString::fromUtf8 ("test1"));
+  EXPECT_EQ (qlist[0], u"test1"_s);
 }
 
 TEST (StringArrayTest, Iteration)

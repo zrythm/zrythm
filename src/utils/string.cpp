@@ -45,17 +45,19 @@ is_equal_ignore_case (const std::string &str1, const std::string &str2)
 }
 
 bool
-contains_substr (const char * str, const char * substr)
+contains_substr (std::string_view str, std::string_view substr)
 {
-  return QString::fromUtf8 (str).contains (
-    QString::fromUtf8 (substr), Qt::CaseSensitive);
+  return utils::std_string_to_qstring (std::string (str))
+    .contains (
+      utils::std_string_to_qstring (std::string{ substr }), Qt::CaseSensitive);
 }
 
 bool
-contains_substr_case_insensitive (const char * str, const char * substr)
+contains_substr_case_insensitive (std::string_view str, std::string_view substr)
 {
-  return QString::fromUtf8 (str).contains (
-    QString::fromUtf8 (substr), Qt::CaseInsensitive);
+  return utils::std_string_to_qstring (std::string{ str })
+    .contains (
+      utils::std_string_to_qstring (std::string{ substr }), Qt::CaseInsensitive);
 }
 
 void
@@ -235,6 +237,12 @@ std::string
 join (const std::vector<std::string> &strings, std::string_view delimiter)
 {
   return fmt::format ("{}", fmt::join (strings, delimiter));
+}
+
+QString
+qurl_to_path_qstring (const QUrl &url)
+{
+  return url.toLocalFile ();
 }
 
 }; // namespace zrythm::utils::string
