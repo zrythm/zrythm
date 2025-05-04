@@ -82,10 +82,10 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-13-$CI_RUNNER_DESCRIPTION
+  - key: cache-14-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
-      - "$BUILDDIR/_deps/*-src"
+      - '${BUILDDIR}-*/_deps/*-src'
 
 configure:gnu/linux:
   extends: .gnu-linux-template
@@ -96,16 +96,20 @@ configure:gnu/linux:
     - python3 -m pip install -r requirements.txt
   script:
     - >-
-      cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
+      cmake -B ${BUILDDIR}-${BUILD_TYPE} ${COMMON_CMAKE_OPTIONS}
       -G "Ninja"
       -DCMAKE_C_COMPILER=gcc
       -DCMAKE_CXX_COMPILER=g++
       -DCMAKE_PREFIX_PATH=/opt/Qt6.9
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Debug, Release]
   artifacts:
     paths:
-      - $BUILDDIR
+      - ${BUILDDIR}-${BUILD_TYPE}
     exclude:
-      - $BUILDDIR/**/.git/**/*
+      - ${BUILDDIR}-${BUILD_TYPE}/**/.git/**/*
     expire_in: 1 day
 
 configure:mac-arm:
@@ -117,14 +121,18 @@ configure:mac-arm:
     - python3 -m pip install -r requirements.txt
   script:
     - >-
-      cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
+      cmake -B ${BUILDDIR}-${BUILD_TYPE} ${COMMON_CMAKE_OPTIONS}
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/homebrew/Cellar/lv2/1.18.10;/opt/Qt6.9"
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Debug, Release]
   artifacts:
     paths:
-      - $BUILDDIR
+      - ${BUILDDIR}-${BUILD_TYPE}
     exclude:
-      - $BUILDDIR/**/.git/**/*
+      - ${BUILDDIR}-${BUILD_TYPE}/**/.git/**/*
     expire_in: 1 day
 
 configure:windows:
@@ -143,18 +151,20 @@ configure:windows:
       -DZRYTHM_BENCHMARKS=ON
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
-      "-DCMAKE_PREFIX_PATH=C:\Qt\Qt-6.9.0-debug;C:\lv2"
+      "-DCMAKE_PREFIX_PATH=C:\Qt\Qt-6.9.0-${env:BUILD_TYPE};C:\lv2"
       -G "Visual Studio 17 2022"
       -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL"
-      "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-debug\bin"
-      -DCMAKE_BUILD_TYPE=Debug
+      "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin"
+      -DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
-
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Debug, Release]
   artifacts:
     paths:
-      - $BUILDDIR
+      - ${BUILDDIR}-${BUILD_TYPE}
     exclude:
-      - $BUILDDIR/**/.git/**/*
+      - ${BUILDDIR}-${BUILD_TYPE}/**/.git/**/*
     expire_in: 1 day
 
 clang-format-check:
@@ -179,19 +189,19 @@ exif-check:
    - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir $BUILDDIR -V || (cat "$BUILDDIR/Testing/Temporary/LastTest.log" && exit 1)
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
 
 clang-tidy-check:
   extends: .gnu-linux-template
   stage: check
   needs:
-    - job: configure:gnu/linux
+    - job: configure:gnu/linux:Debug
       artifacts: true
   script:
     - >-
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
-      -path $BUILDDIR -config-file .clang-tidy
+      -path ${BUILDDIR}-Debug -config-file .clang-tidy
       -use-color
 
 build:gnu/linux:
@@ -200,17 +210,23 @@ build:gnu/linux:
   needs:
     - job: configure:gnu/linux
       artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: [Debug, Release]
     - job: exif-check
     - job: reuse-check
     - job: clang-format-check
   script:
-    - cmake --build $BUILDDIR --parallel
+    - cmake --build ${BUILDDIR}-${BUILD_TYPE} --parallel
     - *unix_test_cmd
     - >-
-      ctest --test-dir $BUILDDIR -V
+      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata"
-      || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
+      || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/MemoryChecker.*.log" && exit 1)
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Debug, Release]
 
 build:mac-arm:
   extends: .mac-arm-template
@@ -218,9 +234,15 @@ build:mac-arm:
   needs:
     - job: configure:mac-arm
       artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: [Debug, Release]
   script:
-    - cmake --build $BUILDDIR --config Debug --parallel
+    - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
     - *unix_test_cmd
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Debug, Release]
 
 build:windows:
   extends: .windows-template
@@ -228,26 +250,20 @@ build:windows:
   needs:
     - job: configure:windows
       artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: [Debug, Release]
   script:
-    - cmake --build ${env:BUILDDIR} --config Debug --verbose --parallel
+    - cmake --build ${env:BUILDDIR}-${env:BUILD_TYPE} --config ${env:BUILD_TYPE} --verbose --parallel
     # copy DLLs and resources needed at runtime for tests, etc.
     - >-
-      C:\Qt\Qt-6.9.0-debug\bin\windeployqt.exe
-      --qmldir "${env:BUILDDIR}" --pdb --force -qml -widgets -quick -quickwidgets
+      C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe
+      --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets
       ${env:BUILDDIR}\Debug\zrythm.exe
-    - ctest --test-dir ${env:BUILDDIR} -V; if (-not $?) { Get-Content ${env:BUILDDIR}/Testing/Temporary/LastTest.log; exit 1 }
-
-package:windows:
-  extends: .windows-template
-  stage: deploy
-  needs:
-    - job: configure:windows
-      artifacts: true
-    - job: build:windows
-      artifacts: true
-  script:
-    - cmake --build ${env:BUILDDIR} --config Release --verbose --parallel
-    - windeployqt ${env:BUILDDIR}/src/gui/zrythm.exe
+    - ctest --test-dir ${env:BUILDDIR}-${env:BUILD_TYPE} -V; if (-not $?) { Get-Content ${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log; exit 1 }
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Debug, Release]
 
 update-manual:
   stage: deploy
@@ -256,9 +272,11 @@ update-manual:
     - tags
   tags:
     - archlinux
+  needs:
+    - job: build:gnu/linux:Debug
   script:
-    - ninja -C $BUILDDIR manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
-    - rsync -av --no-group --omit-dir-times --exclude '*.zip' "$BUILDDIR"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
+    - ninja -C ${BUILDDIR}-Debug manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
+    - rsync -av --no-group --omit-dir-times --exclude '*.zip' "${BUILDDIR}-Debug"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
     #- ssh-add <(echo "$SSH_PRIVATE_KEY")
@@ -274,9 +292,11 @@ update-dev-docs:
     - tags
   tags:
     - archlinux
+  needs:
+    - update-manual
   script:
-    - cmake --build $BUILDDIR --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
-    - rsync -av --no-group --omit-dir-times "$BUILDDIR"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
+    - cmake --build ${BUILDDIR}-Debug --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
+    - rsync -av --no-group --omit-dir-times "${BUILDDIR}-Debug"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
     #- ssh-add <(echo "$SSH_PRIVATE_KEY")
