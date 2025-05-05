@@ -35,6 +35,7 @@ endif()
 
 set_target_properties(zrythm_utils_unit_tests PROPERTIES
   AUTOMOC ON
+  UNITY_BUILD ON
 )
 
 target_link_libraries(zrythm_utils_unit_tests PRIVATE

@@ -160,6 +160,7 @@ configure:windows:
       "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin"
       "-DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}"
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
+      -DCMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE=PRE_TEST
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]

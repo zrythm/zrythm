@@ -43,6 +43,7 @@ endif()
 
 set_target_properties(zrythm_gui_lib PROPERTIES
   OUTPUT_NAME zrythm_gui_lib
+  UNITY_BUILD ON
 )
 target_link_libraries(zrythm_gui_lib
   PUBLIC

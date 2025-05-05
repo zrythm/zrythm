@@ -76,12 +76,12 @@ private:
 // FIXME!!!
 // static_assert (UuidIdentifiableQObject<DerivedTestObject>);
 
-using TestVariant = std::variant<DerivedTestObject *>;
-using TestRegistry = utils::OwningObjectRegistry<TestVariant, BaseTestObject>;
-
 class UuidIdentifiableObjectRegistryTest : public ::testing::Test
 {
 protected:
+  using TestVariant = std::variant<DerivedTestObject *>;
+  using TestRegistry = utils::OwningObjectRegistry<TestVariant, BaseTestObject>;
+
   void SetUp () override
   {
     obj1_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object1");
@@ -97,6 +97,11 @@ protected:
   DerivedTestObject * obj1_{};
   DerivedTestObject * obj2_{};
   DerivedTestObject * obj3_{};
+
+  static_assert (
+    std::copy_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);
+  static_assert (
+    std::move_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);
 };
 
 class UuidIdentifiableObjectSelectionManagerTest
@@ -105,6 +110,9 @@ class UuidIdentifiableObjectSelectionManagerTest
 {
   Q_OBJECT
 protected:
+  using TestVariant = std::variant<DerivedTestObject *>;
+  using TestRegistry = utils::OwningObjectRegistry<TestVariant, BaseTestObject>;
+
   void SetUp () override
   {
     obj1_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object1");
@@ -128,8 +136,3 @@ protected:
   std::unique_ptr<utils::UuidIdentifiableObjectSelectionManager<TestRegistry>>
     selection_manager_;
 };
-
-static_assert (
-  std::copy_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);
-static_assert (
-  std::move_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);

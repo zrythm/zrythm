@@ -12,40 +12,40 @@ using namespace testing;
 namespace zrythm::dsp
 {
 
-class MockProcessable : public IProcessable
-{
-public:
-  MOCK_METHOD (std::string, get_node_name, (), (const, override));
-  MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
-  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
-};
-
-class MockTransport : public ITransport
-{
-public:
-  MOCK_METHOD (
-    void,
-    position_add_frames,
-    (Position &, signed_frame_t),
-    (const, override));
-  MOCK_METHOD (
-    (std::pair<Position, Position>),
-    get_loop_range_positions,
-    (),
-    (const, override));
-  MOCK_METHOD (PlayState, get_play_state, (), (const, override));
-  MOCK_METHOD (Position, get_playhead_position, (), (const, override));
-  MOCK_METHOD (bool, get_loop_enabled, (), (const, override));
-  MOCK_METHOD (
-    nframes_t,
-    is_loop_point_met,
-    (signed_frame_t g_start_frames, nframes_t nframes),
-    (const, override));
-};
-
 class GraphNodeTest : public ::testing::Test
 {
 protected:
+  class MockProcessable : public IProcessable
+  {
+  public:
+    MOCK_METHOD (std::string, get_node_name, (), (const, override));
+    MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
+    MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
+  };
+
+  class MockTransport : public ITransport
+  {
+  public:
+    MOCK_METHOD (
+      void,
+      position_add_frames,
+      (Position &, signed_frame_t),
+      (const, override));
+    MOCK_METHOD (
+      (std::pair<Position, Position>),
+      get_loop_range_positions,
+      (),
+      (const, override));
+    MOCK_METHOD (PlayState, get_play_state, (), (const, override));
+    MOCK_METHOD (Position, get_playhead_position, (), (const, override));
+    MOCK_METHOD (bool, get_loop_enabled, (), (const, override));
+    MOCK_METHOD (
+      nframes_t,
+      is_loop_point_met,
+      (signed_frame_t g_start_frames, nframes_t nframes),
+      (const, override));
+  };
+
   void SetUp () override
   {
     transport_ = std::make_unique<MockTransport> ();

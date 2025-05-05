@@ -18,6 +18,7 @@ set_target_properties(zrythm PROPERTIES
   MACOSX_BUNDLE_SHORT_VERSION_STRING ${ZRYTHM_VERSION}
   MACOSX_BUNDLE TRUE
   WIN32_EXECUTABLE TRUE
+  UNITY_BUILD OFF # unity build is not supported by auto-generated Qt files
 )
 
 # add_subdirectory(resources)

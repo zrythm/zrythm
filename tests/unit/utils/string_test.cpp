@@ -6,6 +6,8 @@
 
 #include <QtEnvironmentVariables>
 
+using namespace Qt::StringLiterals;
+
 using namespace zrythm::utils;
 using namespace zrythm::utils::string;
 
@@ -102,10 +104,11 @@ TEST (StringTest, StringConversions)
   }
 
   // QString <-> std::string
+  // note: emojis don't work
   {
-    QString     qStr ("Test 😊");
+    QString     qStr (u"Test 日本語"_s);
     std::string stdStr = qstring_to_std_string (qStr);
-    EXPECT_EQ (stdStr, "Test 😊");
+    EXPECT_EQ (stdStr, "Test 日本語");
 
     QString convertedBack = std_string_to_qstring (stdStr);
     EXPECT_EQ (convertedBack, qStr);

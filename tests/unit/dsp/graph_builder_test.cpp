@@ -9,9 +9,10 @@
 
 using namespace testing;
 
-namespace zrythm::dsp
-{
+using namespace zrythm::dsp;
 
+namespace graph_builder_test
+{
 class MockProcessable : public IProcessable
 {
 public:
@@ -42,12 +43,15 @@ public:
     (signed_frame_t g_start_frames, nframes_t nframes),
     (const, override));
 };
+}; // namespace graph_builder_test
 
 // Simple test implementation of IGraphBuilder
 class TestGraphBuilder : public IGraphBuilder
 {
 public:
-  TestGraphBuilder (MockTransport &transport, MockProcessable &processable)
+  TestGraphBuilder (
+    graph_builder_test::MockTransport   &transport,
+    graph_builder_test::MockProcessable &processable)
       : transport_ (transport), processable_ (processable)
   {
   }
@@ -65,8 +69,8 @@ protected:
   }
 
 private:
-  MockTransport   &transport_;
-  MockProcessable &processable_;
+  graph_builder_test::MockTransport   &transport_;
+  graph_builder_test::MockProcessable &processable_;
 };
 
 class GraphBuilderTest : public ::testing::Test
@@ -74,15 +78,15 @@ class GraphBuilderTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    transport_ = std::make_unique<MockTransport> ();
-    processable_ = std::make_unique<MockProcessable> ();
+    transport_ = std::make_unique<graph_builder_test::MockTransport> ();
+    processable_ = std::make_unique<graph_builder_test::MockProcessable> ();
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return ("test_node"));
   }
 
-  std::unique_ptr<MockTransport>   transport_;
-  std::unique_ptr<MockProcessable> processable_;
+  std::unique_ptr<graph_builder_test::MockTransport>   transport_;
+  std::unique_ptr<graph_builder_test::MockProcessable> processable_;
 };
 
 TEST_F (GraphBuilderTest, BuildsValidGraph)
@@ -122,6 +126,4 @@ TEST_F (GraphBuilderTest, LatenciesUpdated)
   builder.build_graph (graph);
 
   EXPECT_EQ (graph.get_nodes ().get_max_route_playback_latency (), 128);
-}
-
 }

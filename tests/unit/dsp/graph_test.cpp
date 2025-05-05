@@ -9,9 +9,10 @@
 
 using namespace testing;
 
-namespace zrythm::dsp
-{
+using namespace zrythm::dsp;
 
+namespace graph_test
+{
 class MockProcessable : public IProcessable
 {
 public:
@@ -42,21 +43,22 @@ public:
     (signed_frame_t g_start_frames, nframes_t nframes),
     (const, override));
 };
+}; // namespace graph_test
 
 class GraphTest : public ::testing::Test
 {
 protected:
   void SetUp () override
   {
-    transport_ = std::make_unique<MockTransport> ();
-    processable_ = std::make_unique<MockProcessable> ();
+    transport_ = std::make_unique<graph_test::MockTransport> ();
+    processable_ = std::make_unique<graph_test::MockProcessable> ();
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return ("test_node"));
   }
 
-  std::unique_ptr<MockTransport>   transport_;
-  std::unique_ptr<MockProcessable> processable_;
+  std::unique_ptr<graph_test::MockTransport>   transport_;
+  std::unique_ptr<graph_test::MockProcessable> processable_;
 };
 
 TEST_F (GraphTest, BasicNodeAddition)
@@ -132,6 +134,4 @@ TEST_F (GraphTest, CyclicGraphDetection)
   graph.finalize_nodes ();
 
   EXPECT_FALSE (graph.is_valid ());
-}
-
 }
