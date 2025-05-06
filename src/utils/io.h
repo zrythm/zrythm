@@ -208,7 +208,8 @@ get_files_in_dir_ending_in (
   const std::optional<utils::Utf8String> &end_string);
 
 /**
- * Returns a list of the files in the given directory.
+
+* Returns a list of the files in the given directory.
  *
  * @see io_get_files_in_dir_ending_in().
  * @throw ZrythmException If @ref dir cannot be opened.
@@ -279,8 +280,8 @@ get_legal_path_name (const Utf8String &path);
 /**
  * @brief Returns the registry value for the given key in Zrythm's registry path.
  */
-utils::UUtf8String
-get_registry_string_val (const utils::UUtf8String &key);
+utils::Utf8String
+get_registry_string_val (const utils::Utf8String &key);
 #endif
 
 #if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER

@@ -450,22 +450,23 @@ get_legal_path_name (const Utf8String &path)
 }
 
 #ifdef _WIN32
-std::string
-get_registry_string_val (const std::string &key)
+utils::Utf8String
+get_registry_string_val (const utils::Utf8String &key)
 {
   auto full_path = fmt::format (
-    "HKEY_LOCAL_MACHINE\\Software\\{}\\{}\\Settings\\{}", PROGRAM_NAME,
+    R"(HKEY_LOCAL_MACHINE\Software\{}\{}\Settings\{})", PROGRAM_NAME,
     PROGRAM_NAME, key);
-  auto value = juce::WindowsRegistry::getValue (juce::String (full_path));
+  // auto value = juce::WindowsRegistry::getValue
+  // (utils::Utf8String::from_utf8_encoded_string(full_path).to_juce_string());
 
   if (!value.isEmpty ())
     {
       z_info ("reg value: {}", value);
-      return juce_string_to_std_string (value);
+      return utils::Utf8String::from_juce_string (value);
     }
 
   z_warning ("reg value not found: {}", full_path);
-  return "";
+  return {};
 }
 #endif
 
