@@ -94,6 +94,17 @@ get_dir (const fs::path &filename)
     .to_path ();
 }
 
+fs::path
+uri_to_file (const utils::Utf8String &uri)
+{
+  auto url = QUrl (uri.to_qstring ());
+  if (!url.isValid ())
+    {
+      throw ZrythmException (fmt::format ("Failed to parse URI '{}'", uri));
+    }
+  return utils::Utf8String::from_qstring (url.toLocalFile ()).to_path ();
+}
+
 void
 mkdir (const fs::path &dir)
 {
