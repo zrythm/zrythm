@@ -456,8 +456,8 @@ get_registry_string_val (const utils::Utf8String &key)
   auto full_path = fmt::format (
     R"(HKEY_LOCAL_MACHINE\Software\{}\{}\Settings\{})", PROGRAM_NAME,
     PROGRAM_NAME, key);
-  // auto value = juce::WindowsRegistry::getValue
-  // (utils::Utf8String::from_utf8_encoded_string(full_path).to_juce_string());
+  auto value = juce::WindowsRegistry::getValue (
+    utils::Utf8String::from_utf8_encoded_string (full_path).to_juce_string ());
 
   if (!value.isEmpty ())
     {
