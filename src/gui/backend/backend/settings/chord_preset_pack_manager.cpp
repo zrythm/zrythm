@@ -465,13 +465,13 @@ ChordPresetPackManager::add_user_packs ()
       const auto main_path = get_user_packs_path ();
       z_debug ("Reading user chord packs from {}...", main_path.string ());
 
-      StringArray pack_paths;
+      std::vector<fs::path> pack_paths;
       if (fs::is_directory (main_path))
         {
           try
             {
               pack_paths = utils::io::get_files_in_dir_ending_in (
-                main_path.string (), true, ".json");
+                main_path.string (), true, u8".json");
             }
           catch (const ZrythmException &e)
             {
@@ -480,11 +480,12 @@ ChordPresetPackManager::add_user_packs ()
                 main_path.string (), e.what ());
             }
         }
-      if (!pack_paths.isEmpty ())
+      if (!pack_paths.empty ())
         {
           for (const auto &pack_path : pack_paths)
             {
-              QFileInfo file_info (utils::juce_string_to_qstring (pack_path));
+              QFileInfo file_info (
+                utils::Utf8String::from_path (pack_path).to_qstring ());
               if (!file_info.exists () || file_info.isDir ())
                 {
                   continue;
@@ -493,7 +494,7 @@ ChordPresetPackManager::add_user_packs ()
               z_debug ("checking file {}", pack_path);
 
               QFile f (file_info.absoluteFilePath ());
-              auto  json = utils::qstring_to_std_string (f.readAll ());
+              auto  json = utils::Utf8String::from_qstring (f.readAll ());
 
               try
                 {
@@ -668,14 +669,14 @@ ChordPresetPackManager::serialize ()
       z_return_if_fail (!pack->name_.isEmpty ());
 
       const auto pack_dir =
-        main_path / utils::io::qstring_to_fs_path (pack->name_);
+        main_path / utils::Utf8String::from_qstring (pack->name_);
       const auto pack_path = pack_dir / UserPackJsonFilename;
       try
         {
-          utils::io::mkdir (pack_dir.string ());
+          utils::io::mkdir (pack_dir);
 
           auto pack_json = pack->serialize_to_json_string ();
-          utils::io::set_file_contents (pack_path, pack_json.c_str ());
+          utils::io::set_file_contents (pack_path, pack_json.to_utf8_string ());
         }
       catch (const ZrythmException &e)
         {

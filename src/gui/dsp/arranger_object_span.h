@@ -24,7 +24,7 @@ public:
   static auto name_projection (const VariantType &obj_var)
   {
     return std::visit (
-      [] (const auto &obj) -> std::string {
+      [] (const auto &obj) -> utils::Utf8String {
         using ObjT = base_type<decltype (obj)>;
         if constexpr (std::derived_from<ObjT, NamedObject>)
           {

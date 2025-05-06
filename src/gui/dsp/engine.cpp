@@ -724,7 +724,7 @@ AudioEngine::init_common ()
     }
 
   midi_clock_out_ =
-    std::make_unique<MidiPort> ("MIDI Clock Out", dsp::PortFlow::Output);
+    std::make_unique<MidiPort> (u8"MIDI Clock Out", dsp::PortFlow::Output);
   midi_clock_out_->set_owner (*this);
   midi_clock_out_->id_->flags2_ |= dsp::PortIdentifier::Flags2::MidiClock;
 }
@@ -796,19 +796,19 @@ AudioEngine::AudioEngine (Project * project)
   z_debug ("Creating audio engine...");
 
   midi_editor_manual_press_ = std::make_unique<MidiPort> (
-    "MIDI Editor Manual Press", dsp::PortFlow::Input);
+    u8"MIDI Editor Manual Press", dsp::PortFlow::Input);
   midi_editor_manual_press_->set_owner (*this);
-  midi_editor_manual_press_->id_->sym_ = "midi_editor_manual_press";
+  midi_editor_manual_press_->id_->sym_ = u8"midi_editor_manual_press";
   midi_editor_manual_press_->id_->flags_ |=
     dsp::PortIdentifier::Flags::ManualPress;
 
-  midi_in_ = std::make_unique<MidiPort> ("MIDI in", dsp::PortFlow::Input);
+  midi_in_ = std::make_unique<MidiPort> (u8"MIDI in", dsp::PortFlow::Input);
   midi_in_->set_owner (*this);
-  midi_in_->id_->sym_ = "midi_in";
+  midi_in_->id_->sym_ = u8"midi_in";
 
   {
     auto monitor_out = StereoPorts::create_stereo_ports (
-      project_->get_port_registry (), false, "Monitor Out", "monitor_out");
+      project_->get_port_registry (), false, u8"Monitor Out", u8"monitor_out");
     monitor_out_left_ = monitor_out.first;
     monitor_out_right_ = monitor_out.second;
   }
@@ -1724,7 +1724,7 @@ AudioEngine::set_port_metadata_from_owner (
   id.owner_type_ = dsp::PortIdentifier::OwnerType::AudioEngine;
 }
 
-std::string
+utils::Utf8String
 AudioEngine::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
   return id.get_label ();

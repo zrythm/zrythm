@@ -33,13 +33,14 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   if (new_identity)
     {
       assert (idx.has_value ());
-      name_ = format_str (
-        utils::qstring_to_std_string (QObject::tr ("Macro {}")), *idx + 1);
+      name_ = utils::Utf8String::from_qstring (
+        format_qstr (QObject::tr ("Macro {}"), *idx + 1));
       {
         macro_id_ = port_registry.create_object<ControlPort> (name_);
         auto &macro = get_macro_port ();
         macro.set_owner (*this);
-        macro.id_->sym_ = fmt::format ("macro_{}", *idx + 1);
+        macro.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("macro_{}", *idx + 1));
         macro.range_ = { 0.f, 1.f };
         macro.deff_ = 0.f;
         macro.set_control_value (0.75f, false, false);
@@ -50,26 +51,26 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 
       {
         cv_in_id_ = port_registry.create_object<CVPort> (
-          format_str (
-            utils::qstring_to_std_string (QObject::tr ("Macro CV In {}")),
-            *idx + 1),
+          utils::Utf8String::from_qstring (
+            format_qstr (QObject::tr ("Macro CV In {}"), *idx + 1)),
           dsp::PortFlow::Input);
         auto &cv_in = get_cv_in_port ();
         cv_in.set_owner (*this);
-        cv_in.id_->sym_ = fmt::format ("macro_cv_in_{}", *idx + 1);
+        cv_in.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("macro_cv_in_{}", *idx + 1));
         cv_in.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
         cv_in.id_->port_index_ = *idx;
       }
 
       {
         cv_out_id_ = port_registry.create_object<CVPort> (
-          format_str (
-            utils::qstring_to_std_string (QObject::tr ("Macro CV Out {}")),
-            *idx + 1),
+          utils::Utf8String::from_qstring (
+            format_qstr (QObject::tr ("Macro CV Out {}"), *idx + 1)),
           dsp::PortFlow::Output);
         auto &cv_out = get_cv_out_port ();
         cv_out.set_owner (*this);
-        cv_out.id_->sym_ = fmt::format ("macro_cv_out_{}", *idx + 1);
+        cv_out.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("macro_cv_out_{}", *idx + 1));
         cv_out.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
         cv_out.id_->port_index_ = *idx;
       }
@@ -142,11 +143,12 @@ ModulatorMacroProcessor::set_port_metadata_from_owner (
   id.set_track_id (get_track ()->get_uuid ());
 }
 
-std::string
+utils::Utf8String
 ModulatorMacroProcessor::get_full_designation_for_port (
   const dsp::PortIdentifier &id) const
 {
-  return fmt::format ("Modulator Macro Processor/{}", id.label_);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("Modulator Macro Processor/{}", id.label_));
 }
 
 void

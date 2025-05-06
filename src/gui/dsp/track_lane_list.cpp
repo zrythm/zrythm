@@ -40,8 +40,8 @@ TrackLaneList::data (const QModelIndex &index, int role) const
     case TrackLanePtrRole:
       return QVariant::fromStdVariant (lane_var);
     case Qt::DisplayRole:
-      return utils::std_string_to_qstring (
-        std::visit ([&] (auto &&lane) { return lane->get_name (); }, lane_var));
+      return std::visit ([&] (auto &&lane) { return lane->get_name (); }, lane_var)
+        .to_qstring ();
     default:
       return {};
     }

@@ -105,6 +105,7 @@ configure:gnu/linux:
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -DZRYTHM_USER_MANUAL=ON
       -DZRYTHM_STRICT_SPHINX_OPTS=ON
+      -DZRYTHM_UNITY_BUILD=ON
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -128,6 +129,7 @@ configure:mac-arm:
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/homebrew/Cellar/lv2/1.18.10;/opt/Qt6.9"
+      -DZRYTHM_UNITY_BUILD=ON
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -161,6 +163,7 @@ configure:windows:
       "-DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}"
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
       -DCMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE=PRE_TEST
+      -DZRYTHM_UNITY_BUILD=ON
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]

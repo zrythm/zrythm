@@ -53,8 +53,7 @@ AutomationTrack::getLabel () const
   auto port = PROJECT->find_port_by_id (port_id_);
   z_return_val_if_fail (port.has_value (), QString ());
   return std::visit (
-    [&] (auto &&p) { return utils::std_string_to_qstring (p->get_label ()); },
-    port.value ());
+    [&] (auto &&p) { return p->get_label ().to_qstring (); }, port.value ());
 }
 
 void

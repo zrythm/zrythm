@@ -57,14 +57,15 @@ OutOfProcessPluginScanner::SubprocessCoordinator::SubprocessCoordinator ()
   juce::File path;
   if (!path_from_env.isEmpty ())
     {
-      path = juce::File (utils::qstring_to_std_string (path_from_env));
+      path = utils::Utf8String::from_qstring (path_from_env).to_juce_file ();
     }
   else
     {
-      path = juce::File (
-        (utils::io::qstring_to_fs_path (qApp->applicationDirPath ())
-         / "plugin-scanner")
-          .string ());
+      path =
+        utils::Utf8String::from_path (
+          utils::Utf8String::from_qstring (qApp->applicationDirPath ()).to_path ()
+          / u8"plugin-scanner")
+          .to_juce_file ();
     }
   z_trace ("Scanning plugins with {}", path.getFullPathName ());
   if (!launchWorkerProcess (path, ZRYTHM_PLUGIN_SCANNER_UUID, 0, 0))
@@ -235,7 +236,7 @@ Worker::process ()
       for (const auto &identifier : identifiers)
         {
           scanner_.set_currently_scanning_plugin (
-            utils::juce_string_to_qstring (identifier));
+            utils::Utf8String::from_juce_string (identifier).to_qstring ());
           juce::OwnedArray<juce::PluginDescription> types;
           bool has_new = scanner_.known_plugin_list_->scanAndAddFile (
             identifier, true, types, *format);

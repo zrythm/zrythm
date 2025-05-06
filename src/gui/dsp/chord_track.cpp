@@ -32,7 +32,7 @@ ChordTrack::ChordTrack (
   if (new_identity)
     {
       color_ = Color (QColor ("#1C8FFB"));
-      icon_name_ = "gnome-icon-library-library-music-symbolic";
+      icon_name_ = u8"gnome-icon-library-library-music-symbolic";
     }
   automation_tracklist_->setParent (this);
 }

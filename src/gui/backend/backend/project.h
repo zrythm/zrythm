@@ -481,10 +481,10 @@ private:
 
 public:
   /** Project title. */
-  std::string title_;
+  utils::Utf8String title_;
 
   /** Datetime string to add to the project file. */
-  std::string datetime_str_;
+  utils::Utf8String datetime_str_;
 
   /** Path to save the project in. */
   fs::path dir_;
@@ -511,7 +511,7 @@ public:
   std::binary_semaphore save_sem_{ 1 };
 
   /** Zrythm version, for serialization */
-  std::string version_;
+  utils::Utf8String version_;
 
   /**
    * The last thing selected in the GUI.

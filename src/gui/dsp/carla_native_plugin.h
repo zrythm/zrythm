@@ -91,15 +91,15 @@ public:
   get_descriptor_from_cached (const CarlaCachedPluginInfo &info, PluginType type);
 #endif
 
-  void save_state (bool is_backup, const std::string * abs_state_dir) override;
+  void
+  save_state (bool is_backup, std::optional<fs::path> abs_state_dir) override;
 
   /**
-   * Loads the state from the given file or from
-   * its state file.
+   * @brief Loads the state from the given file or from its state file.
    *
    * @throw ZrythmException if failed to load state.
    */
-  void load_state (const std::string * abs_path);
+  void load_state (std::optional<fs::path> abs_path);
 
   void update_buffer_size_and_sample_rate ();
 

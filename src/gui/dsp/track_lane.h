@@ -29,11 +29,11 @@ public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
-    return utils::std_string_to_qstring (name_); \
+    return name_.to_qstring (); \
   } \
   void setName (const QString &name) \
   { \
-    const auto std_name = utils::qstring_to_std_string (name); \
+    const auto std_name = utils::Utf8String::from_qstring (name); \
     if (name_ == std_name) \
       return; \
 \
@@ -77,13 +77,9 @@ public:
 public:
   Q_DISABLE_COPY_MOVE (TrackLane)
 
-  std::string get_name () const { return this->name_; }
+  auto get_name () const { return this->name_; }
 
-  void generate_name (int pos)
-  {
-    name_ = format_str (
-      utils::qstring_to_std_string (QObject::tr ("Lane {}")), pos + 1);
-  }
+  void generate_name (int pos);
 
   bool get_soloed () const { return solo_; }
 
@@ -102,7 +98,7 @@ public:
   // int pos_ = 0;
 
   /** Name of lane, e.g. "Lane 1". */
-  std::string name_;
+  utils::Utf8String name_;
 
   /** Position of handle. */
   double height_{ DEF_HEIGHT };
@@ -196,12 +192,12 @@ public:
    * @param with_action Whether to make this an
    *   undoable action.
    */
-  void rename (const std::string &new_name, bool with_action);
+  void rename (const utils::Utf8String &new_name, bool with_action);
 
   /**
    * Wrapper over track_lane_rename().
    */
-  void rename_with_action (const std::string &new_name);
+  void rename_with_action (const utils::Utf8String &new_name);
 
   /**
    * Unselects all arranger objects.

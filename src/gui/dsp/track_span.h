@@ -95,7 +95,8 @@ public:
     return it != this->end () ? std::make_optional (*it) : std::nullopt;
   }
 
-  std::optional<VariantType> get_track_by_name (const std::string &name) const
+  std::optional<VariantType>
+  get_track_by_name (const utils::Utf8String &name) const
   {
     auto it = std::ranges::find (*this, name, name_projection);
     return it != this->end () ? std::make_optional (*it) : std::nullopt;
@@ -117,7 +118,7 @@ public:
     return std::ranges::max (*this, {}, position_projection);
   }
 
-  bool contains_track_name (const std::string &name) const
+  bool contains_track_name (const utils::Utf8String &name) const
   {
     return std::ranges::contains (*this, name, name_projection);
   }

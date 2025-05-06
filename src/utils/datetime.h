@@ -18,16 +18,16 @@ namespace zrythm::utils::datetime
 /**
  * Returns the current datetime as a string.
  */
-std::string
+Utf8String
 get_current_as_string ();
 
-std::string
-epoch_to_str (qint64 epoch, const std::string &format = "yyyy-MM-dd hh:mm:ss");
+Utf8String
+epoch_to_str (qint64 epoch, const Utf8String &format = u8"yyyy-MM-dd hh:mm:ss");
 
 /**
  * Get the current datetime to be used in filenames, eg, for the log file.
  */
-std::string
+Utf8String
 get_for_filename ();
 
 }; // zrythm::utils::datetime

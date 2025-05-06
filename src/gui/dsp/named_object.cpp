@@ -15,12 +15,11 @@ using namespace zrythm;
 void
 NamedObject::gen_escaped_name ()
 {
-  escaped_name_ = utils::qstring_to_std_string (
-    utils::std_string_to_qstring (name_).toHtmlEscaped ());
+  escaped_name_ = name_.escape_html ();
 }
 
 void
-NamedObject::set_name_with_action (const std::string &name)
+NamedObject::set_name_with_action (const utils::Utf8String &name)
 {
   /* validate */
   if (!name_validator_ (name))

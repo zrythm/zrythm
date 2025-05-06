@@ -27,7 +27,7 @@ class MidiPort final
 
 public:
   MidiPort ();
-  MidiPort (std::string label, PortFlow flow);
+  MidiPort (utils::Utf8String label, PortFlow flow);
   ~MidiPort () override;
 
   void process (EngineProcessTimeInfo time_nfo, bool noroll) override;

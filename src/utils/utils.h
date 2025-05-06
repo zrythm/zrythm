@@ -44,7 +44,6 @@
 #include "./ring_buffer.h"
 #include "./rt_thread_id.h"
 #include "./string.h"
-#include "./string_array.h"
 #include "./symap.h"
 #include "./variant_helpers.h"
 #include "./yaml.h"

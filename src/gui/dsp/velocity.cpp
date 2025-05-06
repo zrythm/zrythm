@@ -43,6 +43,7 @@ Velocity::get_midi_note () const
 }
 #endif
 
+#if 0
 const char *
 Velocity::setting_enum_to_str (size_t index)
 {
@@ -86,6 +87,7 @@ Velocity::setting_str_to_enum (const char * str)
 
   return val;
 }
+#endif
 
 #if 0
 std::optional<ArrangerObjectPtrVariant>

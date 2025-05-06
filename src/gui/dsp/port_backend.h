@@ -51,7 +51,7 @@ public:
    */
   using IsMidiChannelAcceptedFunc = std::function<bool (midi_byte_t channel)>;
 
-  using PortDesignationProvider = std::function<std::string ()>;
+  using PortDesignationProvider = std::function<utils::Utf8String ()>;
 
   /**
    * Sums the inputs coming in from the backend, before the port is processed.

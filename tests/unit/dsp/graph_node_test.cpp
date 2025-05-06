@@ -18,7 +18,7 @@ protected:
   class MockProcessable : public IProcessable
   {
   public:
-    MOCK_METHOD (std::string, get_node_name, (), (const, override));
+    MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
     MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
     MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
   };
@@ -62,7 +62,7 @@ protected:
         Position{}, Position{ 1920.0, FramesPerTick{ 22.675736961451247 } })));
 
     ON_CALL (*processable_, get_node_name ())
-      .WillByDefault (Return ("test_node"));
+      .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (0));
   }
@@ -75,7 +75,7 @@ protected:
 
 TEST_F (GraphNodeTest, Construction)
 {
-  EXPECT_CALL (*processable_, get_node_name ()).WillOnce (Return ("test_node"));
+  EXPECT_CALL (*processable_, get_node_name ()).WillOnce (Return (u8"test_node"));
 
   auto node = create_test_node ();
   EXPECT_EQ (node.get_processable ().get_node_name (), "test_node");

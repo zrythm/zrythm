@@ -133,19 +133,19 @@ static const std::unordered_map<ZPluginCategory, std::string_view> category_map 
 };
 
 ZPluginCategory
-PluginDescriptor::string_to_category (const std::string &str)
+PluginDescriptor::string_to_category (const utils::Utf8String &str)
 {
   // Search through category_map
   for (const auto &[category, name] : category_map)
     {
-      if (str.find (std::string{ name }) != std::string::npos)
+      if (str.str ().find (std::string{ name }) != std::string::npos)
         {
           return category;
         }
     }
 
   // Special case for "Equalizer" spelling variant
-  if (str.find ("Equalizer") != std::string::npos)
+  if (str.str ().find ("Equalizer") != std::string::npos)
     {
       return ZPluginCategory::EQ;
     }
@@ -153,15 +153,16 @@ PluginDescriptor::string_to_category (const std::string &str)
   return ZPluginCategory::NONE;
 }
 
-std::string
+utils::Utf8String
 PluginDescriptor::category_to_string (ZPluginCategory category)
 {
   if (auto it = category_map.find (category); it != category_map.end ())
     {
-      return std::string{ it->second };
+      return utils::Utf8String::from_utf8_encoded_string (std::string{
+        it->second });
     }
 
-  return "Plugin";
+  return u8"Plugin";
 }
 
 bool
@@ -323,28 +324,28 @@ PluginDescriptor::is_whitelisted () const
 #endif
 }
 
-std::string
+utils::Utf8String
 PluginDescriptor::get_icon_name () const
 {
   if (is_instrument ())
     {
-      return "instrument";
+      return u8"instrument";
     }
   else if (is_modulator ())
     {
-      return "modulator";
+      return u8"modulator";
     }
   else if (is_midi_modifier ())
     {
-      return "signal-midi";
+      return u8"signal-midi";
     }
   else if (is_effect ())
     {
-      return "bars";
+      return u8"bars";
     }
   else
     {
-      return "plug";
+      return u8"plug";
     }
 }
 

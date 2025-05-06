@@ -341,12 +341,12 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
 }
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
-  Region::Uuid               region_id,
-  const dsp::Position       &sel_start,
-  const dsp::Position       &sel_end,
-  AudioFunctionType          audio_func_type,
-  AudioFunctionOpts          opts,
-  std::optional<std::string> uri)
+  Region::Uuid                     region_id,
+  const dsp::Position             &sel_start,
+  const dsp::Position             &sel_end,
+  AudioFunctionType                audio_func_type,
+  AudioFunctionOpts                opts,
+  std::optional<utils::Utf8String> uri)
     : EditArrangerSelectionsAction (
         ArrangerObjectSpan{
           PROJECT->get_arranger_object_registry ().find_by_id_or_throw (

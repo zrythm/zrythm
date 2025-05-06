@@ -112,14 +112,14 @@ public:
   /**
    * Returns the grid intensity as a human-readable string.
    */
-  static std::string stringize_length_and_type (
+  static utils::Utf8String stringize_length_and_type (
     utils::NoteLength note_length,
     utils::NoteType   note_type);
 
   /**
    * Returns the grid intensity as a human-readable string.
    */
-  std::string stringize () const;
+  utils::Utf8String stringize () const;
 
   /**
    * Returns the next or previous SnapGrid point.

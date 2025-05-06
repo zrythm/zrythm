@@ -218,13 +218,13 @@ public:
   public:
     AudioEngineEventType type_ =
       AudioEngineEventType::AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE;
-    void *       arg_ = nullptr;
-    uint32_t     uint_arg_ = 0;
-    float        float_arg_ = 0.0f;
-    const char * file_ = nullptr;
-    const char * func_ = nullptr;
-    int          lineno_ = 0;
-    std::string  backtrace_;
+    void *            arg_ = nullptr;
+    uint32_t          uint_arg_ = 0;
+    float             float_arg_ = 0.0f;
+    const char *      file_ = nullptr;
+    const char *      func_ = nullptr;
+    int               lineno_ = 0;
+    utils::Utf8String backtrace_;
   };
 
   /**
@@ -322,7 +322,7 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   /**

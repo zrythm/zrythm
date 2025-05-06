@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -23,11 +23,11 @@ Metronome::Metronome (AudioEngine &engine)
       auto src_root = env.value (u"G_TEST_SRC_ROOT_DIR"_s);
       z_return_if_fail (!src_root.isEmpty ());
       emphasis_path_ =
-        utils::io::qstring_to_fs_path (src_root) / "data" / "samples" / "klick"
-        / "square_emphasis.wav";
+        utils::Utf8String::from_qstring (src_root).to_path () / "data"
+        / "samples" / "klick" / "square_emphasis.wav";
       normal_path_ =
-        utils::io::qstring_to_fs_path (src_root) / "data" / "samples" / "klick"
-        / "square_normal.wav";
+        utils::Utf8String::from_qstring (src_root).to_path () / "data"
+        / "samples" / "klick" / "square_normal.wav";
     }
   else
     {
@@ -35,7 +35,7 @@ Metronome::Metronome (AudioEngine &engine)
       if (!path_from_env.isEmpty ())
         {
           const auto fs_path_from_env =
-            utils::io::qstring_to_fs_path (path_from_env);
+            utils::Utf8String::from_qstring (path_from_env).to_path ();
           emphasis_path_ = fs_path_from_env / "klick" / "square_emphasis.wav";
           normal_path_ = fs_path_from_env / "klick" / "square_normal.wav";
         }

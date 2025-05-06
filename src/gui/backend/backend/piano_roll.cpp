@@ -9,7 +9,7 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
-static const char * drum_labels[47] = {
+static constexpr std::array<const char *, 47> drum_labels = {
   "Acoustic Bass Drum",
   "Bass Drum 1",
   "Side Stick",
@@ -72,17 +72,19 @@ PianoRoll::init_descriptors ()
       descr.value_ = i;
       descr.marked_ = false;
       descr.visible_ = true;
-      descr.custom_name_ = "";
+      descr.custom_name_ = {};
 
       descr.note_name_ =
-        std::string (dsp::ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)))
-        + std::to_string (i / 12 - 1);
-      descr.note_name_pango_ = fmt::format (
-        "{}<sup>{}</sup>",
         dsp::ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
-        i / 12 - 1);
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12))
+        + utils::Utf8String::from_utf8_encoded_string (
+          std::to_string ((i / 12) - 1));
+      descr.note_name_pango_ =
+        utils::Utf8String::from_utf8_encoded_string (fmt::format (
+          "{}<sup>{}</sup>",
+          dsp::ChordDescriptor::note_to_string (
+            ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
+          (i / 12) - 1));
       idx++;
     }
 
@@ -96,17 +98,20 @@ PianoRoll::init_descriptors ()
       descr.value_ = i;
       descr.marked_ = false;
       descr.visible_ = true;
-      descr.custom_name_ = drum_labels[idx];
+      descr.custom_name_ =
+        utils::Utf8String::from_utf8_encoded_string (drum_labels[idx]);
 
       descr.note_name_ =
-        std::string (dsp::ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)))
-        + std::to_string (i / 12 - 1);
-      descr.note_name_pango_ = fmt::format (
-        "{}<sup>{}</sup>",
         dsp::ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
-        i / 12 - 1);
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12))
+        + utils::Utf8String::from_utf8_encoded_string (
+          std::to_string ((i / 12) - 1));
+      descr.note_name_pango_ =
+        utils::Utf8String::from_utf8_encoded_string (fmt::format (
+          "{}<sup>{}</sup>",
+          dsp::ChordDescriptor::note_to_string (
+            ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
+          (i / 12) - 1));
       idx++;
     }
   for (int i = 0; i < 128; i++)
@@ -120,21 +125,24 @@ PianoRoll::init_descriptors ()
       descr.value_ = i;
       descr.marked_ = false;
       descr.visible_ = true;
-      descr.custom_name_ = fmt::format (
+      descr
+        .custom_name_ = utils::Utf8String::from_utf8_encoded_string (fmt::format (
         "#{}: {}{}", i,
         dsp::ChordDescriptor::note_to_string (
           ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
-        i / 12 - 1);
+        (i / 12) - 1));
 
       descr.note_name_ =
-        std::string (dsp::ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)))
-        + std::to_string (i / 12 - 1);
-      descr.note_name_pango_ = fmt::format (
-        "{}<sup>{}</sup>",
         dsp::ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
-        i / 12 - 1);
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12))
+        + utils::Utf8String::from_utf8_encoded_string (
+          std::to_string ((i / 12) - 1));
+      descr.note_name_pango_ =
+        utils::Utf8String::from_utf8_encoded_string (fmt::format (
+          "{}<sup>{}</sup>",
+          dsp::ChordDescriptor::note_to_string (
+            ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
+          (i / 12) - 1));
       idx++;
     }
 

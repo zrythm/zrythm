@@ -16,18 +16,19 @@
  */
 struct ProjectInfo
 {
-  ProjectInfo (const std::string &name, const std::string &filename);
+  ProjectInfo (utils::Utf8String name, const fs::path &filename);
 
-  static void destroy_func (void * data);
+  static auto get_project_info_file_not_found_string ()
+  {
+    return QObject::tr ("<File not found>");
+  }
 
-  std::string name_;
+  utils::Utf8String name_;
   /** Full path. */
-  std::string filename_;
-  RtTimePoint modified_ = 0;
-  std::string modified_str_;
+  fs::path          filename_;
+  RtTimePoint       modified_ = 0;
+  utils::Utf8String modified_str_;
 };
-
-#define PROJECT_INFO_FILE_NOT_FOUND_STR QObject::tr ("<File not found>")
 
 /**
  * @}

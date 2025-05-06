@@ -148,22 +148,22 @@ public:
   /**
    * Returns the chord type as a string (eg. "aug").
    */
-  static std::string_view chord_type_to_string (ChordType type);
+  static utils::Utf8String chord_type_to_string (ChordType type);
 
   /**
    * Returns the chord accent as a string (eg. "j7").
    */
-  static std::string_view chord_accent_to_string (ChordAccent accent);
+  static utils::Utf8String chord_accent_to_string (ChordAccent accent);
 
   /**
    * Returns the musical note as a string (eg. "C3").
    */
-  static std::string_view note_to_string (MusicalNote note);
+  static utils::Utf8String note_to_string (MusicalNote note);
 
   /**
    * Returns the chord in human readable string.
    */
-  std::string to_string () const;
+  utils::Utf8String to_string () const;
 
   /**
    * Updates the notes array based on the current

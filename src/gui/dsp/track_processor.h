@@ -65,7 +65,7 @@ public:
     const dsp::PortIdentifier           &id,
     float                                value) override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   bool should_sum_data_from_backend () const override;

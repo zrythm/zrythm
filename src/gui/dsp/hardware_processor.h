@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_HARDWARE_PROCESSOR_H__
-#define __AUDIO_HARDWARE_PROCESSOR_H__
+#pragma once
 
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/ext_port.h"
@@ -51,14 +50,14 @@ public:
    *
    * @see ExtPort.get_id()
    */
-  ExtPort * find_ext_port (const std::string &id);
+  ExtPort * find_ext_port (const utils::Utf8String &id);
 
   /**
    * Finds a port from its ID (type + full name).
    *
    * @see ExtPort.get_id()
    */
-  template <typename T = Port> T * find_port (const std::string &id);
+  template <typename T = Port> T * find_port (const utils::Utf8String &id);
 
   /**
    * Sets up the ports but does not start them.
@@ -77,7 +76,7 @@ public:
    */
   void process (nframes_t nframes);
 
-  std::string get_node_name () const override;
+  utils::Utf8String get_node_name () const override;
 
   /**
    * To be used during serialization.
@@ -107,8 +106,8 @@ public:
    *
    * This is only for inputs.
    */
-  std::vector<std::string> selected_midi_ports_;
-  std::vector<std::string> selected_audio_ports_;
+  std::vector<utils::Utf8String> selected_midi_ports_;
+  std::vector<utils::Utf8String> selected_audio_ports_;
 
   /**
    * All known external ports.
@@ -139,10 +138,8 @@ HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
 extern template std::unique_ptr<AudioPort>
 HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
 extern template Port *
-HardwareProcessor::find_port (const std::string &);
+HardwareProcessor::find_port (const utils::Utf8String &);
 
 /**
  * @}
  */
-
-#endif

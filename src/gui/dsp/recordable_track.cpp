@@ -14,9 +14,9 @@ RecordableTrack::RecordableTrack (PortRegistry &port_registry, bool new_identity
   if (new_identity)
     {
       recording_id_ = port_registry.create_object<ControlPort> (
-        utils::qstring_to_std_string (QObject::tr ("Track record")));
+        utils::Utf8String::from_qstring (QObject::tr ("Track record")));
       auto * recording = &get_recording_port ();
-      recording->id_->sym_ = "track_record";
+      recording->id_->sym_ = u8"track_record";
       recording->set_toggled (false, false);
       recording->id_->flags2_ |= dsp::PortIdentifier::Flags2::TrackRecording;
       recording->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;

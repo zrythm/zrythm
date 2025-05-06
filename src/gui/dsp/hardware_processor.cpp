@@ -37,19 +37,16 @@ HardwareProcessor::HardwareProcessor (bool input, AudioEngine * engine)
 }
 
 ExtPort *
-HardwareProcessor::find_ext_port (const std::string &id)
+HardwareProcessor::find_ext_port (const utils::Utf8String &id)
 {
+  const auto id_getter = [] (const auto &port) { return port->get_id (); };
   {
-    auto it = std::find_if (
-      ext_audio_ports_.begin (), ext_audio_ports_.end (),
-      [&id] (auto &port) { return port->get_id () == id; });
+    auto it = std::ranges::find (ext_audio_ports_, id, id_getter);
     if (it != ext_audio_ports_.end ())
       return (*it).get ();
   }
   {
-    auto it = std::find_if (
-      ext_midi_ports_.begin (), ext_midi_ports_.end (),
-      [&id] (auto &port) { return port->get_id () == id; });
+    auto it = std::ranges::find (ext_midi_ports_, id, id_getter);
     if (it != ext_midi_ports_.end ())
       return (*it).get ();
   }
@@ -59,7 +56,7 @@ HardwareProcessor::find_ext_port (const std::string &id)
 
 template <typename T>
 T *
-HardwareProcessor::find_port (const std::string &id)
+HardwareProcessor::find_port (const utils::Utf8String &id)
 {
   auto find_port = [&] (const auto &ext_ports, const auto &ports) {
     for (size_t i = 0; i < ext_ports.size (); ++i)
@@ -203,9 +200,17 @@ HardwareProcessor::setup ()
       /* cache selections */
       auto tmp =
         zrythm::gui::SettingsManager::get_instance ()->get_midiControllers ();
-      selected_midi_ports_ = StringArray (tmp).toStdStringVector ();
+      selected_midi_ports_ =
+        tmp | std::views::transform ([] (const auto &s) {
+          return utils::Utf8String::from_qstring (s);
+        })
+        | std::ranges::to<std::vector> ();
       tmp = zrythm::gui::SettingsManager::get_instance ()->get_audioInputs ();
-      selected_audio_ports_ = StringArray (tmp).toStdStringVector ();
+      selected_audio_ports_ =
+        tmp | std::views::transform ([] (const auto &s) {
+          return utils::Utf8String::from_qstring (s);
+        })
+        | std::ranges::to<std::vector> ();
     }
 
   /* ---- scan current ports ---- */
@@ -263,10 +268,10 @@ HardwareProcessor::activate (bool activate)
   activated_ = activate;
 }
 
-std::string
+utils::Utf8String
 HardwareProcessor::get_node_name () const
 {
-  return is_input_ ? "HW In Processor" : "HW Out Processor";
+  return is_input_ ? u8"HW In Processor" : u8"HW Out Processor";
 }
 
 void
@@ -331,4 +336,4 @@ HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
 template std::unique_ptr<AudioPort>
 HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
 template Port *
-HardwareProcessor::find_port (const std::string &);
+HardwareProcessor::find_port (const utils::Utf8String &);

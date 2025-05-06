@@ -385,7 +385,7 @@ MusicalScale::is_accent_in_scale (
     }
 }
 
-std::string
+utils::Utf8String
 MusicalScale::type_to_string (Type type)
 {
   constexpr std::string_view musical_scale_type_strings[] = {
@@ -451,15 +451,15 @@ MusicalScale::type_to_string (Type type)
     QT_TR_NOOP_UTF8 ("Japanese 1"),
     QT_TR_NOOP_UTF8 ("Japanese 2"),
   };
-  return utils::qstring_to_std_string (
+  return utils::Utf8String::from_qstring (
     QObject::tr (musical_scale_type_strings[(int) type].data ()));
 }
 
-std::string
+utils::Utf8String
 MusicalScale::to_string () const
 {
-  return std::string (ChordDescriptor::note_to_string (root_key_)) + " "
-         + type_to_string (type_);
+  return ChordDescriptor::note_to_string (root_key_)
+         + utils::Utf8String{ u8" " } + type_to_string (type_);
 }
 
 void

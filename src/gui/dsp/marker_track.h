@@ -52,7 +52,7 @@ public:
     return get_children_view ()[index];
   }
 
-  bool validate_marker_name (const std::string &name)
+  bool validate_marker_name (const utils::Utf8String &name)
   {
     /* valid if no other marker with the same name exists*/
     return !std::ranges::contains (

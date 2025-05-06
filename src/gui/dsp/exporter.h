@@ -108,9 +108,9 @@ public:
      *   @ref filepath is NULL.
      */
     void set_bounce_defaults (
-      Format             format,
-      const std::string &filepath,
-      const std::string &bounce_name);
+      Format                   format,
+      const fs::path          &filepath,
+      const utils::Utf8String &bounce_name);
 
     /**
      * @brief Calculate and return the export time range positions.
@@ -120,10 +120,10 @@ public:
     void print () const;
 
   public:
-    Format      format_ = Format::WAV;
-    std::string artist_;
-    std::string title_;
-    std::string genre_;
+    Format            format_ = Format::WAV;
+    utils::Utf8String artist_;
+    utils::Utf8String title_;
+    utils::Utf8String genre_;
     /** Bit depth (16/24/64). */
     BitDepth  depth_ = BitDepth::BIT_DEPTH_16;
     TimeRange time_range_ = TimeRange::Song;
@@ -161,7 +161,7 @@ public:
     /**
      * Absolute path for export file.
      */
-    std::string file_uri_;
+    fs::path file_uri_;
 
     /** Number of files being simultaneously exported, for progress calculation.
      */

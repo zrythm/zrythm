@@ -54,14 +54,14 @@ struct ChannelSendTarget
 
   gui::old_dsp::plugins::Plugin::Uuid pl_id;
 
-  std::string port_group;
+  utils::Utf8String port_group;
 
   /**
    * Returns a string describing this target (track/plugin name/etc.).
    */
-  std::string describe () const;
+  utils::Utf8String describe () const;
 
-  std::string get_icon () const;
+  utils::Utf8String get_icon () const;
 
   static void free_func (void * target) { delete (ChannelSendTarget *) target; }
 };
@@ -130,7 +130,7 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   bool is_prefader () const
@@ -143,7 +143,7 @@ public:
    */
   ChannelTrack * get_track () const;
 
-  std::string get_node_name () const override;
+  utils::Utf8String get_node_name () const override;
 
   bool is_enabled () const;
 
@@ -236,10 +236,9 @@ public:
   }
 
   /**
-   * Get the name of the destination, or a placeholder
-   * text if empty.
+   * Get the name of the destination, or a placeholder text if empty.
    */
-  std::string get_dest_name () const;
+  utils::Utf8String get_dest_name () const;
 
   void copy_values_from (const ChannelSend &other);
 

@@ -35,7 +35,7 @@ TempoTrack::TempoTrack (
       main_height_ = DEF_HEIGHT / 2;
 
       color_ = Color (QColor ("#2f6c52"));
-      icon_name_ = "filename-bpm-amarok";
+      icon_name_ = u8"filename-bpm-amarok";
 
       /* set invisible */
       visible_ = false;
@@ -58,10 +58,10 @@ TempoTrack::initialize ()
   {
     /* create bpm port */
     bpm_port_ = port_registry_.create_object<ControlPort> (
-      utils::qstring_to_std_string (QObject::tr ("BPM")));
+      utils::Utf8String::from_qstring (QObject::tr ("BPM")));
     auto &bpm_port = get_bpm_port ();
     bpm_port.set_owner (*this);
-    bpm_port.id_->sym_ = "bpm";
+    bpm_port.id_->sym_ = u8"bpm";
     bpm_port.range_ = { 60.f, 360.f };
     bpm_port.deff_ = 140.f;
     bpm_port.set_control_value (bpm_port.deff_, false, false);
@@ -72,10 +72,10 @@ TempoTrack::initialize ()
   {
     /* create time sig ports */
     beats_per_bar_port_ = port_registry_.create_object<ControlPort> (
-      utils::qstring_to_std_string (QObject::tr ("Beats per bar")));
+      utils::Utf8String::from_qstring (QObject::tr ("Beats per bar")));
     auto &beats_per_bar_port = get_beats_per_bar_port ();
     beats_per_bar_port.set_owner (*this);
-    beats_per_bar_port.id_->sym_ = ("beats_per_bar");
+    beats_per_bar_port.id_->sym_ = u8"beats_per_bar";
     beats_per_bar_port.range_ = {
       TEMPO_TRACK_MIN_BEATS_PER_BAR, TEMPO_TRACK_MAX_BEATS_PER_BAR
     };
@@ -89,10 +89,10 @@ TempoTrack::initialize ()
 
   {
     beat_unit_port_ = port_registry_.create_object<ControlPort> (
-      utils::qstring_to_std_string (QObject::tr ("Beat unit")));
+      utils::Utf8String::from_qstring (QObject::tr ("Beat unit")));
     auto &beat_unit_port = get_beat_unit_port ();
     beat_unit_port.set_owner (*this);
-    beat_unit_port.id_->sym_ = ("beat_unit");
+    beat_unit_port.id_->sym_ = u8"beat_unit";
     beat_unit_port.range_ = {
       static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT),
       static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT)

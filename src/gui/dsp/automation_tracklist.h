@@ -186,8 +186,10 @@ public:
    *
    * Currently only used in mixer selections action.
    */
-  AutomationTrack *
-  get_plugin_at (dsp::PluginSlot slot, int port_index, const std::string &symbol);
+  AutomationTrack * get_plugin_at (
+    dsp::PluginSlot          slot,
+    int                      port_index,
+    const utils::Utf8String &symbol);
 
   /**
    * Used when the add button is added and a new automation track is requested

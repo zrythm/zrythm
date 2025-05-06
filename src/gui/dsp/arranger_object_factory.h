@@ -115,7 +115,7 @@ public:
     Builder &with_name (
       const QString             &name,
       NamedObject::NameValidator validator =
-        [] (const std::string &) { return true; })
+        [] (const utils::Utf8String &) { return true; })
       requires (std::derived_from<ObjT, NamedObject>)
     {
       name_ = name;
@@ -237,7 +237,7 @@ public:
         {
           if constexpr (std::derived_from<ObjT, NamedObject>)
             {
-              obj->set_name (utils::qstring_to_std_string (*name_));
+              obj->set_name (utils::Utf8String::from_qstring (*name_));
             }
         }
 
@@ -369,7 +369,7 @@ private:
     AudioLane                       &lane,
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
-    const std::string               &clip_name,
+    const utils::Utf8String         &clip_name,
     double                           start_ticks) const
   {
     auto clip = std::make_shared<AudioClip> (
@@ -465,7 +465,7 @@ public:
         .with_start_ticks (startTicks)
         .with_name (
           name,
-          [markerTrack] (const std::string &inner_name) {
+          [markerTrack] (const utils::Utf8String &inner_name) {
             return markerTrack->validate_marker_name (inner_name);
           })
         .build ();
@@ -508,10 +508,10 @@ public:
   }
 
   AudioRegion * add_empty_audio_region_for_recording (
-    AudioLane         &lane,
-    int                num_channels,
-    const std::string &clip_name,
-    double             start_ticks)
+    AudioLane               &lane,
+    int                      num_channels,
+    const utils::Utf8String &clip_name,
+    double                   start_ticks)
   {
     auto clip = std::make_shared<AudioClip> (
       num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
@@ -528,7 +528,7 @@ public:
     double         startTicks)
   {
     auto clip = std::make_shared<AudioClip> (
-      utils::qstring_to_std_string (absPath), sample_rate_provider_ (),
+      utils::Utf8String::from_qstring (absPath), sample_rate_provider_ (),
       bpm_provider_ ());
     new_clip_registration_func_ (clip);
     auto ar_ref =
@@ -590,7 +590,7 @@ public:
     AudioLane                       &lane,
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
-    const std::string               &clip_name,
+    const utils::Utf8String         &clip_name,
     double                           start_ticks) const
   {
     return create_audio_region_from_audio_buffer (
@@ -627,7 +627,7 @@ public:
       {
         new_obj = other.clone_qobject (
           &owner, ObjectCloneType::Snapshot, object_registry_, track_resolver_,
-          [] (const std::string &name) { return true; });
+          [] (const auto &name) { return true; });
       }
     else
       {

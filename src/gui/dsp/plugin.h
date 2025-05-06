@@ -97,10 +97,10 @@ public:
     DECLARE_DEFINE_FIELDS_METHOD ();
 
     /** Human readable name. */
-    std::string name_;
+    utils::Utf8String name_;
 
     /** URI if LV2. */
-    std::string uri_;
+    utils::Utf8String uri_;
 
     /** Carla program index. */
     int carla_program_ = 0;
@@ -126,10 +126,10 @@ public:
     std::vector<Preset> presets_;
 
     /** URI if LV2. */
-    std::string uri_;
+    utils::Utf8String uri_;
 
     /** Human readable name. */
-    std::string name_;
+    utils::Utf8String name_;
 
     PresetIdentifier id_;
   };
@@ -153,7 +153,7 @@ public:
   ~Plugin () override;
 
   PluginDescriptor      &get_descriptor () { return *setting_->descr_; }
-  std::string            get_name () const { return setting_->descr_->name_; }
+  utils::Utf8String      get_name () const { return setting_->descr_->name_; }
   Protocol::ProtocolType get_protocol () const
   {
     return setting_->descr_->protocol_;
@@ -186,7 +186,7 @@ public:
 
   bool is_in_active_project () const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
@@ -237,10 +237,11 @@ public:
    */
   void remove_ats_from_automation_tracklist (bool free_ats, bool fire_events);
 
-  std::string
-  get_full_port_group_designation (const std::string &port_group) const;
+  utils::Utf8String
+  get_full_port_group_designation (const utils::Utf8String &port_group) const;
 
-  Port * get_port_in_group (const std::string &port_group, bool left) const;
+  Port *
+  get_port_in_group (const utils::Utf8String &port_group, bool left) const;
 
   /**
    * @brief Finds the corresponding port in the same port group (eg, if this
@@ -310,7 +311,8 @@ public:
    *
    * @note Only works on LV2 plugins.
    */
-  std::optional<PortPtrVariant> get_port_by_symbol (const std::string &sym);
+  std::optional<PortPtrVariant>
+  get_port_by_symbol (const utils::Utf8String &sym);
 
   /**
    * @brief Copies the state directory from the given source plugin to this
@@ -325,9 +327,9 @@ public:
    * @throw ZrythmException On error.
    */
   void copy_state_dir (
-    const Plugin       &src,
-    bool                is_backup,
-    const std::string * abs_state_dir);
+    const Plugin           &src,
+    bool                    is_backup,
+    std::optional<fs::path> abs_state_dir);
 
   /**
    * Returns the state dir as an absolute path.
@@ -336,13 +338,13 @@ public:
    * not exist. If this is false, the function below is called internally.
    * FIXME refactor this into cleaner API.
    */
-  std::string get_abs_state_dir (bool is_backup, bool create_if_not_exists);
+  fs::path get_abs_state_dir (bool is_backup, bool create_if_not_exists);
 
   /**
    * @brief Simply gets the absolute state directory path, without attempting
    * to create it.
    */
-  std::string get_abs_state_dir (bool is_backup) const
+  fs::path get_abs_state_dir (bool is_backup) const
   {
     return get_abs_state_dir (state_dir_, is_backup);
   }
@@ -350,13 +352,9 @@ public:
   /**
    * @brief Constructs the absolute path to the plugin state dir based on the
    * given relative path given.
-   *
-   * @param plugin_state_dir
-   * @param is_backup
-   * @return std::string
    */
-  static std::string
-  get_abs_state_dir (const std::string &plugin_state_dir, bool is_backup);
+  static fs::path
+  get_abs_state_dir (const fs::path &plugin_state_dir, bool is_backup);
 
   /**
    * Ensures the state dir exists or creates it.
@@ -432,9 +430,9 @@ public:
    */
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  std::string get_node_name () const override;
+  utils::Utf8String get_node_name () const override;
 
-  std::string generate_window_title () const;
+  utils::Utf8String generate_window_title () const;
 
   /**
    * Process show ui
@@ -487,7 +485,7 @@ public:
 
   void set_selected_preset_from_index (int idx);
 
-  void set_selected_preset_by_name (std::string_view name);
+  void set_selected_preset_by_name (const utils::Utf8String &name);
 
   /**
    * Sets caches for processing.
@@ -560,8 +558,9 @@ protected:
   void add_out_port (const PortUuidReference &port_id);
 
   /** Adds a bank to the plugin's list and returns a reference to it. */
-  Bank *
-  add_bank_if_not_exists (const std::string * uri, std::string_view name);
+  Bank * add_bank_if_not_exists (
+    std::optional<utils::Utf8String> uri,
+    const utils::Utf8String         &name);
 
   /**
    * @brief
@@ -611,7 +610,7 @@ private:
    * @throw ZrythmException If the state could not be saved.
    */
   virtual void
-  save_state (bool is_backup, const std::string * abs_state_dir) = 0;
+  save_state (bool is_backup, std::optional<fs::path> abs_state_dir) = 0;
 
   /**
    * @brief Opens or closes a custom non-generic UI.
@@ -734,7 +733,7 @@ public:
    * @note This is only the directory basename and should go in
    * project/plugins/states.
    */
-  std::string state_dir_;
+  fs::path state_dir_;
 
   /** Whether the plugin is currently being deleted. */
   bool deleting_ = false;

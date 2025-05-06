@@ -68,7 +68,7 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   /**
@@ -92,14 +92,14 @@ public:
   /**
    * Returns a unique identifier (full name prefixed with backend type).
    */
-  std::string get_id () const;
+  utils::Utf8String get_id () const;
 
   friend bool operator== (const ExtPort &a, const ExtPort &b);
 
   /**
    * Returns a user-friendly display name (eg, to be used in dropdowns).
    */
-  std::string get_friendly_name () const;
+  utils::Utf8String get_friendly_name () const;
 
   /**
    * Returns the buffer of the external port.
@@ -178,16 +178,16 @@ public:
 #endif
 
   /** Full port name, used also as ID. */
-  std::string full_name_;
+  utils::Utf8String full_name_;
 
   /** Short port name. */
-  std::string short_name_;
+  utils::Utf8String short_name_;
 
   /** Alias #1 if any. */
-  std::string alias1_;
+  utils::Utf8String alias1_;
 
   /** Alias #2 if any. */
-  std::string alias2_;
+  utils::Utf8String alias2_;
 
   int num_aliases_ = 0;
 
@@ -195,7 +195,7 @@ public:
   unsigned int rtaudio_channel_idx_ = 0;
 
   /** RtAudio device name. */
-  std::string rtaudio_dev_name_;
+  utils::Utf8String rtaudio_dev_name_;
 
   /** RtAudio device ID (NOT index!!!). */
   unsigned int rtaudio_id_ = 0;

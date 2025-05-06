@@ -252,9 +252,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           num_actions++;
 
           /* rename group */
-          auto name = format_str (
-            utils::qstring_to_std_string (QObject::tr ("{} Output")),
-            descr_->name_);
+          auto name = utils::Utf8String::from_qstring (
+            format_qstr (QObject::tr ("{} Output"), descr_->name_));
           UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
             convert_to_variant<TrackPtrVariant> (group), *PORT_CONNECTIONS_MGR,
             name));
@@ -276,7 +275,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               num_actions++;
 
               /* rename fx track */
-              name = format_str ("{} {}", descr_->name_, i + 1);
+              name = utils::Utf8String::from_utf8_encoded_string (
+                format_str ("{} {}", descr_->name_, i + 1));
               UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
                 convert_to_variant<TrackPtrVariant> (fx_track),
                 *PORT_CONNECTIONS_MGR, name));
@@ -469,7 +469,7 @@ PluginSettings::serialize_to_file ()
   z_debug ("Writing plugin settings to {}...", path);
   try
     {
-      utils::io::set_file_contents (path, json_str.c_str ());
+      utils::io::set_file_contents (path, json_str.to_utf8_string ());
     }
   catch (const ZrythmException &e)
     {
@@ -492,7 +492,7 @@ PluginSettings::read_or_new ()
   std::string json;
   try
     {
-      json = utils::qstring_to_std_string (utils::io::read_file_contents (path));
+      json = utils::io::read_file_contents (path).toStdString ();
     }
   catch (const ZrythmException &e)
     {

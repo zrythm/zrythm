@@ -29,7 +29,7 @@ ProgressInfo::request_cancellation ()
  * To be called by the task itself.
  */
 void
-ProgressInfo::mark_completed (CompletionType type, const std::string &msg)
+ProgressInfo::mark_completed (CompletionType type, const utils::Utf8String &msg)
 {
   std::scoped_lock guard (m_);
 
@@ -51,7 +51,7 @@ ProgressInfo::mark_completed (CompletionType type, const std::string &msg)
 }
 
 void
-ProgressInfo::update_progress (double progress, const std::string &msg)
+ProgressInfo::update_progress (double progress, const utils::Utf8String &msg)
 {
   std::scoped_lock guard (m_);
 

@@ -18,61 +18,55 @@
 
 using namespace zrythm;
 
-std::string
+utils::Utf8String
 audio_function_get_action_target_for_type (AudioFunctionType type)
 {
-  auto        type_str = AudioFunctionType_to_string (type);
-  std::string type_str_lower (type_str);
-  utils::string::to_lower_ascii (type_str_lower);
-  auto substituted = utils::string::replace (type_str_lower, " ", "-");
+  auto type_str = AudioFunctionType_to_string (type);
+  auto type_str_lower = type_str.to_lower ();
+  auto substituted = type_str_lower.replace (u8" ", u8"-");
 
   return substituted;
 }
 
-/**
- * Returns a detailed action name to be used for
- * actionable widgets or menus.
- *
- * @param base_action Base action to use.
- */
-std::string
+utils::Utf8String
 audio_function_get_detailed_action_for_type (
-  AudioFunctionType  type,
-  const std::string &base_action)
+  AudioFunctionType        type,
+  const utils::Utf8String &base_action)
 {
   auto target = audio_function_get_action_target_for_type (type);
-  return fmt::format ("{}::{}", base_action, target);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}::{}", base_action, target));
 }
 
-const char *
+utils::Utf8String
 audio_function_get_icon_name_for_type (AudioFunctionType type)
 {
   switch (type)
     {
     case AudioFunctionType::Invert:
-      return "edit-select-invert";
+      return u8"edit-select-invert";
     case AudioFunctionType::Reverse:
-      return "path-reverse";
+      return u8"path-reverse";
     case AudioFunctionType::PitchShift:
-      return "path-reverse";
+      return u8"path-reverse";
     case AudioFunctionType::NormalizePeak:
-      return "kt-set-max-upload-speed";
+      return u8"kt-set-max-upload-speed";
     case AudioFunctionType::LinearFadeIn:
-      return "arena-fade-in";
+      return u8"arena-fade-in";
     case AudioFunctionType::LinearFadeOut:
-      return "arena-fade-out";
+      return u8"arena-fade-out";
     case AudioFunctionType::NudgeLeft:
-      return "arrow-left";
+      return u8"arrow-left";
     case AudioFunctionType::NudgeRight:
-      return "arrow-right";
+      return u8"arrow-right";
     case AudioFunctionType::NormalizeRMS:
     case AudioFunctionType::NormalizeLUFS:
     default:
-      return "modulator";
+      return u8"modulator";
       break;
     }
 
-  z_return_val_if_reached (nullptr);
+  z_return_val_if_reached ({});
 }
 
 #if 0
@@ -281,12 +275,12 @@ apply_plugin (
 
 void
 audio_function_apply (
-  ArrangerObject::Uuid       region_id,
-  const dsp::Position       &sel_start,
-  const dsp::Position       &sel_end,
-  AudioFunctionType          type,
-  AudioFunctionOpts          opts,
-  std::optional<std::string> uri)
+  ArrangerObject::Uuid             region_id,
+  const dsp::Position             &sel_start,
+  const dsp::Position             &sel_end,
+  AudioFunctionType                type,
+  AudioFunctionOpts                opts,
+  std::optional<utils::Utf8String> uri)
 {
   using Position = AudioRegion::Position;
   z_debug ("applying {}...", AudioFunctionType_to_string (type));
@@ -505,7 +499,7 @@ audio_function_apply (
         AudioClip tmp_clip_before (
           src_frames, AudioClip::BitDepth::BIT_DEPTH_32,
           AUDIO_ENGINE->sample_rate_, P_TEMPO_TRACK->get_current_bpm (),
-          "tmp-clip");
+          u8"tmp-clip");
         auto tmp_clip = tmp_clip_before.edit_in_ext_program ();
         for (int i = 0; i < channels; ++i)
           {

@@ -73,9 +73,10 @@ public:
    * @param use_flac Whether to look for a FLAC file instead of a wav file.
    * @param is_backup Whether writing to a backup project.
    */
-  fs::path
-  get_clip_path_from_name (const std::string &name, bool use_flac, bool is_backup)
-    const;
+  fs::path get_clip_path_from_name (
+    const utils::Utf8String &name,
+    bool                     use_flac,
+    bool                     is_backup) const;
 
   /**
    * Gets the path of the given clip from the pool.
@@ -154,7 +155,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  bool name_exists (const std::string &name) const;
+  bool name_exists (const utils::Utf8String &name) const;
 
 private:
   SampleRateGetter      sample_rate_getter_;

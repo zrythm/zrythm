@@ -33,7 +33,7 @@ SampleProcessor::load_instrument_if_empty ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       auto _setting_json = gui::SettingsManager::fileBrowserInstrument ();
-      std::string setting_json = utils::qstring_to_std_string (_setting_json);
+      auto setting_json = utils::Utf8String::from_qstring (_setting_json);
       std::unique_ptr<PluginSetting> setting;
       bool                           json_read = false;
       if (!setting_json.empty ())
@@ -395,7 +395,7 @@ SampleProcessor::queue_file_or_chord_preset (
       PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
       true);
     auto * track = std::get<MasterTrack *> (track_ref.get_object ());
-    track->set_name (*tracklist_, "Sample Processor Master", false);
+    track->set_name (*tracklist_, u8"Sample Processor Master", false);
     tracklist_->master_track_ = track;
     tracklist_->insert_track (
       track_ref, static_cast<int> (tracklist_->track_count ()), *AUDIO_ENGINE,
@@ -412,7 +412,7 @@ SampleProcessor::queue_file_or_chord_preset (
           PROJECT->get_arranger_object_registry (), true);
       auto * audio_track =
         std::get<AudioTrack *> (audio_track_ref.get_object ());
-      audio_track->set_name (*tracklist_, "Sample processor audio", false);
+      audio_track->set_name (*tracklist_, u8"Sample processor audio", false);
       tracklist_->insert_track (
         audio_track_ref, static_cast<int> (tracklist_->track_count ()),
         *AUDIO_ENGINE, false, false);
@@ -423,7 +423,7 @@ SampleProcessor::queue_file_or_chord_preset (
           auto * ar =
             ArrangerObjectFactory::get_instance ()->addAudioRegionFromFile (
               &audio_track->get_lane_at (0),
-              utils::std_string_to_qstring (file->abs_path_.string ()),
+              utils::Utf8String::from_path (file->abs_path_).to_qstring (),
               start_pos.ticks_);
           file_end_pos_ = *ar->end_pos_;
         }
@@ -445,7 +445,7 @@ SampleProcessor::queue_file_or_chord_preset (
       auto * instrument_track =
         std::get<InstrumentTrack *> (instrument_track_ref.get_object ());
       instrument_track->set_name (
-        *tracklist_, "Sample processor instrument", false);
+        *tracklist_, u8"Sample processor instrument", false);
       tracklist_->insert_track (
         instrument_track_ref, static_cast<int> (tracklist_->track_count ()),
         *AUDIO_ENGINE, false, false);
@@ -477,7 +477,10 @@ SampleProcessor::queue_file_or_chord_preset (
               auto * midi_track =
                 std::get<MidiTrack *> (midi_track_ref.get_object ());
               midi_track->set_name (
-                *tracklist_, fmt::format ("Sample processor MIDI {}", i), false);
+                *tracklist_,
+                utils::Utf8String::from_utf8_encoded_string (
+                  fmt::format ("Sample processor MIDI {}", i)),
+                false);
               tracklist_->insert_track (
                 midi_track_ref, static_cast<int> (tracklist_->track_count ()),
                 *AUDIO_ENGINE, false, false);
@@ -495,8 +498,8 @@ SampleProcessor::queue_file_or_chord_preset (
                         ArrangerObjectFactory::get_instance ()
                           ->addMidiRegionFromMidiFile (
                             &midi_track->get_lane_at (0),
-                            utils::std_string_to_qstring (
-                              file->abs_path_.string ()),
+                            utils::Utf8String::from_path (file->abs_path_)
+                              .to_qstring (),
                             start_pos.ticks_, i);
                       file_end_pos_ = std::max (
                         file_end_pos_, *static_cast<Position *> (mr->end_pos_));

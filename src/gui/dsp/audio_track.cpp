@@ -41,7 +41,7 @@ AudioTrack::AudioTrack (
     {
       color_ = Color (QColor ("#2BD700"));
       /* signal-audio also works */
-      icon_name_ = "view-media-visualization";
+      icon_name_ = u8"view-media-visualization";
     }
   automation_tracklist_->setParent (this);
   // TODO

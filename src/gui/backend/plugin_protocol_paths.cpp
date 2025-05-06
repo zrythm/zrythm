@@ -18,13 +18,13 @@ add_expanded_paths (auto &arr, const QStringList &paths_from_settings)
   for (const auto &path : paths_from_settings)
     {
       auto expanded_cur_path =
-        utils::string::expand_env_vars (utils::qstring_to_std_string (path));
+        utils::Utf8String::from_qstring (path).expand_env_vars ();
       /* split because the env might contain multiple paths */
-      auto expanded_paths = utils::io::split_paths (
-        utils::std_string_to_qstring (expanded_cur_path));
+      auto expanded_paths =
+        utils::io::split_paths (expanded_cur_path.to_qstring ());
       for (auto &expanded_path : expanded_paths)
         {
-          arr->add_path (utils::io::qstring_to_fs_path (expanded_path));
+          arr->add_path (utils::Utf8String::from_qstring (expanded_path));
         }
     }
 }
@@ -60,22 +60,26 @@ PluginProtocolPaths::get_for_protocol (const Protocol::ProtocolType protocol)
     }
 }
 
-std::string
+utils::Utf8String
 PluginProtocolPaths::get_for_protocol_separated (
   const Protocol::ProtocolType protocol)
 {
   auto paths = get_for_protocol (protocol);
   if (!paths->empty ())
     {
-      std::vector<std::string> path_strings =
-        std::views::transform (paths->getPaths (), utils::qstring_to_std_string)
+      auto path_strings =
+        std::views::transform (
+          paths->getPaths (),
+          [] (const auto &qstr) {
+            return utils::Utf8String::from_qstring (qstr);
+          })
         | std::ranges::to<std::vector> ();
-      auto paths_separated = utils::string::join (
+      auto paths_separated = utils::Utf8String::join (
         path_strings, utils::io::get_path_separator_string ());
       return paths_separated;
     }
 
-  return "";
+  return {};
 }
 
 std::unique_ptr<utils::FilePathList>
@@ -92,11 +96,13 @@ PluginProtocolPaths::get_lv2_paths ()
       z_return_val_if_fail (!root_builddir.isEmpty (), nullptr);
 
       auto test_lv2_plugins =
-        utils::io::qstring_to_fs_path (tests_builddir) / "lv2plugins";
+        utils::Utf8String::from_qstring (tests_builddir).to_path ()
+        / "lv2plugins";
       auto test_root_plugins =
-        utils::io::qstring_to_fs_path (root_builddir) / "data" / "plugins";
-      ret->add_path (test_lv2_plugins.string ());
-      ret->add_path (test_root_plugins.string ());
+        utils::Utf8String::from_qstring (root_builddir).to_path () / "data"
+        / "plugins";
+      ret->add_path (test_lv2_plugins);
+      ret->add_path (test_root_plugins);
 
       QStringList paths_from_settings = { u"${LV2_PATH}"_s, u"/usr/lib/lv2"_s };
       add_expanded_paths (ret, paths_from_settings);
@@ -112,7 +118,7 @@ PluginProtocolPaths::get_lv2_paths ()
     {
       /* no paths given - use default */
 #ifdef _WIN32
-      ret->add_path ("C:\\Program Files\\Common Files\\LV2");
+      ret->add_path (u"C:\\Program Files\\Common Files\\LV2");
 #elifdef __APPLE__
       ret->add_path ("/Library/Audio/Plug-ins/LV2");
 #elifdef FLATPAK_BUILD
@@ -121,7 +127,8 @@ PluginProtocolPaths::get_lv2_paths ()
 #else /* non-flatpak UNIX */
       {
         auto home_lv2 =
-          utils::io::qstring_to_fs_path (QDir::homePath ()) / ".lv2";
+          utils::Utf8String::from_qstring (QDir::homePath ()).to_path ()
+          / ".lv2";
         ret->add_path (home_lv2);
       }
       ret->add_path ("/usr/lib/lv2");
@@ -316,7 +323,7 @@ PluginProtocolPaths::get_dssi_paths ()
 #else /* non-flatpak UNIX */
       {
         auto home_dssi = utils::io::get_home_path () / ".dssi";
-        ret->add_path (home_dssi.string ());
+        ret->add_path (home_dssi);
       }
       ret->add_path ("/usr/lib/dssi");
       ret->add_path ("/usr/local/lib/dssi");
@@ -486,7 +493,7 @@ PluginProtocolPaths::get_au_paths ()
   auto user_components =
     utils::io::get_home_path () / "Library" / "Audio" / "Plug-ins"
     / "Components";
-  ret->add_path (user_components.string ());
+  ret->add_path (user_components);
 
   ret->print ("AU paths");
 

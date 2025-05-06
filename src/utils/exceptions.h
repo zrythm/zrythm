@@ -32,7 +32,11 @@ public:
   explicit ZrythmException (const std::string &message);
   explicit ZrythmException (const QString &message);
 
-  const char * what () const noexcept;
+  const char *      what () const noexcept;
+  utils::Utf8String what_string () const
+  {
+    return utils::Utf8String::from_utf8_encoded_string (what ());
+  }
 
   template <typename... Args>
   void handle (const std::string &format, Args &&... args) const;

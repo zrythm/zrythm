@@ -54,7 +54,7 @@ public:
   /**
    * Returns a human friendly name of the node.
    */
-  virtual std::string get_node_name () const = 0;
+  virtual utils::Utf8String get_node_name () const = 0;
 
   /**
    * Returns the latency of only the given processable, without adding the
@@ -78,7 +78,10 @@ public:
 class InitialProcessor final : public IProcessable
 {
 public:
-  std::string get_node_name () const override { return "Initial Processor"; }
+  utils::Utf8String get_node_name () const override
+  {
+    return u8"Initial Processor";
+  }
 };
 
 /**

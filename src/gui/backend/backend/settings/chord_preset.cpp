@@ -1,11 +1,7 @@
-// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset.h"
-#include "gui/backend/backend/settings/chord_preset_pack_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "utils/rt_thread_id.h"
 
 ChordPreset::ChordPreset (QObject * parent) : QObject (parent) { }
 
@@ -24,28 +20,22 @@ ChordPreset::init_after_cloning (
   descr_ = other.descr_;
 }
 
-std::string
+utils::Utf8String
 ChordPreset::get_info_text () const
 {
-  auto str = utils::qstring_to_std_string (QObject::tr ("Chords"));
-  str += ":\n";
-  bool have_any = false;
-  for (const auto &descr : descr_)
-    {
-      if (descr.type_ == dsp::ChordType::None)
-        break;
+  auto str = utils::Utf8String::from_qstring (QObject::tr ("Chords"));
+  str += u8":\n";
+  const auto joined_str = fmt::format (
+    "{}",
+    fmt::join (
+      descr_ | std::views::filter ([] (const auto &descr) {
+        return descr.type_ != dsp::ChordType::None;
+      }) | std::views::transform ([] (const auto &descr) {
+        return descr.to_string ().str ();
+      }),
+      ", "));
 
-      str += descr.to_string ();
-      str += ", ";
-      have_any = true;
-    }
-
-  if (have_any)
-    {
-      str.erase (str.length () - 2);
-    }
-
-  return str;
+  return str + utils::Utf8String::from_utf8_encoded_string (joined_str);
 }
 
 ChordPreset::NameT

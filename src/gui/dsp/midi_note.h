@@ -77,7 +77,8 @@ public:
    *
    * @param use_markup Use markup to show the octave as a superscript.
    */
-  std::string get_val_as_string (Notation notation, bool use_markup) const;
+  utils::Utf8String
+  get_val_as_string (Notation notation, bool use_markup) const;
 
   /**
    * Listen to the given MidiNote.
@@ -110,7 +111,7 @@ public:
 
   // friend bool operator== (const MidiNote &lhs, const MidiNote &rhs);
 
-  std::string gen_human_friendly_name () const override;
+  utils::Utf8String gen_human_friendly_name () const override;
 
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;

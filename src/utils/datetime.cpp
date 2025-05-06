@@ -13,7 +13,7 @@
 namespace zrythm::utils::datetime
 {
 
-std::string
+Utf8String
 get_current_as_string ()
 {
   auto now = std::chrono::system_clock::now ();
@@ -21,7 +21,7 @@ get_current_as_string ()
 
   std::stringstream ss;
   ss << std::put_time (std::localtime (&in_time_t), "%Y-%m-%d %H:%M:%S");
-  return ss.str ();
+  return Utf8String::from_utf8_encoded_string (ss.str ());
 
   // some systems do not support std::chrono::current_zone() yet
 #if 0
@@ -32,23 +32,23 @@ get_current_as_string ()
 #endif
 }
 
-std::string
-epoch_to_str (qint64 epoch, const std::string &format)
+Utf8String
+epoch_to_str (qint64 epoch, const Utf8String &format)
 {
   QDateTime dt = QDateTime::fromSecsSinceEpoch (epoch);
-  z_return_val_if_fail (!dt.isNull (), "");
-  QString str = dt.toString (utils::std_string_to_qstring (format));
-  return utils::qstring_to_std_string (str);
+  z_return_val_if_fail (!dt.isNull (), {});
+  QString str = dt.toString (format.to_qstring ());
+  return Utf8String::from_qstring (str);
 }
 
-std::string
+Utf8String
 get_for_filename ()
 {
   QDateTime datetime = QDateTime::currentDateTime ();
   QString   str_datetime =
     datetime.toString (QString::fromUtf8 ("yyyy-MM-dd_HH-mm-ss"));
 
-  return utils::qstring_to_std_string (str_datetime);
+  return utils::Utf8String::from_qstring (str_datetime);
 }
 
 }; // zrythm::utils::datetime

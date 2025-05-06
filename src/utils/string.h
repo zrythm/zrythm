@@ -1,19 +1,24 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_STRING_H__
-#define __UTILS_STRING_H__
+#pragma once
+
+#include <cstdlib>
+#include <utility>
 
 #include "utils/traits.h"
 
+#include <QHash>
 #include <QString>
 #include <QUrl>
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace juce
 {
 class String;
+class File;
 }
 
 /**
@@ -22,156 +27,193 @@ class String;
 namespace zrythm::utils
 {
 
-namespace string
+/**
+ * @brief Lightweight UTF-8 string wrapper with safe conversions.
+ *
+ * Guarantees valid UTF-8 storage and explicit encoding handling.
+ */
+class Utf8String
 {
-std::string
-escape_html (const std::string &str);
+public:
+  constexpr Utf8String () noexcept = default;
+  constexpr Utf8String (const char8_t * str)
+      : Utf8String (std::u8string_view{ str })
+  {
+  }
+  constexpr Utf8String (std::u8string_view str)
+      : str_ (str.begin (), str.end ())
+  {
+  }
 
-juce::String
-string_view_to_juce_string (std::string_view sv);
+  Utf8String (const Utf8String &) = default;
+  Utf8String (Utf8String &&) = default;
+  Utf8String &operator= (const Utf8String &) = default;
+  Utf8String &operator= (Utf8String &&) = default;
+  ~Utf8String () = default;
+
+  static Utf8String from_path (const fs::path &path)
+  {
+    return Utf8String{ path.generic_u8string () };
+  }
+  static Utf8String from_qstring (const QString &str)
+  {
+    Utf8String ret;
+    ret.str_ = str.toUtf8 ().toStdString ();
+    return ret;
+  }
+  static Utf8String from_qurl (const QUrl &url)
+  {
+    return from_qstring (url.toLocalFile ());
+  }
+  static Utf8String from_juce_string (const juce::String &str);
+
+  /**
+   * @brief Construct from a std::string_view that we are 100% sure is
+   * UTF8-encoded.
+   *
+   * @warning This is not checked, so use with caution.
+   */
+  static constexpr Utf8String from_utf8_encoded_string (std::string_view str)
+  {
+    Utf8String ret;
+    ret.str_ = str;
+    return ret;
+  }
+
+  // --- Accessors ---
+  std::string_view   view () const noexcept { return str_; }
+  const std::string &str () const noexcept { return str_; }
+  const char *       c_str () const noexcept { return str_.c_str (); }
+  auto               empty () const noexcept { return str_.empty (); }
+
+  // --- Conversions ---
+  fs::path      to_path () const { return { to_u8_string () }; }
+  std::u8string to_u8_string () const { return { str_.begin (), str_.end () }; }
+  QString       to_qstring () const { return QString::fromUtf8 (c_str ()); }
+  juce::String  to_juce_string () const;
+  juce::File    to_juce_file () const;
+
+  // --- Operators ---
+  explicit operator std::string_view () const noexcept { return view (); }
+  bool     operator== (std::string_view other) const noexcept
+  {
+    return view () == other;
+  }
+  Utf8String &operator+= (const Utf8String &other)
+  {
+    str_ += other.str_;
+    return *this;
+  }
+  Utf8String operator+ (const Utf8String &other) const
+  {
+    return Utf8String::from_utf8_encoded_string (str_ + other.str_);
+  }
+
+  operator fs::path () const { return to_path (); }
+  operator QString () const { return to_qstring (); }
+  friend std::ostream &operator<< (std::ostream &os, const Utf8String &str)
+  {
+    return os << str.view ();
+  }
+
+  // --- Utils ---
+  Utf8String escape_html () const;
+  bool       is_ascii () const;
+  bool       contains_substr (const Utf8String &substr) const;
+  bool       contains_substr_case_insensitive (const Utf8String &substr) const;
+  bool       is_equal_ignore_case (const Utf8String &other) const;
+  Utf8String to_upper () const;
+  Utf8String to_lower () const;
+
+  /**
+   * Returns a filename-safe version of the given string.
+   *
+   * Example: "MIDI Region #1" -> "MIDI_Region_1".
+   */
+  Utf8String convert_to_filename () const;
+
+  /**
+   * Removes the suffix starting from @ref suffix
+   * from @ref full_str and returns a newly allocated
+   * string.
+   */
+  Utf8String get_substr_before_suffix (const Utf8String &suffix) const;
+
+  /**
+   * Removes everything up to and including the first match of @ref match from
+   * the start of the string.
+   */
+  Utf8String remove_until_after_first_match (const Utf8String &match) const;
+
+  Utf8String replace (const Utf8String &from, const Utf8String &to) const;
+
+  /**
+   * Gets the string in the given regex group.
+   *
+   * @return The string, or an empty string if nothing found.
+   */
+  Utf8String get_regex_group (const Utf8String &regex, int group) const;
+
+  /**
+   * Gets the string in the given regex group as an integer.
+   *
+   * @param def Default.
+   *
+   * @return The int, or default.
+   */
+  int
+  get_regex_group_as_int (const Utf8String &regex, int group, int def) const;
+
+  /**
+   * Returns the integer found at the end of a string like "My String 3" -> 3,
+   * or -1 if no number is found.
+   *
+   * See https://www.debuggex.com/cheatsheet/regex/pcre for more info.
+   *
+   * @return The integer found at the end of the string, or -1 if no number is
+   * found, and the string without the number (including the space).
+   */
+  std::pair<int, Utf8String> get_int_after_last_space () const;
+
+  /**
+   * Returns a new string with only ASCII alphanumeric characters and replaces
+   * the rest with underscore.
+   */
+  Utf8String symbolify () const;
+
+  /**
+   * Expands environment variables enclosed in ${} in the given string.
+   */
+  Utf8String expand_env_vars () const;
+
+  static Utf8String
+  join (const RangeOf<Utf8String> auto &strings, const Utf8String &delimiter)
+  {
+    return Utf8String::from_utf8_encoded_string (fmt::format (
+      "{}",
+      fmt::join (
+        std::views::transform (strings, &Utf8String::view), delimiter.view ())));
+  }
+
+  // --- Comparisons ---
+  friend auto operator<=> (const Utf8String &a, const Utf8String &b) noexcept
+  {
+    return a.str_ <=> b.str_;
+  }
+  friend bool operator== (const Utf8String &a, const Utf8String &b) noexcept
+  {
+    return a.str_ == b.str_;
+  }
+
+private:
+  std::string str_;
+};
 
 /**
- * Returns if the string is ASCII.
- */
-bool
-is_ascii (std::string_view string);
-
-/**
- * Returns if the given string contains the given substring.
- */
-bool
-contains_substr (std::string_view str, std::string_view substr);
-
-bool
-contains_substr_case_insensitive (std::string_view str, std::string_view substr);
-
-/**
- * @brief Converts only ASCII characters to uppercase.
+ * @brief C string RAII wrapper.
  *
- * @param in
- * @return std::string
+ * @note UTF8 assumed.
  */
-void
-to_upper_ascii (std::string &str);
-
-/**
- * @brief Converts only ASCII characters to lowercase.
- *
- * @param in
- * @return std::string
- */
-void
-to_lower_ascii (std::string &str);
-
-/**
- * Returns if the two strings are exactly equal.
- */
-#define string_is_equal(str1, str2) \
-  (std::string_view (str1) == std::string_view (str2))
-
-/**
- * Returns if the two strings are equal ignoring case.
- */
-bool
-is_equal_ignore_case (const std::string &str1, const std::string &str2);
-
-/**
- * Returns a newly allocated string that is a
- * filename version of the given string.
- *
- * Example: "MIDI Region #1" -> "MIDI_Region_1".
- */
-std::string
-convert_to_filename (const std::string &str);
-
-/**
- * Removes the suffix starting from @ref suffix
- * from @ref full_str and returns a newly allocated
- * string.
- */
-std::string
-get_substr_before_suffix (const std::string &str, const std::string &suffix);
-
-/**
- * Removes everything up to and including the first match of @ref match from the
- * start of the string.
- */
-std::string
-remove_until_after_first_match (const std::string &str, const std::string &match);
-
-std::string
-replace (const std::string &str, const std::string &from, const std::string &to);
-
-/**
- * Gets the string in the given regex group.
- *
- * @return The string, or an empty string if nothing found.
- */
-std::string
-get_regex_group (const std::string &str, const std::string &regex, int group);
-
-/**
- * Gets the string in the given regex group as an
- * integer.
- *
- * @param def Default.
- *
- * @return The int, or default.
- */
-int
-get_regex_group_as_int (
-  const std::string &str,
-  const std::string &regex,
-  int                group,
-  int                def);
-
-/**
- * Returns the integer found at the end of a string like "My String 3" -> 3,
- * or -1 if no number is found.
- *
- * See https://www.debuggex.com/cheatsheet/regex/pcre for more info.
- *
- * @return The integer found at the end of the string, or -1 if no number is
- * found, and the string without the number (including the space).
- */
-std::pair<int, std::string>
-get_int_after_last_space (const std::string &str);
-
-/**
- * TODO
- * Sorts the given string array and removes
- * duplicates.
- *
- * @param str_arr A NULL-terminated array of strings.
- *
- * @return A NULL-terminated array with the string
- *   addresses of the source array.
- */
-char **
-array_sort_and_remove_duplicates (char ** str_arr);
-
-/**
- * Returns a new string with only ASCII alphanumeric
- * characters and replaces the rest with underscore.
- */
-std::string
-symbolify (const std::string &in);
-
-/**
- * Returns whether the string is NULL or empty.
- */
-bool
-is_empty (const char * str);
-
-/**
- * Expands environment variables enclosed in ${} in the given string.
- */
-std::string
-expand_env_vars (const std::string &src);
-
-#include <cstdlib>
-#include <utility>
-
 class CStringRAII
 {
 public:
@@ -207,36 +249,32 @@ public:
 
   bool empty () const noexcept { return !str_ || strlen (str_) == 0; }
 
+  Utf8String to_utf8_string () const
+  {
+    return Utf8String::from_utf8_encoded_string (str_);
+  }
+
 private:
   char * str_;
 };
 
-std::string
-join (const std::vector<std::string> &strings, std::string_view delimiter);
-
-QString
-qurl_to_path_qstring (const QUrl &url);
-
-}; // namespace zrythm::utils::string
-
-static inline std::string
-qstring_to_std_string (const QString &str)
-{
-  return str.toLocal8Bit ().toStdString ();
-}
-
-std::string
-juce_string_to_std_string (const juce::String &str);
-
-static inline QString
-std_string_to_qstring (const std::string &str)
-{
-  return QString::fromLocal8Bit (str);
-}
-
-QString
-juce_string_to_qstring (const juce::String &str);
-
 }; // namespace zrythm::utils
 
-#endif
+// Formatter for Utf8String
+template <>
+struct fmt::formatter<zrythm::utils::Utf8String>
+    : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const zrythm::utils::Utf8String &s, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (s.view (), ctx);
+  }
+};
+
+// Hasher for Utf8String
+static inline size_t
+qHash (const zrythm::utils::Utf8String &t, size_t seed = 0) noexcept
+{
+  return qHash (t.view (), seed); // <-- qHash used as public API
+}

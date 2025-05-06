@@ -16,11 +16,12 @@ FileDescriptor::FileDescriptor (const fs::path &_abs_path)
 {
   // z_debug ("creating new FileDescriptor for {}", path);
   abs_path_ = _abs_path;
-  label_ = utils::io::path_get_basename (_abs_path).string ();
+  label_ =
+    utils::Utf8String::from_path (utils::io::path_get_basename (_abs_path));
 }
 
 std::unique_ptr<FileDescriptor>
-FileDescriptor::new_from_uri (const std::string &uri)
+FileDescriptor::new_from_uri (const utils::Utf8String &uri)
 {
   return std::make_unique<FileDescriptor> (utils::io::uri_to_file (uri));
 }
@@ -54,54 +55,53 @@ FileDescriptor::is_type_midi (FileType type)
   return type == FileType::Midi;
 }
 
-std::string
+utils::Utf8String
 FileDescriptor::get_type_description (FileType type)
 {
   switch (type)
     {
     case FileType::Midi:
-      return "MIDI";
+      return u8"MIDI";
     case FileType::Mp3:
-      return "MP3";
+      return u8"MP3";
     case FileType::Flac:
-      return "FLAC";
+      return u8"FLAC";
     case FileType::Ogg:
-      return "OGG (Vorbis)";
+      return u8"OGG (Vorbis)";
     case FileType::Wav:
-      return "Wave";
+      return u8"Wave";
     case FileType::Directory:
-      return "Directory";
+      return u8"Directory";
     case FileType::ParentDirectory:
-      return "Parent directory";
+      return u8"Parent directory";
     case FileType::Other:
-      return "Other";
+      return u8"Other";
     default:
-      z_return_val_if_reached ("");
+      z_return_val_if_reached ({});
     }
 }
 
 FileType
 FileDescriptor::get_type_from_path (const fs::path &file)
 {
-  const auto ext = utils::io::file_get_ext (file).string ();
-  FileType   type = FileType::Other;
+  const auto ext = utils::Utf8String::from_path (utils::io::file_get_ext (file));
+  FileType type = FileType::Other;
 
   if (fs::is_directory (file))
     type = FileType::Directory;
   else if (ext.empty ())
     type = FileType::Other;
   else if (
-    utils::string::is_equal_ignore_case (ext, "MID")
-    || utils::string::is_equal_ignore_case (ext, "MIDI")
-    || utils::string::is_equal_ignore_case (ext, "SMF"))
+    ext.is_equal_ignore_case (u8"MID") || ext.is_equal_ignore_case (u8"MIDI")
+    || ext.is_equal_ignore_case (u8"SMF"))
     type = FileType::Midi;
-  else if (utils::string::is_equal_ignore_case (ext, "mp3"))
+  else if (ext.is_equal_ignore_case (u8"mp3"))
     type = FileType::Mp3;
-  else if (utils::string::is_equal_ignore_case (ext, "flac"))
+  else if (ext.is_equal_ignore_case (u8"flac"))
     type = FileType::Flac;
-  else if (utils::string::is_equal_ignore_case (ext, "ogg"))
+  else if (ext.is_equal_ignore_case (u8"ogg"))
     type = FileType::Ogg;
-  else if (utils::string::is_equal_ignore_case (ext, "wav"))
+  else if (ext.is_equal_ignore_case (u8"wav"))
     type = FileType::Wav;
   else
     type = FileType::Other;
@@ -109,37 +109,37 @@ FileDescriptor::get_type_from_path (const fs::path &file)
   return type;
 }
 
-const char *
+std::optional<utils::Utf8String>
 FileDescriptor::get_type_ext (FileType type)
 {
   switch (type)
     {
     case FileType::Midi:
-      return "mid";
+      return u8"mid";
       break;
     case FileType::Mp3:
-      return "mp3";
+      return u8"mp3";
       break;
     case FileType::Flac:
-      return "flac";
+      return u8"flac";
       break;
     case FileType::Ogg:
-      return "ogg";
+      return u8"ogg";
       break;
     case FileType::Wav:
-      return "wav";
+      return u8"wav";
       break;
     case FileType::ParentDirectory:
-      return NULL;
+      return std::nullopt;
       break;
     case FileType::Directory:
-      return NULL;
+      return std::nullopt;
       break;
     case FileType::Other:
-      return NULL;
+      return std::nullopt;
       break;
     default:
-      z_return_val_if_reached (nullptr);
+      z_return_val_if_reached (std::nullopt);
     }
 }
 
@@ -174,7 +174,7 @@ FileDescriptor::should_autoplay () const
   return autoplay;
 }
 
-std::string
+utils::Utf8String
 FileDescriptor::get_info_text_for_label () const
 {
   auto file_type_label = get_type_description (type_);
@@ -184,56 +184,55 @@ FileDescriptor::get_info_text_for_label () const
         {
           utils::audio::AudioFile af (abs_path_);
           auto                    metadata = af.read_metadata ();
-          return format_str (
-            utils::qstring_to_std_string (QObject::tr (
+          return utils::Utf8String::from_qstring (format_qstr (
+            QObject::tr (
               "<b>{}</b>\n"
               "Sample rate: {}\n"
               "Length: {}s "
               "{} ms | BPM: {:.1f}\n"
               "Channel(s): {} | Bitrate: {:L}.{} kb/s\n"
-              "Bit depth: {} bits")),
-            utils::string::escape_html (label_), metadata.samplerate,
-            metadata.length / 1000, metadata.length % 1000,
-            (double) metadata.bpm, metadata.channels, metadata.bit_rate / 1000,
-            (metadata.bit_rate % 1000) / 100, metadata.bit_depth);
+              "Bit depth: {} bits"),
+            label_.escape_html (), metadata.samplerate, metadata.length / 1000,
+            metadata.length % 1000, (double) metadata.bpm, metadata.channels,
+            metadata.bit_rate / 1000, (metadata.bit_rate % 1000) / 100,
+            metadata.bit_depth));
         }
       catch (const ZrythmException &e)
         {
           z_warning (
-            "Error reading metadata from {}: {}", abs_path_.string (),
-            e.what ());
-          return format_str (
-            utils::qstring_to_std_string (
-              QObject::tr ("Failed reading metadata for {}")),
-            abs_path_.string ());
+            "Error reading metadata from {}: {}",
+            utils::Utf8String::from_path (abs_path_), e.what ());
+          return utils::Utf8String::from_qstring (format_qstr (
+            QObject::tr ("Failed reading metadata for {}"),
+            utils::Utf8String::from_path (abs_path_)));
         }
     }
   else
     {
-      return format_str (
-        "<b>{}</b>\nType: {}", utils::string::escape_html (label_),
-        utils::string::escape_html (file_type_label));
+      return utils::Utf8String::from_utf8_encoded_string (format_str (
+        "<b>{}</b>\nType: {}", label_.escape_html (),
+        file_type_label.escape_html ()));
     }
 }
 
-const char *
+utils::Utf8String
 FileDescriptor::get_icon_name () const
 {
   switch (type_)
     {
     case FileType::Midi:
-      return "audio-midi";
+      return u8"audio-midi";
     case FileType::Mp3:
     case FileType::Flac:
     case FileType::Ogg:
     case FileType::Wav:
-      return "gnome-icon-library-sound-wave-symbolic";
+      return u8"gnome-icon-library-sound-wave-symbolic";
     case FileType::Directory:
     case FileType::ParentDirectory:
-      return "folder";
+      return u8"folder";
     case FileType::Other:
-      return "application-x-zerosize";
+      return u8"application-x-zerosize";
     default:
-      return "";
+      return {};
     }
 }

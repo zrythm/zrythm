@@ -117,15 +117,14 @@ Tracklist::data (const QModelIndex &index, int role) const
   auto track = track_id.get_object ();
 
   z_trace (
-    "getting role {} for track {}", role,
-    utils::std_string_to_qstring (TrackSpan::name_projection (track)));
+    "getting role {} for track {}", role, TrackSpan::name_projection (track));
 
   switch (role)
     {
     case TrackPtrRole:
       return QVariant::fromStdVariant (track);
     case TrackNameRole:
-      return utils::std_string_to_qstring (TrackSpan::name_projection (track));
+      return TrackSpan::name_projection (track).to_qstring ();
     default:
       return {};
     }
@@ -267,8 +266,8 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
     const auto &dest_track = Track::from_variant (span.at (index2));
     z_debug (
       "swapping tracks {} [{}] and {} [{}]...",
-      src_track ? src_track->get_name () : "(none)", index1,
-      dest_track ? dest_track->get_name () : "(none)", index2);
+      src_track ? src_track->get_name () : u8"(none)", index1,
+      dest_track ? dest_track->get_name () : u8"(none)", index2);
   }
 
   std::iter_swap (tracks_.begin () + index1, tracks_.begin () + index2);
@@ -861,8 +860,8 @@ Tracklist::move_track (
 
 bool
 Tracklist::track_name_is_unique (
-  const std::string &name,
-  const TrackUuid    track_to_skip) const
+  const utils::Utf8String &name,
+  const TrackUuid          track_to_skip) const
 {
   auto track_ids_to_check = std::ranges::to<std::vector> (std::views::filter (
     tracks_, [&] (const auto &id) { return id.id () != track_to_skip; }));
@@ -1140,13 +1139,13 @@ Tracklist::move_region_to_track (
 
 void
 Tracklist::import_files (
-  const StringArray *    uri_list,
-  const FileDescriptor * orig_file,
-  const Track *          track,
-  const TrackLane *      lane,
-  int                    index,
-  const dsp::Position *  pos,
-  TracksReadyCallback    ready_cb)
+  std::optional<std::vector<utils::Utf8String>> uri_list,
+  const FileDescriptor *                        orig_file,
+  const Track *                                 track,
+  const TrackLane *                             lane,
+  int                                           index,
+  const dsp::Position *                         pos,
+  TracksReadyCallback                           ready_cb)
 {
   std::vector<FileDescriptor> file_arr;
   if (orig_file)
@@ -1157,11 +1156,10 @@ Tracklist::import_files (
     {
       for (const auto &uri : *uri_list)
         {
-          if (!uri.contains ("file://"))
+          if (!uri.contains_substr (u8"file://"))
             continue;
 
-          auto file = FileDescriptor::new_from_uri (
-            utils::juce_string_to_std_string (uri));
+          auto file = FileDescriptor::new_from_uri (uri);
           file_arr.push_back (*file);
         }
     }
@@ -1202,10 +1200,10 @@ Tracklist::import_files (
         }
     }
 
-  StringArray filepaths;
+  std::vector<fs::path> filepaths;
   for (const auto &file : file_arr)
     {
-      filepaths.add (file.abs_path_.string ());
+      filepaths.push_back (file.abs_path_);
     }
 
     // TODO

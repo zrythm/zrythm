@@ -15,7 +15,7 @@ public:
   static std::unique_ptr<utils::FilePathList>
   get_for_protocol (Protocol::ProtocolType protocol);
 
-  static std::string
+  static utils::Utf8String
   get_for_protocol_separated (Protocol::ProtocolType protocol);
 
   static std::unique_ptr<utils::FilePathList> get_lv2_paths ();

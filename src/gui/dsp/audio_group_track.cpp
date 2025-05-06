@@ -24,7 +24,7 @@ AudioGroupTrack::AudioGroupTrack (
     {
       /* GTK color picker color */
       color_ = Color (QColor ("#26A269"));
-      icon_name_ = "effect";
+      icon_name_ = u8"effect";
     }
   automation_tracklist_->setParent (this);
 }

@@ -163,11 +163,11 @@ public:
    * If the object has a name, this returns a copy of the name, otherwise
    * generates something appropriate.
    */
-  virtual std::string gen_human_friendly_name () const
+  virtual utils::Utf8String gen_human_friendly_name () const
   {
     /* this will be called if unimplemented - it's not needed for things like
      * Velocity, which don't have reasonable names. */
-    z_return_val_if_reached ("");
+    z_return_val_if_reached ({});
   };
 
   /**

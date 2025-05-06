@@ -144,9 +144,9 @@ Project::print_port_connection (const PortConnection &conn) const
             [&] (auto &&src_track, auto &&dest_track) {
               return fmt::format (
                 "[{} ({})] {} => [{} ({})] {}{}",
-                (src_track != nullptr) ? src_track->get_name () : "(none)",
+                (src_track != nullptr) ? src_track->get_name () : u8"(none)",
                 src->id_->track_id_, src->get_label (),
-                dest_track ? dest_track->get_name () : "(none)",
+                dest_track ? dest_track->get_name () : u8"(none)",
                 dest->id_->track_id_, dest->get_label (), send_str);
             },
             src_track_var, dest_track_var);
@@ -228,7 +228,7 @@ Project::get_newer_backup ()
               auto backup_time = std::filesystem::last_write_time (full_path);
               if (backup_time > original_time)
                 {
-                  result = entry.path ().string ();
+                  result = entry.path ();
                   original_time = backup_time;
                 }
             }
@@ -508,7 +508,8 @@ Project::add_default_tracks ()
         dsp::Position pos;
         pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
         auto * marker = factory->addMarker (
-          marker_track_inner, utils::std_string_to_qstring (marker_name),
+          marker_track_inner,
+          utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
           pos.ticks_);
         marker->marker_type_ = Marker::Type::Start;
       }
@@ -518,7 +519,8 @@ Project::add_default_tracks ()
         dsp::Position pos;
         pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
         auto * marker = factory->addMarker (
-          marker_track_inner, utils::std_string_to_qstring (marker_name),
+          marker_track_inner,
+          utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
           pos.ticks_);
         marker->marker_type_ = Marker::Type::End;
       }
@@ -879,7 +881,7 @@ Project::SerializeProjectThread::run ()
   z_debug ("serializing project to json...");
   auto   time_before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   qint64 time_after{};
-  std::optional<utils::string::CStringRAII> json;
+  std::optional<utils::CStringRAII> json;
   try
     {
       json = ctx_.main_project_->serialize_to_json_string ();
@@ -953,7 +955,7 @@ Project::idle_saved_callback (SaveContext * ctx)
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
         {
           zrythm::gui::ProjectManager::get_instance ()->add_to_recent_projects (
-            utils::std_string_to_qstring (ctx->project_file_path_.string ()));
+            utils::Utf8String::from_path (ctx->project_file_path_).to_qstring ());
         }
       if (ctx->show_notification_)
         {
@@ -1000,18 +1002,19 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 
   try
     {
-      QDir srcdir (utils::std_string_to_qstring (plugin_states_path.string ()));
+      QDir srcdir (
+        utils::Utf8String::from_path (plugin_states_path).to_qstring ());
       const auto entries =
         srcdir.entryInfoList (QDir::Files | QDir::NoDotAndDotDot);
 
       for (const auto &filename : entries)
         {
           const auto filename_str =
-            utils::io::qstring_to_fs_path (filename.fileName ());
-          auto full_path = plugin_states_path / filename_str;
+            utils::Utf8String::from_qstring (filename.fileName ()).to_path ();
+          const auto full_path = plugin_states_path / filename_str;
 
           bool found = std::ranges::contains (
-            plugins, filename_str.string (), PluginSpan::state_dir_projection);
+            plugins, filename_str, PluginSpan::state_dir_projection);
           if (!found)
             {
               z_debug ("removing unused plugin state in {}", full_path);
@@ -1061,7 +1064,7 @@ Project::save (
   dir_ = _dir;
   try
     {
-      utils::io::mkdir (dir_.string ());
+      utils::io::mkdir (dir_);
     }
 
   catch (const ZrythmException &e)
@@ -1072,7 +1075,7 @@ Project::save (
     }
 
   /* set the title */
-  title_ = dir_.filename ().string ();
+  title_ = utils::Utf8String::from_path (dir_.filename ());
 
   /* save current datetime */
   datetime_str_ = utils::datetime::get_current_as_string ();
@@ -1293,13 +1296,13 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
 QString
 Project::getTitle () const
 {
-  return utils::std_string_to_qstring (title_);
+  return title_;
 }
 
 void
 Project::setTitle (const QString &title)
 {
-  const auto std_str = utils::qstring_to_std_string (title);
+  const auto std_str = utils::Utf8String::from_qstring (title);
   if (title_ == std_str)
     return;
 
@@ -1310,13 +1313,13 @@ Project::setTitle (const QString &title)
 QString
 Project::getDirectory () const
 {
-  return utils::io::fs_path_to_qstring (dir_);
+  return utils::Utf8String::from_path (dir_);
 }
 
 void
 Project::setDirectory (const QString &directory)
 {
-  const auto dir_path = utils::io::qstring_to_fs_path (directory);
+  const auto dir_path = utils::Utf8String::from_qstring (directory).to_path ();
   if (dir_ == dir_path)
     return;
 

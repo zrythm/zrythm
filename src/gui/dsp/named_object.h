@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __DSP_NAMEABLE_OBJECT_H__
@@ -14,11 +14,11 @@ public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
-    return utils::std_string_to_qstring (name_); \
+    return name_.to_qstring (); \
   } \
   void setName (const QString &name) \
   { \
-    const auto name_str = utils::qstring_to_std_string (name); \
+    const auto name_str = utils::Utf8String::from_qstring (name); \
     if (name_ == name_str) \
       return; \
     set_name_with_action (name_str); \
@@ -42,10 +42,10 @@ class NamedObject
       public zrythm::utils::serialization::ISerializable<NamedObject>
 {
 public:
-  using NameValidator = std::function<bool (const std::string &)>;
+  using NameValidator = std::function<bool (const utils::Utf8String &)>;
 
   NamedObject (
-    NameValidator validator = [] (const std::string &) { return true; })
+    NameValidator validator = [] (const utils::Utf8String &) { return true; })
       : name_validator_ (std::move (validator))
   {
   }
@@ -56,7 +56,7 @@ public:
   /**
    * Returns the name of the object.
    */
-  std::string get_name () const { return name_; }
+  utils::Utf8String get_name () const { return name_; }
 
   /**
    * Generates the escaped name for the object.
@@ -69,11 +69,11 @@ public:
    * @param name The new name for the object.
    * @param fire_events Whether to fire events when the name is changed.
    */
-  void set_name (this auto &&self, const std::string &name)
+  void set_name (this auto &&self, const utils::Utf8String &name)
   {
     self.name_ = name;
     self.gen_escaped_name ();
-    Q_EMIT self.nameChanged (utils::std_string_to_qstring (name));
+    Q_EMIT self.nameChanged (name.to_qstring ());
   }
 
   void generate_name_from_automation_track (
@@ -81,7 +81,8 @@ public:
     const auto &track,
     const auto &at)
   {
-    self.set_name (fmt::format ("{} - {}", track.get_name (), at.getLabel ()));
+    self.set_name (utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("{} - {}", track.get_name (), at.getLabel ())));
   }
   void generate_name_from_track (this auto &self, const auto &track)
   {
@@ -89,10 +90,10 @@ public:
   }
 
   void generate_name (
-    this auto                 &self,
-    std::optional<std::string> base_name,
-    const auto *               at,
-    const auto *               track)
+    this auto                       &self,
+    std::optional<utils::Utf8String> base_name,
+    const auto *                     at,
+    const auto *                     track)
   {
     if (base_name)
       {
@@ -114,9 +115,9 @@ public:
    *
    * Calls @ref set_name() internally.
    */
-  void set_name_with_action (const std::string &name);
+  void set_name_with_action (const utils::Utf8String &name);
 
-  std::string gen_human_friendly_name () const final { return name_; }
+  utils::Utf8String gen_human_friendly_name () const final { return name_; }
 
   friend bool operator== (const NamedObject &lhs, const NamedObject &rhs)
   {
@@ -134,10 +135,10 @@ protected:
 
 protected:
   /** Name to be shown on the widget. */
-  std::string name_;
+  utils::Utf8String name_;
 
   /** Escaped name for drawing. */
-  std::string escaped_name_;
+  utils::Utf8String escaped_name_;
 
   NameValidator name_validator_;
 };

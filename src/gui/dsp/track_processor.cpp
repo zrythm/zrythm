@@ -59,10 +59,10 @@ TrackProcessor::TrackProcessor (
       if (tr.has_piano_roll () || tr.is_chord ())
         {
           piano_roll_id_ = port_registry_.create_object<MidiPort> (
-            "TP Piano Roll", PortFlow::Input);
+            u8"TP Piano Roll", PortFlow::Input);
           auto * piano_roll = &get_piano_roll_port ();
           piano_roll->set_owner (*this);
-          piano_roll->id_->sym_ = "track_processor_piano_roll";
+          piano_roll->id_->sym_ = u8"track_processor_piano_roll";
           piano_roll->id_->flags_ = PortIdentifier::Flags::PianoRoll;
           if (!tr.is_chord ())
             {
@@ -76,17 +76,17 @@ TrackProcessor::TrackProcessor (
       if (tr.get_type () == Track::Type::Audio)
         {
           mono_id_ =
-            port_registry_.create_object<ControlPort> ("TP Mono Toggle");
+            port_registry_.create_object<ControlPort> (u8"TP Mono Toggle");
           auto * mono = &get_mono_port ();
           mono->set_owner (*this);
-          mono->id_->sym_ = "track_processor_mono_toggle";
+          mono->id_->sym_ = u8"track_processor_mono_toggle";
           mono->id_->flags_ |= PortIdentifier::Flags::Toggle;
           mono->id_->flags_ |= PortIdentifier::Flags::TpMono;
           input_gain_id_ =
-            port_registry_.create_object<ControlPort> ("TP Input Gain");
+            port_registry_.create_object<ControlPort> (u8"TP Input Gain");
           auto * input_gain = &get_input_gain_port ();
           input_gain->set_owner (*this);
-          input_gain->id_->sym_ = "track_processor_input_gain";
+          input_gain->id_->sym_ = u8"track_processor_input_gain";
           input_gain->range_ = { 0.f, 4.f, 0.f };
           input_gain->deff_ = 1.f;
           input_gain->id_->flags_ |= PortIdentifier::Flags::TpInputGain;
@@ -100,20 +100,20 @@ TrackProcessor::TrackProcessor (
   if (tr.get_type () == Track::Type::Audio)
     {
       output_gain_id_ =
-        port_registry_.create_object<ControlPort> ("TP Output Gain");
+        port_registry_.create_object<ControlPort> (u8"TP Output Gain");
       auto * output_gain = &get_output_gain_port ();
       output_gain->set_owner (*this);
-      output_gain->id_->sym_ = "track_processor_output_gain";
+      output_gain->id_->sym_ = u8"track_processor_output_gain";
       output_gain->range_ = { 0.f, 4.f, 0.f };
       output_gain->deff_ = 1.f;
       output_gain->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpOutputGain;
       output_gain->set_control_value (1.f, false, false);
 
       monitor_audio_id_ =
-        port_registry_.create_object<ControlPort> ("Monitor audio");
+        port_registry_.create_object<ControlPort> (u8"Monitor audio");
       auto * monitor_audio = &get_monitor_audio_port ();
       monitor_audio->set_owner (*this);
-      monitor_audio->id_->sym_ = "track_processor_monitor_audio";
+      monitor_audio->id_->sym_ = u8"track_processor_monitor_audio";
       monitor_audio->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
       monitor_audio->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpMonitorAudio;
       monitor_audio->set_control_value (0.f, false, false);
@@ -217,19 +217,19 @@ TrackProcessor::init_midi_port (bool in)
   if (in)
     {
       midi_in_id_ = port_registry_.create_object<MidiPort> (
-        "TP MIDI in", dsp::PortFlow::Input);
+        u8"TP MIDI in", dsp::PortFlow::Input);
       auto * midi_in = &get_midi_in_port ();
       midi_in->set_owner (*this);
-      midi_in->id_->sym_ = ("track_processor_midi_in");
+      midi_in->id_->sym_ = u8"track_processor_midi_in";
       midi_in->id_->flags_ |= dsp::PortIdentifier::Flags::SendReceivable;
     }
   else
     {
       midi_out_id_ = port_registry_.create_object<MidiPort> (
-        "TP MIDI out", dsp::PortFlow::Output);
+        u8"TP MIDI out", dsp::PortFlow::Output);
       auto * midi_out = &get_midi_out_port ();
       midi_out->set_owner (*this);
-      midi_out->id_->sym_ = ("track_processor_midi_out");
+      midi_out->id_->sym_ = u8"track_processor_midi_out";
     }
 }
 
@@ -258,45 +258,51 @@ TrackProcessor::init_midi_cc_ports ()
 
       for (const auto j : std::views::iota (0, 128))
         {
-          (*midi_cc_ids_)[(i * 128) + j] =
-            port_registry_.create_object<ControlPort> (fmt::format (
-              "Ch{} {}", channel, utils::midi::midi_get_controller_name (j)));
+          (*midi_cc_ids_)[(i * 128) + j] = port_registry_.create_object<
+            ControlPort> (
+            utils::Utf8String::from_utf8_encoded_string (fmt::format (
+              "Ch{} {}", channel, utils::midi::midi_get_controller_name (j))));
           auto * cc = std::get<ControlPort *> (
             (*midi_cc_ids_)[(i * 128) + j].get_object ());
           cc->set_owner (*this);
           init_midi_port (cc, (i * 128) + j);
-          cc->id_->sym_ =
-            fmt::format ("midi_controller_ch{}_{}", channel, j + 1);
+          cc->id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("midi_controller_ch{}_{}", channel, j + 1));
         }
 
       (*pitch_bend_ids_)[i] = port_registry_.create_object<ControlPort> (
-        fmt::format ("Ch{} Pitch bend", i + 1));
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("Ch{} Pitch bend", i + 1)));
       auto * pitch_bend =
         std::get<ControlPort *> ((*pitch_bend_ids_)[i].get_object ());
       pitch_bend->set_owner (*this);
-      pitch_bend->id_->sym_ = fmt::format ("ch{}_pitch_bend", i + 1);
+      pitch_bend->id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("ch{}_pitch_bend", i + 1));
       init_midi_port (pitch_bend, i);
       pitch_bend->range_ = { -8192.f, 8191.f, 0.f };
       pitch_bend->deff_ = 0.f;
       pitch_bend->id_->flags2_ |= PortIdentifier::Flags2::MidiPitchBend;
 
       (*poly_key_pressure_ids_)[i] = port_registry_.create_object<ControlPort> (
-        fmt::format ("Ch{} Poly key pressure", i + 1));
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("Ch{} Poly key pressure", i + 1)));
       auto * poly_key_pressure =
         std::get<ControlPort *> ((*poly_key_pressure_ids_)[i].get_object ());
       poly_key_pressure->set_owner (*this);
-      poly_key_pressure->id_->sym_ =
-        fmt::format ("ch{}_poly_key_pressure", i + 1);
+      poly_key_pressure->id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("ch{}_poly_key_pressure", i + 1));
       init_midi_port (poly_key_pressure, i);
       poly_key_pressure->id_->flags2_ |=
         PortIdentifier::Flags2::MidiPolyKeyPressure;
 
       (*channel_pressure_ids_)[i] = port_registry_.create_object<ControlPort> (
-        fmt::format ("Ch{} Channel pressure", i + 1));
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("Ch{} Channel pressure", i + 1)));
       auto * channel_pressure =
         std::get<ControlPort *> ((*channel_pressure_ids_)[i].get_object ());
       channel_pressure->set_owner (*this);
-      channel_pressure->id_->sym_ = fmt::format ("ch{}_channel_pressure", i + 1);
+      channel_pressure->id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("ch{}_channel_pressure", i + 1));
       init_midi_port (channel_pressure, i);
       channel_pressure->id_->flags2_ |=
         PortIdentifier::Flags2::MidiChannelPressure;
@@ -307,8 +313,8 @@ void
 TrackProcessor::init_stereo_out_ports (bool in)
 {
   auto stereo_ports = StereoPorts::create_stereo_ports (
-    port_registry_, in, in ? "TP Stereo in" : "TP Stereo out",
-    std::string ("track_processor_stereo_") + (in ? "in" : "out"));
+    port_registry_, in, in ? u8"TP Stereo in" : u8"TP Stereo out",
+    utils::Utf8String (u8"track_processor_stereo_") + (in ? u8"in" : u8"out"));
   iterate_tuple (
     [&] (const auto &port_ref) {
       auto * port = std::get<AudioPort *> (port_ref.get_object ());
@@ -358,13 +364,14 @@ TrackProcessor::set_port_metadata_from_owner (
   id.owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
 }
 
-std::string
+utils::Utf8String
 TrackProcessor::get_full_designation_for_port (
   const dsp::PortIdentifier &id) const
 {
   auto * tr = get_track ();
   z_return_val_if_fail (tr, {});
-  return fmt::format ("{}/{}", tr->get_name (), id.label_);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}/{}", tr->get_name (), id.label_));
 }
 
 void

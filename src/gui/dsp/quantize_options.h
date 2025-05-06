@@ -54,7 +54,8 @@ public:
   /**
    * Returns the grid intensity as a human-readable string.
    */
-  static std::string to_string (NoteLength note_length, NoteType note_type);
+  static utils::Utf8String
+  to_string (NoteLength note_length, NoteType note_type);
 
   /**
    * Quantizes the given Position using the given

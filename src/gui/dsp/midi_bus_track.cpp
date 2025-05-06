@@ -23,7 +23,7 @@ MidiBusTrack::MidiBusTrack (
   if (new_identity)
     {
       color_ = Color (QColor ("#F5C211"));
-      icon_name_ = "signal-midi";
+      icon_name_ = u8"signal-midi";
       automation_tracklist_->setParent (this);
     }
 }

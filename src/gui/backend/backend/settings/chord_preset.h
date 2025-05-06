@@ -49,7 +49,7 @@ public:
   /**
    * Gets informational text.
    */
-  std::string get_info_text () const;
+  utils::Utf8String get_info_text () const;
 
   // GMenuModel * generate_context_menu () const;
 

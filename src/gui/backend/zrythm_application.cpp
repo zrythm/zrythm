@@ -52,14 +52,18 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   settings_manager_ = new SettingsManager (this);
   dir_manager_ = std::make_unique<DirectoryManager> (
     [&] () {
-      return utils::io::qstring_to_fs_path (
-        settings_manager_->get_zrythm_user_path ());
+      return utils::Utf8String::
+        from_qstring (settings_manager_->get_zrythm_user_path ())
+          .to_path ();
     },
     [&] () {
-      return utils::io::qstring_to_fs_path (
-        SettingsManager::get_default_zrythm_user_path ());
+      return utils::Utf8String::
+        from_qstring (SettingsManager::get_default_zrythm_user_path ())
+          .to_path ();
     },
-    [&] () { return utils::io::qstring_to_fs_path (applicationDirPath ()); });
+    [&] () {
+      return utils::Utf8String::from_qstring (applicationDirPath ()).to_path ();
+    });
   utils::LoggerProvider::set_logger (
     std::make_shared<utils::Logger> (utils::Logger::LoggerType::GUI));
 
@@ -80,8 +84,8 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   launch_engine_process ();
 
   Zrythm::getInstance ()->pre_init (
-    utils::io::qstring_to_fs_path (applicationFilePath ()).string ().c_str (),
-    true, true);
+    utils::Utf8String::from_qstring (applicationFilePath ()).to_path (), true,
+    true);
 
   AudioEngine::set_default_backends (false);
 
@@ -91,19 +95,19 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   constexpr const char * copyright_line =
     "Copyright (C) " COPYRIGHT_YEARS " " COPYRIGHT_NAME;
-  std::string ver = Zrythm::get_version (false);
+  const auto ver = Zrythm::get_version (false);
   std::cout
     << "\n==============================================================\n\n"
-    << format_str (
-         utils::qstring_to_std_string (tr (
+    << utils::Utf8String::from_qstring (format_qstr (
+         QObject::tr (
            "{}-{}\n{}\n\n"
            "{} comes with ABSOLUTELY NO WARRANTY!\n\n"
            "This is free software, and you are welcome to redistribute it\n"
            "under certain conditions. See the file 'COPYING' for details.\n\n"
            "Write comments and bugs to {}\n"
-           "Support this project at {}\n\n")),
+           "Support this project at {}\n\n"),
          PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME, ISSUE_TRACKER_URL,
-         "https://liberapay.com/Zrythm")
+         "https://liberapay.com/Zrythm"))
     << "==============================================================\n\n";
 
   z_info ("Running Zrythm in '{}'", QDir::currentPath ());
@@ -207,7 +211,7 @@ ZrythmApplication::setup_ui ()
 
   auto prepend_icon_theme_search_path = [] (const fs::path &path) {
     QIcon::themeSearchPaths ().prepend (
-      utils::std_string_to_qstring (path.string ()));
+      utils::Utf8String::from_path (path).to_qstring ());
     z_debug ("added icon theme search path: {}", path);
   };
 
@@ -313,12 +317,13 @@ ZrythmApplication::launch_engine_process ()
     QProcessEnvironment::systemEnvironment ().value (u"ZRYTHM_ENGINE_PATH"_s);
   if (!path_from_env.isEmpty ())
     {
-      path = utils::io::qstring_to_fs_path (path_from_env);
+      path = utils::Utf8String::from_qstring (path_from_env).to_path ();
     }
   else
     {
       path =
-        utils::io::qstring_to_fs_path (applicationDirPath ()) / "zrythm-engine";
+        utils::Utf8String::from_qstring (applicationDirPath ()).to_path ()
+        / "zrythm-engine";
     }
   z_info (
     "Starting engine process at {} (application file path: {})", path,
@@ -329,7 +334,7 @@ ZrythmApplication::launch_engine_process ()
     engine_process_, &QProcess::readyReadStandardOutput, this,
     &ZrythmApplication::onEngineOutput);
 
-  engine_process_->start (utils::std_string_to_qstring (path.string ()));
+  engine_process_->start (utils::Utf8String::from_path (path).to_qstring ());
   if (engine_process_->waitForStarted ())
     {
       z_info (

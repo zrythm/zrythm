@@ -939,10 +939,8 @@ struct fmt::formatter<T> : fmt::formatter<std::string_view>
   template <typename FormatContext>
   auto format (const T &uuid, FormatContext &ctx) const
   {
-    return fmt::formatter<std::string_view>::format (
-      utils::qstring_to_std_string (
-        type_safe::get (uuid).toString (QUuid::WithoutBraces)),
-      ctx);
+    return fmt::formatter<QString>{}.format (
+      type_safe::get (uuid).toString (QUuid::WithoutBraces), ctx);
   }
 };
 

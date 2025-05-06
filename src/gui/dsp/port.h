@@ -85,7 +85,7 @@ public:
   set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const = 0;
 
-  virtual std::string
+  virtual utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const
   {
     return id.get_label ();
@@ -195,7 +195,7 @@ public:
 
   void set_owner (IPortOwner &owner);
 
-  std::string get_label () const;
+  utils::Utf8String get_label () const;
 
   bool is_control () const { return id_->is_control (); }
   bool is_audio () const { return id_->type_ == PortType::Audio; }
@@ -212,7 +212,7 @@ public:
    */
   virtual void allocate_bufs () = 0;
 
-  std::string get_node_name () const override
+  utils::Utf8String get_node_name () const override
   {
     return get_full_designation ();
   }
@@ -239,7 +239,7 @@ public:
    * Gets a full designation of the port in the format "Track/Port" or
    * "Track/Plugin/Port".
    */
-  std::string get_full_designation () const
+  utils::Utf8String get_full_designation () const
   {
     return (owner_ != nullptr)
              ? owner_->get_full_designation_for_port (*id_)
@@ -332,12 +332,12 @@ protected:
   Port ();
 
   Port (
-    std::string label,
-    PortType    type = (PortType) 0,
-    PortFlow    flow = (PortFlow) 0,
-    float       minf = 0.f,
-    float       maxf = 1.f,
-    float       zerof = 0.f);
+    utils::Utf8String label,
+    PortType          type = {},
+    PortFlow          flow = {},
+    float             minf = 0.f,
+    float             maxf = 1.f,
+    float             zerof = 0.f);
 
   void copy_members_from (const Port &other, ObjectCloneType clone_type);
 

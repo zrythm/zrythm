@@ -66,10 +66,10 @@ public:
    */
   struct ScalePoint
   {
-    float       val_;
-    std::string label_;
+    float             val_;
+    utils::Utf8String label_;
 
-    ScalePoint (float val, std::string label)
+    ScalePoint (float val, utils::Utf8String label)
         : val_ (val), label_ (std::move (label))
     {
     }
@@ -88,7 +88,7 @@ public:
 
 public:
   ControlPort ();
-  ControlPort (std::string label);
+  ControlPort (utils::Utf8String label);
 
   /**
    * Converts normalized value (0.0 to 1.0) to
@@ -130,7 +130,7 @@ public:
   /**
    * @brief Set the identifier's port unit from the given string.
    */
-  void set_unit_from_str (const std::string &str);
+  void set_unit_from_str (const utils::Utf8String &str);
 
   /**
    * Gets the control value for an integer port.

@@ -31,7 +31,6 @@ class TempoTrack;
 class ModulatorTrack;
 class MasterTrack;
 class MarkerTrack;
-class StringArray;
 class Router;
 
 /**
@@ -357,13 +356,13 @@ public:
    * @throw ZrythmException on error.
    */
   void import_files (
-    const StringArray *           uri_list,
-    const FileDescriptor *        orig_file,
-    const Track *                 track,
-    const TrackLane *             lane,
-    int                           index,
-    const zrythm::dsp::Position * pos,
-    TracksReadyCallback           ready_cb);
+    std::optional<std::vector<utils::Utf8String>> uri_list,
+    const FileDescriptor *                        orig_file,
+    const Track *                                 track,
+    const TrackLane *                             lane,
+    int                                           index,
+    const zrythm::dsp::Position *                 pos,
+    TracksReadyCallback                           ready_cb);
 
 #if 0
   /**
@@ -385,7 +384,8 @@ public:
    * @param track_to_skip Track to skip when searching.
    */
   bool
-  track_name_is_unique (const std::string &name, TrackUuid track_to_skip) const;
+  track_name_is_unique (const utils::Utf8String &name, TrackUuid track_to_skip)
+    const;
 
   /**
    * @brief Returns whether the track at @p index is pinned.

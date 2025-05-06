@@ -79,7 +79,7 @@ ChordObject::insert_clone_to_project () const
 #endif
 }
 
-std::string
+utils::Utf8String
 ChordObject::gen_human_friendly_name () const
 {
   return getChordDescriptor ()->to_string ();

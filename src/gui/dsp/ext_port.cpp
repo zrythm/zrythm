@@ -31,10 +31,11 @@ ExtPort::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range
   id.owner_type_ = dsp::PortIdentifier::OwnerType::HardwareProcessor;
 }
 
-std::string
+utils::Utf8String
 ExtPort::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
-  return fmt::format ("HW/{}", id.label_);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("HW/{}", id.label_));
 }
 
 float *
@@ -57,17 +58,17 @@ ExtPort::get_buffer (nframes_t nframes) const
     }
 }
 
-std::string
+utils::Utf8String
 ExtPort::get_id () const
 {
   static const std::array<std::string, 5> ext_port_type_strings{
     "JACK", "ALSA", "Windows MME", "RtMidi", "RtAudio",
   };
-  return fmt::format (
-    "{}/{}", ext_port_type_strings[ENUM_VALUE_TO_INT (type_)], full_name_);
+  return utils::Utf8String::from_utf8_encoded_string (fmt::format (
+    "{}/{}", ext_port_type_strings[ENUM_VALUE_TO_INT (type_)], full_name_));
 }
 
-std::string
+utils::Utf8String
 ExtPort::get_friendly_name () const
 {
   if (num_aliases_ == 2)
@@ -143,7 +144,7 @@ ExtPort::activate (Port * port, bool activate)
                   jack_port_name (target_port));
                 if (ret != 0 && ret != EEXIST)
                   {
-                    std::string msg = utils::jack::get_error_message (
+                    const auto msg = utils::jack::get_error_message (
                       static_cast<jack_status_t> (ret));
                     z_warning (
                       "Failed connecting {} to {}:\n{}", jack_port_name (jport_),
@@ -352,8 +353,12 @@ ExtPort::matches_backend () const
 
 #ifdef HAVE_JACK
 ExtPort::ExtPort (jack_port_t * jport)
-    : jport_ (jport), full_name_ (jack_port_name (jport)),
-      short_name_ (jack_port_short_name (jport)), type_ (Type::JACK)
+    : jport_ (jport),
+      full_name_ (
+        utils::Utf8String::from_utf8_encoded_string (jack_port_name (jport))),
+      short_name_ (utils::Utf8String::from_utf8_encoded_string (
+        jack_port_short_name (jport))),
+      type_ (Type::JACK)
 {
   std::array<char *, 2> aliases{};
   aliases[0] =
@@ -364,8 +369,8 @@ ExtPort::ExtPort (jack_port_t * jport)
 
   if (num_aliases_ == 2)
     {
-      alias2_ = aliases[1];
-      alias1_ = aliases[0];
+      alias2_ = utils::Utf8String::from_utf8_encoded_string (aliases[1]);
+      alias1_ = utils::Utf8String::from_utf8_encoded_string (aliases[0]);
     }
   else if (num_aliases_ == 1)
     {
@@ -373,11 +378,11 @@ ExtPort::ExtPort (jack_port_t * jport)
        * 1 (it only puts the alias in the 2nd string) */
       if (strlen (aliases[0]) > 0)
         {
-          alias1_ = aliases[0];
+          alias1_ = utils::Utf8String::from_utf8_encoded_string (aliases[0]);
         }
       else if (strlen (aliases[1]) > 0)
         {
-          alias1_ = aliases[1];
+          alias1_ = utils::Utf8String::from_utf8_encoded_string (aliases[1]);
         }
       else
         {

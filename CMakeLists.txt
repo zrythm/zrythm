@@ -193,6 +193,7 @@ option(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Compile with undefined behavi
 option(ZRYTHM_ENABLE_SANITIZER_THREAD "Compile with thread sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_MEMORY "Compile with memory sanitizer" OFF)
 option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay variant in carla" ON)
+option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 
 # Dependency feature options
 option(ZRYTHM_WITH_X11 "Build with X11 support" ${OS_GNU})
@@ -602,6 +603,8 @@ if(ZRYTHM_STRICT)
       -Werror=nonnull-compare
       -Werror=bool-compare
       -Werror=lto-type-mismatch
+      -Werror=dangling-reference
+      -Werror=dangling-pointer
 
       # -fanalyzer
       -Werror=analyzer-possible-null-dereference

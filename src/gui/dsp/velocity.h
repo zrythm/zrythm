@@ -68,9 +68,11 @@ public:
    */
   // MidiNote * get_midi_note () const;
 
+#if 0
   static const char * setting_enum_to_str (size_t index);
 
   static size_t setting_str_to_enum (const char * str);
+#endif
 
   void init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
     override;

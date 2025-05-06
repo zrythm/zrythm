@@ -59,41 +59,24 @@ public:
   double amount_ = 0;
 };
 
-std::string
+utils::Utf8String
 audio_function_get_action_target_for_type (AudioFunctionType type);
 
 /**
- * Returns a detailed action name to be used for
- * actionable widgets or menus.
+ * Returns a detailed action name to be used for actionable widgets or menus.
  *
  * @param base_action Base action to use.
  */
-std::string
+utils::Utf8String
 audio_function_get_detailed_action_for_type (
-  AudioFunctionType  type,
-  const std::string &base_action);
+  AudioFunctionType        type,
+  const utils::Utf8String &base_action);
 
 #define audio_function_get_detailed_action_for_type_default(type) \
   audio_function_get_detailed_action_for_type (type, "app.editor-function")
 
-const char *
+utils::Utf8String
 audio_function_get_icon_name_for_type (AudioFunctionType type);
-
-/**
- * Returns the URI of the plugin responsible for handling the
- * type, if any.
- */
-static inline const char *
-audio_function_get_plugin_uri_for_type (AudioFunctionType type)
-{
-  switch (type)
-    {
-    default:
-      break;
-    }
-
-  return NULL;
-}
 
 /**
  * Applies the given action to the given selections.
@@ -108,12 +91,12 @@ audio_function_get_plugin_uri_for_type (AudioFunctionType type)
  */
 void
 audio_function_apply (
-  ArrangerObject::Uuid       region_id,
-  const dsp::Position       &sel_start,
-  const dsp::Position       &sel_end,
-  AudioFunctionType          type,
-  AudioFunctionOpts          opts,
-  std::optional<std::string> uri);
+  ArrangerObject::Uuid             region_id,
+  const dsp::Position             &sel_start,
+  const dsp::Position             &sel_end,
+  AudioFunctionType                type,
+  AudioFunctionOpts                opts,
+  std::optional<utils::Utf8String> uri);
 
 DEFINE_ENUM_FORMATTER (
   AudioFunctionType,

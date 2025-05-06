@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/zrythm.h"
@@ -48,7 +48,7 @@ CachedPluginDescriptors::serialize_to_file ()
   z_debug ("Writing cached plugin descriptors to {}...", path);
   try
     {
-      utils::io::set_file_contents (path, json_str.c_str ());
+      utils::io::set_file_contents (path, json_str.to_utf8_string ());
     }
   catch (const ZrythmException &e)
     {
@@ -71,7 +71,9 @@ CachedPluginDescriptors::read_or_new ()
   std::string json;
   try
     {
-      json = utils::qstring_to_std_string (utils::io::read_file_contents (path));
+      json =
+        utils::Utf8String::from_qstring (utils::io::read_file_contents (path))
+          .str ();
     }
   catch (const ZrythmException &e)
     {
@@ -198,7 +200,7 @@ CachedPluginDescriptors::blacklist (std::string_view sha1, bool serialize)
 {
   z_return_if_fail (!sha1.empty ());
 
-  blacklisted_sha1s_.push_back (std::string (sha1));
+  blacklisted_sha1s_.emplace_back (sha1);
   if (serialize)
     {
       serialize_to_file_no_throw ();

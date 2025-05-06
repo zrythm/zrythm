@@ -603,7 +603,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
   for (const auto &device : devices)
     {
       ExtPort * ext_port = self->hw_out_processor_->find_ext_port (
-        utils::qstring_to_std_string (device));
+        utils::Utf8String::from_qstring (device));
       if (ext_port)
         {
           /*z_return_val_if_reached (-1);*/
@@ -759,7 +759,8 @@ engine_jack_is_pipewire (AudioEngine * self)
       z_info ("{} () found in {}", func_name, libname);
       const char * ver = (*jack_get_version_string) ();
       z_info ("ver {}", ver);
-      return utils::string::contains_substr (ver, "PipeWire");
+      return utils::Utf8String::from_utf8_encoded_string (ver).contains_substr (
+        u8"PipeWire");
     }
 #  endif
 }

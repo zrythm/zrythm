@@ -41,7 +41,7 @@ URL::get_page_contents (int timeout)
           throw ZrythmException (fmt::format (
             "Failed to get page contents for {}.", url_.toString (true)));
         }
-      return utils::juce_string_to_std_string (res);
+      return utils::Utf8String::from_juce_string (res).str ();
     }
 
   throw ZrythmException (fmt::format (
@@ -64,7 +64,8 @@ URL::post_json_no_auth (
   for (const auto &mime_object : mime_objects)
     {
       url = url.withFileToUpload (
-        mime_object.name_, juce::File (mime_object.filepath_.string ()),
+        mime_object.name_,
+        utils::Utf8String::from_path (mime_object.filepath_).to_juce_file (),
         mime_object.mimetype_);
     }
 

@@ -8,14 +8,14 @@
 
 using namespace zrythm;
 
-ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
-    : name_ (name)
+ProjectInfo::ProjectInfo (utils::Utf8String name, const fs::path &filename)
+    : name_ (std::move (name))
 {
   if (filename.empty ())
     {
-      filename_ = "-";
+      filename_ = u8"-";
       modified_ = 0;
-      modified_str_ = "-";
+      modified_str_ = u8"-";
     }
   else
     {
@@ -23,8 +23,8 @@ ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
       modified_ = utils::io::file_get_last_modified_datetime (filename);
       if (modified_ == -1)
         {
-          modified_str_ =
-            utils::qstring_to_std_string (PROJECT_INFO_FILE_NOT_FOUND_STR);
+          modified_str_ = utils::Utf8String::from_qstring (
+            get_project_info_file_not_found_string ());
           modified_ = std::numeric_limits<int64_t>::max ();
         }
       else
@@ -33,10 +33,4 @@ ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
         }
       z_return_if_fail (!modified_str_.empty ());
     }
-}
-
-void
-ProjectInfo::destroy_func (void * data)
-{
-  delete static_cast<ProjectInfo *> (data);
 }

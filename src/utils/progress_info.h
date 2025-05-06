@@ -64,17 +64,17 @@ public:
   /**
    * To be called by the task itself.
    */
-  void mark_completed (CompletionType type, const std::string &msg);
+  void mark_completed (CompletionType type, const utils::Utf8String &msg);
 
   /**
    * Returns a newly allocated string.
    */
-  std::string get_message () const { return completion_str_; }
+  utils::Utf8String get_message () const { return completion_str_; }
 
   /**
    * To be called by the task caller.
    */
-  std::tuple<double, std::string> get_progress ()
+  std::tuple<double, utils::Utf8String> get_progress ()
   {
     std::scoped_lock guard (m_);
 
@@ -84,7 +84,7 @@ public:
   /**
    * To be called by the task itself.
    */
-  void update_progress (double progress, const std::string &msg);
+  void update_progress (double progress, const utils::Utf8String &msg);
 
   bool pending_cancellation () const
   {
@@ -103,15 +103,15 @@ private:
 
   /** Message to show after completion (error or warning or
    * success message). */
-  std::string completion_str_;
+  utils::Utf8String completion_str_;
 
   /** String to show during the action (can be updated multiple
    * times until completion). */
-  std::string progress_str_;
+  utils::Utf8String progress_str_;
 
   /** String to show in the label when the action is complete
    * (progress == 1.0). */
-  // std::string label_done_str;
+  // utils::Utf8String label_done_str;
 
   /** Mutex to prevent concurrent access/edits. */
   std::mutex m_;

@@ -59,7 +59,7 @@ public:
     utils::audio::BitDepth           bit_depth,
     sample_rate_t                    project_sample_rate,
     bpm_t                            current_bpm,
-    const std::string               &name);
+    const utils::Utf8String         &name);
 
   /**
    * Creates an audio clip by copying the given interleaved float array.
@@ -76,7 +76,7 @@ public:
     zrythm::utils::audio::BitDepth bit_depth,
     sample_rate_t                  project_sample_rate,
     bpm_t                          current_bpm,
-    const std::string             &name)
+    const utils::Utf8String       &name)
       : AudioClip (
           *utils::audio::AudioBuffer::from_interleaved (arr, nframes, channels),
           bit_depth,
@@ -96,11 +96,11 @@ public:
    * current cycle's frames when called during recording.
    */
   AudioClip (
-    channels_t         channels,
-    unsigned_frame_t   nframes,
-    sample_rate_t      project_sample_rate,
-    bpm_t              current_bpm,
-    const std::string &name);
+    channels_t               channels,
+    unsigned_frame_t         nframes,
+    sample_rate_t            project_sample_rate,
+    bpm_t                    current_bpm,
+    const utils::Utf8String &name);
 
 public:
   static bool should_use_flac (zrythm::utils::audio::BitDepth bd)
@@ -156,7 +156,7 @@ public:
   auto        get_last_write_to_file () const { return last_write_; }
   auto        get_use_flac () const { return use_flac_; }
 
-  void set_name (const std::string &name) { name_ = name; }
+  void set_name (const utils::Utf8String &name) { name_ = name; }
   void set_file_hash (utils::hash::HashT hash) { file_hash_ = hash; }
 
   /**
@@ -248,7 +248,7 @@ private:
 
 private:
   /** Name of the clip. */
-  std::string name_;
+  utils::Utf8String name_;
 
   /**
    * Per-channel frames.

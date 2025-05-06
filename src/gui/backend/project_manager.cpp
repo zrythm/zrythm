@@ -32,17 +32,14 @@ ProjectManager::init_templates ()
     {
       try
         {
-          auto files =
-            utils::io::get_files_in_dir (user_templates_dir.string ());
-          std::ranges::transform (
-            files, std::back_inserter (templates_),
-            utils::io::juce_string_to_fs_path);
+          auto files = utils::io::get_files_in_dir (user_templates_dir);
+          templates_.insert (templates_.end (), files.begin (), files.end ());
         }
       catch (const ZrythmException &e)
         {
           z_warning (
             "Failed to init user templates from {}",
-            user_templates_dir.string ());
+            utils::Utf8String::from_path (user_templates_dir));
         }
     }
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
@@ -53,17 +50,15 @@ ProjectManager::init_templates ()
         {
           try
             {
-              auto files =
-                utils::io::get_files_in_dir (system_templates_dir.string ());
-              std::ranges::transform (
-                files, std::back_inserter (templates_),
-                utils::io::juce_string_to_fs_path);
+              auto files = utils::io::get_files_in_dir (system_templates_dir);
+              templates_.insert (
+                templates_.end (), files.begin (), files.end ());
             }
           catch (const ZrythmException &e)
             {
               z_warning (
                 "Failed to init system templates from {}",
-                system_templates_dir.string ());
+                utils::Utf8String::from_path (system_templates_dir));
             }
         }
     }
@@ -71,7 +66,7 @@ ProjectManager::init_templates ()
   for (auto &tmpl : this->templates_)
     {
       z_info ("Template found: {}", tmpl);
-      if (juce::String (tmpl.string ()).contains ("demo_zsong01"))
+      if (utils::Utf8String::from_path (tmpl).contains_substr (u8"demo_zsong01"))
         {
           demo_template_ = tmpl;
         }
@@ -108,10 +103,10 @@ ProjectManager::getNextAvailableProjectName (
     directory.toString (), directory.toLocalFile (),
     directory.toDisplayString ());
   auto tmp =
-    utils::io::qstring_to_fs_path (directory.toLocalFile ())
-    / utils::io::qstring_to_fs_path (name);
+    utils::Utf8String::from_qstring (directory.toLocalFile ()).to_path ()
+    / utils::Utf8String::from_qstring (name).to_path ();
   auto dir = utils::io::get_next_available_filepath (tmp);
-  auto ret = utils::io::fs_path_to_qstring (dir.filename ());
+  auto ret = utils::Utf8String::from_path (dir.filename ()).to_qstring ();
   z_debug ("Next available untitled project name for '{}': {}", tmp, ret);
   return ret;
 }
@@ -131,14 +126,14 @@ ProjectManager::getRecentProjects () const
 
 Project *
 ProjectManager::create_default (
-  const fs::path    &prj_dir,
-  const std::string &name,
-  bool               with_engine)
+  const fs::path          &prj_dir,
+  const utils::Utf8String &name,
+  bool                     with_engine)
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
   auto * prj = new Project ();
-  prj->setTitle (utils::std_string_to_qstring (name));
+  prj->setTitle (name.to_qstring ());
   prj->add_default_tracks ();
 
   /* pre-setup engine */
@@ -194,8 +189,8 @@ ProjectManager::createNewProject (
         auto * project =
           template_file.isEmpty ()
             ? create_default (
-                utils::io::qstring_to_fs_path (directory_file),
-                utils::qstring_to_std_string (name), true)
+                utils::Utf8String::from_qstring (directory_file).to_path (),
+                utils::Utf8String::from_qstring (name), true)
             : nullptr; // TODO: template handling
 
         project->moveToThread (this->thread ());
@@ -215,10 +210,9 @@ ProjectManager::createNewProject (
     catch (const ZrythmException &e)
       {
         z_warning ("Failed to create project: {}", e.what ());
-        QMetaObject::invokeMethod (
-          this, [this, msg = utils::std_string_to_qstring (e.what ())] {
-            Q_EMIT projectLoadingFailed (msg);
-          });
+        QMetaObject::invokeMethod (this, [this, msg = e.what_string ()] {
+          Q_EMIT projectLoadingFailed (msg);
+        });
       }
   }).detach ();
 }

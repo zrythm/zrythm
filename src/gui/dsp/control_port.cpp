@@ -18,9 +18,9 @@
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
 
-ControlPort::ControlPort () : ControlPort ("") { }
+ControlPort::ControlPort () : ControlPort (utils::Utf8String{}) { }
 
-ControlPort::ControlPort (std::string label)
+ControlPort::ControlPort (utils::Utf8String label)
     : Port (std::move (label), PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
 {
 }
@@ -38,25 +38,25 @@ ControlPort::init_after_cloning (
 }
 
 void
-ControlPort::set_unit_from_str (const std::string &str)
+ControlPort::set_unit_from_str (const utils::Utf8String &str)
 {
-  if (str == "Hz")
+  if (str == u8"Hz")
     {
       id_->unit_ = dsp::PortUnit::Hz;
     }
-  else if (str == "ms")
+  else if (str == u8"ms")
     {
       id_->unit_ = dsp::PortUnit::Ms;
     }
-  else if (str == "dB")
+  else if (str == u8"dB")
     {
       id_->unit_ = dsp::PortUnit::Db;
     }
-  else if (str == "s")
+  else if (str == u8"s")
     {
       id_->unit_ = dsp::PortUnit::Seconds;
     }
-  else if (str == "us")
+  else if (str == u8"us")
     {
       id_->unit_ = dsp::PortUnit::Us;
     }

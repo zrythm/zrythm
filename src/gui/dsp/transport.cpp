@@ -125,38 +125,38 @@ Transport::Transport (Project * parent)
   /*}*/
 
   /* create ports */
-  roll_ = std::make_unique<MidiPort> ("Roll", PortFlow::Input);
-  roll_->id_->sym_ = ("roll");
+  roll_ = std::make_unique<MidiPort> (u8"Roll", PortFlow::Input);
+  roll_->id_->sym_ = u8"roll";
   roll_->set_owner (*this);
   roll_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   roll_->id_->flags2_ |= PortIdentifier::Flags2::TransportRoll;
 
-  stop_ = std::make_unique<MidiPort> ("Stop", PortFlow::Input);
-  stop_->id_->sym_ = ("stop");
+  stop_ = std::make_unique<MidiPort> (u8"Stop", PortFlow::Input);
+  stop_->id_->sym_ = u8"stop";
   stop_->set_owner (*this);
   stop_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   stop_->id_->flags2_ |= PortIdentifier::Flags2::TransportStop;
 
-  backward_ = std::make_unique<MidiPort> ("Backward", PortFlow::Input);
-  backward_->id_->sym_ = ("backward");
+  backward_ = std::make_unique<MidiPort> (u8"Backward", PortFlow::Input);
+  backward_->id_->sym_ = u8"backward";
   backward_->set_owner (*this);
   backward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   backward_->id_->flags2_ |= PortIdentifier::Flags2::TransportBackward;
 
-  forward_ = std::make_unique<MidiPort> ("Forward", PortFlow::Input);
-  forward_->id_->sym_ = ("forward");
+  forward_ = std::make_unique<MidiPort> (u8"Forward", PortFlow::Input);
+  forward_->id_->sym_ = u8"forward";
   forward_->set_owner (*this);
   forward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   forward_->id_->flags2_ |= PortIdentifier::Flags2::TransportForward;
 
-  loop_toggle_ = std::make_unique<MidiPort> ("Loop toggle", PortFlow::Input);
-  loop_toggle_->id_->sym_ = ("loop_toggle");
+  loop_toggle_ = std::make_unique<MidiPort> (u8"Loop toggle", PortFlow::Input);
+  loop_toggle_->id_->sym_ = u8"loop_toggle";
   loop_toggle_->set_owner (*this);
   loop_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   loop_toggle_->id_->flags2_ |= PortIdentifier::Flags2::TransportLoopToggle;
 
-  rec_toggle_ = std::make_unique<MidiPort> ("Rec toggle", PortFlow::Input);
-  rec_toggle_->id_->sym_ = ("rec_toggle");
+  rec_toggle_ = std::make_unique<MidiPort> (u8"Rec toggle", PortFlow::Input);
+  rec_toggle_->id_->sym_ = u8"rec_toggle";
   rec_toggle_->set_owner (*this);
   rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   rec_toggle_->id_->flags2_ |= PortIdentifier::Flags2::TransportRecToggle;
@@ -946,10 +946,11 @@ Transport::set_port_metadata_from_owner (
   id.owner_type_ = PortIdentifier::OwnerType::Transport;
 }
 
-std::string
+utils::Utf8String
 Transport::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
-  return fmt::format ("Transport/{}", id.label_);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("Transport/{}", id.label_));
 }
 
 void

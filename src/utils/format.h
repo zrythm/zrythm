@@ -84,9 +84,10 @@ using namespace zrythm;
   }; \
   } \
 \
-  inline std::string function_prefix##_to_string (const obj_type &obj) \
+  inline utils::Utf8String function_prefix##_to_string (const obj_type &obj) \
   { \
-    return fmt::format ("{}", obj); \
+    return utils::Utf8String::from_utf8_encoded_string ( \
+      fmt::format ("{}", obj)); \
   } \
 \
   inline void function_prefix##_print (const obj_type &obj) \
@@ -110,7 +111,7 @@ using namespace zrythm;
       return format_to ( \
         ctx.out (), FMT_STRING ("{}"), \
         translate_ \
-          ? utils::qstring_to_std_string (QObject::tr (str)).c_str () \
+          ? utils::Utf8String::from_qstring (QObject::tr (str)).c_str () \
           : str); \
     } \
   }; \
@@ -123,18 +124,20 @@ using namespace zrythm;
     return enum_strings.data (); \
   } \
 \
-  inline std::string enum_name##_to_string ( \
+  inline utils::Utf8String enum_name##_to_string ( \
     enum_type val, bool translate = false) \
   { \
     if (translate) \
       { \
-        return fmt::format ("{:t}", val); \
+        return utils::Utf8String::from_utf8_encoded_string ( \
+          fmt::format ("{:t}", val)); \
       } \
-    return fmt::format ("{}", val); \
+    return utils::Utf8String::from_utf8_encoded_string ( \
+      fmt::format ("{}", val)); \
   } \
 \
   inline enum_type enum_name##_from_string ( \
-    std::string_view str, bool translate = false) \
+    const utils::Utf8String &str, bool translate = false) \
   { \
     for (size_t i = 0; i < VA_ARGS_SIZE (__VA_ARGS__); ++i) \
       { \
@@ -163,8 +166,9 @@ template <typename... Args>
 QString
 format_qstr (const QString &format, Args &&... args)
 {
-  return utils::std_string_to_qstring (
-    format_str (utils::qstring_to_std_string (format), args...));
+  return utils::Utf8String::from_utf8_encoded_string (
+           format_str (utils::Utf8String::from_qstring (format).str (), args...))
+    .to_qstring ();
 }
 
 // Formatter for std::filesystem::path
@@ -174,7 +178,8 @@ struct fmt::formatter<std::filesystem::path> : fmt::formatter<std::string_view>
   template <typename FormatContext>
   auto format (const std::filesystem::path &p, FormatContext &ctx) const
   {
-    return fmt::formatter<std::string_view>::format (p.string (), ctx);
+    return fmt::formatter<std::string_view>::format (
+      utils::Utf8String::from_path (p).view (), ctx);
   }
 };
 
@@ -186,7 +191,7 @@ struct fmt::formatter<juce::String> : fmt::formatter<std::string_view>
   auto format (const juce::String &s, FormatContext &ctx) const
   {
     return fmt::formatter<std::string_view>::format (
-      utils::juce_string_to_std_string (s), ctx);
+      utils::Utf8String::from_juce_string (s).view (), ctx);
   }
 };
 
@@ -197,7 +202,7 @@ template <> struct fmt::formatter<QString> : fmt::formatter<std::string_view>
   auto format (const QString &s, FormatContext &ctx) const
   {
     return fmt::formatter<std::string_view>::format (
-      utils::qstring_to_std_string (s), ctx);
+      utils::Utf8String::from_qstring (s).view (), ctx);
   }
 };
 

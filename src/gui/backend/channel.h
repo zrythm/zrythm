@@ -141,7 +141,7 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   bool should_bounce_to_master (utils::audio::BounceStep step) const override;

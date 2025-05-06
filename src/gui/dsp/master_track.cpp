@@ -26,7 +26,7 @@ MasterTrack::MasterTrack (
     {
       /* GTK color picker color */
       color_ = Color (QColor ("#D90368"));
-      icon_name_ = "jam-icons-crown";
+      icon_name_ = u8"jam-icons-crown";
     }
   automation_tracklist_->setParent (this);
 }

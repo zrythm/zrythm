@@ -12,7 +12,6 @@
 #include "gui/backend/plugin_descriptor_list.h"
 #include "gui/backend/plugin_scanner.h"
 #include "gui/dsp/plugin_descriptor.h"
-#include "utils/string_array.h"
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -60,7 +59,7 @@ public:
    * Returns a PluginDescriptor for the given URI.
    */
   std::unique_ptr<PluginDescriptor>
-  find_plugin_from_uri (std::string_view uri) const;
+  find_plugin_from_uri (const utils::Utf8String &uri) const;
 
   /**
    * Finds and returns a PluginDescriptor matching the given descriptor.
@@ -99,8 +98,9 @@ private:
    * @brief Adds the given category and author to the lists of plugin categories
    * and authors, if not already present.
    */
-  void
-  add_category_and_author (std::string_view category, std::string_view author);
+  void add_category_and_author (
+    const utils::Utf8String &category,
+    const utils::Utf8String &author);
 
   static fs::path get_known_plugins_xml_path ();
   void            serialize_known_plugins ();
@@ -114,10 +114,10 @@ public:
   // std::vector<PluginDescriptor> plugin_descriptors_;
 
   /** Plugin categories. */
-  std::vector<std::string> plugin_categories_;
+  std::vector<utils::Utf8String> plugin_categories_;
 
   /** Plugin authors. */
-  std::vector<std::string> plugin_authors_;
+  std::vector<utils::Utf8String> plugin_authors_;
 
   /** Current known plugin list. */
   // std::unique_ptr<CachedPluginDescriptors> cached_plugin_descriptors_;

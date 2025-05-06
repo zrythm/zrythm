@@ -348,7 +348,7 @@ public:
 public:
   // void init ();
 
-  std::string get_label () const { return label_; }
+  utils::Utf8String get_label () const { return label_; }
 
   bool is_control () const { return type_ == PortType::Control; }
   bool is_midi () const { return type_ == PortType::Event; }
@@ -375,7 +375,7 @@ public:
   bool        validate () const;
   size_t      get_hash () const;
 
-  static std::string port_unit_to_string (PortUnit unit);
+  static utils::Utf8String port_unit_to_string (PortUnit unit);
 
   void
   init_after_cloning (const PortIdentifier &other, ObjectCloneType clone_type)
@@ -412,22 +412,22 @@ public:
   std::optional<PluginUuid> plugin_id_;
 
   /** Human readable label. */
-  std::string label_;
+  utils::Utf8String label_;
 
   /** Unique symbol. */
-  std::string sym_;
+  utils::Utf8String sym_;
 
   /** URI, if LV2 property. */
-  std::string uri_;
+  utils::Utf8String uri_;
 
   /** Comment, if any. */
-  std::string comment_;
+  utils::Utf8String comment_;
 
   /** Port group this port is part of (only applicable for LV2 plugin ports). */
-  std::string port_group_;
+  utils::Utf8String port_group_;
 
   /** ExtPort ID (type + full name), if hw port. */
-  std::string ext_port_id_;
+  utils::Utf8String ext_port_id_;
 
   /** MIDI channel if MIDI CC port, starting from 1 (so [1, 16]). */
   std::optional<midi_byte_t> midi_channel_;

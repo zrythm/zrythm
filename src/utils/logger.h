@@ -21,7 +21,7 @@ public:
 
   void init_sinks (bool for_testing);
 
-  std::vector<std::string>
+  std::vector<Utf8String>
   get_last_log_entries (size_t count, bool formatted) const;
 
   /**
@@ -30,8 +30,8 @@ public:
    * @return The directory and the path of the compressed file.
    * @throw ZrythmException on failure.
    */
-  virtual std::pair<std::string, std::string>
-  generate_compresed_file (std::string &dir, std::string &path) const = 0;
+  virtual std::pair<fs::path, fs::path>
+  generate_compresed_file (fs::path &dir, fs::path &path) const = 0;
 
 #ifdef __GNUC__
 #  pragma GCC diagnostic push
@@ -47,7 +47,7 @@ public:
 
   virtual bool need_backtrace () const = 0;
 
-  virtual std::string get_log_file_path () const = 0;
+  virtual fs::path get_log_file_path () const = 0;
 
 protected:
   std::shared_ptr<spdlog::logger> logger_;
@@ -72,12 +72,12 @@ public:
 
   Logger (LoggerType type);
 
-  std::pair<std::string, std::string>
-  generate_compresed_file (std::string &dir, std::string &path) const override;
+  std::pair<fs::path, fs::path>
+  generate_compresed_file (fs::path &dir, fs::path &path) const override;
 
   bool need_backtrace () const override;
 
-  [[nodiscard]] std::string get_log_file_path () const override;
+  [[nodiscard]] fs::path get_log_file_path () const override;
 
 private:
   LoggerType type_{};
@@ -88,12 +88,12 @@ class TestLogger : public ILogger
 public:
   TestLogger ();
 
-  std::pair<std::string, std::string>
-  generate_compresed_file (std::string &dir, std::string &path) const override;
+  std::pair<fs::path, fs::path>
+  generate_compresed_file (fs::path &dir, fs::path &path) const override;
 
   bool need_backtrace () const override;
 
-  std::string get_log_file_path () const override;
+  fs::path get_log_file_path () const override;
 };
 
 class LoggerProvider

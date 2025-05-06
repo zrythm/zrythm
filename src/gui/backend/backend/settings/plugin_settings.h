@@ -111,7 +111,7 @@ public:
     return descr_.get ();
   }
 
-  std::string get_name () const { return get_descriptor ()->name_; }
+  auto get_name () const { return get_descriptor ()->name_; }
 
   /**
    * Finishes activating a plugin setting.

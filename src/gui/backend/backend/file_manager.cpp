@@ -182,10 +182,10 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
   {
     auto           parent_dir = fs::path (location.path_).parent_path ();
     FileDescriptor fd;
-    fd.abs_path_ = parent_dir.string ();
+    fd.abs_path_ = parent_dir;
     fd.type_ = FileType::ParentDirectory;
     fd.hidden_ = false;
-    fd.label_ = "..";
+    fd.label_ = u8"..";
     if (fd.abs_path_.string ().length () > 1)
       {
         files.push_back (fd);
@@ -199,7 +199,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
       /* set absolute path & label */
       auto absolute_path = file.path ();
       fd.abs_path_ = absolute_path;
-      fd.label_ = file.path ().filename ().string ();
+      fd.label_ = utils::Utf8String::from_path (file.path ().filename ());
 
       fd.hidden_ = utils::io::is_file_hidden (absolute_path);
 
@@ -251,7 +251,7 @@ FileManager::set_selection (
   if (save_to_settings)
     {
       gui::SettingsManager::get_instance ()->set_fileBrowserLastLocation (
-        utils::std_string_to_qstring (selection->path_.string ()));
+        utils::Utf8String::from_path (selection->path_));
     }
 }
 
@@ -264,7 +264,7 @@ FileManager::save_locations ()
       if (loc.special_location_ > FileManagerSpecialLocation::FILE_MANAGER_NONE)
         continue;
 
-      strv_builder.append (utils::std_string_to_qstring (loc.path_.string ()));
+      strv_builder.append (utils::Utf8String::from_path (loc.path_));
     }
 
   gui::SettingsManager::get_instance ()->set_fileBrowserBookmarks (strv_builder);

@@ -34,12 +34,18 @@ bool
 assert_nonnann (float x)
 {
   auto val = fmt::format ("{:f}", (double) x);
-  if (std::isnan (x) || zrythm::utils::string::contains_substr (val, "nan"))
+  if (
+    std::isnan (x)
+    || utils::Utf8String::from_utf8_encoded_string (val).contains_substr (
+      u8"nan"))
     {
       z_error ("nan");
       return false;
     }
-  if (!std::isfinite (x) || zrythm::utils::string::contains_substr (val, "inf"))
+  if (
+    !std::isfinite (x)
+    || utils::Utf8String::from_utf8_encoded_string (val).contains_substr (
+      u8"inf"))
     {
       z_error ("inf");
       return false;

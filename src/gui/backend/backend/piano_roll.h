@@ -47,9 +47,9 @@ class Region;
 class MidiNoteDescriptor
 {
 public:
-  std::string get_custom_name () const { return custom_name_; }
+  auto get_custom_name () const { return custom_name_; }
 
-  void set_custom_name (const std::string &str) { custom_name_ = str; }
+  void set_custom_name (const utils::Utf8String &str) { custom_name_ = str; }
 
 public:
   /**
@@ -72,13 +72,13 @@ public:
    *
    * This is only used in drum mode.
    */
-  std::string custom_name_;
+  utils::Utf8String custom_name_;
 
   /** Name of the note, from C-2 to B8. */
-  std::string note_name_;
+  utils::Utf8String note_name_;
 
   /** Note name with extra formatting. */
-  std::string note_name_pango_;
+  utils::Utf8String note_name_pango_;
 
   /** Whether the note is highlighted/marked or not. */
   bool marked_ = false;

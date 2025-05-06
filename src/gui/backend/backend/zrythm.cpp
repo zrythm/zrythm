@@ -40,10 +40,11 @@ Zrythm::Zrythm ()
 }
 
 void
-Zrythm::pre_init (const char * exe_path, bool have_ui, bool optimized_dsp)
+Zrythm::
+  pre_init (std::optional<fs::path> exe_path, bool have_ui, bool optimized_dsp)
 {
   if (exe_path)
-    exe_path_ = exe_path;
+    exe_path_ = *exe_path;
 
   have_ui_ = have_ui;
   use_optimized_dsp_ = optimized_dsp;
@@ -72,25 +73,28 @@ Zrythm::init ()
     }
 }
 
-std::string
+utils::Utf8String
 Zrythm::get_version (bool with_v)
 {
   constexpr const char * ver = PACKAGE_VERSION;
 
-  if (with_v)
-    {
-      if (ver[0] == 'v')
-        return ver;
+  return utils::Utf8String::from_utf8_encoded_string (
+    [ver, with_v] () -> std::string {
+      if (with_v)
+        {
+          if (ver[0] == 'v')
+            return ver;
 
-      return fmt::format ("v{}", ver);
-    }
-  else
-    {
-      if (ver[0] == 'v')
-        return &ver[1];
+          return fmt::format ("v{}", ver);
+        }
+      else
+        {
+          if (ver[0] == 'v')
+            return &ver[1];
 
-      return ver;
-    }
+          return ver;
+        }
+    }());
 }
 
 /**
@@ -103,9 +107,9 @@ Zrythm::get_version (bool with_v)
 void
 Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 {
-  std::string ver = get_version (false);
+  const auto ver = get_version (false);
 
-  std::string gstr = fmt::format (
+  auto gstr = utils::Utf8String::from_utf8_encoded_string (fmt::format (
     "{} {}{} ({})\n"
     "  built with {} {} for {}{}\n"
 #if HAVE_CARLA
@@ -154,37 +158,38 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
     ""
 #endif
 
-  );
+    ));
 
   if (include_system_info)
     {
-      gstr += "\n";
-      const auto system_nfo = get_system_info ();
-      gstr += system_nfo;
+      gstr += u8"\n";
+      gstr += get_system_info ();
     }
 
   strcpy (buf, gstr.c_str ());
 }
 
-std::string
+utils::Utf8String
 Zrythm::get_system_info ()
 {
-  std::string gstr;
+  utils::Utf8String gstr;
 
   QFile file (u"/etc/os-release"_s);
   if (file.open (QIODevice::ReadOnly | QIODevice::Text))
     {
       QTextStream in (&file);
-      gstr += utils::qstring_to_std_string (in.readAll ()) + "\n";
+      gstr += utils::Utf8String::from_qstring (in.readAll ()) + u8"\n";
     }
 
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
-  gstr += fmt::format ("XDG_SESSION_TYPE={}\n", env.value (u"XDG_SESSION_ID"_s));
-  gstr += fmt::format (
-    "XDG_CURRENT_DESKTOP={}\n", env.value (u"XDG_CURRENT_DESKTOP"_s));
-  gstr += fmt::format ("DESKTOP_SESSION={}\n", env.value (u"DESKTOP_SESSION"_s));
+  gstr += utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("XDG_SESSION_TYPE={}\n", env.value (u"XDG_SESSION_ID"_s)));
+  gstr += utils::Utf8String::from_utf8_encoded_string (fmt::format (
+    "XDG_CURRENT_DESKTOP={}\n", env.value (u"XDG_CURRENT_DESKTOP"_s)));
+  gstr += utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("DESKTOP_SESSION={}\n", env.value (u"DESKTOP_SESSION"_s)));
 
-  gstr += "\n";
+  gstr += u8"\n";
 
 #if HAVE_CARLA
   gstr += fmt::format ("Carla version: {}\n", Z_CARLA_VERSION_STRING);
@@ -201,9 +206,9 @@ Zrythm::get_system_info ()
     panel_get_minor_version (), panel_get_micro_version ());
 #endif
 
-  gstr += fmt::format (
+  gstr += utils::Utf8String::from_utf8_encoded_string (fmt::format (
     "QT version: {}.{}.{}\n", QT_VERSION_MAJOR, QT_VERSION_MINOR,
-    QT_VERSION_PATCH);
+    QT_VERSION_PATCH));
 
   return gstr;
 }
@@ -224,7 +229,8 @@ Zrythm::is_release (bool official)
     }
 #endif
 
-  return !utils::string::contains_substr (PACKAGE_VERSION, "g");
+  return !utils::Utf8String::from_utf8_encoded_string (PACKAGE_VERSION)
+            .contains_substr (u8"g");
 }
 
 /**
@@ -247,7 +253,8 @@ Zrythm::fetch_latest_release_ver_async (
 bool
 Zrythm::is_latest_release (const char * remote_latest_release)
 {
-  return string_is_equal (remote_latest_release, PACKAGE_VERSION);
+  return utils::Utf8String::from_utf8_encoded_string (remote_latest_release)
+         == utils::Utf8String::from_utf8_encoded_string (PACKAGE_VERSION);
 }
 
 void
@@ -274,7 +281,7 @@ Zrythm::init_user_dirs_and_files ()
       z_return_if_fail (!dir.empty ());
       try
         {
-          utils::io::mkdir (dir.string ());
+          utils::io::mkdir (dir);
         }
       catch (const ZrythmException &e)
         {

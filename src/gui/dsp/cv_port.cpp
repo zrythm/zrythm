@@ -9,7 +9,7 @@
 
 CVPort::CVPort () : CVPort ({}, {}) { }
 
-CVPort::CVPort (std::string label, PortFlow flow)
+CVPort::CVPort (utils::Utf8String label, PortFlow flow)
     : Port (label, PortType::CV, flow, -1.f, 1.f, 0.f)
 {
 }

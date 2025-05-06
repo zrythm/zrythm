@@ -32,7 +32,7 @@ ScaleObject::init_after_cloning (
   ArrangerObject::copy_members_from (other, clone_type);
 }
 
-std::string
+utils::Utf8String
 ScaleObject::gen_human_friendly_name () const
 {
   return scale_.to_string ();

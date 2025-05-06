@@ -121,7 +121,7 @@ public:
    */
   void append_ports (std::vector<Port *> &ports) const;
 
-  std::string get_node_name () const override;
+  utils::Utf8String get_node_name () const override;
 
   /**
    * Sets the amplitude of the fader. (0.0 to 2.0)
@@ -258,7 +258,7 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   void on_control_change_event (

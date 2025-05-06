@@ -16,6 +16,13 @@
 
 using namespace zrythm;
 
+void
+TrackLane::generate_name (int pos)
+{
+  name_ = utils::Utf8String::from_qstring (
+    format_qstr (QObject::tr ("Lane {}"), pos + 1));
+}
+
 template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
@@ -25,7 +32,7 @@ TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
 
 template <typename RegionT>
 void
-TrackLaneImpl<RegionT>::rename_with_action (const std::string &new_name)
+TrackLaneImpl<RegionT>::rename_with_action (const utils::Utf8String &new_name)
 {
   rename (new_name, true);
 }
@@ -45,7 +52,9 @@ TrackLaneImpl<RegionT>::unselect_all ()
 
 template <typename RegionT>
 void
-TrackLaneImpl<RegionT>::rename (const std::string &new_name, bool with_action)
+TrackLaneImpl<RegionT>::rename (
+  const utils::Utf8String &new_name,
+  bool                     with_action)
 {
   if (with_action)
     {

@@ -20,12 +20,12 @@
 Port::Port () : id_ (std::make_unique<PortIdentifier> ()) { }
 
 Port::Port (
-  std::string label,
-  PortType    type,
-  PortFlow    flow,
-  float       minf,
-  float       maxf,
-  float       zerof)
+  utils::Utf8String label,
+  PortType          type,
+  PortFlow          flow,
+  float             minf,
+  float             maxf,
+  float             zerof)
     : Port ()
 {
   range_.minf_ = minf;
@@ -128,7 +128,7 @@ Port::set_owner (IPortOwner &owner)
   owner_->set_port_metadata_from_owner (*id_, range_);
 }
 
-std::string
+utils::Utf8String
 Port::get_label () const
 {
   return id_->get_label ();

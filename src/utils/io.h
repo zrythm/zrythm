@@ -8,8 +8,6 @@
 
 #include <optional>
 
-#include "utils/string_array.h"
-
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 
@@ -21,7 +19,7 @@ namespace zrythm::utils::io
 /**
  * @brief Get the path list separator as a string (":" or ";" on Windows).
  */
-std::string
+utils::Utf8String
 get_path_separator_string ();
 
 /**
@@ -65,7 +63,7 @@ bool
 touch_file (const fs::path &file_path);
 
 fs::path
-uri_to_file (const std::string &uri);
+uri_to_file (const utils::Utf8String &uri);
 
 /**
  * Strips extensions from given filename.
@@ -113,7 +111,7 @@ path_get_basename_without_ext (const fs::path &filename);
 qint64
 file_get_last_modified_datetime (const fs::path &filename);
 
-std::string
+Utf8String
 file_get_last_modified_datetime_as_str (const fs::path &filename);
 
 /**
@@ -159,7 +157,7 @@ inline std::unique_ptr<QTemporaryDir>
 make_tmp_dir_at_path (const fs::path &absolute_template_path)
 {
   return make_tmp_dir (
-    utils::std_string_to_qstring (absolute_template_path.string ()), false);
+    Utf8String::from_path (absolute_template_path).to_qstring (), false);
 }
 
 /**
@@ -173,8 +171,8 @@ make_tmp_dir_at_path (const fs::path &absolute_template_path)
  */
 std::unique_ptr<QTemporaryFile>
 make_tmp_file (
-  std::optional<std::string> template_path = std::nullopt,
-  bool                       in_temp_dir = true);
+  std::optional<utils::Utf8String> template_path = std::nullopt,
+  bool                             in_temp_dir = true);
 
 /**
  * Removes a dir, optionally forcing deletion.
@@ -192,9 +190,8 @@ rmdir (const fs::path &path, bool force);
  *
  * @param _dir
  * @throw ZrythmException If @ref dir cannot be opened.
- * @return StringArray
  */
-StringArray
+std::vector<fs::path>
 get_files_in_dir_as_basenames (const fs::path &_dir);
 
 /**
@@ -203,14 +200,12 @@ get_files_in_dir_as_basenames (const fs::path &_dir);
  * @param dir The directory to look for.
  *
  * @throw ZrythmException If @ref dir cannot be opened.
- *
- * @return a StringArray.
  */
-StringArray
+std::vector<fs::path>
 get_files_in_dir_ending_in (
-  const fs::path                   &_dir,
-  bool                              recursive,
-  const std::optional<std::string> &end_string);
+  const fs::path                         &_dir,
+  bool                                    recursive,
+  const std::optional<utils::Utf8String> &end_string);
 
 /**
  * Returns a list of the files in the given directory.
@@ -218,7 +213,7 @@ get_files_in_dir_ending_in (
  * @see io_get_files_in_dir_ending_in().
  * @throw ZrythmException If @ref dir cannot be opened.
  */
-StringArray
+std::vector<fs::path>
 get_files_in_dir (const fs::path &_dir);
 
 /**
@@ -271,24 +266,21 @@ get_next_available_filepath (const fs::path &filepath);
  *
  * @see io_get_legal_path_name().
  */
-std::string
-get_legal_file_name (const std::string &file_name);
+Utf8String
+get_legal_file_name (const Utf8String &file_name);
 
 /**
  * Returns the given path with any illegal characters removed.
  */
-std::string
-get_legal_path_name (const std::string &path);
+Utf8String
+get_legal_path_name (const Utf8String &path);
 
 #ifdef _WIN32
 /**
  * @brief Returns the registry value for the given key in Zrythm's registry path.
- *
- * @param key
- * @return std::string
  */
-std::string
-get_registry_string_val (const std::string &key);
+utils::UUtf8String
+get_registry_string_val (const utils::UUtf8String &key);
 #endif
 
 #if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
@@ -346,7 +338,7 @@ set_file_contents (const fs::path &path, const char * contents, size_t size);
  * @throw ZrythmException On error.
  */
 void
-set_file_contents (const fs::path &file_path, const std::string &data);
+set_file_contents (const fs::path &file_path, const utils::Utf8String &data);
 
 /**
  * @brief Splits a string of paths separated by the system's list separator
@@ -358,40 +350,6 @@ set_file_contents (const fs::path &file_path, const std::string &data);
  */
 QStringList
 split_paths (const QString &paths);
-
-/**
- * @brief Converts a QString to a fs::path.
- *
- * This is needed because .toStdString() breaks on localized text.
- *
- * @param path
- * @return fs::path
- */
-static inline fs::path
-qstring_to_fs_path (const QString &path)
-{
-#ifdef _WIN32
-  return { path.toStdWString () };
-#else
-  return { path.toStdString () };
-#endif
-}
-
-fs::path
-juce_string_to_fs_path (const juce::String &path);
-
-static inline QString
-fs_path_to_qstring (const fs::path &path)
-{
-#ifdef _WIN32
-  return QString::fromStdWString (path.wstring ());
-#else
-  return utils::std_string_to_qstring (path.string ());
-#endif
-}
-
-juce::String
-fs_path_to_juce_string (const fs::path &path);
 
 }; // namespace zrythm::utils::io
 

@@ -5,9 +5,8 @@
 #define __AUDIO_SUPPORTED_FILE_H__
 
 #include <memory>
-#include <string>
 
-#include "utils/types.h"
+#include "utils/string.h"
 
 /**
  * @addtogroup utils
@@ -51,14 +50,15 @@ public:
    * @return std::unique_ptr<FileDescriptor>
    * @throw ZrythmException on error.
    */
-  static std::unique_ptr<FileDescriptor> new_from_uri (const std::string &uri);
+  static std::unique_ptr<FileDescriptor>
+  new_from_uri (const utils::Utf8String &uri);
 
   /**
    * Returns a human readable description of the given file type.
    *
    * Example: wav -> "Wave file".
    */
-  static std::string get_type_description (FileType type);
+  static utils::Utf8String get_type_description (FileType type);
 
   /**
    * Returns if the given type is supported.
@@ -78,7 +78,7 @@ public:
   /**
    * Returns the most common extension for the given filetype.
    */
-  static const char * get_type_ext (FileType type);
+  static std::optional<utils::Utf8String> get_type_ext (FileType type);
 
   /**
    * Returns the file type of the given file path.
@@ -101,12 +101,12 @@ public:
   /**
    * Gets the corresponding icon name for the given FileDescriptor's type.
    */
-  const char * get_icon_name () const;
+  utils::Utf8String get_icon_name () const;
 
   /**
    * Returns a pango markup to be used in GTK labels.
    */
-  std::string get_info_text_for_label () const;
+  utils::Utf8String get_info_text_for_label () const;
 
 public:
   /** Absolute path. */
@@ -116,7 +116,7 @@ public:
   FileType type_ = {};
 
   /** Human readable label. */
-  std::string label_;
+  utils::Utf8String label_;
 
   /** Hidden or not. */
   bool hidden_ = false;

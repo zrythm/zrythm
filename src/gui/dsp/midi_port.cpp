@@ -13,8 +13,8 @@
 
 MidiPort::MidiPort () = default;
 
-MidiPort::MidiPort (std::string label, PortFlow flow)
-    : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f)
+MidiPort::MidiPort (utils::Utf8String label, PortFlow flow)
+    : Port (std::move (label), PortType::Event, flow, 0.f, 1.f, 0.f)
 {
 }
 

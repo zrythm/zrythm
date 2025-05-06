@@ -27,7 +27,7 @@ AudioClip::AudioClip (
   BitDepth                         bit_depth,
   sample_rate_t                    project_sample_rate,
   bpm_t                            current_bpm,
-  const std::string               &name)
+  const utils::Utf8String         &name)
 {
   samplerate_ = project_sample_rate;
   z_return_if_fail (samplerate_ > 0);
@@ -41,11 +41,11 @@ AudioClip::AudioClip (
 }
 
 AudioClip::AudioClip (
-  const channels_t       channels,
-  const unsigned_frame_t nframes,
-  sample_rate_t          project_sample_rate,
-  bpm_t                  current_bpm,
-  const std::string     &name)
+  const channels_t         channels,
+  const unsigned_frame_t   nframes,
+  sample_rate_t            project_sample_rate,
+  bpm_t                    current_bpm,
+  const utils::Utf8String &name)
 {
   ch_frames_.setSize (channels, nframes, false, true, false);
   name_ = name;
@@ -90,8 +90,8 @@ AudioClip::init_from_file (
         fmt::format ("Failed to read frames from file '{}'", full_path));
     }
 
-  name_ = utils::juce_string_to_std_string (
-    juce::File (full_path.string ()).getFileNameWithoutExtension ());
+  name_ = utils::Utf8String::from_path (
+    utils::io::path_get_basename_without_ext (full_path));
   if (bpm_to_set.has_value ())
     {
       bpm_ = bpm_to_set.value ();

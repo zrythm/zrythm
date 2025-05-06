@@ -63,17 +63,14 @@ PluginManager::get_active_instance ()
 
 void
 PluginManager::add_category_and_author (
-  std::string_view category,
-  std::string_view author)
+  const utils::Utf8String &category,
+  const utils::Utf8String &author)
 {
-  if (!utils::string::is_ascii (category))
+  if (!category.is_ascii ())
     {
       z_warning ("Ignoring non-ASCII plugin category name...");
     }
-  if (
-    !std::any_of (
-      plugin_categories_.begin (), plugin_categories_.end (),
-      [&] (const auto &cat) { return cat == category; }))
+  if (!std::ranges::contains (plugin_categories_, category))
     {
       z_debug ("New category: {}", category);
       plugin_categories_.emplace_back (category);
@@ -81,10 +78,7 @@ PluginManager::add_category_and_author (
 
   if (!author.empty ())
     {
-      if (
-        !std::any_of (
-          plugin_authors_.begin (), plugin_authors_.end (),
-          [&] (const auto &cur_author) { return cur_author == author; }))
+      if (!std::ranges::contains (plugin_authors_, author))
         {
           z_debug ("New author: {}", author);
           plugin_authors_.emplace_back (author);
@@ -157,7 +151,7 @@ PluginManager::get_known_plugins_xml_path ()
   QString local_app_data_path =
     QStandardPaths::writableLocation (QStandardPaths::AppLocalDataLocation);
   QDir dir (local_app_data_path);
-  return utils::io::qstring_to_fs_path (
+  return utils::Utf8String::from_qstring (
     dir.absoluteFilePath (u"known_plugins.xml"_s));
 }
 
@@ -165,16 +159,18 @@ void
 PluginManager::serialize_known_plugins ()
 {
   const auto known_plugins_xml_path = get_known_plugins_xml_path ();
+  const auto known_plugins_xml_path_str =
+    utils::Utf8String::from_path (known_plugins_xml_path);
   z_return_if_fail (known_plugin_list_);
   if (known_plugin_list_->createXml ()->writeTo (
-        juce::File (known_plugins_xml_path.string ())))
+        juce::File (known_plugins_xml_path_str.to_juce_file ())))
     {
-      z_debug ("Saved known plugins to {}", known_plugins_xml_path.string ());
+      z_debug ("Saved known plugins to {}", known_plugins_xml_path_str);
     }
   else
     {
       z_warning (
-        "Failed to save known plugins to {}", known_plugins_xml_path.string ());
+        "Failed to save known plugins to {}", known_plugins_xml_path_str);
     }
 }
 
@@ -182,12 +178,13 @@ void
 PluginManager::deserialize_known_plugins ()
 {
   const auto known_plugins_xml_path = get_known_plugins_xml_path ();
+  const auto known_plugins_xml_path_str =
+    utils::Utf8String::from_path (known_plugins_xml_path);
   known_plugin_list_->clear ();
-  const juce::File jfile (known_plugins_xml_path.string ());
+  const juce::File jfile (known_plugins_xml_path_str.to_juce_file ());
   if (jfile.existsAsFile ())
     {
-      z_debug (
-        "Loading known plugins from {}", known_plugins_xml_path.string ());
+      z_debug ("Loading known plugins from {}", known_plugins_xml_path_str);
       const auto xml_doc = juce::XmlDocument::parse (jfile);
       if (xml_doc)
         {
@@ -196,14 +193,12 @@ PluginManager::deserialize_known_plugins ()
       else
         {
           z_warning (
-            "Failed to load known plugins from {}",
-            known_plugins_xml_path.string ());
+            "Failed to load known plugins from {}", known_plugins_xml_path_str);
         }
     }
   else
     {
-      z_info (
-        "No known plugins file found at {}", known_plugins_xml_path.string ());
+      z_info ("No known plugins file found at {}", known_plugins_xml_path_str);
     }
 }
 
@@ -266,7 +261,7 @@ PluginManager::beginScan ()
 }
 
 std::unique_ptr<PluginDescriptor>
-PluginManager::find_plugin_from_uri (std::string_view uri) const
+PluginManager::find_plugin_from_uri (const utils::Utf8String &uri) const
 {
 // TODO
 #if 0

@@ -45,7 +45,7 @@ MidiNote::insert_clone_to_project () const
 #endif
 }
 
-std::string
+utils::Utf8String
 MidiNote::gen_human_friendly_name () const
 {
   return get_val_as_string (Notation::Musical, false);
@@ -106,19 +106,20 @@ MidiNote::listen (bool listen)
     track_var);
 }
 
-std::string
+utils::Utf8String
 MidiNote::get_val_as_string (Notation notation, bool use_markup) const
 {
   const auto note_str_musical = dsp::ChordDescriptor::note_to_string (
     ENUM_INT_TO_VALUE (dsp::MusicalNote, pitch_ % 12));
-  std::string note_str;
+  utils::Utf8String note_str;
   if (notation == Notation::Musical)
     {
       note_str = note_str_musical;
     }
   else
     {
-      note_str = fmt::format ("{}", pitch_);
+      note_str = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("{}", pitch_));
     }
 
   const int note_val = pitch_ / 12 - 1;
@@ -129,10 +130,11 @@ MidiNote::get_val_as_string (Notation notation, bool use_markup) const
         {
           buf += fmt::format (" ({})", get_uuid ());
         }
-      return buf;
+      return utils::Utf8String::from_utf8_encoded_string (buf);
     }
 
-  return fmt::format ("{}{}", note_str, note_val);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}{}", note_str, note_val));
 }
 
 void

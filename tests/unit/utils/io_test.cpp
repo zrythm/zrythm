@@ -22,11 +22,13 @@ TEST (IoTest, DirectoryOperations)
 {
   // Test directory creation and removal
   auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
-  EXPECT_TRUE (fs::exists (utils::io::qstring_to_fs_path (tmp_dir->path ())));
+  EXPECT_TRUE (
+    fs::exists (utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ()));
 
   // Test nested directory creation
   auto nested_path =
-    utils::io::qstring_to_fs_path (tmp_dir->path ()) / "a" / "b" / "c";
+    utils::Utf8String::from_qstring (tmp_dir->path ()).to_path () / u8"a"
+    / u8"b" / u8"c";
   EXPECT_NO_THROW (utils::io::mkdir (nested_path));
   EXPECT_TRUE (fs::exists (nested_path));
 }
@@ -35,17 +37,18 @@ TEST (IoTest, FileOperations)
 {
   // Test file creation and removal
   auto tmp_file = zrythm::utils::io::make_tmp_file ();
-  EXPECT_TRUE (
-    fs::exists (utils::io::qstring_to_fs_path (tmp_file->fileName ())));
+  EXPECT_TRUE (fs::exists (
+    utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path ()));
 
   // Test file contents
-  std::string test_data = "Hello, World!";
+  utils::Utf8String test_data = u8"Hello, World!";
   EXPECT_NO_THROW (zrythm::utils::io::set_file_contents (
-    utils::io::qstring_to_fs_path (tmp_file->fileName ()), test_data));
+    utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path (),
+    test_data));
 
   auto read_data = zrythm::utils::io::read_file_contents (
-    utils::io::qstring_to_fs_path (tmp_file->fileName ()));
-  EXPECT_EQ (read_data, QByteArray::fromStdString (test_data));
+    utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path ());
+  EXPECT_EQ (read_data, QByteArray::fromStdString (test_data.str ()));
 }
 
 TEST (IoTest, PathManipulation)
@@ -64,11 +67,12 @@ TEST (IoTest, DirectoryListing)
   auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
 
   // Create test files
-  fs::path dir_path = utils::io::qstring_to_fs_path (tmp_dir->path ());
+  fs::path dir_path =
+    utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
   EXPECT_NO_THROW (
-    zrythm::utils::io::set_file_contents (dir_path / "file1.txt", "test1"));
+    zrythm::utils::io::set_file_contents (dir_path / "file1.txt", u8"test1"));
   EXPECT_NO_THROW (
-    zrythm::utils::io::set_file_contents (dir_path / "file2.txt", "test2"));
+    zrythm::utils::io::set_file_contents (dir_path / "file2.txt", u8"test2"));
 
   // Test directory listing
   auto files = zrythm::utils::io::get_files_in_dir (dir_path.string ());
@@ -76,7 +80,7 @@ TEST (IoTest, DirectoryListing)
 
   // Test filtered listing
   auto txt_files =
-    zrythm::utils::io::get_files_in_dir_ending_in (dir_path, false, ".txt");
+    zrythm::utils::io::get_files_in_dir_ending_in (dir_path, false, u8".txt");
   EXPECT_EQ (txt_files.size (), 2);
 }
 
@@ -112,45 +116,47 @@ TEST (IoTest, GetFilesInDirectory)
 {
   // Create temporary directory and file
   auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
-  auto tmp_file = utils::io::qstring_to_fs_path (tmp_dir->path ()) / "test.wav";
+  auto tmp_file =
+    utils::Utf8String::from_qstring (tmp_dir->path ()).to_path () / "test.wav";
   std::ofstream (tmp_file) << "test data";
 
   // Test file listing
   auto files = zrythm::utils::io::get_files_in_dir_ending_in (
-    utils::io::qstring_to_fs_path (tmp_dir->path ()), false, ".wav");
+    utils::Utf8String::from_qstring (tmp_dir->path ()).to_path (), false,
+    u8".wav");
   EXPECT_EQ (files.size (), 1);
   EXPECT_EQ (files[0], tmp_file);
 
   // Test non-existent directory
   EXPECT_ANY_THROW (
-    utils::io::get_files_in_dir_ending_in ("/non-existent", true, ".wav"));
+    utils::io::get_files_in_dir_ending_in ("/non-existent", true, u8".wav"));
 }
 
 TEST (IoTest, QStringConversions)
 {
   {
     QString  qstr = "test";
-    fs::path path = utils::io::qstring_to_fs_path (qstr);
+    fs::path path = utils::Utf8String::from_qstring (qstr).to_path ();
     EXPECT_EQ (path, fs::path ("test"));
   }
 
   // Test with non-ASCII characters
   {
     QString  qstr = "C:/テスト";
-    fs::path path = utils::io::qstring_to_fs_path (qstr);
+    fs::path path = utils::Utf8String::from_qstring (qstr).to_path ();
     EXPECT_EQ (path, fs::path (u"C:/テスト"));
   }
 
   {
     fs::path path = fs::path ("test");
-    QString  qstr = utils::io::fs_path_to_qstring (path);
+    QString  qstr = utils::Utf8String::from_path (path).to_qstring ();
     EXPECT_EQ (qstr, "test");
   }
 
   // Test with non-ASCII characters
   {
     fs::path path = fs::path (u"C:/テスト");
-    QString  qstr = utils::io::fs_path_to_qstring (path);
+    QString  qstr = utils::Utf8String::from_path (path).to_qstring ();
     EXPECT_EQ (qstr, "C:/テスト");
   }
 }

@@ -109,10 +109,13 @@ class SettingsManager final : public QObject
   DEFINE_SETTING_PROPERTY (
     QString,
     new_project_directory,
-    utils::io::fs_path_to_qstring ((
-      utils::io::qstring_to_fs_path (
-        QStandardPaths::writableLocation (QStandardPaths::DocumentsLocation))
-      / utils::io::qstring_to_fs_path (QCoreApplication::applicationName ()))))
+    utils::Utf8String::from_path (
+      (utils::Utf8String::from_qstring (
+         QStandardPaths::writableLocation (QStandardPaths::DocumentsLocation))
+         .to_path ()
+       / utils::Utf8String::from_qstring (QCoreApplication::applicationName ())
+           .to_path ()))
+      .to_qstring ())
   DEFINE_SETTING_PROPERTY (bool, leftPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, rightPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, bottomPanelVisible, true)

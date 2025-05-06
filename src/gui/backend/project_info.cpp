@@ -12,7 +12,7 @@ ProjectInfo::ProjectInfo (const fs::path &path, QObject * parent)
 {
   if (exists ())
     {
-      name_ = utils::std_string_to_qstring (path.filename ().string ());
+      name_ = utils::Utf8String::from_path (path.filename ()).to_qstring ();
       const auto time_since_epoch =
         fs::last_write_time (path).time_since_epoch ();
       const auto secs_since_epoch =
@@ -37,7 +37,7 @@ ProjectInfo::getName () const
 QString
 ProjectInfo::getPath () const
 {
-  return utils::std_string_to_qstring (path_.string ());
+  return utils::Utf8String::from_path (path_).to_qstring ();
 }
 
 QDateTime
@@ -49,7 +49,7 @@ ProjectInfo::getLastSavedAt () const
 void
 ProjectInfo::setPath (const QString &name)
 {
-  auto converted_path = utils::io::qstring_to_fs_path (name);
+  auto converted_path = utils::Utf8String::from_qstring (name).to_path ();
   if (converted_path == path_)
     return;
 

@@ -13,15 +13,10 @@ using namespace zrythm;
 /**
  * Returns a string identifier for the type.
  */
-std::string
+utils::Utf8String
 MidiFunction::type_to_string_id (Type type)
 {
-  const auto  type_str = MidiFunctionType_to_string (type);
-  std::string type_str_lower (type_str);
-  utils::string::to_lower_ascii (type_str_lower);
-  auto substituted = utils::string::replace (type_str_lower, " ", "-");
-
-  return substituted;
+  return MidiFunctionType_to_string (type).to_lower ().replace (u8" ", u8"-");
 }
 
 /**

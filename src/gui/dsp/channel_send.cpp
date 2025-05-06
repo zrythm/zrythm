@@ -82,13 +82,14 @@ ChannelSend::is_in_active_project () const
 {
   return get_track ()->is_in_active_project ();
 }
-std::string
+
+utils::Utf8String
 ChannelSendTarget::describe () const
 {
   switch (type)
     {
     case ChannelSendTargetType::None:
-      return utils::qstring_to_std_string (QObject::tr ("None"));
+      return utils::Utf8String::from_qstring (QObject::tr ("None"));
     case ChannelSendTargetType::Track:
       {
         auto tr =
@@ -108,16 +109,16 @@ ChannelSendTarget::describe () const
       break;
     }
   z_return_val_if_reached (
-    utils::qstring_to_std_string (QObject::tr ("Invalid")));
+    utils::Utf8String::from_qstring (QObject::tr ("Invalid")));
 }
 
-std::string
+utils::Utf8String
 ChannelSendTarget::get_icon () const
 {
   switch (type)
     {
     case ChannelSendTargetType::None:
-      return "edit-none";
+      return u8"edit-none";
     case ChannelSendTargetType::Track:
       {
         Track * tr =
@@ -125,12 +126,12 @@ ChannelSendTarget::get_icon () const
         return tr->get_icon_name ();
       }
     case ChannelSendTargetType::PluginSidechain:
-      return "media-album-track";
+      return u8"media-album-track";
     default:
       break;
     }
   z_return_val_if_reached (
-    utils::qstring_to_std_string (QObject::tr ("Invalid")));
+    utils::Utf8String::from_qstring (QObject::tr ("Invalid")));
 }
 
 void
@@ -157,22 +158,24 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
 {
   slot_ = slot;
 
-  enabled_id_ = get_port_registry ().create_object<ControlPort> (format_str (
-    utils::qstring_to_std_string (QObject::tr ("Channel Send {} enabled")),
-    slot + 1));
+  enabled_id_ = get_port_registry ().create_object<ControlPort> (
+    utils::Utf8String::from_qstring (
+      format_qstr (QObject::tr ("Channel Send {} enabled"), slot + 1)));
   auto &enabled_port = get_enabled_port ();
-  enabled_port.id_->sym_ = fmt::format ("channel_send_{}_enabled", slot + 1);
+  enabled_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("channel_send_{}_enabled", slot + 1));
   enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
   enabled_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendEnabled;
   enabled_port.set_owner (*this);
   enabled_port.set_control_value (0.f, false, false);
 
-  amount_id_ = get_port_registry ().create_object<ControlPort> (format_str (
-    utils::qstring_to_std_string (QObject::tr ("Channel Send {} amount")),
-    slot + 1));
+  amount_id_ = get_port_registry ().create_object<ControlPort> (
+    utils::Utf8String::from_qstring (
+      format_qstr (QObject::tr ("Channel Send {} amount"), slot + 1)));
   auto &amount_port = get_amount_port ();
 
-  amount_port.id_->sym_ = fmt::format ("channel_send_{}_amount", slot + 1);
+  amount_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("channel_send_{}_amount", slot + 1));
   amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
   amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
   amount_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendAmount;
@@ -184,11 +187,11 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
       {
         auto stereo_in_ports = StereoPorts::create_stereo_ports (
           port_registry_, true,
-          format_str (
-            utils::qstring_to_std_string (
-              QObject::tr ("Channel Send {} audio in")),
-            slot + 1),
-          fmt::format ("channel_send_{}_audio_in", slot + 1));
+          utils::Utf8String::from_qstring (format_qstr (
+
+            QObject::tr ("Channel Send {} audio in"), slot + 1)),
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("channel_send_{}_audio_in", slot + 1)));
         stereo_in_left_id_ = stereo_in_ports.first;
         stereo_in_right_id_ = stereo_in_ports.second;
         auto &left_port = get_stereo_in_ports ().first;
@@ -200,11 +203,10 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
       {
         auto stereo_out_ports = StereoPorts::create_stereo_ports (
           port_registry_, false,
-          format_str (
-            utils::qstring_to_std_string (
-              QObject::tr ("Channel Send {} audio out")),
-            slot + 1),
-          fmt::format ("channel_send_{}_audio_out", slot + 1));
+          utils::Utf8String::from_qstring (
+            format_qstr (QObject::tr ("Channel Send {} audio out"), slot + 1)),
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("channel_send_{}_audio_out", slot + 1)));
         stereo_out_left_id_ = stereo_out_ports.first;
         stereo_out_right_id_ = stereo_out_ports.second;
         auto &left_port = get_stereo_out_ports ().first;
@@ -216,22 +218,21 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
   else if (is_midi ())
     {
       midi_in_id_ = get_port_registry ().create_object<MidiPort> (
-        format_str (
-          utils::qstring_to_std_string (QObject::tr ("Channel Send {} MIDI in")),
-          slot + 1),
+        utils::Utf8String::from_qstring (
+          format_qstr (QObject::tr ("Channel Send {} MIDI in"), slot + 1)),
         dsp::PortFlow::Input);
       auto &midi_in_port = get_midi_in_port ();
-      midi_in_port.id_->sym_ = fmt::format ("channel_send_{}_midi_in", slot + 1);
+      midi_in_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("channel_send_{}_midi_in", slot + 1));
       midi_in_port.set_owner (*this);
 
       midi_out_id_ = get_port_registry ().create_object<MidiPort> (
-        format_str (
-          utils::qstring_to_std_string (QObject::tr ("Channel Send {} MIDI out")),
-          slot + 1),
+        utils::Utf8String::from_qstring (
+          format_qstr (QObject::tr ("Channel Send {} MIDI out"), slot + 1)),
         dsp::PortFlow::Output);
       auto &midi_out_port = get_midi_out_port ();
-      midi_out_port.id_->sym_ =
-        fmt::format ("channel_send_{}_midi_out", slot + 1);
+      midi_out_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("channel_send_{}_midi_out", slot + 1));
       midi_out_port.set_owner (*this);
     }
 }
@@ -279,11 +280,12 @@ ChannelSend::prepare_process ()
     }
 }
 
-std::string
+utils::Utf8String
 ChannelSend::get_node_name () const
 {
   auto * tr = get_track ();
-  return fmt::format ("{}/Channel Send {}", tr->get_name (), slot_ + 1);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}/Channel Send {}", tr->get_name (), slot_ + 1));
 }
 
 void
@@ -600,22 +602,18 @@ ChannelSend::set_amount (float amount)
   get_amount_port ().set_control_value (amount, false, true);
 }
 
-/**
- * Get the name of the destination, or a placeholder
- * text if empty.
- */
-std::string
+utils::Utf8String
 ChannelSend::get_dest_name () const
 {
   auto * mgr = get_port_connections_manager ();
-  z_return_val_if_fail (mgr, "");
+  z_return_val_if_fail (mgr, {});
 
   if (is_empty ())
     {
       if (is_prefader ())
-        return utils::qstring_to_std_string (QObject::tr ("Pre-fader send"));
+        return utils::Utf8String::from_qstring (QObject::tr ("Pre-fader send"));
 
-      return utils::qstring_to_std_string (QObject::tr ("Post-fader send"));
+      return utils::Utf8String::from_qstring (QObject::tr ("Post-fader send"));
     }
 
   const auto &search_port_id =
@@ -624,7 +622,7 @@ ChannelSend::get_dest_name () const
   z_return_val_if_fail (conn, {});
   auto dest_var = get_port_registry ().find_by_id_or_throw (conn->dest_id_);
   return std::visit (
-    [&] (auto &&dest) -> std::string {
+    [&] (auto &&dest) -> utils::Utf8String {
       z_return_val_if_fail (dest, {});
       if (is_sidechain_)
         {
@@ -647,9 +645,8 @@ ChannelSend::get_dest_name () const
               dest->id_->get_track_id ().value ());
             return std::visit (
               [&] (auto &&track) {
-                return format_str (
-                  utils::qstring_to_std_string (QObject::tr ("{} input")),
-                  track->get_name ());
+                return utils::Utf8String::from_qstring (
+                  format_qstr (QObject::tr ("{} input"), track->get_name ()));
               },
               track_var);
           }
@@ -663,12 +660,13 @@ ChannelSend::get_dest_name () const
     dest_var);
 }
 
-std::string
+utils::Utf8String
 ChannelSend::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
   auto * tr = get_track ();
   z_return_val_if_fail (tr, {});
-  return fmt::format ("{}/{}", tr->get_name (), id.get_label ());
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}/{}", tr->get_name (), id.get_label ()));
 }
 
 void

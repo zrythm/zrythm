@@ -57,10 +57,10 @@ Plugin::Plugin (PortRegistry &port_registry, ZPluginCategory cat)
     : port_registry_ (port_registry)
 {
   zrythm::gui::old_dsp::plugins::PluginDescriptor descr;
-  descr.author_ = "Hoge";
-  descr.name_ = "Dummy Plugin";
+  descr.author_ = u8"Hoge";
+  descr.name_ = u8"Dummy Plugin";
   descr.category_ = cat;
-  descr.category_str_ = "Dummy Plugin Category";
+  descr.category_str_ = u8"Dummy Plugin Category";
 
   setting_ = std::make_unique<PluginSetting> (descr);
 
@@ -165,13 +165,13 @@ Plugin::is_in_active_project () const
     [&] (auto &&track) { return track->is_in_active_project (); }, *track_var);
 }
 
-std::string
+utils::Utf8String
 Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
   auto track = get_track ();
   z_return_val_if_fail (track, {});
-  return fmt::format (
-    "{}/{}/{}", TrackSpan::name_projection (*track), get_name (), id.label_);
+  return utils::Utf8String::from_utf8_encoded_string (fmt::format (
+    "{}/{}/{}", TrackSpan::name_projection (*track), get_name (), id.label_));
 }
 
 void
@@ -310,12 +310,12 @@ Plugin::init ()
   {
     /* add enabled port */
     auto port_ref = port_registry_->create_object<ControlPort> (
-      utils::qstring_to_std_string (QObject::tr ("Enabled")));
+      utils::Utf8String::from_qstring (QObject::tr ("Enabled")));
     auto * port = std::get<ControlPort *> (port_ref.get_object ());
-    port->id_->sym_ = "enabled";
-    port->id_->comment_ = utils::qstring_to_std_string (
+    port->id_->sym_ = u8"enabled";
+    port->id_->comment_ = utils::Utf8String::from_qstring (
       QObject::tr ("Enables or disables the plugin"));
-    port->id_->port_group_ = "[Zrythm]";
+    port->id_->port_group_ = u8"[Zrythm]";
     port->id_->flags_ |= PortIdentifier::Flags::PluginEnabled;
     port->id_->flags_ |= PortIdentifier::Flags::Toggle;
     port->id_->flags_ |= PortIdentifier::Flags::Automatable;
@@ -332,15 +332,15 @@ Plugin::init ()
   {
     /* add gain port */
     auto port_ref = port_registry_->create_object<ControlPort> (
-      utils::qstring_to_std_string (QObject::tr ("Gain")));
+      utils::Utf8String::from_qstring (QObject::tr ("Gain")));
     auto * port = std::get<ControlPort *> (port_ref.get_object ());
-    port->id_->sym_ = "gain";
+    port->id_->sym_ = u8"gain";
     port->id_->comment_ =
-      utils::qstring_to_std_string (QObject::tr ("Plugin gain"));
+      utils::Utf8String::from_qstring (QObject::tr ("Plugin gain"));
     port->id_->flags_ |= PortIdentifier::Flags::PluginGain;
     port->id_->flags_ |= PortIdentifier::Flags::Automatable;
     port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
-    port->id_->port_group_ = "[Zrythm]";
+    port->id_->port_group_ = u8"[Zrythm]";
     port->range_ = { 0.f, 8.f, 0.f };
     port->deff_ = 1.f;
     port->set_control_value (1.f, false, false);
@@ -374,7 +374,9 @@ Plugin::init ()
 }
 
 Plugin::Bank *
-Plugin::add_bank_if_not_exists (const std::string * uri, std::string_view name)
+Plugin::add_bank_if_not_exists (
+  std::optional<utils::Utf8String> uri,
+  const utils::Utf8String         &name)
 {
   for (auto &bank : banks_)
     {
@@ -435,7 +437,7 @@ Plugin::set_selected_preset_from_index (int idx)
 }
 
 void
-Plugin::set_selected_preset_by_name (std::string_view name)
+Plugin::set_selected_preset_by_name (const utils::Utf8String &name)
 {
   z_return_if_fail (instantiated_);
 
@@ -466,13 +468,13 @@ Plugin::append_ports (std::vector<Port *> &ports)
     }
 }
 
-std::string
+utils::Utf8String
 Plugin::get_node_name () const
 {
   auto track = get_track ();
-  return fmt::format (
+  return utils::Utf8String::from_utf8_encoded_string (fmt::format (
     "{}/{} (Plugin)",
-    track ? TrackSpan::name_projection (*track) : "(No track)", get_name ());
+    track ? TrackSpan::name_projection (*track) : u8"(No track)", get_name ()));
 }
 
 void
@@ -679,17 +681,18 @@ Plugin::get_channel () const
   return ch;
 }
 
-std::string
-Plugin::get_full_port_group_designation (const std::string &port_group) const
+utils::Utf8String
+Plugin::get_full_port_group_designation (
+  const utils::Utf8String &port_group) const
 {
   assert (has_track ());
-  return fmt::format (
+  return utils::Utf8String::from_utf8_encoded_string (fmt::format (
     "{}/{}/{}", TrackSpan::name_projection (*get_track ()), get_name (),
-    port_group);
+    port_group));
 }
 
 Port *
-Plugin::get_port_in_group (const std::string &port_group, bool left) const
+Plugin::get_port_in_group (const utils::Utf8String &port_group, bool left) const
 {
   auto flag =
     left ? PortIdentifier::Flags::StereoL : PortIdentifier::Flags::StereoR;
@@ -745,7 +748,7 @@ Plugin::get_port_in_same_group (const Port &port)
   return nullptr;
 }
 
-std::string
+utils::Utf8String
 Plugin::generate_window_title () const
 {
   z_return_val_if_fail (is_in_active_project (), {});
@@ -753,8 +756,8 @@ Plugin::generate_window_title () const
   auto track_var = get_track ();
 
   return std::visit (
-    [&] (auto &&track) -> std::string {
-      const auto track_name = track ? track->get_name () : "";
+    [&] (auto &&track) -> utils::Utf8String {
+      const auto track_name = track ? track->get_name () : u8"";
       const auto plugin_name = get_name ();
       z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
@@ -780,12 +783,12 @@ Plugin::generate_window_title () const
           slot_str = fmt::format ("#{}", slot_no + 1);
         }
 
-      return fmt::format (
+      return utils::Utf8String::from_utf8_encoded_string (fmt::format (
         "{} ({} {}{}{})", plugin_name, track_name, slot,
         /* assume all plugins use carla for now */
         "",
         /*setting->open_with_carla_ ? " carla" : "",*/
-        bridge_mode);
+        bridge_mode));
     },
     track_var.value ());
 }
@@ -1059,7 +1062,7 @@ Plugin::instantiate ()
   z_debug ("state dir: {}", state_dir_);
 
   instantiate_impl (!PROJECT->loaded_, !state_dir_.empty ());
-  save_state (false, nullptr);
+  save_state (false, std::nullopt);
 
   z_return_if_fail (enabled_);
   enabled_->set_val_from_normalized (1.f, 0);
@@ -1151,7 +1154,7 @@ Plugin::print () const
   const auto track_name =
     is_in_active_project ()
       ? TrackSpan::name_projection (*get_track ())
-      : "<no track>";
+      : u8"<no track>";
   const auto track_pos =
     is_in_active_project () ? TrackSpan::position_projection (*get_track ()) : -1;
   return fmt::format (
@@ -1252,36 +1255,36 @@ Plugin::select (bool select, bool exclusive)
 
 void
 Plugin::copy_state_dir (
-  const Plugin       &src,
-  bool                is_backup,
-  const std::string * abs_state_dir)
+  const Plugin           &src,
+  bool                    is_backup,
+  std::optional<fs::path> abs_state_dir)
 {
   auto dir_to_use =
     abs_state_dir ? *abs_state_dir : get_abs_state_dir (is_backup, true);
   {
     auto files_in_dir = utils::io::get_files_in_dir (dir_to_use);
-    z_return_if_fail (files_in_dir.isEmpty ());
+    z_return_if_fail (files_in_dir.empty ());
   }
 
   auto src_dir_to_use = src.get_abs_state_dir (is_backup);
   z_return_if_fail (!src_dir_to_use.empty ());
   {
     auto files_in_src_dir = utils::io::get_files_in_dir (src_dir_to_use);
-    z_return_if_fail (!files_in_src_dir.isEmpty ());
+    z_return_if_fail (!files_in_src_dir.empty ());
   }
 
   utils::io::copy_dir (dir_to_use, src_dir_to_use, true, true);
 }
 
-std::string
-Plugin::get_abs_state_dir (const std::string &plugin_state_dir, bool is_backup)
+fs::path
+Plugin::get_abs_state_dir (const fs::path &plugin_state_dir, bool is_backup)
 {
   z_return_val_if_fail (!plugin_state_dir.empty (), "");
   auto parent_dir = PROJECT->get_path (ProjectPath::PluginStates, is_backup);
   return fmt::format ("{}/{}", parent_dir, plugin_state_dir);
 }
 
-std::string
+fs::path
 Plugin::get_abs_state_dir (bool is_backup, bool create_if_not_exists)
 {
   if (create_if_not_exists)
@@ -1321,10 +1324,8 @@ Plugin::ensure_state_dir (bool is_backup)
       auto abs_state_dir =
         utils::io::make_tmp_dir_at_path (abs_state_dir_template);
       abs_state_dir->setAutoRemove (false);
-      state_dir_ =
-        utils::io::path_get_basename (
-          utils::io::qstring_to_fs_path (abs_state_dir->path ()))
-          .string ();
+      state_dir_ = utils::io::path_get_basename (
+        utils::Utf8String::from_qstring (abs_state_dir->path ()));
       z_debug ("set plugin state dir to {}", state_dir_);
     }
   catch (const ZrythmException &e)
@@ -1344,7 +1345,7 @@ Plugin::copy_members_from (Plugin &other)
   z_debug ("[1/5] saving state of source plugin (if instantiated)");
   if (other.instantiated_)
     {
-      other.save_state (false, nullptr);
+      other.save_state (false, std::nullopt);
       z_debug ("saved source plugin state to {}", other.state_dir_);
     }
 
@@ -1372,7 +1373,7 @@ Plugin::copy_members_from (Plugin &other)
 
   /* copy the state directory */
   z_debug ("[4/5] copying state directory from source plugin");
-  copy_state_dir (other, false, nullptr);
+  copy_state_dir (other, false, std::nullopt);
 
   z_debug ("[5/5] done");
 
@@ -1900,7 +1901,7 @@ Plugin::expose_ports (AudioEngine &engine, bool expose, bool inputs, bool output
 }
 
 std::optional<PortPtrVariant>
-Plugin::get_port_by_symbol (const std::string &sym)
+Plugin::get_port_by_symbol (const utils::Utf8String &sym)
 {
   z_return_val_if_fail (
     get_protocol () == Protocol::ProtocolType::LV2, std::nullopt);

@@ -41,10 +41,7 @@ public:
   // QML Interface
   // =========================================================
 
-  QString getName () const
-  {
-    return utils::std_string_to_qstring (gen_human_friendly_name ());
-  }
+  QString getName () const { return gen_human_friendly_name ().to_qstring (); }
   Q_SIGNAL void nameChanged (const QString &name);
 
   // =========================================================
@@ -54,7 +51,7 @@ public:
 
   void set_scale (const MusicalScale &scale) { scale_ = scale; }
 
-  std::string gen_human_friendly_name () const override;
+  utils::Utf8String gen_human_friendly_name () const override;
 
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;

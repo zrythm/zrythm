@@ -23,7 +23,7 @@ add_executable(zrythm_dsp_unit_tests
 
 set_target_properties(zrythm_dsp_unit_tests PROPERTIES
   AUTOMOC OFF
-  UNITY_BUILD ON
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
 
 target_link_libraries(zrythm_dsp_unit_tests PRIVATE

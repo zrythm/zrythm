@@ -21,7 +21,7 @@ MidiGroupTrack::MidiGroupTrack (
       ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
   color_ = Color (QColor ("#E66100"));
-  icon_name_ = "signal-midi";
+  icon_name_ = u8"signal-midi";
   automation_tracklist_->setParent (this);
 }
 

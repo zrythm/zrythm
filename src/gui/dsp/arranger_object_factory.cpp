@@ -56,7 +56,7 @@ ArrangerObjectFactory::addMidiRegionFromMidiFile (
 
   try
     {
-      MidiFile mf{ utils::io::qstring_to_fs_path (abs_path) };
+      MidiFile mf{ utils::Utf8String::from_qstring (abs_path) };
       // FIXME use dependency injection instead of global TRANSPORT
       mf.into_region (*mr, *TRANSPORT, midi_track_idx);
       if (*mr->pos_ >= *mr->end_pos_)

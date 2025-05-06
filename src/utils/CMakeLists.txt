@@ -77,10 +77,10 @@ target_sources(zrythm_utils_lib
     rt_thread_id.cpp
     string.h
     string.cpp
-    string_array.h
-    string_array.cpp
     symap.h
     symap.cpp
+    traits.h
+    types.h
     utils.h
     uuid_identifiable_object.h
     uuid_identifiable_object.cpp
@@ -92,7 +92,7 @@ target_sources(zrythm_utils_lib
     yaml.cpp)
 
 set_target_properties(zrythm_utils_lib PROPERTIES
-  UNITY_BUILD ON
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
 
 target_precompile_headers(zrythm_utils_lib PUBLIC

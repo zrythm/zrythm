@@ -42,20 +42,22 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
-  std::string get_name () const { return name_; }
+  auto get_name () const { return name_; }
 
   [[gnu::cold]] void init_loaded (ModulatorTrack &track);
 
-  void set_name (std::string_view name) { name_ = name; }
+  void set_name (const utils::Utf8String &name) { name_ = name; }
 
   ModulatorTrack * get_track () const { return track_; }
 
-  std::string get_node_name () const override
+  utils::Utf8String get_node_name () const override
   {
-    return fmt::format ("{} Modulator Macro Processor", name_);
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("{} Modulator Macro Processor", name_));
+    ;
   }
 
   void process_block (EngineProcessTimeInfo time_nfo) override;
@@ -88,7 +90,7 @@ private:
    * @note This is only cosmetic and should not be used anywhere during
    * processing.
    */
-  std::string name_;
+  utils::Utf8String name_;
 
   /** CV input port for connecting CV signals to. */
   std::optional<PortUuidReference> cv_in_id_;

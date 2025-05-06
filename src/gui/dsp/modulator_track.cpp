@@ -33,7 +33,7 @@ ModulatorTrack::ModulatorTrack (
       main_height_ = DEF_HEIGHT / 2;
 
       color_ = Color (QColor ("#222222"));
-      icon_name_ = "gnome-icon-library-encoder-knob-symbolic";
+      icon_name_ = u8"gnome-icon-library-encoder-knob-symbolic";
 
       /* set invisible */
       visible_ = false;

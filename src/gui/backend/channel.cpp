@@ -61,19 +61,19 @@ Channel::Channel (
         case PortType::Audio:
           {
             stereo_out_left_id_ = get_port_registry ().create_object<AudioPort> (
-              "Stereo out L", dsp::PortFlow::Output);
+              u8"Stereo out L", dsp::PortFlow::Output);
             stereo_out_right_id_ = get_port_registry ().create_object<AudioPort> (
-              "Stereo out R", dsp::PortFlow::Output);
-            get_stereo_out_ports ().first.id_->sym_ = "stereo_out_l";
-            get_stereo_out_ports ().second.id_->sym_ = "stereo_out_r";
+              u8"Stereo out R", dsp::PortFlow::Output);
+            get_stereo_out_ports ().first.id_->sym_ = u8"stereo_out_l";
+            get_stereo_out_ports ().second.id_->sym_ = u8"stereo_out_r";
           }
           break;
         case PortType::Event:
           {
             midi_out_id_ = get_port_registry ().create_object<MidiPort> (
-              utils::qstring_to_std_string (QObject::tr ("MIDI out")),
+              utils::Utf8String::from_qstring (QObject::tr ("MIDI out")),
               dsp::PortFlow::Output);
-            get_midi_out_port ().id_->sym_ = "midi_out";
+            get_midi_out_port ().id_->sym_ = u8"midi_out";
           }
           break;
         default:
@@ -169,11 +169,12 @@ Channel::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range
   id.owner_type_ = dsp::PortIdentifier::OwnerType::Channel;
 }
 
-std::string
+utils::Utf8String
 Channel::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
   const auto &tr = get_track ();
-  return fmt::format ("{}/{}", tr.get_name (), id.label_);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}/{}", tr.get_name (), id.label_));
 }
 
 bool

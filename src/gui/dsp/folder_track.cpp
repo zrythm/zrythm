@@ -22,7 +22,7 @@ FolderTrack::FolderTrack (
   if (new_identity)
     {
       color_ = Color (QColor ("#865E3C"));
-      icon_name_ = "fluentui-folder-regular";
+      icon_name_ = u8"fluentui-folder-regular";
     }
 }
 

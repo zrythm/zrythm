@@ -1875,7 +1875,9 @@ CarlaNativePlugin::get_single_playback_latency () const
 }
 
 void
-CarlaNativePlugin::save_state (bool is_backup, const std::string * abs_state_dir)
+CarlaNativePlugin::save_state (
+  bool                    is_backup,
+  std::optional<fs::path> abs_state_dir)
 {
 #if HAVE_CARLA
   if (!instantiated_)
@@ -1904,7 +1906,7 @@ CarlaNativePlugin::save_state (bool is_backup, const std::string * abs_state_dir
 }
 
 void
-CarlaNativePlugin::load_state (const std::string * abs_path)
+CarlaNativePlugin::load_state (std::optional<fs::path> abs_path)
 {
 #if HAVE_CARLA
   fs::path state_file;

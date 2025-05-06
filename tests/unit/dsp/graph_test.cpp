@@ -16,7 +16,7 @@ namespace graph_test
 class MockProcessable : public IProcessable
 {
 public:
-  MOCK_METHOD (std::string, get_node_name, (), (const, override));
+  MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
   MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
   MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
 };
@@ -54,7 +54,7 @@ protected:
     processable_ = std::make_unique<graph_test::MockProcessable> ();
 
     ON_CALL (*processable_, get_node_name ())
-      .WillByDefault (Return ("test_node"));
+      .WillByDefault (Return (u8"test_node"));
   }
 
   std::unique_ptr<graph_test::MockTransport>   transport_;

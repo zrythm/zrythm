@@ -22,7 +22,6 @@ add_executable(zrythm_utils_unit_tests
   object_pool_test.cpp
   ring_buffer_test.cpp
   string_test.cpp
-  string_array_test.cpp
   uuid_identifiable_object_test.h
   uuid_identifiable_object_test.cpp
   variant_helpers_test.cpp
@@ -35,7 +34,7 @@ endif()
 
 set_target_properties(zrythm_utils_unit_tests PROPERTIES
   AUTOMOC ON
-  UNITY_BUILD ON
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
 
 target_link_libraries(zrythm_utils_unit_tests PRIVATE

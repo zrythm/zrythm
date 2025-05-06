@@ -53,8 +53,9 @@ AudioFile::ensure_file_is_open ()
     }
   else
     {
-      reader_ = std::unique_ptr<juce::AudioFormatReader> (
-        format_mgr.createReaderFor (juce::File (filepath_.string ())));
+      reader_ =
+        std::unique_ptr<juce::AudioFormatReader> (format_mgr.createReaderFor (
+          utils::Utf8String::from_path (filepath_).to_juce_file ()));
       if (reader_ == nullptr)
         {
           throw ZrythmException (

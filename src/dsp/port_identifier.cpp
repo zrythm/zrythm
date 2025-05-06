@@ -7,13 +7,13 @@
 namespace zrythm::dsp
 {
 
-std::string
+utils::Utf8String
 PortIdentifier::port_unit_to_string (PortUnit unit)
 {
-  static const char * port_unit_strings[] = {
-    "none", "Hz", "MHz", "dB", "°", "s", "ms", "μs",
+  constexpr std::array<std::u8string_view, 8> port_unit_strings = {
+    u8"none", u8"Hz", u8"MHz", u8"dB", u8"°", u8"s", u8"ms", u8"μs",
   };
-  return port_unit_strings[ENUM_VALUE_TO_INT (unit)];
+  return port_unit_strings.at (ENUM_VALUE_TO_INT (unit));
 }
 
 #if 0

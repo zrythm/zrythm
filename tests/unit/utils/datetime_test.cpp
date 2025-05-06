@@ -20,15 +20,14 @@ TEST (DateTimeTest, GetCurrentAsStringFormat)
   auto datetime_str = zrythm::utils::datetime::get_current_as_string ();
 
   // Verify format
-  EXPECT_TRUE (std::regex_match (datetime_str, datetime_pattern))
+  EXPECT_TRUE (std::regex_match (datetime_str.str (), datetime_pattern))
     << "Datetime string does not match expected format: " << datetime_str;
 
   // Verify timestamp is close to current time
   auto now = std::chrono::system_clock::now ();
   auto time_t_now = std::chrono::system_clock::to_time_t (now);
   auto time_t_str =
-    QDateTime::fromString (
-      utils::std_string_to_qstring (datetime_str), u"yyyy-MM-dd hh:mm:ss"_s)
+    QDateTime::fromString (datetime_str.to_qstring (), u"yyyy-MM-dd hh:mm:ss"_s)
       .toSecsSinceEpoch ();
 
   // Allow 2 second difference to account for processing time
@@ -41,8 +40,8 @@ TEST (DateTimeTest, GetCurrentAsString)
 {
   auto datetime_str = zrythm::utils::datetime::get_current_as_string ();
   EXPECT_FALSE (datetime_str.empty ());
-  EXPECT_TRUE (datetime_str.find ('-') != std::string::npos);
-  EXPECT_TRUE (datetime_str.find (':') != std::string::npos);
+  EXPECT_TRUE (datetime_str.str ().find ('-') != std::string::npos);
+  EXPECT_TRUE (datetime_str.str ().find (':') != std::string::npos);
 }
 
 TEST (DateTimeTest, EpochToStrDefault)
@@ -59,7 +58,7 @@ TEST (DateTimeTest, EpochToStrCustomFormat)
 {
   qint64 test_epoch = 1577836800; // 2020-01-01 00:00:00
   auto   datetime_str =
-    zrythm::utils::datetime::epoch_to_str (test_epoch, "yyyy-MM-dd");
+    zrythm::utils::datetime::epoch_to_str (test_epoch, u8"yyyy-MM-dd");
   EXPECT_EQ (datetime_str, "2020-01-01");
 }
 
@@ -67,6 +66,6 @@ TEST (DateTimeTest, GetForFilename)
 {
   auto filename_str = zrythm::utils::datetime::get_for_filename ();
   EXPECT_FALSE (filename_str.empty ());
-  EXPECT_TRUE (filename_str.find (' ') == std::string::npos);
-  EXPECT_TRUE (filename_str.find (':') == std::string::npos);
+  EXPECT_TRUE (filename_str.str ().find (' ') == std::string::npos);
+  EXPECT_TRUE (filename_str.str ().find (':') == std::string::npos);
 }

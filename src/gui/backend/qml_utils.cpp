@@ -7,5 +7,5 @@
 QString
 QmlUtils::toPathString (const QUrl &url)
 {
-  return utils::string::qurl_to_path_qstring (url);
+  return utils::Utf8String::from_qurl (url).to_qstring ();
 }

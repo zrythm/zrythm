@@ -101,7 +101,7 @@ PluginCollections::serialize_to_file () const
   z_debug ("Writing plugin collections to {}...", path);
   try
     {
-      utils::io::set_file_contents (path, json.c_str ());
+      utils::io::set_file_contents (path, json.to_utf8_string ());
     }
   catch (const ZrythmException &e)
     {
@@ -144,7 +144,9 @@ PluginCollections::read_or_new ()
   std::string json;
   try
     {
-      json = utils::qstring_to_std_string (utils::io::read_file_contents (path));
+      json =
+        utils::Utf8String::from_qstring (utils::io::read_file_contents (path))
+          .str ();
     }
   catch (const ZrythmException &e)
     {

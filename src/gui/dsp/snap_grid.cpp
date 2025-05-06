@@ -188,7 +188,7 @@ get_note_type_short_str (utils::NoteType type)
   return note_type_short_strings[ENUM_VALUE_TO_INT (type)];
 }
 
-std::string
+utils::Utf8String
 SnapGrid::stringize_length_and_type (
   utils::NoteLength note_length,
   utils::NoteType   note_type)
@@ -196,15 +196,16 @@ SnapGrid::stringize_length_and_type (
   const char * c = get_note_type_short_str (note_type);
   const auto   first_part = utils::note_length_to_str (note_length);
 
-  return fmt::format ("{}{}", first_part, c);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}{}", first_part, c));
 }
 
-std::string
+utils::Utf8String
 SnapGrid::stringize () const
 {
   if (snap_adaptive_)
     {
-      return utils::qstring_to_std_string (QObject::tr ("Adaptive"));
+      return utils::Utf8String::from_qstring (QObject::tr ("Adaptive"));
     }
   else
     {

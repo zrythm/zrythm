@@ -12,7 +12,7 @@ MidiFile::MidiFile (Format format) : format_ (format), for_reading_ (false) { }
 
 MidiFile::MidiFile (const fs::path &path) : for_reading_ (true)
 {
-  juce::File            file (path.string ());
+  juce::File file = utils::Utf8String::from_path (path).to_juce_file ();
   juce::FileInputStream in_stream (file);
 
   int format = 0;
@@ -118,8 +118,8 @@ MidiFile::into_region (
         }
 
       // set a temp name
-      region.set_name (format_str (
-        utils::qstring_to_std_string (QObject::tr ("Untitled Track {}")), i));
+      region.set_name (utils::Utf8String::from_qstring (
+        format_qstr (QObject::tr ("Untitled Track {}"), i)));
 
       const auto * track = midi_file_.getTrack (i);
       for (const auto * event : *track)
@@ -169,7 +169,7 @@ MidiFile::into_region (
               auto name = msg.getTextFromTextMetaEvent ();
               if (!name.isEmpty ())
                 {
-                  region.set_name (utils::juce_string_to_std_string (name));
+                  region.set_name (utils::Utf8String::from_juce_string (name));
                 }
             }
         }

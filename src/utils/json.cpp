@@ -7,7 +7,7 @@
 namespace zrythm::utils::json
 {
 
-string::CStringRAII
+CStringRAII
 get_string (yyjson_val * val)
 {
   yyjson_write_err write_err;

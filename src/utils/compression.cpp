@@ -35,7 +35,7 @@ compress_to_base64_str (const QByteArray &src)
   return ret;
 }
 
-string::CStringRAII
+CStringRAII
 decompress_string_from_base64 (const QByteArray &b64)
 {
   auto src = utils::base64::decode (b64);

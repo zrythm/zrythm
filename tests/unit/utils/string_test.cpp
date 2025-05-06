@@ -9,65 +9,77 @@
 using namespace Qt::StringLiterals;
 
 using namespace zrythm::utils;
-using namespace zrythm::utils::string;
 
 TEST (StringTest, EscapeHtml)
 {
-  EXPECT_EQ (escape_html ("<test>"), "&lt;test&gt;");
-  EXPECT_EQ (escape_html ("\"quote\""), "&quot;quote&quot;");
-  EXPECT_EQ (escape_html ("&ampersand"), "&amp;ampersand");
+  EXPECT_EQ (
+    Utf8String::from_utf8_encoded_string ("<test>").escape_html (),
+    "&lt;test&gt;");
+  EXPECT_EQ (
+    Utf8String::from_utf8_encoded_string ("\"quote\"").escape_html (),
+    "&quot;quote&quot;");
+  EXPECT_EQ (
+    Utf8String::from_utf8_encoded_string ("&ampersand").escape_html (),
+    "&amp;ampersand");
 }
 
 TEST (StringTest, IsAscii)
 {
-  EXPECT_TRUE (is_ascii ("Hello123!"));
-  EXPECT_FALSE (is_ascii ("Hello世界"));
+  EXPECT_TRUE (Utf8String::from_utf8_encoded_string ("Hello123!").is_ascii ());
+  EXPECT_FALSE (Utf8String::from_utf8_encoded_string ("Hello世界").is_ascii ());
 }
 
 TEST (StringTest, ContainsSubstring)
 {
-  EXPECT_TRUE (contains_substr ("Hello World", "World"));
-  EXPECT_TRUE (contains_substr_case_insensitive ("Hello World", "WORLD"));
-  EXPECT_FALSE (contains_substr ("Hello World", "Goodbye"));
+  EXPECT_TRUE (
+    Utf8String::from_utf8_encoded_string ("Hello World")
+      .contains_substr ({ u8"World" }));
+  EXPECT_TRUE (Utf8String{ u8"Hello World" }.contains_substr_case_insensitive (
+    { u8"WORLD" }));
+  EXPECT_FALSE (
+    Utf8String::from_utf8_encoded_string ("Hello World")
+      .contains_substr ({ u8"Goodbye" }));
 }
 
 TEST (StringTest, CaseConversion)
 {
-  std::string str = "Hello123";
-  to_upper_ascii (str);
-  EXPECT_EQ (str, "HELLO123");
-
-  str = "HELLO123";
-  to_lower_ascii (str);
-  EXPECT_EQ (str, "hello123");
+  EXPECT_EQ (Utf8String{ u8"Hello123" }.to_upper (), "HELLO123");
+  EXPECT_EQ (Utf8String{ u8"HELLO123" }.to_lower (), "hello123");
 }
 
 TEST (StringTest, GetIntAfterLastSpace)
 {
-  auto [num, str] = get_int_after_last_space ("Hello World 42");
+  auto [num, str] = Utf8String (u8"Hello World 42").get_int_after_last_space ();
   EXPECT_EQ (num, 42);
   EXPECT_EQ (str, "Hello World");
 
-  std::tie (num, str) = get_int_after_last_space ("No number here");
+  std::tie (num, str) =
+    Utf8String (u8"No number here").get_int_after_last_space ();
   EXPECT_EQ (num, -1);
 }
 
 TEST (StringTest, RegexOperations)
 {
-  EXPECT_EQ (get_regex_group ("Hello, World!", "(World)", 1), "World");
-  EXPECT_EQ (get_regex_group_as_int ("Age: 25 years", "Age: (\\d+)", 1, -1), 25);
+  EXPECT_EQ (
+    Utf8String{ u8"Hello, World!" }.get_regex_group (u8"(World)", 1), "World");
+  EXPECT_EQ (
+    Utf8String (u8"Age: 25 years")
+      .get_regex_group_as_int (u8"Age: (\\d+)", 1, -1),
+    25);
 }
 
 TEST (StringTest, PathManipulation)
 {
-  EXPECT_EQ (convert_to_filename ("Hello World!"), "Hello_World_");
-  EXPECT_EQ (get_substr_before_suffix ("test.txt", ".txt"), "test");
+  EXPECT_EQ (
+    Utf8String (u8"Hello World!").convert_to_filename (), "Hello_World_");
+  EXPECT_EQ (
+    Utf8String (u8"test.txt").get_substr_before_suffix ({ u8".txt" }), "test");
 }
 
 TEST (StringTest, StringJoin)
 {
-  std::vector<std::string> vec = { "one", "two", "three" };
-  EXPECT_EQ (join (vec, ", "), "one, two, three");
+  std::vector<Utf8String> vec = { u8"one", u8"two", u8"three" };
+  EXPECT_EQ (Utf8String::join (vec, u8", "), "one, two, three");
 }
 
 TEST (StringTest, CStringRAII)
@@ -87,7 +99,7 @@ TEST (StringTest, CStringRAII)
 TEST (StringTest, EnvironmentVariables)
 {
   qputenv ("TEST_VAR", "test_value");
-  EXPECT_EQ (expand_env_vars ("${TEST_VAR}"), "test_value");
+  EXPECT_EQ (Utf8String (u8"${TEST_VAR}").expand_env_vars (), "test_value");
   qunsetenv ("TEST_VAR");
 }
 
@@ -96,29 +108,32 @@ TEST (StringTest, StringConversions)
   // juce::String <-> std::string
   {
     juce::String juceStr (juce::CharPointer_UTF8 ("Test 日本語"));
-    std::string  stdStr = juce_string_to_std_string (juceStr);
+    auto         u8str = Utf8String::from_juce_string (juceStr);
+    const auto  &stdStr = u8str.str ();
     EXPECT_EQ (stdStr, "Test 日本語");
 
-    juce::String convertedBack = string_view_to_juce_string (stdStr);
+    juce::String convertedBack =
+      Utf8String::from_utf8_encoded_string (stdStr).to_juce_string ();
     EXPECT_EQ (convertedBack, juceStr);
   }
 
   // QString <-> std::string
   // note: emojis don't work
   {
-    QString     qStr (u"Test 日本語"_s);
-    std::string stdStr = qstring_to_std_string (qStr);
+    QString    qStr (u"Test 日本語"_s);
+    const auto stdStr = Utf8String::from_qstring (qStr).str ();
     EXPECT_EQ (stdStr, "Test 日本語");
 
-    QString convertedBack = std_string_to_qstring (stdStr);
+    QString convertedBack =
+      Utf8String::from_utf8_encoded_string (stdStr).to_qstring ();
     EXPECT_EQ (convertedBack, qStr);
   }
 
   // juce::String <-> QString
   {
     juce::String juceStr (juce::CharPointer_UTF8 ("混合文本"));
-    QString      qStr = juce_string_to_qstring (juceStr);
-    EXPECT_EQ (qStr, "混合文本");
+    QString      qStr = Utf8String::from_juce_string (juceStr).to_qstring ();
+    EXPECT_EQ (qStr, u"混合文本"_s);
   }
 }
 
@@ -127,13 +142,13 @@ TEST (StringTest, PathConversions)
   // Unix-style paths
   {
     QUrl unixUrl ("file:///home/user/文件.txt");
-    EXPECT_EQ (qurl_to_path_qstring (unixUrl), "/home/user/文件.txt");
+    EXPECT_EQ (Utf8String::from_qurl (unixUrl), "/home/user/文件.txt");
   }
 
   // Windows-style paths
   {
-    QUrl    winUrl ("file:///C:/Users/用户/文档.txt");
-    QString path = qurl_to_path_qstring (winUrl);
+    QUrl       winUrl ("file:///C:/Users/用户/文档.txt");
+    const auto path = Utf8String::from_qurl (winUrl);
 #ifdef _WIN32
     EXPECT_EQ (path, "C:/Users/用户/文档.txt");
 #else
@@ -145,13 +160,13 @@ TEST (StringTest, PathConversions)
   // Network paths
   {
     QUrl netUrl ("file://server/share/测试.txt");
-    EXPECT_EQ (qurl_to_path_qstring (netUrl), "//server/share/测试.txt");
+    EXPECT_EQ (Utf8String::from_qurl (netUrl), "//server/share/测试.txt");
   }
 
   // Relative paths
   {
     QUrl relUrl ("file:../relative/路径");
-    EXPECT_EQ (qurl_to_path_qstring (relUrl), "../relative/路径");
+    EXPECT_EQ (Utf8String::from_qurl (relUrl), "../relative/路径");
   }
 }
 
@@ -159,8 +174,9 @@ TEST (StringTest, EdgeCaseConversions)
 {
   // Empty strings
   {
-    EXPECT_TRUE (juce_string_to_std_string (juce::String ()).empty ());
-    EXPECT_TRUE (qstring_to_std_string (QString ()).empty ());
-    EXPECT_TRUE (juce_string_to_qstring (juce::String ()).isEmpty ());
+    EXPECT_TRUE (Utf8String::from_juce_string (juce::String ()).empty ());
+    EXPECT_TRUE (Utf8String::from_qstring (QString ()).empty ());
+    EXPECT_TRUE (
+      Utf8String::from_juce_string (juce::String ()).to_qstring ().isEmpty ());
   }
 }

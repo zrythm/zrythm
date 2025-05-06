@@ -30,7 +30,7 @@ InstrumentTrack::InstrumentTrack (
       RecordableTrack (port_registry, new_identity)
 {
   color_ = Color (QColor ("#FF9616"));
-  icon_name_ = "instrument";
+  icon_name_ = u8"instrument";
   automation_tracklist_->setParent (this);
 }
 

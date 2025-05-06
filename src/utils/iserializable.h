@@ -405,6 +405,7 @@ public:
               || std::is_floating_point_v<FieldT> || std::is_same_v<FieldT, bool>
               || std::is_same_v<FieldT, std::string>
               || std::is_same_v<FieldT, QString>
+              || std::is_same_v<FieldT, utils::Utf8String>
               || std::is_same_v<FieldT, fs::path>
               || std::is_same_v<FieldT, std::vector<bool>>
               || SignedIntegralContainer<FieldT>
@@ -550,7 +551,7 @@ public:
    * @param ctx The context of the serialization.
    * @throw ZrythmException if an error occurred.
    */
-  string::CStringRAII serialize_to_json_string () const
+  CStringRAII serialize_to_json_string () const
   {
     yyjson_mut_doc * doc = yyjson_mut_doc_new (nullptr);
     yyjson_mut_val * root = yyjson_mut_obj (doc);
@@ -758,7 +759,8 @@ public:
       {
         if (!value.isNull ())
           {
-            const auto str = utils::qstring_to_std_string (value.toString ());
+            const auto str =
+              utils::Utf8String::from_qstring (value.toString ()).str ();
             yyjson_mut_obj_add_strncpy (
               doc, obj, key, str.c_str (), str.length ());
           }
@@ -909,7 +911,17 @@ public:
       {
         if (!value.isEmpty ())
           {
-            const auto value_str = utils::qstring_to_std_string (value);
+            const auto value_str =
+              utils::Utf8String::from_qstring (value).str ();
+            yyjson_mut_obj_add_strncpy (
+              doc, obj, key, value_str.data (), value_str.size ());
+          }
+      }
+    else if constexpr (std::is_same_v<T, utils::Utf8String>)
+      {
+        if (!value.empty ())
+          {
+            const auto value_str = value.str ();
             yyjson_mut_obj_add_strncpy (
               doc, obj, key, value_str.data (), value_str.size ());
           }
@@ -918,7 +930,7 @@ public:
       {
         if (!value.empty ())
           {
-            const auto value_str = value.string ();
+            const auto value_str = utils::Utf8String::from_path (value).str ();
             yyjson_mut_obj_add_strncpy (
               doc, obj, key, value_str.data (), value_str.size ());
           }
@@ -1435,13 +1447,24 @@ public:
       }
     else if constexpr (
       std::is_same_v<T, std::string> || std::is_same_v<T, fs::path>
-      || std::is_same_v<T, QString>)
+      || std::is_same_v<T, QString> || std::is_same_v<T, utils::Utf8String>)
       {
         if (yyjson_is_str (val))
           {
             if constexpr (std::is_same_v<T, QString>)
               {
                 value = QString::fromUtf8 (yyjson_get_str (val));
+              }
+            else if constexpr (std::is_same_v<T, fs::path>)
+              {
+                const auto u8s = utils::Utf8String::from_utf8_encoded_string (
+                  yyjson_get_str (val));
+                value = u8s.to_path ();
+              }
+            else if constexpr (std::is_same_v<T, utils::Utf8String>)
+              {
+                value = utils::Utf8String::from_utf8_encoded_string (
+                  yyjson_get_str (val));
               }
             else
               {

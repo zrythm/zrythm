@@ -41,26 +41,27 @@ AudioPool::init_after_cloning (const AudioPool &other, ObjectCloneType clone_typ
 }
 
 bool
-AudioPool::name_exists (const std::string &name) const
+AudioPool::name_exists (const utils::Utf8String &name) const
 {
   return std::ranges::contains (clips_, name, &AudioClip::get_name);
 }
 
 fs::path
 AudioPool::get_clip_path_from_name (
-  const std::string &name,
-  bool               use_flac,
-  bool               is_backup) const
+  const utils::Utf8String &name,
+  bool                     use_flac,
+  bool                     is_backup) const
 {
   auto prj_pool_dir = project_pool_path_getter_ (is_backup);
   if (!utils::io::path_exists (prj_pool_dir))
     {
       z_error ("{} does not exist", prj_pool_dir);
-      return "";
+      return {};
     }
   const auto basename =
-    utils::io::file_strip_ext (name).string () + (use_flac ? ".FLAC" : ".wav");
-  return prj_pool_dir / fs::path (basename);
+    utils::Utf8String::from_path (utils::io::file_strip_ext (name))
+    + (use_flac ? u8".FLAC" : u8".wav");
+  return prj_pool_dir / basename;
 }
 
 fs::path
@@ -156,35 +157,32 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
   constexpr bool is_backup = false;
   auto orig_name_without_ext = utils::io::file_strip_ext (clip.get_name ());
   auto orig_path_in_pool = get_clip_path (clip, is_backup);
-  std::string new_name = orig_name_without_ext.string ();
+  auto new_name = utils::Utf8String::from_path (orig_name_without_ext);
   z_return_if_fail (!new_name.empty ());
 
   bool changed = false;
   while (name_exists (new_name))
     {
-      const auto     prev_new_name = new_name;
-      constexpr auto regex = R"(^.*\((\d+)\)$)";
-      auto cur_val_str = utils::string::get_regex_group (new_name, regex, 1);
-      int  cur_val =
-        utils::string::get_regex_group_as_int (new_name, regex, 1, 0);
-      if (cur_val == 0)
+      const auto prev_new_name = new_name;
+      const auto regex =
+        utils::Utf8String::from_utf8_encoded_string (R"(^.*\((\d+)\)$)");
+      int cur_val = new_name.get_regex_group_as_int (regex, 1, 0);
+
+      // Extract base name (without existing suffix)
+      std::string base_name;
+      if (cur_val > 0)
         {
-          new_name = fmt::format ("{} (1)", new_name);
+          size_t suffix_pos =
+            new_name.str ().rfind (fmt::format (" ({})", cur_val));
+          base_name = new_name.str ().substr (0, suffix_pos);
         }
       else
         {
-          size_t len =
-            strlen (new_name.c_str ()) -
-            /* + 2 for the parens */
-            (strlen (cur_val_str.c_str ()) + 2);
-          /* + 1 for the terminating NULL */
-          size_t            tmp_len = len + 1;
-          std::vector<char> tmp (tmp_len);
-          memset (tmp.data (), 0, tmp_len * sizeof (char));
-          memcpy (tmp.data (), new_name.c_str (), len == 0 ? 0 : len - 1);
-          new_name =
-            fmt::format ("{} ({})", std::string (tmp.data ()), cur_val + 1);
+          base_name = new_name.str ();
         }
+
+      new_name = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("{} ({})", base_name, cur_val + 1));
       changed = true;
     }
 
@@ -293,9 +291,7 @@ AudioPool::remove_unused (bool backup)
           if (!clip)
             continue;
 
-          if (
-            get_clip_path (*clip, backup)
-            == utils::io::juce_string_to_fs_path (path))
+          if (get_clip_path (*clip, backup) == path)
             {
               found = true;
               break;
@@ -305,7 +301,7 @@ AudioPool::remove_unused (bool backup)
       /* if file not found in pool clips, delete */
       if (!found)
         {
-          utils::io::remove (utils::io::juce_string_to_fs_path (path));
+          utils::io::remove (path);
         }
     }
 

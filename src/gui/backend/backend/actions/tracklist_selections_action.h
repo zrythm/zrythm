@@ -108,7 +108,7 @@ public:
     const Color *                  color_new,
     float                          val_before,
     float                          val_after,
-    const std::string *            new_txt,
+    const utils::Utf8String *      new_txt,
     bool                           already_edited);
 
   /**
@@ -289,7 +289,7 @@ public:
    *
    * This will be used as the track name.
    */
-  std::string file_basename_;
+  fs::path file_basename_;
 
   /**
    * If this is an action to create a MIDI track
@@ -300,7 +300,7 @@ public:
    * @note For audio files,
    *   TracklistSelectionsAction.pool_id_ is used.
    */
-  std::string base64_midi_;
+  utils::Utf8String base64_midi_;
 
   /**
    * If this is an action to create an Audio track from an audio file, this
@@ -369,7 +369,7 @@ public:
   std::vector<Color> colors_before_;
   Color              new_color_;
 
-  std::string new_txt_;
+  utils::Utf8String new_txt_;
 
   /** Skip do if true. */
   bool already_edited_ = false;
@@ -829,7 +829,10 @@ public:
 class EditTracksTextAction : public TracklistSelectionsAction
 {
 protected:
-  EditTracksTextAction (EditType edit_type, TrackSpan tls, const std::string &txt)
+  EditTracksTextAction (
+    EditType                 edit_type,
+    TrackSpan                tls,
+    const utils::Utf8String &txt)
       : TracklistSelectionsAction (
           Type::Edit,
           tls,
@@ -857,7 +860,7 @@ protected:
 class EditTracksCommentAction : public EditTracksTextAction
 {
 public:
-  EditTracksCommentAction (TrackSpan tls, const std::string &comment)
+  EditTracksCommentAction (TrackSpan tls, const utils::Utf8String &comment)
       : EditTracksTextAction (EditType::Comment, tls, comment)
   {
   }
@@ -866,7 +869,7 @@ public:
 class EditTrackCommentAction : public EditTracksCommentAction
 {
 public:
-  EditTrackCommentAction (TrackPtrVariant track, const std::string &comment)
+  EditTrackCommentAction (TrackPtrVariant track, const utils::Utf8String &comment)
       : EditTracksCommentAction (TrackSpan (track), comment)
   {
   }
@@ -875,7 +878,7 @@ public:
 class EditTracksIconAction : public EditTracksTextAction
 {
 public:
-  EditTracksIconAction (TrackSpan tls, const std::string &icon)
+  EditTracksIconAction (TrackSpan tls, const utils::Utf8String &icon)
       : EditTracksTextAction (EditType::Icon, tls, icon)
   {
   }
@@ -884,7 +887,7 @@ public:
 class EditTrackIconAction : public EditTracksIconAction
 {
 public:
-  EditTrackIconAction (TrackPtrVariant track, const std::string &icon)
+  EditTrackIconAction (TrackPtrVariant track, const utils::Utf8String &icon)
       : EditTracksIconAction (TrackSpan (track), icon)
   {
   }
@@ -896,7 +899,7 @@ public:
   RenameTrackAction (
     TrackPtrVariant               track,
     const PortConnectionsManager &port_connections_mgr,
-    const std::string            &name)
+    const utils::Utf8String      &name)
       : TracklistSelectionsAction (
           Type::Edit,
           std::nullopt,
@@ -926,8 +929,8 @@ class RenameTrackLaneAction : public TracklistSelectionsAction
 public:
   template <RegionSubclass T>
   RenameTrackLaneAction (
-    const TrackLaneImpl<T> &track_lane,
-    const std::string      &name)
+    const TrackLaneImpl<T>  &track_lane,
+    const utils::Utf8String &name)
       : TracklistSelectionsAction (
           Type::Edit,
           std::nullopt,

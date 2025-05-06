@@ -195,17 +195,18 @@ Logger::Logger (LoggerType type) : type_ (type)
   init_sinks (false);
 }
 
-std::string
+fs::path
 Logger::get_log_file_path () const
 {
   auto str_datetime = utils::datetime::get_for_filename ();
   auto user_log_dir =
     QStandardPaths::writableLocation (QStandardPaths::CacheLocation);
   auto log_filepath =
-    io::qstring_to_fs_path (user_log_dir)
-    / (std::string ("log_") + (type_ == LoggerType::Engine ? std::string ("engine_") : std::string ()) + str_datetime);
-  utils::io::mkdir (io::qstring_to_fs_path (user_log_dir)); // note: throws
-  return log_filepath.string ();
+    Utf8String::from_qstring (user_log_dir).to_path ()
+    / (std::u8string (u8"log_") + (type_ == LoggerType::Engine ? std::u8string (u8"engine_") : std::u8string ()) + str_datetime.to_u8_string());
+  utils::io::mkdir (
+    Utf8String::from_qstring (user_log_dir).to_path ()); // note: throws
+  return log_filepath;
 }
 
 bool
@@ -216,8 +217,8 @@ Logger::need_backtrace () const
   return now - last_bt_time_ > backtrace_cooldown_time;
 }
 
-std::pair<std::string, std::string>
-Logger::generate_compresed_file (std::string &dir, std::string &path) const
+std::pair<fs::path, fs::path>
+Logger::generate_compresed_file (fs::path &dir, fs::path &path) const
 {
 #if 0
     Error * err = NULL;
@@ -269,14 +270,18 @@ Logger::generate_compresed_file (std::string &dir, std::string &path) const
   return std::make_pair ("dir", "path");
 }
 
-std::vector<std::string>
+std::vector<Utf8String>
 ILogger::get_last_log_entries (size_t count, bool formatted) const
 {
   // Get the circular buffer sink from the logger
   auto buffer_sink = std::dynamic_pointer_cast<
     spdlog::sinks::ringbuffer_sink_mt> (logger_->sinks ().back ());
   assert (buffer_sink);
-  return buffer_sink->last_formatted (count);
+  return buffer_sink->last_formatted (count)
+         | std::views::transform ([&] (const auto &entry) {
+             return Utf8String::from_utf8_encoded_string (entry);
+           })
+         | std::ranges::to<std::vector> ();
 }
 
 TestLogger::TestLogger ()
@@ -284,10 +289,10 @@ TestLogger::TestLogger ()
   init_sinks (true);
 }
 
-std::pair<std::string, std::string>
-TestLogger::generate_compresed_file (std::string &dir, std::string &path) const
+std::pair<fs::path, fs::path>
+TestLogger::generate_compresed_file (fs::path &dir, fs::path &path) const
 {
-  return std::make_pair ("dir", "path");
+  return std::make_pair (fs::path{ u8"dir" }, fs::path{ u8"path" });
 }
 
 bool
@@ -296,13 +301,13 @@ TestLogger::need_backtrace () const
   return true;
 }
 
-std::string
+fs::path
 TestLogger::get_log_file_path () const
 {
   auto tmp_log_dir = utils::io::get_temp_path () / "zrythm_test_logs";
-  EXPECT_NO_THROW ({ utils::io::mkdir (tmp_log_dir.string ()); });
+  EXPECT_NO_THROW ({ utils::io::mkdir (tmp_log_dir); });
   auto str_datetime = utils::datetime::get_for_filename ();
-  return (tmp_log_dir / str_datetime).string ();
+  return tmp_log_dir / str_datetime.to_path ();
 }
 
 }; // namespace zrythm::utils

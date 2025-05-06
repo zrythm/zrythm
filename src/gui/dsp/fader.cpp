@@ -95,11 +95,11 @@ Fader::Fader (
     constexpr float amp = 1.f;
     amp_id_ = port_registry_->create_object<ControlPort> (
       passthrough
-        ? utils::qstring_to_std_string (QObject::tr ("Prefader Volume"))
-        : utils::qstring_to_std_string (QObject::tr ("Fader Volume")));
+        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Volume"))
+        : utils::Utf8String::from_qstring (QObject::tr ("Fader Volume")));
     auto &amp_port = get_amp_port ();
     amp_port.set_owner (*this);
-    amp_port.id_->sym_ = passthrough ? "prefader_volume" : "fader_volume";
+    amp_port.id_->sym_ = passthrough ? u8"prefader_volume" : u8"fader_volume";
     amp_port.deff_ = amp;
     amp_port.range_.minf_ = 0.f;
     amp_port.range_.maxf_ = 2.f;
@@ -120,11 +120,12 @@ Fader::Fader (
     constexpr float balance = 0.5f;
     balance_id_ = port_registry_->create_object<ControlPort> (
       passthrough
-        ? utils::qstring_to_std_string (QObject::tr ("Prefader Balance"))
-        : utils::qstring_to_std_string (QObject::tr ("Fader Balance")));
+        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Balance"))
+        : utils::Utf8String::from_qstring (QObject::tr ("Fader Balance")));
     auto &balance_port = get_balance_port ();
     balance_port.set_owner (*this);
-    balance_port.id_->sym_ = passthrough ? "prefader_balance" : "fader_balance";
+    balance_port.id_->sym_ =
+      passthrough ? u8"prefader_balance" : u8"fader_balance";
     balance_port.set_control_value (balance, 0, 0);
     balance_port.id_->flags_ |= dsp::PortIdentifier::Flags::StereoBalance;
     if (
@@ -138,11 +139,11 @@ Fader::Fader (
     /* set mute */
     mute_id_ = port_registry_->create_object<ControlPort> (
       passthrough
-        ? utils::qstring_to_std_string (QObject::tr ("Prefader Mute"))
-        : utils::qstring_to_std_string (QObject::tr ("Fader Mute")));
+        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Mute"))
+        : utils::Utf8String::from_qstring (QObject::tr ("Fader Mute")));
     auto &mute_port = get_mute_port ();
     mute_port.set_owner (*this);
-    mute_port.id_->sym_ = passthrough ? "prefader_mute" : "fader_mute";
+    mute_port.id_->sym_ = passthrough ? u8"prefader_mute" : u8"fader_mute";
     mute_port.set_toggled (false, false);
     mute_port.id_->flags_ |= dsp::PortIdentifier::Flags::FaderMute;
     mute_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
@@ -157,11 +158,11 @@ Fader::Fader (
     /* set solo */
     solo_id_ = port_registry_->create_object<ControlPort> (
       passthrough
-        ? utils::qstring_to_std_string (QObject::tr ("Prefader Solo"))
-        : utils::qstring_to_std_string (QObject::tr ("Fader Solo")));
+        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Solo"))
+        : utils::Utf8String::from_qstring (QObject::tr ("Fader Solo")));
     auto &solo_port = get_solo_port ();
     solo_port.set_owner (*this);
-    solo_port.id_->sym_ = passthrough ? "prefader_solo" : "fader_solo";
+    solo_port.id_->sym_ = passthrough ? u8"prefader_solo" : u8"fader_solo";
     solo_port.set_toggled (false, false);
     solo_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderSolo;
     solo_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
@@ -171,11 +172,11 @@ Fader::Fader (
     /* set listen */
     listen_id_ = port_registry_->create_object<ControlPort> (
       passthrough
-        ? utils::qstring_to_std_string (QObject::tr ("Prefader Listen"))
-        : utils::qstring_to_std_string (QObject::tr ("Fader Listen")));
+        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Listen"))
+        : utils::Utf8String::from_qstring (QObject::tr ("Fader Listen")));
     auto &listen_port = get_listen_port ();
     listen_port.set_owner (*this);
-    listen_port.id_->sym_ = passthrough ? "prefader_listen" : "fader_listen";
+    listen_port.id_->sym_ = passthrough ? u8"prefader_listen" : u8"fader_listen";
     listen_port.set_toggled (false, false);
     listen_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderListen;
     listen_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
@@ -185,12 +186,14 @@ Fader::Fader (
     /* set mono compat */
     mono_compat_enabled_id_ = port_registry_->create_object<ControlPort> (
       passthrough
-        ? utils::qstring_to_std_string (QObject::tr ("Prefader Mono Compat"))
-        : utils::qstring_to_std_string (QObject::tr ("Fader Mono Compat")));
+        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Mono Compat"))
+        : utils::Utf8String::from_qstring (QObject::tr ("Fader Mono Compat")));
     auto &mono_compat_enabled_port = get_mono_compat_enabled_port ();
     mono_compat_enabled_port.set_owner (*this);
     mono_compat_enabled_port.id_->sym_ =
-      passthrough ? "prefader_mono_compat_enabled" : "fader_mono_compat_enabled";
+      passthrough
+        ? u8"prefader_mono_compat_enabled"
+        : u8"fader_mono_compat_enabled";
     mono_compat_enabled_port.set_toggled (false, false);
     mono_compat_enabled_port.id_->flags2_ |=
       dsp::PortIdentifier::Flags2::FaderMonoCompat;
@@ -201,11 +204,11 @@ Fader::Fader (
     const auto create_swap_phase_port = [&port_registry, passthrough] () {
       auto swap_phase = port_registry.create_object<ControlPort> (
         passthrough
-          ? utils::qstring_to_std_string (QObject::tr ("Prefader Swap Phase"))
-          : utils::qstring_to_std_string (QObject::tr ("Fader Swap Phase")));
+          ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Swap Phase"))
+          : utils::Utf8String::from_qstring (QObject::tr ("Fader Swap Phase")));
       auto * swap_phase_ptr = std::get<ControlPort *> (swap_phase.get_object ());
       swap_phase_ptr->id_->sym_ =
-        passthrough ? "prefader_swap_phase" : "fader_swap_phase";
+        passthrough ? u8"prefader_swap_phase" : u8"fader_swap_phase";
       swap_phase_ptr->id_->flags2_ |=
         dsp::PortIdentifier::Flags2::FaderSwapPhase;
       swap_phase_ptr->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
@@ -222,34 +225,34 @@ Fader::Fader (
   if (has_audio_ports ())
     {
       {
-        std::string name;
-        std::string sym;
+        utils::Utf8String name;
+        utils::Utf8String sym;
         if (type == Type::AudioChannel)
           {
             if (passthrough)
               {
-                name = utils::qstring_to_std_string (
+                name = utils::Utf8String::from_qstring (
                   QObject::tr ("Ch Pre-Fader in"));
-                sym = "ch_prefader_in";
+                sym = u8"ch_prefader_in";
               }
             else
               {
                 name =
-                  utils::qstring_to_std_string (QObject::tr ("Ch Fader in"));
-                sym = "ch_fader_in";
+                  utils::Utf8String::from_qstring (QObject::tr ("Ch Fader in"));
+                sym = u8"ch_fader_in";
               }
           }
         else if (type == Type::SampleProcessor)
           {
-            name = utils::qstring_to_std_string (
+            name = utils::Utf8String::from_qstring (
               QObject::tr ("Sample Processor Fader in"));
-            sym = "sample_processor_fader_in";
+            sym = u8"sample_processor_fader_in";
           }
         else
           {
-            name =
-              utils::qstring_to_std_string (QObject::tr ("Monitor Fader in"));
-            sym = "monitor_fader_in";
+            name = utils::Utf8String::from_qstring (
+              QObject::tr ("Monitor Fader in"));
+            sym = u8"monitor_fader_in";
           }
 
         /* stereo in */
@@ -264,34 +267,34 @@ Fader::Fader (
       }
 
       {
-        std::string name;
-        std::string sym;
+        utils::Utf8String name;
+        utils::Utf8String sym;
         if (type == Type::AudioChannel)
           {
             if (passthrough)
               {
-                name = utils::qstring_to_std_string (
+                name = utils::Utf8String::from_qstring (
                   QObject::tr ("Ch Pre-Fader out"));
-                sym = "ch_prefader_out";
+                sym = u8"ch_prefader_out";
               }
             else
               {
-                name =
-                  utils::qstring_to_std_string (QObject::tr ("Ch Fader out"));
-                sym = "ch_fader_out";
+                name = utils::Utf8String::from_qstring (
+                  QObject::tr ("Ch Fader out"));
+                sym = u8"ch_fader_out";
               }
           }
         else if (type == Type::SampleProcessor)
           {
-            name = utils::qstring_to_std_string (
+            name = utils::Utf8String::from_qstring (
               QObject::tr ("Sample Processor Fader out"));
-            sym = "sample_processor_fader_out";
+            sym = u8"sample_processor_fader_out";
           }
         else
           {
-            name =
-              utils::qstring_to_std_string (QObject::tr ("Monitor Fader out"));
-            sym = "monitor_fader_out";
+            name = utils::Utf8String::from_qstring (
+              QObject::tr ("Monitor Fader out"));
+            sym = u8"monitor_fader_out";
           }
 
         {
@@ -312,19 +315,19 @@ Fader::Fader (
     {
       {
         /* MIDI in */
-        std::string name;
-        std::string sym;
+        utils::Utf8String name;
+        utils::Utf8String sym;
         if (passthrough)
           {
-            name = utils::qstring_to_std_string (
+            name = utils::Utf8String::from_qstring (
               QObject::tr ("Ch MIDI Pre-Fader in"));
-            sym = "ch_midi_prefader_in";
+            sym = u8"ch_midi_prefader_in";
           }
         else
           {
-            name =
-              utils::qstring_to_std_string (QObject::tr ("Ch MIDI Fader in"));
-            sym = "ch_midi_fader_in";
+            name = utils::Utf8String::from_qstring (
+              QObject::tr ("Ch MIDI Fader in"));
+            sym = u8"ch_midi_fader_in";
           }
         midi_in_id_ =
           port_registry_->create_object<MidiPort> (name, dsp::PortFlow::Input);
@@ -334,20 +337,20 @@ Fader::Fader (
       }
 
       {
-        std::string name;
-        std::string sym;
+        utils::Utf8String name;
+        utils::Utf8String sym;
         /* MIDI out */
         if (passthrough)
           {
-            name = utils::qstring_to_std_string (
+            name = utils::Utf8String::from_qstring (
               QObject::tr ("Ch MIDI Pre-Fader out"));
-            sym = "ch_midi_prefader_out";
+            sym = u8"ch_midi_prefader_out";
           }
         else
           {
-            name =
-              utils::qstring_to_std_string (QObject::tr ("Ch MIDI Fader out"));
-            sym = "ch_midi_fader_out";
+            name = utils::Utf8String::from_qstring (
+              QObject::tr ("Ch MIDI Fader out"));
+            sym = u8"ch_midi_fader_out";
           }
         midi_out_id_ =
           port_registry_->create_object<MidiPort> (name, dsp::PortFlow::Output);
@@ -403,7 +406,7 @@ Fader::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     }
 }
 
-std::string
+utils::Utf8String
 Fader::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
   if (
@@ -412,11 +415,13 @@ Fader::get_full_designation_for_port (const dsp::PortIdentifier &id) const
     {
       auto * tr = get_track ();
       z_return_val_if_fail (tr, {});
-      return fmt::format ("{}/{}", tr->get_name (), id.get_label ());
+      return utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("{}/{}", tr->get_name (), id.get_label ()));
     }
   if (ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::MonitorFader))
     {
-      return fmt::format ("Engine/{}", id.get_label ());
+      return utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("Engine/{}", id.get_label ()));
     }
   if (ENUM_BITSET_TEST (
         id.flags2_, dsp::PortIdentifier::Flags2::SampleProcessorFader))
@@ -822,21 +827,21 @@ Fader::fade_frames_for_type (Type type)
            : FADER_DEFAULT_FADE_FRAMES_SHORT;
 }
 
-std::string
+utils::Utf8String
 Fader::get_node_name () const
 {
   if (type_ == Type::AudioChannel || type_ == Type::MidiChannel)
     {
       auto * track = get_track ();
-      return fmt::format (
-        "{} {}", track->get_name (), passthrough_ ? "Pre-Fader" : "Fader");
+      return utils::Utf8String::from_utf8_encoded_string (fmt::format (
+        "{} {}", track->get_name (), passthrough_ ? "Pre-Fader" : "Fader"));
     }
   if (type_ == Type::Monitor)
     {
-      return "Monitor Fader";
+      return u8"Monitor Fader";
     }
 
-  return "Fader";
+  return u8"Fader";
 }
 
 /**

@@ -264,11 +264,11 @@ MixerSelectionsAction::save_existing_plugin (
           auto existing_pl = to_track->get_plugin_at_slot (to_slot);
           z_debug (
             "existing plugin at ({}:{} => {}:{}): {}",
-            from_tr ? from_tr->get_name () : "(none)", from_slot,
-            to_tr ? to_tr->get_name () : "(none)", to_slot,
+            from_tr ? from_tr->get_name () : u8"(none)", from_slot,
+            to_tr ? to_tr->get_name () : u8"(none)", to_slot,
             existing_pl
               ? old_dsp::plugins::Plugin::name_projection (existing_pl.value ())
-              : "(none)");
+              : u8"(none)");
           if (existing_pl && (from_tr != to_tr || from_slot != to_slot))
             {
               tmp_plugins.push_back (existing_pl.value ());
@@ -735,8 +735,9 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                   /* add a new track to the tracklist */
                   std::visit (
                     [&] (auto &&own_pl) {
-                      std::string str =
-                        fmt::format ("{} (Copy)", own_pl->get_name ());
+                      const auto str =
+                        utils::Utf8String::from_utf8_encoded_string (
+                          fmt::format ("{} (Copy)", own_pl->get_name ()));
                       auto to_tr_unique_var = Track::create_track (
                         Track::Type::AudioBus, str, TRACKLIST->track_count ());
                       std::visit (

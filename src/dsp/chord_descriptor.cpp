@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
@@ -177,26 +177,25 @@ static constexpr std::array<std::string_view, 10> chord_accent_strings = {
   "6/13",
 };
 
-/**
- * Returns the musical note as a string (eg. "C3").
- */
-std::string_view
+utils::Utf8String
 ChordDescriptor::note_to_string (MusicalNote note)
 {
-  return utils::midi::midi_get_note_name ((midi_byte_t) note);
+  return utils::Utf8String::from_utf8_encoded_string (
+    utils::midi::midi_get_note_name ((midi_byte_t) note));
 }
 
-std::string_view
+utils::Utf8String
 ChordDescriptor::chord_type_to_string (ChordType type)
 {
-  return chord_type_strings.at (static_cast<size_t> (ENUM_VALUE_TO_INT (type)));
+  return utils::Utf8String::from_utf8_encoded_string (
+    chord_type_strings.at (static_cast<size_t> (ENUM_VALUE_TO_INT (type))));
 }
 
-std::string_view
+utils::Utf8String
 ChordDescriptor::chord_accent_to_string (ChordAccent accent)
 {
-  return chord_accent_strings.at (
-    static_cast<size_t> (ENUM_VALUE_TO_INT (accent)));
+  return utils::Utf8String::from_utf8_encoded_string (
+    chord_accent_strings.at (static_cast<size_t> (ENUM_VALUE_TO_INT (accent))));
 }
 
 bool
@@ -238,30 +237,28 @@ ChordDescriptor::define_fields (const utils::serialization::Context &ctx)
     T::make_field ("inversion", inversion_));
 }
 
-/**
- * Returns the chord in human readable string.
- */
-std::string
+utils::Utf8String
 ChordDescriptor::to_string () const
 {
-  std::string str = std::string (note_to_string (root_note_));
+  auto str = note_to_string (root_note_);
   str += chord_type_to_string (type_);
 
   if (accent_ > ChordAccent::None)
     {
-      str += " ";
+      str += u8" ";
       str += chord_accent_to_string (accent_);
     }
   if (has_bass_ && (bass_note_ != root_note_))
     {
-      str += "/";
+      str += u8"/";
       str += note_to_string (bass_note_);
     }
 
   if (inversion_ != 0)
     {
-      str += " i";
-      str += std::to_string (inversion_);
+      str += u8" i";
+      str += utils::Utf8String::from_utf8_encoded_string (
+        std::to_string (inversion_));
     }
 
   return str;

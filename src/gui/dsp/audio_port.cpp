@@ -12,9 +12,9 @@
 
 #include <fmt/format.h>
 
-AudioPort::AudioPort () : AudioPort ("", PortFlow::Input) { }
+AudioPort::AudioPort () : AudioPort ({}, PortFlow::Input) { }
 
-AudioPort::AudioPort (std::string label, PortFlow flow)
+AudioPort::AudioPort (utils::Utf8String label, PortFlow flow)
     : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f)
 {
 }
@@ -254,10 +254,10 @@ AudioPort::apply_fader (float amp, nframes_t start_frame, const nframes_t nframe
 
 std::pair<PortUuidReference, PortUuidReference>
 StereoPorts::create_stereo_ports (
-  PortRegistry &port_registry,
-  bool          input,
-  std::string   name,
-  std::string   symbol)
+  PortRegistry     &port_registry,
+  bool              input,
+  utils::Utf8String name,
+  utils::Utf8String symbol)
 {
   auto l_names = get_name_and_symbols (true, name, symbol);
   auto r_names = get_name_and_symbols (false, name, symbol);

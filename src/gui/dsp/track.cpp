@@ -85,7 +85,7 @@ Track::from_variant (const TrackPtrVariant &variant)
 }
 
 TrackUniquePtrVariant
-Track::create_track (Track::Type type, const std::string &name, int pos)
+Track::create_track (Track::Type type, const utils::Utf8String &name, int pos)
 {
   auto track_var = [&] () -> TrackUniquePtrVariant {
     switch (type)
@@ -271,10 +271,11 @@ Track::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
   id.owner_type_ = dsp::PortIdentifier::OwnerType::Track;
 }
 
-std::string
+utils::Utf8String
 Track::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
-  return fmt::format ("{}/{}", get_name (), id.label_);
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{}/{}", get_name (), id.label_));
 }
 
 bool
@@ -612,7 +613,7 @@ Track::update_positions (
 }
 
 bool
-Track::set_name_with_action_full (const std::string &name)
+Track::set_name_with_action_full (const utils::Utf8String &name)
 {
   try
     {
@@ -629,7 +630,7 @@ Track::set_name_with_action_full (const std::string &name)
 }
 
 void
-Track::set_name_with_action (const std::string &name)
+Track::set_name_with_action (const utils::Utf8String &name)
 {
   set_name_with_action_full (name);
 }
@@ -657,21 +658,21 @@ Track::add_region_if_in_range (
     }
 }
 
-std::string
-Track::get_unique_name (const Tracklist &tracklist, const std::string &name)
+utils::Utf8String
+Track::get_unique_name (const Tracklist &tracklist, const utils::Utf8String &name)
 {
-  std::string new_name = name;
+  auto new_name = name;
   while (!tracklist.track_name_is_unique (new_name, get_uuid ()))
     {
-      auto [ending_num, name_without_num] =
-        utils::string::get_int_after_last_space (new_name);
+      auto [ending_num, name_without_num] = new_name.get_int_after_last_space ();
       if (ending_num == -1)
         {
-          new_name += " 1";
+          new_name += u8" 1";
         }
       else
         {
-          new_name = fmt::format ("{} {}", name_without_num, ending_num + 1);
+          new_name = utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("{} {}", name_without_num, ending_num + 1));
         }
     }
   return new_name;
@@ -679,9 +680,9 @@ Track::get_unique_name (const Tracklist &tracklist, const std::string &name)
 
 void
 Track::set_name (
-  const Tracklist   &tracklist,
-  const std::string &name,
-  bool               pub_events)
+  const Tracklist         &tracklist,
+  const utils::Utf8String &name,
+  bool                     pub_events)
 {
   auto new_name = get_unique_name (tracklist, name);
   name_ = new_name;
@@ -703,7 +704,7 @@ Track::set_name (
 }
 
 void
-Track::set_comment (const std::string &comment, bool undoable)
+Track::set_comment (const utils::Utf8String &comment, bool undoable)
 {
   if (undoable)
     {
@@ -756,7 +757,8 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
 }
 
 void
-Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
+Track::
+  set_icon (const utils::Utf8String &icon_name, bool undoable, bool fire_events)
 {
   if (undoable)
     {
@@ -939,7 +941,7 @@ Track::create_with_action (
   if (file_descr)
     {
       TRACKLIST->import_files (
-        nullptr, file_descr, nullptr, nullptr, index, pos, ready_cb);
+        std::nullopt, file_descr, nullptr, nullptr, index, pos, ready_cb);
     }
   else
     {

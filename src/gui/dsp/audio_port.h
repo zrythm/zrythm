@@ -31,7 +31,7 @@ class AudioPort final
 public:
   AudioPort ();
 
-  AudioPort (std::string label, PortFlow flow);
+  AudioPort (utils::Utf8String label, PortFlow flow);
 
   bool has_sound () const override;
 
@@ -112,19 +112,23 @@ private:
 class StereoPorts final
 {
 public:
-  static std::pair<std::string, std::string>
-  get_name_and_symbols (bool left, std::string name, std::string symbol)
+  static std::pair<utils::Utf8String, utils::Utf8String> get_name_and_symbols (
+    bool              left,
+    utils::Utf8String name,
+    utils::Utf8String symbol)
   {
     return std::make_pair (
-      fmt::format ("{} {}", name, left ? "L" : "R"),
-      fmt::format ("{}_{}", symbol, left ? "l" : "r"));
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("{} {}", name, left ? "L" : "R")),
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("{}_{}", symbol, left ? "l" : "r")));
   }
 
   static std::pair<PortUuidReference, PortUuidReference> create_stereo_ports (
-    PortRegistry &port_registry,
-    bool          input,
-    std::string   name,
-    std::string   symbol);
+    PortRegistry     &port_registry,
+    bool              input,
+    utils::Utf8String name,
+    utils::Utf8String symbol);
 };
 
 /**

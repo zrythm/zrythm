@@ -88,9 +88,9 @@ private:
    * @throw ZrythmException if an error occurred.
    */
   Project * create_default (
-    const fs::path    &prj_dir,
-    const std::string &name,
-    bool               with_engine);
+    const fs::path          &prj_dir,
+    const utils::Utf8String &name,
+    bool                     with_engine);
 
 private:
   /** Array of project template paths. */

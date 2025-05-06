@@ -15,7 +15,7 @@ using namespace zrythm::dsp;
 class MockProcessable : public IProcessable
 {
 public:
-  MOCK_METHOD (std::string, get_node_name, (), (const, override));
+  MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
   MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
   MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
   MOCK_METHOD (void, clear_external_buffer, (), (override));
@@ -62,7 +62,7 @@ protected:
     scheduler_ = std::make_unique<GraphScheduler> ();
 
     ON_CALL (*processable_, get_node_name ())
-      .WillByDefault (Return ("bench_node"));
+      .WillByDefault (Return (u8"bench_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (0));
     ON_CALL (*transport_, get_play_state ())

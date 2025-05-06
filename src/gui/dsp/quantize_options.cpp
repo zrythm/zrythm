@@ -90,7 +90,7 @@ QuantizeOptions::set_randomization (float randomization)
   rand_ticks_ = (double) randomization;
 }
 
-std::string
+utils::Utf8String
 QuantizeOptions::to_string (NoteLength note_length, NoteType note_type)
 {
   return SnapGrid::stringize_length_and_type (note_length, note_type);

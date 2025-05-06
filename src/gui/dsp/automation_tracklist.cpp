@@ -172,11 +172,11 @@ AutomationTracklist::add_automation_track (AutomationTrack &at)
 
 AutomationTrack *
 AutomationTracklist::get_plugin_at (
-  dsp::PluginSlot    slot,
-  const int          port_index,
-  const std::string &symbol)
+  dsp::PluginSlot          slot,
+  const int                port_index,
+  const utils::Utf8String &symbol)
 {
-  auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at) {
+  auto it = std::ranges::find_if (ats_, [&] (const auto &at) {
     const auto &port = get_port (at->port_id_);
     const auto &port_id = *port.id_;
     if (
@@ -539,15 +539,16 @@ AutomationTracklist::append_objects (std::vector<ArrangerObject *> objects) cons
 void
 AutomationTracklist::print_ats () const
 {
-  std::string str =
-    "Automation tracklist (track '" + track_.get_name () + "')\n";
+  utils::Utf8String str =
+    utils::Utf8String (u8"Automation tracklist (track '") + track_.get_name ()
+    + u8"')\n";
 
   for (size_t i = 0; i < ats_.size (); i++)
     {
       const auto &at = ats_[i];
       const auto &port = get_port (at->port_id_);
-      str += fmt::format (
-        "[{}] '{}' (sym '{}')\n", i, at->getLabel (), port.id_->get_symbol ());
+      str += utils::Utf8String::from_utf8_encoded_string (fmt::format (
+        "[{}] '{}' (sym '{}')\n", i, at->getLabel (), port.id_->get_symbol ()));
     }
 
   z_info (str);

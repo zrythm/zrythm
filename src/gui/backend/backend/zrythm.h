@@ -17,7 +17,6 @@
 #include "utils/dsp_context.h"
 #include "utils/monotonic_time_provider.h"
 #include "utils/networking.h"
-#include "utils/string_array.h"
 #include "utils/symap.h"
 
 #include "juce_wrapper.h"
@@ -61,7 +60,8 @@ public:
    * @param have_ui Whether Zrythm is instantiated with a UI (false if headless).
    * @param testing Whether this is a unit test.
    */
-  void pre_init (const char * exe_path, bool have_ui, bool optimized_dsp);
+  void
+  pre_init (std::optional<fs::path> exe_path, bool have_ui, bool optimized_dsp);
 
   void init ();
 
@@ -70,17 +70,14 @@ public:
     return plugin_manager_.get ();
   }
 
-  QString getVersion () const
-  {
-    return utils::std_string_to_qstring (get_version (false));
-  }
+  QString getVersion () const { return get_version (false).to_qstring (); }
 
   /**
    * Returns the version string.
    *
    * @param with_v Include a starting "v".
    */
-  static std::string get_version (bool with_v);
+  static utils::Utf8String get_version (bool with_v);
 
   /**
    * Returns whether the current Zrythm version is a
@@ -115,10 +112,9 @@ public:
   get_version_with_capabilities (char * buf, bool include_system_info);
 
   /**
-   * Returns system info (mainly used for bug
-   * reports).
+   * Returns system info (mainly used for bug reports).
    */
-  static std::string get_system_info ();
+  static utils::Utf8String get_system_info ();
 
   /**
    * Initializes/creates the default dirs/files in the user directory.
@@ -134,7 +130,7 @@ private:
 
 public:
   /** argv[0]. */
-  std::string exe_path_;
+  fs::path exe_path_;
 
   /**
    * Application settings
@@ -149,14 +145,14 @@ public:
   bool creating_project_ = false;
 
   /** Path to create a project in, including its title. */
-  std::string create_project_path_;
+  fs::path create_project_path_;
 
   /**
    * Filename to open passed through the command line.
    *
    * Used only when a filename is passed, eg, zrytm myproject.zpj
    */
-  std::string open_filename_;
+  fs::path open_filename_;
 
   /** File manager. */
   FileManager file_manager_;

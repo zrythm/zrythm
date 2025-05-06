@@ -86,32 +86,32 @@ TEST (PortIdentifier, MonitorFaderPorts)
 TEST (PortIdentifier, Comparison)
 {
   PortIdentifier id1;
-  id1.label_ = "Test Port 1";
-  id1.sym_ = "test_port_1";
+  id1.label_ = u8"Test Port 1";
+  id1.sym_ = u8"test_port_1";
   id1.owner_type_ = PortIdentifier::OwnerType::Plugin;
 
   PortIdentifier id2;
-  id2.label_ = "Test Port 1";
-  id2.sym_ = "test_port_1";
+  id2.label_ = u8"Test Port 1";
+  id2.sym_ = u8"test_port_1";
   id2.owner_type_ = PortIdentifier::OwnerType::Plugin;
 
   EXPECT_EQ (id1, id2);
 
-  id2.sym_ = "test_port_2";
+  id2.sym_ = u8"test_port_2";
   EXPECT_NE (id1, id2);
 }
 
 TEST (PortIdentifier, Hashing)
 {
   PortIdentifier id1;
-  id1.label_ = "Test Port";
-  id1.sym_ = "test_port";
+  id1.label_ = u8"Test Port";
+  id1.sym_ = u8"test_port";
   id1.owner_type_ = PortIdentifier::OwnerType::Track;
   id1.type_ = PortType::Audio;
 
   PortIdentifier id2;
-  id2.label_ = "Test Port";
-  id2.sym_ = "test_port";
+  id2.label_ = u8"Test Port";
+  id2.sym_ = u8"test_port";
   id2.owner_type_ = PortIdentifier::OwnerType::Track;
   id2.type_ = PortType::Audio;
 
@@ -129,10 +129,10 @@ TEST (PortIdentifier, PortUnitStrings)
 TEST (PortIdentifier, Serialization)
 {
   PortIdentifier id1;
-  id1.label_ = "Test Port";
-  id1.sym_ = "test_port";
-  id1.uri_ = "test://uri";
-  id1.comment_ = "Test comment";
+  id1.label_ = u8"Test Port";
+  id1.sym_ = u8"test_port";
+  id1.uri_ = u8"test://uri";
+  id1.comment_ = u8"Test comment";
   id1.owner_type_ = PortIdentifier::OwnerType::Plugin;
   id1.type_ = PortType::Audio;
   id1.flow_ = PortFlow::Input;
@@ -140,8 +140,8 @@ TEST (PortIdentifier, Serialization)
   id1.flags_ = PortIdentifier::Flags::MainPort;
   id1.flags2_ = PortIdentifier::Flags2::MidiPitchBend;
   id1.port_index_ = 42;
-  id1.port_group_ = "group1";
-  id1.ext_port_id_ = "ext1";
+  id1.port_group_ = u8"group1";
+  id1.ext_port_id_ = u8"ext1";
   id1.midi_channel_ = 1;
   id1.set_track_id (PortIdentifier::TrackUuid (QUuid::createUuid ()));
   id1.set_plugin_id (PortIdentifier::PluginUuid (QUuid::createUuid ()));

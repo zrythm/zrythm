@@ -11,126 +11,119 @@
 namespace zrythm::utils
 {
 
-namespace string
+Utf8String
+Utf8String::from_juce_string (const juce::String &str)
 {
-
-std::string
-escape_html (const std::string &str)
-{
-  return qstring_to_std_string (std_string_to_qstring (str).toHtmlEscaped ());
+  Utf8String ret;
+  ret.str_ = str.toUTF8 ();
+  return ret;
 }
 
 juce::String
-string_view_to_juce_string (std::string_view sv)
+Utf8String::to_juce_string () const
 {
-  juce::String juce_str = juce::String::createStringFromData (
-    sv.data (), static_cast<int> (sv.size ()));
-  return juce_str;
+  return juce::String::fromUTF8 (str_.data ());
+}
+
+juce::File
+Utf8String::to_juce_file () const
+{
+  return { to_juce_string () };
+}
+
+Utf8String
+Utf8String::escape_html () const
+{
+  return from_qstring (to_qstring ().toHtmlEscaped ());
 }
 
 bool
-is_ascii (std::string_view string)
+Utf8String::is_ascii () const
 {
-  return std::ranges::all_of (string, [] (unsigned char c) {
-    return c <= 127;
-  });
+  return std::ranges::all_of (str_, [] (unsigned char c) { return c <= 127; });
 }
 
 bool
-is_equal_ignore_case (const std::string &str1, const std::string &str2)
+Utf8String::contains_substr (const Utf8String &substr) const
 {
-  return std::ranges::equal (str1, str2, [] (char a, char b) {
-    return std::tolower (a) == std::tolower (b);
-  });
+  return to_qstring ().contains (substr.to_qstring (), Qt::CaseSensitive);
 }
 
 bool
-contains_substr (std::string_view str, std::string_view substr)
+Utf8String::contains_substr_case_insensitive (const Utf8String &substr) const
 {
-  return utils::std_string_to_qstring (std::string (str))
-    .contains (
-      utils::std_string_to_qstring (std::string{ substr }), Qt::CaseSensitive);
+  return to_qstring ().contains (substr.to_qstring (), Qt::CaseInsensitive);
 }
 
 bool
-contains_substr_case_insensitive (std::string_view str, std::string_view substr)
+Utf8String::is_equal_ignore_case (const Utf8String &other) const
 {
-  return utils::std_string_to_qstring (std::string{ str })
-    .contains (
-      utils::std_string_to_qstring (std::string{ substr }), Qt::CaseInsensitive);
+  return to_qstring ().compare (other.to_qstring (), Qt::CaseInsensitive) == 0;
 }
 
-void
-to_upper_ascii (std::string &str)
+Utf8String
+Utf8String::to_upper () const
 {
-  std::ranges::transform (str, str.begin (), [] (unsigned char c) {
-    return std::toupper (c);
-  });
+  return from_qstring (to_qstring ().toUpper ());
 }
 
-void
-to_lower_ascii (std::string &str)
+Utf8String
+Utf8String::to_lower () const
 {
-  std::ranges::transform (str, str.begin (), [] (unsigned char c) {
-    return std::tolower (c);
-  });
+  return from_qstring (to_qstring ().toLower ());
 }
 
-std::string
-convert_to_filename (const std::string &str)
-{
-  /* convert illegal characters to '_' */
-  return std::regex_replace (
-    str, std::regex (R"([#%&{}\\<>*?/$!'":@+`|= ])"), "_");
+Utf8String
+Utf8String::convert_to_filename () const
+{ /* convert illegal characters to '_' */
+  return from_utf8_encoded_string (std::regex_replace (
+    str_, std::regex (R"([#%&{}\\<>*?/$!'":@+`|= ])"), "_"));
 }
 
-std::string
-get_substr_before_suffix (const std::string &str, const std::string &suffix)
+Utf8String
+Utf8String::get_substr_before_suffix (const Utf8String &suffix) const
 {
   /* get the part without the suffix */
-  auto qstr = utils::std_string_to_qstring (str);
-  auto idx = qstr.indexOf (utils::std_string_to_qstring (suffix));
+  auto qstr = to_qstring ();
+  auto idx = qstr.indexOf (suffix.to_qstring ());
   if (idx == -1)
     {
-      return str;
+      return *this;
     }
-  return qstring_to_std_string (qstr.left (idx));
+  return from_qstring (qstr.left (idx));
 }
 
-std::string
-remove_until_after_first_match (const std::string &str, const std::string &match)
+Utf8String
+Utf8String::remove_until_after_first_match (const Utf8String &match) const
 {
-  if (str.empty ())
-    return "";
+  if (empty ())
+    return {};
 
-  auto pos = str.find (match);
+  auto pos = str_.find (match.str_);
   if (pos == std::string::npos)
-    return str;
+    return *this;
 
-  return str.substr (pos + match.length ());
+  return from_utf8_encoded_string (str_.substr (pos + match.str_.length ()));
 }
 
-std::string
-replace (const std::string &str, const std::string &from, const std::string &to)
+Utf8String
+Utf8String::replace (const Utf8String &from, const Utf8String &to) const
 {
-  std::string result = str;
+  std::string result = str_;
   size_t      start_pos = 0;
-  while ((start_pos = result.find (from, start_pos)) != std::string::npos)
+  while ((start_pos = result.find (from.str_, start_pos)) != std::string::npos)
     {
-      result.replace (start_pos, from.length (), to);
-      start_pos += to.length (); // Move to the end of the replaced string
+      result.replace (start_pos, from.str_.length (), to.str_);
+      start_pos += to.str_.length (); // Move to the end of the replaced string
     }
-  return result;
+  return from_utf8_encoded_string (result);
 }
 
 int
-get_regex_group_as_int (
-  const std::string &str,
-  const std::string &regex,
-  int                group,
-  int                def)
+Utf8String::get_regex_group_as_int (const Utf8String &regex, int group, int def)
+  const
 {
-  auto res = get_regex_group (str, regex, group);
+  auto res = get_regex_group (regex, group);
   if (!res.empty ())
     {
       int res_int = atoi (res.c_str ());
@@ -140,58 +133,44 @@ get_regex_group_as_int (
   return def;
 }
 
-std::string
-get_regex_group (const std::string &str, const std::string &regex, int group)
+Utf8String
+Utf8String::get_regex_group (const Utf8String &regex, int group) const
 {
-  std::regex  re (regex);
+  std::regex  re (regex.str_);
   std::cmatch match;
   if (
-    std::regex_search (str.c_str (), match, re)
+    std::regex_search (c_str (), match, re)
     && group < static_cast<decltype (group)> (match.size ()))
     {
-      return match[static_cast<size_t> (group)].str ();
+      return from_utf8_encoded_string (
+        match[static_cast<size_t> (group)].str ());
     }
 
-  z_warning ("not found: regex '{}', str '{}'", regex, str);
-  return "";
+  z_warning ("not found: regex '{}', str '{}'", regex, str_);
+  return {};
 }
 
-std::pair<int, std::string>
-get_int_after_last_space (const std::string &str)
+std::pair<int, Utf8String>
+Utf8String::get_int_after_last_space () const
 {
   std::regex  re (R"((.*) (\d+))");
   std::smatch match;
-  if (std::regex_match (str, match, re))
+  if (std::regex_match (str_, match, re))
     {
-      return { std::stoi (match[2]), match[1] };
+      return {
+        std::stoi (match[2]), from_utf8_encoded_string (match[1].str ())
+      };
     }
-  return { -1, "" };
+  return { -1, {} };
 }
 
-/**
- * TODO
- * Sorts the given string array and removes
- * duplicates.
- *
- * @param str_arr A NULL-terminated array of strings.
- *
- * @return A NULL-terminated array with the string
- *   addresses of the source array.
- */
-char **
-array_sort_and_remove_duplicates (char ** str_arr)
-{
-  /* TODO */
-  z_return_val_if_reached (nullptr);
-}
-
-std::string
-symbolify (const std::string &in)
+Utf8String
+Utf8String::symbolify () const
 {
   std::string out;
-  out.reserve (in.length ());
+  out.reserve (str_.length ());
 
-  for (const auto &c : in)
+  for (const auto &c : str_)
     {
       if (std::isalnum (static_cast<unsigned char> (c)))
         {
@@ -203,60 +182,27 @@ symbolify (const std::string &in)
         }
     }
 
-  return out;
+  return from_utf8_encoded_string (out);
 }
 
-/**
- * Returns whether the string is NULL or empty.
- */
-bool
-is_empty (const char * str)
-{
-  return !str || strlen (str) == 0;
-}
-
-std::string
-expand_env_vars (const std::string &src)
+Utf8String
+Utf8String::expand_env_vars () const
 {
   std::regex  env_var_regex (R"(\$\{([^}]+)\})");
-  std::string result = src;
+  auto        result = *this;
   std::smatch match;
 
-  while (std::regex_search (result, match, env_var_regex))
+  while (std::regex_search (result.str (), match, env_var_regex))
     {
       std::string  env_var = match[1].str ();
       const char * env_val = std::getenv (env_var.c_str ());
       std::string  replacement = env_val ? env_val : "";
-      result = replace (result, match[0].str (), replacement);
+      result = result.replace (
+        Utf8String::from_utf8_encoded_string (match[0].str ()),
+        Utf8String::from_utf8_encoded_string (replacement));
     }
 
   return result;
-}
-
-std::string
-join (const std::vector<std::string> &strings, std::string_view delimiter)
-{
-  return fmt::format ("{}", fmt::join (strings, delimiter));
-}
-
-QString
-qurl_to_path_qstring (const QUrl &url)
-{
-  return url.toLocalFile ();
-}
-
-}; // namespace zrythm::utils::string
-
-std::string
-juce_string_to_std_string (const juce::String &str)
-{
-  return str.toStdString ();
-}
-
-QString
-juce_string_to_qstring (const juce::String &str)
-{
-  return std_string_to_qstring (juce_string_to_std_string (str));
 }
 
 }; // namespace zrythm::utils

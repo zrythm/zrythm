@@ -53,11 +53,11 @@ public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
-    return utils::std_string_to_qstring (name_); \
+    return name_.to_qstring (); \
   } \
   void setName (const QString &name) \
   { \
-    const auto name_str = utils::qstring_to_std_string (name); \
+    const auto name_str = utils::Utf8String::from_qstring (name); \
     if (name_ == name_str) \
       return; \
 \
@@ -95,11 +95,11 @@ public: \
 \
   QString getComment () const \
   { \
-    return utils::std_string_to_qstring (comment_); \
+    return comment_.to_qstring (); \
   } \
   void setComment (const QString &comment) \
   { \
-    const auto comment_str = utils::qstring_to_std_string (comment); \
+    const auto comment_str = utils::Utf8String::from_qstring (comment); \
     if (comment_ == comment_str) \
       return; \
 \
@@ -252,11 +252,11 @@ public: \
   Q_PROPERTY (QString icon READ getIcon WRITE setIcon NOTIFY iconChanged) \
   QString getIcon () const \
   { \
-    return utils::std_string_to_qstring (icon_name_); \
+    return icon_name_.to_qstring (); \
   } \
   void setIcon (const QString &icon) \
   { \
-    const auto icon_str = utils::qstring_to_std_string (icon); \
+    const auto icon_str = utils::Utf8String::from_qstring (icon); \
     if (icon_name_ == icon_str) \
       { \
         return; \
@@ -731,7 +731,7 @@ public:
           }
       }
 
-    assert (region->get_name ().length () > 0);
+    assert (!region->get_name ().empty ());
     z_debug (
       "inserting region '{}' to track '{}' at lane {} (idx {})",
       region->get_name (), self.name_, lane_pos, idx);
@@ -845,7 +845,7 @@ public:
     });
   }
 
-  std::string get_node_name () const override { return get_name (); }
+  utils::Utf8String get_node_name () const override { return get_name (); }
 
   /**
    * Removes all objects recursively from the track.
@@ -891,17 +891,17 @@ public:
   /**
    * Getter for the track name.
    */
-  std::string get_name () const { return name_; };
+  utils::Utf8String get_name () const { return name_; };
 
   /**
    * Internally called by set_name_with_action().
    */
-  bool set_name_with_action_full (const std::string &name);
+  bool set_name_with_action_full (const utils::Utf8String &name);
 
   /**
    * Setter to be used by the UI to create an undoable action.
    */
-  void set_name_with_action (const std::string &name);
+  void set_name_with_action (const utils::Utf8String &name);
 
   /**
    * Setter for the track name.
@@ -910,14 +910,16 @@ public:
    *
    * Must only be called from the GTK thread.
    */
-  void
-  set_name (const Tracklist &tracklist, const std::string &name, bool pub_events);
+  void set_name (
+    const Tracklist         &tracklist,
+    const utils::Utf8String &name,
+    bool                     pub_events);
 
   /**
    * Returns a unique name for a new track based on the given name.
    */
-  std::string
-  get_unique_name (const Tracklist &tracklist, const std::string &name);
+  utils::Utf8String
+  get_unique_name (const Tracklist &tracklist, const utils::Utf8String &name);
 
   /**
    * Updates the frames/ticks of each position in each child of the track
@@ -1016,14 +1018,14 @@ public:
       }
   }
 
-  std::string get_comment () const { return comment_; }
+  utils::Utf8String get_comment () const { return comment_; }
 
   /**
    * @param undoable Create an undable action.
    */
-  void set_comment (const std::string &comment, bool undoable);
+  void set_comment (const utils::Utf8String &comment, bool undoable);
 
-  void set_comment_with_action (const std::string &comment)
+  void set_comment_with_action (const utils::Utf8String &comment)
   {
     set_comment (comment, true);
   }
@@ -1036,7 +1038,8 @@ public:
   /**
    * Sets the track icon.
    */
-  void set_icon (const std::string &icon_name, bool undoable, bool fire_events);
+  void
+  set_icon (const utils::Utf8String &icon_name, bool undoable, bool fire_events);
 
   /**
    * Appends all channel ports and optionally plugin ports to the array.
@@ -1265,7 +1268,7 @@ public:
    * @param pos
    */
   [[nodiscard]] static TrackUniquePtrVariant
-  create_track (Type type, const std::string &name, int pos);
+  create_track (Type type, const utils::Utf8String &name, int pos);
 
   // GMenu * generate_edit_context_menu (int num_selected);
 
@@ -1274,7 +1277,7 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  std::string
+  utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   virtual bool get_muted () const { return false; }
@@ -1365,10 +1368,10 @@ protected:
   Type type_ = {};
 
   /** Track name, used in channel too. */
-  std::string name_;
+  utils::Utf8String name_;
 
   /** Icon name of the track. */
-  std::string icon_name_;
+  utils::Utf8String icon_name_;
 
   /**
    * Track Widget created dynamically.
@@ -1412,7 +1415,7 @@ protected:
   PortType out_signal_type_ = {};
 
   /** User comments. */
-  std::string comment_;
+  utils::Utf8String comment_;
 
 public:
   /**

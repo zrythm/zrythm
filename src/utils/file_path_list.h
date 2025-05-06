@@ -31,6 +31,7 @@ public:
   Q_INVOKABLE void clear ();
 
   void                 add_path (const fs::path &path);
+  void                 add_path (const Utf8String &path);
   void                 add_paths (const juce::FileSearchPath &paths);
   juce::FileSearchPath get_as_juce_file_search_path () const;
 

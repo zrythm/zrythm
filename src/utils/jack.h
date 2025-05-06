@@ -7,6 +7,8 @@
 
 #ifdef HAVE_JACK
 
+#  include "utils/string.h"
+
 #  include <QString>
 
 #  include "weakjack/weak_libjack.h"
@@ -16,10 +18,10 @@ using namespace Qt::StringLiterals;
 namespace zrythm::utils::jack
 {
 
-static inline std::string
+static inline utils::Utf8String
 get_error_message (jack_status_t status)
 {
-  return utils::qstring_to_std_string ([status] () -> QString {
+  return utils::Utf8String::from_qstring ([status] () -> QString {
     if (status & JackFailure)
       {
         return

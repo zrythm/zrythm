@@ -26,7 +26,7 @@ class CVPort final
   QML_ELEMENT
 public:
   CVPort ();
-  CVPort (std::string label, PortFlow flow);
+  CVPort (utils::Utf8String label, PortFlow flow);
 
   bool has_sound () const override;
 

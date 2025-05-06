@@ -120,8 +120,8 @@ class PluginDescriptor final
   Q_PROPERTY (QString name READ getName CONSTANT FINAL)
 
 public:
-  static ZPluginCategory string_to_category (const std::string &str);
-  static std::string     category_to_string (ZPluginCategory category);
+  static ZPluginCategory   string_to_category (const utils::Utf8String &str);
+  static utils::Utf8String category_to_string (ZPluginCategory category);
 
   // static void free_closure (void * data, GClosure * closure);
 
@@ -167,26 +167,23 @@ public:
   /**
    * Gets an appropriate icon name.
    */
-  std::string get_icon_name () const;
+  utils::Utf8String get_icon_name () const;
 
   // GMenuModel * generate_context_menu () const;
 
-  [[nodiscard]] QString getName () const
-  {
-    return utils::std_string_to_qstring (name_);
-  }
+  [[nodiscard]] QString getName () const { return name_.to_qstring (); }
 
   void
   init_after_cloning (const PluginDescriptor &other, ObjectCloneType clone_type)
     override;
 
 public:
-  std::string     author_;
-  std::string     name_;
-  std::string     website_;
-  ZPluginCategory category_ = ZPluginCategory::NONE;
+  utils::Utf8String author_;
+  utils::Utf8String name_;
+  utils::Utf8String website_;
+  ZPluginCategory   category_ = ZPluginCategory::NONE;
   /** Lv2 plugin subcategory. */
-  std::string category_str_;
+  utils::Utf8String category_str_;
   /** Number of audio input ports. */
   int num_audio_ins_ = 0;
   /** Number of MIDI input ports. */
@@ -210,7 +207,7 @@ public:
   /** Path, if not an Lv2Plugin which uses URIs. */
   fs::path path_;
   /** Lv2Plugin URI. */
-  std::string uri_;
+  utils::Utf8String uri_;
 
   /** Used for VST. */
   int64_t unique_id_ = 0;

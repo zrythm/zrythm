@@ -148,7 +148,8 @@ Exporter::export_audio (Settings &info)
       throw ZrythmException ("Unsupported export format");
     }
 
-  juce::File outputFile (info.file_uri_);
+  auto outputFile =
+    utils::Utf8String::from_path (info.file_uri_).to_juce_file ();
   if (!outputFile.getParentDirectory ().createDirectory ())
     {
       throw ZrythmException ("Failed to create parent directories");
@@ -161,11 +162,13 @@ Exporter::export_audio (Settings &info)
     }
 
   juce::StringPairArray metadata;
-  metadata.set ("title", info.title_.empty () ? PROJECT->title_ : info.title_);
+  metadata.set (
+    "title",
+    (info.title_.empty () ? PROJECT->title_ : info.title_).to_juce_string ());
   if (!info.artist_.empty ())
-    metadata.set ("artist", info.artist_);
+    metadata.set ("artist", info.artist_.to_juce_string ());
   if (!info.genre_.empty ())
-    metadata.set ("genre", info.genre_);
+    metadata.set ("genre", info.genre_.to_juce_string ());
   metadata.set ("software", PROGRAM_NAME);
 
   juce::AudioFormatWriter * writer = format->createWriterFor (
@@ -285,7 +288,7 @@ Exporter::export_audio (Settings &info)
 
       progress_info_->update_progress (
         (TRANSPORT->playhead_pos_->getTicks () - start_pos.ticks_) / total_ticks,
-        "");
+        {});
     }
   while (
     TRANSPORT->playhead_pos_->getTicks () < end_pos.ticks_
@@ -301,7 +304,7 @@ Exporter::export_audio (Settings &info)
 
   /* TODO silence output */
 
-  progress_info_->update_progress (1.0, "");
+  progress_info_->update_progress (1.0, {});
 
   /* set jack freewheeling mode and transport type */
 #ifdef HAVE_JACK
@@ -336,12 +339,13 @@ Exporter::export_audio (Settings &info)
       if (clipped)
         {
           float      max_db = utils::math::amp_to_dbfs (clip_amp);
-          const auto warn_str = format_str (
-            utils::qstring_to_std_string (QObject::tr (
-              "The exported audio contains segments louder than 0 dB (max detected %.1f dB).")),
+          const auto warn_str = format_qstr (
+            QObject::tr (
+              "The exported audio contains segments louder than 0 dB (max detected %.1f dB)."),
             max_db);
           progress_info_->mark_completed (
-            ProgressInfo::CompletionType::HAS_WARNING, warn_str);
+            ProgressInfo::CompletionType::HAS_WARNING,
+            utils::Utf8String::from_qstring (warn_str));
         }
       else
         {
@@ -421,14 +425,14 @@ Exporter::export_midi (Settings &info)
 
 void
 Exporter::Settings::set_bounce_defaults (
-  Format             format,
-  const std::string &filepath,
-  const std::string &bounce_name)
+  Format                   format,
+  const fs::path          &filepath,
+  const utils::Utf8String &bounce_name)
 {
   format_ = format;
-  artist_ = "";
-  title_ = "";
-  genre_ = "";
+  artist_ = {};
+  title_ = {};
+  genre_ = {};
   depth_ = BitDepth::BIT_DEPTH_16;
   time_range_ = TimeRange::Custom;
   switch (mode_)
@@ -484,9 +488,10 @@ Exporter::Settings::set_bounce_defaults (
         std::make_optional (QString::fromUtf8 ("zrythm_bounce_XXXXXX")));
       tmp_dir->setAutoRemove (false);
       const char * ext = format_get_ext (format_);
-      std::string  filename = bounce_name + "." + ext;
+      auto         filename =
+        bounce_name + u8"." + utils::Utf8String::from_utf8_encoded_string (ext);
       file_uri_ =
-        (utils::io::qstring_to_fs_path (tmp_dir->path ()) / filename).string ();
+        utils::Utf8String::from_qstring (tmp_dir->path ()).to_path () / filename;
     }
 }
 
@@ -603,19 +608,18 @@ Exporter::post_export ()
 void
 Exporter::Settings::print () const
 {
-  const std::string time_range_type_str =
-    Exporter_TimeRange_to_string (time_range_);
-  std::string time_range;
+  const auto time_range_type_str = Exporter_TimeRange_to_string (time_range_);
+  utils::Utf8String time_range;
   if (time_range_ == Exporter::TimeRange::Custom)
     {
-      time_range = fmt::format (
+      time_range = utils::Utf8String::from_utf8_encoded_string (fmt::format (
         "Custom: {} ~ {}",
         custom_start_.to_string (
           P_TEMPO_TRACK->get_beats_per_bar (), TRANSPORT->sixteenths_per_beat_,
           AUDIO_ENGINE->frames_per_tick_),
         custom_end_.to_string (
           P_TEMPO_TRACK->get_beats_per_bar (), TRANSPORT->sixteenths_per_beat_,
-          AUDIO_ENGINE->frames_per_tick_));
+          AUDIO_ENGINE->frames_per_tick_)));
     }
   else
     {
@@ -717,7 +721,7 @@ Exporter::export_to_file ()
         {
           progress_info_->mark_completed (
             ProgressInfo::CompletionType::HAS_ERROR,
-            utils::qstring_to_std_string (QObject::tr ("Invalid time range")));
+            utils::Utf8String::from_qstring (QObject::tr ("Invalid time range")));
           z_warning ("invalid time range");
           return; // FIXME: throw exception?
         }

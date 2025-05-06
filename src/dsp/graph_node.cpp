@@ -46,14 +46,14 @@ GraphNode::GraphNode (
 std::string
 GraphNode::print_node_to_str () const
 {
-  std::string name = processable_.get_node_name ();
+  std::string name = processable_.get_node_name ().str ();
   std::string str1 = fmt::format (
     "node [({}) {}] refcount: {} | terminal: {} | initial: {} | playback latency: {}",
     node_id_, name, refcount_.load (), terminal_, initial_, playback_latency_);
   std::string str2;
   for (const auto dest : childnodes_)
     {
-      name = dest.get ().processable_.get_node_name ();
+      name = dest.get ().processable_.get_node_name ().str ();
       str2 =
         fmt::format ("{} (dest [({}) {}])", str1, dest.get ().node_id_, name);
       str1 = str2;

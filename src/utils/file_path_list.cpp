@@ -20,10 +20,10 @@ QStringList
 FilePathList::getPaths () const
 {
   QStringList paths;
-  for (const auto &path : paths_)
-    {
-      paths.push_back (utils::std_string_to_qstring (path.string ()));
-    }
+  std::ranges::transform (
+    paths_, std::back_inserter (paths), [] (const fs::path &path) {
+      return utils::Utf8String::from_path (path).to_qstring ();
+    });
   return paths;
 }
 
@@ -37,16 +37,16 @@ void
 FilePathList::setPaths (const QStringList &paths)
 {
   clear ();
-  for (const auto &path : paths)
-    {
-      add_path (utils::io::qstring_to_fs_path (path));
-    }
+  std::ranges::transform (
+    paths, std::back_inserter (paths_), [] (const QString &path) {
+      return utils::Utf8String::from_qstring (path).to_path ();
+    });
 }
 
 Q_INVOKABLE void
 FilePathList::addPath (const QString &path)
 {
-  add_path (utils::io::qstring_to_fs_path (path));
+  add_path (utils::Utf8String::from_qstring (path));
 }
 
 void
@@ -56,11 +56,17 @@ FilePathList::add_path (const fs::path &path)
 }
 
 void
+FilePathList::add_path (const Utf8String &path)
+{
+  paths_.push_back (path.to_path ());
+}
+
+void
 FilePathList::add_paths (const juce::FileSearchPath &paths)
 {
   for (const int i : std::views::iota (0, paths.getNumPaths ()))
     {
-      add_path (utils::io::juce_string_to_fs_path (paths.getRawString (i)));
+      add_path (utils::Utf8String::from_juce_string (paths.getRawString (i)));
     }
 }
 
@@ -70,7 +76,7 @@ FilePathList::get_as_juce_file_search_path () const
   juce::FileSearchPath path;
   for (const auto &p : paths_)
     {
-      path.add (juce::File (p.string ()));
+      path.add (juce::File (Utf8String::from_path (p).to_juce_string ()));
     }
   return path;
 }

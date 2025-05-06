@@ -273,7 +273,7 @@ public:
   std::optional<PortIdentifier::PortUuid> target_port_;
 
   /** String, when changing a string. */
-  std::string str_;
+  utils::Utf8String str_;
 
   /** Position, when changing a Position. */
   Position pos_;
@@ -576,12 +576,12 @@ public:
    * @brief Wrapper for audio functions.
    */
   EditArrangerSelectionsAction (
-    Region::Uuid               region_id,
-    const dsp::Position       &sel_start,
-    const dsp::Position       &sel_end,
-    AudioFunctionType          audio_func_type,
-    AudioFunctionOpts          opts,
-    std::optional<std::string> uri);
+    Region::Uuid                     region_id,
+    const dsp::Position             &sel_start,
+    const dsp::Position             &sel_end,
+    AudioFunctionType                audio_func_type,
+    AudioFunctionOpts                opts,
+    std::optional<utils::Utf8String> uri);
 };
 
 class ArrangerSelectionsAction::AutomationFillAction

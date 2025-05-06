@@ -47,7 +47,7 @@ target_sources(zrythm_dsp_lib
 )
 
 set_target_properties(zrythm_dsp_lib PROPERTIES
-  UNITY_BUILD ON
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
 
 target_precompile_headers(zrythm_dsp_lib PUBLIC

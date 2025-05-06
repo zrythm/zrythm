@@ -58,7 +58,7 @@ public:
   /**
    * Returns a string identifier for the type.
    */
-  static std::string type_to_string_id (Type type);
+  static utils::Utf8String type_to_string_id (Type type);
 
   /**
    * Returns a string identifier for the type.

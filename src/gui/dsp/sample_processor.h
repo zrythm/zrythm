@@ -74,7 +74,10 @@ public:
    */
   void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  std::string get_node_name () const override { return "Sample Processor"; }
+  utils::Utf8String get_node_name () const override
+  {
+    return u8"Sample Processor";
+  }
 
   nframes_t get_single_playback_latency () const override { return 0; }
 

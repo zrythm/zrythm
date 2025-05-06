@@ -18,7 +18,7 @@ ZrythmException::ZrythmException (const std::string &message)
 }
 
 ZrythmException::ZrythmException (const QString &message)
-    : ZrythmException (utils::qstring_to_std_string (message))
+    : ZrythmException (utils::Utf8String::from_qstring (message).str ())
 {
 }
 

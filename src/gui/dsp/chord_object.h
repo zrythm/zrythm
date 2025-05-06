@@ -79,7 +79,7 @@ public:
 
   ArrangerObjectPtrVariant insert_clone_to_project () const override;
 
-  std::string gen_human_friendly_name () const override;
+  utils::Utf8String gen_human_friendly_name () const override;
 
   friend bool operator== (const ChordObject &lhs, const ChordObject &rhs);
 

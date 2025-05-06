@@ -141,12 +141,12 @@ public:
   static std::array<ChordType, 12>
   get_triad_types_for_type (Type type, bool ascending);
 
-  static std::string type_to_string (Type type);
+  static utils::Utf8String type_to_string (Type type);
 
   /**
    * Prints the MusicalScale to a string.
    */
-  std::string to_string () const;
+  utils::Utf8String to_string () const;
 
   /**
    * Returns if all of the chord's notes are in the scale.
