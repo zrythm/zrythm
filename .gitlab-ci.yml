@@ -190,6 +190,7 @@ clazy-check:
       -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
       -DZRYTHM_UNITY_BUILD=OFF
       -DZRYTHM_DISABLE_CCACHE=ON
+    - cmake --build build_clazy --parallel
 
 clang-format-check:
   extends: .gnu-linux-template
