@@ -75,7 +75,7 @@ stages:
     # use /MP1 to disable parallel builds if the compiler messages are hard to read
     CL: "/MP" # prepended to the cl command
     _CL_: "" # appended to the cl command
-    _LINK_: /verbose
+    _LINK_: ""
   before_script:
     - *windows-enable-vs-env
     - *windows-activate-venv
@@ -269,7 +269,7 @@ build:windows:
     - job: configure:windows
       artifacts: true
   script:
-    - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor" 2>&1 | findstr /V "Discarded"
+    - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
     - if (! $?) { exit 1 }  # Check if the previous command failed
     # copy DLLs and resources needed at runtime for tests, etc.
     - '& "C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe" --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets "${env:BUILDDIR}-${env:BUILD_TYPE}\${env:BUILD_TYPE}\zrythm.exe"'
