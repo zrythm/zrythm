@@ -117,6 +117,8 @@ add_subdirectory(qm-dsp)
 add_subdirectory(rubberband)
 
 set(WITH_OPENMP OFF)
+set(BUILD_TESTS OFF)
+set(BUILD_LSR_TESTS OFF)
 add_subdirectory(soxr)
 add_library(zrythm::soxr ALIAS soxr)
 

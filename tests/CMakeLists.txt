@@ -20,7 +20,11 @@ function(zrythm_discover_tests TARGET_NAME)
     )
   endif()
 
-  gtest_discover_tests(${TARGET_NAME})
+  if(WIN32)
+    gtest_add_tests(TARGET ${TARGET_NAME})
+  else()
+    gtest_discover_tests(${TARGET_NAME})
+  endif()
 endfunction()
 
 set(test_lv2_plugins)
