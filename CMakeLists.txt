@@ -658,49 +658,14 @@ set(zrythm_link_args)
 
 # Sanitizers
 add_library(_sanitizers_lib INTERFACE)
-if(compiler_gnulike)
-  set(sanitizers)
-  if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
-    list(APPEND sanitizers "address")
-    target_compile_options(
-      _sanitizers_lib INTERFACE
-      -fsanitize-address-use-after-scope
-    )
-  endif()
-  if(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
-    list(APPEND sanitizers "undefined")
-  endif()
-  if(ZRYTHM_ENABLE_SANITIZER_THREAD)
-    if("address" IN_LIST sanitizers OR "undefined" IN_LIST sanitizers)
-      message(FATAL_ERROR "Address/undefined sanitizers cannot be enabled together with thread sanitizer")
-    endif()
-    list(APPEND sanitizers "thread")
-  endif()
-  if(ZRYTHM_ENABLE_SANITIZER_MEMORY)
-    list(APPEND sanitizers "memory")
-    target_compile_options(
-      _sanitizers_lib INTERFACE
-      -fsanitize-memory-track-origins
-    )
-  endif()
-
-  list(JOIN sanitizers "," sanitizers_list)
-  if(sanitizers_list)
-    if(NOT "${sanitizers_list}" STREQUAL "")
-      target_compile_options(
-        _sanitizers_lib INTERFACE
-        -fsanitize=${sanitizers_list}
-        # -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/tools/san-blacklist.txt
-        -fno-omit-frame-pointer
-        -fno-optimize-sibling-calls
-      )
-      target_link_options(
-        _sanitizers_lib INTERFACE
-        -fsanitize=${sanitizers_list}
-      )
-    endif()
-  endif()
-endif()
+include(Sanitizers)
+enable_sanitizers(_sanitizers_lib
+  ZRYTHM_ENABLE_SANITIZER_ADDRESS
+  ZRYTHM_ENABLE_SANITIZER_LEAK
+  ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR
+  ZRYTHM_ENABLE_SANITIZER_THREAD
+  ZRYTHM_ENABLE_SANITIZER_MEMORY
+)
 add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 
 ##############################################################
