@@ -93,7 +93,8 @@ ILogger::init_sinks (bool for_testing)
   // Create a rotating file sink with a maximum size of 10 MB and 5 rotated
   // files
   auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt> (
-    get_log_file_path (), 1024 * 1024 * 10, 5);
+    utils::Utf8String::from_path (get_log_file_path ()).str (),
+    1024 * 1024 * 10, 5);
   set_pattern (file_sink, true);
 
 #if 0
