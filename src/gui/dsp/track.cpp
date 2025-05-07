@@ -39,6 +39,8 @@
 
 using namespace zrythm;
 
+Track::~Track () = default;
+
 Track::Track (
   Type                    type,
   PortType                in_signal_type,

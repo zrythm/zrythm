@@ -83,7 +83,7 @@ class ArrangerObject
     : public zrythm::utils::serialization::ISerializable<ArrangerObject>,
       public utils::UuidIdentifiableObject<ArrangerObject>
 {
-  Q_DISABLE_COPY_MOVE (ArrangerObject)
+  Z_DISABLE_COPY_MOVE (ArrangerObject)
 
 public:
   using SelectionStatusGetter = std::function<bool (const Uuid &)>;

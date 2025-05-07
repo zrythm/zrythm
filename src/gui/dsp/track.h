@@ -525,7 +525,7 @@ public:
   }
 
 public:
-  ~Track () override = default;
+  ~Track () override;
   Q_DISABLE_COPY_MOVE (Track)
 
   [[nodiscard]] static TrackUniquePtrVariant
