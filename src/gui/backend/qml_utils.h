@@ -14,4 +14,5 @@ class QmlUtils : public QObject
 
 public:
   Q_INVOKABLE static QString toPathString (const QUrl &url);
+  Q_INVOKABLE static QUrl    localFileToQUrl (const QString &path);
 };

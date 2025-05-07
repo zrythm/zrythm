@@ -380,11 +380,12 @@ get_next_available_filepath (const fs::path &filepath)
     {
       if (fs::is_directory (new_path))
         {
-          new_path = fs::path (fmt::format ("{} ({})", filepath, i++));
+          new_path = utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("{} ({})", filepath, i++));
         }
       else
         {
-          new_path = fs::path (
+          new_path = utils::Utf8String::from_utf8_encoded_string (
             fmt::format ("{} ({}).{}", file_without_ext, i++, file_ext));
         }
     }

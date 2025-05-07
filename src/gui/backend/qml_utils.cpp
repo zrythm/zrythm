@@ -9,3 +9,9 @@ QmlUtils::toPathString (const QUrl &url)
 {
   return utils::Utf8String::from_qurl (url).to_qstring ();
 }
+
+QUrl
+QmlUtils::localFileToQUrl (const QString &path)
+{
+  return QUrl::fromLocalFile (path);
+}

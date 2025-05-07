@@ -363,7 +363,8 @@ Exporter::export_midi (Settings &info)
 
   auto [start_pos, end_pos] = info.get_export_time_range ();
 
-  if ((mf = midiFileCreate (info.file_uri_.c_str (), TRUE)))
+  if ((mf = midiFileCreate (
+         utils::Utf8String::from_path (info.file_uri_).c_str (), TRUE)))
     {
       /* Write tempo information out to track 1 */
       midiSongAddTempo (mf, 1, (int) P_TEMPO_TRACK->get_current_bpm ());

@@ -15,7 +15,7 @@ T.Menu {
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
     margins: 0
     overlap: 1
-    popupType: Popup.Native // auto-fallbacks to Window, then normal
+    popupType: Qt.platform.os === "windows" ? Popup.Window : Popup.Native // auto-fallbacks to Window, then normal (Native crashes on Windows)
 
     delegate: MenuItem {
     }

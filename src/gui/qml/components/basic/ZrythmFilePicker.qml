@@ -20,7 +20,7 @@ RowLayout {
     Binding {
         target: control
         property: "initialUrl"
-        value: Qt.resolvedUrl("file://" + control.initialPath)
+        value: QmlUtils.localFileToQUrl(control.initialPath)
         when: control.initialPath !== undefined
     }
 
