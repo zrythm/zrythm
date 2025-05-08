@@ -3023,27 +3023,27 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Add Audio FX Track</source>
-        <translation>Добавить Аудио Трек</translation>
+        <translation>Добавить аудио FX трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
         <source>Add MIDI FX Track</source>
-        <translation>Добавить _MIDI Трек</translation>
+        <translation>Добавить MIDI FX трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
         <source>Add Audio Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить групповой аудио-трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="67"/>
         <source>Add MIDI Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить MIDI групповой-трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="75"/>
         <source>Add Folder Track</source>
-        <translation type="unfinished">Добавить Трек-Папку</translation>
+        <translation>Добавить трек-папку</translation>
     </message>
 </context>
 <context>
@@ -3051,12 +3051,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Undo</source>
-        <translation type="unfinished">Отменить (Undo)</translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Redo</source>
-        <translation type="unfinished">Повторить (Redo)</translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="18"/>
