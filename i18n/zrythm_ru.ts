@@ -77,7 +77,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
         <source>Midi CC Bindings</source>
-        <translation>Привязки Midi CC</translation>
+        <translation>Привязки MIDI CC</translation>
     </message>
 </context>
 <context>
@@ -3023,12 +3023,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Add Audio FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить Аудио Трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
         <source>Add MIDI FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить _MIDI Трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
@@ -3062,7 +3062,7 @@ Bit depth: {} bits</source>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="18"/>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="30"/>
         <source>%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="19"/>
