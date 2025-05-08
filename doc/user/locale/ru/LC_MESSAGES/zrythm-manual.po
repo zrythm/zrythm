@@ -38,7 +38,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-08-12 11:45+0000\n"
+"PO-Revision-Date: 2024-12-24 07:49+0000\n"
 "Last-Translator: firekonstantin <firekonstantin@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ru/>\n"
@@ -48,7 +48,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -113,7 +113,7 @@ msgstr "Установленные файлы"
 
 #: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
-msgstr "При установке Zrythm устанавливает следующие файлы по умолчанию"
+msgstr "При установке Zrythm устанавливает следующие файлы по умолчанию."
 
 #: ../../appendix/files-and-directories.rst:21
 msgid "Desktop Entry"
@@ -127,10 +127,15 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
+"`Совместимый с freedesktop конфигурационный файл <https://"
+"specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-"
+"latest.html>`_ который описывает, как должна запускаться та или иная "
+"программа, как она отображается в меню и т.д. Обычно он устанавливается в "
+":file:`/usr/share/applications/zrythm.desktop`."
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
-msgstr ""
+msgstr "Схема GLib"
 
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
@@ -138,6 +143,9 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"Этот файл содержит схему для пользовательских конфигураций. Обычно он "
+"устанавливается в :file:`/usr/share/glib-2.0/schemas/"
+"org.zrythm.Zrythm.gschema.xml`."
 
 #: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
@@ -148,6 +156,8 @@ msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"Используется окружением рабочего стола. Обычно устанавливается в :file:`/usr/"
+"share/icons/hicolor/scalable/apps/zrythm.svg`."
 
 #: ../../appendix/files-and-directories.rst:41
 msgid "Localization Files"
@@ -185,16 +195,21 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"Если ваш дистрибутив не содержит пакетов для необходимых шрифтов, шрифты, "
+"требуемые Zrythm, обычно устанавливаются в каталог :file:`/usr/share/fonts/"
+"zrythm`."
 
 #: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
-msgstr ""
+msgstr "Таблицы стилей GtkSourceView"
 
 #: ../../appendix/files-and-directories.rst:62
 msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
+"Zrythm установит таблицы стилей CSS для использования некоторыми виджетами "
+"ввода текста в :file:`/usr/share/zrythm/sourceview-styles`."
 
 #: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
@@ -205,6 +220,8 @@ msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
+"Темы по умолчанию (включая темы иконок) обычно устанавливаются в папку "
+":file:`/usr/share/zrythm/themes`."
 
 #: ../../appendix/files-and-directories.rst:72
 msgid ""
@@ -212,24 +229,28 @@ msgid ""
 "files in the :ref:`Zrythm user path <configuration/preferences:Zrythm User "
 "Path>`. See :ref:`theming/intro:Theming` for details."
 msgstr ""
+"Zrythm предоставляет возможность переопределить некоторые из этих файлов с "
+"помощью файлов, заданных пользователем в :ref:`Zrythm user path <"
+"configuration/preferences:Zrythm User Path>`. Подробности смотрите в :ref:`"
+"theming/intro:Theming`."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
-msgstr ""
+msgstr "Пользовательские файлы"
 
 #: ../../appendix/files-and-directories.rst:80
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "Кэшированные дескрипторы плагинов"
 
 #: ../../appendix/files-and-directories.rst:81
-#, fuzzy
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`."
 msgstr ""
-"Кэш дескрипторов плагинов для более быстрого сканирования. Находится в :file:"
-"`cached_plugin_descriptors.yaml` внутри :term:`Zrythm user path`."
+"Кэш дескрипторов плагинов для более быстрого сканирования. Находится в "
+":file:`cached_plugin_descriptors.yaml` внутри :ref:`Zrythm user path <"
+"configuration/preferences:Zrythm User Path>`."
 
 #: ../../appendix/files-and-directories.rst:87
 msgid "Plugin Collections"
@@ -241,6 +262,9 @@ msgid ""
 "`plugin_collections.yaml` under the :ref:`Zrythm user path <configuration/"
 "preferences:Zrythm User Path>`."
 msgstr ""
+"Этот файл содержит коллекции ваших плагинов. Он находится в "
+":file:`plugin_collections.yaml` внутри :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`."
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Plugin Settings"
@@ -255,6 +279,12 @@ msgid ""
 "whether to use a :ref:`generic UI <plugins-files/plugins/plugin-window:"
 "Generic UIs>`."
 msgstr ""
+"Расположенная в :file:`plugin-settings.yaml` внутри :ref:`Zrythm user path <"
+"configuration/preferences:Zrythm User Path>`, это коллекция настроек для "
+"каждого плагина, например, открывать ли плагин с помощью :term:`Carla`, "
+"какой :ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` "
+"использовать, и использовать ли :ref:`generic UI <plugins-files/plugins/"
+"plugin-window:Generic UIs>`."
 
 #: ../../appendix/files-and-directories.rst:103
 msgid ""
@@ -266,7 +296,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:107
 msgid "Log File"
-msgstr ""
+msgstr "Файл логов"
 
 #: ../../appendix/files-and-directories.rst:108
 msgid ""
@@ -278,7 +308,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:114
 msgid "This log file is useful for debugging crashes and other problems."
-msgstr ""
+msgstr "Этот файл логов полезен для отладки сбоев и прочих проблем."
 
 #: ../../appendix/gnu-free-documentation-license.rst:7
 msgid "GNU Free Documentation License"
