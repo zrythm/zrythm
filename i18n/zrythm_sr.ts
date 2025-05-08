@@ -2082,42 +2082,42 @@ Use the newer backup?</source>
     <name>src/project.c:864</name>
     <message>
         <source>Backup found</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервна копија пронађена</translation>
     </message>
 </context>
 <context>
     <name>src/project.c:903</name>
     <message>
         <source>Failed to get existing yaml</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспело добијање постојећег YAML</translation>
     </message>
 </context>
 <context>
     <name>src/project.c:929</name>
     <message>
         <source>Failed to deserialize project YAML</source>
-        <translation>Неуспешно десериализовање пројектног YAML-а</translation>
+        <translation>Неуспешно десериjализовање пројектног YAML-а</translation>
     </message>
 </context>
 <context>
     <name>src/project.c:942</name>
     <message>
         <source>This project was created with an unsupported version of %s (%s). It may not work correctly.</source>
-        <translation type="unfinished"></translation>
+        <translation>Овај пројекат је креиран са неподржаном верзијом %s (%s). Можда неће радити исправно.</translation>
     </message>
 </context>
 <context>
     <name>src/project.c:958</name>
     <message>
         <source>Failed to load project. Please check the logs for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспело учитавање пројекта. Молимо вас да проверите логове за више информација.</translation>
     </message>
 </context>
 <context>
     <name>src/project.c:1180</name>
     <message>
         <source>Failed to load project. Will create a new one instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспело учитавање пројекта. Уместо тога, биће креиран нови.</translation>
     </message>
 </context>
 <context>
@@ -2191,7 +2191,7 @@ Use the newer backup?</source>
     <name>src/zrythm_app.c:214</name>
     <message>
         <source>Check for Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Провера ажурирања</translation>
     </message>
 </context>
 <context>
@@ -2209,21 +2209,21 @@ Your current version is %s</source>
     <name>src/zrythm_app.c:359</name>
     <message>
         <source>Setting up main window</source>
-        <translation type="unfinished"></translation>
+        <translation>Подешавање главног прозора</translation>
     </message>
 </context>
 <context>
     <name>src/zrythm_app.c:401</name>
     <message>
         <source>Loading project</source>
-        <translation type="unfinished"></translation>
+        <translation>Учитавање пројекта</translation>
     </message>
 </context>
 <context>
     <name>src/zrythm_app.c:415</name>
     <message>
         <source>No project has been selected. %s will now close.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ниједан пројекат није одабран. %s ће сада бити затворен.</translation>
     </message>
 </context>
 <context>
@@ -2265,14 +2265,14 @@ Your current version is %s</source>
     <name>src/zrythm_app.c:474</name>
     <message>
         <source>Scanning plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Скенирање додатака</translation>
     </message>
 </context>
 <context>
     <name>src/zrythm_app.c:594</name>
     <message>
         <source>Waiting for project</source>
-        <translation type="unfinished"></translation>
+        <translation>Чекање на пројекат</translation>
     </message>
 </context>
 <context>
@@ -2329,7 +2329,7 @@ Support this project at https://liberapay.com/Zrythm
     <name>src/zrythm_app.c:1378</name>
     <message>
         <source>File %s not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Фајл %s није пронађен.</translation>
     </message>
 </context>
 <context>
@@ -2344,14 +2344,15 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <source>Project failed to decompress: %s
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Пројекат није успео да се декомпресује: %s
+</translation>
     </message>
 </context>
 <context>
     <name>src/zrythm_app.c:1469</name>
     <message>
         <source>Unknown operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Непозната операција</translation>
     </message>
 </context>
 <context>
@@ -2374,14 +2375,14 @@ Support this project at https://liberapay.com/Zrythm
     <name>src/zrythm_app.c:1636</name>
     <message>
         <source>Convert ZPJ-FILE to YAML</source>
-        <translation type="unfinished"></translation>
+        <translation>Претвори ZPJ-фајл у YAML</translation>
     </message>
 </context>
 <context>
     <name>src/zrythm_app.c:1639</name>
     <message>
         <source>Convert YAML-PROJECT-FILE to the .zpj format</source>
-        <translation type="unfinished"></translation>
+        <translation>Претвори YAML-пројекатни фајл у формат.zpj</translation>
     </message>
 </context>
 <context>
@@ -2457,7 +2458,13 @@ Support this project at https://liberapay.com/Zrythm
 
 Please report issues to %s
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Примери:
+  --zpj-to-yaml a.zpj &gt; b.yaml        Претвори a.zpj у YAML и сачувај у b.yaml
+  --gen-project a.scm -o myproject    Генериши myproject из a.scm
+  -p --pretty                         Претвори тренутна подешавања у лепши изглед
+
+Молимо вас пријавите проблеме на %s
+</translation>
     </message>
 </context>
 <context>
@@ -2611,32 +2618,32 @@ Please report issues to %s
     <name>src/actions/actions.c:593</name>
     <message>
         <source>Creating new projects is disabled. Please restart %s to start a new project</source>
-        <translation type="unfinished"></translation>
+        <translation>Креирање нових пројеката је онемогућено. Поново покрените %s да бисте започели нови пројекат</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:601</name>
     <message>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>Креирајте нови пројекат</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:103</name>
     <message>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>Креирајте нови пројекат</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:603</name>
     <message>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Да</translation>
     </message>
     <message>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Не</translation>
     </message>
 </context>
 <context>
@@ -2650,21 +2657,21 @@ Please report issues to %s
     <name>src/actions/actions.c:642</name>
     <message>
         <source>Loading is disabled in the trial version</source>
-        <translation type="unfinished"></translation>
+        <translation>Учитавање је онемогућено у пробној верзији</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:671</name>
     <message>
         <source>Saving is disabled in the trial version</source>
-        <translation type="unfinished"></translation>
+        <translation>Сачување је онемогућено у пробној верзији</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:696</name>
     <message>
         <source>Saving is disabled in the trial version</source>
-        <translation type="unfinished"></translation>
+        <translation>Сачување је онемогућено у пробној верзији</translation>
     </message>
 </context>
 <context>
@@ -2693,7 +2700,7 @@ Please report issues to %s
     </message>
     <message>
         <source>_Open</source>
-        <translation type="unfinished"></translation>
+        <translation>_Отвори</translation>
     </message>
 </context>
 <context>
@@ -3037,14 +3044,14 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:1564</name>
     <message>
         <source>Failed to create audio FX track</source>
-        <translation type="unfinished"></translation>
+        <translation>Нисам успео да креирам аудио FX траку</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1576</name>
     <message>
         <source>Failed to create MIDI FX track</source>
-        <translation type="unfinished"></translation>
+        <translation>Нисам успео да креирам MIDI FX траку</translation>
     </message>
 </context>
 <context>
@@ -3079,7 +3086,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:1612</name>
     <message>
         <source>Failed to create folder track</source>
-        <translation type="unfinished"></translation>
+        <translation>Нисам успео да креирам фасциклу траку</translation>
     </message>
 </context>
 <context>
@@ -3366,14 +3373,14 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:3098</name>
     <message>
         <source>Are you sure you want to remove this chord preset pack?</source>
-        <translation type="unfinished"></translation>
+        <translation>Да ли сте сигурни да желите да уклоните овај акордни пресет пакет?</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:3136</name>
     <message>
         <source>Are you sure you want to remove this chord preset pack?</source>
-        <translation type="unfinished"></translation>
+        <translation>Да ли сте сигурни да желите да уклоните овај акордни пресет пакет?</translation>
     </message>
 </context>
 <context>
@@ -3408,7 +3415,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:3238</name>
     <message>
         <source>The selection contains uninstantiated plugins. Deleting them will not be undoable and the undo history will be cleared. Continue with deletion?</source>
-        <translation type="unfinished"></translation>
+        <translation>Избор садржи неинстанциране додатке. Брисање их неће бити опозиво и историја ће бити очишћена. Наставите са брисањем?</translation>
     </message>
 </context>
 <context>
@@ -3436,7 +3443,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:3352</name>
     <message>
         <source>Are you sure you want to remove this bookmark?</source>
-        <translation type="unfinished"></translation>
+        <translation>Да ли сте сигурни да желите да уклоните овај обележивач?</translation>
     </message>
 </context>
 <context>
@@ -3457,7 +3464,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:3599</name>
     <message>
         <source>This collection contains %d plugins. Are you sure you want to remove it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ова колекција садржи %d додатака. Да ли сте сигурни да желите да је уклоните?</translation>
     </message>
 </context>
 <context>
@@ -3569,14 +3576,14 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:954</name>
     <message>
         <source>Failed to clone track: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Нисам успео да клонирам траку: %s</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:1402</name>
     <message>
         <source>Failed to clone track: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Нисам успео да клонирам траку: %s</translation>
     </message>
 </context>
 <context>
@@ -3737,14 +3744,14 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:2033</name>
     <message>
         <source>Change Fader</source>
-        <translation type="unfinished"></translation>
+        <translation>Промена фејдера</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2035</name>
     <message>
         <source>Change Pan</source>
-        <translation type="unfinished"></translation>
+        <translation>Промена Пана</translation>
     </message>
 </context>
 <context>
@@ -3947,21 +3954,21 @@ Please select a format to export as</source>
     <name>src/actions/transport_action.c:251</name>
     <message>
         <source>Change BPM</source>
-        <translation type="unfinished"></translation>
+        <translation>Промена БПМ-а</translation>
     </message>
 </context>
 <context>
     <name>src/actions/transport_action.c:253</name>
     <message>
         <source>Beats per bar change</source>
-        <translation type="unfinished"></translation>
+        <translation>Промена броја удараца по такту</translation>
     </message>
 </context>
 <context>
     <name>src/actions/transport_action.c:255</name>
     <message>
         <source>Beat unit change</source>
-        <translation type="unfinished"></translation>
+        <translation>Промена јединице удараца</translation>
     </message>
 </context>
 <context>
@@ -4094,7 +4101,7 @@ Please select a format to export as</source>
     <name>src/actions/arranger_selections.c:2945</name>
     <message>
         <source>Resize arranger selections</source>
-        <translation type="unfinished"></translation>
+        <translation>Промени величину аранжерских селекција</translation>
     </message>
 </context>
 <context>
@@ -4325,7 +4332,7 @@ Please select a format to export as</source>
     <name>src/utils/ui.c:800</name>
     <message>
         <source>Sine (Equal Power)</source>
-        <translation type="unfinished"></translation>
+        <translation>Синус (једнака снага)</translation>
     </message>
 </context>
 <context>
@@ -4354,7 +4361,9 @@ Please select a format to export as</source>
         <source>%s
 ---Backtrace---
 %s</source>
-        <translation type="unfinished"></translation>
+        <translation>%s
+---Бектрејс---
+%s</translation>
     </message>
 </context>
 <context>
@@ -4592,28 +4601,28 @@ Please select a format to export as</source>
     <name>src/utils/dialogs.c:40</name>
     <message>
         <source>Open Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Отвори пројекат</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_toolbar.c:42</name>
     <message>
         <source>Open Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Отвори постојећи пројекат</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_assistant.c:461</name>
     <message>
         <source>_Open</source>
-        <translation type="unfinished"></translation>
+        <translation>_Отвори</translation>
     </message>
 </context>
 <context>
     <name>src/utils/dialogs.c:59</name>
     <message>
         <source>Overwrite Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Пиши преко додатка</translation>
     </message>
 </context>
 <context>
@@ -4659,7 +4668,7 @@ Please select a format to export as</source>
     <name>src/utils/dialogs.c:82</name>
     <message>
         <source>Error instantiating plugin. Please see log for details.</source>
-        <translation type="unfinished"></translation>
+        <translation>Грешка при инсталирању додатка. Молимо вас погледајте лог за детаље.</translation>
     </message>
 </context>
 <context>
@@ -4675,7 +4684,7 @@ Please select a format to export as</source>
     <name>src/audio/supported_file.c:269</name>
     <message>
         <source>Failed opening file</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспешно отварање датотеке</translation>
     </message>
 </context>
 <context>
@@ -5594,7 +5603,7 @@ Bit depth: %d bits</source>
     <name>src/audio/tracklist.c:1317</name>
     <message>
         <source>This MIDI file contains no data</source>
-        <translation type="unfinished"></translation>
+        <translation>Овај МИДИ фајл не садржи податке</translation>
     </message>
 </context>
 <context>
@@ -5629,7 +5638,7 @@ Bit depth: %d bits</source>
     <name>src/audio/tracklist.c:1424</name>
     <message>
         <source>Failed to create arranger objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспешно креирање аранжерских објеката</translation>
     </message>
 </context>
 <context>
@@ -5769,7 +5778,7 @@ Bit depth: %d bits</source>
     <name>src/gui/backend/event_manager.c:1144</name>
     <message>
         <source>Trial limit has been reached. %s will now go silent</source>
-        <translation type="unfinished"></translation>
+        <translation>Пробно ограничење је достигнуто. %s ће од сада бити у тишини</translation>
     </message>
 </context>
 <context>
@@ -5962,7 +5971,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/live_waveform.c:285</name>
     <message>
         <source>Live waveform indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Индикатор живе форме таласа</translation>
     </message>
 </context>
 <context>
@@ -5983,7 +5992,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/automatable_selector_popover.c:335</name>
     <message>
         <source>MIDI Ch%d</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI Ch%d</translation>
     </message>
 </context>
 <context>
@@ -6011,35 +6020,35 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/automatable_selector_popover.c:355</name>
     <message>
         <source>[Instrument] %s</source>
-        <translation type="unfinished"></translation>
+        <translation>[Инструмент] %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/automatable_selector_popover.c:370</name>
     <message>
         <source>[MIDI FX %d] %s</source>
-        <translation type="unfinished"></translation>
+        <translation>[MIDI FX %d] %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/automatable_selector_popover.c:383</name>
     <message>
         <source>[Insert %d] %s</source>
-        <translation type="unfinished"></translation>
+        <translation>[Уметни %d] %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/automatable_selector_popover.c:399</name>
     <message>
         <source>[Modulator %d] %s</source>
-        <translation type="unfinished"></translation>
+        <translation>[Модулатор %d] %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/inspector_track.c:135</name>
     <message>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Коментар</translation>
     </message>
 </context>
 <context>
@@ -6081,7 +6090,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/snap_grid.c:104</name>
     <message>
         <source>Snap/Grid options</source>
-        <translation type="unfinished"></translation>
+        <translation>Опције Snap/Grid</translation>
     </message>
 </context>
 <context>
@@ -6144,7 +6153,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/cc_bindings_tree.c:165</name>
     <message>
         <source>Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Уређај</translation>
     </message>
 </context>
 <context>
@@ -6200,21 +6209,21 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/main_window.c:133</name>
     <message>
         <source>Unsaved changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Несачуване промене</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/main_window.c:135</name>
     <message>
         <source>_Save &amp; Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>_Сачувај и напусти</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/main_window.c:136</name>
     <message>
         <source>_Quit without saving</source>
-        <translation type="unfinished"></translation>
+        <translation>_Напусти без чувања</translation>
     </message>
 </context>
 <context>
@@ -6222,7 +6231,8 @@ Bit depth: %d bits</source>
     <message>
         <source>The project contains unsaved changes.
 If you quit without saving, unsaved changes will be lost.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пројекат садржи несачуване промене.
+Ако напустите без чувања, несачуване промене ће бити изгубљене.</translation>
     </message>
 </context>
 <context>
@@ -6264,14 +6274,14 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/main_window.c:724</name>
     <message>
         <source>Log viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Прегледач лога</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/main_window.c:725</name>
     <message>
         <source>Scripting interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Скриптни интерфејс</translation>
     </message>
 </context>
 <context>
@@ -6285,7 +6295,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/header.c:88</name>
     <message>
         <source>About %s</source>
-        <translation type="unfinished"></translation>
+        <translation>О %s</translation>
     </message>
 </context>
 <context>
@@ -6341,49 +6351,49 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/help_toolbar.c:39</name>
     <message>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>О Zrythm</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/help_toolbar.c:40</name>
     <message>
         <source>Chat (Matrix)</source>
-        <translation type="unfinished"></translation>
+        <translation>Разговор (Matrix)</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/help_toolbar.c:41</name>
     <message>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Приручник</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/help_toolbar.c:42</name>
     <message>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Пречице на тастатури</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:46</name>
     <message>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Пречице на тастатури</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/help_toolbar.c:43</name>
     <message>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Донирајте</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/help_toolbar.c:44</name>
     <message>
         <source>Report a Bug</source>
-        <translation type="unfinished"></translation>
+        <translation>Пријави баг</translation>
     </message>
 </context>
 <context>
@@ -6397,28 +6407,28 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/route_target_selector.c:68</name>
     <message>
         <source>Cannot be routed</source>
-        <translation type="unfinished"></translation>
+        <translation>Не може се рутирати</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/route_target_selector.c:74</name>
     <message>
         <source>Routed to engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Рутирано до мотора</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/route_target_selector.c:81</name>
     <message>
         <source>Select channel to route signal to</source>
-        <translation type="unfinished"></translation>
+        <translation>Изаберите канал за рутирање сигнала до</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/route_target_selector.c:158</name>
     <message>
         <source>Stereo Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Стерео излаз</translation>
     </message>
 </context>
 <context>
@@ -7265,28 +7275,28 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/track.c:699</name>
     <message>
         <source>_Duplicate Track</source>
-        <translation type="unfinished"></translation>
+        <translation>_Дуплирај траку</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/channel.c:625</name>
     <message>
         <source>_Duplicate Track</source>
-        <translation type="unfinished"></translation>
+        <translation>_Дуплирај траку</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:701</name>
     <message>
         <source>_Duplicate Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>_Дуплирај траке</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/channel.c:627</name>
     <message>
         <source>_Duplicate Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>_Дуплирај траке</translation>
     </message>
 </context>
 <context>
@@ -7420,21 +7430,21 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/track.c:769</name>
     <message>
         <source>Unsolo</source>
-        <translation type="unfinished"></translation>
+        <translation>Уклони соло</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/channel.c:667</name>
     <message>
         <source>Unsolo</source>
-        <translation type="unfinished"></translation>
+        <translation>Уклони соло</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:835</name>
     <message>
         <source>Direct out</source>
-        <translation type="unfinished"></translation>
+        <translation>Директан излаз</translation>
     </message>
 </context>
 <context>
@@ -7501,14 +7511,14 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/track.c:863</name>
     <message>
         <source>Change color...</source>
-        <translation type="unfinished"></translation>
+        <translation>Промена боје...</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/channel.c:726</name>
     <message>
         <source>Change color...</source>
-        <translation type="unfinished"></translation>
+        <translation>Промена боје...</translation>
     </message>
 </context>
 <context>
@@ -7991,7 +8001,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/arranger.c:4372</name>
     <message>
         <source>Failed to link or move selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспех у повезивању или премештању селекције</translation>
     </message>
 </context>
 <context>
@@ -8026,35 +8036,35 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/route_target_selector_popover.c:202</name>
     <message>
         <source>No output selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Излаз није изабран</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/route_target_selector_popover.c:379</name>
     <message>
         <source>No output selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ниједан излаз није изабран</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/route_target_selector_popover.c:215</name>
     <message>
         <source>Routing to %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Рутирање до %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/route_target_selector_popover.c:294</name>
     <message>
         <source>Failed to change direct out</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспех у промени директног излаза</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/route_target_selector_popover.c:309</name>
     <message>
         <source>Failed to remove direct out</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспех у уклањању директног излаза</translation>
     </message>
 </context>
 <context>
@@ -8096,7 +8106,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/track_visibility_tree.c:129</name>
     <message>
         <source>Visible</source>
-        <translation type="unfinished"></translation>
+        <translation>Видљиво</translation>
     </message>
 </context>
 <context>
@@ -8117,14 +8127,14 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/view_toolbar.c:23</name>
     <message>
         <source>Toggle Status Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Пребаци статусну траку</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/view_toolbar.c:24</name>
     <message>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Пун екран</translation>
     </message>
 </context>
 <context>
@@ -8138,35 +8148,35 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/project_assistant.c:143</name>
     <message>
         <source>_Open Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>_Отвори изабрано</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/project_assistant.ui:105</name>
     <message>
         <source>_Open Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>_Отвори изабрано</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_assistant.c:149</name>
     <message>
         <source>_Create</source>
-        <translation type="unfinished"></translation>
+        <translation>_Креирај</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_assistant.c:445</name>
     <message>
         <source>No project selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ниједан пројекат није изабран</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_assistant.c:460</name>
     <message>
         <source>Select Project File</source>
-        <translation type="unfinished"></translation>
+        <translation>Изаберите фајл пројекта</translation>
     </message>
 </context>
 <context>
@@ -8222,28 +8232,28 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/project_toolbar.c:39</name>
     <message>
         <source>New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Нови пројекат</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_toolbar.c:41</name>
     <message>
         <source>Save As</source>
-        <translation type="unfinished"></translation>
+        <translation>Сачувај као</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_toolbar.c:43</name>
     <message>
         <source>Export As</source>
-        <translation type="unfinished"></translation>
+        <translation>Извоз као</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/project_toolbar.c:44</name>
     <message>
         <source>Export Graph</source>
-        <translation type="unfinished"></translation>
+        <translation>Извоз графикона</translation>
     </message>
 </context>
 <context>
@@ -8471,56 +8481,56 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/home_toolbar.c:134</name>
     <message>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Исеци</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/home_toolbar.c:135</name>
     <message>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Копирај</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/home_toolbar.c:136</name>
     <message>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Налепи</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/home_toolbar.c:139</name>
     <message>
         <source>Clear selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Очисти селекцију</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/home_toolbar.c:140</name>
     <message>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Изабери све</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:180</name>
     <message>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Изабери све</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/home_toolbar.c:141</name>
     <message>
         <source>Loop selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Петља селекције</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:306</name>
     <message>
         <source>Loop selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Избор петље</translation>
     </message>
 </context>
 <context>
@@ -8647,14 +8657,14 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/track_input_expander.c:414</name>
     <message>
         <source>Channel %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Канал %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track_input_expander.c:426</name>
     <message>
         <source>No channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Нема канала</translation>
     </message>
 </context>
 <context>
@@ -9039,7 +9049,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/file_browser.c:109</name>
     <message>
         <source>Failed to create track for file &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспех у креирању траке за фајл &apos;%s&apos;</translation>
     </message>
 </context>
 <context>
@@ -9403,7 +9413,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/timeline_arranger.c:1067</name>
     <message>
         <source>Region Functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Функције региона</translation>
     </message>
 </context>
 <context>
@@ -9466,7 +9476,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/bot_bar.c:167</name>
     <message>
         <source>Transport display</source>
-        <translation type="unfinished"></translation>
+        <translation>Приказ транспорта</translation>
     </message>
 </context>
 <context>
@@ -9515,14 +9525,14 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/bot_bar.c:335</name>
     <message>
         <source>New buffer size</source>
-        <translation type="unfinished"></translation>
+        <translation>Нова величина бафера</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/bot_bar.c:347</name>
     <message>
         <source>Failed reading value</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспех у читању вредности</translation>
     </message>
 </context>
 <context>
@@ -9645,7 +9655,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/left_dock_edge.c:199</name>
     <message>
         <source>Track Visibility</source>
-        <translation type="unfinished"></translation>
+        <translation>Видљивост траке</translation>
     </message>
 </context>
 <context>
@@ -9827,21 +9837,21 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/project_progress_dialog.c:63</name>
     <message>
         <source>Saving...</source>
-        <translation type="unfinished"></translation>
+        <translation>Чување...</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/project_progress_dialog.c:66</name>
     <message>
         <source>Saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Сачуван</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/project_progress_dialog.c:69</name>
     <message>
         <source>Project Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Напредак пројекта</translation>
     </message>
 </context>
 <context>
@@ -9855,7 +9865,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/port_info.c:137</name>
     <message>
         <source>Port info</source>
-        <translation type="unfinished"></translation>
+        <translation>Информације о порту</translation>
     </message>
 </context>
 <context>
@@ -10054,7 +10064,8 @@ If you quit without saving, unsaved changes will be lost.</source>
     <message>
         <source>
 %d more files...</source>
-        <translation type="unfinished"></translation>
+        <translation>
+још %d фајла...</translation>
     </message>
 </context>
 <context>
@@ -10131,7 +10142,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/create_project_dialog.c:94</name>
     <message>
         <source>Create New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Креирајте нови пројекат</translation>
     </message>
 </context>
 <context>
@@ -10152,7 +10163,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/export_progress_dialog.c:76</name>
     <message>
         <source>Exporting...</source>
-        <translation type="unfinished"></translation>
+        <translation>Извоз...</translation>
     </message>
 </context>
 <context>
@@ -10180,7 +10191,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/export_progress_dialog.c:91</name>
     <message>
         <source>Opens the containing directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Отвара директоријум који садржи</translation>
     </message>
 </context>
 <context>
@@ -10194,7 +10205,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/first_run_dialog.c:169</name>
     <message>
         <source>Setup Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Постављање Zrythm</translation>
     </message>
 </context>
 <context>
@@ -10271,21 +10282,21 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:164</name>
     <message>
         <source>error: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>грешка: %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:169</name>
     <message>
         <source>Done</source>
-        <translation type="unfinished"></translation>
+        <translation>Готово</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:346</name>
     <message>
         <source>Done</source>
-        <translation type="unfinished"></translation>
+        <translation>Готово</translation>
     </message>
 </context>
 <context>
@@ -10341,7 +10352,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:347</name>
     <message>
         <source>Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Неуспех</translation>
     </message>
 </context>
 <context>
@@ -10362,14 +10373,14 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:414</name>
     <message>
         <source>Send via Sourcehut</source>
-        <translation type="unfinished"></translation>
+        <translation>Пошаљи преко Sourcehut</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:420</name>
     <message>
         <source>Please copy the template below in a %snew issue%s.</source>
-        <translation type="unfinished"></translation>
+        <translation>Молимо вас копирајте шаблон испод у %snew issue%s.</translation>
     </message>
 </context>
 <context>
@@ -10394,70 +10405,70 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:589</name>
     <message>
         <source>What did you do?</source>
-        <translation type="unfinished"></translation>
+        <translation>Шта сте урадили?</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:592</name>
     <message>
         <source>Please enter as many details as possible (such as steps to reproduce)</source>
-        <translation type="unfinished"></translation>
+        <translation>Молимо вас унесите што више детаља (као што су кораци за репродукцију)</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:610</name>
     <message>
         <source>Error details</source>
-        <translation type="unfinished"></translation>
+        <translation>Детаљи о грешци</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:617</name>
     <message>
         <source>Backtrace</source>
-        <translation type="unfinished"></translation>
+        <translation>Бектрејс</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:633</name>
     <message>
         <source>Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Лог</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:649</name>
     <message>
         <source>System info</source>
-        <translation type="unfinished"></translation>
+        <translation>Информације о систему</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:664</name>
     <message>
         <source>_Close</source>
-        <translation type="unfinished"></translation>
+        <translation>_Затвори</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:665</name>
     <message>
         <source>Submit on _SourceHut</source>
-        <translation type="unfinished"></translation>
+        <translation>Предај на _SourceHut</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:666</name>
     <message>
         <source>Send via _email (publicly visible)</source>
-        <translation type="unfinished"></translation>
+        <translation>Пошаљи преко _имејла (јавно видљиво)</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:667</name>
     <message>
         <source>Preview and send _automatically (privately)</source>
-        <translation type="unfinished"></translation>
+        <translation>Преглед и пошаљи _аутоматски (приватно)</translation>
     </message>
 </context>
 <context>
@@ -10485,7 +10496,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/arranger_object_info.c:106</name>
     <message>
         <source>Arranger object info</source>
-        <translation type="unfinished"></translation>
+        <translation>Информације о објекту аранжера</translation>
     </message>
 </context>
 <context>
@@ -10527,7 +10538,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/string_entry_dialog.c:81</name>
     <message>
         <source>Please enter a value</source>
-        <translation type="unfinished"></translation>
+        <translation>Молимо вас унесите вредност</translation>
     </message>
 </context>
 <context>
@@ -10818,14 +10829,14 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/plugins/plugin.c:1035</name>
     <message>
         <source> - bridge: %s</source>
-        <translation type="unfinished"></translation>
+        <translation> - мост: %s</translation>
     </message>
 </context>
 <context>
     <name>src/plugins/plugin.c:1043</name>
     <message>
         <source>instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>инструмент</translation>
     </message>
 </context>
 <context>
@@ -11218,21 +11229,21 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/chord_preset_pack_manager.c:160</name>
     <message>
         <source>Together</source>
-        <translation type="unfinished"></translation>
+        <translation>Заједно</translation>
     </message>
 </context>
 <context>
     <name>src/settings/chord_preset_pack_manager.c:172</name>
     <message>
         <source>GG</source>
-        <translation type="unfinished"></translation>
+        <translation>GG</translation>
     </message>
 </context>
 <context>
     <name>src/settings/chord_preset_pack_manager.c:187</name>
     <message>
         <source>Daijiken</source>
-        <translation type="unfinished"></translation>
+        <translation>Дајикен</translation>
     </message>
 </context>
 <context>
@@ -11246,7 +11257,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/chord_preset_pack_manager.c:205</name>
     <message>
         <source>Idol 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Идол 1</translation>
     </message>
 </context>
 <context>
@@ -11260,14 +11271,14 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/chord_preset_pack_manager.c:233</name>
     <message>
         <source>Connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Веза</translation>
     </message>
 </context>
 <context>
     <name>src/settings/chord_preset_pack_manager.c:247</name>
     <message>
         <source>Secret Base</source>
-        <translation type="unfinished"></translation>
+        <translation>Тајна база</translation>
     </message>
 </context>
 <context>
@@ -11288,7 +11299,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/chord_preset_pack_manager.c:304</name>
     <message>
         <source>Future</source>
-        <translation type="unfinished"></translation>
+        <translation>Будућност</translation>
     </message>
 </context>
 <context>
@@ -11302,7 +11313,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/chord_preset_pack_manager.c:372</name>
     <message>
         <source>Sajek Valley</source>
-        <translation type="unfinished"></translation>
+        <translation>Долина Сајек</translation>
     </message>
 </context>
 <context>
@@ -11316,28 +11327,28 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/chord_preset_pack_manager.c:391</name>
     <message>
         <source>Overdrive</source>
-        <translation type="unfinished"></translation>
+        <translation>Прекорачење</translation>
     </message>
 </context>
 <context>
     <name>src/settings/chord_preset_pack_manager.c:403</name>
     <message>
         <source>Heart</source>
-        <translation type="unfinished"></translation>
+        <translation>Срце</translation>
     </message>
 </context>
 <context>
     <name>src/settings/chord_preset_pack_manager.c:414</name>
     <message>
         <source>Pray</source>
-        <translation type="unfinished"></translation>
+        <translation>Молити</translation>
     </message>
 </context>
 <context>
     <name>src/settings/chord_preset_pack_manager.c:426</name>
     <message>
         <source>Thank You</source>
-        <translation type="unfinished"></translation>
+        <translation>Хвала вам</translation>
     </message>
 </context>
 <context>
@@ -11395,14 +11406,14 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/settings.c:299</name>
     <message>
         <source>This will reset Zrythm to factory settings. &lt;b&gt;You will lose all your preferences&lt;/b&gt;. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ово ће ресетовати Zrythm на основна подешавања. &lt;b&gt;Изгубићете сва ваша подешавања&lt;/b&gt;. Настави?</translation>
     </message>
 </context>
 <context>
     <name>src/settings/settings.c:305</name>
     <message>
         <source>Reset to Factory Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ресетуј на основна подешавања</translation>
     </message>
 </context>
 <context>
@@ -11434,371 +11445,371 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/chord_selector_window.ui:20</name>
     <message>
         <source>Root Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Основна Нота</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:37</name>
     <message>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:358</name>
     <message>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:38</name>
     <message>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:47</name>
     <message>
         <source>D♭</source>
-        <translation type="unfinished"></translation>
+        <translation>D♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:368</name>
     <message>
         <source>D♭</source>
-        <translation type="unfinished"></translation>
+        <translation>D♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:48</name>
     <message>
         <source>D♭</source>
-        <translation type="unfinished"></translation>
+        <translation>D♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:57</name>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>D</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:378</name>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>D</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:58</name>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>D</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:67</name>
     <message>
         <source>E♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Е♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:388</name>
     <message>
         <source>E♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Е♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:68</name>
     <message>
         <source>E♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Е♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:77</name>
     <message>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>Е</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:398</name>
     <message>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>Е</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:78</name>
     <message>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>Е</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:87</name>
     <message>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>F</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:408</name>
     <message>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>F</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:88</name>
     <message>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>F</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:97</name>
     <message>
         <source>F♯</source>
-        <translation type="unfinished"></translation>
+        <translation>F♯</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:418</name>
     <message>
         <source>F♯</source>
-        <translation type="unfinished"></translation>
+        <translation>F♯</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:98</name>
     <message>
         <source>F♯</source>
-        <translation type="unfinished"></translation>
+        <translation>F♯</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:107</name>
     <message>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:428</name>
     <message>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:108</name>
     <message>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:117</name>
     <message>
         <source>A♭</source>
-        <translation type="unfinished"></translation>
+        <translation>A♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:438</name>
     <message>
         <source>A♭</source>
-        <translation type="unfinished"></translation>
+        <translation>A♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:118</name>
     <message>
         <source>A♭</source>
-        <translation type="unfinished"></translation>
+        <translation>A♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:127</name>
     <message>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:448</name>
     <message>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:128</name>
     <message>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:137</name>
     <message>
         <source>B♭</source>
-        <translation type="unfinished"></translation>
+        <translation>B♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:458</name>
     <message>
         <source>B♭</source>
-        <translation type="unfinished"></translation>
+        <translation>B♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:138</name>
     <message>
         <source>B♭</source>
-        <translation type="unfinished"></translation>
+        <translation>B♭</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:147</name>
     <message>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:468</name>
     <message>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:148</name>
     <message>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:173</name>
     <message>
         <source>maj</source>
-        <translation type="unfinished"></translation>
+        <translation>мај</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:183</name>
     <message>
         <source>min</source>
-        <translation type="unfinished"></translation>
+        <translation>мин</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:193</name>
     <message>
         <source>dim</source>
-        <translation type="unfinished"></translation>
+        <translation>дим</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:203</name>
     <message>
         <source>sus4</source>
-        <translation type="unfinished"></translation>
+        <translation>сус4</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:213</name>
     <message>
         <source>sus2</source>
-        <translation type="unfinished"></translation>
+        <translation>сус2</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:223</name>
     <message>
         <source>aug</source>
-        <translation type="unfinished"></translation>
+        <translation>увећање</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:233</name>
     <message>
         <source>Accent</source>
-        <translation type="unfinished"></translation>
+        <translation>Акцент</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:251</name>
     <message>
         <source>7</source>
-        <translation type="unfinished"></translation>
+        <translation>7</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:261</name>
     <message>
         <source>j7</source>
-        <translation type="unfinished"></translation>
+        <translation>j7</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:341</name>
     <message>
         <source>Bass Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Бас нота</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:494</name>
     <message>
         <source>In scale</source>
-        <translation type="unfinished"></translation>
+        <translation>У скали</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:506</name>
     <message>
         <source>Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Креатор</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:193</name>
     <message>
         <source>Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Креатор</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:599</name>
     <message>
         <source>Diatonic</source>
-        <translation type="unfinished"></translation>
+        <translation>Дијатонски</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:609</name>
     <message>
         <source>TODO keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>TODO тастатура</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:203</name>
     <message>
         <source>TODO keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>TODO тастатура</translation>
     </message>
 </context>
 <context>
@@ -11819,210 +11830,210 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/chord_selector_window.ui:624</name>
     <message>
         <source>TODO</source>
-        <translation type="unfinished"></translation>
+        <translation>TODO</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:629</name>
     <message>
         <source>Circle of Fifths</source>
-        <translation type="unfinished"></translation>
+        <translation>Круг петица</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/file_auditioner_controls.ui:15</name>
     <message>
         <source>Play/Pause</source>
-        <translation type="unfinished"></translation>
+        <translation>Плеј/Пауза</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/file_auditioner_controls.ui:22</name>
     <message>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Заустави</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:38</name>
     <message>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Заустави</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/active_hardware_popover.ui:11</name>
     <message>
         <source>Ports found</source>
-        <translation type="unfinished"></translation>
+        <translation>Портови пронађени</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/active_hardware_popover.ui:48</name>
     <message>
         <source>Rescan</source>
-        <translation type="unfinished"></translation>
+        <translation>Скенирај поново</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/active_hardware_popover.ui:51</name>
     <message>
         <source>Scan again for MIDI controllers</source>
-        <translation type="unfinished"></translation>
+        <translation>Скенирај поново за MIDI контролере</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/main_window.ui:37</name>
     <message>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ леви панел</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/view_toolbar.ui:41</name>
     <message>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ леви панел</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/main_window.ui:51</name>
     <message>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ десни панел</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/view_toolbar.ui:59</name>
     <message>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ десни панел</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/fader_buttons.ui:73</name>
     <message>
         <source>Channel settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Подешавања канала</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/help_toolbar.ui:40</name>
     <message>
         <source>News</source>
-        <translation type="unfinished"></translation>
+        <translation>Вести</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_box.ui:15</name>
     <message>
         <source>Snap to grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Пријањање на решетку</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_box.ui:29</name>
     <message>
         <source>Keep offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Задржи офсет</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_box.ui:43</name>
     <message>
         <source>Snap to events</source>
-        <translation type="unfinished"></translation>
+        <translation>Пријањање на догађаје</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:66</name>
     <message>
         <source>Note length</source>
-        <translation type="unfinished"></translation>
+        <translation>Дужина ноте</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:149</name>
     <message>
         <source>Note length</source>
-        <translation type="unfinished"></translation>
+        <translation>Дужина ноте</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:84</name>
     <message>
         <source>t</source>
-        <translation type="unfinished"></translation>
+        <translation>t</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:167</name>
     <message>
         <source>t</source>
-        <translation type="unfinished"></translation>
+        <translation>t</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:87</name>
     <message>
         <source>Triplet</source>
-        <translation type="unfinished"></translation>
+        <translation>Триплет</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:170</name>
     <message>
         <source>Triplet</source>
-        <translation type="unfinished"></translation>
+        <translation>Триплет</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:97</name>
     <message>
         <source>Dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>Тачкасто</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:180</name>
     <message>
         <source>Dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>Тачкасто</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:118</name>
     <message>
         <source>Adaptive length</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивна дужина</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:201</name>
     <message>
         <source>Adaptive length</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивна дужина</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:130</name>
     <message>
         <source>Snap</source>
-        <translation type="unfinished"></translation>
+        <translation>Пријањање</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:211</name>
     <message>
         <source>Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Веза</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:212</name>
     <message>
         <source>Link length to snap setting</source>
-        <translation type="unfinished"></translation>
+        <translation>Повежи дужину са подешавањем пријањања</translation>
     </message>
 </context>
 <context>
@@ -12036,7 +12047,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/snap_grid_popover.ui:225</name>
     <message>
         <source>Use last created object&apos;s length</source>
-        <translation type="unfinished"></translation>
+        <translation>Употреби дужину последњег креираног објекта</translation>
     </message>
 </context>
 <context>
@@ -12071,490 +12082,490 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/panel_file_browser.ui:29</name>
     <message>
         <source>Bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation>Обележивачи</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:9</name>
     <message>
         <source>Return to cue point on stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Врати се на тачку заустављања</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:26</name>
     <message>
         <source>Play</source>
-        <translation type="unfinished"></translation>
+        <translation>Плеј</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:50</name>
     <message>
         <source>Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Уназад</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:62</name>
     <message>
         <source>Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Напред</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:74</name>
     <message>
         <source>Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Петља</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/event_viewer.ui:9</name>
     <message>
         <source>Event Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Прегледач догађаја</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/plugin_browser.ui:28</name>
     <message>
         <source>Collection</source>
-        <translation type="unfinished"></translation>
+        <translation>Колекција</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/plugin_browser.ui:42</name>
     <message>
         <source>Author</source>
-        <translation type="unfinished"></translation>
+        <translation>Аутор</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/plugin_browser.ui:56</name>
     <message>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Категорија</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/plugin_browser.ui:70</name>
     <message>
         <source>Protocol</source>
-        <translation type="unfinished"></translation>
+        <translation>Протокол</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/plugin_browser.ui:148</name>
     <message>
         <source>Sort alphabetically</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортирај абецедно</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/plugin_browser.ui:154</name>
     <message>
         <source>Sort by recently used</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортирај по недавно коришћеним</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/plugin_browser.ui:160</name>
     <message>
         <source>Sort by most used</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортирај по највише коришћеним</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/header.ui:23</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Пројекат</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:98</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Пројекат</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/header.ui:34</name>
     <message>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Погледај</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/header.ui:45</name>
     <message>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Помоћ</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/header.ui:60</name>
     <message>
         <source>MIDI in activity</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI у активности</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:140</name>
     <message>
         <source>Toggle event viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ прегледача догађаја</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/timeline_toolbar.ui:105</name>
     <message>
         <source>Toggle event viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ прегледача догађаја</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:163</name>
     <message>
         <source>Flip</source>
-        <translation type="unfinished"></translation>
+        <translation>Окретање</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:206</name>
     <message>
         <source>Flip</source>
-        <translation type="unfinished"></translation>
+        <translation>Окретање</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:165</name>
     <message>
         <source>Horizontal</source>
-        <translation type="unfinished"></translation>
+        <translation>Хоризонтално</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:208</name>
     <message>
         <source>Horizontal</source>
-        <translation type="unfinished"></translation>
+        <translation>Хоризонтално</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:171</name>
     <message>
         <source>Vertical</source>
-        <translation type="unfinished"></translation>
+        <translation>Вертикално</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:214</name>
     <message>
         <source>Vertical</source>
-        <translation type="unfinished"></translation>
+        <translation>Вертикално</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/create_project_dialog.ui:21</name>
     <message>
         <source>Parent directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Родитељски директоријум</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/create_project_dialog.ui:58</name>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Откажи</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bounce_dialog.ui:93</name>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Откажи</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bind_cc_dialog.ui:36</name>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Откажи</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/generic_progress_dialog.ui:52</name>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Откажи</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/fishbowl_window.ui:6</name>
     <message>
         <source>Fishbowl</source>
-        <translation type="unfinished"></translation>
+        <translation>Акваријум</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:5</name>
     <message>
         <source>Quantize Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Опције квантизације</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:26</name>
     <message>
         <source>Quantize to</source>
-        <translation type="unfinished"></translation>
+        <translation>Квантизуј до</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:55</name>
     <message>
         <source>Adjust</source>
-        <translation type="unfinished"></translation>
+        <translation>Прилагоди</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:82</name>
     <message>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Износ</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:102</name>
     <message>
         <source>Swing</source>
-        <translation type="unfinished"></translation>
+        <translation>Свинг</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:117</name>
     <message>
         <source>Randomization</source>
-        <translation type="unfinished"></translation>
+        <translation>Рандомизација</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:140</name>
     <message>
         <source>_Quantize</source>
-        <translation type="unfinished"></translation>
+        <translation>_Квантизуј</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:19</name>
     <message>
         <source>Root Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Основни кључ</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:158</name>
     <message>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Скала</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_chord.ui:18</name>
     <message>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Скала</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:175</name>
     <message>
         <source>Scale - Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Скала - Друго</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bot_bar.ui:63</name>
     <message>
         <source>Toggle Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Пребацивање доњег панела</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/view_toolbar.ui:47</name>
     <message>
         <source>Toggle Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ доњег панела</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/project_assistant.ui:5</name>
     <message>
         <source>Select a Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Изабери пројекат</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/project_assistant.ui:32</name>
     <message>
         <source>Open Recent</source>
-        <translation type="unfinished"></translation>
+        <translation>Отвори недавно</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/project_assistant.ui:57</name>
     <message>
         <source>Create New</source>
-        <translation type="unfinished"></translation>
+        <translation>Креирај нови</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/project_assistant.ui:99</name>
     <message>
         <source>Open from _Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Отвори из _Путање</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/modulator_inner.ui:14</name>
     <message>
         <source>Show/hide UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Прикажи/сакриј UI</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:8</name>
     <message>
         <source>Control this automation track is for</source>
-        <translation type="unfinished"></translation>
+        <translation>За коју контролу је ова аутоматизациона трака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:19</name>
     <message>
         <source>Mute automation track</source>
-        <translation type="unfinished"></translation>
+        <translation>Утишај аутоматизациону траку</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:53</name>
     <message>
         <source>RW</source>
-        <translation type="unfinished"></translation>
+        <translation>RW</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:56</name>
     <message>
         <source>Write automation</source>
-        <translation type="unfinished"></translation>
+        <translation>Пишите аутоматизацију</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:67</name>
     <message>
         <source>Read automation</source>
-        <translation type="unfinished"></translation>
+        <translation>Читај аутоматизацију</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:81</name>
     <message>
         <source>0.0</source>
-        <translation type="unfinished"></translation>
+        <translation>0.0</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:95</name>
     <message>
         <source>Remove automation track</source>
-        <translation type="unfinished"></translation>
+        <translation>Уклони аутоматизациону траку</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automation_track.ui:107</name>
     <message>
         <source>Add automation track</source>
-        <translation type="unfinished"></translation>
+        <translation>Додај аутоматизациону траку</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/arranger_object_info_dialog.ui:34</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/arranger_object_info_dialog.ui:67</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/arranger_object_info_dialog.ui:76</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/automatable_selector.ui:44</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:33</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:57</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:123</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:132</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:153</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:174</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:183</name>
     <message>
         <source>label</source>
-        <translation type="unfinished"></translation>
+        <translation>ознака</translation>
     </message>
 </context>
 <context>
@@ -12575,35 +12586,35 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/chord_pad_panel.ui:53</name>
     <message>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Транспонирај</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_chord.ui:29</name>
     <message>
         <source>Enforce scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Примени скалу</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:6</name>
     <message>
         <source>Export As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Извези као...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:39</name>
     <message>
         <source>Metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Метаподаци</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:160</name>
     <message>
         <source>Metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Метаподаци</translation>
     </message>
 </context>
 <context>
@@ -12722,7 +12733,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/export_dialog.ui:67</name>
     <message>
         <source>Bit Depth</source>
-        <translation type="unfinished"></translation>
+        <translation>Дубина бита</translation>
     </message>
 </context>
 <context>
@@ -12743,42 +12754,42 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/export_dialog.ui:84</name>
     <message>
         <source>Filename Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>Образац имена фајла</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:208</name>
     <message>
         <source>Filename Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>Образац имена</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:89</name>
     <message>
         <source>Mixdown or Stems</source>
-        <translation type="unfinished"></translation>
+        <translation>Миксдаун или Стемови</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:213</name>
     <message>
         <source>Mixdown or Stems</source>
-        <translation type="unfinished"></translation>
+        <translation>Миксдаун или Стемови</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:90</name>
     <message>
         <source>Whether to export the selected tracks as a single mixdown file or each track in its own file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Да ли да се изабране траке извезу као један миксдаун фајл или свaka трака у свом фајлу.</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:214</name>
     <message>
         <source>Whether to export the selected tracks as a single mixdown file or each track in its own file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Да ли да се изабране траке извезу као један миксдаун фајл или свaka трака у свом фајлу.</translation>
     </message>
 </context>
 <context>
@@ -12813,105 +12824,105 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/export_dialog.ui:106</name>
     <message>
         <source>Only events inside this time range will be exported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Само догађаји унутар овог временског опсега ће бити извезени.</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:230</name>
     <message>
         <source>Only events inside this time range will be exported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Само догађаји унутар овог временског опсега ће бити извезени.</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:117</name>
     <message>
         <source>Track Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Избор траке</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:241</name>
     <message>
         <source>Track Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Избор траке</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:134</name>
     <message>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Излаз</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:258</name>
     <message>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Излаз</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/export_dialog.ui:196</name>
     <message>
         <source>Export Lanes as Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Извоз стране као траке</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_selector_dialog.ui:10</name>
     <message>
         <source>Select a port...</source>
-        <translation type="unfinished"></translation>
+        <translation>Избор порта...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_selector_dialog.ui:94</name>
     <message>
         <source>Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Порт</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_master.ui:18</name>
     <message>
         <source>region_name</source>
-        <translation type="unfinished"></translation>
+        <translation>име_региона</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_ap.ui:18</name>
     <message>
         <source>region_name</source>
-        <translation type="unfinished"></translation>
+        <translation>име_региона</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_midi.ui:18</name>
     <message>
         <source>region_name</source>
-        <translation type="unfinished"></translation>
+        <translation>име_региона</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_master.ui:19</name>
     <message>
         <source>Enter region name...</source>
-        <translation type="unfinished"></translation>
+        <translation>Унесите име региона...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_ap.ui:19</name>
     <message>
         <source>Enter region name...</source>
-        <translation type="unfinished"></translation>
+        <translation>Унесите име региона...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_midi.ui:19</name>
     <message>
         <source>Enter region name...</source>
-        <translation type="unfinished"></translation>
+        <translation>Унесите име региона...</translation>
     </message>
 </context>
 <context>
@@ -12939,35 +12950,35 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/inspector_master.ui:82</name>
     <message>
         <source>Muted</source>
-        <translation type="unfinished"></translation>
+        <translation>Утишано</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_ap.ui:82</name>
     <message>
         <source>Muted</source>
-        <translation type="unfinished"></translation>
+        <translation>Утишано</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/inspector_midi.ui:82</name>
     <message>
         <source>Muted</source>
-        <translation type="unfinished"></translation>
+        <translation>Утишано</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/view_toolbar.ui:53</name>
     <message>
         <source>Toggle Top Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ горњи панел</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:66</name>
     <message>
         <source>Full designation</source>
-        <translation type="unfinished"></translation>
+        <translation>Пуна ознака</translation>
     </message>
 </context>
 <context>
@@ -12988,14 +12999,14 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/port_info_dialog.ui:141</name>
     <message>
         <source>Default value</source>
-        <translation type="unfinished"></translation>
+        <translation>Подразумевана вредност</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_info_dialog.ui:162</name>
     <message>
         <source>Current value</source>
-        <translation type="unfinished"></translation>
+        <translation>Тренутна вредност</translation>
     </message>
 </context>
 <context>
@@ -13009,7 +13020,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/range_action_buttons.ui:20</name>
     <message>
         <source>Remove range</source>
-        <translation type="unfinished"></translation>
+        <translation>Уклони опсег</translation>
     </message>
 </context>
 <context>
@@ -13030,84 +13041,84 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/timeline_toolbar.ui:78</name>
     <message>
         <source>Merge selections</source>
-        <translation type="unfinished"></translation>
+        <translation>Споји изборе</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/modulator_view.ui:43</name>
     <message>
         <source>No modulators</source>
-        <translation type="unfinished"></translation>
+        <translation>Нема модулација</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/modulator_view.ui:44</name>
     <message>
         <source>Drag and drop a modulator plugin from the plugin browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Повуците и отпустите модулаторски додатак из прегледача додатака</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/log_viewer.ui:17</name>
     <message>
         <source>Log Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Ниво логовања</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/log_viewer.ui:40</name>
     <message>
         <source>Save As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сачувај као...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/midi_editor_space.ui:92</name>
     <message>
         <source>Pitch Wheel</source>
-        <translation type="unfinished"></translation>
+        <translation>Точак висине</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/midi_editor_space.ui:93</name>
     <message>
         <source>Mod Wheel</source>
-        <translation type="unfinished"></translation>
+        <translation>Точак модулације</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/midi_editor_space.ui:94</name>
     <message>
         <source>Aftertouch</source>
-        <translation type="unfinished"></translation>
+        <translation>После додира</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_box.ui:12</name>
     <message>
         <source>Quick Quantize</source>
-        <translation type="unfinished"></translation>
+        <translation>Брза квантизација</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:285</name>
     <message>
         <source>Quick Quantize</source>
-        <translation type="unfinished"></translation>
+        <translation>Брза квантизација</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_box.ui:22</name>
     <message>
         <source>Full Quantize...</source>
-        <translation type="unfinished"></translation>
+        <translation>Пуна квантизација...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bounce_dialog.ui:10</name>
     <message>
         <source>Bounce Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Опције за одскок</translation>
     </message>
 </context>
 <context>
@@ -13128,14 +13139,14 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/bounce_dialog.ui:40</name>
     <message>
         <source>Tail</source>
-        <translation type="unfinished"></translation>
+        <translation>Реп</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bounce_dialog.ui:62</name>
     <message>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>мс</translation>
     </message>
 </context>
 <context>
@@ -13156,91 +13167,91 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/chord_key.ui:7</name>
     <message>
         <source>Amin 7</source>
-        <translation type="unfinished"></translation>
+        <translation>Амин 7</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_pack_browser.ui:28</name>
     <message>
         <source>Packs</source>
-        <translation type="unfinished"></translation>
+        <translation>Пакети</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/playhead_scroll_buttons.ui:13</name>
     <message>
         <source>Scroll when playhead reaches the edge</source>
-        <translation type="unfinished"></translation>
+        <translation>Скролуј када главна трака достигне ивицу</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/playhead_scroll_buttons.ui:26</name>
     <message>
         <source>Follow playhead</source>
-        <translation type="unfinished"></translation>
+        <translation>Прати главну траку</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/clip_editor.ui:9</name>
     <message>
         <source>No clip selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Нема изабраног клипа</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/clip_editor.ui:10</name>
     <message>
         <source>Select a clip from the timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Изаберите клип из временске линије</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bind_cc_dialog.ui:5</name>
     <message>
         <source>Bind MIDI CC</source>
-        <translation type="unfinished"></translation>
+        <translation>Повежите MIDI CC</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bind_cc_dialog.ui:16</name>
     <message>
         <source>Press a key or move a knob on your MIDI device</source>
-        <translation type="unfinished"></translation>
+        <translation>Притисните тастер или померите ручку на вашем MIDI уређају</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/bind_cc_dialog.ui:23</name>
     <message>
         <source>Waiting for input...</source>
-        <translation type="unfinished"></translation>
+        <translation>Чекање на унос...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/clip_editor_inner.ui:29</name>
     <message>
         <source>Select a region...</source>
-        <translation type="unfinished"></translation>
+        <translation>Изаберите регион...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/splash.ui:10</name>
     <message>
         <source>Splash</source>
-        <translation type="unfinished"></translation>
+        <translation>Сплеш</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/splash.ui:27</name>
     <message>
         <source>Initializing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Иницијализација...</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:30</name>
     <message>
         <source>Global Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Глобалне пречице</translation>
     </message>
 </context>
 <context>
@@ -13303,224 +13314,224 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/gtk/help-overlay.ui:53</name>
     <message>
         <source>Toggle Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ./искљ. приказ у пуном екрану</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:60</name>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Напусти</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:70</name>
     <message>
         <source>Panels</source>
-        <translation type="unfinished"></translation>
+        <translation>Панели</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:74</name>
     <message>
         <source>Toggle left panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ леви панел</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:81</name>
     <message>
         <source>Toggle right panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ десни панел</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:88</name>
     <message>
         <source>Toggle bottom panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Укљ/искљ доњи панел</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:110</name>
     <message>
         <source>Open a project</source>
-        <translation type="unfinished"></translation>
+        <translation>Отворите пројекат</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:117</name>
     <message>
         <source>Save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Сними пројекат</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:126</name>
     <message>
         <source>Copy and Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Копирај и налепи</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:131</name>
     <message>
         <source>Copy selection to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Копирај избор у клипборд</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:138</name>
     <message>
         <source>Cut selection to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Исеци избор у клипборд</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:145</name>
     <message>
         <source>Paste from clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Налепи из клипборда</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:154</name>
     <message>
         <source>Undo and Redo</source>
-        <translation type="unfinished"></translation>
+        <translation>Опозови и понови</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:159</name>
     <message>
         <source>Undo previous command</source>
-        <translation type="unfinished"></translation>
+        <translation>Опозови претходну команду</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:166</name>
     <message>
         <source>Redo previous command</source>
-        <translation type="unfinished"></translation>
+        <translation>Понови претходну команду</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:175</name>
     <message>
         <source>Selections</source>
-        <translation type="unfinished"></translation>
+        <translation>Избори</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:187</name>
     <message>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Уклони све изборе</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:199</name>
     <message>
         <source>Editor Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Пречице у едитору</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:203</name>
     <message>
         <source>Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Алат</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:207</name>
     <message>
         <source>Select/Stretch tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Алат за избор/истезање</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:214</name>
     <message>
         <source>Pencil tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Оловка</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:221</name>
     <message>
         <source>Eraser tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Гумица</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:228</name>
     <message>
         <source>Ramp tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Рампа</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:235</name>
     <message>
         <source>Audition tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Аудитивни алат</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:245</name>
     <message>
         <source>Zooming</source>
-        <translation type="unfinished"></translation>
+        <translation>Увећање</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:250</name>
     <message>
         <source>Zoom in</source>
-        <translation type="unfinished"></translation>
+        <translation>Увећај</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:257</name>
     <message>
         <source>Zoom out</source>
-        <translation type="unfinished"></translation>
+        <translation>Умањи</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:264</name>
     <message>
         <source>Best fit</source>
-        <translation type="unfinished"></translation>
+        <translation>Најбоље уклапање</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:271</name>
     <message>
         <source>Original size</source>
-        <translation type="unfinished"></translation>
+        <translation>Оригинална величина</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:280</name>
     <message>
         <source>Quantizing</source>
-        <translation type="unfinished"></translation>
+        <translation>Квантизација</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:292</name>
     <message>
         <source>Quantize</source>
-        <translation type="unfinished"></translation>
+        <translation>Квантизуј</translation>
     </message>
 </context>
 <context>
     <name>resources/gtk/help-overlay.ui:301</name>
     <message>
         <source>Looping</source>
-        <translation type="unfinished"></translation>
+        <translation>Понављање</translation>
     </message>
 </context>
 <context>
@@ -13919,7 +13930,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.gschema.xml:387</name>
     <message>
         <source>The note notation used in the piano roll - MIDI pitch index or notes (C, C#, etc.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Нотација нота која се користи у пијано ролу - MIDI индекс висине или ноте (C, C#, итд.)</translation>
     </message>
 </context>
 <context>
@@ -15550,14 +15561,14 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1100</name>
     <message>
         <source>VST plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>VST додаци</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1101</name>
     <message>
         <source>Plugin search paths.</source>
-        <translation type="unfinished"></translation>
+        <translation>Путање претраге додатака.</translation>
     </message>
 </context>
 <context>
@@ -15571,14 +15582,14 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1106</name>
     <message>
         <source>Instrument search paths.</source>
-        <translation type="unfinished"></translation>
+        <translation>Путање претраге инструмената.</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1111</name>
     <message>
         <source>Instrument search paths.</source>
-        <translation type="unfinished"></translation>
+        <translation>Путање претраге инструмената.</translation>
     </message>
 </context>
 <context>
@@ -15788,7 +15799,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:7</name>
     <message>
         <source>The Zrythm contributors</source>
-        <translation type="unfinished"></translation>
+        <translation>Доприносиоци Zrythm-а</translation>
     </message>
 </context>
 <context>
@@ -15809,7 +15820,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:17</name>
     <message>
         <source>Zrythm can be extended with user scripts written in Scheme or ECMAScript.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm може да се проширује са скриптама корисника написаним у Scheme или ECMAScript.</translation>
     </message>
 </context>
 <context>
@@ -15858,21 +15869,21 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:56</name>
     <message>
         <source>Drop vendored zix and depend on zix library</source>
-        <translation type="unfinished"></translation>
+        <translation>Уклонити додатни zix и ослонити се на zix библиотеку</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:57</name>
     <message>
         <source>Replace some icons with icons from GNOME icon library</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменити неке иконице иконицама из GNOME библиотеке</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:58</name>
     <message>
         <source>Replace about dialog with AdwDialogWindow</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменити дијалог о AdwDialogWindow</translation>
     </message>
 </context>
 <context>
@@ -15907,140 +15918,140 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:62</name>
     <message>
         <source>Meson: fix lilv-related subprojects</source>
-        <translation type="unfinished"></translation>
+        <translation>Meson: исправка подпројеката повезаних са lilv</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:63</name>
     <message>
         <source>Fix bug report format breaking when undo history is empty</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправити формат извештаја о баговима који се кваре када је историја опозива празна</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:64</name>
     <message>
         <source>Fix VST3 support being disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Поправљена подршка за VST3 која је била онемогућена</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:73</name>
     <message>
         <source>Update Chinese (Simplified), Chinese (Traditional), Catalan, French translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Ажурирани кинески (поједностављене), кинески (традиционалне), каталонски, француски преводи</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:74</name>
     <message>
         <source>Meson: use official lilv repository as subproject</source>
-        <translation type="unfinished"></translation>
+        <translation>Meson: користити званично lilv складиште као подпројекат</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:75</name>
     <message>
         <source>User manual: explain automation lane on/off buttons</source>
-        <translation type="unfinished"></translation>
+        <translation>Приручник за кориснике: објашњени дугмићи за укључивање/искључивање аутоматизације</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:79</name>
     <message>
         <source>Fix lag when clicking on plugins in a large project</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправљено заостајање при кликању на додатке у великом пројекту</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:80</name>
     <message>
         <source>Fix long loading time when loading large projects</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправљено дуго време учитавања при учитавању великих пројеката</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:81</name>
     <message>
         <source>Fix crash when zooming in on audio regions</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправити пад програма при зумирању на аудио регионе</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:90</name>
     <message>
         <source>Update French, Chinese (Simplified), Catalan, Turkish, Portuguese (Brazil), Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, Portuguese, Italian, German, Thai translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Ажуриран француски, кинески (поједностављени), каталонски, турски, португалски (Бразил), јапански, пољски, хебрејски, индонежански, украјински, руски, португалски, италијански, немачки, тајландски преводи</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:91</name>
     <message>
         <source>Add better error handling when failing to read project yaml</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати боље обрађивање грешака када не успе читање пројектног YAML</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:92</name>
     <message>
         <source>Ignore GTK critical message (widget size related)</source>
-        <translation type="unfinished"></translation>
+        <translation>Игнорисати GTK критичну поруку (повезану са величином виџета)</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:93</name>
     <message>
         <source>Meson: accept libpanel alpha release version</source>
-        <translation type="unfinished"></translation>
+        <translation>Meson: прихватити libpanel алфа верзију</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:94</name>
     <message>
         <source>Upgrade project format and drop undo history when loading older projects</source>
-        <translation type="unfinished"></translation>
+        <translation>Надоградити формат пројекта и уклонити историју опозива при учитавању старијих пројеката</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:98</name>
     <message>
         <source>Fix error when lowering BPM and saving a project with audio regions</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправити грешку при смањењу BPM и чувању пројекта са аудио регионима</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:99</name>
     <message>
         <source>Fix loading projects with audio regions under different sample rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправљено учитавање пројеката са аудио регијама под различитом фреквенцијом узорковања</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:100</name>
     <message>
         <source>Fix endless stream of bug report dialogs (only allow a single dialog to be open at any time)</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправити бескрајни ток дијалога о извештају о баговима (дозволити само један дијалог да буде отворен у било ком тренутку)</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:101</name>
     <message>
         <source>Fix error when adding an insert to an audio track</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправити грешку при додавању уметка у аудио траку</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:102</name>
     <message>
         <source>Fix error when attempting to change buffer size</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправити грешку при покушају промене величине бафера</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:103</name>
     <message>
         <source>Fix error when attempting to bounce a track while transport is playing</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправити грешку при покушају да се одскочи трака док је транспорт у репродукцији</translation>
     </message>
 </context>
 <context>
@@ -16054,49 +16065,49 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:112</name>
     <message>
         <source>Use libpanel for docking/panels</source>
-        <translation type="unfinished"></translation>
+        <translation>Користити libpanel за доковање/панеле</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:113</name>
     <message>
         <source>Add search entry in file browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Додат унос за претрагу у прегледачу фајлова</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:114</name>
     <message>
         <source>Add AIFF, AU, CAF, W64 export support</source>
-        <translation type="unfinished"></translation>
+        <translation>Додата подршка за извоз AIFF, AU, CAF, W64</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:118</name>
     <message>
         <source>Redesign export dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Редизајниран дијалог за извоз</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:119</name>
     <message>
         <source>Update French, Chinese (Simplified), Catalan translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Ажурирани француски, кинески (поједностављени), каталонски преводи</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:123</name>
     <message>
         <source>Fix error when creating a region in the 3rd automation track</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправљена грешка при стварању регије у 3. траци аутоматизације</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:124</name>
     <message>
         <source>Fix undo history getting cleared when deleting tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Исправљена историја опозива која се чисти при брисању трака</translation>
     </message>
 </context>
 </TS>
