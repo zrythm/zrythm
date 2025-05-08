@@ -77,7 +77,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
         <source>Midi CC Bindings</source>
-        <translation type="unfinished"></translation>
+        <translation>Cartographies CC MIDI</translation>
     </message>
 </context>
 <context>
@@ -161,7 +161,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="342"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fichier</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="345"/>
@@ -176,17 +176,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="355"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Editer</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="364"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Voir</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="367"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Apparence</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="370"/>
@@ -196,7 +196,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="377"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleur du thème</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="380"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="404"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>A&amp;ide</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="407"/>
@@ -239,12 +239,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="72"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Faire un don</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="73"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>%sZrythm dépend des dons et des achats pour soutenir le développement%s. Si vous appréciez le logiciel, pensez à %sfaire un don%s ou %sacheter un installateur%s.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="82"/>
@@ -275,13 +275,13 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="133"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Si vous utilisez Zrythm pour la première fois, nous vous suggérons de parcourir la section &apos;Getting Started&apos; du %s manuel d&apos;utilisation%s.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="189"/>
         <location filename="../src/gui/qml/Greeter.qml" line="226"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuration</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="192"/>
@@ -296,12 +296,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="246"/>
         <source>Continue</source>
-        <translation type="unfinished"></translation>
+        <translation>Poursuivre</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="268"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Progression</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="284"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="297"/>
         <source>Scanning:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Numérisation</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="323"/>
@@ -332,7 +332,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="423"/>
         <source>Create New Project...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Créer un Nouveau Projet</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="427"/>
@@ -347,7 +347,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="450"/>
         <source>Project Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom du projet</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="451"/>
@@ -357,22 +357,22 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="482"/>
         <source>Create Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer un projet</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Creating Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Création de projets</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="512"/>
         <source>Creating Project...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Création de projets</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="539"/>
         <source>Project Loading Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Le chargement du projet a échoué</translation>
     </message>
 </context>
 <context>
@@ -393,17 +393,17 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher/Masquer le panneau de gauche</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher/Masquer le panneau de droite</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menu</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="105"/>
@@ -433,7 +433,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Export Graph…</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Exporter Graphique</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
@@ -803,7 +803,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="115"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fichier</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="118"/>
@@ -818,7 +818,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="128"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Editer</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="131"/>
@@ -828,12 +828,12 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="137"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Voir</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="140"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Apparence</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="143"/>
@@ -843,7 +843,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="151"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleur du thème</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="154"/>
@@ -863,7 +863,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="181"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>A&amp;ide</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="184"/>
@@ -942,7 +942,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
         <source>Unable to read file at {}: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de lire le fichier à %s</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="573"/>
@@ -1032,7 +1032,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="560"/>
         <source>Could not load project: Corrupted project detected (missing FINISHED file at &apos;{}&apos;).</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de charger le projet&#xa0;: projet corrompu détecté (fichier FINISHED manquant à &apos;%s&apos;).</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="649"/>
@@ -1261,7 +1261,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="937"/>
         <source>Create {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="942"/>
@@ -1722,7 +1722,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="137"/>
         <source>Gee</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouah</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="154"/>
@@ -1852,7 +1852,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="244"/>
         <source>{} Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortie</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="324"/>
@@ -1942,7 +1942,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1517"/>
         <source>Failed to create plugin {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de la création du greffon %s</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1538"/>
@@ -2514,7 +2514,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1351"/>
         <source>Cannot set track enabled status</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de paramétrer la piste activée</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1532"/>
@@ -2676,7 +2676,11 @@ Sample rate: {}
 Length: {}s {} ms | BPM: {:.1f}
 Channel(s): {} | Bitrate: {:L}.{} kb/s
 Bit depth: {} bits</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%s&lt;/b&gt;
+Fréquence d&apos;échantillonnage&#xa0;: %d
+Longueur&#xa0;: %ld s %ld ms | BPM&#xa0;: %.1f
+Canal(aux)&#xa0;: %d | Débit&#xa0;: %&apos;d.%d kb/s
+Définition&#xa0;: %d bits</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_descriptor.cpp" line="204"/>
@@ -2706,7 +2710,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="151"/>
         <source>Failed to create an audio region for file %s: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de la création d&apos;une région MIDI pour le fichier %s</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="172"/>
@@ -2943,7 +2947,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="34"/>
         <source>Select tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Outil de sélection</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="49"/>
@@ -3028,17 +3032,17 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
         <source>Add MIDI FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter une piste _MIDI</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
         <source>Add Audio Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter une piste de groupe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="67"/>
         <source>Add MIDI Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter une piste de groupe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="75"/>
@@ -3075,7 +3079,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/ZrythmFilePicker.qml" line="13"/>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>Parcourir</translation>
     </message>
 </context>
 <context>
@@ -17817,7 +17821,7 @@ Pour supporter ce projet : https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="259"/>
         <source>Failed to load project</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de l&apos;ouverture du projet</translation>
     </message>
 </context>
 <context>
@@ -17826,7 +17830,7 @@ Pour supporter ce projet : https://liberapay.com/Zrythm
         <location filename="../src/gui/backend/project_templates_model.cpp" line="23"/>
         <location filename="../src/gui/backend/project_templates_model.cpp" line="59"/>
         <source>Blank Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projet vierge</translation>
     </message>
 </context>
 <context>
@@ -17845,12 +17849,23 @@ Write comments and bugs to {}
 Support this project at {}
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>%s-%s
+%s
+
+%s est fourni SANS AUCUNE GARANTIE&#x202f;!
+
+Ceci est un logiciel libre, et vous pouvez le redistribuer sous
+certaines conditions. Consultez le fichier `COPYING&apos; pour les détails.
+
+Écrivez des commentaires et reportez des bogues à %s
+Pour supporter ce projet&#xa0;: https://liberapay.com/Zrythm
+
+</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="120"/>
         <source>Open project</source>
-        <translation type="unfinished">Ouvrir le projet</translation>
+        <translation>Ouvrir un projet</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="121"/>
@@ -17873,7 +17888,7 @@ Support this project at {}
     <message>
         <location filename="../src/common/plugins/plugin_scanner.cpp" line="262"/>
         <source>Scanning...</source>
-        <translation type="unfinished"></translation>
+        <translation>Balayage...</translation>
     </message>
 </context>
 </TS>

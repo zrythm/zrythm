@@ -8057,7 +8057,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/route_target_selector_popover.c:294</name>
     <message>
         <source>Failed to change direct out</source>
-        <translation>Неуспех у промени директног излаза</translation>
+        <translation>Неуспешно мењање директног излаза</translation>
     </message>
 </context>
 <context>
@@ -10380,7 +10380,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:420</name>
     <message>
         <source>Please copy the template below in a %snew issue%s.</source>
-        <translation>Молимо вас копирајте шаблон испод у %snew issue%s.</translation>
+        <translation>Молимо вас да копирате шаблон испод у %snew issue%s.</translation>
     </message>
 </context>
 <context>

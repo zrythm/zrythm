@@ -161,7 +161,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="342"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Datei</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="345"/>
@@ -171,32 +171,32 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="349"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="355"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Bearbeiten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="364"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ansicht</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="367"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Darstellung</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="370"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Schalten Sie das helle/dunkle Thema um</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="377"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Thema Farbe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="380"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="404"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Hilfe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="407"/>
@@ -239,7 +239,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="72"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Spenden</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="73"/>
@@ -281,7 +281,7 @@
         <location filename="../src/gui/qml/Greeter.qml" line="189"/>
         <location filename="../src/gui/qml/Greeter.qml" line="226"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguration</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="192"/>
@@ -327,12 +327,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="405"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Über Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="423"/>
         <source>Create New Project...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Neues Projekt erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="427"/>
@@ -342,12 +342,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="440"/>
         <source>Create New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Projekt erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="450"/>
         <source>Project Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Projektname</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="451"/>
@@ -357,17 +357,17 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="482"/>
         <source>Create Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Creating Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekte erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="512"/>
         <source>Creating Project...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Projekte erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="539"/>
@@ -393,27 +393,27 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Linkes Panel ein-/ausblenden</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechte Seite umschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menü</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="105"/>
         <source>Open a Project…</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein Projekt öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="111"/>
         <source>Create New Project…</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Neues Projekt erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="122"/>
@@ -423,22 +423,22 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Save As…</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern als…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Export As…</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportieren als…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Export Graph…</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Exportiere Graph</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Vollbild</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="170"/>
@@ -448,7 +448,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="178"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Tastaturkurzbefehle</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="186"/>
@@ -803,22 +803,22 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="115"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Datei</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="118"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Neu Lang Lang Lang Lang Lang Lang Lang Lang Lang Name</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="122"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="128"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Bearbeiten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="131"/>
@@ -828,22 +828,22 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="137"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ansicht</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="140"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Darstellung</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="143"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Schalten Sie das helle/dunkle Thema um</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="151"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Thema Farbe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="154"/>
@@ -853,7 +853,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="161"/>
         <source>Celestial Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Himmelblau</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="168"/>
@@ -863,12 +863,12 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="181"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Hilfe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="184"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Über Zrythm</translation>
     </message>
 </context>
 <context>
@@ -952,7 +952,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="676"/>
         <source>Failed to save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt konnte nicht gespeichert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="779"/>
@@ -1071,7 +1071,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="854"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/tracklist_selections.cpp" line="575"/>
@@ -1276,7 +1276,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="952"/>
         <source>Delete {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Plugins löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="958"/>
@@ -1286,7 +1286,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="963"/>
         <source>Move {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Plugins verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="969"/>
@@ -1296,7 +1296,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="974"/>
         <source>Copy {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiere %d Plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="980"/>
@@ -1306,7 +1306,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="985"/>
         <source>Paste {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Plugins einfügen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="991"/>
@@ -1366,7 +1366,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="181"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation type="unfinished"></translation>
+        <translation>Spuren können nicht dupliziert werden: Auswahl enthält eine nicht kopierbare Spur</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
@@ -1396,12 +1396,12 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1495"/>
         <source>Copy {} Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiere %d Spuren nach</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1499"/>
         <source>Copy {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1506"/>
@@ -1496,7 +1496,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1567"/>
         <source>Change Fader from {:.1f} to {:.1f}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ändere Regler von %.1f zu %.1f</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1571"/>
@@ -1554,7 +1554,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1601"/>
         <source>Mute {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren stummschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1604"/>
@@ -1564,7 +1564,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1608"/>
         <source>Listen {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren anhören</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1611"/>
@@ -1574,22 +1574,22 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1615"/>
         <source>Enable {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren aktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1618"/>
         <source>Disable {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren deaktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1621"/>
         <source>Fold {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren einklappen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1624"/>
         <source>Unfold {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren ausklappen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1632"/>
@@ -1604,7 +1604,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1636"/>
         <source>Edit tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Track editieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1645"/>
@@ -1624,7 +1624,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1663"/>
         <source>Move {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1669"/>
@@ -1634,7 +1634,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1674"/>
         <source>Pin {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren fixieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1679"/>
@@ -1644,7 +1644,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
         <source>Unpin {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren lösen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="181"/>
@@ -1752,7 +1752,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="205"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Verbinden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="221"/>
@@ -1772,7 +1772,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="252"/>
         <source>Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Blau</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="268"/>
@@ -1782,7 +1782,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="271"/>
         <source>Burning Night</source>
-        <translation type="unfinished"></translation>
+        <translation>Brennende Nacht</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="285"/>
@@ -1837,7 +1837,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="409"/>
         <source>Pray</source>
-        <translation type="unfinished"></translation>
+        <translation>Beten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="423"/>
@@ -1874,7 +1874,7 @@ Die neuere Sicherung verwenden?</translation>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
         <source>_Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>_Ja</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
@@ -1942,7 +1942,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1517"/>
         <source>Failed to create plugin {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin %s konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1538"/>
@@ -2182,7 +2182,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="698"/>
         <source>left</source>
-        <translation type="unfinished"></translation>
+        <translation>verbleibend</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="698"/>
@@ -2244,7 +2244,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="711"/>
         <source>Failed to export</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">: Der Export ist fehlgeschlagen.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="86"/>
@@ -2489,7 +2489,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="549"/>
         <source>Failed creating audio clip from file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Aus der Datei %s konnte kein Audioclip erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="901"/>
@@ -2609,7 +2609,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1142"/>
         <source>Unsupported file type {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht unterstützter Dateityp %s</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1170"/>
@@ -2634,7 +2634,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1325"/>
         <source>Failed to clone/add track</source>
-        <translation type="unfinished"></translation>
+        <translation>Spur konnte nicht geklont werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1345"/>
@@ -2646,7 +2646,7 @@ Die neuere Sicherung verwenden?</translation>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
         <location filename="../src/common/utils/exceptions.cpp" line="41"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
@@ -2761,7 +2761,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="1487"/>
         <source>Error adding carla plugin: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Hinzufügen des Carla-Plugins: %s</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="1654"/>
@@ -2868,7 +2868,8 @@ Bit depth: {} bits</source>
         <location filename="../tests/helpers/zrythm_helper.cpp" line="62"/>
         <source>Error: {} - Backtrace:
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler: %s - Rückverfolgung:
+</translation>
     </message>
     <message>
         <location filename="../tests/helpers/zrythm_helper.cpp" line="87"/>
@@ -2934,7 +2935,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="53"/>
         <source>More Options...</source>
-        <translation type="unfinished"></translation>
+        <translation>Weitere Optionen ...</translation>
     </message>
 </context>
 <context>
@@ -2942,12 +2943,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="34"/>
         <source>Select tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeug auswählen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="49"/>
         <source>Pencil tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Stiftwerkzeug</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="64"/>
@@ -2957,12 +2958,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="79"/>
         <source>Eraser tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Radierwerkzeug</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="94"/>
         <source>Ramp tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Rampenwerkzeug</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="109"/>
@@ -2993,7 +2994,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/Tracklist.qml" line="65"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Testen</translation>
     </message>
 </context>
 <context>
@@ -3022,7 +3023,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Add Audio FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiospur hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
@@ -3066,7 +3067,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="19"/>
         <source>Undo multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Mehrfach rückgängig machen</translation>
     </message>
 </context>
 <context>
@@ -16399,7 +16400,7 @@ Unterstützen Sie dieses Projekt über https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="259"/>
         <source>Failed to load project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt konnte nicht geladen werden</translation>
     </message>
 </context>
 <context>
@@ -16408,7 +16409,7 @@ Unterstützen Sie dieses Projekt über https://liberapay.com/Zrythm
         <location filename="../src/gui/backend/project_templates_model.cpp" line="23"/>
         <location filename="../src/gui/backend/project_templates_model.cpp" line="59"/>
         <source>Blank Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Leeres Projekt</translation>
     </message>
 </context>
 <context>
@@ -16432,12 +16433,12 @@ Support this project at {}
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="120"/>
         <source>Open project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="121"/>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>Erstelle ein neues Projekt</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="123"/>
