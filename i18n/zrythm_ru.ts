@@ -2994,7 +2994,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/Tracklist.qml" line="65"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Тестировать</translation>
     </message>
 </context>
 <context>
