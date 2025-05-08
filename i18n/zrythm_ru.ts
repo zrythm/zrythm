@@ -77,7 +77,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
         <source>Midi CC Bindings</source>
-        <translation>Привязки MIDI CC</translation>
+        <translation>Привязки Midi CC</translation>
     </message>
 </context>
 <context>
