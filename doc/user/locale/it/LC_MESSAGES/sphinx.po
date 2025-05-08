@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: 2023-09-18 20:45+0000\n"
-"Last-Translator: olly1240 <olly1240@gmail.com>\n"
+"PO-Revision-Date: 2024-12-10 11:45+0000\n"
+"Last-Translator: Marco Ciampa <ciampix@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual-sphinx/it/>\n"
 "Language: it\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.2\n"
+"X-Generator: Weblate 5.9-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
@@ -35,12 +35,12 @@ msgstr "Home"
 #: ../../_templates/page.html:88
 #, python-format
 msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
-msgstr ""
+msgstr "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
 
 #: ../../_templates/page.html:92
 #, python-format
 msgid "Copyright &#169; %(copyright)s"
-msgstr ""
+msgstr "Copyright &#169; %(copyright)s"
 
 #: ../../_templates/page.html:99
 #, python-format
@@ -55,11 +55,16 @@ msgid ""
 "\">@pradyunsg</a>'s\n"
 "              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 msgstr ""
+"Creato con <a href=\"https://www.sphinx-doc.org/\">Sphinx</a>\n"
+"              e il \n"
+"              <a href=\"https://github.com/pradyunsg/furo\">tema Furo</a>\n"
+"              di <a class=\"muted-link\" href=\"https://pradyunsg.me\""
+">@pradyunsg</a>."
 
 #: ../../_templates/page.html:116
 msgid "Show Source"
-msgstr ""
+msgstr "Mostra sorgente"
 
 #: ../../_templates/page.html:137
 msgid "Contents"
-msgstr ""
+msgstr "Contenuti"

@@ -37,23 +37,23 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2023-09-18 20:45+0000\n"
-"Last-Translator: olly1240 <olly1240@gmail.com>\n"
+"PO-Revision-Date: 2024-12-24 07:49+0000\n"
+"Last-Translator: Marco Ciampa <ciampix@posteo.net>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/it/>\n"
 "Language: it\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/it/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
-msgstr "Variabili Di Ambiente"
+msgstr "Variabili ambiente"
 
 #: ../../appendix/environment.rst:13
-#, fuzzy
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
@@ -61,49 +61,47 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: "
 "``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
-"Zrythm capisce le seguenti variabili d'ambiente. Esse possono essere "
-"configurate in :file: `.bashrc` o in un file di condifgurazione di una shell "
-"simile, impostazioni di sistema oppure possono essere passate direttamente "
-"quando :program:`zrythm` o :program:`zrythm_launch`è in esecuzione, ad "
-"esempio: ``LV2_PATH=/my/custom/path zrythm_launch``"
+"Zrythm capisce le seguenti variabili ambiente. Esse possono essere "
+"configurate in :file: `.bashrc` o in un file di configurazione di una shell "
+"simile, nelle impostazioni di sistema oppure possono essere passate "
+"direttamente quando :program:`zrythm`o :program:`zrythm_launch`è in "
+"esecuzione, ad esempio: ``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 
 #: ../../appendix/environment.rst:21
 msgid "Set to 1 to disable plugin scanning."
-msgstr "Imposta ad 1 per disabilitare la scansione dei plugin."
+msgstr "Impostare ad 1 per disabilitare la scansione dei plugin."
 
 #: ../../appendix/environment.rst:23
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
-msgstr "Per esempio: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
+msgstr "Esempio: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:28
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
 msgstr ""
-"Numero di thread DSP da usare. L'impostazione predefinita è il numero di "
-"core della CPU -1."
+"Numero di thread DSP da usare. Valore predefinito è il numero di core CPU -1."
 
 #: ../../appendix/environment.rst:33
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
-"Imposta ad 1 per mostrare informazioni aggiuntive utili per gli sviluppatori."
+"Impostare ad 1 per mostrare informazioni aggiuntive utili agli sviluppatori."
 
 #: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
-msgstr "File e Cartelle"
+msgstr "File e cartelle"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid "User path"
 msgstr "Percorso utente"
 
 #: ../../appendix/files-and-directories.rst:11
-#, fuzzy
 msgid ""
 "When Zrythm is launched for the first time, it will also ask you to select a "
 "directory for saving your user data. See :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
-"Quando Zrythm viene avviato per la prima volta, ti chiederà di selezionare "
-"una cartella dove salvare i dati utente. Vedi :term: `Zrythm user path` per "
-"i dettagli."
+"Quando Zrythm viene avviato per la prima volta, chiederà di selezionare una "
+"cartella dove salvare i dati utente. Vedere :ref:`percorso utente Zrythm <"
+"configuration/preferences:Zrythm User Path>` per i dettagli."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -116,9 +114,8 @@ msgstr ""
 "predefinita."
 
 #: ../../appendix/files-and-directories.rst:21
-#, fuzzy
 msgid "Desktop Entry"
-msgstr "Voce Desktop"
+msgstr "Voce scrivania"
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
@@ -137,7 +134,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
-msgstr ""
+msgstr "Schema GLib"
 
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
@@ -145,6 +142,9 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"Questo file contiene lo schema per le configurazioni utente. Normalmente è "
+"installato in :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
+"xml`."
 
 #: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
@@ -222,15 +222,15 @@ msgstr ""
 "dentro :file:`/usr/share/zrythm/themes`."
 
 #: ../../appendix/files-and-directories.rst:72
-#, fuzzy
 msgid ""
 "Zrythm provides ways to override some of these files with user-specified "
 "files in the :ref:`Zrythm user path <configuration/preferences:Zrythm User "
 "Path>`. See :ref:`theming/intro:Theming` for details."
 msgstr ""
-"Zrythm fornisce dei modi per ignorare la configurazione alcuni di questi "
-"file utilizzando invece quella contenuta nei file definiti dall'utente in :"
-"term:`Zrythm user path`. Vedi :doc:`../theming/intro` per i dettagli."
+"Zrythm fornisce metodi per ignorare la configurazione alcuni di questi file "
+"usando file specificati dall'utente nel :ref:`percorso utente Zrythm <"
+"configuration/preferences:Zrythm User Path>`. Vedere :ref:`theming/"
+"intro:Theming` per i dettagli."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
@@ -238,7 +238,7 @@ msgstr "File Utente"
 
 #: ../../appendix/files-and-directories.rst:80
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "Descrittori dei plugin nella cache"
 
 #: ../../appendix/files-and-directories.rst:81
 msgid ""
@@ -246,14 +246,13 @@ msgid ""
 "`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`."
 msgstr ""
+"Cache dei descrittori dei plugin per una scansione più rapida. Si trova in "
+":file:`cached_plugin_descriptors.yaml` sotto :ref:`percorso utente Zrythm <"
+"configuration/preferences:Zrythm User Path>`."
 
 #: ../../appendix/files-and-directories.rst:87
-#, fuzzy
 msgid "Plugin Collections"
-msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Proprietà del plugin"
+msgstr "Collezioni di plugin"
 
 #: ../../appendix/files-and-directories.rst:88
 msgid ""
@@ -261,15 +260,13 @@ msgid ""
 "`plugin_collections.yaml` under the :ref:`Zrythm user path <configuration/"
 "preferences:Zrythm User Path>`."
 msgstr ""
+"Questo file contiene le tue raccolte di plugin. Si trova in "
+":file:`plugin_collections.yaml` sotto il :ref:`percorso utente Zrythm <"
+"configuration/preferences:Zrythm User Path>`."
 
 #: ../../appendix/files-and-directories.rst:94
-#, fuzzy
 msgid "Plugin Settings"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Impostazioni del plugin.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Impostazioni plugin"
 
 #: ../../appendix/files-and-directories.rst:95
 msgid ""
@@ -286,10 +283,12 @@ msgid ""
 "This file is generated and maintained automatically by Zrythm and users are "
 "not expected to edit it."
 msgstr ""
+"Questo file viene generato e gestito automaticamente da Zrythm e non è "
+"previsto che gli utenti lo modifichino."
 
 #: ../../appendix/files-and-directories.rst:107
 msgid "Log File"
-msgstr ""
+msgstr "File di log"
 
 #: ../../appendix/files-and-directories.rst:108
 msgid ""
@@ -302,10 +301,11 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:114
 msgid "This log file is useful for debugging crashes and other problems."
 msgstr ""
+"Questo file di registro è utile per indagare sui crash e altri problemi."
 
 #: ../../appendix/gnu-free-documentation-license.rst:7
 msgid "GNU Free Documentation License"
-msgstr ""
+msgstr "Licenza della Documentazione Libera GNU"
 
 #: ../../appendix/intro.rst:7
 msgid "Appendix"
@@ -313,7 +313,7 @@ msgstr "Appendice"
 
 #: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
-msgstr ""
+msgstr "Blocco accordi"
 
 #: ../../chords-and-scales/chord-pad.rst:10 ../../editing/timeline.rst:10
 #: ../../playback-and-recording/overview.rst:7
@@ -322,13 +322,16 @@ msgstr ""
 #: ../../tracks/overview.rst:7 ../../tracks/tracklist.rst:10
 #: ../../zrythm-interface/overview.rst:7
 msgid "Overview"
-msgstr "Visione d’insieme"
+msgstr "Panoramica"
 
 #: ../../chords-and-scales/chord-pad.rst:12
 msgid ""
 "The chord pad contains 12 pads (1 for each key on a piano keyboard) that can "
 "be used to trigger chords. The chord pad can be found in the bottom panel."
 msgstr ""
+"Il blocco accordi contiene 12 blocchi (1 per ogni tasto di pianoforte) che "
+"possono essere utilizzati per attivare gli accordi. Il blocco accordi si "
+"trova nel pannello inferiore."
 
 #: ../../chords-and-scales/chord-pad.rst:19
 #, fuzzy
@@ -346,17 +349,20 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
-msgstr ""
+msgstr "Preimpostazioni"
 
 #: ../../chords-and-scales/chord-pad.rst:25
 msgid ""
 "Zrythm comes with pre-installed chord presets, and it also allows you to "
 "generate chord presets from scales, or even save your own."
 msgstr ""
+"Zrythm è dotato di preimpostazioni di accordi preinstallati e consente anche "
+"di generare preimpostazioni di accordi da scale o anche di salvarne di "
+"propri."
 
 #: ../../chords-and-scales/chord-pad.rst:30
 msgid "Preset Packs"
-msgstr ""
+msgstr "Pacchetti di preimpostazioni"
 
 #: ../../chords-and-scales/chord-pad.rst:32
 msgid ""
@@ -371,7 +377,7 @@ msgstr ""
 #: ../../chords-and-scales/chord-pad.rst:42
 #: ../../plugins-files/audio-midi-files/file-browser.rst:47
 msgid "Filtering"
-msgstr ""
+msgstr "Filtri"
 
 #: ../../chords-and-scales/chord-pad.rst:44
 msgid ""
@@ -400,16 +406,18 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:56
 msgid "Standard Packs"
-msgstr ""
+msgstr "Pacchetti standard"
 
 #: ../../chords-and-scales/chord-pad.rst:58
 msgid ""
 "Zrythm comes with some standard packs that cannot be renamed or deleted."
 msgstr ""
+"Zrythm include alcuni pacchetti standard che non possono essere rinominati o "
+"eliminati."
 
 #: ../../chords-and-scales/chord-pad.rst:62
 msgid "Custom Packs"
-msgstr ""
+msgstr "Pacchetti personalizzati"
 
 #: ../../chords-and-scales/chord-pad.rst:65
 msgid "Creating Custom Packs"
@@ -427,23 +435,29 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:77
 msgid "Editing Custom Packs"
-msgstr ""
+msgstr "Modifica dei pacchetti personalizzati"
 
 #: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
 msgstr ""
+"I pacchetti personalizzati possono essere rinominati o eliminati facendo "
+"clic con il pulsante destro del mouse."
 
 #: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
 msgstr ""
+"Rinominare o eliminare un pacchetto di preimpostazioni di accordi "
+"personalizzati"
 
 #: ../../chords-and-scales/chord-pad.rst:87
 msgid "Chord presets under the selected pack can also be renamed and deleted."
 msgstr ""
+"È anche possibile rinominare ed eliminare le preimpostazioni degli accordi "
+"nel pacchetto selezionato."
 
 #: ../../chords-and-scales/chord-pad.rst:91
 msgid "Saving Presets"
-msgstr ""
+msgstr "Salvataggio delle preimpostazioni"
 
 #: ../../chords-and-scales/chord-pad.rst:93
 msgid ""
@@ -453,23 +467,24 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:100
 msgid "Saving a chord preset"
-msgstr ""
+msgstr "Salvataggio di una preimpostazione di accordi"
 
 #: ../../chords-and-scales/chord-pad.rst:103
-#, fuzzy
 msgid "Loading Presets"
-msgstr "Impostazioni del progetto."
+msgstr "Caricamento preimpostazioni"
 
 #: ../../chords-and-scales/chord-pad.rst:105
 msgid ""
 "To load a preset, click the :guilabel:`Load Preset` button in the top part "
 "of the chord pad, then select the preset you want to use."
 msgstr ""
+"Per caricare una preimpostazione, fare clic sul pulsante :guilabel:`Carica "
+"preimpostazione` nella parte superiore del blocco accordi, quindi "
+"selezionare la preimpostazione che si vuole usare."
 
 #: ../../chords-and-scales/chord-pad.rst:112
-#, fuzzy
 msgid "Selecting a chord preset"
-msgstr "Selezioni"
+msgstr "Selezionare una preimpostazione accordi"
 
 #: ../../chords-and-scales/chord-pad.rst:114
 msgid ""
@@ -492,7 +507,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:130
 msgid "Transpose"
-msgstr ""
+msgstr "Trasporre"
 
 #: ../../chords-and-scales/chord-pad.rst:132
 msgid ""
