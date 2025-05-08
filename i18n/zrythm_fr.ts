@@ -44,7 +44,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="63"/>
         <source>Editor</source>
-        <translation type="unfinished">Éditeur</translation>
+        <translation>Éditeur</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="68"/>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="73"/>
         <source>Modulators</source>
-        <translation type="unfinished">Modulateurs</translation>
+        <translation>Modulateurs</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="78"/>
@@ -85,17 +85,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="153"/>
         <source>Editor</source>
-        <translation type="unfinished">Éditeur</translation>
+        <translation>Éditeur</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="159"/>
         <source>Mixer</source>
-        <translation type="unfinished">Mixeur</translation>
+        <translation>Mixeur</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="165"/>
         <source>Modulators</source>
-        <translation type="unfinished">Modulateurs</translation>
+        <translation>Modulateurs</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="182"/>
@@ -171,7 +171,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="349"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="355"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="61"/>
         <source>About Flatpak</source>
-        <translation type="unfinished"></translation>
+        <translation>À propos de Flatpak</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="62"/>
@@ -317,17 +317,17 @@
         <location filename="../src/gui/qml/Greeter.qml" line="323"/>
         <location filename="../src/gui/qml/Greeter.qml" line="380"/>
         <source>Open a Project</source>
-        <translation type="unfinished">Ouvrir un projet</translation>
+        <translation>Ouvrir un projet</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="397"/>
         <source>Preferences</source>
-        <translation type="unfinished">Préférences</translation>
+        <translation>Préférences</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="405"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>À propos de Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="423"/>
@@ -342,7 +342,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="440"/>
         <source>Create New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer un Nouveau Projet</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="450"/>
@@ -408,27 +408,27 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="105"/>
         <source>Open a Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir un projet…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="111"/>
         <source>Create New Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer un Nouveau Projet…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="122"/>
         <source>Save</source>
-        <translation type="unfinished">Sauvegarder</translation>
+        <translation>Sauvegarder</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Save As…</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer sous…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Export As…</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Exporter…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
@@ -438,17 +438,17 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Plein écran</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="170"/>
         <source>Preferences</source>
-        <translation type="unfinished">Préférences</translation>
+        <translation>Préférences</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="178"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Raccourcis claviers</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="186"/>
@@ -469,7 +469,7 @@
     <message>
         <location filename="../src/common/dsp/region.h" line="599"/>
         <source>Inherit</source>
-        <translation type="unfinished">Hériter</translation>
+        <translation>Hériter</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/region.h" line="600"/>
@@ -813,7 +813,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="122"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="128"/>
@@ -868,7 +868,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="184"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>À propos de Zrythm</translation>
     </message>
 </context>
 <context>
@@ -937,7 +937,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="294"/>
         <source>Failed to create backup directory {}</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Échec de la création du répertoire de sauvegarde {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
@@ -952,7 +952,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="676"/>
         <source>Failed to save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de la sauvegarde du projet</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="779"/>
@@ -962,7 +962,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="959"/>
         <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Échec de la création du répertoire de sauvegarde</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1029"/>
@@ -1047,7 +1047,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="781"/>
         <source>This project has been automatically upgraded to v{}.{}. Saving this project will overwrite the old one. If you would like to keep both, please use &apos;Save As...&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce projet a été automatiquement mis à jour vers la v{}.{}. Sauvegarder ce projet écrasera l&apos;ancien. Si vous souhaitez conserver les deux, veuillez utiliser &quot;Enregistrer sous...&quot;.</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="848"/>
@@ -1066,7 +1066,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="853"/>
         <source>Open Backup</source>
-        <translation type="unfinished">Sauvegarde ouverte</translation>
+        <translation type="unfinished">Ouvrir la sauvegarde</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="854"/>
@@ -2056,47 +2056,47 @@ Utiliser la sauvegarde la plus récente  ?</translation>
         <location filename="../src/common/dsp/engine.cpp" line="413"/>
         <location filename="../src/common/dsp/engine.cpp" line="475"/>
         <source>Backend Initialization Failed</source>
-        <translation type="unfinished">Échec de l&apos;initialisation du dorsal</translation>
+        <translation type="unfinished">Échec de l&apos;initialisation du serveur</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="414"/>
         <source>Failed to initialize the %s audio backend. Will use the dummy backend instead. Please check your backend settings in the Preferences.</source>
-        <translation type="unfinished">Échec de l&apos;initialisation du dorsal audio %s. On utilisera le dorsal factice (dummy) à la place. Veuillez vérifier vos paramètres de dorsal dans les Préférences.</translation>
+        <translation type="unfinished">Échec de l&apos;initialisation du serveur audio %s. Utilisation du serveur factice (dummy) à la place. Veuillez vérifier vos paramètres de serveurs dans les Préférences.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="442"/>
         <source>Backend Error</source>
-        <translation type="unfinished">Erreur du dorsal</translation>
+        <translation type="unfinished">Erreur du serveur</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="443"/>
         <source>The JACK MIDI backend can only be used with the JACK audio backend (your current audio backend is %s). Will use the dummy MIDI backend instead.</source>
-        <translation type="unfinished">Le dorsal MIDI JACK ne peut être utilisé qu&apos;avec le dorsal audio JACK (votre dorsal audio actuel est %s). Nous utiliserons le dorsal MIDI factice à la place.</translation>
+        <translation type="unfinished">Le serveur MIDI JACK ne peut être utilisé qu&apos;avec le serveur audio JACK (votre serveur audio actuel est %s). Utilisation du serveur MIDI factice à la place.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="476"/>
         <source>Failed to initialize the %s MIDI backend. Will use the dummy backend instead. Please check your backend settings in the Preferences.</source>
-        <translation type="unfinished">Échec de l&apos;initialisation du dorsal MIDI %s. On utilisera le dorsal factice (dummy) à la place. Veuillez vérifier vos paramètres de dorsal dans les Préférences.</translation>
+        <translation type="unfinished">Échec de l&apos;initialisation du serveur MIDI %s. Utilisation du serveur factice (dummy) à la place. Veuillez vérifier vos paramètres de serveurs dans les Préférences.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="511"/>
         <source>Invalid Backend Combination</source>
-        <translation type="unfinished">Combinaison non valide de dorsal</translation>
+        <translation type="unfinished">Combinaison de serveurs non valide</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="512"/>
         <source>Your selected combination of backends may not work properly. If you want to use JACK, please select JACK as both your audio and MIDI backend.</source>
-        <translation type="unfinished">Votre combinaison de dorsaux risque de ne pas fonctionner convenablement. Si vous voulez utiliser JACK, veuillez sélectionner JACK comme dorsal audio et MIDI.</translation>
+        <translation type="unfinished">Votre combinaison de serveurs risque de ne pas fonctionner convenablement. Si vous voulez utiliser JACK, veuillez sélectionner JACK comme serveur audio et MIDI.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="654"/>
         <source>Selected Backend Not Found</source>
-        <translation type="unfinished">Dorsal sélectionné non trouvé</translation>
+        <translation type="unfinished">Serveur sélectionné introuvable</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="655"/>
         <source>The selected MIDI/audio backend was not found in the version of %s you have installed. The audio and MIDI backends were set to &quot;Dummy&quot;. Please set your preferred backend from the preferences.</source>
-        <translation type="unfinished">Le dorsal MIDI/audio sélectionné n&apos;a pas été trouvé dans la version de %s que vous avez installée. Les dorsaux audio et MIDI ont été réglés sur &quot;Factice&quot;. Veuillez choisir votre dorsal préféré dans les préférences.</translation>
+        <translation type="unfinished">Le serveur MIDI/audio sélectionné n&apos;a pas été trouvé dans la version de %s que vous avez installée. Les serveurs audio et MIDI ont été réglés sur &quot;Factice&quot;. Veuillez choisir votre serveur préféré dans les préférences.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="474"/>
@@ -2157,7 +2157,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="610"/>
         <source>Backend error</source>
-        <translation type="unfinished">Erreur du dorsal</translation>
+        <translation type="unfinished">Erreur du serveur</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="614"/>
@@ -2224,7 +2224,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/engine_pulse.cpp" line="417"/>
         <source>Pulseaudio Backend Test Failed</source>
-        <translation type="unfinished">Échec du test du dorsal Pulseaudio</translation>
+        <translation type="unfinished">Échec du test du serveur Pulseaudio</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="337"/>
@@ -2244,7 +2244,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="711"/>
         <source>Failed to export</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de l&apos;exportation</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="86"/>
@@ -2319,7 +2319,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="204"/>
         <source>Ch Pre-Fader in</source>
-        <translation type="unfinished">Entrée pré-fader</translation>
+        <translation>Entrée pré-fader</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="209"/>
@@ -2359,7 +2359,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="268"/>
         <source>Ch MIDI Pre-Fader in</source>
-        <translation type="unfinished">Entrée MIDI pré-fader</translation>
+        <translation>Entrée MIDI pré-fader</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="273"/>
@@ -2424,7 +2424,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/modulator_track.cpp" line="19"/>
         <source>Modulators</source>
-        <translation type="unfinished">Modulateurs</translation>
+        <translation>Modulateurs</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="52"/>
@@ -2454,12 +2454,12 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="21"/>
         <source>Tempo</source>
-        <translation type="unfinished">Tempo</translation>
+        <translation>Tempo</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="47"/>
         <source>BPM</source>
-        <translation type="unfinished">BPM</translation>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="59"/>
@@ -2529,32 +2529,32 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1544"/>
         <source>Duplicate Track</source>
-        <translation type="unfinished">_Copier la Piste</translation>
+        <translation>Dupliquer la piste</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1546"/>
         <source>Duplicate Tracks</source>
-        <translation type="unfinished">_Copier les pistes</translation>
+        <translation>Dupliquer les pistes</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Track</source>
-        <translation type="unfinished">Cacher la piste</translation>
+        <translation>Masquer la piste</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Tracks</source>
-        <translation type="unfinished">Cacher les pistes</translation>
+        <translation>Masquer les pistes</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Track</source>
-        <translation type="unfinished">Attacher/détacher la piste</translation>
+        <translation>Attacher/détacher la piste</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Tracks</source>
-        <translation type="unfinished">Attacher/détacher les pistes</translation>
+        <translation>Attacher/détacher les pistes</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1579"/>
@@ -2564,7 +2564,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1586"/>
         <source>Rename...</source>
-        <translation type="unfinished">Renommer...</translation>
+        <translation>Renommer...</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
@@ -2589,7 +2589,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1112"/>
         <source>No file was found</source>
-        <translation type="unfinished">Fichier introuvable</translation>
+        <translation>Fichier introuvable</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1117"/>
@@ -2646,7 +2646,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
         <location filename="../src/common/utils/exceptions.cpp" line="41"/>
         <source>Error</source>
-        <translation type="unfinished">Erreur</translation>
+        <translation>Erreur</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
@@ -2736,17 +2736,17 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="867"/>
         <source>Audio in</source>
-        <translation type="unfinished">Entrée Audio</translation>
+        <translation>Entrée Audio</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="920"/>
         <source>Audio out</source>
-        <translation type="unfinished">Sortie Audio</translation>
+        <translation>Sortie Audio</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="927"/>
         <source>MIDI in</source>
-        <translation type="unfinished">Entrée MIDI</translation>
+        <translation>Entrée MIDI</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="943"/>
@@ -2771,7 +2771,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/collections.cpp" line="60"/>
         <source>Rename</source>
-        <translation type="unfinished">Renommer</translation>
+        <translation>Renommer</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="194"/>
@@ -2781,7 +2781,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="222"/>
         <source>Enabled</source>
-        <translation type="unfinished">Activé</translation>
+        <translation>Activé</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="225"/>
@@ -2791,7 +2791,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="241"/>
         <source>Gain</source>
-        <translation type="unfinished">Gain</translation>
+        <translation>Gain</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="243"/>
@@ -2826,7 +2826,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
         <source>Details</source>
-        <translation type="unfinished">Détails</translation>
+        <translation>Détails</translation>
     </message>
     <message>
         <location filename="../src/common/utils/logger.cpp" line="162"/>
@@ -2851,7 +2851,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="701"/>
         <source>Experimental Feature</source>
-        <translation type="unfinished">Caractéristique expérimentale</translation>
+        <translation>Fonctionnalité expérimentale</translation>
     </message>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="702"/>
@@ -2887,7 +2887,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="18"/>
         <source>Record</source>
-        <translation type="unfinished">Enregistrer</translation>
+        <translation>Enregistrer</translation>
     </message>
 </context>
 <context>
@@ -2895,12 +2895,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/RightDock.qml" line="19"/>
         <source>Plugin Browser</source>
-        <translation type="unfinished">Navigateur de greffon</translation>
+        <translation type="unfinished">Explorateur de greffon</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/RightDock.qml" line="28"/>
         <source>File Browser</source>
-        <translation type="unfinished">Navigateur de fichiers</translation>
+        <translation type="unfinished">Explorateur de fichiers</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/RightDock.qml" line="37"/>
@@ -2927,7 +2927,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="17"/>
         <source>Solo</source>
-        <translation type="unfinished">Solo</translation>
+        <translation>Solo</translation>
     </message>
 </context>
 <context>
@@ -17850,17 +17850,17 @@ Support this project at {}
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="120"/>
         <source>Open project</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ouvrir le projet</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="121"/>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer un nouveau projet</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="123"/>
         <source>Create new project with template</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer un nouveau projet à partir d&apos;un modèle</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="126"/>
