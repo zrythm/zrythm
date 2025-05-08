@@ -9613,7 +9613,7 @@ If you quit without saving, unsaved changes will be lost.</source>
     <name>src/gui/widgets/bot_bar.c:577</name>
     <message>
         <source>time sig.</source>
-        <translation>временски потпис</translation>
+        <translation type="unfinished">временски потпис</translation>
     </message>
 </context>
 <context>
