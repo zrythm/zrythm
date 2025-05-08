@@ -765,9 +765,13 @@ endif()
 add_library(zrythm::fftw3_libs ALIAS fftw3_libs)
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
+add_library(_zrythm_chromaprint_lib INTERFACE)
 if(CHROMAPRINT_FOUND)
-  set(HAVE_CHROMAPRINT TRUE)
+  # disable for now
+  # set(HAVE_CHROMAPRINT TRUE)
+  target_link_libraries(_zrythm_chromaprint_lib INTERFACE PkgConfig::CHROMAPRINT)
 endif()
+add_library(zrythm::chromaprint_lib ALIAS _zrythm_chromaprint_lib)
 
 # Carla
 if(false)
@@ -1019,6 +1023,7 @@ list(APPEND zrythm_link_libs
   # PkgConfig::RTAUDIO
   # PkgConfig::RTMIDI
   zrythm::zstd
+  zrythm::chromaprint_lib
   Threads::Threads
   zrythm::rubberband
   ${CMAKE_DL_LIBS}
@@ -1045,10 +1050,6 @@ endif()
 
 if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
   list(APPEND zrythm_link_libs cyaml::cyaml)
-endif()
-
-if(CHROMAPRINT_FOUND)
-  list(APPEND zrythm_link_libs PkgConfig::CHROMAPRINT)
 endif()
 
 if(OS_GNU)

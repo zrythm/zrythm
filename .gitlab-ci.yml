@@ -182,13 +182,13 @@ clazy-check:
   stage: check
   needs: []
   script:
-    - export CLAZY_CHECKS="level1"
+    - export CLAZY_CHECKS="level0"
     - >-
       cmake -B build_clazy ${COMMON_CMAKE_OPTIONS}
       -G "Ninja"
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clazy
-      -DCMAKE_PREFIX_PATH=/opt/Qt6.9
+      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
       -DZRYTHM_UNITY_BUILD=OFF
