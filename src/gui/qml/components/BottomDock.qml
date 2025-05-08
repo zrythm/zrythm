@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm 1.0
 import ZrythmStyle 1.0
@@ -51,6 +54,7 @@ ColumnLayout {
             model: 3
 
             Rectangle {
+                required property int index
                 width: 180
                 height: 50
                 color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
@@ -59,7 +63,7 @@ ColumnLayout {
 
                 Text {
                     anchors.centerIn: parent
-                    text: "Item " + (index + 1)
+                    text: "Item " + (parent.index + 1)
                     font.pixelSize: 16
                 }
 

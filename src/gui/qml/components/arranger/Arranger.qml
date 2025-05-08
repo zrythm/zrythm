@@ -1,7 +1,10 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
+import QtQuick.Controls
 import ZrythmStyle 1.0
 import Zrythm 1.0
 
@@ -97,7 +100,7 @@ Item {
         anchors.fill: parent
         clip: true
         contentWidth: arrangerContent.width
-        contentHeight: root.enableYScroll ? arrangerContent.height : height
+        contentHeight: root.enableYScroll ? arrangerContent.height : scrollView.height
         ScrollBar.vertical.policy: root.enableYScroll ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
 
         Binding {
@@ -145,6 +148,7 @@ Item {
                     model: Math.ceil(arrangerContent.width / root.ruler.pxPerBar)
 
                     Rectangle {
+                        required property int index
                         width: 1
                         height: arrangerContent.height
                         x: index * root.ruler.pxPerBar
@@ -163,11 +167,12 @@ Item {
                         model: Math.ceil(arrangerContent.width / root.ruler.pxPerBeat)
 
                         Rectangle {
+                            required property int index
                             width: 1
                             height: arrangerContent.height
-                            x: index * ruler.pxPerBeat
+                            x: index * root.ruler.pxPerBeat
                             color: root.palette.button
-                            opacity: ruler.beatLineOpacity
+                            opacity: root.ruler.beatLineOpacity
                             visible: index % 4 !== 0
                         }
 
@@ -184,11 +189,12 @@ Item {
                         model: Math.ceil(arrangerContent.width / root.ruler.pxPerSixteenth)
 
                         Rectangle {
+                            required property int index
                             width: 1
                             height: arrangerContent.height
-                            x: index * ruler.pxPerSixteenth
+                            x: index * root.ruler.pxPerSixteenth
                             color: root.palette.button
-                            opacity: ruler.sixteenthLineOpacity
+                            opacity: root.ruler.sixteenthLineOpacity
                             visible: index % 4 !== 0
                         }
 
@@ -261,12 +267,12 @@ Item {
                 hoverEnabled: true
                 preventStealing: true
                 propagateComposedEvents: true
-                onEntered: (mouse) => {
+                onEntered: () => {
                     console.log("Cursor entered arranger");
                     hovered = true;
                     updateCursor();
                 }
-                onExited: (mouse) => {
+                onExited: () => {
                     console.log("Cursor exited arranger");
                     hovered = false;
                 }

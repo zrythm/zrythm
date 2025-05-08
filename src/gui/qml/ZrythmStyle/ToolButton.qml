@@ -16,11 +16,11 @@ T.ToolButton {
         if (control.checked)
             c = control.palette.highlight;
 
-        if (!control.hovered && !control.focused && !control.down)
+        if (!control.hovered && !control.focus && !control.down)
             return c;
         else if (control.down)
             return Style.getStrongerColor(c);
-        else if (hovered || focused)
+        else if (hovered || focus)
             return c;
     }
 

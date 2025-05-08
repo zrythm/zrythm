@@ -42,8 +42,8 @@ T.MenuItem {
         source: control.checkable ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/check.png" : ""
         color: Style.colorPalette.windowText
         defaultColor: "#353637"
-        sourceSize.width: icon.width
-        sourceSize.height: icon.width
+        sourceSize.width: control.icon.width
+        sourceSize.height: control.icon.width
     }
 
     arrow: ColorImage {
@@ -54,8 +54,8 @@ T.MenuItem {
         source: control.subMenu ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png" : ""
         color: Style.colorPalette.windowText
         defaultColor: "#353637"
-        sourceSize.width: icon.width - 4
-        sourceSize.height: icon.width - 4
+        sourceSize.width: control.icon.width - 4
+        sourceSize.height: control.icon.width - 4
     }
 
     background: Rectangle {

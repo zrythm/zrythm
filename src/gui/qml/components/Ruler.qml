@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
@@ -47,6 +49,7 @@ Item {
             model: 1000 // Will be clipped by parent ScrollView
 
             Rectangle {
+                required property int index
                 width: 2
                 height: 14 // parent.height / 3
                 color: control.palette.text
@@ -77,6 +80,7 @@ Item {
                 model: 1000 * 4
 
                 Rectangle {
+                    required property int index
                     width: 1
                     height: 10
                     color: control.palette.text
@@ -112,6 +116,7 @@ Item {
                 model: 1000 * 4
 
                 Rectangle {
+                    required property int index
                     width: 1
                     height: 8
                     color: control.palette.text

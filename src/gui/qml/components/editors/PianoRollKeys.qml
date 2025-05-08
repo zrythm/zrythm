@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -53,7 +55,8 @@ Item {
             Item {
                 id: keyItem
 
-                property int midiNote: root.endNote - modelData
+                required property int index
+                property int midiNote: root.endNote - index
                 property bool isPressed: false
 
                 Layout.fillWidth: true

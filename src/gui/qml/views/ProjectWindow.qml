@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import "../config.js" as Config
-import Qt.labs.platform as Labs
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm 1.0
 import ZrythmStyle 1.0

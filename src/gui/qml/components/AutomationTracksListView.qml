@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle 1.0

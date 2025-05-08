@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// pragma ComponentBehavior: Bound
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm 1.0
 import ZrythmStyle 1.0
@@ -328,6 +330,7 @@ ApplicationWindow {
                     Rectangle {
                         id: projectItem
 
+                        required property string path
                         readonly property ListView lv: ListView.view
                         property bool isCurrent: ListView.isCurrentItem
 
@@ -342,7 +345,7 @@ ApplicationWindow {
                         Text {
                             id: projectTxt
 
-                            text: model.path
+                            text: projectItem.path
                             horizontalAlignment: Qt.AlignHCenter
                             color: palette.text
 

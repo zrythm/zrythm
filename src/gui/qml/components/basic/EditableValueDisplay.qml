@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import Zrythm 1.0
 import ZrythmStyle 1.0
 

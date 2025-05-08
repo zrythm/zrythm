@@ -3,6 +3,7 @@
 
 import "../config.js" as Config
 import QtQuick
+import QtQuick.Controls
 import Zrythm 1.0
 import ZrythmStyle 1.0
 

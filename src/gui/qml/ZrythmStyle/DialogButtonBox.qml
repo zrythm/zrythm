@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: Copyright (C) 2023 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-only
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Templates as T
 
