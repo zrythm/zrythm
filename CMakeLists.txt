@@ -174,7 +174,7 @@ option(ZRYTHM_USER_MANUAL "Build and install user manual" OFF)
 cmake_dependent_option(ZRYTHM_STRICT_SPHINX_OPTS "Use strict sphinx options (for docs, fail on warnings)" OFF "ZRYTHM_USER_MANUAL" OFF)
 option(ZRYTHM_STRICT "Compile and link with strict flags (warnings as errors, etc.)" OFF)
 # Enable extra optimizations only if building with O1 or above
-option(ZRYTHM_EXTRA_OPTIMIZATIONS "Compile and link with extra optimizations (for performance)" OFF)
+option(ZRYTHM_EXTRA_OPTIMIZATIONS "Compile and link with extra optimizations (for performance)" ${ZRYTHM_OPTIMIZED_BUILD})
 cmake_dependent_option(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS "Compile and link with more aggressive optimizations (experimental)" OFF "ZRYTHM_EXTRA_OPTIMIZATIONS" OFF)
 cmake_dependent_option(ZRYTHM_NATIVE_OPTIMIZATIONS "Compile and link with native (-march/-mtune=native) optimizations (for performance)" OFF "ZRYTHM_EXTRA_OPTIMIZATIONS" OFF)
 option(ZRYTHM_EXTRA_DEBUG_INFO "Compile and link with extra debug info (for debugging) (-g3)" OFF)
@@ -339,10 +339,6 @@ endforeach()
 string(JOIN " " locales_str ${locales_list})
 message(STATUS "Locales: ${locales_str}")
 
-if(compiler_gnulike)
-  set(full_optimization_args "-O3")
-endif()
-
 #==============================================================================
 # Required Packages
 #==============================================================================
@@ -427,8 +423,7 @@ endif()
 if(ZRYTHM_EXTRA_OPTIMIZATIONS)
   if(compiler_gnulike)
     target_compile_options(_zrythm_compile_options INTERFACE
-      -ffast-math -DPIC -freciprocal-math
-      -fsingle-precision-constant
+      -ffast-math -freciprocal-math
       # the following 2 taken from DISTRHO-Ports, need testing
       -ftree-vectorize -funroll-loops)
     if(NOT APPLE)
@@ -437,7 +432,7 @@ if(ZRYTHM_EXTRA_OPTIMIZATIONS)
 
     # -O1 turns this on, but it may break backtraces so explicitly turn it
     # off on builds supposed to be debuggable
-    target_compile_options(_zrythm_compile_options INTERFACE -fno-omit-frame-pointer)
+    # target_compile_options(_zrythm_compile_options INTERFACE -fno-omit-frame-pointer)
   endif()
 endif()
 

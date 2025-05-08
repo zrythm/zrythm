@@ -51,7 +51,7 @@ public:
   };
 
 public:
-  inline void init (
+  void init (
     const Type                   type,
     const Track                 &track,
     const EngineProcessTimeInfo &time_nfo,

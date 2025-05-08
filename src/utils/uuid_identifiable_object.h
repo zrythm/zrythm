@@ -24,7 +24,7 @@ class UuidIdentifiableObject
     : public serialization::ISerializable<UuidIdentifiableObject<Derived>>
 {
 public:
-  struct Uuid
+  struct Uuid final
       : type_safe::strong_typedef<Uuid, QUuid>,
         type_safe::strong_typedef_op::equality_comparison<Uuid>,
         type_safe::strong_typedef_op::relational_comparison<Uuid>,
