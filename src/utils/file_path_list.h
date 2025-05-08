@@ -3,9 +3,10 @@
 
 #pragma once
 
+#include "utils/string.h"
+
 #include <QtQmlIntegration>
 
-#include "./types.h"
 #include "juce_wrapper.h"
 
 namespace zrythm::utils
