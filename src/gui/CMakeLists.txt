@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 # ==============================================================================================
@@ -76,14 +76,14 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/
 
 # font files
 set(font_filepaths
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Inter-4.0/InterVariable.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Inter-4.0/InterVariable-Italic.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Regular.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Bold.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Light.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Italic.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-BoldItalic.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-LightItalic.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/NotoSans/NotoSans-VariableFont_wdth_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/NotoSans/NotoSans-Italic-VariableFont_wdth_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Arabic/NotoSansArabic-VariableFont_wdth_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Hebrew/NotoSansHebrew-VariableFont_wdth_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Thai/NotoSansThai-VariableFont_wdth_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_KR/NotoSansKR-VariableFont_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_SC/NotoSansSC-VariableFont_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_TC/NotoSansTC-VariableFont_wght.ttf
 )
 set(font_files)
 foreach(font_filepath ${font_filepaths})

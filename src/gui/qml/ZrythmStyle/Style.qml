@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // zrythm color variant (accent | accent lighter | accent darker):
 // F79616 | FFA533 | D68A0C
@@ -12,7 +12,7 @@ QtObject {
     id: root
 
     property bool darkMode: false
-    readonly property string fontFamily: interFont.name
+    property string fontFamily: notoSansFont.name
     readonly property real fontPointSize: 10
     readonly property real animationDuration: 200
     readonly property int animationEasingType: Easing.OutExpo
@@ -54,11 +54,6 @@ QtObject {
         "family": root.fontFamily,
         "pixelSize": 11,
         "weight": Font.Normal
-    })
-    readonly property font semiBoldMonoFont: ({
-        "family": monoFont.name,
-        "pixelSize": 12,
-        "weight": Font.Medium
     })
     readonly property font arrangerObjectTextFont: ({
         "family": root.fontFamily,
@@ -106,7 +101,7 @@ QtObject {
         link: root.primaryColor
         linkVisited: root.getStrongerColor(root.primaryColor)
         mid: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor) // docs say "between button background color and text color", no idea where it's used
-        midlight: root.getColorBlendedTowardsContrast(buttonBackgroundColor)
+        midlight: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor)
         placeholderText: root.placeholderTextColor
         shadow: root.shadowColor
         text: root.textColor
@@ -116,9 +111,46 @@ QtObject {
         windowText: root.textColor
     }
 
+    // These are used as fallbacks automatically just by declaring them
+    // even if they are not referenced anywhere explicitly
     readonly property FontLoader
-    interFont: FontLoader {
-        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/InterVariable.ttf")
+    notoSansFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSans-VariableFont_wdth_wght.ttf")
+    }
+
+    readonly property FontLoader
+    notoSansItalicFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSans-Italic-VariableFont_wdth_wght.ttf")
+    }
+
+    readonly property FontLoader
+    notoSansKrFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansKR-VariableFont_wght.ttf")
+    }
+
+    readonly property FontLoader
+    notoSansScFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansSC-VariableFont_wght.ttf")
+    }
+
+    readonly property FontLoader
+    notoSansTcFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansTC-VariableFont_wght.ttf")
+    }
+
+    readonly property FontLoader
+    notoSansArabicFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansArabic-VariableFont_wdth_wght.ttf")
+    }
+
+    readonly property FontLoader
+    notoSansHebrewFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansHebrew-VariableFont_wdth_wght.ttf")
+    }
+
+    readonly property FontLoader
+    notoSansThaiFont: FontLoader {
+        source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansThai-VariableFont_wdth_wght.ttf")
     }
 
     readonly property PropertyAnimation

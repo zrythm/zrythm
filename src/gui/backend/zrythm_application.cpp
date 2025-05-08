@@ -238,6 +238,17 @@ ZrythmApplication::setup_ui ()
 
   // KDDockWidgets::initFrontend (KDDockWidgets::FrontendType::QtQuick);
 
+  // not needed - done in Style.qml - but kept for reference
+#if 0
+  // fonts
+  int fontId = QFontDatabase::addApplicationFont (
+    u":/qt/qml/Zrythm/fonts/NotoSansJP-VariableFont_wght.ttf"_s);
+  if (fontId == -1)
+    {
+      z_warning ("Failed to load custom font!");
+    }
+#endif
+
   // Create and show the main window
   qml_engine_ = new QQmlApplicationEngine (this);
   // KDDockWidgets::QtQuick::Platform::instance ()->setQmlEngine (&engine);
