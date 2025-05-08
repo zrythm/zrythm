@@ -42,8 +42,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-11-27 21:59+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"PO-Revision-Date: 2025-02-01 11:45+0000\n"
+"Last-Translator: \"Kai A.\" <kai.adolf@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/de/>\n"
 "Language: de\n"
@@ -51,7 +51,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -59,7 +59,6 @@ msgid "Environment Variables"
 msgstr "Umgebungsvariablen"
 
 #: ../../appendix/environment.rst:13
-#, fuzzy
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
@@ -67,11 +66,11 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: "
 "``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
-"Zrythm versteht die folgenden Umgebungsvariablen. Diese können in :file:`."
-"bashrc` oder einer ähnlichen Shell-Konfigurationsdatei, sowie in den "
-"Einstellungen des Betriebssystems konfiguriert werden, oder sie werden "
-"direkt beim Aufruf von :program:`zrythm` oder :program:`zrythm_launch` "
-"übergeben, wie: ``LV2_PATH=/mein/angepasster/Pfad zrythm_launch``"
+"Zrythm versteht die folgenden Umgebungsvariablen. Diese können in "
+":file:`.bashrc` oder einer ähnlichen Shell-Konfigurationsdatei, sowie in den "
+"Einstellungen des Betriebssystems konfiguriert werden oder sie werden direkt "
+"beim Aufruf von :program:`zrythm` oder :program:`zrythm_launch` übergeben, "
+"wie: ``LV2_PATH=/mein/angepasster/Pfad zrythm_launch``"
 
 #: ../../appendix/environment.rst:21
 msgid "Set to 1 to disable plugin scanning."
@@ -102,15 +101,14 @@ msgid "User path"
 msgstr "Benutzerpfad"
 
 #: ../../appendix/files-and-directories.rst:11
-#, fuzzy
 msgid ""
 "When Zrythm is launched for the first time, it will also ask you to select a "
 "directory for saving your user data. See :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
-"Wenn Zrythm zum ersten Mal gestartet wird, werden Sie auch aufgefordert, ein "
-"Verzeichnis zum Speichern Ihrer Benutzerdaten auszuwählen. Siehe :term:"
-"`Zrythm Benutzerpfad` für Details."
+"Wenn Zrythm zum ersten Mal gestartet wird, werden Sie ebenfalls aufgefordert "
+"ein Verzeichnis zum Speichern Ihrer Benutzerdaten auszuwählen. Siehe :term:`"
+"Zrythm Benutzerpfad` für Details."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -746,7 +744,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:70
 msgid "MIDI learn window"
-msgstr ""
+msgstr "MIDI-Lernen Fenster"
 
 #: ../../configuration/device-setup.rst:72
 msgid ""
