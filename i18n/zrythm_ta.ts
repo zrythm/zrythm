@@ -54,28 +54,28 @@
     <name>inc/dsp/track.h:164</name>
     <message>
         <source>Audio</source>
-        <translation>ஆடியோ</translation>
+        <translation>ஒலி</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/region.c:471</name>
     <message>
         <source>Audio</source>
-        <translation>ஆடியோ</translation>
+        <translation>ஒலி</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/bot_bar.c:415</name>
     <message>
         <source>Audio</source>
-        <translation>ஆடியோ</translation>
+        <translation>ஒலி</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1245</name>
     <message>
         <source>Audio</source>
-        <translation>ஆடியோ</translation>
+        <translation>ஒலி</translation>
     </message>
 </context>
 <context>
@@ -166,14 +166,14 @@
     <name>inc/dsp/track.h:170</name>
     <message>
         <source>Audio FX</source>
-        <translation>ஆடியோ எஃப்எக்ச்</translation>
+        <translation>ஒலி எஃப்எக்ச்</translation>
     </message>
 </context>
 <context>
     <name>inc/dsp/track.h:171</name>
     <message>
         <source>Audio Group</source>
-        <translation>ஆடியோ குழு</translation>
+        <translation>ஒலி குழு</translation>
     </message>
 </context>
 <context>
@@ -935,7 +935,7 @@
     <name>inc/dsp/scale.h:163</name>
     <message>
         <source>Insen</source>
-        <translation>இன்சென் இன்சென்</translation>
+        <translation>இன்சென்</translation>
     </message>
 </context>
 <context>
@@ -1544,7 +1544,7 @@
     <name>src/project.c:490</name>
     <message>
         <source>Unable to read file at %s</source>
-        <translation type="unfinished">%S இல் கோப்பைப் படிக்க முடியவில்லை</translation>
+        <translation>%s இல் கோப்பைப் படிக்க முடியவில்லை</translation>
     </message>
 </context>
 <context>
@@ -1642,7 +1642,7 @@
     <name>src/project.c:1045</name>
     <message>
         <source>Failed to write audio pool to disk</source>
-        <translation>வட்டுக்கு ஆடியோ பூல் எழுதத் தவறிவிட்டது</translation>
+        <translation>வட்டுக்கு ஒலி பூல் எழுதத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -1752,7 +1752,7 @@ Your current version is %s</source>
     <name>src/zrythm_app.c:432</name>
     <message>
         <source>Initializing %s directories</source>
-        <translation type="unfinished">%S கோப்பகங்களைத் தொடங்குதல்</translation>
+        <translation>%s கோப்பகங்களைத் தொடங்குதல்</translation>
     </message>
 </context>
 <context>
@@ -1794,7 +1794,7 @@ Your current version is %s</source>
     <name>src/zrythm_app.c:750</name>
     <message>
         <source>Your user does not have enough privileges to allow %s to lock unlimited memory. This may cause audio dropouts. Please refer to the &apos;Getting Started&apos; section in the user manual for details.</source>
-        <translation>வரம்பற்ற நினைவகத்தை பூட்ட %s அனுமதிக்க உங்கள் பயனருக்கு போதுமான சலுகைகள் இல்லை. இது ஆடியோ கைவிடுதல்களை ஏற்படுத்தக்கூடும். விவரங்களுக்கு பயனர் கையேட்டில் &apos;தொடங்குதல்&apos; பகுதியைப் பார்க்கவும்.</translation>
+        <translation>வரம்பற்ற நினைவகத்தை பூட்ட %s அனுமதிக்க உங்கள் பயனருக்கு போதுமான சலுகைகள் இல்லை. இது ஒலி கைவிடுதல்களை ஏற்படுத்தக்கூடும். விவரங்களுக்கு பயனர் கையேட்டில் &apos;தொடங்குதல்&apos; பகுதியைப் பார்க்கவும்.</translation>
     </message>
 </context>
 <context>
@@ -1902,7 +1902,7 @@ Support this project at https://liberapay.com/Zrythm
     <name>src/zrythm_app.c:1445</name>
     <message>
         <source>Override the audio backend to use</source>
-        <translation>பயன்படுத்த ஆடியோ பின்தளத்தில் மேலெழுதவும்</translation>
+        <translation>பயன்படுத்த ஒலி பின்தளத்தில் மேலெழுதவும்</translation>
     </message>
 </context>
 <context>
@@ -1916,7 +1916,7 @@ Support this project at https://liberapay.com/Zrythm
     <name>src/zrythm_app.c:1449</name>
     <message>
         <source>Shorthand for --midi-backend=none --audio-backend=none</source>
-        <translation>--மிடி-பேக்கெண்டிற்கான சுருக்கெழுத்து = எதுவுமில்லை-ஆடியோ-பேக்கெண்ட் = எதுவுமில்லை</translation>
+        <translation>--மிடி-பேக்கெண்டிற்கான சுருக்கெழுத்து = எதுவுமில்லை-ஒலி-பேக்கெண்ட் = எதுவுமில்லை</translation>
     </message>
 </context>
 <context>
@@ -1947,7 +1947,7 @@ Please report issues to %s
     <name>src/zrythm_app.c:1486</name>
     <message>
         <source>Run %s, optionally passing a project file.</source>
-        <translation type="unfinished">%S ஐ இயக்கவும், விருப்பமாக திட்டக் கோப்பை கடந்து செல்லுங்கள்.</translation>
+        <translation>%s ஐ இயக்கவும், விருப்பமாக திட்டக் கோப்பை கடந்து செல்லுங்கள்.</translation>
     </message>
 </context>
 <context>
@@ -2094,7 +2094,7 @@ Please report issues to %s
     <name>src/actions/actions.c:348</name>
     <message>
         <source>Scripting extensibility with &lt;a href=&quot;%s&quot;&gt;GNU Guile&lt;/a&gt; is not enabled in your %s installation.</source>
-        <translation type="unfinished">&lt;a href=&quot;%S&quot;&gt; குனு கெயில் &lt;/a&gt; உடன் ச்கிரிப்டிங் நீட்டிப்பு உங்கள் %நிறுவலில் இயக்கப்படவில்லை.</translation>
+        <translation>&lt;a href=&quot;%s&quot;&gt; குனு கெயில் &lt;/a&gt; உடன் ச்கிரிப்டிங் நீட்டிப்பு உங்கள் %நிறுவலில் இயக்கப்படவில்லை.</translation>
     </message>
 </context>
 <context>
@@ -2850,28 +2850,28 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:2496</name>
     <message>
         <source>Failed to apply audio function</source>
-        <translation>ஆடியோ செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
+        <translation>ஒலி செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:3049</name>
     <message>
         <source>Failed to apply audio function</source>
-        <translation>ஆடியோ செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
+        <translation>ஒலி செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/actions/arranger_selections.c:607</name>
     <message>
         <source>Failed to apply audio function</source>
-        <translation>ஆடியோ செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
+        <translation>ஒலி செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/actions/arranger_selections.c:618</name>
     <message>
         <source>Failed to apply audio function</source>
-        <translation>ஆடியோ செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
+        <translation>ஒலி செயல்பாட்டைப் பயன்படுத்துவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -3006,7 +3006,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:2993</name>
     <message>
         <source>Detected BPM: %.2f</source>
-        <translation type="unfinished">கண்டறியப்பட்ட பிபிஎம்: %.2 எஃப்</translation>
+        <translation>கண்டறியப்பட்ட பிபிஎம்: %.2 எஃப்</translation>
     </message>
 </context>
 <context>
@@ -3188,7 +3188,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:3630</name>
     <message>
         <source>Failed to reset %s</source>
-        <translation type="unfinished">%களை மீட்டமைக்கத் தவறிவிட்டது</translation>
+        <translation>%களை மீட்டமைக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -3230,7 +3230,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:3967</name>
     <message>
         <source>The collection &apos;%s&apos; contains %d plugins. Are you sure you want to remove it?</source>
-        <translation type="unfinished">&apos; %S&apos; தொகுப்பில் %d செருகுநிரல்கள் உள்ளன. நீங்கள் அதை அகற்ற விரும்புகிறீர்களா?</translation>
+        <translation>&apos; %s&apos; தொகுப்பில் %d செருகுநிரல்கள் உள்ளன. நீங்கள் அதை அகற்ற விரும்புகிறீர்களா?</translation>
     </message>
 </context>
 <context>
@@ -3258,21 +3258,21 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:275</name>
     <message>
         <source>Failed getting contents for %s</source>
-        <translation type="unfinished">%S க்கு உள்ளடக்கங்களைப் பெறுவதில் தோல்வி</translation>
+        <translation>%s க்கு உள்ளடக்கங்களைப் பெறுவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:289</name>
     <message>
         <source>Failed creating audio clip from file at %s</source>
-        <translation type="unfinished">%S இல் கோப்பிலிருந்து ஆடியோ கிளிப்பை உருவாக்குவது தோல்வி</translation>
+        <translation>%s இல் கோப்பிலிருந்து ஒலி கிளிப்பை உருவாக்குவது தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/track.c:1908</name>
     <message>
         <source>Failed creating audio clip from file at %s</source>
-        <translation type="unfinished">%S இல் கோப்பிலிருந்து ஆடியோ கிளிப்பை உருவாக்குவது தோல்வி</translation>
+        <translation>%s இல் கோப்பிலிருந்து ஒலி கிளிப்பை உருவாக்குவது தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -3377,7 +3377,7 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:875</name>
     <message>
         <source>Failed to create track at %d</source>
-        <translation type="unfinished">%D இல் பாதையை உருவாக்கத் தவறிவிட்டது</translation>
+        <translation>%d இல் பாதையை உருவாக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -3405,21 +3405,21 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:1840</name>
     <message>
         <source>Copy %d Tracks</source>
-        <translation type="unfinished">%D தடங்களை நகலெடுக்கவும்</translation>
+        <translation>%d தடங்களை நகலெடுக்கவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:1847</name>
     <message>
         <source>Create %s Track</source>
-        <translation type="unfinished">%S பாதையை உருவாக்கவும்</translation>
+        <translation>%s பாதையை உருவாக்கவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:1852</name>
     <message>
         <source>Create %d %s Tracks</source>
-        <translation type="unfinished">%D %S தடங்களை உருவாக்கவும்</translation>
+        <translation>%d %s தடங்களை உருவாக்கவும்</translation>
     </message>
 </context>
 <context>
@@ -3433,7 +3433,7 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:1863</name>
     <message>
         <source>Delete %d Tracks</source>
-        <translation type="unfinished">%D தடங்களை நீக்கு</translation>
+        <translation>%d தடங்களை நீக்கு</translation>
     </message>
 </context>
 <context>
@@ -3482,7 +3482,7 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:1889</name>
     <message>
         <source>Mute Lane</source>
-        <translation>முடக்கு பாதை</translation>
+        <translation>முடக்கு வழிபாதை</translation>
     </message>
 </context>
 <context>
@@ -3650,7 +3650,7 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:1952</name>
     <message>
         <source>Listen %d Tracks</source>
-        <translation type="unfinished">%D தடங்களைக் கேளுங்கள்</translation>
+        <translation>%d தடங்களைக் கேளுங்கள்</translation>
     </message>
 </context>
 <context>
@@ -3664,28 +3664,28 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:1959</name>
     <message>
         <source>Enable %d Tracks</source>
-        <translation type="unfinished">%D தடங்களை இயக்கவும்</translation>
+        <translation>%d தடங்களை இயக்கவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:1962</name>
     <message>
         <source>Disable %d Tracks</source>
-        <translation type="unfinished">%D தடங்களை முடக்கு</translation>
+        <translation>%d தடங்களை முடக்கு</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:1965</name>
     <message>
         <source>Fold %d Tracks</source>
-        <translation type="unfinished">%D தடங்களை மடிக்கவும்</translation>
+        <translation>%d தடங்களை மடிக்கவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:1968</name>
     <message>
         <source>Unfold %d Tracks</source>
-        <translation type="unfinished">%D தடங்கள்</translation>
+        <translation>%d தடங்கள்</translation>
     </message>
 </context>
 <context>
@@ -3713,7 +3713,7 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:2002</name>
     <message>
         <source>Move %d Tracks</source>
-        <translation type="unfinished">%D தடங்களை நகர்த்தவும்</translation>
+        <translation>%d தடங்களை நகர்த்தவும்</translation>
     </message>
 </context>
 <context>
@@ -3825,7 +3825,7 @@ Please select a format to export as</source>
     <name>src/actions/arranger_selections.c:2950</name>
     <message>
         <source>Create audio selections</source>
-        <translation>ஆடியோ தேர்வுகளை உருவாக்கவும்</translation>
+        <translation>ஒலி தேர்வுகளை உருவாக்கவும்</translation>
     </message>
 </context>
 <context>
@@ -3916,7 +3916,7 @@ Please select a format to export as</source>
     <name>src/actions/arranger_selections.c:2983</name>
     <message>
         <source>Resize arranger selections - %s</source>
-        <translation>ஏற்பாடு ஏற்பாடு தேர்வுகள் - %s</translation>
+        <translation>மறுஅளவிடு ஏற்பாடு தேர்வுகள் - %s</translation>
     </message>
 </context>
 <context>
@@ -3937,7 +3937,7 @@ Please select a format to export as</source>
     <name>src/actions/channel_send_action.c:157</name>
     <message>
         <source>Failed to connect audio send</source>
-        <translation>ஆடியோ அனுப்பலை இணைக்கத் தவறிவிட்டது</translation>
+        <translation>ஒலி அனுப்பலை இணைக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -4091,7 +4091,7 @@ Please select a format to export as</source>
     <name>src/actions/mixer_selections_action.c:1202</name>
     <message>
         <source>Create %s</source>
-        <translation type="unfinished">%S ஐ உருவாக்குங்கள்</translation>
+        <translation>%s ஐ உருவாக்குங்கள்</translation>
     </message>
 </context>
 <context>
@@ -4112,35 +4112,35 @@ Please select a format to export as</source>
     <name>src/actions/mixer_selections_action.c:1217</name>
     <message>
         <source>Delete %d Plugins</source>
-        <translation type="unfinished">%D செருகுநிரல்களை நீக்கு</translation>
+        <translation>%d செருகுநிரல்களை நீக்கு</translation>
     </message>
 </context>
 <context>
     <name>src/actions/mixer_selections_action.c:1223</name>
     <message>
         <source>Move %s</source>
-        <translation type="unfinished">%S ஐ நகர்த்தவும்</translation>
+        <translation>%s ஐ நகர்த்தவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/mixer_selections_action.c:1228</name>
     <message>
         <source>Move %d Plugins</source>
-        <translation type="unfinished">%D செருகுநிரல்களை நகர்த்தவும்</translation>
+        <translation>%d செருகுநிரல்களை நகர்த்தவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/mixer_selections_action.c:1234</name>
     <message>
         <source>Copy %s</source>
-        <translation type="unfinished">%S நகல்</translation>
+        <translation>%s நகல்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/mixer_selections_action.c:1239</name>
     <message>
         <source>Copy %d Plugins</source>
-        <translation type="unfinished">%D செருகுநிரல்களை நகலெடுக்கவும்</translation>
+        <translation>%d செருகுநிரல்களை நகலெடுக்கவும்</translation>
     </message>
 </context>
 <context>
@@ -4154,28 +4154,28 @@ Please select a format to export as</source>
     <name>src/actions/mixer_selections_action.c:1250</name>
     <message>
         <source>Paste %d Plugins</source>
-        <translation type="unfinished">%D செருகுநிரல்களை ஒட்டவும்</translation>
+        <translation>%d செருகுநிரல்களை ஒட்டவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/mixer_selections_action.c:1256</name>
     <message>
         <source>Change Status for %s</source>
-        <translation type="unfinished">%S க்கான நிலையை மாற்றவும்</translation>
+        <translation>%s க்கான நிலையை மாற்றவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/mixer_selections_action.c:1262</name>
     <message>
         <source>Change Status for %d Plugins</source>
-        <translation type="unfinished">%D செருகுநிரல்களுக்கான நிலையை மாற்றவும்</translation>
+        <translation>%d செருகுநிரல்களுக்கான நிலையை மாற்றவும்</translation>
     </message>
 </context>
 <context>
     <name>src/actions/mixer_selections_action.c:1266</name>
     <message>
         <source>Change Load Behavior for %s</source>
-        <translation type="unfinished">%S க்கு சுமை நடத்தை மாற்றவும்</translation>
+        <translation>%s க்கு சுமை நடத்தை மாற்றவும்</translation>
     </message>
 </context>
 <context>
@@ -4210,7 +4210,7 @@ Please select a format to export as</source>
     <name>src/dsp/supported_file.c:272</name>
     <message>
         <source>Failed reading metadata for %s</source>
-        <translation type="unfinished">%S க்கு மேனிலை தரவு வாசிப்பு தோல்வியுற்றது</translation>
+        <translation>%s க்கு மேனிலை தரவு வாசிப்பு தோல்வியுற்றது</translation>
     </message>
 </context>
 <context>
@@ -4221,7 +4221,7 @@ Sample rate: %d
 Length: %&lt;PRId64&gt;s %&lt;PRId64&gt; ms | BPM: %.1f
 Channel(s): %u | Bitrate: %&apos;d.%d kb/s
 Bit depth: %d bits</source>
-        <translation type="unfinished">&lt;b&gt;%s &lt;/b&gt;
+        <translation>&lt;b&gt;%s &lt;/b&gt;
  மாதிரி வீதம்: %d
  நீளம்: %&lt;prid64&gt; S %&lt;prid64&gt; MS | பிபிஎம்: %.1 எஃப்
  சேனல் (கள்): %u | பிட்ரேட்: %&apos;d. %d kb/s
@@ -4649,14 +4649,14 @@ Bit depth: %d bits</source>
     <name>src/dsp/audio_function.c:553</name>
     <message>
         <source>This function can only be used on audio clips with 2 channels</source>
-        <translation>இந்த செயல்பாட்டை 2 சேனல்களுடன் ஆடியோ கிளிப்களில் மட்டுமே பயன்படுத்த முடியும்</translation>
+        <translation>இந்த செயல்பாட்டை 2 சேனல்களுடன் ஒலி கிளிப்களில் மட்டுமே பயன்படுத்த முடியும்</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/audio_function.c:568</name>
     <message>
         <source>Failed to get audio clip from external program</source>
-        <translation>வெளிப்புற நிரலிலிருந்து ஆடியோ கிளிப்பைப் பெறுவதில் தோல்வி</translation>
+        <translation>வெளிப்புற நிரலிலிருந்து ஒலி கிளிப்பைப் பெறுவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -4930,7 +4930,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/engine.c:484</name>
     <message>
         <source>Failed to initialize the %s audio backend. Will use the dummy backend instead. Please check your backend settings in the Preferences.</source>
-        <translation type="unfinished">%S ஆடியோ பின்தளத்தில் தொடங்குவதில் தோல்வி. அதற்கு பதிலாக போலி பின்தளத்தில் பயன்படுத்தும். விருப்பங்களில் உங்கள் பின்தளத்தில் அமைப்புகளை சரிபார்க்கவும்.</translation>
+        <translation>%s ஒலி பின்தளத்தில் தொடங்குவதில் தோல்வி. அதற்கு பதிலாக போலி பின்தளத்தில் பயன்படுத்தும். விருப்பங்களில் உங்கள் பின்தளத்தில் அமைப்புகளை சரிபார்க்கவும்.</translation>
     </message>
 </context>
 <context>
@@ -4944,14 +4944,14 @@ Bit depth: %d bits</source>
     <name>src/dsp/engine.c:524</name>
     <message>
         <source>The JACK MIDI backend can only be used with the JACK audio backend (your current audio backend is %s). Will use the dummy MIDI backend instead.</source>
-        <translation>சாக் மிடி பின்தளத்தில் சாக் ஆடியோ பின்தளத்தில் மட்டுமே பயன்படுத்த முடியும் (உங்கள் தற்போதைய ஆடியோ பின்தளத்தில் %s). அதற்கு பதிலாக போலி மிடி பின்தளத்தில் பயன்படுத்தும்.</translation>
+        <translation>சாக் மிடி பின்தளத்தில் சாக் ஒலி பின்தளத்தில் மட்டுமே பயன்படுத்த முடியும் (உங்கள் தற்போதைய ஒலி பின்தளத்தில் %s). அதற்கு பதிலாக போலி மிடி பின்தளத்தில் பயன்படுத்தும்.</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/engine.c:558</name>
     <message>
         <source>Failed to initialize the %s MIDI backend. Will use the dummy backend instead. Please check your backend settings in the Preferences.</source>
-        <translation type="unfinished">%S MIDI பின்தளத்தில் தொடங்குவதில் தோல்வி. அதற்கு பதிலாக போலி பின்தளத்தில் பயன்படுத்தும். விருப்பங்களில் உங்கள் பின்தளத்தில் அமைப்புகளை சரிபார்க்கவும்.</translation>
+        <translation>%s MIDI பின்தளத்தில் தொடங்குவதில் தோல்வி. அதற்கு பதிலாக போலி பின்தளத்தில் பயன்படுத்தும். விருப்பங்களில் உங்கள் பின்தளத்தில் அமைப்புகளை சரிபார்க்கவும்.</translation>
     </message>
 </context>
 <context>
@@ -4965,7 +4965,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/engine.c:599</name>
     <message>
         <source>Your selected combination of backends may not work properly. If you want to use JACK, please select JACK as both your audio and MIDI backend.</source>
-        <translation>நீங்கள் தேர்ந்தெடுக்கப்பட்ட பின்தளத்தில் கலவையானது சரியாக வேலை செய்யாது. நீங்கள் சாக் பயன்படுத்த விரும்பினால், தயவுசெய்து உங்கள் ஆடியோ மற்றும் மிடி பின்தளத்தில் சாக் தேர்ந்தெடுக்கவும்.</translation>
+        <translation>நீங்கள் தேர்ந்தெடுக்கப்பட்ட பின்தளத்தில் கலவையானது சரியாக வேலை செய்யாது. நீங்கள் சாக் பயன்படுத்த விரும்பினால், தயவுசெய்து உங்கள் ஒலி மற்றும் மிடி பின்தளத்தில் சாக் தேர்ந்தெடுக்கவும்.</translation>
     </message>
 </context>
 <context>
@@ -4979,7 +4979,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/engine.c:789</name>
     <message>
         <source>The selected MIDI/audio backend was not found in the version of %s you have installed. The audio and MIDI backends were set to &quot;Dummy&quot;. Please set your preferred backend from the preferences.</source>
-        <translation>தேர்ந்தெடுக்கப்பட்ட மிடி/ஆடியோ பின்தளத்தில் நீங்கள் நிறுவிய %s பதிப்பில் காணப்படவில்லை. ஆடியோ மற்றும் மிடி பின்தளத்தில் &quot;போலி&quot; என அமைக்கப்பட்டன. விருப்பங்களிலிருந்து உங்களுக்கு விருப்பமான பின்தளத்தில் அமைக்கவும்.</translation>
+        <translation>தேர்ந்தெடுக்கப்பட்ட மிடி/ஒலி பின்தளத்தில் நீங்கள் நிறுவிய %s பதிப்பில் காணப்படவில்லை. ஒலி மற்றும் மிடி பின்தளத்தில் &quot;போலி&quot; என அமைக்கப்பட்டன. விருப்பங்களிலிருந்து உங்களுக்கு விருப்பமான பின்தளத்தில் அமைக்கவும்.</translation>
     </message>
 </context>
 <context>
@@ -5009,35 +5009,35 @@ Bit depth: %d bits</source>
     <name>src/dsp/exporter.c:262</name>
     <message>
         <source>Invalid SNDFILE format %s: 0x%08X != 0x%08X</source>
-        <translation type="unfinished">தவறான SndFile வடிவம்%s: 0x%08x! = 0x%08x</translation>
+        <translation>தவறான SndFile வடிவம்%s: 0x%08x! = 0x%08x</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/exporter.c:407</name>
     <message>
         <source>Export failed: Error seeking file at %ld</source>
-        <translation type="unfinished">ஏற்றுமதி தோல்வியுற்றது: %எல்.டி.யில் கோப்பைத் தேடும் பிழை</translation>
+        <translation>ஏற்றுமதி தோல்வியுற்றது: %எல்.டி.யில் கோப்பைத் தேடும் பிழை</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/exporter.c:423</name>
     <message>
         <source>Export failed: %ld frames written (expected %d)</source>
-        <translation type="unfinished">ஏற்றுமதி தோல்வியுற்றது: %எல்.டி பிரேம்கள் எழுதப்பட்டவை (எதிர்பார்க்கப்படும் %d)</translation>
+        <translation>ஏற்றுமதி தோல்வியுற்றது: %எல்.டி பிரேம்கள் எழுதப்பட்டவை (எதிர்பார்க்கப்படும் %d)</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/exporter.c:515</name>
     <message>
         <source>The exported audio contains segments louder than 0 dB (max detected %.1f dB).</source>
-        <translation>ஏற்றுமதி செய்யப்பட்ட ஆடியோவில் 0 dB ஐ விட சத்தமாக பகுதிகள் உள்ளன (அதிகபட்சம் %.1f DB).</translation>
+        <translation>ஏற்றுமதி செய்யப்பட்ட ஒலிவில் 0 dB ஐ விட சத்தமாக பகுதிகள் உள்ளன (அதிகபட்சம் %.1f DB).</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/exporter.c:952</name>
     <message>
         <source>Failed to create audio track</source>
-        <translation>ஆடியோ டிராக்கை உருவாக்குவதில் தோல்வி</translation>
+        <translation>ஒலி டிராக்கை உருவாக்குவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -5051,7 +5051,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/engine_pulse.c:85</name>
     <message>
         <source>A buffer underflow has occurred. Try increasing the buffer size in the settings to avoid audio glitches.</source>
-        <translation>இடையக கீழ்நோக்கி ஏற்பட்டது. ஆடியோ குறைபாடுகளைத் தவிர்க்க அமைப்புகளில் இடையக அளவை அதிகரிக்க முயற்சிக்கவும்.</translation>
+        <translation>இடையக கீழ்நோக்கி ஏற்பட்டது. ஒலி குறைபாடுகளைத் தவிர்க்க அமைப்புகளில் இடையக அளவை அதிகரிக்க முயற்சிக்கவும்.</translation>
     </message>
 </context>
 <context>
@@ -5100,35 +5100,35 @@ Bit depth: %d bits</source>
     <name>src/dsp/clip.c:195</name>
     <message>
         <source>Failed to initialize audio file</source>
-        <translation>ஆடியோ கோப்பைத் தொடங்குவதில் தோல்வி</translation>
+        <translation>ஒலி கோப்பைத் தொடங்குவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/clip.c:221</name>
     <message>
         <source>Failed to initialize audio file at %s</source>
-        <translation type="unfinished">%S இல் ஆடியோ கோப்பைத் தொடங்குவதில் தோல்வி</translation>
+        <translation>%s இல் ஒலி கோப்பைத் தொடங்குவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/clip.c:468</name>
     <message>
         <source>Failed to write audio clip to file: %s</source>
-        <translation>கோப்புக்கு ஆடியோ கிளிப்பை எழுதத் தவறிவிட்டது: %s</translation>
+        <translation>கோப்புக்கு ஒலி கிளிப்பை எழுதத் தவறிவிட்டது: %s</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/clip.c:531</name>
     <message>
         <source>Failed to write audio file</source>
-        <translation>ஆடியோ கோப்பை எழுதுவதில் தோல்வி</translation>
+        <translation>ஒலி கோப்பை எழுதுவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/clip.c:551</name>
     <message>
         <source>Failed to create audio clip from file</source>
-        <translation>கோப்பிலிருந்து ஆடியோ கிளிப்பை உருவாக்கத் தவறிவிட்டது</translation>
+        <translation>கோப்பிலிருந்து ஒலி கிளிப்பை உருவாக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -5205,14 +5205,14 @@ Bit depth: %d bits</source>
     <name>src/dsp/clip.c:741</name>
     <message>
         <source>Failed to create audio clip from file at %s</source>
-        <translation type="unfinished">%S இல் கோப்பிலிருந்து ஆடியோ கிளிப்பை உருவாக்கத் தவறிவிட்டது</translation>
+        <translation>%s இல் கோப்பிலிருந்து ஒலி கிளிப்பை உருவாக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
     <name>src/dsp/audio_region.c:89</name>
     <message>
         <source>Failed to create audio clip from file at %s</source>
-        <translation type="unfinished">%S இல் கோப்பிலிருந்து ஆடியோ கிளிப்பை உருவாக்கத் தவறிவிட்டது</translation>
+        <translation>%s இல் கோப்பிலிருந்து ஒலி கிளிப்பை உருவாக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -5262,7 +5262,7 @@ Bit depth: %d bits</source>
     </message>
     <message>
         <source>Please enter a number between %f and %f</source>
-        <translation type="unfinished">%F மற்றும் %f க்கு இடையில் ஒரு எண்ணை உள்ளிடவும்</translation>
+        <translation>%F மற்றும் %f க்கு இடையில் ஒரு எண்ணை உள்ளிடவும்</translation>
     </message>
 </context>
 <context>
@@ -5323,7 +5323,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/pool.c:397</name>
     <message>
         <source>Failed to initialize audio clip &apos;%s&apos;</source>
-        <translation>ஆடியோ கிளிப்பை &apos;%s&apos; துவக்கத் தவறிவிட்டது</translation>
+        <translation>ஒலி கிளிப்பை &apos;%s&apos; துவக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -5337,7 +5337,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/audio_region.c:226</name>
     <message>
         <source>Failed to duplicate audio clip</source>
-        <translation>ஆடியோ கிளிப்பை நகலெடுப்பதில் தோல்வி</translation>
+        <translation>ஒலி கிளிப்பை நகலெடுப்பதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -5400,7 +5400,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/channel_send.c:158</name>
     <message>
         <source>Channel Send %d audio in</source>
-        <translation>சேனல் %d ஆடியோவை அனுப்பவும்</translation>
+        <translation>சேனல் %d ஒலிவை அனுப்பவும்</translation>
     </message>
 </context>
 <context>
@@ -5414,7 +5414,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/channel_send.c:170</name>
     <message>
         <source>Channel Send %d audio out</source>
-        <translation>சேனல் %d ஆடியோவை வெளியே அனுப்புங்கள்</translation>
+        <translation>சேனல் %d ஒலிவை வெளியே அனுப்புங்கள்</translation>
     </message>
 </context>
 <context>
@@ -5498,7 +5498,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/tracklist.c:1243</name>
     <message>
         <source>Failed to create region %d inside track %s</source>
-        <translation type="unfinished">ட்ராக் %s இன்சைட் ட்ராக் %d உருவாக்கத் தவறிவிட்டது</translation>
+        <translation>ட்ராக் %s இன்சைட் ட்ராக் %d உருவாக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -5519,7 +5519,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/tracklist.c:1356</name>
     <message>
         <source>Can only drop audio files on audio tracks</source>
-        <translation>ஆடியோ டிராக்குகளில் மட்டுமே ஆடியோ கோப்புகளை கைவிட முடியும்</translation>
+        <translation>ஒலி டிராக்குகளில் மட்டுமே ஒலி கோப்புகளை கைவிட முடியும்</translation>
     </message>
 </context>
 <context>
@@ -5639,7 +5639,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/modulator_macro_processor.c:97</name>
     <message>
         <source>Macro CV In %d</source>
-        <translation type="unfinished">%D இல் மேக்ரோ சி.வி.</translation>
+        <translation>%d இல் மேக்ரோ சிவி</translation>
     </message>
 </context>
 <context>
@@ -5674,7 +5674,7 @@ Bit depth: %d bits</source>
     <name>src/dsp/channel.c:1850</name>
     <message>
         <source>Plugin %s cannot be added to this slot</source>
-        <translation type="unfinished">இந்த ச்லாட்டில் சொருகி %களை சேர்க்க முடியாது</translation>
+        <translation>இந்த ச்லாட்டில் சொருகி %களை சேர்க்க முடியாது</translation>
     </message>
 </context>
 <context>
@@ -5688,7 +5688,7 @@ Bit depth: %d bits</source>
     <name>src/io/file_import.c:111</name>
     <message>
         <source>The MIDI file at %s contains no data</source>
-        <translation type="unfinished">%S இல் உள்ள மிடி கோப்பில் தரவு இல்லை</translation>
+        <translation>%s இல் உள்ள மிடி கோப்பில் தரவு இல்லை</translation>
     </message>
 </context>
 <context>
@@ -5723,56 +5723,56 @@ Bit depth: %d bits</source>
     <name>src/io/audio_file.c:147</name>
     <message>
         <source>Failed to open audio file at &apos;%s&apos;: %s (error code %i)</source>
-        <translation>ஆடியோ கோப்பை &apos; %s&apos; இல் திறக்கத் தவறிவிட்டது: %s (பிழைக் குறியீடு %i)</translation>
+        <translation>ஒலி கோப்பை &apos; %s&apos; இல் திறக்கத் தவறிவிட்டது: %s (பிழைக் குறியீடு %i)</translation>
     </message>
 </context>
 <context>
     <name>src/io/audio_file.c:172</name>
     <message>
         <source>Failed to open audio file</source>
-        <translation>ஆடியோ கோப்பைத் திறக்கத் தவறிவிட்டது</translation>
+        <translation>ஒலி கோப்பைத் திறக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
     <name>src/io/audio_file.c:242</name>
     <message>
         <source>Failed to open audio file</source>
-        <translation>ஆடியோ கோப்பைத் திறக்கத் தவறிவிட்டது</translation>
+        <translation>ஒலி கோப்பைத் திறக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
     <name>src/io/audio_file.c:205</name>
     <message>
         <source>Failed to close audio file after reading info</source>
-        <translation>தகவலைப் படித்த பிறகு ஆடியோ கோப்பை மூடுவதில் தோல்வி</translation>
+        <translation>தகவலைப் படித்த பிறகு ஒலி கோப்பை மூடுவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
     <name>src/io/audio_file.c:254</name>
     <message>
         <source>Tried to seek %zu frames but actually seeked %zd frames</source>
-        <translation type="unfinished">%ZU பிரேம்களைத் தேட முயற்சித்தேன், ஆனால் உண்மையில் %ZD பிரேம்களைத் தேடினார்</translation>
+        <translation>%ZU பிரேம்களைத் தேட முயற்சித்தேன், ஆனால் உண்மையில் %ZD பிரேம்களைத் தேடினார்</translation>
     </message>
 </context>
 <context>
     <name>src/io/audio_file.c:265</name>
     <message>
         <source>Expected to read %zu frames but actually read %zd frames</source>
-        <translation type="unfinished">%ZU பிரேம்களைப் படிக்கும் என்று எதிர்பார்க்கப்படுகிறது, ஆனால் உண்மையில் %ZD பிரேம்களைப் படியுங்கள்</translation>
+        <translation>%ZU பிரேம்களைப் படிக்கும் என்று எதிர்பார்க்கப்படுகிறது, ஆனால் உண்மையில் %ZD பிரேம்களைப் படியுங்கள்</translation>
     </message>
 </context>
 <context>
     <name>src/io/audio_file.c:281</name>
     <message>
         <source>Expected to read %&lt;PRId64&gt; frames but actually read %zd frames</source>
-        <translation type="unfinished">%&lt;prid64&gt; பிரேம்களைப் படிக்கும் என்று எதிர்பார்க்கப்படுகிறது, ஆனால் உண்மையில் %ZD பிரேம்களைப் படியுங்கள்</translation>
+        <translation>%&lt;prid64&gt; பிரேம்களைப் படிக்கும் என்று எதிர்பார்க்கப்படுகிறது, ஆனால் உண்மையில் %ZD பிரேம்களைப் படியுங்கள்</translation>
     </message>
 </context>
 <context>
     <name>src/io/audio_file.c:307</name>
     <message>
         <source>Failed to close audio file at &apos;%s&apos;: %s (error code %i)</source>
-        <translation>&apos; %s&apos; இல் ஆடியோ கோப்பை மூடுவதில் தோல்வி: %s (பிழைக் குறியீடு %i)</translation>
+        <translation>&apos; %s&apos; இல் ஒலி கோப்பை மூடுவதில் தோல்வி: %s (பிழைக் குறியீடு %i)</translation>
     </message>
 </context>
 <context>
@@ -5810,7 +5810,7 @@ Bit depth: %d bits</source>
 1. Uncomment any locale starting with the language code &lt;b&gt;%s&lt;/b&gt; in &lt;b&gt;/etc/locale.gen&lt;/b&gt; (needs root privileges)
 2. Run &lt;b&gt;locale-gen&lt;/b&gt; as root
 3. Restart %s</source>
-        <translation type="unfinished">நீங்கள் தேர்ந்தெடுத்த மொழிக்கான இடம் கிடைக்கவில்லை. கீழேயுள்ள படிகளைப் பயன்படுத்தி முதலில் ஒன்றை இயக்கவும், மீண்டும் முயற்சிக்கவும்.
+        <translation>நீங்கள் தேர்ந்தெடுத்த மொழிக்கான இடம் கிடைக்கவில்லை. கீழேயுள்ள படிகளைப் பயன்படுத்தி முதலில் ஒன்றை இயக்கவும், மீண்டும் முயற்சிக்கவும்.
  1. மொழிக் குறியீட்டிலிருந்து தொடங்கும் எந்தவொரு இடத்தையும் &lt;b&gt;%s &lt;/b&gt; &lt;b&gt; /etc/locale.gen &lt;/b&gt; இல் (ரூட் சலுகைகள் தேவை)
  2. &lt;b&gt; லோகேல்-சென் &lt;/b&gt; ஐ வேராக இயக்கவும்
  3. %களை மறுதொடக்கம் செய்யுங்கள்</translation>
@@ -6635,7 +6635,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/preferences.c:676</name>
     <message>
         <source>Multiple search paths must be separated by the %s character. Environment variables are supported with the following syntax: ${ENV_VAR_NAME}. Leave blank to use default paths.</source>
-        <translation>பல தேடல் பாதைகள் %s எழுத்துக்குறியால் பிரிக்கப்பட வேண்டும். சுற்றுச்சூழல் மாறிகள் பின்வரும் தொடரியல் மூலம் ஆதரிக்கப்படுகின்றன: $ {env_var_name}. இயல்புநிலை பாதைகளைப் பயன்படுத்த காலியாக விடவும்.</translation>
+        <translation>பல தேடல் பாதைகள் %s எழுத்துக்குறியால் பிரிக்கப்பட வேண்டும். சுற்றுச்சூழல் மாறிகள் பின்வரும் தொடரியல் மூலம் ஆதரிக்கப்படுகின்றன: $ {ENV_VAR_NAME}. இயல்புநிலை பாதைகளைப் பயன்படுத்த காலியாக விடவும்.</translation>
     </message>
 </context>
 <context>
@@ -6684,7 +6684,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/route_target_selector.c:60</name>
     <message>
         <source>Failed to change direct out to %s</source>
-        <translation type="unfinished">%S க்கு நேரடியாக மாற்றத் தவறிவிட்டது</translation>
+        <translation>%s க்கு நேரடியாக மாற்றத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -6733,7 +6733,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/route_target_selector.c:341</name>
     <message>
         <source>Routed to %s</source>
-        <translation type="unfinished">%S க்கு திசைதிருப்பப்பட்டது</translation>
+        <translation>%s க்கு திசைதிருப்பப்பட்டது</translation>
     </message>
 </context>
 <context>
@@ -7167,35 +7167,35 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/event_viewer.c:700</name>
     <message>
         <source>Curviness</source>
-        <translation>வளைவு</translation>
+        <translation>வளைவாக</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/item_factory.c:310</name>
     <message>
         <source>Curviness</source>
-        <translation>வளைவு</translation>
+        <translation>வளைவாக</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/item_factory.c:781</name>
     <message>
         <source>Curviness</source>
-        <translation>வளைவு</translation>
+        <translation>வளைவாக</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:582</name>
     <message>
         <source>Curviness</source>
-        <translation>வளைவு</translation>
+        <translation>வளைவாக</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:615</name>
     <message>
         <source>Curviness</source>
-        <translation>வளைவு</translation>
+        <translation>வளைவாக</translation>
     </message>
 </context>
 <context>
@@ -7440,7 +7440,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/track.c:409</name>
     <message>
         <source>Freeze/unfreeze</source>
-        <translation>முடக்கம்/முடக்கம்</translation>
+        <translation>உறையவை/செயல்படுத்து</translation>
     </message>
 </context>
 <context>
@@ -7836,7 +7836,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/plugin_properties_expander.c:234</name>
     <message>
         <source>Save preset</source>
-        <translation>முன்னமைவை சேமிக்கவும்</translation>
+        <translation>முன்னமைவை சேமி</translation>
     </message>
 </context>
 <context>
@@ -8516,7 +8516,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/ext_input_selection_dropdown.c:267</name>
     <message>
         <source>All Audio Inputs</source>
-        <translation>அனைத்து ஆடியோ உள்ளீடுகளும்</translation>
+        <translation>அனைத்து ஒலி உள்ளீடுகளும்</translation>
     </message>
 </context>
 <context>
@@ -8541,7 +8541,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/track_input_expander.c:57</name>
     <message>
         <source>Audio input (%s) for recording</source>
-        <translation>பதிவு செய்வதற்கான ஆடியோ உள்ளீடு (%s)</translation>
+        <translation>பதிவு செய்வதற்கான ஒலி உள்ளீடு (%s)</translation>
     </message>
 </context>
 <context>
@@ -8615,7 +8615,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/monitor_section.c:58</name>
     <message>
         <source>&lt;small&gt;%d muted&lt;/small&gt;</source>
-        <translation>&lt;mall&gt;%d முடக்கிய &lt;/சிறிய&gt;</translation>
+        <translation>&lt;small&gt;%d முடக்கிய&lt;/small&gt;</translation>
     </message>
 </context>
 <context>
@@ -8629,7 +8629,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/monitor_section.c:63</name>
     <message>
         <source>&lt;small&gt;%d soloed&lt;/small&gt;</source>
-        <translation>&lt;mall&gt;%d தனியாக &lt;/சிறிய&gt;</translation>
+        <translation>&lt;small&gt;%d தனியாக &lt;/small&gt;</translation>
     </message>
 </context>
 <context>
@@ -8643,7 +8643,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/monitor_section.c:68</name>
     <message>
         <source>&lt;small&gt;%d listened&lt;/small&gt;</source>
-        <translation>&lt;mall&gt;%d கேட்டது &lt;/சிறிய&gt;</translation>
+        <translation>&lt;small&gt;%d கேட்டது &lt;/small&gt;</translation>
     </message>
 </context>
 <context>
@@ -8797,14 +8797,14 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/ports_expander.c:212</name>
     <message>
         <source>Audio Ins</source>
-        <translation>ஆடியோ இன்</translation>
+        <translation>ஒலி இன்</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/ports_expander.c:214</name>
     <message>
         <source>Audio Outs</source>
-        <translation>ஆடியோ அவுட்</translation>
+        <translation>ஒலி அவுட்கள்</translation>
     </message>
 </context>
 <context>
@@ -9454,7 +9454,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/timeline_arranger.c:1058</name>
     <message>
         <source>Audio Regions</source>
-        <translation>ஆடியோ பகுதிகள்</translation>
+        <translation>ஒலி பகுதிகள்</translation>
     </message>
 </context>
 <context>
@@ -9496,7 +9496,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/timeline_arranger.c:1130</name>
     <message>
         <source>Bounce to Audio</source>
-        <translation>ஆடியோவுக்கு பவுன்ச்</translation>
+        <translation>ஒலிவுக்கு பவுன்ச்</translation>
     </message>
 </context>
 <context>
@@ -9752,14 +9752,14 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/greeter.c:694</name>
     <message>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %suser manual%s.</source>
-        <translation type="unfinished">Zrythm ஐப் பயன்படுத்துவது இது உங்கள் முதல் முறையாக இருந்தால், %SUSER MANUAL %S இல் &apos;தொடங்குதல்&apos; பிரிவு வழியாக செல்ல பரிந்துரைக்கிறோம்.</translation>
+        <translation>Zrythm ஐப் பயன்படுத்துவது இது உங்கள் முதல் முறையாக இருந்தால், %sUSER MANUAL %s இல் &apos;தொடங்குதல்&apos; பிரிவு வழியாக செல்ல பரிந்துரைக்கிறோம்.</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/welcome_message_dialog.c:26</name>
     <message>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %suser manual%s.</source>
-        <translation type="unfinished">Zrythm ஐப் பயன்படுத்துவது இது உங்கள் முதல் முறையாக இருந்தால், %SUSER MANUAL %S இல் &apos;தொடங்குதல்&apos; பிரிவு வழியாக செல்ல பரிந்துரைக்கிறோம்.</translation>
+        <translation>Zrythm ஐப் பயன்படுத்துவது இது உங்கள் முதல் முறையாக இருந்தால், %sபயனர் கையேடு%s இல் &apos;தொடங்குதல்&apos; பிரிவு வழியாகச் செல்லப் பரிந்துரைக்கிறோம்.</translation>
     </message>
 </context>
 <context>
@@ -9780,7 +9780,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/greeter.c:726</name>
     <message>
         <source>Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s, registered in the UK and other countries.</source>
-        <translation type="unfinished">சிரித்ம் மற்றும் சிரித்ம் லோகோ ஆகியவை இங்கிலாந்திலும் பிற நாடுகளிலும் பதிவுசெய்யப்பட்ட அலெக்சாண்ட்ரோச் தியோடோட்டோ %s இன் %ச்ட்ராட்மார்க்ச் ஆகும்.</translation>
+        <translation>சிரித்ம் மற்றும் சிரித்ம் லோகோ ஆகியவை இங்கிலாந்திலும் பிற நாடுகளிலும் பதிவுசெய்யப்பட்ட அலெக்சாண்ட்ரோச் தியோடோட்டோ %s இன் %ச்ட்ராட்மார்க்ச் ஆகும்.</translation>
     </message>
 </context>
 <context>
@@ -9836,7 +9836,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/greeter.c:785</name>
     <message>
         <source>You can create your own templates by copying a project directory under “templates” in the &lt;a href=&quot;%s&quot;&gt;Zrythm user path&lt;/a&gt;.</source>
-        <translation type="unfinished">&lt;a href=&quot;%S&quot;&gt; zrythm பயனர் பாதை &lt;/a&gt; இல் “வார்ப்புருக்கள்” இன் கீழ் ஒரு திட்ட கோப்பகத்தை நகலெடுப்பதன் மூலம் உங்கள் சொந்த வார்ப்புருக்களை உருவாக்கலாம்.</translation>
+        <translation>&lt;a href=&quot;%s&quot;&gt; zrythm பயனர் பாதை &lt;/a&gt; இல் “வார்ப்புருக்கள்” இன் கீழ் ஒரு திட்ட கோப்பகத்தை நகலெடுப்பதன் மூலம் உங்கள் சொந்த வார்ப்புருக்களை உருவாக்கலாம்.</translation>
     </message>
 </context>
 <context>
@@ -9857,7 +9857,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/tracklist.c:70</name>
     <message>
         <source>Add Audio Track</source>
-        <translation>ஆடியோ டிராக்கைச் சேர்க்கவும்</translation>
+        <translation>ஒலி டிராக்கைச் சேர்க்கவும்</translation>
     </message>
 </context>
 <context>
@@ -10001,7 +10001,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/dialogs/welcome_message_dialog.c:34</name>
     <message>
         <source>%sZrythm relies on donations and purchases to sustain development%s. If you enjoy the software, please consider %sdonating%s or %sbuying an installer%s.</source>
-        <translation type="unfinished">%szrythm வளர்ச்சியைத் தக்கவைக்க நன்கொடைகள் மற்றும் கொள்முதல் ஆகியவற்றை நம்பியுள்ளது. நீங்கள் மென்பொருளை ரசிக்கிறீர்கள் என்றால், தயவுசெய்து %sdonation %s அல்லது %sbuying ஒரு நிறுவி %s ஐக் கவனியுங்கள்.</translation>
+        <translation>%szrythm வளர்ச்சியைத் தக்கவைக்க நன்கொடைகள் மற்றும் கொள்முதல் ஆகியவற்றை நம்பியுள்ளது. நீங்கள் மென்பொருளை ரசிக்கிறீர்கள் என்றால், தயவுசெய்து %sdonation %s அல்லது %sbuying ஒரு நிறுவி %s ஐக் கவனியுங்கள்.</translation>
     </message>
 </context>
 <context>
@@ -10036,7 +10036,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/dialogs/welcome_message_dialog.c:67</name>
     <message>
         <source>Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s.</source>
-        <translation type="unfinished">சிரித்ம் மற்றும் சிரித்ம் லோகோ ஆகியவை அலெக்சாண்ட்ரோச் தியோடோடோ %s %ச்ட்ராட்மார்க்ச் ஆகும்.</translation>
+        <translation>சிரித்ம் மற்றும் சிரித்ம் லோகோ ஆகியவை அலெக்சாண்ட்ரோச் தியோடோடோ %s %ச்ட்ராட்மார்க்ச் ஆகும்.</translation>
     </message>
 </context>
 <context>
@@ -10190,7 +10190,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/dialogs/port_info.c:64</name>
     <message>
         <source>%.1f to %.1f</source>
-        <translation type="unfinished">%.1 எஃப் முதல் %.1 எஃப்</translation>
+        <translation>%.1 எஃப் முதல் %.1 எஃப்</translation>
     </message>
 </context>
 <context>
@@ -10218,7 +10218,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/dialogs/file_import_progress_dialog.c:30</name>
     <message>
         <source>Imported %d of %d files...</source>
-        <translation type="unfinished">%D கோப்புகளின் இறக்குமதி %d ...</translation>
+        <translation>%d கோப்புகளின் இறக்குமதி %d ...</translation>
     </message>
 </context>
 <context>
@@ -10460,7 +10460,7 @@ Bit depth: %d bits</source>
     <message>
         <source>
 %zu more files...</source>
-        <translation type="unfinished">
+        <translation>
 மேலும் கோப்புகளுக்கு %...</translation>
     </message>
 </context>
@@ -10661,7 +10661,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:278</name>
     <message>
         <source>Click OK to submit. You can verify what will be sent below. By clicking OK, you agree to our %sPrivacy Policy%s.</source>
-        <translation type="unfinished">சமர்ப்பிக்க சரி என்பதைக் சொடுக்கு செய்க. கீழே அனுப்பப்படும் என்ன என்பதை நீங்கள் சரிபார்க்கலாம். சரி என்பதைக் சொடுக்கு செய்வதன் மூலம், எங்கள் %தனியுரிமைக் கொள்கை %s ஒப்புக்கொள்கிறீர்கள்.</translation>
+        <translation>சமர்ப்பிக்க சரி என்பதைக் சொடுக்கு செய்க. கீழே அனுப்பப்படும் என்ன என்பதை நீங்கள் சரிபார்க்கலாம். சரி என்பதைக் சொடுக்கு செய்வதன் மூலம், எங்கள் %தனியுரிமைக் கொள்கை %s ஒப்புக்கொள்கிறீர்கள்.</translation>
     </message>
 </context>
 <context>
@@ -10696,21 +10696,21 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:412</name>
     <message>
         <source>Please copy the template below in a &lt;a href=&quot;%s&quot;&gt;new issue&lt;/a&gt;.</source>
-        <translation type="unfinished">கீழே உள்ள வார்ப்புருவை &lt;a href=&quot;%S&quot;&gt; புதிய வெளியீடு &lt;/a&gt; இல் நகலெடுக்கவும்.</translation>
+        <translation>கீழே உள்ள வார்ப்புருவை &lt;a href=&quot;%s&quot;&gt; புதிய வெளியீடு &lt;/a&gt; இல் நகலெடுக்கவும்.</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/bug_report_dialog.c:521</name>
     <message>
         <source>%sPlease help us fix this by submitting a bug report</source>
-        <translation type="unfinished">பிழை அறிக்கையைச் சமர்ப்பிப்பதன் மூலம் இதை சரிசெய்ய எங்களுக்கு உதவுங்கள்</translation>
+        <translation>பிழை அறிக்கையைச் சமர்ப்பிப்பதன் மூலம் இதை சரிசெய்ய எங்களுக்கு உதவுங்கள்</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/about_dialog.c:53</name>
     <message>
         <source>a highly automated and intuitive digital audio workstation</source>
-        <translation>மிகவும் தானியங்கி மற்றும் உள்ளுணர்வு டிசிட்டல் ஆடியோ பணிநிலையம்</translation>
+        <translation>மிகவும் தானியங்கி மற்றும் உள்ளுணர்வு டிசிட்டல் ஒலி பணிநிலையம்</translation>
     </message>
 </context>
 <context>
@@ -10787,7 +10787,7 @@ Bit depth: %d bits</source>
     <name>src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:95</name>
     <message>
         <source>Failed to create audio group track</source>
-        <translation>ஆடியோ குழு தடத்தை உருவாக்குவதில் தோல்வி</translation>
+        <translation>ஒலி குழு தடத்தை உருவாக்குவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -11067,7 +11067,7 @@ Bit depth: %d bits</source>
     <name>src/guile/actions/channel_send_action.c:32</name>
     <message>
         <source>Failed to create audio send</source>
-        <translation>ஆடியோ அனுப்பலை உருவாக்கத் தவறிவிட்டது</translation>
+        <translation>ஒலி அனுப்பலை உருவாக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -11102,7 +11102,7 @@ Bit depth: %d bits</source>
     <name>src/plugins/plugin_manager.c:1245</name>
     <message>
         <source>Skipped %1$s plugin at %2$s</source>
-        <translation type="unfinished">%2 $ s இல் %1 $ s சொருகி தவிர்க்கப்பட்டது</translation>
+        <translation>%2$s இல் %1$s சொருகி தவிர்க்கப்பட்டது</translation>
     </message>
 </context>
 <context>
@@ -11130,7 +11130,7 @@ Bit depth: %d bits</source>
     <name>src/plugins/plugin_manager.c:1449</name>
     <message>
         <source>Skipped AU plugin at %u</source>
-        <translation type="unfinished">%U இல் அயு சொருகி தவிர்க்கப்பட்டது</translation>
+        <translation>%u இல் அயு சொருகி தவிர்க்கப்பட்டது</translation>
     </message>
 </context>
 <context>
@@ -11165,7 +11165,7 @@ Bit depth: %d bits</source>
     <name>src/plugins/lv2_plugin.c:2162</name>
     <message>
         <source>Failed to load state from %s</source>
-        <translation type="unfinished">%S இலிருந்து நிலையை ஏற்றுவதில் தோல்வி</translation>
+        <translation>%s இலிருந்து நிலையை ஏற்றுவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -11186,7 +11186,7 @@ Bit depth: %d bits</source>
     <name>src/plugins/lv2_plugin.c:2217</name>
     <message>
         <source>Failed to get dlinfo for %s</source>
-        <translation type="unfinished">%S க்கு Dlinfo ஐப் பெறுவதில் தோல்வி</translation>
+        <translation>%s க்கு Dlinfo ஐப் பெறுவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -11364,7 +11364,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/plugins/plugin.c:2091</name>
     <message>
         <source>Failed to create plugin clone for %s</source>
-        <translation type="unfinished">%S க்கு சொருகி நகலியை உருவாக்குவதில் தோல்வி</translation>
+        <translation>%s க்கு சொருகி நகலியை உருவாக்குவதில் தோல்வி</translation>
     </message>
 </context>
 <context>
@@ -11385,7 +11385,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/plugins/plugin_gtk.c:295</name>
     <message>
         <source>Save Preset</source>
-        <translation>முன்னமைவை சேமிக்கவும்</translation>
+        <translation>முன்னமைவை சேமி</translation>
     </message>
 </context>
 <context>
@@ -11492,14 +11492,14 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/plugins/carla_native_plugin.c:1049</name>
     <message>
         <source>Audio in</source>
-        <translation>ஆடியோ இன்</translation>
+        <translation>ஒலி உள்</translation>
     </message>
 </context>
 <context>
     <name>src/plugins/carla_native_plugin.c:1097</name>
     <message>
         <source>Audio out</source>
-        <translation>ஆடியோ அவுட்</translation>
+        <translation>ஒலி அவுட்</translation>
     </message>
 </context>
 <context>
@@ -11513,7 +11513,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/plugins/carla_native_plugin.c:1123</name>
     <message>
         <source>CV in</source>
-        <translation>சி.வி.</translation>
+        <translation>சிவி உள்</translation>
     </message>
 </context>
 <context>
@@ -11573,7 +11573,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     </message>
     <message>
         <source>Failed to open LV2 UI for %s</source>
-        <translation type="unfinished">%S க்கு LV2 இடைமுகம் ஐ திறக்கத் தவறிவிட்டது</translation>
+        <translation>%s க்கு LV2 இடைமுகம் ஐ திறக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -11668,7 +11668,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/plugin_settings.c:569</name>
     <message>
         <source>This plugin contains multiple audio outputs. Would you like to auto-route each output to a separate FX track?</source>
-        <translation>இந்த சொருகி பல ஆடியோ வெளியீடுகளைக் கொண்டுள்ளது. ஒவ்வொரு வெளியீட்டையும் ஒரு தனி எஃப்எக்ச் பாதையில் தானாக மாற்ற விரும்புகிறீர்களா?</translation>
+        <translation>இந்த சொருகி பல ஒலி வெளியீடுகளைக் கொண்டுள்ளது. ஒவ்வொரு வெளியீட்டையும் ஒரு தனி எஃப்எக்ச் பாதையில் தானாக மாற்ற விரும்புகிறீர்களா?</translation>
     </message>
 </context>
 <context>
@@ -11801,7 +11801,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/settings/settings.c:122</name>
     <message>
         <source>Schema %s%s%s</source>
-        <translation type="unfinished">அட்டவணை%s%s</translation>
+        <translation>அட்டவணை%s%s</translation>
     </message>
 </context>
 <context>
@@ -11961,7 +11961,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/project/project_init_flow_manager.c:812</name>
     <message>
         <source>Failed to read JSON: [code: %&lt;PRIu32&gt;, pos: %zu] %s</source>
-        <translation type="unfinished">சாதொபொகு ஐப் படிக்கத் தவறிவிட்டது: [குறியீடு: %&lt;PRIU32&gt;, POS: %ZU] %s</translation>
+        <translation>சாதொபொகு ஐப் படிக்கத் தவறிவிட்டது: [குறியீடு: %&lt;PRIU32&gt;, POS: %ZU] %s</translation>
     </message>
 </context>
 <context>
@@ -11982,7 +11982,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/project/project_init_flow_manager.c:970</name>
     <message>
         <source>Failed to initialize the audio file pool</source>
-        <translation>ஆடியோ கோப்பு குளத்தை துவக்கத் தவறிவிட்டது</translation>
+        <translation>ஒலி கோப்பு குளத்தை துவக்கத் தவறிவிட்டது</translation>
     </message>
 </context>
 <context>
@@ -11996,7 +11996,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/project/project_init_flow_manager.c:1082</name>
     <message>
         <source>This project has been automatically upgraded to v1.%d. Saving this project will overwrite the old one. If you would like to keep both, please use &apos;Save As...&apos;.</source>
-        <translation type="unfinished">இந்த திட்டம் தானாக V1 ஆக மேம்படுத்தப்படுகிறது.%D. இந்த திட்டத்தை சேமிப்பது பழையதை மேலெழுதும். இரண்டையும் வைத்திருக்க விரும்பினால், தயவுசெய்து &apos;சேமி ...&apos; ஐப் பயன்படுத்தவும்.</translation>
+        <translation>இந்த திட்டம் தானாக V1 ஆக மேம்படுத்தப்படுகிறது.%d. இந்த திட்டத்தை சேமிப்பது பழையதை மேலெழுதும். இரண்டையும் வைத்திருக்க விரும்பினால், தயவுசெய்து &apos;சேமி ...&apos; ஐப் பயன்படுத்தவும்.</translation>
     </message>
 </context>
 <context>
@@ -12042,21 +12042,21 @@ Use the newer backup?</source>
     <name>data/zrythm.desktop.in:7</name>
     <message>
         <source>Digital Audio Workstation</source>
-        <translation>டிசிட்டல் ஆடியோ பணிநிலையம்</translation>
+        <translation>டிசிட்டல் ஒலி பணிநிலையம்</translation>
     </message>
 </context>
 <context>
     <name>data/zrythm.desktop.in:9</name>
     <message>
         <source>highly automated and intuitive digital audio workstation</source>
-        <translation>அதிக தானியங்கி மற்றும் உள்ளுணர்வு டிசிட்டல் ஆடியோ பணிநிலையம்</translation>
+        <translation>அதிக தானியங்கி மற்றும் உள்ளுணர்வு டிசிட்டல் ஒலி பணிநிலையம்</translation>
     </message>
 </context>
 <context>
     <name>data/zrythm.desktop.in:11</name>
     <message>
         <source>daw;audio;midi;music;</source>
-        <translation>daw; ஆடியோ; மிடி; இசை;</translation>
+        <translation>daw; ஒலி; மிடி; இசை;</translation>
     </message>
 </context>
 <context>
@@ -12469,7 +12469,7 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:403</name>
     <message>
         <source>Whether to use musical mode. If this is on, time-stretching will be applied to events so that they match the project BPM. This mostly applies to audio regions.</source>
-        <translation>இசை பயன்முறையைப் பயன்படுத்த வேண்டுமா. இது இயக்கத்தில் இருந்தால், நிகழ்வுகளுக்கு நேர நீட்டிப்பு பயன்படுத்தப்படும், இதனால் அவை பிபிஎம் திட்டத்துடன் பொருந்துகின்றன. இது பெரும்பாலும் ஆடியோ பகுதிகளுக்கு பொருந்தும்.</translation>
+        <translation>இசை பயன்முறையைப் பயன்படுத்த வேண்டுமா. இது இயக்கத்தில் இருந்தால், நிகழ்வுகளுக்கு நேர நீட்டிப்பு பயன்படுத்தப்படும், இதனால் அவை பிபிஎம் திட்டத்துடன் பொருந்துகின்றன. இது பெரும்பாலும் ஒலி பகுதிகளுக்கு பொருந்தும்.</translation>
     </message>
 </context>
 <context>
@@ -12483,7 +12483,7 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:408</name>
     <message>
         <source>Whether to listen to MIDI notes while dragging them in the piano roll.</source>
-        <translation>பியானோ ரோலில் இழுக்கும்போது மிடி குறிப்புகளைக் கேட்கலாமா?</translation>
+        <translation>பியானோ ரோலில் இழுக்கும்போது மிடி குறிப்புகளைக் கேட்கலாமா.</translation>
     </message>
 </context>
 <context>
@@ -12756,14 +12756,14 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:507</name>
     <message>
         <source>Last used audio function</source>
-        <translation>கடைசியாக பயன்படுத்தப்பட்ட ஆடியோ செயல்பாடு</translation>
+        <translation>கடைசியாக பயன்படுத்தப்பட்ட ஒலி செயல்பாடு</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:508</name>
     <message>
         <source>Last used audio function (index corresponding to enum in audio function action).</source>
-        <translation>கடைசியாக பயன்படுத்தப்பட்ட ஆடியோ செயல்பாடு (ஆடியோ செயல்பாட்டு செயலில் ENUM உடன் தொடர்புடைய குறியீடு).</translation>
+        <translation>கடைசியாக பயன்படுத்தப்பட்ட ஒலி செயல்பாடு (ஒலி செயல்பாட்டு செயலில் ENUM உடன் தொடர்புடைய குறியீடு).</translation>
     </message>
 </context>
 <context>
@@ -14170,7 +14170,7 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1078</name>
     <message>
         <source>Audio backend</source>
-        <translation>ஆடியோ பின்தளத்தில்</translation>
+        <translation>ஒலி பின்தளத்தில்</translation>
     </message>
 </context>
 <context>
@@ -14226,14 +14226,14 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1108</name>
     <message>
         <source>Audio inputs</source>
-        <translation>ஆடியோ உள்ளீடுகள்</translation>
+        <translation>ஒலி உள்ளீடுகள்</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1109</name>
     <message>
         <source>A list of audio inputs to enable.</source>
-        <translation>இயக்க ஆடியோ உள்ளீடுகளின் பட்டியல்.</translation>
+        <translation>இயக்க ஒலி உள்ளீடுகளின் பட்டியல்.</translation>
     </message>
 </context>
 <context>
@@ -14681,14 +14681,14 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:8</name>
     <message>
         <source>Digital audio workstation</source>
-        <translation>டிசிட்டல் ஆடியோ பணிநிலையம்</translation>
+        <translation>டிசிட்டல் ஒலி பணிநிலையம்</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:10</name>
     <message>
         <source>Zrythm is a digital audio workstation designed to be featureful and easy to use. It offers streamlined editing workflows with flexible tools, limitless automation capabilities, powerful mixing features, chord assistance and support for various plugin and file formats.</source>
-        <translation>சிரித்ம் என்பது டிசிட்டல் ஆடியோ பணிநிலையமாகும், இது அம்சமாகவும் பயன்படுத்த எளிதாகவும் வடிவமைக்கப்பட்டுள்ளது. இது நெகிழ்வான கருவிகள், வரம்பற்ற ஆட்டோமேசன் திறன்கள், சக்திவாய்ந்த கலவை நற்பொருத்தங்கள், நாண் உதவி மற்றும் பல்வேறு சொருகி மற்றும் கோப்பு வடிவங்களுக்கான உதவி ஆகியவற்றைக் கொண்ட நெறிப்படுத்தப்பட்ட திருத்துதல் பணிப்பாய்வுகளை வழங்குகிறது.</translation>
+        <translation>சிரித்ம் என்பது டிசிட்டல் ஒலி பணிநிலையமாகும், இது அம்சமாகவும் பயன்படுத்த எளிதாகவும் வடிவமைக்கப்பட்டுள்ளது. இது நெகிழ்வான கருவிகள், வரம்பற்ற ஆட்டோமேசன் திறன்கள், சக்திவாய்ந்த கலவை நற்பொருத்தங்கள், நாண் உதவி மற்றும் பல்வேறு சொருகி மற்றும் கோப்பு வடிவங்களுக்கான உதவி ஆகியவற்றைக் கொண்ட நெறிப்படுத்தப்பட்ட திருத்துதல் பணிப்பாய்வுகளை வழங்குகிறது.</translation>
     </message>
 </context>
 <context>
@@ -14912,7 +14912,7 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:100</name>
     <message>
         <source>Change how object resizing works: revert original object(s) on undo (fixes undoing audio stretching not reverting the original audio, #4955)</source>
-        <translation>பொருள் மறுஅளவிடுதல் எவ்வாறு செயல்படுகிறது என்பதை மாற்றவும்: செயல்தவிர் இல் அசல் பொருள் (களை) மாற்றவும் (அசல் ஆடியோவை மாற்றாமல் ஆடியோ நீட்டிப்பை செயல்தவிர்க்கிறது, #4955)</translation>
+        <translation>பொருள் மறுஅளவிடுதல் எவ்வாறு செயல்படுகிறது என்பதை மாற்றவும்: செயல்தவிர் இல் அசல் பொருள் (களை) மாற்றவும் (அசல் ஒலிவை மாற்றாமல் ஒலி நீட்டிப்பை செயல்தவிர்க்கிறது, #4955)</translation>
     </message>
 </context>
 <context>
@@ -15010,7 +15010,7 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:126</name>
     <message>
         <source>Show fade in/out line indicator in audio regions in timeline on hover</source>
-        <translation>மிதமான காலக்கெடுவில் ஆடியோ பகுதிகளில் மங்கலைக் காட்டு/அவுட் வரி காட்டுகிறது</translation>
+        <translation>மிதமான காலக்கெடுவில் ஒலி பகுதிகளில் மங்கலைக் காட்டு/அவுட் வரி காட்டுகிறது</translation>
     </message>
 </context>
 <context>
@@ -15066,7 +15066,7 @@ Use the newer backup?</source>
     <name>build/data/org.zrythm.Zrythm.appdata.xml.in:140</name>
     <message>
         <source>Fix incorrectly allowing audio region fade in/out to crossfade (#4975)</source>
-        <translation>கிராச்ஃபேடிற்கு (#4975) ஆடியோ பகுதி மங்குவதை தவறாக அனுமதிக்கிறது</translation>
+        <translation>கிராச்ஃபேடிற்கு (#4975) ஒலி பகுதி மங்குவதை தவறாக அனுமதிக்கிறது</translation>
     </message>
 </context>
 <context>
