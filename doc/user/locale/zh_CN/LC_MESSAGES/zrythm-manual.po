@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-02-03 20:45+0000\n"
-"Last-Translator: 雪と葉 <vescrity@foxmail.com>\n"
+"PO-Revision-Date: 2025-03-11 11:46+0000\n"
+"Last-Translator: 王晨旭 <wcxu21@126.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -2132,7 +2133,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:188
 msgid "Ramp Tool"
-msgstr "斜率工具"
+msgstr "斜坡工具"
 
 #: ../../editing/edit-tools.rst:189
 msgid ""
