@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UTILS_IO_H__
@@ -8,10 +8,10 @@
 
 #include <optional>
 
+#include "utils/string.h"
+
 #include <QTemporaryDir>
 #include <QTemporaryFile>
-
-#include "./types.h"
 
 namespace zrythm::utils::io
 {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -10,7 +10,7 @@
 #ifndef __UTILS_DATETIME_H__
 #define __UTILS_DATETIME_H__
 
-#include "./types.h"
+#include "utils/string.h"
 
 namespace zrythm::utils::datetime
 {

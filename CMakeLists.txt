@@ -766,9 +766,8 @@ add_library(zrythm::fftw3_libs ALIAS fftw3_libs)
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
 add_library(_zrythm_chromaprint_lib INTERFACE)
-if(CHROMAPRINT_FOUND)
-  # disable for now
-  # set(HAVE_CHROMAPRINT TRUE)
+if(CHROMAPRINT_FOUND AND FALSE) # disable for now
+  set(HAVE_CHROMAPRINT TRUE)
   target_link_libraries(_zrythm_chromaprint_lib INTERFACE PkgConfig::CHROMAPRINT)
 endif()
 add_library(zrythm::chromaprint_lib ALIAS _zrythm_chromaprint_lib)

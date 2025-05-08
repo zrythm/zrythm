@@ -7,6 +7,7 @@
 #include "zrythm-config.h"
 
 #include "utils/format.h"
+#include "utils/types.h"
 
 #include "juce_wrapper.h"
 #include <spdlog/spdlog.h>

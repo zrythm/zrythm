@@ -12,9 +12,8 @@
 
 #include <exception>
 #include <sstream>
-#include <string>
 
-#include <QString>
+#include "utils/string.h"
 
 /**
  * @addtogroup utils
