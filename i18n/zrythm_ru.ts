@@ -146,7 +146,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="316"/>
         <source>Undo Cut</source>
-        <translation>Отменить вырезку</translation>
+        <translation>Отменить вырезание</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="326"/>
@@ -201,17 +201,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="380"/>
         <source>Zrythm Orange</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm Orange</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="386"/>
         <source>Celestial Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Celestial Blue</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="392"/>
         <source>Jonquil Yellow</source>
-        <translation type="unfinished"></translation>
+        <translation>Jonquil Yellow</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="404"/>
@@ -301,7 +301,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="268"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Прогресс</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="284"/>
@@ -393,12 +393,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключить левую панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключить правую панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
@@ -433,7 +433,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Export Graph…</source>
-        <translation>Экспорт Диаграммы…</translation>
+        <translation>Экспортировать граф…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
@@ -453,7 +453,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="186"/>
         <source>About Zrythm Long Long Long Long Long Long Long</source>
-        <translation type="unfinished"></translation>
+        <translation>О Zrythm</translation>
     </message>
 </context>
 <context>
@@ -937,7 +937,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="294"/>
         <source>Failed to create backup directory {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать резервную копию каталога {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
@@ -947,7 +947,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="573"/>
         <source>Unable to decompress project file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно распаковать файл проекта в {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="676"/>
@@ -962,12 +962,12 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="959"/>
         <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать резервную копию каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1029"/>
         <source>Failed to copy plugin states</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось скопировать состояния плагина</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="140"/>
@@ -1047,12 +1047,12 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="781"/>
         <source>This project has been automatically upgraded to v{}.{}. Saving this project will overwrite the old one. If you would like to keep both, please use &apos;Save As...&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот проект был автоматически обновлен до версии {}.{}. Сохранение этого проекта перезапишет предыдущее. Если вы хотите сохранить оба, используйте «Сохранить как...».</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="848"/>
         <source>Open Backup?</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть резервную копию?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="850"/>
@@ -1066,12 +1066,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="853"/>
         <source>Open Backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть резервную копию</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="854"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>Игнорировать</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/tracklist_selections.cpp" line="575"/>
@@ -1101,12 +1101,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="440"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно выполнить {} изменение размера — выделенное содержит зацикленные объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="451"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно выполнить {} изменение размера — выделенное содержит нециклические объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2279"/>
@@ -1181,7 +1181,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2324"/>
         <source>Resize arranger selections - {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить размер выбранных элементов аранжировщика - {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2327"/>
@@ -1261,12 +1261,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="937"/>
         <source>Create {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="942"/>
         <source>Create {} {}s</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {} {}s</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="947"/>
@@ -1276,57 +1276,57 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="952"/>
         <source>Delete {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="958"/>
         <source>Move {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Переместить {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="963"/>
         <source>Move {} Plugins</source>
-        <translation>Переместить %d плагинов</translation>
+        <translation>Переместить {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="969"/>
         <source>Copy {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="974"/>
         <source>Copy {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="980"/>
         <source>Paste {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="985"/>
         <source>Paste {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="991"/>
         <source>Change Status for {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить статус для {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="997"/>
         <source>Change Status for {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить статус для {} плагинов</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1002"/>
         <source>Change Load Behavior for {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить поведение загрузки для {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="80"/>
         <source>Set {} to {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить {} на {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="122"/>
@@ -1366,7 +1366,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="181"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно скопировать треки: выделенное содержит некопируемый трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
@@ -1381,7 +1381,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="409"/>
         <source>{} Track</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1487"/>
@@ -1396,22 +1396,22 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1495"/>
         <source>Copy {} Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопировать {} трек внутрь</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1499"/>
         <source>Copy {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1506"/>
         <source>Create {} Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {} трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1511"/>
         <source>Create {} {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {} {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1517"/>
@@ -1421,7 +1421,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1522"/>
         <source>Delete {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1532"/>
@@ -1554,17 +1554,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1601"/>
         <source>Mute {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Заглушить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1604"/>
         <source>Unmute {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1608"/>
         <source>Listen {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Прослушать {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1611"/>
@@ -1574,7 +1574,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1615"/>
         <source>Enable {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1618"/>
@@ -1619,12 +1619,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1657"/>
         <source>Move {} Tracks inside</source>
-        <translation>Переместить %d треков внутрь</translation>
+        <translation>Переместить {} треки внутрь</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1663"/>
         <source>Move {} Tracks</source>
-        <translation>Переместить %d треков</translation>
+        <translation>Переместить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1669"/>
@@ -1634,7 +1634,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1674"/>
         <source>Pin {} Tracks</source>
-        <translation>Закрепить %d треков</translation>
+        <translation>Закрепить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1679"/>
@@ -1644,17 +1644,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
         <source>Unpin {} Tracks</source>
-        <translation>Открепить %d треков</translation>
+        <translation>Открепить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="181"/>
         <source>Change BPM from {:.2f} to {:.2f}</source>
-        <translation>Изменить BPM с %.2f на %.2f</translation>
+        <translation>Изменить такт с {:.2f} до {:.2f}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="185"/>
         <source>Change beats per bar from {} to {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить количество ударов в такте с {} на {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="189"/>
@@ -1868,7 +1868,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
         <source>Are the outputs stereo?</source>
-        <translation type="unfinished"></translation>
+        <translation>Являются ли выходы стерео?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
@@ -1926,7 +1926,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
         <source>Please enter a number between {:f} and {:f}</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, введите число от {:f} до {:f}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1039"/>
@@ -1942,12 +1942,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1517"/>
         <source>Failed to create plugin {}</source>
-        <translation>Не удалось создать плагин %s</translation>
+        <translation>Не удалось создать плагин {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1538"/>
         <source>zrythm::plugins::Plugin {} cannot be added to this slot</source>
-        <translation type="unfinished"></translation>
+        <translation>zrythm::plugins::Плагин {} не может быть добавлен в этот слот</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1540"/>
@@ -2014,7 +2014,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="556"/>
         <source>{} input</source>
-        <translation type="unfinished"></translation>
+        <translation>{} ввод</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="209"/>
@@ -2244,7 +2244,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="711"/>
         <source>Failed to export</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось экспортировать</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="86"/>
@@ -2499,12 +2499,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1099"/>
         <source>Failed to set track comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось добавить комментарий к треку</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1123"/>
         <source>Failed to set track color</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось сменить цвет треку</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1152"/>
@@ -2569,7 +2569,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
         <source>Lane {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Полоса {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="74"/>
@@ -2584,7 +2584,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="129"/>
         <source>Could not mute/unmute track lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось отключить/включить звук на полосе трека</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1112"/>
@@ -2609,12 +2609,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1142"/>
         <source>Unsupported file type {}</source>
-        <translation>Неподдерживаемый тип файла %s</translation>
+        <translation>Неподдерживаемый тип файла {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1170"/>
         <source>Failed to import file {}: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось импортировать файл {}: {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1209"/>
@@ -2634,7 +2634,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1325"/>
         <source>Failed to clone/add track</source>
-        <translation>Не удалось клонировать трек</translation>
+        <translation>Не удалось клонировать/добавить трек</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1345"/>
@@ -2731,7 +2731,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="521"/>
         <source>Preset {}</source>
-        <translation>Пресет {0}</translation>
+        <translation>Пресет {}</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="867"/>
@@ -2953,7 +2953,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="64"/>
         <source>Scissors tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Ножницы</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="79"/>
@@ -3075,7 +3075,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/ZrythmFilePicker.qml" line="13"/>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>Обзор</translation>
     </message>
 </context>
 <context>
@@ -16502,7 +16502,7 @@ Support this project at {}
 %s поставляется АБСОЛЮТНО БЕЗ КАКОЙ-ЛИБО ГАРАНТИИ!
 
 Это свободное программное обеспечение, и вы можете распространять его
-при определенных условиях. Подробности смотрите в файле `COPYING&apos;.
+при определенных условиях. Подробности смотрите в файле &apos;COPYING&apos;.
 
 Пишите комментарии и ошибки по адресу %s
 Поддержите этот проект на https://liberapay.com/Zrythm
@@ -16527,7 +16527,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="126"/>
         <source>Use dummy audio/midi engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать dummy аудио/midi движок</translation>
     </message>
 </context>
 <context>
