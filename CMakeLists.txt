@@ -69,6 +69,7 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.24)
 # Enable precompiled headers
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 # set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Prefer static libraries for easier linking
 set(BUILD_SHARED_LIBS OFF)
@@ -376,6 +377,10 @@ endif()
 
 if(APPLE AND CMAKE_C_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wno-documentation)
+endif()
+
+if(OS_GNU AND compiler_gnulike)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
 endif()
 
 # compile args
@@ -843,7 +848,8 @@ FetchContent_Declare(
     GIT_TAG f8745da6ff1ad1e7bab384bd1f9d742439278e99
     GIT_SHALLOW TRUE
     SOURCE_SUBDIR build/cmake
-    FIND_PACKAGE_ARGS zstd REQUIRED
+    # FIND_PACKAGE_ARGS zstd REQUIRED
+    OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(zstd)
 add_library(_zstd_lib INTERFACE)

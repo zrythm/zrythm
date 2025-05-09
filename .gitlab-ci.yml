@@ -18,6 +18,7 @@ variables:
   COMMON_CMAKE_OPTIONS: >-
     -DZRYTHM_STRICT=ON
     -DZRYTHM_TESTS=ON
+    -DZRYTHM_TESTS_WITH_INTERNET_ACCESS=ON
     -DZRYTHM_BENCHMARKS=ON
     -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
 
@@ -83,7 +84,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-15-$CI_RUNNER_DESCRIPTION
+  - key: cache-16-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - '${BUILDDIR}-*/_deps/*-src'
@@ -158,6 +159,7 @@ configure:windows:
       cmake -B "${env:BUILDDIR}-${env:BUILD_TYPE}"
       -DZRYTHM_STRICT=ON
       -DZRYTHM_TESTS=ON
+      -DZRYTHM_TESTS_WITH_INTERNET_ACCESS=ON
       -DZRYTHM_BENCHMARKS=ON
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE

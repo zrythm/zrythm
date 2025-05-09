@@ -90,7 +90,46 @@ target_compile_definitions(juce_lib
     $<IF:$<CONFIG:Debug>,JUCE_DEBUG=1;_DEBUG=1;DEBUG=1,JUCE_DEBUG=0;_NDEBUG=1;NDEBUG=1>
 )
 if(OS_GNU)
-  find_package(CURL REQUIRED)
+  FetchContent_Declare(
+    MbedTLS
+    GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
+    GIT_TAG 22098d41c6620ce07cf8a0134d37302355e1e5ef # 3.6.3
+    # FIND_PACKAGE_ARGS NAMES MbedTLS
+    OVERRIDE_FIND_PACKAGE
+  )
+  set(ENABLE_TESTING OFF)
+  set(ENABLE_PROGRAMS OFF)
+  set(DISABLE_PACKAGE_CONFIG_AND_INSTALL OFF)
+  set(USE_SHARED_MBEDTLS_LIBRARY OFF)
+  set(USE_STATIC_MBEDTLS_LIBRARY ON)
+  FetchContent_MakeAvailable(MbedTLS)
+  find_package(MbedTLS REQUIRED)
+  set(MBEDTLS_LIBRARIES MbedTLS::mbedtls)
+  get_target_property(MBEDTLS_INCLUDE_DIRS MbedTLS::mbedtls INTERFACE_INCLUDE_DIRECTORIES)
+  FetchContent_Declare(
+    curl
+    GIT_REPOSITORY https://github.com/curl/curl.git
+    GIT_TAG 1c3149881769e7bd79b072e48374e4c2b3678b2f # 8.13.0
+    FIND_PACKAGE_ARGS NAMES CURL
+  )
+  set(HTTP_ONLY ON)
+  set(BUILD_LIBCURL_DOCS OFF)
+  set(BUILD_MIS_DOCS OFF)
+  set(BUILD_TESTING OFF)
+  set(ENABLE_CURL_MANUAL OFF)
+  set(CURL_USE_MBEDTLS ON)
+  set(CURL_USE_PKGCONFIG OFF)
+  set(CURL_USE_LIBPSL OFF)
+  set(CURL_USE_LIBSSH2 OFF)
+  # TODO: eventually enable https://github.com/nghttp2/nghttp2 to support HTTP/2
+  set(USE_NGHTTP2 OFF)
+  set(USE_LIBIDN2 OFF)
+  set(CURL_BROTLI OFF)
+  set(CURL_ZLIB OFF)
+  set(CURL_ZSTD OFF)
+  set(BUILD_CURL_EXE OFF)
+  set(BUILD_SHARED_LIBS OFF)
+  FetchContent_MakeAvailable(curl)
   target_link_libraries(juce_lib PRIVATE CURL::libcurl)
 endif()
 # sord/serd don't play well with UBSan
