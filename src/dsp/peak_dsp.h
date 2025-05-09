@@ -51,10 +51,10 @@ class PeakDsp
 {
 public:
   /**
-   * Process.
-   *
-   * @param p Frame array.
-   * @param n Number of samples.
+   * Processes audio samples.
+   * @param p Array of samples (must be finite numbers)
+   * @param n Number of samples
+   * @note Non-finite values (NaN/Inf) will be treated as 0.0
    */
   [[gnu::hot]] void process (float * p, int n);
 

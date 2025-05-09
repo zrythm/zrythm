@@ -112,7 +112,7 @@ TEST_F (PeakDspTest, EdgeCases)
   signal[4] = 0.7f; // Valid value
 
   // Process multiple times to allow the meter to stabilize
-  for (int i = 0; i < 3; ++i)
+  for (const auto _ : std::views::iota (0, 3))
     {
       meter_.process (signal.data (), signal.size ());
     }
@@ -120,6 +120,7 @@ TEST_F (PeakDspTest, EdgeCases)
   auto [rms, peak] = meter_.read ();
 
   // Verify the results are valid and bounded
+  EXPECT_TRUE (std::isfinite (peak));
   EXPECT_GE (peak, 0.0f);
   EXPECT_LE (peak, 1.0f);
 }
