@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "utils/traits.h"
+#include "utils/types.h"
 
 #include <QHash>
 #include <QString>

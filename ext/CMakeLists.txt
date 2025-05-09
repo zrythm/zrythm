@@ -90,6 +90,10 @@ target_compile_definitions(juce_lib
     $<IF:$<CONFIG:Debug>,JUCE_DEBUG=1;_DEBUG=1;DEBUG=1,JUCE_DEBUG=0;_NDEBUG=1;NDEBUG=1>
 )
 if(OS_GNU)
+  # Force Release build for MbedTLS and curl
+  set(original_build_type ${CMAKE_BUILD_TYPE})
+  set(CMAKE_BUILD_TYPE Release)
+
   FetchContent_Declare(
     MbedTLS
     GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
@@ -132,6 +136,10 @@ if(OS_GNU)
   set(BUILD_SHARED_LIBS OFF)
   FetchContent_MakeAvailable(curl)
   target_link_libraries(juce_lib PRIVATE CURL::libcurl)
+
+  # Restore original build type
+  set(CMAKE_BUILD_TYPE ${original_build_type})
+  unset(original_build_type)
 endif()
 # sord/serd don't play well with UBSan
 if(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)

@@ -380,6 +380,7 @@ if(APPLE AND CMAKE_C_COMPILER_ID MATCHES "Clang")
 endif()
 
 if(OS_GNU AND compiler_gnulike)
+  # drop unused library dependencies
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
 endif()
 
