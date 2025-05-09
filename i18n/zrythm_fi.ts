@@ -1683,7 +1683,7 @@ Please report issues to %s
     <name>src/plugins/carla_native_plugin.c:1746</name>
     <message>
         <source>State file %s doesn&apos;t exist</source>
-        <translation>Tilatiedostoa %s ei ole olemassa.</translation>
+        <translation type="unfinished">Tilatiedostoa %s ei ole olemassa.</translation>
     </message>
 </context>
 <context>
@@ -2136,14 +2136,14 @@ Jos lisäosa ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja ilmoita t
     <name>src/plugins/lv2_plugin.c:2831</name>
     <message>
         <source>Failed to create or init ports and parameters</source>
-        <translation>Porttien ja parametrien luominen tai käyttöönotto epäonnistui.</translation>
+        <translation type="unfinished">Porttien ja parametrien luominen tai käyttöönotto epäonnistui.</translation>
     </message>
 </context>
 <context>
     <name>src/plugins/lv2_plugin.c:2861</name>
     <message>
         <source>Required feature %s is not supported</source>
-        <translation>Vaadittua ominaisuutta %s ei tueta.</translation>
+        <translation type="unfinished">Vaadittua ominaisuutta %s ei tueta.</translation>
     </message>
 </context>
 <context>
@@ -2157,7 +2157,7 @@ Jos lisäosa ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja ilmoita t
     <name>src/plugins/lv2_plugin.c:3125</name>
     <message>
         <source>Required option %s is not supported</source>
-        <translation>Vaadittua vaihtoehtoa %s ei tueta.</translation>
+        <translation type="unfinished">Vaadittua vaihtoehtoa %s ei tueta.</translation>
     </message>
 </context>
 <context>
@@ -2234,7 +2234,7 @@ Jos lisäosa ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja ilmoita t
     <name>src/plugins/lv2/lv2_gtk.c:575</name>
     <message>
         <source>Failed to open LV2 UI for %s</source>
-        <translation>LV2-käyttöliittymän avaaminen ei onnistunut %s:lle.</translation>
+        <translation type="unfinished">LV2-käyttöliittymän avaaminen ei onnistunut %s:lle.</translation>
     </message>
 </context>
 <context>
@@ -3187,14 +3187,14 @@ Jos lisäosa ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja ilmoita t
     <name>src/gui/widgets/editor_selection_info.c:85</name>
     <message>
         <source>No object selected</source>
-        <translation>Kohdetta ei ole valittu.</translation>
+        <translation type="unfinished">Kohdetta ei ole valittu.</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/timeline_selection_info.c:430</name>
     <message>
         <source>No object selected</source>
-        <translation>Kohdetta ei ole valittu.</translation>
+        <translation type="unfinished">Kohdetta ei ole valittu.</translation>
     </message>
 </context>
 <context>
@@ -3668,7 +3668,7 @@ Jos lisäosa ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja ilmoita t
     <name>src/gui/widgets/arranger.c:2537</name>
     <message>
         <source>Cannot resize because the selection contains objects without length</source>
-        <translation>Kokoa ei voi muuttaa, koska valinta sisältää objekteja, joilla ei ole pituutta.</translation>
+        <translation type="unfinished">Kokoa ei voi muuttaa, koska valinta sisältää objekteja, joilla ei ole pituutta.</translation>
     </message>
 </context>
 <context>
@@ -4179,7 +4179,7 @@ Jos lisäosa ei lataudu, yritä lisätä lisäosa täyssiltatilassa ja ilmoita t
     <name>src/gui/widgets/bot_bar.c:703</name>
     <message>
         <source>time sig.</source>
-        <translation>tahtilaji</translation>
+        <translation type="unfinished">tahtilaji</translation>
     </message>
 </context>
 <context>
@@ -6945,7 +6945,7 @@ Changes:
     <name>src/audio/tracklist.c:1397</name>
     <message>
         <source>Can only drop MIDI files on MIDI/instrument tracks</source>
-        <translation>MIDI-tiedostoja voi pudottaa vain MIDI-/instrumenttiraidoille.</translation>
+        <translation type="unfinished">MIDI-tiedostoja voi pudottaa vain MIDI-/instrumenttiraidoille.</translation>
     </message>
 </context>
 <context>
@@ -7936,7 +7936,7 @@ Bit depth: %d bits</source>
     <name>src/actions/arranger_selections.c:790</name>
     <message>
         <source>Cannot perform %s resize - selections contain looped objects</source>
-        <translation>%s koon muuttaminen ei onnistu - valinnat sisältävät silmukoituja objekteja.</translation>
+        <translation type="unfinished">%s koon muuttaminen ei onnistu - valinnat sisältävät silmukoituja objekteja.</translation>
     </message>
 </context>
 <context>
@@ -8294,7 +8294,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:1167</name>
     <message>
         <source>Can&apos;t paste incompatible data</source>
-        <translation>Ei voi liittää yhteensopimattomia tietoja.</translation>
+        <translation type="unfinished">Ei voi liittää yhteensopimattomia tietoja.</translation>
     </message>
 </context>
 <context>
@@ -8448,7 +8448,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:2091</name>
     <message>
         <source>Must select either the timeline or the editor first. The current selection is %s</source>
-        <translation>Valitse ensin joko aikajana tai editori. Nykyinen valinta on %s.</translation>
+        <translation type="unfinished">Valitse ensin joko aikajana tai editori. Nykyinen valinta on %s.</translation>
     </message>
 </context>
 <context>

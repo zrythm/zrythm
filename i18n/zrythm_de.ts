@@ -11,12 +11,12 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="126"/>
         <source>On</source>
-        <translation type="unfinished">Ein</translation>
+        <translation>Ein</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
         <source>Touch</source>
-        <translation type="unfinished">Touch</translation>
+        <translation>Touch</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
@@ -26,17 +26,17 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="155"/>
         <source>Off</source>
-        <translation type="unfinished">Aus</translation>
+        <translation>Aus</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="194"/>
         <source>Hide automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisierungsunterspur ausblenden</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="217"/>
         <source>Add automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisierungsunterspur hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -44,17 +44,17 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="63"/>
         <source>Editor</source>
-        <translation type="unfinished">Editor</translation>
+        <translation>Editor</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="68"/>
         <source>Mixer</source>
-        <translation type="unfinished">Mixer</translation>
+        <translation>Mixer</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="73"/>
         <source>Modulators</source>
-        <translation type="unfinished">Modulatoren</translation>
+        <translation>Modulatoren</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="78"/>
@@ -67,12 +67,12 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="156"/>
         <source>Timeline</source>
-        <translation type="unfinished">Zeitachse</translation>
+        <translation>Zeitachse</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="161"/>
         <source>Port Connections</source>
-        <translation type="unfinished">Port-Verbindungen</translation>
+        <translation>Port-Verbindungen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
@@ -85,27 +85,27 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="153"/>
         <source>Editor</source>
-        <translation type="unfinished">Editor</translation>
+        <translation>Editor</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="159"/>
         <source>Mixer</source>
-        <translation type="unfinished">Mixer</translation>
+        <translation>Mixer</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="165"/>
         <source>Modulators</source>
-        <translation type="unfinished">Modulatoren</translation>
+        <translation>Modulatoren</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="182"/>
         <source>Track Inspector</source>
-        <translation type="unfinished">Spur-Inspektor</translation>
+        <translation>Spur-Inspektor</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="187"/>
         <source>Plugin Inspector</source>
-        <translation type="unfinished">Plugin-Inspektor</translation>
+        <translation>Plugin-Inspektor</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="199"/>
@@ -131,72 +131,72 @@
         <location filename="../src/gui/qml/DemoView.qml" line="305"/>
         <location filename="../src/gui/qml/DemoView.qml" line="358"/>
         <source>Undo</source>
-        <translation type="unfinished">Rückgängig machen</translation>
+        <translation>Rückgängig</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="306"/>
         <source>Undo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Mehrfach rückgängig machen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="312"/>
         <source>Undo Move</source>
-        <translation type="unfinished"></translation>
+        <translation>Verschiebung rückgängig machen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="316"/>
         <source>Undo Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausschneiden rückgängig machen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="326"/>
         <source>Redo</source>
-        <translation type="unfinished">Wiederherstellen</translation>
+        <translation>Wiederherstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="327"/>
         <source>Redo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Mehrfach wiederherstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="342"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Datei</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="345"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Neu Lang Lang Lang Lang Lang Lang Lang Lang Lang Name</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="349"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="355"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>B&amp;earbeiten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="364"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ansicht</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="367"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Aussehen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="370"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Hell/Dunkel-Thema umschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="377"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Themenfarbe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="380"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="386"/>
         <source>Celestial Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Himmelblau</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="392"/>
@@ -216,12 +216,12 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="404"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Hilfe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="407"/>
         <source>Something</source>
-        <translation type="unfinished"></translation>
+        <translation>Etwas</translation>
     </message>
 </context>
 <context>
@@ -229,17 +229,17 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="61"/>
         <source>About Flatpak</source>
-        <translation type="unfinished"></translation>
+        <translation>Über Flatpak</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="62"/>
         <source>Only audio plugins installed via Flatpak are supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur per Flatpak installierte Audio-Plugins werden unterstützt.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="72"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Spenden</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="73"/>
@@ -249,28 +249,28 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="82"/>
         <source>All Ready!</source>
-        <translation type="unfinished"></translation>
+        <translation>Alles bereit!</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="85"/>
         <source>Proceed to Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Weiter zur Konfiguration</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="103"/>
         <location filename="../src/gui/qml/Greeter.qml" line="123"/>
         <source>Welcome</source>
-        <translation type="unfinished">Willkommen</translation>
+        <translation>Willkommen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="124"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
-        <translation type="unfinished"></translation>
+        <translation>Willkommen bei der Zrythm Digital Audio Workstation. Gehen Sie zur nächsten Seite, um loszulegen.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="132"/>
         <source>Read the Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesen Sie das Handbuch</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="133"/>
@@ -281,27 +281,27 @@
         <location filename="../src/gui/qml/Greeter.qml" line="189"/>
         <location filename="../src/gui/qml/Greeter.qml" line="226"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguration</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="192"/>
         <source>Initial Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Erstkonfiguration</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="221"/>
         <source>‹</source>
-        <translation type="unfinished"></translation>
+        <translation>‹</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="246"/>
         <source>Continue</source>
-        <translation type="unfinished"></translation>
+        <translation>Weiter</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="268"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Fortschritt</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="284"/>
@@ -317,62 +317,62 @@
         <location filename="../src/gui/qml/Greeter.qml" line="323"/>
         <location filename="../src/gui/qml/Greeter.qml" line="380"/>
         <source>Open a Project</source>
-        <translation type="unfinished">Ein Projekt öffnen</translation>
+        <translation>Projekt öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="397"/>
         <source>Preferences</source>
-        <translation type="unfinished">Einstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="405"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Über Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="423"/>
         <source>Create New Project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Projekt erstellen...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="427"/>
         <source>Open From Path...</source>
-        <translation type="unfinished"></translation>
+        <translation>Von Pfad öffnen...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="440"/>
         <source>Create New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Projekt erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="450"/>
         <source>Project Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Projektname</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="451"/>
         <source>Untitled Project</source>
-        <translation type="unfinished">Unbenanntes Projekt</translation>
+        <translation>Unbenanntes Projekt</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="482"/>
         <source>Create Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Creating Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekte erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="512"/>
         <source>Creating Project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt wird erstellt...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="539"/>
         <source>Project Loading Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Laden des Projekts fehlgeschlagen</translation>
     </message>
 </context>
 <context>
@@ -380,12 +380,12 @@
     <message>
         <location filename="../src/gui/qml/components/LeftDock.qml" line="19"/>
         <source>Track Inspector</source>
-        <translation type="unfinished">Spur-Inspektor</translation>
+        <translation>Spur-Inspektor</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/LeftDock.qml" line="28"/>
         <source>Plugin Inspector</source>
-        <translation type="unfinished">Plugin-Inspektor</translation>
+        <translation>Plugin-Inspektor</translation>
     </message>
 </context>
 <context>
@@ -393,67 +393,67 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Linkes Bedienfeld umschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechtes Bedienfeld umschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menü</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="105"/>
         <source>Open a Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt öffnen…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="111"/>
         <source>Create New Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Projekt erstellen…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="122"/>
         <source>Save</source>
-        <translation type="unfinished">Speichern</translation>
+        <translation>Speichern</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Save As…</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern als…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Export As…</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportieren als…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Export Graph…</source>
-        <translation type="unfinished"></translation>
+        <translation>Graph exportieren…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Vollbild</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="170"/>
         <source>Preferences</source>
-        <translation type="unfinished">Einstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="178"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Tastaturkurzbefehle</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="186"/>
         <source>About Zrythm Long Long Long Long Long Long Long</source>
-        <translation type="unfinished"></translation>
+        <translation>Über Zrythm Lang Lang Lang Lang Lang Lang Lang</translation>
     </message>
 </context>
 <context>
@@ -461,7 +461,7 @@
     <message>
         <location filename="../src/common/dsp/marker_track.cpp" line="14"/>
         <source>Markers</source>
-        <translation type="unfinished">Marker</translation>
+        <translation>Marker</translation>
     </message>
 </context>
 <context>
@@ -469,17 +469,17 @@
     <message>
         <location filename="../src/common/dsp/region.h" line="599"/>
         <source>Inherit</source>
-        <translation type="unfinished">Übernehmen</translation>
+        <translation>Erben</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/region.h" line="600"/>
         <source>Off</source>
-        <translation type="unfinished">Aus</translation>
+        <translation>Aus</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/region.h" line="601"/>
         <source>On</source>
-        <translation type="unfinished">Ein</translation>
+        <translation>Ein</translation>
     </message>
 </context>
 <context>
@@ -487,7 +487,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="399"/>
         <source>Chromatic</source>
-        <translation type="unfinished">Chromatisch</translation>
+        <translation>Chromatisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="400"/>
@@ -572,7 +572,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="416"/>
         <source>Acoustic</source>
-        <translation type="unfinished">Akustisch</translation>
+        <translation>Akustisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="417"/>
@@ -592,7 +592,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="420"/>
         <source>Algerian</source>
-        <translation type="unfinished">Algerisch</translation>
+        <translation>Algerisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="421"/>
@@ -607,12 +607,12 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="423"/>
         <source>Chinese</source>
-        <translation type="unfinished">Chinesisch</translation>
+        <translation>Chinesisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="424"/>
         <source>Diminished</source>
-        <translation type="unfinished">Vermindert</translation>
+        <translation>Vermindert</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="425"/>
@@ -622,12 +622,12 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="426"/>
         <source>Egyptian</source>
-        <translation type="unfinished">Ägyptisch</translation>
+        <translation>Ägyptisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="427"/>
         <source>Eight Tone Spanish</source>
-        <translation type="unfinished">Achtton-Spanisch</translation>
+        <translation>Achtton-Spanisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="428"/>
@@ -642,7 +642,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="430"/>
         <source>Hindu</source>
-        <translation type="unfinished">Hindu</translation>
+        <translation>Hindu</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="431"/>
@@ -672,7 +672,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="436"/>
         <source>Oriental</source>
-        <translation type="unfinished">Orientalisch</translation>
+        <translation>Orientalisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="437"/>
@@ -722,7 +722,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="446"/>
         <source>Composite</source>
-        <translation type="unfinished">Zusammengesetzt</translation>
+        <translation>Zusammengesetzt</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="447"/>
@@ -737,7 +737,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="449"/>
         <source>Persian</source>
-        <translation type="unfinished">Persisch</translation>
+        <translation>Persisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="450"/>
@@ -772,7 +772,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="456"/>
         <source>Balinese</source>
-        <translation type="unfinished">Balinesisch</translation>
+        <translation>Balinesisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="457"/>
@@ -782,12 +782,12 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="458"/>
         <source>Japanese 1</source>
-        <translation type="unfinished">Japanisch 1</translation>
+        <translation>Japanisch 1</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="459"/>
         <source>Japanese 2</source>
-        <translation type="unfinished">Japanisch 2</translation>
+        <translation>Japanisch 2</translation>
     </message>
 </context>
 <context>
@@ -795,7 +795,7 @@
     <message>
         <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="13"/>
         <source>Mute</source>
-        <translation type="unfinished">Stummschalten</translation>
+        <translation>Stummschalten</translation>
     </message>
 </context>
 <context>
@@ -803,47 +803,47 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="115"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Datei</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="118"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Neu Lang Lang Lang Lang Lang Lang Lang Lang Lang Name</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="122"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="128"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>B&amp;earbeiten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="131"/>
         <source>Undo</source>
-        <translation type="unfinished">Rückgängig machen</translation>
+        <translation>Rückgängig machen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="137"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ansicht</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="140"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Aussehen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="143"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Helles/Dunkles Thema umschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="151"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Themenfarbe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="154"/>
@@ -853,7 +853,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="161"/>
         <source>Celestial Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Himmelblau</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="168"/>
@@ -863,12 +863,12 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="181"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Hilfe</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="184"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Über Zrythm</translation>
     </message>
 </context>
 <context>
@@ -876,42 +876,42 @@
     <message>
         <location filename="../src/gui/backend/action_controller.cpp" line="28"/>
         <source>Failed to create track</source>
-        <translation type="unfinished">Spur konnte nicht erstellt werden</translation>
+        <translation>Spur konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="283"/>
         <source>Linear</source>
-        <translation type="unfinished">Linear</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="285"/>
         <source>Exponential</source>
-        <translation type="unfinished">Exponentiell</translation>
+        <translation>Exponentiell</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="288"/>
         <source>Elliptic</source>
-        <translation type="unfinished">Elliptisch</translation>
+        <translation>Elliptisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="291"/>
         <source>Logarithmic</source>
-        <translation type="unfinished">Logarithmisch</translation>
+        <translation>Logarithmisch</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="294"/>
         <source>Vital</source>
-        <translation type="unfinished">Vital</translation>
+        <translation>Vital</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="755"/>
         <source>Failed to add region</source>
-        <translation type="unfinished">Fehler beim Wiederholen</translation>
+        <translation>Region konnte nicht hinzugefügt werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="799"/>
         <source>Failed to paste selections</source>
-        <translation type="unfinished">Auswahl konnte nicht eingefügt werden</translation>
+        <translation>Auswahlen konnten nicht eingefügt werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/file_manager.cpp" line="75"/>
@@ -927,176 +927,176 @@
         <location filename="../src/gui/backend/backend/file_manager.cpp" line="329"/>
         <location filename="../src/common/plugins/collections.cpp" line="63"/>
         <source>Delete</source>
-        <translation type="unfinished">Löschen</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/mixer_selections.cpp" line="367"/>
         <source>Failed to paste plugins</source>
-        <translation type="unfinished">Plugins konnten nicht eingefügt werden</translation>
+        <translation>Plugins konnten nicht eingefügt werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="294"/>
         <source>Failed to create backup directory {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Sicherungsverzeichnis {} konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
         <source>Unable to read file at {}: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei bei {} kann nicht gelesen werden: {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="573"/>
         <source>Unable to decompress project file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Projektdatei bei {} kann nicht dekomprimiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="676"/>
         <source>Failed to save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt konnte nicht gespeichert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="779"/>
         <source>Failed to compress project file</source>
-        <translation type="unfinished">Fehler beim Dekomprimieren der Projektdatei</translation>
+        <translation>Projektdatei konnte nicht komprimiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="959"/>
         <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Sicherungsverzeichnis konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1029"/>
         <source>Failed to copy plugin states</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin-Status konnte nicht kopiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="140"/>
         <source>Failed to deserialize v1 project file</source>
-        <translation type="unfinished">Aktuelles Projekt konnte nicht serialisiert werden</translation>
+        <translation>v1-Projektdatei konnte nicht deserialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="150"/>
         <source>Failed to serialize v1 project file</source>
-        <translation type="unfinished">Aktuelles Projekt konnte nicht serialisiert werden</translation>
+        <translation>v1-Projektdatei konnte nicht serialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="173"/>
         <source>Failed to deserialize v1/2/3 project file</source>
-        <translation type="unfinished"></translation>
+        <translation>v1/2/3-Projektdatei konnte nicht deserialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="209"/>
         <source>Failed to serialize v3 project file</source>
-        <translation type="unfinished">Aktuelles Projekt konnte nicht serialisiert werden</translation>
+        <translation>v1/2/3-Projektdatei konnte nicht serialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="238"/>
         <source>Failed to deserialize v4 project file</source>
-        <translation type="unfinished">Aktuelles Projekt konnte nicht serialisiert werden</translation>
+        <translation>v4-Projektdatei konnte nicht deserialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="258"/>
         <source>Failed to serialize v4 project file</source>
-        <translation type="unfinished">Aktuelles Projekt konnte nicht serialisiert werden</translation>
+        <translation>v4-Projektdatei konnte nicht serialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="286"/>
         <source>Failed to deserialize v5 project file</source>
-        <translation type="unfinished">Aktuelles Projekt konnte nicht serialisiert werden</translation>
+        <translation>v5-Projektdatei konnte nicht deserialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="293"/>
         <source>Failed to convert v5 YAML project file to JSON</source>
-        <translation type="unfinished">Fehler beim Dekomprimieren der Projektdatei %s</translation>
+        <translation>v5 YAML-Projektdatei konnte nicht nach JSON konvertiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="471"/>
         <source>Invalid project: missing version</source>
-        <translation type="unfinished">Ungültiger Objektname %s</translation>
+        <translation>Ungültiges Projekt: fehlende Version</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="497"/>
         <source>Failed to upgrade YAML project schema</source>
-        <translation type="unfinished">Objekte konnten nicht verschoben werden</translation>
+        <translation>YAML-Projektschema konnte nicht aktualisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="519"/>
         <source>Failed to upgrade project schema to JSON</source>
-        <translation type="unfinished">Objekte konnten nicht verschoben werden</translation>
+        <translation>Projektschema kann nicht auf JSON aktualisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="546"/>
         <source>Failed to deserialize project YAML</source>
-        <translation type="unfinished">Aktuelles Projekt konnte nicht serialisiert werden</translation>
+        <translation>Projekt-YAML konnte nicht deserialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="560"/>
         <source>Could not load project: Corrupted project detected (missing FINISHED file at &apos;{}&apos;).</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt konnte nicht geladen werden: Fehlerhaftes Projekt erkannt (fehlende FINISHED-Datei bei &apos;{}&apos;).</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="649"/>
         <source>Failed to initialize the audio file pool</source>
-        <translation type="unfinished">Fehler beim Schreiben der Datei: %s</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="780"/>
         <source>Project Upgraded</source>
-        <translation type="unfinished">Projekt gespeichert.</translation>
+        <translation>Projekt aktualisiert</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="781"/>
         <source>This project has been automatically upgraded to v{}.{}. Saving this project will overwrite the old one. If you would like to keep both, please use &apos;Save As...&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieses Projekt wurde automatisch auf v{}.{} aktualisiert. Wenn Sie dieses Projekt speichern, wird das alte Projekt überschrieben. Wenn Sie beides behalten möchten, verwenden Sie bitte ‚Speichern als...‘.</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="848"/>
         <source>Open Backup?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sicherung öffnen?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="850"/>
         <source>Newer backup found:
   %s.
 Use the newer backup?</source>
-        <translation type="unfinished">Neuere Sicherung gefunden:
+        <translation>Neuere Sicherung gefunden:
   %s.
-Die neuere Sicherung verwenden?</translation>
+Neuere Sicherung verwenden?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="853"/>
         <source>Open Backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Sicherung öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="854"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/tracklist_selections.cpp" line="575"/>
         <source>Failed to paste tracks</source>
-        <translation type="unfinished">Spuren konnten nicht abgehört werden</translation>
+        <translation>Spuren konnten nicht eingefügt werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="42"/>
         <source>Arranger selections contain an undeletable object</source>
-        <translation type="unfinished">Arrangeur-Auswahl enthält ein nicht löschbares Objekt</translation>
+        <translation>Arrangeur-Auswahlen enthalten ein nicht löschbares Objekt</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="251"/>
         <source>Arranger selections contain an object that cannot be duplicated</source>
-        <translation type="unfinished">Arrangeur-Auswahl enthält ein nicht löschbares Objekt</translation>
+        <translation>Arrangeur-Auswahlen enthalten ein Objekt, das nicht dupliziert werden kann</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="307"/>
         <source>Cannot rename selected object(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgewählte(s) Objekt(e) können nicht umbenannt werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="430"/>
         <source>Attempted to resize unresizable objects</source>
-        <translation type="unfinished">Länge des Objekts ist nicht änderbar</translation>
+        <translation>Versuchte, die Größe von nicht veränderbaren Objekten zu ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="440"/>
@@ -1111,57 +1111,57 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2279"/>
         <source>Create timeline selections</source>
-        <translation type="unfinished">Zeitachsenauswahl erstellen</translation>
+        <translation>Zeitachsenauswahlen erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2283"/>
         <source>Create audio selections</source>
-        <translation type="unfinished">Ausioauswahl erstellen</translation>
+        <translation>Audioauswahlen erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2287"/>
         <source>Create automation selections</source>
-        <translation type="unfinished">Automationsauswahl erstellen</translation>
+        <translation>Automatisierungsauswahlen erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2291"/>
         <source>Create chord selections</source>
-        <translation type="unfinished">Akkordauswahl erstellen</translation>
+        <translation>Akkordauswahlen erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2295"/>
         <source>Create MIDI selections</source>
-        <translation type="unfinished">MIDI-Auswahl erstellen</translation>
+        <translation>MIDI-Auswahlen erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2304"/>
         <source>Delete arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl aufheben</translation>
+        <translation>Arrangeur-Auswahlen löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2306"/>
         <source>Duplicate arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl duplizieren</translation>
+        <translation>Arrangeur-Auswahlen duplizieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2308"/>
         <source>Move arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl verschieben</translation>
+        <translation>Arrangeur-Auswahlen verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2310"/>
         <source>Link arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl miteinander verlinken</translation>
+        <translation>Arrangeur-Auswahlen verlinken</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2312"/>
         <source>Record arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl aufzeichnen</translation>
+        <translation>Arrangeur-Auswahlen aufzeichnen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2314"/>
         <source>Edit arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl bearbeiten</translation>
+        <translation>Arrangeur-Auswahlen bearbeiten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2316"/>
@@ -1171,22 +1171,22 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2318"/>
         <source>Split arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl teilen</translation>
+        <translation>Arrangeur-Auswahlen aufteilen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2320"/>
         <source>Merge arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl verschmelzen</translation>
+        <translation>Arrangeur-Auswahlen zusammenführen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2324"/>
         <source>Resize arranger selections - {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Größe von Arrangeur-Auswahlen ändern - {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2327"/>
         <source>Quantize arranger selections</source>
-        <translation type="unfinished">Arrangeur-Auswahl quantisieren</translation>
+        <translation>Arrangeur-Auswahlen quantisieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="219"/>
@@ -1196,27 +1196,27 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="221"/>
         <source>Connect stereo</source>
-        <translation type="unfinished">Stereo verbinden</translation>
+        <translation>Stereo verbinden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="223"/>
         <source>Connect MIDI</source>
-        <translation type="unfinished">MIDI verbinden</translation>
+        <translation>MIDI verbinden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="225"/>
         <source>Disconnect</source>
-        <translation type="unfinished">Trennen</translation>
+        <translation>Trennen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="227"/>
         <source>Change amount</source>
-        <translation type="unfinished">Betrag ändern</translation>
+        <translation>Betrag ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="229"/>
         <source>Change ports</source>
-        <translation type="unfinished">Ports ändern</translation>
+        <translation>Ports ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="231"/>
@@ -1226,17 +1226,17 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/chord_action.cpp" line="80"/>
         <source>Change chords</source>
-        <translation type="unfinished">Akkorde ändern</translation>
+        <translation>Akkorde ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="136"/>
         <source>MIDI mapping enable</source>
-        <translation type="unfinished">MIDI-Mapping aktivieren</translation>
+        <translation>MIDI-Zuordnung aktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="138"/>
         <source>MIDI mapping disable</source>
-        <translation type="unfinished">MIDI-Mapping deaktivieren</translation>
+        <translation>MIDI-Zuordnung deaktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="140"/>
@@ -1251,177 +1251,177 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="577"/>
         <source>Project Reload Needed</source>
-        <translation type="unfinished">Projekt gespeichert.</translation>
+        <translation>Neuladen des Projekts erforderlich</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="578"/>
         <source>Plugin load behavior changes will only take effect after you save and re-load the project</source>
-        <translation type="unfinished">Einige Änderungen werden erst nach einem Neustart wirksam %s</translation>
+        <translation>Änderungen des Plugin-Ladeverhaltens werden erst nach dem Speichern und erneutem Laden des Projekts wirksam</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="937"/>
         <source>Create {}</source>
-        <translation type="unfinished"></translation>
+        <translation>{} erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="942"/>
         <source>Create {} {}s</source>
-        <translation type="unfinished"></translation>
+        <translation>{} {}s erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="947"/>
         <source>Delete Plugin</source>
-        <translation type="unfinished">Plugin löschen</translation>
+        <translation>Plugin löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="952"/>
         <source>Delete {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Plugins löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="958"/>
         <source>Move {}</source>
-        <translation type="unfinished"></translation>
+        <translation>{} verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="963"/>
         <source>Move {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Plugins verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="969"/>
         <source>Copy {}</source>
-        <translation type="unfinished"></translation>
+        <translation>{} kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="974"/>
         <source>Copy {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Plugins kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="980"/>
         <source>Paste {}</source>
-        <translation type="unfinished"></translation>
+        <translation>{} einfügen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="985"/>
         <source>Paste {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Plugins einfügen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="991"/>
         <source>Change Status for {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Status für {} ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="997"/>
         <source>Change Status for {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Status für {} Plugins ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1002"/>
         <source>Change Load Behavior for {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ladeverhalten für {} ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="80"/>
         <source>Set {} to {}</source>
-        <translation type="unfinished"></translation>
+        <translation>{} auf {} festlegen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="122"/>
         <source>Connect ports</source>
-        <translation type="unfinished">Ports verbinden</translation>
+        <translation>Ports verbinden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="124"/>
         <source>Disconnect ports</source>
-        <translation type="unfinished">Ports trennen</translation>
+        <translation>Ports trennen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="126"/>
         <source>Enable port connection</source>
-        <translation type="unfinished">Port-Verbindung aktivieren</translation>
+        <translation>Port-Verbindung aktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="128"/>
         <source>Disable port connection</source>
-        <translation type="unfinished">Port-Verbindung deaktivieren</translation>
+        <translation>Port-Verbindung deaktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="130"/>
         <source>Change port connection</source>
-        <translation type="unfinished">Port-Verbindung ändern</translation>
+        <translation>Port-Verbindung ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="492"/>
         <source>Insert silence</source>
-        <translation type="unfinished">Stille einfügen</translation>
+        <translation>Stille einfügen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="494"/>
         <source>Delete range</source>
-        <translation type="unfinished">Bereich löschen</translation>
+        <translation>Bereich löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="181"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation type="unfinished"></translation>
+        <translation>Spuren können nicht kopiert werden: Auswahl enthält eine nicht kopierbare Spur</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
         <source>Cannot delete tracks: selection contains an undeletable track</source>
-        <translation type="unfinished">Spuren können nicht gelöscht werden: Auswahl enthält eine nicht löschbare Spur</translation>
+        <translation>Spuren können nicht gelöscht werden: Auswahl enthält eine nicht löschbare Spur</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="290"/>
         <source>No tracks selected</source>
-        <translation type="unfinished">Keine Spuren ausgewählt</translation>
+        <translation>Keine Spuren ausgewählt</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="409"/>
         <source>{} Track</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spur</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1487"/>
         <source>Copy Track inside</source>
-        <translation type="unfinished">Track Vereinzeln</translation>
+        <translation>Spur nach innen kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1489"/>
         <source>Copy Track</source>
-        <translation type="unfinished">Spur kopieren</translation>
+        <translation>Spur kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1495"/>
         <source>Copy {} Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>%d Spuren nach innen kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1499"/>
         <source>Copy {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1506"/>
         <source>Create {} Track</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spur erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1511"/>
         <source>Create {} {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} {} Spuren erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1517"/>
         <source>Delete Track</source>
-        <translation type="unfinished">Spur löschen</translation>
+        <translation>Spur löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1522"/>
         <source>Delete {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1532"/>
@@ -1436,7 +1436,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1537"/>
         <source>Solo Lane</source>
-        <translation type="unfinished">Track Vereinzeln</translation>
+        <translation>Unterspur vereinzeln</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1539"/>
@@ -1446,7 +1446,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1542"/>
         <source>Mute Track</source>
-        <translation type="unfinished">Spur stummschalten</translation>
+        <translation>Spur stummschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1544"/>
@@ -1456,47 +1456,47 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1547"/>
         <source>Mute Lane</source>
-        <translation type="unfinished">Spur stummschalten</translation>
+        <translation>Unterspur stummschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1549"/>
         <source>Unmute Lane</source>
-        <translation type="unfinished">Laut schalten</translation>
+        <translation>Unterspur lautschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1552"/>
         <source>Listen Track</source>
-        <translation type="unfinished">Spur hören</translation>
+        <translation>Spur anhören</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1554"/>
         <source>Unlisten Track</source>
-        <translation type="unfinished">Spur nicht mehr hören</translation>
+        <translation>Spur nicht mehr anhören</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1557"/>
         <source>Enable Track</source>
-        <translation type="unfinished">Spur fixieren/lösen</translation>
+        <translation>Spur aktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1559"/>
         <source>Disable Track</source>
-        <translation type="unfinished">Spur deaktivieren</translation>
+        <translation>Spur deaktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1562"/>
         <source>Fold Track</source>
-        <translation type="unfinished">Spur einklappen</translation>
+        <translation>Spur einklappen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1564"/>
         <source>Unfold Track</source>
-        <translation type="unfinished">Spur ausklappen</translation>
+        <translation>Spur ausklappen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1567"/>
         <source>Change Fader from {:.1f} to {:.1f}</source>
-        <translation type="unfinished"></translation>
+        <translation>Regler von {:.1f} auf {:.1f} ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1571"/>
@@ -1507,39 +1507,39 @@ Die neuere Sicherung verwenden?</translation>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1574"/>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1630"/>
         <source>Change direct out</source>
-        <translation type="unfinished">Ändere direkten Ausgang</translation>
+        <translation>Direkten Ausgang ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1576"/>
         <source>Rename track</source>
-        <translation type="unfinished">Spur umbenennen</translation>
+        <translation>Spur umbenennen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1578"/>
         <source>Rename lane</source>
-        <translation type="unfinished">Bahn umbenennen</translation>
+        <translation>Unterspur umbenennen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1580"/>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1626"/>
         <source>Change color</source>
-        <translation type="unfinished">Farbe ändern</translation>
+        <translation>Farbe ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1582"/>
         <source>Change icon</source>
-        <translation type="unfinished">Symbol ändern</translation>
+        <translation>Symbol ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1584"/>
         <source>Change comment</source>
-        <translation type="unfinished">Kommentar ändern</translation>
+        <translation>Kommentar ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1586"/>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1628"/>
         <source>Change MIDI fader mode</source>
-        <translation type="unfinished">MIDI-Fader-Modus ändern</translation>
+        <translation>MIDI-Reglermodus ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1595"/>
@@ -1554,7 +1554,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1601"/>
         <source>Mute {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren stummschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1604"/>
@@ -1564,32 +1564,32 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1608"/>
         <source>Listen {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren anhören</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1611"/>
         <source>Unlisten {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren nicht mehr anhören</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1615"/>
         <source>Enable {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren aktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1618"/>
         <source>Disable {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren deaktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1621"/>
         <source>Fold {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren einklappen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1624"/>
         <source>Unfold {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren ausklappen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1632"/>
@@ -1599,120 +1599,120 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1634"/>
         <source>Mute lanes</source>
-        <translation type="unfinished"></translation>
+        <translation>Unterspuren stummschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1636"/>
         <source>Edit tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Spuren bearbeiten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1645"/>
         <source>Move Track inside</source>
-        <translation type="unfinished">Spur verschieben</translation>
+        <translation>Spur nach innen verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1649"/>
         <source>Move Track</source>
-        <translation type="unfinished">Spur verschieben</translation>
+        <translation>Spur verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1657"/>
         <source>Move {} Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren nach innen verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1663"/>
         <source>Move {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren verschieben</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1669"/>
         <source>Pin Track</source>
-        <translation type="unfinished">Spur fixieren</translation>
+        <translation>Spur anheften</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1674"/>
         <source>Pin {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren anheften</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1679"/>
         <source>Unpin Track</source>
-        <translation type="unfinished">Spur lösen</translation>
+        <translation>Spur lösen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
         <source>Unpin {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Spuren lösen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="181"/>
         <source>Change BPM from {:.2f} to {:.2f}</source>
-        <translation type="unfinished"></translation>
+        <translation>BPM von {:.2f} auf {:.2f} ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="185"/>
         <source>Change beats per bar from {} to {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Beats pro Takt von {} auf {} ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="189"/>
         <source>Change beat unit from {} to {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Schlageinheit von {} auf {} ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="28"/>
         <location filename="../src/common/dsp/chord_track.cpp" line="15"/>
         <source>Chords</source>
-        <translation type="unfinished">Akkorde</translation>
+        <translation>Akkorde</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="81"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="88"/>
         <source>_Rename</source>
-        <translation type="unfinished">Umbenennen _r</translation>
+        <translation>_Umbenennen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="86"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="93"/>
         <source>_Delete</source>
-        <translation type="unfinished">Löschen _D</translation>
+        <translation>_Löschen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="58"/>
         <source>Euro Pop</source>
-        <translation type="unfinished">Euro-Pop</translation>
+        <translation>Europop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="61"/>
         <source>4 Chord Song</source>
-        <translation type="unfinished">4-Akkorde-Song</translation>
+        <translation>4-Akkorde-Song</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="75"/>
         <source>Canon in D</source>
-        <translation type="unfinished">Kanon in D</translation>
+        <translation>Kanon in D</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="87"/>
         <source>Love Progression</source>
-        <translation type="unfinished">Liebeslieb-Akkordfolge</translation>
+        <translation type="unfinished">Liebeslied-Akkordfolge</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="95"/>
         <source>Pop Chords 1</source>
-        <translation type="unfinished">Pop-Akkorde 1</translation>
+        <translation>Pop-Akkorde 1</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="107"/>
         <source>Most Often Used Chords</source>
-        <translation type="unfinished">Am häufigsten verwendete Akkorde</translation>
+        <translation>Am häufigsten verwendete Akkorde</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="122"/>
         <source>Eastern Pop</source>
-        <translation type="unfinished">Euro-Pop</translation>
+        <translation>Ostpop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="125"/>
@@ -1732,7 +1732,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="170"/>
         <source>Dance</source>
-        <translation type="unfinished">Abbrechen</translation>
+        <translation>Tanzen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="174"/>
@@ -1742,7 +1742,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="185"/>
         <source>Ballad</source>
-        <translation type="unfinished">Ballade</translation>
+        <translation>Ballade</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="189"/>
@@ -1752,17 +1752,17 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="205"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Verbinden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="221"/>
         <source>Secret Base</source>
-        <translation type="unfinished"></translation>
+        <translation>Geheime Basis</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="238"/>
         <source>Eurodance</source>
-        <translation type="unfinished">Eurodance</translation>
+        <translation>Eurodance</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="242"/>
@@ -1777,7 +1777,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="268"/>
         <source>Eurobeat</source>
-        <translation type="unfinished">Eurobeat</translation>
+        <translation>Eurobeat</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="271"/>
@@ -1822,7 +1822,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="378"/>
         <source>Rock</source>
-        <translation type="unfinished">Rock</translation>
+        <translation>Rock</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="381"/>
@@ -1837,7 +1837,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="409"/>
         <source>Pray</source>
-        <translation type="unfinished"></translation>
+        <translation>Beten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="423"/>
@@ -1858,91 +1858,91 @@ Die neuere Sicherung verwenden?</translation>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="324"/>
         <location filename="../src/common/dsp/audio_function.cpp" line="113"/>
         <source>Failed to instantiate plugin</source>
-        <translation type="unfinished">Plugin konnte nicht eingerichtet werden</translation>
+        <translation>Plugin konnte nicht instanziiert werden</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
         <source>Stereo?</source>
-        <translation type="unfinished">Stereo-Eingang</translation>
+        <translation>Stereo?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
         <source>Are the outputs stereo?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sind die Ausgänge stereo?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
         <source>_Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>_Ja</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
         <source>_No</source>
-        <translation type="unfinished">Nein</translation>
+        <translation>_Nein</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="393"/>
         <source>Auto-route?</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisch routen?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
         <location filename="../src/common/dsp/clip.cpp" line="497"/>
         <source>_Cancel</source>
-        <translation type="unfinished">C_Abbrechen</translation>
+        <translation>Abbre_chen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/arranger_object.cpp" line="781"/>
         <source>Failed to edit object</source>
-        <translation type="unfinished">Objekt konnte nicht erstellt werden</translation>
+        <translation>Objekt konnte nicht bearbeitet werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/audio_function.cpp" line="105"/>
         <source>Failed to create plugin</source>
-        <translation type="unfinished">Plugin konnte nicht erstellt werden</translation>
+        <translation>Plugin konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/audio_function.cpp" line="306"/>
         <source>Invalid positions - skipping function</source>
-        <translation type="unfinished">Ungültige Positionen - Funktion wird übersprungen</translation>
+        <translation>Ungültige Positionen - Funktion wird übersprungen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/audio_function.cpp" line="546"/>
         <source>Failed to apply plugin</source>
-        <translation type="unfinished">Das Plugin konnte nicht angewendet werden</translation>
+        <translation>Plugin konnte nicht angewendet werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/audio_region.cpp" line="166"/>
         <source>Failed to duplicate audio clip</source>
-        <translation type="unfinished">Automation konnte nicht dupliziert werden</translation>
+        <translation>Audioclip konnte nicht dupliziert werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
         <source>Invalid Value</source>
-        <translation type="unfinished">Ungültig</translation>
+        <translation>Ungültiger Wert</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
         <source>Please enter a number between {:f} and {:f}</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte geben Sie eine Zahl zwischen {:f} und {:f} ein</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1039"/>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="935"/>
         <source>MIDI out</source>
-        <translation type="unfinished">MIDI-Ausgang</translation>
+        <translation>MIDI-Ausgang</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1491"/>
         <source>Failed to move or copy plugins</source>
-        <translation type="unfinished">Plugins konnten nicht verschoben oder kopiert werden</translation>
+        <translation>Plugins konnten nicht verschoben oder kopiert werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1517"/>
         <source>Failed to create plugin {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin {} konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1538"/>
@@ -1952,18 +1952,18 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1540"/>
         <source>Failed to add plugin</source>
-        <translation type="unfinished">Das Plugin konnte nicht angewendet werden</translation>
+        <translation>Plugin kann nicht hinzugefügt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="42"/>
         <source>None</source>
-        <translation type="unfinished">Keine</translation>
+        <translation>Keine</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="56"/>
         <location filename="../src/common/dsp/channel_send.cpp" line="76"/>
         <source>Invalid</source>
-        <translation type="unfinished">Ungültig</translation>
+        <translation>Ungültig</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="102"/>
@@ -1999,7 +1999,7 @@ Die neuere Sicherung verwenden?</translation>
         <location filename="../src/common/dsp/channel_send.cpp" line="374"/>
         <location filename="../src/common/dsp/channel_send.cpp" line="416"/>
         <source>Ports cannot be connected</source>
-        <translation type="unfinished">Ports können nicht verbunden werden</translation>
+        <translation>Ports können nicht verbunden werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="526"/>
@@ -2014,12 +2014,12 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="556"/>
         <source>{} input</source>
-        <translation type="unfinished"></translation>
+        <translation>{}-Eingang</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="209"/>
         <source>New direct out</source>
-        <translation type="unfinished">Neuer Direktausgang</translation>
+        <translation>Neuer Direktausgang</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="234"/>
@@ -2029,34 +2029,34 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="240"/>
         <source>Direct Output</source>
-        <translation type="unfinished">Direct Out</translation>
+        <translation>Direktausgang</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/clip.cpp" line="495"/>
         <source>Edit in external app</source>
-        <translation type="unfinished">In externer Anwendung bearbeiten</translation>
+        <translation>In externer App bearbeiten</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/clip.cpp" line="496"/>
         <location filename="../src/common/utils/ui.cpp" line="138"/>
         <source>_OK</source>
-        <translation type="unfinished">_OK</translation>
+        <translation>_OK</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/clip.cpp" line="511"/>
         <source>Edit the file at &lt;u&gt;%s&lt;/u&gt;, then press OK</source>
-        <translation type="unfinished">Bearbeiten Sie die Datei unter &lt;u&gt;%s&lt;/u&gt; und klicken Sie dann OK</translation>
+        <translation>Bearbeiten Sie die Datei unter &lt;u&gt;%s&lt;/u&gt;, und drücken Sie dann OK</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/clip.cpp" line="519"/>
         <source>Launch</source>
-        <translation type="unfinished">Starten</translation>
+        <translation>Starten</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="413"/>
         <location filename="../src/common/dsp/engine.cpp" line="475"/>
         <source>Backend Initialization Failed</source>
-        <translation type="unfinished">Fehler beim Schreiben der Datei: %s</translation>
+        <translation>Backend-Initialisierung fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="414"/>
@@ -2066,7 +2066,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="442"/>
         <source>Backend Error</source>
-        <translation type="unfinished">Backend-Fehler</translation>
+        <translation>Backend-Fehler</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="443"/>
@@ -2081,7 +2081,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="511"/>
         <source>Invalid Backend Combination</source>
-        <translation type="unfinished">Startposition</translation>
+        <translation>Ungültige Backend-Kombination</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="512"/>
@@ -2091,7 +2091,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="654"/>
         <source>Selected Backend Not Found</source>
-        <translation type="unfinished">Die gewählten Backends sind betriebsfähig</translation>
+        <translation>Ausgewähltes Backend nicht gefunden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="655"/>
@@ -2102,67 +2102,67 @@ Die neuere Sicherung verwenden?</translation>
         <location filename="../src/common/dsp/engine_jack.cpp" line="474"/>
         <location filename="../src/common/dsp/engine_jack.cpp" line="513"/>
         <source>JACK Error</source>
-        <translation type="unfinished">JACK-Fehler: %s</translation>
+        <translation>JACK-Fehler</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="569"/>
         <source>Overall operation failed</source>
-        <translation type="unfinished">Gesamter Betrieb fehlgeschlagen</translation>
+        <translation>Gesamte Operation fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="573"/>
         <source>The operation contained an invalid or unsupported option</source>
-        <translation type="unfinished">Der Vorgang beinhaltete eine ungültige oder nicht unterstütze Option</translation>
+        <translation>Die Operation enthielt eine ungültige oder nicht unterstützte Option</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="578"/>
         <source>The desired client name was not unique</source>
-        <translation type="unfinished">Der gewünschte Clientname war nicht eindeutig</translation>
+        <translation>Der gewünschte Clientname war nicht eindeutig</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="582"/>
         <source>Unable to connect to the JACK server</source>
-        <translation type="unfinished">Es kann keine Verbindung zum JACK-Server aufgebaut werden</translation>
+        <translation>Es kann keine Verbindung zum JACK-Server aufgebaut werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="586"/>
         <source>Communication error with the JACK server</source>
-        <translation type="unfinished">Kommunikationsfehler mit dem JACK-Server</translation>
+        <translation>Kommunikationsfehler mit dem JACK-Server</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="590"/>
         <source>Requested client does not exist</source>
-        <translation type="unfinished">Der angeforderte Client existiert nicht</translation>
+        <translation>Der angeforderte Client existiert nicht</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="594"/>
         <source>Unable to load internal client</source>
-        <translation type="unfinished">Der interne Client kann nicht geladen werden</translation>
+        <translation>Interner Client kann nicht geladen werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="598"/>
         <source>Unable to initialize client</source>
-        <translation type="unfinished">Der Client kann nicht initialisiert werden</translation>
+        <translation>Client kann nicht initialisiert werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="602"/>
         <source>Unable to access shared memory</source>
-        <translation type="unfinished">Es kann nicht auf den gemeinsam genutzten Speicher zugegriffen werden</translation>
+        <translation>Zugriff auf gemeinsamen Speicher nicht möglich</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="606"/>
         <source>Client&apos;s protocol version does not match</source>
-        <translation type="unfinished">Die Protokollversion des Clients stimmt nicht überein</translation>
+        <translation>Die Protokollversion des Clients stimmt nicht überein</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="610"/>
         <source>Backend error</source>
-        <translation type="unfinished">Backend-Fehler</translation>
+        <translation>Backend-Fehler</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="614"/>
         <source>Client zombie</source>
-        <translation type="unfinished">Client-Zombie</translation>
+        <translation>Client-Zombie</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="652"/>
@@ -2172,7 +2172,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="687"/>
         <source>JACK: No physical playback ports found</source>
-        <translation type="unfinished"></translation>
+        <translation>JACK: Keine physischen Wiedergabeanschlüsse gefunden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="697"/>
@@ -2182,69 +2182,69 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="698"/>
         <source>left</source>
-        <translation type="unfinished"></translation>
+        <translation>links</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="698"/>
         <source>right</source>
-        <translation type="unfinished">Rechts</translation>
+        <translation>rechts</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="749"/>
         <source>Failed to connect to left monitor output port</source>
-        <translation type="unfinished">%s konnte nicht mit %s verbunden werden</translation>
+        <translation>Verbindung zum linken Monitorausgang fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="761"/>
         <source>Failed to connect to right monitor output port</source>
-        <translation type="unfinished">%s konnte nicht mit %s verbunden werden</translation>
+        <translation>Verbindung zum rechten Monitorausgang fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_pa.cpp" line="194"/>
         <location filename="../src/common/dsp/engine_pa.cpp" line="206"/>
         <location filename="../src/common/dsp/engine_pa.cpp" line="214"/>
         <source>PortAudio Error: %s</source>
-        <translation type="unfinished">PortAudio-Fehler: %s</translation>
+        <translation>PortAudio-Fehler: %s</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_pulse.cpp" line="86"/>
         <source>Buffer Underflow</source>
-        <translation type="unfinished"></translation>
+        <translation>Pufferunterlauf</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_pulse.cpp" line="87"/>
         <source>A buffer underflow has occurred. Try increasing the buffer size in the settings to avoid audio glitches.</source>
-        <translation type="unfinished">Es ist ein Pufferunterlauf aufgetreten. Um Audiostörungen zu vermeiden, versuchen Sie die Puffergröße in den Einstellungen zu erhöhen.</translation>
+        <translation>Es ist ein Pufferunterlauf aufgetreten. Versuchen Sie, die Puffergröße in den Einstellungen zu erhöhen, um Audiostörungen zu vermeiden.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_pulse.cpp" line="207"/>
         <source>PulseAudio Error: %s</source>
-        <translation type="unfinished">PulseAudio-Fehler: %s</translation>
+        <translation>PulseAudio-Fehler: %s</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_pulse.cpp" line="417"/>
         <source>Pulseaudio Backend Test Failed</source>
-        <translation type="unfinished">Das zu benutzende Audio-Backend.</translation>
+        <translation>Pulseaudio-Backend-Test fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="337"/>
         <source>The exported audio contains segments louder than 0 dB (max detected %.1f dB).</source>
-        <translation type="unfinished"></translation>
+        <translation>Das exportierte Audiomaterial enthält Segmente, die lauter als 0 dB sind (max. erkannte %.1f dB).</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="664"/>
         <source>Failed to create audio track</source>
-        <translation type="unfinished">Audiospur konnte nicht erstellt werden</translation>
+        <translation>Audiospur konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="690"/>
         <source>Invalid time range</source>
-        <translation type="unfinished">Ungültig</translation>
+        <translation>Ungültige Zeitspanne</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="711"/>
         <source>Failed to export</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportieren fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="86"/>
@@ -2379,17 +2379,17 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="487"/>
         <source>Failed to change volume</source>
-        <translation type="unfinished">Lautstärke konnte nicht geändert werden</translation>
+        <translation>Lautstärke konnte nicht geändert werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="517"/>
         <source>Failed to set MIDI mode</source>
-        <translation type="unfinished">MIDI-Modus konnte nicht gesetzt werden</translation>
+        <translation>MIDI-Modus konnte nicht festgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/foldable_track.cpp" line="146"/>
         <source>Cannot set track folded</source>
-        <translation type="unfinished">Spur kann nicht eingeklappt werden</translation>
+        <translation>Spur kann nicht eingeklappt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/marker_track.cpp" line="28"/>
@@ -2409,7 +2409,7 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="66"/>
         <source>Macro {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Makro {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="79"/>
@@ -2424,157 +2424,157 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/modulator_track.cpp" line="19"/>
         <source>Modulators</source>
-        <translation type="unfinished">Modulatoren</translation>
+        <translation>Modulatoren</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="52"/>
         <source>Invalid object name %s</source>
-        <translation type="unfinished">Ungültiger Objektname %s</translation>
+        <translation>Ungültiger Objektname %s</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="53"/>
         <source>Invalid Name</source>
-        <translation type="unfinished">Ungültig</translation>
+        <translation>Ungültiger Name</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="75"/>
         <source>Failed to rename object</source>
-        <translation type="unfinished">Objekt konnte nicht umbenannt werden</translation>
+        <translation>Objekt konnte nicht umbenannt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/recordable_track.cpp" line="15"/>
         <source>Track record</source>
-        <translation type="unfinished">Spuraufnahme</translation>
+        <translation>Spuraufnahme</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/snap_grid.cpp" line="239"/>
         <source>Adaptive</source>
-        <translation type="unfinished">Adaptiv</translation>
+        <translation>Adaptiv</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="21"/>
         <source>Tempo</source>
-        <translation type="unfinished">Tempo</translation>
+        <translation>Tempo</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="47"/>
         <source>BPM</source>
-        <translation type="unfinished">BPM</translation>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="59"/>
         <source>Beats per bar</source>
-        <translation type="unfinished">Schläge pro Takt</translation>
+        <translation>Schläge pro Takt</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="72"/>
         <source>Beat unit</source>
-        <translation type="unfinished">Notenwert des Grundschlags</translation>
+        <translation>Schlageinheit</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="165"/>
         <source>Failed to change BPM</source>
-        <translation type="unfinished">BPM konnte nicht geändert werden</translation>
+        <translation>BPM konnte nicht geändert werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="195"/>
         <source>Invalid BPM Value</source>
-        <translation type="unfinished">Ungültig</translation>
+        <translation>Ungültiger BPM-Wert</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="196"/>
         <source>Please enter a positive decimal number</source>
-        <translation type="unfinished">Bitte geben Sie einen Wert ein</translation>
+        <translation>Bitte geben Sie eine positive Dezimalzahl ein</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="549"/>
         <source>Failed creating audio clip from file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Aus der Datei bei {} konnte kein Audioclip erstellt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="901"/>
         <source>Failed to rename track</source>
-        <translation type="unfinished">Spur konnte nicht umbenannt werden</translation>
+        <translation>Spur konnte nicht umbenannt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1099"/>
         <source>Failed to set track comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Spurkommentar konnte nicht festgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1123"/>
         <source>Failed to set track color</source>
-        <translation type="unfinished"></translation>
+        <translation>Spurfarbe konnte nicht festgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1152"/>
         <source>Cannot set track icon</source>
-        <translation type="unfinished">Icon der Spur kann nicht gesetzt werden</translation>
+        <translation>Spursymbol kann nicht festgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1351"/>
         <source>Cannot set track enabled status</source>
-        <translation type="unfinished"></translation>
+        <translation>Spuraktivierungsstatus konnte nicht festgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1532"/>
         <source>_Delete Track</source>
-        <translation type="unfinished">_Spur löschen</translation>
+        <translation>Spur _löschen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1534"/>
         <source>_Delete Tracks</source>
-        <translation type="unfinished">_Spuren löschen</translation>
+        <translation>Spuren _löschen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1544"/>
         <source>Duplicate Track</source>
-        <translation type="unfinished">_Spur duplizieren</translation>
+        <translation>Spur duplizieren</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1546"/>
         <source>Duplicate Tracks</source>
-        <translation type="unfinished">_Spuren duplizieren</translation>
+        <translation>Spuren duplizieren</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Track</source>
-        <translation type="unfinished">Spur verstecken</translation>
+        <translation>Spur ausblenden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Tracks</source>
-        <translation type="unfinished">Spuren verstecken</translation>
+        <translation>Spuren ausblenden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Track</source>
-        <translation type="unfinished">Spur fixieren/lösen</translation>
+        <translation>Spur anheften/lösen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Tracks</source>
-        <translation type="unfinished">Spuren fixieren/lösen</translation>
+        <translation>Spuren anheften/lösen</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1579"/>
         <source>Change Color...</source>
-        <translation type="unfinished">Farbe ändern…</translation>
+        <translation>Farbe ändern...</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1586"/>
         <source>Rename...</source>
-        <translation type="unfinished">Umbenennen</translation>
+        <translation>Umbenennen...</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
         <source>Lane {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Unterspur {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="74"/>
         <source>Failed to rename lane</source>
-        <translation type="unfinished">Bahn konnte nicht umbenannt werden</translation>
+        <translation>Unterspur konnte nicht umbenannt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="99"/>
@@ -2589,42 +2589,42 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1112"/>
         <source>No file was found</source>
-        <translation type="unfinished">Keine Datei gefunden</translation>
+        <translation>Keine Datei gefunden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1117"/>
         <source>Can only drop 1 file at a time on existing tracks</source>
-        <translation type="unfinished">Kann immer nur ein Datei gleichzeitig auf vorhandenen Spuren ablegen</translation>
+        <translation>Es kann jeweils nur 1 Datei auf vorhandenen Spuren abgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1127"/>
         <source>Can only drop audio files on audio tracks</source>
-        <translation type="unfinished">Auf Audiospuren können nur Audiodateien abgelegt werden</translation>
+        <translation>Es können nur Audiodateien auf Audiospuren abgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1134"/>
         <source>Can only drop MIDI files on MIDI/instrument tracks</source>
-        <translation type="unfinished">MIDI-Dateien können nur auf MIDI-/Instrumentenspuren abgelegt werden</translation>
+        <translation>Es können nur MIDI-Dateien auf MIDI-/Instrumentenspuren abgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1142"/>
         <source>Unsupported file type {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht unterstützter Dateityp {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1170"/>
         <source>Failed to import file {}: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Datei {} konnte nicht importiert werden: {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1209"/>
         <source>Failed to move tracks after copying or moving inside folder</source>
-        <translation type="unfinished">Spuren konnten nicht verschoben werden, nachdem sie innerhalb des Ordners kopiert oder verschoben wurden</translation>
+        <translation>Spuren konnten nach dem Kopieren oder Verschieben innerhalb eines Ordners nicht verschoben werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1273"/>
         <source>Failed to copy tracks inside</source>
-        <translation type="unfinished">Spuren konnten nicht kopiert werden</translation>
+        <translation>Spuren konnten nicht nach innen kopiert werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1310"/>
@@ -2634,24 +2634,24 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1325"/>
         <source>Failed to clone/add track</source>
-        <translation type="unfinished"></translation>
+        <translation>Spur konnte nicht geklont/hinzugefügt werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1345"/>
         <source>Failed to copy tracks</source>
-        <translation type="unfinished">Spuren konnten nicht kopiert werden</translation>
+        <translation>Spuren konnten nicht kopiert werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
         <location filename="../src/common/utils/exceptions.cpp" line="41"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
         <source>Cannot drag folder into itself</source>
-        <translation type="unfinished">Ordner kann nicht in sich selbst gezogen werden</translation>
+        <translation>Ordner kann nicht in sich selbst gezogen werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1382"/>
@@ -2662,12 +2662,12 @@ Die neuere Sicherung verwenden?</translation>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1441"/>
         <source>Failed to clone track</source>
-        <translation type="unfinished">Spur konnte nicht geklont werden</translation>
+        <translation>Spur konnte nicht geklont werden</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1460"/>
         <source>Failed to move tracks</source>
-        <translation type="unfinished">Spuren konnten nicht verschoben werden</translation>
+        <translation>Spuren konnten nicht verschoben werden</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_descriptor.cpp" line="187"/>
@@ -2676,27 +2676,31 @@ Sample rate: {}
 Length: {}s {} ms | BPM: {:.1f}
 Channel(s): {} | Bitrate: {:L}.{} kb/s
 Bit depth: {} bits</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;{}&lt;/b&gt;
+Abtastrate: {}
+Länge: {}s {} ms | BPM: {:.1f}
+Kanal/Kanäle: {} | Bitrate: {:L}.{} kb/s
+Bittiefe: {} Bits</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_descriptor.cpp" line="204"/>
         <source>Failed reading metadata for {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Metadaten für {} konnten nicht gelesen werden</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="72"/>
         <source>Unsupported file type %s</source>
-        <translation type="unfinished">Nicht unterstützter Dateityp %s</translation>
+        <translation>Nicht unterstützter Dateityp %s</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="85"/>
         <source>The MIDI file at %s contains no data</source>
-        <translation type="unfinished"></translation>
+        <translation>Die MIDI-Datei bei %s enthält keine Daten</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="104"/>
         <source>This MIDI file contains %d tracks. It cannot be dropped into an existing track</source>
-        <translation type="unfinished">Diese MIDI-Datei enthält %d Spuren. Sie kann nicht auf einer bestehenden Spur abgelegt werden</translation>
+        <translation>Diese MIDI-Datei enthält %d Spuren. Sie kann nicht auf einer bestehenden Spur abgelegt werden</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="119"/>
@@ -2706,27 +2710,27 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="151"/>
         <source>Failed to create an audio region for file %s: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Es konnte keine Audioregion für die Datei %s erstellt werden: %s</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_import.cpp" line="172"/>
         <source>Failed to create a MIDI region for file %s: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Es konnte keine MIDI-Region für die Datei %s erstellt werden: %s</translation>
     </message>
     <message>
         <location filename="../src/common/io/midi_file.cpp" line="121"/>
         <source>Untitled Track {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Unbetitelte Spur {}</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="504"/>
         <source>Default bank</source>
-        <translation type="unfinished">Standardbank</translation>
+        <translation>Standardbank</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="508"/>
         <source>Init</source>
-        <translation type="unfinished">Initialisierung</translation>
+        <translation>Initialisierung</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="521"/>
@@ -2736,42 +2740,42 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="867"/>
         <source>Audio in</source>
-        <translation type="unfinished">Audioeingang</translation>
+        <translation>Audioeingang</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="920"/>
         <source>Audio out</source>
-        <translation type="unfinished">Audioausgang</translation>
+        <translation>Audioausgang</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="927"/>
         <source>MIDI in</source>
-        <translation type="unfinished">MIDI-Eingang</translation>
+        <translation>MIDI-Eingang</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="943"/>
         <source>CV in</source>
-        <translation type="unfinished">CV-Eingang</translation>
+        <translation>CV-Eingang</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="950"/>
         <source>CV out</source>
-        <translation type="unfinished">CV-Ausgang</translation>
+        <translation>CV-Ausgang</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="1487"/>
         <source>Error adding carla plugin: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Hinzufügen des Carla-Plugins: {}</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="1654"/>
         <source>Failed to load Carla state</source>
-        <translation type="unfinished">Fehler bei Laden des Carla-Status</translation>
+        <translation>Carla-Status konnte nicht geladen werden</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/collections.cpp" line="60"/>
         <source>Rename</source>
-        <translation type="unfinished">Umbenennen</translation>
+        <translation>Umbenennen</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="194"/>
@@ -2781,12 +2785,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="222"/>
         <source>Enabled</source>
-        <translation type="unfinished">Aktiviert</translation>
+        <translation>Aktiviert</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="225"/>
         <source>Enables or disables the plugin</source>
-        <translation type="unfinished">Aktiviert oder deaktiviert das Plugin</translation>
+        <translation>Aktiviert oder deaktiviert das Plugin</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="241"/>
@@ -2801,43 +2805,44 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="375"/>
         <source>Add to project</source>
-        <translation type="unfinished">Zu Projekt hinzufügen</translation>
+        <translation>Zum Projekt hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="390"/>
         <source>Add to project (bridged UI)</source>
-        <translation type="unfinished">Zu Projekt hinzufügen (überbrückte Benutzeroberfläce)</translation>
+        <translation>Zum Projekt hinzufügen (überbrückte Benutzeroberfläche)</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="400"/>
         <source>Add to project (bridged full)</source>
-        <translation type="unfinished">Zu Projekt hinzufügen (voll überbrückt)</translation>
+        <translation>Zum Projekt hinzufügen (voll überbrückt)</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="436"/>
         <source>Add to collection</source>
-        <translation type="unfinished">Zu Sammlung hinzufügen</translation>
+        <translation>Zur Sammlung hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="462"/>
         <source>Remove from collection</source>
-        <translation type="unfinished">Aus Sammlung entfernen</translation>
+        <translation>Aus der Sammlung entfernen</translation>
     </message>
     <message>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
         <source>Details</source>
-        <translation type="unfinished">Details</translation>
+        <translation>Details</translation>
     </message>
     <message>
         <location filename="../src/common/utils/logger.cpp" line="162"/>
         <source>%s has encountered an error
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Bei %s ist ein Fehler aufgetreten
+</translation>
     </message>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="669"/>
         <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Sprachumgebung für die von Ihnen gewählte Sprache ({}) ist nicht verfügbar. Bitte installieren Sie zuerst eine und starten Sie {} neu</translation>
     </message>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="675"/>
@@ -2850,25 +2855,26 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="701"/>
         <source>Experimental Feature</source>
-        <translation type="unfinished"></translation>
+        <translation>Experimentelle Funktion</translation>
     </message>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="702"/>
         <source>BPM and time signature automation is an experimental feature. Using it may corrupt your project.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Automatisierung von BPM und Taktart ist eine experimentelle Funktion. Ihre Verwendung kann Ihr Projekt beschädigen.</translation>
     </message>
     <message>
         <location filename="../tests/helpers/zrythm_helper.cpp" line="59"/>
         <source>Error - Backtrace:
 </source>
-        <translation type="unfinished">Fehler - Rückverfolgung:
+        <translation>Fehler - Rückverfolgung:
 </translation>
     </message>
     <message>
         <location filename="../tests/helpers/zrythm_helper.cpp" line="62"/>
         <source>Error: {} - Backtrace:
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler: {} - Rückverfolgung:
+</translation>
     </message>
     <message>
         <location filename="../tests/helpers/zrythm_helper.cpp" line="87"/>
@@ -2878,7 +2884,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../tests/helpers/zrythm_helper.cpp" line="96"/>
         <source>Pipes are not supported in this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Pipes werden von dieser Plattform nicht unterstützt</translation>
     </message>
 </context>
 <context>
@@ -2886,7 +2892,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="18"/>
         <source>Record</source>
-        <translation type="unfinished">Aufnehmen</translation>
+        <translation>Aufnehmen</translation>
     </message>
 </context>
 <context>
@@ -2894,12 +2900,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/RightDock.qml" line="19"/>
         <source>Plugin Browser</source>
-        <translation type="unfinished">Plugin-Browser</translation>
+        <translation>Plugin-Browser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/RightDock.qml" line="28"/>
         <source>File Browser</source>
-        <translation type="unfinished">Datei-Browser</translation>
+        <translation>Datei-Browser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/RightDock.qml" line="37"/>
@@ -2934,7 +2940,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="53"/>
         <source>More Options...</source>
-        <translation type="unfinished"></translation>
+        <translation>Weitere Optionen...</translation>
     </message>
 </context>
 <context>
@@ -2942,27 +2948,27 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="34"/>
         <source>Select tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeug auswählen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="49"/>
         <source>Pencil tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Stiftwerkzeug</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="64"/>
         <source>Scissors tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Scherenwerkzeug</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="79"/>
         <source>Eraser tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Radierwerkzeug</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="94"/>
         <source>Ramp tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Rampenwerkzeug</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="109"/>
@@ -2975,17 +2981,17 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="152"/>
         <source>Scales</source>
-        <translation type="unfinished">Tonleiter</translation>
+        <translation>Tonleiter</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="184"/>
         <source>Show lanes</source>
-        <translation type="unfinished">Bahnen anzeigen</translation>
+        <translation>Unterspuren anzeigen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="201"/>
         <source>Show automation</source>
-        <translation type="unfinished">Automation anzeigen</translation>
+        <translation>Automatisierung anzeigen</translation>
     </message>
 </context>
 <context>
@@ -2993,7 +2999,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/Tracklist.qml" line="65"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Testen</translation>
     </message>
 </context>
 <context>
@@ -3001,7 +3007,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="18"/>
         <source>Add track</source>
-        <translation type="unfinished">FX-Spur hinzufügen</translation>
+        <translation>Spur hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="29"/>
@@ -3011,38 +3017,37 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="34"/>
         <source>Add Audio Track</source>
-        <translation type="unfinished">Audiospur hinzufügen</translation>
+        <translation>Audiospur hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="42"/>
         <source>Import File...</source>
-        <translation type="unfinished">
-1 weitere Datei…</translation>
+        <translation>Datei importieren...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Add Audio FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio-Effekt-Spur hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
         <source>Add MIDI FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI-Effekt-Spur hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
         <source>Add Audio Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiogruppenspur hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="67"/>
         <source>Add MIDI Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI-Gruppenspur hinzufügen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="75"/>
         <source>Add Folder Track</source>
-        <translation type="unfinished">Ordner-Spur hinzufügen</translation>
+        <translation>Ordner-Spur hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -3050,23 +3055,23 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Undo</source>
-        <translation type="unfinished">Rückgängig machen</translation>
+        <translation>Rückgängig machen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Redo</source>
-        <translation type="unfinished">Wiederherstellen</translation>
+        <translation>Wiederherstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="18"/>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="30"/>
         <source>%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="19"/>
         <source>Undo multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Mehrfach rückgängig machen</translation>
     </message>
 </context>
 <context>
@@ -3074,7 +3079,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/ZrythmFilePicker.qml" line="13"/>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchsuchen</translation>
     </message>
 </context>
 <context>
@@ -16399,7 +16404,7 @@ Unterstützen Sie dieses Projekt über https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="259"/>
         <source>Failed to load project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt konnte nicht geladen werden</translation>
     </message>
 </context>
 <context>
@@ -16408,7 +16413,7 @@ Unterstützen Sie dieses Projekt über https://liberapay.com/Zrythm
         <location filename="../src/gui/backend/project_templates_model.cpp" line="23"/>
         <location filename="../src/gui/backend/project_templates_model.cpp" line="59"/>
         <source>Blank Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Leeres Projekt</translation>
     </message>
 </context>
 <context>
@@ -16432,17 +16437,17 @@ Support this project at {}
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="120"/>
         <source>Open project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="121"/>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Projekt erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="123"/>
         <source>Create new project with template</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Projekt mit Vorlage erstellen</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="126"/>

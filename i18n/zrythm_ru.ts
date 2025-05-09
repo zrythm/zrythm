@@ -6,37 +6,37 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="94"/>
         <source>Change automatable</source>
-        <translation type="unfinished">Изменить значение</translation>
+        <translation>Изменить автоматизации</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="126"/>
         <source>On</source>
-        <translation type="unfinished">Вкл. (On)</translation>
+        <translation>Вкл.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
         <source>Touch</source>
-        <translation type="unfinished">Касание (Touch)</translation>
+        <translation>Касание</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
         <source>Latch</source>
-        <translation type="unfinished">Фиксация (Latch)</translation>
+        <translation>Фиксация</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="155"/>
         <source>Off</source>
-        <translation type="unfinished">Выкл. (Off)</translation>
+        <translation>Выкл.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="194"/>
         <source>Hide automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрыть полосу автоматизации</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="217"/>
         <source>Add automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить полосу автоматизации</translation>
     </message>
 </context>
 <context>
@@ -44,22 +44,22 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="63"/>
         <source>Editor</source>
-        <translation type="unfinished">Редактор (Editor)</translation>
+        <translation>Редактор</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="68"/>
         <source>Mixer</source>
-        <translation type="unfinished">Микшер (Mixer)</translation>
+        <translation>Микшер</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="73"/>
         <source>Modulators</source>
-        <translation type="unfinished">Модуляторы (Modulators)</translation>
+        <translation>Модуляторы</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="78"/>
         <source>Chord Pad</source>
-        <translation type="unfinished">Панель Аккордов (Chord Pad)</translation>
+        <translation>Панель аккордов</translation>
     </message>
 </context>
 <context>
@@ -67,7 +67,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="156"/>
         <source>Timeline</source>
-        <translation type="unfinished">Инспектор таймлайна</translation>
+        <translation>Таймлайн</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="161"/>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
         <source>Midi CC Bindings</source>
-        <translation type="unfinished"></translation>
+        <translation>Привязки MIDI CC</translation>
     </message>
 </context>
 <context>
@@ -85,17 +85,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="153"/>
         <source>Editor</source>
-        <translation type="unfinished">Редактор (Editor)</translation>
+        <translation>Редактор</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="159"/>
         <source>Mixer</source>
-        <translation type="unfinished">Микшер (Mixer)</translation>
+        <translation>Микшер</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="165"/>
         <source>Modulators</source>
-        <translation type="unfinished">Модуляторы (Modulators)</translation>
+        <translation>Модуляторы</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="182"/>
@@ -110,7 +110,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="199"/>
         <source>Plugin Browser</source>
-        <translation type="unfinished">Браузер плагинов (Plugin Browser)</translation>
+        <translation>Браузер плагинов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="208"/>
@@ -125,7 +125,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="226"/>
         <source>Chord Preset Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Обзор пресетов аккордов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="305"/>
@@ -136,17 +136,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="306"/>
         <source>Undo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить несколько действий</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="312"/>
         <source>Undo Move</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить перемещение</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="316"/>
         <source>Undo Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить вырезание</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="326"/>
@@ -161,67 +161,67 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="342"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="345"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Новое Длинное Длинное Длинное Длинное Длинное Длинное Длинное Длинное Длинное Имя</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="349"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="355"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Изменить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="364"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Вид</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="367"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешний вид</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="370"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключить светлую/тёмную тему</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="377"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет темы</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="380"/>
         <source>Zrythm Orange</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm Orange</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="386"/>
         <source>Celestial Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Celestial Blue</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="392"/>
         <source>Jonquil Yellow</source>
-        <translation type="unfinished"></translation>
+        <translation>Jonquil Yellow</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="404"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Помощь</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="407"/>
         <source>Something</source>
-        <translation type="unfinished"></translation>
+        <translation>Что-то</translation>
     </message>
 </context>
 <context>
@@ -229,79 +229,79 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="61"/>
         <source>About Flatpak</source>
-        <translation type="unfinished"></translation>
+        <translation>О Flatpak</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="62"/>
         <source>Only audio plugins installed via Flatpak are supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешены только аддоны, установленные через Flatpak.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="72"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожертвовать</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="73"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zrythm существует благодаря пожертвованиям и покупкам. Если вам нравится приложение и вы бы хотели помочь проекту, вы можете %1пожертвовать%2 или %3купить установщик%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="82"/>
         <source>All Ready!</source>
-        <translation type="unfinished"></translation>
+        <translation>Все готово!</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="85"/>
         <source>Proceed to Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Перейти к настройкам</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="103"/>
         <location filename="../src/gui/qml/Greeter.qml" line="123"/>
         <source>Welcome</source>
-        <translation type="unfinished">Добро пожаловать</translation>
+        <translation>Добро пожаловать</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="124"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Добро пожаловать в Zrythm - программу для работы с аудио. Перейдите к следующей странице, чтобы начать.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="132"/>
         <source>Read the Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Прочитать мануал</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="133"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Если вы впервые в Zrythm, мы предлагаем вам ознакомиться с секцией &apos;Начать работу&apos; в %1мануале%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="189"/>
         <location filename="../src/gui/qml/Greeter.qml" line="226"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="192"/>
         <source>Initial Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальная конфигурация</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="221"/>
         <source>‹</source>
-        <translation type="unfinished"></translation>
+        <translation>‹</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="246"/>
         <source>Continue</source>
-        <translation type="unfinished"></translation>
+        <translation>Продолжить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="268"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Прогресс</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="284"/>
@@ -311,68 +311,68 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="297"/>
         <source>Scanning:</source>
-        <translation type="unfinished"></translation>
+        <translation>Сканирование:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="323"/>
         <location filename="../src/gui/qml/Greeter.qml" line="380"/>
         <source>Open a Project</source>
-        <translation type="unfinished">Открыть проект</translation>
+        <translation>Открыть проект</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="397"/>
         <source>Preferences</source>
-        <translation type="unfinished">Настройки</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="405"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Про Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="423"/>
         <source>Create New Project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать новый проект...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="427"/>
         <source>Open From Path...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Открыть путь...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="440"/>
         <source>Create New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать новый проект</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="450"/>
         <source>Project Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="451"/>
         <source>Untitled Project</source>
-        <translation type="unfinished">Безымянный проект</translation>
+        <translation>Безымянный проект</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="482"/>
         <source>Create Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать проект</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Creating Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Создание проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="512"/>
         <source>Creating Project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Создание проекта...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="539"/>
         <source>Project Loading Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось загрузить проект</translation>
     </message>
 </context>
 <context>
@@ -393,67 +393,67 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключить левую панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключить правую панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Меню</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="105"/>
         <source>Open a Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть проект…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="111"/>
         <source>Create New Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать новый проект…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="122"/>
         <source>Save</source>
-        <translation type="unfinished">Сохранить</translation>
+        <translation>Сохранить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Save As…</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить как…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Export As…</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспортировать как…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Export Graph…</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспортировать граф…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Во весь экран</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="170"/>
         <source>Preferences</source>
-        <translation type="unfinished">Настройки</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="178"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Горячие клавиши</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="186"/>
         <source>About Zrythm Long Long Long Long Long Long Long</source>
-        <translation type="unfinished"></translation>
+        <translation>О Zrythm</translation>
     </message>
 </context>
 <context>
@@ -461,7 +461,7 @@
     <message>
         <location filename="../src/common/dsp/marker_track.cpp" line="14"/>
         <source>Markers</source>
-        <translation type="unfinished">Маркеры (Markers)</translation>
+        <translation>Маркеры</translation>
     </message>
 </context>
 <context>
@@ -469,17 +469,17 @@
     <message>
         <location filename="../src/common/dsp/region.h" line="599"/>
         <source>Inherit</source>
-        <translation type="unfinished">Наследовать (Inherit)</translation>
+        <translation>Наследовать</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/region.h" line="600"/>
         <source>Off</source>
-        <translation type="unfinished">Выкл. (Off)</translation>
+        <translation>Выкл.</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/region.h" line="601"/>
         <source>On</source>
-        <translation type="unfinished">Вкл. (On)</translation>
+        <translation>Вкл.</translation>
     </message>
 </context>
 <context>
@@ -487,7 +487,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="399"/>
         <source>Chromatic</source>
-        <translation type="unfinished">Хроматика</translation>
+        <translation type="unfinished">Цветной</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="400"/>
@@ -572,7 +572,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="416"/>
         <source>Acoustic</source>
-        <translation type="unfinished">Акустический</translation>
+        <translation>Акустический</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="417"/>
@@ -587,17 +587,17 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="419"/>
         <source>Major Locrian</source>
-        <translation type="unfinished"></translation>
+        <translation>Локрийский Лад</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="420"/>
         <source>Algerian</source>
-        <translation type="unfinished">Алжирский</translation>
+        <translation>Алжирский</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="421"/>
         <source>Augmented</source>
-        <translation type="unfinished">Дополненный</translation>
+        <translation type="unfinished">Увеличенный</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="422"/>
@@ -607,12 +607,12 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="423"/>
         <source>Chinese</source>
-        <translation type="unfinished">Китайский</translation>
+        <translation>Китайский</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="424"/>
         <source>Diminished</source>
-        <translation type="unfinished"></translation>
+        <translation>Уменьшенный</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="425"/>
@@ -622,7 +622,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="426"/>
         <source>Egyptian</source>
-        <translation type="unfinished">Египетский</translation>
+        <translation>Египетский</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="427"/>
@@ -737,7 +737,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="449"/>
         <source>Persian</source>
-        <translation type="unfinished"></translation>
+        <translation>Персидский</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="450"/>
@@ -782,12 +782,12 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="458"/>
         <source>Japanese 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Японский 1</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="459"/>
         <source>Japanese 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Японский 2</translation>
     </message>
 </context>
 <context>
@@ -795,7 +795,7 @@
     <message>
         <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="13"/>
         <source>Mute</source>
-        <translation type="unfinished">Заглушить (Mute)</translation>
+        <translation>Заглушить</translation>
     </message>
 </context>
 <context>
@@ -803,57 +803,57 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="115"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="118"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Новое Длинное Длинное Длинное Длинное Длинное Длинное Длинное Длинное Длинное Имя</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="122"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="128"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Изменить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="131"/>
         <source>Undo</source>
-        <translation type="unfinished">Отменить (Undo)</translation>
+        <translation type="unfinished">Отменить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="137"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Вид</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="140"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешний вид</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="143"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Переключить светлую/темную тему</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="151"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет темы</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="154"/>
         <source>Zrythm Orange</source>
-        <translation type="unfinished"></translation>
+        <translation>Оранжевый Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="161"/>
         <source>Celestial Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Небесно-Голубой</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="168"/>
@@ -863,12 +863,12 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="181"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Помощь</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="184"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Про Zrythm</translation>
     </message>
 </context>
 <context>
@@ -876,7 +876,7 @@
     <message>
         <location filename="../src/gui/backend/action_controller.cpp" line="28"/>
         <source>Failed to create track</source>
-        <translation type="unfinished">Не удалось создать трек</translation>
+        <translation>Не удалось создать трек</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="283"/>
@@ -906,7 +906,7 @@
     <message>
         <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="755"/>
         <source>Failed to add region</source>
-        <translation type="unfinished">Не удалось повторить</translation>
+        <translation>Не удалось добавить регион</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="799"/>
@@ -916,18 +916,18 @@
     <message>
         <location filename="../src/gui/backend/backend/file_manager.cpp" line="75"/>
         <source>Home</source>
-        <translation type="unfinished">Главная</translation>
+        <translation>Главная</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/file_manager.cpp" line="84"/>
         <source>Desktop</source>
-        <translation type="unfinished">Рабочий стол</translation>
+        <translation>Рабочий стол</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/file_manager.cpp" line="329"/>
         <location filename="../src/common/plugins/collections.cpp" line="63"/>
         <source>Delete</source>
-        <translation type="unfinished">Удалить (Delete)</translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/mixer_selections.cpp" line="367"/>
@@ -937,37 +937,37 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="294"/>
         <source>Failed to create backup directory {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать резервную копию каталога {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
         <source>Unable to read file at {}: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось прочитать файл на {}: {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="573"/>
         <source>Unable to decompress project file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно распаковать файл проекта в {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="676"/>
         <source>Failed to save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось сохранить проект</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="779"/>
         <source>Failed to compress project file</source>
-        <translation type="unfinished">Не удалось сжать файл проекта</translation>
+        <translation>Не удалось сжать файл проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="959"/>
         <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать резервную копию каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1029"/>
         <source>Failed to copy plugin states</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось скопировать состояния плагина</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="140"/>
@@ -1012,7 +1012,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="471"/>
         <source>Invalid project: missing version</source>
-        <translation type="unfinished">Недопустимое имя объекта %s</translation>
+        <translation type="unfinished">Некорректный проект: пропущена версия</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="497"/>
@@ -1032,7 +1032,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="560"/>
         <source>Could not load project: Corrupted project detected (missing FINISHED file at &apos;{}&apos;).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Не удалось загрузить проект: Обнаружен нерабочий проект (нет файла FINISHED в &apos;{}&apos;).</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="649"/>
@@ -1047,12 +1047,12 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="781"/>
         <source>This project has been automatically upgraded to v{}.{}. Saving this project will overwrite the old one. If you would like to keep both, please use &apos;Save As...&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот проект был автоматически обновлен до версии {}.{}. Сохранение этого проекта перезапишет предыдущее. Если вы хотите сохранить оба, используйте «Сохранить как...».</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="848"/>
         <source>Open Backup?</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть резервную копию?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="850"/>
@@ -1066,12 +1066,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="853"/>
         <source>Open Backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть резервную копию</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="854"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>Игнорировать</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/tracklist_selections.cpp" line="575"/>
@@ -1101,12 +1101,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="440"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно выполнить {} изменение размера — выделенное содержит зацикленные объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="451"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно выполнить {} изменение размера — выделенное содержит нециклические объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2279"/>
@@ -1181,7 +1181,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2324"/>
         <source>Resize arranger selections - {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить размер выбранных элементов аранжировщика - {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2327"/>
@@ -1261,12 +1261,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="937"/>
         <source>Create {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="942"/>
         <source>Create {} {}s</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {} {}s</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="947"/>
@@ -1276,57 +1276,57 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="952"/>
         <source>Delete {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="958"/>
         <source>Move {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Переместить {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="963"/>
         <source>Move {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Переместить {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="969"/>
         <source>Copy {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="974"/>
         <source>Copy {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="980"/>
         <source>Paste {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="985"/>
         <source>Paste {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить {} плагины</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="991"/>
         <source>Change Status for {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить статус для {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="997"/>
         <source>Change Status for {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить статус для {} плагинов</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1002"/>
         <source>Change Load Behavior for {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить поведение загрузки для {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="80"/>
         <source>Set {} to {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить {} на {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="122"/>
@@ -1366,7 +1366,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="181"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно скопировать треки: выделенное содержит некопируемый трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
@@ -1381,7 +1381,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="409"/>
         <source>{} Track</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1487"/>
@@ -1396,22 +1396,22 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1495"/>
         <source>Copy {} Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопировать {} трек внутрь</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1499"/>
         <source>Copy {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1506"/>
         <source>Create {} Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {} трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1511"/>
         <source>Create {} {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать {} {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1517"/>
@@ -1421,7 +1421,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1522"/>
         <source>Delete {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1532"/>
@@ -1554,17 +1554,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1601"/>
         <source>Mute {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Заглушить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1604"/>
         <source>Unmute {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1608"/>
         <source>Listen {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Прослушать {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1611"/>
@@ -1574,7 +1574,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1615"/>
         <source>Enable {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1618"/>
@@ -1619,12 +1619,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1657"/>
         <source>Move {} Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Переместить {} треки внутрь</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1663"/>
         <source>Move {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Переместить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1669"/>
@@ -1634,7 +1634,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1674"/>
         <source>Pin {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрепить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1679"/>
@@ -1644,17 +1644,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
         <source>Unpin {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Открепить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="181"/>
         <source>Change BPM from {:.2f} to {:.2f}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить такт с {:.2f} до {:.2f}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="185"/>
         <source>Change beats per bar from {} to {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить количество ударов в такте с {} на {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="189"/>
@@ -1868,13 +1868,13 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
         <source>Are the outputs stereo?</source>
-        <translation type="unfinished"></translation>
+        <translation>Являются ли выходы стерео?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
         <source>_Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>_Да</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
@@ -1926,7 +1926,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
         <source>Please enter a number between {:f} and {:f}</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, введите число от {:f} до {:f}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1039"/>
@@ -1942,12 +1942,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1517"/>
         <source>Failed to create plugin {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать плагин {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1538"/>
         <source>zrythm::plugins::Plugin {} cannot be added to this slot</source>
-        <translation type="unfinished"></translation>
+        <translation>zrythm::plugins::Плагин {} не может быть добавлен в этот слот</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1540"/>
@@ -2014,7 +2014,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="556"/>
         <source>{} input</source>
-        <translation type="unfinished"></translation>
+        <translation>{} ввод</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="209"/>
@@ -2244,7 +2244,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="711"/>
         <source>Failed to export</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось экспортировать</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="86"/>
@@ -2499,12 +2499,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1099"/>
         <source>Failed to set track comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось добавить комментарий к треку</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1123"/>
         <source>Failed to set track color</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось сменить цвет треку</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1152"/>
@@ -2569,7 +2569,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
         <source>Lane {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Полоса {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="74"/>
@@ -2584,7 +2584,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="129"/>
         <source>Could not mute/unmute track lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось отключить/включить звук на полосе трека</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1112"/>
@@ -2609,12 +2609,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1142"/>
         <source>Unsupported file type {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Неподдерживаемый тип файла {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1170"/>
         <source>Failed to import file {}: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось импортировать файл {}: {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1209"/>
@@ -2634,7 +2634,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1325"/>
         <source>Failed to clone/add track</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось клонировать/добавить трек</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1345"/>
@@ -2731,7 +2731,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="521"/>
         <source>Preset {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Пресет {}</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="867"/>
@@ -2935,7 +2935,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="53"/>
         <source>More Options...</source>
-        <translation type="unfinished"></translation>
+        <translation>Больше опций…</translation>
     </message>
 </context>
 <context>
@@ -2943,32 +2943,32 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="34"/>
         <source>Select tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделение</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="49"/>
         <source>Pencil tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Карандаш</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="64"/>
         <source>Scissors tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Ножницы</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="79"/>
         <source>Eraser tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Ластик</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="94"/>
         <source>Ramp tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Рампа</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="109"/>
         <source>Audition tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Прослушивание</translation>
     </message>
 </context>
 <context>
@@ -2994,7 +2994,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/Tracklist.qml" line="65"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Тестировать</translation>
     </message>
 </context>
 <context>
@@ -3023,27 +3023,27 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Add Audio FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить аудио FX трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
         <source>Add MIDI FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить MIDI FX трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
         <source>Add Audio Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить групповой аудио-трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="67"/>
         <source>Add MIDI Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить MIDI групповой-трек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="75"/>
         <source>Add Folder Track</source>
-        <translation type="unfinished">Добавить Трек-Папку</translation>
+        <translation>Добавить трек-папку</translation>
     </message>
 </context>
 <context>
@@ -3051,18 +3051,18 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Undo</source>
-        <translation type="unfinished">Отменить (Undo)</translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Redo</source>
-        <translation type="unfinished">Повторить (Redo)</translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="18"/>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="30"/>
         <source>%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="19"/>
@@ -3075,7 +3075,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/ZrythmFilePicker.qml" line="13"/>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>Обзор</translation>
     </message>
 </context>
 <context>
@@ -16468,7 +16468,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="259"/>
         <source>Failed to load project</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось загрузить проект</translation>
     </message>
 </context>
 <context>
@@ -16477,7 +16477,7 @@ Support this project at https://liberapay.com/Zrythm
         <location filename="../src/gui/backend/project_templates_model.cpp" line="23"/>
         <location filename="../src/gui/backend/project_templates_model.cpp" line="59"/>
         <source>Blank Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Пустой проект</translation>
     </message>
 </context>
 <context>
@@ -16496,27 +16496,38 @@ Write comments and bugs to {}
 Support this project at {}
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>%s-%s
+ %s
+
+%s поставляется АБСОЛЮТНО БЕЗ КАКОЙ-ЛИБО ГАРАНТИИ!
+
+Это свободное программное обеспечение, и вы можете распространять его
+при определенных условиях. Подробности смотрите в файле &apos;COPYING&apos;.
+
+Пишите комментарии и ошибки по адресу %s
+Поддержите этот проект на https://liberapay.com/Zrythm
+
+</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="120"/>
         <source>Open project</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть проект</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="121"/>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать новый проект</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="123"/>
         <source>Create new project with template</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать новый проект из шаблона</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="126"/>
         <source>Use dummy audio/midi engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать dummy аудио/midi движок</translation>
     </message>
 </context>
 <context>
@@ -16524,7 +16535,7 @@ Support this project at {}
     <message>
         <location filename="../src/common/plugins/plugin_scanner.cpp" line="262"/>
         <source>Scanning...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сканирование...</translation>
     </message>
 </context>
 </TS>

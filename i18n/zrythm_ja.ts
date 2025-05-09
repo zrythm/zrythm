@@ -11,32 +11,32 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="126"/>
         <source>On</source>
-        <translation type="unfinished">有効</translation>
+        <translation>有効</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
         <source>Touch</source>
-        <translation type="unfinished">タッチ</translation>
+        <translation>タッチ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
         <source>Latch</source>
-        <translation type="unfinished">ラッチ</translation>
+        <translation>ラッチ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="155"/>
         <source>Off</source>
-        <translation type="unfinished">無効</translation>
+        <translation>無効</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="194"/>
         <source>Hide automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>オートメーションレーンを非表示</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="217"/>
         <source>Add automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>オートメーションレーンを表示</translation>
     </message>
 </context>
 <context>
@@ -44,22 +44,22 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="63"/>
         <source>Editor</source>
-        <translation type="unfinished">エディター</translation>
+        <translation>エディター</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="68"/>
         <source>Mixer</source>
-        <translation type="unfinished">ミキサー</translation>
+        <translation>ミキサー</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="73"/>
         <source>Modulators</source>
-        <translation type="unfinished">モジュレーター</translation>
+        <translation>モジュレーター</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="78"/>
         <source>Chord Pad</source>
-        <translation type="unfinished">コードパッド</translation>
+        <translation>コードパッド</translation>
     </message>
 </context>
 <context>
@@ -67,7 +67,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="156"/>
         <source>Timeline</source>
-        <translation type="unfinished">タイムライン</translation>
+        <translation>タイムライン</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="161"/>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
         <source>Midi CC Bindings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">MIDI CC 割り当て</translation>
     </message>
 </context>
 <context>
@@ -85,78 +85,78 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="153"/>
         <source>Editor</source>
-        <translation type="unfinished">エディター</translation>
+        <translation>エディター</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="159"/>
         <source>Mixer</source>
-        <translation type="unfinished">ミキサー</translation>
+        <translation>ミキサー</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="165"/>
         <source>Modulators</source>
-        <translation type="unfinished">モジュレーター</translation>
+        <translation>モジュレーター</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="182"/>
         <source>Track Inspector</source>
-        <translation type="unfinished">トラックインスペクター</translation>
+        <translation>トラックインスペクター</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="187"/>
         <source>Plugin Inspector</source>
-        <translation type="unfinished">プラグインインスペクター</translation>
+        <translation>プラグインインスペクター</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="199"/>
         <source>Plugin Browser</source>
-        <translation type="unfinished">プラグインブラウザ</translation>
+        <translation>プラグインブラウザ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="208"/>
         <source>File Browser</source>
-        <translation type="unfinished">ファイルブラウザ</translation>
+        <translation>ファイルブラウザ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="217"/>
         <source>Monitor Section</source>
-        <translation type="unfinished">モニターセクション</translation>
+        <translation>モニターセクション</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="226"/>
         <source>Chord Preset Browser</source>
-        <translation type="unfinished">コードプリセットブラウザ</translation>
+        <translation>コードプリセットブラウザ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="305"/>
         <location filename="../src/gui/qml/DemoView.qml" line="358"/>
         <source>Undo</source>
-        <translation type="unfinished">元に戻す</translation>
+        <translation>取り消し</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="306"/>
         <source>Undo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>複数回の取り消し</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="312"/>
         <source>Undo Move</source>
-        <translation type="unfinished"></translation>
+        <translation>移動を取り消す</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="316"/>
         <source>Undo Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>カットを取り消す</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="326"/>
         <source>Redo</source>
-        <translation type="unfinished">やり直し</translation>
+        <translation>やり直し</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="327"/>
         <source>Redo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>複数回のやり直し</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="342"/>
@@ -3018,8 +3018,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="42"/>
         <source>Import File...</source>
-        <translation type="unfinished">
-もう1つのファイル...</translation>
+        <translation>もう1つのファイル...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>

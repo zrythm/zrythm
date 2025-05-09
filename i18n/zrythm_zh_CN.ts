@@ -31,12 +31,12 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="194"/>
         <source>Hide automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>隐藏自动化轨道</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="217"/>
         <source>Add automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>添加自动化轨道</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
         <source>Midi CC Bindings</source>
-        <translation type="unfinished"></translation>
+        <translation>Midi CC 绑定</translation>
     </message>
 </context>
 <context>
@@ -125,7 +125,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="226"/>
         <source>Chord Preset Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>和弦预制浏览器</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="305"/>
@@ -136,17 +136,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="306"/>
         <source>Undo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>撤销多次</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="312"/>
         <source>Undo Move</source>
-        <translation type="unfinished"></translation>
+        <translation>撤销移动</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="316"/>
         <source>Undo Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>撤销剪切</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="326"/>
@@ -191,12 +191,12 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="370"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>切换浅色/深色模式</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="377"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>主题颜色</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="380"/>

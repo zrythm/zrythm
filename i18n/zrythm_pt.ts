@@ -249,12 +249,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="82"/>
         <source>All Ready!</source>
-        <translation type="unfinished"></translation>
+        <translation>Tudo pronto!</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="85"/>
         <source>Proceed to Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Prossiga para a configuração</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="103"/>
@@ -265,7 +265,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="124"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bem-vindo à estação de trabalho de áudio digital Zrythm. Vá para a próxima página para começar.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="132"/>
@@ -301,17 +301,17 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="268"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Desenvolvimento</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="284"/>
         <source>Scanning Plugins</source>
-        <translation type="unfinished">Procurar suplementos</translation>
+        <translation>Verificando plug-ins</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="297"/>
         <source>Scanning:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Digitalização</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="323"/>
@@ -337,17 +337,17 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="427"/>
         <source>Open From Path...</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir do caminho...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="440"/>
         <source>Create New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar Novo Projeto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="450"/>
         <source>Project Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome do projeto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="451"/>
@@ -357,12 +357,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="482"/>
         <source>Create Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar projeto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Creating Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Criação de projetos</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="512"/>
@@ -372,7 +372,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="539"/>
         <source>Project Loading Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha no carregamento do projeto</translation>
     </message>
 </context>
 <context>
@@ -393,7 +393,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar Painel Esquerdo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>

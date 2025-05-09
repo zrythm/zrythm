@@ -239,7 +239,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="72"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Przekaż darowiznę</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="73"/>

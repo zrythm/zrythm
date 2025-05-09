@@ -700,7 +700,7 @@ Apoie este projeto em https://liberapay.com/Zrythm
     <name>src/gui/widgets/top_bar.c:375</name>
     <message>
         <source>time sig.</source>
-        <translation>sig. de tempo</translation>
+        <translation type="unfinished">sig. de tempo</translation>
     </message>
 </context>
 <context>

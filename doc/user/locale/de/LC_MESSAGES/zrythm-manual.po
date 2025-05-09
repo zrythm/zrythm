@@ -42,15 +42,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2023-12-22 20:45+0000\n"
-"Last-Translator: Arnold <as103@mailbox.org>\n"
+"PO-Revision-Date: 2025-02-01 11:45+0000\n"
+"Last-Translator: \"Kai A.\" <kai.adolf@gmail.com>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -58,7 +59,6 @@ msgid "Environment Variables"
 msgstr "Umgebungsvariablen"
 
 #: ../../appendix/environment.rst:13
-#, fuzzy
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
@@ -66,11 +66,11 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: "
 "``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
-"Zrythm versteht die folgenden Umgebungsvariablen. Diese können in :file:`."
-"bashrc` oder einer ähnlichen Shell-Konfigurationsdatei, sowie in den "
-"Einstellungen des Betriebssystems konfiguriert werden, oder sie werden "
-"direkt beim Aufruf von :program:`zrythm` oder :program:`zrythm_launch` "
-"übergeben, wie: ``LV2_PATH=/mein/angepasster/Pfad zrythm_launch``"
+"Zrythm versteht die folgenden Umgebungsvariablen. Diese können in "
+":file:`.bashrc` oder einer ähnlichen Shell-Konfigurationsdatei, sowie in den "
+"Einstellungen des Betriebssystems konfiguriert werden oder sie werden direkt "
+"beim Aufruf von :program:`zrythm` oder :program:`zrythm_launch` übergeben, "
+"wie: ``LV2_PATH=/mein/angepasster/Pfad zrythm_launch``"
 
 #: ../../appendix/environment.rst:21
 msgid "Set to 1 to disable plugin scanning."
@@ -101,15 +101,14 @@ msgid "User path"
 msgstr "Benutzerpfad"
 
 #: ../../appendix/files-and-directories.rst:11
-#, fuzzy
 msgid ""
 "When Zrythm is launched for the first time, it will also ask you to select a "
 "directory for saving your user data. See :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
-"Wenn Zrythm zum ersten Mal gestartet wird, werden Sie auch aufgefordert, ein "
-"Verzeichnis zum Speichern Ihrer Benutzerdaten auszuwählen. Siehe :term:"
-"`Zrythm Benutzerpfad` für Details."
+"Wenn Zrythm zum ersten Mal gestartet wird, werden Sie ebenfalls aufgefordert "
+"ein Verzeichnis zum Speichern Ihrer Benutzerdaten auszuwählen. Siehe :term:`"
+"Zrythm Benutzerpfad` für Details."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -745,7 +744,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:70
 msgid "MIDI learn window"
-msgstr ""
+msgstr "MIDI-Lernen Fenster"
 
 #: ../../configuration/device-setup.rst:72
 msgid ""
@@ -9390,9 +9389,8 @@ msgid "Changes the color of the selected track."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:89
-#, fuzzy
 msgid "Rename"
-msgstr "Aktiviert"
+msgstr "Umbenennen"
 
 #: ../../tracks/track-operations.rst:89
 msgid "Changes the name of the selected track."
@@ -10328,9 +10326,8 @@ msgid "Open an existing project."
 msgstr "Projekte erstellen"
 
 #: ../../zrythm-interface/main-toolbar.rst:35
-#, fuzzy
 msgid "Create New Project"
-msgstr "Projekte erstellen"
+msgstr "Neues Projekt erstellen"
 
 #: ../../zrythm-interface/main-toolbar.rst:36
 msgid "Create a new project."
@@ -10338,7 +10335,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:37
 msgid "Save"
-msgstr ""
+msgstr "Speichern"
 
 #: ../../zrythm-interface/main-toolbar.rst:38
 msgid "Save the current project at its current location."
@@ -10346,7 +10343,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid "Save As"
-msgstr ""
+msgstr "Speichern als"
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid "Save the current project at a new location."
@@ -10357,13 +10354,12 @@ msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:46
-#, fuzzy
 msgid "Export"
-msgstr "Exporte"
+msgstr "Exportieren"
 
 #: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Export As"
-msgstr ""
+msgstr "Exportieren als"
 
 #: ../../zrythm-interface/main-toolbar.rst:48
 msgid ""
@@ -10373,7 +10369,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:52
 msgid "Export Graph"
-msgstr "Exportiere Graph"
+msgstr "Graph exportieren"
 
 #: ../../zrythm-interface/main-toolbar.rst:51
 msgid ""
@@ -10387,11 +10383,11 @@ msgstr "Ansicht"
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Fullscreen"
-msgstr ""
+msgstr "Vollbild"
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Toggle fullscreen mode."
-msgstr ""
+msgstr "Vollbildmodus umschalten."
 
 #: ../../zrythm-interface/main-toolbar.rst:60
 #, fuzzy
@@ -10407,13 +10403,12 @@ msgid "Show all the available keyboard shortcuts."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:67
-#, fuzzy
 msgid "About Zrythm"
-msgstr "zrythm"
+msgstr "Über Zrythm"
 
 #: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Display information about Zrythm."
-msgstr ""
+msgstr "Informationen über Zrythm anzeigen."
 
 #: ../../zrythm-interface/overview.rst:9
 msgid "The Zrythm interface is split into various sub-modules."
