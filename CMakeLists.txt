@@ -439,6 +439,8 @@ if(ZRYTHM_EXTRA_OPTIMIZATIONS)
     # -O1 turns this on, but it may break backtraces so explicitly turn it
     # off on builds supposed to be debuggable
     # target_compile_options(_zrythm_compile_options INTERFACE -fno-omit-frame-pointer)
+  elseif(MSVC)
+    target_compile_options(_zrythm_compile_options INTERFACE /fp:fast)
   endif()
 endif()
 
@@ -450,7 +452,6 @@ if(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS)
     target_compile_options(_zrythm_compile_options INTERFACE
       # not allowed on clang + C
       #'-fallow-store-data-races',
-      -ffinite-math-only
       -fno-signed-zeros
       -fno-trapping-math
       -ffp-contract=fast

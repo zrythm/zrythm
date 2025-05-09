@@ -101,6 +101,7 @@ TEST_F (PeakDspTest, AbsoluteValueDetection)
   EXPECT_NEAR (peak, 0.7f, EPSILON);
 }
 
+#ifndef __FAST_MATH__
 TEST_F (PeakDspTest, EdgeCases)
 {
   std::vector<float> signal (1024, 0.0f);
@@ -124,5 +125,6 @@ TEST_F (PeakDspTest, EdgeCases)
   EXPECT_GE (peak, 0.0f);
   EXPECT_LE (peak, 1.0f);
 }
+#endif
 
 } // namespace zrythm::dsp

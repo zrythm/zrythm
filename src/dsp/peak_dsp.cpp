@@ -65,8 +65,6 @@ PeakDsp::process (float * p, int n)
   while (n--)
     {
       s = *p++;
-      if (!std::isfinite (s)) [[unlikely]] // Handle infinity/NaN
-        s = 0.f;
       max = std::max (std::abs (s), max);
       t = std::max (t, max); // Update digital peak.
     }
