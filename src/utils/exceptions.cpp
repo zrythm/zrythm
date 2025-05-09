@@ -6,6 +6,8 @@
 
 #include <fmt/format.h>
 
+using namespace zrythm::utils::exceptions;
+
 ZrythmException::ZrythmException (const char * message)
     : ZrythmException (std::string (message))
 {

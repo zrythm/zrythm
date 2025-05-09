@@ -1,25 +1,17 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Exception handling utilities.
- */
-
-#ifndef __UTILS_EXCEPTIONS_H__
-#define __UTILS_EXCEPTIONS_H__
+#pragma once
 
 #include <exception>
-#include <sstream>
 
 #include "utils/string.h"
 
 /**
- * @addtogroup utils
- *
- * @{
+ * @brief Exception handling utilities.
  */
+namespace zrythm::utils::exceptions
+{
 
 /**
  * Base class for exceptions in Zrythm.
@@ -49,8 +41,4 @@ private:
   mutable std::string full_message_;
 };
 
-/**
- * @}
- */
-
-#endif // __UTILS_EXCEPTIONS_H__
+} // namespace zrythm::utils::exceptions

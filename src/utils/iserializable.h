@@ -29,6 +29,8 @@
 
 #include <yyjson.h>
 
+using zrythm::utils::exceptions::ZrythmException;
+
 namespace zrythm::utils::serialization
 {
 
