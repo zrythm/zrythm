@@ -201,7 +201,6 @@ option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay
 option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 
 # Dependency feature options
-option(ZRYTHM_WITH_X11 "Build with X11 support" ${OS_GNU})
 option(ZRYTHM_WITH_RTMIDI "Build with RtMidi support" ON)
 option(ZRYTHM_WITH_RTAUDIO "Build with RtAudio support" ON)
 option(ZRYTHM_WITH_JACK "Build with JACK support" ${OS_GNU})
@@ -693,11 +692,6 @@ set_property(TARGET yyjson PROPERTY XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH[variant=Deb
 
 add_subdirectory(ext)
 
-if(ZRYTHM_WITH_X11 AND NOT APPLE)
-  find_package(X11 REQUIRED)
-  set(HAVE_X11 TRUE)
-endif()
-
 if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
   pkg_check_modules(LIBCYAML libcyaml>=1.2.0 IMPORTED_TARGET)
   if(LIBCYAML_FOUND)
@@ -1074,10 +1068,6 @@ elseif(APPLE)
       ${APPKIT_LIBRARY}
   )
   list(APPEND zrythm_link_libs zrythm_apple_libs)
-endif()
-
-if(ZRYTHM_WITH_X11)
-  list(APPEND zrythm_link_libs X11::X11)
 endif()
 
 file(COPY
