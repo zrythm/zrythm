@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_utils_unit_tests
@@ -18,6 +18,7 @@ add_executable(zrythm_utils_unit_tests
   midi_test.cpp
   monotonic_time_provider_test.cpp
   mpmc_queue_test.cpp
+  networking_test.cpp
   object_pool_test.cpp
   ring_buffer_test.cpp
   string_test.cpp
@@ -27,10 +28,6 @@ add_executable(zrythm_utils_unit_tests
   views_test.cpp
 )
 
-if(ZRYTHM_TESTS_WITH_INTERNET_ACCESS)
-  target_sources(zrythm_utils_unit_tests PRIVATE networking_test.cpp)
-endif()
-
 set_target_properties(zrythm_utils_unit_tests PROPERTIES
   AUTOMOC ON
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
@@ -39,6 +36,7 @@ set_target_properties(zrythm_utils_unit_tests PROPERTIES
 target_link_libraries(zrythm_utils_unit_tests PRIVATE
   zrythm::gtest_for_tests
   zrythm::utils_lib
+  httplib::httplib
 )
 target_compile_definitions(zrythm_utils_unit_tests PRIVATE
   TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"

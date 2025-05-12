@@ -48,7 +48,7 @@ URL::get_page_contents (int timeout)
     "Failed to create input stream for {}.", url_.toString (true)));
 }
 
-void
+utils::Utf8String
 URL::post_json_no_auth (
   const std::string                         &json_str,
   int                                        timeout,
@@ -85,6 +85,8 @@ URL::post_json_no_auth (
   if (auto stream = url.createInputStream (options))
     {
       z_info ("Success! status code: {}", status_code);
+      auto res = stream->readEntireStreamAsString ();
+      return utils::Utf8String::from_juce_string (res);
     }
   else
     {

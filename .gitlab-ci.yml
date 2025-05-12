@@ -18,7 +18,6 @@ variables:
   COMMON_CMAKE_OPTIONS: >-
     -DZRYTHM_STRICT=ON
     -DZRYTHM_TESTS=ON
-    -DZRYTHM_TESTS_WITH_INTERNET_ACCESS=ON
     -DZRYTHM_BENCHMARKS=ON
     -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
 
@@ -159,7 +158,6 @@ configure:windows:
       cmake -B "${env:BUILDDIR}-${env:BUILD_TYPE}"
       -DZRYTHM_STRICT=ON
       -DZRYTHM_TESTS=ON
-      -DZRYTHM_TESTS_WITH_INTERNET_ACCESS=ON
       -DZRYTHM_BENCHMARKS=ON
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
@@ -295,7 +293,7 @@ update-manual:
     - job: configure:gnu/linux
       artifacts: true
   script:
-    - ninja -C ${BUILDDIR}-Debug manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
+    - cmake --build ${BUILDDIR}-Debug --target manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times --exclude '*.zip' "${BUILDDIR}-Debug"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)

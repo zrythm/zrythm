@@ -159,7 +159,6 @@ if(ZRYTHM_TESTS)
 endif()
 cmake_dependent_option(ZRYTHM_BENCHMARKS "Build benchmarks" OFF "ZRYTHM_TESTS" OFF)
 cmake_dependent_option(ZRYTHM_GUI_TESTS "Build GUI tests" OFF "ZRYTHM_TESTS" OFF)
-cmake_dependent_option(ZRYTHM_TESTS_WITH_INTERNET_ACCESS "Enable tests that require internet access" OFF "ZRYTHM_TESTS" OFF)
 option(ZRYTHM_BUNDLED_PLUGINS "Build and install bundled plugins" ON)
 option(ZRYTHM_BUNDLED_PLUGINS_WITH_STATIC_LINKING "Build bundled plugins with static libs (libgcc/libstdc++). Distros should turn this off" ON)
 option(ZRYTHM_MAINTAINER_MODE "Whether to enable maintainer options (only for use by Zrythm maintainers/developers)" OFF)
@@ -984,6 +983,22 @@ elseif(compiler_gnulike)
   target_compile_options(_benchmark_libs INTERFACE -Wno-error=overloaded-virtual -Wno-error=redundant-decls)
 endif()
 add_library(zrythm::benchmark ALIAS _benchmark_libs)
+
+FetchContent_Declare(
+  cpp_httplib
+  GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+  # 0.20.1
+  GIT_TAG 3af7f2c16147f3fbc6e4d717032daf505dc1652c
+  GIT_SHALLOW TRUE
+)
+if(ZRYTHM_TESTS)
+  set(HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF)
+  set(HTTPLIB_USE_ZSTD_IF_AVAILABLE OFF)
+  set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF)
+  set(HTTPLIB_USE_ZLIB_IF_AVAILABLE OFF)
+  set(HTTPLIB_INSTALL OFF)
+  FetchContent_MakeAvailable(cpp_httplib)
+endif()
 
 find_package(Qt6
   COMPONENTS

@@ -1,56 +1,102 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <chrono>
 #include <fstream>
+#include <thread>
 
 #include "utils/gtest_wrapper.h"
 #include "utils/networking.h"
 
-TEST (NetworkingTest, BasicUrlConstruction)
+#include <httplib.h>
+
+using namespace std::chrono_literals;
+
+class NetworkingTest : public ::testing::Test
+{
+protected:
+  void SetUp () override
+  {
+    server_thread_ = std::thread ([this] () {
+      port_ = svr_.bind_to_any_port ("0.0.0.0");
+      svr_.listen_after_bind ();
+    });
+    std::this_thread::sleep_for (10ms);
+  }
+
+  void TearDown () override
+  {
+    svr_.stop ();
+    if (server_thread_.joinable ())
+      server_thread_.join ();
+  }
+
+  httplib::Server svr_;
+  int             port_;
+  std::thread     server_thread_;
+
+  std::string get_base_url () const
+  {
+    return fmt::format ("http://127.0.0.1:{}", port_);
+  }
+};
+
+TEST_F (NetworkingTest, BasicUrlConstruction)
 {
   EXPECT_NO_THROW ({ networking::URL url ("https://example.com"); });
 }
 
-TEST (NetworkingTest, GetPageContents)
+TEST_F (NetworkingTest, GetPageContents)
 {
-  networking::URL url ("https://example.com");
+  svr_.Get ("/", [] (const httplib::Request &, httplib::Response &res) {
+    res.set_content ("mock page contents", "text/plain");
+  });
+
+  networking::URL url (get_base_url ());
   auto            contents = url.get_page_contents ();
-  EXPECT_FALSE (contents.empty ());
-  // Just verify we got some content back
-  EXPECT_TRUE (contents.length () > 0);
+  EXPECT_EQ (contents, "mock page contents");
 }
 
-TEST (NetworkingTest, GetPageContentsWithTimeout)
+TEST_F (NetworkingTest, GetPageContentsWithTimeout)
 {
-  networking::URL url ("https://example.com");
-  // Test with 5 second timeout
-  auto contents = url.get_page_contents (5000);
-  EXPECT_FALSE (contents.empty ());
+  svr_.Get ("/timeout", [] (const httplib::Request &, httplib::Response &res) {
+    res.set_content ("timeout test", "text/plain");
+  });
+
+  networking::URL url (get_base_url () + "/timeout");
+  auto            contents = url.get_page_contents (5000);
+  EXPECT_EQ (contents, "timeout test");
 }
 
-TEST (NetworkingTest, PostJsonNoAuth)
+TEST_F (NetworkingTest, PostJsonNoAuth)
 {
-  networking::URL url ("https://httpbin.org/post");
-  std::string     json = R"({"test": "value"})";
+  svr_.Post ("/post", [] (const httplib::Request &req, httplib::Response &res) {
+    res.set_content ("{\"received\": true}", "application/json");
+  });
 
-  // Create a test file for multipart
   auto tmp_dir = fs::temp_directory_path () / "networking_test";
-  fs::create_directory (tmp_dir);
+  ASSERT_TRUE (fs::create_directory (tmp_dir));
   auto test_file = tmp_dir / "test.txt";
   std::ofstream (test_file) << "test content";
 
-  EXPECT_NO_THROW ({
-    url.post_json_no_auth (
-      json, 5000,
-      { networking::URL::MultiPartMimeObject ("file", test_file, "text/plain") });
-  });
+  networking::URL url (get_base_url () + "/post");
+  std::string     json = R"({"test": "value"})";
+
+  auto response = url.post_json_no_auth (
+    json, 5000,
+    { networking::URL::MultiPartMimeObject ("file", test_file, "text/plain") });
+  EXPECT_EQ (response, R"({"received": true})");
 
   fs::remove_all (tmp_dir);
 }
 
-TEST (NetworkingTest, AsyncGetContents)
+TEST_F (NetworkingTest, AsyncGetContents)
 {
-  networking::URL    url ("https://example.com");
+  svr_.Get ("/async", [] (const httplib::Request &, httplib::Response &res) {
+    res.set_content ("async test", "text/plain");
+  });
+
+  networking::URL    url (get_base_url () + "/async");
   std::promise<void> promise;
   auto               future = promise.get_future ();
 
@@ -68,6 +114,5 @@ TEST (NetworkingTest, AsyncGetContents)
         }
     });
 
-  EXPECT_EQ (
-    future.wait_for (std::chrono::seconds (10)), std::future_status::ready);
+  EXPECT_EQ (future.wait_for (10s), std::future_status::ready);
 }

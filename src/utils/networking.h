@@ -1,17 +1,11 @@
-// SPDX-FileCopyrightText: © 2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Networking utilities.
- */
-
-#ifndef __UTILS_NETWORKING_H__
-#define __UTILS_NETWORKING_H__
+#pragma once
 
 #include <filesystem>
 
+#include "utils/string.h"
 #include "utils/types.h"
 
 #include "juce_wrapper.h"
@@ -22,6 +16,9 @@
  * @{
  */
 
+/**
+ * @brief Networking utilities.
+ */
 namespace networking
 {
 
@@ -65,7 +62,7 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  void post_json_no_auth (
+  utils::Utf8String post_json_no_auth (
     const std::string                         &json_str,
     int                                        timeout,
     std::initializer_list<MultiPartMimeObject> mime_objects);
@@ -86,5 +83,3 @@ private:
 /**
  * @}
  */
-
-#endif
