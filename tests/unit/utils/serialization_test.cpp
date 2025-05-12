@@ -127,6 +127,8 @@ TEST (SerializationTest, VariantSerialization)
   nlohmann::json json = var;
 
   VariantT deserialized;
+  // clang fails to compile the next line unless this assert is here
+  static_assert (!VariantOfPointers<VariantT>);
   variant_from_json_with_builder (
     json, deserialized, SerializationTestVariantBuilder{});
 
