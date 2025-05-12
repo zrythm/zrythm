@@ -12,17 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-17 21:18+0900\n"
+"POT-Creation-Date: 2025-05-12 22:14+0900\n"
 "PO-Revision-Date: 2025-05-03 12:08+0000\n"
 "Last-Translator: Y_NOIZ <timemachine.liesin@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -34,15 +33,14 @@ msgstr "環境変数"
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
-"operating system's settings, or they can be passed directly when running :"
-"program:`zrythm` or :program:`zrythm_launch`, like: "
+"operating system's settings, or they can be passed directly when "
+"running :program:`zrythm` or :program:`zrythm_launch`, like: "
 "``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
-"Zrythmは以下の環境変数を理解します。これらは :file:`.bashrc` "
-"や同様のシェルの設定ファイル、オペレーティングシステムの設定、または "
-":program:`zrythm` や :program:`zrythm_launch` "
-"を実行するときに、次のように直接指定すこともできます： ``LV2_PATH=/my/custom/"
-"path zrythm_launch``"
+"Zrythmは以下の環境変数を理解します。これらは :file:`.bashrc` や同様のシェルの"
+"設定ファイル、オペレーティングシステムの設定、または :program:`zrythm` "
+"や :program:`zrythm_launch` を実行するときに、次のように直接指定すこともでき"
+"ます： ``LV2_PATH=/my/custom/path zrythm_launch``"
 
 #: ../../appendix/environment.rst:21
 msgid "Set to 1 to disable plugin scanning."
@@ -75,8 +73,8 @@ msgid ""
 "<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
 "Zrythmを初めて起動するときには、ユーザーデータを保存するディレクトリの選択も"
-"求められます。詳しくは :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>` をご覧ください。"
+"求められます。詳しくは :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>` をご覧ください。"
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -95,11 +93,11 @@ msgstr "Desktopファイル"
 #: ../../appendix/files-and-directories.rst:22
 #, fuzzy
 msgid ""
-"A `freedesktop-compliant configuration file <https://specifications."
-"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ that "
-"describes how a particular program should be launched, how it appears in "
-"menus, etc. This is normally installed at :file:`/usr/share/applications/"
-"zrythm.desktop`."
+"A `freedesktop-compliant configuration file <https://"
+"specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-"
+"latest.html>`_ that describes how a particular program should be launched, "
+"how it appears in menus, etc. This is normally installed at :file:`/usr/"
+"share/applications/zrythm.desktop`."
 msgstr ""
 "特定のプログラムの起動方法や、メニューへの表示方法などを記述した "
 "`freedesktop-compliant configuration file <https://"
@@ -114,8 +112,8 @@ msgstr "GLib スキーマ"
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
 "This file contains the schema for user configurations. It is normally "
-"installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
-"xml`."
+"installed at :file:`/usr/share/glib-2.0/schemas/"
+"org.zrythm.Zrythm.gschema.xml`."
 msgstr ""
 "このファイルには、ユーザー設定用のスキーマが含まれています。通常は :file:`/"
 "usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gshema.xml` にインストールされま"
@@ -143,8 +141,8 @@ msgid ""
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
 "ローカライズファイルは、 :file:`/usr/share/locale` の下にインストールされま"
-"す。例えば、韓国語の場合は、 :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm."
-"mo` となります。"
+"す。例えば、韓国語の場合は、 :file:`/usr/share/locale/ko/LC_MESSAGES/"
+"zrythm.mo` となります。"
 
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:100
@@ -182,8 +180,8 @@ msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
-"Zrythmは、いくつかのテキスト入力ウィジェットで使用されるCSSスタイルシートを :"
-"file:`/usr/share/zrythm/sourceview-styles` の下にインストールします。"
+"Zrythmは、いくつかのテキスト入力ウィジェットで使用されるCSSスタイルシート"
+"を :file:`/usr/share/zrythm/sourceview-styles` の下にインストールします。"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
@@ -191,8 +189,8 @@ msgstr "テーマ"
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
-"Default themes (including icon themes) will normally be installed under :"
-"file:`/usr/share/zrythm/themes`."
+"Default themes (including icon themes) will normally be installed "
+"under :file:`/usr/share/zrythm/themes`."
 msgstr ""
 "デフォルトのテーマ（アイコンテーマを含む）は通常、 :file:`/usr/share/zrythm/"
 "themes` にインストールされます。"
@@ -204,9 +202,9 @@ msgid ""
 "Path>`. See :ref:`theming/intro:Theming` for details."
 msgstr ""
 "Zrythmは、これらのファイルの一部を :ref:`Zrythm user path <configuration/"
-"preferences:Zrythm User "
-"Path>` のユーザー指定ファイルでオーバーライドする方法を提供します。詳細につい"
-"ては、:ref:`theming/intro:Theming` を参照してください。"
+"preferences:Zrythm User Path>` のユーザー指定ファイルでオーバーライドする方法"
+"を提供します。詳細については、:ref:`theming/intro:Theming` を参照してくださ"
+"い。"
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
@@ -219,8 +217,8 @@ msgstr "キャッシュされたプラグインの記述子"
 #: ../../appendix/files-and-directories.rst:81
 #, fuzzy
 msgid ""
-"Plugin descriptor cache for faster scanning. This is found at :file:"
-"`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
+"Plugin descriptor cache for faster scanning. This is found "
+"at :file:`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "高速スキャンのためのプラグイン記述子キャッシュ。これは、 :term:`Zrythm user "
@@ -233,12 +231,13 @@ msgstr "プラグインコレクション"
 #: ../../appendix/files-and-directories.rst:88
 #, fuzzy
 msgid ""
-"This file contains your plugin collections. It is found at :file:"
-"`plugin_collections.yaml` under the :ref:`Zrythm user path <configuration/"
-"preferences:Zrythm User Path>`."
+"This file contains your plugin collections. It is found "
+"at :file:`plugin_collections.yaml` under the :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>`."
 msgstr ""
-"このファイルには、プラグインコレクションが含まれています。これは :term:"
-"`Zrythm user path` の下の :file:`plugin_collections.yaml` にあります。"
+"このファイルには、プラグインコレクションが含まれています。これ"
+"は :term:`Zrythm user path` の下の :file:`plugin_collections.yaml` にありま"
+"す。"
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Plugin Settings"
@@ -248,10 +247,10 @@ msgstr "プラグイン設定"
 msgid ""
 "Located at :file:`plugin-settings.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`, this is a collection of per-"
-"plugin settings, such as whether to open the plugin with :term:`Carla`, the :"
-"ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use and "
-"whether to use a :ref:`generic UI <plugins-files/plugins/plugin-window:"
-"Generic UIs>`."
+"plugin settings, such as whether to open the plugin with :term:`Carla`, "
+"the :ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use "
+"and whether to use a :ref:`generic UI <plugins-files/plugins/plugin-"
+"window:Generic UIs>`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:103
@@ -268,9 +267,9 @@ msgstr "ログファイル"
 #, fuzzy
 msgid ""
 "Zrythm will write to a log file on each run inside the :file:`log` "
-"subdirectory under the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`. The filename will contain the current date and time, for "
-"example :file:`log_2020-06-26_15-34-19.log`."
+"subdirectory under the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`. The filename will contain the current date "
+"and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
 "Zrythmは、実行するたびに、 :term:`Zrythm user path` の下の :file:`log` サブ"
 "ディレクトリ内のログファイルに書き込みます。ファイル名には、現在の日付と時刻"
@@ -364,9 +363,9 @@ msgstr "オーディション"
 #: ../../chords-and-scales/chord-pad.rst:50
 msgid ""
 "You can audition chord presets by selecting an instrument plugin from the "
-"list and using the available playback controls. This works similarly to :ref:"
-"`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
-"browser:Auditioning>`."
+"list and using the available playback controls. This works similarly "
+"to :ref:`auditioning in the File Browser <plugins-files/audio-midi-files/"
+"file-browser:Auditioning>`."
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:56
@@ -458,8 +457,8 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:120
 msgid ""
-"Chords can be generated from a scale and a root note by clicking on the :"
-"guilabel:`Load Preset` button, then selecting a scale and a root note."
+"Chords can be generated from a scale and a root note by clicking on "
+"the :guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:127
@@ -688,9 +687,9 @@ msgstr "設定ダイアログを表示します。"
 
 #: ../../configuration/preferences.rst:22
 msgid ""
-"Preferences are grouped by sections, such as :guilabel:`General` and :"
-"guilabel:`Plugins`, and each item in the preferences contains a description "
-"that explains what it does (when not self-explanatory)."
+"Preferences are grouped by sections, such as :guilabel:`General` "
+"and :guilabel:`Plugins`, and each item in the preferences contains a "
+"description that explains what it does (when not self-explanatory)."
 msgstr ""
 
 #: ../../configuration/preferences.rst:27
@@ -705,8 +704,8 @@ msgid ""
 "or the optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/"
 "DconfEditor>`_."
 msgstr ""
-"Zrythmは　`gsettings <https://developer.gnome.org/gio/stable/gsettings-tool."
-"html>`_ のコマンドや　`dconf-editor <https://wiki.gnome.org/Apps/"
+"Zrythmは　`gsettings <https://developer.gnome.org/gio/stable/gsettings-"
+"tool.html>`_ のコマンドや　`dconf-editor <https://wiki.gnome.org/Apps/"
 "DconfEditor>`_　のGUIツールがあるGSettingsを使用し、設定を保存しています。"
 
 #: ../../configuration/preferences.rst:35
@@ -795,8 +794,9 @@ msgstr "入力デバイス/コントローラ"
 #: ../../configuration/preferences.rst:86
 msgid ""
 "In order to be able to record input from MIDI/audio devices, the devices "
-"must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
-"guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
+"must be explicitly enabled using the :guilabel:`MIDI controllers` "
+"and :guilabel:`Audio inputs` settings under :menuselection:`General --> "
+"Engine`."
 msgstr ""
 
 #: ../../configuration/preferences.rst:92
@@ -864,8 +864,8 @@ msgstr "初期設定にリセット"
 
 #: ../../configuration/preferences.rst:132
 msgid ""
-"There is an option to reset Zrythm to its default settings under :"
-"menuselection:`General --> Other`."
+"There is an option to reset Zrythm to its default settings "
+"under :menuselection:`General --> Other`."
 msgstr ""
 
 #: ../../configuration/preferences.rst:135
@@ -954,8 +954,8 @@ msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
 "such as icons you can start by creating your own themes and icons as "
-"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/overview:"
-"CSS`."
+"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/"
+"overview:CSS`."
 msgstr ""
 "Zrythm は CSS でテーマを設定でき、多くのアイコンを使用しています。アイコンの"
 "ようなアートワークを投稿したい場合は、 :ref:`icon-themes` や :ref:`css` で説"
@@ -1032,8 +1032,8 @@ msgstr ""
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
-"`official documentation <https://docs.weblate.org/en/latest/user/translating."
-"html>`_."
+"`official documentation <https://docs.weblate.org/en/latest/user/"
+"translating.html>`_."
 msgstr ""
 "作業したいプロジェクトをクリックし、次の画面で言語を選択します。Weblateの使い"
 "方については、 `公式ドキュメント <https://docs.weblate.org/ja/latest/user/"
@@ -1135,8 +1135,8 @@ msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
 msgstr ""
-"あるいは、 `Zrythm インストーラーを購入することもできます <https://www."
-"zrythm.org/en/download.html>`_ 。"
+"あるいは、 `Zrythm インストーラーを購入することもできます <https://"
+"www.zrythm.org/en/download.html>`_ 。"
 
 #: ../../contributing/reporting-bugs.rst:7
 #, fuzzy
@@ -1298,8 +1298,8 @@ msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:83
 msgid ""
-"You can obtain OS information from the About dialog (click :guilabel:"
-"`Troubleshooting` then :guilabel:`Debugging Information`)"
+"You can obtain OS information from the About dialog "
+"(click :guilabel:`Troubleshooting` then :guilabel:`Debugging Information`)"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:91
@@ -1339,9 +1339,9 @@ msgstr ""
 #: ../../contributing/reporting-bugs.rst:111
 msgid ""
 "Click on :guilabel:`New Issue`. You will see the following page where you "
-"can fill in details about the issue you are facing. Click on :guilabel:"
-"`Choose a template...` under :guilabel:`Description` and select what best "
-"describes your issue (e.g., a bug)."
+"can fill in details about the issue you are facing. Click "
+"on :guilabel:`Choose a template...` under :guilabel:`Description` and select "
+"what best describes your issue (e.g., a bug)."
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:117
@@ -1478,16 +1478,16 @@ msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:212
 msgid ""
-"Please send us the core dump file (in the example above it can be found at :"
-"file:`/home/alex/Downloads/core.23179`)."
+"Please send us the core dump file (in the example above it can be found "
+"at :file:`/home/alex/Downloads/core.23179`)."
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:216
 msgid ""
 "`c - Find which assembly instruction caused an Illegal Instruction error "
-"without debugging - Stack Overflow <https://stackoverflow.com/"
-"questions/10354147/find-which-assembly-instruction-caused-an-illegal-"
-"instruction-error-without-debu/40223712#40223712>`_"
+"without debugging - Stack Overflow <https://stackoverflow.com/questions/"
+"10354147/find-which-assembly-instruction-caused-an-illegal-instruction-error-"
+"without-debu/40223712#40223712>`_"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:217
@@ -1902,8 +1902,8 @@ msgid ""
 "they can be pasted elsewhere. The shortcut for cutting is :kbd:`Control-x`."
 msgstr ""
 "選択したオブジェクトを削除してコピーし、クリップボードに保存して、他の場所に"
-"貼り付けられるようにします。カットのショートカットは :zbutton:`Ctrl` + :"
-"zbutton:`X` です。"
+"貼り付けられるようにします。カットのショートカットは :zbutton:`Ctrl` "
+"+ :zbutton:`X` です。"
 
 #: ../../editing/common-operations.rst:57
 msgid "Copy"
@@ -1941,8 +1941,8 @@ msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :kbd:`Control-d`."
 msgstr ""
-"コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカットは :"
-"zbutton:`Control`+:zbutton:`D` です。"
+"コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカット"
+"は :zbutton:`Control`+:zbutton:`D` です。"
 
 #: ../../editing/common-operations.rst:79
 msgid "Duplicating a region"
@@ -3202,8 +3202,8 @@ msgstr ""
 #: ../../editing/piano-roll.rst:65
 #, fuzzy
 msgid ""
-"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
-"`Shift` and scrolling."
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` "
+"and :kbd:`Shift` and scrolling."
 msgstr ""
 "ズームレベルは、 :kbd:`Ctrl` と :kbd:`Shift` を押しながらスクロールすることで"
 "変更できます。"
@@ -3290,9 +3290,9 @@ msgstr "タイムライン"
 #, fuzzy
 msgid ""
 "Editing in the timeline is the most common workflow inside Zrythm. The "
-"timeline section consists of the :ref:`tracklist <tracks/tracklist:"
-"Tracklist>` on the left and the ruler/arranger on the right, along with a "
-"timeline-specific toolbar at the top."
+"timeline section consists of the :ref:`tracklist <tracks/"
+"tracklist:Tracklist>` on the left and the ruler/arranger on the right, along "
+"with a timeline-specific toolbar at the top."
 msgstr ""
 "タイムラインでの編集は Zrythm 内で最も一般的なワークフローです。タイムライン"
 "セクションは、左側のトラックリストと右側のルーラー/アレンジャーで構成されてい"
@@ -3401,9 +3401,9 @@ msgstr "言語の選択"
 
 #: ../../editing/timeline.rst:67
 msgid ""
-"Clicking and dragging in the top half of the ruler will create a :term:"
-"`range <Range>` selection. If an existing range exists, you can click an "
-"drag it to move it."
+"Clicking and dragging in the top half of the ruler will create "
+"a :term:`range <Range>` selection. If an existing range exists, you can "
+"click an drag it to move it."
 msgstr ""
 
 #: ../../editing/timeline.rst:75
@@ -3452,8 +3452,8 @@ msgstr "リージョン"
 #: ../../editing/timeline.rst:103
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
-"MIDI notes and audio clips - see below) that can be edited in an :ref:"
-"`editor <editing/timeline:Editing Region Contents>`. Regions can be "
+"MIDI notes and audio clips - see below) that can be edited in "
+"an :ref:`editor <editing/timeline:Editing Region Contents>`. Regions can be "
 "repeated, like below."
 msgstr ""
 
@@ -4094,8 +4094,8 @@ msgstr ""
 
 #: ../../getting-started/faq.rst:91
 msgid ""
-"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
-"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` "
+"and :ref:`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 msgstr ""
 
 #: ../../getting-started/faq.rst:95
@@ -4401,12 +4401,12 @@ msgstr ""
 #, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
-"tarball <https://www.zrythm.org/releases/>`_ or `git <https://gitlab.zrythm."
-"org/zrythm/zrythm/>`_."
+"tarball <https://www.zrythm.org/releases/>`_ or `git <https://"
+"gitlab.zrythm.org/zrythm/zrythm/>`_."
 msgstr ""
-"高度なユーザーの場合は、 `ソースディストリビューション tarball <https://www."
-"zrythm.org/releases/>`_ または `git <https://git.zrythm.org/cgit/zrythm/>`_ "
-"を使用して、ソースから Zrythm をビルドすることもできます。"
+"高度なユーザーの場合は、 `ソースディストリビューション tarball <https://"
+"www.zrythm.org/releases/>`_ または `git <https://git.zrythm.org/cgit/zrythm/"
+">`_ を使用して、ソースから Zrythm をビルドすることもできます。"
 
 #: ../../getting-started/installation.rst:51
 #, fuzzy
@@ -4789,8 +4789,8 @@ msgid ""
 "before running Zrythm. You will find lots of information online about how to "
 "configure JACK, such as `Demystifying JACK - A Beginners Guide to Getting "
 "Started with JACK <https://linuxaudio.github.io/libremusicproduction/html/"
-"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack."
-"html>`_, so we will skip this part."
+"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-"
+"jack.html>`_, so we will skip this part."
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:135
@@ -4848,8 +4848,8 @@ msgstr "a2jmidid"
 
 #: ../../glossary/intro.rst:14
 msgid ""
-"a2jmidid is an application that bridges between the system MIDI ports and :"
-"term:`JACK`."
+"a2jmidid is an application that bridges between the system MIDI ports "
+"and :term:`JACK`."
 msgstr ""
 "a2jmididはシステムのMIDIポートと :term:`JACK` の間のブリッジとなるアプリケー"
 "ションです。"
@@ -5118,8 +5118,8 @@ msgid ""
 "details."
 msgstr ""
 "プロジェクトは、作業セッションを参照します。プロジェクト ファイルを含むディレ"
-"クトリとして、他の補助ファイルと共に保存されます。詳細については、:"
-"ref:'Projects' を参照してください。"
+"クトリとして、他の補助ファイルと共に保存されます。詳細について"
+"は、:ref:'Projects' を参照してください。"
 
 #: ../../glossary/intro.rst:138
 msgid "Range"
@@ -5221,8 +5221,8 @@ msgstr "コマンドライン"
 
 #: ../../invoking-from-command-line/intro.rst:14
 msgid ""
-"Zrythm comes with a few utilities below that can be used from the :term:"
-"`CLI`."
+"Zrythm comes with a few utilities below that can be used from "
+"the :term:`CLI`."
 msgstr ""
 "Zrythm には、以下に示すいくつかのユーティリティが付属しており、このユーティリ"
 "ティは :term:`CLI` から使用できます。"
@@ -5260,8 +5260,8 @@ msgstr "ユーザー設定を初期値に戻します。"
 #, fuzzy
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
-"affect any files in the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`."
+"affect any files in the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`."
 msgstr ""
 ":option:`-p` で出力される設定にのみ影響します。これは、 :term:`Zrythm user "
 "path` 内のファイルには*影響しません*。"
@@ -5303,12 +5303,12 @@ msgstr "zrythm_launch"
 #: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
-"Zrythm. All of the options for :program:`zrythm` can also be passed to :"
-"program:`zrythm_launch`."
+"Zrythm. All of the options for :program:`zrythm` can also be passed "
+"to :program:`zrythm_launch`."
 msgstr ""
-"Zrythm を起動する前に正しいパスを設定する :program:`zrythm` のラッパー。 :"
-"program:`zrythm` のすべてのオプションは :program:`zrythm_launch` にも渡すこと"
-"ができます。"
+"Zrythm を起動する前に正しいパスを設定する :program:`zrythm` のラッ"
+"パー。 :program:`zrythm` のすべてのオプションは :program:`zrythm_launch` にも"
+"渡すことができます。"
 
 #: ../../mixing/intro.rst:9
 msgid "Mixing"
@@ -5424,9 +5424,9 @@ msgstr "グループ"
 #: ../../mixing/routing.rst:11
 #, fuzzy
 msgid ""
-":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` and :ref:"
-"`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be created for "
-"grouping signals."
+":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` "
+"and :ref:`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be "
+"created for grouping signals."
 msgstr ""
 "オーディオグループトラックとMIDIグループトラック(それぞれ :ref:`audio-group-"
 "track` と :ref:`midi-group-track` で説明)を作成して信号をグループ化することが"
@@ -5522,8 +5522,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Modulators and macro knobs are associated with the :ref:`Modulator Track "
-"<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
-"term:`Project`."
+"<tracks/track-types:Modulator Track>`, which contains all modulators in "
+"the :term:`Project`."
 msgstr ""
 ":term:`プロジェクト <Project>` 内のすべてのモジュレータは :doc:`../tracks/"
 "modulator-track` に付属しています。"
@@ -5535,8 +5535,8 @@ msgstr "モジュレーターの追加"
 #: ../../modulators/intro.rst:31
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
-"plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
-"ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
+"plugins/plugin-browser` into the Modulators tab. Modulator plugins can "
+"be :ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
 "browser:Filter Buttons>`."
 msgstr ""
 "モジュレータ プラグインは :doc:`../plugins-files/plugins/plugin-browser` か"
@@ -5607,8 +5607,8 @@ msgstr ""
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:18
 #, fuzzy
 msgid ""
-"Clicking and dragging on the integer counterpart will change the integer (e."
-"g., from 140.24 to 141.24) and clicking and dragging on the decimal "
+"Clicking and dragging on the integer counterpart will change the integer "
+"(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
 msgstr ""
 "整数の部分をクリックしてドラッグすると整数が変更され（例：140.24から141.24"
@@ -5817,8 +5817,8 @@ msgstr "オーディオとMIDIの録音"
 #: ../../playback-and-recording/recording.rst:31
 #, fuzzy
 msgid ""
-"After arming the tracks you want to record events into, enable recording in :"
-"ref:`transport-controls` and press play. Any signals received will be "
+"After arming the tracks you want to record events into, enable recording "
+"in :ref:`transport-controls` and press play. Any signals received will be "
 "recorded inside new regions in the timeline."
 msgstr ""
 "イベントを記録したいトラックをアームした後、 :ref:transport-controls` で録音"
@@ -6107,9 +6107,9 @@ msgstr "プレイヘッド表示"
 
 #: ../../playback-and-recording/transport-controls.rst:64
 msgid ""
-"The playhead position can be displayed in either BBT notation (`bars.beats."
-"sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be toggled by right-"
-"clicking on the playhead position display."
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:73
@@ -6192,8 +6192,8 @@ msgstr "フィルター ボタン"
 #: ../../plugins-files/audio-midi-files/file-browser.rst:51
 #, fuzzy
 msgid ""
-"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-browser:"
-"Plugin Browser>`, files can be filtered based on their type."
+"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-"
+"browser:Plugin Browser>`, files can be filtered based on their type."
 msgstr "さらに、プラグインは種類に基づいてフィルタリングすることができます。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:58
@@ -6550,8 +6550,8 @@ msgstr "表示"
 #, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :ref:`routing/connections:"
-"Connections` for details."
+"number of connections to/from this port. See :ref:`routing/"
+"connections:Connections` for details."
 msgstr ""
 "各ポート名の右上の番号には、このポートとの間の現在の接続数が表示されます。:d "
 "oc:'を参照してください。/../ルーティング/接続を作成する'詳細については。"
@@ -6788,11 +6788,16 @@ msgstr "プラグインは、次のカテゴリに分類されます。"
 msgid "|icon_instrument| Instrument"
 msgstr "|icon_instrument| インストゥルメント"
 
+#: ../../<rst_prolog>:18
+#, fuzzy
+msgid "instrument"
+msgstr "音源"
+
 #: ../../plugins-files/plugins/plugin-info.rst:23
 #, fuzzy
 msgid ""
-"These plugins will create an :ref:`Instrument Track <tracks/track-types:"
-"Instrument Track>` when added to the project."
+"These plugins will create an :ref:`Instrument Track <tracks/track-"
+"types:Instrument Track>` when added to the project."
 msgstr ""
 "これらのプラグインは、プロジェクトに追加されたときにインストゥルメントトラッ"
 "クを作成します。"
@@ -6800,6 +6805,11 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:31
 msgid "|icon_audio-insert| Effect"
 msgstr "|icon_audio-insert| エフェクト"
+
+#: ../../<rst_prolog>:12
+#, fuzzy
+msgid "audio-insert"
+msgstr "オーディオインターフェイス"
 
 #: ../../plugins-files/plugins/plugin-info.rst:28
 #, fuzzy
@@ -6816,6 +6826,11 @@ msgstr ""
 msgid "|icon_modulator| Modulator"
 msgstr "|icon_modulator| モジュレータ"
 
+#: ../../<rst_prolog>:21
+#, fuzzy
+msgid "modulator"
+msgstr "モジュレーター"
+
 #: ../../plugins-files/plugins/plugin-info.rst:34
 msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other "
@@ -6827,6 +6842,10 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:41
 msgid "|icon_signal-midi| MIDI Effect"
 msgstr "|icon_signal-midi| MIDI エフェクト"
+
+#: ../../<rst_prolog>:15
+msgid "signal-midi"
+msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:38
 msgid ""
@@ -6848,8 +6867,8 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:52
 msgid ""
-"Plugins consist of controls (parameters) and a variety of audio, :term:"
-"`MIDI` and :term:`CV` :ref:`ports <ports>`."
+"Plugins consist of controls (parameters) and a variety of "
+"audio, :term:`MIDI` and :term:`CV` :ref:`ports <ports>`."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:56
@@ -6956,8 +6975,9 @@ msgstr "プラグインのスキャン"
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports `CLAP`_, :term:`LV2`, :term:`VST2`, :"
-"term:`VST3`, :term:`LADSPA`, :term:`DSSI` and :term:`AU` plugins."
+"until it is closed. Zrythm supports "
+"`CLAP`_, :term:`LV2`, :term:`VST2`, :term:`VST3`, :term:`LADSPA`, :term:`DSSI` "
+"and :term:`AU` plugins."
 msgstr ""
 "Zrythmは起動時にプラグインをスキャンし、閉じられるまでそれらのプラグインを覚"
 "えています。Zrythm は LV2 と VST の両方のプラグインを対応していますが、LV2 は"
@@ -6975,8 +6995,8 @@ msgstr ""
 #: ../../plugins-files/plugins/scanning.rst:18
 #, fuzzy
 msgid ""
-"Plugin scanning can be disabled by setting the :envvar:"
-"`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
+"Plugin scanning can be disabled by setting "
+"the :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
 msgstr ""
 "プラグインのスキャンは、Zrythmの実行時に :envvar:`NO_SCAN_PLUGINS` を渡すこと"
 "で無効にできます。"
@@ -6988,10 +7008,10 @@ msgstr "パス"
 
 #: ../../plugins-files/plugins/scanning.rst:24
 msgid ""
-"Zrythm will scan for plugins in the plugin search paths specified in the :"
-"ref:`preferences <configuration/preferences:Preferences>`. If the search "
-"path is left empty, Zrythm will scan for plugins in the standard paths "
-"according to the specifications of each plugin format (if any)."
+"Zrythm will scan for plugins in the plugin search paths specified in "
+"the :ref:`preferences <configuration/preferences:Preferences>`. If the "
+"search path is left empty, Zrythm will scan for plugins in the standard "
+"paths according to the specifications of each plugin format (if any)."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:29
@@ -7038,9 +7058,9 @@ msgstr "AUスキャン"
 #: ../../plugins-files/plugins/scanning.rst:44
 #, fuzzy
 msgid ""
-"On MacOS, :term:`AU` plugins will be scanned at their standard locations at :"
-"file:`/Library/Audio/Plug-Ins/Components` for system plugins and :file:`~/"
-"Library/Audio/Plug-Ins/Components` for user plugins."
+"On MacOS, :term:`AU` plugins will be scanned at their standard locations "
+"at :file:`/Library/Audio/Plug-Ins/Components` for system plugins "
+"and :file:`~/Library/Audio/Plug-Ins/Components` for user plugins."
 msgstr ""
 "MacOSでは、 :term:`AU` プラグインは :file:`/Library/Audio/Plug-Ins/"
 "Components` にある標準の場所でスキャンされます。"
@@ -7329,8 +7349,8 @@ msgstr "オートメーションの選択"
 
 #: ../../routing/connections.rst:50
 msgid ""
-"Signal from tracks can be routed to plugins that have sidechain inputs via :"
-"ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
+"Signal from tracks can be routed to plugins that have sidechain inputs "
+"via :ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
 msgstr ""
 
 #: ../../routing/connections.rst:59
@@ -7687,211 +7707,6 @@ msgid ""
 "automatically by Zrythm internally."
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:6
-#, fuzzy
-msgid "Creates an audio send connection as an undoable action."
-msgstr "2ポートを接続するためのアクションを作成します。"
-
-#: ../../scripting/api/actions port_connection_action.rst:6
-msgid "Connects 2 ports as an undoable action."
-msgstr "2 つのポートを取り消し可能な操作として接続します。"
-
-#: ../../scripting/api/actions undo_manager.rst:6
-msgid "Undoes the last action."
-msgstr "最後の操作を元に戻します。"
-
-#: ../../scripting/api/actions undo_manager.rst:10
-msgid "Redoes the last undone action."
-msgstr "最後に取り消した操作をやり直します。"
-
-#: ../../scripting/api/audio channel.rst:6
-msgid "Returns the plugin at the given insert slot"
-msgstr "指定されたインサートスロットでプラグインを返します"
-
-#: ../../scripting/api/audio channel.rst:10
-msgid "Returns the instrument at the given channel"
-msgstr "指定されたチャンネルのインストゥルメントを返します．"
-
-#: ../../scripting/api/audio channel.rst:14
-msgid "Returns the send instance at the given slot"
-msgstr "指定したスロットでのセンドインスタンスを返します"
-
-#: ../../scripting/api/audio midi_note.rst:6
-msgid "Returns a new midi note."
-msgstr "新しい MIDI ノートを返します。"
-
-#: ../../scripting/api/audio midi_region.rst:6
-msgid "Returns a new midi region."
-msgstr "新しい MIDI リージョンを返します。"
-
-#: ../../scripting/api/audio midi_region.rst:10
-msgid "Adds a midi note to ``region``."
-msgstr "``region`` に MIDI ノートを追加します。"
-
-#: ../../scripting/api/audio port.rst:6
-msgid "Returns the left or right port of the stereo pair."
-msgstr "ステレオペアの左または右のポートを返します。"
-
-#: ../../scripting/api/audio port.rst:10
-msgid "Returns the identifier of ``port``."
-msgstr "``port`` の識別子を返します。"
-
-#: ../../scripting/api/audio position.rst:6
-#, fuzzy
-msgid ""
-"Return a newly-created position as ``bars``.\\ ``beats``.\\ ``sixteenths``."
-"\\ ``ticks``.\\ ``sub_tick``."
-msgstr ""
-"新しく作成した位置をbars.beats.sixteenths.ticks.sub_tickとして返します。"
-
-#: ../../scripting/api/audio position.rst:11
-msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
-msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
-
-#: ../../scripting/api/audio supported_file.rst:6
-msgid "Returns an instance of SupportedFile."
-msgstr "SupportedFile のインスタンスを返します。"
-
-#: ../../scripting/api/audio track.rst:6
-#, fuzzy
-msgid ""
-"Returns a new track with name ``name`` to be placed at position ``idx`` in "
-"the tracklist."
-msgstr ""
-"トラックリスト内の位置 idx に配置される名前を持つ新しいトラックを返します。"
-
-#: ../../scripting/api/audio track.rst:11
-msgid "Returns the name of ``track``."
-msgstr "``track`` の名前を返します。"
-
-#: ../../scripting/api/audio track.rst:15
-msgid "Returns the processor of ``track``."
-msgstr "``track`` のプロセッサを返します。"
-
-#: ../../scripting/api/audio track.rst:19
-msgid "Returns the channel of ``track``."
-msgstr "``track`` のチャンネルを返します。"
-
-#: ../../scripting/api/audio track.rst:23
-#, fuzzy
-msgid ""
-"Sets whether ``track`` is soloed or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"トラックをミュートするかどうかを設定します。これは元に戻せないアクションを作"
-"成して実行します。"
-
-#: ../../scripting/api/audio track.rst:28
-msgid ""
-"Sets whether ``track`` is muted or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"``track`` がミュートされているかどうかを設定します。元に戻せるアクションを作"
-"成し、それを実行します。"
-
-#: ../../scripting/api/audio track.rst:33
-msgid ""
-"Adds ``region`` to track ``track``. To be used for regions with lanes (midi/"
-"audio)"
-msgstr ""
-"トラック ``track`` に ``region`` を追加します。レーンを持つリージョンに使用さ"
-"れます (MIDI/オーディオ)"
-
-#: ../../scripting/api/audio track_processor.rst:6
-msgid "Returns the stereo in ports instance of the track processor."
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:6
-msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
-msgstr ""
-"トラックリストのインデックス ``idx`` にトラック ``track`` を挿入します。"
-
-#: ../../scripting/api/audio tracklist.rst:10
-msgid "Returns the track at ``pos`` in the tracklist."
-msgstr "トラックリストの ``pos`` にあるトラックを返します。"
-
-#: ../../scripting/api/audio tracklist.rst:14
-msgid "Returns the number of tracks in the tracklist."
-msgstr "トラックリスト内のトラックの数を返します。"
-
-#: ../../scripting/api/intro.rst:6
-msgid "API"
-msgstr "API"
-
-#: ../../scripting/api/plugins plugin.rst:6
-msgid "Returns the input port of the plugin at the given index."
-msgstr "指定したインデックスのプラグインの入力ポートを返します。"
-
-#: ../../scripting/api/plugins plugin.rst:10
-msgid "Returns the output port of the plugin at the given index."
-msgstr "指定したインデックスのプラグインの出力ポートを返します。"
-
-#: ../../scripting/api/plugins plugin_manager.rst:6
-msgid "Returns the PluginDescriptor matching the given URI."
-msgstr "指定したURIにマッチするPluginDescriptorを返します。"
-
-#: ../../scripting/api/plugins plugin_manager.rst:10
-msgid "Scans the system for plugins."
-msgstr "プラグインをスキャンします。"
-
-#: ../../scripting/api/project.rst:6
-msgid "Return the project’s title."
-msgstr "トラックのプロセッサを返します。"
-
-#: ../../scripting/api/project.rst:10
-msgid "Returns the tracklist for the project."
-msgstr "プロジェクトのトラックリストを返します。"
-
-#: ../../scripting/api/project.rst:14
-msgid "Returns the undo manager for the project."
-msgstr "プロジェクトの Undo マネージャー (Undo Manager) を返します。"
-
-#: ../../scripting/api/zrythm.rst:6
-msgid "Return the Zrythm version as a string."
-msgstr "Zrythmのバージョンを文字列として返します。"
-
-#: ../../scripting/api/zrythm.rst:10
-msgid "Return the PluginManager instance."
-msgstr "PluginManager のインスタンスを返します。"
-
-#: ../../scripting/api/zrythm.rst:14
-msgid "Return the currently loaded Project instance."
-msgstr "PluginManager のインスタンスを返します。"
-
-#: ../../scripting/api/zrythm.rst:18
-msgid "Returns a NULL pointer."
-msgstr "NULL ポインタを返します。"
-
-#: ../../scripting/api/zrythm.rst:22
-msgid "Writes the message to the log."
-msgstr "メッセージをログに書き込みます。"
-
-#: ../../scripting/examples.rst:7
-msgid "Examples"
-msgstr "例"
-
-#: ../../scripting/examples.rst:9
-msgid ""
-"The following examples are in the public domain (`CC 0 <https://"
-"creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and modify "
-"them."
-msgstr ""
-"以下の例はパブリックドメイン( `CC 0 <https://creativecommons.org/"
-"publicdomain/zero/1.0/>`_ )にあります。自由にコピーしたり、変更したりしてくだ"
-"さい。"
-
-#: ../../scripting/examples.rst:14
-msgid "Create MIDI track with notes"
-msgstr "ノート付きの MIDI トラックを作成"
-
-#: ../../scripting/examples.rst:47
-msgid "Hello world"
-msgstr "ハローワールド"
-
-#: ../../scripting/examples.rst:56
-msgid "Print all tracks"
-msgstr "すべてのトラックを出力する"
-
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
 msgstr "スクリプティング"
@@ -7936,15 +7751,14 @@ msgstr ""
 
 #: ../../scripting/overview.rst:34
 msgid ""
-"The Guile API is not available on Windows. See `this ticket <https://github."
-"com/msys2/MINGW-packages/issues/3298>`_ for details."
+"The Guile API is not available on Windows. See `this ticket <https://"
+"github.com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
 
 #: ../../scripting/overview.rst:38
 msgid ""
-"The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
-"all available procedures in the API. Each section in the API corresponds to "
-"a specific Guile module."
+"The ``API section`` is a comprehensive list of all available procedures in "
+"the API. Each section in the API corresponds to a specific Guile module."
 msgstr ""
 
 #: ../../scripting/overview.rst:44
@@ -7962,50 +7776,6 @@ msgstr ""
 msgid "To use it from ECMAScript, use:"
 msgstr ""
 
-#: ../../scripting/scripting-interface.rst:7
-msgid "Scripting Interface"
-msgstr "スクリプティングインタフェース"
-
-#: ../../scripting/scripting-interface.rst:9
-msgid ""
-"Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
-"Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
-"scripting interface dialog."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:17
-#, fuzzy
-msgid "Scripting interface"
-msgstr "スクリプティングインタフェース"
-
-#: ../../scripting/scripting-interface.rst:19
-msgid ""
-"Scripts can be edited in the editor found in the top part of the scrpiting "
-"interface."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:23
-#, fuzzy
-msgid "Execution"
-msgstr "選択範囲"
-
-#: ../../scripting/scripting-interface.rst:25
-msgid ""
-"Pressing :guilabel:`Execute` will execute the script and print any output in "
-"the label at the bottom."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:30
-#, fuzzy
-msgid "Changing Language"
-msgstr "値の変更"
-
-#: ../../scripting/scripting-interface.rst:32
-msgid ""
-"The language of the script can be selected using the provided dropdown. "
-"Changing the language will also affect code highlighting."
-msgstr ""
-
 #: ../../theming/intro.rst:7 ../../theming/overview.rst:7
 msgid "Theming"
 msgstr "テーマ"
@@ -8019,8 +7789,8 @@ msgstr ""
 #: ../../theming/overview.rst:14
 #, fuzzy
 msgid ""
-"You can override many defaults that Zrythm uses by placing things in your :"
-"ref:`user path <configuration/preferences:Zrythm User Path>`."
+"You can override many defaults that Zrythm uses by placing things in "
+"your :ref:`user path <configuration/preferences:Zrythm User Path>`."
 msgstr ""
 ":option:`-p` で出力される設定にのみ影響します。これは、 :term:`Zrythm user "
 "path` 内のファイルには*影響しません*。"
@@ -8089,8 +7859,8 @@ msgstr "以下は公式GNOMEソースによるリンクです。"
 #, fuzzy
 msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
 msgstr ""
-"`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-overview."
-"html>`_"
+"`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-"
+"overview.html>`_"
 
 #: ../../theming/overview.rst:51
 #, fuzzy
@@ -8104,8 +7874,8 @@ msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
 msgstr ""
-"`GTK を CSS でスタイリングする <https://thegnomejournal.wordpress."
-"com/2011/03/15/styling-gtk-with-css/>`_"
+"`GTK を CSS でスタイリングする <https://thegnomejournal.wordpress.com/"
+"2011/03/15/styling-gtk-with-css/>`_"
 
 #: ../../theming/overview.rst:55
 msgid "Icon Themes"
@@ -8216,14 +7986,14 @@ msgstr ""
 
 #: ../../tracks/automation.rst:39
 msgid ""
-"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
-"`Off` toggles in the track lane."
+"Automation can be enabled or disabled using the :guilabel:`On` "
+"and :guilabel:`Off` toggles in the track lane."
 msgstr ""
 
 #: ../../tracks/automation.rst:42
 msgid ""
-"Touch/latch modes can also be used to record automation live (see the :ref:"
-"`playback-and-recording/recording:Recording Automation` section)."
+"Touch/latch modes can also be used to record automation live (see "
+"the :ref:`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 
 #: ../../tracks/automation.rst:48
@@ -8313,11 +8083,11 @@ msgstr "MIDIトラック"
 #: ../../tracks/creating-tracks.rst:24
 #, fuzzy
 msgid ""
-":ref:`Instantiating a plugin <plugins-files/plugins/plugin-browser:"
-"Instantiating Plugins>` will cause new tracks to be created (unless the "
-"plugin was dropped in a particular location). If the plugin is an instrument "
-"plugin, an instrument track will be created. If the plugin is an effect, a "
-"bus track will be created."
+":ref:`Instantiating a plugin <plugins-files/plugins/plugin-"
+"browser:Instantiating Plugins>` will cause new tracks to be created (unless "
+"the plugin was dropped in a particular location). If the plugin is an "
+"instrument plugin, an instrument track will be created. If the plugin is an "
+"effect, a bus track will be created."
 msgstr ""
 "プラグインはプラグインブラウザからクリックしてドラッグし、トラックリストまた"
 "はミキサーの空き領域にドロップしてインスタンスを作成できます。プラグインがイ"
@@ -8553,8 +8323,8 @@ msgstr "ボリュームとステレオバランスをコントロールするフ
 #: ../../tracks/inspector-page.rst:134
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
-"respective widgets. You can reset them to their default positions with :"
-"menuselection:`Right click --> Reset`."
+"respective widgets. You can reset them to their default positions "
+"with :menuselection:`Right click --> Reset`."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:139
@@ -8594,9 +8364,9 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:154
 #, fuzzy
 msgid ""
-"The track will still be processed, so if you are looking to decrease :term:"
-"`DSP` usage, try :ref:`disabling the track <tracks/track-operations:Channel "
-"Section>` (or individual plugins) instead."
+"The track will still be processed, so if you are looking to "
+"decrease :term:`DSP` usage, try :ref:`disabling the track <tracks/track-"
+"operations:Channel Section>` (or individual plugins) instead."
 msgstr ""
 "トラックはまだ処理されますので、 :term:`DSP` の使用量を減らしたい場合は、代わ"
 "りにプラグインを無効にしてみてください。"
@@ -8696,8 +8466,8 @@ msgstr "トラックインタフェース"
 #: ../../tracks/overview.rst:21
 #, fuzzy
 msgid ""
-"Most types of tracks have a corresponding channel that appears in the :ref:"
-"`Mixer <mixer>`. See :ref:`channels` for more info."
+"Most types of tracks have a corresponding channel that appears in "
+"the :ref:`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
 "ほとんどのタイプのトラックには、対応するチャンネルが :ref:`mixer` に表示され"
 "ます。詳細については、 :ref:`channels` を参照してください。"
@@ -8850,8 +8620,8 @@ msgstr "選択を行う"
 #: ../../tracks/track-operations.rst:14
 msgid ""
 "Tracks are selected by clicking on them, either in the tracklist or in the "
-"mixer. Multiple tracks can be selected by pressing and holding :kbd:"
-"`Control` while clicking them."
+"mixer. Multiple tracks can be selected by pressing and "
+"holding :kbd:`Control` while clicking them."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:17
@@ -8915,8 +8685,8 @@ msgstr ""
 #: ../../tracks/track-operations.rst:48
 msgid ""
 "The track name can be changed by double-clicking on it in the track view, in "
-"the track inspector, or in the channel. It can also be changed via the :"
-"guilabel:`Rename` context menu option."
+"the track inspector, or in the channel. It can also be changed via "
+"the :guilabel:`Rename` context menu option."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:60
@@ -9310,8 +9080,8 @@ msgstr "詳細については、:doc:`../chords-and-scales/intro` を参照し�
 
 #: ../../tracks/track-types.rst:151
 msgid ""
-"For editing chords inside chord regions, see :ref:`editing/chord-editor:"
-"Chord Editor`."
+"For editing chords inside chord regions, see :ref:`editing/chord-"
+"editor:Chord Editor`."
 msgstr ""
 
 #: ../../tracks/track-types.rst:155
@@ -9445,8 +9215,8 @@ msgid ""
 "audio backend."
 msgstr ""
 "マスタートラックは、Zrythmがオーディオバックエンドにすべての処理が行われた"
-"後、生成されたオーディオ信号をルーティングするために使用する特殊なタイプの :"
-"ref:`audio-group-track` です。"
+"後、生成されたオーディオ信号をルーティングするために使用する特殊なタイプ"
+"の :ref:`audio-group-track` です。"
 
 #: ../../tracks/track-types.rst:241
 #, fuzzy
@@ -9872,8 +9642,8 @@ msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for "
 "more details."
 msgstr ""
-"プロジェクトをオーディオまたは MIDI としてエクスポートする。詳細は :ref:"
-"`export-audio-and-midi` を参照してください。"
+"プロジェクトをオーディオまたは MIDI としてエクスポートする。詳細"
+"は :ref:`export-audio-and-midi` を参照してください。"
 
 #: ../../zrythm-interface/main-toolbar.rst:52
 msgid "Export Graph"
@@ -10143,6 +9913,173 @@ msgid ""
 "clipping."
 msgstr ""
 
+#~ msgid "Creates an audio send connection as an undoable action."
+#~ msgstr "2ポートを接続するためのアクションを作成します。"
+
+#~ msgid "Connects 2 ports as an undoable action."
+#~ msgstr "2 つのポートを取り消し可能な操作として接続します。"
+
+#~ msgid "Undoes the last action."
+#~ msgstr "最後の操作を元に戻します。"
+
+#~ msgid "Redoes the last undone action."
+#~ msgstr "最後に取り消した操作をやり直します。"
+
+#~ msgid "Returns the plugin at the given insert slot"
+#~ msgstr "指定されたインサートスロットでプラグインを返します"
+
+#~ msgid "Returns the instrument at the given channel"
+#~ msgstr "指定されたチャンネルのインストゥルメントを返します．"
+
+#~ msgid "Returns the send instance at the given slot"
+#~ msgstr "指定したスロットでのセンドインスタンスを返します"
+
+#~ msgid "Returns a new midi note."
+#~ msgstr "新しい MIDI ノートを返します。"
+
+#~ msgid "Returns a new midi region."
+#~ msgstr "新しい MIDI リージョンを返します。"
+
+#~ msgid "Adds a midi note to ``region``."
+#~ msgstr "``region`` に MIDI ノートを追加します。"
+
+#~ msgid "Returns the left or right port of the stereo pair."
+#~ msgstr "ステレオペアの左または右のポートを返します。"
+
+#~ msgid "Returns the identifier of ``port``."
+#~ msgstr "``port`` の識別子を返します。"
+
+#~ msgid ""
+#~ "Return a newly-created position as ``bars``.\\ ``beats``.\\ "
+#~ "``sixteenths``.\\ ``ticks``.\\ ``sub_tick``."
+#~ msgstr ""
+#~ "新しく作成した位置をbars.beats.sixteenths.ticks.sub_tickとして返します。"
+
+#~ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
+#~ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#~ msgid "Returns an instance of SupportedFile."
+#~ msgstr "SupportedFile のインスタンスを返します。"
+
+#~ msgid ""
+#~ "Returns a new track with name ``name`` to be placed at position ``idx`` "
+#~ "in the tracklist."
+#~ msgstr ""
+#~ "トラックリスト内の位置 idx に配置される名前を持つ新しいトラックを返しま"
+#~ "す。"
+
+#~ msgid "Returns the name of ``track``."
+#~ msgstr "``track`` の名前を返します。"
+
+#~ msgid "Returns the processor of ``track``."
+#~ msgstr "``track`` のプロセッサを返します。"
+
+#~ msgid "Returns the channel of ``track``."
+#~ msgstr "``track`` のチャンネルを返します。"
+
+#~ msgid ""
+#~ "Sets whether ``track`` is soloed or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "トラックをミュートするかどうかを設定します。これは元に戻せないアクションを"
+#~ "作成して実行します。"
+
+#~ msgid ""
+#~ "Sets whether ``track`` is muted or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "``track`` がミュートされているかどうかを設定します。元に戻せるアクションを"
+#~ "作成し、それを実行します。"
+
+#~ msgid ""
+#~ "Adds ``region`` to track ``track``. To be used for regions with lanes "
+#~ "(midi/audio)"
+#~ msgstr ""
+#~ "トラック ``track`` に ``region`` を追加します。レーンを持つリージョンに使"
+#~ "用されます (MIDI/オーディオ)"
+
+#~ msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
+#~ msgstr ""
+#~ "トラックリストのインデックス ``idx`` にトラック ``track`` を挿入します。"
+
+#~ msgid "Returns the track at ``pos`` in the tracklist."
+#~ msgstr "トラックリストの ``pos`` にあるトラックを返します。"
+
+#~ msgid "Returns the number of tracks in the tracklist."
+#~ msgstr "トラックリスト内のトラックの数を返します。"
+
+#~ msgid "API"
+#~ msgstr "API"
+
+#~ msgid "Returns the input port of the plugin at the given index."
+#~ msgstr "指定したインデックスのプラグインの入力ポートを返します。"
+
+#~ msgid "Returns the output port of the plugin at the given index."
+#~ msgstr "指定したインデックスのプラグインの出力ポートを返します。"
+
+#~ msgid "Returns the PluginDescriptor matching the given URI."
+#~ msgstr "指定したURIにマッチするPluginDescriptorを返します。"
+
+#~ msgid "Scans the system for plugins."
+#~ msgstr "プラグインをスキャンします。"
+
+#~ msgid "Return the project’s title."
+#~ msgstr "トラックのプロセッサを返します。"
+
+#~ msgid "Returns the tracklist for the project."
+#~ msgstr "プロジェクトのトラックリストを返します。"
+
+#~ msgid "Returns the undo manager for the project."
+#~ msgstr "プロジェクトの Undo マネージャー (Undo Manager) を返します。"
+
+#~ msgid "Return the Zrythm version as a string."
+#~ msgstr "Zrythmのバージョンを文字列として返します。"
+
+#~ msgid "Return the PluginManager instance."
+#~ msgstr "PluginManager のインスタンスを返します。"
+
+#~ msgid "Return the currently loaded Project instance."
+#~ msgstr "PluginManager のインスタンスを返します。"
+
+#~ msgid "Returns a NULL pointer."
+#~ msgstr "NULL ポインタを返します。"
+
+#~ msgid "Writes the message to the log."
+#~ msgstr "メッセージをログに書き込みます。"
+
+#~ msgid "Examples"
+#~ msgstr "例"
+
+#~ msgid ""
+#~ "The following examples are in the public domain (`CC 0 <https://"
+#~ "creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and "
+#~ "modify them."
+#~ msgstr ""
+#~ "以下の例はパブリックドメイン( `CC 0 <https://creativecommons.org/"
+#~ "publicdomain/zero/1.0/>`_ )にあります。自由にコピーしたり、変更したりして"
+#~ "ください。"
+
+#~ msgid "Create MIDI track with notes"
+#~ msgstr "ノート付きの MIDI トラックを作成"
+
+#~ msgid "Hello world"
+#~ msgstr "ハローワールド"
+
+#~ msgid "Print all tracks"
+#~ msgstr "すべてのトラックを出力する"
+
+#~ msgid "Scripting Interface"
+#~ msgstr "スクリプティングインタフェース"
+
+#~ msgid "Scripting interface"
+#~ msgstr "スクリプティングインタフェース"
+
+#~ msgid "Execution"
+#~ msgstr "選択範囲"
+
+#~ msgid "Changing Language"
+#~ msgstr "値の変更"
+
 #~ msgid "Menu Actions"
 #~ msgstr "メニューアクション"
 
@@ -10272,8 +10209,8 @@ msgstr ""
 #~ msgstr "エディター"
 
 #~ msgid ""
-#~ "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
-#~ "`common-operations`."
+#~ "Editing inside the MIDI arranger is covered in :ref:`edit-tools` "
+#~ "and :ref:`common-operations`."
 #~ msgstr ""
 #~ "MIDIエディター内での操作については :ref:`edit-tools` と :ref:`common-"
 #~ "operations` を参照してください。"
@@ -10502,8 +10439,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "Zrythm can import MIDI and audio files into the project. The files can be "
-#~ "imported by dragging and dropping from your computer or from the :doc:"
-#~ "`file browser <file-browser>` into a track."
+#~ "imported by dragging and dropping from your computer or from "
+#~ "the :doc:`file browser <file-browser>` into a track."
 #~ msgstr ""
 #~ "Zrythm は、プロジェクトに MIDI ファイルとオーディオ ファイルをインポートで"
 #~ "きます。ファイルは、コンピュータまたはファイルブラウザからトラックにドラッ"
@@ -10571,8 +10508,8 @@ msgstr ""
 #~ msgstr "シグナル値の二乗平均平方根。"
 
 #~ msgid ""
-#~ "The controls available for controlling the signal flow are covered in :"
-#~ "ref:`tracks/track-controls:Signal Flow`."
+#~ "The controls available for controlling the signal flow are covered "
+#~ "in :ref:`tracks/track-controls:Signal Flow`."
 #~ msgstr "シグナルフローを制御するために、以下のコントロールが使用できます。"
 
 #~ msgid "MIDI faders use MIDI volume CC."
@@ -10602,8 +10539,8 @@ msgstr ""
 #~ msgstr "オートメーションを表示"
 
 #~ msgid ""
-#~ "Toggle the visibility of :ref:`automation tracks <tracks/automation:"
-#~ "Automation Tracks>`."
+#~ "Toggle the visibility of :ref:`automation tracks <tracks/"
+#~ "automation:Automation Tracks>`."
 #~ msgstr "オートメーション トラックの表示/非表示を切り替えます。"
 
 #~ msgid "Show UI"
@@ -10628,8 +10565,8 @@ msgstr ""
 #~ msgstr "トラックの削除"
 
 #~ msgid ""
-#~ "Tracks can be deleted by right-clicking them and selecting :guilabel:"
-#~ "`Delete`."
+#~ "Tracks can be deleted by right-clicking them and "
+#~ "selecting :guilabel:`Delete`."
 #~ msgstr ""
 #~ "トラックを右クリックして :guilabel:`Delete` を選択すると、トラックを削除す"
 #~ "ることができます。"
@@ -10666,8 +10603,8 @@ msgstr ""
 #~ msgstr "Flatpak"
 
 #~ msgid ""
-#~ "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/wayland."
-#~ "html>`_"
+#~ "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/"
+#~ "wayland.html>`_"
 #~ msgstr ""
 #~ "`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-"
 #~ "overview.html>`_"
@@ -10679,8 +10616,8 @@ msgstr ""
 #~ msgstr "これは :term:`Zrythm user path` です。"
 
 #~ msgid ""
-#~ "A proprietary plugin standard, mainly used on MacOS. We recommend using :"
-#~ "term:`LV2` instead."
+#~ "A proprietary plugin standard, mainly used on MacOS. We recommend "
+#~ "using :term:`LV2` instead."
 #~ msgstr ""
 #~ "プロプライエタリなプラグインの規格で、主にMacOSで使われています。代わり"
 #~ "に :term:`LV2` を使うことをお勧めします。"
@@ -10916,8 +10853,8 @@ msgstr ""
 #~ "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_."
 #~ msgstr ""
 #~ "Zrythmは、 `ここで指定された標準パス <https://lv2plug.in/pages/filesystem-"
-#~ "hierarchy-standard.html>`_ でLV2プラグインをスキャンします。 :envvar:"
-#~ "`LV2_PATH` を渡すことで、この動作を回避できます。"
+#~ "hierarchy-standard.html>`_ でLV2プラグインをスキャンしま"
+#~ "す。 :envvar:`LV2_PATH` を渡すことで、この動作を回避できます。"
 
 #~ msgid ""
 #~ "On Flatpak builds, Zrythm will scan for LV2 plugins in the following "
@@ -10954,15 +10891,15 @@ msgstr ""
 #~ msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
 #~ msgid ""
-#~ "You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
-#~ "`VST3_PATH`, respectively."
+#~ "You can bypass this behavior by passing :envvar:`VST_PATH` "
+#~ "and :envvar:`VST3_PATH`, respectively."
 #~ msgstr ""
 #~ ":envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバー"
 #~ "ライドすることができます。"
 
 #~ msgid ""
-#~ "Zrythm will scan for VST plugins in the paths specified in the :ref:"
-#~ "`preferences <configuration/preferences:Preferences>`."
+#~ "Zrythm will scan for VST plugins in the paths specified in "
+#~ "the :ref:`preferences <configuration/preferences:Preferences>`."
 #~ msgstr ""
 #~ "Zrythm は 、 :ref:`vst-paths` で指定されたパス内の VST プラグインをスキャ"
 #~ "ンします。"
@@ -10975,12 +10912,6 @@ msgstr ""
 #~ "Windows では、Zrythm は、``VST plug-in locations on Windows <https://"
 #~ "helpcenter.steinberg.de/hc/en-us/articles/115000177084-VST-plug-in-"
 #~ "locations-on-Windows>`_ で指定されたパス内のプラグインをスキャンします。"
-
-#~ msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
-#~ msgstr "VST2は:file:`/Library/Audio/Plug-Ins/VST`"
-
-#~ msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
-#~ msgstr "VST3は:file:`/Library/Audio/Plug-Ins/VST3`"
 
 #~ msgid "Zrythm will scan for DSSI plugins in the following paths,"
 #~ msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
@@ -11058,8 +10989,8 @@ msgstr ""
 #~ "に選択しなければなりません。"
 
 #~ msgid ""
-#~ "All of the settings mentioned here are also available in the :ref:"
-#~ "`preferences`, so don't worry if you selected the wrong settings."
+#~ "All of the settings mentioned here are also available in "
+#~ "the :ref:`preferences`, so don't worry if you selected the wrong settings."
 #~ msgstr ""
 #~ "ここで説明するすべての設定は、プリファレンス(Ctr+Shift+Pまたはファイル->プ"
 #~ "リファレンス)でもアクセスできますので、間違った設定を選択しても大丈夫で"
@@ -11195,8 +11126,8 @@ msgstr ""
 #~ "をします。"
 
 #~ msgid ""
-#~ "These chords act similarly to the piano roll keys explained in :ref:"
-#~ "`piano-roll-keys`."
+#~ "These chords act similarly to the piano roll keys explained "
+#~ "in :ref:`piano-roll-keys`."
 #~ msgstr ""
 #~ "これらのコードは、 :ref:`piano-roll-keys` で説明されているピアノロールキー"
 #~ "と同様に機能します。"
@@ -11557,8 +11488,8 @@ msgstr ""
 #~ "プアイコンをクリックします。"
 
 #~ msgid ""
-#~ "More information about automation tracks can be found in the :ref:"
-#~ "`automation` chapter."
+#~ "More information about automation tracks can be found in "
+#~ "the :ref:`automation` chapter."
 #~ msgstr ""
 #~ "オートメーショントラックについての詳細は :ref:`automation` の章を参照して"
 #~ "ください。"
@@ -11567,11 +11498,11 @@ msgstr ""
 #~ msgstr "MIDI変換"
 
 #~ msgid ""
-#~ "Each track will display its page in the inspector when selected. See :ref:"
-#~ "`track-inspector` for more details."
+#~ "Each track will display its page in the inspector when selected. "
+#~ "See :ref:`track-inspector` for more details."
 #~ msgstr ""
-#~ "各トラックが選択されると、インスペクタにそのページが表示されます。詳細は :"
-#~ "ref:`track-inspector` を参照してください。"
+#~ "各トラックが選択されると、インスペクタにそのページが表示されます。詳細"
+#~ "は :ref:`track-inspector` を参照してください。"
 
 #~ msgid ""
 #~ "Zrythm has the following types of Tracks, and they are explained further "
@@ -11594,8 +11525,8 @@ msgstr ""
 #~ "inspector-page`)."
 #~ msgstr ""
 #~ "これは :term:`LV2` プラグインにのみ適用されます。その他の種類のプラグイン"
-#~ "については、プラグインインスペクターページでパラメータを編集できます ( :"
-#~ "ref:`plugin-inspector-page` を参照)。"
+#~ "については、プラグインインスペクターページでパラメータを編集できます "
+#~ "( :ref:`plugin-inspector-page` を参照)。"
 
 #~ msgid ""
 #~ "For at least the time being, Zrythm follows a rolling release model and "
@@ -11787,8 +11718,8 @@ msgstr ""
 #~ msgid ""
 #~ "The panning algorithm to use when applying pan on mono signals. See the "
 #~ "graph below for the different curves as you move the pan from left to "
-#~ "right. We recommend leaving it as the default (Sine). See https://www.cs."
-#~ "cmu.edu/~music/icm-online/readings/panlaws/index.html for more "
+#~ "right. We recommend leaving it as the default (Sine). See https://"
+#~ "www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html for more "
 #~ "information."
 #~ msgstr ""
 #~ "使用するパン アルゴリズム。パンを左から右に移動する際のカーブの違いについ"
@@ -11870,11 +11801,11 @@ msgstr ""
 
 #~ msgid ""
 #~ "For a list of supported languages and their translation status, or to "
-#~ "translate Zrythm into your language, see `Weblate <https://hosted.weblate."
-#~ "org/projects/zrythm/>`_."
+#~ "translate Zrythm into your language, see `Weblate <https://"
+#~ "hosted.weblate.org/projects/zrythm/>`_."
 #~ msgstr ""
-#~ "サポートされている言語とその翻訳状況の一覧は、 `Weblate <https://hosted."
-#~ "weblate.org/projects/zrythm/>`_ を参照してください。"
+#~ "サポートされている言語とその翻訳状況の一覧は、 `Weblate <https://"
+#~ "hosted.weblate.org/projects/zrythm/>`_ を参照してください。"
 
 #~ msgid "Some of these settings require a restart of Zrythm to take effect."
 #~ msgstr ""
@@ -12219,14 +12150,15 @@ msgstr ""
 
 #~ msgid ""
 #~ "Zrythm will auto-connect to the devices specified in :ref:`configuration/"
-#~ "preferences/intro:Audio inputs` and :ref:`configuration/preferences/intro:"
-#~ "MIDI controllers` and make these devices available in the :ref:`track "
-#~ "inputs <tracks/inspector-page:Inputs>` (as below) and other places."
+#~ "preferences/intro:Audio inputs` and :ref:`configuration/preferences/"
+#~ "intro:MIDI controllers` and make these devices available in "
+#~ "the :ref:`track inputs <tracks/inspector-page:Inputs>` (as below) and "
+#~ "other places."
 #~ msgstr ""
-#~ "Zrythmは、 :ref:`configuration/preferences/intro:Audio inputs` や :ref:"
-#~ "`configuration/preferences/intro:MIDI controllers` で指定されたデバイスに"
-#~ "自動接続し、これらのデバイスを :ref:`トラック入力 <tracks/inspector-page:"
-#~ "Inputs>` (以下のように) などで利用できるようにします。"
+#~ "Zrythmは、 :ref:`configuration/preferences/intro:Audio inputs` "
+#~ "や :ref:`configuration/preferences/intro:MIDI controllers` で指定されたデ"
+#~ "バイスに自動接続し、これらのデバイスを :ref:`トラック入力 <tracks/"
+#~ "inspector-page:Inputs>` (以下のように) などで利用できるようにします。"
 
 #~ msgid ""
 #~ "We want to provide a friendly and harassment-free environment so that "
@@ -12238,8 +12170,8 @@ msgstr ""
 #~ "私たちは、誰もが自分の能力を最大限に発揮して貢献できるように、フレンドリー"
 #~ "でハラスメントのない環境を提供したいと考えています。この目的のために、私た"
 #~ "ちのプロジェクトでは https://contributor-covenant.org/ を参考にした `貢献"
-#~ "者規約` を使用しています。誓約の全文は、私たちの `行動規範 <https://forum."
-#~ "zrythm.org/t/code-of-conduct>`_ にあります."
+#~ "者規約` を使用しています。誓約の全文は、私たちの `行動規範 <https://"
+#~ "forum.zrythm.org/t/code-of-conduct>`_ にあります."
 
 #~ msgid "Project Info"
 #~ msgstr "プロジェクト情報"
@@ -12337,8 +12269,8 @@ msgstr ""
 #~ msgstr "停止、再生、録音などのコントロール"
 
 #~ msgid ""
-#~ "More information about working with the transport bar is covered in :ref:"
-#~ "`transport-controls`."
+#~ "More information about working with the transport bar is covered "
+#~ "in :ref:`transport-controls`."
 #~ msgstr ""
 #~ "トランスポート バーの操作の詳細については、 :ref:`transport-controls` で説"
 #~ "明しています。"
@@ -12440,9 +12372,9 @@ msgstr ""
 #~ "<https://software.opensuse.org//download.html?"
 #~ "project=home%3Aalextee&package=zrythm>`_"
 #~ msgstr ""
-#~ "使用しているディストロの最新バージョンの Zrythm を`ここ <https://software."
-#~ "opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_からイ"
-#~ "ンストールできます"
+#~ "使用しているディストロの最新バージョンの Zrythm を`ここ <https://"
+#~ "software.opensuse.org//download.html?"
+#~ "project=home%3Aalextee&package=zrythm>`_からインストールできます"
 
 #~ msgid "You will be presented with the following"
 #~ msgstr "次の選択が表示されます"
@@ -12548,8 +12480,8 @@ msgstr ""
 #~ "As an example, to change the audio backend you would do ``gsettings set "
 #~ "org.zrythm.Zrythm.preferences audio-backend \"jack\"``"
 #~ msgstr ""
-#~ "例として、オーディオバックエンドを変更するには、``gsettings set set org."
-#~ "zrythm.preferences audio-backend \"jack\"`` を実行します"
+#~ "例として、オーディオバックエンドを変更するには、``gsettings set set "
+#~ "org.zrythm.preferences audio-backend \"jack\"`` を実行します"
 
 #~ msgid "You can use the range option to get a list of the available values:"
 #~ msgstr ""
@@ -12697,9 +12629,9 @@ msgstr ""
 
 #~ msgid ""
 #~ "When you first run Zrythm, it will display a wizard that lets you "
-#~ "configure the basic settings that Zrythm will use. These include :term:"
-#~ "`MIDI` devices, the :term:`Zrythm user path`, the language of the user "
-#~ "interface and audio/MIDI backends."
+#~ "configure the basic settings that Zrythm will use. These "
+#~ "include :term:`MIDI` devices, the :term:`Zrythm user path`, the language "
+#~ "of the user interface and audio/MIDI backends."
 #~ msgstr ""
 #~ "Zrythm を初めて実行すると、Zrythm が使用する基本的な設定をできるウィザード"
 #~ "が表示されます。MIDI デバイス、デフォルトの Zrythm パス、インターフェイス"
@@ -12741,9 +12673,9 @@ msgstr ""
 
 #~ msgid ""
 #~ "Please see the `Contributing Guide <https://docs.zrythm.org/"
-#~ "md_CONTRIBUTING.html>`_ and check out the `Developer Docs <https://docs."
-#~ "zrythm.org/>`_. These have a lot of information about how to contribute "
-#~ "code and various guidelines to follow."
+#~ "md_CONTRIBUTING.html>`_ and check out the `Developer Docs <https://"
+#~ "docs.zrythm.org/>`_. These have a lot of information about how to "
+#~ "contribute code and various guidelines to follow."
 #~ msgstr ""
 #~ "`Contributing Guide <https://docs.zrythm.org/md_CONTRIBUTING.html>`_ を参"
 #~ "照し、 `Developer Docs <https://docs.zrythm.org/>`_ をご覧ください。これら"
@@ -12764,13 +12696,14 @@ msgstr ""
 #~ msgid ""
 #~ "For making themes, you can take a look in https://git.zrythm.org/cgit/"
 #~ "zrythm/tree/resources/theme.css to get an idea of how CSS in GTK+3 works. "
-#~ "We also recommend looking at the `CSS Overview <https://developer.gnome."
-#~ "org/gtk3/stable/chap-css-overview.html>`_ section in the GTK+3 docs."
+#~ "We also recommend looking at the `CSS Overview <https://"
+#~ "developer.gnome.org/gtk3/stable/chap-css-overview.html>`_ section in the "
+#~ "GTK+3 docs."
 #~ msgstr ""
-#~ "テーマを作成するには、gtk+3 の CSS の仕組みを知るためにhttps://git.zrythm."
-#~ "org/cgit/zrythm/tree/resources/theme.cssを見てみましょう。また、GTK+3 ド"
-#~ "キュメントの `CSS 概要 <https://developer.gnome.org/gtk3/stable/chap-css-"
-#~ "overview.html>`_ セクションを見ることをお勧めします。"
+#~ "テーマを作成するには、gtk+3 の CSS の仕組みを知るためにhttps://"
+#~ "git.zrythm.org/cgit/zrythm/tree/resources/theme.cssを見てみましょう。ま"
+#~ "た、GTK+3 ドキュメントの `CSS 概要 <https://developer.gnome.org/gtk3/"
+#~ "stable/chap-css-overview.html>`_ セクションを見ることをお勧めします。"
 
 #~ msgid "The Zrythm translation project contains the following components:"
 #~ msgstr "Zrythmの翻訳プロジェクトには、次のコンポーネントがあります。"
@@ -13098,20 +13031,20 @@ msgstr ""
 #~ msgstr "課題管理システム"
 
 #~ msgid ""
-#~ "The issue tracker can be found on our `Redmine instance <https://redmine."
-#~ "zrythm.org/projects/zrythm/issues>`_. You can use this to report bugs or "
-#~ "give feedback."
+#~ "The issue tracker can be found on our `Redmine instance <https://"
+#~ "redmine.zrythm.org/projects/zrythm/issues>`_. You can use this to report "
+#~ "bugs or give feedback."
 #~ msgstr ""
-#~ "課題トラッカーはZrythmの `Redmine インスタンス <https://redmine.zrythm."
-#~ "org/projects/zrythm/issues>`_ にあります。これを使用して、バグを報告した"
-#~ "り、フィードバックを書いたりできます。"
+#~ "課題トラッカーはZrythmの `Redmine インスタンス <https://"
+#~ "redmine.zrythm.org/projects/zrythm/issues>`_ にあります。これを使用して、"
+#~ "バグを報告したり、フィードバックを書いたりできます。"
 
 #~ msgid "Source Code"
 #~ msgstr "ソースコード"
 
 #~ msgid ""
-#~ "Zrythm's source code can be found on our `CGit instance <https://git."
-#~ "zrythm.org/cgit/zrythm/>`_."
+#~ "Zrythm's source code can be found on our `CGit instance <https://"
+#~ "git.zrythm.org/cgit/zrythm/>`_."
 #~ msgstr ""
 #~ "ZrythmのソースコードはZrythmの `CGitインスタンス <https://git.zrythm.org/"
 #~ "cgit/zrythm/>`_ にあります。"
@@ -13120,8 +13053,8 @@ msgstr ""
 #~ msgstr "旧バージョン"
 
 #~ msgid ""
-#~ "Older releases of Zrythm can be found on the `Releases page <https://www."
-#~ "zrythm.org/releases>`_"
+#~ "Older releases of Zrythm can be found on the `Releases page <https://"
+#~ "www.zrythm.org/releases>`_"
 #~ msgstr ""
 #~ "Zrythmの旧リリースは、`リリースページ <https://www.zrythm.org/releases>`_ "
 #~ "にあります"
@@ -13253,9 +13186,9 @@ msgstr ""
 #~ "You can install the latest version of Zrythm for MacOS from the `Download "
 #~ "<https://www.zrythm.org/en/download.html>`_ page on our website."
 #~ msgstr ""
-#~ "Zrythmのウェブサイトの `ダウンロード <https://www.zrythm.org/ja/download."
-#~ "html>`_ ページのインストーラーを使用して、ご使用されているディストリビュー"
-#~ "ション用の Zrythm の最新バージョンをインストールできます。"
+#~ "Zrythmのウェブサイトの `ダウンロード <https://www.zrythm.org/ja/"
+#~ "download.html>`_ ページのインストーラーを使用して、ご使用されているディス"
+#~ "トリビューション用の Zrythm の最新バージョンをインストールできます。"
 
 #~ msgid ""
 #~ "This is the easiest and recommended way to install the latest version of "
@@ -13268,9 +13201,9 @@ msgstr ""
 #~ "You can install the latest version of Zrythm for Windows 64bit from the "
 #~ "`Download <https://www.zrythm.org/en/download.html>`_ page on our website."
 #~ msgstr ""
-#~ "Zrythmのウェブサイトの `ダウンロード <https://www.zrythm.org/ja/download."
-#~ "html>`_ ページのインストーラーを使用して、ご使用されているディストリビュー"
-#~ "ション用の Zrythm の最新バージョンをインストールできます。"
+#~ "Zrythmのウェブサイトの `ダウンロード <https://www.zrythm.org/ja/"
+#~ "download.html>`_ ページのインストーラーを使用して、ご使用されているディス"
+#~ "トリビューション用の Zrythm の最新バージョンをインストールできます。"
 
 #~ msgid "x86_64, i686 or ARM processor"
 #~ msgstr "x86_64、i686 または ARM プロセッサ"
@@ -13463,10 +13396,10 @@ msgstr ""
 #~ "specify custom paths. For example, ``LV2_PATH=/home/me/custom-lv2-dir "
 #~ "zrythm``."
 #~ msgstr ""
-#~ "Zrythm は、`ここ <https://lv2plug.in/pages/filesystem-hierarchy-standard."
-#~ "html>`_ で指定された標準パス内のLV2プラグインをスキャンします。この動作を"
-#~ "回避するには、``LV2_PATH`` の環境変数を渡してカスタム パスを指定します。た"
-#~ "とえば、``LV2_PATH=~/custom-lv2-dir zrythm`` を指定します。"
+#~ "Zrythm は、`ここ <https://lv2plug.in/pages/filesystem-hierarchy-"
+#~ "standard.html>`_ で指定された標準パス内のLV2プラグインをスキャンします。こ"
+#~ "の動作を回避するには、``LV2_PATH`` の環境変数を渡してカスタム パスを指定し"
+#~ "ます。たとえば、``LV2_PATH=~/custom-lv2-dir zrythm`` を指定します。"
 
 #~ msgid "``lib`` will be replaced with ``lib64`` depending on your system."
 #~ msgstr "``lib`` は、ディストロに応じて ``lib64`` に置き換えられます。"
@@ -13479,9 +13412,9 @@ msgstr ""
 #~ "とができます。"
 
 #~ msgid ""
-#~ "You can bypass this behavior by passing the :envvar:`VST_PATH` or :envvar:"
-#~ "`VST3_PATH` environment variables to specify custom paths. For example, "
-#~ "``VST_PATH=$HOME/custom-vst-dir zrythm``."
+#~ "You can bypass this behavior by passing the :envvar:`VST_PATH` "
+#~ "or :envvar:`VST3_PATH` environment variables to specify custom paths. For "
+#~ "example, ``VST_PATH=$HOME/custom-vst-dir zrythm``."
 #~ msgstr ""
 #~ "この動作を回避するには、``VST_PATH`` の環境変数を渡してカスタム パスを指定"
 #~ "します。たとえば、``VST_PATH=~/custom-vst-dir zrythm``."
@@ -13540,8 +13473,8 @@ msgstr ""
 #~ "d0b7-403d-83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-"
 #~ "aae7-02713b7c1460>`_."
 #~ msgstr ""
-#~ "Till Parisotさんが `BitTube <https://bittube.video/videos/watch/"
-#~ "playlist/69bc340a-d0b7-403d-83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-"
+#~ "Till Parisotさんが `BitTube <https://bittube.video/videos/watch/playlist/"
+#~ "69bc340a-d0b7-403d-83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-"
 #~ "aae7-02713b7c1460>`_ でZrythmのデモ動画のプレイリストをまとめてくれまし"
 #~ "た。"
 

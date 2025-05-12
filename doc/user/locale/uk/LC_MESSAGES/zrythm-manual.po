@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-17 21:18+0900\n"
+"POT-Creation-Date: 2025-05-12 22:14+0900\n"
 "PO-Revision-Date: 2024-12-18 11:45+0000\n"
 "Last-Translator: Максим Горпиніч <mgorpinic2005@gmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/uk/>\n"
 "Language: uk\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/uk/>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.9.2-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -29,14 +28,14 @@ msgstr "Змінні середовища"
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
-"operating system's settings, or they can be passed directly when running :"
-"program:`zrythm` or :program:`zrythm_launch`, like: "
+"operating system's settings, or they can be passed directly when "
+"running :program:`zrythm` or :program:`zrythm_launch`, like: "
 "``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
-"Zrythm розуміє наступні змінні середовища. Їх можна налаштувати в "
-":file:`.bashrc` або подібному файлі конфігурації оболонки, налаштуваннях "
-"операційної системи, або їх можна передати безпосередньо під час запуску "
-":program:`zrythm` або :program:`zrythm_launch`, наприклад: `` "
+"Zrythm розуміє наступні змінні середовища. Їх можна налаштувати "
+"в :file:`.bashrc` або подібному файлі конфігурації оболонки, налаштуваннях "
+"операційної системи, або їх можна передати безпосередньо під час "
+"запуску :program:`zrythm` або :program:`zrythm_launch`, наприклад: `` "
 "ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 
 #: ../../appendix/environment.rst:21
@@ -74,8 +73,8 @@ msgid ""
 "<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
 "Коли Zrythm запускається вперше, він також попросить вас вибрати каталог для "
-"збереження ваших даних користувача. Дивіться :ref:`Шлях користувача Zrythm <"
-"configuration/preferences:Шлях користувача Zrythm>` для деталей."
+"збереження ваших даних користувача. Дивіться :ref:`Шлях користувача Zrythm "
+"<configuration/preferences:Zrythm User Path>` для деталей."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -91,11 +90,11 @@ msgstr "Запис на робочому столі"
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
-"A `freedesktop-compliant configuration file <https://specifications."
-"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ that "
-"describes how a particular program should be launched, how it appears in "
-"menus, etc. This is normally installed at :file:`/usr/share/applications/"
-"zrythm.desktop`."
+"A `freedesktop-compliant configuration file <https://"
+"specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-"
+"latest.html>`_ that describes how a particular program should be launched, "
+"how it appears in menus, etc. This is normally installed at :file:`/usr/"
+"share/applications/zrythm.desktop`."
 msgstr ""
 "`Файл конфігурації, сумісний із freedesktop <https://"
 "specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-"
@@ -110,8 +109,8 @@ msgstr "Схема GLib"
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
 "This file contains the schema for user configurations. It is normally "
-"installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
-"xml`."
+"installed at :file:`/usr/share/glib-2.0/schemas/"
+"org.zrythm.Zrythm.gschema.xml`."
 msgstr ""
 "Цей файл містить схему конфігурації користувача. Зазвичай він інсталюється "
 "за адресою :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema.xml`."
@@ -137,8 +136,9 @@ msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
-"Файли локалізації встановлені в папці :file:`/usr/share/locale`. Наприклад, "
-":file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` для корейської мови."
+"Файли локалізації встановлені в папці :file:`/usr/share/locale`. "
+"Наприклад, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` для корейської "
+"мови."
 
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:100
@@ -150,8 +150,8 @@ msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
-"Зразки звуку за замовчуванням, які використовує Zrythm (наприклад, метроном)"
-". Зазвичай встановлюється в :file:`/usr/share/zrythm/samples`."
+"Зразки звуку за замовчуванням, які використовує Zrythm (наприклад, "
+"метроном). Зазвичай встановлюється в :file:`/usr/share/zrythm/samples`."
 
 #: ../../appendix/files-and-directories.rst:54
 msgid "Fonts"
@@ -185,11 +185,11 @@ msgstr "Теми"
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
-"Default themes (including icon themes) will normally be installed under :"
-"file:`/usr/share/zrythm/themes`."
+"Default themes (including icon themes) will normally be installed "
+"under :file:`/usr/share/zrythm/themes`."
 msgstr ""
-"Теми за замовчуванням (включно з темами значків) зазвичай встановлюються в "
-":file:`/usr/share/zrythm/themes`."
+"Теми за замовчуванням (включно з темами значків) зазвичай встановлюються "
+"в :file:`/usr/share/zrythm/themes`."
 
 #: ../../appendix/files-and-directories.rst:72
 msgid ""
@@ -198,8 +198,9 @@ msgid ""
 "Path>`. See :ref:`theming/intro:Theming` for details."
 msgstr ""
 "Zrythm надає способи замінити деякі з цих файлів файлами, визначеними "
-"користувачем у :ref:`Шлях користувача Zrythm <configuration/preferences:Шлях "
-"користувача Zrythm>`. Перегляньте :ref:`theming/intro:Theming` для деталей."
+"користувачем у :ref:`Шлях користувача Zrythm <configuration/"
+"preferences:Zrythm User Path>`. Перегляньте :ref:`theming/intro:Theming` для "
+"деталей."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
@@ -211,13 +212,13 @@ msgstr "Кешовані дескриптори плагінів"
 
 #: ../../appendix/files-and-directories.rst:81
 msgid ""
-"Plugin descriptor cache for faster scanning. This is found at :file:"
-"`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
+"Plugin descriptor cache for faster scanning. This is found "
+"at :file:`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`."
 msgstr ""
-"Кеш дескриптора плагіна для швидшого сканування. Його можна знайти в "
-":file:`cached_plugin_descriptors.yaml` у :ref:`Шлях користувача Zrythm <"
-"configuration/preferences:Шлях користувача Zrythm>`."
+"Кеш дескриптора плагіна для швидшого сканування. Його можна знайти "
+"в :file:`cached_plugin_descriptors.yaml` у :ref:`Шлях користувача Zrythm "
+"<configuration/preferences:Zrythm User Path>`."
 
 #: ../../appendix/files-and-directories.rst:87
 msgid "Plugin Collections"
@@ -225,13 +226,13 @@ msgstr "Колекції плагінів"
 
 #: ../../appendix/files-and-directories.rst:88
 msgid ""
-"This file contains your plugin collections. It is found at :file:"
-"`plugin_collections.yaml` under the :ref:`Zrythm user path <configuration/"
-"preferences:Zrythm User Path>`."
+"This file contains your plugin collections. It is found "
+"at :file:`plugin_collections.yaml` under the :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>`."
 msgstr ""
-"Цей файл містить ваші колекції плагінів. Його можна знайти за адресою "
-":file:`plugin_collections.yaml` під :ref:`Шляхом користувача Zrythm <"
-"configuration/preferences:Шлях користувача Zrythm>`."
+"Цей файл містить ваші колекції плагінів. Його можна знайти за "
+"адресою :file:`plugin_collections.yaml` під :ref:`Шляхом користувача Zrythm "
+"<configuration/preferences:Zrythm User Path>`."
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Plugin Settings"
@@ -241,17 +242,17 @@ msgstr "Налаштування плагіна"
 msgid ""
 "Located at :file:`plugin-settings.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`, this is a collection of per-"
-"plugin settings, such as whether to open the plugin with :term:`Carla`, the :"
-"ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use and "
-"whether to use a :ref:`generic UI <plugins-files/plugins/plugin-window:"
-"Generic UIs>`."
+"plugin settings, such as whether to open the plugin with :term:`Carla`, "
+"the :ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use "
+"and whether to use a :ref:`generic UI <plugins-files/plugins/plugin-"
+"window:Generic UIs>`."
 msgstr ""
-"Розташований у :file:`plugin-settings.yaml` у :ref:`Zrythm user path <"
-"configuration/preferences:Zrythm User Path>`, це набір налаштувань для "
+"Розташований у :file:`plugin-settings.yaml` у :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>`, це набір налаштувань для "
 "кожного плагіна, наприклад, чи відкривати плагін за допомогою :term:`Carla`, "
-"режим мосту :ref:` <plugins-files/plugins/plugin-window:Bridging>` "
-"використовувати та чи використовувати :ref:`загальний інтерфейс користувача "
-"<plugins-files/plugins/plugin-window:Generic UIs>`."
+"режим мосту :ref:`bridge mode <plugins-files/plugins/plugin-"
+"window:Bridging>` використовувати та чи використовувати :ref:`загальний "
+"інтерфейс користувача <plugins-files/plugins/plugin-window:Generic UIs>`."
 
 #: ../../appendix/files-and-directories.rst:103
 msgid ""
@@ -268,14 +269,14 @@ msgstr "Файл журналу"
 #: ../../appendix/files-and-directories.rst:108
 msgid ""
 "Zrythm will write to a log file on each run inside the :file:`log` "
-"subdirectory under the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`. The filename will contain the current date and time, for "
-"example :file:`log_2020-06-26_15-34-19.log`."
+"subdirectory under the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`. The filename will contain the current date "
+"and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
 "Zrythm записуватиме файл журналу під час кожного запуску всередині "
 "підкаталогу :file:`log` у :ref:`Шлях користувача Zrythm <configuration/"
-"preferences:Шлях користувача Zrythm>`. Ім’я файлу міститиме поточну дату й "
-"час, наприклад :file:`log_2020-06-26_15-34-19.log`."
+"preferences:Zrythm User Path>`. Ім’я файлу міститиме поточну дату й час, "
+"наприклад :file:`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:114
 msgid "This log file is useful for debugging crashes and other problems."
@@ -317,7 +318,7 @@ msgid ""
 "chord-editor:Chord Editor>`."
 msgstr ""
 "Ці 12 акордів пов’язані з акордами в :ref:`Редактор акордів <editing/chord-"
-"editor:Редактор акордів>`."
+"editor:Chord Editor>`."
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:85
@@ -343,7 +344,7 @@ msgid ""
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
 "Список пресетів і пресетів можна знайти на :ref:`правій панелі <zrythm-"
-"interface/right-panel:права панель>` під :guilabel:`переглядачем акордів`."
+"interface/right-panel:Right Panel>` під :guilabel:`переглядачем акордів`."
 
 #: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
@@ -370,9 +371,9 @@ msgstr "Прослуховування"
 #: ../../chords-and-scales/chord-pad.rst:50
 msgid ""
 "You can audition chord presets by selecting an instrument plugin from the "
-"list and using the available playback controls. This works similarly to :ref:"
-"`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
-"browser:Auditioning>`."
+"list and using the available playback controls. This works similarly "
+"to :ref:`auditioning in the File Browser <plugins-files/audio-midi-files/"
+"file-browser:Auditioning>`."
 msgstr ""
 "Ви можете прослухати попередньо встановлені акорди, вибравши плагін "
 "інструменту зі списку та використовуючи доступні елементи керування "
@@ -475,11 +476,11 @@ msgstr "Створення акордів зі звукоряду"
 
 #: ../../chords-and-scales/chord-pad.rst:120
 msgid ""
-"Chords can be generated from a scale and a root note by clicking on the :"
-"guilabel:`Load Preset` button, then selecting a scale and a root note."
+"Chords can be generated from a scale and a root note by clicking on "
+"the :guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
-"Акорди можна створити з гами та основної ноти, натиснувши кнопку :guilabel:`"
-"Load Preset`, а потім вибравши гамму та базову ноту."
+"Акорди можна створити з гами та основної ноти, натиснувши "
+"кнопку :guilabel:`Load Preset`, а потім вибравши гамму та базову ноту."
 
 #: ../../chords-and-scales/chord-pad.rst:127
 msgid "Generating chords from a scale"
@@ -593,10 +594,10 @@ msgid ""
 "<configuration/preferences:Preferences>` and make these devices available "
 "in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
 msgstr ""
-"Zrythm автоматично підключатиметься до пристроїв, указаних у :ref:`"
-"Preferences <configuration/preferences:Preferences>`, і зробить ці пристрої "
-"доступними в :ref:`track inputs <tracks/inspector-page:Inputs>` та інших "
-"місцях."
+"Zrythm автоматично підключатиметься до пристроїв, указаних "
+"у :ref:`Preferences <configuration/preferences:Preferences>`, і зробить ці "
+"пристрої доступними в :ref:`track inputs <tracks/inspector-page:Inputs>` та "
+"інших місцях."
 
 #: ../../configuration/device-setup.rst:23
 msgid "JACK/PipeWire"
@@ -687,9 +688,9 @@ msgid ""
 "Device mappings (bindings) can be found under the :guilabel:`Bindings` tab "
 "in the :ref:`main panel <zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
-"Зіставлення пристроїв (прив’язки) можна знайти на вкладці "
-":guilabel:`Прив’язки` на :ref:`головній панелі <zrythm-interface/main-panel:"
-"Main Panel>`."
+"Зіставлення пристроїв (прив’язки) можна знайти на "
+"вкладці :guilabel:`Прив’язки` на :ref:`головній панелі <zrythm-interface/"
+"main-panel:Main Panel>`."
 
 #: ../../configuration/device-setup.rst:86
 msgid "MIDI CC bindings"
@@ -702,8 +703,8 @@ msgid ""
 "button in the toolbar at the bottom."
 msgstr ""
 "Прив’язки можна ввімкнути/вимкнути, клацнувши прапорець у кожному рядку, або "
-"видалити, вибравши один або декілька рядків і натиснувши кнопку "
-":guilabel:`Видалити` на панелі інструментів внизу."
+"видалити, вибравши один або декілька рядків і натиснувши "
+"кнопку :guilabel:`Видалити` на панелі інструментів внизу."
 
 #: ../../configuration/intro.rst:9
 msgid "Configuration"
@@ -721,8 +722,8 @@ msgid ""
 "can be accessed by clicking the gear icon or with :kbd:`Control-,`"
 msgstr ""
 "Zrythm має діалогове вікно налаштувань, яке містить усі глобальні параметри, "
-"доступ до яких можна отримати, натиснувши значок шестірні або за допомогою "
-":kbd:`Control-,`"
+"доступ до яких можна отримати, натиснувши значок шестірні або за "
+"допомогою :kbd:`Control-,`"
 
 #: ../../configuration/preferences.rst:20
 msgid "Preferences dialog"
@@ -730,12 +731,12 @@ msgstr "Діалог налаштувань"
 
 #: ../../configuration/preferences.rst:22
 msgid ""
-"Preferences are grouped by sections, such as :guilabel:`General` and :"
-"guilabel:`Plugins`, and each item in the preferences contains a description "
-"that explains what it does (when not self-explanatory)."
+"Preferences are grouped by sections, such as :guilabel:`General` "
+"and :guilabel:`Plugins`, and each item in the preferences contains a "
+"description that explains what it does (when not self-explanatory)."
 msgstr ""
-"Налаштування згруповано за розділами, наприклад :guilabel:`Загальні` та "
-":guilabel:`Плагіни`, і кожен елемент у налаштуваннях містить опис, який "
+"Налаштування згруповано за розділами, наприклад :guilabel:`Загальні` "
+"та :guilabel:`Плагіни`, і кожен елемент у налаштуваннях містить опис, який "
 "пояснює, що він робить (якщо не пояснюється самостійно)."
 
 #: ../../configuration/preferences.rst:27
@@ -752,7 +753,7 @@ msgstr ""
 "Zrythm зберігає ці налаштування за допомогою механізму GSettings, який "
 "постачається разом із командою ``gsettings`` для зміни налаштувань із "
 "командного рядка або додатковим інструментом GUI `dconf-editor <https://"
-"wiki.gnome.org/Apps/DconfEditor >`_."
+"wiki.gnome.org/Apps/DconfEditor>`_."
 
 #: ../../configuration/preferences.rst:35
 msgid ""
@@ -818,7 +819,7 @@ msgid ""
 msgstr ""
 ":envvar:`XDG_DATA_HOME` (див. `Специфікацію базового каталогу XDG <https://"
 "specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) у "
-"системах, сумісних із freedesktop (або якщо :envvar :`XDG_DATA_HOME` "
+"системах, сумісних із freedesktop (або якщо :envvar:`XDG_DATA_HOME` "
 "визначено), або"
 
 #: ../../configuration/preferences.rst:71
@@ -848,12 +849,14 @@ msgstr "Пристрої введення/контролери"
 #: ../../configuration/preferences.rst:86
 msgid ""
 "In order to be able to record input from MIDI/audio devices, the devices "
-"must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
-"guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
+"must be explicitly enabled using the :guilabel:`MIDI controllers` "
+"and :guilabel:`Audio inputs` settings under :menuselection:`General --> "
+"Engine`."
 msgstr ""
 "Щоб мати можливість записувати вхідні дані з MIDI/аудіопристроїв, пристрої "
-"мають бути явно ввімкнені за допомогою :guilabel:`MIDI-контролерів` і "
-":guilabel:`Аудіовходів` налаштувань у :menuselection:`Загальні --> Механізм`."
+"мають бути явно ввімкнені за допомогою :guilabel:`MIDI-контролерів` "
+"і :guilabel:`Аудіовходів` налаштувань у :menuselection:`Загальні --> "
+"Механізм`."
 
 #: ../../configuration/preferences.rst:92
 msgid "Zrythm will ignore input from any devices not explicitly enabled."
@@ -870,10 +873,11 @@ msgid ""
 "controls how far back you can undo user actions in a given project. For "
 "example, if set to 128, you can go back 128 (undoable) user actions."
 msgstr ""
-"Розмір стека скасування, який можна знайти в розділі :menuselection:`"
-"Редагування --> Скасувати`, визначає, наскільки назад ви можете скасувати "
-"дії користувача в даному проекті. Наприклад, якщо встановлено значення 128, "
-"ви можете повернутися до 128 (скасованих) дій користувача."
+"Розмір стека скасування, який можна знайти в "
+"розділі :menuselection:`Редагування --> Скасувати`, визначає, наскільки "
+"назад ви можете скасувати дії користувача в даному проекті. Наприклад, якщо "
+"встановлено значення 128, ви можете повернутися до 128 (скасованих) дій "
+"користувача."
 
 #: ../../configuration/preferences.rst:103
 msgid ""
@@ -915,8 +919,9 @@ msgid ""
 "--> General`. To disable auto-save, set the interval to 0."
 msgstr ""
 "Zrythm може автоматично зберігати резервні копії під час роботи над "
-"проектом. Ви можете вказати інтервал у хвилинах у розділі :menuselection:`"
-"Проекти --> Загальні`. Щоб вимкнути автозбереження, встановіть інтервал 0."
+"проектом. Ви можете вказати інтервал у хвилинах у "
+"розділі :menuselection:`Проекти --> Загальні`. Щоб вимкнути автозбереження, "
+"встановіть інтервал 0."
 
 #: ../../configuration/preferences.rst:124
 msgid "User Interface Language"
@@ -936,8 +941,8 @@ msgstr "Скидання до заводських налаштувань"
 
 #: ../../configuration/preferences.rst:132
 msgid ""
-"There is an option to reset Zrythm to its default settings under :"
-"menuselection:`General --> Other`."
+"There is an option to reset Zrythm to its default settings "
+"under :menuselection:`General --> Other`."
 msgstr ""
 "У меню :menuselection:`Загальне --> Інше` є можливість скинути Zrythm до "
 "стандартних налаштувань."
@@ -1027,8 +1032,8 @@ msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
 "such as icons you can start by creating your own themes and icons as "
-"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/overview:"
-"CSS`."
+"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/"
+"overview:CSS`."
 msgstr ""
 "Zrythm є темою CSS, а також використовує багато піктограм, деякі "
 "налаштовані, а деякі запозичені з інших тем. Якщо ви бажаєте додати "
@@ -1060,7 +1065,7 @@ msgstr ""
 
 #: ../../contributing/overview.rst:43
 msgid ":ref:`contributing/reporting-bugs:Reporting Bugs`"
-msgstr ":ref:`contributing/reporting-bugs:Повідомлення про помилки`"
+msgstr ":ref:`contributing/reporting-bugs:Reporting Bugs`"
 
 #: ../../contributing/overview.rst:46
 msgid "Editing this Manual"
@@ -1078,8 +1083,8 @@ msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
 msgstr ""
-"Вам потрібно буде встановити `Sphinx <https://www.sphinx-doc.org/en/master/>`"
-"_, щоб скласти цей посібник."
+"Вам потрібно буде встановити `Sphinx <https://www.sphinx-doc.org/en/master/"
+">`_, щоб скласти цей посібник."
 
 #: ../../contributing/overview.rst:55
 msgid "Translation"
@@ -1105,8 +1110,8 @@ msgstr ""
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
-"`official documentation <https://docs.weblate.org/en/latest/user/translating."
-"html>`_."
+"`official documentation <https://docs.weblate.org/en/latest/user/"
+"translating.html>`_."
 msgstr ""
 "Клацніть проект, над яким ви бажаєте працювати, а потім виберіть мову на "
 "наступному екрані. Щоб отримати додаткові відомості про використання "
@@ -1121,9 +1126,9 @@ msgid ""
 "`fr` in the URL with your language code)."
 msgstr ""
 "Zrythm містить термінологію, схожу на існуюче аудіо програмне забезпечення. "
-"Вам може бути корисно запозичити терміни з них. Перегляньте, наприклад, `"
-"посібник Cubase Pro Artist <https://steinberg.help/cubase_pro_artist/v9/fr/>`"
-"_ (замініть `fr` в URL-адресі кодом своєї мови)."
+"Вам може бути корисно запозичити терміни з них. Перегляньте, наприклад, "
+"`посібник Cubase Pro Artist <https://steinberg.help/cubase_pro_artist/v9/fr/"
+">`_ (замініть `fr` в URL-адресі кодом своєї мови)."
 
 #: ../../contributing/overview.rst:77
 msgid "User Manual"
@@ -1402,12 +1407,12 @@ msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:83
 msgid ""
-"You can obtain OS information from the About dialog (click :guilabel:"
-"`Troubleshooting` then :guilabel:`Debugging Information`)"
+"You can obtain OS information from the About dialog "
+"(click :guilabel:`Troubleshooting` then :guilabel:`Debugging Information`)"
 msgstr ""
-"Ви можете отримати інформацію про ОС у діалоговому вікні Про (клацніть "
-":guilabel:`Усунення несправностей`, а потім :guilabel:`Інформація про "
-"налагодження`)"
+"Ви можете отримати інформацію про ОС у діалоговому вікні Про "
+"(клацніть :guilabel:`Усунення несправностей`, а потім :guilabel:`Інформація "
+"про налагодження`)"
 
 #: ../../contributing/reporting-bugs.rst:91
 msgid "Log"
@@ -1421,9 +1426,9 @@ msgid ""
 "first)."
 msgstr ""
 "Файл журналу можна знайти у :ref:`розташуванні, вказаному тут <appendix/"
-"files-and-directories:Файл журналу>`. Будь ласка, надайте принаймні останні "
-"100 рядків. Вас можуть попросити надати повний файл журналу (спочатку "
-"стисніть його)."
+"files-and-directories:Log File>`. Будь ласка, надайте принаймні останні 100 "
+"рядків. Вас можуть попросити надати повний файл журналу (спочатку стисніть "
+"його)."
 
 #: ../../contributing/reporting-bugs.rst:99
 msgid "How to Report an Issue on GitLab"
@@ -1454,14 +1459,14 @@ msgstr "Список проблем Zrythm"
 #: ../../contributing/reporting-bugs.rst:111
 msgid ""
 "Click on :guilabel:`New Issue`. You will see the following page where you "
-"can fill in details about the issue you are facing. Click on :guilabel:"
-"`Choose a template...` under :guilabel:`Description` and select what best "
-"describes your issue (e.g., a bug)."
+"can fill in details about the issue you are facing. Click "
+"on :guilabel:`Choose a template...` under :guilabel:`Description` and select "
+"what best describes your issue (e.g., a bug)."
 msgstr ""
 "Натисніть :guilabel:`Новий випуск`. Ви побачите наступну сторінку, де ви "
-"зможете вказати деталі проблеми, з якою ви зіткнулися. Натисніть :guilabel:`"
-"Виберіть шаблон...` під :guilabel:`Опис` і виберіть те, що найкраще описує "
-"вашу проблему (наприклад, помилку)."
+"зможете вказати деталі проблеми, з якою ви зіткнулися. "
+"Натисніть :guilabel:`Виберіть шаблон...` під :guilabel:`Опис` і виберіть те, "
+"що найкраще описує вашу проблему (наприклад, помилку)."
 
 #: ../../contributing/reporting-bugs.rst:117
 msgid "Selecting an issue template"
@@ -1513,9 +1518,9 @@ msgid ""
 "(like a thumbs up) to let us know it's important."
 msgstr ""
 "Натисніть :guilabel:`Новий випуск`. Ви побачите наступну сторінку, де ви "
-"зможете вказати деталі проблеми, з якою ви зіткнулися. Натисніть :guilabel:`"
-"Виберіть шаблон...` під :guilabel:`опис` і виберіть те, що найкраще описує "
-"вашу проблему (наприклад, помилку)."
+"зможете вказати деталі проблеми, з якою ви зіткнулися. "
+"Натисніть :guilabel:`Виберіть шаблон...` під :guilabel:`опис` і виберіть те, "
+"що найкраще описує вашу проблему (наприклад, помилку)."
 
 #: ../../contributing/reporting-bugs.rst:140
 msgid ""
@@ -1629,8 +1634,8 @@ msgstr "Змініть шлях до файлу, наданий ``--output``, н
 
 #: ../../contributing/reporting-bugs.rst:212
 msgid ""
-"Please send us the core dump file (in the example above it can be found at :"
-"file:`/home/alex/Downloads/core.23179`)."
+"Please send us the core dump file (in the example above it can be found "
+"at :file:`/home/alex/Downloads/core.23179`)."
 msgstr ""
 "Будь ласка, надішліть нам файл дампа ядра (у наведеному вище прикладі його "
 "можна знайти за адресою :file:`/home/alex/Downloads/core.23179`)."
@@ -1638,9 +1643,9 @@ msgstr ""
 #: ../../contributing/reporting-bugs.rst:216
 msgid ""
 "`c - Find which assembly instruction caused an Illegal Instruction error "
-"without debugging - Stack Overflow <https://stackoverflow.com/"
-"questions/10354147/find-which-assembly-instruction-caused-an-illegal-"
-"instruction-error-without-debu/40223712#40223712>`_"
+"without debugging - Stack Overflow <https://stackoverflow.com/questions/"
+"10354147/find-which-assembly-instruction-caused-an-illegal-instruction-error-"
+"without-debu/40223712#40223712>`_"
 msgstr ""
 "`c - Знайдіть, яка інструкція зі складання спричинила помилку Illegal "
 "Instruction без налагодження - Переповнення стека <https://stackoverflow.com/"
@@ -1657,7 +1662,7 @@ msgstr ""
 "`linux - Як мені проаналізувати файл дампа ядра програми за допомогою GDB, "
 "якщо він має параметри командного рядка? - Переповнення стека <https://"
 "stackoverflow.com/questions/8305866/how-do-i-analyze-a-programs-core-dump-"
-"file-with-gdb-when-it-has-command-line-pa> `_"
+"file-with-gdb-when-it-has-command-line-pa>`_"
 
 #: ../../contributing/reporting-bugs.rst:220
 msgid "Getting a Backtrace on Windows"
@@ -1670,8 +1675,8 @@ msgid ""
 "Administrator`. Then, type the following and press enter/return:"
 msgstr ""
 "Відкрийте програму «Командний рядок» як адміністратор, знайшовши «cmd» у "
-"меню «Пуск», потім клацнувши програму правою кнопкою миші та вибравши «"
-"Запустити від імені адміністратора». Потім введіть наступне та натисніть "
+"меню «Пуск», потім клацнувши програму правою кнопкою миші та вибравши "
+"«Запустити від імені адміністратора». Потім введіть наступне та натисніть "
 "enter/return:"
 
 #: ../../contributing/reporting-bugs.rst:234
@@ -1689,8 +1694,8 @@ msgid ""
 "on the screen with error details."
 msgstr ""
 "Потім запустіть :file:`C:\\Program Files\\Zrythm\\bin\\zrythm_debug_gdb.exe` "
-"і зробіть його збій. Коли Zrythm аварійно завершує роботу, на екрані з’"
-"являється вікно Dr. Mingw з деталями помилки."
+"і зробіть його збій. Коли Zrythm аварійно завершує роботу, на екрані "
+"з’являється вікно Dr. Mingw з деталями помилки."
 
 #: ../../contributing/reporting-bugs.rst:248
 msgid ""
@@ -1945,8 +1950,8 @@ msgid ""
 "length)."
 msgstr ""
 "Ліворуч у редакторі акордів є список акордів, які можна змінювати, а "
-"праворуч — аранжувальник для створення акордових прогресій із акордових об’"
-"єктів. Об'єкти хорди позначають початок хорди (вони не мають довжини)."
+"праворуч — аранжувальник для створення акордових прогресій із акордових "
+"об’єктів. Об'єкти хорди позначають початок хорди (вони не мають довжини)."
 
 #: ../../editing/chord-editor.rst:24
 msgid "Chords"
@@ -1969,8 +1974,8 @@ msgid ""
 "These chords correspond to each chord in the :ref:`Chord pad <chords-and-"
 "scales/chord-pad:Chord Pad>`."
 msgstr ""
-"Ці акорди відповідають кожному акорду в :ref:`Акордова панель <chords-"
-"and-scales/chord-pad:Chord Pad>`."
+"Ці акорди відповідають кожному акорду в :ref:`Акордова панель <chords-and-"
+"scales/chord-pad:Chord Pad>`."
 
 #: ../../editing/chord-editor.rst:36
 msgid "The controls available are similar to those in the chord pad."
@@ -2036,8 +2041,8 @@ msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-Shift-"
 "z`."
 msgstr ""
-"Комбінації клавіш для скасування та повторення: :kbd:`Control-z` і :kbd"
-":`Control-Shift-z`."
+"Комбінації клавіш для скасування та повторення: :kbd:`Control-z` "
+"і :kbd:`Control-Shift-z`."
 
 #: ../../editing/common-operations.rst:40
 msgid ""
@@ -2073,8 +2078,8 @@ msgid ""
 "they can be pasted elsewhere. The shortcut for cutting is :kbd:`Control-x`."
 msgstr ""
 "Видаліть і скопіюйте вибрані об’єкти та збережіть їх у буфері обміну, щоб їх "
-"можна було вставити в інше місце. Комбінація клавіш для вирізання: "
-":kbd:`Control-x`."
+"можна було вставити в інше місце. Комбінація клавіш для "
+"вирізання: :kbd:`Control-x`."
 
 #: ../../editing/common-operations.rst:57
 msgid "Copy"
@@ -2410,9 +2415,9 @@ msgid ""
 "position*) and the start/end loop points, can be :ref:`adjusted in the clip "
 "editor <editing/timeline:Editor Ruler Indicators>`."
 msgstr ""
-"Позиція, де область спочатку розпочне відтворення (*початкова позиція кліпу*)"
-" і точки початку/кінца циклу, можуть бути :ref:`adjusted in the clip editor <"
-"editing/timeline:Editor Ruler Indicators>`."
+"Позиція, де область спочатку розпочне відтворення (*початкова позиція "
+"кліпу*) і точки початку/кінца циклу, можуть бути :ref:`adjusted in the clip "
+"editor <editing/timeline:Editor Ruler Indicators>`."
 
 #: ../../editing/edit-tools.rst:125
 msgid ""
@@ -2459,8 +2464,8 @@ msgid ""
 "Clicking and holding the right mouse button while hovering over objects in "
 "*select* mode will delete them."
 msgstr ""
-"Якщо клацнути й утримувати праву кнопку миші під час наведення курсора на об’"
-"єкти в режимі *вибору*, їх буде видалено."
+"Якщо клацнути й утримувати праву кнопку миші під час наведення курсора на "
+"об’єкти в режимі *вибору*, їх буде видалено."
 
 #: ../../editing/edit-tools.rst:153
 msgid "Edit Tool"
@@ -2489,9 +2494,9 @@ msgid ""
 "objects in a row (where applicable) with a length specified by the snap "
 "settings corresponding to each editor."
 msgstr ""
-"Утримуючи :kbd:`Control` під час клацання, ви зможете створити декілька об’"
-"єктів у рядку (де це можливо) із довжиною, визначеною параметрами прив’язки, "
-"що відповідають кожному редактору."
+"Утримуючи :kbd:`Control` під час клацання, ви зможете створити декілька "
+"об’єктів у рядку (де це можливо) із довжиною, визначеною параметрами "
+"прив’язки, що відповідають кожному редактору."
 
 #: ../../editing/edit-tools.rst:171
 msgid "Bulk-creating MIDI notes"
@@ -2508,8 +2513,8 @@ msgid ""
 "clicking."
 msgstr ""
 "Інструмент «Вирізати» поводиться подібно до того, що згадано в :ref:`cutting-"
-"objects`, за винятком того, що ви можете просто клацати замість "
-":kbd:`Alt`-клацання."
+"objects`, за винятком того, що ви можете просто клацати замість :kbd:`Alt`-"
+"клацання."
 
 #: ../../editing/edit-tools.rst:180
 msgid "Erase Tool"
@@ -2662,8 +2667,8 @@ msgid ""
 "When snapping, keep the offset of objects from the nearest snap point on "
 "their left."
 msgstr ""
-"Під час прив’язки зберігайте зміщення об’єктів від найближчої точки прив’"
-"язки зліва."
+"Під час прив’язки зберігайте зміщення об’єктів від найближчої точки "
+"прив’язки зліва."
 
 #: ../../editing/editor-toolbars.rst:52
 msgid "Default Object Length"
@@ -2742,8 +2747,8 @@ msgid ""
 "Select if you want to quantize the start positions, the end positions (on "
 "objects that have length), or both."
 msgstr ""
-"Виберіть, чи потрібно квантувати початкові позиції, кінцеві позиції (на об’"
-"єктах, які мають довжину), або обидва."
+"Виберіть, чи потрібно квантувати початкові позиції, кінцеві позиції (на "
+"об’єктах, які мають довжину), або обидва."
 
 #: ../../editing/editor-toolbars.rst:79
 msgid "Amount"
@@ -2999,7 +3004,8 @@ msgstr "Елементи керування піаніно"
 #: ../../editing/editor-toolbars.rst:197
 msgid ""
 "The following controls are only available in the piano roll (MIDI editor)."
-msgstr "Наступні елементи керування доступні лише в Piano Roll (редактор MIDI)."
+msgstr ""
+"Наступні елементи керування доступні лише в Piano Roll (редактор MIDI)."
 
 #: ../../editing/editor-toolbars.rst:202
 msgid "Piano roll toolbar"
@@ -3066,8 +3072,8 @@ msgid ""
 "scales/chord-pad:Chord Pad>` for details."
 msgstr ""
 "Див. :ref:`Chord Track <tracks/track-types:Chord Track>`, :ref:`Chord Editor "
-"<editing/chord-editor:Chord Editor>` і :ref:`Chord Pad <chords-and-scales "
-"/chord-pad:Chord Pad>` для отримання деталей."
+"<editing/chord-editor:Chord Editor>` і :ref:`Chord Pad <chords-and-scales/"
+"chord-pad:Chord Pad>` для отримання деталей."
 
 #: ../../editing/editor-toolbars.rst:229
 msgid "MIDI Functions"
@@ -3146,8 +3152,8 @@ msgid ""
 "Shift the position and velocity of notes that start at the same position "
 "(chords) to simulate strumming, like when playing guitar."
 msgstr ""
-"Зміщуйте позицію та швидкість нот, які починаються з однієї позиції (акордів)"
-", щоб імітувати бренчання, як під час гри на гітарі."
+"Зміщуйте позицію та швидкість нот, які починаються з однієї позиції "
+"(акордів), щоб імітувати бренчання, як під час гри на гітарі."
 
 #: ../../editing/editor-toolbars.rst:256
 msgid "Add illustrations."
@@ -3354,9 +3360,9 @@ msgid ""
 "Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
 "drawn as a diamond and the piano roll keys display the name of each drum."
 msgstr ""
-"Перейдіть у вікно редактора барабанів (або «режим барабанів»), де кожна "
-":term:`MIDI-нота` зображена як ромб, а клавіші піаніно відображають назву "
-"кожного барабана."
+"Перейдіть у вікно редактора барабанів (або «режим барабанів»), де "
+"кожна :term:`MIDI note` зображена як ромб, а клавіші піаніно відображають "
+"назву кожного барабана."
 
 #: ../../editing/piano-roll.rst:39
 msgid "Drum mode"
@@ -3403,11 +3409,11 @@ msgstr ""
 
 #: ../../editing/piano-roll.rst:65
 msgid ""
-"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
-"`Shift` and scrolling."
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` "
+"and :kbd:`Shift` and scrolling."
 msgstr ""
-"Рівень вертикального масштабування можна змінити, утримуючи :kbd:`Ctrl` і "
-":kbd:`Shift` і прокручуючи."
+"Рівень вертикального масштабування можна змінити, утримуючи :kbd:`Ctrl` "
+"і :kbd:`Shift` і прокручуючи."
 
 #: ../../editing/piano-roll.rst:70
 msgid "MIDI Arranger"
@@ -3494,9 +3500,9 @@ msgstr "Лінія часу"
 #: ../../editing/timeline.rst:12
 msgid ""
 "Editing in the timeline is the most common workflow inside Zrythm. The "
-"timeline section consists of the :ref:`tracklist <tracks/tracklist:"
-"Tracklist>` on the left and the ruler/arranger on the right, along with a "
-"timeline-specific toolbar at the top."
+"timeline section consists of the :ref:`tracklist <tracks/"
+"tracklist:Tracklist>` on the left and the ruler/arranger on the right, along "
+"with a timeline-specific toolbar at the top."
 msgstr ""
 "Редагування на часовій шкалі є найпоширенішим робочим процесом у Zrythm. "
 "Розділ шкали часу складається з :ref:`списку треків <tracks/"
@@ -3606,13 +3612,13 @@ msgstr "Вибір діапазону"
 
 #: ../../editing/timeline.rst:67
 msgid ""
-"Clicking and dragging in the top half of the ruler will create a :term:"
-"`range <Range>` selection. If an existing range exists, you can click an "
-"drag it to move it."
+"Clicking and dragging in the top half of the ruler will create "
+"a :term:`range <Range>` selection. If an existing range exists, you can "
+"click an drag it to move it."
 msgstr ""
-"Клацання та перетягування верхньої половини лінійки створить виділення "
-":term:`range <Діапазон>`. Якщо наявний діапазон існує, ви можете клацнути та "
-"перетягнути його, щоб перемістити."
+"Клацання та перетягування верхньої половини лінійки створить "
+"виділення :term:`range <Діапазон>`. Якщо наявний діапазон існує, ви можете "
+"клацнути та перетягнути його, щоб перемістити."
 
 #: ../../editing/timeline.rst:75
 msgid "Range selection"
@@ -3659,13 +3665,13 @@ msgstr "Регіони"
 #: ../../editing/timeline.rst:103
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
-"MIDI notes and audio clips - see below) that can be edited in an :ref:"
-"`editor <editing/timeline:Editing Region Contents>`. Regions can be "
+"MIDI notes and audio clips - see below) that can be edited in "
+"an :ref:`editor <editing/timeline:Editing Region Contents>`. Regions can be "
 "repeated, like below."
 msgstr ""
-"Області (або :term:`clips <Clip>`) — це контейнери для подій або даних ("
-"таких як MIDI-нотатки та аудіокліпи — див. нижче), які можна редагувати в "
-":ref:`редакторі <editing/timeline:Editing Region Contents >`. Регіони можна "
+"Області (або :term:`clips <Clip>`) — це контейнери для подій або даних "
+"(таких як MIDI-нотатки та аудіокліпи — див. нижче), які можна редагувати "
+"в :ref:`редакторі <editing/timeline:Editing Region Contents>`. Регіони можна "
 "повторити, як показано нижче."
 
 #: ../../editing/timeline.rst:112 ../../glossary/intro.rst:145
@@ -3734,8 +3740,8 @@ msgid ""
 "Double-clicking a MIDI region will bring up the :ref:`piano roll <editing/"
 "piano-roll:Piano Roll>`."
 msgstr ""
-"Подвійне клацання області MIDI відкриє :ref:`piano roll <editing/piano-roll:"
-"Piano Roll>`."
+"Подвійне клацання області MIDI відкриє :ref:`piano roll <editing/piano-"
+"roll:Piano Roll>`."
 
 #: ../../editing/timeline.rst:157
 msgid "Automation Regions"
@@ -3763,7 +3769,7 @@ msgid ""
 "editor <editing/automation-editor:Automation Editor>`."
 msgstr ""
 "Подвійне клацання області автоматизації відкриє :ref:`редактор автоматизації "
-"<editing/automation-editor:Редактор автоматизації>`."
+"<editing/automation-editor:Automation Editor>`."
 
 #: ../../editing/timeline.rst:177
 msgid "Chord regions"
@@ -3964,7 +3970,7 @@ msgid ""
 "differ depending on the type of region selected."
 msgstr ""
 "Коли на часовій шкалі вибрано регіони, їх вміст буде показано на вкладці "
-"«Редактор» на :ref:`нижній панелі`. Хоча є деякі загальні елементи для "
+"«Редактор» на :ref:`bottom-panel`. Хоча є деякі загальні елементи для "
 "кожного типу редактора, розділ редактора відрізнятиметься залежно від типу "
 "вибраного регіону."
 
@@ -4112,7 +4118,7 @@ msgid ""
 "with the exception of MP3."
 msgstr ""
 "Формат для експорту. Доступні формати, згадані в розділі :ref:`Підтримувані "
-"формати <plugins-files/audio-midi-files/overview:Підтримувані формати>`, за "
+"формати <plugins-files/audio-midi-files/overview:Supported Formats>`, за "
 "винятком MP3."
 
 #: ../../exporting/audio-and-midi.rst:37
@@ -4231,10 +4237,10 @@ msgid ""
 "the hamburger menu in the :doc:`../zrythm-interface/main-toolbar`. The "
 "routing graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
-"Щоб експортувати графік маршрутизації, виберіть опцію :guilabel:`"
-"Експортувати графік` у гамбургер-меню в :doc:`../zrythm-interface/main-"
-"toolbar`. Графік маршрутизації можна експортувати як зображення у форматі "
-"PNG або у форматі .dot."
+"Щоб експортувати графік маршрутизації, виберіть "
+"опцію :guilabel:`Експортувати графік` у гамбургер-меню в :doc:`../zrythm-"
+"interface/main-toolbar`. Графік маршрутизації можна експортувати як "
+"зображення у форматі PNG або у форматі .dot."
 
 #: ../../exporting/routing-graph.rst:22
 msgid ""
@@ -4291,9 +4297,9 @@ msgid ""
 "free as in *free beer* if you build it yourself or get it from a "
 "distribution."
 msgstr ""
-"Zrythm безкоштовний, як і *freedom* (:term:`Вільне програмне забезпечення`). "
-"Якщо ви придбаєте двійковий файл у нас, це стягнеться за певну плату, але ви "
-"також можете отримати Zrythm безкоштовно, наприклад *безкоштовне пиво*, якщо "
+"Zrythm безкоштовний, як і *freedom* (:term:`Free software`). Якщо ви "
+"придбаєте двійковий файл у нас, це стягнеться за певну плату, але ви також "
+"можете отримати Zrythm безкоштовно, наприклад *безкоштовне пиво*, якщо "
 "створите його самостійно або отримаєте з розповсюдження."
 
 #: ../../getting-started/faq.rst:80
@@ -4320,12 +4326,11 @@ msgstr "Як додати зовнішні плагіни?"
 
 #: ../../getting-started/faq.rst:91
 msgid ""
-"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
-"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` "
+"and :ref:`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 msgstr ""
-"Перегляньте :ref:`plugins-files/plugins/scanning:Сканування на наявність "
-"плагінів` і :ref:`plugins-files/plugins/plugin-browser:Створення екземплярів "
-"плагінів`."
+"Перегляньте :ref:`plugins-files/plugins/scanning:Scanning for Plugins` "
+"і :ref:`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 
 #: ../../getting-started/faq.rst:95
 msgid "How do I import an audio/MIDI file?"
@@ -4334,8 +4339,8 @@ msgstr "Як імпортувати аудіо/MIDI-файл?"
 #: ../../getting-started/faq.rst:97
 msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
 msgstr ""
-"Перегляньте :ref:`plugins-files/audio-midi-files/file-browser:Імпортування "
-"файлів`."
+"Перегляньте :ref:`plugins-files/audio-midi-files/file-browser:Importing "
+"Files`."
 
 #: ../../getting-started/faq.rst:100
 msgid "Can I use ASIO?"
@@ -4377,8 +4382,8 @@ msgid ""
 msgstr ""
 "Однак Zrythm підтримує серверні модулі JACK і RtAudio, які додатково "
 "підтримують ASIO. Оскільки ми не можемо розповсюджувати ці бібліотеки з "
-"підтримкою ASIO разом із Zrythm, ви повинні отримати їх самостійно ("
-"наприклад, зібравши з джерел із підтримкою ASIO) і дозволити Zrythm "
+"підтримкою ASIO разом із Zrythm, ви повинні отримати їх самостійно "
+"(наприклад, зібравши з джерел із підтримкою ASIO) і дозволити Zrythm "
 "використовувати їх."
 
 #: ../../getting-started/faq.rst:120
@@ -4573,7 +4578,8 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:105
 msgid "We will also be offering sample packs for download in the future."
-msgstr "У майбутньому ми також пропонуватимемо зразки пакетів для завантаження."
+msgstr ""
+"У майбутньому ми також пропонуватимемо зразки пакетів для завантаження."
 
 #: ../../getting-started/installation.rst:9
 msgid "Installation"
@@ -4648,8 +4654,8 @@ msgstr "Будівництво з першоджерела"
 #: ../../getting-started/installation.rst:47
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
-"tarball <https://www.zrythm.org/releases/>`_ or `git <https://gitlab.zrythm."
-"org/zrythm/zrythm/>`_."
+"tarball <https://www.zrythm.org/releases/>`_ or `git <https://"
+"gitlab.zrythm.org/zrythm/zrythm/>`_."
 msgstr ""
 "Ви можете зібрати Zrythm із вихідного коду, використовуючи `архів "
 "дистрибутива вихідного коду <https://www.zrythm.org/releases/>`_ або `git "
@@ -4683,8 +4689,8 @@ msgid ""
 msgstr ""
 "Під час першого запуску Zrythm відобразиться діалогове вікно, яке дозволить "
 "вам налаштувати основні параметри, які використовуватиме Zrythm. До них "
-"належать :ref:`Шлях користувача Zrythm <configuration/preferences:Шлях "
-"користувача Zrythm>` і мова інтерфейсу користувача."
+"належать :ref:`Шлях користувача Zrythm <configuration/preferences:Zrythm "
+"User Path>` і мова інтерфейсу користувача."
 
 #: ../../getting-started/running-zrythm.rst:23
 msgid "Initial configuration dialog"
@@ -4718,12 +4724,12 @@ msgid ""
 "This is the :ref:`Zrythm user path <configuration/preferences:Zrythm User "
 "Path>`."
 msgstr ""
-"Це :ref:`Шлях користувача Zrythm <configuration/preferences:Шлях користувача "
-"Zrythm>`."
+"Це :ref:`Шлях користувача Zrythm <configuration/preferences:Zrythm User "
+"Path>`."
 
 #: ../../getting-started/running-zrythm.rst:36
 msgid "More settings are available in the :ref:`preferences`."
-msgstr "Інші параметри доступні в :ref:`налаштуваннях`."
+msgstr "Інші параметри доступні в :ref:`preferences`."
 
 #: ../../getting-started/running-zrythm.rst:40
 msgid "Plugin Scan"
@@ -4748,8 +4754,8 @@ msgid ""
 "overview>` will show up."
 msgstr ""
 "Нарешті Zrythm попросить вас :doc:`завантажити або створити проект <../"
-"projects/saving-loading>`, а потім з’явиться :doc:`основний інтерфейс "
-"<../zrythm-interface/overview>` ."
+"projects/saving-loading>`, а потім з’явиться :doc:`основний інтерфейс <../"
+"zrythm-interface/overview>` ."
 
 #: ../../getting-started/running-zrythm.rst:59
 #: ../../projects/saving-loading.rst:21
@@ -5024,8 +5030,8 @@ msgid ""
 "before running Zrythm. You will find lots of information online about how to "
 "configure JACK, such as `Demystifying JACK - A Beginners Guide to Getting "
 "Started with JACK <https://linuxaudio.github.io/libremusicproduction/html/"
-"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack."
-"html>`_, so we will skip this part."
+"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-"
+"jack.html>`_, so we will skip this part."
 msgstr ""
 "Якщо використовується серверна частина :term:`JACK`, перед запуском Zrythm "
 "JACK потрібно налаштувати та налаштувати. Ви знайдете в Інтернеті багато "
@@ -5103,9 +5109,10 @@ msgstr "a2 jmidid"
 
 #: ../../glossary/intro.rst:14
 msgid ""
-"a2jmidid is an application that bridges between the system MIDI ports and :"
-"term:`JACK`."
-msgstr "a2jmidid — це програма, яка з’єднує порти MIDI системи та :term:`JACK`."
+"a2jmidid is an application that bridges between the system MIDI ports "
+"and :term:`JACK`."
+msgstr ""
+"a2jmidid — це програма, яка з’єднує порти MIDI системи та :term:`JACK`."
 
 #: ../../glossary/intro.rst:16
 msgid "AU"
@@ -5191,8 +5198,8 @@ msgid ""
 msgstr ""
 "Елемент керування — це :doc:`порт <../routing/ports>` зі змінним "
 "користувачем значенням керування, яке впливає на процесор, наприклад плагін. "
-"Наприклад, регулятор посилення. Використовується як взаємозамінний із "
-":term:`Parameter`."
+"Наприклад, регулятор посилення. Використовується як взаємозамінний "
+"із :term:`Parameter`."
 
 #: ../../glossary/intro.rst:53 ../../routing/ports.rst:52
 msgid "CV"
@@ -5241,8 +5248,8 @@ msgid ""
 "instrument plugins, that has been superseded by :term:`LV2`."
 msgstr ""
 ":скорочення: «DSSI (одноразовий інтерфейс м’якого синтезатора)» — це "
-"стандарт плагінів для інструментальних плагінів, який замінено на "
-":term:`LV2`."
+"стандарт плагінів для інструментальних плагінів, який замінено "
+"на :term:`LV2`."
 
 #: ../../glossary/intro.rst:72
 msgid "Free software"
@@ -5378,8 +5385,8 @@ msgid ""
 "details."
 msgstr ""
 "Проект відноситься до робочого сеансу. Він зберігається як каталог, що "
-"містить файл проекту разом з іншими допоміжними файлами. Дивіться "
-":ref:`Проекти` для більш детальної інформації."
+"містить файл проекту разом з іншими допоміжними файлами. "
+"Дивіться :ref:`Projects` для більш детальної інформації."
 
 #: ../../glossary/intro.rst:138
 msgid "Range"
@@ -5444,8 +5451,7 @@ msgid ""
 "VST3 than VST2, because it is released as :term:`Free software`."
 msgstr ""
 "VST3 — це стандарт плагіна, який замінює :term:`VST2`. Краще використовувати "
-"VST3, ніж VST2, оскільки він випускається як :term:`вільне програмне "
-"забезпечення`."
+"VST3, ніж VST2, оскільки він випускається як :term:`Free software`."
 
 #: ../../glossary/intro.rst:169
 msgid "XRUN"
@@ -5492,11 +5498,11 @@ msgstr "Командний рядок"
 
 #: ../../invoking-from-command-line/intro.rst:14
 msgid ""
-"Zrythm comes with a few utilities below that can be used from the :term:"
-"`CLI`."
+"Zrythm comes with a few utilities below that can be used from "
+"the :term:`CLI`."
 msgstr ""
-"Zrythm поставляється з кількома утилітами, які можна використовувати з "
-":term:`CLI`."
+"Zrythm поставляється з кількома утилітами, які можна використовувати "
+"з :term:`CLI`."
 
 #: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
@@ -5519,8 +5525,8 @@ msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
 "to get pretty-printed output, like below."
 msgstr ""
-"Роздрукуйте всі налаштування користувача. Можна поєднати з :option:`zrythm "
-"--pretty`, щоб отримати гарний друкований результат, як показано нижче."
+"Роздрукуйте всі налаштування користувача. Можна поєднати з :option:`zrythm --"
+"pretty`, щоб отримати гарний друкований результат, як показано нижче."
 
 #: ../../invoking-from-command-line/intro.rst:42
 msgid "Reset user settings to their default values."
@@ -5529,12 +5535,12 @@ msgstr "Скинути налаштування користувача до зн
 #: ../../invoking-from-command-line/intro.rst:44
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
-"affect any files in the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`."
+"affect any files in the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`."
 msgstr ""
 "Впливає лише на налаштування, надруковані за допомогою :option:`zrythm -p`. "
 "Це *не* вплине на файли в :ref:`Шлях користувача Zrythm <configuration/"
-"preferences:Шлях користувача Zrythm>`."
+"preferences:Zrythm User Path>`."
 
 #: ../../invoking-from-command-line/intro.rst:49
 msgid "This will clear ALL your user settings."
@@ -5571,12 +5577,12 @@ msgstr "zrythm _launch"
 #: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
-"Zrythm. All of the options for :program:`zrythm` can also be passed to :"
-"program:`zrythm_launch`."
+"Zrythm. All of the options for :program:`zrythm` can also be passed "
+"to :program:`zrythm_launch`."
 msgstr ""
 "Обгортка над :program:`zrythm`, яка встановлює правильні шляхи перед "
-"запуском Zrythm. Усі параметри для :program:`zrythm` також можна передати в "
-":program:`zrythm_launch`."
+"запуском Zrythm. Усі параметри для :program:`zrythm` також можна передати "
+"в :program:`zrythm_launch`."
 
 #: ../../mixing/intro.rst:9
 msgid "Mixing"
@@ -5686,13 +5692,13 @@ msgstr "Групи"
 
 #: ../../mixing/routing.rst:11
 msgid ""
-":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` and :ref:"
-"`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be created for "
-"grouping signals."
+":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` "
+"and :ref:`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be "
+"created for grouping signals."
 msgstr ""
-":ref:`Доріжки аудіогрупи <tracks/track-types:Audio Group Track>` і :ref:`"
-"Групові доріжки MIDI <tracks/track-types:MIDI Group Track>` можуть бути "
-"створені для групування сигналів."
+":ref:`Доріжки аудіогрупи <tracks/track-types:Audio Group Track>` "
+"і :ref:`Групові доріжки MIDI <tracks/track-types:MIDI Group Track>` можуть "
+"бути створені для групування сигналів."
 
 #: ../../mixing/routing.rst:16
 msgid ""
@@ -5702,7 +5708,7 @@ msgid ""
 msgstr ""
 "Щоб спрямувати канали на ці доріжки, ви можете натиснути селектор прямого "
 "виходу та вибрати їх, подібно до того, як це працює у :ref:`властивості "
-"доріжки в інспекторі доріжки <tracks/inspector-page:Властивості доріжки>`."
+"доріжки в інспекторі доріжки <tracks/inspector-page:Track Properties>`."
 
 #: ../../mixing/routing.rst:21
 msgid "The Master track is also a group."
@@ -5758,8 +5764,8 @@ msgid ""
 "sidechain ports, if the plugin has any. See :ref:`track-sends` for details."
 msgstr ""
 "Подібно до надсилання сигналів на треки FX, ви також можете надсилати "
-"сигнали на порти сайдчейну плагіна, якщо вони є в плагіні. Дивіться :ref"
-":`track-sends` для деталей."
+"сигнали на порти сайдчейну плагіна, якщо вони є в плагіні. "
+"Дивіться :ref:`track-sends` для деталей."
 
 #: ../../modulators/intro.rst:9 ../../tracks/track-types.rst:61
 msgid "Modulators"
@@ -5772,8 +5778,8 @@ msgid ""
 "example, you can route an LFO to a filter cutoff parameter to modulate its "
 "value."
 msgstr ""
-"Модулятори — це будь-які плагіни, які мають принаймні один вихідний порт "
-":term:`CV`. Ці порти CV можуть бути направлені до будь-якого "
+"Модулятори — це будь-які плагіни, які мають принаймні один вихідний "
+"порт :term:`CV`. Ці порти CV можуть бути направлені до будь-якого "
 "автоматизованого параметра в Zrythm. Наприклад, ви можете направити LFO до "
 "параметра зрізу фільтра, щоб модулювати його значення."
 
@@ -5792,8 +5798,8 @@ msgstr ""
 #: ../../modulators/intro.rst:25
 msgid ""
 "Modulators and macro knobs are associated with the :ref:`Modulator Track "
-"<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
-"term:`Project`."
+"<tracks/track-types:Modulator Track>`, which contains all modulators in "
+"the :term:`Project`."
 msgstr ""
 "Модулятори та макрорегулятори пов’язані з :ref:`Modulator Track <tracks/"
 "track-types:Modulator Track>`, який містить усі модулятори в :term:`Project`."
@@ -5805,14 +5811,14 @@ msgstr "Додавання модуляторів"
 #: ../../modulators/intro.rst:31
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
-"plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
-"ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
+"plugins/plugin-browser` into the Modulators tab. Modulator plugins can "
+"be :ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
 "browser:Filter Buttons>`."
 msgstr ""
 "Плагіни модулятора можна перетягнути з :doc:`../plugins-files/plugins/plugin-"
-"browser` на вкладку Модулятори. Плагіни модулятора можна :ref:`"
-"відфільтрувати в браузері плагінів <plugins-files/plugins/plugin-browser:"
-"Filter Buttons>`."
+"browser` на вкладку Модулятори. Плагіни модулятора "
+"можна :ref:`відфільтрувати в браузері плагінів <plugins-files/plugins/plugin-"
+"browser:Filter Buttons>`."
 
 #: ../../modulators/intro.rst:37
 msgid "Routing Modulators"
@@ -5881,12 +5887,12 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:18
 msgid ""
-"Clicking and dragging on the integer counterpart will change the integer (e."
-"g., from 140.24 to 141.24) and clicking and dragging on the decimal "
+"Clicking and dragging on the integer counterpart will change the integer "
+"(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
 msgstr ""
-"Клацання та перетягування відповідника цілого числа змінює ціле число ("
-"наприклад, із 140,24 на 141,24), а натискання та перетягування десяткового "
+"Клацання та перетягування відповідника цілого числа змінює ціле число "
+"(наприклад, із 140,24 на 141,24), а натискання та перетягування десяткового "
 "відповідника змінює десяткове значення (наприклад, із 140,24 на 140,25)."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:26
@@ -6001,8 +6007,8 @@ msgid ""
 "Custom Markers can also be created inside the :ref:`Marker Track <tracks/"
 "track-types:Marker Track>`."
 msgstr ""
-"Користувацькі маркери також можна створити всередині :ref:`Marker Track <"
-"tracks/track-types:Marker Track>`."
+"Користувацькі маркери також можна створити всередині :ref:`Marker Track "
+"<tracks/track-types:Marker Track>`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:61
 msgid ""
@@ -6082,8 +6088,8 @@ msgid ""
 "on your MIDI keyboard."
 msgstr ""
 "Наприклад, якщо інструментальна доріжка ввімкнена для запису, а до її входів "
-"підключено MIDI-клавіатуру, ви почуєте звук, коли натиснете клавішу на "
-"MIDI-клавіатурі."
+"підключено MIDI-клавіатуру, ви почуєте звук, коли натиснете клавішу на MIDI-"
+"клавіатурі."
 
 #: ../../playback-and-recording/recording.rst:30
 msgid "Recording Audio & MIDI"
@@ -6091,8 +6097,8 @@ msgstr "Запис аудіо та MIDI"
 
 #: ../../playback-and-recording/recording.rst:31
 msgid ""
-"After arming the tracks you want to record events into, enable recording in :"
-"ref:`transport-controls` and press play. Any signals received will be "
+"After arming the tracks you want to record events into, enable recording "
+"in :ref:`transport-controls` and press play. Any signals received will be "
 "recorded inside new regions in the timeline."
 msgstr ""
 "Після встановлення доріжок, на які ви хочете записувати події, увімкніть "
@@ -6392,9 +6398,9 @@ msgstr "Дисплей Playhead"
 
 #: ../../playback-and-recording/transport-controls.rst:64
 msgid ""
-"The playhead position can be displayed in either BBT notation (`bars.beats."
-"sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be toggled by right-"
-"clicking on the playhead position display."
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
 msgstr ""
 "Позицію вказівника відтворення можна відобразити або в нотації BBT "
 "(`bars.beats.sixteenth.ticks`), або в фактичному часі (`mm:ss.ms`). Це можна "
@@ -6453,8 +6459,8 @@ msgstr "Попередньо визначені закладки"
 msgid ""
 "Zrythm provides a predefined bookmark for the user's :file:`Home` directory."
 msgstr ""
-"Zrythm надає попередньо визначену закладку для каталогу користувача "
-":file:`Home`."
+"Zrythm надає попередньо визначену закладку для каталогу "
+"користувача :file:`Home`."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:31
 msgid "Custom Bookmarks"
@@ -6483,11 +6489,11 @@ msgstr "Кнопки фільтрів"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:51
 msgid ""
-"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-browser:"
-"Plugin Browser>`, files can be filtered based on their type."
+"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-"
+"browser:Plugin Browser>`, files can be filtered based on their type."
 msgstr ""
-"Подібно до :ref:`переглядача плагінів <plugins-files/plugins/plugin-browser:"
-"Plugin Browser>`, файли можна фільтрувати за типом."
+"Подібно до :ref:`переглядача плагінів <plugins-files/plugins/plugin-"
+"browser:Plugin Browser>`, файли можна фільтрувати за типом."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:58
 msgid "Filtering by audio files"
@@ -6519,8 +6525,8 @@ msgstr "Показувати лише файли MIDI."
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Only show preset files (currently unused/unimplemented)."
 msgstr ""
-"Показувати лише попередньо встановлені файли (наразі "
-"невикористані/нереалізовані)."
+"Показувати лише попередньо встановлені файли (наразі невикористані/"
+"нереалізовані)."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:72
 msgid "Files can be filtered by a search term from the provided search box."
@@ -6657,10 +6663,10 @@ msgid ""
 "(depending on the number of dropped files, or number of tracks contained in "
 "Type 1 MIDI files)."
 msgstr ""
-"Переміщення на наявну доріжку призведе до імпортування файлу на цій доріжці ("
-"якщо можливо), а переміщення на порожнє місце створить одну або кілька нових "
-"доріжок (залежно від кількості вилучених файлів або кількості доріжок, що "
-"містяться у файлах MIDI типу 1)."
+"Переміщення на наявну доріжку призведе до імпортування файлу на цій доріжці "
+"(якщо можливо), а переміщення на порожнє місце створить одну або кілька "
+"нових доріжок (залежно від кількості вилучених файлів або кількості доріжок, "
+"що містяться у файлах MIDI типу 1)."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:140
 msgid ""
@@ -6796,9 +6802,9 @@ msgid ""
 "When a plugin is selected in the Mixer, or when using :menuselection:`right "
 "click --> Inspect` on an instrument, its page will appear in the inspector."
 msgstr ""
-"Коли плагін вибрано в мікшері або під час використання :menuselection:`"
-"клацніть правою кнопкою миші --> Перевірити` на інструменті, його сторінка з’"
-"явиться в інспекторі."
+"Коли плагін вибрано в мікшері або під час "
+"використання :menuselection:`клацніть правою кнопкою миші --> Перевірити` на "
+"інструменті, його сторінка з’явиться в інспекторі."
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
 msgid "Plugin inspector"
@@ -6835,8 +6841,8 @@ msgid ""
 "info:Plugin Ports>`. Depending on the type of plugin, there may be different "
 "categories of ports being shown."
 msgstr ""
-"Це :ref:`порти, якими володіє плагін <plugins-files/plugins/plugin-info:"
-"Plugin Ports>`. Залежно від типу плагіна можуть відображатися різні "
+"Це :ref:`порти, якими володіє плагін <plugins-files/plugins/plugin-"
+"info:Plugin Ports>`. Залежно від типу плагіна можуть відображатися різні "
 "категорії портів."
 
 #: ../../plugins-files/plugins/inspector-page.rst:42
@@ -6865,8 +6871,8 @@ msgstr "Дисплей"
 #: ../../plugins-files/plugins/inspector-page.rst:53
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :ref:`routing/connections:"
-"Connections` for details."
+"number of connections to/from this port. See :ref:`routing/"
+"connections:Connections` for details."
 msgstr ""
 "Число у верхньому правому куті назви кожного порту відображатиме поточну "
 "кількість підключень до/з цього порту. Перегляньте :ref:`routing/"
@@ -7103,17 +7109,27 @@ msgstr "Плагіни поділяються на такі категорії."
 msgid "|icon_instrument| Instrument"
 msgstr "|icon_instrument| Інструмент"
 
+#: ../../<rst_prolog>:18
+#, fuzzy
+msgid "instrument"
+msgstr "Інструмент"
+
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid ""
-"These plugins will create an :ref:`Instrument Track <tracks/track-types:"
-"Instrument Track>` when added to the project."
+"These plugins will create an :ref:`Instrument Track <tracks/track-"
+"types:Instrument Track>` when added to the project."
 msgstr ""
-"Ці плагіни створять :ref:`Інструментальний трек <tracks/track-types:"
-"Instrument Track>` під час додавання до проекту."
+"Ці плагіни створять :ref:`Інструментальний трек <tracks/track-"
+"types:Instrument Track>` під час додавання до проекту."
 
 #: ../../plugins-files/plugins/plugin-info.rst:31
 msgid "|icon_audio-insert| Effect"
 msgstr "|icon_audio-insert| Ефект"
+
+#: ../../<rst_prolog>:12
+#, fuzzy
+msgid "audio-insert"
+msgstr "Аудіоінтерфейс"
 
 #: ../../plugins-files/plugins/plugin-info.rst:28
 msgid ""
@@ -7121,13 +7137,18 @@ msgid ""
 "the :ref:`mixer <mixing/overview:Mixer>` or can be instantiated to create "
 "new FX tracks."
 msgstr ""
-"Ці плагіни можна перетягнути в слоти для вставлення існуючих каналів у :ref:`"
-"mixer <mixing/overview:Mixer>` або їх можна створити для створення нових "
-"треків FX."
+"Ці плагіни можна перетягнути в слоти для вставлення існуючих каналів "
+"у :ref:`mixer <mixing/overview:Mixer>` або їх можна створити для створення "
+"нових треків FX."
 
 #: ../../plugins-files/plugins/plugin-info.rst:35
 msgid "|icon_modulator| Modulator"
 msgstr "|icon_modulator| Модулятор"
+
+#: ../../<rst_prolog>:21
+#, fuzzy
+msgid "modulator"
+msgstr "Модулятори"
 
 #: ../../plugins-files/plugins/plugin-info.rst:34
 msgid ""
@@ -7141,6 +7162,10 @@ msgstr ""
 msgid "|icon_signal-midi| MIDI Effect"
 msgstr "|icon_signal-midi| MIDI-ефект"
 
+#: ../../<rst_prolog>:15
+msgid "signal-midi"
+msgstr ""
+
 #: ../../plugins-files/plugins/plugin-info.rst:38
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the "
@@ -7149,7 +7174,7 @@ msgid ""
 msgstr ""
 "Ці плагіни змінюють вхідні сигнали :term:`MIDI` і можуть використовуватися в "
 "ланцюжку сигналів MIDI :ref:`Instrument <tracks/track-types:Instrument "
-"Track>` або :ref:`MIDI Track <tracks/track- типи: MIDI Track>`."
+"Track>` або :ref:`MIDI Track <tracks/track-types:MIDI Track>`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:44
 msgid ""
@@ -7163,8 +7188,8 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:52
 msgid ""
-"Plugins consist of controls (parameters) and a variety of audio, :term:"
-"`MIDI` and :term:`CV` :ref:`ports <ports>`."
+"Plugins consist of controls (parameters) and a variety of "
+"audio, :term:`MIDI` and :term:`CV` :ref:`ports <ports>`."
 msgstr ""
 "Плагіни складаються з елементів керування (параметрів) і різноманітних "
 "аудіо, :term:`MIDI` і :term:`CV` :ref:`ports <ports>`."
@@ -7199,7 +7224,7 @@ msgid ""
 "<plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
 "Усі порти плагіна будуть показані на :ref:`сторінці інспектора плагіна "
-"<plugins-files/plugins/inspector-page:Сторінка інспектора>`"
+"<plugins-files/plugins/inspector-page:Inspector Page>`"
 
 #: ../../plugins-files/plugins/plugin-window.rst:7
 msgid "Plugin Window"
@@ -7242,8 +7267,8 @@ msgid ""
 "cross-process communication."
 msgstr ""
 "За замовчуванням плагіни створюються в окремому процесі від Zrythm, щоб "
-"Zrythm не аварійно завершував роботу, якщо плагін поводиться неправильно ("
-"Zrythm називає це *мостом*). Однак це має побічний ефект: :term:`DSP` не "
+"Zrythm не аварійно завершував роботу, якщо плагін поводиться неправильно "
+"(Zrythm називає це *мостом*). Однак це має побічний ефект: :term:`DSP` не "
 "такий швидкий, як міг би бути (хоча досить швидкий у більшості випадків), "
 "оскільки існує міжпроцесний зв’язок."
 
@@ -7278,28 +7303,30 @@ msgstr "Сканування Плагінів"
 #: ../../plugins-files/plugins/scanning.rst:11
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports `CLAP`_, :term:`LV2`, :term:`VST2`, :"
-"term:`VST3`, :term:`LADSPA`, :term:`DSSI` and :term:`AU` plugins."
+"until it is closed. Zrythm supports "
+"`CLAP`_, :term:`LV2`, :term:`VST2`, :term:`VST3`, :term:`LADSPA`, :term:`DSSI` "
+"and :term:`AU` plugins."
 msgstr ""
 "Zrythm шукатиме плагіни під час запуску та запам’ятовуватиме ці плагіни, "
-"доки не закриється. Zrythm підтримує плагіни `CLAP`_, :term:`LV2`, "
-":term:`VST2`, :term:`VST3`, :term:`LADSPA`, :term:`DSSI` і :term:`AU`."
+"доки не закриється. Zrythm підтримує плагіни "
+"`CLAP`_, :term:`LV2`, :term:`VST2`, :term:`VST3`, :term:`LADSPA`, :term:`DSSI` "
+"і :term:`AU`."
 
 #: ../../plugins-files/plugins/scanning.rst:15
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
 "treated as instrument plugins."
 msgstr ""
-":Також підтримуються інструменти term:`SFZ` і :term:`SF2`, і вони "
+"Також підтримуються інструменти :term:`SFZ` і :term:`SF2`, і вони "
 "розглядаються як плагіни інструментів."
 
 #: ../../plugins-files/plugins/scanning.rst:18
 msgid ""
-"Plugin scanning can be disabled by setting the :envvar:"
-"`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
+"Plugin scanning can be disabled by setting "
+"the :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
 msgstr ""
-"Сканування плагінів можна вимкнути, встановивши змінну середовища "
-":envvar:`ZRYTHM_SKIP_PLUGIN_SCAN`."
+"Сканування плагінів можна вимкнути, встановивши змінну "
+"середовища :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN`."
 
 #: ../../plugins-files/plugins/scanning.rst:22
 msgid "Scan Paths"
@@ -7307,14 +7334,14 @@ msgstr "Шляхи сканування"
 
 #: ../../plugins-files/plugins/scanning.rst:24
 msgid ""
-"Zrythm will scan for plugins in the plugin search paths specified in the :"
-"ref:`preferences <configuration/preferences:Preferences>`. If the search "
-"path is left empty, Zrythm will scan for plugins in the standard paths "
-"according to the specifications of each plugin format (if any)."
+"Zrythm will scan for plugins in the plugin search paths specified in "
+"the :ref:`preferences <configuration/preferences:Preferences>`. If the "
+"search path is left empty, Zrythm will scan for plugins in the standard "
+"paths according to the specifications of each plugin format (if any)."
 msgstr ""
-"Zrythm шукатиме плагіни в шляхах пошуку плагінів, указаних у :ref:`"
-"preferences <configuration/preferences:Preferences>`. Якщо шлях пошуку "
-"залишити порожнім, Zrythm шукатиме плагіни за стандартними шляхами "
+"Zrythm шукатиме плагіни в шляхах пошуку плагінів, указаних "
+"у :ref:`preferences <configuration/preferences:Preferences>`. Якщо шлях "
+"пошуку залишити порожнім, Zrythm шукатиме плагіни за стандартними шляхами "
 "відповідно до специфікацій кожного формату плагінів (якщо такі є)."
 
 #: ../../plugins-files/plugins/scanning.rst:29
@@ -7324,8 +7351,8 @@ msgid ""
 "where ``ENV_VAR_NAME`` is the name of the environment variable."
 msgstr ""
 "Ви можете використовувати змінні середовища (наприклад, ``LV2_PATH``), коли "
-"вказуєте шляхи пошуку в параметрах. Дозволений синтаксис: ``${ENV_VAR_NAME}``"
-", де ``ENV_VAR_NAME`` — це ім’я змінної середовища."
+"вказуєте шляхи пошуку в параметрах. Дозволений синтаксис: ``${ENV_VAR_NAME}"
+"``, де ``ENV_VAR_NAME`` — це ім’я змінної середовища."
 
 #: ../../plugins-files/plugins/scanning.rst:35
 msgid "Plugin Cache"
@@ -7337,9 +7364,9 @@ msgid ""
 "cached plugin descriptors file <appendix/files-and-directories:Cached Plugin "
 "Descriptors>`."
 msgstr ""
-"Zrythm запам’ятає відскановані плагіни та збереже цю інформацію у :ref:`"
-"файлі кешованих дескрипторів плагінів <appendix/files-and-directories:Cached "
-"Plugin Descriptors>`."
+"Zrythm запам’ятає відскановані плагіни та збереже цю інформацію "
+"у :ref:`файлі кешованих дескрипторів плагінів <appendix/files-and-"
+"directories:Cached Plugin Descriptors>`."
 
 #: ../../plugins-files/plugins/scanning.rst:39
 msgid ""
@@ -7356,13 +7383,13 @@ msgstr "AU Сканувати"
 
 #: ../../plugins-files/plugins/scanning.rst:44
 msgid ""
-"On MacOS, :term:`AU` plugins will be scanned at their standard locations at :"
-"file:`/Library/Audio/Plug-Ins/Components` for system plugins and :file:`~/"
-"Library/Audio/Plug-Ins/Components` for user plugins."
+"On MacOS, :term:`AU` plugins will be scanned at their standard locations "
+"at :file:`/Library/Audio/Plug-Ins/Components` for system plugins "
+"and :file:`~/Library/Audio/Plug-Ins/Components` for user plugins."
 msgstr ""
-"У MacOS плагіни :term:`AU` скануватимуться у стандартних розташуваннях у "
-":file:`/Library/Audio/Plug-Ins/Components` для системних плагінів і :file:`~/"
-"Library/Audio/Plug-Ins /Components` для плагінів користувача."
+"У MacOS плагіни :term:`AU` скануватимуться у стандартних розташуваннях "
+"у :file:`/Library/Audio/Plug-Ins/Components` для системних плагінів "
+"і :file:`~/Library/Audio/Plug-Ins /Components` для плагінів користувача."
 
 #: ../../plugins-files/plugins/scanning.rst:49
 msgid "SFZ/SF2 Scan"
@@ -7374,7 +7401,7 @@ msgid ""
 "and subdirectories specified in the :ref:`preferences <configuration/"
 "preferences:Preferences>`."
 msgstr ""
-":інструменти term:`SFZ` і :term:`SF2` скануватимуться в усіх каталогах і "
+"інструменти :term:`SFZ` і :term:`SF2` скануватимуться в усіх каталогах і "
 "підкаталогах, указаних у :ref:`preferences <configuration/"
 "preferences:Preferences>`."
 
@@ -7458,7 +7485,7 @@ msgid ""
 msgstr ""
 "Zrythm автоматично зберігатиме резервні копії за замовчуванням під час "
 "автозбереження. Ви можете змінити інтервал автозбереження або вимкнути його "
-"в :ref:`налаштуваннях <configuration/preferences:Налаштування>`."
+"в :ref:`налаштуваннях <configuration/preferences:Preferences>`."
 
 #: ../../projects/project-structure.rst:35
 msgid "Project Directory"
@@ -7476,8 +7503,8 @@ msgid ""
 "alias of ``application/zstd``)."
 msgstr ""
 "Файли проекту Zrythm (``project.zpj``) є `zstd <https://facebook.github.io/"
-"zstd/>`_-стиснутими `JSON <https://www.json.org/>`_ файлами (файл проекту `"
-"тип MIME <https://en.wikipedia.org/wiki/MIME>`_ ``x-zrythm-project`` є "
+"zstd/>`_-стиснутими `JSON <https://www.json.org/>`_ файлами (файл проекту "
+"`тип MIME <https://en.wikipedia.org/wiki/MIME>`_ ``x-zrythm-project`` є "
 "псевдонімом з ``application/zstd``)."
 
 #: ../../projects/project-structure.rst:115
@@ -7552,8 +7579,8 @@ msgid ""
 "Project`."
 msgstr ""
 "Щоб створити новий проект, клацніть :guilabel:`Створити новий проект...` і "
-"виберіть назву, батьківський каталог і шаблон, а потім натисніть :guilabel:`"
-"Створити проект`."
+"виберіть назву, батьківський каталог і шаблон, а потім "
+"натисніть :guilabel:`Створити проект`."
 
 #: ../../projects/saving-loading.rst:37
 msgid "New project creation"
@@ -7566,8 +7593,8 @@ msgid ""
 "path <configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "Доступний порожній шаблон, і ви можете створити власні шаблони, скопіювавши "
-"каталог проекту в :file:`templates` у :ref:`Шлях користувача Zrythm <"
-"configuration/preferences:Шлях користувача Zrythm>`."
+"каталог проекту в :file:`templates` у :ref:`Шлях користувача Zrythm "
+"<configuration/preferences:Zrythm User Path>`."
 
 #: ../../projects/saving-loading.rst:42
 msgid "Saving Projects"
@@ -7654,8 +7681,8 @@ msgid ""
 "In the popover, you can view existing connections and press :guilabel:`Add` "
 "to create a new connection."
 msgstr ""
-"У спливаючому вікні ви можете переглянути існуючі підключення та натиснути "
-":guilabel:`Додати`, щоб створити нове підключення."
+"У спливаючому вікні ви можете переглянути існуючі підключення та "
+"натиснути :guilabel:`Додати`, щоб створити нове підключення."
 
 #: ../../routing/connections.rst:37
 msgid "Port connections for control"
@@ -7672,8 +7699,8 @@ msgstr "Вибір нового порту для підключення"
 
 #: ../../routing/connections.rst:50
 msgid ""
-"Signal from tracks can be routed to plugins that have sidechain inputs via :"
-"ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
+"Signal from tracks can be routed to plugins that have sidechain inputs "
+"via :ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
 msgstr ""
 "Сигнал із доріжок можна скеровувати до плагінів, які мають входи сайдчейну "
 "через :ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
@@ -7684,8 +7711,8 @@ msgid ""
 "sidechain input from a kick track to get a pumping/ducking effect."
 msgstr ""
 "Наприклад, ви можете використовувати плагін компресора для бас-треку, який "
-"приймає вхідний сигнал сайдчейну з кік-треку, щоб отримати ефект "
-"накачування/приглушення."
+"приймає вхідний сигнал сайдчейну з кік-треку, щоб отримати ефект накачування/"
+"приглушення."
 
 #: ../../routing/connections.rst:64
 msgid "Managing Connections"
@@ -7772,9 +7799,9 @@ msgid ""
 "routing signals. It is found inside the :ref:`Right Panel <zrythm-interface/"
 "right-panel:Right Panel>`."
 msgstr ""
-"Розділ монітора використовується для редагування глобальних параметрів, пов’"
-"язаних із мікшуванням і маршрутизацією сигналів. Його можна знайти всередині "
-":ref:`правої панелі <zrythm-interface/right-panel:права панель>`."
+"Розділ монітора використовується для редагування глобальних параметрів, "
+"пов’язаних із мікшуванням і маршрутизацією сигналів. Його можна знайти "
+"всередині :ref:`правої панелі <zrythm-interface/right-panel:Right Panel>`."
 
 #: ../../routing/monitor-section.rst:16
 msgid "Monitor section"
@@ -8043,208 +8070,6 @@ msgstr ""
 "підключений до вхідного аудіопорту ``Ch Pre-Fader in L``. Це підключення "
 "автоматично створюється Zrythm всередині."
 
-#: ../../scripting/api/actions channel_send_action.rst:6
-msgid "Creates an audio send connection as an undoable action."
-msgstr "Створює з’єднання для надсилання аудіо як незмінну дію."
-
-#: ../../scripting/api/actions port_connection_action.rst:6
-msgid "Connects 2 ports as an undoable action."
-msgstr "Підключає 2 порти як незмінну дію."
-
-#: ../../scripting/api/actions undo_manager.rst:6
-msgid "Undoes the last action."
-msgstr "Скасовує останню дію."
-
-#: ../../scripting/api/actions undo_manager.rst:10
-msgid "Redoes the last undone action."
-msgstr "Повторює останню скасовану дію."
-
-#: ../../scripting/api/audio channel.rst:6
-msgid "Returns the plugin at the given insert slot"
-msgstr "Повертає плагін у вказаний слот вставки"
-
-#: ../../scripting/api/audio channel.rst:10
-msgid "Returns the instrument at the given channel"
-msgstr "Повертає інструмент на вказаний канал"
-
-#: ../../scripting/api/audio channel.rst:14
-msgid "Returns the send instance at the given slot"
-msgstr "Повертає екземпляр відправки в заданий слот"
-
-#: ../../scripting/api/audio midi_note.rst:6
-msgid "Returns a new midi note."
-msgstr "Повертає нову міді-ноту."
-
-#: ../../scripting/api/audio midi_region.rst:6
-msgid "Returns a new midi region."
-msgstr "Повертає нову область midi."
-
-#: ../../scripting/api/audio midi_region.rst:10
-msgid "Adds a midi note to ``region``."
-msgstr "Додає ноту midi до ``області``."
-
-#: ../../scripting/api/audio port.rst:6
-msgid "Returns the left or right port of the stereo pair."
-msgstr "Повертає лівий або правий порт стереопари."
-
-#: ../../scripting/api/audio port.rst:10
-msgid "Returns the identifier of ``port``."
-msgstr "Повертає ідентифікатор ``порту``."
-
-#: ../../scripting/api/audio position.rst:6
-msgid ""
-"Return a newly-created position as ``bars``.\\ ``beats``.\\ ``sixteenths``."
-"\\ ``ticks``.\\ ``sub_tick``."
-msgstr ""
-"Повертає новостворену позицію як ``bars``.\\ ``beats``.\\ ``sixteenth``.\\ "
-"``ticks``.\\ ``sub_tick``."
-
-#: ../../scripting/api/audio position.rst:11
-msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
-msgstr "Друкує позицію як «bars.beats.sixteenths.ticks.sub_tick»."
-
-#: ../../scripting/api/audio supported_file.rst:6
-msgid "Returns an instance of SupportedFile."
-msgstr "Повертає екземпляр SupportedFile."
-
-#: ../../scripting/api/audio track.rst:6
-msgid ""
-"Returns a new track with name ``name`` to be placed at position ``idx`` in "
-"the tracklist."
-msgstr ""
-"Повертає нову доріжку з назвою ``name`` для розміщення на позиції ``idx`` у "
-"списку доріжок."
-
-#: ../../scripting/api/audio track.rst:11
-msgid "Returns the name of ``track``."
-msgstr "Повертає назву ``доріжки``."
-
-#: ../../scripting/api/audio track.rst:15
-msgid "Returns the processor of ``track``."
-msgstr "Повертає процесор ``track``."
-
-#: ../../scripting/api/audio track.rst:19
-msgid "Returns the channel of ``track``."
-msgstr "Повертає канал ``доріжки``."
-
-#: ../../scripting/api/audio track.rst:23
-msgid ""
-"Sets whether ``track`` is soloed or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"Встановлює, чи буде ``доріжка`` соло чи ні. Це створює дію, яку можна "
-"скасувати, і виконує її."
-
-#: ../../scripting/api/audio track.rst:28
-msgid ""
-"Sets whether ``track`` is muted or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"Встановлює, чи вимикається ``доріжка``. Це створює дію, яку можна скасувати, "
-"і виконує її."
-
-#: ../../scripting/api/audio track.rst:33
-msgid ""
-"Adds ``region`` to track ``track``. To be used for regions with lanes (midi/"
-"audio)"
-msgstr ""
-"Додає ``регіон`` для відстеження ``відстеження``. Використовується для "
-"регіонів із смугами (міді/аудіо)"
-
-#: ../../scripting/api/audio track_processor.rst:6
-msgid "Returns the stereo in ports instance of the track processor."
-msgstr "Повертає стерео в портах екземпляра трекового процесора."
-
-#: ../../scripting/api/audio tracklist.rst:6
-msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
-msgstr "Вставляє трек ``track`` за індексом ``idx`` у список треків."
-
-#: ../../scripting/api/audio tracklist.rst:10
-msgid "Returns the track at ``pos`` in the tracklist."
-msgstr "Повертає трек у ``pos`` у списку треків."
-
-#: ../../scripting/api/audio tracklist.rst:14
-msgid "Returns the number of tracks in the tracklist."
-msgstr "Повертає кількість треків у списку треків."
-
-#: ../../scripting/api/intro.rst:6
-msgid "API"
-msgstr "API"
-
-#: ../../scripting/api/plugins plugin.rst:6
-msgid "Returns the input port of the plugin at the given index."
-msgstr "Повертає вхідний порт плагіна за вказаним індексом."
-
-#: ../../scripting/api/plugins plugin.rst:10
-msgid "Returns the output port of the plugin at the given index."
-msgstr "Повертає вихідний порт плагіна за вказаним індексом."
-
-#: ../../scripting/api/plugins plugin_manager.rst:6
-msgid "Returns the PluginDescriptor matching the given URI."
-msgstr "Повертає PluginDescriptor, що відповідає вказаному URI."
-
-#: ../../scripting/api/plugins plugin_manager.rst:10
-msgid "Scans the system for plugins."
-msgstr "Сканує систему на наявність плагінів."
-
-#: ../../scripting/api/project.rst:6
-msgid "Return the project’s title."
-msgstr "Повернути назву проекту."
-
-#: ../../scripting/api/project.rst:10
-msgid "Returns the tracklist for the project."
-msgstr "Повертає трек-лист для проекту."
-
-#: ../../scripting/api/project.rst:14
-msgid "Returns the undo manager for the project."
-msgstr "Повертає менеджер скасування для проекту."
-
-#: ../../scripting/api/zrythm.rst:6
-msgid "Return the Zrythm version as a string."
-msgstr "Повертає версію Zrythm як рядок."
-
-#: ../../scripting/api/zrythm.rst:10
-msgid "Return the PluginManager instance."
-msgstr "Повернути екземпляр PluginManager."
-
-#: ../../scripting/api/zrythm.rst:14
-msgid "Return the currently loaded Project instance."
-msgstr "Повернути поточний завантажений екземпляр проекту."
-
-#: ../../scripting/api/zrythm.rst:18
-msgid "Returns a NULL pointer."
-msgstr "Повертає покажчик NULL."
-
-#: ../../scripting/api/zrythm.rst:22
-msgid "Writes the message to the log."
-msgstr "Записує повідомлення в журнал."
-
-#: ../../scripting/examples.rst:7
-msgid "Examples"
-msgstr "Приклади"
-
-#: ../../scripting/examples.rst:9
-msgid ""
-"The following examples are in the public domain (`CC 0 <https://"
-"creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and modify "
-"them."
-msgstr ""
-"Наступні приклади знаходяться у відкритому доступі (`CC 0 <https://"
-"creativecommons.org/publicdomain/zero/1.0/>`_). Не соромтеся копіювати та "
-"змінювати їх."
-
-#: ../../scripting/examples.rst:14
-msgid "Create MIDI track with notes"
-msgstr "Створення MIDI-треку з нотами"
-
-#: ../../scripting/examples.rst:47
-msgid "Hello world"
-msgstr "Привіт світ"
-
-#: ../../scripting/examples.rst:56
-msgid "Print all tracks"
-msgstr "Роздрукувати всі треки"
-
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
 msgstr "Написання скриптів"
@@ -8299,17 +8124,17 @@ msgstr ""
 
 #: ../../scripting/overview.rst:34
 msgid ""
-"The Guile API is not available on Windows. See `this ticket <https://github."
-"com/msys2/MINGW-packages/issues/3298>`_ for details."
+"The Guile API is not available on Windows. See `this ticket <https://"
+"github.com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
 "API Guile недоступний у Windows. Перегляньте `цей квиток <https://github.com/"
 "msys2/MINGW-packages/issues/3298>`_, щоб дізнатися більше."
 
 #: ../../scripting/overview.rst:38
+#, fuzzy
 msgid ""
-"The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
-"all available procedures in the API. Each section in the API corresponds to "
-"a specific Guile module."
+"The ``API section`` is a comprehensive list of all available procedures in "
+"the API. Each section in the API corresponds to a specific Guile module."
 msgstr ""
 ":ref:`Розділ API <scripting/api/intro:API>` — це вичерпний список усіх "
 "доступних процедур в API. Кожен розділ в API відповідає певному модулю Guile."
@@ -8330,56 +8155,6 @@ msgstr ""
 msgid "To use it from ECMAScript, use:"
 msgstr "Щоб використовувати його з ECMAScript, використовуйте:"
 
-#: ../../scripting/scripting-interface.rst:7
-msgid "Scripting Interface"
-msgstr "Інтерфейс сценаріїв/Scripting Interface"
-
-#: ../../scripting/scripting-interface.rst:9
-msgid ""
-"Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
-"Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
-"scripting interface dialog."
-msgstr ""
-"Натискання кнопки :guilabel:`Інтерфейс сценаріїв` на :ref:`Головній панелі "
-"інструментів <zrythm-interface/main-toolbar:Головна панель інструментів>` "
-"відкриє діалогове вікно інтерфейсу сценаріїв."
-
-#: ../../scripting/scripting-interface.rst:17
-msgid "Scripting interface"
-msgstr "Інтерфейс сценаріїв"
-
-#: ../../scripting/scripting-interface.rst:19
-msgid ""
-"Scripts can be edited in the editor found in the top part of the scrpiting "
-"interface."
-msgstr ""
-"Сценарії можна редагувати в редакторі, який знаходиться у верхній частині "
-"інтерфейсу сценарію."
-
-#: ../../scripting/scripting-interface.rst:23
-msgid "Execution"
-msgstr "виконання"
-
-#: ../../scripting/scripting-interface.rst:25
-msgid ""
-"Pressing :guilabel:`Execute` will execute the script and print any output in "
-"the label at the bottom."
-msgstr ""
-"Натискання :guilabel:`Execute` виконає сценарій і надрукує будь-які "
-"результати в мітці внизу."
-
-#: ../../scripting/scripting-interface.rst:30
-msgid "Changing Language"
-msgstr "Зміна мови"
-
-#: ../../scripting/scripting-interface.rst:32
-msgid ""
-"The language of the script can be selected using the provided dropdown. "
-"Changing the language will also affect code highlighting."
-msgstr ""
-"Мову сценарію можна вибрати за допомогою спадного меню. Зміна мови також "
-"вплине на підсвічування коду."
-
 #: ../../theming/intro.rst:7 ../../theming/overview.rst:7
 msgid "Theming"
 msgstr "Тематизація"
@@ -8394,12 +8169,12 @@ msgstr ""
 
 #: ../../theming/overview.rst:14
 msgid ""
-"You can override many defaults that Zrythm uses by placing things in your :"
-"ref:`user path <configuration/preferences:Zrythm User Path>`."
+"You can override many defaults that Zrythm uses by placing things in "
+"your :ref:`user path <configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "Ви можете перевизначити багато параметрів за замовчуванням, які використовує "
 "Zrythm, розмістивши речі у своєму :ref:`шляху користувача <configuration/"
-"preferences:Шлях користувача Zrythm>`."
+"preferences:Zrythm User Path>`."
 
 #: ../../theming/overview.rst:17
 msgid ""
@@ -8407,9 +8182,9 @@ msgid ""
 "This is normally :file:`/opt/zrythm-<your version>` on GNU/Linux and MacOS, "
 "and :file:`C:\\\\Program Files\\\\Zrythm` on Windows."
 msgstr ""
-"`Каталог інсталяції Zrythm` вказує на місце встановлення Zrythm. Зазвичай це "
-":file:`/opt/zrythm-<ваша версія>` для GNU/Linux і MacOS і :file:`C:\\"
-"\\Program Files\\ \\Zrythm` у Windows."
+"`Каталог інсталяції Zrythm` вказує на місце встановлення Zrythm. Зазвичай "
+"це :file:`/opt/zrythm-<ваша версія>` для GNU/Linux і MacOS і :file:`C:\\"
+"\\Program Files\\\\Zrythm` у Windows."
 
 #: ../../theming/overview.rst:25
 msgid "CSS"
@@ -8427,7 +8202,7 @@ msgstr ""
 "Ви можете замінити тему GTK, яку використовує Zrythm разом із більшою "
 "частиною колірної схеми, у спеціальному файлі CSS. Бажано почати з "
 "копіювання теми з каталогу встановлення Zrythm (зазвичай :file:`/usr/share/"
-"zrythm/themes/zrythm-theme.css` у GNU/Linux і :file:`share/zrythm/ themes/"
+"zrythm/themes/zrythm-theme.css` у GNU/Linux і :file:`share/zrythm/themes/"
 "zrythm-theme.css` у шляху інсталяції у Windows або вміст програми в MacOS."
 
 #: ../../theming/overview.rst:36
@@ -8437,10 +8212,10 @@ msgid ""
 "is :file:`/home/me/zrythm`, you should create a file at :file:`/home/me/"
 "zrythm/themes/theme.css`."
 msgstr ""
-"Вам слід створити файл під назвою :file:`theme.css` у каталозі :file:`themes`"
-" вашого каталогу Zrythm. Наприклад, якщо ваш каталог Zrythm :file:`/home/me/"
-"zrythm`, вам слід створити файл за адресою :file:`/home/me/zrythm/themes/"
-"theme.css`."
+"Вам слід створити файл під назвою :file:`theme.css` у "
+"каталозі :file:`themes` вашого каталогу Zrythm. Наприклад, якщо ваш каталог "
+"Zrythm :file:`/home/me/zrythm`, вам слід створити файл за адресою :file:`/"
+"home/me/zrythm/themes/theme.css`."
 
 #: ../../theming/overview.rst:41
 msgid "This is highly experimental and many things are subject to change."
@@ -8468,15 +8243,16 @@ msgstr "`Огляд GTK+ CSS <https://docs.gtk.org/gtk4/css-overview.html>`_"
 
 #: ../../theming/overview.rst:51
 msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk4/css-properties.html>`_"
-msgstr "`Властивості GTK+ CSS <https://docs.gtk.org/gtk4/css-properties.html>`_"
+msgstr ""
+"`Властивості GTK+ CSS <https://docs.gtk.org/gtk4/css-properties.html>`_"
 
 #: ../../theming/overview.rst:52
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
 "styling-gtk-with-css/>`_"
 msgstr ""
-"`Стилізація GTK за допомогою CSS <https://thegnomejournal.wordpress.com/2011/"
-"03/15/styling-gtk-with-css/>`_"
+"`Стилізація GTK за допомогою CSS <https://thegnomejournal.wordpress.com/"
+"2011/03/15/styling-gtk-with-css/>`_"
 
 #: ../../theming/overview.rst:55
 msgid "Icon Themes"
@@ -8599,20 +8375,20 @@ msgstr "Режим відтворення"
 
 #: ../../tracks/automation.rst:39
 msgid ""
-"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
-"`Off` toggles in the track lane."
+"Automation can be enabled or disabled using the :guilabel:`On` "
+"and :guilabel:`Off` toggles in the track lane."
 msgstr ""
-"Автоматизацію можна ввімкнути або вимкнути за допомогою перемикачів "
-":guilabel:`On` і :guilabel:`Off` на доріжці."
+"Автоматизацію можна ввімкнути або вимкнути за допомогою "
+"перемикачів :guilabel:`On` і :guilabel:`Off` на доріжці."
 
 #: ../../tracks/automation.rst:42
 msgid ""
-"Touch/latch modes can also be used to record automation live (see the :ref:"
-"`playback-and-recording/recording:Recording Automation` section)."
+"Touch/latch modes can also be used to record automation live (see "
+"the :ref:`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 "Режими Touch/Latch також можна використовувати для автоматизованого запису в "
-"прямому ефірі (див. розділ :ref:`playback-and-recording/recording:"
-"Автоматизація запису`)."
+"прямому ефірі (див. розділ :ref:`playback-and-recording/recording:Recording "
+"Automation`)."
 
 #: ../../tracks/automation.rst:48
 msgid "Editing Automation"
@@ -8626,7 +8402,7 @@ msgid ""
 msgstr ""
 "Редагування автоматизації передбачає створення областей автоматизації, а "
 "потім створення подій автоматизації в :ref:`редакторі автоматизації <editing/"
-"automation-editor:Редактор автоматизації>`."
+"automation-editor:Automation Editor>`."
 
 #: ../../tracks/automation.rst:54
 msgid "Showing/Hiding Lanes"
@@ -8652,7 +8428,7 @@ msgstr "Існуючі смуги можна приховати за допом�
 
 #: ../../tracks/automation.rst:64
 msgid ":ref:`tracks/track-operations:Automation Section`"
-msgstr ":ref:`tracks/track-operations:Розділ автоматизації`"
+msgstr ":ref:`tracks/track-operations:Automation Section`"
 
 #: ../../tracks/automation.rst:67
 msgid "Behavior"
@@ -8695,8 +8471,8 @@ msgid ""
 "To add an empty track, click the :guilabel:`+` button in the tracklist (or "
 "right click on empty space) and select the type of track you want to add."
 msgstr ""
-"Щоб додати порожню доріжку, натисніть кнопку :guilabel:`+` у списку доріжок ("
-"або клацніть правою кнопкою миші на порожньому місці) і виберіть тип "
+"Щоб додати порожню доріжку, натисніть кнопку :guilabel:`+` у списку доріжок "
+"(або клацніть правою кнопкою миші на порожньому місці) і виберіть тип "
 "доріжки, яку ви хочете додати."
 
 #: ../../tracks/creating-tracks.rst:19
@@ -8705,17 +8481,17 @@ msgstr "Додавання нового порожнього треку"
 
 #: ../../tracks/creating-tracks.rst:24
 msgid ""
-":ref:`Instantiating a plugin <plugins-files/plugins/plugin-browser:"
-"Instantiating Plugins>` will cause new tracks to be created (unless the "
-"plugin was dropped in a particular location). If the plugin is an instrument "
-"plugin, an instrument track will be created. If the plugin is an effect, a "
-"bus track will be created."
+":ref:`Instantiating a plugin <plugins-files/plugins/plugin-"
+"browser:Instantiating Plugins>` will cause new tracks to be created (unless "
+"the plugin was dropped in a particular location). If the plugin is an "
+"instrument plugin, an instrument track will be created. If the plugin is an "
+"effect, a bus track will be created."
 msgstr ""
-":ref:`Створення екземпляра плагіна <plugins-files/plugins/plugin-browser:"
-"Instantiating Plugins>` призведе до створення нових треків (якщо плагін не "
-"було відкинуто в певному місці). Якщо плагін є плагіном інструменту, буде "
-"створено трек інструменту. Якщо плагін є ефектом, буде створено шинну "
-"доріжку."
+":ref:`Створення екземпляра плагіна <plugins-files/plugins/plugin-"
+"browser:Instantiating Plugins>` призведе до створення нових треків (якщо "
+"плагін не було відкинуто в певному місці). Якщо плагін є плагіном "
+"інструменту, буде створено трек інструменту. Якщо плагін є ефектом, буде "
+"створено шинну доріжку."
 
 #: ../../tracks/creating-tracks.rst:29
 msgid "Instrument tracks can be created this way."
@@ -8727,9 +8503,9 @@ msgid ""
 "file-browser:Importing Files>` will create audio and/or MIDI tracks "
 "containing that file."
 msgstr ""
-"Подібним чином :ref:`імпорт аудіо/MIDI-файлів <plugins-files/"
-"audio-midi-files/file-browser:Importing Files>` створить аудіо- та/або MIDI-"
-"доріжки, що містять цей файл."
+"Подібним чином :ref:`імпорт аудіо/MIDI-файлів <plugins-files/audio-midi-"
+"files/file-browser:Importing Files>` створить аудіо- та/або MIDI-доріжки, що "
+"містять цей файл."
 
 #: ../../tracks/creating-tracks.rst:38
 msgid "Duplicating/Cloning"
@@ -8740,8 +8516,8 @@ msgid ""
 "Most Tracks can be duplicated via the :guilabel:`Duplicate` context menu "
 "option."
 msgstr ""
-"Більшість доріжок можна скопіювати за допомогою пункту контекстного меню "
-":guilabel:`Дублювати`."
+"Більшість доріжок можна скопіювати за допомогою пункту контекстного "
+"меню :guilabel:`Дублювати`."
 
 #: ../../tracks/inspector-page.rst:9
 msgid "Track Inspector"
@@ -8792,8 +8568,8 @@ msgid ""
 "The instrument plugin from this track (only applicable to :ref:`instrument "
 "tracks <tracks/track-types:Instrument Track>`)."
 msgstr ""
-"Інструментальний плагін із цього треку (застосовується лише до :ref:`"
-"інструментальних треків <tracks/track-types:Instrument Track>`)."
+"Інструментальний плагін із цього треку (застосовується лише "
+"до :ref:`інструментальних треків <tracks/track-types:Instrument Track>`)."
 
 #: ../../tracks/inspector-page.rst:49
 msgid ""
@@ -8947,8 +8723,8 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:134
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
-"respective widgets. You can reset them to their default positions with :"
-"menuselection:`Right click --> Reset`."
+"respective widgets. You can reset them to their default positions "
+"with :menuselection:`Right click --> Reset`."
 msgstr ""
 "Щоб змінити величину фейдера або стереобалансу, клацніть і перетягніть "
 "відповідні віджети. Ви можете повернути їх до стандартних позицій за "
@@ -8987,13 +8763,13 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:154
 msgid ""
-"The track will still be processed, so if you are looking to decrease :term:"
-"`DSP` usage, try :ref:`disabling the track <tracks/track-operations:Channel "
-"Section>` (or individual plugins) instead."
+"The track will still be processed, so if you are looking to "
+"decrease :term:`DSP` usage, try :ref:`disabling the track <tracks/track-"
+"operations:Channel Section>` (or individual plugins) instead."
 msgstr ""
-"Доріжка все одно оброблятиметься, тож якщо ви хочете зменшити використання "
-":term:`DSP`, спробуйте :ref:`вимкнути доріжку <tracks/track-operations:"
-"Channel Section>` (або окремі плагіни)."
+"Доріжка все одно оброблятиметься, тож якщо ви хочете зменшити "
+"використання :term:`DSP`, спробуйте :ref:`вимкнути доріжку <tracks/track-"
+"operations:Channel Section>` (або окремі плагіни)."
 
 #: ../../tracks/inspector-page.rst:159
 msgid "Solo"
@@ -9019,7 +8795,7 @@ msgid ""
 msgstr ""
 "Подібно до соло, за винятком того, що він зменшує гучність інших треків, а "
 "не приглушує їх. Рівень затемнення можна контролювати в :ref:`розділі "
-"монітора <routing/monitor-section:розділ монітора>`."
+"монітора <routing/monitor-section:Monitor Section>`."
 
 #: ../../tracks/inspector-page.rst:167
 msgid ""
@@ -9092,11 +8868,11 @@ msgstr "Трек у списку треків"
 
 #: ../../tracks/overview.rst:21
 msgid ""
-"Most types of tracks have a corresponding channel that appears in the :ref:"
-"`Mixer <mixer>`. See :ref:`channels` for more info."
+"Most types of tracks have a corresponding channel that appears in "
+"the :ref:`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
-"Більшість типів треків мають відповідний канал, який відображається в :ref:`"
-"Mixer <mixer>`. Перегляньте :ref:`channels` для отримання додаткової "
+"Більшість типів треків мають відповідний канал, який відображається "
+"в :ref:`Mixer <mixer>`. Перегляньте :ref:`channels` для отримання додаткової "
 "інформації."
 
 #: ../../tracks/overview.rst:28
@@ -9216,7 +8992,7 @@ msgid ""
 "optionally mute the last recorded region in the previous lane."
 msgstr ""
 "Смуги також корисні під час запису. Якщо ви встановите :ref:`режим запису "
-"<playback-and-recording/recording:Режими запису>` на :guilabel:`Створити "
+"<playback-and-recording/recording:Recording Modes>` на :guilabel:`Створити "
 "дублі`, щоразу під час циклу відтворення він починатиме записувати з нової "
 "смуги та, за бажанням, приглушуватиме останній запис області в попередній "
 "смузі."
@@ -9244,8 +9020,8 @@ msgstr "Вибір треку"
 #: ../../tracks/track-operations.rst:14
 msgid ""
 "Tracks are selected by clicking on them, either in the tracklist or in the "
-"mixer. Multiple tracks can be selected by pressing and holding :kbd:"
-"`Control` while clicking them."
+"mixer. Multiple tracks can be selected by pressing and "
+"holding :kbd:`Control` while clicking them."
 msgstr ""
 "Треки вибираються клацанням миші в трек-листі або в мікшері. Кілька треків "
 "можна вибрати, натиснувши й утримуючи :kbd:`Control`, клацаючи їх."
@@ -9311,8 +9087,8 @@ msgstr ""
 #: ../../tracks/track-operations.rst:48
 msgid ""
 "The track name can be changed by double-clicking on it in the track view, in "
-"the track inspector, or in the channel. It can also be changed via the :"
-"guilabel:`Rename` context menu option."
+"the track inspector, or in the channel. It can also be changed via "
+"the :guilabel:`Rename` context menu option."
 msgstr ""
 "Назву доріжки можна змінити, двічі клацнувши на ній у перегляді доріжки, в "
 "інспекторі доріжки або в каналі. Його також можна змінити за допомогою "
@@ -9684,16 +9460,16 @@ msgid ""
 "For more information about chords, see the section :ref:`chords-and-scales/"
 "intro:Chords and Scales`."
 msgstr ""
-"Для отримання додаткової інформації про акорди перегляньте розділ :ref"
-":`chords-and-scales/intro:Chords and Scals`."
+"Для отримання додаткової інформації про акорди перегляньте "
+"розділ :ref:`chords-and-scales/intro:Chords and Scales`."
 
 #: ../../tracks/track-types.rst:151
 msgid ""
-"For editing chords inside chord regions, see :ref:`editing/chord-editor:"
-"Chord Editor`."
+"For editing chords inside chord regions, see :ref:`editing/chord-"
+"editor:Chord Editor`."
 msgstr ""
-"Щоб відредагувати акорди всередині акордових областей, перегляньте :ref:`"
-"editing/chord-editor:Chord Editor`."
+"Щоб відредагувати акорди всередині акордових областей, "
+"перегляньте :ref:`editing/chord-editor:Chord Editor`."
 
 #: ../../tracks/track-types.rst:155
 msgid "Live Audition"
@@ -10005,8 +9781,8 @@ msgstr ""
 "Ви можете закріпити треки, щоб вони залишалися вгорі, незалежно від того, "
 "наскільки далеко ви прокрутите список треків вниз. Це корисно робити з "
 "акордами та маркерами, щоб ви завжди могли бачити, де ви перебуваєте музично/"
-"структурно у своєму проекті. Треки закріплюються, вибравши "
-":guilabel:`Закріпити/Відкріпити трек` у контекстному меню."
+"структурно у своєму проекті. Треки закріплюються, "
+"вибравши :guilabel:`Закріпити/Відкріпити трек` у контекстному меню."
 
 #: ../../tracks/tracklist.rst:32
 msgid "Zrythm pins the Chord and Marker tracks by default."
@@ -10043,8 +9819,8 @@ msgid ""
 "Tracks can also be quickly hidden with the :guilabel:`Hide` option in their "
 "context menu."
 msgstr ""
-"Доріжки також можна швидко приховати за допомогою опції :guilabel:`Приховати`"
-" в контекстному меню."
+"Доріжки також можна швидко приховати за допомогою "
+"опції :guilabel:`Приховати` в контекстному меню."
 
 #: ../../tracks/tracklist.rst:51
 msgid "Tracklist Settings"
@@ -10097,7 +9873,7 @@ msgstr ":ref:`Редактор <editing/timeline:Editing Region Contents>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:20
 msgid ":ref:`Mixer <mixing>`"
-msgstr ":ref:`Mixer <змішування>`"
+msgstr ":ref:`Mixer <mixing>`"
 
 #: ../../zrythm-interface/bottom-panel.rst:21
 msgid ":ref:`Modulators <modulators/intro:Modulators>`"
@@ -10129,7 +9905,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:19
 msgid ":ref:`Track Inspector <track-inspector>`"
-msgstr ":ref:` Track Inspector <track-inspector>`"
+msgstr ":ref:`Track Inspector <track-inspector>`"
 
 #: ../../zrythm-interface/left-panel.rst:20
 msgid ""
@@ -10160,13 +9936,11 @@ msgstr ":ref:`Лінія часу <editing/timeline:Timeline>`"
 
 #: ../../zrythm-interface/main-panel.rst:20
 msgid ":ref:`Port Connections <routing/connections:Managing Connections>`"
-msgstr ""
-":ref:`Підключення портів <маршрутизація/підключення:Керування підключеннями>`"
+msgstr ":ref:`Підключення портів <routing/connections:Managing Connections>`"
 
 #: ../../zrythm-interface/main-panel.rst:21
 msgid ":ref:`MIDI CC Bindings <configuration/device-setup:MIDI Bindings>`"
 msgstr ""
-":ref:`MIDI CC Bindings <конфігурація/пристрій-налаштування:MIDI Bindings>`"
 
 #: ../../zrythm-interface/main-toolbar.rst:9
 msgid "Main Toolbar"
@@ -10267,8 +10041,8 @@ msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
 msgstr ""
-"Експортуйте графік маршрутизації як зображення або .dot-граф. Дивіться :ref"
-":`export-routing-graph` для отримання додаткової інформації."
+"Експортуйте графік маршрутизації як зображення або .dot-граф. "
+"Дивіться :ref:`export-routing-graph` для отримання додаткової інформації."
 
 #: ../../zrythm-interface/main-toolbar.rst:55
 msgid "View"
@@ -10288,7 +10062,7 @@ msgstr "інше"
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid "Show the :ref:`preferences dialog <preferences>`."
-msgstr "Показати :ref:`діалог налаштувань <налаштування>`."
+msgstr "Показати :ref:`діалог налаштувань <preferences>`."
 
 #: ../../zrythm-interface/main-toolbar.rst:64
 msgid "Show all the available keyboard shortcuts."
@@ -10316,27 +10090,27 @@ msgstr "Кожен підмодуль пояснюється в окремому
 
 #: ../../zrythm-interface/overview.rst:19
 msgid ":ref:`main-toolbar` (1)"
-msgstr ":ref:`головна панель інструментів` (1)"
+msgstr ""
 
 #: ../../zrythm-interface/overview.rst:20
 msgid ":ref:`main-panel` (2)"
-msgstr ":ref:`основна панель` (2)"
+msgstr ""
 
 #: ../../zrythm-interface/overview.rst:21
 msgid ":ref:`left-panel` (3)"
-msgstr ":ref:`ліва панель` (3)"
+msgstr ""
 
 #: ../../zrythm-interface/overview.rst:22
 msgid ":ref:`bottom-panel` (4)"
-msgstr ":ref:`нижня панель` (4)"
+msgstr ""
 
 #: ../../zrythm-interface/overview.rst:23
 msgid ":ref:`right-panel` (5)"
-msgstr ":ref:`права панель` (5)"
+msgstr ""
 
 #: ../../zrythm-interface/overview.rst:24
 msgid ":ref:`transport-bar` (6)"
-msgstr ":ref:`транспорт-бар` (6)"
+msgstr ""
 
 #: ../../zrythm-interface/overview.rst:27
 msgid "Managing Panels"
@@ -10379,8 +10153,8 @@ msgid ""
 "middle of the panel."
 msgstr ""
 "Види в кожній панелі роз'ємні. Щоб від’єднати подання в окреме вікно, "
-"клацніть і перетягніть його піктограму вкладки до 3-ї кнопки, яка з’"
-"являється посередині панелі."
+"клацніть і перетягніть його піктограму вкладки до 3-ї кнопки, яка "
+"з’являється посередині панелі."
 
 #: ../../zrythm-interface/overview.rst:52
 msgid "Detaching the timeline view"
@@ -10444,9 +10218,9 @@ msgid ""
 "transport-controls:Transport Controls>`. and various indicators."
 msgstr ""
 "Транспортна панель містить інформацію про механізм аудіо, :ref:`BPM і "
-"тактовий сигнатур <playback-and-recording/bpm-and-time-signatures:BPM і "
-"тактові сигнатури>`, :ref:`елементи керування транспортуванням <playback- "
-"and-recording/transport-controls:Transport Controls>`. і різні показники."
+"тактовий сигнатур <playback-and-recording/bpm-and-time-signatures:BPM and "
+"Time Signatures>`, :ref:`елементи керування транспортуванням <playback-and-"
+"recording/transport-controls:Transport Controls>`. і різні показники."
 
 #: ../../zrythm-interface/transport-bar.rst:19
 msgid "Transport bar"
@@ -10494,7 +10268,8 @@ msgstr "MIDI в"
 
 #: ../../zrythm-interface/transport-bar.rst:43
 msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
-msgstr "Показує :term:`MIDI` активність автоматично підключених MIDI-пристроїв."
+msgstr ""
+"Показує :term:`MIDI` активність автоматично підключених MIDI-пристроїв."
 
 #: ../../zrythm-interface/transport-bar.rst:44
 msgid "Oscilloscope"
@@ -10524,8 +10299,208 @@ msgid ""
 "clipping."
 msgstr ""
 "Відображає поточний % u використання процесора вгорі та поточний % u "
-"використання DSP унизу. Якщо % e DSP перевищує 100 (усі стовпчики заповнені)"
-", аудіо почне вирізатися."
+"використання DSP унизу. Якщо % e DSP перевищує 100 (усі стовпчики "
+"заповнені), аудіо почне вирізатися."
+
+#~ msgid "Creates an audio send connection as an undoable action."
+#~ msgstr "Створює з’єднання для надсилання аудіо як незмінну дію."
+
+#~ msgid "Connects 2 ports as an undoable action."
+#~ msgstr "Підключає 2 порти як незмінну дію."
+
+#~ msgid "Undoes the last action."
+#~ msgstr "Скасовує останню дію."
+
+#~ msgid "Redoes the last undone action."
+#~ msgstr "Повторює останню скасовану дію."
+
+#~ msgid "Returns the plugin at the given insert slot"
+#~ msgstr "Повертає плагін у вказаний слот вставки"
+
+#~ msgid "Returns the instrument at the given channel"
+#~ msgstr "Повертає інструмент на вказаний канал"
+
+#~ msgid "Returns the send instance at the given slot"
+#~ msgstr "Повертає екземпляр відправки в заданий слот"
+
+#~ msgid "Returns a new midi note."
+#~ msgstr "Повертає нову міді-ноту."
+
+#~ msgid "Returns a new midi region."
+#~ msgstr "Повертає нову область midi."
+
+#~ msgid "Adds a midi note to ``region``."
+#~ msgstr "Додає ноту midi до ``області``."
+
+#~ msgid "Returns the left or right port of the stereo pair."
+#~ msgstr "Повертає лівий або правий порт стереопари."
+
+#~ msgid "Returns the identifier of ``port``."
+#~ msgstr "Повертає ідентифікатор ``порту``."
+
+#~ msgid ""
+#~ "Return a newly-created position as ``bars``.\\ ``beats``.\\ "
+#~ "``sixteenths``.\\ ``ticks``.\\ ``sub_tick``."
+#~ msgstr ""
+#~ "Повертає новостворену позицію як ``bars``.\\ ``beats``.\\ ``sixteenth``."
+#~ "\\ ``ticks``.\\ ``sub_tick``."
+
+#~ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
+#~ msgstr "Друкує позицію як «bars.beats.sixteenths.ticks.sub_tick»."
+
+#~ msgid "Returns an instance of SupportedFile."
+#~ msgstr "Повертає екземпляр SupportedFile."
+
+#~ msgid ""
+#~ "Returns a new track with name ``name`` to be placed at position ``idx`` "
+#~ "in the tracklist."
+#~ msgstr ""
+#~ "Повертає нову доріжку з назвою ``name`` для розміщення на позиції ``idx`` "
+#~ "у списку доріжок."
+
+#~ msgid "Returns the name of ``track``."
+#~ msgstr "Повертає назву ``доріжки``."
+
+#~ msgid "Returns the processor of ``track``."
+#~ msgstr "Повертає процесор ``track``."
+
+#~ msgid "Returns the channel of ``track``."
+#~ msgstr "Повертає канал ``доріжки``."
+
+#~ msgid ""
+#~ "Sets whether ``track`` is soloed or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "Встановлює, чи буде ``доріжка`` соло чи ні. Це створює дію, яку можна "
+#~ "скасувати, і виконує її."
+
+#~ msgid ""
+#~ "Sets whether ``track`` is muted or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "Встановлює, чи вимикається ``доріжка``. Це створює дію, яку можна "
+#~ "скасувати, і виконує її."
+
+#~ msgid ""
+#~ "Adds ``region`` to track ``track``. To be used for regions with lanes "
+#~ "(midi/audio)"
+#~ msgstr ""
+#~ "Додає ``регіон`` для відстеження ``відстеження``. Використовується для "
+#~ "регіонів із смугами (міді/аудіо)"
+
+#~ msgid "Returns the stereo in ports instance of the track processor."
+#~ msgstr "Повертає стерео в портах екземпляра трекового процесора."
+
+#~ msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
+#~ msgstr "Вставляє трек ``track`` за індексом ``idx`` у список треків."
+
+#~ msgid "Returns the track at ``pos`` in the tracklist."
+#~ msgstr "Повертає трек у ``pos`` у списку треків."
+
+#~ msgid "Returns the number of tracks in the tracklist."
+#~ msgstr "Повертає кількість треків у списку треків."
+
+#~ msgid "API"
+#~ msgstr "API"
+
+#~ msgid "Returns the input port of the plugin at the given index."
+#~ msgstr "Повертає вхідний порт плагіна за вказаним індексом."
+
+#~ msgid "Returns the output port of the plugin at the given index."
+#~ msgstr "Повертає вихідний порт плагіна за вказаним індексом."
+
+#~ msgid "Returns the PluginDescriptor matching the given URI."
+#~ msgstr "Повертає PluginDescriptor, що відповідає вказаному URI."
+
+#~ msgid "Scans the system for plugins."
+#~ msgstr "Сканує систему на наявність плагінів."
+
+#~ msgid "Return the project’s title."
+#~ msgstr "Повернути назву проекту."
+
+#~ msgid "Returns the tracklist for the project."
+#~ msgstr "Повертає трек-лист для проекту."
+
+#~ msgid "Returns the undo manager for the project."
+#~ msgstr "Повертає менеджер скасування для проекту."
+
+#~ msgid "Return the Zrythm version as a string."
+#~ msgstr "Повертає версію Zrythm як рядок."
+
+#~ msgid "Return the PluginManager instance."
+#~ msgstr "Повернути екземпляр PluginManager."
+
+#~ msgid "Return the currently loaded Project instance."
+#~ msgstr "Повернути поточний завантажений екземпляр проекту."
+
+#~ msgid "Returns a NULL pointer."
+#~ msgstr "Повертає покажчик NULL."
+
+#~ msgid "Writes the message to the log."
+#~ msgstr "Записує повідомлення в журнал."
+
+#~ msgid "Examples"
+#~ msgstr "Приклади"
+
+#~ msgid ""
+#~ "The following examples are in the public domain (`CC 0 <https://"
+#~ "creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and "
+#~ "modify them."
+#~ msgstr ""
+#~ "Наступні приклади знаходяться у відкритому доступі (`CC 0 <https://"
+#~ "creativecommons.org/publicdomain/zero/1.0/>`_). Не соромтеся копіювати та "
+#~ "змінювати їх."
+
+#~ msgid "Create MIDI track with notes"
+#~ msgstr "Створення MIDI-треку з нотами"
+
+#~ msgid "Hello world"
+#~ msgstr "Привіт світ"
+
+#~ msgid "Print all tracks"
+#~ msgstr "Роздрукувати всі треки"
+
+#~ msgid "Scripting Interface"
+#~ msgstr "Інтерфейс сценаріїв/Scripting Interface"
+
+#~ msgid ""
+#~ "Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
+#~ "Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
+#~ "scripting interface dialog."
+#~ msgstr ""
+#~ "Натискання кнопки :guilabel:`Інтерфейс сценаріїв` на :ref:`Головній "
+#~ "панелі інструментів <zrythm-interface/main-toolbar:Головна панель "
+#~ "інструментів>` відкриє діалогове вікно інтерфейсу сценаріїв."
+
+#~ msgid "Scripting interface"
+#~ msgstr "Інтерфейс сценаріїв"
+
+#~ msgid ""
+#~ "Scripts can be edited in the editor found in the top part of the "
+#~ "scrpiting interface."
+#~ msgstr ""
+#~ "Сценарії можна редагувати в редакторі, який знаходиться у верхній частині "
+#~ "інтерфейсу сценарію."
+
+#~ msgid "Execution"
+#~ msgstr "виконання"
+
+#~ msgid ""
+#~ "Pressing :guilabel:`Execute` will execute the script and print any output "
+#~ "in the label at the bottom."
+#~ msgstr ""
+#~ "Натискання :guilabel:`Execute` виконає сценарій і надрукує будь-які "
+#~ "результати в мітці внизу."
+
+#~ msgid "Changing Language"
+#~ msgstr "Зміна мови"
+
+#~ msgid ""
+#~ "The language of the script can be selected using the provided dropdown. "
+#~ "Changing the language will also affect code highlighting."
+#~ msgstr ""
+#~ "Мову сценарію можна вибрати за допомогою спадного меню. Зміна мови також "
+#~ "вплине на підсвічування коду."
 
 #~ msgid "Automation arranger"
 #~ msgstr "Автоматизація"

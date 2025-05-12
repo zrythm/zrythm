@@ -12,17 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-17 21:18+0900\n"
+"POT-Creation-Date: 2025-05-12 22:14+0900\n"
 "PO-Revision-Date: 2024-11-14 11:45+0000\n"
 "Last-Translator: Cleverson Cândido <optimuspraimu@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -34,8 +33,8 @@ msgstr "Variáveis de ambiente"
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
-"operating system's settings, or they can be passed directly when running :"
-"program:`zrythm` or :program:`zrythm_launch`, like: "
+"operating system's settings, or they can be passed directly when "
+"running :program:`zrythm` or :program:`zrythm_launch`, like: "
 "``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
 "A Zrythm entende as seguintes variáveis de ambiente. Elas podem ser "
@@ -97,17 +96,17 @@ msgstr "Entrada na área de trabalho"
 #: ../../appendix/files-and-directories.rst:22
 #, fuzzy
 msgid ""
-"A `freedesktop-compliant configuration file <https://specifications."
-"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ that "
-"describes how a particular program should be launched, how it appears in "
-"menus, etc. This is normally installed at :file:`/usr/share/applications/"
-"zrythm.desktop`."
+"A `freedesktop-compliant configuration file <https://"
+"specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-"
+"latest.html>`_ that describes how a particular program should be launched, "
+"how it appears in menus, etc. This is normally installed at :file:`/usr/"
+"share/applications/zrythm.desktop`."
 msgstr ""
-"Um `ficheiro de configuração freedesktop-complicant <https://specifications."
-"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ que "
-"descreve como um determinado programa deve ser iniciado, como aparece nos "
-"menus, etc. Isto é normalmente instalado em :file:`/usr/share/applications/"
-"zrythm.desktop`."
+"Um `ficheiro de configuração freedesktop-complicant <https://"
+"specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-"
+"latest.html>`_ que descreve como um determinado programa deve ser iniciado, "
+"como aparece nos menus, etc. Isto é normalmente instalado em :file:`/usr/"
+"share/applications/zrythm.desktop`."
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
@@ -116,12 +115,12 @@ msgstr "Esquema GLib"
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
 "This file contains the schema for user configurations. It is normally "
-"installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
-"xml`."
+"installed at :file:`/usr/share/glib-2.0/schemas/"
+"org.zrythm.Zrythm.gschema.xml`."
 msgstr ""
 "Este ficheiro contém o esquema para as configurações do utilizador. É "
-"normalmente instalado em :file:`/usr/share/glib-2.0/schemas/org.zrythm."
-"Zrythm.gschema.xml`."
+"normalmente instalado em :file:`/usr/share/glib-2.0/schemas/"
+"org.zrythm.Zrythm.gschema.xml`."
 
 #: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
@@ -158,7 +157,7 @@ msgid ""
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
 "Amostras de áudio padrão usadas pelo Zrythm (como o metrónomo). Normalmente "
-"instalado em :file:`/usr/share/zrythm/samples'."
+"instalado em :file:`/usr/share/zrythm/samples`."
 
 #: ../../appendix/files-and-directories.rst:54
 msgid "Fonts"
@@ -184,7 +183,7 @@ msgid ""
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
 "Zrythm irá instalar stylesheets CSS para serem utilizadas por alguns widgets "
-"de entrada de texto em :file:`/usr/share/zrythm/sourceview-styles'."
+"de entrada de texto em :file:`/usr/share/zrythm/sourceview-styles`."
 
 #: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
@@ -192,11 +191,11 @@ msgstr "Temas"
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
-"Default themes (including icon themes) will normally be installed under :"
-"file:`/usr/share/zrythm/themes`."
+"Default themes (including icon themes) will normally be installed "
+"under :file:`/usr/share/zrythm/themes`."
 msgstr ""
-"Os temas padrão (incluindo temas de ícones) serão normalmente instalados em :"
-"file:`/usr/share/zrythm/themes'."
+"Os temas padrão (incluindo temas de ícones) serão normalmente instalados "
+"em :file:`/usr/share/zrythm/themes`."
 
 #: ../../appendix/files-and-directories.rst:72
 #, fuzzy
@@ -220,8 +219,8 @@ msgstr "Descritores de suplementos em cache"
 #: ../../appendix/files-and-directories.rst:81
 #, fuzzy
 msgid ""
-"Plugin descriptor cache for faster scanning. This is found at :file:"
-"`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
+"Plugin descriptor cache for faster scanning. This is found "
+"at :file:`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "Zrythm lembrar-se-á dos suplementos VST analisados e gravará esta informação "
@@ -234,12 +233,12 @@ msgstr "Coleções de suplementos"
 #: ../../appendix/files-and-directories.rst:88
 #, fuzzy
 msgid ""
-"This file contains your plugin collections. It is found at :file:"
-"`plugin_collections.yaml` under the :ref:`Zrythm user path <configuration/"
-"preferences:Zrythm User Path>`."
+"This file contains your plugin collections. It is found "
+"at :file:`plugin_collections.yaml` under the :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>`."
 msgstr ""
-"Este ficheiro contém as suas coleções de suplementos. Encontra-se em :file:"
-"`plugin_collections.yaml` sob o termo :term:`Zrythm user path`."
+"Este ficheiro contém as suas coleções de suplementos. Encontra-se "
+"em :file:`plugin_collections.yaml` sob o termo :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Plugin Settings"
@@ -250,10 +249,10 @@ msgstr "Configurações do suplemento"
 msgid ""
 "Located at :file:`plugin-settings.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`, this is a collection of per-"
-"plugin settings, such as whether to open the plugin with :term:`Carla`, the :"
-"ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use and "
-"whether to use a :ref:`generic UI <plugins-files/plugins/plugin-window:"
-"Generic UIs>`."
+"plugin settings, such as whether to open the plugin with :term:`Carla`, "
+"the :ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use "
+"and whether to use a :ref:`generic UI <plugins-files/plugins/plugin-"
+"window:Generic UIs>`."
 msgstr ""
 "Localizado em :file:`plugin-settings.yaml` sob o :term:`Zrythm user path`, "
 "esta é uma coleção de configurações por suplemento, tais como se abrir o "
@@ -278,14 +277,14 @@ msgstr "Ficheiro de registo"
 #, fuzzy
 msgid ""
 "Zrythm will write to a log file on each run inside the :file:`log` "
-"subdirectory under the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`. The filename will contain the current date and time, for "
-"example :file:`log_2020-06-26_15-34-19.log`."
+"subdirectory under the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`. The filename will contain the current date "
+"and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
 "Zrythm irá escrever num ficheiro de log em cada execução dentro do "
 "subdiretório :file:`log` sob o termo :term:`Zrythm user path`. O nome do "
-"ficheiro conterá a data e hora atual, por exemplo :file:"
-"`log_2020-06-26_15-34-19.log`."
+"ficheiro conterá a data e hora atual, por "
+"exemplo :file:`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:114
 msgid "This log file is useful for debugging crashes and other problems."
@@ -378,9 +377,9 @@ msgstr "Edição"
 #: ../../chords-and-scales/chord-pad.rst:50
 msgid ""
 "You can audition chord presets by selecting an instrument plugin from the "
-"list and using the available playback controls. This works similarly to :ref:"
-"`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
-"browser:Auditioning>`."
+"list and using the available playback controls. This works similarly "
+"to :ref:`auditioning in the File Browser <plugins-files/audio-midi-files/"
+"file-browser:Auditioning>`."
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:56
@@ -471,8 +470,8 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:120
 msgid ""
-"Chords can be generated from a scale and a root note by clicking on the :"
-"guilabel:`Load Preset` button, then selecting a scale and a root note."
+"Chords can be generated from a scale and a root note by clicking on "
+"the :guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:127
@@ -638,9 +637,9 @@ msgid ""
 "clicking on eligible controls and selecting :guilabel:`MIDI learn`."
 msgstr ""
 "Os controles de aparelhos MIDI podem ser mapeados para controles dentro do "
-"Zrythm (em controles que o suportam). Após ativar um aparelho no :ref:"
-"`preferences <configuration/preferences:Engine>`, um mapeamento pode ser "
-"criado a clicar com o botão direito do rato em controles elegíveis e a "
+"Zrythm (em controles que o suportam). Após ativar um aparelho "
+"no :ref:`preferences <configuration/preferences:Engine>`, um mapeamento pode "
+"ser criado a clicar com o botão direito do rato em controles elegíveis e a "
 "selecionar :guilabel:`MIDI learn`."
 
 #: ../../configuration/device-setup.rst:62
@@ -677,8 +676,8 @@ msgid ""
 "Device mappings (bindings) can be found under the :guilabel:`Bindings` tab "
 "in the :ref:`main panel <zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
-"Os mapeamentos de aparelhos (vinculações) são encontrados no separador :"
-"guilabel:`Bindings` no painel principal."
+"Os mapeamentos de aparelhos (vinculações) são encontrados no "
+"separador :guilabel:`Bindings` no painel principal."
 
 #: ../../configuration/device-setup.rst:86
 msgid "MIDI CC bindings"
@@ -718,9 +717,9 @@ msgstr "Preferências"
 
 #: ../../configuration/preferences.rst:22
 msgid ""
-"Preferences are grouped by sections, such as :guilabel:`General` and :"
-"guilabel:`Plugins`, and each item in the preferences contains a description "
-"that explains what it does (when not self-explanatory)."
+"Preferences are grouped by sections, such as :guilabel:`General` "
+"and :guilabel:`Plugins`, and each item in the preferences contains a "
+"description that explains what it does (when not self-explanatory)."
 msgstr ""
 
 #: ../../configuration/preferences.rst:27
@@ -826,8 +825,9 @@ msgstr ""
 #: ../../configuration/preferences.rst:86
 msgid ""
 "In order to be able to record input from MIDI/audio devices, the devices "
-"must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
-"guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
+"must be explicitly enabled using the :guilabel:`MIDI controllers` "
+"and :guilabel:`Audio inputs` settings under :menuselection:`General --> "
+"Engine`."
 msgstr ""
 
 #: ../../configuration/preferences.rst:92
@@ -895,8 +895,8 @@ msgstr "Redefinir para configurações de fábrica"
 
 #: ../../configuration/preferences.rst:132
 msgid ""
-"There is an option to reset Zrythm to its default settings under :"
-"menuselection:`General --> Other`."
+"There is an option to reset Zrythm to its default settings "
+"under :menuselection:`General --> Other`."
 msgstr ""
 
 #: ../../configuration/preferences.rst:135
@@ -916,8 +916,8 @@ msgstr "Atalhos"
 msgid ""
 "Shortcuts (key bindings) can be previewed by pressing :kbd:`Shift-Control-?`."
 msgstr ""
-"Os atalhos (vinculações de teclas) podem ser pré-visualizados a pressionar :"
-"kbd:`Control-?` ou :kbd:`Control-F1`."
+"Os atalhos (vinculações de teclas) podem ser pré-visualizados a "
+"pressionar :kbd:`Control-?` ou :kbd:`Control-F1`."
 
 #: ../../configuration/shortcuts.rst:12
 msgid "Global Shortcuts"
@@ -988,8 +988,8 @@ msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
 "such as icons you can start by creating your own themes and icons as "
-"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/overview:"
-"CSS`."
+"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/"
+"overview:CSS`."
 msgstr ""
 "O Zrythm é temável com CSS e também utiliza muitos ícones, alguns "
 "personalizados e outros emprestados de outros temas. Se deseja contribuir "
@@ -1008,8 +1008,8 @@ msgid ""
 "zrythm/-/issues>`_."
 msgstr ""
 "Está convidado a se juntar a nós para testar as últimas características no "
-"Zrythm e relatar bugs e comentários sobre `Redmine <https://redmine.zrythm."
-"org/projects/zrythm/issues>`_."
+"Zrythm e relatar bugs e comentários sobre `Redmine <https://"
+"redmine.zrythm.org/projects/zrythm/issues>`_."
 
 #: ../../contributing/overview.rst:39
 #, fuzzy
@@ -1068,13 +1068,13 @@ msgstr ""
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
-"`official documentation <https://docs.weblate.org/en/latest/user/translating."
-"html>`_."
+"`official documentation <https://docs.weblate.org/en/latest/user/"
+"translating.html>`_."
 msgstr ""
 "Clique no projeto em que deseja trabalhar e selecione um idioma no ecrã a "
 "seguir. Para mais informações sobre a utilização do Weblate, consulte a "
-"`documentação oficial <https://docs.weblate.org/en/latest/user/translating."
-"html>`_."
+"`documentação oficial <https://docs.weblate.org/en/latest/user/"
+"translating.html>`_."
 
 #: ../../contributing/overview.rst:70
 msgid ""
@@ -1349,8 +1349,8 @@ msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:83
 msgid ""
-"You can obtain OS information from the About dialog (click :guilabel:"
-"`Troubleshooting` then :guilabel:`Debugging Information`)"
+"You can obtain OS information from the About dialog "
+"(click :guilabel:`Troubleshooting` then :guilabel:`Debugging Information`)"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:91
@@ -1390,9 +1390,9 @@ msgstr ""
 #: ../../contributing/reporting-bugs.rst:111
 msgid ""
 "Click on :guilabel:`New Issue`. You will see the following page where you "
-"can fill in details about the issue you are facing. Click on :guilabel:"
-"`Choose a template...` under :guilabel:`Description` and select what best "
-"describes your issue (e.g., a bug)."
+"can fill in details about the issue you are facing. Click "
+"on :guilabel:`Choose a template...` under :guilabel:`Description` and select "
+"what best describes your issue (e.g., a bug)."
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:117
@@ -1529,16 +1529,16 @@ msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:212
 msgid ""
-"Please send us the core dump file (in the example above it can be found at :"
-"file:`/home/alex/Downloads/core.23179`)."
+"Please send us the core dump file (in the example above it can be found "
+"at :file:`/home/alex/Downloads/core.23179`)."
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:216
 msgid ""
 "`c - Find which assembly instruction caused an Illegal Instruction error "
-"without debugging - Stack Overflow <https://stackoverflow.com/"
-"questions/10354147/find-which-assembly-instruction-caused-an-illegal-"
-"instruction-error-without-debu/40223712#40223712>`_"
+"without debugging - Stack Overflow <https://stackoverflow.com/questions/"
+"10354147/find-which-assembly-instruction-caused-an-illegal-instruction-error-"
+"without-debu/40223712#40223712>`_"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:217
@@ -1902,8 +1902,8 @@ msgid ""
 msgstr ""
 "Por exemplo, se criar uma nota MIDI e pressionar desfazer, a nota MIDI será "
 "excluída (Zrythm volta ao estado em que a nota MIDI não existia). Pressionar "
-"o botão :guilabel:`Redo` irá criar a nota novamente, e pode voltar entre :"
-"guilabel:`Undo` e :guilabel:`Redo` quantas vezes quiser."
+"o botão :guilabel:`Redo` irá criar a nota novamente, e pode voltar "
+"entre :guilabel:`Undo` e :guilabel:`Redo` quantas vezes quiser."
 
 #: ../../editing/common-operations.rst:28
 msgid ""
@@ -1994,7 +1994,7 @@ msgid ""
 "duplicating is :kbd:`Control-d`."
 msgstr ""
 "Crie uma cópia dos objetos selecionados adjacentes a eles. O atalho para "
-"duplicar é :kbd:`Controle-d'."
+"duplicar é :kbd:`Controle-d`."
 
 #: ../../editing/common-operations.rst:79
 msgid "Duplicating a region"
@@ -2028,7 +2028,7 @@ msgstr "Selecionar tudo"
 
 #: ../../editing/common-operations.rst:94
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
-msgstr "Selecione todos os objetos no editor atual (:kbd:`Control-a')."
+msgstr "Selecione todos os objetos no editor atual (:kbd:`Control-a`)."
 
 #: ../../editing/common-operations.rst:98
 msgid "Loop Selection"
@@ -2037,7 +2037,7 @@ msgstr "Seleção de loop"
 #: ../../editing/common-operations.rst:99
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
-"Posicione os marcadores de laço ao redor da seleção (:kbd:`Controle-l')."
+"Posicione os marcadores de laço ao redor da seleção (:kbd:`Controle-l`)."
 
 #: ../../editing/common-operations.rst:103
 #: ../../editing/editor-toolbars.rst:116
@@ -2316,7 +2316,7 @@ msgstr "Cortar objetos"
 
 #: ../../editing/edit-tools.rst:141
 msgid "You can :kbd:`Alt`-click inside objects to break them up."
-msgstr "Pode :kbd:`Alt-clicar nos objetos para separá-los."
+msgstr "Pode :kbd:`Alt`-clicar nos objetos para separá-los."
 
 #: ../../editing/edit-tools.rst:146
 #, fuzzy
@@ -2381,9 +2381,9 @@ msgid ""
 "objects`, with the exception that you can just click instead of :kbd:`Alt`-"
 "clicking."
 msgstr ""
-"A ferramenta Cortar comporta-se de forma semelhante ao que é mencionado em :"
-"ref:`cutting-objects`, com a exceção de que pode simplesmente clicar em vez "
-"de :kbd:`Alt`-clicar."
+"A ferramenta Cortar comporta-se de forma semelhante ao que é mencionado "
+"em :ref:`cutting-objects`, com a exceção de que pode simplesmente clicar em "
+"vez de :kbd:`Alt`-clicar."
 
 #: ../../editing/edit-tools.rst:180
 msgid "Erase Tool"
@@ -3259,11 +3259,11 @@ msgstr ""
 #: ../../editing/piano-roll.rst:65
 #, fuzzy
 msgid ""
-"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
-"`Shift` and scrolling."
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` "
+"and :kbd:`Shift` and scrolling."
 msgstr ""
-"O nível de ampliação pode ser alterado a manter pressionado:kbd:`Ctrl` e :"
-"kbd:`Shift` e rolando."
+"O nível de ampliação pode ser alterado a manter pressionado:kbd:`Ctrl` "
+"e :kbd:`Shift` e rolando."
 
 #: ../../editing/piano-roll.rst:70
 msgid "MIDI Arranger"
@@ -3352,9 +3352,9 @@ msgstr "Cronologia"
 #, fuzzy
 msgid ""
 "Editing in the timeline is the most common workflow inside Zrythm. The "
-"timeline section consists of the :ref:`tracklist <tracks/tracklist:"
-"Tracklist>` on the left and the ruler/arranger on the right, along with a "
-"timeline-specific toolbar at the top."
+"timeline section consists of the :ref:`tracklist <tracks/"
+"tracklist:Tracklist>` on the left and the ruler/arranger on the right, along "
+"with a timeline-specific toolbar at the top."
 msgstr ""
 "A edição na cronologia é o fluxo de trabalho mais comum dentro da Zrythm. A "
 "secção da cronologia consiste na lista de faixas à esquerda e a régua/"
@@ -3390,8 +3390,8 @@ msgid ""
 "in :ref:`loop-points-and-markers`."
 msgstr ""
 "A régua exibirá mais ou menos informação dependendo do nível de ampliação "
-"atual. Ela também exibirá os seguintes marcadores/indicadores discutidos em :"
-"ref:`pontos-e-marcadores'."
+"atual. Ela também exibirá os seguintes marcadores/indicadores discutidos "
+"em :ref:`loop-points-and-markers`."
 
 #: ../../editing/timeline.rst:44
 msgid "Cue point"
@@ -3466,9 +3466,9 @@ msgstr "Seleção de idioma"
 
 #: ../../editing/timeline.rst:67
 msgid ""
-"Clicking and dragging in the top half of the ruler will create a :term:"
-"`range <Range>` selection. If an existing range exists, you can click an "
-"drag it to move it."
+"Clicking and dragging in the top half of the ruler will create "
+"a :term:`range <Range>` selection. If an existing range exists, you can "
+"click an drag it to move it."
 msgstr ""
 
 #: ../../editing/timeline.rst:75
@@ -3523,8 +3523,8 @@ msgstr "Regiões"
 #, fuzzy
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
-"MIDI notes and audio clips - see below) that can be edited in an :ref:"
-"`editor <editing/timeline:Editing Region Contents>`. Regions can be "
+"MIDI notes and audio clips - see below) that can be edited in "
+"an :ref:`editor <editing/timeline:Editing Region Contents>`. Regions can be "
 "repeated, like below."
 msgstr ""
 "Regiões (ou :term:`clips <Clip>`) são recipientes para eventos ou dados "
@@ -3576,7 +3576,7 @@ msgstr "Regiões de MIDI"
 
 #: ../../editing/timeline.rst:138
 msgid "MIDI regions contain :term:`MIDI` notes."
-msgstr "As regiões MIDI contêm notas :term:'MIDI'."
+msgstr "As regiões MIDI contêm notas :term:`MIDI`."
 
 #: ../../editing/timeline.rst:143
 msgid "MIDI region"
@@ -3837,7 +3837,7 @@ msgid ""
 "differ depending on the type of region selected."
 msgstr ""
 "Quando regiões são selecionadas na cronologia, o conteúdo dele será mostrado "
-"no separador Editor no painel :ref:`bottom-panel'. Embora existam alguns "
+"no separador Editor no painel :ref:`bottom-panel`. Embora existam alguns "
 "elementos comuns compartilhados entre cada tipo de editor, a secção do "
 "editor diferirá, dependendo do tipo de região selecionada."
 
@@ -3849,8 +3849,8 @@ msgstr "Régua do editor"
 #, fuzzy
 msgid "The editor ruler is similar to the timeline ruler."
 msgstr ""
-"A régua do editor é semelhante à régua da cronologia explicada em :ref:"
-"`timeline-ruler`, com algumas diferenças."
+"A régua do editor é semelhante à régua da cronologia explicada "
+"em :ref:`timeline-ruler`, com algumas diferenças."
 
 #: ../../editing/timeline.rst:339
 #, fuzzy
@@ -3955,8 +3955,8 @@ msgid ""
 "interface/main-toolbar:Export`."
 msgstr ""
 "O diálogo Exportar abaixo é usado para exportar o projeto, ou parte do "
-"projeto em ficheiros de áudio, ou MIDI. Pode ser acessado a clicar em :ref:"
-"`zrythm-interface/main-toolbar:Export As`."
+"projeto em ficheiros de áudio, ou MIDI. Pode ser acessado a clicar "
+"em :ref:`zrythm-interface/main-toolbar:Export As`."
 
 #: ../../exporting/audio-and-midi.rst:19
 msgid "Export dialog"
@@ -4188,8 +4188,8 @@ msgstr ""
 
 #: ../../getting-started/faq.rst:91
 msgid ""
-"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
-"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` "
+"and :ref:`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 msgstr ""
 
 #: ../../getting-started/faq.rst:95
@@ -4396,7 +4396,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
 msgstr ""
-"'Freesound'_ tem predefinições disponíveis para descarregar para suplementos "
+"`Freesound`_ tem predefinições disponíveis para descarregar para suplementos "
 "específicos."
 
 #: ../../getting-started/getting-plugins.rst:89
@@ -4498,12 +4498,12 @@ msgstr ""
 #, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
-"tarball <https://www.zrythm.org/releases/>`_ or `git <https://gitlab.zrythm."
-"org/zrythm/zrythm/>`_."
+"tarball <https://www.zrythm.org/releases/>`_ or `git <https://"
+"gitlab.zrythm.org/zrythm/zrythm/>`_."
 msgstr ""
 "Se é um utilizador avançado, também pode construir Zrythm a partir do código-"
-"fonte, utilizando um tarball de distribuição de código fonte <https://www."
-"zrythm.org/releases/>`_ ou `git <https://git.zrythm.org/cgit/zrythm/>`_."
+"fonte, utilizando um tarball de distribuição de código fonte <https://"
+"www.zrythm.org/releases/>`_ ou `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:51
 #, fuzzy
@@ -4535,9 +4535,9 @@ msgid ""
 "user interface."
 msgstr ""
 "Quando executa o Zrythm pela primeira vez, exibirá um assistente que permite "
-"definir as configurações básicas que o Zrythm irá usar. Estas incluem o :"
-"term:`Zrythm user path`, o idioma da interface do utilizador e backends de "
-"áudio/MIDI."
+"definir as configurações básicas que o Zrythm irá usar. Estas incluem "
+"o :term:`Zrythm user path`, o idioma da interface do utilizador e backends "
+"de áudio/MIDI."
 
 #: ../../getting-started/running-zrythm.rst:23
 msgid "Initial configuration dialog"
@@ -4586,8 +4586,8 @@ msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
 msgstr ""
-"Quando o primeiro assistente de execução estiver concluído, Zrythm iniciará :"
-"doc:`procurar for suplementos <../plugins-files/plugins/scanning>`."
+"Quando o primeiro assistente de execução estiver concluído, Zrythm "
+"iniciará :doc:`procurar for suplementos <../plugins-files/plugins/scanning>`."
 
 #: ../../getting-started/running-zrythm.rst:49
 msgid "Project Selection"
@@ -4886,8 +4886,8 @@ msgid ""
 "before running Zrythm. You will find lots of information online about how to "
 "configure JACK, such as `Demystifying JACK - A Beginners Guide to Getting "
 "Started with JACK <https://linuxaudio.github.io/libremusicproduction/html/"
-"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack."
-"html>`_, so we will skip this part."
+"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-"
+"jack.html>`_, so we will skip this part."
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:135
@@ -4945,11 +4945,11 @@ msgstr "a2jmidid"
 
 #: ../../glossary/intro.rst:14
 msgid ""
-"a2jmidid is an application that bridges between the system MIDI ports and :"
-"term:`JACK`."
+"a2jmidid is an application that bridges between the system MIDI ports "
+"and :term:`JACK`."
 msgstr ""
-"a2jmid é uma aplicação que faz a ponte entre as portas MIDI do sistema e o :"
-"term:`JACK`."
+"a2jmid é uma aplicação que faz a ponte entre as portas MIDI do sistema e "
+"o :term:`JACK`."
 
 #: ../../glossary/intro.rst:16
 msgid "AU"
@@ -5029,8 +5029,8 @@ msgid ""
 msgstr ""
 "Um controle é um :doc:`port <../routing/ports>` com um valor de controle "
 "modificável pelo utilizador que afeta um processador, tal como um "
-"suplemento. Por exemplo, um controle de ganho. Utilizado alternadamente com :"
-"term:`Parameter`."
+"suplemento. Por exemplo, um controle de ganho. Utilizado alternadamente "
+"com :term:`Parameter`."
 
 #: ../../glossary/intro.rst:53 ../../routing/ports.rst:52
 msgid "CV"
@@ -5295,11 +5295,11 @@ msgstr "Linha de comando"
 
 #: ../../invoking-from-command-line/intro.rst:14
 msgid ""
-"Zrythm comes with a few utilities below that can be used from the :term:"
-"`CLI`."
+"Zrythm comes with a few utilities below that can be used from "
+"the :term:`CLI`."
 msgstr ""
-"Zrythm vem com algumas utilidades abaixo que podem ser utilizadas do :term:"
-"`CLI`."
+"Zrythm vem com algumas utilidades abaixo que podem ser utilizadas "
+"do :term:`CLI`."
 
 #: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
@@ -5325,8 +5325,8 @@ msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
 "to get pretty-printed output, like below."
 msgstr ""
-"Imprime todas as configurações do utilizador. Pode ser combinado com :option:"
-"`--pretty` para obter uma saída bem impressa, como a seguir."
+"Imprime todas as configurações do utilizador. Pode ser combinado "
+"com :option:`--pretty` para obter uma saída bem impressa, como a seguir."
 
 #: ../../invoking-from-command-line/intro.rst:42
 #, fuzzy
@@ -5338,8 +5338,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
-"affect any files in the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`."
+"affect any files in the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`."
 msgstr ""
 "Só afeta as definições impressas com :option:`-p`. Isso *não* afetará "
 "nenhuns ficheiros no :term:`Zrythm user path`."
@@ -5381,8 +5381,8 @@ msgstr "zrythm_launch"
 #: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
-"Zrythm. All of the options for :program:`zrythm` can also be passed to :"
-"program:`zrythm_launch`."
+"Zrythm. All of the options for :program:`zrythm` can also be passed "
+"to :program:`zrythm_launch`."
 msgstr ""
 "Invólucro sobre :program:`zrythm` que define os caminhos corretos antes de "
 "lançar Zrythm. Todas as opções para :program:`zrythm` também podem ser "
@@ -5499,12 +5499,13 @@ msgstr "Grupos"
 #: ../../mixing/routing.rst:11
 #, fuzzy
 msgid ""
-":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` and :ref:"
-"`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be created for "
-"grouping signals."
+":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` "
+"and :ref:`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be "
+"created for grouping signals."
 msgstr ""
-"As faixas de áudio e de grupo MIDI (cobertas em :ref:`audio-group-track` e :"
-"ref:`midi-group-track` respetivamente) podem ser criadas para agrupar sinais."
+"As faixas de áudio e de grupo MIDI (cobertas em :ref:`audio-group-track` "
+"e :ref:`midi-group-track` respetivamente) podem ser criadas para agrupar "
+"sinais."
 
 #: ../../mixing/routing.rst:16
 msgid ""
@@ -5564,8 +5565,8 @@ msgid ""
 "sidechain ports, if the plugin has any. See :ref:`track-sends` for details."
 msgstr ""
 "Similar ao envio de sinais para pistas FX, também pode enviar sinais para as "
-"portas de suplemento sidechain, se o suplemento tiver algum. Veja :ref:"
-"`track-sends` para detalhes."
+"portas de suplemento sidechain, se o suplemento tiver algum. "
+"Veja :ref:`track-sends` para detalhes."
 
 #: ../../modulators/intro.rst:9 ../../tracks/track-types.rst:61
 msgid "Modulators"
@@ -5600,8 +5601,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Modulators and macro knobs are associated with the :ref:`Modulator Track "
-"<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
-"term:`Project`."
+"<tracks/track-types:Modulator Track>`, which contains all modulators in "
+"the :term:`Project`."
 msgstr ""
 "Os moduladores estão associados ao :doc:`../tracks/modulator-track`, que "
 "contém todos os moduladores no :term:`Project`."
@@ -5613,8 +5614,8 @@ msgstr "Adicionando Moduladores"
 #: ../../modulators/intro.rst:31
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
-"plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
-"ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
+"plugins/plugin-browser` into the Modulators tab. Modulator plugins can "
+"be :ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
 "browser:Filter Buttons>`."
 msgstr ""
 "Os suplementos moduladores podem ser arrastados do separador :doc:`../"
@@ -5682,8 +5683,8 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:18
 msgid ""
-"Clicking and dragging on the integer counterpart will change the integer (e."
-"g., from 140.24 to 141.24) and clicking and dragging on the decimal "
+"Clicking and dragging on the integer counterpart will change the integer "
+"(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
 msgstr ""
 "Clicar e arrastar sobre a contraparte inteira mudará o número inteiro (por "
@@ -5906,8 +5907,8 @@ msgstr "Gravação de Áudio & MIDI"
 #: ../../playback-and-recording/recording.rst:31
 #, fuzzy
 msgid ""
-"After arming the tracks you want to record events into, enable recording in :"
-"ref:`transport-controls` and press play. Any signals received will be "
+"After arming the tracks you want to record events into, enable recording "
+"in :ref:`transport-controls` and press play. Any signals received will be "
 "recorded inside new regions in the timeline."
 msgstr ""
 "Depois de armar as faixas em que quer gravar os eventos, ative a gravação "
@@ -6201,9 +6202,9 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:64
 msgid ""
-"The playhead position can be displayed in either BBT notation (`bars.beats."
-"sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be toggled by right-"
-"clicking on the playhead position display."
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:73
@@ -6286,8 +6287,8 @@ msgstr "Botões de Filtro"
 #: ../../plugins-files/audio-midi-files/file-browser.rst:51
 #, fuzzy
 msgid ""
-"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-browser:"
-"Plugin Browser>`, files can be filtered based on their type."
+"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-"
+"browser:Plugin Browser>`, files can be filtered based on their type."
 msgstr "Além disso, os suplementos podem ser filtrados com base no tipo deles."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:58
@@ -6649,8 +6650,8 @@ msgstr "Mostrar"
 #, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :ref:`routing/connections:"
-"Connections` for details."
+"number of connections to/from this port. See :ref:`routing/"
+"connections:Connections` for details."
 msgstr ""
 "O número na parte superior direita de cada nome de porta mostrará a "
 "quantidade atual de conexões a/de esta porta. Veja :doc:`../../routing/"
@@ -6885,17 +6886,27 @@ msgstr "Os suplementos são classificados nas seguintes categorias."
 msgid "|icon_instrument| Instrument"
 msgstr ""
 
+#: ../../<rst_prolog>:18
+#, fuzzy
+msgid "instrument"
+msgstr "Instrumento"
+
 #: ../../plugins-files/plugins/plugin-info.rst:23
 #, fuzzy
 msgid ""
-"These plugins will create an :ref:`Instrument Track <tracks/track-types:"
-"Instrument Track>` when added to the project."
+"These plugins will create an :ref:`Instrument Track <tracks/track-"
+"types:Instrument Track>` when added to the project."
 msgstr ""
 "Estes suplementos criarão uma faixa de instrumento ao adicionar ao projeto."
 
 #: ../../plugins-files/plugins/plugin-info.rst:31
 msgid "|icon_audio-insert| Effect"
 msgstr ""
+
+#: ../../<rst_prolog>:12
+#, fuzzy
+msgid "audio-insert"
+msgstr "Interface de áudio"
 
 #: ../../plugins-files/plugins/plugin-info.rst:28
 #, fuzzy
@@ -6913,6 +6924,11 @@ msgstr ""
 msgid "|icon_modulator| Modulator"
 msgstr "Moduladores de Roteamento"
 
+#: ../../<rst_prolog>:21
+#, fuzzy
+msgid "modulator"
+msgstr "Moduladores"
+
 #: ../../plugins-files/plugins/plugin-info.rst:34
 msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other "
@@ -6923,6 +6939,10 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:41
 msgid "|icon_signal-midi| MIDI Effect"
+msgstr ""
+
+#: ../../<rst_prolog>:15
+msgid "signal-midi"
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:38
@@ -6945,12 +6965,12 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:52
 #, fuzzy
 msgid ""
-"Plugins consist of controls (parameters) and a variety of audio, :term:"
-"`MIDI` and :term:`CV` :ref:`ports <ports>`."
+"Plugins consist of controls (parameters) and a variety of "
+"audio, :term:`MIDI` and :term:`CV` :ref:`ports <ports>`."
 msgstr ""
 "Os suplementos consistem em controles (parâmetros) e uma variedade de portas "
-"de áudio, :term:`MIDI` e :term:`CV`. As portas são explicadas em :ref:"
-"`ports`."
+"de áudio, :term:`MIDI` e :term:`CV`. As portas são explicadas "
+"em :ref:`ports`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:56
 msgid ""
@@ -7064,12 +7084,14 @@ msgstr "Procurando suplementos"
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports `CLAP`_, :term:`LV2`, :term:`VST2`, :"
-"term:`VST3`, :term:`LADSPA`, :term:`DSSI` and :term:`AU` plugins."
+"until it is closed. Zrythm supports "
+"`CLAP`_, :term:`LV2`, :term:`VST2`, :term:`VST3`, :term:`LADSPA`, :term:`DSSI` "
+"and :term:`AU` plugins."
 msgstr ""
 "A Zrythm procurará suplementos na inicialização e lembrará-se desses "
-"suplementos até que seja fechado. O Zrythm suporta :term:`LV2`, :term:"
-"`VST2`, :term:`VST3` e :term:`AU` plugins. LV2 é o padrão recomendado."
+"suplementos até que seja fechado. O Zrythm "
+"suporta :term:`LV2`, :term:`VST2`, :term:`VST3` e :term:`AU` plugins. LV2 é "
+"o padrão recomendado."
 
 #: ../../plugins-files/plugins/scanning.rst:15
 #, fuzzy
@@ -7083,11 +7105,11 @@ msgstr ""
 #: ../../plugins-files/plugins/scanning.rst:18
 #, fuzzy
 msgid ""
-"Plugin scanning can be disabled by setting the :envvar:"
-"`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
+"Plugin scanning can be disabled by setting "
+"the :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
 msgstr ""
-"A procura por suplementos pode ser desativada a passar :envvar:"
-"`NO_SCAN_PLUGINS` ao executar o Zrythm."
+"A procura por suplementos pode ser desativada a "
+"passar :envvar:`NO_SCAN_PLUGINS` ao executar o Zrythm."
 
 #: ../../plugins-files/plugins/scanning.rst:22
 #, fuzzy
@@ -7096,10 +7118,10 @@ msgstr "Caminhos"
 
 #: ../../plugins-files/plugins/scanning.rst:24
 msgid ""
-"Zrythm will scan for plugins in the plugin search paths specified in the :"
-"ref:`preferences <configuration/preferences:Preferences>`. If the search "
-"path is left empty, Zrythm will scan for plugins in the standard paths "
-"according to the specifications of each plugin format (if any)."
+"Zrythm will scan for plugins in the plugin search paths specified in "
+"the :ref:`preferences <configuration/preferences:Preferences>`. If the "
+"search path is left empty, Zrythm will scan for plugins in the standard "
+"paths according to the specifications of each plugin format (if any)."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:29
@@ -7140,9 +7162,9 @@ msgstr "Varredura AU"
 #: ../../plugins-files/plugins/scanning.rst:44
 #, fuzzy
 msgid ""
-"On MacOS, :term:`AU` plugins will be scanned at their standard locations at :"
-"file:`/Library/Audio/Plug-Ins/Components` for system plugins and :file:`~/"
-"Library/Audio/Plug-Ins/Components` for user plugins."
+"On MacOS, :term:`AU` plugins will be scanned at their standard locations "
+"at :file:`/Library/Audio/Plug-Ins/Components` for system plugins "
+"and :file:`~/Library/Audio/Plug-Ins/Components` for user plugins."
 msgstr ""
 "Em MacOS, suplementos de :term:`AU` serão analisados na localização padrão "
 "deles em :file:`/Library/Audio/Plug-Ins/Components`."
@@ -7433,8 +7455,8 @@ msgstr "Selecionar Automação"
 
 #: ../../routing/connections.rst:50
 msgid ""
-"Signal from tracks can be routed to plugins that have sidechain inputs via :"
-"ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
+"Signal from tracks can be routed to plugins that have sidechain inputs "
+"via :ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
 msgstr ""
 
 #: ../../routing/connections.rst:59
@@ -7454,8 +7476,8 @@ msgid ""
 "Connections can be managed in the Connections tab in the :ref:`main manel "
 "<zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
-"Os mapeamentos de aparelhos (vinculações) são encontrados no separador :"
-"guilabel:`Bindings` no painel principal."
+"Os mapeamentos de aparelhos (vinculações) são encontrados no "
+"separador :guilabel:`Bindings` no painel principal."
 
 #: ../../routing/connections.rst:73
 #, fuzzy
@@ -7792,226 +7814,6 @@ msgid ""
 "automatically by Zrythm internally."
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:6
-msgid "Creates an audio send connection as an undoable action."
-msgstr ""
-
-#: ../../scripting/api/actions port_connection_action.rst:6
-msgid "Connects 2 ports as an undoable action."
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:6
-msgid "Undoes the last action."
-msgstr "Silencia a faixa."
-
-#: ../../scripting/api/actions undo_manager.rst:10
-#, fuzzy
-msgid "Redoes the last undone action."
-msgstr "Silencia a faixa."
-
-#: ../../scripting/api/audio channel.rst:6
-msgid "Returns the plugin at the given insert slot"
-msgstr "Retorna o suplemento no compartimento de inserção fornecido"
-
-#: ../../scripting/api/audio channel.rst:10
-msgid "Returns the instrument at the given channel"
-msgstr "Retorna o instrumento no canal fornecido"
-
-#: ../../scripting/api/audio channel.rst:14
-msgid "Returns the send instance at the given slot"
-msgstr "Retorna a instância de envio no compartimento fornecido"
-
-#: ../../scripting/api/audio midi_note.rst:6
-msgid "Returns a new midi note."
-msgstr "Retorna uma nova nota midi."
-
-#: ../../scripting/api/audio midi_region.rst:6
-#, fuzzy
-msgid "Returns a new midi region."
-msgstr "Retorna uma nova nota midi."
-
-#: ../../scripting/api/audio midi_region.rst:10
-msgid "Adds a midi note to ``region``."
-msgstr ""
-
-#: ../../scripting/api/audio port.rst:6
-msgid "Returns the left or right port of the stereo pair."
-msgstr "Retorna a porta esquerda ou direita do par estéreo."
-
-#: ../../scripting/api/audio port.rst:10
-#, fuzzy
-msgid "Returns the identifier of ``port``."
-msgstr "Retorna o identificador da porta."
-
-#: ../../scripting/api/audio position.rst:6
-#, fuzzy
-msgid ""
-"Return a newly-created position as ``bars``.\\ ``beats``.\\ ``sixteenths``."
-"\\ ``ticks``.\\ ``sub_tick``."
-msgstr ""
-"Retorna a posição recém-criada como barras.batidas.decimos-sextos.ticks."
-"sub_tick."
-
-#: ../../scripting/api/audio position.rst:11
-msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
-msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
-
-#: ../../scripting/api/audio supported_file.rst:6
-msgid "Returns an instance of SupportedFile."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:6
-#, fuzzy
-msgid ""
-"Returns a new track with name ``name`` to be placed at position ``idx`` in "
-"the tracklist."
-msgstr ""
-"Retorna uma nova faixa com nome a ser localizada na posição idx na lista de "
-"faixas."
-
-#: ../../scripting/api/audio track.rst:11
-#, fuzzy
-msgid "Returns the name of ``track``."
-msgstr "Retorna o nome da faixa."
-
-#: ../../scripting/api/audio track.rst:15
-#, fuzzy
-msgid "Returns the processor of ``track``."
-msgstr "Retorna o processador da faixa."
-
-#: ../../scripting/api/audio track.rst:19
-#, fuzzy
-msgid "Returns the channel of ``track``."
-msgstr "Retorna o canal da faixa."
-
-#: ../../scripting/api/audio track.rst:23
-#, fuzzy
-msgid ""
-"Sets whether ``track`` is soloed or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
-"desfeita e executa-a."
-
-#: ../../scripting/api/audio track.rst:28
-#, fuzzy
-msgid ""
-"Sets whether ``track`` is muted or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
-"desfeita e executa-a."
-
-#: ../../scripting/api/audio track.rst:33
-#, fuzzy
-msgid ""
-"Adds ``region`` to track ``track``. To be used for regions with lanes (midi/"
-"audio)"
-msgstr ""
-"Adiciona região para rastrear faixa. Para ser usado para regiões com pistas "
-"(midi/áudio)"
-
-#: ../../scripting/api/audio track_processor.rst:6
-#, fuzzy
-msgid "Returns the stereo in ports instance of the track processor."
-msgstr "Retorna a instância de envio no compartimento fornecido."
-
-#: ../../scripting/api/audio tracklist.rst:6
-#, fuzzy
-msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
-msgstr "Insere faixa no índice idx na lista de faixas."
-
-#: ../../scripting/api/audio tracklist.rst:10
-msgid "Returns the track at ``pos`` in the tracklist."
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:14
-#, fuzzy
-msgid "Returns the number of tracks in the tracklist."
-msgstr "Retorna o nome da faixa."
-
-#: ../../scripting/api/intro.rst:6
-msgid "API"
-msgstr "API"
-
-#: ../../scripting/api/plugins plugin.rst:6
-msgid "Returns the input port of the plugin at the given index."
-msgstr "Retorna a porta de entrada do suplemento no índice dado."
-
-#: ../../scripting/api/plugins plugin.rst:10
-msgid "Returns the output port of the plugin at the given index."
-msgstr "Retorna a porta de saída do suplemento no índice dado."
-
-#: ../../scripting/api/plugins plugin_manager.rst:6
-#, fuzzy
-msgid "Returns the PluginDescriptor matching the given URI."
-msgstr "Retorna o suplemento no compartimento de inserção fornecido"
-
-#: ../../scripting/api/plugins plugin_manager.rst:10
-msgid "Scans the system for plugins."
-msgstr ""
-
-#: ../../scripting/api/project.rst:6
-msgid "Return the project’s title."
-msgstr "Retorna o processador da faixa."
-
-#: ../../scripting/api/project.rst:10
-#, fuzzy
-msgid "Returns the tracklist for the project."
-msgstr "Insere faixa no índice idx na lista de faixas."
-
-#: ../../scripting/api/project.rst:14
-msgid "Returns the undo manager for the project."
-msgstr ""
-
-#: ../../scripting/api/zrythm.rst:6
-msgid "Return the Zrythm version as a string."
-msgstr "Retornar a versão do Zrythm como uma cadeia."
-
-#: ../../scripting/api/zrythm.rst:10
-msgid "Return the PluginManager instance."
-msgstr "Retornar a instância do PluginManager."
-
-#: ../../scripting/api/zrythm.rst:14
-msgid "Return the currently loaded Project instance."
-msgstr "Retornar a instância do PluginManager."
-
-#: ../../scripting/api/zrythm.rst:18
-msgid "Returns a NULL pointer."
-msgstr "Retorna um ponteiro NULL."
-
-#: ../../scripting/api/zrythm.rst:22
-msgid "Writes the message to the log."
-msgstr ""
-
-#: ../../scripting/examples.rst:7
-msgid "Examples"
-msgstr "Exemplos"
-
-#: ../../scripting/examples.rst:9
-msgid ""
-"The following examples are in the public domain (`CC 0 <https://"
-"creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and modify "
-"them."
-msgstr ""
-"Os exemplos seguintes são de domínio público (`CC 0 <https://creativecommons."
-"org/publicdomain/zero/1.0/>`_). Sinta-se à vontade a copiá-los e modificá-"
-"los."
-
-#: ../../scripting/examples.rst:14
-msgid "Create MIDI track with notes"
-msgstr "Criar faixa de MIDI com notas"
-
-#: ../../scripting/examples.rst:47
-#, fuzzy
-msgid "Hello world"
-msgstr "Olá mundo"
-
-#: ../../scripting/examples.rst:56
-#, fuzzy
-msgid "Print all tracks"
-msgstr "Imprimir nomes de faixas"
-
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
 msgstr "Scripting"
@@ -8056,22 +7858,21 @@ msgstr ""
 
 #: ../../scripting/overview.rst:34
 msgid ""
-"The Guile API is not available on Windows. See `this ticket <https://github."
-"com/msys2/MINGW-packages/issues/3298>`_ for details."
+"The Guile API is not available on Windows. See `this ticket <https://"
+"github.com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
 
 #: ../../scripting/overview.rst:38
 #, fuzzy
 msgid ""
-"The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
-"all available procedures in the API. Each section in the API corresponds to "
-"a specific Guile module."
+"The ``API section`` is a comprehensive list of all available procedures in "
+"the API. Each section in the API corresponds to a specific Guile module."
 msgstr ""
 "A próxima secção é uma lista abrangente de todos os procedimentos "
 "disponíveis na API. Cada secção na API corresponde a um módulo Guile "
-"específico, assim, por exemplo, para utilizar os procedimentos na secção:"
-"scheme:`audio position`, seria feito :scheme:`(use-modules (audio track))` "
-"no topo do script."
+"específico, assim, por exemplo, para utilizar os procedimentos na "
+"secção:scheme:`audio position`, seria feito :scheme:`(use-modules (audio "
+"track))` no topo do script."
 
 #: ../../scripting/overview.rst:44
 #, fuzzy
@@ -8088,50 +7889,6 @@ msgstr ""
 msgid "To use it from ECMAScript, use:"
 msgstr ""
 
-#: ../../scripting/scripting-interface.rst:7
-msgid "Scripting Interface"
-msgstr "Interface de script"
-
-#: ../../scripting/scripting-interface.rst:9
-msgid ""
-"Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
-"Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
-"scripting interface dialog."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:17
-#, fuzzy
-msgid "Scripting interface"
-msgstr "Interface de script"
-
-#: ../../scripting/scripting-interface.rst:19
-msgid ""
-"Scripts can be edited in the editor found in the top part of the scrpiting "
-"interface."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:23
-#, fuzzy
-msgid "Execution"
-msgstr "Seleções"
-
-#: ../../scripting/scripting-interface.rst:25
-msgid ""
-"Pressing :guilabel:`Execute` will execute the script and print any output in "
-"the label at the bottom."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:30
-#, fuzzy
-msgid "Changing Language"
-msgstr "Alterar Valores"
-
-#: ../../scripting/scripting-interface.rst:32
-msgid ""
-"The language of the script can be selected using the provided dropdown. "
-"Changing the language will also affect code highlighting."
-msgstr ""
-
 #: ../../theming/intro.rst:7 ../../theming/overview.rst:7
 msgid "Theming"
 msgstr "Temas"
@@ -8145,8 +7902,8 @@ msgstr ""
 #: ../../theming/overview.rst:14
 #, fuzzy
 msgid ""
-"You can override many defaults that Zrythm uses by placing things in your :"
-"ref:`user path <configuration/preferences:Zrythm User Path>`."
+"You can override many defaults that Zrythm uses by placing things in "
+"your :ref:`user path <configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "Só afeta as definições impressas com :option:`-p`. Isso *não* afetará "
 "nenhuns ficheiros no :term:`Zrythm user path`."
@@ -8190,10 +7947,10 @@ msgid ""
 "is :file:`/home/me/zrythm`, you should create a file at :file:`/home/me/"
 "zrythm/themes/theme.css`."
 msgstr ""
-"Deve criar um ficheiro chamado :file:`theme.css` sob o diretório :file:"
-"`themes` no seu diretório Zrythm. Por exemplo, se o seu diretório Zrythm é :"
-"file:`/home/me/zrythm`, deve criar um ficheiro em :file:`/home/me/zrythm/"
-"themes/theme.css`."
+"Deve criar um ficheiro chamado :file:`theme.css` sob o "
+"diretório :file:`themes` no seu diretório Zrythm. Por exemplo, se o seu "
+"diretório Zrythm é :file:`/home/me/zrythm`, deve criar um ficheiro "
+"em :file:`/home/me/zrythm/themes/theme.css`."
 
 #: ../../theming/overview.rst:41
 msgid "This is highly experimental and many things are subject to change."
@@ -8345,14 +8102,14 @@ msgstr ""
 
 #: ../../tracks/automation.rst:39
 msgid ""
-"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
-"`Off` toggles in the track lane."
+"Automation can be enabled or disabled using the :guilabel:`On` "
+"and :guilabel:`Off` toggles in the track lane."
 msgstr ""
 
 #: ../../tracks/automation.rst:42
 msgid ""
-"Touch/latch modes can also be used to record automation live (see the :ref:"
-"`playback-and-recording/recording:Recording Automation` section)."
+"Touch/latch modes can also be used to record automation live (see "
+"the :ref:`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 
 #: ../../tracks/automation.rst:48
@@ -8367,8 +8124,8 @@ msgid ""
 "editor:Automation Editor>`."
 msgstr ""
 "A edição de automação consiste em criar regiões de automação e depois criar "
-"eventos de automação dentro do editor de automação. Veja o capítulo :ref:"
-"`editing` para detalhes."
+"eventos de automação dentro do editor de automação. Veja o "
+"capítulo :ref:`editing` para detalhes."
 
 #: ../../tracks/automation.rst:54
 #, fuzzy
@@ -8441,11 +8198,11 @@ msgstr "Faixa MIDI"
 #: ../../tracks/creating-tracks.rst:24
 #, fuzzy
 msgid ""
-":ref:`Instantiating a plugin <plugins-files/plugins/plugin-browser:"
-"Instantiating Plugins>` will cause new tracks to be created (unless the "
-"plugin was dropped in a particular location). If the plugin is an instrument "
-"plugin, an instrument track will be created. If the plugin is an effect, a "
-"bus track will be created."
+":ref:`Instantiating a plugin <plugins-files/plugins/plugin-"
+"browser:Instantiating Plugins>` will cause new tracks to be created (unless "
+"the plugin was dropped in a particular location). If the plugin is an "
+"instrument plugin, an instrument track will be created. If the plugin is an "
+"effect, a bus track will be created."
 msgstr ""
 "Os suplementos podem ser clicados e arrastados do Navegador de suplementos e "
 "soltos em espaços vazios na Lista de Faixas ou Misturador para instanciá-"
@@ -8689,8 +8446,8 @@ msgstr "Secção de faders para controlar o volume e o equilíbrio estéreo."
 #: ../../tracks/inspector-page.rst:134
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
-"respective widgets. You can reset them to their default positions with :"
-"menuselection:`Right click --> Reset`."
+"respective widgets. You can reset them to their default positions "
+"with :menuselection:`Right click --> Reset`."
 msgstr ""
 "Para alterar o valor do fader ou do balanço estéreo, clique e arraste os "
 "respetivos widgets deles. Pode redefini-los às posições predefinidas deles "
@@ -8735,12 +8492,12 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:154
 #, fuzzy
 msgid ""
-"The track will still be processed, so if you are looking to decrease :term:"
-"`DSP` usage, try :ref:`disabling the track <tracks/track-operations:Channel "
-"Section>` (or individual plugins) instead."
+"The track will still be processed, so if you are looking to "
+"decrease :term:`DSP` usage, try :ref:`disabling the track <tracks/track-"
+"operations:Channel Section>` (or individual plugins) instead."
 msgstr ""
-"A faixa ainda será processada, portanto, se quiser diminuir o uso de :term:"
-"`DSP`, tente desativar os suplementos no seu lugar."
+"A faixa ainda será processada, portanto, se quiser diminuir o uso "
+"de :term:`DSP`, tente desativar os suplementos no seu lugar."
 
 #: ../../tracks/inspector-page.rst:159
 msgid "Solo"
@@ -8834,11 +8591,11 @@ msgstr "Interface de Faixa"
 #: ../../tracks/overview.rst:21
 #, fuzzy
 msgid ""
-"Most types of tracks have a corresponding channel that appears in the :ref:"
-"`Mixer <mixer>`. See :ref:`channels` for more info."
+"Most types of tracks have a corresponding channel that appears in "
+"the :ref:`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
-"A maioria dos tipos de faixas tem um canal correspondente que aparece no :"
-"ref:`mixer`. Veja :ref:`channels` para mais informações."
+"A maioria dos tipos de faixas tem um canal correspondente que aparece "
+"no :ref:`mixer`. Veja :ref:`channels` para mais informações."
 
 #: ../../tracks/overview.rst:28
 #, fuzzy
@@ -8990,8 +8747,8 @@ msgstr "Fazer Seleções"
 #: ../../tracks/track-operations.rst:14
 msgid ""
 "Tracks are selected by clicking on them, either in the tracklist or in the "
-"mixer. Multiple tracks can be selected by pressing and holding :kbd:"
-"`Control` while clicking them."
+"mixer. Multiple tracks can be selected by pressing and "
+"holding :kbd:`Control` while clicking them."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:17
@@ -9053,8 +8810,8 @@ msgstr ""
 #: ../../tracks/track-operations.rst:48
 msgid ""
 "The track name can be changed by double-clicking on it in the track view, in "
-"the track inspector, or in the channel. It can also be changed via the :"
-"guilabel:`Rename` context menu option."
+"the track inspector, or in the channel. It can also be changed via "
+"the :guilabel:`Rename` context menu option."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:60
@@ -9453,8 +9210,8 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:151
 msgid ""
-"For editing chords inside chord regions, see :ref:`editing/chord-editor:"
-"Chord Editor`."
+"For editing chords inside chord regions, see :ref:`editing/chord-"
+"editor:Chord Editor`."
 msgstr ""
 
 #: ../../tracks/track-types.rst:155
@@ -10028,8 +9785,8 @@ msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
 msgstr ""
-"Exportar o gráfico de roteamento como uma imagem ou gráfico .dot. Veja :ref:"
-"`export-routing-graph` para mais detalhes."
+"Exportar o gráfico de roteamento como uma imagem ou gráfico .dot. "
+"Veja :ref:`export-routing-graph` para mais detalhes."
 
 #: ../../zrythm-interface/main-toolbar.rst:55
 msgid "View"
@@ -10285,6 +10042,152 @@ msgid ""
 "clipping."
 msgstr ""
 
+#~ msgid "Undoes the last action."
+#~ msgstr "Silencia a faixa."
+
+#~ msgid "Redoes the last undone action."
+#~ msgstr "Silencia a faixa."
+
+#~ msgid "Returns the plugin at the given insert slot"
+#~ msgstr "Retorna o suplemento no compartimento de inserção fornecido"
+
+#~ msgid "Returns the instrument at the given channel"
+#~ msgstr "Retorna o instrumento no canal fornecido"
+
+#~ msgid "Returns the send instance at the given slot"
+#~ msgstr "Retorna a instância de envio no compartimento fornecido"
+
+#~ msgid "Returns a new midi note."
+#~ msgstr "Retorna uma nova nota midi."
+
+#~ msgid "Returns a new midi region."
+#~ msgstr "Retorna uma nova nota midi."
+
+#~ msgid "Returns the left or right port of the stereo pair."
+#~ msgstr "Retorna a porta esquerda ou direita do par estéreo."
+
+#~ msgid "Returns the identifier of ``port``."
+#~ msgstr "Retorna o identificador da porta."
+
+#~ msgid ""
+#~ "Return a newly-created position as ``bars``.\\ ``beats``.\\ "
+#~ "``sixteenths``.\\ ``ticks``.\\ ``sub_tick``."
+#~ msgstr ""
+#~ "Retorna a posição recém-criada como barras.batidas.decimos-"
+#~ "sextos.ticks.sub_tick."
+
+#~ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
+#~ msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
+#~ msgid ""
+#~ "Returns a new track with name ``name`` to be placed at position ``idx`` "
+#~ "in the tracklist."
+#~ msgstr ""
+#~ "Retorna uma nova faixa com nome a ser localizada na posição idx na lista "
+#~ "de faixas."
+
+#~ msgid "Returns the name of ``track``."
+#~ msgstr "Retorna o nome da faixa."
+
+#~ msgid "Returns the processor of ``track``."
+#~ msgstr "Retorna o processador da faixa."
+
+#~ msgid "Returns the channel of ``track``."
+#~ msgstr "Retorna o canal da faixa."
+
+#~ msgid ""
+#~ "Sets whether ``track`` is soloed or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
+#~ "desfeita e executa-a."
+
+#~ msgid ""
+#~ "Sets whether ``track`` is muted or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
+#~ "desfeita e executa-a."
+
+#~ msgid ""
+#~ "Adds ``region`` to track ``track``. To be used for regions with lanes "
+#~ "(midi/audio)"
+#~ msgstr ""
+#~ "Adiciona região para rastrear faixa. Para ser usado para regiões com "
+#~ "pistas (midi/áudio)"
+
+#~ msgid "Returns the stereo in ports instance of the track processor."
+#~ msgstr "Retorna a instância de envio no compartimento fornecido."
+
+#~ msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
+#~ msgstr "Insere faixa no índice idx na lista de faixas."
+
+#~ msgid "Returns the number of tracks in the tracklist."
+#~ msgstr "Retorna o nome da faixa."
+
+#~ msgid "API"
+#~ msgstr "API"
+
+#~ msgid "Returns the input port of the plugin at the given index."
+#~ msgstr "Retorna a porta de entrada do suplemento no índice dado."
+
+#~ msgid "Returns the output port of the plugin at the given index."
+#~ msgstr "Retorna a porta de saída do suplemento no índice dado."
+
+#~ msgid "Returns the PluginDescriptor matching the given URI."
+#~ msgstr "Retorna o suplemento no compartimento de inserção fornecido"
+
+#~ msgid "Return the project’s title."
+#~ msgstr "Retorna o processador da faixa."
+
+#~ msgid "Returns the tracklist for the project."
+#~ msgstr "Insere faixa no índice idx na lista de faixas."
+
+#~ msgid "Return the Zrythm version as a string."
+#~ msgstr "Retornar a versão do Zrythm como uma cadeia."
+
+#~ msgid "Return the PluginManager instance."
+#~ msgstr "Retornar a instância do PluginManager."
+
+#~ msgid "Return the currently loaded Project instance."
+#~ msgstr "Retornar a instância do PluginManager."
+
+#~ msgid "Returns a NULL pointer."
+#~ msgstr "Retorna um ponteiro NULL."
+
+#~ msgid "Examples"
+#~ msgstr "Exemplos"
+
+#~ msgid ""
+#~ "The following examples are in the public domain (`CC 0 <https://"
+#~ "creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and "
+#~ "modify them."
+#~ msgstr ""
+#~ "Os exemplos seguintes são de domínio público (`CC 0 <https://"
+#~ "creativecommons.org/publicdomain/zero/1.0/>`_). Sinta-se à vontade a "
+#~ "copiá-los e modificá-los."
+
+#~ msgid "Create MIDI track with notes"
+#~ msgstr "Criar faixa de MIDI com notas"
+
+#~ msgid "Hello world"
+#~ msgstr "Olá mundo"
+
+#~ msgid "Print all tracks"
+#~ msgstr "Imprimir nomes de faixas"
+
+#~ msgid "Scripting Interface"
+#~ msgstr "Interface de script"
+
+#~ msgid "Scripting interface"
+#~ msgstr "Interface de script"
+
+#~ msgid "Execution"
+#~ msgstr "Seleções"
+
+#~ msgid "Changing Language"
+#~ msgstr "Alterar Valores"
+
 #~ msgid "Menu Actions"
 #~ msgstr "Menu Ações"
 
@@ -10326,8 +10229,9 @@ msgstr ""
 #~ msgstr ""
 #~ "A Zrythm pretende permitir um amplo apoio a temas. Pode substituir muitas "
 #~ "predefinições que a Zrythm usa por coisas no seu diretório de "
-#~ "utilizadores Zrythm. Este diretório pode ser encontrado em :ref:"
-#~ "`preferences` e será referido como `o diretório Zrythm` neste capítulo."
+#~ "utilizadores Zrythm. Este diretório pode ser encontrado "
+#~ "em :ref:`preferences` e será referido como `o diretório Zrythm` neste "
+#~ "capítulo."
 
 #~ msgid "User Media"
 #~ msgstr "Mídia do utilizador"
@@ -10367,9 +10271,9 @@ msgstr ""
 #~ "tools` and :ref:`common-operations`, with the added feature that curves "
 #~ "can be dragged up or down to change their `curviness`."
 #~ msgstr ""
-#~ "A edição no arranjo de automação geralmente segue :ref:`edit-tools' e :"
-#~ "ref:`common-operations', com o recurso adicionado que as curvas podem ser "
-#~ "arrastadas para cima ou para baixo para alterar a `curvidade`."
+#~ "A edição no arranjo de automação geralmente segue :ref:`edit-tools' "
+#~ "e :ref:`common-operations', com o recurso adicionado que as curvas podem "
+#~ "ser arrastadas para cima ou para baixo para alterar a `curvidade`."
 
 #~ msgid "Chord Arranger"
 #~ msgstr "Arranjador de acordes"
@@ -10401,8 +10305,8 @@ msgstr ""
 #~ msgstr "Editores"
 
 #~ msgid ""
-#~ "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
-#~ "`common-operations`."
+#~ "Editing inside the MIDI arranger is covered in :ref:`edit-tools` "
+#~ "and :ref:`common-operations`."
 #~ msgstr ""
 #~ "A edição no arranjador MIDI é coberta em :ref:`edit-tools' e :ref:`common-"
 #~ "operations'."
@@ -10622,8 +10526,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "Zrythm can import MIDI and audio files into the project. The files can be "
-#~ "imported by dragging and dropping from your computer or from the :doc:"
-#~ "`file browser <file-browser>` into a track."
+#~ "imported by dragging and dropping from your computer or from "
+#~ "the :doc:`file browser <file-browser>` into a track."
 #~ msgstr ""
 #~ "O Zrythm pode importar ficheiros de MIDI e de áudio para o projeto. Os "
 #~ "ficheiros podem ser importados arrastando e soltando do seu computador ou "
@@ -10689,8 +10593,8 @@ msgstr ""
 #~ msgstr "Média quadrática do valor do sinal."
 
 #~ msgid ""
-#~ "The controls available for controlling the signal flow are covered in :"
-#~ "ref:`tracks/track-controls:Signal Flow`."
+#~ "The controls available for controlling the signal flow are covered "
+#~ "in :ref:`tracks/track-controls:Signal Flow`."
 #~ msgstr ""
 #~ "Os controles seguintes estão disponíveis para controlar o fluxo do sinal."
 
@@ -10721,8 +10625,8 @@ msgstr ""
 #~ msgstr "Mostrar Automação"
 
 #~ msgid ""
-#~ "Toggle the visibility of :ref:`automation tracks <tracks/automation:"
-#~ "Automation Tracks>`."
+#~ "Toggle the visibility of :ref:`automation tracks <tracks/"
+#~ "automation:Automation Tracks>`."
 #~ msgstr "Alterna a visibilidade das pistas de automação."
 
 #~ msgid "Show UI"
@@ -10747,8 +10651,8 @@ msgstr ""
 #~ msgstr "Apagar Faixas"
 
 #~ msgid ""
-#~ "Tracks can be deleted by right-clicking them and selecting :guilabel:"
-#~ "`Delete`."
+#~ "Tracks can be deleted by right-clicking them and "
+#~ "selecting :guilabel:`Delete`."
 #~ msgstr ""
 #~ "As faixas podem ser apagadas clicando com o botão direito do rato neles e "
 #~ "selecionando: zbutton: \"Apagar\"."
@@ -10782,8 +10686,8 @@ msgstr ""
 #~ msgstr "Flatpak"
 
 #~ msgid ""
-#~ "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/wayland."
-#~ "html>`_"
+#~ "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/"
+#~ "wayland.html>`_"
 #~ msgstr ""
 #~ "`Visão geral do CSS do GTK+ <https://developer.gnome.org/gtk3/stable/chap-"
 #~ "css-overview.html>`_"
@@ -10795,8 +10699,8 @@ msgstr ""
 #~ msgstr "Este é o :term:`Zrythm user path`."
 
 #~ msgid ""
-#~ "A proprietary plugin standard, mainly used on MacOS. We recommend using :"
-#~ "term:`LV2` instead."
+#~ "A proprietary plugin standard, mainly used on MacOS. We recommend "
+#~ "using :term:`LV2` instead."
 #~ msgstr ""
 #~ "Uma norma de suplementos proprietário, utilizado principalmente no MacOS. "
 #~ "Recomendamos a utilização do :term:`LV2` no seu lugar."
@@ -10839,9 +10743,9 @@ msgstr ""
 #~ "After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
 #~ "directory to save the project in and a title for the project."
 #~ msgstr ""
-#~ "Assim que um modelo (ou em branco) for selecionado e clicar em :guilabel:"
-#~ "`Apply`, o Zrythm irá pedi-lo por um diretório pai para gravar o projeto "
-#~ "e dar um título ao projeto."
+#~ "Assim que um modelo (ou em branco) for selecionado e clicar "
+#~ "em :guilabel:`Apply`, o Zrythm irá pedi-lo por um diretório pai para "
+#~ "gravar o projeto e dar um título ao projeto."
 
 #~ msgid ""
 #~ "Once you click :guilabel:`OK`, the new project will be set up and you "
@@ -10989,11 +10893,12 @@ msgstr ""
 #~ msgstr "Atalhos do Editor"
 
 #~ msgid ""
-#~ "Shortcuts can be overridden by placing a file named :file:`shortcuts."
-#~ "yaml` under the :term:`Zrythm user path`."
+#~ "Shortcuts can be overridden by placing a file "
+#~ "named :file:`shortcuts.yaml` under the :term:`Zrythm user path`."
 #~ msgstr ""
-#~ "Os atalhos podem ser substituídos a pôr um ficheiro chamado :file:"
-#~ "`shortcuts.yaml` no termo :term:`caminho de utilizador do Zrythm`."
+#~ "Os atalhos podem ser substituídos a pôr um ficheiro "
+#~ "chamado :file:`shortcuts.yaml` no termo :term:`caminho de utilizador do "
+#~ "Zrythm`."
 
 #~ msgid "An example is given below."
 #~ msgstr "Um exemplo é dado abaixo."
@@ -11035,8 +10940,8 @@ msgstr ""
 
 #~ msgid "You can bypass this behavior by passing :envvar:`LV2_PATH`."
 #~ msgstr ""
-#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
-#~ "`VST3_PATH`."
+#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` "
+#~ "e :envvar:`VST3_PATH`."
 
 #~ msgid "VST2/VST3 Scan"
 #~ msgstr "Varredura de VST2/VST3"
@@ -11063,18 +10968,18 @@ msgstr ""
 #~ msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
 
 #~ msgid ""
-#~ "You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
-#~ "`VST3_PATH`, respectively."
+#~ "You can bypass this behavior by passing :envvar:`VST_PATH` "
+#~ "and :envvar:`VST3_PATH`, respectively."
 #~ msgstr ""
-#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
-#~ "`VST3_PATH`."
+#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` "
+#~ "e :envvar:`VST3_PATH`."
 
 #~ msgid ""
-#~ "Zrythm will scan for VST plugins in the paths specified in the :ref:"
-#~ "`preferences <configuration/preferences:Preferences>`."
+#~ "Zrythm will scan for VST plugins in the paths specified in "
+#~ "the :ref:`preferences <configuration/preferences:Preferences>`."
 #~ msgstr ""
-#~ "Zrythm irá procurar por suplementos VST nos caminhos especificados em :"
-#~ "ref:`vst-paths`."
+#~ "Zrythm irá procurar por suplementos VST nos caminhos especificados "
+#~ "em :ref:`vst-paths`."
 
 #~ msgid ""
 #~ "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
@@ -11084,12 +10989,6 @@ msgstr ""
 #~ "Zrythm irá procurar por suplementos VST nos caminhos especificados em "
 #~ "`VST plug-in locais no Mac OS X e macOS <https://helpcenter.steinberg.de/"
 #~ "hc/en-us/articles/115000171310>`_."
-
-#~ msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
-#~ msgstr ":file:`/Library/Audio/Plug-Ins/VST` para VST2"
-
-#~ msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
-#~ msgstr ":file:`/Library/Audio/Plug-Ins/VST3` para VST3"
 
 #~ msgid "Zrythm will scan for DSSI plugins in the following paths,"
 #~ msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
@@ -11101,8 +11000,8 @@ msgstr ""
 
 #~ msgid "You can bypass this behavior by passing :envvar:`DSSI_PATH`."
 #~ msgstr ""
-#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
-#~ "`VST3_PATH`."
+#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` "
+#~ "e :envvar:`VST3_PATH`."
 
 #~ msgid "Zrythm will scan for LADSPA plugins in the following paths,"
 #~ msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
@@ -11114,8 +11013,8 @@ msgstr ""
 
 #~ msgid "You can bypass this behavior by passing :envvar:`LADSPA_PATH`."
 #~ msgstr ""
-#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
-#~ "`VST3_PATH`."
+#~ "Pode ignorar este comportamento a passar :envvar:`VST_PATH` "
+#~ "e :envvar:`VST3_PATH`."
 
 #~ msgid ""
 #~ "The Zrythm theme inherits from the `Matcha GTK theme <https://github.com/"
@@ -11163,12 +11062,12 @@ msgstr ""
 #~ "escolhidos em conjunto."
 
 #~ msgid ""
-#~ "All of the settings mentioned here are also available in the :ref:"
-#~ "`preferences`, so don't worry if you selected the wrong settings."
+#~ "All of the settings mentioned here are also available in "
+#~ "the :ref:`preferences`, so don't worry if you selected the wrong settings."
 #~ msgstr ""
-#~ "Todas as configurações mencionadas aqui também estão disponíveis em :ref:"
-#~ "`preferences`, portanto não se preocupe se selecionou as configurações "
-#~ "erradas."
+#~ "Todas as configurações mencionadas aqui também estão disponíveis "
+#~ "em :ref:`preferences`, portanto não se preocupe se selecionou as "
+#~ "configurações erradas."
 
 #~ msgid ""
 #~ "Click on the :guilabel:`View Source` button at the top of the page to "
@@ -11279,8 +11178,8 @@ msgstr ""
 #~ "ruler`."
 #~ msgstr ""
 #~ "Atualmente só é utilizado para visualizar áudio e não tem outra "
-#~ "funcionalidade, além de alterar os pontos na régua, como abordado em :ref:"
-#~ "`editor-ruler`."
+#~ "funcionalidade, além de alterar os pontos na régua, como abordado "
+#~ "em :ref:`editor-ruler`."
 
 #~ msgid ""
 #~ "It is very similar to the piano roll, with the exception that the "
@@ -11293,12 +11192,12 @@ msgstr ""
 #~ "Its ruler behaves similarly to the editor ruler explained in :ref:`editor-"
 #~ "ruler`."
 #~ msgstr ""
-#~ "A régua comporta-se de forma semelhante à régua do editor explicada em :"
-#~ "ref:`editor-régua'."
+#~ "A régua comporta-se de forma semelhante à régua do editor explicada "
+#~ "em :ref:`editor-régua'."
 
 #~ msgid ""
-#~ "These chords act similarly to the piano roll keys explained in :ref:"
-#~ "`piano-roll-keys`."
+#~ "These chords act similarly to the piano roll keys explained "
+#~ "in :ref:`piano-roll-keys`."
 #~ msgstr ""
 #~ "Estes acordes agem de forma semelhante às teclas de cilindros de piano "
 #~ "explicadas em :ref:`piano-roll-keys'."
@@ -11308,15 +11207,15 @@ msgstr ""
 
 #~ msgid ""
 #~ "It consists of the toolbar discussed in :ref:`editor-toolbar` at the very "
-#~ "top, a smaller space containing extra controls, the ruler discussed in :"
-#~ "ref:`editor-ruler`, the piano roll keys on the left, the piano roll "
+#~ "top, a smaller space containing extra controls, the ruler discussed "
+#~ "in :ref:`editor-ruler`, the piano roll keys on the left, the piano roll "
 #~ "(MIDI) arranger on the right and the velocity editor at the bottom."
 #~ msgstr ""
 #~ "Consiste na barra de ferramentas discutida em :ref:`editor-toolbar` no "
-#~ "topo, um espaço menor contem controles extras, a régua discutida em :ref:"
-#~ "`editor-régua`, as teclas de rolo de piano à esquerda, o arranjador de "
-#~ "cilindros de piano (MIDI) à direita e o editor de velocidade na parte "
-#~ "inferior."
+#~ "topo, um espaço menor contem controles extras, a régua discutida "
+#~ "em :ref:`editor-régua`, as teclas de rolo de piano à esquerda, o "
+#~ "arranjador de cilindros de piano (MIDI) à direita e o editor de "
+#~ "velocidade na parte inferior."
 
 #~ msgid "Explain/show how the 2 sections above look in drum mode."
 #~ msgstr "Explique/mostrar como as 2 secções ficam acima em modo de bateria."
@@ -11489,9 +11388,10 @@ msgstr ""
 #~ "na pista 2."
 
 #~ msgid ""
-#~ "Audio and MIDI FX tracks (covered in :ref:`audio-bus-track` and :ref:"
-#~ "`midi-bus-track` respectively) can be created for sending additional "
-#~ "signals to them, in addition to the channel's main direct output."
+#~ "Audio and MIDI FX tracks (covered in :ref:`audio-bus-track` "
+#~ "and :ref:`midi-bus-track` respectively) can be created for sending "
+#~ "additional signals to them, in addition to the channel's main direct "
+#~ "output."
 #~ msgstr ""
 #~ "Faixas áudio e MIDI FX (coberto em :ref:`audio-bus-track` e :ref:`midi-"
 #~ "bus-track`, respetivamente) podem ser criados para o envio de um sinal "
@@ -11680,18 +11580,18 @@ msgstr ""
 #~ "cúspide na faixa MIDI."
 
 #~ msgid ""
-#~ "More information about automation tracks can be found in the :ref:"
-#~ "`automation` chapter."
+#~ "More information about automation tracks can be found in "
+#~ "the :ref:`automation` chapter."
 #~ msgstr ""
-#~ "Mais informações sobre as pistas de automação encontram-se no capítulo :"
-#~ "ref:`automation`."
+#~ "Mais informações sobre as pistas de automação encontram-se no "
+#~ "capítulo :ref:`automation`."
 
 #~ msgid "MIDI Transformations"
 #~ msgstr "Transformações MIDI"
 
 #~ msgid ""
-#~ "Each track will display its page in the inspector when selected. See :ref:"
-#~ "`track-inspector` for more details."
+#~ "Each track will display its page in the inspector when selected. "
+#~ "See :ref:`track-inspector` for more details."
 #~ msgstr ""
 #~ "Cada faixa exibirá a página dela no inspetor quando dor selecionada. "
 #~ "Veja :ref:`track-inspector` para mais detalhes."
@@ -11764,16 +11664,16 @@ msgstr ""
 #~ "preferences:Engine` and make these devices available in the :ref:`track "
 #~ "inputs <tracks/inspector-page:Inputs>` (as below) and other places."
 #~ msgstr ""
-#~ "Zrythm conectará-se automaticamente aos aparelhos especificados em :ref:"
-#~ "`configuração/preferências:Motor' e disponibilizará esses aparelhos em :"
-#~ "ref:`entradas de faixa <tracks/inspector-page:Inputs>` (como abaixo) e "
-#~ "outros lugares."
+#~ "Zrythm conectará-se automaticamente aos aparelhos especificados "
+#~ "em :ref:`configuração/preferências:Motor' e disponibilizará esses "
+#~ "aparelhos em :ref:`entradas de faixa <tracks/inspector-page:Inputs>` "
+#~ "(como abaixo) e outros lugares."
 
 #~ msgid ""
 #~ "ALSA MIDI devices might need to be bridged to JACK using :term:`a2jmidid`."
 #~ msgstr ""
-#~ "Os aparelhos ALSA MIDI podem precisar ser ligados ao JACK a utilizar :"
-#~ "term:`a2jmid`."
+#~ "Os aparelhos ALSA MIDI podem precisar ser ligados ao JACK a "
+#~ "utilizar :term:`a2jmid`."
 
 #~ msgid "Zrythm will not remember connections made externally."
 #~ msgstr "A Zrythm não se vai lembrar das ligações feitas externamente."
@@ -11921,8 +11821,8 @@ msgstr ""
 #~ msgid ""
 #~ "The panning algorithm to use when applying pan on mono signals. See the "
 #~ "graph below for the different curves as you move the pan from left to "
-#~ "right. We recommend leaving it as the default (Sine). See https://www.cs."
-#~ "cmu.edu/~music/icm-online/readings/panlaws/index.html for more "
+#~ "right. We recommend leaving it as the default (Sine). See https://"
+#~ "www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html for more "
 #~ "information."
 #~ msgstr ""
 #~ "O algoritmo de pan a usar. Veja no gráfico abaixo as curvas diferentes à "
@@ -12008,12 +11908,12 @@ msgstr ""
 
 #~ msgid ""
 #~ "For a list of supported languages and their translation status, or to "
-#~ "translate Zrythm into your language, see `Weblate <https://hosted.weblate."
-#~ "org/projects/zrythm/>`_."
+#~ "translate Zrythm into your language, see `Weblate <https://"
+#~ "hosted.weblate.org/projects/zrythm/>`_."
 #~ msgstr ""
 #~ "Para uma lista de idiomas suportados e o estado de tradução delas, ou "
-#~ "para traduzir o Zrythm ao seu idioma, veja `Weblate <https://hosted."
-#~ "weblate.org/projects/zrythm/>`_."
+#~ "para traduzir o Zrythm ao seu idioma, veja `Weblate <https://"
+#~ "hosted.weblate.org/projects/zrythm/>`_."
 
 #~ msgid "Some of these settings require a restart of Zrythm to take effect."
 #~ msgstr ""
@@ -12137,8 +12037,8 @@ msgstr ""
 #~ "The first tab is the plugin browser, which is explained in :ref:`plugin-"
 #~ "browser`."
 #~ msgstr ""
-#~ "A primeira guia é o navegador de suplementos, que é explicado em :ref:"
-#~ "`plugin-browser`."
+#~ "A primeira guia é o navegador de suplementos, que é explicado "
+#~ "em :ref:`plugin-browser`."
 
 #~ msgid "The control room is covered in :ref:`control-room`."
 #~ msgstr "A sala de controle é abundada em :ref:`control-room`."
@@ -12348,15 +12248,16 @@ msgstr ""
 
 #~ msgid ""
 #~ "Zrythm will auto-connect to the devices specified in :ref:`configuration/"
-#~ "preferences/intro:Audio inputs` and :ref:`configuration/preferences/intro:"
-#~ "MIDI controllers` and make these devices available in the :ref:`track "
-#~ "inputs <tracks/inspector-page:Inputs>` (as below) and other places."
+#~ "preferences/intro:Audio inputs` and :ref:`configuration/preferences/"
+#~ "intro:MIDI controllers` and make these devices available in "
+#~ "the :ref:`track inputs <tracks/inspector-page:Inputs>` (as below) and "
+#~ "other places."
 #~ msgstr ""
-#~ "O Zrythm conectará automaticamente com aparelhos especificados em :ref:"
-#~ "`configuration/preferences/intro:Audio inputs` e :ref:`configuration/"
-#~ "preferences/intro:MIDI controllers` e disponibilizará esses aparelhos em :"
-#~ "ref:`track inputs <tracks/inspector-page:Inputs>` (como abaixo) e outros "
-#~ "lugares."
+#~ "O Zrythm conectará automaticamente com aparelhos especificados "
+#~ "em :ref:`configuration/preferences/intro:Audio inputs` "
+#~ "e :ref:`configuration/preferences/intro:MIDI controllers` e "
+#~ "disponibilizará esses aparelhos em :ref:`track inputs <tracks/inspector-"
+#~ "page:Inputs>` (como abaixo) e outros lugares."
 
 #~ msgid ""
 #~ "We want to provide a friendly and harassment-free environment so that "
@@ -12461,8 +12362,8 @@ msgstr ""
 
 #~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
 #~ msgstr ""
-#~ "Posição atual da cabeça de reprodução, em barras.batidas.decimos-sextos."
-#~ "ticks."
+#~ "Posição atual da cabeça de reprodução, em barras.batidas.decimos-"
+#~ "sextos.ticks."
 
 #~ msgid "Transport buttons"
 #~ msgstr "Botões de transporte"
@@ -12471,8 +12372,8 @@ msgstr ""
 #~ msgstr "Controlos para parar, reproduzir, gravar, etc."
 
 #~ msgid ""
-#~ "More information about working with the transport bar is covered in :ref:"
-#~ "`transport-controls`."
+#~ "More information about working with the transport bar is covered "
+#~ "in :ref:`transport-controls`."
 #~ msgstr ""
 #~ "Mais informações sobre como trabalhar com a barra de transporte são "
 #~ "abordadas em :ref:`transport-controls`."
@@ -12509,8 +12410,8 @@ msgstr ""
 #~ "Connections can be made by double clicking on ports in the :ref:`track-"
 #~ "inspector` or the :ref:`plugin-inspector`."
 #~ msgstr ""
-#~ "As conexões podem ser feitas a clicar duas vezes nas portas no :ref:"
-#~ "`track-inspector` ou no :ref:`plugin-inspector`."
+#~ "As conexões podem ser feitas a clicar duas vezes nas portas "
+#~ "no :ref:`track-inspector` ou no :ref:`plugin-inspector`."
 
 #~ msgid "See :ref:`exporting-routing-graph` for details."
 #~ msgstr "Veja :ref:`exportar-roteiro-graph` para detalhes."
@@ -12732,8 +12633,8 @@ msgstr ""
 #~ msgid ""
 #~ "This is the path where Zrythm will save projects, temporary files, "
 #~ "exported audio, etc. The default is \"zrythm\" under `XDG_DATA_HOME "
-#~ "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest."
-#~ "html>`_ on freedesktop-compliant systems."
+#~ "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
+#~ "latest.html>`_ on freedesktop-compliant systems."
 #~ msgstr ""
 #~ "Este é o caminho onde a Zrythm irá gravar projetos, ficheiros "
 #~ "temporários, áudio exportado, etc. A predefinição é \"zrythm\" em "
@@ -12753,8 +12654,8 @@ msgstr ""
 #~ "option (ie, ``zrythm --print-settings --pretty`` or ``zrythm -p --"
 #~ "pretty`` for short), you can get output like the following."
 #~ msgstr ""
-#~ "O binário :program:`zrythm` vem com uma opção ``-print-settings`` (veja :"
-#~ "ref:`command-line-options` para mais detalhes) que imprime toda a "
+#~ "O binário :program:`zrythm` vem com uma opção ``-print-settings`` "
+#~ "(veja :ref:`command-line-options` para mais detalhes) que imprime toda a "
 #~ "configuração para a linha de comando. Em combinação com a opção ``--"
 #~ "pretty'' (ou seja, ``zrythm --print-settings --pretty'' ou ``zrythm -p --"
 #~ "pretty'' para encurtar) pode obter uma saída como a seguinte."
@@ -12773,8 +12674,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "The :program:`zrythm` binary also comes with a :option:`--reset-to-"
-#~ "factory` option for resetting Zrythm to its default state. See :ref:"
-#~ "`command-line` for details."
+#~ "factory` option for resetting Zrythm to its default state. "
+#~ "See :ref:`command-line` for details."
 #~ msgstr ""
 #~ "O binário :program:`zrythm` também vem com a opção ``--reset-to-factory`` "
 #~ "para redefinir o Zrythm ao seu estado padrão."
@@ -12829,9 +12730,9 @@ msgstr ""
 
 #~ msgid ""
 #~ "When you first run Zrythm, it will display a wizard that lets you "
-#~ "configure the basic settings that Zrythm will use. These include :term:"
-#~ "`MIDI` devices, the :term:`Zrythm user path`, the language of the user "
-#~ "interface and audio/MIDI backends."
+#~ "configure the basic settings that Zrythm will use. These "
+#~ "include :term:`MIDI` devices, the :term:`Zrythm user path`, the language "
+#~ "of the user interface and audio/MIDI backends."
 #~ msgstr ""
 #~ "Quando você executa o Zrythm pela primeira vez, ele exibe um assistente "
 #~ "que permite-lhe configurar as configurações básicas que o Zrythm usará. "
@@ -12939,8 +12840,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "Please see the `Contribution Guide <https://docs.zrythm.org/"
-#~ "md_CONTRIBUTING.html>`_ and check out the `Developer Docs <https://docs."
-#~ "zrythm.org/>`_."
+#~ "md_CONTRIBUTING.html>`_ and check out the `Developer Docs <https://"
+#~ "docs.zrythm.org/>`_."
 #~ msgstr ""
 #~ "Por favor, veja o `Guia de Contribuição <https://docs.zrythm.org/md>`_ e "
 #~ "confira os `Documentos do Desenvolvedor <https://docs.zrythm.org/>`_."
@@ -12950,9 +12851,9 @@ msgstr ""
 
 #~ msgid ""
 #~ "Please see the `Contributing Guide <https://docs.zrythm.org/"
-#~ "md_CONTRIBUTING.html>`_ and check out the `Developer Docs <https://docs."
-#~ "zrythm.org/>`_. These have a lot of information about how to contribute "
-#~ "code and various guidelines to follow."
+#~ "md_CONTRIBUTING.html>`_ and check out the `Developer Docs <https://"
+#~ "docs.zrythm.org/>`_. These have a lot of information about how to "
+#~ "contribute code and various guidelines to follow."
 #~ msgstr ""
 #~ "Por favor veja o \"Guia de Contribuição <https://docs.zrythm.org/"
 #~ "md_CONTRIBUTING.html>`_ e confira os \"Documentos do Programador <https://"
@@ -12973,8 +12874,9 @@ msgstr ""
 #~ msgid ""
 #~ "For making themes, you can take a look in https://git.zrythm.org/cgit/"
 #~ "zrythm/tree/resources/theme.css to get an idea of how CSS in GTK+3 works. "
-#~ "We also recommend looking at the `CSS Overview <https://developer.gnome."
-#~ "org/gtk3/stable/chap-css-overview.html>`_ section in the GTK+3 docs."
+#~ "We also recommend looking at the `CSS Overview <https://"
+#~ "developer.gnome.org/gtk3/stable/chap-css-overview.html>`_ section in the "
+#~ "GTK+3 docs."
 #~ msgstr ""
 #~ "Para criar temas, pode dar uma olhada em https://git.zrythm.org/cgit/"
 #~ "zrythm/tree/resources/theme.css para ter uma ideia de como funciona o CSS "
@@ -13011,8 +12913,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Temos contas de \"Patreon <https://www.patreon.com/alex_tee>`_ e "
 #~ "\"LiberaPay <https://liberapay.com/Zrythm>`_ para doações recorrentes. "
-#~ "Alternativamente, pode comprar binários do Zrythm em https://www.zrythm."
-#~ "org/en/download.html"
+#~ "Alternativamente, pode comprar binários do Zrythm em https://"
+#~ "www.zrythm.org/en/download.html"
 
 #~ msgid ""
 #~ "Please see the `HACKING file <https://git.sr.ht/~alextee/zrythm/tree/"
@@ -13038,9 +12940,9 @@ msgstr ""
 #~ "Clicking the :zbutton:`Loop Selection` button or pressing :zbutton:`Ctrl "
 #~ "+ L` will place the loop points around the currently selected objects."
 #~ msgstr ""
-#~ "Clicando no botão :zbutton:`Seleção de loop` ou pressionando :zbutton:"
-#~ "`Ctrl + L` irá por os pontos de loop á volta dos objetos atualmente "
-#~ "selecionados."
+#~ "Clicando no botão :zbutton:`Seleção de loop` ou "
+#~ "pressionando :zbutton:`Ctrl + L` irá por os pontos de loop á volta dos "
+#~ "objetos atualmente selecionados."
 
 #~ msgid ""
 #~ "Zrythm also has the usual undo/redo/copy/paste functionalities which are "
@@ -13394,8 +13296,8 @@ msgstr ""
 #~ "The issue tracker can be found on `Savannah <https://savannah.nongnu.org/"
 #~ "support/?group=zrythm>`_."
 #~ msgstr ""
-#~ "O rastreador de problemas encontra-se em `Savannah <https://savannah."
-#~ "nongnu.org/support/?group=zrythm>`_."
+#~ "O rastreador de problemas encontra-se em `Savannah <https://"
+#~ "savannah.nongnu.org/support/?group=zrythm>`_."
 
 #~ msgid ""
 #~ "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_, the "
@@ -13464,9 +13366,9 @@ msgstr ""
 #~ msgstr "Rastreador de Problemas"
 
 #~ msgid ""
-#~ "The issue tracker can be found on our `Redmine instance <https://redmine."
-#~ "zrythm.org/projects/zrythm/issues>`_. You can use this to report bugs or "
-#~ "give feedback."
+#~ "The issue tracker can be found on our `Redmine instance <https://"
+#~ "redmine.zrythm.org/projects/zrythm/issues>`_. You can use this to report "
+#~ "bugs or give feedback."
 #~ msgstr ""
 #~ "O rastreador de problemas encontra-se na nossa `instância Redmine "
 #~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_. Pode usá-lo para "
@@ -13476,18 +13378,18 @@ msgstr ""
 #~ msgstr "Código- Fonte"
 
 #~ msgid ""
-#~ "Zrythm's source code can be found on our `CGit instance <https://git."
-#~ "zrythm.org/cgit/zrythm/>`_."
+#~ "Zrythm's source code can be found on our `CGit instance <https://"
+#~ "git.zrythm.org/cgit/zrythm/>`_."
 #~ msgstr ""
-#~ "O código-fonte do Zrythm encontra-se na nossa `instância CGit<https://git."
-#~ "zrythm.org/cgit/zrythm/>`_."
+#~ "O código-fonte do Zrythm encontra-se na nossa `instância CGit<https://"
+#~ "git.zrythm.org/cgit/zrythm/>`_."
 
 #~ msgid "Older Versions"
 #~ msgstr "Versões Mais Antigas"
 
 #~ msgid ""
-#~ "Older releases of Zrythm can be found on the `Releases page <https://www."
-#~ "zrythm.org/releases>`_"
+#~ "Older releases of Zrythm can be found on the `Releases page <https://"
+#~ "www.zrythm.org/releases>`_"
 #~ msgstr ""
 #~ "Versões mais antigas do Zrythm encontram-se na`Página de lançamentos "
 #~ "<https://download.savannah.nongnu.org/releases/zrythm/>`_"
@@ -13971,13 +13873,14 @@ msgstr ""
 #~ "suplemento são anexadas."
 
 #~ msgid ""
-#~ "You can bypass this behavior by passing the :envvar:`VST_PATH` or :envvar:"
-#~ "`VST3_PATH` environment variables to specify custom paths. For example, "
-#~ "``VST_PATH=$HOME/custom-vst-dir zrythm``."
+#~ "You can bypass this behavior by passing the :envvar:`VST_PATH` "
+#~ "or :envvar:`VST3_PATH` environment variables to specify custom paths. For "
+#~ "example, ``VST_PATH=$HOME/custom-vst-dir zrythm``."
 #~ msgstr ""
-#~ "Pode ignorar este comportamento a passar as variáveis de ambiente :envvar:"
-#~ "`VST_PATH` ou :envvar:`VST3_PATH` para especificar caminhos "
-#~ "personalizados. Por exemplo, ``VST_PATH=$HOME/custom-vst-dir zrythm``."
+#~ "Pode ignorar este comportamento a passar as variáveis de "
+#~ "ambiente :envvar:`VST_PATH` ou :envvar:`VST3_PATH` para especificar "
+#~ "caminhos personalizados. Por exemplo, ``VST_PATH=$HOME/custom-vst-dir "
+#~ "zrythm``."
 
 #~ msgid ""
 #~ "Compatible ports can be connected to one another. See :ref:`making-"
@@ -14160,8 +14063,8 @@ msgstr ""
 #~ "aae7-02713b7c1460>`_."
 #~ msgstr ""
 #~ "Till Parisot compilou uma lista de reprodução de vídeos de demonstração "
-#~ "do Zrythm no `BitTube <https://bittube.video/videos/watch/"
-#~ "playlist/69bc340a-d0b7-403d-83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-"
+#~ "do Zrythm no `BitTube <https://bittube.video/videos/watch/playlist/"
+#~ "69bc340a-d0b7-403d-83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-"
 #~ "aae7-02713b7c1460>`_."
 
 #~ msgid "MIDI Modifier Editor"

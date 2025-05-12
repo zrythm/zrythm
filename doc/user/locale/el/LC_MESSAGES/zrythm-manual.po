@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-17 21:18+0900\n"
+"POT-Creation-Date: 2025-05-12 22:14+0900\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -27,8 +27,8 @@ msgstr "Μεταβλητές Περιβάλλοντος"
 msgid ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
-"operating system's settings, or they can be passed directly when running :"
-"program:`zrythm` or :program:`zrythm_launch`, like: "
+"operating system's settings, or they can be passed directly when "
+"running :program:`zrythm` or :program:`zrythm_launch`, like: "
 "``ZRYTHM_SKIP_PLUGIN_SCAN=1 zrythm_launch``"
 msgstr ""
 
@@ -79,11 +79,11 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
-"A `freedesktop-compliant configuration file <https://specifications."
-"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ that "
-"describes how a particular program should be launched, how it appears in "
-"menus, etc. This is normally installed at :file:`/usr/share/applications/"
-"zrythm.desktop`."
+"A `freedesktop-compliant configuration file <https://"
+"specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-"
+"latest.html>`_ that describes how a particular program should be launched, "
+"how it appears in menus, etc. This is normally installed at :file:`/usr/"
+"share/applications/zrythm.desktop`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:29
@@ -93,8 +93,8 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
 "This file contains the schema for user configurations. It is normally "
-"installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
-"xml`."
+"installed at :file:`/usr/share/glib-2.0/schemas/"
+"org.zrythm.Zrythm.gschema.xml`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:35
@@ -155,8 +155,8 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
-"Default themes (including icon themes) will normally be installed under :"
-"file:`/usr/share/zrythm/themes`."
+"Default themes (including icon themes) will normally be installed "
+"under :file:`/usr/share/zrythm/themes`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:72
@@ -177,8 +177,8 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:81
 #, fuzzy
 msgid ""
-"Plugin descriptor cache for faster scanning. This is found at :file:"
-"`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
+"Plugin descriptor cache for faster scanning. This is found "
+"at :file:`cached_plugin_descriptors.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "Το Zrythm θα θυμάται τα σκαναρισμένα πρόσθετα VST και θα αποθηκεύσει αυτές "
@@ -192,9 +192,9 @@ msgstr "Συλλογές"
 
 #: ../../appendix/files-and-directories.rst:88
 msgid ""
-"This file contains your plugin collections. It is found at :file:"
-"`plugin_collections.yaml` under the :ref:`Zrythm user path <configuration/"
-"preferences:Zrythm User Path>`."
+"This file contains your plugin collections. It is found "
+"at :file:`plugin_collections.yaml` under the :ref:`Zrythm user path "
+"<configuration/preferences:Zrythm User Path>`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:94
@@ -206,10 +206,10 @@ msgstr "Ρυθμίσεις :term:`προσθέτων <Plugin>`."
 msgid ""
 "Located at :file:`plugin-settings.yaml` under the :ref:`Zrythm user path "
 "<configuration/preferences:Zrythm User Path>`, this is a collection of per-"
-"plugin settings, such as whether to open the plugin with :term:`Carla`, the :"
-"ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use and "
-"whether to use a :ref:`generic UI <plugins-files/plugins/plugin-window:"
-"Generic UIs>`."
+"plugin settings, such as whether to open the plugin with :term:`Carla`, "
+"the :ref:`bridge mode <plugins-files/plugins/plugin-window:Bridging>` to use "
+"and whether to use a :ref:`generic UI <plugins-files/plugins/plugin-"
+"window:Generic UIs>`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:103
@@ -225,9 +225,9 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:108
 msgid ""
 "Zrythm will write to a log file on each run inside the :file:`log` "
-"subdirectory under the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`. The filename will contain the current date and time, for "
-"example :file:`log_2020-06-26_15-34-19.log`."
+"subdirectory under the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`. The filename will contain the current date "
+"and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:114
@@ -322,9 +322,9 @@ msgstr "Επεξεργασία"
 #: ../../chords-and-scales/chord-pad.rst:50
 msgid ""
 "You can audition chord presets by selecting an instrument plugin from the "
-"list and using the available playback controls. This works similarly to :ref:"
-"`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
-"browser:Auditioning>`."
+"list and using the available playback controls. This works similarly "
+"to :ref:`auditioning in the File Browser <plugins-files/audio-midi-files/"
+"file-browser:Auditioning>`."
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:56
@@ -415,8 +415,8 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:120
 msgid ""
-"Chords can be generated from a scale and a root note by clicking on the :"
-"guilabel:`Load Preset` button, then selecting a scale and a root note."
+"Chords can be generated from a scale and a root note by clicking on "
+"the :guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:127
@@ -642,8 +642,8 @@ msgid ""
 "can be accessed by clicking the gear icon or with :kbd:`Control-,`"
 msgstr ""
 "Το Zrythm έχει ένα παράθυρο Επιλογών που περιέχει όλες τις γενικές ρυθμίσεις "
-"που μπορεί να προβληθεί κάνοντας κλικ στο εικονίδιο γραναζιού ή με το :kbd:"
-"`Control-Shift-p`"
+"που μπορεί να προβληθεί κάνοντας κλικ στο εικονίδιο γραναζιού ή με "
+"το :kbd:`Control-Shift-p`"
 
 #: ../../configuration/preferences.rst:20
 #, fuzzy
@@ -652,9 +652,9 @@ msgstr "Επιλογές"
 
 #: ../../configuration/preferences.rst:22
 msgid ""
-"Preferences are grouped by sections, such as :guilabel:`General` and :"
-"guilabel:`Plugins`, and each item in the preferences contains a description "
-"that explains what it does (when not self-explanatory)."
+"Preferences are grouped by sections, such as :guilabel:`General` "
+"and :guilabel:`Plugins`, and each item in the preferences contains a "
+"description that explains what it does (when not self-explanatory)."
 msgstr ""
 
 #: ../../configuration/preferences.rst:27
@@ -670,10 +670,10 @@ msgid ""
 "DconfEditor>`_."
 msgstr ""
 "Το Zrythm αποθηκεύει όλες τις ρυθμίσεις του χρησιμοποιώντας τον μηχανισμό "
-"Gsettings, ο οποίος παρέχει την εντολή `gsettings <https://developer.gnome."
-"org/gio/stable/gsettings-tool.html>`_ για αλλαγή ρυθμίσεων από τη γραμμή "
-"εντολών, ή προαιρετικά το εργαλείο γραφικού περιβάλλοντος χρήστη `dconf-"
-"editor <https://wiki.gnome.org/Apps/DconfEditor>`_."
+"Gsettings, ο οποίος παρέχει την εντολή `gsettings <https://"
+"developer.gnome.org/gio/stable/gsettings-tool.html>`_ για αλλαγή ρυθμίσεων "
+"από τη γραμμή εντολών, ή προαιρετικά το εργαλείο γραφικού περιβάλλοντος "
+"χρήστη `dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>`_."
 
 #: ../../configuration/preferences.rst:35
 #, fuzzy
@@ -730,8 +730,8 @@ msgid ""
 "under"
 msgstr ""
 "Το μονοπάτι όπου το Zrythm θα αποθηκεύει τα δεδομένα του χρήστη, όπως έργα, "
-"προσωρινά αρχεία, προρυθμίσεις και εξαγόμενους ήχους. Η προεπιλογή είναι :"
-"file:`zrythm` στο"
+"προσωρινά αρχεία, προρυθμίσεις και εξαγόμενους ήχους. Η προεπιλογή "
+"είναι :file:`zrythm` στο"
 
 #: ../../configuration/preferences.rst:66
 msgid ""
@@ -741,8 +741,8 @@ msgid ""
 msgstr ""
 ":envvar:`XDG_DATA_HOME` (βλέπε το `XDG Base Directory Specification <https://"
 "specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) σε "
-"συστήματα συμβατά με το freedesktop (ή αν έχει οριστεί το :envvar:"
-"`XDG_DATA_HOME`), ή"
+"συστήματα συμβατά με το freedesktop (ή αν έχει οριστεί "
+"το :envvar:`XDG_DATA_HOME`), ή"
 
 #: ../../configuration/preferences.rst:71
 msgid "``%LOCALAPPDATA%`` on Windows"
@@ -768,8 +768,9 @@ msgstr ""
 #: ../../configuration/preferences.rst:86
 msgid ""
 "In order to be able to record input from MIDI/audio devices, the devices "
-"must be explicitly enabled using the :guilabel:`MIDI controllers` and :"
-"guilabel:`Audio inputs` settings under :menuselection:`General --> Engine`."
+"must be explicitly enabled using the :guilabel:`MIDI controllers` "
+"and :guilabel:`Audio inputs` settings under :menuselection:`General --> "
+"Engine`."
 msgstr ""
 
 #: ../../configuration/preferences.rst:92
@@ -837,8 +838,8 @@ msgstr "Επαναφορά στις εργαστηριακές ρυθμίσει�
 
 #: ../../configuration/preferences.rst:132
 msgid ""
-"There is an option to reset Zrythm to its default settings under :"
-"menuselection:`General --> Other`."
+"There is an option to reset Zrythm to its default settings "
+"under :menuselection:`General --> Other`."
 msgstr ""
 
 #: ../../configuration/preferences.rst:135
@@ -930,15 +931,15 @@ msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
 "such as icons you can start by creating your own themes and icons as "
-"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/overview:"
-"CSS`."
+"discussed in :ref:`theming/overview:Icon Themes` and :ref:`theming/"
+"overview:CSS`."
 msgstr ""
 "Η εμφάνιση του Zrythm είναι επεξεργάσιμη με CSS και χρησιμοποιεί πολλά "
 "εικονίδια, κάποια από τα οποία είναι προσαρμοσμένα και κάποια που είναι "
 "δανεισμένα από άλλα θέματα. Αν θα θέλατε να συνεισφέρετε στην καλλιτεχνική "
 "επιμέλεια, όπως για παράδειγμα στα εικονίδια, μπορείτε να αρχίσετε με τη "
-"δημιουργία δικών σας θεμάτων και εικονιδίων συμβουλευόμενοι τους συνδέσμους :"
-"ref:`icon-themes` και :ref:`css`."
+"δημιουργία δικών σας θεμάτων και εικονιδίων συμβουλευόμενοι τους "
+"συνδέσμους :ref:`icon-themes` και :ref:`css`."
 
 #: ../../contributing/overview.rst:34
 msgid "Testing"
@@ -996,8 +997,8 @@ msgid ""
 "Zrythm is available for translation at `Weblate <https://hosted.weblate.org/"
 "engage/zrythm/?utm_source=widget>`_."
 msgstr ""
-"Το Zrythm είναι διαθέσιμο για μετάφραση στο `Weblate <https://hosted.weblate."
-"org/engage/zrythm/?utm_source=widget>`_."
+"Το Zrythm είναι διαθέσιμο για μετάφραση στο `Weblate <https://"
+"hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 
 #: ../../contributing/overview.rst:59
 #, fuzzy
@@ -1012,14 +1013,14 @@ msgstr ""
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
-"`official documentation <https://docs.weblate.org/en/latest/user/translating."
-"html>`_."
+"`official documentation <https://docs.weblate.org/en/latest/user/"
+"translating.html>`_."
 msgstr ""
 "Κάντε κλικ πάνω στο εγχείρημα στο οποίο επιθυμείτε να δουλέψετε, και στη "
 "συνέχεια επιλέξτε μια γλώσσα στην οθόνη που ακολουθεί. Για περισσότερες "
 "πληροφορίες σχετικά με τη χρήση του Weblate, παρακαλούμε συμβουλευτείτε τα "
-"`επίσημα εγχειρίδια <https://docs.weblate.org/en/latest/user/translating."
-"html>`_ του Weblate."
+"`επίσημα εγχειρίδια <https://docs.weblate.org/en/latest/user/"
+"translating.html>`_ του Weblate."
 
 #: ../../contributing/overview.rst:70
 msgid ""
@@ -1131,8 +1132,8 @@ msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
 msgstr ""
-"Εναλλακτικά, μπορείτε να `αγοράσετε έναν εγκαταστατή Zrythm <https://www."
-"zrythm.org/en/download.html>`_."
+"Εναλλακτικά, μπορείτε να `αγοράσετε έναν εγκαταστατή Zrythm <https://"
+"www.zrythm.org/en/download.html>`_."
 
 #: ../../contributing/reporting-bugs.rst:7
 #, fuzzy
@@ -1293,8 +1294,8 @@ msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:83
 msgid ""
-"You can obtain OS information from the About dialog (click :guilabel:"
-"`Troubleshooting` then :guilabel:`Debugging Information`)"
+"You can obtain OS information from the About dialog "
+"(click :guilabel:`Troubleshooting` then :guilabel:`Debugging Information`)"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:91
@@ -1334,9 +1335,9 @@ msgstr ""
 #: ../../contributing/reporting-bugs.rst:111
 msgid ""
 "Click on :guilabel:`New Issue`. You will see the following page where you "
-"can fill in details about the issue you are facing. Click on :guilabel:"
-"`Choose a template...` under :guilabel:`Description` and select what best "
-"describes your issue (e.g., a bug)."
+"can fill in details about the issue you are facing. Click "
+"on :guilabel:`Choose a template...` under :guilabel:`Description` and select "
+"what best describes your issue (e.g., a bug)."
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:117
@@ -1473,16 +1474,16 @@ msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:212
 msgid ""
-"Please send us the core dump file (in the example above it can be found at :"
-"file:`/home/alex/Downloads/core.23179`)."
+"Please send us the core dump file (in the example above it can be found "
+"at :file:`/home/alex/Downloads/core.23179`)."
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:216
 msgid ""
 "`c - Find which assembly instruction caused an Illegal Instruction error "
-"without debugging - Stack Overflow <https://stackoverflow.com/"
-"questions/10354147/find-which-assembly-instruction-caused-an-illegal-"
-"instruction-error-without-debu/40223712#40223712>`_"
+"without debugging - Stack Overflow <https://stackoverflow.com/questions/"
+"10354147/find-which-assembly-instruction-caused-an-illegal-instruction-error-"
+"without-debu/40223712#40223712>`_"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:217
@@ -1857,8 +1858,8 @@ msgstr ""
 "Για παράδειγμα, αν δημιουργήσετε μια νότα MIDI και πατήσετε αναίρεση, η νότα "
 "MIDI θα διαγραφεί (το Zrythm κάνει επαναφορά στην κατάσταση που βρισκόταν "
 "στην οποία η νότα MIDI δεν υπήρχε). Πατώντας το κουμπί :guilabel:`Redo` θα "
-"δημιουργήσει τη νότα ξανά, και μπορείτε να επιστρέψετε ανάμεσα στην :"
-"guilabel:`Undo` και :guilabel:`Redo` στην όσες φορές θέλετε."
+"δημιουργήσει τη νότα ξανά, και μπορείτε να επιστρέψετε ανάμεσα "
+"στην :guilabel:`Undo` και :guilabel:`Redo` στην όσες φορές θέλετε."
 
 #: ../../editing/common-operations.rst:28
 msgid ""
@@ -1912,8 +1913,8 @@ msgid ""
 "they can be pasted elsewhere. The shortcut for cutting is :kbd:`Control-x`."
 msgstr ""
 "Διαγραφή και αντιγραφή των επιλεγμένων αντικειμένων και αποθήκευσή τους στο "
-"πρόχειρο ώστε να επικολληθούν αλλού. Η συντόμευση για την αποκοπή είναι :kbd:"
-"`Control-x`."
+"πρόχειρο ώστε να επικολληθούν αλλού. Η συντόμευση για την αποκοπή "
+"είναι :kbd:`Control-x`."
 
 #: ../../editing/common-operations.rst:57
 msgid "Copy"
@@ -1966,8 +1967,8 @@ msgstr "Διαγραφή"
 msgid ""
 "Delete the selected objects. The shortcut for deleting is :kbd:`Delete`."
 msgstr ""
-"Διαγραφή των επιλεγμένων αντικειμένων. Μπορείτε επίσης να πατήσετε :kbd:"
-"`Delete`."
+"Διαγραφή των επιλεγμένων αντικειμένων. Μπορείτε επίσης να "
+"πατήσετε :kbd:`Delete`."
 
 #: ../../editing/common-operations.rst:87
 msgid "Selections"
@@ -2355,9 +2356,9 @@ msgid ""
 "objects`, with the exception that you can just click instead of :kbd:`Alt`-"
 "clicking."
 msgstr ""
-"Η λειτουργία κοψίματος συμπεριφέρεται παρόμοια με ό,τι αναφέρεται στο :ref:"
-"`cutting-objects`, με τη διαφορά ότι μπορείτε απλώς να κάνετε κλικ αντί για :"
-"kbd:`Alt`-κλικ."
+"Η λειτουργία κοψίματος συμπεριφέρεται παρόμοια με ό,τι αναφέρεται "
+"στο :ref:`cutting-objects`, με τη διαφορά ότι μπορείτε απλώς να κάνετε κλικ "
+"αντί για :kbd:`Alt`-κλικ."
 
 #: ../../editing/edit-tools.rst:180
 msgid "Erase Tool"
@@ -3249,8 +3250,8 @@ msgstr ""
 #: ../../editing/piano-roll.rst:65
 #, fuzzy
 msgid ""
-"The vertical zoom level can be changed by holding down :kbd:`Ctrl` and :kbd:"
-"`Shift` and scrolling."
+"The vertical zoom level can be changed by holding down :kbd:`Ctrl` "
+"and :kbd:`Shift` and scrolling."
 msgstr ""
 "Το επίπεδο ζουμαρίσματος μπορεί να αλλάξει κρατώντας πατημένο το :kbd:`Ctrl` "
 "και :kbd:`Shift` και σκρολάροντας."
@@ -3341,9 +3342,9 @@ msgstr "Χρονολόγιο"
 #, fuzzy
 msgid ""
 "Editing in the timeline is the most common workflow inside Zrythm. The "
-"timeline section consists of the :ref:`tracklist <tracks/tracklist:"
-"Tracklist>` on the left and the ruler/arranger on the right, along with a "
-"timeline-specific toolbar at the top."
+"timeline section consists of the :ref:`tracklist <tracks/"
+"tracklist:Tracklist>` on the left and the ruler/arranger on the right, along "
+"with a timeline-specific toolbar at the top."
 msgstr ""
 "Η επεξεργασία μέσα στο χρονολόγιο είναι η πιο κοινή εργασία στο Zrythm. Το "
 "τμήμα του χρονολογίου αποτελείται από τη λίστα κομματιών στα αριστερά και "
@@ -3456,9 +3457,9 @@ msgstr "Επιλογή γλώσσας"
 
 #: ../../editing/timeline.rst:67
 msgid ""
-"Clicking and dragging in the top half of the ruler will create a :term:"
-"`range <Range>` selection. If an existing range exists, you can click an "
-"drag it to move it."
+"Clicking and dragging in the top half of the ruler will create "
+"a :term:`range <Range>` selection. If an existing range exists, you can "
+"click an drag it to move it."
 msgstr ""
 
 #: ../../editing/timeline.rst:75
@@ -3513,8 +3514,8 @@ msgstr "Περιοχές"
 #, fuzzy
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such as "
-"MIDI notes and audio clips - see below) that can be edited in an :ref:"
-"`editor <editing/timeline:Editing Region Contents>`. Regions can be "
+"MIDI notes and audio clips - see below) that can be edited in "
+"an :ref:`editor <editing/timeline:Editing Region Contents>`. Regions can be "
 "repeated, like below."
 msgstr ""
 "Οι περιοχές (ή :term:`clips <Clip>`) είναι κοντέινερς για γεγονότα ή "
@@ -3965,8 +3966,8 @@ msgid ""
 "Markers created in the :ref:`Marker track <tracks/track-types:Marker Track>` "
 "will be displayed here as read-only."
 msgstr ""
-"Τα προσαρμοσμένα σημάδια μπορούν επίσης να δημιουργηθούν μέσα στο :ref:"
-"`marker-track`."
+"Τα προσαρμοσμένα σημάδια μπορούν επίσης να δημιουργηθούν μέσα "
+"στο :ref:`marker-track`."
 
 #: ../../editing/timeline.rst:351
 msgid "Clip Start"
@@ -4037,8 +4038,8 @@ msgid ""
 "interface/main-toolbar:Export`."
 msgstr ""
 "Το παράθυρο εξαγωγής παρακάτω χρησιμοποιείται για την εξαγωγή του έργου ή "
-"μέρους του έργου σε αρχεία ήχου ή MIDI. Μπορεί να ανοίξει κάνοντας κλικ στο :"
-"ref:`zrythm-interface/main-toolbar:Export As`."
+"μέρους του έργου σε αρχεία ήχου ή MIDI. Μπορεί να ανοίξει κάνοντας κλικ "
+"στο :ref:`zrythm-interface/main-toolbar:Export As`."
 
 #: ../../exporting/audio-and-midi.rst:19
 msgid "Export dialog"
@@ -4154,8 +4155,9 @@ msgid ""
 msgstr ""
 "Η εξαγωγή στελεχών σημαίνει ότι κάθε επιλεγμένο κομμάτι θα εξαχθεί στο δικό "
 "του αρχείο. Αυτό είναι χρήσιμο όταν θέλετε να μοιράσετε ξεχωριστά τα "
-"στοιχεία του τραγουδιού σας. Για παράδειγμα, μπορείτε να κάνετε :term:"
-"`bounce <Bounce>` τα κρουστά και το μπάσο σε ξεχωριστά αρχεία ήχου."
+"στοιχεία του τραγουδιού σας. Για παράδειγμα, μπορείτε να "
+"κάνετε :term:`bounce <Bounce>` τα κρουστά και το μπάσο σε ξεχωριστά αρχεία "
+"ήχου."
 
 #: ../../exporting/audio-and-midi.rst:88
 msgid "Export options for stems"
@@ -4269,8 +4271,8 @@ msgstr ""
 
 #: ../../getting-started/faq.rst:91
 msgid ""
-"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
-"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` "
+"and :ref:`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 msgstr ""
 
 #: ../../getting-started/faq.rst:95
@@ -4524,8 +4526,8 @@ msgid ""
 "download.html>`_ page on our website."
 msgstr ""
 "Μπορείτε να εγκαταστήσετε την τελευταία έκδοση του Zrythm για τη διανομή σας "
-"χρησιμοποιώντας έναν εγκαταστατή από τη σελίδα `λήψης <https://www.zrythm."
-"org/en/download.html>`_ στην ιστοσελίδα μας."
+"χρησιμοποιώντας έναν εγκαταστατή από τη σελίδα `λήψης <https://"
+"www.zrythm.org/en/download.html>`_ στην ιστοσελίδα μας."
 
 #: ../../getting-started/installation.rst:21
 msgid ""
@@ -4581,8 +4583,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
-"tarball <https://www.zrythm.org/releases/>`_ or `git <https://gitlab.zrythm."
-"org/zrythm/zrythm/>`_."
+"tarball <https://www.zrythm.org/releases/>`_ or `git <https://"
+"gitlab.zrythm.org/zrythm/zrythm/>`_."
 msgstr ""
 "Αν είστε προχωρημένος χρήστης, μπορείτε να χτίσετε το Zrythm από την πηγή, "
 "χρησιμοποιώντας είτε ένα `συμπιεσμένο αρχείο .tar με την πηγαία διανομή "
@@ -4638,9 +4640,9 @@ msgid ""
 "comfortable in."
 msgstr ""
 "Το Zrythm σάς επιτρέπει να επιλέξετε τη γλώσσα του περιβάλλοντός σας. Το "
-"περιβάλον είναι ήδη μεταφρασμένο σε `πολλαπλές γλώσσες <https://hosted."
-"weblate.org/projects/zrythm/#languages>`_, οπότε επιλέξτε τη γλώσσα με την "
-"οποία είστε πιο εξοικειωμένος."
+"περιβάλον είναι ήδη μεταφρασμένο σε `πολλαπλές γλώσσες <https://"
+"hosted.weblate.org/projects/zrythm/#languages>`_, οπότε επιλέξτε τη γλώσσα "
+"με την οποία είστε πιο εξοικειωμένος."
 
 #: ../../getting-started/running-zrythm.rst:31
 msgid "You must have a locale enabled for the language you want to use."
@@ -4971,8 +4973,8 @@ msgid ""
 "before running Zrythm. You will find lots of information online about how to "
 "configure JACK, such as `Demystifying JACK - A Beginners Guide to Getting "
 "Started with JACK <https://linuxaudio.github.io/libremusicproduction/html/"
-"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack."
-"html>`_, so we will skip this part."
+"articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-"
+"jack.html>`_, so we will skip this part."
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:135
@@ -5030,8 +5032,8 @@ msgstr "a2jmidid"
 
 #: ../../glossary/intro.rst:14
 msgid ""
-"a2jmidid is an application that bridges between the system MIDI ports and :"
-"term:`JACK`."
+"a2jmidid is an application that bridges between the system MIDI ports "
+"and :term:`JACK`."
 msgstr ""
 "Το a2jmidid είναι μια εφαρμογή που γεφυρώνει τις θύρες MIDI του συστήματος "
 "και το :term:`JACK`."
@@ -5116,8 +5118,8 @@ msgid ""
 msgstr ""
 "Ο χειριστής είναι μία :doc:`port <../routing/ports>` με επεξεργάσιμη από τον "
 "χρήστη χειριστική τιμή που επηρεάζει έναν επεξεργαστή, όπως ένα πρόσθετο. "
-"Για παράδειγμα, ο χειριστής απολαβής. Είναι ισοδύναμος όρος με την :term:"
-"`Parameter`."
+"Για παράδειγμα, ο χειριστής απολαβής. Είναι ισοδύναμος όρος με "
+"την :term:`Parameter`."
 
 #: ../../glossary/intro.rst:53 ../../routing/ports.rst:52
 msgid "CV"
@@ -5316,8 +5318,8 @@ msgid ""
 "details."
 msgstr ""
 "Με τον όρο έργο εννοείται η συνεδρία δουλειάς. Αποθηκεύεται ως κατάλογος που "
-"περιέχει το αρχείο έργου μαζί με άλλα επικουρικά αρχεία. Βλέπε :ref:"
-"`Projects` για περισσότερες λεπτομέρειες."
+"περιέχει το αρχείο έργου μαζί με άλλα επικουρικά αρχεία. "
+"Βλέπε :ref:`Projects` για περισσότερες λεπτομέρειες."
 
 #: ../../glossary/intro.rst:138
 msgid "Range"
@@ -5360,8 +5362,8 @@ msgstr "Στέρεο"
 #: ../../glossary/intro.rst:158
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
-"Είναι το δικαναλικό ηχητικό σήμα (αριστερά και δεξιά) (βλέπε επίσης :term:"
-"`Mono`)."
+"Είναι το δικαναλικό ηχητικό σήμα (αριστερά και δεξιά) (βλέπε "
+"επίσης :term:`Mono`)."
 
 #: ../../glossary/intro.rst:160
 msgid "VST2"
@@ -5386,9 +5388,9 @@ msgid ""
 "VST3 than VST2, because it is released as :term:`Free software`."
 msgstr ""
 "Το VST3 είναι το πρότυπο προσθέτων που διαδέχεται το :term:`VST2`. Είναι "
-"καλύτερο να χρησιμοποιείται το VST3 από το VST2, διότι κυκλοφορεί ως :term:"
-"`Free software`. Ωστόσο, αντί αυτού συνιστούμε τη χρήση του προτύπου :term:"
-"`LV2`."
+"καλύτερο να χρησιμοποιείται το VST3 από το VST2, διότι κυκλοφορεί "
+"ως :term:`Free software`. Ωστόσο, αντί αυτού συνιστούμε τη χρήση του "
+"προτύπου :term:`LV2`."
 
 #: ../../glossary/intro.rst:169
 msgid "XRUN"
@@ -5427,11 +5429,11 @@ msgstr "Γραμμή εντολών"
 
 #: ../../invoking-from-command-line/intro.rst:14
 msgid ""
-"Zrythm comes with a few utilities below that can be used from the :term:"
-"`CLI`."
+"Zrythm comes with a few utilities below that can be used from "
+"the :term:`CLI`."
 msgstr ""
-"Το Zrythm παρέχει κάποιες λειτουργίες που μπορούν να χρησιμοποιηθούν με το :"
-"term:`CLI`."
+"Το Zrythm παρέχει κάποιες λειτουργίες που μπορούν να χρησιμοποιηθούν με "
+"το :term:`CLI`."
 
 #: ../../invoking-from-command-line/intro.rst:18
 msgid "zrythm"
@@ -5457,8 +5459,9 @@ msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
 "to get pretty-printed output, like below."
 msgstr ""
-"Εκτυπώνει όλες τις ρυθμίσεις του χρήστη. Μπορεί να συνδυαστεί με το :option:"
-"`--pretty` για να προβληθεί φορμαρισμένο το εξαγόμενο, όπως παρακάτω."
+"Εκτυπώνει όλες τις ρυθμίσεις του χρήστη. Μπορεί να συνδυαστεί με "
+"το :option:`--pretty` για να προβληθεί φορμαρισμένο το εξαγόμενο, όπως "
+"παρακάτω."
 
 #: ../../invoking-from-command-line/intro.rst:42
 #, fuzzy
@@ -5469,8 +5472,8 @@ msgstr "Επαναφέρει τις ρυθμίσεις του χρήστη στ�
 #, fuzzy
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
-"affect any files in the :ref:`Zrythm user path <configuration/preferences:"
-"Zrythm User Path>`."
+"affect any files in the :ref:`Zrythm user path <configuration/"
+"preferences:Zrythm User Path>`."
 msgstr ""
 "Επηρεάζει μόνο τις ρυθμίσεις που εκτυπώνονται με το :option:`-p`. Αυτό *δεν* "
 "θα επηρεάσει κανένα αρχείο στο :term:`Zrythm user path`."
@@ -5511,8 +5514,8 @@ msgstr "zrythm_launch"
 #: ../../invoking-from-command-line/intro.rst:72
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
-"Zrythm. All of the options for :program:`zrythm` can also be passed to :"
-"program:`zrythm_launch`."
+"Zrythm. All of the options for :program:`zrythm` can also be passed "
+"to :program:`zrythm_launch`."
 msgstr ""
 "Ένα περιτύλιγμα γύρω από το :program:`zrythm` που θέτει τα σωστά μονοπάτια "
 "πριν την εκκίνηση του Zrythm. Όλες οι ρυθμίσεις για το :program:`zrythm` "
@@ -5633,9 +5636,9 @@ msgstr "Ομάδες"
 #: ../../mixing/routing.rst:11
 #, fuzzy
 msgid ""
-":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` and :ref:"
-"`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be created for "
-"grouping signals."
+":ref:`Audio group tracks <tracks/track-types:Audio Group Track>` "
+"and :ref:`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be "
+"created for grouping signals."
 msgstr ""
 "Τα κομμάτια ομάδων ήχου και MIDI (καλύπτονται στα :ref:`audio-group-track` "
 "και :ref:`midi-group-track` αντίστοιχα) μπορούν να δημιουργηθούν για την "
@@ -5737,8 +5740,8 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Modulators and macro knobs are associated with the :ref:`Modulator Track "
-"<tracks/track-types:Modulator Track>`, which contains all modulators in the :"
-"term:`Project`."
+"<tracks/track-types:Modulator Track>`, which contains all modulators in "
+"the :term:`Project`."
 msgstr ""
 "Οι διαμορφωτές συσχετίζονται με το :doc:`../tracks/modulator-track`, το "
 "οποίο περιέχει όλους τους διαμορφωτές στο :term:`Project`."
@@ -5750,8 +5753,8 @@ msgstr "Προσθήκη διαμορφωτών"
 #: ../../modulators/intro.rst:31
 msgid ""
 "Modulator plugins can be drag-n-dropped from the :doc:`../plugins-files/"
-"plugins/plugin-browser` into the Modulators tab. Modulator plugins can be :"
-"ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
+"plugins/plugin-browser` into the Modulators tab. Modulator plugins can "
+"be :ref:`filtered inside the plugin browser <plugins-files/plugins/plugin-"
 "browser:Filter Buttons>`."
 msgstr ""
 "Τα πρόσθετα διαμορφωτών μπορούν να συρθούν και να ριχτούν από τον :doc:`../"
@@ -5820,8 +5823,8 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:18
 msgid ""
-"Clicking and dragging on the integer counterpart will change the integer (e."
-"g., from 140.24 to 141.24) and clicking and dragging on the decimal "
+"Clicking and dragging on the integer counterpart will change the integer "
+"(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
 msgstr ""
 "Κάνοντας κλικ και σύροντας το ακέραιο μέρος θα αλλάξει τον ακέραιο (π.χ., "
@@ -5891,8 +5894,8 @@ msgstr ""
 msgid ""
 "This only applies to the :ref:`timeline ruler <editing/timeline:Ruler>`."
 msgstr ""
-"Αυτό ισχύει μόνο στον χάρακα χρονολογίου, ο οποίος καλύπτεται στο :ref:"
-"`timeline-ruler`."
+"Αυτό ισχύει μόνο στον χάρακα χρονολογίου, ο οποίος καλύπτεται "
+"στο :ref:`timeline-ruler`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:23
 msgid "Cue Point"
@@ -5946,8 +5949,8 @@ msgid ""
 "Custom Markers can also be created inside the :ref:`Marker Track <tracks/"
 "track-types:Marker Track>`."
 msgstr ""
-"Τα προσαρμοσμένα σημάδια μπορούν επίσης να δημιουργηθούν μέσα στο :ref:"
-"`marker-track`."
+"Τα προσαρμοσμένα σημάδια μπορούν επίσης να δημιουργηθούν μέσα "
+"στο :ref:`marker-track`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:61
 msgid ""
@@ -6013,8 +6016,8 @@ msgstr ""
 "Τα κομμάτια μπορούν να οπλιστούν για ηχογράφηση κάνοντας κλικ στο κουμπί "
 "ηχογράφησης είτε μέσα στο κομμάτι είτε στην ενότητα fader του κομματιού στο "
 "κανάλι είτε στον :ref:`επιθεωρητή κομματιών <track-inspector>`. Όταν τα "
-"κομμάτια οπλιστούν για ηχογράφηση, θα αρχίσουν να ακούνε για σήματα στις :"
-"ref:`track-inputs` τους και αυτά τα σήματα θα περαστούν στην αλυσίδα "
+"κομμάτια οπλιστούν για ηχογράφηση, θα αρχίσουν να ακούνε για σήματα "
+"στις :ref:`track-inputs` τους και αυτά τα σήματα θα περαστούν στην αλυσίδα "
 "διεργασίας."
 
 #: ../../playback-and-recording/recording.rst:19
@@ -6027,8 +6030,8 @@ msgstr ""
 "Τα κομμάτια μπορούν να οπλιστούν για ηχογράφηση κάνοντας κλικ στο κουμπί "
 "ηχογράφησης είτε μέσα στο κομμάτι είτε στην ενότητα fader του κομματιού στο "
 "κανάλι είτε στον :ref:`επιθεωρητή κομματιών <track-inspector>`. Όταν τα "
-"κομμάτια οπλιστούν για ηχογράφηση, θα αρχίσουν να ακούνε για σήματα στις :"
-"ref:`track-inputs` τους και αυτά τα σήματα θα περαστούν στην αλυσίδα "
+"κομμάτια οπλιστούν για ηχογράφηση, θα αρχίσουν να ακούνε για σήματα "
+"στις :ref:`track-inputs` τους και αυτά τα σήματα θα περαστούν στην αλυσίδα "
 "διεργασίας."
 
 #: ../../playback-and-recording/recording.rst:24
@@ -6048,8 +6051,8 @@ msgstr "Ηχογράφηση ήχου & MIDI"
 #: ../../playback-and-recording/recording.rst:31
 #, fuzzy
 msgid ""
-"After arming the tracks you want to record events into, enable recording in :"
-"ref:`transport-controls` and press play. Any signals received will be "
+"After arming the tracks you want to record events into, enable recording "
+"in :ref:`transport-controls` and press play. Any signals received will be "
 "recorded inside new regions in the timeline."
 msgstr ""
 "Αφού οπλίσετε τα κομμάτια στα οποία θέλετε να καταγράψετε γεγονότα, "
@@ -6356,9 +6359,9 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:64
 msgid ""
-"The playhead position can be displayed in either BBT notation (`bars.beats."
-"sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be toggled by right-"
-"clicking on the playhead position display."
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:73
@@ -6442,8 +6445,8 @@ msgstr "Κουμπιά φίλτρων"
 #: ../../plugins-files/audio-midi-files/file-browser.rst:51
 #, fuzzy
 msgid ""
-"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-browser:"
-"Plugin Browser>`, files can be filtered based on their type."
+"Similarly to the :ref:`plugin browser <plugins-files/plugins/plugin-"
+"browser:Plugin Browser>`, files can be filtered based on their type."
 msgstr ""
 "Επιπρόσθετα προς τα παραπάνω, τα πρόσθετα μπορούν να φιλτραριστούν σύμφωνα "
 "με τον τύπο τους."
@@ -6809,8 +6812,8 @@ msgstr "Προβολή"
 #, fuzzy
 msgid ""
 "The number in the top right of each port name will display the current "
-"number of connections to/from this port. See :ref:`routing/connections:"
-"Connections` for details."
+"number of connections to/from this port. See :ref:`routing/"
+"connections:Connections` for details."
 msgstr ""
 "Ο αριθμός πάνω δεξιά σε κάθε όνομα θύρας θα προβάλει τον τρέχοντα αριθμό "
 "συνδέσεων από/προς αυτή τη θύρα. Βλέπε :doc:`../../routing/making-"
@@ -7053,11 +7056,16 @@ msgstr "Τα πρόσθετα τυποποιούνται στις εξής κα�
 msgid "|icon_instrument| Instrument"
 msgstr ""
 
+#: ../../<rst_prolog>:18
+#, fuzzy
+msgid "instrument"
+msgstr "Όργανο"
+
 #: ../../plugins-files/plugins/plugin-info.rst:23
 #, fuzzy
 msgid ""
-"These plugins will create an :ref:`Instrument Track <tracks/track-types:"
-"Instrument Track>` when added to the project."
+"These plugins will create an :ref:`Instrument Track <tracks/track-"
+"types:Instrument Track>` when added to the project."
 msgstr ""
 "Αυτά τα πρόσθετα θα δημιουργήσουν ένα κομμάτι οργάνου κατά την προσθήκη τους "
 "στο έργο."
@@ -7065,6 +7073,11 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:31
 msgid "|icon_audio-insert| Effect"
 msgstr ""
+
+#: ../../<rst_prolog>:12
+#, fuzzy
+msgid "audio-insert"
+msgstr "Διεπαφή ήχου"
 
 #: ../../plugins-files/plugins/plugin-info.rst:28
 #, fuzzy
@@ -7082,6 +7095,11 @@ msgstr ""
 msgid "|icon_modulator| Modulator"
 msgstr "Δρομολόγηση διαμορφωτών"
 
+#: ../../<rst_prolog>:21
+#, fuzzy
+msgid "modulator"
+msgstr "Διαμορφωτές"
+
 #: ../../plugins-files/plugins/plugin-info.rst:34
 msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other "
@@ -7092,6 +7110,10 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:41
 msgid "|icon_signal-midi| MIDI Effect"
+msgstr ""
+
+#: ../../<rst_prolog>:15
+msgid "signal-midi"
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:38
@@ -7115,8 +7137,8 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:52
 #, fuzzy
 msgid ""
-"Plugins consist of controls (parameters) and a variety of audio, :term:"
-"`MIDI` and :term:`CV` :ref:`ports <ports>`."
+"Plugins consist of controls (parameters) and a variety of "
+"audio, :term:`MIDI` and :term:`CV` :ref:`ports <ports>`."
 msgstr ""
 "Τα πρόσθετα αποτελούνται από χειριστές (παραμέτρους) και μια ποικιλία θυρών "
 "ήχου, :term:`MIDI` και :term:`CV`. Οι θύρες εξηγούνται στις :ref:`ports`."
@@ -7231,12 +7253,14 @@ msgstr "Σκανάρισμα προσθέτων"
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports `CLAP`_, :term:`LV2`, :term:`VST2`, :"
-"term:`VST3`, :term:`LADSPA`, :term:`DSSI` and :term:`AU` plugins."
+"until it is closed. Zrythm supports "
+"`CLAP`_, :term:`LV2`, :term:`VST2`, :term:`VST3`, :term:`LADSPA`, :term:`DSSI` "
+"and :term:`AU` plugins."
 msgstr ""
 "Το Zrythm θα σκανάρει πρόσθετα κατά την εκκίνηση και θα θυμάται τα πρόσθετα "
-"μέχρι να κλείσει. Το Zrythm υποστηρίζει πρόσθετα :term:`LV2`, :term:`VST2`, :"
-"term:`VST3` και :term:`AU`. Το LV2 είναι το προτεινόμενο πρότυπο."
+"μέχρι να κλείσει. Το Zrythm υποστηρίζει "
+"πρόσθετα :term:`LV2`, :term:`VST2`, :term:`VST3` και :term:`AU`. Το LV2 "
+"είναι το προτεινόμενο πρότυπο."
 
 #: ../../plugins-files/plugins/scanning.rst:15
 #, fuzzy
@@ -7250,11 +7274,11 @@ msgstr ""
 #: ../../plugins-files/plugins/scanning.rst:18
 #, fuzzy
 msgid ""
-"Plugin scanning can be disabled by setting the :envvar:"
-"`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
+"Plugin scanning can be disabled by setting "
+"the :envvar:`ZRYTHM_SKIP_PLUGIN_SCAN` environment variable."
 msgstr ""
-"Το σκανάρισμα προσθέτων μπορεί να απενεργοποιηθεί ενεργοποιώντας την εντολή :"
-"envvar:`NO_SCAN_PLUGINS` κατά την εκτέλεση του Zrythm."
+"Το σκανάρισμα προσθέτων μπορεί να απενεργοποιηθεί ενεργοποιώντας την "
+"εντολή :envvar:`NO_SCAN_PLUGINS` κατά την εκτέλεση του Zrythm."
 
 #: ../../plugins-files/plugins/scanning.rst:22
 #, fuzzy
@@ -7263,10 +7287,10 @@ msgstr "Μονοπάτια"
 
 #: ../../plugins-files/plugins/scanning.rst:24
 msgid ""
-"Zrythm will scan for plugins in the plugin search paths specified in the :"
-"ref:`preferences <configuration/preferences:Preferences>`. If the search "
-"path is left empty, Zrythm will scan for plugins in the standard paths "
-"according to the specifications of each plugin format (if any)."
+"Zrythm will scan for plugins in the plugin search paths specified in "
+"the :ref:`preferences <configuration/preferences:Preferences>`. If the "
+"search path is left empty, Zrythm will scan for plugins in the standard "
+"paths according to the specifications of each plugin format (if any)."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:29
@@ -7308,9 +7332,9 @@ msgstr "Σκανάρισμα AU"
 #: ../../plugins-files/plugins/scanning.rst:44
 #, fuzzy
 msgid ""
-"On MacOS, :term:`AU` plugins will be scanned at their standard locations at :"
-"file:`/Library/Audio/Plug-Ins/Components` for system plugins and :file:`~/"
-"Library/Audio/Plug-Ins/Components` for user plugins."
+"On MacOS, :term:`AU` plugins will be scanned at their standard locations "
+"at :file:`/Library/Audio/Plug-Ins/Components` for system plugins "
+"and :file:`~/Library/Audio/Plug-Ins/Components` for user plugins."
 msgstr ""
 "Στα MacOS, πρόσθετα :term:`AU` θα σκανάρονται στον προεπιλεγμένο προορισμό "
 "τους στο :file:`/Library/Audio/Plug-Ins/Components`."
@@ -7494,8 +7518,8 @@ msgid ""
 "path <configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "Ένα κενό πρότυπο είναι διαθέσιμο, και μπορείτε να δημιουργήσετε τα δικά σας "
-"πρότυπα αντιγράφοντας έναν κατάλογο έργου από τα :file:`templates` στο :term:"
-"`Zrythm user path`."
+"πρότυπα αντιγράφοντας έναν κατάλογο έργου από τα :file:`templates` "
+"στο :term:`Zrythm user path`."
 
 #: ../../projects/saving-loading.rst:42
 msgid "Saving Projects"
@@ -7575,8 +7599,8 @@ msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector-page`."
 msgstr ""
-"Οι συνδέσεις μπορούν να γίνουν κάνοντας διπλό κλικ στις θύρες στον :ref:"
-"`track-inspector` ή στον :ref:`plugin-inspector-page`."
+"Οι συνδέσεις μπορούν να γίνουν κάνοντας διπλό κλικ στις θύρες "
+"στον :ref:`track-inspector` ή στον :ref:`plugin-inspector-page`."
 
 #: ../../routing/connections.rst:29
 #, fuzzy
@@ -7604,8 +7628,8 @@ msgstr ""
 
 #: ../../routing/connections.rst:50
 msgid ""
-"Signal from tracks can be routed to plugins that have sidechain inputs via :"
-"ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
+"Signal from tracks can be routed to plugins that have sidechain inputs "
+"via :ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
 msgstr ""
 
 #: ../../routing/connections.rst:59
@@ -7968,228 +7992,6 @@ msgid ""
 "automatically by Zrythm internally."
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:6
-msgid "Creates an audio send connection as an undoable action."
-msgstr ""
-
-#: ../../scripting/api/actions port_connection_action.rst:6
-msgid "Connects 2 ports as an undoable action."
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:6
-msgid "Undoes the last action."
-msgstr "Βάζει το κομμάτι σε σίγαση."
-
-#: ../../scripting/api/actions undo_manager.rst:10
-#, fuzzy
-msgid "Redoes the last undone action."
-msgstr "Βάζει το κομμάτι σε σίγαση."
-
-#: ../../scripting/api/audio channel.rst:6
-msgid "Returns the plugin at the given insert slot"
-msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέση εισαγόμενου"
-
-#: ../../scripting/api/audio channel.rst:10
-msgid "Returns the instrument at the given channel"
-msgstr "Επιστρέφει το όργανο στο δοθέν κανάλι"
-
-#: ../../scripting/api/audio channel.rst:14
-msgid "Returns the send instance at the given slot"
-msgstr "Επιστρέφει την περίπτωση αποστολής στη δοθείσα θέση"
-
-#: ../../scripting/api/audio midi_note.rst:6
-msgid "Returns a new midi note."
-msgstr "Επιστρέφει μια καινούρια νότα MIDI."
-
-#: ../../scripting/api/audio midi_region.rst:6
-#, fuzzy
-msgid "Returns a new midi region."
-msgstr "Επιστρέφει μια καινούρια νότα MIDI."
-
-#: ../../scripting/api/audio midi_region.rst:10
-msgid "Adds a midi note to ``region``."
-msgstr ""
-
-#: ../../scripting/api/audio port.rst:6
-msgid "Returns the left or right port of the stereo pair."
-msgstr "Επιστρέφει την αριστερή ή δεξιά θύρα ενός ζευγαριού στέρεο."
-
-#: ../../scripting/api/audio port.rst:10
-#, fuzzy
-msgid "Returns the identifier of ``port``."
-msgstr "Επιστρέφει το αναγνωριστικό της θύρας."
-
-#: ../../scripting/api/audio position.rst:6
-#, fuzzy
-msgid ""
-"Return a newly-created position as ``bars``.\\ ``beats``.\\ ``sixteenths``."
-"\\ ``ticks``.\\ ``sub_tick``."
-msgstr ""
-"Επιστρέφει μια θέση που μόλις δημιουργήθηκε ως bars.beats.sixteenths.ticks."
-"sub_tick."
-
-#: ../../scripting/api/audio position.rst:11
-msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
-msgstr "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘."
-
-#: ../../scripting/api/audio supported_file.rst:6
-msgid "Returns an instance of SupportedFile."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:6
-#, fuzzy
-msgid ""
-"Returns a new track with name ``name`` to be placed at position ``idx`` in "
-"the tracklist."
-msgstr ""
-"Επιστρέφει ένα καινούριο κομμάτι με όνομα προς τοποθέτηση στη θέση idx στη "
-"λίστα κομματιών."
-
-#: ../../scripting/api/audio track.rst:11
-#, fuzzy
-msgid "Returns the name of ``track``."
-msgstr "Επιστρέφει το όνομα του κομματιού."
-
-#: ../../scripting/api/audio track.rst:15
-#, fuzzy
-msgid "Returns the processor of ``track``."
-msgstr "Επιστρέφει τον επεξεργαστή του κομματιού."
-
-#: ../../scripting/api/audio track.rst:19
-#, fuzzy
-msgid "Returns the channel of ``track``."
-msgstr "Επιστρέφει το κανάλι του κομματιού."
-
-#: ../../scripting/api/audio track.rst:23
-#, fuzzy
-msgid ""
-"Sets whether ``track`` is soloed or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"Ορίζει αν το κομμάτι είναι σε σίγαση ή όχι. Αυτό δημιουργεί μια δράση που "
-"δεν μπορεί να αναιρεθεί και την εκτελεί."
-
-#: ../../scripting/api/audio track.rst:28
-#, fuzzy
-msgid ""
-"Sets whether ``track`` is muted or not. This creates an undoable action and "
-"performs it."
-msgstr ""
-"Ορίζει αν το κομμάτι είναι σε σίγαση ή όχι. Αυτό δημιουργεί μια δράση που "
-"δεν μπορεί να αναιρεθεί και την εκτελεί."
-
-#: ../../scripting/api/audio track.rst:33
-#, fuzzy
-msgid ""
-"Adds ``region`` to track ``track``. To be used for regions with lanes (midi/"
-"audio)"
-msgstr ""
-"Προσθέτει περιοχή στο κομμάτι. Προς χρήση σε περιοχές με λωρίδες (MIDI/ήχος)"
-
-#: ../../scripting/api/audio track_processor.rst:6
-#, fuzzy
-msgid "Returns the stereo in ports instance of the track processor."
-msgstr "Επιστρέφει την περίπτωση αποστολής στη δοθείσα θέση"
-
-#: ../../scripting/api/audio tracklist.rst:6
-#, fuzzy
-msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
-msgstr "Εισάγει κομμάτι στον δείκτη idx στη λίστα κομματιών."
-
-#: ../../scripting/api/audio tracklist.rst:10
-#, fuzzy
-msgid "Returns the track at ``pos`` in the tracklist."
-msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
-
-#: ../../scripting/api/audio tracklist.rst:14
-#, fuzzy
-msgid "Returns the number of tracks in the tracklist."
-msgstr "Επιστρέφει το όνομα του κομματιού."
-
-#: ../../scripting/api/intro.rst:6
-msgid "API"
-msgstr "Διεπαφή Προγραμματισμού Εφαρμογών (API)"
-
-#: ../../scripting/api/plugins plugin.rst:6
-msgid "Returns the input port of the plugin at the given index."
-msgstr "Επιστρέφει τη θύρα εισαγωγής του προσθέτου στον δοθέντα δείκτη."
-
-#: ../../scripting/api/plugins plugin.rst:10
-msgid "Returns the output port of the plugin at the given index."
-msgstr "Επιστρέφει τη θύρα εξαγόμενου του προσθέτου στον δοθέντα δείκτη."
-
-#: ../../scripting/api/plugins plugin_manager.rst:6
-#, fuzzy
-msgid "Returns the PluginDescriptor matching the given URI."
-msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέση εισαγόμενου"
-
-#: ../../scripting/api/plugins plugin_manager.rst:10
-msgid "Scans the system for plugins."
-msgstr ""
-
-#: ../../scripting/api/project.rst:6
-msgid "Return the project’s title."
-msgstr ""
-
-#: ../../scripting/api/project.rst:10
-#, fuzzy
-msgid "Returns the tracklist for the project."
-msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
-
-#: ../../scripting/api/project.rst:14
-#, fuzzy
-msgid "Returns the undo manager for the project."
-msgstr "Επιστρέφει το όνομα του κομματιού."
-
-#: ../../scripting/api/zrythm.rst:6
-msgid "Return the Zrythm version as a string."
-msgstr "Επιστροφή της έκδοσης του Zrythm ως κλωστή (string)."
-
-#: ../../scripting/api/zrythm.rst:10
-msgid "Return the PluginManager instance."
-msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
-
-#: ../../scripting/api/zrythm.rst:14
-#, fuzzy
-msgid "Return the currently loaded Project instance."
-msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
-
-#: ../../scripting/api/zrythm.rst:18
-msgid "Returns a NULL pointer."
-msgstr "Επιστρέφει έναν ΜΗΔΑΜΙΝΟ δείκτη."
-
-#: ../../scripting/api/zrythm.rst:22
-msgid "Writes the message to the log."
-msgstr ""
-
-#: ../../scripting/examples.rst:7
-msgid "Examples"
-msgstr "Παραδείγματα"
-
-#: ../../scripting/examples.rst:9
-msgid ""
-"The following examples are in the public domain (`CC 0 <https://"
-"creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and modify "
-"them."
-msgstr ""
-"Τα ακόλουθα παραδείγματα αποτελούν κοινό κτήμα (`CC 0 <https://"
-"creativecommons.org/publicdomain/zero/1.0/>`_). Αντιγράψτε και τροποποιήστε "
-"ελεύθερα."
-
-#: ../../scripting/examples.rst:14
-msgid "Create MIDI track with notes"
-msgstr "Δημιουργία κομματιού MIDI με νότες"
-
-#: ../../scripting/examples.rst:47
-#, fuzzy
-msgid "Hello world"
-msgstr "Γεια σου κόσμε"
-
-#: ../../scripting/examples.rst:56
-#, fuzzy
-msgid "Print all tracks"
-msgstr "Εκτύπωση ονομάτων κομματιών"
-
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
 msgstr "Σύνταξη δέσμης ενεργειών (scripting)"
@@ -8234,16 +8036,15 @@ msgstr ""
 
 #: ../../scripting/overview.rst:34
 msgid ""
-"The Guile API is not available on Windows. See `this ticket <https://github."
-"com/msys2/MINGW-packages/issues/3298>`_ for details."
+"The Guile API is not available on Windows. See `this ticket <https://"
+"github.com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
 
 #: ../../scripting/overview.rst:38
 #, fuzzy
 msgid ""
-"The :ref:`API section <scripting/api/intro:API>` is a comprehensive list of "
-"all available procedures in the API. Each section in the API corresponds to "
-"a specific Guile module."
+"The ``API section`` is a comprehensive list of all available procedures in "
+"the API. Each section in the API corresponds to a specific Guile module."
 msgstr ""
 "Η επόμενη ενότητα είναι μια περιεκτική λίστα όλων των διαθέσιμων διαδικασιών "
 "στη Διεπαφή Προγραμματισμού Εφαρμογών (API). Κάθε ενότητα στην API "
@@ -8267,50 +8068,6 @@ msgstr ""
 msgid "To use it from ECMAScript, use:"
 msgstr ""
 
-#: ../../scripting/scripting-interface.rst:7
-msgid "Scripting Interface"
-msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
-
-#: ../../scripting/scripting-interface.rst:9
-msgid ""
-"Clicking the :guilabel:`Scripting Interface` button in the :ref:`Main "
-"Toolbar <zrythm-interface/main-toolbar:Main Toolbar>` will bring up the "
-"scripting interface dialog."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:17
-#, fuzzy
-msgid "Scripting interface"
-msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
-
-#: ../../scripting/scripting-interface.rst:19
-msgid ""
-"Scripts can be edited in the editor found in the top part of the scrpiting "
-"interface."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:23
-#, fuzzy
-msgid "Execution"
-msgstr "Επιλογές"
-
-#: ../../scripting/scripting-interface.rst:25
-msgid ""
-"Pressing :guilabel:`Execute` will execute the script and print any output in "
-"the label at the bottom."
-msgstr ""
-
-#: ../../scripting/scripting-interface.rst:30
-#, fuzzy
-msgid "Changing Language"
-msgstr "Αλλαγή τιμών"
-
-#: ../../scripting/scripting-interface.rst:32
-msgid ""
-"The language of the script can be selected using the provided dropdown. "
-"Changing the language will also affect code highlighting."
-msgstr ""
-
 #: ../../theming/intro.rst:7 ../../theming/overview.rst:7
 msgid "Theming"
 msgstr "Επεξεργασία θεμάτων"
@@ -8324,8 +8081,8 @@ msgstr ""
 #: ../../theming/overview.rst:14
 #, fuzzy
 msgid ""
-"You can override many defaults that Zrythm uses by placing things in your :"
-"ref:`user path <configuration/preferences:Zrythm User Path>`."
+"You can override many defaults that Zrythm uses by placing things in "
+"your :ref:`user path <configuration/preferences:Zrythm User Path>`."
 msgstr ""
 "Επηρεάζει μόνο τις ρυθμίσεις που εκτυπώνονται με το :option:`-p`. Αυτό *δεν* "
 "θα επηρεάσει κανένα αρχείο στο :term:`Zrythm user path`."
@@ -8451,9 +8208,9 @@ msgid ""
 "under your Zrythm installation directory."
 msgstr ""
 "Για να παρακάμψετε το εικονικό θέμα του Zrythm με το δικό σας εικονικό θέμα, "
-"θα πρέπει να δημιουργήσετε έναν καινούριο κατάλογο παρόμοιο με το :file:"
-"`share/zrythm/themes/icons/zrythm-dark` κάτω από τον κατάλογο εγκατάστασης "
-"του Zrythm σας."
+"θα πρέπει να δημιουργήσετε έναν καινούριο κατάλογο παρόμοιο με "
+"το :file:`share/zrythm/themes/icons/zrythm-dark` κάτω από τον κατάλογο "
+"εγκατάστασης του Zrythm σας."
 
 #: ../../theming/overview.rst:71
 msgid ""
@@ -8525,14 +8282,14 @@ msgstr ""
 
 #: ../../tracks/automation.rst:39
 msgid ""
-"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
-"`Off` toggles in the track lane."
+"Automation can be enabled or disabled using the :guilabel:`On` "
+"and :guilabel:`Off` toggles in the track lane."
 msgstr ""
 
 #: ../../tracks/automation.rst:42
 msgid ""
-"Touch/latch modes can also be used to record automation live (see the :ref:"
-"`playback-and-recording/recording:Recording Automation` section)."
+"Touch/latch modes can also be used to record automation live (see "
+"the :ref:`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 
 #: ../../tracks/automation.rst:48
@@ -8621,11 +8378,11 @@ msgstr "Κομμάτι MIDI"
 #: ../../tracks/creating-tracks.rst:24
 #, fuzzy
 msgid ""
-":ref:`Instantiating a plugin <plugins-files/plugins/plugin-browser:"
-"Instantiating Plugins>` will cause new tracks to be created (unless the "
-"plugin was dropped in a particular location). If the plugin is an instrument "
-"plugin, an instrument track will be created. If the plugin is an effect, a "
-"bus track will be created."
+":ref:`Instantiating a plugin <plugins-files/plugins/plugin-"
+"browser:Instantiating Plugins>` will cause new tracks to be created (unless "
+"the plugin was dropped in a particular location). If the plugin is an "
+"instrument plugin, an instrument track will be created. If the plugin is an "
+"effect, a bus track will be created."
 msgstr ""
 "Τα πρόσθετα μπορούν να πατηθούν και να συρθούν από τον περιηγητή προσθέτων "
 "και να ριχτούν στον κενό χώρο στην λίστα κομματιών ή στον μίκτη για να "
@@ -8871,8 +8628,8 @@ msgstr "Το τμήμα fader για τον έλεγχο της έντασης �
 #: ../../tracks/inspector-page.rst:134
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
-"respective widgets. You can reset them to their default positions with :"
-"menuselection:`Right click --> Reset`."
+"respective widgets. You can reset them to their default positions "
+"with :menuselection:`Right click --> Reset`."
 msgstr ""
 "Για να αλλάξετε την ποσότητα του fader ή της ισορροπίας stereo, κάνετε κλικ "
 "και σύρετε τα αντίστοιχα γραφικά στοιχεία τους. Μπορείτε να τα επαναφέρετε "
@@ -8917,9 +8674,9 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:154
 #, fuzzy
 msgid ""
-"The track will still be processed, so if you are looking to decrease :term:"
-"`DSP` usage, try :ref:`disabling the track <tracks/track-operations:Channel "
-"Section>` (or individual plugins) instead."
+"The track will still be processed, so if you are looking to "
+"decrease :term:`DSP` usage, try :ref:`disabling the track <tracks/track-"
+"operations:Channel Section>` (or individual plugins) instead."
 msgstr ""
 "Το κομμάτι θα εξακολουθήσει να βρίσκεται σε επεξεργασία, οπότε αν ψάχνετε να "
 "μειώσετε τη :term:`DSP`, τότε προσπαθήστε να απενεργοποιήσετε κάποια "
@@ -9017,8 +8774,8 @@ msgstr "Διεπαφή κομματιών"
 #: ../../tracks/overview.rst:21
 #, fuzzy
 msgid ""
-"Most types of tracks have a corresponding channel that appears in the :ref:"
-"`Mixer <mixer>`. See :ref:`channels` for more info."
+"Most types of tracks have a corresponding channel that appears in "
+"the :ref:`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
 "Οι περισσότεροι τύποι κομματιών έχουν ένα αντίστοιχο κανάλι που εμφανίζεται "
 "στον :ref:`mixer`. Βλέπε :ref:`channels` για περισσότερες πληροφορίες."
@@ -9178,8 +8935,8 @@ msgstr "Επιλογή έργου"
 #: ../../tracks/track-operations.rst:14
 msgid ""
 "Tracks are selected by clicking on them, either in the tracklist or in the "
-"mixer. Multiple tracks can be selected by pressing and holding :kbd:"
-"`Control` while clicking them."
+"mixer. Multiple tracks can be selected by pressing and "
+"holding :kbd:`Control` while clicking them."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:17
@@ -9243,8 +9000,8 @@ msgstr ""
 #: ../../tracks/track-operations.rst:48
 msgid ""
 "The track name can be changed by double-clicking on it in the track view, in "
-"the track inspector, or in the channel. It can also be changed via the :"
-"guilabel:`Rename` context menu option."
+"the track inspector, or in the channel. It can also be changed via "
+"the :guilabel:`Rename` context menu option."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:60
@@ -9650,8 +9407,8 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:151
 msgid ""
-"For editing chords inside chord regions, see :ref:`editing/chord-editor:"
-"Chord Editor`."
+"For editing chords inside chord regions, see :ref:`editing/chord-"
+"editor:Chord Editor`."
 msgstr ""
 
 #: ../../tracks/track-types.rst:155
@@ -10200,8 +9957,8 @@ msgstr "Αποθήκευση του τρέχοντος έργου σε έναν 
 #: ../../zrythm-interface/main-toolbar.rst:42
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
-"Για περισσότερες πληροφορίες σχετικά με τα έργα, βλέπε την ενότητα :ref:"
-"`projects`."
+"Για περισσότερες πληροφορίες σχετικά με τα έργα, βλέπε την "
+"ενότητα :ref:`projects`."
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 #, fuzzy
@@ -10229,8 +9986,8 @@ msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
 msgstr ""
-"Εξαγωγή του γραφήματος δρομολόγησης ως εικόνας ή γραφήματος .dot. Βλέπε :ref:"
-"`export-routing-graph` για περισσότερες λεπτομέρειες."
+"Εξαγωγή του γραφήματος δρομολόγησης ως εικόνας ή γραφήματος .dot. "
+"Βλέπε :ref:`export-routing-graph` για περισσότερες λεπτομέρειες."
 
 #: ../../zrythm-interface/main-toolbar.rst:55
 #, fuzzy
@@ -10488,6 +10245,155 @@ msgid ""
 "clipping."
 msgstr ""
 
+#~ msgid "Undoes the last action."
+#~ msgstr "Βάζει το κομμάτι σε σίγαση."
+
+#~ msgid "Redoes the last undone action."
+#~ msgstr "Βάζει το κομμάτι σε σίγαση."
+
+#~ msgid "Returns the plugin at the given insert slot"
+#~ msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέση εισαγόμενου"
+
+#~ msgid "Returns the instrument at the given channel"
+#~ msgstr "Επιστρέφει το όργανο στο δοθέν κανάλι"
+
+#~ msgid "Returns the send instance at the given slot"
+#~ msgstr "Επιστρέφει την περίπτωση αποστολής στη δοθείσα θέση"
+
+#~ msgid "Returns a new midi note."
+#~ msgstr "Επιστρέφει μια καινούρια νότα MIDI."
+
+#~ msgid "Returns a new midi region."
+#~ msgstr "Επιστρέφει μια καινούρια νότα MIDI."
+
+#~ msgid "Returns the left or right port of the stereo pair."
+#~ msgstr "Επιστρέφει την αριστερή ή δεξιά θύρα ενός ζευγαριού στέρεο."
+
+#~ msgid "Returns the identifier of ``port``."
+#~ msgstr "Επιστρέφει το αναγνωριστικό της θύρας."
+
+#~ msgid ""
+#~ "Return a newly-created position as ``bars``.\\ ``beats``.\\ "
+#~ "``sixteenths``.\\ ``ticks``.\\ ``sub_tick``."
+#~ msgstr ""
+#~ "Επιστρέφει μια θέση που μόλις δημιουργήθηκε ως "
+#~ "bars.beats.sixteenths.ticks.sub_tick."
+
+#~ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
+#~ msgstr "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘."
+
+#~ msgid ""
+#~ "Returns a new track with name ``name`` to be placed at position ``idx`` "
+#~ "in the tracklist."
+#~ msgstr ""
+#~ "Επιστρέφει ένα καινούριο κομμάτι με όνομα προς τοποθέτηση στη θέση idx "
+#~ "στη λίστα κομματιών."
+
+#~ msgid "Returns the name of ``track``."
+#~ msgstr "Επιστρέφει το όνομα του κομματιού."
+
+#~ msgid "Returns the processor of ``track``."
+#~ msgstr "Επιστρέφει τον επεξεργαστή του κομματιού."
+
+#~ msgid "Returns the channel of ``track``."
+#~ msgstr "Επιστρέφει το κανάλι του κομματιού."
+
+#~ msgid ""
+#~ "Sets whether ``track`` is soloed or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "Ορίζει αν το κομμάτι είναι σε σίγαση ή όχι. Αυτό δημιουργεί μια δράση που "
+#~ "δεν μπορεί να αναιρεθεί και την εκτελεί."
+
+#~ msgid ""
+#~ "Sets whether ``track`` is muted or not. This creates an undoable action "
+#~ "and performs it."
+#~ msgstr ""
+#~ "Ορίζει αν το κομμάτι είναι σε σίγαση ή όχι. Αυτό δημιουργεί μια δράση που "
+#~ "δεν μπορεί να αναιρεθεί και την εκτελεί."
+
+#~ msgid ""
+#~ "Adds ``region`` to track ``track``. To be used for regions with lanes "
+#~ "(midi/audio)"
+#~ msgstr ""
+#~ "Προσθέτει περιοχή στο κομμάτι. Προς χρήση σε περιοχές με λωρίδες (MIDI/"
+#~ "ήχος)"
+
+#~ msgid "Returns the stereo in ports instance of the track processor."
+#~ msgstr "Επιστρέφει την περίπτωση αποστολής στη δοθείσα θέση"
+
+#~ msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
+#~ msgstr "Εισάγει κομμάτι στον δείκτη idx στη λίστα κομματιών."
+
+#~ msgid "Returns the track at ``pos`` in the tracklist."
+#~ msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
+
+#~ msgid "Returns the number of tracks in the tracklist."
+#~ msgstr "Επιστρέφει το όνομα του κομματιού."
+
+#~ msgid "API"
+#~ msgstr "Διεπαφή Προγραμματισμού Εφαρμογών (API)"
+
+#~ msgid "Returns the input port of the plugin at the given index."
+#~ msgstr "Επιστρέφει τη θύρα εισαγωγής του προσθέτου στον δοθέντα δείκτη."
+
+#~ msgid "Returns the output port of the plugin at the given index."
+#~ msgstr "Επιστρέφει τη θύρα εξαγόμενου του προσθέτου στον δοθέντα δείκτη."
+
+#~ msgid "Returns the PluginDescriptor matching the given URI."
+#~ msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέση εισαγόμενου"
+
+#~ msgid "Returns the tracklist for the project."
+#~ msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
+
+#~ msgid "Returns the undo manager for the project."
+#~ msgstr "Επιστρέφει το όνομα του κομματιού."
+
+#~ msgid "Return the Zrythm version as a string."
+#~ msgstr "Επιστροφή της έκδοσης του Zrythm ως κλωστή (string)."
+
+#~ msgid "Return the PluginManager instance."
+#~ msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
+
+#~ msgid "Return the currently loaded Project instance."
+#~ msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
+
+#~ msgid "Returns a NULL pointer."
+#~ msgstr "Επιστρέφει έναν ΜΗΔΑΜΙΝΟ δείκτη."
+
+#~ msgid "Examples"
+#~ msgstr "Παραδείγματα"
+
+#~ msgid ""
+#~ "The following examples are in the public domain (`CC 0 <https://"
+#~ "creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to copy and "
+#~ "modify them."
+#~ msgstr ""
+#~ "Τα ακόλουθα παραδείγματα αποτελούν κοινό κτήμα (`CC 0 <https://"
+#~ "creativecommons.org/publicdomain/zero/1.0/>`_). Αντιγράψτε και "
+#~ "τροποποιήστε ελεύθερα."
+
+#~ msgid "Create MIDI track with notes"
+#~ msgstr "Δημιουργία κομματιού MIDI με νότες"
+
+#~ msgid "Hello world"
+#~ msgstr "Γεια σου κόσμε"
+
+#~ msgid "Print all tracks"
+#~ msgstr "Εκτύπωση ονομάτων κομματιών"
+
+#~ msgid "Scripting Interface"
+#~ msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
+
+#~ msgid "Scripting interface"
+#~ msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
+
+#~ msgid "Execution"
+#~ msgstr "Επιλογές"
+
+#~ msgid "Changing Language"
+#~ msgstr "Αλλαγή τιμών"
+
 #~ msgid "Menu Actions"
 #~ msgstr "Ενέργειες μενού"
 
@@ -10571,8 +10477,8 @@ msgstr ""
 #~ "tools` and :ref:`common-operations`, with the added feature that curves "
 #~ "can be dragged up or down to change their `curviness`."
 #~ msgstr ""
-#~ "Η επεξεργασία εντός του ταξινόμου αυτοματισμού γενικά ακολουθεί τα :ref:"
-#~ "`edit-tools` και :ref:`common-operations`, με το επιπρόσθετο "
+#~ "Η επεξεργασία εντός του ταξινόμου αυτοματισμού γενικά ακολουθεί "
+#~ "τα :ref:`edit-tools` και :ref:`common-operations`, με το επιπρόσθετο "
 #~ "χαρακτηριστικό ότι οι καμπύλες μπορούν να συρθούν πάνω ή κάτω για να "
 #~ "αλλάξει η `curviness` τους."
 
@@ -10599,15 +10505,15 @@ msgstr ""
 #~ "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 #~ "operations`."
 #~ msgstr ""
-#~ "Η επεξεργασία στον ταξινόμο συγχορδιών ακολουθεί :ref:`edit-tools` και :"
-#~ "ref:`common-operations`."
+#~ "Η επεξεργασία στον ταξινόμο συγχορδιών ακολουθεί :ref:`edit-tools` "
+#~ "και :ref:`common-operations`."
 
 #~ msgid "Editors"
 #~ msgstr "Επεξεργαστές"
 
 #~ msgid ""
-#~ "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
-#~ "`common-operations`."
+#~ "Editing inside the MIDI arranger is covered in :ref:`edit-tools` "
+#~ "and :ref:`common-operations`."
 #~ msgstr ""
 #~ "Η επεξεργασία μέσα στον ταξινόμο MIDI καλύπτεται στο :ref:`edit-tools` "
 #~ "και :ref:`common-operations`."
@@ -10730,15 +10636,15 @@ msgstr ""
 
 #~ msgid ""
 #~ "Regions can be repeated, and hence they have :ref:`editable loop points "
-#~ "and a clip start position <editing/clip-editors/ruler:Markers>` in the :"
-#~ "doc:`Editor ruler <../../editing/clip-editors/ruler>` to modify the "
+#~ "and a clip start position <editing/clip-editors/ruler:Markers>` in "
+#~ "the :doc:`Editor ruler <../../editing/clip-editors/ruler>` to modify the "
 #~ "looping (repeating) behavior."
 #~ msgstr ""
-#~ "Οι περιοχές μπορούν να επαναληφθούν, και ως εκ τούτου έχουν :ref:"
-#~ "`επεξεργάσιμα σημεία λούπας και μια θέση εκκίνησης κλιπ <editing/clip-"
-#~ "editors/ruler:Loop Points>` στον :doc:`Επεξεργαστή Χάρακα <../../editing/"
-#~ "clip-editors/ruler>` για την τροποποίηση της συμπεριφοράς λούπας "
-#~ "(επανάληψης)."
+#~ "Οι περιοχές μπορούν να επαναληφθούν, και ως εκ τούτου "
+#~ "έχουν :ref:`επεξεργάσιμα σημεία λούπας και μια θέση εκκίνησης κλιπ "
+#~ "<editing/clip-editors/ruler:Loop Points>` στον :doc:`Επεξεργαστή Χάρακα "
+#~ "<../../editing/clip-editors/ruler>` για την τροποποίηση της συμπεριφοράς "
+#~ "λούπας (επανάληψης)."
 
 #~ msgid "Looping (loop-resizing) a region"
 #~ msgstr "Λουπάρισμα (αλλαγή μεγέθους λούπας) περιοχής"
@@ -10749,8 +10655,8 @@ msgstr ""
 #~ msgid ""
 #~ "Linked regions can be created by holding down :kbd:`Alt` while moving."
 #~ msgstr ""
-#~ "Οι συνδεόμενες περιοχές μπορούν να δημιουργηθούν κρατώντας πατημένο :kbd:"
-#~ "`Alt` κατά τη μετακίνηση."
+#~ "Οι συνδεόμενες περιοχές μπορούν να δημιουργηθούν κρατώντας "
+#~ "πατημένο :kbd:`Alt` κατά τη μετακίνηση."
 
 #~ msgid ""
 #~ "You can verify that a link exists on a region by the link icon that shows "
@@ -10770,8 +10676,8 @@ msgstr ""
 #~ msgid ""
 #~ "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
 #~ msgstr ""
-#~ "Το υπόλοιπο μέρος της λίστας κομματιών αναφέρεται συνοπτικά στη :ref:"
-#~ "`tracklist`."
+#~ "Το υπόλοιπο μέρος της λίστας κομματιών αναφέρεται συνοπτικά "
+#~ "στη :ref:`tracklist`."
 
 #~ msgid ""
 #~ "For more details about track operations, see the :ref:`tracks` section."
@@ -10846,8 +10752,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "Zrythm can import MIDI and audio files into the project. The files can be "
-#~ "imported by dragging and dropping from your computer or from the :doc:"
-#~ "`file browser <file-browser>` into a track."
+#~ "imported by dragging and dropping from your computer or from "
+#~ "the :doc:`file browser <file-browser>` into a track."
 #~ msgstr ""
 #~ "Το Zrythm μπορεί να εισαγάγει αρχεία MIDI και ήχου στο έργο. Τα αρχεία "
 #~ "μπορούν να εισαχθούν σύροντας και ρίχνοντάς τα από τον υπολογιστή σας ή "
@@ -10914,8 +10820,8 @@ msgstr ""
 #~ msgstr "Μέση τετραγωνική ρίζα (Root Mean Square) της τιμής του σήματος."
 
 #~ msgid ""
-#~ "The controls available for controlling the signal flow are covered in :"
-#~ "ref:`tracks/track-controls:Signal Flow`."
+#~ "The controls available for controlling the signal flow are covered "
+#~ "in :ref:`tracks/track-controls:Signal Flow`."
 #~ msgstr ""
 #~ "Οι ακόλουθοι χειριστές είναι διαθέσιμοι για τον έλεγχο της ροής του "
 #~ "σήματος."
@@ -10948,8 +10854,8 @@ msgstr ""
 #~ msgstr "Προβολή αυτοματισμών"
 
 #~ msgid ""
-#~ "Toggle the visibility of :ref:`automation tracks <tracks/automation:"
-#~ "Automation Tracks>`."
+#~ "Toggle the visibility of :ref:`automation tracks <tracks/"
+#~ "automation:Automation Tracks>`."
 #~ msgstr "Εναλλάσσει την ορατότητα των κομματιών αυτοματισμού."
 
 #~ msgid "Show UI"
@@ -10974,8 +10880,8 @@ msgstr ""
 #~ msgstr "Διαγραφή κομματιών"
 
 #~ msgid ""
-#~ "Tracks can be deleted by right-clicking them and selecting :guilabel:"
-#~ "`Delete`."
+#~ "Tracks can be deleted by right-clicking them and "
+#~ "selecting :guilabel:`Delete`."
 #~ msgstr ""
 #~ "Τα κομμάτια μπορούν να διαγραφούν κάνοντας δεξί κλικ πάνω τους και "
 #~ "επιλέγοντας :zbutton:`Delete`."
@@ -11003,8 +10909,8 @@ msgstr ""
 #~ msgstr "Βλέπε :option:`zrythm --print-settings`."
 
 #~ msgid ""
-#~ "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/wayland."
-#~ "html>`_"
+#~ "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/"
+#~ "wayland.html>`_"
 #~ msgstr ""
 #~ "`Επισκόπηση GTK + CSS <https://developer.gnome.org/gtk3/stable/chap-css-"
 #~ "overview.html>`_"
@@ -11016,8 +10922,8 @@ msgstr ""
 #~ msgstr "Αυτό είναι το :term:`Zrythm user path`."
 
 #~ msgid ""
-#~ "A proprietary plugin standard, mainly used on MacOS. We recommend using :"
-#~ "term:`LV2` instead."
+#~ "A proprietary plugin standard, mainly used on MacOS. We recommend "
+#~ "using :term:`LV2` instead."
 #~ msgstr ""
 #~ "Ένα ιδιωτικό πρότυπο προσθέτων που χρησιμοποιείται κυρίως στα MacOS. Αντί "
 #~ "αυτών, προτείνουμε τη χρήση :term:`LV2`."
@@ -11203,12 +11109,12 @@ msgstr ""
 #~ msgstr "Συντομεύσεις επεξεργαστή"
 
 #~ msgid ""
-#~ "Shortcuts can be overridden by placing a file named :file:`shortcuts."
-#~ "yaml` under the :term:`Zrythm user path`."
+#~ "Shortcuts can be overridden by placing a file "
+#~ "named :file:`shortcuts.yaml` under the :term:`Zrythm user path`."
 #~ msgstr ""
 #~ "Το Zrythm θα θυμάται τα σκαναρισμένα πρόσθετα VST και θα αποθηκεύσει "
-#~ "αυτές τις πληροφορίες στο :file:`cached_plugin_descriptors.yaml` στο :"
-#~ "term:`Zrythm user path`."
+#~ "αυτές τις πληροφορίες στο :file:`cached_plugin_descriptors.yaml` "
+#~ "στο :term:`Zrythm user path`."
 
 #~ msgid "LV2 Scan"
 #~ msgstr "Σκανάρισμα LV2"
@@ -11229,8 +11135,8 @@ msgstr ""
 
 #~ msgid "You can bypass this behavior by passing :envvar:`LV2_PATH`."
 #~ msgstr ""
-#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την εντολή :"
-#~ "envvar:`VST_PATH` και :envvar:`VST3_PATH`."
+#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την "
+#~ "εντολή :envvar:`VST_PATH` και :envvar:`VST3_PATH`."
 
 #~ msgid "VST2/VST3 Scan"
 #~ msgstr "Σκανάρισμα VST2/VST3"
@@ -11258,18 +11164,18 @@ msgstr ""
 #~ msgstr "Το Zrythm θα σκανάρει πρόσθετα VST2 στα εξής μονοπάτια,"
 
 #~ msgid ""
-#~ "You can bypass this behavior by passing :envvar:`VST_PATH` and :envvar:"
-#~ "`VST3_PATH`, respectively."
+#~ "You can bypass this behavior by passing :envvar:`VST_PATH` "
+#~ "and :envvar:`VST3_PATH`, respectively."
 #~ msgstr ""
-#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την εντολή :"
-#~ "envvar:`VST_PATH` και :envvar:`VST3_PATH`."
+#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την "
+#~ "εντολή :envvar:`VST_PATH` και :envvar:`VST3_PATH`."
 
 #~ msgid ""
-#~ "Zrythm will scan for VST plugins in the paths specified in the :ref:"
-#~ "`preferences <configuration/preferences:Preferences>`."
+#~ "Zrythm will scan for VST plugins in the paths specified in "
+#~ "the :ref:`preferences <configuration/preferences:Preferences>`."
 #~ msgstr ""
-#~ "Το Zrythm θα σκανάρει πρόσθετα VST στα μονοπάτια που προσδιορίζονται στα :"
-#~ "ref:`vst-paths`."
+#~ "Το Zrythm θα σκανάρει πρόσθετα VST στα μονοπάτια που προσδιορίζονται "
+#~ "στα :ref:`vst-paths`."
 
 #~ msgid ""
 #~ "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
@@ -11279,12 +11185,6 @@ msgstr ""
 #~ "Το Zrythm θα σκανάρει πρόσθετα VST στα μονοπάτια που προσδιορίζονται "
 #~ "στους `προορισμούς προσθέτων VST στα Mac OS X και macOS <https://"
 #~ "helpcenter.steinberg.de/hc/en-us/articles/115000171310>`_."
-
-#~ msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
-#~ msgstr ":file:`/Library/Audio/Plug-Ins/VST` για VST2"
-
-#~ msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
-#~ msgstr ":file:`/Library/Audio/Plug-Ins/VST3` για VST3"
 
 #~ msgid "Zrythm will scan for DSSI plugins in the following paths,"
 #~ msgstr "Το Zrythm θα σκανάρει πρόσθετα VST2 στα εξής μονοπάτια,"
@@ -11296,8 +11196,8 @@ msgstr ""
 
 #~ msgid "You can bypass this behavior by passing :envvar:`DSSI_PATH`."
 #~ msgstr ""
-#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την εντολή :"
-#~ "envvar:`VST_PATH` και :envvar:`VST3_PATH`."
+#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την "
+#~ "εντολή :envvar:`VST_PATH` και :envvar:`VST3_PATH`."
 
 #~ msgid "Zrythm will scan for LADSPA plugins in the following paths,"
 #~ msgstr "Το Zrythm θα σκανάρει πρόσθετα VST2 στα εξής μονοπάτια,"
@@ -11309,8 +11209,8 @@ msgstr ""
 
 #~ msgid "You can bypass this behavior by passing :envvar:`LADSPA_PATH`."
 #~ msgstr ""
-#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την εντολή :"
-#~ "envvar:`VST_PATH` και :envvar:`VST3_PATH`."
+#~ "Μπορείτε να παρακάμψετε αυτή τη συμπεριφορά ενεργοποιώντας την "
+#~ "εντολή :envvar:`VST_PATH` και :envvar:`VST3_PATH`."
 
 #~ msgid "the directory for local application data on Windows"
 #~ msgstr "ο κατάλογος για τα τοπικά δεδομένα της εφαρμογής στα Windows"
@@ -11363,11 +11263,12 @@ msgstr ""
 #~ "και τα δύο παρασκήνια JACK MIDI και JACK ήχου."
 
 #~ msgid ""
-#~ "All of the settings mentioned here are also available in the :ref:"
-#~ "`preferences`, so don't worry if you selected the wrong settings."
+#~ "All of the settings mentioned here are also available in "
+#~ "the :ref:`preferences`, so don't worry if you selected the wrong settings."
 #~ msgstr ""
-#~ "Όλες οι ρυθμίσεις που αναφέρονται εδώ είναι διαθέσιμες επίσης στις :ref:"
-#~ "`preferences`, οπότε μην ανησυχείτε αν επιλέξατε τις λάθος ρυθμίσεις."
+#~ "Όλες οι ρυθμίσεις που αναφέρονται εδώ είναι διαθέσιμες επίσης "
+#~ "στις :ref:`preferences`, οπότε μην ανησυχείτε αν επιλέξατε τις λάθος "
+#~ "ρυθμίσεις."
 
 #~ msgid ""
 #~ "Click on the :guilabel:`View Source` button at the top of the page to "
@@ -11420,8 +11321,9 @@ msgstr ""
 #~ "Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI FX/"
 #~ "Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
 #~ msgstr ""
-#~ "Οι εισαγωγές και οι αποστολές καλύπτονται στο :ref:`tracks/inspector-page:"
-#~ "MIDI FX/Inserts` και :ref:`tracks/inspector-page:Aux Sends` αντίστοιχα."
+#~ "Οι εισαγωγές και οι αποστολές καλύπτονται στο :ref:`tracks/inspector-"
+#~ "page:MIDI FX/Inserts` και :ref:`tracks/inspector-page:Aux Sends` "
+#~ "αντίστοιχα."
 
 #~ msgid ""
 #~ "By double clicking the port, you can select a port to connect it to, or "
@@ -11498,8 +11400,8 @@ msgstr ""
 #~ "εξηγείται στο :ref:`editor-ruler`."
 
 #~ msgid ""
-#~ "These chords act similarly to the piano roll keys explained in :ref:"
-#~ "`piano-roll-keys`."
+#~ "These chords act similarly to the piano roll keys explained "
+#~ "in :ref:`piano-roll-keys`."
 #~ msgstr ""
 #~ "Αυτές οι συγχορδίες συμπεριφέρονται παρόμοια με τα πλήκτρα ρολού πιάνου "
 #~ "που εξηγούνται στο :ref:`piano-roll-keys`."
@@ -11511,12 +11413,12 @@ msgstr ""
 
 #~ msgid ""
 #~ "It consists of the toolbar discussed in :ref:`editor-toolbar` at the very "
-#~ "top, a smaller space containing extra controls, the ruler discussed in :"
-#~ "ref:`editor-ruler`, the piano roll keys on the left, the piano roll "
+#~ "top, a smaller space containing extra controls, the ruler discussed "
+#~ "in :ref:`editor-ruler`, the piano roll keys on the left, the piano roll "
 #~ "(MIDI) arranger on the right and the velocity editor at the bottom."
 #~ msgstr ""
-#~ "Αποτελείται από μια γραμμή εργαλείων στο πάνω μέρος που εξηγείται στο :"
-#~ "ref:`editor-toolbar`, ένα μικρότερο κενό που περιέχει επιπρόσθετους "
+#~ "Αποτελείται από μια γραμμή εργαλείων στο πάνω μέρος που εξηγείται "
+#~ "στο :ref:`editor-toolbar`, ένα μικρότερο κενό που περιέχει επιπρόσθετους "
 #~ "χειριστές, έναν χάρακα που εξηγείται στο :ref:`editor-ruler`, τα πλήκτρα "
 #~ "ρολού πιάνου στα αριστερά, τον ταξινόμο ρολού πιάνου (MIDI) στα δεξιά και "
 #~ "τον επεξεργαστή ταχύτητας στο κάτω μέρος."
@@ -11647,8 +11549,9 @@ msgstr ""
 #~ "you to reposition the playhead."
 #~ msgstr ""
 #~ "Κάνοντας κλικ και σύροντας πάνω σε κενό χώρο στον χάρακα (εκτός από το "
-#~ "πάνω μέρος, το οποίο χρησιμοποιείται για την επιλογή εύρους - βλέπε :term:"
-#~ "`Range`) θα σας επιτρέψει να αλλάξετε θέση την κεφαλή αναπαραγωγής."
+#~ "πάνω μέρος, το οποίο χρησιμοποιείται για την επιλογή εύρους - "
+#~ "βλέπε :term:`Range`) θα σας επιτρέψει να αλλάξετε θέση την κεφαλή "
+#~ "αναπαραγωγής."
 
 #~ msgid ""
 #~ "It contains a snap section, a quantize section, and an audio region "
@@ -11711,12 +11614,13 @@ msgstr ""
 #~ "νότες στη λωρίδα 2."
 
 #~ msgid ""
-#~ "Audio and MIDI FX tracks (covered in :ref:`audio-bus-track` and :ref:"
-#~ "`midi-bus-track` respectively) can be created for sending additional "
-#~ "signals to them, in addition to the channel's main direct output."
+#~ "Audio and MIDI FX tracks (covered in :ref:`audio-bus-track` "
+#~ "and :ref:`midi-bus-track` respectively) can be created for sending "
+#~ "additional signals to them, in addition to the channel's main direct "
+#~ "output."
 #~ msgstr ""
-#~ "Κομμάτια εφέ ήχου και MIDI (καλύπτονται στα :ref:`audio-bus-track` και :"
-#~ "ref:`midi-bus-track` αντίστοιχα) μπορούν να δημιουργηθούν για την "
+#~ "Κομμάτια εφέ ήχου και MIDI (καλύπτονται στα :ref:`audio-bus-track` "
+#~ "και :ref:`midi-bus-track` αντίστοιχα) μπορούν να δημιουργηθούν για την "
 #~ "αποστολή επιπρόσθετων σημάτων προς αυτά, συμπεριλαμβανομένης της κύριας "
 #~ "απευθείας εξόδου του καναλιού."
 
@@ -11917,8 +11821,8 @@ msgstr ""
 #~ "αυτοματισμού, κάνετε κλικ στο ακριανό εικονίδιο στο κομμάτι MIDI."
 
 #~ msgid ""
-#~ "More information about automation tracks can be found in the :ref:"
-#~ "`automation` chapter."
+#~ "More information about automation tracks can be found in "
+#~ "the :ref:`automation` chapter."
 #~ msgstr ""
 #~ "Για περισσότερες πληροφορίες σχετικά με τα κομμάτια αυτοματισμού μπορούν "
 #~ "να βρεθούν στην ενότητα :ref:`automation`."
@@ -11927,8 +11831,8 @@ msgstr ""
 #~ msgstr "Μεταμορφώσεις MIDI"
 
 #~ msgid ""
-#~ "Each track will display its page in the inspector when selected. See :ref:"
-#~ "`track-inspector` for more details."
+#~ "Each track will display its page in the inspector when selected. "
+#~ "See :ref:`track-inspector` for more details."
 #~ msgstr ""
 #~ "Κάθε κομμάτι θα προβάλει τη σελίδα του στον επιθεωρητή όταν επιλεγεί. "
 #~ "Βλέπε :ref:`track-inspector` για περισσότερες πληροφορίες."
@@ -12151,8 +12055,8 @@ msgstr ""
 #~ msgid ""
 #~ "The panning algorithm to use when applying pan on mono signals. See the "
 #~ "graph below for the different curves as you move the pan from left to "
-#~ "right. We recommend leaving it as the default (Sine). See https://www.cs."
-#~ "cmu.edu/~music/icm-online/readings/panlaws/index.html for more "
+#~ "right. We recommend leaving it as the default (Sine). See https://"
+#~ "www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html for more "
 #~ "information."
 #~ msgstr ""
 #~ "Ο αλγόριθμος παναρίσματος προς χρήση κατά την εφαρμογή παναρίσματος στα "
@@ -12164,8 +12068,8 @@ msgstr ""
 
 #~ msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 #~ msgstr ""
-#~ "Αλγόριθμοι παναρίσματος (:blue:`ημιτονοειδές`, :red:`τετραγωνική ρίζα`, :"
-#~ "green:`γραμμικό`)."
+#~ "Αλγόριθμοι παναρίσματος (:blue:`ημιτονοειδές`, :red:`τετραγωνική "
+#~ "ρίζα`, :green:`γραμμικό`)."
 
 #~ msgid "The :term:`Pan law` to use when applying pan on mono signals."
 #~ msgstr ""
@@ -12242,8 +12146,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "For a list of supported languages and their translation status, or to "
-#~ "translate Zrythm into your language, see `Weblate <https://hosted.weblate."
-#~ "org/projects/zrythm/>`_."
+#~ "translate Zrythm into your language, see `Weblate <https://"
+#~ "hosted.weblate.org/projects/zrythm/>`_."
 #~ msgstr ""
 #~ "Για μια λίστα των υποστηριζόμενων γλωσσών και την κατάσταση μετάφρασής "
 #~ "τους, ή για τη μετάφραση του Zrythm στη γλώσσα σας, βλέπε `Weblate "
@@ -12283,8 +12187,8 @@ msgstr ""
 
 #~ msgid "Editing inside the Editor tab is covered in :ref:`editors`."
 #~ msgstr ""
-#~ "Η επεξεργασία μέσα στην καρτέλα επεξεργαστή καλύπτεται στους :ref:"
-#~ "`editors`."
+#~ "Η επεξεργασία μέσα στην καρτέλα επεξεργαστή καλύπτεται "
+#~ "στους :ref:`editors`."
 
 #~ msgid ""
 #~ "The Piano Roll, or MIDI Arranger, is the most commonly used editor. It "
@@ -12316,8 +12220,8 @@ msgstr ""
 #~ msgid ""
 #~ "The automation editor is covered in detail in :ref:`automation-editor`."
 #~ msgstr ""
-#~ "Ο επεξεργαστής αυτοματισμού καλύπτεται με λεπτομέρεια στο :ref:"
-#~ "`automation-editor`."
+#~ "Ο επεξεργαστής αυτοματισμού καλύπτεται με λεπτομέρεια "
+#~ "στο :ref:`automation-editor`."
 
 #~ msgid ""
 #~ "The audio editor is used to view the contents of audio regions. The audio "
@@ -12381,8 +12285,8 @@ msgstr ""
 #~ "The first tab is the plugin browser, which is explained in :ref:`plugin-"
 #~ "browser`."
 #~ msgstr ""
-#~ "Η πρώτη καρτέλα είναι ο περιηγητής προσθέτων, ο οποίος εξηγείται στο :ref:"
-#~ "`plugin-browser`."
+#~ "Η πρώτη καρτέλα είναι ο περιηγητής προσθέτων, ο οποίος εξηγείται "
+#~ "στο :ref:`plugin-browser`."
 
 #~ msgid "The control room is covered in :ref:`control-room`."
 #~ msgstr "Η αίθουσα ελέγχου καλύπτεται στην :ref:`control-room`."
@@ -12596,15 +12500,16 @@ msgstr ""
 
 #~ msgid ""
 #~ "Zrythm will auto-connect to the devices specified in :ref:`configuration/"
-#~ "preferences/intro:Audio inputs` and :ref:`configuration/preferences/intro:"
-#~ "MIDI controllers` and make these devices available in the :ref:`track "
-#~ "inputs <tracks/inspector-page:Inputs>` (as below) and other places."
+#~ "preferences/intro:Audio inputs` and :ref:`configuration/preferences/"
+#~ "intro:MIDI controllers` and make these devices available in "
+#~ "the :ref:`track inputs <tracks/inspector-page:Inputs>` (as below) and "
+#~ "other places."
 #~ msgstr ""
-#~ "Το Zrythm θα συνδεθεί αυτόματα στις συσκευές που προσδιορίζονται στο :ref:"
-#~ "`configuration/preferences/intro:Audio inputs` και :ref:`configuration/"
-#~ "preferences/intro:MIDI controllers` και θα καταστήσει αυτές τις συσκεύες "
-#~ "διαθέσιμες στο :ref:`track inputs <tracks/inspector-page:Inputs>` (όπως "
-#~ "παρακάτω) και σε άλλα μέρη."
+#~ "Το Zrythm θα συνδεθεί αυτόματα στις συσκευές που προσδιορίζονται "
+#~ "στο :ref:`configuration/preferences/intro:Audio inputs` "
+#~ "και :ref:`configuration/preferences/intro:MIDI controllers` και θα "
+#~ "καταστήσει αυτές τις συσκεύες διαθέσιμες στο :ref:`track inputs <tracks/"
+#~ "inspector-page:Inputs>` (όπως παρακάτω) και σε άλλα μέρη."
 
 #~ msgid ""
 #~ "We want to provide a friendly and harassment-free environment so that "
@@ -12673,8 +12578,8 @@ msgstr ""
 #~ msgid ""
 #~ "The backups are saved in the project's directory, under :file:`backups`."
 #~ msgstr ""
-#~ "Τα αντίγραφα ασφαλείας αποθηκεύονται στον κατάλογο του έργου, στα :file:"
-#~ "`backups`."
+#~ "Τα αντίγραφα ασφαλείας αποθηκεύονται στον κατάλογο του έργου, "
+#~ "στα :file:`backups`."
 
 #~ msgid ""
 #~ "Displays the log, which gets updated real-time. Preferences Shows the "
@@ -12721,8 +12626,8 @@ msgstr ""
 #~ msgstr "Χειριστές για παύση, αναπαραγωγή, ηχογράφηση, κλπ."
 
 #~ msgid ""
-#~ "More information about working with the transport bar is covered in :ref:"
-#~ "`transport-controls`."
+#~ "More information about working with the transport bar is covered "
+#~ "in :ref:`transport-controls`."
 #~ msgstr ""
 #~ "Περισσότερες πληροφορίες όσον αφορά τη δουλειά με την μπάρα μεταφοράς "
 #~ "καλύπτεται στους :ref:`transport-controls`."
@@ -12852,9 +12757,9 @@ msgstr ""
 #~ msgstr "Ιχνηλάτης προβλημάτων"
 
 #~ msgid ""
-#~ "The issue tracker can be found on our `Redmine instance <https://redmine."
-#~ "zrythm.org/projects/zrythm/issues>`_. You can use this to report bugs or "
-#~ "give feedback."
+#~ "The issue tracker can be found on our `Redmine instance <https://"
+#~ "redmine.zrythm.org/projects/zrythm/issues>`_. You can use this to report "
+#~ "bugs or give feedback."
 #~ msgstr ""
 #~ "Ο ιχνηλάτης προβλημάτων μπορεί να βρεθεί στο `Redmine instance <https://"
 #~ "redmine.zrythm.org/projects/zrythm/issues>`_. Μπορείτε να τον "
@@ -12864,8 +12769,8 @@ msgstr ""
 #~ msgstr "Πηγαίος κώδικας"
 
 #~ msgid ""
-#~ "Zrythm's source code can be found on our `CGit instance <https://git."
-#~ "zrythm.org/cgit/zrythm/>`_."
+#~ "Zrythm's source code can be found on our `CGit instance <https://"
+#~ "git.zrythm.org/cgit/zrythm/>`_."
 #~ msgstr ""
 #~ "Ο πηγαίος κώδικας του Zrythm μπορεί να βρεθεί στο `CGit instance μας "
 #~ "<https://git.zrythm.org/cgit/zrythm/>`_."
@@ -12874,8 +12779,8 @@ msgstr ""
 #~ msgstr "Παλαιότερες εκδόσεις"
 
 #~ msgid ""
-#~ "Older releases of Zrythm can be found on the `Releases page <https://www."
-#~ "zrythm.org/releases>`_"
+#~ "Older releases of Zrythm can be found on the `Releases page <https://"
+#~ "www.zrythm.org/releases>`_"
 #~ msgstr ""
 #~ "Παλαιότερες κυκλοφορίες του Zrythm μπορούν να βρεθούν στη `σελίδα "
 #~ "κυκλοφοριών <https://www.zrythm.org/releases>`_"
