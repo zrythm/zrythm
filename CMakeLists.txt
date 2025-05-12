@@ -374,18 +374,30 @@ if(WIN32)
   )
 endif()
 
-if(APPLE AND CMAKE_C_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wno-documentation)
-endif()
-
 if(OS_GNU AND compiler_gnulike)
   # drop unused library dependencies
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
 endif()
 
-# compile args
 add_library(_zrythm_compile_options INTERFACE)
 add_library(_zrythm_warning_flags INTERFACE)
+
+if(ZRYTHM_OPTIMIZED_BUILD)
+  # LTO
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT ipo_supported)
+  if(ipo_supported)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+  endif()
+
+  if(compiler_gnulike)
+    target_compile_options(_zrythm_compile_options INTERFACE -ffunction-sections -fdata-sections)
+    target_link_options(_zrythm_compile_options INTERFACE -Wl,--gc-sections)
+  elseif(MSVC)
+    target_link_options(_zrythm_compile_options INTERFACE /OPT:ICF)
+  endif()
+endif()
+
 if(compiler_gnulike)
   target_compile_options(_zrythm_warning_flags INTERFACE -Wall -Wextra) # -Weffc++)
   if(compiler_is_clang)
@@ -431,15 +443,15 @@ if(ZRYTHM_EXTRA_OPTIMIZATIONS)
       -ffast-math -freciprocal-math
       # the following 2 taken from DISTRHO-Ports, need testing
       -ftree-vectorize -funroll-loops)
-    if(NOT APPLE)
-      target_compile_options(_zrythm_compile_options INTERFACE -fprefetch-loop-arrays)
-    endif()
 
     # -O1 turns this on, but it may break backtraces so explicitly turn it
     # off on builds supposed to be debuggable
     # target_compile_options(_zrythm_compile_options INTERFACE -fno-omit-frame-pointer)
   elseif(MSVC)
     target_compile_options(_zrythm_compile_options INTERFACE /fp:fast)
+  endif()
+  if(compiler_is_gcc)
+    target_compile_options(_zrythm_compile_options INTERFACE -fprefetch-loop-arrays)
   endif()
 endif()
 
@@ -654,9 +666,6 @@ target_link_libraries(_zrythm_all_compile_options INTERFACE
   zrythm::strict_warning_flags
 )
 add_library(zrythm::all_compile_options ALIAS _zrythm_all_compile_options)
-
-# Linker libs/flags
-set(zrythm_link_args)
 
 # Sanitizers
 add_library(_sanitizers_lib INTERFACE)

@@ -35,7 +35,7 @@ endif()
 if(OS_GNU)
   configure_file(zrythm_gdb.in ${prog_name_lowercase}_gdb @ONLY)
   configure_file(zrythm_valgrind.in ${prog_name_lowercase}_valgrind @ONLY)
-  install(PROGRAMS 
+  install(PROGRAMS
     ${CMAKE_CURRENT_BINARY_DIR}/${prog_name_lowercase}_gdb
     ${CMAKE_CURRENT_BINARY_DIR}/${prog_name_lowercase}_valgrind
     DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -75,7 +75,7 @@ add_custom_command(
   OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
     "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in.in" ${app_id}
-  COMMAND "${XMLLINT_EXECUTABLE}" --format --output 
+  COMMAND "${XMLLINT_EXECUTABLE}" --format --output
     "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
     "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in.in"
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
@@ -86,7 +86,7 @@ add_custom_target(appdata-xml ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appdata
 if(ITSTOOL_EXECUTABLE AND FALSE)
   add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
-    COMMAND 
+    COMMAND
     ${ITSTOOL_EXECUTABLE}
       --join "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
       "--its=${appstream_its_rules}"
@@ -131,8 +131,8 @@ if(APPSTREAMCLI_EXECUTABLE)
     NAME appstream-cli-validate-appdata
     COMMAND ${APPSTREAMCLI_EXECUTABLE} validate ${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}
     )
-    set_tests_properties(appstream-cli-validate-appdata 
-    PROPERTIES 
+    set_tests_properties(appstream-cli-validate-appdata
+    PROPERTIES
     LABELS "data"
     DEPENDS appdata-xml-merged
     )

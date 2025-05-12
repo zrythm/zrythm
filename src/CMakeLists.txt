@@ -56,7 +56,6 @@ target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_dsp_lib)
 
 target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_gui_lib)
-target_link_options(zrythm PRIVATE ${zrythm_link_args})
 
 if(OS_GNU)
   add_dependencies(zrythm appdata-xml-merged)
