@@ -13,7 +13,8 @@ constexpr const char * CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME =
   "cached-plugins.json";
 
 using namespace zrythm;
-using namespace zrythm::gui::old_dsp::plugins;
+namespace zrythm::gui::old_dsp::plugins
+{
 
 fs::path
 CachedPluginDescriptors::get_file_path ()
@@ -240,3 +241,5 @@ from_json (const nlohmann::json &j, CachedPluginDescriptors &p)
   j.at (CachedPluginDescriptors::kBlacklistedSha1sKey)
     .get_to (p.blacklisted_sha1s_);
 }
+
+} // namespace zrythm::gui::old_dsp::plugin

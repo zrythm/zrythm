@@ -1839,7 +1839,7 @@ from_json (const nlohmann::json &j, Channel &c)
   j.at (Channel::kInsertsKey).get_to (c.inserts_);
   for (
     const auto &[index, send_json] :
-    std::views::enumerate (j.at (Channel::kSendsKey)))
+    utils::views::enumerate (j.at (Channel::kSendsKey)))
     {
       if (send_json.is_null ())
         continue;

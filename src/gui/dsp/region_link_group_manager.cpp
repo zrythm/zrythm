@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/dsp/region_link_group_manager.h"
 #include "utils/logger.h"
+#include "utils/views.h"
 
 bool
 RegionLinkGroupManager::validate () const
@@ -59,7 +60,7 @@ from_json (const nlohmann::json &j, RegionLinkGroupManager &mgr)
 {
   for (
     const auto &[index, group_json] :
-    std::views::enumerate (j.at (RegionLinkGroupManager::kGroupsKey)))
+    utils::views::enumerate (j.at (RegionLinkGroupManager::kGroupsKey)))
     {
       auto group = std::make_unique<RegionLinkGroup> (index);
       from_json (group_json, *group);
