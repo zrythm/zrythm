@@ -413,7 +413,7 @@ msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
 msgstr ""
-"Pots crear el teu propi paquet en clicar el botó :guilabel:`Add ` sota la "
+"Pots crear el teu propi paquet en clicar el botó :guilabel:`Add` sota la "
 "llista de paquets predefinits d'acords."
 
 #: ../../chords-and-scales/chord-pad.rst:74
@@ -449,7 +449,7 @@ msgid ""
 "Clicking on the :guilabel:`Save Preset` button in the top part of the chord "
 "pad will allow you to save the current chord configuration in a preset."
 msgstr ""
-"En clicar el botó :guilabel:`Save Preset`a la part superior del pad d'acords "
+"En clicar el botó :guilabel:`Save Preset` a la part superior del pad d'acords "
 "podràs desar la configuració actual de l'acord en un preajust."
 
 #: ../../chords-and-scales/chord-pad.rst:100
@@ -4342,8 +4342,8 @@ msgid ""
 "See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
 "`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 msgstr ""
-"Consulta :ref:`plugins-files/plugins/scanning:Explorant complements` i :ref:"
-"`plugins-files/plugins/plugin-browser:Instal·lant complements`."
+"Consulta :ref:`plugins-files/plugins/scanning:Scanning for Plugins` i :ref:"
+"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 
 #: ../../getting-started/faq.rst:95
 msgid "How do I import an audio/MIDI file?"
@@ -4352,7 +4352,7 @@ msgstr "Com importar un fitxer d'àudio/MIDI?"
 #: ../../getting-started/faq.rst:97
 msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
 msgstr ""
-"Consulta :ref:`plugins-files/audio-midi-files/file-browser:Importar fitxers`."
+"Consulta :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
 
 #: ../../getting-started/faq.rst:100
 msgid "Can I use ASIO?"
@@ -4742,7 +4742,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:36
 msgid "More settings are available in the :ref:`preferences`."
-msgstr "Hi ha més configuracions disponibles a :ref:`preferències`."
+msgstr "Hi ha més configuracions disponibles a :ref:`preferences`."
 
 #: ../../getting-started/running-zrythm.rst:40
 msgid "Plugin Scan"
@@ -5887,7 +5887,7 @@ msgid ""
 "Click the :guilabel:`Add` button on the left side of a macro knob to add "
 "inputs to modulate the macro knob."
 msgstr ""
-"Clica al botó :guilabel:`Add ` al costat esquerre d'una rodeta macro per a "
+"Clica al botó :guilabel:`Add` al costat esquerre d'una rodeta macro per a "
 "afegir entrades per a modular les rodetes macro."
 
 #: ../../modulators/intro.rst:66
@@ -7712,7 +7712,7 @@ msgid ""
 "to create a new connection."
 msgstr ""
 "A la finestra emergent, pots veure les connexions existents i prémer :"
-"guilabel:`Add ` per a crear una connexió nova."
+"guilabel:`Add` per a crear una connexió nova."
 
 #: ../../routing/connections.rst:37
 msgid "Port connections for control"
@@ -8065,7 +8065,7 @@ msgid ""
 ":term:`CV` ports handle continuous signals and can be used to modulate "
 "control ports"
 msgstr ""
-"Els ports :term:`CV`maneguen senyals continus i es poden utilitzar per a "
+"Els ports :term:`CV` maneguen senyals continus i es poden utilitzar per a "
 "modular els ports de control"
 
 #: ../../routing/ports.rst:55
@@ -8347,8 +8347,7 @@ msgstr "`ECMAScript <https://en.wikipedia.org/wiki/ECMAScript>`_"
 
 #: ../../scripting/overview.rst:30
 msgid ""
-"`Scheme <https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_"
-msgstr "`Scheme <https://ca.wikipedia.org/wiki/Scheme`_"
+msgstr ""
 
 #: ../../scripting/overview.rst:34
 msgid ""

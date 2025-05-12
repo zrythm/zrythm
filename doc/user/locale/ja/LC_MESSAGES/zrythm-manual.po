@@ -205,7 +205,7 @@ msgid ""
 msgstr ""
 "Zrythmは、これらのファイルの一部を :ref:`Zrythm user path <configuration/"
 "preferences:Zrythm User "
-"Path>`のユーザー指定ファイルでオーバーライドする方法を提供します。詳細につい"
+"Path>` のユーザー指定ファイルでオーバーライドする方法を提供します。詳細につい"
 "ては、:ref:`theming/intro:Theming` を参照してください。"
 
 #: ../../appendix/files-and-directories.rst:78

@@ -352,7 +352,7 @@ msgid ""
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
 "Se encuentra una lista de paquetes preestablecidos y ajustes preestablecidos "
-"en el :ref:`Panel derecho <zrythm-interface/right-panel:Panel derecho>` en :"
+"en el :ref:`Panel derecho <zrythm-interface/right-panel:Right Panel>` en :"
 "guilabel:`Chord Preset Browser`."
 
 #: ../../chords-and-scales/chord-pad.rst:39

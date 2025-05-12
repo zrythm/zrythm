@@ -168,7 +168,7 @@ msgid ""
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
 "I file di traduzione sono installati dentro :file:`/usr/share/locale`. Ad "
-"esempio, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo`per il coreano."
+"esempio, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` per il coreano."
 
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:100

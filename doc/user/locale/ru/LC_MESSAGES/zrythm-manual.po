@@ -4590,7 +4590,7 @@ msgstr "Рекомендуемые комплекты плагинов"
 #: ../../getting-started/getting-plugins.rst:39
 msgid "`DISTRHO Ports`_ provides a good variety of synths and effects."
 msgstr ""
-"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ предлагает "
+"`DISTRHO Ports`_ предлагает "
 "хорошее разнообразие синтезаторов и эффектов."
 
 #: ../../getting-started/getting-plugins.rst:42

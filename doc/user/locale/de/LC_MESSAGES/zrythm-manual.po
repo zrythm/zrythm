@@ -107,8 +107,8 @@ msgid ""
 "<configuration/preferences:Zrythm User Path>` for details."
 msgstr ""
 "Wenn Zrythm zum ersten Mal gestartet wird, werden Sie ebenfalls aufgefordert "
-"ein Verzeichnis zum Speichern Ihrer Benutzerdaten auszuwählen. Siehe :term:`"
-"Zrythm Benutzerpfad` für Details."
+"ein Verzeichnis zum Speichern Ihrer Benutzerdaten auszuwählen. Siehe :ref:`"
+"Zrythm user path <configuration/preferences:Zrythm User Path>` für Details."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -661,7 +661,7 @@ msgid ""
 "in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
 msgstr ""
 "Zrythm wird sich automatisch mit den in den :ref:`Bevorzugten Einstellungen "
-"<configuration/preferences:Preferences>`genannten Geräten verbinden und "
+"<configuration/preferences:Preferences>` genannten Geräten verbinden und "
 "diese in den :ref:`Spur-Eingängen <tracks/inspector-page:Inputs>`, sowie an "
 "anderen Stellen zur Verfügung stellen."
 
@@ -3684,7 +3684,7 @@ msgstr ""
 
 #: ../../editing/timeline.rst:112 ../../glossary/intro.rst:145
 msgid "Region"
-msgstr "Bereich"
+msgstr ""
 
 #: ../../editing/timeline.rst:114
 msgid "The following types of regions exist."
@@ -9760,7 +9760,7 @@ msgid ""
 "intro:Chords and Scales`."
 msgstr ""
 "Weitere Informationen über Akkorde finden Sie im Abschnitt :ref:`chords-and-"
-"scales/intro:Akkorde und Tonleitern`."
+"scales/intro:Chords and Scales`."
 
 #: ../../tracks/track-types.rst:151
 msgid ""

@@ -17,7 +17,7 @@ endforeach()
 # Find all SVG files in the Zrythm dark icon theme directory
 file(GLOB_RECURSE GUI_ICONS
   RELATIVE ${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable
-  "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/*.svg")
+  "${CMAKE_SOURCE_DIR}/src/gui/resources/icons/zrythm-dark/scalable/*.svg")
 
 # Copy GUI icons to the build directory
 foreach(ICON ${GUI_ICONS})

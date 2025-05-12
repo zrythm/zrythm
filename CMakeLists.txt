@@ -390,7 +390,7 @@ if(ZRYTHM_OPTIMIZED_BUILD)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
   endif()
 
-  if(compiler_gnulike)
+  if(compiler_is_gcc)
     target_compile_options(_zrythm_compile_options INTERFACE -ffunction-sections -fdata-sections)
     target_link_options(_zrythm_compile_options INTERFACE -Wl,--gc-sections)
   elseif(MSVC)
