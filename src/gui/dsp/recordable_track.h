@@ -173,7 +173,4 @@ public:
    * See @ref RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING.
    */
   bool recording_paused_ = false;
-
-private:
-  PortRegistry &port_registry_;
 };

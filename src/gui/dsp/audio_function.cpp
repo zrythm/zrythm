@@ -293,7 +293,6 @@ audio_function_apply (
   auto * orig_clip = r->get_clip ();
   z_return_if_fail (orig_clip);
 
-  Position init_pos;
   if (sel_start < r->get_position () || sel_end > r->get_end_position ())
     {
       throw ZrythmException (

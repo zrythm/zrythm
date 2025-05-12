@@ -566,8 +566,7 @@ do_move (PluginMoveData * data)
           PluginUuidReference plugin_ref{
             pl->get_uuid (), data_track->get_plugin_registry ()
           };
-          auto plugin_id =
-            prev_ch->remove_plugin_from_channel (prev_slot, true, false);
+          prev_ch->remove_plugin_from_channel (prev_slot, true, false);
 
           /* add plugin to its new channel */
           data_track->channel_->add_plugin (

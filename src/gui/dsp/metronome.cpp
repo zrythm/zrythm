@@ -76,7 +76,6 @@ Metronome::queue_events (
   using Position = dsp::Position;
   auto *     transport_ = engine->project_->transport_;
   const auto playhead = transport_->playhead_pos_;
-  Position   bar_pos, beat_pos;
   Position   playhead_pos = playhead->get_position ();
   Position   unlooped_playhead = playhead->get_position ();
   transport_->position_add_frames (playhead_pos, nframes);

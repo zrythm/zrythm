@@ -8,8 +8,7 @@
 using namespace zrythm;
 
 RecordableTrack::RecordableTrack (PortRegistry &port_registry, bool new_identity)
-    : ProcessableTrack (port_registry, new_identity),
-      port_registry_ (port_registry)
+    : ProcessableTrack (port_registry, new_identity)
 {
   if (new_identity)
     {
