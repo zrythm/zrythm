@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 workflow:
@@ -312,7 +312,9 @@ update-dev-docs:
     - master
     - tags
   needs:
-    - update-manual
+    - job: build:gnu/linux
+    - job: configure:gnu/linux
+      artifacts: true
   script:
     - cmake --build ${BUILDDIR}-Debug --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times "${BUILDDIR}-Debug"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
