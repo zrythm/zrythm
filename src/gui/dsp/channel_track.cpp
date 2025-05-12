@@ -9,15 +9,6 @@
 
 using namespace zrythm;
 
-ChannelTrack::ChannelTrack (const DeserializationDependencyHolder &dh)
-    : ChannelTrack (
-        dh.get<std::reference_wrapper<TrackRegistry>> ().get (),
-        dh.get<std::reference_wrapper<PluginRegistry>> ().get (),
-        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-        false)
-{
-}
-
 ChannelTrack::ChannelTrack (
   TrackRegistry  &track_registry,
   PluginRegistry &plugin_registry,

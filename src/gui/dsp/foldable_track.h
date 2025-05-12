@@ -9,9 +9,7 @@
 /**
  * @brief Abstract base for a foldable track.
  */
-class FoldableTrack
-    : virtual public Track,
-      public zrythm::utils::serialization::ISerializable<FoldableTrack>
+class FoldableTrack : virtual public Track
 {
 public:
   enum class MixerStatus
@@ -55,8 +53,19 @@ public:
   void
   set_folded (bool folded, bool trigger_undo, bool auto_select, bool fire_events);
 
-protected:
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr auto kSizeKey = "size"sv;
+  static constexpr auto kFoldedKey = "folded"sv;
+  friend void           to_json (nlohmann::json &j, const FoldableTrack &track)
+  {
+    j[kSizeKey] = track.size_;
+    j[kFoldedKey] = track.folded_;
+  }
+  friend void from_json (const nlohmann::json &j, FoldableTrack &track)
+  {
+    j.at (kSizeKey).get_to (track.size_);
+    j.at (kFoldedKey).get_to (track.folded_);
+  }
 
 public:
   /**

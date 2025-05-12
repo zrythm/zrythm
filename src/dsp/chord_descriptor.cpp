@@ -225,18 +225,6 @@ ChordDescriptor::is_key_in_chord (MusicalNote key) const
   return false;
 }
 
-void
-ChordDescriptor::define_fields (const utils::serialization::Context &ctx)
-{
-  using T = utils::serialization::ISerializable<ChordDescriptor>;
-  T::serialize_fields (
-    ctx, T::make_field ("hasBass", has_bass_),
-    T::make_field ("rootNote", root_note_),
-    T::make_field ("bassNote", bass_note_), T::make_field ("type", type_),
-    T::make_field ("accent", accent_), T::make_field ("notes", notes_),
-    T::make_field ("inversion", inversion_));
-}
-
 utils::Utf8String
 ChordDescriptor::to_string () const
 {

@@ -147,11 +147,11 @@ TEST (PortIdentifier, Serialization)
   id1.set_plugin_id (PortIdentifier::PluginUuid (QUuid::createUuid ()));
 
   // Serialize to JSON
-  auto json_str = id1.serialize_to_json_string ();
+  nlohmann::json json = id1;
 
   // Create new object and deserialize
   PortIdentifier id2;
-  id2.deserialize_from_json_string (json_str.c_str ());
+  from_json (json, id2);
 
   // Verify all fields match
   EXPECT_EQ (id1.label_, id2.label_);

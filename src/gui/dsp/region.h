@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __DSP_REGION_H__
-#define __DSP_REGION_H__
+#pragma once
 
 #include "dsp/position.h"
 #include "gui/dsp/arranger_object.h"
@@ -109,8 +108,7 @@ class Region
       virtual public NamedObject,
       virtual public MuteableObject,
       virtual public LoopableObject,
-      public ColoredObject,
-      public zrythm::utils::serialization::ISerializable<Region>
+      public ColoredObject
 {
 public:
   ~Region () override = default;
@@ -191,7 +189,16 @@ protected:
 
   void copy_members_from (const Region &other, ObjectCloneType clone_type);
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kLinkGroupKey = "linkGroup";
+  friend void to_json (nlohmann::json &j, const Region &region)
+  {
+    j[kLinkGroupKey] = region.link_group_;
+  }
+  friend void from_json (const nlohmann::json &j, Region &region)
+  {
+    j.at (kLinkGroupKey).get_to (region.link_group_);
+  }
 
 public:
   ArrangerObjectRegistry &object_registry_;
@@ -503,12 +510,6 @@ DEFINE_OBJECT_FORMATTER (Region, Region, [] (const Region &r) {
     r.link_group_);
 })
 
-inline bool
-operator== (const Region &lhs, const Region &rhs)
-{
-  return lhs.get_uuid () == rhs.get_uuid ();
-}
-
 using RegionVariant =
   std::variant<MidiRegion, ChordRegion, AutomationRegion, AudioRegion>;
 using RegionPtrVariant = to_pointer_variant<RegionVariant>;
@@ -524,5 +525,3 @@ extern template class RegionImpl<ChordRegion>;
 /**
  * @}
  */
-
-#endif // __DSP_REGION_H__

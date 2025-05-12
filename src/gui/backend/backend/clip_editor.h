@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __GUI_BACKEND_CLIP_EDITOR_H__
-#define __GUI_BACKEND_CLIP_EDITOR_H__
+#pragma once
 
 #include "gui/backend/backend/audio_clip_editor.h"
 #include "gui/backend/backend/automation_editor.h"
@@ -24,10 +23,7 @@ class ArrangerSelections;
 /**
  * Backend for the clip editor part of the UI.
  */
-class ClipEditor final
-    : public QObject,
-      public zrythm::utils::serialization::ISerializable<ClipEditor>,
-      public ICloneable<ClipEditor>
+class ClipEditor final : public QObject, public ICloneable<ClipEditor>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -42,13 +38,6 @@ class ClipEditor final
     AutomationEditor * automationEditor READ getAutomationEditor CONSTANT FINAL)
 
 public:
-  ClipEditor (const DeserializationDependencyHolder &dh)
-      : ClipEditor (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
-          dh.get<TrackResolver> ())
-  {
-  }
-
   ClipEditor (
     ArrangerObjectRegistry &reg,
     TrackResolver           track_resolver,
@@ -123,8 +112,6 @@ public:
    */
   void set_caches ();
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
   void init_after_cloning (const ClipEditor &other, ObjectCloneType clone_type)
     override
   {
@@ -133,6 +120,33 @@ public:
     automation_editor_ = other.automation_editor_;
     chord_editor_ = other.chord_editor_;
     track_ = other.track_;
+  }
+
+private:
+  static constexpr auto kRegionIdKey = "regionId"sv;
+  static constexpr auto kPianoRollKey = "pianoRoll"sv;
+  static constexpr auto kAutomationEditorKey = "automationEditor"sv;
+  static constexpr auto kChordEditorKey = "chordEditor"sv;
+  static constexpr auto kAudioClipEditorKey = "audioClipEditor"sv;
+  friend void           to_json (nlohmann::json &j, const ClipEditor &editor)
+  {
+    j[kRegionIdKey] = editor.region_id_;
+    j[kPianoRollKey] = editor.piano_roll_;
+    j[kAutomationEditorKey] = editor.automation_editor_;
+    j[kChordEditorKey] = editor.chord_editor_;
+    j[kAudioClipEditorKey] = editor.audio_clip_editor_;
+  }
+  friend void from_json (const nlohmann::json &j, ClipEditor &editor)
+  {
+    j.at (kRegionIdKey).get_to (editor.region_id_);
+    editor.piano_roll_ = new PianoRoll (&editor);
+    editor.automation_editor_ = new AutomationEditor (&editor);
+    editor.chord_editor_ = new ChordEditor (&editor);
+    editor.audio_clip_editor_ = new AudioClipEditor (&editor);
+    j.at (kPianoRollKey).get_to (*editor.piano_roll_);
+    j.at (kAutomationEditorKey).get_to (*editor.automation_editor_);
+    j.at (kChordEditorKey).get_to (*editor.chord_editor_);
+    j.at (kAudioClipEditorKey).get_to (*editor.audio_clip_editor_);
   }
 
 public:
@@ -156,5 +170,3 @@ public:
 /**
  * @}
  */
-
-#endif

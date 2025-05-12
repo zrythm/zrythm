@@ -413,3 +413,19 @@ AudioPool::print () const
     }
   z_info ("{}", ss.str ());
 }
+
+void
+to_json (nlohmann::json &j, const AudioPool &pool)
+{
+  j[AudioPool::kClipsKey] = pool.clips_.values ();
+}
+void
+from_json (const nlohmann::json &j, AudioPool &pool)
+{
+  for (const auto &clip_json : j.at (AudioPool::kClipsKey))
+    {
+      auto clip = std::make_shared<AudioClip> ();
+      from_json (clip_json, *clip);
+      pool.clips_.insert (clip->get_uuid (), clip);
+    }
+}

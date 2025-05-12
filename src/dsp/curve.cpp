@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -202,13 +202,6 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
       z_return_val_if_reached (-1);
     }
   return std::clamp (val, 0.0, 1.0);
-}
-
-void
-CurveOptions::define_fields (const utils::serialization::Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("algorithm", algo_), make_field ("curviness", curviness_));
 }
 
 bool

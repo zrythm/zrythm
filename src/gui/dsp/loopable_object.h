@@ -9,9 +9,7 @@
 #define DEFINE_LOOPABLE_OBJECT_QML_PROPERTIES(ClassType) \
   DEFINE_BOUNDED_OBJECT_QML_PROPERTIES (ClassType)
 
-class LoopableObject
-    : virtual public BoundedObject,
-      public zrythm::utils::serialization::ISerializable<LoopableObject>
+class LoopableObject : virtual public BoundedObject
 {
 public:
   LoopableObject () noexcept { };
@@ -127,7 +125,22 @@ protected:
   bool
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kClipStartPosKey = "clipStartPos";
+  static constexpr std::string_view kLoopStartPosKey = "loopStartPos";
+  static constexpr std::string_view kLoopEndPosKey = "loopEndPos";
+  friend auto to_json (nlohmann::json &j, const LoopableObject &object)
+  {
+    j[kClipStartPosKey] = object.clip_start_pos_;
+    j[kLoopStartPosKey] = object.loop_start_pos_;
+    j[kLoopEndPosKey] = object.loop_end_pos_;
+  }
+  friend auto from_json (const nlohmann::json &j, LoopableObject &object)
+  {
+    j.at (kClipStartPosKey).get_to (*object.end_pos_);
+    j.at (kLoopStartPosKey).get_to (object.loop_start_pos_);
+    j.at (kLoopEndPosKey).get_to (object.loop_end_pos_);
+  }
 
 public:
   /**
@@ -148,13 +161,5 @@ public:
    */
   dsp::Position loop_end_pos_;
 };
-
-inline bool
-operator== (const LoopableObject &lhs, const LoopableObject &rhs)
-{
-  return lhs.clip_start_pos_ == rhs.clip_start_pos_
-         && lhs.loop_start_pos_ == rhs.loop_start_pos_
-         && lhs.loop_end_pos_ == rhs.loop_end_pos_;
-}
 
 #endif // __DSP_LOOPABLE_OBJECT_H__

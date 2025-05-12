@@ -13,8 +13,7 @@ add_executable(zrythm_utils_unit_tests
   hash_test.cpp
   icloneable_test.cpp
   io_test.cpp
-  json_test.cpp
-  iserializable_test.cpp
+  serialization_test.cpp
   math_test.cpp
   midi_test.cpp
   monotonic_time_provider_test.cpp

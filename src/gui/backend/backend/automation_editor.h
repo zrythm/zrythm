@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __GUI_BACKEND_AUTOMATION_EDITOR_H__
-#define __GUI_BACKEND_AUTOMATION_EDITOR_H__
+#pragma once
 
 #include "gui/backend/backend/editor_settings.h"
 #include "gui/dsp/arranger_object_all.h"
@@ -22,8 +21,7 @@
 class AutomationEditor final
     : public QObject,
       public EditorSettings,
-      public ICloneable<AutomationEditor>,
-      public zrythm::utils::serialization::ISerializable<AutomationEditor>
+      public ICloneable<AutomationEditor>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -32,8 +30,6 @@ public:
   AutomationEditor (QObject * parent = nullptr) : QObject (parent) { }
 
 public:
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
   void
   init_after_cloning (const AutomationEditor &other, ObjectCloneType clone_type)
     override
@@ -46,11 +42,19 @@ public:
   auto &get_selected_object_ids () { return selected_objects_; }
 
 private:
+  friend void to_json (nlohmann::json &j, const AutomationEditor &editor)
+  {
+    to_json (j, static_cast<const EditorSettings &> (editor));
+  }
+  friend void from_json (const nlohmann::json &j, AutomationEditor &editor)
+  {
+    from_json (j, static_cast<EditorSettings &> (editor));
+  }
+
+private:
   ArrangerObjectSelectionManager::UuidSet selected_objects_;
 };
 
 /**
  * @}
  */
-
-#endif

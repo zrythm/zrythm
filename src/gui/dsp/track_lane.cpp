@@ -25,13 +25,6 @@ TrackLane::generate_name (int pos)
 
 template <typename RegionT>
 void
-TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
-{
-  track_ = track;
-}
-
-template <typename RegionT>
-void
 TrackLaneImpl<RegionT>::rename_with_action (const utils::Utf8String &new_name)
 {
   rename (new_name, true);

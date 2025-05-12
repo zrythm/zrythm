@@ -137,20 +137,6 @@ LanedTrackImpl<TrackLaneT>::set_playback_caches ()
 
 template <typename TrackLaneT>
 void
-LanedTrackImpl<TrackLaneT>::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
-{
-  for (auto &lane_var : lanes_)
-    {
-      auto lane = std::get<TrackLaneT *> (lane_var);
-
-      lane->init_loaded (this);
-    }
-}
-
-template <typename TrackLaneT>
-void
 LanedTrackImpl<TrackLaneT>::copy_members_from (
   const LanedTrackImpl &other,
   ObjectCloneType       clone_type)

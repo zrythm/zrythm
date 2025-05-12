@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef ZRYTHM_DSP_CURVE_H
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "utils/format.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 namespace zrythm::dsp
 {
@@ -19,8 +19,7 @@ namespace zrythm::dsp
  *
  * Can find more at tracktion_AudioFadeCurve.h.
  */
-class CurveOptions
-    : public zrythm::utils::serialization::ISerializable<CurveOptions>
+class CurveOptions final
 {
 public:
   /**
@@ -93,7 +92,6 @@ public:
   // Rule of 0
   CurveOptions () = default;
   CurveOptions (double curviness, Algorithm algo);
-  ~CurveOptions () override = default;
 
   /**
    * Returns the Y value on a curve.
@@ -114,7 +112,9 @@ public:
     return get_normalized_y (x, !fade_in);
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  friend bool operator== (const CurveOptions &a, const CurveOptions &b);
+
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE (CurveOptions, algo_, curviness_)
 
 public:
   /** Curviness between -1 and 1, where < 0 tils downwards, > 0
@@ -124,9 +124,6 @@ public:
   /** Curve algorithm to use. */
   Algorithm algo_{};
 };
-
-bool
-operator== (const CurveOptions &a, const CurveOptions &b);
 
 } // namespace zrythm::dsp
 

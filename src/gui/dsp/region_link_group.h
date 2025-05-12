@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_REGION_LINK_GROUP_H__
-#define __AUDIO_REGION_LINK_GROUP_H__
+#pragma once
 
 #include "gui/dsp/arranger_object.h"
 #include "utils/format.h"
@@ -18,14 +17,9 @@ class Region;
 /**
  * A group of linked regions.
  */
-class RegionLinkGroup
-  final : public zrythm::utils::serialization::ISerializable<RegionLinkGroup>
+class RegionLinkGroup final
 {
 public:
-  RegionLinkGroup (const DeserializationDependencyHolder &dh)
-      : RegionLinkGroup (dh.get<int> ())
-  {
-  }
   RegionLinkGroup (int idx) : group_idx_ (idx) { }
   void add_region (Region &region);
 
@@ -51,7 +45,16 @@ public:
 
   bool validate () const;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kIdsKey = "ids"sv;
+  friend void to_json (nlohmann::json &j, const RegionLinkGroup &group)
+  {
+    j[kIdsKey] = group.ids_;
+  }
+  friend void from_json (const nlohmann::json &j, RegionLinkGroup &group)
+  {
+    j.at (kIdsKey).get_to (group.ids_);
+  }
 
 public:
   /** Group index. */
@@ -73,5 +76,3 @@ DEFINE_OBJECT_FORMATTER (
 /**
  * @}
  */
-
-#endif

@@ -16,11 +16,7 @@
 /**
  * @brief CV port specifics.
  */
-class CVPort final
-    : public QObject,
-      public Port,
-      public ICloneable<CVPort>,
-      public zrythm::utils::serialization::ISerializable<CVPort>
+class CVPort final : public QObject, public Port, public ICloneable<CVPort>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -36,10 +32,21 @@ public:
 
   void clear_buffer (AudioEngine &engine) override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
   void
   init_after_cloning (const CVPort &other, ObjectCloneType clone_type) override;
+
+private:
+  static constexpr std::string_view kRangeKey = "range";
+  friend void                       to_json (nlohmann::json &j, const CVPort &p)
+  {
+    to_json (j, static_cast<const Port &> (p));
+    j[kRangeKey] = p.range_;
+  }
+  friend void from_json (const nlohmann::json &j, CVPort &p)
+  {
+    from_json (j, static_cast<Port &> (p));
+    j.at (kRangeKey).get_to (p.range_);
+  }
 };
 
 /**

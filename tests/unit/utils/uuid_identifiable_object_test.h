@@ -10,16 +10,9 @@ using namespace zrythm::utils;
 
 using namespace zrythm;
 
-class BaseTestObject
-    : public utils::UuidIdentifiableObject<BaseTestObject>,
-      public serialization::ISerializable<BaseTestObject>
+class BaseTestObject : public utils::UuidIdentifiableObject<BaseTestObject>
 {
 public:
-  // for disambiguation on g++
-  using serialization::ISerializable<BaseTestObject>::serialize_to_json_string;
-  using serialization::ISerializable<
-    BaseTestObject>::deserialize_from_json_string;
-
   BaseTestObject () = default;
   explicit BaseTestObject (Uuid id)
       : UuidIdentifiableObject<BaseTestObject> (id)
@@ -31,11 +24,13 @@ public:
   BaseTestObject (BaseTestObject &&) = default;
   BaseTestObject &operator= (BaseTestObject &&) = default;
 
-  std::string get_document_type () const override { return "TestObject"; }
-  DECLARE_DEFINE_FIELDS_METHOD ()
+  friend void to_json (nlohmann::json &json_value, const BaseTestObject &obj)
   {
-    using T = ISerializable<BaseTestObject>;
-    T::call_all_base_define_fields<UuidIdentifiableObject> (ctx);
+    to_json (json_value, static_cast<const UuidIdentifiableObject &> (obj));
+  }
+  friend void from_json (const nlohmann::json &json_value, BaseTestObject &obj)
+  {
+    from_json (json_value, static_cast<UuidIdentifiableObject &> (obj));
   }
 };
 
@@ -53,6 +48,9 @@ class DerivedTestObject
 {
   Q_OBJECT
 public:
+  // Used to test non-default constructable objects that require a dependency
+  // during deserialization
+  explicit DerivedTestObject (int some_dependency) { };
   explicit DerivedTestObject (TestUuid id, std::string name)
       : BaseTestObject (id), name_ (std::move (name))
   {
@@ -69,19 +67,42 @@ public:
 
   Q_SIGNAL void selectedChanged (bool selected);
 
+  NLOHMANN_DEFINE_DERIVED_TYPE_INTRUSIVE (DerivedTestObject, BaseTestObject, name_)
+
 private:
   std::string name_;
 };
+
+class TestObjectBuilder
+{
+public:
+  TestObjectBuilder () = default;
+  TestObjectBuilder &with_int_dependency (int some_dependency)
+  {
+    some_dependency_ = some_dependency;
+    return *this;
+  }
+
+  template <typename ObjectT> auto build () const
+  {
+    return std::make_unique<ObjectT> (some_dependency_);
+  }
+
+private:
+  int some_dependency_{};
+};
+static_assert (ObjectBuilder<TestObjectBuilder>);
 
 // FIXME!!!
 // static_assert (UuidIdentifiableQObject<DerivedTestObject>);
 
 class UuidIdentifiableObjectRegistryTest : public ::testing::Test
 {
-protected:
+public:
   using TestVariant = std::variant<DerivedTestObject *>;
   using TestRegistry = utils::OwningObjectRegistry<TestVariant, BaseTestObject>;
 
+protected:
   void SetUp () override
   {
     obj1_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object1");
@@ -109,10 +130,12 @@ class UuidIdentifiableObjectSelectionManagerTest
       public ::testing::Test
 {
   Q_OBJECT
-protected:
+
+public:
   using TestVariant = std::variant<DerivedTestObject *>;
   using TestRegistry = utils::OwningObjectRegistry<TestVariant, BaseTestObject>;
 
+protected:
   void SetUp () override
   {
     obj1_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object1");

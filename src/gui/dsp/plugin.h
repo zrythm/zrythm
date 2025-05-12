@@ -55,8 +55,7 @@ constexpr auto PLUGIN_MAGIC = 43198683;
  * class provides a common interface for working with them.
  */
 class Plugin
-    : public utils::serialization::ISerializable<Plugin>,
-      public dsp::IProcessable,
+    : public dsp::IProcessable,
       public IPortOwner,
       public utils::UuidIdentifiableObject<Plugin>
 {
@@ -73,11 +72,8 @@ public:
    * Preset identifier.
    */
   struct PresetIdentifier
-      : public zrythm::utils::serialization::ISerializable<PresetIdentifier>
   {
     // Rule of 0
-
-    DECLARE_DEFINE_FIELDS_METHOD ();
 
     /** Index in bank, or -1 if this is used for a bank. */
     int idx_ = 0;
@@ -87,15 +83,15 @@ public:
 
     /** Plugin identifier. */
     PluginUuid plugin_id_;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE (PresetIdentifier, idx_, bank_idx_, plugin_id_)
   };
 
   /**
    * Plugin preset.
    */
-  struct Preset : public zrythm::utils::serialization::ISerializable<Preset>
+  struct Preset
   {
-    DECLARE_DEFINE_FIELDS_METHOD ();
-
     /** Human readable name. */
     utils::Utf8String name_;
 
@@ -106,6 +102,8 @@ public:
     int carla_program_ = 0;
 
     PresetIdentifier id_;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE (Preset, name_, uri_, carla_program_, id_)
   };
 
   /**
@@ -114,13 +112,11 @@ public:
    * If the plugin has no banks, there must be a default bank that will contain
    * all the presets.
    */
-  struct Bank : public zrythm::utils::serialization::ISerializable<Bank>
+  struct Bank
   {
     // Rule of 0
 
     void add_preset (Preset &&preset);
-
-    DECLARE_DEFINE_FIELDS_METHOD ();
 
     /** Presets in this bank. */
     std::vector<Preset> presets_;
@@ -132,6 +128,8 @@ public:
     utils::Utf8String name_;
 
     PresetIdentifier id_;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE (Bank, name_, presets_, uri_, id_)
   };
 
   constexpr static auto DEFAULT_BANK_URI = "https://lv2.zrythm.org#default-bank";
@@ -643,7 +641,42 @@ protected:
    */
   Plugin (PortRegistry &port_registry, ZPluginCategory cat);
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr auto kTrackIdKey = "trackId"sv;
+  static constexpr auto kSettingKey = "setting"sv;
+  static constexpr auto kInPortsKey = "inPorts"sv;
+  static constexpr auto kOutPortsKey = "outPorts"sv;
+  static constexpr auto kBanksKey = "banks"sv;
+  static constexpr auto kSelectedBankKey = "selectedBank"sv;
+  static constexpr auto kSelectedPresetKey = "selectedPreset"sv;
+  static constexpr auto kVisibleKey = "visible"sv;
+  static constexpr auto kStateDirectoryKey = "stateDir"sv;
+  friend void           to_json (nlohmann::json &j, const Plugin &p)
+  {
+    to_json (j, static_cast<const UuidIdentifiableObject &> (p));
+    j[kTrackIdKey] = p.track_id_;
+    j[kSettingKey] = p.setting_;
+    j[kInPortsKey] = p.in_ports_;
+    j[kOutPortsKey] = p.out_ports_;
+    j[kBanksKey] = p.banks_;
+    j[kSelectedBankKey] = p.selected_bank_;
+    j[kSelectedPresetKey] = p.selected_preset_;
+    j[kVisibleKey] = p.visible_;
+    j[kStateDirectoryKey] = p.state_dir_;
+  }
+  friend void from_json (const nlohmann::json &j, Plugin &p)
+  {
+    from_json (j, static_cast<UuidIdentifiableObject &> (p));
+    j.at (kTrackIdKey).get_to (p.track_id_);
+    j.at (kSettingKey).get_to (p.setting_);
+    j.at (kInPortsKey).get_to (p.in_ports_);
+    j.at (kOutPortsKey).get_to (p.out_ports_);
+    j.at (kBanksKey).get_to (p.banks_);
+    j.at (kSelectedBankKey).get_to (p.selected_bank_);
+    j.at (kSelectedPresetKey).get_to (p.selected_preset_);
+    j.at (kVisibleKey).get_to (p.visible_);
+    j.at (kStateDirectoryKey).get_to (p.state_dir_);
+  }
 
 public:
   OptionalRef<PortRegistry>    port_registry_;
@@ -795,5 +828,10 @@ using PluginRegistryRef = std::reference_wrapper<PluginRegistry>;
 using PluginUuidReference = utils::UuidReference<PluginRegistry>;
 
 } // namespace zrythm::gui::old_dsp::plugins
+
+void
+from_json (
+  const nlohmann::json                  &j,
+  gui::old_dsp::plugins::PluginRegistry &registry);
 
 #endif

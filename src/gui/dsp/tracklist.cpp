@@ -1614,16 +1614,6 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
     }
 }
 
-void
-Tracklist::define_fields (const utils::serialization::Context &ctx)
-{
-  using T = ISerializable<Tracklist>;
-  T::serialize_fields (
-    ctx, T::make_field ("pinnedTracksCutoff", pinned_tracks_cutoff_),
-    T::make_field ("tracks", tracks_),
-    T::make_field ("selectedTracks", selected_tracks_));
-}
-
 Tracklist::~Tracklist ()
 {
   z_debug ("freeing tracklist...");

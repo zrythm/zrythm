@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_MIDI_NOTE_H__
-#define __AUDIO_MIDI_NOTE_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -28,8 +27,7 @@ class MidiNote final
       public MuteableObject,
       public RegionOwnedObject,
       public BoundedObject,
-      public ICloneable<MidiNote>,
-      public zrythm::utils::serialization::ISerializable<MidiNote>
+      public ICloneable<MidiNote>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -119,7 +117,27 @@ public:
   void init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kVelocityKey = "velocity";
+  static constexpr std::string_view kPitchKey = "pitch";
+  friend void to_json (nlohmann::json &j, const MidiNote &note)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (note));
+    to_json (j, static_cast<const BoundedObject &> (note));
+    to_json (j, static_cast<const MuteableObject &> (note));
+    to_json (j, static_cast<const RegionOwnedObject &> (note));
+    j[kVelocityKey] = note.vel_;
+    j[kPitchKey] = note.pitch_;
+  }
+  friend void from_json (const nlohmann::json &j, MidiNote &note)
+  {
+    from_json (j, static_cast<ArrangerObject &> (note));
+    from_json (j, static_cast<BoundedObject &> (note));
+    from_json (j, static_cast<MuteableObject &> (note));
+    from_json (j, static_cast<RegionOwnedObject &> (note));
+    j.at (kVelocityKey).get_to (*note.vel_);
+    j.at (kPitchKey).get_to (note.pitch_);
+  }
 
 public:
   /** Velocity. */
@@ -162,5 +180,3 @@ DEFINE_OBJECT_FORMATTER (MidiNote, MidiNote, [] (const MidiNote &mn) {
 /**
  * @}
  */
-
-#endif // __AUDIO_MIDI_NOTE_H__

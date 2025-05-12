@@ -47,24 +47,27 @@ concept CompleteType = requires { sizeof (T); };
 template <typename T>
 concept IsRawPointer = std::is_pointer_v<T>;
 
+template <typename T>
+concept StdVariant = requires {
+  requires requires (T v) {
+    []<typename... Vs> (std::variant<Vs...> &) { }(v);
+  };
+};
+static_assert (StdVariant<std::variant<float, int>>);
+static_assert (StdVariant<std::variant<>>);
+static_assert (!StdVariant<float>);
+
 // Concept to check if a type is a variant of pointers (allows std::nullptr_t)
 template <typename T>
-concept VariantOfPointers = requires {
-  []<typename... Ts> (std::variant<Ts...> *) {
-    static_assert (
-      ((IsRawPointer<Ts> || std::is_null_pointer_v<Ts>) && ...),
-      "All types in the variant must be pointers");
-  }(static_cast<T *> (nullptr));
+concept VariantOfPointers = requires (T v) {
+  requires StdVariant<T>;
+  []<typename... Vs> (std::variant<Vs...> &)
+    requires (std::is_pointer_v<Vs> && ...)
+  { }(v);
 };
 
-// Concept to check if a type is a vector of variants of pointers (allows
-// std::nullptr_t)
-template <typename T>
-concept VectorOfVariantPointers = requires {
-  typename T::value_type;
-  requires VariantOfPointers<typename T::value_type>;
-  requires ContainerType<T>;
-};
+static_assert (VariantOfPointers<std::variant<std::nullptr_t *, int *>>);
+static_assert (!VariantOfPointers<std::variant<std::nullptr_t *, int>>);
 
 template <typename T>
 concept OptionalType = requires {
@@ -104,17 +107,13 @@ template <typename T> struct remove_smart_pointer<std::weak_ptr<T>>
 template <typename T>
 using remove_smart_pointer_t = typename remove_smart_pointer<T>::type;
 
+/// @brief An improved version of std::decay_t that also removes raw and smart
+/// pointers.
 template <typename T>
 using base_type = std::remove_cvref_t<
   remove_smart_pointer_t<std::remove_pointer_t<std::decay_t<T>>>>;
-
 static_assert (std::is_same_v<base_type<int * const &>, int>);
-
-// Concept to check if a type is derived from the base type pointed to by
-// another type
-template <typename Derived, typename Base>
-concept DerivedFromPointee =
-  std::derived_from<base_type<Derived>, base_type<Base>>;
+static_assert (std::is_same_v<base_type<std::shared_ptr<int> const &>, int>);
 
 template <typename T>
 concept StdArray = requires {
@@ -122,7 +121,6 @@ concept StdArray = requires {
   requires std::same_as<
     T, std::array<typename T::value_type, std::tuple_size<T>::value>>;
 };
-
 static_assert (StdArray<std::array<unsigned char, 3>>);
 static_assert (!StdArray<std::vector<float>>);
 
@@ -147,14 +145,6 @@ template <typename T> constexpr bool is_shared_ptr_v = is_shared_ptr<T>::value;
 
 template <typename T>
 concept SmartPtr = is_unique_ptr_v<T> || is_shared_ptr_v<T>;
-
-template <typename T>
-concept SmartPtrToContainer =
-  SmartPtr<T> && ContainerType<typename T::element_type>;
-
-template <typename T>
-concept FloatingPointContainer =
-  ContainerType<T> && std::is_floating_point_v<typename T::value_type>;
 
 template <typename Derived, typename Base>
 concept DerivedButNotBase =
@@ -184,11 +174,6 @@ static_assert (!DerivedFromCRTPBase<NonDerived, CRTPBase>);
 static_assert (!DerivedFromCRTPBase<OtherNonDerived, CRTPBase>);
 }; // namespace detail_test
 
-template <typename T>
-concept IsVariant = requires {
-  []<typename... Ts> (std::variant<Ts...> *) { }(static_cast<T *> (nullptr));
-};
-
 // Trick to print the tparam type during compilation
 // i.e.: No type named 'something_made_up' in 'tparam'
 #define DEBUG_TEMPLATE_PARAM(tparam) \
@@ -197,3 +182,34 @@ concept IsVariant = requires {
 template <typename R, typename T>
 concept RangeOf =
   std::ranges::range<R> && std::same_as<std::ranges::range_value_t<R>, T>;
+
+namespace detail
+{
+struct build_test_type
+{
+  template <typename... Args>
+  build_test_type (Args &&...) { } // Accept any constructor arguments
+};
+}
+/**
+ * @brief Concept that checks if a type is a builder for objects.
+ */
+template <typename T>
+concept ObjectBuilder = requires (T t) {
+  {
+    t.template build<detail::build_test_type> ()
+  } -> std::same_as<std::unique_ptr<detail::build_test_type>>;
+};
+namespace object_builder_test
+{
+struct ValidBuilder
+{
+  template <typename T> auto build () { return std::make_unique<T> (); }
+};
+struct InvalidBuilder
+{
+  template <typename T> void build () { }
+};
+static_assert (ObjectBuilder<ValidBuilder>);
+static_assert (!ObjectBuilder<InvalidBuilder>);
+};

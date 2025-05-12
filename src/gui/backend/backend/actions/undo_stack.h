@@ -1,12 +1,11 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UNDO_UNDO_STACK_H__
-#define __UNDO_UNDO_STACK_H__
+#pragma once
 
 #include "gui/backend/backend/actions/undoable_action_all.h"
 #include "utils/icloneable.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 class AudioClip;
 
@@ -18,10 +17,7 @@ namespace zrythm::gui::actions
  *
  * This is used for both undo and redo.
  */
-class UndoStack final
-    : public QAbstractListModel,
-      public ICloneable<UndoStack>,
-      public zrythm::utils::serialization::ISerializable<UndoStack>
+class UndoStack final : public QAbstractListModel, public ICloneable<UndoStack>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -115,7 +111,17 @@ public:
   void init_after_cloning (const UndoStack &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kMaxLengthKey = "maxLength"sv;
+  friend void           to_json (nlohmann::json &j, const UndoStack &stack)
+  {
+    // rest TODO
+    j[kMaxLengthKey] = stack.max_size_;
+  }
+  friend void from_json (const nlohmann::json &j, UndoStack &stack)
+  {
+    j.at (kMaxLengthKey).get_to (stack.max_size_);
+  }
 
 public:
   /**
@@ -172,5 +178,3 @@ extern template bool
 UndoStack::contains_action (const TransportAction &action) const;
 
 }; // namespace zrythm::gui::actions
-
-#endif

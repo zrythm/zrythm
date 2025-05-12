@@ -322,3 +322,21 @@ ModulatorTrack::validate () const
 {
   return Track::validate_base () && AutomatableTrack::validate_base ();
 }
+
+void
+from_json (const nlohmann::json &j, ModulatorTrack &track)
+{
+  from_json (j, static_cast<Track &> (track));
+  from_json (j, static_cast<ProcessableTrack &> (track));
+  from_json (j, static_cast<AutomatableTrack &> (track));
+  j.at (ModulatorTrack::kModulatorsKey).get_to (track.modulators_);
+  for (
+    const auto &macro_proc_json :
+    j.at (ModulatorTrack::kModulatorMacroProcessorsKey))
+    {
+      auto macro_proc = std::make_unique<ModulatorMacroProcessor> (
+        track.port_registry_, &track, std::nullopt, false);
+      from_json (macro_proc_json, *macro_proc);
+      track.modulator_macro_processors_.push_back (std::move (macro_proc));
+    }
+}

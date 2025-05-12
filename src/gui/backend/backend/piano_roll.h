@@ -1,15 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Piano roll backend.
- */
-
-#ifndef __GUI_BACKEND_PIANO_ROLL_H__
-#define __GUI_BACKEND_PIANO_ROLL_H__
-
+#pragma once
 #include "gui/backend/backend/editor_settings.h"
 #include "gui/dsp/arranger_object_all.h"
 #include "utils/icloneable.h"
@@ -92,8 +84,7 @@ public:
 class PianoRoll final
     : public QObject,
       public EditorSettings,
-      public ICloneable<PianoRoll>,
-      public zrythm::utils::serialization::ISerializable<PianoRoll>
+      public ICloneable<PianoRoll>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -120,8 +111,6 @@ private:
   };
 
 public:
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
   // ============================================================================
   // QML Interface
   // ============================================================================
@@ -244,6 +233,21 @@ public:
   }
 
 private:
+  static constexpr auto kNotesZoomKey = "notesZoom"sv;
+  static constexpr auto kMidiModifierKey = "midiModifier"sv;
+  friend void           to_json (nlohmann::json &j, const PianoRoll &piano_roll)
+  {
+    to_json (j, static_cast<const EditorSettings &> (piano_roll));
+    j[kNotesZoomKey] = piano_roll.notes_zoom_;
+    j[kMidiModifierKey] = piano_roll.midi_modifier_;
+  }
+  friend void from_json (const nlohmann::json &j, PianoRoll &piano_roll)
+  {
+    from_json (j, static_cast<EditorSettings &> (piano_roll));
+    j.at (kNotesZoomKey).get_to (piano_roll.notes_zoom_);
+    j.at (kMidiModifierKey).get_to (piano_roll.midi_modifier_);
+  }
+
   /**
    * Inits the descriptors to the default values.
    *
@@ -292,9 +296,3 @@ public:
 
   ArrangerObjectSelectionManager::UuidSet selected_objects_;
 };
-
-/**
- * @}
- */
-
-#endif

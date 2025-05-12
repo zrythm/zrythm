@@ -94,14 +94,15 @@ void
 PluginCollections::serialize_to_file () const
 {
   z_info ("Serializing plugin collections...");
-  auto json = serialize_to_json_string ();
-  auto path = get_file_path ();
+  nlohmann::json json = *this;
+  auto           path = get_file_path ();
   z_return_if_fail (
     !path.empty () && path.is_absolute () && path.has_parent_path ());
   z_debug ("Writing plugin collections to {}...", path);
   try
     {
-      utils::io::set_file_contents (path, json.to_utf8_string ());
+      utils::io::set_file_contents (
+        path, utils::Utf8String::from_utf8_encoded_string (json.dump ()));
     }
   catch (const ZrythmException &e)
     {
@@ -156,7 +157,8 @@ PluginCollections::read_or_new ()
 
   try
     {
-      ret->deserialize_from_json_string (json.c_str ());
+      auto j = nlohmann::json::parse (json);
+      from_json (j, *ret);
     }
   catch (const ZrythmException &e)
     {

@@ -27,7 +27,6 @@ class PositionProxy
     : public QObject,
       public IRealtimeProperty,
       public zrythm::dsp::Position,
-      public zrythm::utils::serialization::ISerializable<PositionProxy>,
       public ICloneable<PositionProxy>
 {
   Q_OBJECT

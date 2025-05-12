@@ -40,10 +40,7 @@ class Router;
  * Tracklist should be concerned with Tracks in the arranger, and the Mixer
  * should be concerned with Channels, routing and Port connections.
  */
-class Tracklist final
-    : public QAbstractListModel,
-      public ICloneable<Tracklist>,
-      virtual public zrythm::utils::serialization::ISerializable<Tracklist>
+class Tracklist final : public QAbstractListModel, public ICloneable<Tracklist>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -481,9 +478,25 @@ public:
     get_track_span ().mark_all_tracks_for_bounce (*this, bounce);
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kPinnedTracksCutoffKey = "pinnedTracksCutoff"sv;
+  static constexpr auto kTracksKey = "tracks"sv;
+  static constexpr auto kSelectedTracksKey = "selectedTracks"sv;
+  friend void           to_json (nlohmann::json &j, const Tracklist &t)
+  {
+    j = nlohmann::json{
+      { kPinnedTracksCutoffKey, t.pinned_tracks_cutoff_ },
+      { kTracksKey,             t.tracks_               },
+      { kSelectedTracksKey,     t.selected_tracks_      },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, Tracklist &t)
+  {
+    j.at (kPinnedTracksCutoffKey).get_to (t.pinned_tracks_cutoff_);
+    j.at (kTracksKey).get_to (t.tracks_);
+    j.at (kSelectedTracksKey).get_to (t.selected_tracks_);
+  }
+
   void swap_tracks (size_t index1, size_t index2);
 
   auto &get_track_registry () const { return *track_registry_; }

@@ -22,8 +22,7 @@ namespace zrythm::gui::actions
 class MixerSelectionsAction
     : public QObject,
       public UndoableAction,
-      public ICloneable<MixerSelectionsAction>,
-      public zrythm::utils::serialization::ISerializable<MixerSelectionsAction>
+      public ICloneable<MixerSelectionsAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -87,8 +86,6 @@ public:
   void init_after_cloning (
     const MixerSelectionsAction &other,
     ObjectCloneType              clone_type) override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override;

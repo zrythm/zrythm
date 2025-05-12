@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -7,8 +7,7 @@
  * Chord editor backend.
  */
 
-#ifndef __GUI_BACKEND_CHORD_EDITOR_H__
-#define __GUI_BACKEND_CHORD_EDITOR_H__
+#pragma once
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
@@ -36,8 +35,7 @@ constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 class ChordEditor final
     : public QObject,
       public EditorSettings,
-      public ICloneable<ChordEditor>,
-      public utils::serialization::ISerializable<ChordEditor>
+      public ICloneable<ChordEditor>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -98,7 +96,6 @@ public:
   void
   replace_chord_descriptor (const auto index, ChordDescriptor &&chord_descr)
   {
-    auto removed_id = chords_.at (index);
     chords_.erase (chords_.begin () + index);
     chords_.insert (chords_.begin () + index, std::move (chord_descr));
     get_chord_at_index (index).update_notes ();
@@ -106,7 +103,18 @@ public:
 
   auto &get_selected_object_ids () { return selected_objects_; }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kChordsKey = "chords"sv;
+  friend void           to_json (nlohmann::json &j, const ChordEditor &editor)
+  {
+    to_json (j, static_cast<const EditorSettings &> (editor));
+    j[kChordsKey] = editor.chords_;
+  }
+  friend void from_json (const nlohmann::json &j, ChordEditor &editor)
+  {
+    from_json (j, static_cast<EditorSettings &> (editor));
+    j.at (kChordsKey).get_to (editor.chords_);
+  }
 
 public:
   /**
@@ -124,5 +132,3 @@ private:
 /**
  * @}
  */
-
-#endif

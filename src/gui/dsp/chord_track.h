@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef GUI_DSP_CHORD_TRACK_H
-#define GUI_DSP_CHORD_TRACK_H
-
+#pragma once
 #include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/chord_region.h"
@@ -41,7 +39,6 @@ class ChordTrack final
       public ArrangerObjectOwner<ChordRegion>,
       public ArrangerObjectOwner<ScaleObject>,
       public ICloneable<ChordTrack>,
-      public zrythm::utils::serialization::ISerializable<ChordTrack>,
       public utils::InitializableObject<ChordTrack>
 {
   Q_OBJECT
@@ -133,9 +130,28 @@ public:
     return "scales";
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void to_json (nlohmann::json &j, const ChordTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const ProcessableTrack &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    to_json (j, static_cast<const ChannelTrack &> (track));
+    to_json (j, static_cast<const RecordableTrack &> (track));
+    to_json (j, static_cast<const ArrangerObjectOwner<ChordRegion> &> (track));
+    to_json (j, static_cast<const ArrangerObjectOwner<ScaleObject> &> (track));
+  }
+  friend void from_json (const nlohmann::json &j, ChordTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+    from_json (j, static_cast<ProcessableTrack &> (track));
+    from_json (j, static_cast<AutomatableTrack &> (track));
+    from_json (j, static_cast<ChannelTrack &> (track));
+    from_json (j, static_cast<RecordableTrack &> (track));
+    from_json (j, static_cast<ArrangerObjectOwner<ChordRegion> &> (track));
+    from_json (j, static_cast<ArrangerObjectOwner<ScaleObject> &> (track));
+  }
+
   bool initialize ();
   void set_playback_caches () override;
 };
@@ -143,5 +159,3 @@ private:
 /**
  * @}
  */
-
-#endif

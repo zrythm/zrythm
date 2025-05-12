@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_PORT_CONNECTIONS_MANAGER_H__
@@ -27,8 +27,7 @@ using namespace zrythm;
  */
 class PortConnectionsManager final
     : public QObject,
-      public ICloneable<PortConnectionsManager>,
-      public utils::serialization::ISerializable<PortConnectionsManager>
+      public ICloneable<PortConnectionsManager>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -201,9 +200,23 @@ public:
     const PortConnectionsManager &other,
     ObjectCloneType               clone_type) override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr std::string_view kConnectionsKey = "connections";
+  friend void to_json (nlohmann::json &j, const PortConnectionsManager &pcm)
+  {
+    j[kConnectionsKey] = pcm.connections_;
+  }
+  friend void from_json (const nlohmann::json &j, PortConnectionsManager &pcm)
+  {
+    for (const auto &conn_json : j.at (kConnectionsKey))
+      {
+        auto * conn = new PortConnection (&pcm);
+        from_json (conn_json, *conn);
+        pcm.connections_.push_back (conn);
+      }
+    pcm.regenerate_hashtables ();
+  }
+
   void add_or_replace_connection (
     ConnectionHashTable  &ht,
     const PortUuid       &id,

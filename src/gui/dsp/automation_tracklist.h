@@ -30,14 +30,12 @@ class Channel;
  */
 class AutomationTracklist final
     : public QAbstractListModel,
-      public ICloneable<AutomationTracklist>,
-      public zrythm::utils::serialization::ISerializable<AutomationTracklist>
+      public ICloneable<AutomationTracklist>
 {
   Q_OBJECT
   QML_ELEMENT
 
 public:
-  AutomationTracklist (const DeserializationDependencyHolder &dh);
   AutomationTracklist (
     PortRegistry           &port_registry,
     ArrangerObjectRegistry &object_registry,
@@ -233,9 +231,14 @@ public:
 
   void set_caches (CacheType types);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr std::string_view kAutomationTracksKey = "automationTracks";
+  friend void to_json (nlohmann::json &j, const AutomationTracklist &ats)
+  {
+    j[kAutomationTracksKey] = ats.ats_;
+  }
+  friend void from_json (const nlohmann::json &j, AutomationTracklist &ats);
+
   auto &get_port_registry () { return port_registry_; }
   auto &get_port_registry () const { return port_registry_; }
 

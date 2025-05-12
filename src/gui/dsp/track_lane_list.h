@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef DSP_TRACK_LANE_LIST_H
@@ -8,9 +8,7 @@
 #include "gui/dsp/midi_lane.h"
 #include "gui/dsp/track_lane.h"
 
-class TrackLaneList final
-    : public QAbstractListModel,
-      public zrythm::utils::serialization::ISerializable<TrackLaneList>
+class TrackLaneList final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
@@ -122,7 +120,30 @@ public:
 
   [[nodiscard]] auto back () const noexcept { return lanes_.back (); }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kLanesKey = "lanes";
+  friend void to_json (nlohmann::json &j, const TrackLaneList &p)
+  {
+    j[kLanesKey] = p.lanes_;
+  }
+  struct Builder
+  {
+    template <typename TrackLaneT> std::unique_ptr<TrackLaneT> build () const
+    {
+      // TODO. also should get rid of the Track dependency in track lanes...
+      return {};
+    }
+  };
+  friend void from_json (const nlohmann::json &j, TrackLaneList &p)
+  {
+    for (const auto &lane_json : j.at (kLanesKey))
+      {
+        TrackLanePtrVariant lane;
+        utils::serialization::variant_from_json_with_builder (
+          lane_json, lane, Builder{});
+        p.lanes_.push_back (lane);
+      }
+  }
 
 private:
   std::vector<TrackLanePtrVariant> lanes_;

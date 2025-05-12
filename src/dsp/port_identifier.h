@@ -65,9 +65,7 @@ enum class PortUnit
 /**
  * Struct used to identify Ports in the project.
  */
-class PortIdentifier
-    : public zrythm::utils::serialization::ISerializable<PortIdentifier>,
-      public ICloneable<PortIdentifier>
+class PortIdentifier : public ICloneable<PortIdentifier>
 {
 public:
   using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
@@ -384,8 +382,6 @@ public:
     *this = other;
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 public:
   /** Index (e.g. in plugin's output ports, the modulator macro processor slot,
    * etc.). */
@@ -397,12 +393,12 @@ public:
   /** Owner type. */
   PortIdentifier::OwnerType owner_type_{};
   /** Data type (e.g. AUDIO). */
-  PortType type_{};
+  PortType type_{ PortType::Unknown };
   /** Flow (IN/OUT). */
   PortFlow flow_{ PortFlow::Unknown };
 
   /** Port unit. */
-  PortUnit unit_{};
+  PortUnit unit_{ PortUnit::None };
 
   /** Flags (e.g. is side chain). */
   PortIdentifier::Flags  flags_{};
@@ -418,19 +414,60 @@ public:
   utils::Utf8String sym_;
 
   /** URI, if LV2 property. */
-  utils::Utf8String uri_;
+  std::optional<utils::Utf8String> uri_;
 
   /** Comment, if any. */
-  utils::Utf8String comment_;
+  std::optional<utils::Utf8String> comment_;
 
   /** Port group this port is part of (only applicable for LV2 plugin ports). */
-  utils::Utf8String port_group_;
+  std::optional<utils::Utf8String> port_group_;
 
   /** ExtPort ID (type + full name), if hw port. */
-  utils::Utf8String ext_port_id_;
+  std::optional<utils::Utf8String> ext_port_id_;
 
   /** MIDI channel if MIDI CC port, starting from 1 (so [1, 16]). */
   std::optional<midi_byte_t> midi_channel_;
+
+  friend void to_json (nlohmann::json &j, const PortIdentifier &port)
+  {
+    j = nlohmann::json{
+      { "label",          port.label_        },
+      { "symbol",         port.sym_          },
+      { "uri",            port.uri_          },
+      { "comment",        port.comment_      },
+      { "ownerType",      port.owner_type_   },
+      { "type",           port.type_         },
+      { "flow",           port.flow_         },
+      { "unit",           port.unit_         },
+      { "flags",          port.flags_        },
+      { "flags2",         port.flags2_       },
+      { "trackId",        port.track_id_     },
+      { "pluginId",       port.plugin_id_    },
+      { "portGroup",      port.port_group_   },
+      { "externalPortId", port.ext_port_id_  },
+      { "portIndex",      port.port_index_   },
+      { "midiChannel",    port.midi_channel_ },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, PortIdentifier &port)
+  {
+    j.at ("label").get_to (port.label_);
+    j.at ("symbol").get_to (port.sym_);
+    j.at ("uri").get_to (port.uri_);
+    j.at ("comment").get_to (port.comment_);
+    j.at ("ownerType").get_to (port.owner_type_);
+    j.at ("type").get_to (port.type_);
+    j.at ("flow").get_to (port.flow_);
+    j.at ("unit").get_to (port.unit_);
+    j.at ("flags").get_to (port.flags_);
+    j.at ("flags2").get_to (port.flags2_);
+    j.at ("trackId").get_to (port.track_id_);
+    j.at ("pluginId").get_to (port.plugin_id_);
+    j.at ("portGroup").get_to (port.port_group_);
+    j.at ("externalPortId").get_to (port.ext_port_id_);
+    j.at ("portIndex").get_to (port.port_index_);
+    j.at ("midiChannel").get_to (port.midi_channel_);
+  }
 };
 
 }; // namespace zrythm::dsp

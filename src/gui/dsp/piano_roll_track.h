@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __DSP_PIANO_ROLL_TRACK_H__
-#define __DSP_PIANO_ROLL_TRACK_H__
+#pragma once
 
 #include <vector>
 
@@ -24,8 +23,7 @@ using MIDI_FILE = void;
  */
 class PianoRollTrack
     : virtual public RecordableTrack,
-      public LanedTrackImpl<MidiLane>,
-      public zrythm::utils::serialization::ISerializable<PianoRollTrack>
+      public LanedTrackImpl<MidiLane>
 {
   Z_DISABLE_COPY_MOVE (PianoRollTrack)
 protected:
@@ -82,7 +80,22 @@ protected:
 
   void set_playback_caches () override;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr auto kDrumModeKey = "drumMode"sv;
+  static constexpr auto kMidiChKey = "midiCh"sv;
+  static constexpr auto kPassthroughMidiInputKey = "passthroughMidiInput"sv;
+  friend void           to_json (nlohmann::json &j, const PianoRollTrack &track)
+  {
+    j[kDrumModeKey] = track.drum_mode_;
+    j[kMidiChKey] = track.midi_ch_;
+    j[kPassthroughMidiInputKey] = track.passthrough_midi_input_;
+  }
+  friend void from_json (const nlohmann::json &j, PianoRollTrack &track)
+  {
+    j.at (kDrumModeKey).get_to (track.drum_mode_);
+    j.at (kMidiChKey).get_to (track.midi_ch_);
+    j.at (kPassthroughMidiInputKey).get_to (track.passthrough_midi_input_);
+  }
 
 public:
   /**
@@ -105,5 +118,3 @@ public:
 
 using PianoRollTrackVariant = std::variant<MidiTrack, InstrumentTrack>;
 using PianoRollTrackPtrVariant = to_pointer_variant<PianoRollTrackVariant>;
-
-#endif // __DSP_PIANO_ROLL_TRACK_H__

@@ -44,10 +44,7 @@ target_sources(zrythm_utils_lib
     io.h
     io.cpp
     icloneable.h
-    iserializable.h
     jack.h
-    json.h
-    json.cpp
     logger.h
     logger.cpp
     math.h
@@ -75,6 +72,7 @@ target_sources(zrythm_utils_lib
     ring_buffer.h
     rt_thread_id.h
     rt_thread_id.cpp
+    serialization.h
     string.h
     string.cpp
     symap.h

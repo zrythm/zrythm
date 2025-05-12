@@ -125,10 +125,7 @@ public:
  * and AudioTrack.
  */
 template <typename RegionT>
-class TrackLaneImpl
-    : public TrackLane,
-      public ArrangerObjectOwner<RegionT>,
-      public zrythm::utils::serialization::ISerializable<TrackLaneImpl<RegionT>>
+class TrackLaneImpl : public TrackLane, public ArrangerObjectOwner<RegionT>
 {
 public:
   using TrackLaneT =
@@ -157,8 +154,6 @@ public:
   bool is_in_active_project () const;
 
   bool is_auditioner () const;
-
-  void init_loaded (LanedTrackT * track);
 
   /**
    * Sets track lane soloed, updates UI and optionally
@@ -260,9 +255,31 @@ protected:
   void
   copy_members_from (const TrackLaneImpl &other, ObjectCloneType clone_type);
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
 private:
+  static constexpr std::string_view kNameKey = "name";
+  static constexpr std::string_view kHeightKey = "height";
+  static constexpr std::string_view kMuteKey = "mute";
+  static constexpr std::string_view kSoloKey = "solo";
+  static constexpr std::string_view kMidiChannelKey = "midiChannel";
+  friend void to_json (nlohmann::json &j, const TrackLaneImpl &lane)
+  {
+    to_json (j, static_cast<const ArrangerObjectOwner<RegionT> &> (lane));
+    j[kNameKey] = lane.name_;
+    j[kHeightKey] = lane.height_;
+    j[kMuteKey] = lane.mute_;
+    j[kSoloKey] = lane.solo_;
+    j[kMidiChannelKey] = lane.midi_ch_;
+  }
+  friend void from_json (const nlohmann::json &j, TrackLaneImpl &lane)
+  {
+    from_json (j, static_cast<ArrangerObjectOwner<RegionT> &> (lane));
+    j.at (kNameKey).get_to (lane.name_);
+    j.at (kHeightKey).get_to (lane.height_);
+    j.at (kMuteKey).get_to (lane.mute_);
+    j.at (kSoloKey).get_to (lane.solo_);
+    j.at (kMidiChannelKey).get_to (lane.midi_ch_);
+  }
+
   // TODO make sure this gets called when regions are removed from
   // ArrangerObjectOwner
   void after_remove_region ();

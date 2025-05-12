@@ -12,11 +12,7 @@
 namespace zrythm::gui::actions
 {
 
-class PortAction
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<PortAction>,
-      public zrythm::utils::serialization::ISerializable<PortAction>
+class PortAction : public QObject, public UndoableAction, public ICloneable<PortAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -52,8 +48,6 @@ public:
 
   void init_after_cloning (const PortAction &other, ObjectCloneType clone_type)
     override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override { }

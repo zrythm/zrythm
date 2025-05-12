@@ -17,8 +17,7 @@ namespace zrythm::gui::actions
 class TransportAction final
     : public QObject,
       public UndoableAction,
-      public ICloneable<TransportAction>,
-      public zrythm::utils::serialization::ISerializable<TransportAction>
+      public ICloneable<TransportAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -70,8 +69,6 @@ public:
     override;
 
   QString to_string () const override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override { }

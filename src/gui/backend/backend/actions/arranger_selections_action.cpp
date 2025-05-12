@@ -2017,7 +2017,7 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
               if (do_it)
                 {
                   /* quantize it */
-                  if (opts_->adj_start_)
+                  if (opts_->adjust_start_)
                     {
                       const auto &[new_pos, ticks] =
                         opts_->quantize_position (obj->get_position ());
@@ -2027,7 +2027,7 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
                           obj->end_pos_->add_ticks (ticks, frames_per_tick_);
                         }
                     }
-                  if (opts_->adj_end_)
+                  if (opts_->adjust_end_)
                     {
                       if constexpr (std::derived_from<ObjT, BoundedObject>)
                         {

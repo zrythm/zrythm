@@ -25,10 +25,9 @@ TEST (UuidIdentifiableObjectTest, Creation)
 TEST (UuidIdentifiableObjectTest, Serialization)
 {
   BaseTestObject obj1;
-  auto           json = obj1.serialize_to_json_string ();
+  nlohmann::json json = obj1;
 
-  BaseTestObject obj2;
-  obj2.deserialize_from_json_string (json.c_str ());
+  auto obj2 = json.get<BaseTestObject> ();
 
   EXPECT_EQ (obj2.get_uuid (), obj1.get_uuid ());
 }
@@ -255,6 +254,36 @@ TEST_F (UuidIdentifiableObjectRegistryTest, ObjectCloning)
     *obj1_, TestUuid{ QUuid::createUuid () }, "ClonedObject");
   EXPECT_NE (clone_ref.id (), obj1_->get_uuid ());
   EXPECT_EQ (registry_.size (), 4);
+}
+
+void
+from_json (
+  nlohmann::json                                   &j,
+  UuidIdentifiableObjectRegistryTest::TestRegistry &obj)
+{
+  auto builder = TestObjectBuilder ().with_int_dependency (42);
+  from_json_with_builder (j, obj, builder);
+}
+
+TEST_F (UuidIdentifiableObjectRegistryTest, RegistrySerialization)
+{
+  // Serialize the registry
+  nlohmann::json json = registry_;
+
+  // Create a new registry and deserialize into it
+  TestRegistry new_registry;
+  from_json (json, new_registry);
+
+  // Verify all objects were deserialized correctly
+  EXPECT_EQ (new_registry.size (), 3);
+  EXPECT_TRUE (new_registry.contains (obj1_->get_uuid ()));
+  EXPECT_TRUE (new_registry.contains (obj2_->get_uuid ()));
+  EXPECT_TRUE (new_registry.contains (obj3_->get_uuid ()));
+
+  // Verify object data was preserved
+  auto obj1_var = new_registry.find_by_id_or_throw (obj1_->get_uuid ());
+  std::visit (
+    [] (auto * obj) { EXPECT_EQ (obj->name (), "Object1"); }, obj1_var);
 }
 
 TEST_F (UuidIdentifiableObjectSelectionManagerTest, BasicSelection)

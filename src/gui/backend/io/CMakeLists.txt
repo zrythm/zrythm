@@ -6,5 +6,3 @@ target_sources(zrythm_gui_lib
     file_descriptor.cpp
     file_import.cpp
     midi_file.cpp)
-
-add_subdirectory(serialization)

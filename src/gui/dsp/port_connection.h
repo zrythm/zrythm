@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022,2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_PORT_CONNECTION_H__
@@ -16,10 +16,7 @@ using namespace zrythm;
 /**
  * A connection between two ports.
  */
-class PortConnection final
-    : public QObject,
-      public zrythm::utils::serialization::ISerializable<PortConnection>,
-      public ICloneable<PortConnection>
+class PortConnection final : public QObject, public ICloneable<PortConnection>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -48,7 +45,33 @@ public:
     enabled_ = enabled;
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kSourceIdKey = "srcId";
+  static constexpr std::string_view kDestIdKey = "destId";
+  static constexpr std::string_view kMultiplierKey = "multiplier";
+  static constexpr std::string_view kLockedKey = "locked";
+  static constexpr std::string_view kEnabledKey = "enabled";
+  // note: this is only needed for CV ports
+  static constexpr std::string_view kBaseValueKey = "baseValue";
+  friend void to_json (nlohmann::json &j, const PortConnection &port_connection)
+  {
+    j[kSourceIdKey] = port_connection.src_id_;
+    j[kDestIdKey] = port_connection.dest_id_;
+    j[kMultiplierKey] = port_connection.multiplier_;
+    j[kLockedKey] = port_connection.locked_;
+    j[kEnabledKey] = port_connection.enabled_;
+    j[kBaseValueKey] = port_connection.base_value_;
+  }
+  friend void
+  from_json (const nlohmann::json &j, PortConnection &port_connection)
+  {
+    j.at (kSourceIdKey).get_to (port_connection.src_id_);
+    j.at (kDestIdKey).get_to (port_connection.dest_id_);
+    j.at (kMultiplierKey).get_to (port_connection.multiplier_);
+    j.at (kLockedKey).get_to (port_connection.locked_);
+    j.at (kEnabledKey).get_to (port_connection.enabled_);
+    j.at (kBaseValueKey).get_to (port_connection.base_value_);
+  }
 
 public:
   PortUuid src_id_;

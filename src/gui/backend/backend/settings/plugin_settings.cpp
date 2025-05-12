@@ -18,7 +18,7 @@
 
 using namespace zrythm;
 
-constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";
+constexpr auto PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json"sv;
 
 void
 PluginSetting::copy_fields_from (const PluginSetting &other)
@@ -460,7 +460,8 @@ PluginSettings::serialize_to_file ()
 {
   z_info ("Serializing plugin settings...");
 
-  auto json_str = serialize_to_json_string ();
+  nlohmann::json json = *this;
+  auto           json_str = json.dump ();
 
   auto path = get_file_path ();
   z_return_if_fail (
@@ -469,7 +470,8 @@ PluginSettings::serialize_to_file ()
   z_debug ("Writing plugin settings to {}...", path);
   try
     {
-      utils::io::set_file_contents (path, json_str.to_utf8_string ());
+      utils::io::set_file_contents (
+        path, utils::Utf8String::from_utf8_encoded_string (json_str));
     }
   catch (const ZrythmException &e)
     {
@@ -502,7 +504,8 @@ PluginSettings::read_or_new ()
 
   try
     {
-      ret->deserialize_from_json_string (json.c_str ());
+      nlohmann::json j = nlohmann::json::parse (json);
+      from_json (j, *ret);
     }
   catch (const ZrythmException &e)
     {
@@ -594,4 +597,14 @@ PluginSettings::set (const PluginSetting &setting, bool _serialize)
     {
       serialize_to_file_no_throw ();
     }
+}
+
+void
+from_json (const nlohmann::json &j, PluginSetting &p)
+{
+  p.descr_ = std::make_unique<PluginDescriptor> ();
+  j.at (PluginSetting::kDescriptorKey).get_to (*p.descr_);
+  j.at (PluginSetting::kOpenWithCarlaKey).get_to (p.open_with_carla_);
+  j.at (PluginSetting::kForceGenericUIKey).get_to (p.force_generic_ui_);
+  j.at (PluginSetting::kBridgeModeKey).get_to (p.bridge_mode_);
 }

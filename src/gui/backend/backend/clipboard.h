@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __GUI_BACKEND_CLIPBOARD_H__
-#define __GUI_BACKEND_CLIPBOARD_H__
+#pragma once
 
 #include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/track_span.h"
@@ -14,7 +13,7 @@
 /**
  * Clipboard struct.
  */
-class Clipboard final : public utils::serialization::ISerializable<Clipboard>
+class Clipboard final
 {
 public:
   using PluginUuid = Plugin::PluginUuid;
@@ -57,11 +56,17 @@ public:
   {
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  std::string get_document_type () const { return "ZrythmClipboard"; };
+  int         get_format_major_version () const { return 3; }
+  int         get_format_minor_version () const { return 0; }
 
-  std::string get_document_type () const override { return "ZrythmClipboard"; };
-  int         get_format_major_version () const override { return 3; }
-  int         get_format_minor_version () const override { return 0; }
+private:
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE (
+    Clipboard,
+    type_,
+    arranger_objects_,
+    tracks_,
+    plugins_)
 
 public:
   Type                              type_{};
@@ -73,5 +78,3 @@ public:
 /**
  * @}
  */
-
-#endif

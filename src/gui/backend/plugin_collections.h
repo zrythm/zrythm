@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __PLUGINS_PLUGIN_COLLECTIONS_H__
-#define __PLUGINS_PLUGIN_COLLECTIONS_H__
+#pragma once
 
 #include <vector>
 
@@ -20,9 +19,7 @@ namespace zrythm::gui::old_dsp::plugins
 /**
  * Plugin collection used in the plugin browser.
  */
-class PluginCollection final
-    : public ICloneable<PluginCollection>,
-      public zrythm::utils::serialization::ISerializable<PluginCollection>
+class PluginCollection final : public ICloneable<PluginCollection>
 {
 public:
   std::string get_name () const { return name_; }
@@ -30,8 +27,6 @@ public:
   void set_name (std::string_view name) { name_ = name; }
 
   void clear () { descriptors_.clear (); }
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
   /**
    * Returns whether the collection contains the given descriptor.
@@ -57,6 +52,25 @@ public:
   init_after_cloning (const PluginCollection &other, ObjectCloneType clone_type)
     override;
 
+private:
+  static constexpr auto kNameKey = "name"sv;
+  static constexpr auto kDescriptionKey = "description"sv;
+  static constexpr auto kDescriptorsKey = "descriptors"sv;
+  friend void           to_json (nlohmann::json &j, const PluginCollection &p)
+  {
+    j = nlohmann::json{
+      { kNameKey,        p.name_        },
+      { kDescriptionKey, p.description_ },
+      { kDescriptorsKey, p.descriptors_ },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, PluginCollection &p)
+  {
+    j.at (kNameKey).get_to (p.name_);
+    j.at (kDescriptionKey).get_to (p.description_);
+    j.at (kDescriptorsKey).get_to (p.descriptors_);
+  }
+
 public:
   /** Name of the collection. */
   std::string name_;
@@ -72,7 +86,6 @@ public:
  * Serializable plugin collections.
  */
 class PluginCollections
-    : public zrythm::utils::serialization::ISerializable<PluginCollections>
 {
 public:
   /**
@@ -106,14 +119,9 @@ public:
       }
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-  std::string get_document_type () const override
-  {
-    return "Zrythm Plugin Collections";
-  }
-  int get_format_major_version () const override { return 3; }
-  int get_format_minor_version () const override { return 0; }
+  std::string get_document_type () const { return "Zrythm Plugin Collections"; }
+  int         get_format_major_version () const { return 3; }
+  int         get_format_minor_version () const { return 0; }
 
   /**
    * Appends a collection.
@@ -137,6 +145,16 @@ public:
   void remove (PluginCollection &collection, bool serialize);
 
 private:
+  static constexpr auto kCollectionsKey = "collections"sv;
+  friend void           to_json (nlohmann::json &j, const PluginCollections &pc)
+  {
+    j[kCollectionsKey] = pc.collections_;
+  }
+  friend void from_json (const nlohmann::json &j, PluginCollections &pc)
+  {
+    j.at (kCollectionsKey).get_to (pc.collections_);
+  }
+
   /**
    * @brief Deletes the cache file.
    *
@@ -156,5 +174,3 @@ public:
 /**
  * @}
  */
-
-#endif

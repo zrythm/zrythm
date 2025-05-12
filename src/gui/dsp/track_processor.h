@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_TRACK_PROCESSOR_H__
-#define __AUDIO_TRACK_PROCESSOR_H__
+#pragma once
 
 #include "gui/dsp/midi_mapping.h"
 #include "gui/dsp/plugin.h"
@@ -31,18 +30,13 @@ constexpr int TRACK_PROCESSOR_MAGIC = 81213128;
  * A TrackProcessor is a processor that is used as the first entry point when
  * processing a track.
  */
-class TrackProcessor final
-    : public ICloneable<TrackProcessor>,
-      public zrythm::utils::serialization::ISerializable<TrackProcessor>,
-      public IPortOwner
+class TrackProcessor final : public ICloneable<TrackProcessor>, public IPortOwner
 {
   using PortType = zrythm::dsp::PortType;
   using PortFlow = zrythm::dsp::PortFlow;
   using PortIdentifier = zrythm::dsp::PortIdentifier;
 
 public:
-  TrackProcessor (const DeserializationDependencyHolder &dh);
-
   /**
    * Creates a new track processor for the given track.
    */
@@ -233,9 +227,61 @@ public:
         .get_object ());
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kMonoKey = "mono"sv;
+  static constexpr auto kInputGainKey = "inputGain"sv;
+  static constexpr auto kOutputGainKey = "outputGain"sv;
+  static constexpr auto kMidiInKey = "midiIn"sv;
+  static constexpr auto kMidiOutKey = "midiOut"sv;
+  static constexpr auto kPianoRollKey = "pianoRoll"sv;
+  static constexpr auto kMonitorAudioKey = "monitorAudio"sv;
+  static constexpr auto kStereoInLKey = "stereoInL"sv;
+  static constexpr auto kStereoInRKey = "stereoInR"sv;
+  static constexpr auto kStereoOutLKey = "stereoOutL"sv;
+  static constexpr auto kStereoOutRKey = "stereoOutR"sv;
+  static constexpr auto kMidiCcKey = "midiCc"sv;
+  static constexpr auto kPitchBendKey = "pitchBend"sv;
+  static constexpr auto kPolyKeyPressureKey = "polyKeyPressure"sv;
+  static constexpr auto kChannelPressureKey = "channelPressure"sv;
+  friend void           to_json (nlohmann::json &j, const TrackProcessor &tp)
+  {
+    j = nlohmann::json{
+      { kMonoKey,            tp.mono_id_               },
+      { kInputGainKey,       tp.input_gain_id_         },
+      { kOutputGainKey,      tp.output_gain_id_        },
+      { kMidiInKey,          tp.midi_in_id_            },
+      { kMidiOutKey,         tp.midi_out_id_           },
+      { kPianoRollKey,       tp.piano_roll_id_         },
+      { kMonitorAudioKey,    tp.monitor_audio_id_      },
+      { kStereoInLKey,       tp.stereo_in_left_id_     },
+      { kStereoInRKey,       tp.stereo_in_right_id_    },
+      { kStereoOutLKey,      tp.stereo_out_left_id_    },
+      { kStereoOutRKey,      tp.stereo_out_right_id_   },
+      { kMidiCcKey,          tp.midi_cc_ids_           },
+      { kPitchBendKey,       tp.pitch_bend_ids_        },
+      { kPolyKeyPressureKey, tp.poly_key_pressure_ids_ },
+      { kChannelPressureKey, tp.channel_pressure_ids_  },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, TrackProcessor &tp)
+  {
+    j.at (kMonoKey).get_to (tp.mono_id_);
+    j.at (kInputGainKey).get_to (tp.input_gain_id_);
+    j.at (kOutputGainKey).get_to (tp.output_gain_id_);
+    j.at (kMidiInKey).get_to (tp.midi_in_id_);
+    j.at (kMidiOutKey).get_to (tp.midi_out_id_);
+    j.at (kPianoRollKey).get_to (tp.piano_roll_id_);
+    j.at (kMonitorAudioKey).get_to (tp.monitor_audio_id_);
+    j.at (kStereoInLKey).get_to (tp.stereo_in_left_id_);
+    j.at (kStereoInRKey).get_to (tp.stereo_in_right_id_);
+    j.at (kStereoOutLKey).get_to (tp.stereo_out_left_id_);
+    j.at (kStereoOutRKey).get_to (tp.stereo_out_right_id_);
+    j.at (kMidiCcKey).get_to (tp.midi_cc_ids_);
+    j.at (kPitchBendKey).get_to (tp.pitch_bend_ids_);
+    j.at (kPolyKeyPressureKey).get_to (tp.poly_key_pressure_ids_);
+    j.at (kChannelPressureKey).get_to (tp.channel_pressure_ids_);
+  }
+
   void init_common ();
 
   /**
@@ -398,12 +444,8 @@ public:
    * port for changes.
    */
   std::unique_ptr<MPMCQueue<ControlPort *>> updated_midi_automatable_ports_;
-
-  int magic_ = TRACK_PROCESSOR_MAGIC;
 };
 
 /**
  * @}
  */
-
-#endif

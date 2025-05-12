@@ -208,3 +208,9 @@ MidiMappings::get_for_port (
     }
   return count;
 }
+
+void
+from_json (const nlohmann::json &j, MidiMappings &mappings)
+{
+  j.at (MidiMappings::kMappingsKey).get_to (mappings.mappings_);
+}

@@ -33,15 +33,6 @@
 namespace zrythm::gui
 {
 
-Channel::Channel (const DeserializationDependencyHolder &dh)
-    : Channel (
-        dh.get<std::reference_wrapper<TrackRegistry>> ().get (),
-        dh.get<std::reference_wrapper<PluginRegistry>> ().get (),
-        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-        {})
-{
-}
-
 Channel::Channel (
   TrackRegistry            &track_registry,
   PluginRegistry           &plugin_registry,
@@ -1841,4 +1832,55 @@ Channel::disconnect_channel ()
     }
 }
 
-}; // namespace zrythm::gui::old_dsp
+void
+from_json (const nlohmann::json &j, Channel &c)
+{
+  j.at (Channel::kMidiFxKey).get_to (c.midi_fx_);
+  j.at (Channel::kInsertsKey).get_to (c.inserts_);
+  for (
+    const auto &[index, send_json] :
+    std::views::enumerate (j.at (Channel::kSendsKey)))
+    {
+      if (send_json.is_null ())
+        continue;
+      auto send = std::make_unique<ChannelSend> (
+        *c.track_, c.track_registry_, c.port_registry_);
+      from_json (send_json, *send);
+      c.sends_.at (index) = std::move (send);
+    }
+  j.at (Channel::kInstrumentKey).get_to (c.instrument_);
+  c.prefader_ = new Fader (&c);
+  j.at (Channel::kPrefaderKey).get_to (*c.prefader_);
+  c.fader_ = new Fader (&c);
+  j.at (Channel::kFaderKey).get_to (*c.fader_);
+  j.at (Channel::kMidiOutKey).get_to (c.midi_out_id_);
+  j.at (Channel::kStereoOutLKey).get_to (c.stereo_out_left_id_);
+  j.at (Channel::kStereoOutRKey).get_to (c.stereo_out_right_id_);
+  j.at (Channel::kOutputIdKey).get_to (c.output_track_uuid_);
+  j.at (Channel::kTrackIdKey).get_to (c.track_uuid_);
+  if (j.contains (Channel::kExtMidiInputsKey))
+    {
+      j.at (Channel::kExtMidiInputsKey).get_to (c.ext_midi_ins_);
+    }
+  j.at (Channel::kAllMidiInputsKey).get_to (c.all_midi_ins_);
+  if (j.contains (Channel::kMidiChannelsKey))
+    {
+      j.at (Channel::kMidiChannelsKey).get_to (c.midi_channels_);
+    }
+  j.at (Channel::kAllMidiChannelsKey).get_to (c.all_midi_channels_);
+  if (j.contains (Channel::kExtStereoLInputsKey))
+    {
+      j.at (Channel::kExtStereoLInputsKey).get_to (c.ext_stereo_l_ins_);
+    }
+  j.at (Channel::kAllStereoLInputsKey).get_to (c.all_stereo_l_ins_);
+  if (j.contains (Channel::kExtStereoRInputsKey))
+    {
+      j.at (Channel::kExtStereoRInputsKey).get_to (c.ext_stereo_r_ins_);
+    }
+  j.at (Channel::kAllStereoRInputsKey).get_to (c.all_stereo_r_ins_);
+  j.at (Channel::kWidthKey).get_to (c.width_);
+}
+
+}; // namespace zrythm::gui
+
+using zrythm::gui::Channel;

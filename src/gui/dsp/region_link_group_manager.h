@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_REGION_LINK_GROUP_MANAGER_H__
-#define __AUDIO_REGION_LINK_GROUP_MANAGER_H__
+#pragma once
 
 #include "gui/dsp/region_link_group.h"
 #include "utils/format.h"
@@ -19,7 +18,6 @@
  * Manager of region link groups.
  */
 class RegionLinkGroupManager final
-    : public zrythm::utils::serialization::ISerializable<RegionLinkGroupManager>
 {
 public:
   /**
@@ -36,7 +34,13 @@ public:
 
   bool validate () const;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kGroupsKey = "groups"sv;
+  friend void to_json (nlohmann::json &j, const RegionLinkGroupManager &mgr)
+  {
+    j[kGroupsKey] = mgr.groups_;
+  }
+  friend void from_json (const nlohmann::json &j, RegionLinkGroupManager &mgr);
 
 public:
   /** Region link groups. */
@@ -55,5 +59,3 @@ DEFINE_OBJECT_FORMATTER (
 /**
  * @}
  */
-
-#endif

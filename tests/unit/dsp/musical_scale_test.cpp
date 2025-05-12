@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/musical_scale.h"
@@ -127,11 +127,11 @@ TEST (MusicalScaleTest, Serialization)
   MusicalScale scale1 (MusicalScale::Type::Major, MusicalNote::C);
 
   // Serialize to JSON
-  auto json_str = scale1.serialize_to_json_string ();
+  nlohmann::json j = scale1;
 
   // Create new object and deserialize
   MusicalScale scale2;
-  scale2.deserialize_from_json_string (json_str.c_str ());
+  from_json (j, scale2);
 
   // Verify all fields match
   EXPECT_EQ (scale1.type_, scale2.type_);

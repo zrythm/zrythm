@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef DSP_AUDIO_REGION_H
-#define DSP_AUDIO_REGION_H
+#pragma once
 
 #include "gui/dsp/clip.h"
 #include "gui/dsp/fadeable_object.h"
@@ -40,8 +39,7 @@ class AudioRegion final
       public RegionImpl<AudioRegion>,
       public LaneOwnedObject,
       public FadeableObject,
-      public ICloneable<AudioRegion>,
-      public zrythm::utils::serialization::ISerializable<AudioRegion>
+      public ICloneable<AudioRegion>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -52,7 +50,6 @@ public:
   using BitDepth = AudioClip::BitDepth;
 
 public:
-  AudioRegion (const DeserializationDependencyHolder &dh);
   AudioRegion (
     ArrangerObjectRegistry &obj_registry,
     TrackResolver           track_resolver,
@@ -133,7 +130,35 @@ public:
   void release_resources ();
   // ==========================================================================
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kClipIdKey = "clipId";
+  static constexpr std::string_view kGainKey = "gain";
+  friend void to_json (nlohmann::json &j, const AudioRegion &region)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (region));
+    to_json (j, static_cast<const BoundedObject &> (region));
+    to_json (j, static_cast<const LoopableObject &> (region));
+    to_json (j, static_cast<const FadeableObject &> (region));
+    to_json (j, static_cast<const MuteableObject &> (region));
+    to_json (j, static_cast<const NamedObject &> (region));
+    to_json (j, static_cast<const ColoredObject &> (region));
+    to_json (j, static_cast<const Region &> (region));
+    j[kClipIdKey] = region.clip_id_;
+    j[kGainKey] = region.gain_;
+  }
+  friend void from_json (const nlohmann::json &j, AudioRegion &region)
+  {
+    from_json (j, static_cast<ArrangerObject &> (region));
+    from_json (j, static_cast<BoundedObject &> (region));
+    from_json (j, static_cast<LoopableObject &> (region));
+    from_json (j, static_cast<FadeableObject &> (region));
+    from_json (j, static_cast<MuteableObject &> (region));
+    from_json (j, static_cast<NamedObject &> (region));
+    from_json (j, static_cast<ColoredObject &> (region));
+    from_json (j, static_cast<Region &> (region));
+    j.at (kClipIdKey).get_to (region.clip_id_);
+    j.at (kGainKey).get_to (region.gain_);
+  }
 
 public:
   AudioClipResolverFunc clip_resolver_;
@@ -163,26 +188,6 @@ public:
   std::unique_ptr<juce::AudioSampleBuffer> tmp_buf_;
 };
 
-inline bool
-operator== (const AudioRegion &lhs, const AudioRegion &rhs)
-{
-  return static_cast<const Region &> (lhs) == static_cast<const Region &> (rhs)
-         && static_cast<const TimelineObject &> (lhs)
-              == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NamedObject &> (lhs)
-              == static_cast<const NamedObject &> (rhs)
-         && static_cast<const LoopableObject &> (lhs)
-              == static_cast<const LoopableObject &> (rhs)
-         && static_cast<const ColoredObject &> (lhs)
-              == static_cast<const ColoredObject &> (rhs)
-         && static_cast<const MuteableObject &> (lhs)
-              == static_cast<const MuteableObject &> (rhs)
-         && static_cast<const BoundedObject &> (lhs)
-              == static_cast<const BoundedObject &> (rhs)
-         && static_cast<const ArrangerObject &> (lhs)
-              == static_cast<const ArrangerObject &> (rhs);
-}
-
 DEFINE_OBJECT_FORMATTER (AudioRegion, AudioRegion, [] (const AudioRegion &ar) {
   return fmt::format (
     "AudioRegion[id: {}, {}]", ar.get_uuid (), static_cast<const Region &> (ar));
@@ -191,5 +196,3 @@ DEFINE_OBJECT_FORMATTER (AudioRegion, AudioRegion, [] (const AudioRegion &ar) {
 /**
  * @}
  */
-
-#endif // DSP_AUDIO_REGION_H

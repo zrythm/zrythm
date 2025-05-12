@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef GUI_BACKEND_PROJECT_H
-#define GUI_BACKEND_PROJECT_H
+#pragma once
 
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/clip_editor.h"
@@ -29,16 +28,6 @@
 using namespace zrythm;
 
 #define PROJECT (Project::get_active_instance ())
-constexpr const char * PROJECT_FILE = "project.zpj";
-#define PROJECT_BACKUPS_DIR "backups"
-#define PROJECT_PLUGINS_DIR "plugins"
-#define PROJECT_PLUGIN_STATES_DIR "states"
-#define PROJECT_PLUGIN_EXT_COPIES_DIR "ext_file_copies"
-#define PROJECT_PLUGIN_EXT_LINKS_DIR "ext_file_links"
-#define PROJECT_EXPORTS_DIR "exports"
-#define PROJECT_STEMS_DIR "stems"
-#define PROJECT_POOL_DIR "pool"
-#define PROJECT_FINISHED_FILE "FINISHED"
 
 enum class ProjectPath
 {
@@ -70,18 +59,6 @@ enum class ProjectPath
 };
 
 /**
- * Flag to pass to project_compress() and project_decompress().
- */
-enum class ProjectCompressionFlag
-{
-  PROJECT_COMPRESS_FILE,
-  PROJECT_COMPRESS_DATA,
-};
-
-#define PROJECT_DECOMPRESS_FILE ProjectCompressionFlag::PROJECT_COMPRESS_FILE
-#define PROJECT_DECOMPRESS_DATA ProjectCompressionFlag::PROJECT_COMPRESS_DATA
-
-/**
  * @brief Contains all of the info that will be serialized into a project file.
  *
  * @todo Create a UserInterface struct and move things that are only relevant to
@@ -90,10 +67,7 @@ enum class ProjectCompressionFlag
  * A project (or song), contains all the project data as opposed to zrythm_app.h
  * which manages global things like plugin descriptors and global settings.
  **/
-class Project final
-    : public QObject,
-      virtual public zrythm::utils::serialization::ISerializable<Project>,
-      public ICloneable<Project>
+class Project final : public QObject, public ICloneable<Project>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -122,9 +96,21 @@ public:
   using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
 
+  static constexpr auto PROJECT_FILE = "project.zpj"sv;
+  static constexpr auto PROJECT_BACKUPS_DIR = "backups"sv;
+  static constexpr auto PROJECT_PLUGINS_DIR = "plugins"sv;
+  static constexpr auto PROJECT_PLUGIN_STATES_DIR = "states"sv;
+  static constexpr auto PROJECT_PLUGIN_EXT_COPIES_DIR = "ext_file_copies"sv;
+  static constexpr auto PROJECT_PLUGIN_EXT_LINKS_DIR = "ext_file_links"sv;
+  static constexpr auto PROJECT_EXPORTS_DIR = "exports"sv;
+  static constexpr auto PROJECT_STEMS_DIR = "stems"sv;
+  static constexpr auto PROJECT_POOL_DIR = "pool"sv;
+  static constexpr auto PROJECT_FINISHED_FILE = "FINISHED"sv;
+
 public:
   Project (QObject * parent = nullptr);
   ~Project () override;
+  Z_DISABLE_COPY_MOVE (Project)
 
   /**
    * Selection type, used for controlling which part of the interface is
@@ -152,6 +138,17 @@ public:
 
     /** Editor arranger. */
     Editor,
+  };
+
+  /**
+   * Flag to pass to project_compress() and project_decompress().
+   */
+  enum class CompressionFlag
+  {
+    PROJECT_COMPRESS_FILE = 0,
+    PROJECT_DECOMPRESS_FILE = 0,
+    PROJECT_COMPRESS_DATA = 1,
+    PROJECT_DECOMPRESS_DATA = 1,
   };
 
   // =========================================================
@@ -192,18 +189,6 @@ public:
   bool validate () const;
 
   static Project * get_active_instance ();
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-  std::string get_document_type () const override { return "ZrythmProject"; }
-
-  /**
-   * @brief These are used when serializing.
-   *
-   * @return int
-   */
-  int get_format_major_version () const override { return 1; }
-  int get_format_minor_version () const override { return 11; }
 
   /**
    * @return Whether positions were adjusted.
@@ -248,42 +233,33 @@ public:
    * @param[out] _dest Pointer to a location to allocate memory.
    * @param[out] _dest_size Pointer to a location to store the size of the
    * allocated memory.
-   * @param _src Input buffer or filepath.
-   * @param _src_size Input buffer size, if not filepath.
+   * @param src Input bytes to compress/decompress.
    *
    * @throw ZrythmException If the compression/decompression fails.
    */
   static void compress_or_decompress (
-    bool                   compress,
-    char **                _dest,
-    size_t *               _dest_size,
-    ProjectCompressionFlag dest_type,
-    const char *           _src,
-    size_t                 _src_size,
-    ProjectCompressionFlag src_type);
+    bool              compress,
+    char **           _dest,
+    size_t *          _dest_size,
+    CompressionFlag   dest_type,
+    const QByteArray &src);
 
   static void compress (
-    char **                _dest,
-    size_t *               _dest_size,
-    ProjectCompressionFlag dest_type,
-    const char *           _src,
-    const size_t           _src_size,
-    ProjectCompressionFlag src_type)
+    char **           _dest,
+    size_t *          _dest_size,
+    CompressionFlag   dest_type,
+    const QByteArray &src)
   {
-    compress_or_decompress (
-      true, _dest, _dest_size, dest_type, _src, _src_size, src_type);
+    compress_or_decompress (true, _dest, _dest_size, dest_type, src);
   }
 
   static void decompress (
-    char **                _dest,
-    size_t *               _dest_size,
-    ProjectCompressionFlag dest_type,
-    const char *           _src,
-    const size_t           _src_size,
-    ProjectCompressionFlag src_type)
+    char **           _dest,
+    size_t *          _dest_size,
+    CompressionFlag   dest_type,
+    const QByteArray &src)
   {
-    compress_or_decompress (
-      false, _dest, _dest_size, dest_type, _src, _src_size, src_type);
+    compress_or_decompress (false, _dest, _dest_size, dest_type, src);
   }
 
   /**
@@ -474,6 +450,34 @@ private:
   static bool idle_saved_callback (SaveContext * ctx);
 
 private:
+  static constexpr auto kPortRegistryKey = "portRegistry"sv;
+  static constexpr auto kPluginRegistryKey = "pluginRegistry"sv;
+  static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
+  static constexpr auto kTrackRegistryKey = "trackRegistry"sv;
+  static constexpr auto kTitleKey = "title"sv;
+  static constexpr auto kDatetimeKey = "datetime"sv;
+  static constexpr auto kVersionKey = "version"sv;
+  static constexpr auto kClipEditorKey = "clipEditor"sv;
+  static constexpr auto kTimelineKey = "timeline"sv;
+  static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
+  static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
+  static constexpr auto kQuantizeOptsTimelineKey = "quantizeOptsTimeline"sv;
+  static constexpr auto kQuantizeOptsEditorKey = "quantizeOptsEditor"sv;
+  static constexpr auto kTransportKey = "transport"sv;
+  static constexpr auto kAudioEngineKey = "audioEngine"sv;
+  static constexpr auto kTracklistKey = "tracklist"sv;
+  static constexpr auto kRegionLinkGroupManagerKey = "regionLinkGroupManager"sv;
+  static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
+  static constexpr auto kMidiMappingsKey = "midiMappings"sv;
+  static constexpr auto kUndoManagerKey = "undoManager"sv;
+  static constexpr auto kLastSelectionKey = "lastSelection"sv;
+  static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
+  static constexpr auto FORMAT_MAJOR_VER = 2;
+  static constexpr auto FORMAT_MINOR_VER = 1;
+  friend void           to_json (nlohmann::json &j, const Project &project);
+  friend void           from_json (const nlohmann::json &j, Project &project);
+
+private:
   PortRegistry *           port_registry_{};
   PluginRegistry *         plugin_registry_{};
   ArrangerObjectRegistry * arranger_object_registry_{};
@@ -608,5 +612,3 @@ public:
 /**
  * @}
  */
-
-#endif // GUI_BACKEND_PROJECT_H

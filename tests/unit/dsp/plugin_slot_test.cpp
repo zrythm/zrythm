@@ -63,11 +63,11 @@ TEST (PluginSlotTest, Serialization)
   PluginSlot original{ PluginSlotType::Insert, 2 };
 
   // Serialize to JSON
-  auto json_str = original.serialize_to_json_string ();
+  nlohmann::json j = original;
 
   // Deserialize
   PluginSlot deserialized;
-  deserialized.deserialize_from_json_string (json_str.c_str ());
+  from_json (j, deserialized);
 
   EXPECT_EQ (original, deserialized);
 }

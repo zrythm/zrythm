@@ -57,6 +57,23 @@ public:
     }
 
   public:
+    std::unique_ptr<TrackT> build_for_deserialization () const
+    {
+      // FIXME: DRY
+      if constexpr (utils::Initializable<TrackT>)
+        {
+          return TrackT::create_unique (
+            track_registry_, plugin_registry_, port_registry_,
+            arranger_object_registry_, false);
+        }
+      else
+        {
+          return std::make_unique<TrackT> (
+            track_registry_, plugin_registry_, port_registry_,
+            arranger_object_registry_, false);
+        }
+    }
+
     auto build ()
     {
       auto obj_ref = [&] () {

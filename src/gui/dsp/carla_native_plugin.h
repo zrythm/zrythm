@@ -66,8 +66,7 @@ struct CarlaPatchbayPortInfo
 class CarlaNativePlugin final
     : public QObject,
       public Plugin,
-      public ICloneable<CarlaNativePlugin>,
-      public zrythm::utils::serialization::ISerializable<CarlaNativePlugin>
+      public ICloneable<CarlaNativePlugin>
 {
 public:
   CarlaNativePlugin () = default;
@@ -150,9 +149,16 @@ public:
   init_after_cloning (const CarlaNativePlugin &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void to_json (nlohmann::json &j, const CarlaNativePlugin &plugin)
+  {
+    to_json (j, static_cast<const Plugin &> (plugin));
+  }
+  friend void from_json (const nlohmann::json &j, CarlaNativePlugin &plugin)
+  {
+    from_json (j, static_cast<Plugin &> (plugin));
+  }
+
   void populate_banks () override;
 
   void set_selected_preset_from_index_impl (int idx) override;

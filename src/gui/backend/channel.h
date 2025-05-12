@@ -41,11 +41,7 @@ struct PluginImportData;
  *
  * @see Track
  */
-class Channel final
-    : public QObject,
-      public ICloneable<Channel>,
-      public utils::serialization::ISerializable<Channel>,
-      public IPortOwner
+class Channel final : public QObject, public ICloneable<Channel>, public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
@@ -68,8 +64,6 @@ public:
   friend struct PluginImportData;
 
 public:
-  Channel (const DeserializationDependencyHolder &dh);
-
   /**
    * @brief Main constructor used by the others.
    *
@@ -371,9 +365,65 @@ public:
 
   auto &get_sends () const { return sends_; }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kMidiFxKey = "midiFx"sv;
+  static constexpr auto kInsertsKey = "inserts"sv;
+  static constexpr auto kSendsKey = "sends"sv;
+  static constexpr auto kInstrumentKey = "instrument"sv;
+  static constexpr auto kPrefaderKey = "prefader"sv;
+  static constexpr auto kFaderKey = "fader"sv;
+  static constexpr auto kMidiOutKey = "midiOut"sv;
+  static constexpr auto kStereoOutLKey = "stereoOutL"sv;
+  static constexpr auto kStereoOutRKey = "stereoOutR"sv;
+  static constexpr auto kOutputIdKey = "outputId"sv;
+  static constexpr auto kTrackIdKey = "trackId"sv;
+  static constexpr auto kExtMidiInputsKey = "extMidiIns"sv;
+  static constexpr auto kAllMidiInputsKey = "allMidiIns"sv;
+  static constexpr auto kMidiChannelsKey = "midiChannels"sv;
+  static constexpr auto kAllMidiChannelsKey = "allMidiChannels"sv;
+  static constexpr auto kExtStereoLInputsKey = "extStereoLIns"sv;
+  static constexpr auto kAllStereoLInputsKey = "allStereoLIns"sv;
+  static constexpr auto kExtStereoRInputsKey = "extStereoRIns"sv;
+  static constexpr auto kAllStereoRInputsKey = "allStereoRIns"sv;
+  static constexpr auto kWidthKey = "width"sv;
+
+  friend void to_json (nlohmann::json &j, const Channel &c)
+  {
+    j[kMidiFxKey] = c.midi_fx_;
+    j[kInsertsKey] = c.inserts_;
+    j[kSendsKey] = c.sends_;
+    j[kInstrumentKey] = c.instrument_;
+    j[kPrefaderKey] = c.prefader_;
+    j[kFaderKey] = c.fader_;
+    j[kMidiOutKey] = c.midi_out_id_;
+    j[kStereoOutLKey] = c.stereo_out_left_id_;
+    j[kStereoOutRKey] = c.stereo_out_right_id_;
+    j[kOutputIdKey] = c.output_track_uuid_;
+    j[kTrackIdKey] = c.track_uuid_;
+    if (!c.all_midi_ins_)
+      {
+        j[kExtMidiInputsKey] = c.ext_midi_ins_;
+      }
+    j[kAllMidiInputsKey] = c.all_midi_ins_;
+    if (!c.all_midi_channels_)
+      {
+        j[kMidiChannelsKey] = c.midi_channels_;
+      }
+    j[kAllMidiChannelsKey] = c.all_midi_channels_;
+    if (!c.all_stereo_l_ins_)
+      {
+        j[kExtStereoLInputsKey] = c.ext_stereo_l_ins_;
+      }
+    j[kAllStereoLInputsKey] = c.all_stereo_l_ins_;
+    if (!c.all_stereo_r_ins_)
+      {
+        j[kExtStereoRInputsKey] = c.ext_stereo_r_ins_;
+      }
+    j[kAllStereoRInputsKey] = c.all_stereo_r_ins_;
+    j[kWidthKey] = c.width_;
+  }
+  friend void from_json (const nlohmann::json &j, Channel &c);
+
   /**
    * Connect ports in the case of !prev && !next.
    */

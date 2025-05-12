@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_INSTRUMENT_TRACK_H__
@@ -19,7 +19,6 @@ class InstrumentTrack final
       public GroupTargetTrack,
       public PianoRollTrack,
       public ICloneable<InstrumentTrack>,
-      public zrythm::utils::serialization::ISerializable<InstrumentTrack>,
       public utils::InitializableObject<InstrumentTrack>
 {
   Q_OBJECT
@@ -62,9 +61,32 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void
+  to_json (nlohmann::json &j, const InstrumentTrack &instrument_track)
+  {
+    to_json (j, static_cast<const Track &> (instrument_track));
+    to_json (j, static_cast<const ProcessableTrack &> (instrument_track));
+    to_json (j, static_cast<const AutomatableTrack &> (instrument_track));
+    to_json (j, static_cast<const RecordableTrack &> (instrument_track));
+    to_json (j, static_cast<const PianoRollTrack &> (instrument_track));
+    to_json (j, static_cast<const ChannelTrack &> (instrument_track));
+    to_json (j, static_cast<const LanedTrackImpl &> (instrument_track));
+    to_json (j, static_cast<const GroupTargetTrack &> (instrument_track));
+  }
+  friend void
+  from_json (const nlohmann::json &j, InstrumentTrack &instrument_track)
+  {
+    from_json (j, static_cast<Track &> (instrument_track));
+    from_json (j, static_cast<ProcessableTrack &> (instrument_track));
+    from_json (j, static_cast<AutomatableTrack &> (instrument_track));
+    from_json (j, static_cast<RecordableTrack &> (instrument_track));
+    from_json (j, static_cast<PianoRollTrack &> (instrument_track));
+    from_json (j, static_cast<ChannelTrack &> (instrument_track));
+    from_json (j, static_cast<LanedTrackImpl &> (instrument_track));
+    from_json (j, static_cast<GroupTargetTrack &> (instrument_track));
+  }
+
   bool initialize ();
 
 public:

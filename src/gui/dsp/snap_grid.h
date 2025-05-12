@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_SNAP_GRID_H__
-#define __AUDIO_SNAP_GRID_H__
+#pragma once
 
 #include "dsp/position.h"
 #include "utils/note_type.h"
@@ -33,8 +32,7 @@ enum class NoteLengthType
 /**
  * @brief Snap/grid information.
  */
-class SnapGrid
-  final : public zrythm::utils::serialization::ISerializable<SnapGrid>
+class SnapGrid final
 {
 public:
   enum class Type
@@ -245,10 +243,51 @@ public:
    */
   Position get_snapped_end_position (const Position &start_pos) const;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kTypeKey = "type"sv;
+  static constexpr auto kSnapNoteLengthKey = "snapNoteLength"sv;
+  static constexpr auto kSnapNoteTypeKey = "snapNoteType"sv;
+  static constexpr auto kSnapAdaptiveKey = "snapAdaptive"sv;
+  static constexpr auto kDefaultNoteLengthKey = "defaultNoteLength"sv;
+  static constexpr auto kDefaultNoteTypeKey = "defaultNoteType"sv;
+  static constexpr auto kDefaultAdaptiveKey = "defaultAdaptive"sv;
+  static constexpr auto kLengthTypeKey = "lengthType"sv;
+  static constexpr auto kSnapToGridKey = "snapToGrid"sv;
+  static constexpr auto kKeepOffsetKey = "keepOffset"sv;
+  static constexpr auto kSnapToEventsKey = "snapToEvents"sv;
+  friend void           to_json (nlohmann::json &j, const SnapGrid &p)
+  {
+    j = nlohmann::json{
+      { kTypeKey,              p.type_                     },
+      { kSnapNoteLengthKey,    p.snap_note_length_         },
+      { kSnapNoteTypeKey,      p.snap_note_type_           },
+      { kSnapAdaptiveKey,      p.snap_adaptive_            },
+      { kDefaultNoteLengthKey, p.default_note_length_      },
+      { kDefaultNoteTypeKey,   p.default_note_type_        },
+      { kDefaultAdaptiveKey,   p.default_adaptive_         },
+      { kLengthTypeKey,        p.length_type_              },
+      { kSnapToGridKey,        p.snap_to_grid_             },
+      { kKeepOffsetKey,        p.snap_to_grid_keep_offset_ },
+      { kSnapToEventsKey,      p.snap_to_events_           }
+    };
+  }
+  friend void from_json (const nlohmann::json &j, SnapGrid &p)
+  {
+    j.at (kTypeKey).get_to (p.type_);
+    j.at (kSnapNoteLengthKey).get_to (p.snap_note_length_);
+    j.at (kSnapNoteTypeKey).get_to (p.snap_note_type_);
+    j.at (kSnapAdaptiveKey).get_to (p.snap_adaptive_);
+    j.at (kDefaultNoteLengthKey).get_to (p.default_note_length_);
+    j.at (kDefaultNoteTypeKey).get_to (p.default_note_type_);
+    j.at (kDefaultAdaptiveKey).get_to (p.default_adaptive_);
+    j.at (kLengthTypeKey).get_to (p.length_type_);
+    j.at (kSnapToGridKey).get_to (p.snap_to_grid_);
+    j.at (kKeepOffsetKey).get_to (p.snap_to_grid_keep_offset_);
+    j.at (kSnapToEventsKey).get_to (p.snap_to_events_);
+  }
 
 public:
-  Type type_ = (Type) 0;
+  Type type_{};
 
   /**
    * If this is on, the snap note length will be determined automatically
@@ -304,5 +343,3 @@ private:
 };
 
 }; // namespace zrythm::gui
-
-#endif

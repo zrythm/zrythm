@@ -14,16 +14,6 @@
 using namespace zrythm;
 
 ModulatorMacroProcessor::ModulatorMacroProcessor (
-  const DeserializationDependencyHolder &dh)
-    : ModulatorMacroProcessor (
-        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-        std::addressof (dh.get<std::reference_wrapper<ModulatorTrack>> ().get ()),
-        std::nullopt,
-        false)
-{
-}
-
-ModulatorMacroProcessor::ModulatorMacroProcessor (
   PortRegistry      &port_registry,
   ModulatorTrack *   track,
   std::optional<int> idx,
@@ -75,14 +65,6 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
         cv_out.id_->port_index_ = *idx;
       }
     }
-}
-
-void
-ModulatorMacroProcessor::define_fields (const utils::serialization::Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("name", name_), make_field ("cvIn", cv_in_id_),
-    make_field ("cvOut", cv_out_id_), make_field ("macro", macro_id_));
 }
 
 bool

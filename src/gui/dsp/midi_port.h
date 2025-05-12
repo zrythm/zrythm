@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_MIDI_PORT_H__
-#define __AUDIO_MIDI_PORT_H__
+#pragma once
 
 #include "gui/dsp/port.h"
 #include "utils/icloneable.h"
@@ -16,11 +15,7 @@
 /**
  * @brief MIDI port specifics.
  */
-class MidiPort final
-    : public QObject,
-      public Port,
-      public ICloneable<MidiPort>,
-      public zrythm::utils::serialization::ISerializable<MidiPort>
+class MidiPort final : public QObject, public Port, public ICloneable<MidiPort>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -39,7 +34,15 @@ public:
   void init_after_cloning (const MidiPort &original, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  friend void to_json (nlohmann::json &j, const MidiPort &p)
+  {
+    to_json (j, static_cast<const Port &> (p));
+  }
+  friend void from_json (const nlohmann::json &j, MidiPort &p)
+  {
+    from_json (j, static_cast<Port &> (p));
+  }
 
 public:
   /**
@@ -81,5 +84,3 @@ public:
 /**
  * @}
  */
-
-#endif

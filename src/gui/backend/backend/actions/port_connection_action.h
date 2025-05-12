@@ -15,8 +15,7 @@ namespace zrythm::gui::actions
 class PortConnectionAction
     : public QObject,
       public UndoableAction,
-      public ICloneable<PortConnectionAction>,
-      public zrythm::utils::serialization::ISerializable<PortConnectionAction>
+      public ICloneable<PortConnectionAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -51,8 +50,6 @@ public:
   void init_after_cloning (
     const PortConnectionAction &other,
     ObjectCloneType             clone_type) override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override { }

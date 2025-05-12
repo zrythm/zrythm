@@ -8,9 +8,7 @@
 
 class Region;
 
-class RegionOwnedObject
-    : virtual public ArrangerObject,
-      public zrythm::utils::serialization::ISerializable<RegionOwnedObject>
+class RegionOwnedObject : virtual public ArrangerObject
 {
 public:
   RegionOwnedObject (ArrangerObjectRegistry &obj_registry) noexcept
@@ -59,7 +57,16 @@ protected:
   void
   copy_members_from (const RegionOwnedObject &other, ObjectCloneType clone_type);
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kRegionIdKey = "regionId";
+  friend void to_json (nlohmann::json &j, const RegionOwnedObject &object)
+  {
+    j[kRegionIdKey] = object.region_id_;
+  }
+  friend void from_json (const nlohmann::json &j, RegionOwnedObject &object)
+  {
+    j.at (kRegionIdKey).get_to (object.region_id_);
+  }
 
 public:
   ArrangerObjectRegistry &object_registry_;

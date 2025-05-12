@@ -1,15 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * The audio engine.
- */
-
-#ifndef __AUDIO_ENGINE_H__
-#define __AUDIO_ENGINE_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -171,10 +164,7 @@ midi_backend_is_rtmidi (MidiBackend backend)
 /**
  * The audio engine.
  */
-class AudioEngine final
-    : public ICloneable<AudioEngine>,
-      public zrythm::utils::serialization::ISerializable<AudioEngine>,
-      public IPortOwner
+class AudioEngine final : public ICloneable<AudioEngine>, public IPortOwner
 {
 public:
   enum class JackTransportType
@@ -468,9 +458,38 @@ public:
   std::pair<AudioPort &, AudioPort &> get_monitor_out_ports ();
   std::pair<AudioPort &, AudioPort &> get_dummy_input_ports ();
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kTransportTypeKey = "transportType"sv;
+  static constexpr auto kSampleRateKey = "sampleRate"sv;
+  static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
+  static constexpr auto kMonitorOutLKey = "monitorOutL"sv;
+  static constexpr auto kMonitorOutRKey = "monitorOutR"sv;
+  static constexpr auto kMidiEditorManualPressKey = "midiEditorManualPress"sv;
+  static constexpr auto kMidiInKey = "midiIn"sv;
+  static constexpr auto kPoolKey = "pool"sv;
+  static constexpr auto kControlRoomKey = "controlRoom"sv;
+  static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
+  static constexpr auto kHwInProcessorKey = "hwInProcessor"sv;
+  static constexpr auto kHwOutProcessorKey = "hwOutProcessor"sv;
+  friend void           to_json (nlohmann::json &j, const AudioEngine &engine)
+  {
+    j = nlohmann::json{
+      { kTransportTypeKey,         engine.transport_type_           },
+      { kSampleRateKey,            engine.sample_rate_              },
+      { kFramesPerTickKey,         engine.frames_per_tick_          },
+      { kMonitorOutLKey,           engine.monitor_out_left_         },
+      { kMonitorOutRKey,           engine.monitor_out_right_        },
+      { kMidiEditorManualPressKey, engine.midi_editor_manual_press_ },
+      { kMidiInKey,                engine.midi_in_                  },
+      { kPoolKey,                  engine.pool_                     },
+      { kControlRoomKey,           engine.control_room_             },
+      { kSampleProcessorKey,       engine.sample_processor_         },
+      { kHwInProcessorKey,         engine.hw_in_processor_          },
+      { kHwOutProcessorKey,        engine.hw_out_processor_         },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, AudioEngine &engine);
+
   /**
    * Cleans duplicate events and copies the events to the given vector.
    */
@@ -912,5 +931,3 @@ DEFINE_ENUM_FORMATTER (
 /**
  * @}
  */
-
-#endif

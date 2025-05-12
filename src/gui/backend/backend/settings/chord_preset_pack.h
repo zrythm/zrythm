@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __SETTINGS_CHORD_PRESET_PACK_H__
@@ -21,10 +21,7 @@
 /**
  * Chord preset pack.
  */
-class ChordPresetPack final
-    : public QObject,
-      public zrythm::utils::serialization::ISerializable<ChordPresetPack>,
-      public ICloneable<ChordPresetPack>
+class ChordPresetPack final : public QObject, public ICloneable<ChordPresetPack>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -47,14 +44,9 @@ public:
 
   // ============================================================================
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-  std::string get_document_type () const override
-  {
-    return "Zrythm Chord Preset Pack";
-  }
-  int get_format_major_version () const override { return 2; }
-  int get_format_minor_version () const override { return 0; }
+  std::string get_document_type () const { return "Zrythm Chord Preset Pack"; }
+  int         get_format_major_version () const { return 2; }
+  int         get_format_minor_version () const { return 0; }
 
   void
   init_after_cloning (const ChordPresetPack &other, ObjectCloneType clone_type)
@@ -76,6 +68,29 @@ public:
   }
 
   // GMenuModel * generate_context_menu () const;
+
+private:
+  static constexpr std::string_view kNameKey = "name";
+  static constexpr std::string_view kPresetsKey = "presets";
+  static constexpr std::string_view kIsStandardKey = "isStandard";
+  friend void to_json (nlohmann::json &j, const ChordPresetPack &pack)
+  {
+    j[kNameKey] = pack.name_;
+    j[kPresetsKey] = pack.presets_;
+    j[kIsStandardKey] = pack.is_standard_;
+  }
+  friend void from_json (const nlohmann::json &j, ChordPresetPack &pack)
+  {
+    j.at (kNameKey).get_to (pack.name_);
+    for (const auto &pset : j.at (kPresetsKey))
+      {
+        // TODO: check if this is correct
+        auto * pset_ptr = new ChordPreset (&pack);
+        from_json (pset, *pset_ptr);
+        pack.presets_.push_back (pset_ptr);
+      }
+    j.at (kIsStandardKey).get_to (pack.is_standard_);
+  }
 
 public:
   /** Pack name. */

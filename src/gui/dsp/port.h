@@ -31,7 +31,7 @@ constexpr int TIME_TO_RESET_PEAK = 4800000;
 template <typename T>
 concept FinalPortSubclass = std::derived_from<T, Port> && FinalClass<T>;
 
-class PortRange : public utils::serialization::ISerializable<PortRange>
+class PortRange
 {
 public:
   PortRange () = default;
@@ -43,7 +43,22 @@ public:
 
   float clamp_to_range (float val) { return std::clamp (val, minf_, maxf_); }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kMinKey = "minf";
+  static constexpr std::string_view kMaxKey = "maxf";
+  static constexpr std::string_view kZeroKey = "zerof";
+  friend void to_json (nlohmann::json &j, const PortRange &p)
+  {
+    j[kMinKey] = p.minf_;
+    j[kMaxKey] = p.maxf_;
+    j[kZeroKey] = p.zerof_;
+  }
+  friend void from_json (const nlohmann::json &j, PortRange &p)
+  {
+    j.at (kMinKey).get_to (p.minf_);
+    j.at (kMaxKey).get_to (p.maxf_);
+    j.at (kZeroKey).get_to (p.zerof_);
+  }
 
 public:
   /**
@@ -162,10 +177,7 @@ class IPortConnectionManager
  * as tracks, plugins, and the audio engine. The `set_owner()` method is used
  * to set the owner of the port.
  */
-class Port
-    : public utils::serialization::ISerializable<Port>,
-      public dsp::IProcessable,
-      public utils::UuidIdentifiableObject<Port>
+class Port : public dsp::IProcessable, public utils::UuidIdentifiableObject<Port>
 {
   Q_DISABLE_COPY_MOVE (Port)
 public:
@@ -341,9 +353,21 @@ protected:
 
   void copy_members_from (const Port &other, ObjectCloneType clone_type);
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
   int get_num_unlocked (bool sources) const;
+
+private:
+  static constexpr std::string_view kIdKey = "id";
+  static constexpr std::string_view kExposedToBackendKey = "exposedToBackend";
+  friend void                       to_json (nlohmann::json &j, const Port &p)
+  {
+    j[kIdKey] = p.id_;
+    j[kExposedToBackendKey] = p.exposed_to_backend_;
+  }
+  friend void from_json (const nlohmann::json &j, Port &p)
+  {
+    j.at (kIdKey).get_to (p.id_);
+    j.at (kExposedToBackendKey).get_to (p.exposed_to_backend_);
+  }
 
 public:
   /**
@@ -447,6 +471,9 @@ using PortRefVariant = to_reference_variant<PortVariant>;
 using PortRegistry = utils::OwningObjectRegistry<PortPtrVariant, Port>;
 using PortRegistryRef = std::reference_wrapper<PortRegistry>;
 using PortUuidReference = utils::UuidReference<PortRegistry>;
+
+void
+from_json (const nlohmann::json &j, PortRegistry &registry);
 
 /**
  * @}

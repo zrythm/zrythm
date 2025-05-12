@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef DSP_SAMPLE_PROCESSOR_H
-#define DSP_SAMPLE_PROCESSOR_H
+#pragma once
 
 #include "dsp/graph.h"
 #include "dsp/position.h"
@@ -37,8 +36,7 @@ class AudioEngine;
  */
 class SampleProcessor final
     : public ICloneable<SampleProcessor>,
-      public dsp::IProcessable,
-      public utils::serialization::ISerializable<SampleProcessor>
+      public dsp::IProcessable
 {
 public:
   using Position = zrythm::dsp::Position;
@@ -144,9 +142,17 @@ public:
     Position  end_pos,
     nframes_t loffset);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kFaderKey = "fader"sv;
+  friend void           to_json (nlohmann::json &j, const SampleProcessor &sp)
+  {
+    j[kFaderKey] = sp.fader_;
+  }
+  friend void from_json (const nlohmann::json &j, SampleProcessor &sp)
+  {
+    j.at (kFaderKey).get_to (sp.fader_);
+  }
+
   void init_common ();
 
   void queue_file_or_chord_preset (
@@ -193,5 +199,3 @@ public:
 /**
  * @}
  */
-
-#endif

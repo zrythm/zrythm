@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
@@ -98,11 +98,11 @@ TEST (ChordDescriptorTest, Serialization)
   chord1.update_notes ();
 
   // Serialize to JSON
-  auto json_str = chord1.serialize_to_json_string ();
+  nlohmann::json j = chord1;
 
   // Create new object and deserialize
   ChordDescriptor chord2;
-  chord2.deserialize_from_json_string (json_str.c_str ());
+  from_json (j, chord2);
 
   // Verify all fields match
   EXPECT_EQ (chord1.has_bass_, chord2.has_bass_);

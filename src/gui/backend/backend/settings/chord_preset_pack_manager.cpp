@@ -498,8 +498,9 @@ ChordPresetPackManager::add_user_packs ()
 
               try
                 {
-                  auto pack = std::make_unique<ChordPresetPack> ();
-                  pack->deserialize_from_json_string (json.c_str ());
+                  auto           pack = std::make_unique<ChordPresetPack> ();
+                  nlohmann::json j = nlohmann::json::parse (json.view ());
+                  from_json (j, *pack);
                   packs_.push_back (std::move (pack));
                 }
               catch (const ZrythmException &e)
@@ -597,8 +598,7 @@ ChordPresetPackManager::get_pack_index (const ChordPresetPack &pack) const
   });
   if (it != packs_.end ())
     return it - packs_.begin ();
-  else
-    z_return_val_if_reached (-1);
+  z_return_val_if_reached (-1);
 }
 
 int
@@ -675,8 +675,10 @@ ChordPresetPackManager::serialize ()
         {
           utils::io::mkdir (pack_dir);
 
-          auto pack_json = pack->serialize_to_json_string ();
-          utils::io::set_file_contents (pack_path, pack_json.to_utf8_string ());
+          nlohmann::json pack_json = *pack;
+          utils::io::set_file_contents (
+            pack_path,
+            utils::Utf8String::from_utf8_encoded_string (pack_json.dump ()));
         }
       catch (const ZrythmException &e)
         {

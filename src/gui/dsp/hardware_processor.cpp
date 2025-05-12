@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -329,6 +329,17 @@ HardwareProcessor::init_after_cloning (
   clone_unique_ptr_container (ext_midi_ports_, other.ext_midi_ports_);
   clone_unique_ptr_container (audio_ports_, other.audio_ports_);
   clone_unique_ptr_container (midi_ports_, other.midi_ports_);
+}
+
+void
+from_json (const nlohmann::json &j, HardwareProcessor &p)
+{
+  j.at (HardwareProcessor::kIsInputKey).get_to (p.is_input_);
+  j.at (HardwareProcessor::kExtAudioPortsKey).get_to (p.ext_audio_ports_);
+  j.at (HardwareProcessor::kExtMidiPortsKey).get_to (p.ext_midi_ports_);
+  // TODO
+  // j.at (kAudioPortsKey).get_to (p.audio_ports_);
+  // j.at (kMidiPortsKey).get_to (p.midi_ports_);
 }
 
 template std::unique_ptr<MidiPort>

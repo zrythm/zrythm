@@ -19,8 +19,7 @@ namespace zrythm::gui::actions
 class MidiMappingAction final
     : public QObject,
       public UndoableAction,
-      public ICloneable<MidiMappingAction>,
-      public zrythm::utils::serialization::ISerializable<MidiMappingAction>
+      public ICloneable<MidiMappingAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -67,8 +66,6 @@ public:
   void
   init_after_cloning (const MidiMappingAction &other, ObjectCloneType clone_type)
     override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override { }

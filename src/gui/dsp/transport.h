@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_TRANSPORT_H__
-#define __AUDIO_TRANSPORT_H__
+#pragma once
 
 #include "dsp/itransport.h"
 #include "dsp/position.h"
@@ -50,7 +49,6 @@ static const char * preroll_count_bars_str[] = {
 class Transport final
     : public QObject,
       public ICloneable<Transport>,
-      public utils::serialization::ISerializable<Transport>,
       public dsp::ITransport,
       public IPortOwner
 {
@@ -487,9 +485,67 @@ frames_add_frames (
   Q_INVOKABLE QString
   getPlayheadPositionString (const TempoTrack * tempo_track) const;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kTotalBarsKey = "totalBars"sv;
+  static constexpr auto kPlayheadPosKey = "playheadPos"sv;
+  static constexpr auto kCuePosKey = "cuePos"sv;
+  static constexpr auto kLoopStartPosKey = "loopStartPos"sv;
+  static constexpr auto kLoopEndPosKey = "loopEndPos"sv;
+  static constexpr auto kPunchInPosKey = "punchInPos"sv;
+  static constexpr auto kPunchOutPosKey = "punchOutPos"sv;
+  static constexpr auto kRange1Key = "range1"sv;
+  static constexpr auto kRange2Key = "range2"sv;
+  static constexpr auto kHasRangeKey = "hasRange"sv;
+  static constexpr auto kPositionKey = "position"sv;
+  static constexpr auto kRollKey = "roll"sv;
+  static constexpr auto kStopKey = "stop"sv;
+  static constexpr auto kBackwardKey = "backward"sv;
+  static constexpr auto kForwardKey = "forward"sv;
+  static constexpr auto kLoopToggleKey = "loopToggle"sv;
+  static constexpr auto kRecToggleKey = "recToggle"sv;
+  friend void           to_json (nlohmann::json &j, const Transport &transport)
+  {
+    j = nlohmann::json{
+      { kTotalBarsKey,    transport.total_bars_     },
+      { kPlayheadPosKey,  transport.playhead_pos_   },
+      { kCuePosKey,       transport.cue_pos_        },
+      { kLoopStartPosKey, transport.loop_start_pos_ },
+      { kLoopEndPosKey,   transport.loop_end_pos_   },
+      { kPunchInPosKey,   transport.punch_in_pos_   },
+      { kPunchOutPosKey,  transport.punch_out_pos_  },
+      { kRange1Key,       transport.range_1_        },
+      { kRange2Key,       transport.range_2_        },
+      { kHasRangeKey,     transport.has_range_      },
+      { kPositionKey,     transport.position_       },
+      { kRollKey,         transport.roll_           },
+      { kStopKey,         transport.stop_           },
+      { kBackwardKey,     transport.backward_       },
+      { kForwardKey,      transport.forward_        },
+      { kLoopToggleKey,   transport.loop_toggle_    },
+      { kRecToggleKey,    transport.rec_toggle_     },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, Transport &transport)
+  {
+    j.at (kTotalBarsKey).get_to (transport.total_bars_);
+    j.at (kPlayheadPosKey).get_to (*transport.playhead_pos_);
+    j.at (kCuePosKey).get_to (*transport.cue_pos_);
+    j.at (kLoopStartPosKey).get_to (*transport.loop_start_pos_);
+    j.at (kLoopEndPosKey).get_to (*transport.loop_end_pos_);
+    j.at (kPunchInPosKey).get_to (*transport.punch_in_pos_);
+    j.at (kPunchOutPosKey).get_to (*transport.punch_out_pos_);
+    j.at (kRange1Key).get_to (transport.range_1_);
+    j.at (kRange2Key).get_to (transport.range_2_);
+    j.at (kHasRangeKey).get_to (transport.has_range_);
+    j.at (kPositionKey).get_to (transport.position_);
+    j.at (kRollKey).get_to (transport.roll_);
+    j.at (kStopKey).get_to (transport.stop_);
+    j.at (kBackwardKey).get_to (transport.backward_);
+    j.at (kForwardKey).get_to (transport.forward_);
+    j.at (kLoopToggleKey).get_to (transport.loop_toggle_);
+    j.at (kRecToggleKey).get_to (transport.rec_toggle_);
+  }
+
   void init_common ();
 
   /**
@@ -633,5 +689,3 @@ private:
 /**
  * @}
  */
-
-#endif

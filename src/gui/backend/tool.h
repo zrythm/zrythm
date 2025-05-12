@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __GUI_BACKEND_TOOL_H__
-#define __GUI_BACKEND_TOOL_H__
+#pragma once
 
 #include "utils/icloneable.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 #include <QObject>
 #include <QtQmlIntegration>
@@ -13,10 +12,7 @@
 namespace zrythm::gui::backend
 {
 
-class Tool
-    : public QObject,
-      public ICloneable<Tool>,
-      public zrythm::utils::serialization::ISerializable<Tool>
+class Tool : public QObject, public ICloneable<Tool>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -46,12 +42,19 @@ public:
   void
   init_after_cloning (const Tool &other, ObjectCloneType clone_type) override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kToolValueKey = "toolValue"sv;
+  friend void           to_json (nlohmann::json &j, const Tool &tool)
+  {
+    j[kToolValueKey] = tool.tool_;
+  }
+  friend void from_json (const nlohmann::json &j, Tool &tool)
+  {
+    j.at (kToolValueKey).get_to (tool.tool_);
+  }
 
 private:
   ToolType tool_{ ToolType::Select };
 };
 
 }; // namespace zrythm::gui::backend
-
-#endif

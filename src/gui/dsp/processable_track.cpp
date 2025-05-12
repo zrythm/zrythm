@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -21,23 +21,6 @@ ProcessableTrack::ProcessableTrack (
     {
       processor_ = std::make_unique<TrackProcessor> (*this, port_registry, true);
     }
-}
-
-ProcessableTrack::ProcessableTrack (const DeserializationDependencyHolder &dh)
-    : ProcessableTrack (dh.get<std::reference_wrapper<PortRegistry>> ().get (), false)
-{
-}
-
-void
-ProcessableTrack::define_base_fields (const utils::serialization::Context &ctx)
-{
-  using T = ISerializable<ProcessableTrack>;
-  auto new_ctx = ctx;
-  if (ctx.is_deserializing ())
-    {
-      new_ctx.dependency_holder_.put (std::ref (*this));
-    }
-  T::serialize_fields (new_ctx, T::make_field ("processor", processor_));
 }
 
 void

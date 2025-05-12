@@ -25,10 +25,7 @@ constexpr uint8_t VELOCITY_DEFAULT = 90;
 /**
  * The MidiNote velocity.
  */
-class Velocity final
-    : public QObject,
-      public ICloneable<Velocity>,
-      public zrythm::utils::serialization::ISerializable<Velocity>
+class Velocity final : public QObject, public ICloneable<Velocity>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -77,7 +74,16 @@ public:
   void init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kVelocityKey = "value";
+  friend void to_json (nlohmann::json &j, const Velocity &velocity)
+  {
+    j[kVelocityKey] = velocity.vel_;
+  }
+  friend void from_json (const nlohmann::json &j, Velocity &velocity)
+  {
+    j.at (kVelocityKey).get_to (velocity.vel_);
+  }
 
 public:
   /** Pointer back to the MIDI note (this is also the QObject parent). */

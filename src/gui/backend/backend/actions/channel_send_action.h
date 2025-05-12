@@ -17,8 +17,7 @@ namespace zrythm::gui::actions
 class ChannelSendAction
     : public QObject,
       public UndoableAction,
-      public ICloneable<ChannelSendAction>,
-      public zrythm::utils::serialization::ISerializable<ChannelSendAction>
+      public ICloneable<ChannelSendAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -62,8 +61,6 @@ public:
   void
   init_after_cloning (const ChannelSendAction &other, ObjectCloneType clone_type)
     override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override { }

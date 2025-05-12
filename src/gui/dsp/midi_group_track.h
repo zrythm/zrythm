@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __MIDI_MIDI_GROUP_TRACK_H__
-#define __MIDI_MIDI_GROUP_TRACK_H__
+#pragma once
 
 #include "gui/dsp/foldable_track.h"
 #include "gui/dsp/group_target_track.h"
@@ -12,7 +11,6 @@ class MidiGroupTrack final
       public FoldableTrack,
       public GroupTargetTrack,
       public ICloneable<MidiGroupTrack>,
-      public zrythm::utils::serialization::ISerializable<MidiGroupTrack>,
       public utils::InitializableObject<MidiGroupTrack>
 {
   Q_OBJECT
@@ -39,10 +37,25 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void to_json (nlohmann::json &j, const MidiGroupTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const ProcessableTrack &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    to_json (j, static_cast<const ChannelTrack &> (track));
+    to_json (j, static_cast<const GroupTargetTrack &> (track));
+    to_json (j, static_cast<const FoldableTrack &> (track));
+  }
+  friend void from_json (const nlohmann::json &j, MidiGroupTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+    from_json (j, static_cast<ProcessableTrack &> (track));
+    from_json (j, static_cast<AutomatableTrack &> (track));
+    from_json (j, static_cast<ChannelTrack &> (track));
+    from_json (j, static_cast<GroupTargetTrack &> (track));
+    from_json (j, static_cast<FoldableTrack &> (track));
+  }
+
   bool initialize ();
 };
-
-#endif // __MIDI_MIDI_BUS_TRACK_H__

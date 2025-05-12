@@ -22,8 +22,7 @@ namespace zrythm::gui::actions
 class TracklistSelectionsAction
     : public QObject,
       public UndoableAction,
-      public ICloneable<TracklistSelectionsAction>,
-      public zrythm::utils::serialization::ISerializable<TracklistSelectionsAction>
+      public ICloneable<TracklistSelectionsAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -203,8 +202,6 @@ public:
   void init_after_cloning (
     const TracklistSelectionsAction &other,
     ObjectCloneType                  clone_type) override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () final;

@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_BACKEND_EDITOR_SETTINGS_H__
 #define __GUI_BACKEND_EDITOR_SETTINGS_H__
 
 #include "utils/icloneable.h"
-#include "utils/iserializable.h"
 #include "utils/math.h"
+#include "utils/serialization.h"
 
 /**
  * @addtogroup gui_backend
@@ -70,9 +70,11 @@ using namespace zrythm;
 /**
  * Common editor settings.
  */
-class EditorSettings : public utils::serialization::ISerializable<EditorSettings>
+class EditorSettings
 {
 public:
+  virtual ~EditorSettings () = default;
+
   double clamp_scroll_start_x (double x);
 
   double clamp_scroll_start_y (double y);
@@ -91,7 +93,22 @@ protected:
     hzoom_level_ = other.hzoom_level_;
   }
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr auto kScrollStartXKey = "scrollStartX"sv;
+  static constexpr auto kScrollStartYKey = "scrollStartY"sv;
+  static constexpr auto kHZoomLevelKey = "hZoomLevel"sv;
+  friend void to_json (nlohmann::json &j, const EditorSettings &settings)
+  {
+    j[kScrollStartXKey] = settings.scroll_start_x_;
+    j[kScrollStartYKey] = settings.scroll_start_y_;
+    j[kHZoomLevelKey] = settings.hzoom_level_;
+  }
+  friend void from_json (const nlohmann::json &j, EditorSettings &settings)
+  {
+    j.at (kScrollStartXKey).get_to (settings.scroll_start_x_);
+    j.at (kScrollStartYKey).get_to (settings.scroll_start_y_);
+    j.at (kHZoomLevelKey).get_to (settings.hzoom_level_);
+  }
 
 public:
   /** Horizontal scroll start position. */

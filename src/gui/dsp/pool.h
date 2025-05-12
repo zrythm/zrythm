@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_POOL_H__
-#define __AUDIO_POOL_H__
+#pragma once
 
 #include "gui/dsp/clip.h"
 #include "utils/types.h"
@@ -21,17 +20,11 @@
  * edited counterparts after some hard editing like stretching) are saved in
  * the pool.
  */
-struct AudioPool final
-    : public ICloneable<AudioPool>,
-      public zrythm::utils::serialization::ISerializable<AudioPool>
+struct AudioPool final : public ICloneable<AudioPool>
 {
 public:
   using ProjectPoolPathGetter = std::function<fs::path (bool backup)>;
 
-  AudioPool (const DeserializationDependencyHolder &dh)
-      : AudioPool (dh.get<ProjectPoolPathGetter> (), dh.get<SampleRateGetter> ())
-  {
-  }
   AudioPool (ProjectPoolPathGetter path_getter, SampleRateGetter sr_getter);
 
 public:
@@ -152,9 +145,11 @@ public:
   void init_after_cloning (const AudioPool &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kClipsKey = "clips"sv;
+  friend void           to_json (nlohmann::json &j, const AudioPool &pool);
+  friend void           from_json (const nlohmann::json &j, AudioPool &pool);
+
   bool name_exists (const utils::Utf8String &name) const;
 
 private:
@@ -170,5 +165,3 @@ private:
 /**
  * @}
  */
-
-#endif

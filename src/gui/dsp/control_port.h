@@ -1,9 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CONTROL_PORT_H__
-#define __AUDIO_CONTROL_PORT_H__
-
+#pragma once
 #include <utility>
 
 #include "gui/dsp/port.h"
@@ -21,11 +19,7 @@ class AutomationTrack;
 /**
  * @brief Control port specifics.
  */
-class ControlPort final
-    : public QObject,
-      public Port,
-      public ICloneable<ControlPort>,
-      public zrythm::utils::serialization::ISerializable<ControlPort>
+class ControlPort final : public QObject, public Port, public ICloneable<ControlPort>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -73,16 +67,15 @@ public:
         : val_ (val), label_ (std::move (label))
     {
     }
-    ~ScalePoint () = default;
 
-    auto operator<=> (const ScalePoint &other) const
+    friend auto operator<=> (const ScalePoint &lhs, const ScalePoint &rhs)
     {
-      return val_ <=> other.val_;
+      return lhs.val_ <=> rhs.val_;
     }
 
-    bool operator== (const ScalePoint &other) const
+    friend bool operator== (const ScalePoint &lhs, const ScalePoint &rhs)
     {
-      return utils::math::floats_equal (val_, other.val_);
+      return utils::math::floats_equal (lhs.val_, rhs.val_);
     }
   };
 
@@ -272,9 +265,31 @@ public:
   void init_after_cloning (const ControlPort &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr std::string_view kControlKey = "control";
+  static constexpr std::string_view kRangeKey = "range";
+  static constexpr std::string_view kDefaultValueKey = "defaultValue";
+  static constexpr std::string_view kCarlaParameterIdKey = "carlaParameterId";
+  static constexpr std::string_view kBaseValueKey = "baseValue";
+  friend void to_json (nlohmann::json &j, const ControlPort &p)
+  {
+    to_json (j, static_cast<const Port &> (p));
+    j[kControlKey] = p.control_;
+    j[kRangeKey] = p.range_;
+    j[kDefaultValueKey] = p.deff_;
+    j[kCarlaParameterIdKey] = p.carla_param_id_;
+    j[kBaseValueKey] = p.base_value_;
+  }
+  friend void from_json (const nlohmann::json &j, ControlPort &p)
+  {
+    from_json (j, static_cast<Port &> (p));
+    j.at (kControlKey).get_to (p.control_);
+    j.at (kRangeKey).get_to (p.range_);
+    j.at (kDefaultValueKey).get_to (p.deff_);
+    j.at (kCarlaParameterIdKey).get_to (p.carla_param_id_);
+    j.at (kBaseValueKey).get_to (p.base_value_);
+  }
+
   /**
    * To be called when a control's value changes so that a message can be sent
    * to the plugin UI.
@@ -366,5 +381,3 @@ public:
 /**
  * @}
  */
-
-#endif

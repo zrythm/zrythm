@@ -24,18 +24,14 @@ public: \
     return ArrangerObjectOwner<ChildType>::get_model (); \
   }
 
-template <FinalArrangerObjectSubclass ChildT>
-class ArrangerObjectOwner
-    : public utils::serialization::ISerializable<ArrangerObjectOwner<ChildT>>
+template <FinalArrangerObjectSubclass ChildT> class ArrangerObjectOwner
 {
 public:
-  using ISerializableType =
-    utils::serialization::ISerializable<ArrangerObjectOwner<ChildT>>;
   using PortUuid = dsp::PortIdentifier::PortUuid;
   using ArrangerObjectChildType = ChildT;
 
   ArrangerObjectOwner () = default;
-  ~ArrangerObjectOwner () override { delete list_model_; }
+  virtual ~ArrangerObjectOwner () { delete list_model_; }
 
   /**
    * @brief Location info of this class.
@@ -185,15 +181,6 @@ public:
   virtual std::string
   get_field_name_for_serialization (const ChildT *) const = 0;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ()
-  {
-    const auto children_field_name =
-      get_field_name_for_serialization (static_cast<ChildT *> (nullptr));
-    ISerializableType::serialize_fields (
-      ctx,
-      ISerializableType::make_field (children_field_name.c_str (), children_));
-  }
-
   void
   copy_members_from (const ArrangerObjectOwner &other, ObjectCloneType clone_type)
   {
@@ -212,6 +199,20 @@ public:
   void copy_children (const ArrangerObjectOwner &other)
   {
     // TODO
+  }
+
+private:
+  friend void to_json (nlohmann::json &j, const ArrangerObjectOwner &obj)
+  {
+    const auto children_field_name =
+      obj.get_field_name_for_serialization (static_cast<ChildT *> (nullptr));
+    j[children_field_name] = obj.children_;
+  }
+  friend void from_json (const nlohmann::json &j, ArrangerObjectOwner &obj)
+  {
+    const auto children_field_name =
+      obj.get_field_name_for_serialization (static_cast<ChildT *> (nullptr));
+    j.at (children_field_name).get_to (obj.children_);
   }
 
 private:

@@ -22,8 +22,7 @@
  */
 class HardwareProcessor final
     : public ICloneable<HardwareProcessor>,
-      public dsp::IProcessable,
-      public utils::serialization::ISerializable<HardwareProcessor>
+      public dsp::IProcessable
 {
 public:
   using PortFlow = zrythm::dsp::PortFlow;
@@ -85,9 +84,24 @@ public:
   init_after_cloning (const HardwareProcessor &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kIsInputKey = "isInput"sv;
+  static constexpr auto kExtAudioPortsKey = "extAudioPorts"sv;
+  static constexpr auto kExtMidiPortsKey = "extMidiPorts"sv;
+  static constexpr auto kAudioPortsKey = "audioPorts"sv;
+  static constexpr auto kMidiPortsKey = "midiPorts"sv;
+  friend void           to_json (nlohmann::json &j, const HardwareProcessor &p)
+  {
+    j = nlohmann::json{
+      { kIsInputKey,       p.is_input_        },
+      { kExtAudioPortsKey, p.ext_audio_ports_ },
+      { kExtMidiPortsKey,  p.ext_midi_ports_  },
+      { kAudioPortsKey,    p.audio_ports_     },
+      { kMidiPortsKey,     p.midi_ports_      },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, HardwareProcessor &p);
+
   template <typename T>
   std::unique_ptr<T>
   create_port_for_ext_port (const ExtPort &ext_port, PortFlow flow);

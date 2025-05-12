@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UNDO_UNDO_MANAGER_H__
-#define __UNDO_UNDO_MANAGER_H__
+#pragma once
 
 #include <semaphore>
 
@@ -18,10 +17,7 @@ namespace zrythm::gui::actions
 /**
  * Undo manager.
  */
-class UndoManager final
-    : public QObject,
-      public ICloneable<UndoManager>,
-      public zrythm::utils::serialization::ISerializable<UndoManager>
+class UndoManager final : public QObject, public ICloneable<UndoManager>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -91,9 +87,18 @@ public:
   void init_after_cloning (const UndoManager &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kUndoStackKey = "undoStack"sv;
+  static constexpr auto kRedoStackKey = "redoStack"sv;
+  friend void to_json (nlohmann::json &j, const UndoManager &undo_manager)
+  {
+    j[kUndoStackKey] = undo_manager.undo_stack_;
+  }
+  friend void from_json (const nlohmann::json &j, UndoManager &undo_manager)
+  {
+    j.at (kUndoStackKey).get_to (*undo_manager.undo_stack_);
+  }
+
   /**
    * @brief Does or undoes the given action.
    *
@@ -178,5 +183,3 @@ UndoManager::do_or_undo_action (
   UndoStack        &opposite_stack);
 
 }; // namespace zrythm::gui::actions
-
-#endif

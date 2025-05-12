@@ -31,9 +31,7 @@ public: \
  * BoundedObject inherits from ArrangerObject and extends it with length-related
  * functionality.
  */
-class BoundedObject
-    : virtual public ArrangerObject,
-      public zrythm::utils::serialization::ISerializable<BoundedObject>
+class BoundedObject : virtual public ArrangerObject
 {
 public:
   BoundedObject ();
@@ -248,16 +246,12 @@ public:
            || (get_position () < start && *end_pos_ >= end);
   }
 
-  friend bool operator== (const BoundedObject &lhs, const BoundedObject &rhs);
-
 protected:
   void
   copy_members_from (const BoundedObject &other, ObjectCloneType clone_type);
 
   bool
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
-
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 private:
   /**
@@ -283,6 +277,15 @@ private:
       }
   }
 
+  friend auto to_json (nlohmann::json &j, const BoundedObject &object)
+  {
+    j["endPos"] = object.end_pos_;
+  }
+  friend auto from_json (const nlohmann::json &j, BoundedObject &object)
+  {
+    j.at ("endPos").get_to (*object.end_pos_);
+  }
+
 public:
   /**
    * End Position, if the object has one.
@@ -296,12 +299,6 @@ public:
 template <typename T>
 concept FinalBoundedObjectSubclass =
   std::derived_from<T, BoundedObject> && FinalClass<T>;
-
-inline bool
-operator== (const BoundedObject &lhs, const BoundedObject &rhs)
-{
-  return *lhs.end_pos_ == *rhs.end_pos_;
-}
 
 using BoundedObjectVariant =
   std::variant<MidiRegion, AudioRegion, ChordRegion, AutomationRegion, MidiNote>;

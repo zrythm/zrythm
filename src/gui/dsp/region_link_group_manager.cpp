@@ -53,3 +53,16 @@ RegionLinkGroupManager::remove_group (int group_id)
     }
   groups_.pop_back ();
 }
+
+void
+from_json (const nlohmann::json &j, RegionLinkGroupManager &mgr)
+{
+  for (
+    const auto &[index, group_json] :
+    std::views::enumerate (j.at (RegionLinkGroupManager::kGroupsKey)))
+    {
+      auto group = std::make_unique<RegionLinkGroup> (index);
+      from_json (group_json, *group);
+      mgr.groups_.push_back (std::move (*group.release ()));
+    }
+}

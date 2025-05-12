@@ -274,39 +274,15 @@ Project::make_project_dirs (bool is_backup)
 
 void
 Project::compress_or_decompress (
-  bool                   compress,
-  char **                _dest,
-  size_t *               _dest_size,
-  ProjectCompressionFlag dest_type,
-  const char *           _src,
-  const size_t           _src_size,
-  ProjectCompressionFlag src_type)
+  bool              compress,
+  char **           _dest,
+  size_t *          _dest_size,
+  CompressionFlag   dest_type,
+  const QByteArray &src)
 {
   z_info (
     "using zstd v{}.{}.{}", ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR,
     ZSTD_VERSION_RELEASE);
-
-  QByteArray src{};
-  // size_t src_size = 0;
-  switch (src_type)
-    {
-    case ProjectCompressionFlag::PROJECT_COMPRESS_DATA:
-      src.setRawData (_src, static_cast<qsizetype> (_src_size));
-      break;
-    case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
-      {
-        try
-          {
-            src = utils::io::read_file_contents (_src);
-          }
-        catch (const ZrythmException &e)
-          {
-            throw ZrythmException (
-              fmt::format ("Failed to read file '{}': {}", _src, e.what ()));
-          }
-      }
-      break;
-    }
 
   char * dest = nullptr;
   size_t dest_size = 0;
@@ -363,11 +339,11 @@ Project::compress_or_decompress (
 
   switch (dest_type)
     {
-    case ProjectCompressionFlag::PROJECT_COMPRESS_DATA:
+    case CompressionFlag::PROJECT_COMPRESS_DATA:
       *_dest = dest;
       *_dest_size = dest_size;
       break;
-    case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
+    case CompressionFlag::PROJECT_COMPRESS_FILE:
       {
         // setting the resulting data to the file at path `_dest`
         try
@@ -694,8 +670,8 @@ Project::get_existing_uncompressed_text (bool backup)
   try
     {
       decompress (
-        &text, &text_size, PROJECT_DECOMPRESS_DATA, compressed_pj.constData (),
-        compressed_pj.size (), PROJECT_DECOMPRESS_DATA);
+        &text, &text_size, CompressionFlag::PROJECT_DECOMPRESS_DATA,
+        compressed_pj);
     }
   catch (ZrythmException &e)
     {
@@ -881,10 +857,10 @@ Project::SerializeProjectThread::run ()
   z_debug ("serializing project to json...");
   auto   time_before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   qint64 time_after{};
-  std::optional<utils::CStringRAII> json;
+  std::optional<nlohmann::json> json;
   try
     {
-      json = ctx_.main_project_->serialize_to_json_string ();
+      json = *ctx_.main_project_;
     }
   catch (const ZrythmException &e)
     {
@@ -898,11 +874,13 @@ Project::SerializeProjectThread::run ()
   /* compress */
   try
     {
+      const auto json_str = json->dump ();
+      // warning: this byte array depends on json_str being alive while it's used
+      QByteArray src_data =
+        QByteArray::fromRawData (json_str.c_str (), json_str.length ());
       compress (
         &compressed_json, &compressed_size,
-        ProjectCompressionFlag::PROJECT_COMPRESS_DATA, json->c_str (),
-        strlen (json->c_str ()) * sizeof (char),
-        ProjectCompressionFlag::PROJECT_COMPRESS_DATA);
+        CompressionFlag::PROJECT_COMPRESS_DATA, src_data);
     }
   catch (const ZrythmException &ex)
     {
@@ -1401,4 +1379,100 @@ Project::clone (bool for_backup) const
         }
     }
   return ret;
+}
+
+void
+to_json (nlohmann::json &j, const Project &project)
+{
+  j[utils::serialization::kDocumentTypeKey] = Project::DOCUMENT_TYPE;
+  j[utils::serialization::kFormatMajorKey] = Project::FORMAT_MAJOR_VER;
+  j[utils::serialization::kFormatMinorKey] = Project::FORMAT_MINOR_VER;
+  j[Project::kPortRegistryKey] = project.port_registry_;
+  j[Project::kPluginRegistryKey] = project.plugin_registry_;
+  j[Project::kArrangerObjectRegistryKey] = project.arranger_object_registry_;
+  j[Project::kTrackRegistryKey] = project.track_registry_;
+  j[Project::kTitleKey] = project.title_;
+  j[Project::kDatetimeKey] = project.datetime_str_;
+  j[Project::kVersionKey] = project.version_;
+  j[Project::kClipEditorKey] = project.clip_editor_;
+  j[Project::kTimelineKey] = project.timeline_;
+  j[Project::kSnapGridTimelineKey] = project.snap_grid_timeline_;
+  j[Project::kSnapGridEditorKey] = project.snap_grid_editor_;
+  j[Project::kQuantizeOptsTimelineKey] = project.quantize_opts_timeline_;
+  j[Project::kQuantizeOptsEditorKey] = project.quantize_opts_editor_;
+  j[Project::kTransportKey] = project.transport_;
+  j[Project::kAudioEngineKey] = project.audio_engine_;
+  j[Project::kTracklistKey] = project.tracklist_;
+  j[Project::kRegionLinkGroupManagerKey] = project.region_link_group_manager_;
+  j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
+  j[Project::kMidiMappingsKey] = project.midi_mappings_;
+  j[Project::kUndoManagerKey] = project.undo_manager_;
+  j[Project::kLastSelectionKey] = project.last_selection_;
+}
+
+struct ArrangerObjectBuilderForDeserialization
+{
+  ArrangerObjectBuilderForDeserialization (const Project &project)
+      : project_ (project)
+  {
+  }
+
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    return project_.getArrangerObjectFactory ()->get_builder<T> ().build_empty ();
+  }
+
+  const Project &project_;
+};
+
+struct TrackBuilderForDeserialization
+{
+  TrackBuilderForDeserialization (const Project &project) : project_ (project)
+  {
+  }
+
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    return project_.getTrackFactory ()
+      ->get_builder<T> ()
+      .build_for_deserialization ();
+  }
+
+  const Project &project_;
+};
+
+void
+from_json (const nlohmann::json &j, Project &project)
+{
+  j.at (utils::serialization::kFormatMajorKey).get_to (project.format_major_);
+  j.at (utils::serialization::kFormatMinorKey).get_to (project.format_minor_);
+  j.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
+  j.at (Project::kPluginRegistryKey).get_to (*project.plugin_registry_);
+  from_json_with_builder (
+    j.at (Project::kArrangerObjectRegistryKey),
+    *project.arranger_object_registry_,
+    ArrangerObjectBuilderForDeserialization{ project });
+  from_json_with_builder (
+    j.at (Project::kTrackRegistryKey), *project.track_registry_,
+    TrackBuilderForDeserialization{ project });
+  j.at (Project::kTitleKey).get_to (project.title_);
+  j.at (Project::kDatetimeKey).get_to (project.datetime_str_);
+  j.at (Project::kVersionKey).get_to (project.version_);
+  j.at (Project::kClipEditorKey).get_to (*project.clip_editor_);
+  j.at (Project::kTimelineKey).get_to (*project.timeline_);
+  j.at (Project::kSnapGridTimelineKey).get_to (project.snap_grid_timeline_);
+  j.at (Project::kSnapGridEditorKey).get_to (project.snap_grid_editor_);
+  j.at (Project::kQuantizeOptsTimelineKey)
+    .get_to (project.quantize_opts_timeline_);
+  j.at (Project::kQuantizeOptsEditorKey).get_to (project.quantize_opts_editor_);
+  j.at (Project::kTransportKey).get_to (*project.transport_);
+  j.at (Project::kAudioEngineKey).get_to (project.audio_engine_);
+  j.at (Project::kTracklistKey).get_to (*project.tracklist_);
+  j.at (Project::kRegionLinkGroupManagerKey)
+    .get_to (project.region_link_group_manager_);
+  j.at (Project::kPortConnectionsManagerKey)
+    .get_to (*project.port_connections_manager_);
+  j.at (Project::kMidiMappingsKey).get_to (project.midi_mappings_);
+  j.at (Project::kUndoManagerKey).get_to (*project.undo_manager_);
+  j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
 }

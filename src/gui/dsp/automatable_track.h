@@ -1,9 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_AUTOMATABLE_TRACK_H__
-#define __AUDIO_AUTOMATABLE_TRACK_H__
-
+#pragma once
 #include "gui/dsp/track.h"
 
 #define DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES(ClassType) \
@@ -44,12 +42,9 @@ public: \
  *
  * Tracks that can have plugins must implement this interface.
  */
-class AutomatableTrack
-    : virtual public Track,
-      public zrythm::utils::serialization::ISerializable<AutomatableTrack>
+class AutomatableTrack : virtual public Track
 {
 public:
-  AutomatableTrack (const DeserializationDependencyHolder &dh);
   AutomatableTrack (PortRegistry &port_registry, bool new_identity);
 
   ~AutomatableTrack () override = default;
@@ -135,7 +130,21 @@ protected:
     get_automation_tracklist ().set_caches (CacheType::PlaybackSnapshots);
   }
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr auto kAutomationTracklistKey = "automationTracklist"sv;
+  static constexpr auto kAutomationVisibleKey = "automationVisible"sv;
+  friend void to_json (nlohmann::json &j, const AutomatableTrack &track)
+  {
+    j[kAutomationTracklistKey] = track.automation_tracklist_;
+    j[kAutomationVisibleKey] = track.automation_visible_;
+  }
+  friend void from_json (const nlohmann::json &j, AutomatableTrack &track)
+  {
+    track.automation_tracklist_ = new AutomationTracklist (
+      track.port_registry_, track.object_registry_, track);
+    from_json (j, *track.automation_tracklist_);
+    j.at (kAutomationVisibleKey).get_to (track.automation_visible_);
+  }
 
 public:
   AutomationTracklist * automation_tracklist_ = nullptr;
@@ -157,5 +166,3 @@ using AutomatableTrackVariant = std::variant<
   ModulatorTrack,
   TempoTrack>;
 using AutomatableTrackPtrVariant = to_pointer_variant<AutomatableTrackVariant>;
-
-#endif // __AUDIO_AUTOMATABLE_TRACK_H__

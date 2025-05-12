@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef DSP_TRACK_H
-#define DSP_TRACK_H
+#pragma once
 
 #include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/automation_tracklist.h"
@@ -28,18 +27,11 @@ class GroupTargetTrack;
  * @{
  */
 
+class TrackFactory;
+
 #define DECLARE_FINAL_TRACK_CONSTRUCTORS(ClassType) \
+  /* FIXME: make private */ \
 public: \
-  ClassType (const DeserializationDependencyHolder &dh) \
-      : ClassType ( \
-          dh.get<std::reference_wrapper<TrackRegistry>> ().get (), \
-          dh.get<std::reference_wrapper<PluginRegistry>> ().get (), \
-          dh.get<std::reference_wrapper<PortRegistry>> ().get (), \
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (), false) \
-  { \
-  } \
-\
-private: \
   ClassType ( \
     TrackRegistry &track_registry, PluginRegistry &plugin_registry, \
     PortRegistry &port_registry, ArrangerObjectRegistry &obj_registry, \
@@ -284,7 +276,6 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  */
 class Track
     : public dsp::IProcessable,
-      public utils::serialization::ISerializable<Track>,
       public IPortOwner,
       public utils::UuidIdentifiableObject<Track>
 {
@@ -1321,8 +1312,6 @@ protected:
 
   bool validate_base () const;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
   /**
    * @brief Set the playback caches for a track.
    *
@@ -1337,6 +1326,51 @@ protected:
     Region *               region);
 
 private:
+  static constexpr std::string_view kTypeKey = "type";
+  static constexpr std::string_view kNameKey = "name";
+  static constexpr std::string_view kIconNameKey = "iconName";
+  static constexpr std::string_view kIndexKey = "index";
+  static constexpr std::string_view kVisibleKey = "visible";
+  static constexpr std::string_view kMainHeightKey = "mainHeight";
+  static constexpr std::string_view kEnabledKey = "enabled";
+  static constexpr std::string_view kColorKey = "color";
+  static constexpr std::string_view kInputSignalTypeKey = "inSignalType";
+  static constexpr std::string_view kOutputSignalTypeKey = "outSignalType";
+  static constexpr std::string_view kCommentKey = "comment";
+  static constexpr std::string_view kFrozenClipIdKey = "frozenClipId";
+  friend void to_json (nlohmann::json &j, const Track &track)
+  {
+    to_json (j, static_cast<const UuidIdentifiableObject &> (track));
+    j[kTypeKey] = track.type_;
+    j[kNameKey] = track.name_;
+    j[kIconNameKey] = track.icon_name_;
+    j[kIndexKey] = track.pos_;
+    j[kVisibleKey] = track.visible_;
+    j[kMainHeightKey] = track.main_height_;
+    j[kEnabledKey] = track.enabled_;
+    j[kColorKey] = track.color_;
+    j[kInputSignalTypeKey] = track.in_signal_type_;
+    j[kOutputSignalTypeKey] = track.out_signal_type_;
+    j[kCommentKey] = track.comment_;
+    j[kFrozenClipIdKey] = track.frozen_clip_id_;
+  }
+  friend void from_json (const nlohmann::json &j, Track &track)
+  {
+    from_json (j, static_cast<UuidIdentifiableObject &> (track));
+    j.at (kTypeKey).get_to (track.type_);
+    j.at (kNameKey).get_to (track.name_);
+    j.at (kIconNameKey).get_to (track.icon_name_);
+    j.at (kIndexKey).get_to (track.pos_);
+    j.at (kVisibleKey).get_to (track.visible_);
+    j.at (kMainHeightKey).get_to (track.main_height_);
+    j.at (kEnabledKey).get_to (track.enabled_);
+    j.at (kColorKey).get_to (track.color_);
+    j.at (kInputSignalTypeKey).get_to (track.in_signal_type_);
+    j.at (kOutputSignalTypeKey).get_to (track.out_signal_type_);
+    j.at (kCommentKey).get_to (track.comment_);
+    j.at (kFrozenClipIdKey).get_to (track.frozen_clip_id_);
+  }
+
   /**
    * @brief Create a new track.
    *
@@ -1493,5 +1527,3 @@ using TrackSelectionManager =
 /**
  * @}
  */
-
-#endif // __AUDIO_TRACK_H__

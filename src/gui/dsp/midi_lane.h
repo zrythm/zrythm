@@ -11,8 +11,7 @@
 class MidiLane final
     : public QObject,
       public TrackLaneImpl<MidiRegion>,
-      public ICloneable<MidiLane>,
-      public zrythm::utils::serialization::ISerializable<MidiLane>
+      public ICloneable<MidiLane>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -22,15 +21,18 @@ public:
   using RegionT = MidiRegion;
 
 public:
-  MidiLane (const DeserializationDependencyHolder &dh)
-      : MidiLane (
-          &dh.get<std::reference_wrapper<LanedTrackImpl<MidiLane>>> ().get ())
-  {
-  }
   MidiLane (LanedTrackImpl<MidiLane> * track);
 
   void init_after_cloning (const MidiLane &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  friend void to_json (nlohmann::json &j, const MidiLane &lane)
+  {
+    to_json (j, static_cast<const TrackLaneImpl &> (lane));
+  }
+  friend void from_json (const nlohmann::json &j, MidiLane &lane)
+  {
+    from_json (j, static_cast<TrackLaneImpl &> (lane));
+  }
 };

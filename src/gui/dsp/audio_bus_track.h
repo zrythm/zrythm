@@ -1,9 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_AUDIO_BUS_TRACK_H__
-#define __AUDIO_AUDIO_BUS_TRACK_H__
-
+#pragma once
 #include "gui/dsp/channel_track.h"
 
 /**
@@ -13,7 +11,6 @@ class AudioBusTrack final
     : public QObject,
       public ChannelTrack,
       public ICloneable<AudioBusTrack>,
-      public zrythm::utils::serialization::ISerializable<AudioBusTrack>,
       public utils::InitializableObject<AudioBusTrack>
 {
 public:
@@ -41,10 +38,21 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void to_json (nlohmann::json &j, const AudioBusTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const ProcessableTrack &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    to_json (j, static_cast<const ChannelTrack &> (track));
+  }
+  friend void from_json (const nlohmann::json &j, AudioBusTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+    from_json (j, static_cast<ProcessableTrack &> (track));
+    from_json (j, static_cast<AutomatableTrack &> (track));
+    from_json (j, static_cast<ChannelTrack &> (track));
+  }
+
   bool initialize ();
 };
-
-#endif // __AUDIO_AUDIO_BUS_TRACK_H__

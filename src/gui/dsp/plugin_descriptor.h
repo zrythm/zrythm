@@ -1,15 +1,14 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __PLUGINS_PLUGIN_DESCRIPTOR_H__
-#define __PLUGINS_PLUGIN_DESCRIPTOR_H__
+#pragma once
 
 #include "zrythm-config.h"
 
 #include "dsp/plugin_slot.h"
 #include "gui/dsp/plugin_protocol.h"
 #include "utils/icloneable.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 #include <QObject>
 
@@ -110,22 +109,15 @@ enum class CarlaBridgeMode
  * metadata, such as its author, name, website, category, port counts,
  * architecture, protocol, and unique ID (for VST plugins).
  */
-class PluginDescriptor final
-    : public QObject,
-      public zrythm::utils::serialization::ISerializable<PluginDescriptor>,
-      public ICloneable<PluginDescriptor>
+class PluginDescriptor final : public QObject, public ICloneable<PluginDescriptor>
 {
   Q_OBJECT
-
+  QML_ELEMENT
   Q_PROPERTY (QString name READ getName CONSTANT FINAL)
 
 public:
   static ZPluginCategory   string_to_category (const utils::Utf8String &str);
   static utils::Utf8String category_to_string (ZPluginCategory category);
-
-  // static void free_closure (void * data, GClosure * closure);
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
   bool is_instrument () const;
   bool is_effect () const;
@@ -176,6 +168,82 @@ public:
   void
   init_after_cloning (const PluginDescriptor &other, ObjectCloneType clone_type)
     override;
+
+private:
+  static constexpr auto kAuthorKey = "author"sv;
+  static constexpr auto kNameKey = "name"sv;
+  static constexpr auto kWebsiteKey = "website"sv;
+  static constexpr auto kCategoryKey = "category"sv;
+  static constexpr auto kCategoryStringKey = "categoryString"sv;
+  static constexpr auto kNumAudioInsKey = "numAudioIns"sv;
+  static constexpr auto kNumAudioOutsKey = "numAudioOuts"sv;
+  static constexpr auto kNumMidiInsKey = "numMidiIns"sv;
+  static constexpr auto kNumMidiOutsKey = "numMidiOuts"sv;
+  static constexpr auto kNumCtrlInsKey = "numCtrlIns"sv;
+  static constexpr auto kNumCtrlOutsKey = "numCtrlOuts"sv;
+  static constexpr auto kNumCvInsKey = "numCvIns"sv;
+  static constexpr auto kNumCvOutsKey = "numCvOuts"sv;
+  static constexpr auto kUniqueIdKey = "uniqueId"sv;
+  static constexpr auto kArchitectureKey = "architecture"sv;
+  static constexpr auto kProtocolKey = "protocol"sv;
+  static constexpr auto kPathKey = "path"sv;
+  static constexpr auto kUriKey = "uri"sv;
+  static constexpr auto kMinBridgeModeKey = "minBridgeMode"sv;
+  static constexpr auto kHasCustomUIKey = "hasCustomUI"sv;
+  static constexpr auto kGHashKey = "ghash"sv;
+  static constexpr auto kSha1Key = "sha1"sv;
+  friend void           to_json (nlohmann::json &j, const PluginDescriptor &p)
+  {
+    j = nlohmann::json{
+      { kAuthorKey,         p.author_          },
+      { kNameKey,           p.name_            },
+      { kWebsiteKey,        p.website_         },
+      { kCategoryKey,       p.category_        },
+      { kCategoryStringKey, p.category_str_    },
+      { kNumAudioInsKey,    p.num_audio_ins_   },
+      { kNumAudioOutsKey,   p.num_audio_outs_  },
+      { kNumMidiInsKey,     p.num_midi_ins_    },
+      { kNumMidiOutsKey,    p.num_midi_outs_   },
+      { kNumCtrlInsKey,     p.num_ctrl_ins_    },
+      { kNumCtrlOutsKey,    p.num_ctrl_outs_   },
+      { kNumCvInsKey,       p.num_cv_ins_      },
+      { kNumCvOutsKey,      p.num_cv_outs_     },
+      { kUniqueIdKey,       p.unique_id_       },
+      { kArchitectureKey,   p.arch_            },
+      { kProtocolKey,       p.protocol_        },
+      { kPathKey,           p.path_            },
+      { kUriKey,            p.uri_             },
+      { kMinBridgeModeKey,  p.min_bridge_mode_ },
+      { kHasCustomUIKey,    p.has_custom_ui_   },
+      { kGHashKey,          p.ghash_           },
+      { kSha1Key,           p.sha1_            },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, PluginDescriptor &p)
+  {
+    j.at (kAuthorKey).get_to (p.author_);
+    j.at (kNameKey).get_to (p.name_);
+    j.at (kWebsiteKey).get_to (p.website_);
+    j.at (kCategoryKey).get_to (p.category_);
+    j.at (kCategoryStringKey).get_to (p.category_str_);
+    j.at (kNumAudioInsKey).get_to (p.num_audio_ins_);
+    j.at (kNumAudioOutsKey).get_to (p.num_audio_outs_);
+    j.at (kNumMidiInsKey).get_to (p.num_midi_ins_);
+    j.at (kNumMidiOutsKey).get_to (p.num_midi_outs_);
+    j.at (kNumCtrlInsKey).get_to (p.num_ctrl_ins_);
+    j.at (kNumCtrlOutsKey).get_to (p.num_ctrl_outs_);
+    j.at (kNumCvInsKey).get_to (p.num_cv_ins_);
+    j.at (kNumCvOutsKey).get_to (p.num_cv_outs_);
+    j.at (kUniqueIdKey).get_to (p.unique_id_);
+    j.at (kArchitectureKey).get_to (p.arch_);
+    j.at (kProtocolKey).get_to (p.protocol_);
+    j.at (kPathKey).get_to (p.path_);
+    j.at (kUriKey).get_to (p.uri_);
+    j.at (kMinBridgeModeKey).get_to (p.min_bridge_mode_);
+    j.at (kHasCustomUIKey).get_to (p.has_custom_ui_);
+    j.at (kGHashKey).get_to (p.ghash_);
+    j.at (kSha1Key).get_to (p.sha1_);
+  }
 
 public:
   utils::Utf8String author_;
@@ -242,5 +310,3 @@ operator== (const PluginDescriptor &a, const PluginDescriptor &b)
 /**
  * @}
  */
-
-#endif

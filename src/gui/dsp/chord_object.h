@@ -1,12 +1,10 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CHORD_OBJECT_H__
-#define __AUDIO_CHORD_OBJECT_H__
+#pragma once
 
 #include "dsp/chord_descriptor.h"
 #include "gui/dsp/arranger_object.h"
-#include "gui/dsp/bounded_object.h"
 #include "gui/dsp/muteable_object.h"
 #include "gui/dsp/region_owned_object.h"
 #include "utils/icloneable.h"
@@ -42,8 +40,7 @@ class ChordObject final
     : public QObject,
       public MuteableObject,
       public RegionOwnedObject,
-      public ICloneable<ChordObject>,
-      public zrythm::utils::serialization::ISerializable<ChordObject>
+      public ICloneable<ChordObject>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -81,7 +78,16 @@ public:
 
   utils::Utf8String gen_human_friendly_name () const override;
 
-  friend bool operator== (const ChordObject &lhs, const ChordObject &rhs);
+  friend bool operator== (const ChordObject &lhs, const ChordObject &rhs)
+  {
+    return static_cast<const ArrangerObject &> (lhs)
+             == static_cast<const ArrangerObject &> (rhs)
+           && lhs.chord_index_ == rhs.chord_index_
+           && static_cast<const RegionOwnedObject &> (lhs)
+                == static_cast<const RegionOwnedObject &> (rhs)
+           && static_cast<const MuteableObject &> (lhs)
+                == static_cast<const MuteableObject &> (rhs);
+  }
 
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
@@ -89,24 +95,27 @@ public:
   void init_after_cloning (const ChordObject &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kChordIndexKey = "chordIndex";
+  friend void to_json (nlohmann::json &j, const ChordObject &co)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (co));
+    to_json (j, static_cast<const MuteableObject &> (co));
+    to_json (j, static_cast<const RegionOwnedObject &> (co));
+    j[kChordIndexKey] = co.chord_index_;
+  }
+  friend void from_json (const nlohmann::json &j, ChordObject &co)
+  {
+    from_json (j, static_cast<ArrangerObject &> (co));
+    from_json (j, static_cast<MuteableObject &> (co));
+    from_json (j, static_cast<RegionOwnedObject &> (co));
+    j.at (kChordIndexKey).get_to (co.chord_index_);
+  }
 
 public:
   /** The index of the chord it belongs to (0 topmost). */
   int chord_index_ = 0;
 };
-
-inline bool
-operator== (const ChordObject &lhs, const ChordObject &rhs)
-{
-  return static_cast<const ArrangerObject &> (lhs)
-           == static_cast<const ArrangerObject &> (rhs)
-         && lhs.chord_index_ == rhs.chord_index_
-         && static_cast<const RegionOwnedObject &> (lhs)
-              == static_cast<const RegionOwnedObject &> (rhs)
-         && static_cast<const MuteableObject &> (lhs)
-              == static_cast<const MuteableObject &> (rhs);
-}
 
 DEFINE_OBJECT_FORMATTER (ChordObject, ChordObject, [] (const ChordObject &co) {
   return fmt::format (
@@ -116,5 +125,3 @@ DEFINE_OBJECT_FORMATTER (ChordObject, ChordObject, [] (const ChordObject &co) {
 /**
  * @}
  */
-
-#endif

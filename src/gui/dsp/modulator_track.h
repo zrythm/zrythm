@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_MODULATOR_TRACK_H__
-#define __AUDIO_MODULATOR_TRACK_H__
+#pragma once
 
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/carla_native_plugin.h"
@@ -25,7 +24,6 @@ class ModulatorTrack final
     : public QObject,
       public ProcessableTrack,
       public ICloneable<ModulatorTrack>,
-      public zrythm::utils::serialization::ISerializable<ModulatorTrack>,
       public utils::InitializableObject<ModulatorTrack>
 {
   Q_OBJECT
@@ -89,9 +87,19 @@ public:
 
   auto get_modulator_span () const { return PluginSpan{ modulators_ }; }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kModulatorsKey = "modulators"sv;
+  static constexpr auto kModulatorMacroProcessorsKey = "modulatorMacros"sv;
+  friend void           to_json (nlohmann::json &j, const ModulatorTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const ProcessableTrack &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    j[kModulatorsKey] = track.modulators_;
+    j[kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
+  }
+  friend void from_json (const nlohmann::json &j, ModulatorTrack &track);
+
   bool initialize ();
 
 private:
@@ -106,5 +114,3 @@ private:
 /**
  * @}
  */
-
-#endif

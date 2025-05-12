@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_MARKER_H__
@@ -22,8 +22,7 @@ class Marker final
     : public QObject,
       public TimelineObject,
       public NamedObject,
-      public ICloneable<Marker>,
-      public zrythm::utils::serialization::ISerializable<Marker>
+      public ICloneable<Marker>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -44,13 +43,6 @@ public:
     Custom,
   };
 
-  Marker (const DeserializationDependencyHolder &dh)
-      : Marker (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
-          dh.get<TrackResolver> (),
-          dh.get<NameValidator> ())
-  {
-  }
   Marker (
     ArrangerObjectRegistry &obj_registry,
     TrackResolver           track_resolver,
@@ -76,24 +68,25 @@ public:
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kMarkerTypeKey = "markerType";
+  friend void                       to_json (nlohmann::json &j, const Marker &m)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (m));
+    to_json (j, static_cast<const NamedObject &> (m));
+    j[kMarkerTypeKey] = m.marker_type_;
+  }
+  friend void from_json (const nlohmann::json &j, Marker &m)
+  {
+    from_json (j, static_cast<ArrangerObject &> (m));
+    from_json (j, static_cast<NamedObject &> (m));
+    j.at (kMarkerTypeKey).get_to (m.marker_type_);
+  }
 
 public:
   /** Marker type. */
   Type marker_type_ = Type::Custom;
 };
-
-inline bool
-operator== (const Marker &lhs, const Marker &rhs)
-{
-  return static_cast<const TimelineObject &> (lhs)
-           == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NamedObject &> (lhs)
-              == static_cast<const NamedObject &> (rhs)
-         && static_cast<const ArrangerObject &> (lhs)
-              == static_cast<const ArrangerObject &> (rhs)
-         && lhs.marker_type_ == rhs.marker_type_;
-}
 
 DEFINE_OBJECT_FORMATTER (Marker, Marker, [] (const Marker &m) {
   return fmt::format (

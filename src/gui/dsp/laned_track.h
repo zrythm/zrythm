@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_LANED_TRACK_H__
-#define __AUDIO_LANED_TRACK_H__
+#pragma once
 
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/midi_region.h"
@@ -84,10 +83,7 @@ public:
 /**
  * Interface for a track that has lanes.
  */
-template <typename TrackLaneT>
-class LanedTrackImpl
-    : public LanedTrack,
-      public zrythm::utils::serialization::ISerializable<LanedTrackImpl<TrackLaneT>>
+template <typename TrackLaneT> class LanedTrackImpl : public LanedTrack
 {
 public:
   using RegionT = typename TrackLaneT::RegionT;
@@ -99,7 +95,9 @@ public:
 
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+    override
+  {
+  }
 
   /**
    * Creates missing TrackLane's until pos.
@@ -163,11 +161,22 @@ protected:
 
   bool validate_base () const;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
   void set_playback_caches () override;
 
 private:
+  static constexpr std::string_view kLanesVisibleKey = "lanesVisible";
+  static constexpr std::string_view kLanesListKey = "lanesList";
+  friend void to_json (nlohmann::json &j, const LanedTrackImpl &track)
+  {
+    j[kLanesVisibleKey] = track.lanes_visible_;
+    j[kLanesListKey] = track.lanes_;
+  }
+  friend void from_json (const nlohmann::json &j, LanedTrackImpl &track)
+  {
+    j.at (kLanesVisibleKey).get_to (track.lanes_visible_);
+    j.at (kLanesListKey).get_to (track.lanes_);
+  }
+
   void add_lane ();
 
 public:
@@ -185,5 +194,3 @@ using LanedTrackPtrVariant = to_pointer_variant<LanedTrackVariant>;
 
 extern template class LanedTrackImpl<MidiLane>;
 extern template class LanedTrackImpl<AudioLane>;
-
-#endif // __AUDIO_LANED_TRACK_H__

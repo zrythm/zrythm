@@ -19,16 +19,6 @@
 
 using namespace zrythm;
 
-ChannelSend::ChannelSend (const DeserializationDependencyHolder &dh)
-    : ChannelSend (
-        dh.get<std::reference_wrapper<TrackRegistry>> ().get (),
-        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-        dh.get<std::reference_wrapper<ChannelTrack>> ().get (),
-        std::nullopt,
-        false)
-{
-}
-
 ChannelSend::ChannelSend (
   TrackRegistry            &track_registry,
   PortRegistry             &port_registry,
@@ -51,22 +41,6 @@ ChannelSend::ChannelSend (
       assert (track);
       construct_for_slot (*track, slot_);
     }
-}
-
-void
-ChannelSend::define_fields (const utils::serialization::Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("slot", slot_), make_field ("amount", amount_id_),
-    make_field ("enabled", enabled_id_),
-    make_field ("isSidechain", is_sidechain_),
-    make_field ("midiIn", midi_in_id_, true),
-    make_field ("stereoInL", stereo_in_left_id_, true),
-    make_field ("stereoInR", stereo_in_right_id_, true),
-    make_field ("midiOut", midi_out_id_, true),
-    make_field ("stereoOutL", stereo_out_left_id_, true),
-    make_field ("stereoOutR", stereo_out_right_id_, true),
-    make_field ("trackId", track_id_));
 }
 
 dsp::PortType
@@ -632,7 +606,7 @@ ChannelSend::get_dest_name () const
           return std::visit (
             [&] (auto &&pl) {
               return pl->get_full_port_group_designation (
-                dest->id_->port_group_);
+                *dest->id_->port_group_);
             },
             pl_var.value ());
         }

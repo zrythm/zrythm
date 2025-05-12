@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CHANNEL_TRACK_H__
-#define __AUDIO_CHANNEL_TRACK_H__
+#pragma once
 
 #include "gui/backend/channel.h"
 #include "gui/dsp/processable_track.h"
@@ -21,15 +20,12 @@ public: \
 /**
  * Abstract class for a track that has a channel in the mixer.
  */
-class ChannelTrack
-    : virtual public ProcessableTrack,
-      public zrythm::utils::serialization::ISerializable<ChannelTrack>
+class ChannelTrack : virtual public ProcessableTrack
 {
 public:
   using Channel = zrythm::gui::Channel;
 
 protected:
-  ChannelTrack (const DeserializationDependencyHolder &dh);
   ChannelTrack (
     TrackRegistry  &track_registry,
     PluginRegistry &plugin_registry,
@@ -140,9 +136,20 @@ protected:
    */
   void init_channel ();
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kChannelKey = "channel"sv;
+  friend void to_json (nlohmann::json &j, const ChannelTrack &channel_track)
+  {
+    j[kChannelKey] = channel_track.channel_;
+  }
+  friend void from_json (const nlohmann::json &j, ChannelTrack &channel_track)
+  {
+    channel_track.channel_ = new Channel (
+      channel_track.track_registry_, channel_track.plugin_registry_,
+      channel_track.port_registry_);
+    j.at (kChannelKey).get_to (*channel_track.channel_);
+  }
+
   /**
    * Removes the AutomationTrack's associated with this channel from the
    * AutomationTracklist in the corresponding Track.
@@ -170,5 +177,3 @@ using ChannelTrackVariant = std::variant<
   InstrumentTrack,
   MasterTrack>;
 using ChannelTrackPtrVariant = to_pointer_variant<ChannelTrackVariant>;
-
-#endif // __AUDIO_CHANNEL_TRACK_H__

@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_AUTOMATION_REGION_H__
-#define __AUDIO_AUTOMATION_REGION_H__
+#pragma once
 
 #include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/region.h"
@@ -22,8 +21,7 @@ class AutomationRegion final
     : public QObject,
       public RegionImpl<AutomationRegion>,
       public ArrangerObjectOwner<AutomationPoint>,
-      public ICloneable<AutomationRegion>,
-      public zrythm::utils::serialization::ISerializable<AutomationRegion>
+      public ICloneable<AutomationRegion>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -111,7 +109,29 @@ public:
   init_after_cloning (const AutomationRegion &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  friend void to_json (nlohmann::json &j, const AutomationRegion &ar)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (ar));
+    to_json (j, static_cast<const BoundedObject &> (ar));
+    to_json (j, static_cast<const LoopableObject &> (ar));
+    to_json (j, static_cast<const MuteableObject &> (ar));
+    to_json (j, static_cast<const NamedObject &> (ar));
+    to_json (j, static_cast<const ColoredObject &> (ar));
+    to_json (j, static_cast<const Region &> (ar));
+    to_json (j, static_cast<const ArrangerObjectOwner &> (ar));
+  }
+  friend void from_json (const nlohmann::json &j, AutomationRegion &ar)
+  {
+    from_json (j, static_cast<ArrangerObject &> (ar));
+    from_json (j, static_cast<BoundedObject &> (ar));
+    from_json (j, static_cast<LoopableObject &> (ar));
+    from_json (j, static_cast<MuteableObject &> (ar));
+    from_json (j, static_cast<NamedObject &> (ar));
+    from_json (j, static_cast<ColoredObject &> (ar));
+    from_json (j, static_cast<Region &> (ar));
+    from_json (j, static_cast<ArrangerObjectOwner &> (ar));
+  }
 
 public:
   /** Last recorded automation point. */
@@ -122,26 +142,6 @@ public:
    */
   ControlPort::Uuid automatable_port_id_;
 };
-
-inline bool
-operator== (const AutomationRegion &lhs, const AutomationRegion &rhs)
-{
-  return static_cast<const Region &> (lhs) == static_cast<const Region &> (rhs)
-         && static_cast<const TimelineObject &> (lhs)
-              == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NamedObject &> (lhs)
-              == static_cast<const NamedObject &> (rhs)
-         && static_cast<const LoopableObject &> (lhs)
-              == static_cast<const LoopableObject &> (rhs)
-         && static_cast<const ColoredObject &> (lhs)
-              == static_cast<const ColoredObject &> (rhs)
-         && static_cast<const MuteableObject &> (lhs)
-              == static_cast<const MuteableObject &> (rhs)
-         && static_cast<const BoundedObject &> (lhs)
-              == static_cast<const BoundedObject &> (rhs)
-         && static_cast<const ArrangerObject &> (lhs)
-              == static_cast<const ArrangerObject &> (rhs);
-}
 
 DEFINE_OBJECT_FORMATTER (
   AutomationRegion,
@@ -155,5 +155,3 @@ DEFINE_OBJECT_FORMATTER (
 /**
  * @}
  */
-
-#endif // __AUDIO_AUTOMATION_REGION_H__

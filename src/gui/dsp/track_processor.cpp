@@ -29,14 +29,6 @@
 
 #include <fmt/format.h>
 
-TrackProcessor::TrackProcessor (const DeserializationDependencyHolder &dh)
-    : TrackProcessor (
-        dh.get<std::reference_wrapper<ProcessableTrack>> ().get (),
-        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-        false)
-{
-}
-
 TrackProcessor::TrackProcessor (
   ProcessableTrack &tr,
   PortRegistry     &port_registry,
@@ -120,27 +112,6 @@ TrackProcessor::TrackProcessor (
     }
 
   init_common ();
-}
-
-void
-TrackProcessor::define_fields (const utils::serialization::Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("mono", mono_id_, true),
-    make_field ("inputGain", input_gain_id_, true),
-    make_field ("outputGain", output_gain_id_, true),
-    make_field ("midiIn", midi_in_id_, true),
-    make_field ("midiOut", midi_out_id_, true),
-    make_field ("pianoRoll", piano_roll_id_, true),
-    make_field ("monitorAudio", monitor_audio_id_, true),
-    make_field ("stereoInL", stereo_in_left_id_, true),
-    make_field ("stereoInR", stereo_in_right_id_, true),
-    make_field ("stereoOutL", stereo_out_left_id_, true),
-    make_field ("stereoOutR", stereo_out_right_id_, true),
-    make_field ("midiCc", midi_cc_ids_, true),
-    make_field ("pitchBend", pitch_bend_ids_, true),
-    make_field ("polyKeyPressure", poly_key_pressure_ids_, true),
-    make_field ("channelPressure", channel_pressure_ids_, true));
 }
 
 void

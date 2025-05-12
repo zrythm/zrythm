@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_EXT_PORT_H__
@@ -13,7 +13,7 @@
 #include "zrythm-config.h"
 
 #include "gui/dsp/port.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 #include "utils/types.h"
 
 #ifdef HAVE_JACK
@@ -37,9 +37,7 @@ enum class MidiBackend;
 /**
  * External port.
  */
-class ExtPort final
-    : public utils::serialization::ISerializable<ExtPort>,
-      public IPortOwner
+class ExtPort final : public IPortOwner
 {
 public:
   /**
@@ -167,7 +165,43 @@ connect (
     std::vector<ExtPort> &ports,
     AudioEngine          &engine);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kTypeKey = "type";
+  static constexpr std::string_view kFullNameKey = "fullName";
+  static constexpr std::string_view kShortNameKey = "shortName";
+  static constexpr std::string_view kAlias1Key = "alias1";
+  static constexpr std::string_view kAlias2Key = "alias2";
+  static constexpr std::string_view kNumAliasesKey = "numAliases";
+  static constexpr std::string_view kRtAudioDeviceNameKey = "rtAudioDeviceName";
+  static constexpr std::string_view kRtAudioChannelIndexKey =
+    "rtAudioChannelIndex";
+  static constexpr std::string_view kIsMidiKey = "isMidi";
+  friend void to_json (nlohmann::json &j, const ExtPort &port)
+  {
+    j = nlohmann::json{
+      { kTypeKey,                port.type_                },
+      { kFullNameKey,            port.full_name_           },
+      { kShortNameKey,           port.short_name_          },
+      { kAlias1Key,              port.alias1_              },
+      { kAlias2Key,              port.alias2_              },
+      { kNumAliasesKey,          port.num_aliases_         },
+      { kRtAudioDeviceNameKey,   port.rtaudio_dev_name_    },
+      { kRtAudioChannelIndexKey, port.rtaudio_channel_idx_ },
+      { kIsMidiKey,              port.is_midi_             },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, ExtPort &port)
+  {
+    j.at (kTypeKey).get_to (port.type_);
+    j.at (kFullNameKey).get_to (port.full_name_);
+    j.at (kShortNameKey).get_to (port.short_name_);
+    j.at (kAlias1Key).get_to (port.alias1_);
+    j.at (kAlias2Key).get_to (port.alias2_);
+    j.at (kNumAliasesKey).get_to (port.num_aliases_);
+    j.at (kRtAudioDeviceNameKey).get_to (port.rtaudio_dev_name_);
+    j.at (kRtAudioChannelIndexKey).get_to (port.rtaudio_channel_idx_);
+    j.at (kIsMidiKey).get_to (port.is_midi_);
+  }
 
 public:
 /** JACK port. */

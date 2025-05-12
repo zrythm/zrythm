@@ -36,6 +36,7 @@
 #endif
 
 using namespace magic_enum::bitwise_operators;
+using namespace std::literals;
 
 /**
  * @addtogroup utils

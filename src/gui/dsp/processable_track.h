@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_PROCESSABLE_TRACK_H__
-#define __AUDIO_PROCESSABLE_TRACK_H__
+#pragma once
 
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/track_processor.h"
@@ -15,12 +14,9 @@ class TrackProcessor;
  *
  * @ref processor_ is the starting point when processing a Track.
  */
-class ProcessableTrack
-    : virtual public AutomatableTrack,
-      public zrythm::utils::serialization::ISerializable<ProcessableTrack>
+class ProcessableTrack : virtual public AutomatableTrack
 {
 public:
-  ProcessableTrack (const DeserializationDependencyHolder &dh);
   ProcessableTrack (PortRegistry &port_registry, bool new_identity);
 
   ~ProcessableTrack () override = default;
@@ -77,7 +73,17 @@ protected:
   void
   append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr auto kProcessorKey = "processor"sv;
+  friend void           to_json (nlohmann::json &j, const ProcessableTrack &p)
+  {
+    j[kProcessorKey] = p.processor_;
+  }
+  friend void from_json (const nlohmann::json &j, ProcessableTrack &p)
+  {
+    p.processor_ = std::make_unique<TrackProcessor> (p, p.port_registry_, false);
+    j[kProcessorKey].get_to (*p.processor_);
+  }
 
 public:
   /**
@@ -104,5 +110,3 @@ using ProcessableTrackVariant = std::variant<
   ModulatorTrack,
   TempoTrack>;
 using ProcessableTrackPtrVariant = to_pointer_variant<ProcessableTrackVariant>;
-
-#endif // __AUDIO_PROCESSABLE_TRACK_H__

@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_AUTOMATION_POINT_H__
-#define __AUDIO_AUTOMATION_POINT_H__
+#pragma once
 
 #include "dsp/curve.h"
 #include "dsp/position.h"
@@ -32,8 +31,7 @@ using namespace zrythm;
 class AutomationPoint final
     : public QObject,
       public RegionOwnedObject,
-      public ICloneable<AutomationPoint>,
-      public zrythm::utils::serialization::ISerializable<AutomationPoint>
+      public ICloneable<AutomationPoint>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -148,7 +146,26 @@ public:
            && utils::math::floats_near (a.fvalue_, b.fvalue_, 0.001f);
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kValueKey = "value";
+  static constexpr std::string_view kNormalizedValueKey = "normalized_value";
+  static constexpr std::string_view kCurveOptionsKey = "curve_options";
+  friend void to_json (nlohmann::json &j, const AutomationPoint &point)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (point));
+    to_json (j, static_cast<const RegionOwnedObject &> (point));
+    j[kValueKey] = point.fvalue_;
+    j[kNormalizedValueKey] = point.normalized_val_;
+    j[kCurveOptionsKey] = point.curve_opts_;
+  }
+  friend void from_json (const nlohmann::json &j, AutomationPoint &point)
+  {
+    from_json (j, static_cast<ArrangerObject &> (point));
+    from_json (j, static_cast<RegionOwnedObject &> (point));
+    j.at (kValueKey).get_to (point.fvalue_);
+    j.at (kNormalizedValueKey).get_to (point.normalized_val_);
+    j.at (kCurveOptionsKey).get_to (point.curve_opts_);
+  }
 
 public:
   /** Float value (real). */
@@ -194,5 +211,3 @@ DEFINE_OBJECT_FORMATTER (
 /**
  * @}
  */
-
-#endif // __AUDIO_AUTOMATION_POINT_H__

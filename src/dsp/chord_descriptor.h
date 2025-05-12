@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef ZRYTHM_DSP_CHORD_DESCRIPTOR_H
@@ -77,7 +77,6 @@ enum class ChordAccent
  * Chord objects should include a ChordDescriptor.
  */
 class ChordDescriptor
-    : public zrythm::utils::serialization::ISerializable<ChordDescriptor>
 {
 public:
   static constexpr size_t MAX_NOTES = 48;
@@ -171,7 +170,15 @@ public:
    */
   void update_notes ();
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE (
+    ChordDescriptor,
+    has_bass_,
+    root_note_,
+    bass_note_,
+    type_,
+    accent_,
+    notes_,
+    inversion_)
 
 public:
   /** Has bass note or not. */

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/curve.h"
@@ -117,11 +117,11 @@ TEST (CurveTest, Serialization)
   CurveOptions opts1 (0.75, CurveOptions::Algorithm::Vital);
 
   // Serialize to JSON
-  auto json_str = opts1.serialize_to_json_string ();
+  nlohmann::json j = opts1;
 
   // Create new object and deserialize
   CurveOptions opts2;
-  opts2.deserialize_from_json_string (json_str.c_str ());
+  from_json (j, opts2);
 
   // Verify all fields match
   EXPECT_DOUBLE_EQ (opts1.curviness_, opts2.curviness_);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/musical_scale.h"
@@ -460,14 +460,6 @@ MusicalScale::to_string () const
 {
   return ChordDescriptor::note_to_string (root_key_)
          + utils::Utf8String{ u8" " } + type_to_string (type_);
-}
-
-void
-MusicalScale::define_fields (const utils::serialization::Context &ctx)
-{
-  ISerializable<MusicalScale>::serialize_fields (
-    ctx, ISerializable<MusicalScale>::make_field ("type", type_),
-    ISerializable<MusicalScale>::make_field ("rootKey", root_key_));
 }
 
 } // namespace zrythm::dsp

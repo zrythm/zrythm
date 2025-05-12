@@ -1,17 +1,9 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Plugin descriptors.
- */
-
-#ifndef __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
-#define __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
-
+#pragma once
 #include "gui/dsp/plugin_descriptor.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 /**
  * @addtogroup plugins
@@ -26,7 +18,6 @@ namespace zrythm::gui::old_dsp::plugins
  * Descriptors to be cached.
  */
 class CachedPluginDescriptors final
-    : public zrythm::utils::serialization::ISerializable<CachedPluginDescriptors>
 {
 public:
   /**
@@ -60,14 +51,11 @@ public:
       }
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-  int get_format_major_version () const override { return 6; }
-  int get_format_minor_version () const override { return 0; }
-
-  std::string get_document_type () const override
+  static constexpr int  get_format_major_version () { return 6; }
+  static constexpr int  get_format_minor_version () { return 0; }
+  static constexpr auto get_document_type ()
   {
-    return "CachedPluginDescriptors";
+    return "CachedPluginDescriptors"sv;
   }
 
   /**
@@ -119,7 +107,22 @@ public:
    */
   void clear ();
 
+  static constexpr auto kDescriptorsKey = "descriptors"sv;
+  static constexpr auto kBlacklistedSha1sKey = "blacklistedSha1s"sv;
+
 private:
+  friend void to_json (nlohmann::json &j, const CachedPluginDescriptors &p)
+  {
+    j = nlohmann::json{
+      { utils::serialization::kDocumentTypeKey, get_document_type ()        },
+      { utils::serialization::kFormatMajorKey,  get_format_major_version () },
+      { utils::serialization::kFormatMinorKey,  get_format_minor_version () },
+      { kDescriptorsKey,                        p.descriptors_              },
+      { kBlacklistedSha1sKey,                   p.blacklisted_sha1s_        },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, CachedPluginDescriptors &p);
+
   /**
    * @brief Deletes the cache file.
    *
@@ -142,5 +145,3 @@ public:
 /**
  * @}
  */
-
-#endif

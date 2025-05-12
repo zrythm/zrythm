@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_AUDIO_GROUP_TRACK_H__
-#define __AUDIO_AUDIO_GROUP_TRACK_H__
+#pragma once
 
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/foldable_track.h"
@@ -17,7 +16,6 @@ class AudioGroupTrack final
       public FoldableTrack,
       public GroupTargetTrack,
       public ICloneable<AudioGroupTrack>,
-      public zrythm::utils::serialization::ISerializable<AudioGroupTrack>,
       public utils::InitializableObject<AudioGroupTrack>
 {
   Q_OBJECT
@@ -43,10 +41,25 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void to_json (nlohmann::json &j, const AudioGroupTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const ProcessableTrack &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    to_json (j, static_cast<const ChannelTrack &> (track));
+    to_json (j, static_cast<const GroupTargetTrack &> (track));
+    to_json (j, static_cast<const FoldableTrack &> (track));
+  }
+  friend void from_json (const nlohmann::json &j, AudioGroupTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+    from_json (j, static_cast<ProcessableTrack &> (track));
+    from_json (j, static_cast<AutomatableTrack &> (track));
+    from_json (j, static_cast<ChannelTrack &> (track));
+    from_json (j, static_cast<GroupTargetTrack &> (track));
+    from_json (j, static_cast<FoldableTrack &> (track));
+  }
+
   bool initialize ();
 };
-
-#endif // __AUDIO_AUDIO_BUS_TRACK_H__

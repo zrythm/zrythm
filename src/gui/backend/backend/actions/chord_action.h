@@ -17,8 +17,7 @@ namespace zrythm::gui::actions
 class ChordAction final
     : public QObject,
       public UndoableAction,
-      public ICloneable<ChordAction>,
-      public utils::serialization::ISerializable<ChordAction>
+      public ICloneable<ChordAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -69,8 +68,6 @@ public:
 
   void init_after_cloning (const ChordAction &other, ObjectCloneType clone_type)
     override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override { }

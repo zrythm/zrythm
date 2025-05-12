@@ -1,13 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * The control room backend.
- */
-#ifndef __AUDIO_CONTROL_ROOM_H__
-#define __AUDIO_CONTROL_ROOM_H__
+#pragma once
 
 #include "gui/dsp/fader.h"
 #include "utils/icloneable.h"
@@ -29,9 +23,7 @@ class ExtPort;
  * to set overall volume after the Master Channel so you can change the volume
  * without touching the Master Fader.
  */
-class ControlRoom final
-    : public ICloneable<ControlRoom>,
-      public zrythm::utils::serialization::ISerializable<ControlRoom>
+class ControlRoom final : public ICloneable<ControlRoom>
 {
 public:
   ControlRoom () = default;
@@ -52,9 +44,17 @@ public:
   void init_after_cloning (const ControlRoom &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kMonitorFaderKey = "monitorFader"sv;
+  friend void to_json (nlohmann::json &j, const ControlRoom &control_room)
+  {
+    j[kMonitorFaderKey] = control_room.listen_fader_;
+  }
+  friend void from_json (const nlohmann::json &j, ControlRoom &control_room)
+  {
+    j.at (kMonitorFaderKey).get_to (control_room.listen_fader_);
+  }
+
   void init_common ();
 
 public:
@@ -105,5 +105,3 @@ public:
 /**
  * @}
  */
-
-#endif

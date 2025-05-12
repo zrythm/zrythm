@@ -158,23 +158,39 @@ public:
       return *this;
     }
 
-    auto build ()
+    /**
+     * @brief Returns an instantiated object to be used for deserialization.
+     */
+    std::unique_ptr<ObjT> build_empty () const
+    {
+      std::unique_ptr<ObjT> ret;
+      if constexpr (std::is_same_v<ObjT, AudioRegion>)
+        {
+          ret = std::make_unique<ObjT> (
+            registry_, track_resolver_, *clip_resolver_);
+        }
+      else if constexpr (std::is_same_v<ObjT, Marker>)
+        {
+          ret = std::make_unique<ObjT> (
+            registry_, track_resolver_, *name_validator_);
+        }
+      else
+        {
+          ret = std::make_unique<ObjT> (registry_, track_resolver_);
+        }
+      return ret;
+    }
+
+    auto build_in_registry ()
     {
       auto obj_ref = [&] () {
-        if constexpr (std::is_same_v<ObjT, AudioRegion>)
-          {
-            return registry_.create_object<ObjT> (
-              registry_, track_resolver_, *clip_resolver_);
-          }
-        else if constexpr (std::is_same_v<ObjT, Marker>)
-          {
-            return registry_.create_object<ObjT> (
-              registry_, track_resolver_, *name_validator_);
-          }
-        else
-          {
-            return registry_.create_object<ObjT> (registry_, track_resolver_);
-          }
+        auto obj_unique_ptr = build_empty ();
+        registry_.register_object (obj_unique_ptr.get ());
+        ArrangerObjectUuidReference ret_ref{
+          obj_unique_ptr->get_uuid (), registry_
+        };
+        obj_unique_ptr.release ();
+        return ret_ref;
       }();
 
       auto * obj = std::get<ObjT *> (obj_ref.get_object ());
@@ -355,7 +371,7 @@ private:
       get_builder<AudioRegion> ()
         .with_start_ticks (startTicks)
         .with_clip (clip_id)
-        .build ();
+        .build_in_registry ();
     return obj;
   }
 
@@ -410,7 +426,7 @@ private:
       {
         builder.with_chord_descriptor (std::get<int> (value));
       }
-    auto obj_ref = builder.build ();
+    auto obj_ref = builder.build_in_registry ();
     region.add_object (obj_ref);
     auto obj = std::get<ChildT *> (obj_ref.get_object ());
     {
@@ -451,7 +467,7 @@ public:
       get_builder<ScaleObject> ()
         .with_start_ticks (start_ticks)
         .with_scale (scale)
-        .build ();
+        .build_in_registry ();
     chord_track.ArrangerObjectOwner<ScaleObject>::add_object (obj_ref);
     return std::get<ScaleObject *> (obj_ref.get_object ());
   }
@@ -468,7 +484,7 @@ public:
           [markerTrack] (const utils::Utf8String &inner_name) {
             return markerTrack->validate_marker_name (inner_name);
           })
-        .build ();
+        .build_in_registry ();
     markerTrack->add_object (marker_ref);
     return std::get<Marker *> (marker_ref.get_object ());
   }
@@ -477,7 +493,9 @@ public:
   addEmptyMidiRegion (MidiLane * lane, double startTicks)
   {
     auto mr_ref =
-      get_builder<MidiRegion> ().with_start_ticks (startTicks).build ();
+      get_builder<MidiRegion> ()
+        .with_start_ticks (startTicks)
+        .build_in_registry ();
     add_laned_object (*lane, mr_ref);
     return std::get<MidiRegion *> (mr_ref.get_object ());
   }
@@ -486,7 +504,9 @@ public:
   addEmptyChordRegion (ChordTrack * track, double startTicks)
   {
     auto cr_ref =
-      get_builder<ChordRegion> ().with_start_ticks (startTicks).build ();
+      get_builder<ChordRegion> ()
+        .with_start_ticks (startTicks)
+        .build_in_registry ();
     track->Track::add_region<ChordRegion> (cr_ref, nullptr, std::nullopt, true);
     return std::get<ChordRegion *> (cr_ref.get_object ());
   }
@@ -496,7 +516,9 @@ public:
 
   {
     auto ar_ref =
-      get_builder<AutomationRegion> ().with_start_ticks (startTicks).build ();
+      get_builder<AutomationRegion> ()
+        .with_start_ticks (startTicks)
+        .build_in_registry ();
     auto track_var = automationTrack->get_track ();
     std::visit (
       [&] (auto &&track) {

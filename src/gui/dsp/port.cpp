@@ -356,3 +356,17 @@ Port::get_hash () const
 {
   return utils::hash::get_object_hash (*this);
 }
+
+struct PortRegistryBuilder
+{
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    return std::make_unique<T> ();
+  }
+};
+
+void
+from_json (const nlohmann::json &j, PortRegistry &registry)
+{
+  from_json_with_builder (j, registry, PortRegistryBuilder{});
+}

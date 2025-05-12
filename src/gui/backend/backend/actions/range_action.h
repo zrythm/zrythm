@@ -15,8 +15,7 @@ namespace zrythm::gui::actions
 class RangeAction
     : public QObject,
       public UndoableAction,
-      public ICloneable<RangeAction>,
-      public zrythm::utils::serialization::ISerializable<RangeAction>
+      public ICloneable<RangeAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -52,8 +51,6 @@ public:
 
   void init_after_cloning (const RangeAction &other, ObjectCloneType clone_type)
     override;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void init_loaded_impl () override;

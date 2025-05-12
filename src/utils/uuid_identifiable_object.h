@@ -6,7 +6,7 @@
 #include "utils/format.h"
 #include "utils/icloneable.h"
 #include "utils/initializable_object.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 #include "utils/string.h"
 
 #include <QUuid>
@@ -19,16 +19,13 @@ namespace zrythm::utils
 /**
  * Base class for objects that need to be uniquely identified by UUID.
  */
-template <typename Derived>
-class UuidIdentifiableObject
-    : public serialization::ISerializable<UuidIdentifiableObject<Derived>>
+template <typename Derived> class UuidIdentifiableObject
 {
 public:
   struct Uuid final
       : type_safe::strong_typedef<Uuid, QUuid>,
         type_safe::strong_typedef_op::equality_comparison<Uuid>,
-        type_safe::strong_typedef_op::relational_comparison<Uuid>,
-        utils::serialization::ISerializable<Uuid>
+        type_safe::strong_typedef_op::relational_comparison<Uuid>
   {
     using UuidTag = void; // used by the fmt formatter below
     using type_safe::strong_typedef<Uuid, QUuid>::strong_typedef;
@@ -46,12 +43,6 @@ public:
 
     void set_null () { type_safe::get (*this) = QUuid (); }
 
-    DECLARE_DEFINE_FIELDS_METHOD ()
-    {
-      using T = serialization::ISerializable<Uuid>;
-      T::serialize_fields (ctx, T::make_field ("uuid", type_safe::get (*this)));
-    }
-
     std::size_t hash () const { return qHash (type_safe::get (*this)); }
   };
   static_assert (std::regular<Uuid>);
@@ -63,7 +54,7 @@ public:
   operator= (const UuidIdentifiableObject &other) = default;
   UuidIdentifiableObject (UuidIdentifiableObject &&other) = default;
   UuidIdentifiableObject &operator= (UuidIdentifiableObject &&other) = default;
-  ~UuidIdentifiableObject () override = default;
+  virtual ~UuidIdentifiableObject () = default;
 
   auto get_uuid () const { return uuid_; }
 
@@ -72,13 +63,25 @@ public:
     uuid_ = other.uuid_;
   }
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ()
+  friend void to_json (nlohmann::json &j, const UuidIdentifiableObject &obj)
   {
-    using T = UuidIdentifiableObject;
-    T::serialize_fields (ctx, T::make_field ("id", uuid_));
+    j[kUuidKey] = obj.uuid_;
+  }
+  friend void from_json (const nlohmann::json &j, UuidIdentifiableObject &obj)
+  {
+    j.at (kUuidKey).get_to (obj.uuid_);
+  }
+
+  friend bool operator== (
+    const UuidIdentifiableObject &lhs,
+    const UuidIdentifiableObject &rhs)
+  {
+    return lhs.uuid_ == rhs.uuid_;
   }
 
 private:
+  static constexpr std::string_view kUuidKey = "id";
+
   Uuid uuid_;
 };
 
@@ -111,9 +114,7 @@ concept UuidIdentifiableQObject =
  *
  * @tparam RegistryT
  */
-template <typename RegistryT>
-class UuidReference
-    : public serialization::ISerializable<UuidReference<RegistryT>>
+template <typename RegistryT> class UuidReference
 {
 public:
   using UuidType = typename RegistryT::UuidType;
@@ -123,11 +124,6 @@ public:
   // temporary resizing of tracks_. This should be removed after the swap logic
   // is refactored.
   UuidReference () = default;
-
-  UuidReference (const DeserializationDependencyHolder &dh)
-      : registry_ (dh.get<std::reference_wrapper<RegistryT>> ().get ())
-  {
-  }
 
   UuidReference (const UuidType &id, RegistryT &registry)
       : id_ (id), registry_ (registry)
@@ -188,15 +184,14 @@ public:
       get_object ());
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ()
+  friend void to_json (nlohmann::json &j, const UuidReference &ref)
   {
-    using T = serialization::ISerializable<UuidReference>;
-    T::serialize_fields (ctx, T::make_field ("uuid", id_));
-
-    if (ctx.is_deserializing ())
-      {
-        acquire_ref ();
-      }
+    j[kIdKey] = ref.id_;
+  }
+  friend void from_json (const nlohmann::json &j, UuidReference &ref)
+  {
+    j.at (kIdKey).get_to (ref.id_);
+    ref.acquire_ref ();
   }
 
   auto get_iterator_in_registry () const
@@ -236,6 +231,8 @@ private:
   RegistryT &get_registry () { return *registry_; }
 
 private:
+  static constexpr std::string_view kIdKey = "id";
+
   std::optional<UuidType> id_;
   OptionalRef<RegistryT>  registry_;
 };
@@ -261,9 +258,7 @@ using UuidIdentifiablObjectResolver =
  * @tparam BaseT The common base class of the objects in the variant.
  */
 template <typename VariantT, UuidIdentifiable BaseT>
-class OwningObjectRegistry
-    : public QObject,
-      public serialization::ISerializable<OwningObjectRegistry<VariantT, BaseT>>
+class OwningObjectRegistry : public QObject
 {
 public:
   using UuidType = typename UuidIdentifiableObject<BaseT>::Uuid;
@@ -410,21 +405,34 @@ public:
 
   size_t size () const { return objects_by_id_.size (); }
 
-  DECLARE_DEFINE_FIELDS_METHOD ()
+  friend void to_json (nlohmann::json &j, const OwningObjectRegistry &obj)
   {
-    using T = serialization::ISerializable<OwningObjectRegistry>;
-    T::serialize_fields (ctx, T::make_field ("objectsById", objects_by_id_));
-
-    if (ctx.is_deserializing ())
+    auto objects = nlohmann::json::array ();
+    for (const auto &var : obj.objects_by_id_.values ())
       {
-        for (auto &var : objects_by_id_.values ())
-          {
-            std::visit ([&] (auto &&v) { v->setParent (this); }, var);
-          }
+        objects.push_back (var);
+      }
+    j[kObjectsKey] = objects;
+  }
+  template <ObjectBuilder BuilderT>
+  friend void from_json_with_builder (
+    const nlohmann::json &j,
+    OwningObjectRegistry &obj,
+    const BuilderT       &builder)
+  {
+    auto objects = j.at (kObjectsKey);
+    for (const auto &object_var_json : objects)
+      {
+        VariantT object_var;
+        utils::serialization::variant_from_json_with_builder (
+          object_var_json, object_var, builder);
+        obj.register_object (object_var);
       }
   }
 
 private:
+  static constexpr const char * kObjectsKey = "objectsById";
+
   /**
    * @brief Unregisters an object.
    *

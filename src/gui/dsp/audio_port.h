@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_AUDIO_PORT_H__
@@ -19,11 +19,7 @@ class PortConnectionsManager;
 /**
  * @brief Audio port specifics.
  */
-class AudioPort final
-    : public QObject,
-      public Port,
-      public ICloneable<AudioPort>,
-      public zrythm::utils::serialization::ISerializable<AudioPort>
+class AudioPort final : public QObject, public Port, public ICloneable<AudioPort>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -80,8 +76,6 @@ public:
 
   void clear_buffer (AudioEngine &engine) override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
   bool is_stereo_port () const
   {
     return ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL)
@@ -92,6 +86,15 @@ public:
     override;
 
 private:
+  friend void to_json (nlohmann::json &j, const AudioPort &port)
+  {
+    to_json (j, static_cast<const Port &> (port));
+  }
+  friend void from_json (const nlohmann::json &j, AudioPort &port)
+  {
+    from_json (j, static_cast<Port &> (port));
+  }
+
   /**
    * Sums the inputs coming in from the dummy engine StereoPorts, before the
    * port is processed.

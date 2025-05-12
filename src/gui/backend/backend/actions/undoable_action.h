@@ -27,7 +27,6 @@ public: \
  * Base class to be inherited by implementing undoable actions.
  */
 class UndoableAction
-    : public zrythm::utils::serialization::ISerializable<UndoableAction>
 {
 public:
   /**
@@ -70,7 +69,7 @@ public:
     Type               type,
     dsp::FramesPerTick frames_per_tick,
     sample_rate_t      sample_rate);
-  ~UndoableAction () override = default;
+  virtual ~UndoableAction () = default;
 
   /**
    * @brief Create a unique from id object
@@ -180,8 +179,6 @@ public:
 protected:
   void
   copy_members_from (const UndoableAction &other, ObjectCloneType clone_type);
-
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 private:
   /** NVI pattern. */

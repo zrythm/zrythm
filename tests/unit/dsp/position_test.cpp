@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/position.h"
@@ -160,11 +160,11 @@ TEST_F (PositionTest, Serialization)
   pos1.frames_ = 43534;
 
   // Serialize to JSON
-  auto json_str = pos1.serialize_to_json_string ();
+  nlohmann::json j = pos1;
 
   // Create new object and deserialize
   Position pos2;
-  pos2.deserialize_from_json_string (json_str.c_str ());
+  from_json (j, pos2);
 
   // Verify all fields match
   EXPECT_EQ (pos1.ticks_, pos2.ticks_);

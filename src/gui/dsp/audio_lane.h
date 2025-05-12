@@ -11,8 +11,7 @@
 class AudioLane final
     : public QObject,
       public TrackLaneImpl<AudioRegion>,
-      public ICloneable<AudioLane>,
-      public zrythm::utils::serialization::ISerializable<AudioLane>
+      public ICloneable<AudioLane>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -22,11 +21,6 @@ public:
   using RegionT = AudioRegion;
 
 public:
-  AudioLane (const DeserializationDependencyHolder &dh)
-      : AudioLane (
-          &dh.get<std::reference_wrapper<LanedTrackImpl<AudioLane>>> ().get ())
-  {
-  }
   /**
    * @see TrackLaneImpl::TrackLaneImpl
    */
@@ -35,5 +29,13 @@ public:
   void init_after_cloning (const AudioLane &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  friend void to_json (nlohmann::json &j, const AudioLane &lane)
+  {
+    to_json (j, static_cast<const TrackLaneImpl &> (lane));
+  }
+  friend void from_json (const nlohmann::json &j, AudioLane &lane)
+  {
+    from_json (j, static_cast<TrackLaneImpl &> (lane));
+  }
 };

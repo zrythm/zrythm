@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __SETTINGS_PLUGIN_SETTINGS_H__
-#define __SETTINGS_PLUGIN_SETTINGS_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -28,9 +27,7 @@ using namespace zrythm;
 /**
  * A setting for a specific plugin descriptor.
  */
-class PluginSetting final
-    : public zrythm::utils::serialization::ISerializable<PluginSetting>,
-      public ICloneable<PluginSetting>
+class PluginSetting final : public ICloneable<PluginSetting>
 {
 public:
   PluginSetting () = default;
@@ -64,9 +61,9 @@ public:
 public:
   void validate () { validate (false); }
 
-  std::string get_document_type () const override { return "PluginSetting"; }
-  int         get_format_major_version () const override { return 1; }
-  int         get_format_minor_version () const override { return 0; }
+  std::string get_document_type () const { return "PluginSetting"; }
+  int         get_format_major_version () const { return 1; }
+  int         get_format_minor_version () const { return 0; }
 
   /**
    * Makes sure the setting is valid in the current run and changes any fields
@@ -79,8 +76,6 @@ public:
   void validate (bool print_result);
 
   void print () const;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
   /**
    * Creates necessary tracks at the end of the tracklist.
@@ -119,6 +114,21 @@ public:
   void activate_finish (bool autoroute_multiout, bool has_stereo_outputs) const;
 
 private:
+  static constexpr auto kDescriptorKey = "descriptor"sv;
+  static constexpr auto kOpenWithCarlaKey = "openWithCarla"sv;
+  static constexpr auto kForceGenericUIKey = "forceGenericUI"sv;
+  static constexpr auto kBridgeModeKey = "bridgeMode"sv;
+  friend void           to_json (nlohmann::json &j, const PluginSetting &p)
+  {
+    j = nlohmann::json{
+      { kDescriptorKey,     p.descr_            },
+      { kOpenWithCarlaKey,  p.open_with_carla_  },
+      { kForceGenericUIKey, p.force_generic_ui_ },
+      { kBridgeModeKey,     p.bridge_mode_      },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, PluginSetting &p);
+
   void copy_fields_from (const PluginSetting &other);
 
 public:
@@ -145,8 +155,7 @@ public:
   int num_instantiations_ = 0;
 };
 
-class PluginSettings
-  final : public zrythm::utils::serialization::ISerializable<PluginSettings>
+class PluginSettings final
 {
 public:
   /**
@@ -178,11 +187,9 @@ public:
       }
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-  int         get_format_major_version () const override { return 7; }
-  int         get_format_minor_version () const override { return 0; }
-  std::string get_document_type () const override { return "PluginSettings"; }
+  int         get_format_major_version () const { return 7; }
+  int         get_format_minor_version () const { return 0; }
+  std::string get_document_type () const { return "PluginSettings"; }
 
   /**
    * Finds a setting for the given plugin descriptor.
@@ -202,6 +209,16 @@ public:
   void set (const PluginSetting &setting, bool serialize);
 
 private:
+  static constexpr auto kSettingsKey = "settings"sv;
+  friend void           to_json (nlohmann::json &j, const PluginSettings &p)
+  {
+    j[kSettingsKey] = p.settings_;
+  }
+  friend void from_json (const nlohmann::json &j, PluginSettings &p)
+  {
+    j.at (kSettingsKey).get_to (p.settings_);
+  }
+
   static fs::path get_file_path ();
 
   /**
@@ -219,5 +236,3 @@ public:
 /**
  * @}
  */
-
-#endif

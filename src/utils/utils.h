@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -25,8 +25,6 @@
 #include "./icloneable.h"
 #include "./initializable_object.h"
 #include "./io.h"
-#include "./iserializable.h"
-#include "./json.h"
 #include "./logger.h"
 #include "./math.h"
 #include "./mem.h"
@@ -43,6 +41,7 @@
 #include "./resampler.h"
 #include "./ring_buffer.h"
 #include "./rt_thread_id.h"
+#include "./serialization.h"
 #include "./string.h"
 #include "./symap.h"
 #include "./variant_helpers.h"

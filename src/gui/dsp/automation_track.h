@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_AUTOMATION_TRACK_H__
@@ -44,8 +44,7 @@ DEFINE_ENUM_FORMATTER (
 class AutomationTrack final
     : public QObject,
       public ICloneable<AutomationTrack>,
-      public ArrangerObjectOwner<AutomationRegion>,
-      public zrythm::utils::serialization::ISerializable<AutomationTrack>
+      public ArrangerObjectOwner<AutomationRegion>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -68,15 +67,6 @@ public:
   using TrackGetter = std::function<TrackPtrVariant ()>;
 
 public:
-  AutomationTrack (const DeserializationDependencyHolder &dh)
-      : AutomationTrack (
-          dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
-          dh.get<TrackGetter> (),
-          dh.get<ControlPort::Uuid> ())
-  {
-  }
-
   /** Creates an automation track for the given Port. */
   AutomationTrack (
     PortRegistry            &port_registry,
@@ -273,7 +263,36 @@ public:
     return "regions";
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kIndexKey = "index";
+  static constexpr std::string_view kPortIdKey = "portId";
+  static constexpr std::string_view kCreatedKey = "created";
+  static constexpr std::string_view kAutomationModeKey = "automationMode";
+  static constexpr std::string_view kRecordModeKey = "recordMode";
+  static constexpr std::string_view kVisibleKey = "visible";
+  static constexpr std::string_view kHeightKey = "height";
+  friend void to_json (nlohmann::json &j, const AutomationTrack &track)
+  {
+    to_json (j, static_cast<const ArrangerObjectOwner &> (track));
+    j[kIndexKey] = track.index_;
+    j[kPortIdKey] = track.port_id_;
+    j[kCreatedKey] = track.created_;
+    j[kAutomationModeKey] = track.automation_mode_;
+    j[kRecordModeKey] = track.record_mode_;
+    j[kVisibleKey] = track.visible_;
+    j[kHeightKey] = track.height_;
+  }
+  friend void from_json (const nlohmann::json &j, AutomationTrack &track)
+  {
+    from_json (j, static_cast<ArrangerObjectOwner &> (track));
+    j.at (kIndexKey).get_to (track.index_);
+    j.at (kPortIdKey).get_to (track.port_id_);
+    j.at (kCreatedKey).get_to (track.created_);
+    j.at (kAutomationModeKey).get_to (track.automation_mode_);
+    j.at (kRecordModeKey).get_to (track.record_mode_);
+    j.at (kVisibleKey).get_to (track.visible_);
+    j.at (kHeightKey).get_to (track.height_);
+  }
 
 public:
   PortRegistry           &port_registry_;

@@ -1,14 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * The master track.
- */
-
-#ifndef __AUDIO_MASTER_TRACK_H__
-#define __AUDIO_MASTER_TRACK_H__
+#pragma once
 
 #include "gui/dsp/group_target_track.h"
 
@@ -24,7 +17,6 @@ class MasterTrack final
     : public QObject,
       public GroupTargetTrack,
       public ICloneable<MasterTrack>,
-      public zrythm::utils::serialization::ISerializable<MasterTrack>,
       public utils::InitializableObject<MasterTrack>
 {
   Q_OBJECT
@@ -50,14 +42,27 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void to_json (nlohmann::json &j, const MasterTrack &project)
+  {
+    to_json (j, static_cast<const Track &> (project));
+    to_json (j, static_cast<const ProcessableTrack &> (project));
+    to_json (j, static_cast<const AutomatableTrack &> (project));
+    to_json (j, static_cast<const ChannelTrack &> (project));
+    to_json (j, static_cast<const GroupTargetTrack &> (project));
+  }
+  friend void from_json (const nlohmann::json &j, MasterTrack &project)
+  {
+    from_json (j, static_cast<Track &> (project));
+    from_json (j, static_cast<ProcessableTrack &> (project));
+    from_json (j, static_cast<AutomatableTrack &> (project));
+    from_json (j, static_cast<ChannelTrack &> (project));
+    from_json (j, static_cast<GroupTargetTrack &> (project));
+  }
+
   bool initialize ();
 };
 
 /**
  * @}
  */
-
-#endif // __AUDIO_MASTER_TRACK_H__

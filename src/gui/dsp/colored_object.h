@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __DSP_COLORED_OBJECT_H__
-#define __DSP_COLORED_OBJECT_H__
+#pragma once
 
 #include "gui/dsp/arranger_object.h"
 #include "utils/color.h"
@@ -53,9 +52,7 @@ public: \
   } \
   Q_SIGNAL void effectiveColorChanged (QColor color);
 
-class ColoredObject
-    : virtual public ArrangerObject,
-      public zrythm::utils::serialization::ISerializable<ColoredObject>
+class ColoredObject : virtual public ArrangerObject
 {
 public:
   // = default deletes it for some reason on gcc
@@ -83,7 +80,19 @@ protected:
     QObject::connect (&self, &Derived::useColorChanged, &self, update_eff_color);
   }
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kColorKey = "color";
+  static constexpr std::string_view kUseColorKey = "useColor";
+  friend void to_json (nlohmann::json &j, const ColoredObject &obj)
+  {
+    j[kColorKey] = obj.color_;
+    j[kUseColorKey] = obj.use_color_;
+  }
+  friend void from_json (const nlohmann::json &j, ColoredObject &obj)
+  {
+    j.at (kColorKey).get_to (obj.color_);
+    j.at (kUseColorKey).get_to (obj.use_color_);
+  }
 
 public:
   /**
@@ -98,11 +107,3 @@ public:
    */
   bool use_color_ = false;
 };
-
-inline bool
-operator== (const ColoredObject &lhs, const ColoredObject &rhs)
-{
-  return lhs.color_ == rhs.color_ && lhs.use_color_ == rhs.use_color_;
-}
-
-#endif // __DSP_COLORED_OBJECT_H__

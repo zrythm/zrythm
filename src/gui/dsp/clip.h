@@ -1,15 +1,14 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_AUDIO_CLIP_H
-#define ZRYTHM_DSP_AUDIO_CLIP_H
+#pragma once
 
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/hash.h"
 #include "utils/icloneable.h"
-#include "utils/iserializable.h"
 #include "utils/monotonic_time_provider.h"
+#include "utils/serialization.h"
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
 
@@ -21,8 +20,7 @@ using namespace zrythm;
  * These should be loaded in the project's sample rate.
  */
 class AudioClip final
-    : public zrythm::utils::serialization::ISerializable<AudioClip>,
-      public ICloneable<AudioClip>,
+    : public ICloneable<AudioClip>,
       public utils::UuidIdentifiableObject<AudioClip>,
       private utils::QElapsedTimeProvider
 {
@@ -229,9 +227,34 @@ public:
    */
   bool enough_time_elapsed_since_last_write () const;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kNameKey = "name"sv;
+  static constexpr auto kFileHashKey = "fileHash"sv;
+  static constexpr auto kBpmKey = "bpm"sv;
+  static constexpr auto kBitDepthKey = "bitDepth"sv;
+  static constexpr auto kUseFlacKey = "useFlac"sv;
+  static constexpr auto kSamplerateKey = "samplerate"sv;
+  friend void           to_json (nlohmann::json &j, const AudioClip &clip)
+  {
+    to_json (j, static_cast<const UuidIdentifiableObject &> (clip));
+    j[kNameKey] = clip.name_;
+    j[kFileHashKey] = clip.file_hash_;
+    j[kBpmKey] = clip.bpm_;
+    j[kBitDepthKey] = clip.bit_depth_;
+    j[kUseFlacKey] = clip.use_flac_;
+    j[kSamplerateKey] = clip.samplerate_;
+  }
+  friend void from_json (const nlohmann::json &j, AudioClip &clip)
+  {
+    from_json (j, static_cast<UuidIdentifiableObject &> (clip));
+    j.at (kNameKey).get_to (clip.name_);
+    j.at (kFileHashKey).get_to (clip.file_hash_);
+    j.at (kBpmKey).get_to (clip.bpm_);
+    j.at (kBitDepthKey).get_to (clip.bit_depth_);
+    j.at (kUseFlacKey).get_to (clip.use_flac_);
+    j.at (kSamplerateKey).get_to (clip.samplerate_);
+  }
+
   /**
    * @brief Initializes members from an audio file.
    *
@@ -311,5 +334,3 @@ DEFINE_UUID_HASH_SPECIALIZATION (AudioClip::Uuid)
 /**
  * @}
  */
-
-#endif

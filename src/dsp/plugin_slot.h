@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
 #define ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
 
 #include "utils/format.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 #include "utils/uuid_identifiable_object.h"
 
 class Track;
@@ -24,7 +24,7 @@ enum class PluginSlotType
   Modulator,
 };
 
-class PluginSlot : public utils::serialization::ISerializable<PluginSlot>
+class PluginSlot
 {
 public:
   using SlotNo = std::uint_fast8_t;
@@ -103,7 +103,7 @@ public:
            || (type_ != PluginSlotType::Instrument && slot_.has_value ());
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE (PluginSlot, type_, slot_)
 
 private:
   PluginSlotType        type_{ PluginSlotType::Invalid };

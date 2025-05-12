@@ -41,7 +41,8 @@ SampleProcessor::load_instrument_if_empty ()
           try
             {
               setting = std::make_unique<PluginSetting> ();
-              setting->deserialize_from_json_string (setting_json.c_str ());
+              nlohmann::json j = nlohmann::json::parse (setting_json.view ());
+              from_json (j, *setting);
               json_read = true;
             }
           catch (const ZrythmException &e)

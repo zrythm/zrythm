@@ -6,9 +6,7 @@
 
 #include "gui/dsp/arranger_object.h"
 
-class MuteableObject
-    : virtual public ArrangerObject,
-      public zrythm::utils::serialization::ISerializable<MuteableObject>
+class MuteableObject : virtual public ArrangerObject
 {
 public:
   // = default deletes it for some reason on gcc
@@ -31,23 +29,24 @@ public:
    */
   void set_muted (bool muted, bool fire_events);
 
-  friend bool operator== (const MuteableObject &lhs, const MuteableObject &rhs);
-
 protected:
   void
   copy_members_from (const MuteableObject &other, ObjectCloneType clone_type);
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kMutedKey = "muted";
+  friend void to_json (nlohmann::json &j, const MuteableObject &object)
+  {
+    j[kMutedKey] = object.muted_;
+  }
+  friend void from_json (const nlohmann::json &j, MuteableObject &object)
+  {
+    j.at (kMutedKey).get_to (object.muted_);
+  }
 
 public:
   /** Whether muted or not. */
   bool muted_ = false;
 };
-
-inline bool
-operator== (const MuteableObject &lhs, const MuteableObject &rhs)
-{
-  return lhs.muted_ == rhs.muted_;
-}
 
 #endif // __DSP_MUTEABLE_OBJECT_H__

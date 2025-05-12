@@ -19,14 +19,6 @@
 
 using namespace zrythm;
 
-AudioRegion::AudioRegion (const DeserializationDependencyHolder &dh)
-    : AudioRegion (
-        dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
-        dh.get<TrackResolver> (),
-        dh.get<AudioClipResolverFunc> ())
-{
-}
-
 AudioRegion::AudioRegion (
   ArrangerObjectRegistry &obj_registry,
   TrackResolver           track_resolver,

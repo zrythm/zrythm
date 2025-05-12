@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CHORD_REGION_H__
-#define __AUDIO_CHORD_REGION_H__
+#pragma once
 
 #include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/chord_object.h"
@@ -18,8 +17,7 @@ class ChordRegion final
     : public QObject,
       public RegionImpl<ChordRegion>,
       public ArrangerObjectOwner<ChordObject>,
-      public ICloneable<ChordRegion>,
-      public zrythm::utils::serialization::ISerializable<ChordRegion>
+      public ICloneable<ChordRegion>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -54,28 +52,30 @@ public:
   void init_after_cloning (const ChordRegion &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  friend void to_json (nlohmann::json &j, const ChordRegion &cr)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (cr));
+    to_json (j, static_cast<const BoundedObject &> (cr));
+    to_json (j, static_cast<const LoopableObject &> (cr));
+    to_json (j, static_cast<const MuteableObject &> (cr));
+    to_json (j, static_cast<const NamedObject &> (cr));
+    to_json (j, static_cast<const ColoredObject &> (cr));
+    to_json (j, static_cast<const Region &> (cr));
+    to_json (j, static_cast<const ArrangerObjectOwner &> (cr));
+  }
+  friend void from_json (const nlohmann::json &j, ChordRegion &cr)
+  {
+    from_json (j, static_cast<ArrangerObject &> (cr));
+    from_json (j, static_cast<BoundedObject &> (cr));
+    from_json (j, static_cast<LoopableObject &> (cr));
+    from_json (j, static_cast<MuteableObject &> (cr));
+    from_json (j, static_cast<NamedObject &> (cr));
+    from_json (j, static_cast<ColoredObject &> (cr));
+    from_json (j, static_cast<Region &> (cr));
+    from_json (j, static_cast<ArrangerObjectOwner &> (cr));
+  }
 };
-
-inline bool
-operator== (const ChordRegion &lhs, const ChordRegion &rhs)
-{
-  return static_cast<const Region &> (lhs) == static_cast<const Region &> (rhs)
-         && static_cast<const TimelineObject &> (lhs)
-              == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NamedObject &> (lhs)
-              == static_cast<const NamedObject &> (rhs)
-         && static_cast<const LoopableObject &> (lhs)
-              == static_cast<const LoopableObject &> (rhs)
-         && static_cast<const ColoredObject &> (lhs)
-              == static_cast<const ColoredObject &> (rhs)
-         && static_cast<const MuteableObject &> (lhs)
-              == static_cast<const MuteableObject &> (rhs)
-         && static_cast<const BoundedObject &> (lhs)
-              == static_cast<const BoundedObject &> (rhs)
-         && static_cast<const ArrangerObject &> (lhs)
-              == static_cast<const ArrangerObject &> (rhs);
-}
 
 DEFINE_OBJECT_FORMATTER (ChordRegion, ChordRegion, [] (const ChordRegion &cr) {
   return fmt::format (
@@ -85,5 +85,3 @@ DEFINE_OBJECT_FORMATTER (ChordRegion, ChordRegion, [] (const ChordRegion &cr) {
 /**
  * @}
  */
-
-#endif

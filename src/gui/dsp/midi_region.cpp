@@ -162,7 +162,7 @@ MidiRegion::start_unended_note (
       .with_end_ticks (end_pos.ticks_)
       .with_pitch (pitch)
       .with_velocity (vel)
-      .build ();
+      .build_in_registry ();
   add_object (mn);
 
   /* add to unended notes */

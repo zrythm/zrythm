@@ -4,7 +4,7 @@
 #ifndef ZRYTHM_COMMON_DSP_POSITION_H
 #define ZRYTHM_COMMON_DSP_POSITION_H
 
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 #include "utils/types.h"
 
 namespace zrythm::dsp
@@ -13,8 +13,7 @@ namespace zrythm::dsp
 struct FramesPerTick
     : type_safe::strong_typedef<FramesPerTick, double>,
       type_safe::strong_typedef_op::equality_comparison<FramesPerTick>,
-      type_safe::strong_typedef_op::relational_comparison<FramesPerTick>,
-      utils::serialization::ISerializable<FramesPerTick>
+      type_safe::strong_typedef_op::relational_comparison<FramesPerTick>
 {
   using FramesPerTickTag = void; // used by the fmt formatter below
   using type_safe::strong_typedef<FramesPerTick, double>::strong_typedef;
@@ -22,21 +21,13 @@ struct FramesPerTick
   explicit FramesPerTick () = default;
 
   static_assert (StrongTypedef<FramesPerTick>);
-
-  DECLARE_DEFINE_FIELDS_METHOD ()
-  {
-    using T = utils::serialization::ISerializable<FramesPerTick>;
-    T::serialize_fields (
-      ctx, T::make_field ("framesPerTick", type_safe::get (*this)));
-  }
 };
 static_assert (std::regular<FramesPerTick>);
 
 struct TicksPerFrame
     : type_safe::strong_typedef<TicksPerFrame, double>,
       type_safe::strong_typedef_op::equality_comparison<TicksPerFrame>,
-      type_safe::strong_typedef_op::relational_comparison<TicksPerFrame>,
-      utils::serialization::ISerializable<TicksPerFrame>
+      type_safe::strong_typedef_op::relational_comparison<TicksPerFrame>
 {
   using TicksPerFrameTag = void; // used by the fmt formatter below
   using type_safe::strong_typedef<TicksPerFrame, double>::strong_typedef;
@@ -44,13 +35,6 @@ struct TicksPerFrame
   explicit TicksPerFrame () = default;
 
   static_assert (StrongTypedef<TicksPerFrame>);
-
-  DECLARE_DEFINE_FIELDS_METHOD ()
-  {
-    using T = utils::serialization::ISerializable<TicksPerFrame>;
-    T::serialize_fields (
-      ctx, T::make_field ("ticksPerFrame", type_safe::get (*this)));
-  }
 };
 static_assert (std::regular<TicksPerFrame>);
 
@@ -79,7 +63,7 @@ to_frames_per_tick (const TicksPerFrame &ticks_per_frame)
  * The class also provides various comparison operators and utility functions
  * for working with positions.
  */
-class Position : public utils::serialization::ISerializable<Position>
+class Position
 {
 public:
   static constexpr int    TICKS_PER_QUARTER_NOTE = 960;
@@ -121,8 +105,6 @@ public:
     ticks_ = 0.0;
     frames_ = 0;
   }
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
   /** Getter */
   signed_frame_t get_total_frames () const { return frames_; }
@@ -489,6 +471,9 @@ public:
   {
     return (lhs <=> rhs) == 0;
   }
+
+private:
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE (Position, ticks_, frames_)
 
 public:
   /** Precise total number of ticks. */

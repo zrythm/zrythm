@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef ZRYTHM_DSP_MUSICAL_SCALE_H
 #define ZRYTHM_DSP_MUSICAL_SCALE_H
 
 #include "dsp/chord_descriptor.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 namespace zrythm::dsp
 {
@@ -16,7 +16,6 @@ namespace zrythm::dsp
  * @see https://pianoscales.org/
  */
 class MusicalScale
-    : public zrythm::utils::serialization::ISerializable<MusicalScale>
 {
 public:
   /**
@@ -168,7 +167,10 @@ public:
    */
   bool contains_note (MusicalNote note) const;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE (MusicalScale, type_, root_key_)
+
+  friend auto
+  operator<=> (const MusicalScale &lhs, const MusicalScale &rhs) = default;
 
 public:
   /** Identification of the scale (e.g. AEOLIAN). */
@@ -177,12 +179,6 @@ public:
   /** Root key of the scale. */
   MusicalNote root_key_ = MusicalNote::A;
 };
-
-inline bool
-operator== (const MusicalScale &lhs, const MusicalScale &rhs)
-{
-  return lhs.type_ == rhs.type_ && lhs.root_key_ == rhs.root_key_;
-}
 
 } // namespace zrythm::dsp
 

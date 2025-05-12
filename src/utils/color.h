@@ -4,14 +4,14 @@
 #ifndef __UTILS_COLOR_H__
 #define __UTILS_COLOR_H__
 
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 #include <QColor>
 
 namespace zrythm::utils
 {
 
-class Color final : public serialization::ISerializable<Color>
+class Color final
 {
 public:
   static constexpr auto DEFAULT_BRIGHTEN_VAL = 0.1f;
@@ -148,7 +148,7 @@ public:
 
   friend bool operator== (const Color &lhs, const Color &rhs);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE (Color, red_, green_, blue_, alpha_)
 
 public:
   float red_ = 0.f;    ///< Red.

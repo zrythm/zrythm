@@ -19,9 +19,7 @@
  * Children are always `ChannelTrack`s since they require a channel to route to
  * a target.
  */
-class GroupTargetTrack
-    : virtual public ChannelTrack,
-      public zrythm::utils::serialization::ISerializable<GroupTargetTrack>
+class GroupTargetTrack : virtual public ChannelTrack
 {
 protected:
   GroupTargetTrack () noexcept { };
@@ -82,9 +80,17 @@ protected:
 
   bool validate_base () const;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kChildrenKey = "children"sv;
+  friend void to_json (nlohmann::json &j, const GroupTargetTrack &track)
+  {
+    j[kChildrenKey] = track.children_;
+  }
+  friend void from_json (const nlohmann::json &j, GroupTargetTrack &track)
+  {
+    j.at (kChildrenKey).get_to (track.children_);
+  }
+
   /**
    * Updates the output of the child channel (where the Channel routes to).
    */

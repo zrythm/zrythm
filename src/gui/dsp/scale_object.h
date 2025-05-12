@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_SCALE_OBJECT_H__
@@ -9,7 +9,7 @@
 #include "gui/dsp/muteable_object.h"
 #include "gui/dsp/timeline_object.h"
 #include "utils/icloneable.h"
-#include "utils/iserializable.h"
+#include "utils/serialization.h"
 
 /**
  * @addtogroup dsp
@@ -23,8 +23,7 @@ class ScaleObject final
     : public QObject,
       public TimelineObject,
       public MuteableObject,
-      public ICloneable<ScaleObject>,
-      public zrythm::utils::serialization::ISerializable<ScaleObject>
+      public ICloneable<ScaleObject>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -61,26 +60,25 @@ public:
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-  friend bool operator== (const ScaleObject &a, const ScaleObject &b);
+private:
+  static constexpr std::string_view kScaleKey = "scale";
+  friend void to_json (nlohmann::json &j, const ScaleObject &so)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (so));
+    to_json (j, static_cast<const MuteableObject &> (so));
+    j[kScaleKey] = so.scale_;
+  }
+  friend void from_json (const nlohmann::json &j, ScaleObject &so)
+  {
+    from_json (j, static_cast<ArrangerObject &> (so));
+    from_json (j, static_cast<MuteableObject &> (so));
+    j.at (kScaleKey).get_to (so.scale_);
+  }
 
 public:
   /** The scale descriptor. */
   MusicalScale scale_;
 };
-
-inline bool
-operator== (const ScaleObject &a, const ScaleObject &b)
-{
-  return static_cast<const TimelineObject &> (a)
-           == static_cast<const TimelineObject &> (b)
-         && static_cast<const MuteableObject &> (a)
-              == static_cast<const MuteableObject &> (b)
-         && static_cast<const ArrangerObject &> (a)
-              == static_cast<const ArrangerObject &> (b)
-         && a.scale_ == b.scale_;
-}
 
 DEFINE_OBJECT_FORMATTER (ScaleObject, ScaleObject, [] (const ScaleObject &so) {
   return fmt::format ("ScaleObject[position: {}]", so.get_position ());

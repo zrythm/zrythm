@@ -46,7 +46,7 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
                       ->get_builder<MidiRegion> ()
                       .with_start_ticks (pos.ticks_)
                       .with_end_ticks (end_pos.ticks_)
-                      .build ();
+                      .build_in_registry ();
                   for (const auto &obj : *this)
                     {
                       auto * r = std::get<MidiRegion *> (obj);

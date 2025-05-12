@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_RECORDABLE_TRACK_H__
-#define __AUDIO_RECORDABLE_TRACK_H__
+#pragma once
 
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/processable_track.h"
@@ -28,9 +27,7 @@ public: \
 /**
  * Abstract class for a track that can be recorded.
  */
-class RecordableTrack
-    : virtual public ProcessableTrack,
-      public zrythm::utils::serialization::ISerializable<RecordableTrack>
+class RecordableTrack : virtual public ProcessableTrack
 {
 protected:
   RecordableTrack (PortRegistry &port_registry, bool new_identity);
@@ -118,7 +115,19 @@ protected:
     return *std::get<ControlPort *> (recording_id_->get_object ());
   }
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr auto kRecordingIdKey = "recordingId"sv;
+  static constexpr auto kRecordSetAutomaticallyKey = "recordSetAutomatically"sv;
+  friend void to_json (nlohmann::json &j, const RecordableTrack &track)
+  {
+    j[kRecordingIdKey] = track.recording_id_;
+    j[kRecordSetAutomaticallyKey] = track.record_set_automatically_;
+  }
+  friend void from_json (const nlohmann::json &j, RecordableTrack &track)
+  {
+    j.at (kRecordingIdKey).get_to (track.recording_id_);
+    j.at (kRecordSetAutomaticallyKey).get_to (track.record_set_automatically_);
+  }
 
 public:
   /** Recording or not. */
@@ -168,5 +177,3 @@ public:
 private:
   PortRegistry &port_registry_;
 };
-
-#endif // __AUDIO_RECORDABLE_TRACK_H__

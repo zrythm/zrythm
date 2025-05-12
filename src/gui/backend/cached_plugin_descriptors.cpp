@@ -27,20 +27,12 @@ CachedPluginDescriptors::get_file_path ()
 }
 
 void
-CachedPluginDescriptors::define_fields (const utils::serialization::Context &ctx)
-{
-  using T = ISerializable<CachedPluginDescriptors>;
-  T::serialize_fields (
-    ctx, T::make_field ("descriptors", descriptors_),
-    T::make_field ("blacklistedSha1s", blacklisted_sha1s_));
-}
-
-void
 CachedPluginDescriptors::serialize_to_file ()
 {
   z_info ("Serializing cached plugin descriptors...");
 
-  auto json_str = serialize_to_json_string ();
+  nlohmann::json json = *this;
+  auto           json_str = json.dump ();
 
   auto path = get_file_path ();
   z_return_if_fail (
@@ -48,7 +40,8 @@ CachedPluginDescriptors::serialize_to_file ()
   z_debug ("Writing cached plugin descriptors to {}...", path);
   try
     {
-      utils::io::set_file_contents (path, json_str.to_utf8_string ());
+      utils::io::set_file_contents (
+        path, utils::Utf8String::from_utf8_encoded_string (json_str));
     }
   catch (const ZrythmException &e)
     {
@@ -83,7 +76,9 @@ CachedPluginDescriptors::read_or_new ()
 
   try
     {
-      ret->deserialize_from_json_string (json.c_str ());
+      auto nlohmann_json = nlohmann::json::parse (json);
+      ret = std::make_unique<CachedPluginDescriptors> ();
+      from_json (nlohmann_json, *ret);
     }
   catch (const ZrythmException &e)
     {
@@ -232,4 +227,16 @@ CachedPluginDescriptors::clear ()
   descriptors_.clear ();
   blacklisted_sha1s_.clear ();
   delete_file ();
+}
+
+void
+from_json (const nlohmann::json &j, CachedPluginDescriptors &p)
+{
+  [[maybe_unused]] const auto major_ver =
+    j.at (utils::serialization::kDocumentTypeKey).get<int> ();
+  [[maybe_unused]] const auto minor_ver =
+    j.at (utils::serialization::kFormatMinorKey).get<int> ();
+  j.at (CachedPluginDescriptors::kDescriptorsKey).get_to (p.descriptors_);
+  j.at (CachedPluginDescriptors::kBlacklistedSha1sKey)
+    .get_to (p.blacklisted_sha1s_);
 }

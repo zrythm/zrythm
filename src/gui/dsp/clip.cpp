@@ -402,15 +402,3 @@ AudioClip::edit_in_ext_program ()
 #endif
   return nullptr;
 }
-
-void
-AudioClip::define_fields (const utils::serialization::Context &ctx)
-{
-  using T = utils::serialization::ISerializable<AudioClip>;
-  T::call_all_base_define_fields<UuidIdentifiableObject> (ctx);
-  T::serialize_fields (
-    ctx, T::make_field ("name", name_), T::make_field ("fileHash", file_hash_),
-    T::make_field ("bpm", bpm_), T::make_field ("bitDepth", bit_depth_),
-    T::make_field ("useFlac", use_flac_),
-    T::make_field ("samplerate", samplerate_));
-}

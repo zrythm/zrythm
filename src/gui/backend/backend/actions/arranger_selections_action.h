@@ -31,8 +31,7 @@ namespace zrythm::gui::actions
 class ArrangerSelectionsAction
     : public QObject,
       public UndoableAction,
-      public ICloneable<ArrangerSelectionsAction>,
-      public zrythm::utils::serialization::ISerializable<ArrangerSelectionsAction>
+      public ICloneable<ArrangerSelectionsAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -152,8 +151,6 @@ public:
   bool can_contain_clip () const override { return true; }
 
   [[nodiscard]] QString to_string () const final;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
 
 protected:
   /**

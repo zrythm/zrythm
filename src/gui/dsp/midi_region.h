@@ -39,8 +39,7 @@ class MidiRegion final
       public LaneOwnedObject,
       public RegionImpl<MidiRegion>,
       public ArrangerObjectOwner<MidiNote>,
-      public ICloneable<MidiRegion>,
-      public zrythm::utils::serialization::ISerializable<MidiRegion>
+      public ICloneable<MidiRegion>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -223,7 +222,29 @@ public:
     return "midiNotes";
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  friend void to_json (nlohmann::json &j, const MidiRegion &region)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (region));
+    to_json (j, static_cast<const BoundedObject &> (region));
+    to_json (j, static_cast<const LoopableObject &> (region));
+    to_json (j, static_cast<const MuteableObject &> (region));
+    to_json (j, static_cast<const NamedObject &> (region));
+    to_json (j, static_cast<const ColoredObject &> (region));
+    to_json (j, static_cast<const Region &> (region));
+    to_json (j, static_cast<const ArrangerObjectOwner &> (region));
+  }
+  friend void from_json (const nlohmann::json &j, MidiRegion &region)
+  {
+    from_json (j, static_cast<ArrangerObject &> (region));
+    from_json (j, static_cast<BoundedObject &> (region));
+    from_json (j, static_cast<LoopableObject &> (region));
+    from_json (j, static_cast<MuteableObject &> (region));
+    from_json (j, static_cast<NamedObject &> (region));
+    from_json (j, static_cast<ColoredObject &> (region));
+    from_json (j, static_cast<Region &> (region));
+    from_json (j, static_cast<ArrangerObjectOwner &> (region));
+  }
 
 public:
   /**
@@ -237,26 +258,6 @@ public:
    */
   std::vector<MidiNote *> unended_notes_;
 };
-
-inline bool
-operator== (const MidiRegion &lhs, const MidiRegion &rhs)
-{
-  return static_cast<const Region &> (lhs) == static_cast<const Region &> (rhs)
-         && static_cast<const TimelineObject &> (lhs)
-              == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NamedObject &> (lhs)
-              == static_cast<const NamedObject &> (rhs)
-         && static_cast<const LoopableObject &> (lhs)
-              == static_cast<const LoopableObject &> (rhs)
-         && static_cast<const ColoredObject &> (lhs)
-              == static_cast<const ColoredObject &> (rhs)
-         && static_cast<const MuteableObject &> (lhs)
-              == static_cast<const MuteableObject &> (rhs)
-         && static_cast<const BoundedObject &> (lhs)
-              == static_cast<const BoundedObject &> (rhs)
-         && static_cast<const ArrangerObject &> (lhs)
-              == static_cast<const ArrangerObject &> (rhs);
-}
 
 DEFINE_OBJECT_FORMATTER (MidiRegion, MidiRegion, [] (const MidiRegion &mr) {
   return fmt::format (

@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_MIDI_MAPPING_H__
-#define __AUDIO_MIDI_MAPPING_H__
+#pragma once
 
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/port.h"
@@ -21,10 +20,7 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
 /**
  * A mapping from a MIDI CC value to a destination ControlPort.
  */
-class MidiMapping final
-    : public QObject,
-      public ICloneable<MidiMapping>,
-      public zrythm::utils::serialization::ISerializable<MidiMapping>
+class MidiMapping final : public QObject, public ICloneable<MidiMapping>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -42,7 +38,27 @@ public:
 
   void apply (std::array<midi_byte_t, 3> buf);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kKeyKey = "key"sv;
+  static constexpr auto kDevicePortKey = "devicePort"sv;
+  static constexpr auto kDestIdKey = "destId"sv;
+  static constexpr auto kEnabledKey = "enabled"sv;
+  friend void           to_json (nlohmann::json &j, const MidiMapping &mapping)
+  {
+    j = nlohmann::json{
+      { kKeyKey,        mapping.key_             },
+      { kDevicePortKey, mapping.device_port_     },
+      { kDestIdKey,     mapping.dest_id_         },
+      { kEnabledKey,    mapping.enabled_.load () },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, MidiMapping &mapping)
+  {
+    j.at (kKeyKey).get_to (mapping.key_);
+    j.at (kDevicePortKey).get_to (mapping.device_port_);
+    j.at (kDestIdKey).get_to (mapping.dest_id_);
+    mapping.enabled_.store (j.at (kEnabledKey).get<bool> ());
+  }
 
 public:
   /** Raw MIDI signal. */
@@ -69,9 +85,7 @@ public:
 /**
  * All MIDI mappings in Zrythm.
  */
-class MidiMappings final
-    : public ICloneable<MidiMappings>,
-      public zrythm::utils::serialization::ISerializable<MidiMappings>
+class MidiMappings final : public ICloneable<MidiMappings>
 {
 public:
   void init_loaded ();
@@ -151,7 +165,13 @@ public:
     clone_unique_ptr_container (mappings_, other.mappings_);
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kMappingsKey = "mappings"sv;
+  friend void to_json (nlohmann::json &j, const MidiMappings &mappings)
+  {
+    j[kMappingsKey] = mappings.mappings_;
+  }
+  friend void from_json (const nlohmann::json &j, MidiMappings &mappings);
 
 public:
   std::vector<std::unique_ptr<MidiMapping>> mappings_;
@@ -160,5 +180,3 @@ public:
 /**
  * @}
  */
-
-#endif

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/plugin_slot.h"
@@ -71,8 +71,8 @@ PortIdentifier::get_hash () const
       hash = hash ^ qHash (label_);
     }
 
-  if (!uri_.empty ())
-    hash = hash ^ qHash (uri_);
+  if (uri_)
+    hash = hash ^ qHash (*uri_);
   hash = hash ^ qHash (owner_type_);
   hash = hash ^ qHash (type_);
   hash = hash ^ qHash (flow_);
@@ -81,31 +81,15 @@ PortIdentifier::get_hash () const
   hash = hash ^ qHash (unit_);
   if (plugin_id_.has_value ())
     hash = hash ^ qHash (type_safe::get (plugin_id_.value ()));
-  if (!port_group_.empty ())
-    hash = hash ^ qHash (port_group_);
-  if (!ext_port_id_.empty ())
-    hash = hash ^ qHash (ext_port_id_);
+  if (port_group_)
+    hash = hash ^ qHash (*port_group_);
+  if (ext_port_id_)
+    hash = hash ^ qHash (*ext_port_id_);
   if (track_id_.has_value ())
     hash = hash ^ qHash (type_safe::get (track_id_.value ()));
   hash = hash ^ qHash (port_index_);
   // z_debug ("hash for {}: {}", sym_, hash);
   return hash;
-}
-
-void
-PortIdentifier::define_fields (const utils::serialization::Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("label", label_, true), make_field ("symbol", sym_, true),
-    make_field ("uri", uri_, true), make_field ("comment", comment_, true),
-    make_field ("ownerType", owner_type_), make_field ("type", type_),
-    make_field ("flow", flow_), make_field ("unit", unit_),
-    make_field ("flags", flags_), make_field ("flags2", flags2_),
-    make_field ("trackId", track_id_), make_field ("pluginId", plugin_id_),
-    make_field ("portGroup", port_group_, true),
-    make_field ("externalPortId", ext_port_id_, true),
-    make_field ("portIndex", port_index_),
-    make_field ("midiChannel", midi_channel_));
 }
 
 bool

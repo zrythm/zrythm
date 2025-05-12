@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_AUDIO_TRACK_H__
-#define __AUDIO_AUDIO_TRACK_H__
+#pragma once
 
 #include "dsp/stretcher.h"
 #include "gui/dsp/audio_region.h"
@@ -22,7 +21,6 @@ class AudioTrack final
       public LanedTrackImpl<AudioLane>,
       public RecordableTrack,
       public ICloneable<AudioTrack>,
-      public zrythm::utils::serialization::ISerializable<AudioTrack>,
       public utils::InitializableObject<AudioTrack>
 {
   Q_OBJECT
@@ -34,17 +32,6 @@ class AudioTrack final
   DEFINE_RECORDABLE_TRACK_QML_PROPERTIES (AudioTrack)
 
   friend class InitializableObject;
-
-public:
-  AudioTrack (const DeserializationDependencyHolder &dh)
-      : AudioTrack (
-          dh.get<std::reference_wrapper<TrackRegistry>> ().get (),
-          dh.get<std::reference_wrapper<PluginRegistry>> ().get (),
-          dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
-          false)
-  {
-  }
 
 private:
   AudioTrack (
@@ -96,9 +83,26 @@ public:
     unsigned_frame_t    out_frame_offset,
     unsigned_frame_t    frames_to_process);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  friend void to_json (nlohmann::json &j, const AudioTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const ProcessableTrack &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    to_json (j, static_cast<const RecordableTrack &> (track));
+    to_json (j, static_cast<const ChannelTrack &> (track));
+    to_json (j, static_cast<const LanedTrackImpl &> (track));
+  }
+  friend void from_json (const nlohmann::json &j, AudioTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+    from_json (j, static_cast<ProcessableTrack &> (track));
+    from_json (j, static_cast<AutomatableTrack &> (track));
+    from_json (j, static_cast<RecordableTrack &> (track));
+    from_json (j, static_cast<ChannelTrack &> (track));
+    from_json (j, static_cast<LanedTrackImpl &> (track));
+  }
+
   bool initialize ();
 
   void set_playback_caches () override;
@@ -116,5 +120,3 @@ private:
    */
   unsigned int samplerate_ = 0;
 };
-
-#endif // __AUDIO_TRACK_H__

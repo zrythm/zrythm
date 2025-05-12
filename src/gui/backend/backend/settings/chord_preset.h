@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __SETTINGS_CHORD_PRESET_H__
@@ -23,10 +23,7 @@ class ChordPresetPack;
 /**
  * A preset of chord descriptors.
  */
-class ChordPreset final
-    : public QObject,
-      public ICloneable<ChordPreset>,
-      public zrythm::utils::serialization::ISerializable<ChordPreset>
+class ChordPreset final : public QObject, public ICloneable<ChordPreset>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -56,7 +53,19 @@ public:
   void init_after_cloning (const ChordPreset &other, ObjectCloneType clone_type)
     override;
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kNameKey = "name";
+  static constexpr std::string_view kDescriptorsKey = "descriptors";
+  friend void to_json (nlohmann::json &j, const ChordPreset &preset)
+  {
+    j[kNameKey] = preset.name_;
+    j[kDescriptorsKey] = preset.descr_;
+  }
+  friend void from_json (const nlohmann::json &j, ChordPreset &preset)
+  {
+    j.at (kNameKey).get_to (preset.name_);
+    j.at (kDescriptorsKey).get_to (preset.descr_);
+  }
 
 public:
   /** Preset name. */

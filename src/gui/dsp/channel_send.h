@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CHANNEL_SEND_H__
-#define __AUDIO_CHANNEL_SEND_H__
+#pragma once
 
 #include "dsp/plugin_slot.h"
 #include "gui/dsp/audio_port.h"
@@ -74,7 +73,6 @@ struct ChannelSendTarget
 class ChannelSend final
     : public ICloneable<ChannelSend>,
       public dsp::IProcessable,
-      public utils::serialization::ISerializable<ChannelSend>,
       public IPortOwner
 {
 public:
@@ -85,7 +83,7 @@ public:
   };
 
 public:
-  ChannelSend (const DeserializationDependencyHolder &dh);
+  // FIXME confusing constructors - maybe use a builder
 
   /**
    * To be used when creating a new (identity) ChannelSend.
@@ -96,6 +94,17 @@ public:
     PortRegistry  &port_registry,
     int            slot)
       : ChannelSend (track_registry, port_registry, track, slot, true)
+  {
+  }
+
+  /**
+   * To be used when deserializing.
+   */
+  ChannelSend (
+    ChannelTrack  &track,
+    TrackRegistry &track_registry,
+    PortRegistry  &port_registry)
+      : ChannelSend (track_registry, port_registry, track, std::nullopt, false)
   {
   }
 
@@ -285,9 +294,49 @@ public:
 
   bool validate ();
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kSlotKey = "slot"sv;
+  static constexpr auto kAmountKey = "amount"sv;
+  static constexpr auto kEnabledKey = "enabled"sv;
+  static constexpr auto kIsSidechainKey = "isSidechain"sv;
+  static constexpr auto kMidiInKey = "midiIn"sv;
+  static constexpr auto kStereoInLKey = "stereoInL"sv;
+  static constexpr auto kStereoInRKey = "stereoInR"sv;
+  static constexpr auto kMidiOutKey = "midiOut"sv;
+  static constexpr auto kStereoOutLKey = "stereoOutL"sv;
+  static constexpr auto kStereoOutRKey = "stereoOutR"sv;
+  static constexpr auto kTrackIdKey = "trackId"sv;
+  friend void           to_json (nlohmann::json &j, const ChannelSend &p)
+  {
+    j = nlohmann::json{
+      { kSlotKey,        p.slot_                },
+      { kAmountKey,      p.amount_id_           },
+      { kEnabledKey,     p.enabled_id_          },
+      { kIsSidechainKey, p.is_sidechain_        },
+      { kMidiInKey,      p.midi_in_id_          },
+      { kStereoInLKey,   p.stereo_in_left_id_   },
+      { kStereoInRKey,   p.stereo_in_right_id_  },
+      { kMidiOutKey,     p.midi_out_id_         },
+      { kStereoOutLKey,  p.stereo_out_left_id_  },
+      { kStereoOutRKey,  p.stereo_out_right_id_ },
+      { kTrackIdKey,     p.track_id_            },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, ChannelSend &p)
+  {
+    j.at (kSlotKey).get_to (p.slot_);
+    j.at (kAmountKey).get_to (p.amount_id_);
+    j.at (kEnabledKey).get_to (p.enabled_id_);
+    j.at (kIsSidechainKey).get_to (p.is_sidechain_);
+    j.at (kMidiInKey).get_to (p.midi_in_id_);
+    j.at (kStereoInLKey).get_to (p.stereo_in_left_id_);
+    j.at (kStereoInRKey).get_to (p.stereo_in_right_id_);
+    j.at (kMidiOutKey).get_to (p.midi_out_id_);
+    j.at (kStereoOutLKey).get_to (p.stereo_out_left_id_);
+    j.at (kStereoOutRKey).get_to (p.stereo_out_right_id_);
+    j.at (kTrackIdKey).get_to (p.track_id_);
+  }
+
   PortType get_signal_type () const;
 
   void disconnect_midi ();
@@ -371,5 +420,3 @@ public:
 /**
  * @}
  */
-
-#endif

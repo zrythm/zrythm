@@ -721,7 +721,7 @@ Plugin::get_port_in_group (const utils::Utf8String &port_group, bool left) const
 Port *
 Plugin::get_port_in_same_group (const Port &port)
 {
-  if (port.id_->port_group_.empty ())
+  if (!port.id_->port_group_)
     {
       z_warning ("port {} has no port group", port.get_label ());
       return nullptr;
@@ -1924,4 +1924,18 @@ Plugin::get_port_by_symbol (const utils::Utf8String &sym)
 
   z_warning ("failed to find port with symbol {}", sym);
   return std::nullopt;
+}
+
+struct PluginRegistryBuilder
+{
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    return std::make_unique<T> ();
+  }
+};
+
+void
+from_json (const nlohmann::json &j, PluginRegistry &registry)
+{
+  from_json_with_builder (j, registry, PluginRegistryBuilder{});
 }

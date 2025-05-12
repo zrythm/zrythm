@@ -1133,10 +1133,8 @@ AudioEngine::update_position_info (
   beat_start = bar_start;
   beat_start.add_beats (
     pos_nfo.beat_ - 1, transport_->ticks_per_beat_, frames_per_tick_);
-  pos_nfo.tick_within_beat_ =
-    static_cast<double> (playhead.ticks_ - beat_start.ticks_);
-  pos_nfo.tick_within_bar_ =
-    static_cast<double> (playhead.ticks_ - bar_start.ticks_);
+  pos_nfo.tick_within_beat_ = playhead.ticks_ - beat_start.ticks_;
+  pos_nfo.tick_within_bar_ = playhead.ticks_ - bar_start.ticks_;
   pos_nfo.playhead_ticks_ = playhead.ticks_;
   pos_nfo.ninetysixth_notes_ = static_cast<int32_t> (std::floor (
     playhead.ticks_ / dsp::Position::TICKS_PER_NINETYSIXTH_NOTE_DBL));
@@ -1808,4 +1806,27 @@ AudioEngine::get_active_instance ()
       return prj->audio_engine_.get ();
     }
   return nullptr;
+}
+
+void
+from_json (const nlohmann::json &j, AudioEngine &engine)
+{
+  j.at (AudioEngine::kTransportTypeKey).get_to (engine.transport_type_);
+  j.at (AudioEngine::kSampleRateKey).get_to (engine.sample_rate_);
+  j.at (AudioEngine::kFramesPerTickKey).get_to (engine.frames_per_tick_);
+  j.at (AudioEngine::kMonitorOutLKey).get_to (engine.monitor_out_left_);
+  j.at (AudioEngine::kMonitorOutRKey).get_to (engine.monitor_out_right_);
+  j.at (AudioEngine::kMidiEditorManualPressKey)
+    .get_to (engine.midi_editor_manual_press_);
+  j.at (AudioEngine::kMidiInKey).get_to (engine.midi_in_);
+  engine.pool_ = std::make_unique<AudioPool> (
+    [&engine] (bool backup) {
+      return engine.project_->get_path (ProjectPath::POOL, backup);
+    },
+    [&engine] () { return engine.sample_rate_; });
+  j.at (AudioEngine::kPoolKey).get_to (*engine.pool_);
+  j.at (AudioEngine::kControlRoomKey).get_to (engine.control_room_);
+  j.at (AudioEngine::kSampleProcessorKey).get_to (engine.sample_processor_);
+  j.at (AudioEngine::kHwInProcessorKey).get_to (engine.hw_in_processor_);
+  j.at (AudioEngine::kHwOutProcessorKey).get_to (engine.hw_out_processor_);
 }

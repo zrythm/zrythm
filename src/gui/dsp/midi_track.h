@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_MIDI_TRACK_H__
-#define __AUDIO_MIDI_TRACK_H__
+#pragma once
 
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/channel_track.h"
@@ -20,7 +19,6 @@ class MidiTrack final
       public PianoRollTrack,
       public ChannelTrack,
       public ICloneable<MidiTrack>,
-      public zrythm::utils::serialization::ISerializable<MidiTrack>,
       public utils::InitializableObject<MidiTrack>
 {
   Q_OBJECT
@@ -49,13 +47,30 @@ public:
     override;
 
 private:
-  bool initialize ();
+  friend void to_json (nlohmann::json &j, const MidiTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const ProcessableTrack &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    to_json (j, static_cast<const RecordableTrack &> (track));
+    to_json (j, static_cast<const PianoRollTrack &> (track));
+    to_json (j, static_cast<const ChannelTrack &> (track));
+    to_json (j, static_cast<const LanedTrackImpl &> (track));
+  }
+  friend void from_json (const nlohmann::json &j, MidiTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+    from_json (j, static_cast<ProcessableTrack &> (track));
+    from_json (j, static_cast<AutomatableTrack &> (track));
+    from_json (j, static_cast<RecordableTrack &> (track));
+    from_json (j, static_cast<PianoRollTrack &> (track));
+    from_json (j, static_cast<ChannelTrack &> (track));
+    from_json (j, static_cast<LanedTrackImpl &> (track));
+  }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  bool initialize ();
 };
 
 /**
  * @}
  */
-
-#endif // __AUDIO_MIDI_TRACK_H__

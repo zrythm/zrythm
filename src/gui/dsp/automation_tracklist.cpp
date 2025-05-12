@@ -18,15 +18,6 @@
 #include "utils/views.h"
 
 AutomationTracklist::AutomationTracklist (
-  const DeserializationDependencyHolder &dh)
-    : AutomationTracklist (
-        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
-        dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
-        dh.get<std::reference_wrapper<AutomatableTrack>> ().get ())
-{
-}
-
-AutomationTracklist::AutomationTracklist (
   PortRegistry           &port_registry,
   ArrangerObjectRegistry &obj_registry,
   AutomatableTrack       &track,
@@ -637,4 +628,18 @@ AutomationTracklist::print_regions () const
     }
 
   z_info (str);
+}
+
+void
+from_json (const nlohmann::json &j, AutomationTracklist &ats)
+{
+  for (const auto &at_json : j.at (AutomationTracklist::kAutomationTracksKey))
+    {
+      auto   port_id = at_json.at ("portId").get<ControlPort::Uuid> ();
+      auto * at = new AutomationTrack (
+        ats.port_registry_, ats.object_registry_,
+        [&ats] () { return convert_to_variant<TrackPtrVariant> (&ats.track_); },
+        port_id);
+      ats.ats_.push_back (at);
+    }
 }

@@ -37,9 +37,7 @@ public: \
  * Derived classes that require name validation must pass a validator callable
  * to the constructor.
  */
-class NamedObject
-    : virtual public ArrangerObject,
-      public zrythm::utils::serialization::ISerializable<NamedObject>
+class NamedObject : virtual public ArrangerObject
 {
 public:
   using NameValidator = std::function<bool (const utils::Utf8String &)>;
@@ -119,11 +117,6 @@ public:
 
   utils::Utf8String gen_human_friendly_name () const final { return name_; }
 
-  friend bool operator== (const NamedObject &lhs, const NamedObject &rhs)
-  {
-    return lhs.name_ == rhs.name_;
-  }
-
 protected:
   void copy_members_from (const NamedObject &other, ObjectCloneType clone_type)
   {
@@ -131,7 +124,17 @@ protected:
     escaped_name_ = other.escaped_name_;
   }
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kNameKey = "name";
+  friend void to_json (nlohmann::json &j, const NamedObject &named_object)
+  {
+    j[kNameKey] = named_object.name_;
+  }
+  friend void from_json (const nlohmann::json &j, NamedObject &named_object)
+  {
+    j.at (kNameKey).get_to (named_object.name_);
+    named_object.gen_escaped_name ();
+  }
 
 protected:
   /** Name to be shown on the widget. */

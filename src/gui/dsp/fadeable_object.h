@@ -12,9 +12,7 @@ using namespace zrythm;
 
 #define DEFINE_FADEABLE_OBJECT_QML_PROPERTIES(ClassType)
 
-class FadeableObject
-    : virtual public BoundedObject,
-      public zrythm::utils::serialization::ISerializable<FadeableObject>
+class FadeableObject : virtual public BoundedObject
 {
 public:
   // = default deletes it for some reason on gcc
@@ -50,7 +48,25 @@ protected:
   bool
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
+private:
+  static constexpr std::string_view kFadeInPosKey = "fadeInPos";
+  static constexpr std::string_view kFadeOutPosKey = "fadeOutPos";
+  static constexpr std::string_view kFadeInOptsKey = "fadeInOpts";
+  static constexpr std::string_view kFadeOutOptsKey = "fadeOutOpts";
+  friend auto to_json (nlohmann::json &j, const FadeableObject &object)
+  {
+    j[kFadeInPosKey] = object.fade_in_pos_;
+    j[kFadeOutPosKey] = object.fade_out_pos_;
+    j[kFadeInOptsKey] = object.fade_in_opts_;
+    j[kFadeOutOptsKey] = object.fade_out_opts_;
+  }
+  friend auto from_json (const nlohmann::json &j, FadeableObject &object)
+  {
+    j.at (kFadeInPosKey).get_to (object.fade_in_pos_);
+    j.at (kFadeOutPosKey).get_to (object.fade_out_pos_);
+    j.at (kFadeInOptsKey).get_to (object.fade_in_opts_);
+    j.at (kFadeOutOptsKey).get_to (object.fade_out_opts_);
+  }
 
 public:
   /**

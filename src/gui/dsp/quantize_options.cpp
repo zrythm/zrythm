@@ -48,10 +48,10 @@ QuantizeOptions::init (NoteLength note_length)
   q_points_.clear ();
   note_type_ = NoteType::Normal;
   amount_ = 100.f;
-  adj_start_ = true;
-  adj_end_ = false;
+  adjust_start_ = true;
+  adjust_end_ = false;
   swing_ = 0.f;
-  rand_ticks_ = 0.0;
+  randomization_ticks_ = 0.0;
 }
 
 float
@@ -69,7 +69,7 @@ QuantizeOptions::get_amount () const
 float
 QuantizeOptions::get_randomization () const
 {
-  return (float) rand_ticks_;
+  return (float) randomization_ticks_;
 }
 
 void
@@ -87,7 +87,7 @@ QuantizeOptions::set_amount (float amount)
 void
 QuantizeOptions::set_randomization (float randomization)
 {
-  rand_ticks_ = (double) randomization;
+  randomization_ticks_ = (double) randomization;
 }
 
 utils::Utf8String
@@ -128,8 +128,8 @@ QuantizeOptions::quantize_position (const Position &pos)
   auto next_point = get_next_point (pos);
   assert (prev_point && next_point);
 
-  const double upper = rand_ticks_;
-  const double lower = -rand_ticks_;
+  const double upper = randomization_ticks_;
+  const double lower = -randomization_ticks_;
   auto         rand = PCGRand::getInstance ();
   double       rand_double = (double) rand->u32 ();
   double       rand_ticks = fmod (rand_double, (upper - lower + 1.0)) + lower;

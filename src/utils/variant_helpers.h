@@ -141,42 +141,6 @@ convert_to_variant (const Base * base_ptr) -> Variant
 }
 
 /**
- * @brief Converts a variant that includes derived pointers to a base pointer.
- *
- * This function takes a pointer variant and attempts to convert it to the
- * specified base pointer type. The function uses std::visit to iterate
- * through the variant types and return the first successful conversion.
- *
- * @tparam BaseT The base pointer type to convert to.
- * @tparam PtrVariantT The variant pointer type to convert from.
- * @param variant The variant pointer to convert.
- * @return The converted base pointer.
- * @throw std::runtime_error if no conversion is possible.
- */
-template <typename BaseT, typename PtrVariantT>
-static BaseT *
-get_ptr_variant_as_base_ptr (PtrVariantT &&variant)
-  requires (!IsRawPointer<BaseT>)
-           && VariantOfPointers<std::remove_reference_t<PtrVariantT>>
-{
-  return std::visit (
-    [] (auto &&obj) -> BaseT * {
-      using CurT = base_type<decltype (obj)>;
-      static_assert (CompleteType<CurT>);
-      static_assert (CompleteType<BaseT>);
-      if constexpr (std::derived_from<CurT, BaseT>)
-        {
-          return obj;
-        }
-      else
-        {
-          throw std::runtime_error ("Invalid variant type");
-        }
-    },
-    std::forward<PtrVariantT> (variant));
-}
-
-/**
  * @brief Overload pattern.
  *
  * Usage: `auto result = std::visit (overload {

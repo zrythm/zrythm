@@ -675,20 +675,16 @@ add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 ##############################################################
 
 FetchContent_Declare(
-  yyjson
-  GIT_REPOSITORY https://github.com/ibireme/yyjson.git
-  # 0.10.0
-  GIT_TAG 9ddba001a4ea88e93b46932e5c5b87b222e19a5f
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  # 3.12.0 + some commits later
+  GIT_TAG 230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48
   GIT_SHALLOW TRUE
-  FIND_PACKAGE_ARGS NAMES yyjson
+  FIND_PACKAGE_ARGS NAMES nlohmann_json 3.12.1 REQUIRED
 )
-FetchContent_MakeAvailable(yyjson)
-if(NOT TARGET yyjson::yyjson)
-  add_library(yyjson::yyjson ALIAS yyjson)
-endif()
-# yyjson CMakeLists.txt sets these... override them
-set_property(TARGET yyjson PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_DOCUMENTATION_COMMENTS "NO")
-set_property(TARGET yyjson PROPERTY XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH[variant=Debug] "NO")
+set(JSON_ImplicitConversions OFF)
+set(JSON_SystemInclude ON)
+FetchContent_MakeAvailable(nlohmann_json)
 
 add_subdirectory(ext)
 
@@ -1030,7 +1026,7 @@ list(APPEND zrythm_link_libs
   ${CMAKE_DL_LIBS}
   zrythm::fftw3_libs
   xxHash::xxhash
-  yyjson::yyjson
+  nlohmann_json::nlohmann_json
   magic_enum::magic_enum
   zrythm::juce_libs
   backward_cpp::backward_cpp

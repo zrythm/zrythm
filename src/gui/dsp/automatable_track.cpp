@@ -11,11 +11,6 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
-AutomatableTrack::AutomatableTrack (const DeserializationDependencyHolder &dh)
-    : AutomatableTrack (dh.get<std::reference_wrapper<PortRegistry>> ().get (), false)
-{
-}
-
 AutomatableTrack::AutomatableTrack (
   PortRegistry &port_registry,
   bool          new_identity)

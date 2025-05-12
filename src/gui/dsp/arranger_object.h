@@ -59,14 +59,6 @@ public: \
 
 #define DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS(ClassType) \
 public: \
-  ClassType (const DeserializationDependencyHolder &dh) \
-      : ClassType ( \
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (), \
-          dh.get<TrackResolver> ()) \
-  { \
-  } \
-\
-public: \
   ClassType ( \
     ArrangerObjectRegistry &obj_registry, TrackResolver track_resolver, \
     QObject * parent = nullptr);
@@ -79,9 +71,7 @@ public: \
  * It provides common functionality and properties shared by all these
  * objects.
  */
-class ArrangerObject
-    : public zrythm::utils::serialization::ISerializable<ArrangerObject>,
-      public utils::UuidIdentifiableObject<ArrangerObject>
+class ArrangerObject : public utils::UuidIdentifiableObject<ArrangerObject>
 {
   Z_DISABLE_COPY_MOVE (ArrangerObject)
 
@@ -368,8 +358,6 @@ protected:
   void
   copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);
 
-  DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
   /**
    * @brief To be called by @ref validate() implementations.
    */
@@ -378,6 +366,23 @@ protected:
 
 private:
   dsp::Position * get_position_ptr (PositionType type);
+
+  friend void to_json (nlohmann::json &j, const ArrangerObject &arranger_object)
+  {
+    to_json (j, static_cast<const UuidIdentifiableObject &> (arranger_object));
+    j["type"] = arranger_object.type_;
+    j["flags"] = arranger_object.flags_;
+    j["trackId"] = arranger_object.track_id_;
+    j["pos"] = arranger_object.pos_;
+  }
+  friend void
+  from_json (const nlohmann::json &j, ArrangerObject &arranger_object)
+  {
+    j.at ("type").get_to (arranger_object.type_);
+    j.at ("flags").get_to (arranger_object.flags_);
+    j.at ("trackId").get_to (arranger_object.track_id_);
+    j.at ("pos").get_to (*arranger_object.pos_);
+  }
 
 protected:
   TrackResolver track_resolver_;

@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_MODULATOR_MACRO_PROCESSOR_H__
-#define __AUDIO_MODULATOR_MACRO_PROCESSOR_H__
+#pragma once
 
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
@@ -26,11 +25,9 @@ class ModulatorTrack;
 class ModulatorMacroProcessor final
     : public ICloneable<ModulatorMacroProcessor>,
       public dsp::IProcessable,
-      public utils::serialization::ISerializable<ModulatorMacroProcessor>,
       public IPortOwner
 {
 public:
-  ModulatorMacroProcessor (const DeserializationDependencyHolder &dh);
   ModulatorMacroProcessor (
     PortRegistry      &port_registry,
     ModulatorTrack *   track,
@@ -81,7 +78,27 @@ public:
     return *std::get<ControlPort *> (macro_id_->get_object ());
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+private:
+  static constexpr auto kNameKey = "name"sv;
+  static constexpr auto kCVInKey = "cvIn"sv;
+  static constexpr auto kCVOutKey = "cvOut"sv;
+  static constexpr auto kMacroKey = "macro"sv;
+  friend void to_json (nlohmann::json &j, const ModulatorMacroProcessor &p)
+  {
+    j = nlohmann::json{
+      { kNameKey,  p.name_      },
+      { kCVInKey,  p.cv_in_id_  },
+      { kCVOutKey, p.cv_out_id_ },
+      { kMacroKey, p.macro_id_  },
+    };
+  }
+  friend void from_json (const nlohmann::json &j, ModulatorMacroProcessor &p)
+  {
+    j.at (kNameKey).get_to (p.name_);
+    j.at (kCVInKey).get_to (p.cv_in_id_);
+    j.at (kCVOutKey).get_to (p.cv_out_id_);
+    j.at (kMacroKey).get_to (p.macro_id_);
+  }
 
 private:
   /**
@@ -112,5 +129,3 @@ private:
 /**
  * @}
  */
-
-#endif

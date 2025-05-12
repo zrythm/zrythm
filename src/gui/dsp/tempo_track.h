@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_TEMPO_TRACK_H__
-#define __AUDIO_TEMPO_TRACK_H__
+#pragma once
 
 #include "gui/dsp/automatable_track.h"
 #include "utils/types.h"
@@ -36,7 +35,6 @@ class TempoTrack final
     : public QObject,
       public AutomatableTrack,
       public ICloneable<TempoTrack>,
-      public zrythm::utils::serialization::ISerializable<TempoTrack>,
       public utils::InitializableObject<TempoTrack>
 {
   Q_OBJECT
@@ -162,9 +160,27 @@ public:
     return *std::get<ControlPort *> (beat_unit_port_->get_object ());
   }
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
 private:
+  static constexpr auto kBpmPortKey = "bpmPort"sv;
+  static constexpr auto kBeatsPerBarPortKey = "beatsPerBarPort"sv;
+  static constexpr auto kBeatUnitPortKey = "beatUnitPort"sv;
+  friend void           to_json (nlohmann::json &j, const TempoTrack &track)
+  {
+    to_json (j, static_cast<const Track &> (track));
+    to_json (j, static_cast<const AutomatableTrack &> (track));
+    j[kBpmPortKey] = track.bpm_port_;
+    j[kBeatsPerBarPortKey] = track.beats_per_bar_port_;
+    j[kBeatUnitPortKey] = track.beat_unit_port_;
+  }
+  friend void from_json (const nlohmann::json &j, TempoTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+    from_json (j, static_cast<AutomatableTrack &> (track));
+    j.at (kBpmPortKey).get_to (track.bpm_port_);
+    j.at (kBeatsPerBarPortKey).get_to (track.beats_per_bar_port_);
+    j.at (kBeatUnitPortKey).get_to (track.beat_unit_port_);
+  }
+
   bool initialize ();
 
 private:
@@ -180,10 +196,6 @@ private:
   std::optional<PortUuidReference> beat_unit_port_;
 };
 
-static_assert (ConstructibleWithDependencyHolder<TempoTrack>);
-
 /**
  * @}
  */
-
-#endif
