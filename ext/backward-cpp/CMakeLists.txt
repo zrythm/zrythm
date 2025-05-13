@@ -6,11 +6,13 @@ set(backward_cpp_compile_defs)
 set(backward_cpp_libs Threads::Threads)
 
 if(${OS_GNU})
-  pkg_check_modules(LIBDW REQUIRED IMPORTED_TARGET libdw)
-  list(APPEND backward_cpp_libs PkgConfig::LIBDW)
-  list(APPEND backward_cpp_compile_defs
-    BACKWARD_HAS_DW=1
-    BACKWARD_HAS_UNWIND=1)
+  if(ZRYTHM_WITH_LIBDW)
+    pkg_check_modules(LIBDW REQUIRED IMPORTED_TARGET libdw)
+    list(APPEND backward_cpp_libs PkgConfig::LIBDW)
+    list(APPEND backward_cpp_compile_defs
+      BACKWARD_HAS_DW=1
+      BACKWARD_HAS_UNWIND=1)
+  endif()
 elseif(APPLE)
   list(APPEND backward_cpp_compile_defs BACKWARD_HAS_UNWIND=1)
 elseif(WIN32)

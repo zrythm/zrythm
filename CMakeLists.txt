@@ -203,6 +203,7 @@ option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 option(ZRYTHM_WITH_RTMIDI "Build with RtMidi support" ON)
 option(ZRYTHM_WITH_RTAUDIO "Build with RtAudio support" ON)
 option(ZRYTHM_WITH_JACK "Build with JACK support" ${OS_GNU})
+option(ZRYTHM_WITH_LIBDW "Build with libdw support (better backtraces)" ${OS_GNU})
 option(ZRYTHM_WITH_VALGRIND "Compile with valgrind lib (only for debugging)" OFF)
 
 #==============================================================================
