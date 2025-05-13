@@ -136,9 +136,13 @@ if(OS_GNU)
   set(BUILD_SHARED_LIBS OFF)
   FetchContent_MakeAvailable(curl)
 
-  pkg_check_modules(freetype2 REQUIRED freetype2 IMPORTED_TARGET)
-  target_link_libraries(juce_lib PRIVATE CURL::libcurl PkgConfig::freetype2)
-  target_link_libraries(juce_clap_hosting_lib PRIVATE CURL::libcurl PkgConfig::freetype2)
+  find_package(Freetype REQUIRED)
+  find_package(Fontconfig REQUIRED)
+  add_library(_juce_dependencies INTERFACE)
+  target_link_libraries(_juce_dependencies INTERFACE
+   CURL::libcurl Freetype::Freetype Fontconfig::Fontconfig)
+  target_link_libraries(juce_lib PRIVATE _juce_dependencies)
+  target_link_libraries(juce_clap_hosting_lib PRIVATE _juce_dependencies)
 
   # Restore original build type
   set(CMAKE_BUILD_TYPE ${original_build_type})
