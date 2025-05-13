@@ -908,6 +908,7 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES fmt REQUIRED
 )
+set(FMT_INSTALL OFF)
 FetchContent_MakeAvailable(fmt)
 
 # spdlog
@@ -919,6 +920,7 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES spdlog REQUIRED
 )
+set(SPDLOG_INSTALL OFF)
 FetchContent_MakeAvailable(spdlog)
 add_library(spdlog_lib INTERFACE)
 target_link_libraries(spdlog_lib INTERFACE spdlog::spdlog)
@@ -955,6 +957,7 @@ FetchContent_Declare(
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(INSTALL_GTEST OFF)
 FetchContent_MakeAvailable(googletest)
 add_library(_gtest_libs INTERFACE)
 target_link_libraries(_gtest_libs INTERFACE gtest)
@@ -972,6 +975,8 @@ FetchContent_Declare(
   FIND_PACKAGE_ARGS NAMES benchmark REQUIRED
 )
 set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_INSTALL OFF)
+set(BENCHMARK_INSTALL_DOCS OFF)
 set(CMAKE_BUILD_TYPE_BEFORE ${CMAKE_BUILD_TYPE})
 set(CMAKE_BUILD_TYPE Release)
 FetchContent_MakeAvailable(benchmark)
