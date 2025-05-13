@@ -136,6 +136,7 @@ if(OS_GNU)
   set(BUILD_SHARED_LIBS OFF)
   FetchContent_MakeAvailable(curl)
   target_link_libraries(juce_lib PRIVATE CURL::libcurl)
+  target_link_libraries(juce_clap_hosting_lib PRIVATE CURL::libcurl)
 
   # Restore original build type
   set(CMAKE_BUILD_TYPE ${original_build_type})
