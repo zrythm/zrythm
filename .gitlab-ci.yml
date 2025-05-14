@@ -83,7 +83,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-19-$CI_RUNNER_DESCRIPTION
+  - key: cache-20-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - '${BUILDDIR}-*/_deps/*-src'
@@ -98,7 +98,7 @@ configure:gnu/linux:
   before_script:
     - python3 -m venv venv
     - *unix-activate-venv
-    - python3 -m pip install -r requirements.txt
+    # - python3 -m pip install -r requirements.txt
   script:
     - >-
       cmake -B ${BUILDDIR}-${BUILD_TYPE} ${COMMON_CMAKE_OPTIONS}
