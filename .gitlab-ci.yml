@@ -262,7 +262,7 @@ clang-tidy-check:
       artifacts: true
   script:
     - >-
-      cmake -B ${BUILDDIR}-Debug ${COMMON_CMAKE_OPTIONS}
+      cmake -B ${BUILDDIR} ${COMMON_CMAKE_OPTIONS}
       -G "Ninja"
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clang++
@@ -274,7 +274,7 @@ clang-tidy-check:
     - >-
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
-      -path ${BUILDDIR}-Debug -config-file .clang-tidy
+      -path ${BUILDDIR} -config-file .clang-tidy
       -use-color
 
 build:gnu/linux:
@@ -340,8 +340,8 @@ update-manual:
     - job: configure-for-tools:gnu/linux
       artifacts: true
   script:
-    - cmake --build ${BUILDDIR}-Debug --target manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
-    - rsync -av --no-group --omit-dir-times --exclude '*.zip' "${BUILDDIR}-Debug"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
+    - cmake --build ${BUILDDIR} --target manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
+    - rsync -av --no-group --omit-dir-times --exclude '*.zip' "${BUILDDIR}"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
     #- ssh-add <(echo "$SSH_PRIVATE_KEY")
@@ -363,8 +363,8 @@ update-dev-docs:
     - job: configure-for-tools:gnu/linux
       artifacts: true
   script:
-    - cmake --build ${BUILDDIR}-Debug --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
-    - rsync -av --no-group --omit-dir-times "${BUILDDIR}-Debug"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
+    - cmake --build ${BUILDDIR} --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
+    - rsync -av --no-group --omit-dir-times "${BUILDDIR}"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
     #- ssh-add <(echo "$SSH_PRIVATE_KEY")

@@ -50,7 +50,7 @@ endif()
 project(zrythm
   VERSION ${ZRYTHM_VERSION_MAJOR}.${ZRYTHM_VERSION_MINOR}.${ZRYTHM_VERSION_PATCH}
   HOMEPAGE_URL "https://www.zrythm.org"
-  DESCRIPTION "Highly automated and intuitive digital audio workstation"
+  DESCRIPTION "A highly automated and intuitive digital audio workstation (DAW)"
   LANGUAGES C CXX)
 
 if (APPLE)
@@ -1276,3 +1276,19 @@ add_subdirectory(doc)
 
 # Post-install script
 install(SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install.cmake)
+
+set(CPACK_PACKAGE_NAME "Zrythm")
+set(CPACK_PACKAGE_VENDOR "Alexandros Theodotou")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/zrythm.png") # TODO
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Zrythm ${ZRYTHM_VERSION_MAJOR}.${ZRYTHM_VERSION_MINOR}")
+set(CPACK_PACKAGE_CHECKSUM "MD5")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSES/LicenseRef-ZrythmLicense.txt")
+set(CPACK_PACKAGE_EXECUTABLES "zrythm;Zrythm")
+set(CPACK_THREADS 0) # use all CPU cores
+
+# NSIS
+set(nsis_zrythm_icon "${CMAKE_SOURCE_DIR}/zrythm.ico")
+set(CPACK_NSIS_MUI_ICON "${nsis_zrythm_icon}")
+set(CPACK_NSIS_MUI_UNIICON "${nsis_zrythm_icon}")
+SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\zrythm.exe")
+include(CPack) # must be included after specifying the CPACK_ variables

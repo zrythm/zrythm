@@ -47,6 +47,28 @@ RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.1.0/gcc-15.1.0.tar.xz && \
     rm -rf gcc-15.1.0.tar.xz gcc-15.1.0 && \
     gcc --version && g++ --version
 
+
+# Build environment (FIXME: CPATH/LIBRARY_PATH might not be needed)
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH \
+    PATH=/usr/local/bin:$PATH \
+    LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LIBRARY_PATH \
+    CPATH=/usr/local/include:$CPATH \
+    LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH \
+    CMAKE_PREFIX_PATH=/usr/local:$CMAKE_PREFIX_PATH \
+    QT_QPA_PLATFORM=offscreen \
+    BOOST_ROOT=/usr/local
+
+# Set up environment for all users
+RUN echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH' > /etc/profile.d/zrythm_env.sh && \
+    echo 'export PATH=/usr/local/bin:$PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LIBRARY_PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export CPATH=/usr/local/include:$CPATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export CMAKE_PREFIX_PATH=/usr/local:$CMAKE_PREFIX_PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export QT_QPA_PLATFORM=offscreen' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export BOOST_ROOT=/usr/local' >> /etc/profile.d/zrythm_env.sh && \
+    chmod +x /etc/profile.d/zrythm_env.sh
+
 # Valgrind
 RUN wget https://sourceware.org/pub/valgrind/valgrind-3.25.0.tar.bz2 && \
     tar -xf valgrind-3.25.0.tar.bz2 && \
@@ -80,27 +102,6 @@ RUN wget https://lv2plug.in/spec/lv2-1.18.10.tar.xz && \
     cd .. && \
     rm -rf lv2-1.18.10.tar.xz lv2-1.18.10
 
-# Build environment (FIXME: CPATH/LIBRARY_PATH might not be needed)
-ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH \
-    PATH=/usr/local/bin:$PATH \
-    LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LIBRARY_PATH \
-    CPATH=/usr/local/include:$CPATH \
-    LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH \
-    CMAKE_PREFIX_PATH=/usr/local:$CMAKE_PREFIX_PATH \
-    QT_QPA_PLATFORM=offscreen \
-    BOOST_ROOT=/usr/local
-
-# Set up environment for all users
-RUN echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH' > /etc/profile.d/zrythm_env.sh && \
-    echo 'export PATH=/usr/local/bin:$PATH' >> /etc/profile.d/zrythm_env.sh && \
-    echo 'export LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LIBRARY_PATH' >> /etc/profile.d/zrythm_env.sh && \
-    echo 'export CPATH=/usr/local/include:$CPATH' >> /etc/profile.d/zrythm_env.sh && \
-    echo 'export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH' >> /etc/profile.d/zrythm_env.sh && \
-    echo 'export CMAKE_PREFIX_PATH=/usr/local:$CMAKE_PREFIX_PATH' >> /etc/profile.d/zrythm_env.sh && \
-    echo 'export QT_QPA_PLATFORM=offscreen' >> /etc/profile.d/zrythm_env.sh && \
-    echo 'export BOOST_ROOT=/usr/local' >> /etc/profile.d/zrythm_env.sh && \
-    chmod +x /etc/profile.d/zrythm_env.sh
-
 # Qt
 RUN wget https://download.qt.io/official_releases/qt/6.9/6.9.0/single/qt-everywhere-src-6.9.0.tar.xz && \
     tar -xf qt-everywhere-src-6.9.0.tar.xz && \
@@ -116,15 +117,17 @@ RUN wget https://download.qt.io/official_releases/qt/6.9/6.9.0/single/qt-everywh
     rm -rf qt-everywhere-src-6.9.0.tar.xz qt-everywhere-src-6.9.0 && \
     qmllint --version
 
+# Install various utilities
+RUN apt-get install -y curl sudo
+
 # Install gitlab runner too so container can be used as a runner
 # (needs manual registration)
 RUN curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | bash && \
     apt-get install -y gitlab-runner && \
     gitlab-runner --version
 
-# Install various utilities and clean up to reduce image size
-RUN apt-get install -y curl sudo \
-    apt-get clean && \
+# Clean up to reduce image size
+RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user for runtime
