@@ -107,8 +107,8 @@ configure:gnu/linux:
       -DCMAKE_CXX_COMPILER=g++
       -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -DZRYTHM_USER_MANUAL=ON
-      -DZRYTHM_STRICT_SPHINX_OPTS=ON
+      -DZRYTHM_USER_MANUAL=OFF
+      -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
   parallel:
     matrix:
