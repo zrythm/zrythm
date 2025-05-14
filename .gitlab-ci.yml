@@ -262,7 +262,7 @@ clang-tidy-check:
       artifacts: true
   script:
     - >-
-      cmake -B ${BUILDDIR} ${COMMON_CMAKE_OPTIONS}
+      cmake -B ${BUILDDIR}-Debug ${COMMON_CMAKE_OPTIONS}
       -G "Ninja"
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clang++
@@ -274,7 +274,7 @@ clang-tidy-check:
     - >-
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
-      -path ${BUILDDIR} -config-file .clang-tidy
+      -path ${BUILDDIR}-Debug -config-file .clang-tidy
       -use-color
 
 build:gnu/linux:

@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
     libxcb-xkb-dev libxcb-xkb1 pax-utils libfontconfig1-dev itstool \
     libxcb-cursor-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb1-dev \
     libxcb-xinerama0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev \
-    libxkbcommon-x11-dev python3.8-venv
+    libxkbcommon-x11-dev python3.8-venv ccache
 
 # GCC
 RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.1.0/gcc-15.1.0.tar.xz && \
@@ -89,6 +89,17 @@ ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CON
     CMAKE_PREFIX_PATH=/usr/local:$CMAKE_PREFIX_PATH \
     QT_QPA_PLATFORM=offscreen \
     BOOST_ROOT=/usr/local
+
+# Set up environment for all users
+RUN echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH' > /etc/profile.d/zrythm_env.sh && \
+    echo 'export PATH=/usr/local/bin:$PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LIBRARY_PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export CPATH=/usr/local/include:$CPATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export CMAKE_PREFIX_PATH=/usr/local:$CMAKE_PREFIX_PATH' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export QT_QPA_PLATFORM=offscreen' >> /etc/profile.d/zrythm_env.sh && \
+    echo 'export BOOST_ROOT=/usr/local' >> /etc/profile.d/zrythm_env.sh && \
+    chmod +x /etc/profile.d/zrythm_env.sh
 
 # Qt
 RUN wget https://download.qt.io/official_releases/qt/6.9/6.9.0/single/qt-everywhere-src-6.9.0.tar.xz && \
