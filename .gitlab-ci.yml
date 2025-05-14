@@ -47,7 +47,7 @@ stages:
 
 .gnu-linux-template:
   tags:
-    - archlinux
+    - ubuntu20
   variables:
     BUILDDIR: "build_gnu_linux"
     QT_QPA_PLATFORM: "offscreen"
@@ -83,7 +83,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-18-$CI_RUNNER_DESCRIPTION
+  - key: cache-19-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - '${BUILDDIR}-*/_deps/*-src'
@@ -110,7 +110,6 @@ configure:gnu/linux:
       -DZRYTHM_USER_MANUAL=ON
       -DZRYTHM_STRICT_SPHINX_OPTS=ON
       -DZRYTHM_UNITY_BUILD=ON
-      -DCMAKE_LINKER_TYPE=MOLD
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -119,6 +118,34 @@ configure:gnu/linux:
       - ${BUILDDIR}-${BUILD_TYPE}
     exclude:
       - ${BUILDDIR}-${BUILD_TYPE}/**/.git/**/*
+    expire_in: 1 day
+
+configure-for-tools:gnu/linux:
+  extends: .gnu-linux-template
+  tags:
+    - archlinux
+  stage: setup
+  before_script:
+    - python3 -m venv venv
+    - *unix-activate-venv
+    - python3 -m pip install -r requirements.txt
+  script:
+    - >-
+      cmake -B ${BUILDDIR} ${COMMON_CMAKE_OPTIONS}
+      -G "Ninja"
+      -DCMAKE_C_COMPILER=clang
+      -DCMAKE_CXX_COMPILER=clang++
+      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+      -DZRYTHM_USER_MANUAL=ON
+      -DZRYTHM_STRICT_SPHINX_OPTS=ON
+      -DZRYTHM_UNITY_BUILD=OFF
+      -DCMAKE_LINKER_TYPE=MOLD
+  artifacts:
+    paths:
+      - ${BUILDDIR}
+    exclude:
+      - ${BUILDDIR}/**/.git/**/*
     expire_in: 1 day
 
 configure:mac-arm:
@@ -179,6 +206,8 @@ configure:windows:
 
 clazy-check:
   extends: .gnu-linux-template
+  tags:
+    - archlinux
   stage: check
   needs: []
   script:
@@ -197,6 +226,8 @@ clazy-check:
 
 clang-format-check:
   extends: .gnu-linux-template
+  tags:
+    - archlinux
   stage: check
   needs: []
   script:
@@ -211,6 +242,8 @@ reuse-check:
 
 exif-check:
   extends: .gnu-linux-template
+  tags:
+    - archlinux
   stage: check
   needs: []
   script:
@@ -221,15 +254,27 @@ exif-check:
 
 clang-tidy-check:
   extends: .gnu-linux-template
+  tags:
+    - archlinux
   stage: check
   needs:
-    - job: configure:gnu/linux
+    - job: configure-for-tools:gnu/linux
       artifacts: true
   script:
     - >-
+      cmake -B ${BUILDDIR} ${COMMON_CMAKE_OPTIONS}
+      -G "Ninja"
+      -DCMAKE_C_COMPILER=clang
+      -DCMAKE_CXX_COMPILER=clang++
+      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_BUILD_TYPE=Debug
+      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+      -DZRYTHM_UNITY_BUILD=OFF
+      -DZRYTHM_DISABLE_CCACHE=ON
+    - >-
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
-      -path ${BUILDDIR}-Debug -config-file .clang-tidy
+      -path ${BUILDDIR} -config-file .clang-tidy
       -use-color
 
 build:gnu/linux:
@@ -284,13 +329,15 @@ build:windows:
 
 update-manual:
   extends: .gnu-linux-template
+  tags:
+    - archlinux
   stage: deploy
   only:
     - master
     - tags
   needs:
     - job: build:gnu/linux
-    - job: configure:gnu/linux
+    - job: configure-for-tools:gnu/linux
       artifacts: true
   script:
     - cmake --build ${BUILDDIR}-Debug --target manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
@@ -305,13 +352,15 @@ update-manual:
 
 update-dev-docs:
   extends: .gnu-linux-template
+  tags:
+    - archlinux
   stage: deploy
   only:
     - master
     - tags
   needs:
     - job: build:gnu/linux
-    - job: configure:gnu/linux
+    - job: configure-for-tools:gnu/linux
       artifacts: true
   script:
     - cmake --build ${BUILDDIR}-Debug --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)

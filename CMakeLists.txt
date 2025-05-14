@@ -714,9 +714,6 @@ if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
   set(HAVE_CYAML TRUE)
 endif()
 
-set(BUILD_EXAMPLES OFF)
-set(BUILD_TESTING OFF)
-set(ENABLE_EXTERNAL_LIBS ON)
 FetchContent_Declare(
   SndFile
   GIT_REPOSITORY https://github.com/libsndfile/libsndfile
@@ -725,6 +722,10 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES SndFile 1.0.29 REQUIRED
 )
+set(BUILD_EXAMPLES OFF)
+set(BUILD_TESTING OFF)
+set(ENABLE_EXTERNAL_LIBS ON)
+set(INSTALL_PKGCONFIG_MODULE OFF)
 FetchContent_MakeAvailable(sndfile)
 set(HAVE_OPUS TRUE)
 

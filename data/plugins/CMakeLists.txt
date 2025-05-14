@@ -75,6 +75,11 @@ foreach(plugin_info ${plugins})
       zrythm::lv2
     )
     if(compiler_is_gcc AND OS_GNU AND ZRYTHM_BUNDLED_PLUGINS_WITH_STATIC_LINKING)
+      # x42 says: plugins should be statically linked against libstdc++, but not
+      #the host. The host should use system-wide libstdc++ or libc++
+      # one exception: windows. you may have to ship libstdc++.dll there
+      # (in my experience libstdc++.so is needed for he host for c++23
+      # features and should be bundled)
       list(APPEND pl_link_args -static-libgcc -static-libstdc++)
     endif()
     if(MSVC)
