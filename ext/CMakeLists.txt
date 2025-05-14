@@ -18,6 +18,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
   GIT_TAG 10a589619b452c261b2940767eb253171eb5a823  # 8.0.7
   GIT_SHALLOW TRUE
+  EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(juce)
 
@@ -27,12 +28,14 @@ if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
     GIT_REPOSITORY https://github.com/free-audio/clap.git
     GIT_TAG 27f20f81dec40b930d79ef429fd35dcc2d45db5b # 1.2.2
     GIT_SHALLOW TRUE
+    EXCLUDE_FROM_ALL
   )
   FetchContent_MakeAvailable(clap)
   FetchContent_Declare(
     clap-helpers
     GIT_REPOSITORY https://github.com/free-audio/clap-helpers.git
     GIT_TAG 59791394dc26637d9425c2745233a979602be2a7 # main branch
+    EXCLUDE_FROM_ALL
   )
   FetchContent_MakeAvailable(clap-helpers)
 
@@ -100,6 +103,7 @@ if(OS_GNU)
     GIT_TAG 22098d41c6620ce07cf8a0134d37302355e1e5ef # 3.6.3
     # FIND_PACKAGE_ARGS NAMES MbedTLS
     OVERRIDE_FIND_PACKAGE
+    EXCLUDE_FROM_ALL
   )
   set(ENABLE_TESTING OFF)
   set(ENABLE_PROGRAMS OFF)
@@ -116,6 +120,7 @@ if(OS_GNU)
     GIT_REPOSITORY https://github.com/curl/curl.git
     GIT_TAG 1c3149881769e7bd79b072e48374e4c2b3678b2f # 8.13.0
     FIND_PACKAGE_ARGS NAMES CURL
+    EXCLUDE_FROM_ALL
   )
   set(HTTP_ONLY ON)
   set(BUILD_LIBCURL_DOCS OFF)
@@ -174,10 +179,18 @@ add_subdirectory(rubberband)
 set(WITH_OPENMP OFF)
 set(BUILD_TESTS OFF)
 set(BUILD_LSR_TESTS OFF)
-add_subdirectory(soxr)
+add_subdirectory(soxr EXCLUDE_FROM_ALL)
 add_library(zrythm::soxr ALIAS soxr)
 
 add_subdirectory(weakjack)
 add_subdirectory(whereami)
 add_subdirectory(zita-resampler)
-add_subdirectory(typesafe)
+
+FetchContent_Declare(
+  type_safe
+  GIT_REPOSITORY https://github.com/foonathan/type_safe/
+  GIT_TAG 1dbea7936a1e389caa692d01bb3f5ba4b6da7d82 # 0.2.4
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
+)
+FetchContent_MakeAvailable(type_safe)

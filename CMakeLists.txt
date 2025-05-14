@@ -690,6 +690,7 @@ FetchContent_Declare(
   GIT_TAG 230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES nlohmann_json 3.12.1 REQUIRED
+  EXCLUDE_FROM_ALL
 )
 set(JSON_ImplicitConversions OFF)
 set(JSON_SystemInclude ON)
@@ -708,6 +709,7 @@ if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
       GIT_REPOSITORY https://gitlab.zrythm.org/zrythm/zrythm-libcyaml.git
       GIT_TAG 6cae0db42e28900a9c5bbba11816fb1c5caf0f7b
       GIT_SHALLOW TRUE
+      EXCLUDE_FROM_ALL
     )
     FetchContent_MakeAvailable(libcyaml)
   endif()
@@ -721,12 +723,14 @@ FetchContent_Declare(
   GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES SndFile 1.0.29 REQUIRED
+  EXCLUDE_FROM_ALL
 )
 set(BUILD_EXAMPLES OFF)
 set(BUILD_TESTING OFF)
 set(ENABLE_EXTERNAL_LIBS ON)
 set(INSTALL_PKGCONFIG_MODULE OFF)
-FetchContent_MakeAvailable(sndfile)
+FetchContent_MakeAvailable(SndFile)
+set_target_properties(sndfile PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(HAVE_OPUS TRUE)
 
 # add_library(lv2_lib INTERFACE)
@@ -753,13 +757,17 @@ if(OS_GNU)
   FetchContent_Declare(
     fftw3
     URL       http://fftw.org/fftw-3.3.10.tar.gz
-    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
+    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
+    EXCLUDE_FROM_ALL
+  )
   FetchContent_MakeAvailable(fftw3)
   set(ENABLE_FLOAT ON)
   FetchContent_Declare(
     fftw3f
     URL       http://fftw.org/fftw-3.3.10.tar.gz
-    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
+    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
+    EXCLUDE_FROM_ALL
+  )
   FetchContent_MakeAvailable(fftw3f)
   add_library(fftw3_libs INTERFACE)
   target_link_libraries(fftw3_libs INTERFACE fftw3 fftw3f)
@@ -844,14 +852,15 @@ set(ZSTD_BUILD_PROGRAMS OFF)
 set(ZSTD_BUILD_CONTRIB OFF)
 set(ZSTD_BUILD_TESTS OFF)
 FetchContent_Declare(
-    zstd
-    GIT_REPOSITORY https://github.com/facebook/zstd
-    # 1.5.7
-    GIT_TAG f8745da6ff1ad1e7bab384bd1f9d742439278e99
-    GIT_SHALLOW TRUE
-    SOURCE_SUBDIR build/cmake
-    # FIND_PACKAGE_ARGS zstd REQUIRED
-    OVERRIDE_FIND_PACKAGE
+  zstd
+  GIT_REPOSITORY https://github.com/facebook/zstd
+  # 1.5.7
+  GIT_TAG f8745da6ff1ad1e7bab384bd1f9d742439278e99
+  GIT_SHALLOW TRUE
+  SOURCE_SUBDIR build/cmake
+  # FIND_PACKAGE_ARGS zstd REQUIRED
+  OVERRIDE_FIND_PACKAGE
+  EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(zstd)
 add_library(_zstd_lib INTERFACE)
@@ -866,6 +875,7 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   SOURCE_SUBDIR cmake_unofficial
   FIND_PACKAGE_ARGS NAMES xxHash 0.8 REQUIRED
+  EXCLUDE_FROM_ALL
 )
 set(XXHASH_BUILD_XXHSUM OFF)
 FetchContent_MakeAvailable(xxHash)
@@ -881,6 +891,7 @@ if(0)
       # master on 2024-10-01
       GIT_TAG 703438d8e55dbfd1c2021d0bc12e36edd1e227e2
       GIT_SHALLOW TRUE
+      EXCLUDE_FROM_ALL
     )
     FetchContent_MakeAvailable(vamp-sdk)
   else()
@@ -897,6 +908,7 @@ FetchContent_Declare(
   GIT_TAG dd6a39d0ba1852cf06907e0f0573a2a10d23c2ad
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES magic_enum 0.9.5 REQUIRED
+  EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(magic_enum)
 
@@ -908,6 +920,7 @@ FetchContent_Declare(
   GIT_TAG 0c9fce2ffefecfdce794e1859584e25877b7b592
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES fmt REQUIRED
+  EXCLUDE_FROM_ALL
 )
 set(FMT_INSTALL OFF)
 FetchContent_MakeAvailable(fmt)
@@ -920,6 +933,7 @@ FetchContent_Declare(
   GIT_TAG 8e5613379f5140fefb0b60412fbf1f5406e7c7f8
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES spdlog REQUIRED
+  EXCLUDE_FROM_ALL
 )
 set(SPDLOG_INSTALL OFF)
 FetchContent_MakeAvailable(spdlog)
@@ -955,6 +969,7 @@ FetchContent_Declare(
   GIT_TAG 6910c9d9165801d8827d628cb72eb7ea9dd538c5
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES GTest REQUIRED
+  EXCLUDE_FROM_ALL
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -974,6 +989,7 @@ FetchContent_Declare(
   GIT_TAG afa23b7699c17f1e26c88cbf95257b20d78d6247
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES benchmark REQUIRED
+  EXCLUDE_FROM_ALL
 )
 set(BENCHMARK_ENABLE_TESTING OFF)
 set(BENCHMARK_ENABLE_INSTALL OFF)
@@ -997,6 +1013,7 @@ FetchContent_Declare(
   # 0.20.1
   GIT_TAG 3af7f2c16147f3fbc6e4d717032daf505dc1652c
   GIT_SHALLOW TRUE
+  EXCLUDE_FROM_ALL
 )
 if(ZRYTHM_TESTS)
   set(HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF)
@@ -1290,5 +1307,5 @@ set(CPACK_THREADS 0) # use all CPU cores
 set(nsis_zrythm_icon "${CMAKE_SOURCE_DIR}/zrythm.ico")
 set(CPACK_NSIS_MUI_ICON "${nsis_zrythm_icon}")
 set(CPACK_NSIS_MUI_UNIICON "${nsis_zrythm_icon}")
-SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\zrythm.exe")
+SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\zrythm.exe")
 include(CPack) # must be included after specifying the CPACK_ variables

@@ -11,7 +11,7 @@
 #include <variant>
 #include <vector>
 
-#include "type_safe/strong_typedef.hpp"
+#include <type_safe/strong_typedef.hpp>
 
 // Helper concept to check if a type is a container
 template <typename T>
