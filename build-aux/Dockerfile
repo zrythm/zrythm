@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
     libxcb-xkb-dev libxcb-xkb1 pax-utils libfontconfig1-dev itstool \
     libxcb-cursor-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb1-dev \
     libxcb-xinerama0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev \
-    libxkbcommon-x11-dev
+    libxkbcommon-x11-dev python3.8-venv
 
 # GCC
 RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.1.0/gcc-15.1.0.tar.xz && \
