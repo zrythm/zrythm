@@ -124,3 +124,9 @@ USER appuser
 
 # Set working directory
 WORKDIR /home/appuser
+
+# To build Zrythm:
+# cmake -B builddir_cmake -DZRYTHM_STRICT=ON -DZRYTHM_TESTS=ON -DZRYTHM_BENCHMARKS=ON -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DZRYTHM_WITH_LIBDW=OFF -DZRYTHM_UNITY_BUILD=ON
+# cmake --build builddir_cmake --parallel
+# cmake --install builddir_cmake
+# /usr/local/bin/zrythm --version
