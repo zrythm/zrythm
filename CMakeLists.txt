@@ -1325,7 +1325,7 @@ elseif(APPLE)
     execute_process(
       COMMAND \"${MACDEPLOYQT_EXECUTABLE}\"
         \"\$\{CMAKE_INSTALL_PREFIX\}/$<TARGET_BUNDLE_DIR_NAME:zrythm>\"
-        --qmldir \"${CMAKE_BINARY_DIR}\"
+        -qmldir=\"${CMAKE_BINARY_DIR}\"
     )
   "
   COMPONENT Runtime)
