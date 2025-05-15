@@ -24,8 +24,7 @@ variables:
 stages:
   - setup
   - check
-  - build # also test
-  - package
+  - build # also test & package
   - deploy
 
 .unix-activate-venv: &unix-activate-venv
@@ -295,9 +294,15 @@ build:gnu/linux:
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata"
       || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/MemoryChecker.*.log" && exit 1)
+    - cpack -G TXZ -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
+  artifacts:
+    paths:
+      - package-${BUILD_TYPE}/*.tar.xz*
+    when: on_success
+    expire_in: "1 day"
 
 build:mac-arm:
   extends: .mac-arm-template
@@ -308,9 +313,16 @@ build:mac-arm:
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
     - *unix_test_cmd
+    - cpack -G "DragNDrop" -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - exit 1 # TODO
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
+  artifacts:
+    paths:
+      - package-${BUILD_TYPE}/*.dmg*
+    when: on_success
+    expire_in: "1 day"
 
 build:windows:
   extends: .windows-template
@@ -324,63 +336,7 @@ build:windows:
     # copy DLLs and resources needed at runtime for tests, etc.
     - '& "C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe" --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets "${env:BUILDDIR}-${env:BUILD_TYPE}\${env:BUILD_TYPE}\zrythm.exe"'
     - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -V; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
-  parallel:
-    matrix:
-      - BUILD_TYPE: [Debug, Release]
-
-package:gnu/linux:
-  extends: .gnu-linux-template
-  stage: package
-  needs:
-    - job: configure:gnu/linux
-      artifacts: true
-    - job: build:gnu/linux
-  script:
-    - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
-    - cpack -G TXZ -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
-  parallel:
-    matrix:
-      - BUILD_TYPE: [Debug, Release]
-  artifacts:
-    paths:
-      - package-${BUILD_TYPE}/*.tar.xz*
-    when: on_success
-    expire_in: "1 day"
-
-package:mac-arm:
-  extends: .mac-arm-template
-  stage: build
-  needs:
-    - job: configure:mac-arm
-      artifacts: true
-    - job: build:mac-arm
-  script:
-    - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
-    - cpack -G "DragNDrop" -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
-    - exit 1 # TODO
-  parallel:
-    matrix:
-      - BUILD_TYPE: [Debug, Release]
-  artifacts:
-    paths:
-      - package-${BUILD_TYPE}/*.dmg*
-    when: on_success
-    expire_in: "1 day"
-
-package:windows:
-  extends: .windows-template
-  stage: build
-  needs:
-    - job: configure:windows
-      artifacts: true
-    - job: build:windows
-  script:
-    - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
-    - if (! $?) { exit 1 }  # Check if the previous command failed
-    # copy DLLs and resources needed at runtime for tests, etc.
-    - '& "C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe" --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets "${env:BUILDDIR}-${env:BUILD_TYPE}\${env:BUILD_TYPE}\zrythm.exe"'
-    - cpack -G INNOSETUP -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
-    - exit 1 # TODO
+    - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config ${env:BUILDDIR}-${env:BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${env:BUILD_TYPE}; if (-not $?) { Get-Content "package-${env:BUILD_TYPE}/_CPack_Packages/win64/INNOSETUP/ISCCOutput.log"; exit 1 }
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
