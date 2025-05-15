@@ -215,7 +215,6 @@ include(FindPython3)
 if (${ZRYTHM_SHELL_COMPLETIONS})
   find_program(FLEX_EXECUTABLE "flex" REQUIRED)
 endif()
-find_program(XMLLINT_EXECUTABLE "xmllint" REQUIRED)
 find_program(FAUST2LV2_EXECUTABLE "faust2lv2")
 find_program(ITSTOOL_EXECUTABLE itstool)
 
@@ -1295,8 +1294,12 @@ add_subdirectory(doc)
 # CPack / Packaging
 #==============================================================================
 
+get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
+get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
+
 if(WIN32)
   # TODO: windeployqt
+  find_program(WINDEPLOYQT_EXECUTABLE windeployqt PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
 elseif(APPLE)
   # TODO: macdeployqt
 else()
@@ -1320,8 +1323,6 @@ else()
       COMPONENT Runtime
       NAMELINK_COMPONENT Development
   )
-  get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
-  get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
   install(
     DIRECTORY ${QT6_PREFIX_PATH}/plugins/
     DESTINATION plugins

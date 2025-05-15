@@ -58,8 +58,7 @@ target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_gui_lib)
 
 if(OS_GNU)
-  add_dependencies(zrythm appdata-xml-merged)
-  add_dependencies(zrythm desktop-file)
+  add_dependencies(zrythm appdata-xml desktop-file)
 endif()
 
 if(WIN32)

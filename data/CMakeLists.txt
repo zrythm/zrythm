@@ -1,15 +1,16 @@
-# SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 set(app_id "org.zrythm.Zrythm")
 
 # Install samples
-set(samples
-  ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_emphasis.wav
-  ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_normal.wav
+install(
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_emphasis.wav
+    ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_normal.wav
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/zrythm/samples
+  COMPONENT Runtime
 )
-install(FILES ${samples}
-  DESTINATION share/zrythm/samples COMPONENT Runtime)
 
 # Configure and install launcher scripts
 if(UNIX)
@@ -69,81 +70,82 @@ if(OS_GNU)
 endif()
 
 # Appdata
-set(release_tag_base_url "https://gitlab.zrythm.org/zrythm/zrythm/-/tags/")
-set(homepage_url "https://www.zrythm.org/en/index.html")
-set(translate_url "https://hosted.weblate.org/engage/zrythm/")
-set(contact_url "https://www.zrythm.org/en/community.html#contact")
-set(main_screenshot_url "https://www.zrythm.org/static/images/screenshots/screenshot-20240208.png")
-configure_file(gen-appdata-xml.py gen-appdata-xml.py @ONLY)
-set(appdata_xml_filename "${app_id}.appdata.xml")
-add_custom_command(
-  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
-    "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in.in" ${app_id}
-  COMMAND "${XMLLINT_EXECUTABLE}" --format --output
-    "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in.in"
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
-  COMMENT "Generating appdata XML"
-)
-add_custom_target(appdata-xml ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in")
-
-if(ITSTOOL_EXECUTABLE AND FALSE)
+if(OS_GNU)
+  set(release_tag_base_url "https://gitlab.zrythm.org/zrythm/zrythm/-/tags/")
+  set(homepage_url "https://www.zrythm.org/en/index.html")
+  set(translate_url "https://hosted.weblate.org/engage/zrythm/")
+  set(contact_url "https://www.zrythm.org/en/community.html#contact")
+  set(main_screenshot_url "https://www.zrythm.org/static/images/screenshots/screenshot-20240208.png")
+  configure_file(gen-appdata-xml.py gen-appdata-xml.py @ONLY)
+  set(appdata_xml_filename "${app_id}.appdata.xml")
+  set(_final_appdata_xml_filepath "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}")
+  find_program(XMLLINT_EXECUTABLE "xmllint" REQUIRED)
   add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
-    COMMAND
-    ${ITSTOOL_EXECUTABLE}
-      --join "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
-      "--its=${appstream_its_rules}"
-      ${build_mo_files}
-      --out "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
-    DEPENDS appdata-xml pofiles
-    COMMENT "Merging translations for appdata XML"
-    )
-else()
-  message("itstool not found, not merging translations for appdata XML")
-  add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
-    DEPENDS appdata-xml
-    COMMENT "Copying untranslated appdata XML"
+    OUTPUT "${_final_appdata_xml_filepath}.in"
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
+      "${_final_appdata_xml_filepath}.in.in" ${app_id}
+    COMMAND "${XMLLINT_EXECUTABLE}" --format --output
+      "${_final_appdata_xml_filepath}.in"
+      "${_final_appdata_xml_filepath}.in.in"
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
+    COMMENT "Generating appdata XML"
   )
-endif()
-add_custom_target(appdata-xml-merged DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}")
-set(APPDATA_FILE "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}" PARENT_SCOPE)
+  if(ITSTOOL_EXECUTABLE AND FALSE) # TODO
+    add_custom_command(
+      OUTPUT "${_final_appdata_xml_filepath}"
+      COMMAND
+      ${ITSTOOL_EXECUTABLE}
+        --join "${_final_appdata_xml_filepath}.in"
+        "--its=${appstream_its_rules}"
+        ${build_mo_files}
+        --out "${_final_appdata_xml_filepath}"
+      DEPENDS "${_final_appdata_xml_filepath}.in" pofiles
+      COMMENT "Merging translations for appdata XML"
+      )
+  else()
+    message("itstool not found, not merging translations for appdata XML")
+    add_custom_command(
+      OUTPUT "${_final_appdata_xml_filepath}"
+      COMMAND ${CMAKE_COMMAND} -E copy "${_final_appdata_xml_filepath}.in"
+        "${_final_appdata_xml_filepath}"
+      DEPENDS "${_final_appdata_xml_filepath}.in"
+      COMMENT "Copying untranslated appdata XML"
+    )
+  endif()
+  add_custom_target(appdata-xml DEPENDS "${_final_appdata_xml_filepath}")
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
-  COMPONENT Runtime
-)
+  install(FILES "${_final_appdata_xml_filepath}"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
+    COMPONENT Runtime
+  )
 
-# Validate the appdata file
-find_program(APPSTREAM_UTIL_EXECUTABLE appstream-util)
-if(APPSTREAM_UTIL_EXECUTABLE)
-  add_test(
-    NAME appstream-util-validate-appdata
-    COMMAND ${APPSTREAM_UTIL_EXECUTABLE} validate-relax --nonet ${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}
-    )
-    set_tests_properties(appstream-util-validate-appdata
-    PROPERTIES
-    LABELS "data"
-    DEPENDS appdata-xml-merged
-    )
-endif()
+  # Validate the appdata file
+  find_program(APPSTREAM_UTIL_EXECUTABLE appstream-util)
+  if(APPSTREAM_UTIL_EXECUTABLE)
+    add_test(
+      NAME appstream-util-validate-appdata
+      COMMAND ${APPSTREAM_UTIL_EXECUTABLE} validate-relax --nonet ${_final_appdata_xml_filepath}
+      )
+      set_tests_properties(appstream-util-validate-appdata
+      PROPERTIES
+      LABELS "data"
+      DEPENDS appdata-xml-merged
+      )
+  endif()
 
-find_program(APPSTREAMCLI_EXECUTABLE appstreamcli)
-if(APPSTREAMCLI_EXECUTABLE)
-  add_test(
-    NAME appstream-cli-validate-appdata
-    COMMAND ${APPSTREAMCLI_EXECUTABLE} validate ${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}
-    )
-    set_tests_properties(appstream-cli-validate-appdata
-    PROPERTIES
-    LABELS "data"
-    DEPENDS appdata-xml-merged
-    )
-endif()
+  find_program(APPSTREAMCLI_EXECUTABLE appstreamcli)
+  if(APPSTREAMCLI_EXECUTABLE)
+    add_test(
+      NAME appstream-cli-validate-appdata
+      COMMAND ${APPSTREAMCLI_EXECUTABLE} validate ${_final_appdata_xml_filepath}
+      )
+      set_tests_properties(appstream-cli-validate-appdata
+      PROPERTIES
+      LABELS "data"
+      DEPENDS appdata-xml-merged
+      )
+  endif()
+endif() # OS_GNU (appdata XML generation/install/tests)
 
 if(APPLE)
   configure_file(zrythm_lldb.in ${prog_name_lowercase}_lldb @ONLY)
