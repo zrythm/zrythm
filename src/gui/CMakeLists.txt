@@ -21,6 +21,14 @@ set_target_properties(zrythm PROPERTIES
   UNITY_BUILD OFF # unity build is not supported by auto-generated Qt files
 )
 
+if(WIN32)
+  # copy all required DLLs into the binary output directory
+  add_custom_command(TARGET zrythm POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:zrythm> $<TARGET_RUNTIME_DLLS:zrythm>
+    COMMAND_EXPAND_LISTS
+  )
+endif()
+
 # add_subdirectory(resources)
 
 # Generate language map for config.js

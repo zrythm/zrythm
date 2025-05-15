@@ -217,6 +217,11 @@ if (${ZRYTHM_SHELL_COMPLETIONS})
 endif()
 find_program(FAUST2LV2_EXECUTABLE "faust2lv2")
 find_program(ITSTOOL_EXECUTABLE itstool)
+if(APPLE)
+  find_program(RSVG_CONVERT_EXECUTABLE rsvg-convert REQUIRED)
+elseif(WIN32)
+  find_program(MAGICK_EXECUTABLE "magick" REQUIRED)
+endif()
 
 #==============================================================================
 # Common Variables
@@ -259,6 +264,9 @@ set(license_url "${main_repo_url}/-/raw/master/LICENSES/LicenseRef-ZrythmLicense
 set(trademark_policy_url "${main_repo_url}/-/raw/master/TRADEMARKS.md")
 set(bug_report_api_endpoint "https://accounts.zrythm.org/api/v1/error-reports/new")
 set(PLUGIN_SCANNER_UUID "f47ac10b")
+set(ZRYTHM_SVG_ICON "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/icons/zrythm-dark/scalable/apps/zrythm.svg")
+set(ZRYTHM_ICNS_FILE "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.icns")
+set(ZRYTHM_ICO_FILE "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.ico")
 
 # if latest version in changelog is the project's
 # version, add the changelog to the config
@@ -1303,11 +1311,11 @@ if(WIN32)
       COMMAND \"${WINDEPLOYQT_EXECUTABLE}\"
         --qmldir \"${CMAKE_BINARY_DIR}\"
         --force
+        # Distributing the VC redistributable violates the GPL
+        # See: https://www.gnu.org/licenses/gpl-faq.html#RedistributingWindows
+        --no-compiler-runtime
         -qml -widgets -quick -quickwidgets
         \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
-      # Delete the VC redistributable as distributing it violates the GPL
-      # See: https://www.gnu.org/licenses/gpl-faq.html#RedistributingWindows
-      COMMAND \"${CMAKE_COMMAND}\" -E rm \"\$\{CMAKE_INSTALL_PREFIX\}/bin/vc_redist.x64.exe\"
     )
   "
   COMPONENT Runtime)
@@ -1389,7 +1397,6 @@ install(SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install.cmake)
 
 set(CPACK_PACKAGE_NAME "Zrythm")
 set(CPACK_PACKAGE_VENDOR "Alexandros Theodotou and Contributors")
-# set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/zrythm.png") # TODO
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Zrythm ${ZRYTHM_VERSION_MAJOR}.${ZRYTHM_VERSION_MINOR}")
 set(CPACK_PACKAGE_CHECKSUM "MD5")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSES/LicenseRef-ZrythmLicense.txt")
@@ -1410,18 +1417,27 @@ cpack_add_component(Runtime
 )
 set(CPACK_COMPONENTS_ALL "Runtime")
 
-# Archive generator options
+if(WIN32)
+  set(CPACK_PACKAGE_ICON "${ZRYTHM_ICO_FILE}")
+elseif(APPLE)
+  set(CPACK_SYSTEM_NAME "MacOS")
+  set(CPACK_PACKAGE_ICON "${ZRYTHM_ICNS_FILE}")
+endif()
+
+# -- Generator-specific options --
+
+# Archive generator
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
-# DragNDrop generator options
+# DragNDrop generator
 set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
 
-# NSIS generator options
+# NSIS generator
 # set(nsis_zrythm_icon "${CMAKE_SOURCE_DIR}/zrythm.ico") # TODO
 # set(CPACK_NSIS_MUI_ICON "${nsis_zrythm_icon}")
 # set(CPACK_NSIS_MUI_UNIICON "${nsis_zrythm_icon}")
 SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\zrythm.exe")
 
-# Inno Setup generator o ptions
+# INNO Setup generator
 
 include(CPack) # must be included after specifying the CPACK_ variables

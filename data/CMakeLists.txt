@@ -3,6 +3,60 @@
 
 set(app_id "org.zrythm.Zrythm")
 
+# Prepare icons
+if(APPLE)
+  set(_iconset_dir "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.iconset")
+  file(MAKE_DIRECTORY "${_iconset_dir}")
+
+  # --- Generate all PNG sizes directly from SVG ---
+  set(_icon_sizes 16 32 64 128 256 512)
+  foreach(SIZE IN LISTS _icon_sizes)
+    math(EXPR SIZE_2X "${SIZE} * 2")
+    add_custom_command(
+      OUTPUT
+        "${_iconset_dir}/icon_${SIZE}x${SIZE}.png"
+        "${_iconset_dir}/icon_${SIZE}x${SIZE}@2x.png"
+      COMMAND ${RSVG_CONVERT_EXECUTABLE} -w ${SIZE} -h ${SIZE} "${ZRYTHM_SVG_ICON}" -o "${_iconset_dir}/icon_${SIZE}x${SIZE}.png"
+      COMMAND ${RSVG_CONVERT_EXECUTABLE} -w ${SIZE_2X} -h ${SIZE_2X} "${ZRYTHM_SVG_ICON}" -o "${_iconset_dir}/icon_${SIZE}x${SIZE}@2x.png"
+      COMMENT "Generating ${SIZE}x${SIZE} icons..."
+    )
+  endforeach()
+
+  # --- Generate .icns ---
+  add_custom_command(
+    OUTPUT "${ZRYTHM_ICNS_FILE}"
+    COMMAND iconutil -c icns "${_iconset_dir}" -o "${ZRYTHM_ICNS_FILE}"
+    DEPENDS
+      "${_iconset_dir}/icon_16x16.png"
+      "${_iconset_dir}/icon_16x16@2x.png"
+      "${_iconset_dir}/icon_32x32.png"
+      "${_iconset_dir}/icon_32x32@2x.png"
+      "${_iconset_dir}/icon_64x64.png"
+      "${_iconset_dir}/icon_64x64@2x.png"
+      "${_iconset_dir}/icon_128x128.png"
+      "${_iconset_dir}/icon_128x128@2x.png"
+      "${_iconset_dir}/icon_256x256.png"
+      "${_iconset_dir}/icon_256x256@2x.png"
+      "${_iconset_dir}/icon_512x512.png"
+      "${_iconset_dir}/icon_512x512@2x.png"
+    COMMENT "Creating .icns file..."
+  )
+
+  add_custom_target(generate_icns ALL DEPENDS "${ZRYTHM_ICNS_FILE}")
+elseif(WIN32)
+  # --- Convert SVG → ICO using magick ---
+  add_custom_command(
+    OUTPUT "${ZRYTHM_ICO_FILE}"
+    COMMAND "${MAGICK_EXECUTABLE}" convert "${ZRYTHM_SVG_ICON}"
+        -define icon:auto-resize=16,32,48,64,256  # Standard sizes
+        "${ZRYTHM_ICO_FILE}"
+    COMMENT "Converting SVG to .ico using ImageMagick..."
+    VERBATIM
+  )
+
+  add_custom_target(generate_ico ALL DEPENDS "${ZRYTHM_ICO_FILE}")
+endif()
+
 # Install samples
 install(
   FILES
