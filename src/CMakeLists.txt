@@ -69,9 +69,5 @@ if(WIN32)
   target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
 endif()
 
-install(TARGETS zrythm
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
-
 add_subdirectory(engine)
 add_dependencies(zrythm zrythm-engine plugin-scanner)

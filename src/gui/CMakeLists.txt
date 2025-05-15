@@ -71,7 +71,9 @@ endforeach()
 # Install app icon
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/apps/zrythm.svg"
   RENAME "org.zrythm.Zrythm.svg"
-  DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps")
+  DESTINATION "share/icons/hicolor/scalable/apps"
+  COMPONENT Runtime
+)
 
 
 # font files

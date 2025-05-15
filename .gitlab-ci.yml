@@ -337,10 +337,15 @@ package:gnu/linux:
     - job: build:gnu/linux
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
-    - cpack -G TGZ -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - cpack -G TXZ -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
+  artifacts:
+    paths:
+      - package-${BUILD_TYPE}/*.tar.xz*
+    when: on_success
+    expire_in: "1 day"
 
 package:mac-arm:
   extends: .mac-arm-template
@@ -351,10 +356,16 @@ package:mac-arm:
     - job: build:mac-arm
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
-    - cpack -G "Bundle;DragNDrop" -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - cpack -G "DragNDrop" -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - exit 1 # TODO
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
+  artifacts:
+    paths:
+      - package-${BUILD_TYPE}/*.dmg*
+    when: on_success
+    expire_in: "1 day"
 
 package:windows:
   extends: .windows-template
@@ -362,15 +373,22 @@ package:windows:
   needs:
     - job: configure:windows
       artifacts: true
+    - job: build:windows
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
     - if (! $?) { exit 1 }  # Check if the previous command failed
     # copy DLLs and resources needed at runtime for tests, etc.
     - '& "C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin\windeployqt.exe" --qmldir "${env:BUILDDIR}-${env:BUILD_TYPE}" --pdb --force -qml -widgets -quick -quickwidgets "${env:BUILDDIR}-${env:BUILD_TYPE}\${env:BUILD_TYPE}\zrythm.exe"'
-    - cpack -G Inno -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - cpack -G INNOSETUP -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - exit 1 # TODO
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
+  artifacts:
+    paths:
+      - package-${BUILD_TYPE}/*.exe*
+    when: on_success
+    expire_in: "1 day"
 
 update-manual:
   extends: .gnu-linux-template

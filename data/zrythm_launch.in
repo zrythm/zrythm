@@ -1,35 +1,24 @@
 #!/usr/bin/env sh
-# SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+HERE="$(dirname "$(readlink -f "${0}")")"
+
+# see https://github.com/probonopd/linuxdeployqt/issues/416
+export QT_PLUGIN_PATH=""
+export QML2_IMPORT_PATH=""
 
 flatpak_build="@FLATPAK_BUILD_ONE_OR_ZERO@"
 if [ "$flatpak_build" != "1" ]; then
-  jack_path=$(dirname $(ldconfig -p | grep 'libjack.so ' | head -n 1 | cut -d ' ' -f 4))
-
-  export GSETTINGS_SCHEMA_DIR=@gschemas_dir@
+  jack_path="$(dirname $(ldconfig -p | grep 'libjack.so ' | head -n 1 | cut -d ' ' -f 4))"
 
   # used by the universal installer
-  if [ "@ZRYTHM_IS_INSTALLER_VER_ONE_OR_ZERO@" = "1" ]; then
-    export GDK_PIXBUF_MODULE_FILE="@CMAKE_INSTALL_FULL_LIBDIR@/gdk-pixbuf-2.0/2.10.0/loaders.cache"
-    export PATH="@CMAKE_INSTALL_PREFIX@/libexec:$PATH"
-    export @LD_LIBRARY_PATH_ENV@="@zrythm_carla_libdir@:@zrythm_libdir@:@CMAKE_INSTALL_FULL_LIBDIR@:$jack_path:$@LD_LIBRARY_PATH_ENV@"
-  else
-    export @LD_LIBRARY_PATH_ENV@="@zrythm_carla_libdir@:@zrythm_libdir@:$jack_path:@CMAKE_INSTALL_FULL_LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
-  fi
+  # if [ "@ZRYTHM_IS_INSTALLER_VER_ONE_OR_ZERO@" = "1" ]; then
+    # export PATH="@CMAKE_INSTALL_PREFIX@/libexec:$PATH"
+    # export @LD_LIBRARY_PATH_ENV@="@zrythm_carla_libdir@:@zrythm_libdir@:@CMAKE_INSTALL_FULL_LIBDIR@:$jack_path:$@LD_LIBRARY_PATH_ENV@"
+  # else
+    # export @LD_LIBRARY_PATH_ENV@="@zrythm_carla_libdir@:@zrythm_libdir@:$jack_path:@CMAKE_INSTALL_FULL_LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
+  # fi
 fi
 
-# if not first run, set language so that pre-startup
-# output is localized to the user's choice instead
-# of system's locale
-schema_prefix="org.zrythm.Zrythm"
-cmd="gsettings get $schema_prefix.preferences.ui.general language"
-$cmd > /dev/null
-first_run=`gsettings get $schema_prefix.general first-run`
-if [ $? = 0 ] && [ $first_run = "false" ]; then
-  preferences_lang=`$cmd | sed -e "s|'||g"`
-  lang=`locale -a | grep $preferences_lang | head -n 1`
-  export LANG="$lang"
-  export LC_MESSAGES="$lang"
-fi
-
-@CMAKE_INSTALL_FULL_BINDIR@/@prog_name_lowercase@ "$@"
+exec "${HERE}/@prog_name_lowercase@" "$@"

@@ -8,7 +8,8 @@ set(samples
   ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_emphasis.wav
   ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_normal.wav
 )
-install(FILES ${samples} DESTINATION ${samplesdir})
+install(FILES ${samples}
+  DESTINATION share/zrythm/samples COMPONENT Runtime)
 
 # Configure and install launcher scripts
 if(UNIX)
@@ -29,7 +30,9 @@ if(UNIX)
   endif()
   configure_file(zrythm_launch.in ${prog_name_lowercase}_launch @ONLY)
   install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${prog_name_lowercase}_launch
-          DESTINATION ${CMAKE_INSTALL_BINDIR})
+    TYPE BIN
+    COMPONENT Runtime
+  )
 endif()
 
 if(OS_GNU)
@@ -60,7 +63,9 @@ if(OS_GNU)
     )
   add_custom_target(desktop-file DEPENDS ${desktop_file_out})
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${desktop_file_out}"
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+    COMPONENT Runtime
+  )
 endif()
 
 # Appdata
@@ -109,7 +114,9 @@ add_custom_target(appdata-xml-merged DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appd
 set(APPDATA_FILE "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}" PARENT_SCOPE)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
+  COMPONENT Runtime
+)
 
 # Validate the appdata file
 find_program(APPSTREAM_UTIL_EXECUTABLE appstream-util)
@@ -148,7 +155,9 @@ add_subdirectory(icon-themes)
 
 # Zrythm project MIME type
 install(FILES org.zrythm.Zrythm-mime.xml
-DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages)
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages
+  COMPONENT Runtime
+)
 
 # Templates
 install(DIRECTORY DESTINATION ${zrythm_datadir}/templates)

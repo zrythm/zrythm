@@ -32,7 +32,9 @@ add_custom_command(
 add_custom_target(manpage ALL DEPENDS ${target_manpage_path})
 
 install(FILES ${target_manpage_path}
-  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+  TYPE MAN
+  COMPONENT Runtime
+)
 
 # Generate completions
 if(ZRYTHM_SHELL_COMPLETIONS)

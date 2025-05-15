@@ -12,4 +12,6 @@ set_target_properties(zrythm-engine PROPERTIES
   WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS zrythm-engine RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS zrythm-engine
+  COMPONENT Runtime
+)

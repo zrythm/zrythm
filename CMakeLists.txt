@@ -203,7 +203,7 @@ option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 option(ZRYTHM_WITH_RTMIDI "Build with RtMidi support" ON)
 option(ZRYTHM_WITH_RTAUDIO "Build with RtAudio support" ON)
 option(ZRYTHM_WITH_JACK "Build with JACK support" ${OS_GNU})
-option(ZRYTHM_WITH_LIBDW "Build with libdw support (better backtraces)" ${OS_GNU})
+option(ZRYTHM_WITH_LIBDW "Build with libdw support (better backtraces)" OFF) #${OS_GNU})
 option(ZRYTHM_WITH_VALGRIND "Compile with valgrind lib (only for debugging)" OFF)
 
 #==============================================================================
@@ -722,7 +722,8 @@ FetchContent_Declare(
   # 1.2.2
   GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
   GIT_SHALLOW TRUE
-  FIND_PACKAGE_ARGS NAMES SndFile 1.0.29 REQUIRED
+  # FIND_PACKAGE_ARGS NAMES SndFile 1.0.29 REQUIRED
+  OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
 )
 set(BUILD_EXAMPLES OFF)
@@ -758,7 +759,6 @@ if(OS_GNU)
     fftw3
     URL       http://fftw.org/fftw-3.3.10.tar.gz
     URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
-    EXCLUDE_FROM_ALL
   )
   FetchContent_MakeAvailable(fftw3)
   set(ENABLE_FLOAT ON)
@@ -766,7 +766,6 @@ if(OS_GNU)
     fftw3f
     URL       http://fftw.org/fftw-3.3.10.tar.gz
     URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
-    EXCLUDE_FROM_ALL
   )
   FetchContent_MakeAvailable(fftw3f)
   add_library(fftw3_libs INTERFACE)
@@ -874,7 +873,8 @@ FetchContent_Declare(
   GIT_TAG bbb27a5efb85b92a0486cf361a8635715a53f6ba
   GIT_SHALLOW TRUE
   SOURCE_SUBDIR cmake_unofficial
-  FIND_PACKAGE_ARGS NAMES xxHash 0.8 REQUIRED
+  # FIND_PACKAGE_ARGS NAMES xxHash 0.8 REQUIRED
+  OVERRIDE_FIND_PACKAGE
   EXCLUDE_FROM_ALL
 )
 set(XXHASH_BUILD_XXHSUM OFF)
@@ -1291,17 +1291,115 @@ if(ZRYTHM_TESTS)
 endif()
 add_subdirectory(doc)
 
+#==============================================================================
+# CPack / Packaging
+#==============================================================================
+
+if(WIN32)
+  # TODO: windeployqt
+elseif(APPLE)
+  # TODO: macdeployqt
+else()
+  install(
+    IMPORTED_RUNTIME_ARTIFACTS
+      Qt6::Core
+      Qt6::Gui
+      Qt6::Widgets
+      Qt6::Quick
+      Qt6::QuickControls2
+      Qt6::Concurrent
+    RUNTIME
+      COMPONENT Runtime
+    LIBRARY
+      COMPONENT Runtime
+      NAMELINK_COMPONENT Development
+  )
+  get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
+  get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
+  install(
+    DIRECTORY ${QT6_PREFIX_PATH}/plugins/
+    DESTINATION plugins/
+    COMPONENT Runtime
+  )
+  install(
+    DIRECTORY ${QT6_PREFIX_PATH}/lib/
+    TYPE LIB
+    COMPONENT Runtime
+    FILES_MATCHING
+    PATTERN "*.so*"
+    PATTERN "cmake" EXCLUDE
+    PATTERN "pkgconfig" EXCLUDE
+    PATTERN "objects-*" EXCLUDE
+  )
+  install(
+    DIRECTORY ${QT6_PREFIX_PATH}/qml/
+    DESTINATION qml
+    COMPONENT Runtime
+    PATTERN "*"
+    PATTERN "Qt5Compat" EXCLUDE
+    PATTERN "objects-*" EXCLUDE
+    PATTERN "*.a" EXCLUDE
+    PATTERN "*.prl" EXCLUDE
+  )
+  if(compiler_is_gcc)
+    # bundle libstdc++
+    execute_process(
+      COMMAND sh -c "gcc --print-file-name=libstdc++.so"
+      OUTPUT_VARIABLE _libstdcxx_path
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    get_filename_component(_libstdcxx_path "${_libstdcxx_path}" REALPATH)
+    install(
+      FILES "${_libstdcxx_path}"
+      DESTINATION lib
+      COMPONENT Runtime
+      RENAME "libstdc++.so.6"
+    )
+  endif()
+endif()
+
+install(
+  TARGETS
+    zrythm
+    fftw3 fftw3f
+  RUNTIME           # Following options apply to runtime artifacts.
+    COMPONENT Runtime
+  LIBRARY           # Following options apply to library artifacts.
+    COMPONENT Runtime
+    NAMELINK_COMPONENT Development
+  ARCHIVE           # Following options apply to archive artifacts.
+    COMPONENT Development
+    DESTINATION lib/static
+  FILE_SET HEADERS  # Following options apply to file set HEADERS.
+    COMPONENT Development
+)
+
 # Post-install script
 install(SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install.cmake)
 
 set(CPACK_PACKAGE_NAME "Zrythm")
-set(CPACK_PACKAGE_VENDOR "Alexandros Theodotou")
+set(CPACK_PACKAGE_VENDOR "Alexandros Theodotou and Contributors")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/zrythm.png") # TODO
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Zrythm ${ZRYTHM_VERSION_MAJOR}.${ZRYTHM_VERSION_MINOR}")
 set(CPACK_PACKAGE_CHECKSUM "MD5")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSES/LicenseRef-ZrythmLicense.txt")
 set(CPACK_PACKAGE_EXECUTABLES "zrythm;Zrythm")
 set(CPACK_THREADS 0) # use all CPU cores
+
+# cpack_add_component_group(Zrythm
+#   DISPLAY_NAME "Zrythm"
+#   DESCRIPTION "Zrythm"
+#   EXPANDED
+#   BOLD_TITLE
+# )
+cpack_add_component(Runtime
+  DISPLAY_NAME "Zrythm Runtime"
+  DESCRIPTION "Zrythm Runtime"
+  REQUIRED
+  # GROUP Zrythm
+)
+set(CPACK_COMPONENTS_ALL "Runtime")
+set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
 # NSIS
 set(nsis_zrythm_icon "${CMAKE_SOURCE_DIR}/zrythm.ico")

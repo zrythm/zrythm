@@ -17,4 +17,6 @@ set_target_properties(plugin-scanner PROPERTIES
   WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS plugin-scanner RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS plugin-scanner
+  COMPONENT Runtime
+)
