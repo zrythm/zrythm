@@ -77,6 +77,9 @@ install(
     zrythm
   RUNTIME           # Following options apply to runtime artifacts.
     COMPONENT Runtime
+  BUNDLE            # Following options apply to .app bundle artifacts.
+    COMPONENT Runtime
+    DESTINATION .
   LIBRARY           # Following options apply to library artifacts.
     COMPONENT Runtime
     NAMELINK_COMPONENT Development
