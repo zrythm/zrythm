@@ -687,7 +687,6 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/nlohmann/json.git
   # 3.12.0 + some commits later
   GIT_TAG 230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48
-  GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES nlohmann_json 3.12.1 REQUIRED
   EXCLUDE_FROM_ALL
 )
