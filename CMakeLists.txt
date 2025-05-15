@@ -218,7 +218,10 @@ endif()
 find_program(FAUST2LV2_EXECUTABLE "faust2lv2")
 find_program(ITSTOOL_EXECUTABLE itstool)
 if(APPLE)
-  find_program(RSVG_CONVERT_EXECUTABLE rsvg-convert REQUIRED)
+  find_program(RSVG_CONVERT_EXECUTABLE rsvg-convert
+    PATHS /opt/homebrew/Cellar/librsvg/2.60.0/bin
+    REQUIRED
+  )
 elseif(WIN32)
   find_program(MAGICK_EXECUTABLE "magick" REQUIRED)
 endif()
