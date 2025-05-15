@@ -1305,6 +1305,9 @@ if(WIN32)
         --force
         -qml -widgets -quick -quickwidgets
         \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
+      # Delete the VC redistributable as distributing it violates the GPL
+      # See: https://www.gnu.org/licenses/gpl-faq.html#RedistributingWindows
+      COMMAND \"${CMAKE_COMMAND}\" -E rm \"\$\{CMAKE_INSTALL_PREFIX\}/bin/vc_redist.x64.exe\"
     )
   "
   COMPONENT Runtime)
