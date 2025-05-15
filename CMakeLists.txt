@@ -1298,10 +1298,27 @@ get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
 get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
 
 if(WIN32)
-  # TODO: windeployqt
-  find_program(WINDEPLOYQT_EXECUTABLE windeployqt PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
+  find_program(WINDEPLOYQT_EXECUTABLE windeployqt REQUIRED PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
+  install(CODE "
+    execute_process(
+      COMMAND \"${WINDEPLOYQT_EXECUTABLE}\"
+        --qmldir \"${CMAKE_BINARY_DIR}\"
+        --force
+        -qml -widgets -quick -quickwidgets
+        \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
+    )
+  "
+  COMPONENT Runtime)
 elseif(APPLE)
-  # TODO: macdeployqt
+  find_program(MACDEPLOYQT_EXECUTABLE macdeployqt REQUIRED PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
+  install(CODE "
+    execute_process(
+      COMMAND \"${MACDEPLOYQT_EXECUTABLE}\"
+        --qmldir \"${CMAKE_BINARY_DIR}\"
+        \"\$\{CMAKE_INSTALL_PREFIX\}/$<TARGET_FILE_NAME:zrythm>\"
+    )
+  "
+  COMPONENT Runtime)
 else()
   install(
     TARGETS
