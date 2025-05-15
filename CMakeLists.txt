@@ -1301,6 +1301,12 @@ elseif(APPLE)
   # TODO: macdeployqt
 else()
   install(
+    TARGETS
+      fftw3 fftw3f
+    LIBRARY
+      COMPONENT Runtime
+  )
+  install(
     IMPORTED_RUNTIME_ARTIFACTS
       Qt6::Core
       Qt6::Gui
@@ -1318,7 +1324,7 @@ else()
   get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
   install(
     DIRECTORY ${QT6_PREFIX_PATH}/plugins/
-    DESTINATION plugins/
+    DESTINATION plugins
     COMPONENT Runtime
   )
   install(
@@ -1358,22 +1364,6 @@ else()
   endif()
 endif()
 
-install(
-  TARGETS
-    zrythm
-    fftw3 fftw3f
-  RUNTIME           # Following options apply to runtime artifacts.
-    COMPONENT Runtime
-  LIBRARY           # Following options apply to library artifacts.
-    COMPONENT Runtime
-    NAMELINK_COMPONENT Development
-  ARCHIVE           # Following options apply to archive artifacts.
-    COMPONENT Development
-    DESTINATION lib/static
-  FILE_SET HEADERS  # Following options apply to file set HEADERS.
-    COMPONENT Development
-)
-
 # Post-install script
 install(SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install.cmake)
 
@@ -1399,11 +1389,19 @@ cpack_add_component(Runtime
   # GROUP Zrythm
 )
 set(CPACK_COMPONENTS_ALL "Runtime")
+
+# Archive generator options
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
-# NSIS
+# DragNDrop generator options
+set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
+
+# NSIS generator options
 set(nsis_zrythm_icon "${CMAKE_SOURCE_DIR}/zrythm.ico")
 set(CPACK_NSIS_MUI_ICON "${nsis_zrythm_icon}")
 set(CPACK_NSIS_MUI_UNIICON "${nsis_zrythm_icon}")
 SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\zrythm.exe")
+
+# Inno Setup generator o ptions
+
 include(CPack) # must be included after specifying the CPACK_ variables

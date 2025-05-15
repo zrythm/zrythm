@@ -71,3 +71,18 @@ endif()
 
 add_subdirectory(engine)
 add_dependencies(zrythm zrythm-engine plugin-scanner)
+
+install(
+  TARGETS
+    zrythm
+  RUNTIME           # Following options apply to runtime artifacts.
+    COMPONENT Runtime
+  LIBRARY           # Following options apply to library artifacts.
+    COMPONENT Runtime
+    NAMELINK_COMPONENT Development
+  ARCHIVE           # Following options apply to archive artifacts.
+    COMPONENT Development
+    DESTINATION lib/static
+  FILE_SET HEADERS  # Following options apply to file set HEADERS.
+    COMPONENT Development
+)
