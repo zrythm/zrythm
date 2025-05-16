@@ -223,7 +223,10 @@ if(APPLE)
     REQUIRED
   )
 elseif(WIN32)
-  find_program(MAGICK_EXECUTABLE "magick" REQUIRED)
+  find_program(MAGICK_EXECUTABLE "magick"
+    PATHS "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI"
+    REQUIRED
+  )
 endif()
 
 #==============================================================================
