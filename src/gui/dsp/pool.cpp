@@ -254,8 +254,8 @@ AudioPool::remove_clip (
   if (free_and_remove_file)
     {
       const auto path = get_clip_path (*clip, backup);
-      z_debug ("removing clip at {}", path.string ());
-      assert (!path.string ().empty ());
+      z_debug ("removing clip at {}", path);
+      assert (!path.empty ());
       utils::io::remove (path);
     }
 

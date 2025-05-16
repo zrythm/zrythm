@@ -27,7 +27,7 @@ AudioFile::ensure_file_is_open ()
       z_return_if_reached ();
 #if 0
       auto format = format_mgr.findFormatForFileExtension (
-        fs::path (filepath_).extension ().string ());
+        utils::Utf8String::from_path(filepath_.extension ()).to_juce_string ());
       if (format == nullptr)
         {
         throw ZrythmException (

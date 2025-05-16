@@ -186,7 +186,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
     fd.type_ = FileType::ParentDirectory;
     fd.hidden_ = false;
     fd.label_ = u8"..";
-    if (fd.abs_path_.string ().length () > 1)
+    if (!fd.abs_path_.empty ())
       {
         files.push_back (fd);
       }
@@ -241,7 +241,7 @@ FileManager::set_selection (
   bool                 _load_files,
   bool                 save_to_settings)
 {
-  z_debug ("setting selection to {}", sel.path_.string ());
+  z_debug ("setting selection to {}", sel.path_);
 
   selection = std::make_unique<FileBrowserLocation> (sel);
   if (_load_files)
@@ -312,7 +312,7 @@ void
 FileBrowserLocation::print () const
 {
   z_info (
-    "[FileBrowserLocation] {}: '{}', special: {}", label_, path_.string (),
+    "[FileBrowserLocation] {}: '{}', special: {}", label_, path_,
     ENUM_NAME (special_location_));
 }
 

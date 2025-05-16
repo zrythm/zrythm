@@ -211,7 +211,7 @@ CachedPluginDescriptors::add (
   auto new_descr = descr.clone_unique ();
   if (!descr.path_.empty ())
     {
-      // auto file = Gio::File::create_for_path (descr.path_.string ());
+      // auto file = Gio::File::create_for_path (descr.path_);
       // new_descr->ghash_ = file->hash ();
     }
   descriptors_.emplace_back (std::move (new_descr));

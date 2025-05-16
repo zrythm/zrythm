@@ -82,12 +82,12 @@ FilePathList::get_as_juce_file_search_path () const
 }
 
 void
-FilePathList::print (const std::string &title) const
+FilePathList::print (const utils::Utf8String &title) const
 {
-  std::string str = title + ":\n";
+  utils::Utf8String str = title + u8":\n";
   for (const auto &path : paths_)
     {
-      str += path.string () + "\n";
+      str += utils::Utf8String::from_path (path) + u8"\n";
     }
   z_debug (str);
 }

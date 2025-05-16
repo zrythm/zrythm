@@ -1174,23 +1174,22 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
             descr.arch_ == PluginArchitecture::ARCH_64_BIT
               ? CarlaBackend::BINARY_NATIVE
               : CarlaBackend::BINARY_WIN32,
-            type, descr.path_.string ().c_str (), descr.name_.c_str (),
-            descr.name_.c_str (), descr.unique_id_, nullptr,
-            CarlaBackend::PLUGIN_OPTIONS_NULL);
+            type, descr.path_, descr.name_.c_str (), descr.name_.c_str (),
+            descr.unique_id_, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         case ProtocolType::DSSI:
         case ProtocolType::LADSPA:
           added = carla_add_plugin (
-            host_handle_, CarlaBackend::BINARY_NATIVE, type,
-            descr.path_.string ().c_str (), descr.name_.c_str (),
-            descr.uri_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
+            host_handle_, CarlaBackend::BINARY_NATIVE, type, descr.path_,
+            descr.name_.c_str (), descr.uri_.c_str (), 0, nullptr,
+            CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         case ProtocolType::SFZ:
         case ProtocolType::SF2:
           added = carla_add_plugin (
-            host_handle_, CarlaBackend::BINARY_NATIVE, type,
-            descr.path_.string ().c_str (), descr.name_.c_str (),
-            descr.name_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
+            host_handle_, CarlaBackend::BINARY_NATIVE, type, descr.path_,
+            descr.name_.c_str (), descr.name_.c_str (), 0, nullptr,
+            CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         case ProtocolType::JSFX:
           {
@@ -1203,9 +1202,8 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
               descr.arch_ == PluginArchitecture::ARCH_64_BIT
                 ? CarlaBackend::BINARY_NATIVE
                 : CarlaBackend::BINARY_WIN32,
-              type, pl_path.string ().c_str (), descr.name_.c_str (),
-              descr.name_.c_str (), descr.unique_id_, nullptr,
-              CarlaBackend::PLUGIN_OPTIONS_NULL);
+              type, pl_path, descr.name_.c_str (), descr.name_.c_str (),
+              descr.unique_id_, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           }
           break;
         case ProtocolType::CLAP:
@@ -1214,8 +1212,8 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
             descr.arch_ == PluginArchitecture::ARCH_64_BIT
               ? CarlaBackend::BINARY_NATIVE
               : CarlaBackend::BINARY_WIN32,
-            type, descr.path_.string ().c_str (), descr.name_.c_str (),
-            descr.uri_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
+            type, descr.path_, descr.name_.c_str (), descr.uri_.c_str (), 0,
+            nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         default:
           z_return_val_if_reached (-1);
@@ -1250,7 +1248,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     fs::path (carla_filename).parent_path ().parent_path ().parent_path ();
   auto res_dir = dir / "share" / "carla" / "resources";
   // FIXME leak
-  native_host_descriptor_.resourceDir = g_strdup (res_dir.string ().c_str ());
+  native_host_descriptor_.resourceDir = g_strdup (res_dir);
 
   native_host_descriptor_.get_buffer_size = host_get_buffer_size;
   native_host_descriptor_.get_sample_rate = host_get_sample_rate;
@@ -1394,12 +1392,11 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     carla_binaries_dir);
   carla_set_engine_option (
     host_handle_, CarlaBackend::ENGINE_OPTION_PATH_BINARIES, 0,
-    carla_binaries_dir.string ().c_str ());
+    carla_binaries_dir);
 
   /* set carla resource paths */
   carla_set_engine_option (
-    host_handle_, CarlaBackend::ENGINE_OPTION_PATH_RESOURCES, 0,
-    res_dir.string ().c_str ());
+    host_handle_, CarlaBackend::ENGINE_OPTION_PATH_RESOURCES, 0, res_dir);
 
   /* set plugin paths */
   {
@@ -1409,8 +1406,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     auto ptype = zrythm::gui::old_dsp::plugins::PluginDescriptor::
       get_carla_plugin_type_from_protocol (get_protocol ());
     carla_set_engine_option (
-      host_handle_, CarlaBackend::ENGINE_OPTION_PLUGIN_PATH, ptype,
-      paths.c_str ());
+      host_handle_, CarlaBackend::ENGINE_OPTION_PLUGIN_PATH, ptype, paths);
   }
 
   /* set UI scale factor */
@@ -1894,8 +1890,7 @@ CarlaNativePlugin::save_state (
   auto state_file_abs_path = fs::path (dir_to_use) / CARLA_STATE_FILENAME;
   z_debug ("saving carla plugin state to {}", state_file_abs_path);
 
-  if (!carla_save_plugin_state (
-        host_handle_, 0, state_file_abs_path.string ().c_str ()))
+  if (!carla_save_plugin_state (host_handle_, 0, state_file_abs_path))
     {
       throw ZrythmException (format_str (
         "Failed to save plugin state: {}", carla_get_last_error (host_handle_)));
@@ -1925,29 +1920,28 @@ CarlaNativePlugin::load_state (std::optional<fs::path> abs_path)
       state_file = fs::path (state_dir_abs_path) / CARLA_STATE_FILENAME;
     }
   z_debug (
-    "loading state from {} (given path: {})...", state_file.string (),
+    "loading state from {} (given path: {})...", state_file,
     abs_path ? *abs_path : "");
 
   if (!fs::exists (state_file))
     {
       throw ZrythmException (
-        format_str ("State file {} doesn't exist", state_file.string ()));
+        format_str ("State file {} doesn't exist", state_file));
     }
 
   loading_state_ = true;
-  carla_load_plugin_state (host_handle_, 0, state_file.string ().c_str ());
+  carla_load_plugin_state (host_handle_, 0, state_file);
   auto plugin_count = carla_get_current_plugin_count (host_handle_);
   if (plugin_count == 2)
     {
-      carla_load_plugin_state (host_handle_, 1, state_file.string ().c_str ());
+      carla_load_plugin_state (host_handle_, 1, state_file);
     }
   loading_state_ = false;
   if (visible_ && is_in_active_project ())
     {
       // EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, this);
     }
-  z_debug (
-    "successfully loaded carla plugin state from {}", state_file.string ());
+  z_debug ("successfully loaded carla plugin state from {}", state_file);
 #endif
 }
 

@@ -1330,8 +1330,7 @@ Plugin::ensure_state_dir (bool is_backup)
   catch (const ZrythmException &e)
     {
       throw ZrythmException (format_str (
-        "Failed to make state dir using template {}",
-        abs_state_dir_template.string ()));
+        "Failed to make state dir using template {}", abs_state_dir_template));
     }
 }
 

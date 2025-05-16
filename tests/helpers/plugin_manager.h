@@ -123,7 +123,7 @@ test_plugin_manager_get_plugin_setting (
       else if (cur_descr.protocol_ != ProtocolType::LV2)
         {
           auto basename = io_path_get_basename (pl_bundle);
-          auto descr_basename = io_path_get_basename (cur_descr.path_.string ());
+          auto descr_basename = io_path_get_basename (cur_descr.path_);
           if (descr_basename == basename)
             {
               descr = cur_descr;

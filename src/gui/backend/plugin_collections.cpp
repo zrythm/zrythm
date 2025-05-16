@@ -36,7 +36,7 @@ PluginCollection::add_descriptor (
   if (!descr.path_.empty ())
     {
       // TODO? or delete
-      // auto file = Gio::File::create_for_path (descr.path_.string ());
+      // auto file = Gio::File::create_for_path (descr.path_);
       // new_descr->ghash_ =  file->hash ();
     }
   descriptors_.emplace_back (std::move (new_descr));

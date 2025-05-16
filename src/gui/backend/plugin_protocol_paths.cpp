@@ -107,7 +107,7 @@ PluginProtocolPaths::get_lv2_paths ()
       QStringList paths_from_settings = { u"${LV2_PATH}"_s, u"/usr/lib/lv2"_s };
       add_expanded_paths (ret, paths_from_settings);
 
-      ret->print ("LV2 paths");
+      ret->print (u8"LV2 paths");
 
       return ret;
     }
@@ -161,7 +161,7 @@ PluginProtocolPaths::get_lv2_paths ()
   ret->add_path (builtin_plugins_path);
   ret->add_path (special_plugins_path);
 
-  ret->print ("LV2 paths");
+  ret->print (u8"LV2 paths");
 
   return ret;
 }
@@ -176,7 +176,7 @@ PluginProtocolPaths::get_vst2_paths ()
       QStringList paths_from_settings = { u"${VST_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
-      ret->print ("VST2 paths");
+      ret->print (u8"VST2 paths");
       return ret;
     }
 
@@ -197,7 +197,7 @@ PluginProtocolPaths::get_vst2_paths ()
       ret->add_path ("/app/extensions/Plugins/vst");
 #else /* non-flatpak UNIX */
       {
-        auto home_vst = utils::io::get_home_path () / ".vst";
+        auto home_vst = utils::io::get_home_path () / u8".vst";
         ret->add_path (home_vst);
       }
       ret->add_path ("/usr/lib/vst");
@@ -220,7 +220,7 @@ PluginProtocolPaths::get_vst2_paths ()
       add_expanded_paths (ret, paths_from_settings);
     }
 
-  ret->print ("VST2 paths");
+  ret->print (u8"VST2 paths");
 
   return ret;
 }
@@ -235,7 +235,7 @@ PluginProtocolPaths::get_vst3_paths ()
       QStringList paths_from_settings = { u"${VST3_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
-      ret->print ("VST3 paths");
+      ret->print (u8"VST3 paths");
       return ret;
     }
 
@@ -275,7 +275,7 @@ PluginProtocolPaths::get_vst3_paths ()
       add_expanded_paths (ret, paths_from_settings);
     }
 
-  ret->print ("VST3 paths");
+  ret->print (u8"VST3 paths");
 
   return ret;
 }
@@ -309,7 +309,7 @@ PluginProtocolPaths::get_dssi_paths ()
       QStringList paths_from_settings = { u"${DSSI_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
-      ret->print ("DSSI paths");
+      ret->print (u8"DSSI paths");
       return ret;
     }
 
@@ -345,7 +345,7 @@ PluginProtocolPaths::get_dssi_paths ()
       add_expanded_paths (ret, paths_from_settings);
     }
 
-  ret->print ("DSSI paths");
+  ret->print (u8"DSSI paths");
 
   return ret;
 }
@@ -360,7 +360,7 @@ PluginProtocolPaths::get_ladspa_paths ()
       QStringList paths_from_settings = { u"${LADSPA_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
-      ret->print ("LADSPA paths");
+      ret->print (u8"LADSPA paths");
       return ret;
     }
 
@@ -392,7 +392,7 @@ PluginProtocolPaths::get_ladspa_paths ()
       add_expanded_paths (ret, paths_from_settings);
     }
 
-  ret->print ("LADSPA paths");
+  ret->print (u8"LADSPA paths");
 
   return ret;
 }
@@ -411,7 +411,7 @@ PluginProtocolPaths::get_clap_paths ()
       QStringList paths_from_settings = { u"${CLAP_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
-      ret->print ("CLAP paths");
+      ret->print (u8"CLAP paths");
       return ret;
     }
 
@@ -452,7 +452,7 @@ PluginProtocolPaths::get_clap_paths ()
       add_expanded_paths (ret, paths_from_settings);
     }
 
-  ret->print ("CLAP paths");
+  ret->print (u8"CLAP paths");
 
   return ret;
 }
@@ -467,7 +467,7 @@ PluginProtocolPaths::get_jsfx_paths ()
       QStringList paths_from_settings = { u"${JSFX_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
-      ret->print ("JSFX paths");
+      ret->print (u8"JSFX paths");
       return ret;
     }
 
@@ -479,7 +479,7 @@ PluginProtocolPaths::get_jsfx_paths ()
       add_expanded_paths (ret, paths_from_settings);
     }
 
-  ret->print ("JSFX paths");
+  ret->print (u8"JSFX paths");
 
   return ret;
 }
@@ -495,7 +495,7 @@ PluginProtocolPaths::get_au_paths ()
     / "Components";
   ret->add_path (user_components);
 
-  ret->print ("AU paths");
+  ret->print (u8"AU paths");
 
   return ret;
 }

@@ -70,7 +70,6 @@ stages:
   variables:
     BUILDDIR: "build_windows"
     INSTALLDIR: "install_windows"
-    BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
     VSLANG: "1033"
     # use /MP1 to disable parallel builds if the compiler messages are hard to read
     CL: "/MP" # prepended to the cl command
@@ -187,8 +186,8 @@ configure:windows:
       -DZRYTHM_TESTS=ON
       -DZRYTHM_BENCHMARKS=ON
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
-      -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
       "-DCMAKE_PREFIX_PATH=C:\Qt\Qt-6.9.0-${env:BUILD_TYPE};C:\lv2"
+      "-DBOOST_ROOT=C:\Boost\boost_1_86_0"
       -G "Visual Studio 17 2022"
       "-DCMAKE_MSVCIDE_RUN_PATH=C:\Qt\Qt-6.9.0-${env:BUILD_TYPE}\bin"
       "-DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}"

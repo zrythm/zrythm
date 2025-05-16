@@ -39,7 +39,7 @@ public:
   /**
    * @brief For debugging.
    */
-  void print (const std::string &title) const;
+  void print (const utils::Utf8String &title) const;
 
   auto begin () const { return paths_.begin (); }
   auto end () const { return paths_.end (); }

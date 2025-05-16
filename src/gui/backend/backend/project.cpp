@@ -210,7 +210,7 @@ Project::get_newer_backup ()
     }
   else
     {
-      z_warning ("Failed to get last modified for {}", filepath.string ());
+      z_warning ("Failed to get last modified for {}", filepath);
       return std::nullopt;
     }
 
@@ -221,7 +221,7 @@ Project::get_newer_backup ()
       for (const auto &entry : std::filesystem::directory_iterator (backups_dir))
         {
           auto full_path = entry.path () / PROJECT_FILE;
-          z_debug ("{}", full_path.string ());
+          z_debug ("{}", full_path);
 
           if (std::filesystem::exists (full_path))
             {
@@ -234,8 +234,7 @@ Project::get_newer_backup ()
             }
           else
             {
-              z_warning (
-                "Failed to get last modified for {}", full_path.string ());
+              z_warning ("Failed to get last modified for {}", full_path);
               return std::nullopt;
             }
         }
@@ -259,7 +258,7 @@ Project::make_project_dirs (bool is_backup)
       ProjectPath::PLUGIN_EXT_COPIES, ProjectPath::PLUGIN_EXT_LINKS })
     {
       const auto dir = get_path (type, is_backup);
-      assert (!dir.string ().empty ());
+      assert (!dir.empty ());
       try
         {
           utils::io::mkdir (dir);
@@ -267,7 +266,7 @@ Project::make_project_dirs (bool is_backup)
       catch (ZrythmException &e)
         {
           throw ZrythmException (
-            fmt::format ("Failed to create directory {}", dir.string ()));
+            fmt::format ("Failed to create directory {}", dir));
         }
     }
 }
@@ -649,7 +648,7 @@ Project::get_existing_uncompressed_text (bool backup)
 {
   /* get file contents */
   const auto project_file_path = get_path (ProjectPath::ProjectFile, backup);
-  z_debug ("getting text for project file {}", project_file_path.string ());
+  z_debug ("getting text for project file {}", project_file_path);
 
   QByteArray compressed_pj{};
   try
@@ -659,8 +658,8 @@ Project::get_existing_uncompressed_text (bool backup)
   catch (const ZrythmException &e)
     {
       throw ZrythmException (format_qstr (
-        QObject::tr ("Unable to read file at {}: {}"),
-        project_file_path.string (), e.what ()));
+        QObject::tr ("Unable to read file at {}: {}"), project_file_path,
+        e.what ()));
     }
 
   /* decompress */
@@ -1018,7 +1017,7 @@ Project::save (
 {
   z_info (
     "Saving project at {}, is backup: {}, show notification: {}, async: {}",
-    _dir.string (), is_backup, show_notification, async);
+    _dir, is_backup, show_notification, async);
 
   /* pause engine */
   AudioEngine::State state{};
@@ -1049,7 +1048,7 @@ Project::save (
     {
       throw ZrythmException (
 
-        fmt::format ("Failed to create project directory {}", dir_.string ()));
+        fmt::format ("Failed to create project directory {}", dir_));
     }
 
   /* set the title */

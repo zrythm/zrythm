@@ -132,7 +132,7 @@ file_get_ext (const fs::path &filename)
     {
       auto ret = filename.extension ();
       // remove the dot
-      return { ret.string ().substr (1) };
+      return { utils::Utf8String::from_path (ret).to_u8_string ().substr (1) };
     }
   return "";
 }
@@ -195,7 +195,7 @@ file_get_last_modified_datetime_as_str (const fs::path &filename)
 bool
 remove (const fs::path &path)
 {
-  z_debug ("Removing {}...", path.string ());
+  z_debug ("Removing {}...", path);
 
   auto file = utils::Utf8String::from_path (path).to_juce_file ();
   if (!file.exists ())
@@ -248,12 +248,12 @@ append_files_from_dir_ending_in (
   const fs::path                         &_dir,
   const std::optional<utils::Utf8String> &opt_end_string)
 {
-  juce::File directory (_dir.string ());
+  auto directory = utils::Utf8String::from_path (_dir).to_juce_file ();
 
   if (!directory.isDirectory ())
     {
-      throw ZrythmException (fmt::format (
-        "'{}' is not a directory (or doesn't exist)", _dir.string ()));
+      throw ZrythmException (
+        fmt::format ("'{}' is not a directory (or doesn't exist)", _dir));
     }
 
   for (
@@ -541,8 +541,7 @@ read_file_contents (const fs::path &path)
       return file.readAll ();
     }
   throw ZrythmException (fmt::format (
-    "Failed to open file for reading: '{}' ({})", path.string (),
-    file.errorString ()));
+    "Failed to open file for reading: '{}' ({})", path, file.errorString ()));
 }
 
 void
@@ -556,7 +555,7 @@ set_file_contents (const fs::path &path, const char * contents, size_t size)
   else
     {
       throw ZrythmException (fmt::format (
-        "Failed to open file for writing: '{}' ({})", path.string (),
+        "Failed to open file for writing: '{}' ({})", path,
         file.errorString ()));
     }
 }
@@ -567,8 +566,7 @@ set_file_contents (const fs::path &file_path, const Utf8String &data)
   std::ofstream file (file_path);
   if (!file.is_open ())
     {
-      throw ZrythmException (
-        fmt::format ("Failed to open file: {}", file_path.string ()));
+      throw ZrythmException (fmt::format ("Failed to open file: {}", file_path));
     }
   file << data;
 }

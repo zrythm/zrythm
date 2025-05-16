@@ -205,13 +205,13 @@ AudioClip::write_to_file (const fs::path &filepath, bool parts)
   z_return_if_fail (frames_written_ < SIZE_MAX);
 
   auto create_writer_for_filepath = [&] () {
-    juce::File file (filepath.string ());
-    auto       out_stream = std::make_unique<juce::FileOutputStream> (file);
+    auto file = utils::Utf8String::from_path (filepath).to_juce_file ();
+    auto out_stream = std::make_unique<juce::FileOutputStream> (file);
 
     if (!out_stream || !out_stream->openedOk ())
       {
-        throw ZrythmException (fmt::format (
-          "Failed to open file '{}' for writing", filepath.string ()));
+        throw ZrythmException (
+          fmt::format ("Failed to open file '{}' for writing", filepath));
       }
 
     auto format = std::unique_ptr<juce::AudioFormat> (
@@ -227,7 +227,7 @@ AudioClip::write_to_file (const fs::path &filepath, bool parts)
     if (writer == nullptr)
       {
         throw ZrythmException (
-          "Failed to create audio writer for file: " + filepath.string ());
+          fmt::format ("Failed to create audio writer for file: {}", filepath));
       }
     return writer;
   };
@@ -273,7 +273,7 @@ AudioClip::verify_recorded_file (
   sample_rate_t   project_sample_rate,
   bpm_t           current_bpm) const
 {
-  AudioClip new_clip (filepath.string (), project_sample_rate, current_bpm);
+  AudioClip new_clip (filepath, project_sample_rate, current_bpm);
   if (get_num_frames () != new_clip.get_num_frames ())
     {
       z_error ("{} != {}", get_num_frames (), new_clip.get_num_frames ());

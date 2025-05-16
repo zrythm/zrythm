@@ -463,7 +463,7 @@ ChordPresetPackManager::add_user_packs ()
     {
       /* add user preset packs */
       const auto main_path = get_user_packs_path ();
-      z_debug ("Reading user chord packs from {}...", main_path.string ());
+      z_debug ("Reading user chord packs from {}...", main_path);
 
       std::vector<fs::path> pack_paths;
       if (fs::is_directory (main_path))
@@ -471,13 +471,13 @@ ChordPresetPackManager::add_user_packs ()
           try
             {
               pack_paths = utils::io::get_files_in_dir_ending_in (
-                main_path.string (), true, u8".json");
+                main_path, true, u8".json");
             }
           catch (const ZrythmException &e)
             {
               z_warning (
-                "Could not read user chord packs from {}: {}",
-                main_path.string (), e.what ());
+                "Could not read user chord packs from {}: {}", main_path,
+                e.what ());
             }
         }
       if (!pack_paths.empty ())
@@ -658,8 +658,8 @@ ChordPresetPackManager::serialize ()
 
   z_debug ("Serializing user preset packs...");
   const auto main_path = get_user_packs_path ();
-  z_return_if_fail (!main_path.empty () && main_path.string ().length () > 2);
-  z_debug ("Writing user chord packs to {}...", main_path.string ());
+  z_return_if_fail (!main_path.empty ());
+  z_debug ("Writing user chord packs to {}...", main_path);
 
   for (const auto &pack : packs_)
     {

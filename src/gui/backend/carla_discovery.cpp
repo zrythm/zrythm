@@ -132,7 +132,7 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
     {
       descr->path_ = path;
       /* ghash only used for compatibility with older projects */
-      GFile * file = g_file_new_for_path (descr->path_.string ().c_str ());
+      GFile * file = g_file_new_for_path (descr->path_);
       descr->ghash_ = g_file_hash (file);
       g_object_unref (file);
     }
@@ -290,7 +290,7 @@ CarlaDiscoveryStartThread::run ()
     get_carla_plugin_type_from_protocol (protocol_);
 
   void * handle = carla_plugin_discovery_start (
-    discovery_tool.string ().c_str (), btype_, ptype, paths_separated.c_str (),
+    discovery_tool, btype_, ptype, paths_separated.c_str (),
     z_carla_discovery_plugin_scanned_cb,
     z_carla_discovery_plugin_check_cache_cb, this);
   if (handle == nullptr)
