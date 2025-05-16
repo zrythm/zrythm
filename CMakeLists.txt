@@ -273,6 +273,7 @@ set(PLUGIN_SCANNER_UUID "f47ac10b")
 set(ZRYTHM_SVG_ICON "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/icons/zrythm-dark/scalable/apps/zrythm.svg")
 set(ZRYTHM_ICNS_FILE "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.icns")
 set(ZRYTHM_ICO_FILE "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.ico")
+set(ZRYTHM_BMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.bmp")
 
 # if latest version in changelog is the project's
 # version, add the changelog to the config
@@ -1057,6 +1058,13 @@ target_compile_definitions(Qt6::Core INTERFACE
   "QT_ENABLE_STRICT_MODE_UP_TO=0x060900"
   "QT_NO_KEYWORDS"
 )
+get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
+get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
+if(WIN32)
+  find_program(WINDEPLOYQT_EXECUTABLE windeployqt REQUIRED PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
+elseif(APPLE)
+  find_program(MACDEPLOYQT_EXECUTABLE macdeployqt REQUIRED PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
+endif()
 
 add_library(qt_libs INTERFACE)
 target_link_libraries(qt_libs
@@ -1307,11 +1315,7 @@ add_subdirectory(doc)
 # CPack / Packaging
 #==============================================================================
 
-get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
-get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
-
 if(WIN32)
-  find_program(WINDEPLOYQT_EXECUTABLE windeployqt REQUIRED PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
   install(CODE "
     execute_process(
       COMMAND \"${WINDEPLOYQT_EXECUTABLE}\"
@@ -1326,7 +1330,6 @@ if(WIN32)
   "
   COMPONENT Runtime)
 elseif(APPLE)
-  find_program(MACDEPLOYQT_EXECUTABLE macdeployqt REQUIRED PATHS "${QT6_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
   install(CODE "
     execute_process(
       COMMAND \"${MACDEPLOYQT_EXECUTABLE}\"
@@ -1424,7 +1427,10 @@ cpack_add_component(Runtime
 set(CPACK_COMPONENTS_ALL "Runtime")
 
 if(WIN32)
-  set(CPACK_PACKAGE_ICON "${ZRYTHM_ICO_FILE}")
+  # Installer banner
+  set(CPACK_INNOSETUP_ICON_FILE "${ZRYTHM_ICO_FILE}")
+  # Installer icon
+  set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
 elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
   set(CPACK_PACKAGE_ICON "${ZRYTHM_ICNS_FILE}")

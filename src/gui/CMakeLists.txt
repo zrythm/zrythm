@@ -22,9 +22,15 @@ set_target_properties(zrythm PROPERTIES
 )
 
 if(WIN32)
-  # copy all required DLLs into the binary output directory
+  # Copy all required DLLs and resources into the binary output directory
+  # (needed to debug or run the test suite)
   add_custom_command(TARGET zrythm POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:zrythm> $<TARGET_RUNTIME_DLLS:zrythm>
+    COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+      --qmldir "${CMAKE_BINARY_DIR}"
+      --pdb --force
+      -qml -widgets -quick -quickwidgets
+      $<TARGET_FILE:zrythm>
     COMMAND_EXPAND_LISTS
   )
 endif()

@@ -44,17 +44,34 @@ if(APPLE)
 
   add_custom_target(generate_icns ALL DEPENDS "${ZRYTHM_ICNS_FILE}")
 elseif(WIN32)
-  # --- Convert SVG → ICO using magick ---
+  # --- Convert SVG → ICO for installer icon ---
   add_custom_command(
     OUTPUT "${ZRYTHM_ICO_FILE}"
     COMMAND "${MAGICK_EXECUTABLE}" convert "${ZRYTHM_SVG_ICON}"
         -define icon:auto-resize=16,32,48,64,256  # Standard sizes
+        -alpha on
         "${ZRYTHM_ICO_FILE}"
     COMMENT "Converting SVG to .ico using ImageMagick..."
     VERBATIM
   )
+  # --- Convert SVG → BPM for installer banner ---
+  add_custom_command(
+    OUTPUT "${ZRYTHM_BMP_FILE}"
+    COMMAND "${MAGICK_EXECUTABLE}" convert "${ZRYTHM_SVG_ICON}"
+        -resize 240x459
+        -background white  # Fallback for transparent SVGs
+        -flatten
+        -define bmp:format=bmp3  # Windows 3.x format
+        "${ZRYTHM_BMP_FILE}"
+    COMMENT "Generating wizard bitmap..."
+    VERBATIM
+  )
 
-  add_custom_target(generate_ico ALL DEPENDS "${ZRYTHM_ICO_FILE}")
+  add_custom_target(generate_ico ALL
+    DEPENDS
+      "${ZRYTHM_ICO_FILE}"
+      "${ZRYTHM_BMP_FILE}"
+  )
 endif()
 
 # Install samples
