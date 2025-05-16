@@ -1428,10 +1428,9 @@ cpack_add_component(Runtime
 set(CPACK_COMPONENTS_ALL "Runtime")
 
 if(WIN32)
-  # Installer icon
-  set(CPACK_INNOSETUP_ICON_FILE "${ZRYTHM_ICO_FILE}")
   # Installer banner
   set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
+  set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/build-aux/README_windows_installer.md")
 elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
   set(CPACK_PACKAGE_ICON "${ZRYTHM_ICNS_FILE}")
@@ -1452,5 +1451,9 @@ set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
 SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\zrythm.exe")
 
 # INNO Setup generator
+set(CPACK_INNOSETUP_USE_MODERN_WIZARD ON)
+set(CPACK_INNOSETUP_ICON_FILE "${ZRYTHM_ICO_FILE}")
+set(CPACK_INNOSETUP_LANGUAGES "english;brazilianPortuguese;catalan;french;german;hebrew;italian;japanese;norwegian;polish;portuguese;russian;spanish;turkish;ukrainian")
+set(CPACK_INNOSETUP_RUN_EXECUTABLES "zrythm")
 
 include(CPack) # must be included after specifying the CPACK_ variables
