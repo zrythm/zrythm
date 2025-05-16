@@ -1324,6 +1324,7 @@ if(WIN32)
         # Distributing the VC redistributable violates the GPL
         # See: https://www.gnu.org/licenses/gpl-faq.html#RedistributingWindows
         --no-compiler-runtime
+        --no-system-d3d-compiler
         -qml -widgets -quick -quickwidgets
         \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
     )
@@ -1427,9 +1428,9 @@ cpack_add_component(Runtime
 set(CPACK_COMPONENTS_ALL "Runtime")
 
 if(WIN32)
-  # Installer banner
-  set(CPACK_INNOSETUP_ICON_FILE "${ZRYTHM_ICO_FILE}")
   # Installer icon
+  set(CPACK_INNOSETUP_ICON_FILE "${ZRYTHM_ICO_FILE}")
+  # Installer banner
   set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
 elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
