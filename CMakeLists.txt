@@ -1430,7 +1430,7 @@ set(CPACK_COMPONENTS_ALL "Runtime")
 if(WIN32)
   # Installer banner
   set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
-  set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/build-aux/README_windows_installer.md")
+  set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/build-aux/README_windows_installer.rtf")
 elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
   set(CPACK_PACKAGE_ICON "${ZRYTHM_ICNS_FILE}")

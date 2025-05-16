@@ -569,3 +569,8 @@ SPDX-License-Identifier = "LGPL-2.1-or-later"
 path = "ext/rubberband/**"
 SPDX-FileCopyrightText = "Copyright (c) 2007-18 robs@users.sourceforge.net"
 SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "build-aux/README_windows_installer.rtf"
+SPDX-FileCopyrightText = "2025 Alexandros Theodotou"
+SPDX-License-Identifier = "FSFAP"
