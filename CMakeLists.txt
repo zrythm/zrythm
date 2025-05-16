@@ -1325,6 +1325,8 @@ if(WIN32)
         # See: https://www.gnu.org/licenses/gpl-faq.html#RedistributingWindows
         --no-compiler-runtime
         --no-system-d3d-compiler
+        --no-system-dxc-compiler
+        --no-pdf
         -qml -widgets -quick -quickwidgets
         \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
     )
