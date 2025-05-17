@@ -1,0 +1,100 @@
+<!-- SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org> -->
+<!-- SPDX-License-Identifier: FSFAP -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Basic App Metadata -->
+  <key>CFBundleName</key>
+  <string>Zrythm</string>
+  <key>CFBundleDisplayName</key>
+  <string>Zrythm</string>
+  <key>CFBundleSpokenName</key>
+  <string>Zrythm</string>
+  <key>CFBundleExecutable</key>
+  <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+  <key>CFBundleIdentifier</key>
+  <string>${MACOSX_BUNDLE_GUI_IDENTIFIER}</string>
+  <key>CFBundleVersion</key>
+  <string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
+  <key>CFBundleShortVersionString</key>
+  <string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleIconFile</key>
+  <string>${MACOSX_BUNDLE_ICON_FILE}</string>
+  <key>CFBundleAllowMixedLocalizations</key>
+  <true/>
+  <key>CSResourcesFileMapped</key>
+  <true/>
+
+  <key>LSMinimumSystemVersion</key>
+  <string>${CMAKE_OSX_DEPLOYMENT_TARGET}</string>
+  <key>LSMultipleInstancesProhibited</key>
+  <true/>
+
+  <!-- macOS App Configuration -->
+  <key>NSPrincipalClass</key>
+  <string>NSApplication</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+  <key>NSSupportsAutomaticGraphicsSwitching</key>
+  <true/>
+  <key>NSHumanReadableCopyright</key>
+  <string>${MACOSX_BUNDLE_COPYRIGHT}</string>
+
+  <!-- DAW-Specific Permissions -->
+  <key>NSMicrophoneUsageDescription</key>
+  <string>This app needs microphone access for audio recording.</string>
+  <key>NSAudioDeviceUsageDescription</key>
+  <string>This app needs audio device access for playback and recording.</string>
+
+  <!-- File associations -->
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeName</key>
+      <string>Zrythm Project</string>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleTypeExtensions</key>
+      <array>
+        <string>zpj</string>
+      </array>
+      <key>CFBundleTypeIconFile</key>
+      <string>${MACOSX_BUNDLE_ICON_FILE}</string>
+      <key>LSHandlerRank</key>
+      <string>Owner</string>
+      <key>LSTypeIsPackage</key>
+      <false/>
+      <key>LSItemContentTypes</key>
+      <array>
+          <string>org.zrythm.zpj</string>
+      </array>
+    </dict>
+  </array>
+
+  <key>UTExportedTypeDeclarations</key>
+  <array>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>org.zrythm.zpj</string>
+      <key>UTTypeDescription</key>
+      <string>Zrythm Project File</string>
+      <key>UTTypeConformsTo</key>
+      <array>
+        <string>public.data</string>
+      </array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array>
+          <string>zpj</string>
+        </array>
+      </dict>
+    </dict>
+  </array>
+</dict>
+</plist>

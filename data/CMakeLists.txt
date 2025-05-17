@@ -24,8 +24,8 @@ if(APPLE)
 
   # --- Generate .icns ---
   add_custom_command(
-    OUTPUT "${ZRYTHM_ICNS_FILE}"
-    COMMAND iconutil -c icns "${_iconset_dir}" -o "${ZRYTHM_ICNS_FILE}"
+    OUTPUT "${ZRYTHM_ICNS_FILE_PATH}"
+    COMMAND iconutil -c icns "${_iconset_dir}" -o "${ZRYTHM_ICNS_FILE_PATH}"
     DEPENDS
       "${_iconset_dir}/icon_16x16.png"
       "${_iconset_dir}/icon_16x16@2x.png"
@@ -42,7 +42,13 @@ if(APPLE)
     COMMENT "Creating .icns file..."
   )
 
-  add_custom_target(generate_icns ALL DEPENDS "${ZRYTHM_ICNS_FILE}")
+  install(
+    FILES "${ZRYTHM_ICNS_FILE_PATH}"
+    DESTINATION "$<TARGET_BUNDLE_DIR_NAME:zrythm>/Contents/Resources"
+    COMPONENT Runtime
+  )
+
+  add_custom_target(generate_icns ALL DEPENDS "${ZRYTHM_ICNS_FILE_PATH}")
 elseif(WIN32)
   # --- Convert SVG → ICO for installer icon ---
   add_custom_command(

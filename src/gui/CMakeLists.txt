@@ -5,17 +5,28 @@
 # Resources & QML
 # ==============================================================================================
 
-# set(MACOSX_BUNDLE_GUI_IDENTIFIER ${bundle_identifier})
 qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
+
+set(_build_datetime "")
+if(APPLE)
+  execute_process(
+    COMMAND date "+%Y.%m.%d.%H%M"
+    OUTPUT_VARIABLE _build_datetime
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+endif()
 
 set_target_properties(zrythm PROPERTIES
   # note: separate variables by \n
   VS_DEBUGGER_ENVIRONMENT "ZRYTHM_SAMPLES_PATH=${CMAKE_SOURCE_DIR}/data/samples\nG_DEBUG=fatal_criticals"
   # note: separate variables by ;
   XCODE_SCHEME_ENVIRONMENT "ZRYTHM_SAMPLES_PATH=${CMAKE_SOURCE_DIR}/data/samples;G_DEBUG=fatal_criticals"
+  MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/data/platform/macos/Info.plist.in"
   MACOSX_BUNDLE_GUI_IDENTIFIER "${bundle_identifier}"
-  MACOSX_BUNDLE_BUNDLE_VERSION ${ZRYTHM_VERSION_STRING_FULL}
-  MACOSX_BUNDLE_SHORT_VERSION_STRING ${ZRYTHM_VERSION}
+  MACOSX_BUNDLE_ICON_FILE "${ZRYTHM_ICNS_FILE_NAME}"
+  MACOSX_BUNDLE_BUNDLE_VERSION "${_build_datetime}" # build identifier
+  MACOSX_BUNDLE_SHORT_VERSION_STRING "${ZRYTHM_VERSION}" # actual x.x.x version (no extra numbers allowed)
+  MACOSX_BUNDLE_COPYRIGHT "© ${copyright_years} ${copyright_name}"
   MACOSX_BUNDLE TRUE
   WIN32_EXECUTABLE TRUE
   UNITY_BUILD OFF # unity build is not supported by auto-generated Qt files
