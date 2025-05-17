@@ -161,6 +161,7 @@ configure:mac-arm:
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/homebrew/Cellar/lv2/1.18.10;/opt/Qt6.9"
       -DZRYTHM_UNITY_BUILD=ON
+      -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou (7C847PV5AW)"
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]

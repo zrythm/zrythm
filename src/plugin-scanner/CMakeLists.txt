@@ -13,10 +13,3 @@ target_include_directories(plugin-scanner
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/src
 )
-set_target_properties(plugin-scanner PROPERTIES
-  WIN32_EXECUTABLE TRUE
-)
-
-install(TARGETS plugin-scanner
-  COMPONENT Runtime
-)

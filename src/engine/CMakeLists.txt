@@ -8,10 +8,3 @@ qt_add_executable(zrythm-engine
 )
 
 target_link_libraries(zrythm-engine PRIVATE zrythm_dsp_lib)
-set_target_properties(zrythm-engine PROPERTIES
-  WIN32_EXECUTABLE TRUE
-)
-
-install(TARGETS zrythm-engine
-  COMPONENT Runtime
-)

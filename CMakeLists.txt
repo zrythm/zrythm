@@ -1338,6 +1338,7 @@ elseif(APPLE)
       COMMAND \"${MACDEPLOYQT_EXECUTABLE}\"
         \"\$\{CMAKE_INSTALL_PREFIX\}/$<TARGET_BUNDLE_DIR_NAME:zrythm>\"
         -qmldir=${CMAKE_BINARY_DIR}
+        -sign-for-notarization=\"${APPLE_APP_CODESIGN_IDENTITY}\"
     )
   "
   COMPONENT Runtime)

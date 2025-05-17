@@ -74,17 +74,21 @@ add_dependencies(zrythm zrythm-engine plugin-scanner)
 install(
   TARGETS
     zrythm
-  RUNTIME           # Following options apply to runtime artifacts.
+    plugin-scanner
+    zrythm-engine
+  RUNTIME
     COMPONENT Runtime
-  BUNDLE            # Following options apply to .app bundle artifacts.
+    # put helper executables inside the main zrythm app bundle on MacOS
+    DESTINATION $<IF:$<PLATFORM_ID:Darwin>,$<TARGET_BUNDLE_DIR_NAME:zrythm>/Contents/MacOS,${CMAKE_INSTALL_BINDIR}>
+  BUNDLE
     COMPONENT Runtime
     DESTINATION .
-  LIBRARY           # Following options apply to library artifacts.
+  LIBRARY
     COMPONENT Runtime
     NAMELINK_COMPONENT Development
-  ARCHIVE           # Following options apply to archive artifacts.
+  ARCHIVE
     COMPONENT Development
     DESTINATION lib/static
-  FILE_SET HEADERS  # Following options apply to file set HEADERS.
+  FILE_SET HEADERS
     COMPONENT Development
 )

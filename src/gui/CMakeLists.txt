@@ -89,7 +89,6 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/
   COMPONENT Runtime
 )
 
-
 # font files
 set(font_filepaths
   ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/NotoSans/NotoSans-VariableFont_wdth_wght.ttf
