@@ -930,8 +930,8 @@ FetchContent_MakeAvailable(magic_enum)
 FetchContent_Declare(
   fmt
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  # 11.0.2
-  GIT_TAG 0c9fce2ffefecfdce794e1859584e25877b7b592
+  # 11.2.0
+  GIT_TAG 40626af88bd7df9a5fb80be7b25ac85b122d6c21
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES fmt REQUIRED
   EXCLUDE_FROM_ALL
@@ -943,8 +943,8 @@ FetchContent_MakeAvailable(fmt)
 FetchContent_Declare(
   spdlog
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  # 1.15.0
-  GIT_TAG 8e5613379f5140fefb0b60412fbf1f5406e7c7f8
+  # 1.15.3
+  GIT_TAG 6fa36017cfd5731d617e1a934f0e5ea9c4445b13
   GIT_SHALLOW TRUE
   FIND_PACKAGE_ARGS NAMES spdlog REQUIRED
   EXCLUDE_FROM_ALL
@@ -1145,7 +1145,6 @@ file(COPY
 configure_file(
   src/zrythm-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/zrythm-config.h)
 
-# Plugins for testing
 # Plugins for testing
 set(ext_lv2_plugins
   "ams_lfo|AMS LFO|http://github.com/blablack/ams-lv2/lfo"
