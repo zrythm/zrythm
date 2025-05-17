@@ -12,12 +12,25 @@ if(APPLE)
   set(_icon_sizes 16 32 64 128 256 512)
   foreach(SIZE IN LISTS _icon_sizes)
     math(EXPR SIZE_2X "${SIZE} * 2")
+    # Calculate padding from base 512px size (49.5px)
+    math(EXPR PADDING "49.5 * ${SIZE} / 512")
+    math(EXPR PADDING_2X "49.5 * ${SIZE_2X} / 512")
+    math(EXPR INNER_ICON_SIZE "${SIZE} - 2 * ${PADDING}")
+    math(EXPR INNER_ICON_SIZE_2X "${SIZE_2X} - 2 * ${PADDING_2X}")
     add_custom_command(
       OUTPUT
         "${_iconset_dir}/icon_${SIZE}x${SIZE}.png"
         "${_iconset_dir}/icon_${SIZE}x${SIZE}@2x.png"
-      COMMAND ${RSVG_CONVERT_EXECUTABLE} -w ${SIZE} -h ${SIZE} "${ZRYTHM_SVG_ICON}" -o "${_iconset_dir}/icon_${SIZE}x${SIZE}.png"
-      COMMAND ${RSVG_CONVERT_EXECUTABLE} -w ${SIZE_2X} -h ${SIZE_2X} "${ZRYTHM_SVG_ICON}" -o "${_iconset_dir}/icon_${SIZE}x${SIZE}@2x.png"
+      COMMAND ${RSVG_CONVERT_EXECUTABLE}
+        -w ${INNER_ICON_SIZE} -h ${INNER_ICON_SIZE}
+        --page-width ${SIZE} --page-height ${SIZE}
+        --top ${PADDING} --left ${PADDING}
+        "${ZRYTHM_SVG_ICON}" -o "${_iconset_dir}/icon_${SIZE}x${SIZE}.png"
+      COMMAND ${RSVG_CONVERT_EXECUTABLE}
+        -w ${INNER_ICON_SIZE_2X} -h ${INNER_ICON_SIZE_2X}
+        --page-width ${SIZE_2X} --page-height ${SIZE_2X}
+        --top ${PADDING_2X} --left ${PADDING_2X}
+        "${ZRYTHM_SVG_ICON}" -o "${_iconset_dir}/icon_${SIZE}x${SIZE}@2x.png"
       COMMENT "Generating ${SIZE}x${SIZE} icons..."
     )
   endforeach()

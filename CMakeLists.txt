@@ -1331,7 +1331,6 @@ elseif(APPLE)
         \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
         -qmldir=${CMAKE_BINARY_DIR}
         -always-overwrite
-        -codesign=\"${APPLE_APP_CODESIGN_IDENTITY}\"
         \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:plugin-scanner>\"
         \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:zrythm-engine>\"
       COMMAND_ERROR_IS_FATAL ANY
@@ -1343,6 +1342,8 @@ elseif(APPLE)
         COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_and_notarize_app.sh\"
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
           \"${APPLE_APP_CODESIGN_IDENTITY}\"
+          # this is optional and can be passed via cmake argument
+          # if not given, env variables are used (see the invoked script)
           \"${APPLE_APP_NOTARY_KEYCHAIN_PROFILE}\"
         COMMAND_ERROR_IS_FATAL ANY
       )
