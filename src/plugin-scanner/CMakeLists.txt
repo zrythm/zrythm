@@ -1,7 +1,8 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(plugin-scanner
+  WIN32 # not a GUI application but build fails otherwise
   plugin_scanner_subprocess.h
   plugin_scanner_subprocess.cpp
 )

@@ -6,6 +6,7 @@ set -e
 
 app_bundle="$1"
 app_bundle_zip="$1.zip"
+codesign_identity="$2"
 
 codesign \
   --deep --force --verbose \

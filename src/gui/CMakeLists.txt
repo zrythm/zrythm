@@ -26,7 +26,7 @@ set_target_properties(zrythm PROPERTIES
   MACOSX_BUNDLE_GUI_IDENTIFIER "${bundle_identifier}"
   MACOSX_BUNDLE_ICON_FILE "${ZRYTHM_ICNS_FILE_NAME}"
   MACOSX_BUNDLE_BUNDLE_VERSION "${_build_datetime}" # build identifier
-  MACOSX_BUNDLE_SHORT_VERSION_STRING "${ZRYTHM_VERSION}" # actual x.x.x version (no extra numbers allowed)
+  MACOSX_BUNDLE_SHORT_VERSION_STRING "${ZRYTHM_VERSION_MAJOR}.${ZRYTHM_VERSION_MINOR}.${ZRYTHM_VERSION_PATCH}" # actual x.x.x version (no extra numbers allowed)
   MACOSX_BUNDLE_COPYRIGHT "© ${copyright_years} ${copyright_name}"
   MACOSX_BUNDLE TRUE
   WIN32_EXECUTABLE TRUE

@@ -1332,6 +1332,7 @@ elseif(APPLE)
         \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
         -qmldir=${CMAKE_BINARY_DIR}
         -always-overwrite
+        -codesign=\"${APPLE_APP_CODESIGN_IDENTITY}\"
         \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:plugin-scanner>\"
         \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:zrythm-engine>\"
       COMMAND_ERROR_IS_FATAL ANY
@@ -1350,6 +1351,7 @@ elseif(APPLE)
       execute_process(
         COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_app_for_debug.sh\"
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
+          \"${APPLE_APP_CODESIGN_IDENTITY}\"
         COMMAND_ERROR_IS_FATAL ANY
       )
     endif()
