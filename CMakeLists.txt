@@ -1315,7 +1315,6 @@ if(WIN32)
         --no-compiler-runtime
         --no-system-d3d-compiler
         --no-system-dxc-compiler
-        --no-pdf
         -qml -widgets -quick -quickwidgets
         \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
       COMMAND_ERROR_IS_FATAL ANY
