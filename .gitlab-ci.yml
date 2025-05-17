@@ -87,10 +87,7 @@ default:
       - venv
       - '${BUILDDIR}*/_deps/*-src'
 
-# Assumes Qt is configured with:
-# -prefix /opt/Qt6.9-Release -release -no-gtk -qt-zlib -qt-libjpeg -qt-libpng
-# -qt-freetype -qt-pcre -qt-harfbuzz -opensource -confirm-license -skip qtgrpc
-# (for debug just change -release to -debug and update the -prefix)
+# (see build-aux/Dockerfile for Qt build flags)
 configure:gnu/linux:
   extends: .gnu-linux-template
   stage: setup

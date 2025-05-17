@@ -70,6 +70,7 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.24)
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 # set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_EXECUTE_PROCESS_COMMAND_ERROR_IS_FATAL ANY)
 
 # Prefer static libraries for easier linking
 set(BUILD_SHARED_LIBS OFF)
@@ -1331,8 +1332,8 @@ elseif(APPLE)
         \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
         -qmldir=${CMAKE_BINARY_DIR}
         -always-overwrite
-        -executable=\"\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:plugin-scanner>\"
-        -executable=\"\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:zrythm-engine>\"
+        \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:plugin-scanner>\"
+        \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:zrythm-engine>\"
     )
 
     # Code sign (& notarize) the app bundle
