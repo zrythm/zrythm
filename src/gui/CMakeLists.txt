@@ -21,6 +21,7 @@ set_target_properties(zrythm PROPERTIES
   VS_DEBUGGER_ENVIRONMENT "ZRYTHM_SAMPLES_PATH=${CMAKE_SOURCE_DIR}/data/samples\nG_DEBUG=fatal_criticals"
   # note: separate variables by ;
   XCODE_SCHEME_ENVIRONMENT "ZRYTHM_SAMPLES_PATH=${CMAKE_SOURCE_DIR}/data/samples;G_DEBUG=fatal_criticals"
+  MACOSX_BUNDLE_BUNDLE_NAME "Zrythm"
   MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/data/platform/macos/Info.plist.in"
   MACOSX_BUNDLE_GUI_IDENTIFIER "${bundle_identifier}"
   MACOSX_BUNDLE_ICON_FILE "${ZRYTHM_ICNS_FILE_NAME}"

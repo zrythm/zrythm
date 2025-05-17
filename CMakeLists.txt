@@ -1340,7 +1340,7 @@ elseif(APPLE)
     # Code sign (& notarize) the app bundle
     if($<CONFIG:Release>)
       execute_process(
-        COMMAND \"\$\{CMAKE_SOURCE_DIR\}/scripts/mac_codesign_and_notarize_app.sh\"
+        COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_and_notarize_app.sh\"
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
           \"${APPLE_APP_CODESIGN_IDENTITY}\"
           \"${APPLE_APP_NOTARY_KEYCHAIN_PROFILE}\"
@@ -1348,7 +1348,7 @@ elseif(APPLE)
       )
     else()
       execute_process(
-        COMMAND \"\$\{CMAKE_SOURCE_DIR\}/scripts/mac_codesign_app_for_debug.sh\"
+        COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_app_for_debug.sh\"
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
         COMMAND_ERROR_IS_FATAL ANY
       )

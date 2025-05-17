@@ -6,7 +6,7 @@
 <dict>
   <!-- Basic App Metadata -->
   <key>CFBundleName</key>
-  <string>Zrythm</string>
+  <string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
   <key>CFBundleDisplayName</key>
   <string>Zrythm</string>
   <key>CFBundleSpokenName</key>
