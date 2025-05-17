@@ -70,7 +70,6 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.24)
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 # set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_EXECUTE_PROCESS_COMMAND_ERROR_IS_FATAL ANY)
 
 # Prefer static libraries for easier linking
 set(BUILD_SHARED_LIBS OFF)
@@ -1319,6 +1318,7 @@ if(WIN32)
         --no-pdf
         -qml -widgets -quick -quickwidgets
         \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
+      COMMAND_ERROR_IS_FATAL ANY
     )
   "
   COMPONENT Runtime)
@@ -1334,6 +1334,7 @@ elseif(APPLE)
         -always-overwrite
         \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:plugin-scanner>\"
         \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:zrythm-engine>\"
+      COMMAND_ERROR_IS_FATAL ANY
     )
 
     # Code sign (& notarize) the app bundle
@@ -1343,11 +1344,13 @@ elseif(APPLE)
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
           \"${APPLE_APP_CODESIGN_IDENTITY}\"
           \"${APPLE_APP_NOTARY_KEYCHAIN_PROFILE}\"
+        COMMAND_ERROR_IS_FATAL ANY
       )
     else()
       execute_process(
         COMMAND \"\$\{CMAKE_SOURCE_DIR\}/scripts/mac_codesign_app_for_debug.sh\"
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
+        COMMAND_ERROR_IS_FATAL ANY
       )
     endif()
   "
@@ -1404,6 +1407,7 @@ else()
       COMMAND sh -c "gcc --print-file-name=libstdc++.so"
       OUTPUT_VARIABLE _libstdcxx_path
       OUTPUT_STRIP_TRAILING_WHITESPACE
+      COMMAND_ERROR_IS_FATAL ANY
     )
     get_filename_component(_libstdcxx_path "${_libstdcxx_path}" REALPATH)
     install(

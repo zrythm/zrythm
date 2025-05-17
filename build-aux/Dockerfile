@@ -110,6 +110,7 @@ RUN wget https://download.qt.io/official_releases/qt/6.9/6.9.0/single/qt-everywh
     ../configure -prefix /usr/local -release -no-gtk -qt-zlib -qt-libjpeg \
     -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -opensource \
     -confirm-license -skip qtgrpc -skip qtdoc -skip qtwebengine \
+    -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport \
     -xcb -unity-build -pch -force-bundled-libs && \
     cmake --build . --parallel && \
     cmake --install . && \
