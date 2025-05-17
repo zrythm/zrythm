@@ -12,21 +12,6 @@ DirectoryManager::get_prefix () const
 {
   // return parent path of the executable's owner path (1 level above "bin")
   return application_dir_path_provider_ ().parent_path ();
-#if 0
-#  if defined(_WIN32) && ZRYTHM_IS_INSTALLER_VER
-  return io_get_registry_string_val ("InstallPath");
-#  elif defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
-  char bundle_path[PATH_MAX];
-  int  ret = io_get_bundle_path (bundle_path);
-  z_return_val_if_fail (ret == 0, nullptr);
-  return io_path_get_parent_dir (bundle_path);
-#  elif defined(APPIMAGE_BUILD)
-  z_return_val_if_fail (zrythm_app->appimage_runtime_path, nullptr);
-  return g_build_filename (zrythm_app->appimage_runtime_path, "usr", nullptr);
-#  else
-  return ZRYTHM_PREFIX;
-#  endif
-#endif
 }
 
 fs::path

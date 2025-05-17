@@ -41,7 +41,6 @@ Metronome::Metronome (AudioEngine &engine)
         }
       else
         {
-
           auto &dir_mgr =
             dynamic_cast<gui::ZrythmApplication *> (qApp)
               ->get_directory_manager ();

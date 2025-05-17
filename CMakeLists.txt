@@ -1266,17 +1266,6 @@ if(ZRYTHM_TESTS)
   endif()
 endif()
 
-# Copy DLLs needed for the target at runtime to the target's directory
-# (currently unused)
-function(copy_dlls_to_target TARGET_NAME)
-  if(WIN32)
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${TARGET_NAME}> $<TARGET_RUNTIME_DLLS:${TARGET_NAME}>
-      COMMAND_EXPAND_LISTS
-    )
-  endif()
-endfunction()
-
 # Add subdirectories
 add_subdirectory(po)
 add_subdirectory(data)
@@ -1334,12 +1323,32 @@ if(WIN32)
   COMPONENT Runtime)
 elseif(APPLE)
   install(CODE "
+    set(ZRYTHM_APP_BUNDLE_DIR \"\$\{CMAKE_INSTALL_PREFIX\}/$<TARGET_BUNDLE_DIR_NAME:zrythm>\")
+
+    # Deploy Qt dependencies
     execute_process(
       COMMAND \"${MACDEPLOYQT_EXECUTABLE}\"
-        \"\$\{CMAKE_INSTALL_PREFIX\}/$<TARGET_BUNDLE_DIR_NAME:zrythm>\"
+        \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
         -qmldir=${CMAKE_BINARY_DIR}
-        -sign-for-notarization=\"${APPLE_APP_CODESIGN_IDENTITY}\"
+        -always-overwrite
+        -executable=\"\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:plugin-scanner>\"
+        -executable=\"\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:zrythm-engine>\"
     )
+
+    # Code sign (& notarize) the app bundle
+    if($<CONFIG:Release>)
+      execute_process(
+        COMMAND \"\$\{CMAKE_SOURCE_DIR\}/scripts/mac_codesign_and_notarize_app.sh\"
+          \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
+          \"${APPLE_APP_CODESIGN_IDENTITY}\"
+          \"${APPLE_APP_NOTARY_KEYCHAIN_PROFILE}\"
+      )
+    else()
+      execute_process(
+        COMMAND \"\$\{CMAKE_SOURCE_DIR\}/scripts/mac_codesign_app_for_debug.sh\"
+          \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
+      )
+    endif()
   "
   COMPONENT Runtime)
 else()
