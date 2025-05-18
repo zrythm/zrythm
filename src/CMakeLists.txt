@@ -92,3 +92,15 @@ install(
   FILE_SET HEADERS
     COMPONENT Development
 )
+
+if(MSVC)
+  set(_targets_to_install_pdb_for zrythm zrythm-engine plugin-scanner)
+  foreach(_target ${_targets_to_install_pdb_for})
+    install(
+      FILES $<TARGET_PDB_FILE:${_target}>
+      COMPONENT Runtime
+      DESTINATION ${CMAKE_INSTALL_BINDIR}
+      CONFIGURATIONS Debug RelWithDebInfo
+    )
+  endforeach()
+endif()

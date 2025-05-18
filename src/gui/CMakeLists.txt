@@ -95,12 +95,14 @@ foreach(dir ${icon_dirs})
   endforeach()
 endforeach()
 
-# Install app icon
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/apps/zrythm.svg"
-  RENAME "org.zrythm.Zrythm.svg"
-  DESTINATION "share/icons/hicolor/scalable/apps"
-  COMPONENT Runtime
-)
+if(OS_GNU)
+  # Install app icon
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/apps/zrythm.svg"
+    RENAME "org.zrythm.Zrythm.svg"
+    DESTINATION "share/icons/hicolor/scalable/apps"
+    COMPONENT Runtime
+  )
+endif()
 
 # font files
 set(font_filepaths
