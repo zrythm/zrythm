@@ -2,6 +2,9 @@
 # SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+# This also notarizes the app inside the dmg, so no need to notarize the .app
+# separately
+
 set -e
 
 dmg_file="$1"

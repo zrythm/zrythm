@@ -64,12 +64,6 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
           }
         case DirectoryManager::DirectoryType::SYSTEM_LOCALEDIR:
           return prefix / DATADIR_NAME / "locale";
-        case DirectoryManager::DirectoryType::SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR:
-          return prefix / DATADIR_NAME / "gtksourceview-5" / "language-specs";
-        case DirectoryManager::DirectoryType::
-          SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR:
-          return prefix / DATADIR_NAME / "zrythm" / "gtksourceview-5"
-                 / "language-specs";
         case DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_DATADIR:
           return prefix / DATADIR_NAME / "zrythm";
         case DirectoryManager::DirectoryType::SYSTEM_SAMPLESDIR:
@@ -92,8 +86,6 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
           }
         case DirectoryManager::DirectoryType::SYSTEM_SPECIAL_LV2_PLUGINS_DIR:
           return prefix / DATADIR_NAME / "zrythm" / "lv2";
-        case DirectoryManager::DirectoryType::SYSTEM_FONTSDIR:
-          return prefix / DATADIR_NAME / "fonts" / "zrythm";
         case DirectoryManager::DirectoryType::SYSTEM_TEMPLATES:
           return prefix / DATADIR_NAME / "zrythm" / "templates";
         default:

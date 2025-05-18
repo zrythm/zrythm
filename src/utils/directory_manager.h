@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_DIRECTORY_MANAGER_H__
-#define __UTILS_DIRECTORY_MANAGER_H__
+#pragma once
 
 #include <utility>
 
@@ -52,16 +51,6 @@ public:
     /** Localization under "share". */
     SYSTEM_LOCALEDIR,
 
-    /**
-     * "gtksourceview-5/language-specs" under "share".
-     */
-    SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR,
-
-    /**
-     * "gtksourceview-5/language-specs" under "share/zrythm".
-     */
-    SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR,
-
     /** share/zrythm */
     SYSTEM_ZRYTHM_DATADIR,
 
@@ -87,9 +76,6 @@ public:
      * Used for ZLFO and other plugins.
      */
     SYSTEM_SPECIAL_LV2_PLUGINS_DIR,
-
-    /** The directory fonts/zrythm under datadir. */
-    SYSTEM_FONTSDIR,
 
     /** Project templates. */
     SYSTEM_TEMPLATES,
@@ -219,5 +205,3 @@ struct TestingDirectoryManager : public IDirectoryManager
   /** Zrythm directory used during unit tests. */
   fs::path testing_dir_;
 };
-
-#endif // __UTILS_DIRECTORY_MANAGER_H__

@@ -158,7 +158,7 @@ configure:mac-arm:
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/homebrew/Cellar/lv2/1.18.10;/opt/Qt6.9"
       -DZRYTHM_UNITY_BUILD=ON
-      -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou (7C847PV5AW)"
+      -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -313,9 +313,9 @@ build:mac-arm:
     - cpack -G "DragNDrop" -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
     - >-
       if [ "${BUILD_TYPE}" = "Release" ]; then
-        scripts/mac_codesign_and_notarize_dmg.sh "package-${BUILD_TYPE}"/*.dmg "Developer ID Installer: Alexandros Theodotou (7C847PV5AW)"
+        scripts/mac_codesign_and_notarize_dmg.sh "package-${BUILD_TYPE}"/*.dmg "Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
       else
-        scripts/mac_codesign_dmg_for_debug.sh "package-${BUILD_TYPE}"/*.dmg "Developer ID Installer: Alexandros Theodotou (7C847PV5AW)"
+        scripts/mac_codesign_dmg_for_debug.sh "package-${BUILD_TYPE}"/*.dmg "Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
       fi
   parallel:
     matrix:

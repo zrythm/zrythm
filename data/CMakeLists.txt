@@ -8,11 +8,10 @@ if(APPLE)
   set(_iconset_dir "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.iconset")
   file(MAKE_DIRECTORY "${_iconset_dir}")
 
-  # --- Generate all PNG sizes directly from SVG ---
+  # --- Generate all PNG sizes (with padding) directly from SVG ---
   set(_icon_sizes 16 32 64 128 256 512)
   foreach(SIZE IN LISTS _icon_sizes)
     math(EXPR SIZE_2X "${SIZE} * 2")
-    # Calculate padding from base 512px size (49.5px)
     math(EXPR PADDING "(100 * ${SIZE}) / 1024")
     math(EXPR PADDING_2X "(100 * ${SIZE_2X}) / 1024")
     math(EXPR INNER_ICON_SIZE "${SIZE} - 2 * ${PADDING}")

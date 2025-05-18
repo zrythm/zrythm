@@ -1336,27 +1336,23 @@ elseif(APPLE)
       COMMAND_ERROR_IS_FATAL ANY
     )
 
-    # Code sign (& notarize) the app bundle
-    if($<CONFIG:Release>)
-      execute_process(
-        COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_and_notarize_app.sh\"
-          \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
-          \"${APPLE_APP_CODESIGN_IDENTITY}\"
-          \"${CMAKE_SOURCE_DIR}/data/platform/macos/Zrythm.entitlements\"
-          # this is optional and can be passed via cmake argument
-          # if not given, env variables are used (see the invoked script)
-          \"${APPLE_APP_NOTARY_KEYCHAIN_PROFILE}\"
-        COMMAND_ERROR_IS_FATAL ANY
-      )
-    else()
-      execute_process(
-        COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_app_for_debug.sh\"
-          \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
-          \"${APPLE_APP_CODESIGN_IDENTITY}\"
-          \"${CMAKE_SOURCE_DIR}/data/platform/macos/Zrythm.entitlements\"
-        COMMAND_ERROR_IS_FATAL ANY
-      )
-    endif()
+    # Code sign the app bundle
+    # No need to notarize since we'll notarize the .dmg later, and it covers
+    # the .app too
+    execute_process(
+      COMMAND codesign
+        --deep --force --verbose $<$<CONFIG:Release>:--options;runtime> --timestamp
+        --entitlements \"${CMAKE_SOURCE_DIR}/data/platform/macos/Zrythm.entitlements\"
+        --sign \"${APPLE_APP_CODESIGN_IDENTITY}\"
+        \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
+      COMMAND_ERROR_IS_FATAL ANY
+    )
+    execute_process(
+      COMMAND codesign
+      --verify --deep --verbose
+      \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
+      COMMAND_ERROR_IS_FATAL ANY
+    )
   "
   COMPONENT Runtime)
 else()
