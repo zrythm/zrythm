@@ -4,15 +4,11 @@
 
 set -e
 
-app_bundle="$1"
+dmg_bundle="$1"
 codesign_identity="$2"
-entitlements_file_path="$3"
 
 codesign \
-  --deep --force --verbose \
-  --entitlements "$entitlements_file_path" \
+  --force --verbose \
   --sign "$codesign_identity" \
-  "$app_bundle"
-codesign \
-  --verify --deep --verbose \
-  "$app_bundle"
+  "$dmg_bundle"
+codesign --verify --verbose "$dmg_bundle"
