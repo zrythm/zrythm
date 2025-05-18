@@ -54,6 +54,13 @@ target_link_libraries(zrythm_gui_lib
 )
 target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_dsp_lib)
 
+# add resource file with icon
+if(WIN32)
+  set(_rc_file "${CMAKE_CURRENT_BINARY_DIR}/app_icon.rc")
+  file(WRITE ${_rc_file} "IDI_ICON1 ICON \"${ZRYTHM_ICO_FILE}\"\n")
+  target_sources(zrythm PRIVATE ${_rc_file})
+endif()
+
 target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_gui_lib)
 
@@ -65,7 +72,7 @@ if(WIN32)
   if(MSVC)
     target_link_options(zrythm PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
   endif()
-  target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
+  # target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
 endif()
 
 add_subdirectory(engine)
@@ -75,7 +82,6 @@ install(
   TARGETS
     zrythm
     plugin-scanner
-    zrythm-engine
   RUNTIME
     COMPONENT Runtime
     # put helper executables inside the main zrythm app bundle on MacOS
@@ -94,7 +100,7 @@ install(
 )
 
 if(MSVC)
-  set(_targets_to_install_pdb_for zrythm zrythm-engine plugin-scanner)
+  set(_targets_to_install_pdb_for zrythm plugin-scanner)
   foreach(_target ${_targets_to_install_pdb_for})
     install(
       FILES $<TARGET_PDB_FILE:${_target}>

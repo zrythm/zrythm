@@ -56,6 +56,8 @@ project(zrythm
 if (APPLE)
   enable_language(OBJC)
   enable_language(OBJCXX)
+elseif(WIN32)
+  enable_language(RC)
 endif()
 
 set(CMAKE_C_STANDARD 17)
@@ -273,7 +275,7 @@ set(PLUGIN_SCANNER_UUID "f47ac10b")
 set(ZRYTHM_SVG_ICON "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/icons/zrythm-dark/scalable/apps/zrythm.svg")
 set(ZRYTHM_ICNS_FILE_NAME "Zrythm.icns")
 set(ZRYTHM_ICNS_FILE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${ZRYTHM_ICNS_FILE_NAME}")
-set(ZRYTHM_ICO_FILE "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.ico")
+set(ZRYTHM_ICO_FILE "${CMAKE_CURRENT_SOURCE_DIR}/data/platform/windows/zrythm.ico")
 set(ZRYTHM_BMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/Zrythm.bmp")
 
 # if latest version in changelog is the project's

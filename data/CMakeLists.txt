@@ -62,16 +62,6 @@ if(APPLE)
 
   add_custom_target(generate_icns ALL DEPENDS "${ZRYTHM_ICNS_FILE_PATH}")
 elseif(WIN32)
-  # --- Convert SVG → ICO for installer icon ---
-  add_custom_command(
-    OUTPUT "${ZRYTHM_ICO_FILE}"
-    COMMAND "${MAGICK_EXECUTABLE}" convert "${ZRYTHM_SVG_ICON}"
-      -background transparent
-      -define icon:auto-resize=16,32,48,64,256  # Standard sizes
-      "${ZRYTHM_ICO_FILE}"
-    COMMENT "Converting SVG to .ico using ImageMagick..."
-    VERBATIM
-  )
   # --- Convert SVG → BPM for installer banner ---
   add_custom_command(
     OUTPUT "${ZRYTHM_BMP_FILE}"
@@ -84,12 +74,7 @@ elseif(WIN32)
     COMMENT "Generating wizard bitmap..."
     VERBATIM
   )
-
-  add_custom_target(generate_ico ALL
-    DEPENDS
-      "${ZRYTHM_ICO_FILE}"
-      "${ZRYTHM_BMP_FILE}"
-  )
+  add_custom_target(generate_ico ALL DEPENDS "${ZRYTHM_BMP_FILE}")
 endif()
 
 # Install samples
@@ -102,7 +87,7 @@ install(
 )
 
 # Configure and install launcher scripts
-if(UNIX)
+if(OS_GNU)
   if(ZRYTHM_IS_FLATPAK)
     set(FLATPAK_BUILD_ONE_OR_ZERO 1)
   else()
@@ -123,9 +108,7 @@ if(UNIX)
     TYPE BIN
     COMPONENT Runtime
   )
-endif()
 
-if(OS_GNU)
   configure_file(zrythm_gdb.in ${prog_name_lowercase}_gdb @ONLY)
   configure_file(zrythm_valgrind.in ${prog_name_lowercase}_valgrind @ONLY)
   install(PROGRAMS
@@ -260,4 +243,4 @@ add_subdirectory(plugins)
 set(BUNDLED_PLUGINS_FOR_TESTS "${BUNDLED_PLUGINS_FOR_TESTS}" PARENT_SCOPE)
 set(BUNDLED_PLUGINS_FOR_TESTS_TGTS "${BUNDLED_PLUGINS_FOR_TESTS_TGTS}" PARENT_SCOPE)
 
-add_subdirectory(windows)
+add_subdirectory(platform)
