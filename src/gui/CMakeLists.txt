@@ -28,6 +28,7 @@ set_target_properties(zrythm PROPERTIES
   MACOSX_BUNDLE_BUNDLE_VERSION "${_build_datetime}" # build identifier
   MACOSX_BUNDLE_SHORT_VERSION_STRING "${ZRYTHM_VERSION_MAJOR}.${ZRYTHM_VERSION_MINOR}.${ZRYTHM_VERSION_PATCH}" # actual x.x.x version (no extra numbers allowed)
   MACOSX_BUNDLE_COPYRIGHT "© ${copyright_years} ${copyright_name}"
+  XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/data/platform/macos/Zrythm.entitlements"
   MACOSX_BUNDLE TRUE
   WIN32_EXECUTABLE TRUE
   UNITY_BUILD OFF # unity build is not supported by auto-generated Qt files

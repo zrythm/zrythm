@@ -1342,6 +1342,7 @@ elseif(APPLE)
         COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_and_notarize_app.sh\"
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
           \"${APPLE_APP_CODESIGN_IDENTITY}\"
+          \"${CMAKE_SOURCE_DIR}/data/platform/macos/Zrythm.entitlements\"
           # this is optional and can be passed via cmake argument
           # if not given, env variables are used (see the invoked script)
           \"${APPLE_APP_NOTARY_KEYCHAIN_PROFILE}\"
@@ -1352,6 +1353,7 @@ elseif(APPLE)
         COMMAND \"${CMAKE_SOURCE_DIR}/scripts/mac_codesign_app_for_debug.sh\"
           \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
           \"${APPLE_APP_CODESIGN_IDENTITY}\"
+          \"${CMAKE_SOURCE_DIR}/data/platform/macos/Zrythm.entitlements\"
         COMMAND_ERROR_IS_FATAL ANY
       )
     endif()

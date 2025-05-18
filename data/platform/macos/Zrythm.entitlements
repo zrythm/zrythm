@@ -1,0 +1,31 @@
+<!-- SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org> -->
+<!-- SPDX-License-Identifier: FSFAP -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Audio & MIDI Hardware Access -->
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
+    <key>com.apple.security.device.microphone</key>
+    <true/>
+    <key>com.apple.security.device.usb</key>
+    <true/>
+
+    <!-- File System Access (for project files, samples, plugins) -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    <key>com.apple.security.files.downloads.read-write</key>
+    <true/>
+    <key>com.apple.security.assets.music.read-write</key>
+    <true/>
+
+    <!-- Network (for plugin validation, updates, collaboration) -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!-- Disable sandbox (only needed for Mac App Store) -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+</dict>
+</plist>

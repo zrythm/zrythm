@@ -7,10 +7,12 @@ set -e
 app_bundle="$1"
 app_bundle_zip="$1.zip"
 codesign_identity="$2"
-notarization_keychain_profile="$3"
+entitlements_file_path="$3"
+notarization_keychain_profile="$4"
 
 codesign \
   --deep --force --verbose --options runtime --timestamp \
+  --entitlements "$entitlements_file_path" \
   --sign "$codesign_identity" \
   "$app_bundle"
 codesign \
