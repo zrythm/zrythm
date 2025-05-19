@@ -743,7 +743,7 @@ Channel::connect_plugins ()
   for (const auto i : std::views::iota (0, 3))
     {
       zrythm::dsp::PluginSlotType slot_type;
-      for (const auto j : std::views::iota (0zu, dsp::STRIP_SIZE))
+      for (const auto j : std::views::iota (0_zu, dsp::STRIP_SIZE))
         {
           Channel::Plugin *                  plugin = nullptr;
           const auto                         slot = j;

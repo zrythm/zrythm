@@ -38,6 +38,13 @@
 using namespace magic_enum::bitwise_operators;
 using namespace std::literals;
 
+// For compilers without __cpp_size_t_suffix
+constexpr size_t
+operator"" _zu (unsigned long long int x)
+{
+  return static_cast<size_t> (x);
+}
+
 /**
  * @addtogroup utils
  *

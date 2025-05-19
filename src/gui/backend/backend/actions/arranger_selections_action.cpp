@@ -861,7 +861,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                        * in the same lane */
                       for (
                         const auto _ :
-                        std::views::iota (index + 1zu, sel_after_span.size ()))
+                        std::views::iota (index + 1_zu, sel_after_span.size ()))
                         {
                           if (
                             track_id_before_move

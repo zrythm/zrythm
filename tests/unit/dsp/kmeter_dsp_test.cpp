@@ -94,7 +94,7 @@ TEST_F (KMeterDspTest, RMSCalculation)
 {
   // Test with a sine wave
   std::vector<float> signal (1024);
-  for (const auto i : std::views::iota (0zu, signal.size ()))
+  for (const auto i : std::views::iota (0_zu, signal.size ()))
     {
       signal[i] = std::sin (
         2.0f * std::numbers::pi_v<float> * static_cast<float> (i) / 32.0f);

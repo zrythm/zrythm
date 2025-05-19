@@ -546,7 +546,7 @@ SampleProcessor::queue_file_or_chord_preset (
                             audio_engine_->ticks_per_frame_);
                           for (
                             const auto k : std::views::iota (
-                              0zu, dsp::ChordDescriptor::MAX_NOTES))
+                              0_zu, dsp::ChordDescriptor::MAX_NOTES))
                             {
                               if (descr.notes_[k])
                                 {

@@ -1331,7 +1331,6 @@ elseif(APPLE)
         -qmldir=${CMAKE_BINARY_DIR}
         -always-overwrite
         \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:plugin-scanner>\"
-        \"-executable=\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/MacOS/$<TARGET_FILE_NAME:zrythm-engine>\"
       COMMAND_ERROR_IS_FATAL ANY
     )
 

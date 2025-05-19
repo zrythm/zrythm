@@ -391,7 +391,7 @@ public:
   std::unique_ptr<MidiMappings> cc_mappings_;
 
   /** MIDI CC control ports, 16 channels x 128 controls. */
-  std::unique_ptr<std::array<PortUuidReference, 16zu * 128>> midi_cc_ids_;
+  std::unique_ptr<std::array<PortUuidReference, 16_zu * 128>> midi_cc_ids_;
 
   using SixteenPortUuidArray = std::array<PortUuidReference, 16>;
 

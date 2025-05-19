@@ -169,6 +169,12 @@ configure:mac-arm:
       - ${BUILDDIR}-${BUILD_TYPE}/**/.git/**/*
     expire_in: 1 day
 
+# Memo - Qt configured with (-pch option caused failures in release build):
+# configure.bat -skip qtgrpc -release -prefix 'C:\Qt\Qt-6.9.0-release'
+# -unity-build -no-gtk -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre
+# -qt-harfbuzz -opensource -confirm-license -skip qtdoc -skip qtwebengine
+# -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport
+# -skip qtlocation -skip qtpositioning -skip qtmqtt -skip qtremoteobjects
 configure:windows:
   extends: .windows-template
   stage: setup

@@ -266,7 +266,7 @@ AudioBuffer::deinterleave_samples (size_t num_channels)
   int read_index = 0;
   for (const auto sample : std::views::iota (0, total_samples))
     {
-      for (const auto channel : std::views::iota (0zu, num_channels))
+      for (const auto channel : std::views::iota (0_zu, num_channels))
         {
           tempBuffer.setSample (
             static_cast<int> (channel), static_cast<int> (sample),

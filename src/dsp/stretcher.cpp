@@ -367,9 +367,9 @@ Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
         static_cast<rubberband_int_t> (avail));
 
       /* save the result */
-      for (const auto i : std::views::iota (0zu, channels))
+      for (const auto i : std::views::iota (0_zu, channels))
         {
-          for (const auto j : std::views::iota (0zu, out_chunk_size))
+          for (const auto j : std::views::iota (0_zu, out_chunk_size))
             {
               out_samples.setSample (
                 static_cast<int> (i), static_cast<int> (j + total_out_frames),

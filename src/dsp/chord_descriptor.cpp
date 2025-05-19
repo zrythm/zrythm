@@ -37,7 +37,7 @@ invert_chord (auto &notes, int inversion)
         {
           for (
             const auto j :
-            std::views::iota (12zu, ChordDescriptor::MAX_NOTES)
+            std::views::iota (12_zu, ChordDescriptor::MAX_NOTES)
               | std::views::reverse)
             {
               if (notes[j])

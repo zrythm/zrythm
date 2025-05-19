@@ -202,7 +202,7 @@ public:
   {
     vec.clear ();
 
-    for (const auto i : std::views::iota (0zu, 128zu))
+    for (const auto i : std::views::iota (0_zu, 128_zu))
       {
         MidiNoteDescriptor * descr;
         if (drum_mode)
