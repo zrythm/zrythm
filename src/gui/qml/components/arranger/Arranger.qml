@@ -139,6 +139,24 @@ Item {
             width: root.ruler.width
             height: 600 // TODO: calculate height
 
+            ContextMenu.menu: Menu {
+                MenuItem {
+                    text: qsTr("Copy")
+                    onTriggered: {
+                    }
+                }
+                MenuItem {
+                    text: qsTr("Paste")
+                    onTriggered: {
+                    }
+                }
+                MenuItem {
+                    text: qsTr("Delete")
+                    onTriggered: {
+                    }
+                }
+            }
+
             // Vertical grid lines
             Item {
                 id: timeGrid

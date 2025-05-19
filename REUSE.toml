@@ -74,7 +74,7 @@ SPDX-License-Identifier = "CC-BY-SA-4.0"
 SPDX-FileComment = "Custom created icons"
 
 [[annotations]]
-path = ["data/windows/zrythm.ico", "doc/user/_static/favicon.ico", "doc/user/_static/z.svg", "**/zrythm-dark/**/zrythm.svg", "**/zrythm-dark/**/zrythm-monochrome.svg", "**/zrythm-dark/**/zrythm-splash**"]
+path = ["data/platform/windows/zrythm.ico", "doc/user/_static/favicon.ico", "doc/user/_static/z.svg", "**/zrythm-dark/**/zrythm.svg", "**/zrythm-dark/**/zrythm-monochrome.svg", "**/zrythm-dark/**/zrythm-splash**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2020 Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLogoLicense"

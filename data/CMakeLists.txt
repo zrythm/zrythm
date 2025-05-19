@@ -227,11 +227,13 @@ endif()
 
 add_subdirectory(icon-themes)
 
-# Zrythm project MIME type
-install(FILES org.zrythm.Zrythm-mime.xml
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages
-  COMPONENT Runtime
-)
+if(OS_GNU)
+  # Zrythm project MIME type
+  install(FILES org.zrythm.Zrythm-mime.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages
+    COMPONENT Runtime
+  )
+endif()
 
 # Templates
 install(DIRECTORY DESTINATION ${zrythm_datadir}/templates)
@@ -242,5 +244,3 @@ install(DIRECTORY DESTINATION ${zrythm_datadir}/templates)
 add_subdirectory(plugins)
 set(BUNDLED_PLUGINS_FOR_TESTS "${BUNDLED_PLUGINS_FOR_TESTS}" PARENT_SCOPE)
 set(BUNDLED_PLUGINS_FOR_TESTS_TGTS "${BUNDLED_PLUGINS_FOR_TESTS_TGTS}" PARENT_SCOPE)
-
-add_subdirectory(platform)

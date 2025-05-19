@@ -21,9 +21,6 @@ if(APPLE)
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
   set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")
 elseif(WIN32)
-  # Set the release runtime library for all targets to make our life easier
-  # (all dependencies must use the same runtime library, so build all
-  # dependencies against the release runtime library first)
   # Note: only DLL is allowed, and it must not be redistributed
   # See https://opensource.stackexchange.com/a/7187
   cmake_policy(SET CMP0091 NEW)  # Ensures CMAKE_MSVC_RUNTIME_LIBRARY is respected

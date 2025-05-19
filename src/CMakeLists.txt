@@ -72,7 +72,6 @@ if(WIN32)
   if(MSVC)
     target_link_options(zrythm PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
   endif()
-  # target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
 endif()
 
 add_subdirectory(engine)
