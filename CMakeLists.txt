@@ -20,7 +20,7 @@ if(APPLE)
 
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
   set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")
-elseif(WIN32)
+elseif(MSVC)
   # Note: only DLL is allowed, and it must not be redistributed
   # See https://opensource.stackexchange.com/a/7187
   cmake_policy(SET CMP0091 NEW)  # Ensures CMAKE_MSVC_RUNTIME_LIBRARY is respected
@@ -1316,9 +1316,9 @@ if(WIN32)
         --force
         # Distributing the VC redistributable violates the GPL
         # See: https://www.gnu.org/licenses/gpl-faq.html#RedistributingWindows
-        --no-compiler-runtime
-        --no-system-d3d-compiler
-        --no-system-dxc-compiler
+        # --no-compiler-runtime
+        # --no-system-d3d-compiler
+        # --no-system-dxc-compiler
         -qml -widgets -quick -quickwidgets
         \"\$\{CMAKE_INSTALL_PREFIX\}/bin/$<TARGET_FILE_NAME:zrythm>\"
       COMMAND_ERROR_IS_FATAL ANY
