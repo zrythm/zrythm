@@ -14,7 +14,15 @@
 #include <QString>
 
 #include "juce_wrapper.h"
+
+#if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#endif
 #include <boost/describe.hpp>
+#if defined(__clang__)
+#  pragma clang diagnostic pop
+#endif
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <magic_enum.hpp>
