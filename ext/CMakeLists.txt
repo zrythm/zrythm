@@ -49,8 +49,12 @@ if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
       clap-helpers
     PUBLIC
       juce::juce_recommended_config_flags
-      juce::juce_recommended_lto_flags
   )
+  if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+   target_link_libraries(juce_clap_hosting_lib
+      PUBLIC juce::juce_recommended_lto_flags
+    )
+  endif()
   target_include_directories(juce_clap_hosting_lib
     INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/juce_clap_hosting"
   )
@@ -66,9 +70,13 @@ target_link_libraries(juce_lib
     juce::juce_data_structures
   PUBLIC
     juce::juce_recommended_config_flags
-    juce::juce_recommended_lto_flags
     # juce::juce_recommended_warning_flags
 )
+if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+  target_link_libraries(juce_lib
+    PUBLIC juce::juce_recommended_lto_flags
+  )
+endif()
 target_include_directories(juce_lib
   INTERFACE "${juce_SOURCE_DIR}/modules"
   # FIXME should be private
