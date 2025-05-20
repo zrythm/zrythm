@@ -71,7 +71,7 @@ foreach(plugin_info ${plugins})
     set(pl_link_args)
     set(pl_cpp_args)
     set(pl_deps
-      Boost::boost
+      Boost::circular_buffer
       zrythm::lv2
     )
     if(compiler_is_gcc AND OS_GNU AND ZRYTHM_BUNDLED_PLUGINS_WITH_STATIC_LINKING)

@@ -969,11 +969,15 @@ add_library(zrythm::spdlog ALIAS spdlog_lib)
 
 # pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
-if(MSVC OR APPLE)
-  find_package(Boost REQUIRED)
-else()
-  find_package(Boost REQUIRED CONFIG)
-endif()
+FetchContent_Declare(
+  Boost
+  URL https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.tar.xz
+  URL_MD5 893b5203b862eb9bbd08553e24ff146a
+  DOWNLOAD_EXTRACT_TIMESTAMP ON
+  EXCLUDE_FROM_ALL
+)
+set(BOOST_INCLUDE_LIBRARIES circular_buffer stl_interfaces describe)
+FetchContent_MakeAvailable(Boost)
 
 FetchContent_Declare(
   googletest
@@ -1102,7 +1106,8 @@ list(APPEND zrythm_link_libs
   fmt::fmt
   zrythm::spdlog
   type_safe
-  Boost::boost
+  Boost::describe
+  Boost::stl_interfaces
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers
