@@ -4,6 +4,7 @@
 add_subdirectory(backward-cpp)
 add_subdirectory(crill)
 add_subdirectory(dirent)
+add_subdirectory(lv2)
 
 set(JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED ON)
 set(JUCE_MODULES_ONLY ON)
