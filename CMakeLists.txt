@@ -971,9 +971,25 @@ add_library(zrythm::spdlog ALIAS spdlog_lib)
 
 FetchContent_Declare(
   Boost
-  URL https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.tar.xz
-  URL_MD5 893b5203b862eb9bbd08553e24ff146a
-  DOWNLOAD_EXTRACT_TIMESTAMP ON
+  GIT_REPOSITORY https://github.com/boostorg/boost
+  # 1.88.0
+  GIT_TAG 199ef13d6034c85232431130142159af3adfce22
+  GIT_SHALLOW TRUE
+  GIT_SUBMODULES
+    libs/circular_buffer
+    libs/assert
+    libs/concept_check
+    libs/config
+    libs/core
+    libs/move
+    libs/static_assert
+    libs/throw_exception
+    libs/type_traits
+    libs/stl_interfaces
+    libs/describe
+    libs/mp11
+    libs/preprocessor
+    tools/cmake
   EXCLUDE_FROM_ALL
 )
 set(BOOST_INCLUDE_LIBRARIES circular_buffer stl_interfaces describe)
