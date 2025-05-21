@@ -200,6 +200,8 @@ GraphThread::run_worker () [[clang::nonblocking]]
           int idle_cnt = scheduler->idle_thread_cnt_.load ();
           int work_avail = scheduler->trigger_queue_size_.load ();
           int wakeup = std::min (idle_cnt + 1, work_avail);
+          assert (wakeup >= 1);
+          assert (wakeup <= GraphScheduler::MAX_GRAPH_THREADS);
           if constexpr (DEBUG_THREADS)
             {
               z_debug (
@@ -207,8 +209,12 @@ GraphThread::run_worker () [[clang::nonblocking]]
                 id_, wakeup - 1, idle_cnt, work_avail);
             }
 
-          for (int i = 1; i < wakeup; ++i)
+          for (const auto _ : std::views::iota (1, wakeup))
             {
+              scheduler->sem_counter_.fetch_add (1);
+              z_debug (
+                "[worker] releasing sem (count: {})",
+                scheduler->sem_counter_.load ());
               scheduler->trigger_sem_.release ();
             }
         }
@@ -233,6 +239,10 @@ GraphThread::run_worker () [[clang::nonblocking]]
                 id_, idle_thread_cnt, scheduler->threads_.size ());
             }
 
+          scheduler->sem_counter_.fetch_sub (1);
+          z_debug (
+            "[terminate] acquiring sem (count: {})",
+            scheduler->sem_counter_.load ());
           scheduler->trigger_sem_.acquire ();
 
           if (threadShouldExit ()) [[unlikely]]

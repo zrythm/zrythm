@@ -55,6 +55,8 @@ class GraphScheduler
 {
   friend class GraphThread;
   using GraphThreadPtr = std::unique_ptr<GraphThread>;
+
+public:
   static constexpr int MAX_GRAPH_THREADS = 128;
 
 public:
@@ -137,6 +139,8 @@ private:
 
   /** Number of entries in trigger queue. */
   std::atomic<int> trigger_queue_size_ = 0;
+
+  std::atomic<int> sem_counter_{ 0 }; // FIXME: delete
 
   /**
    * @brief Live graph nodes.

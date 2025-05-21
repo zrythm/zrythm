@@ -39,6 +39,10 @@ GraphScheduler::trigger_node (GraphNode &node)
   /* check if we can run */
   if (node.refcount_.fetch_sub (1) == 1)
     {
+      assert (trigger_queue_size_.load () >= 0);
+      assert (trigger_queue_size_.load () < MAX_GRAPH_THREADS);
+      z_debug ("[trigger_node] pre-trigger sem count: {}", sem_counter_.load ());
+
       /* reset reference count for next cycle */
       node.refcount_.store (node.init_refcount_);
 
@@ -198,12 +202,16 @@ GraphScheduler::terminate_threads ()
 
   /* wake-up sleeping threads */
   int tc = idle_thread_cnt_.load ();
+  assert (tc >= 0);
+  assert (tc <= static_cast<int> (threads_.size ()));
   if (tc != static_cast<int> (threads_.size ()))
     {
       z_warning ("expected {} idle threads, found {}", threads_.size (), tc);
     }
-  for (int i = 0; i < tc; ++i)
+  for (const auto _ : std::views::iota (0, tc))
     {
+      sem_counter_.fetch_add (1);
+      z_debug ("[terminate] releasing sem (count: {})", sem_counter_.load ());
       trigger_sem_.release ();
     }
 
