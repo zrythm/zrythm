@@ -62,19 +62,21 @@ if(APPLE)
 
   add_custom_target(generate_icns ALL DEPENDS "${ZRYTHM_ICNS_FILE_PATH}")
 elseif(WIN32)
-  # --- Convert SVG → BPM for installer banner ---
-  add_custom_command(
-    OUTPUT "${ZRYTHM_BMP_FILE}"
-    COMMAND "${MAGICK_EXECUTABLE}" convert "${ZRYTHM_SVG_ICON}"
-      -resize 240x459
-      -background white  # Fallback for transparent SVGs
-      -flatten
-      -define bmp:format=bmp3  # Windows 3.x format
-      "${ZRYTHM_BMP_FILE}"
-    COMMENT "Generating wizard bitmap..."
-    VERBATIM
-  )
-  add_custom_target(generate_ico ALL DEPENDS "${ZRYTHM_BMP_FILE}")
+  if(MAGICK_EXECUTABLE)
+    # --- Convert SVG → BPM for installer banner ---
+    add_custom_command(
+      OUTPUT "${ZRYTHM_BMP_FILE}"
+      COMMAND "${MAGICK_EXECUTABLE}" convert "${ZRYTHM_SVG_ICON}"
+        -resize 240x459
+        -background white  # Fallback for transparent SVGs
+        -flatten
+        -define bmp:format=bmp3  # Windows 3.x format
+        "${ZRYTHM_BMP_FILE}"
+      COMMENT "Generating wizard bitmap..."
+      VERBATIM
+    )
+    add_custom_target(generate_ico ALL DEPENDS "${ZRYTHM_BMP_FILE}")
+  endif()
 endif()
 
 # Install samples

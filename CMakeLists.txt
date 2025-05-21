@@ -224,7 +224,6 @@ if(APPLE)
 elseif(WIN32)
   find_program(MAGICK_EXECUTABLE "magick"
     PATHS "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI"
-    REQUIRED
   )
 endif()
 
@@ -1465,8 +1464,10 @@ cpack_add_component(Runtime
 set(CPACK_COMPONENTS_ALL "Runtime")
 
 if(WIN32)
-  # Installer banner
-  set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
+  if(MAGICK_EXECUTABLE)
+    # Installer banner
+    set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
+  endif()
   set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/build-aux/README_windows_installer.rtf")
 elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
