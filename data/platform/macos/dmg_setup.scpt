@@ -9,32 +9,30 @@ on run argv
 
     -- wait for the image to finish mounting
     set open_attempts to 0
-    repeat while open_attempts < 4
+    repeat while open_attempts < 10
       try
         open
-          delay 1
-          set open_attempts to 5
+          delay 2
+          set open_attempts to 10
         close
       on error errStr number errorNumber
         set open_attempts to open_attempts + 1
-        delay 10
+        delay 15
       end try
     end repeat
-    delay 5
+    delay 10
 
-    -- open the image the first time and save a DS_Store with just
-    -- background and icon setup
+    -- first pass: setup background and icons
     open
       set current view of container window to icon view
       set theViewOptions to the icon view options of container window
       set background picture of theViewOptions to file ".background:background.tif"
       set arrangement of theViewOptions to not arranged
       set icon size of theViewOptions to 128
-      delay 5
+      delay 10
     close
 
-    -- next setup the position of the app and Applications symlink
-    -- plus hide all the window decoration
+    -- second pass: position items and hide decorations
     open
       update without registering applications
       tell container window
@@ -46,15 +44,15 @@ on run argv
         set position of item "Applications" to { 378, 200 }
       end tell
       update without registering applications
-      delay 5
+      delay 10
     close
 
     -- one last open and close so you can see everything looks correct
     open
-      delay 5
+      delay 10
     close
 
   end tell
-  delay 1
+  delay 5
 end tell
 end run
