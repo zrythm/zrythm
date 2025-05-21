@@ -135,9 +135,6 @@ private:
   /** Queue containing nodes that can be processed. */
   MPMCQueue<GraphNode *> trigger_queue_;
 
-  /** Number of entries in trigger queue. */
-  std::atomic<int> trigger_queue_size_ = 0;
-
   /**
    * @brief Live graph nodes.
    */

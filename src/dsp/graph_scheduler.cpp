@@ -48,7 +48,6 @@ GraphScheduler::trigger_node (GraphNode &node)
 
       /* all nodes that feed this node have completed, so this node be
        * processed now. */
-      trigger_queue_size_.fetch_add (1);
       /*z_info ("triggering node, pushing back");*/
       trigger_queue_.push_back (&node);
     }
@@ -58,8 +57,6 @@ void
 GraphScheduler::rechain_from_node_collection (dsp::GraphNodeCollection &&nodes)
 {
   z_debug ("rechaining graph...");
-
-  z_return_if_fail (trigger_queue_size_.load () == 0);
 
   /* --- swap setup nodes with graph nodes --- */
 
@@ -198,11 +195,13 @@ GraphScheduler::terminate_threads ()
 
   /* wake-up sleeping threads */
   int tc = idle_thread_cnt_.load ();
+  assert (tc >= 0);
+  assert (tc <= static_cast<int> (threads_.size ()));
   if (tc != static_cast<int> (threads_.size ()))
     {
       z_warning ("expected {} idle threads, found {}", threads_.size (), tc);
     }
-  for (int i = 0; i < tc; ++i)
+  for (const auto _ : std::views::iota (0, tc))
     {
       trigger_sem_.release ();
     }
