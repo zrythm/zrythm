@@ -39,10 +39,6 @@ GraphScheduler::trigger_node (GraphNode &node)
   /* check if we can run */
   if (node.refcount_.fetch_sub (1) == 1)
     {
-      assert (trigger_queue_size_.load () >= 0);
-      assert (trigger_queue_size_.load () < MAX_GRAPH_THREADS);
-      z_debug ("[trigger_node] pre-trigger sem count: {}", sem_counter_.load ());
-
       /* reset reference count for next cycle */
       node.refcount_.store (node.init_refcount_);
 
@@ -52,7 +48,6 @@ GraphScheduler::trigger_node (GraphNode &node)
 
       /* all nodes that feed this node have completed, so this node be
        * processed now. */
-      trigger_queue_size_.fetch_add (1);
       /*z_info ("triggering node, pushing back");*/
       trigger_queue_.push_back (&node);
     }
@@ -62,8 +57,6 @@ void
 GraphScheduler::rechain_from_node_collection (dsp::GraphNodeCollection &&nodes)
 {
   z_debug ("rechaining graph...");
-
-  z_return_if_fail (trigger_queue_size_.load () == 0);
 
   /* --- swap setup nodes with graph nodes --- */
 
@@ -210,8 +203,6 @@ GraphScheduler::terminate_threads ()
     }
   for (const auto _ : std::views::iota (0, tc))
     {
-      sem_counter_.fetch_add (1);
-      z_debug ("[terminate] releasing sem (count: {})", sem_counter_.load ());
       trigger_sem_.release ();
     }
 

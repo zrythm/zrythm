@@ -109,7 +109,6 @@ GraphThread::on_reached_terminal_node ()
   if (scheduler_.terminal_refcnt_.fetch_sub (1) == 1)
     {
       /* all terminal nodes have completed, we're done with this cycle. */
-      z_warn_if_fail (scheduler_.trigger_queue_size_.load () == 0);
 
       /* Notify caller */
       scheduler_.callback_done_sem_.release ();
@@ -139,7 +138,6 @@ GraphThread::on_reached_terminal_node ()
       /* and start the initial nodes */
       for (auto node : scheduler_.graph_nodes_.trigger_nodes_)
         {
-          scheduler_.trigger_queue_size_.fetch_add (1);
           scheduler_.trigger_queue_.push_back (std::addressof (node.get ()));
         }
       /* continue in worker-thread */
@@ -182,23 +180,18 @@ GraphThread::run_worker () [[clang::nonblocking]]
 
       if (scheduler->trigger_queue_.pop_front (to_run))
         {
-          if (to_run == nullptr) [[unlikely]]
-            {
-              z_error ("[{}]: null node in queue, terminating thread...", id_);
-              return;
-            }
+          assert (to_run != nullptr);
           if constexpr (DEBUG_THREADS)
             {
               z_debug (
-                "[{}]: dequeued node below (nodes left {})\n{}", id_,
-                scheduler->trigger_queue_size_.load (),
+                "[{}]: dequeued node below\n{}", id_,
                 to_run->print_node_to_str ());
             }
           /* Wake up idle threads, but at most as many as there's work in the
            * trigger queue that can be processed by other threads. This thread
            * as not yet decreased _trigger_queue_size. */
           int idle_cnt = scheduler->idle_thread_cnt_.load ();
-          int work_avail = scheduler->trigger_queue_size_.load ();
+          int work_avail = 1;
           int wakeup = std::min (idle_cnt + 1, work_avail);
           assert (wakeup >= 1);
           assert (wakeup <= GraphScheduler::MAX_GRAPH_THREADS);
@@ -211,10 +204,6 @@ GraphThread::run_worker () [[clang::nonblocking]]
 
           for (const auto _ : std::views::iota (1, wakeup))
             {
-              scheduler->sem_counter_.fetch_add (1);
-              z_debug (
-                "[worker] releasing sem (count: {})",
-                scheduler->sem_counter_.load ());
               scheduler->trigger_sem_.release ();
             }
         }
@@ -239,10 +228,6 @@ GraphThread::run_worker () [[clang::nonblocking]]
                 id_, idle_thread_cnt, scheduler->threads_.size ());
             }
 
-          scheduler->sem_counter_.fetch_sub (1);
-          z_debug (
-            "[terminate] acquiring sem (count: {})",
-            scheduler->sem_counter_.load ());
           scheduler->trigger_sem_.acquire ();
 
           if (threadShouldExit ()) [[unlikely]]
@@ -265,7 +250,6 @@ GraphThread::run_worker () [[clang::nonblocking]]
         }
 
       /* this thread has now claimed the graph node for processing - process it */
-      scheduler->trigger_queue_size_.fetch_sub (1);
       if constexpr (DEBUG_THREADS)
         {
           z_info ("[{}]: running node", id_);
@@ -323,7 +307,6 @@ GraphThread::run ()
        * (later this is done by Graph.reached_terminal_node())*/
       for (const auto node : graph->graph_nodes_.trigger_nodes_)
         {
-          graph->trigger_queue_size_.fetch_add (1);
           /*z_info ("[main] pushing back node {} during bootstrap", i);*/
           graph->trigger_queue_.push_back (std::addressof (node.get ()));
         }
