@@ -27,11 +27,11 @@
 #ifndef ZRYTHM_DSP_GRAPH_SCHEDULER_H
 #define ZRYTHM_DSP_GRAPH_SCHEDULER_H
 
-#include <semaphore>
-
 #include "dsp/graph_node.h"
 #include "utils/mpmc_queue.h"
 #include "utils/rt_thread_id.h"
+
+#include "../ext/moodycamel/lightweightsemaphore.h"
 
 namespace zrythm::dsp
 {
@@ -123,14 +123,15 @@ private:
   /** Synchronization with main process callback. */
   /* FIXME: this should probably be binary semaphore but i left it as a
    * counting one out of caution while refactoring from ZixSem */
-  std::counting_semaphore<MAX_GRAPH_THREADS> callback_start_sem_{ 0 };
+  std::binary_semaphore                      callback_start_sem_{ 0 };
   std::binary_semaphore                      callback_done_sem_{ 0 };
 
   /** Number of threads waiting for work. */
   std::atomic<int> idle_thread_cnt_ = 0;
 
   /** Wake up graph node process threads. */
-  std::counting_semaphore<MAX_GRAPH_THREADS> trigger_sem_{ 0 };
+  // This is not a std::counting_semaphore due to issues on MSVC/Windows.
+  moodycamel::LightweightSemaphore trigger_sem_{ 0 };
 
   /** Queue containing nodes that can be processed. */
   MPMCQueue<GraphNode *> trigger_queue_;

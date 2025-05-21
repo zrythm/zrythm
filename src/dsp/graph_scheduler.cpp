@@ -203,7 +203,7 @@ GraphScheduler::terminate_threads ()
     }
   for (const auto _ : std::views::iota (0, tc))
     {
-      trigger_sem_.release ();
+      trigger_sem_.signal ();
     }
 
   /* and the main thread */

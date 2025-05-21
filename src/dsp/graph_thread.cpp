@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -197,7 +197,7 @@ GraphThread::run_worker () [[clang::nonblocking]]
                 "[{}]: Waking up an idle thread (idle count {})", id_, idle_cnt);
             }
 
-          scheduler->trigger_sem_.release ();
+          scheduler->trigger_sem_.signal ();
         }
 
       while (to_run == nullptr)
@@ -220,7 +220,7 @@ GraphThread::run_worker () [[clang::nonblocking]]
                 id_, idle_thread_cnt, scheduler->threads_.size ());
             }
 
-          scheduler->trigger_sem_.acquire ();
+          scheduler->trigger_sem_.wait ();
 
           if (threadShouldExit ()) [[unlikely]]
             {
