@@ -26,9 +26,9 @@ on run argv
     open
       set current view of container window to icon view
       set theViewOptions to the icon view options of container window
-      set background picture of theViewOptions to file ".background:background.tif"
+      set background picture of theViewOptions to file ".background:background.png"
       set arrangement of theViewOptions to not arranged
-      set icon size of theViewOptions to 128
+      set icon size of theViewOptions to 96
       delay 10
     close
 
@@ -39,15 +39,15 @@ on run argv
         set sidebar width to 0
         set statusbar visible to false
         set toolbar visible to false
-        set the bounds to { 400, 100, 900, 465 }
-        set position of item "Zrythm.app" to { 133, 200 }
-        set position of item "Applications" to { 378, 200 }
+        set the bounds to { 400, 100, 912, 612 }
+        set position of item "Zrythm.app" to { 128, 278 }
+        set position of item "Applications" to { 408, 278 }
       end tell
       update without registering applications
       delay 10
     close
 
-    -- one last open and close so you can see everything looks correct
+    -- final check: show window once more to see everything looks correct
     open
       delay 10
     close

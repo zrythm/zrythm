@@ -576,8 +576,8 @@ SPDX-FileCopyrightText = "2025 Alexandros Theodotou"
 SPDX-License-Identifier = "FSFAP"
 
 [[annotations]]
-path = ["data/platform/macos/dmg_background.tif" ]
+path = ["data/platform/macos/dmg_background_512.png" ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2025 Alexandros Theodotou <alex@zrythm.org>"
-SPDX-License-Identifier = "CC-BY-SA-4.0"
-SPDX-FileComment = "Temporary DMG background image"
+SPDX-License-Identifier = "LicenseRef-ZrythmLogoLicense"
+SPDX-FileComment = "DMG background image"

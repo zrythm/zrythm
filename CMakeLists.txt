@@ -1480,7 +1480,7 @@ set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 # DragNDrop generator
 set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
 set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_SOURCE_DIR}/data/platform/macos/dmg_setup.scpt")
-set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/data/platform/macos/dmg_background.tif")
+set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/data/platform/macos/dmg_background_512.png")
 
 # NSIS generator
 # set(nsis_zrythm_icon "${CMAKE_SOURCE_DIR}/zrythm.ico") # TODO
