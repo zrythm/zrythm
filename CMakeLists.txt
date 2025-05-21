@@ -89,7 +89,7 @@ include(FetchContent)
 include(CheckLibraryExists)
 include(PreventInSourceBuilds)
 set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
-find_package(PkgConfig REQUIRED)
+find_package(PkgConfig)
 find_package(Threads REQUIRED)
 
 #==============================================================================
