@@ -574,3 +574,10 @@ SPDX-License-Identifier = "GPL-2.0-or-later"
 path = "build-aux/README_windows_installer.rtf"
 SPDX-FileCopyrightText = "2025 Alexandros Theodotou"
 SPDX-License-Identifier = "FSFAP"
+
+[[annotations]]
+path = ["data/platform/macos/dmg_background.tif" ]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 Alexandros Theodotou <alex@zrythm.org>"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+SPDX-FileComment = "Temporary DMG background image"

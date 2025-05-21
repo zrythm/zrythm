@@ -31,7 +31,7 @@
 #include "utils/mpmc_queue.h"
 #include "utils/rt_thread_id.h"
 
-#include "../ext/moodycamel/lightweightsemaphore.h"
+#include <moodycamel/lightweightsemaphore.h>
 
 namespace zrythm::dsp
 {
