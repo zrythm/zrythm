@@ -574,8 +574,3 @@ SPDX-License-Identifier = "GPL-2.0-or-later"
 path = "build-aux/README_windows_installer.rtf"
 SPDX-FileCopyrightText = "2025 Alexandros Theodotou"
 SPDX-License-Identifier = "FSFAP"
-
-[[annotations]]
-path = "ext/lv2/**"
-SPDX-FileCopyrightText = "Copyright 2006-2012 Steve Harris, David Robillard., Copyright 2000-2002 Richard W.E. Furse, Paul Barton-Davis, Stefan Westerfeld."
-SPDX-License-Identifier = "ISC"
