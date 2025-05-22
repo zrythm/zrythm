@@ -42,8 +42,6 @@ on run argv
         set the bounds to { 400, 100, 912, 612 }
         set position of item "Zrythm.app" to { 128, 278 }
         set position of item "Applications" to { 408, 278 }
-        set position of item ".background" to { 0, 700 }
-        set position of item ".fseventsd" to { 0, 700 }
       end tell
       update without registering applications
       delay 10
