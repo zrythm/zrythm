@@ -1,11 +1,12 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_CONCURRENCY_H__
-#define __UTILS_CONCURRENCY_H__
+#pragma once
 
 #include <atomic>
 #include <semaphore>
+
+#include <moodycamel/lightweightsemaphore.h>
 
 /**
  * @brief RAII class for managing the lifetime of an atomic bool.
@@ -69,13 +70,25 @@ public:
   {
     if (force_acquire)
       {
+        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+        {
+          semaphore_.wait();
+        }
+        else {
         semaphore_.acquire ();
+        }
         acquired_ = true;
       }
     else
       {
+        if constexpr (
+          std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+          {
+            acquired_ = semaphore_.tryWait ();
+          }
+          else {
         acquired_ = semaphore_.try_acquire ();
-      }
+      }}
   }
 
   /**
@@ -85,7 +98,13 @@ public:
   {
     if (acquired_)
       {
+        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+        {
+          semaphore_.signal();
+        }
+        else {
         semaphore_.release ();
+        }
       }
   }
 
@@ -103,8 +122,12 @@ public:
   {
     if (!acquired_)
       {
+        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+        {
+          acquired_ = semaphore_.tryWait();
+        }else {
         acquired_ = semaphore_.try_acquire ();
-      }
+      }}
     return acquired_;
   }
 
@@ -115,7 +138,13 @@ public:
   {
     if (acquired_)
       {
+        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+        {
+          semaphore_.signal();
+        }
+        else {
         semaphore_.release ();
+        }
         acquired_ = false;
       }
   }
@@ -131,5 +160,3 @@ private:
   SemaphoreType &semaphore_; ///< Reference to the binary semaphore.
   bool acquired_ = false;    ///< Flag indicating if the semaphore is acquired.
 };
-
-#endif // __UTILS_CONCURRENCY_H__

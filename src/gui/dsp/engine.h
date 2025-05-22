@@ -372,12 +372,12 @@ public:
    * @param bpm_change Whether this is a BPM change.
    */
   void update_frames_per_tick (
-    const int           beats_per_bar,
-    const bpm_t         bpm,
-    const sample_rate_t sample_rate,
-    bool                thread_check,
-    bool                update_from_ticks,
-    bool                bpm_change);
+    int           beats_per_bar,
+    bpm_t         bpm,
+    sample_rate_t sample_rate,
+    bool          thread_check,
+    bool          update_from_ticks,
+    bool          bpm_change);
 
   /**
    * Timeout function to be called periodically by Glib.
@@ -395,15 +395,15 @@ public:
    * @return Whether the cycle should be skipped.
    */
   [[gnu::hot]] bool process_prepare (
-    nframes_t                                  nframes,
-    SemaphoreRAII<std::counting_semaphore<>> * sem = nullptr);
+    nframes_t                                         nframes,
+    SemaphoreRAII<moodycamel::LightweightSemaphore> * sem = nullptr);
 
   /**
    * Processes current cycle.
    *
    * To be called by each implementation in its callback.
    */
-  [[gnu::hot]] int process (const nframes_t total_frames_to_process);
+  [[gnu::hot]] int process (nframes_t total_frames_to_process);
 
   /**
    * To be called after processing for common logic.
@@ -412,13 +412,12 @@ public:
    * rolling).
    * @param nframes Total frames for this processing cycle.
    */
-  [[gnu::hot]] void
-  post_process (const nframes_t roll_nframes, const nframes_t nframes);
+  [[gnu::hot]] void post_process (nframes_t roll_nframes, nframes_t nframes);
 
   /**
    * Called to fill in the external buffers at the end of the processing cycle.
    */
-  void fill_out_bufs (const nframes_t nframes);
+  void fill_out_bufs (nframes_t nframes);
 
   /**
    * Returns the int value corresponding to the given AudioEngineBufferSize.
@@ -658,7 +657,7 @@ public:
   /**
    * Semaphore for blocking DSP while a plugin and its ports are deleted.
    */
-  std::counting_semaphore<> port_operation_lock_{ 1 };
+  moodycamel::LightweightSemaphore port_operation_lock_{ 1 };
 
   /** Ok to process or not. */
   std::atomic_bool run_{ false };

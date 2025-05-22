@@ -437,7 +437,7 @@ Transport::requestPause (bool with_wait)
 
   if (with_wait)
     {
-      audio_engine_->port_operation_lock_.acquire ();
+      audio_engine_->port_operation_lock_.wait ();
     }
 
   set_play_state_rt_safe (PlayState::PauseRequested);
@@ -453,7 +453,7 @@ Transport::requestPause (bool with_wait)
 
   if (with_wait)
     {
-      audio_engine_->port_operation_lock_.release ();
+      audio_engine_->port_operation_lock_.signal ();
     }
 }
 
@@ -465,7 +465,8 @@ Transport::requestRoll (bool with_wait)
   /* can only be called from the gtk thread */
   z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<std::counting_semaphore<>>> wait_sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
+    wait_sem;
   if (with_wait)
     {
       wait_sem.emplace (audio_engine_->port_operation_lock_);
@@ -766,7 +767,8 @@ Transport::set_loop (bool enabled, bool with_wait)
   /* can only be called from the gtk thread */
   z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
+    sem;
   if (with_wait)
     {
       sem.emplace (audio_engine_->port_operation_lock_);
@@ -977,7 +979,8 @@ Transport::move_backward (bool with_wait)
   /* can only be called from the gtk thread */
   z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
+    sem;
   if (with_wait)
     {
       sem.emplace (audio_engine_->port_operation_lock_);
@@ -1009,7 +1012,8 @@ Transport::move_forward (bool with_wait)
   /* can only be called from the gtk thread */
   z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
+    sem;
   if (with_wait)
     {
       sem.emplace (audio_engine_->port_operation_lock_);
@@ -1033,7 +1037,8 @@ Transport::set_recording (bool record, bool with_wait)
   /* can only be called from the gtk thread */
   z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
+    sem;
   if (with_wait)
     {
       sem.emplace (audio_engine_->port_operation_lock_);

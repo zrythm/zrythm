@@ -50,6 +50,9 @@ class GraphThread;
  * the processing threads, and run a processing cycle. It also includes
  * various internal data structures and synchronization primitives to
  * facilitate the efficient parallel processing of the graph.
+ *
+ * TODO: investigate work contracts as a replacement of task queues:
+ * https://github.com/buildingcpp/work_contract
  */
 class GraphScheduler
 {

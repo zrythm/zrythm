@@ -100,8 +100,7 @@ TransportAction::do_or_undo (bool do_it)
 
   /* run engine to apply the change */
   {
-    SemaphoreRAII<std::counting_semaphore<>> sem (
-      AUDIO_ENGINE->port_operation_lock_, true);
+    SemaphoreRAII sem (AUDIO_ENGINE->port_operation_lock_, true);
     AUDIO_ENGINE->process_prepare (1, &sem);
   }
   EngineProcessTimeInfo time_nfo = {

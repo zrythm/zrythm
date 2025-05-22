@@ -1142,8 +1142,8 @@ AudioEngine::update_position_info (
 
 bool
 AudioEngine::process_prepare (
-  nframes_t                                  nframes,
-  SemaphoreRAII<std::counting_semaphore<>> * sem)
+  nframes_t                                         nframes,
+  SemaphoreRAII<moodycamel::LightweightSemaphore> * sem)
 {
   if (denormal_prevention_val_positive_)
     {

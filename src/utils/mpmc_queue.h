@@ -57,6 +57,9 @@
  * http://www.1024cores.net/home/lock-free-algorithms/queues/bounded-mpmc-queue
  * Kudos to Dmitry Vyukov who licensed that code in terms of a 2-clause BSD
  * license.
+ *
+ * TODO: maybe replace with
+ * https://github.com/erez-strauss/lockfree_mpmc_queue ?
  */
 template <typename T> class MPMCQueue
 {

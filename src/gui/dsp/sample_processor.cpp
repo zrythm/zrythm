@@ -595,8 +595,7 @@ SampleProcessor::queue_file_or_chord_preset (
    * lock also used by the engine. The engine will skip its cycle until the port
    * operation lock is released.
    */
-  SemaphoreRAII<std::counting_semaphore<>> port_op_raii (
-    AUDIO_ENGINE->port_operation_lock_);
+  SemaphoreRAII       port_op_raii (AUDIO_ENGINE->port_operation_lock_);
   dsp::Graph          graph;
   ProjectGraphBuilder builder (*PROJECT, true);
   builder.build_graph (graph);
