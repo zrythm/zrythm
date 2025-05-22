@@ -1284,7 +1284,6 @@ if(ZRYTHM_TESTS)
 endif()
 
 # Add subdirectories
-add_subdirectory(po)
 add_subdirectory(data)
 add_subdirectory(src)
 

@@ -70,13 +70,15 @@ public:
   {
     if (force_acquire)
       {
-        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
-        {
-          semaphore_.wait();
-        }
-        else {
-        semaphore_.acquire ();
-        }
+        if constexpr (
+          std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+          {
+            semaphore_.wait ();
+          }
+        else
+          {
+            semaphore_.acquire ();
+          }
         acquired_ = true;
       }
     else
@@ -86,9 +88,11 @@ public:
           {
             acquired_ = semaphore_.tryWait ();
           }
-          else {
-        acquired_ = semaphore_.try_acquire ();
-      }}
+        else
+          {
+            acquired_ = semaphore_.try_acquire ();
+          }
+      }
   }
 
   /**
@@ -98,13 +102,15 @@ public:
   {
     if (acquired_)
       {
-        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
-        {
-          semaphore_.signal();
-        }
-        else {
-        semaphore_.release ();
-        }
+        if constexpr (
+          std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+          {
+            semaphore_.signal ();
+          }
+        else
+          {
+            semaphore_.release ();
+          }
       }
   }
 
@@ -122,12 +128,16 @@ public:
   {
     if (!acquired_)
       {
-        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
-        {
-          acquired_ = semaphore_.tryWait();
-        }else {
-        acquired_ = semaphore_.try_acquire ();
-      }}
+        if constexpr (
+          std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+          {
+            acquired_ = semaphore_.tryWait ();
+          }
+        else
+          {
+            acquired_ = semaphore_.try_acquire ();
+          }
+      }
     return acquired_;
   }
 
@@ -138,13 +148,15 @@ public:
   {
     if (acquired_)
       {
-        if constexpr (std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
-        {
-          semaphore_.signal();
-        }
-        else {
-        semaphore_.release ();
-        }
+        if constexpr (
+          std::is_same_v<SemaphoreType, moodycamel::LightweightSemaphore>)
+          {
+            semaphore_.signal ();
+          }
+        else
+          {
+            semaphore_.release ();
+          }
         acquired_ = false;
       }
   }
