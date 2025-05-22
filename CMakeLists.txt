@@ -1465,7 +1465,6 @@ if(WIN32)
     # Installer banner
     set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
   endif()
-  set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/build-aux/README_windows_installer.rtf")
 elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
   set(CPACK_PACKAGE_ICON "${ZRYTHM_ICNS_FILE_PATH}")
@@ -1473,21 +1472,15 @@ endif()
 
 # -- Generator-specific options --
 
-# Archive generator
+# Archive generator (GNU/Linux)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
-# DragNDrop generator
+# DragNDrop generator (MacOS)
 set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
 set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_SOURCE_DIR}/data/platform/macos/dmg_setup.scpt")
 set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/data/platform/macos/dmg_background_512.png")
 
-# NSIS generator
-# set(nsis_zrythm_icon "${CMAKE_SOURCE_DIR}/zrythm.ico") # TODO
-# set(CPACK_NSIS_MUI_ICON "${nsis_zrythm_icon}")
-# set(CPACK_NSIS_MUI_UNIICON "${nsis_zrythm_icon}")
-SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\zrythm.exe")
-
-# INNO Setup generator
+# INNO Setup generator (Windows)
 set(CPACK_INNOSETUP_USE_MODERN_WIZARD ON)
 set(CPACK_INNOSETUP_ICON_FILE "${ZRYTHM_ICO_FILE}")
 set(CPACK_INNOSETUP_LANGUAGES "english;brazilianPortuguese;catalan;french;german;hebrew;italian;japanese;norwegian;polish;portuguese;russian;spanish;turkish;ukrainian")
