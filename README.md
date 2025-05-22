@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 Zrythm
 ======
 
-> [!CAUTION]
+> [!WARNING]
 > Zrythm is undergoing major refactoring in this branch.
 > **DO NOT USE THIS BRANCH** if you are looking for a usable version.
 > Instead, use the `v1` branch.
@@ -73,7 +73,7 @@ See the following instructions if you would like to build Zrythm from source ins
 
 ### Building From Source
 
-> [!IMPORTANT]
+> [!NOTE]
 > We make heavy use of CMake's [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) module to fetch dependencies so you don't need to install any dependencies manually other than CMake and Qt.
 > This guide assumes you are fine with fetching dependencies automatically.
 
@@ -104,8 +104,8 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 3. Run `cmake -B builddir -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix> -DZRYTHM_USER_MANUAL=OFF`.
 4. Open the Visual Studio solution inside `builddir` and build it.
 
-> [!CAUTION]
-> You must build Qt with the same compiler and same configuration (Debug/Release) you use to build Zrythm.
+> [!NOTE]
+> On Windows, you must build Qt with the same compiler and same configuration (Debug/Release) you use to build Zrythm.
 
 ## Using Zryhm
 See the [user manual](http://manual.zrythm.org/).
