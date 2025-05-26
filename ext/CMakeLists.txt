@@ -74,6 +74,10 @@ target_link_libraries(juce_lib
     juce::juce_recommended_config_flags
     # juce::juce_recommended_warning_flags
 )
+if(APPLE)
+  find_library(AUDIO_UNIT_LIB AudioUnit REQUIRED)
+  target_link_libraries(juce_lib INTERFACE ${AUDIO_UNIT_LIB})
+endif()
 if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
   target_link_libraries(juce_lib
     PUBLIC juce::juce_recommended_lto_flags
