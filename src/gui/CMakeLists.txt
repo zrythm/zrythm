@@ -42,7 +42,7 @@ if(WIN32)
     COMMAND "${WINDEPLOYQT_EXECUTABLE}"
       --qmldir "${CMAKE_BINARY_DIR}"
       --pdb --force
-      -qml -widgets -quick -quickwidgets
+      -qml -widgets -quick -quickwidgets -test
       $<TARGET_FILE:zrythm>
     COMMAND_EXPAND_LISTS
   )
