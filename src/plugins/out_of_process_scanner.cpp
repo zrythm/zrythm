@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -37,18 +37,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-#include <utility>
-
-#include "gui/backend/plugin_protocol_paths.h"
-#include "gui/backend/plugin_scanner.h"
-
-using namespace zrythm::gui::old_dsp::plugins;
-using namespace zrythm::gui::old_dsp::plugins::scanner_private;
 using namespace Qt::StringLiterals;
+using namespace std::chrono_literals;
 
-constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);
+#include "plugins/out_of_process_scanner.h"
 
-//==============================================================================
+constexpr auto PLUGIN_SCAN_TIMEOUT = 4s;
+
+using namespace zrythm::plugins::discovery;
 
 OutOfProcessPluginScanner::SubprocessCoordinator::SubprocessCoordinator ()
 {
@@ -89,13 +85,13 @@ OutOfProcessPluginScanner::SubprocessCoordinator::getResponse ()
   if (!condvar.wait_for (lock, std::chrono::milliseconds{ 50 }, [&] {
         return gotResult || connectionLost;
       }))
-    return { State::Timeout, nullptr };
+    return { .state = State::Timeout, .xml = nullptr };
 
   const auto state = connectionLost ? State::ConnectionLost : State::GotResult;
   connectionLost = false;
   gotResult = false;
 
-  return { state, std::move (pluginDescription) };
+  return { .state = state, .xml = std::move (pluginDescription) };
 }
 
 void
@@ -204,113 +200,3 @@ OutOfProcessPluginScanner::add_plugin_descriptions (
       return (response.state == SubprocessCoordinator::State::GotResult);
     }
 }
-
-//==============================================================================
-
-Worker::Worker (PluginScanner &scanner) : scanner_ (scanner) { }
-
-void
-Worker::process ()
-{
-  z_info ("Scanning for plugins...");
-
-  scanner_.known_plugin_list_->setCustomScanner (
-    std::make_unique<OutOfProcessPluginScanner> ());
-
-  // Initialize the format manager
-  juce::AudioPluginFormatManager formatManager;
-  formatManager.addDefaultFormats ();
-#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
-  formatManager.addFormat (new juce::CLAPPluginFormat ());
-#endif
-
-  // Iterate through available formats
-  for (auto * format : formatManager.getFormats ())
-    {
-      z_debug ("Scanning plugins for format {}", format->getName ());
-      const auto protocol = Protocol::from_juce_format_name (format->getName ());
-      const auto paths = PluginProtocolPaths::get_for_protocol (protocol);
-      // auto defaultLocations = format->getDefaultLocationsToSearch ();
-      auto identifiers = format->searchPathsForPlugins (
-        paths->get_as_juce_file_search_path (), true, true);
-      for (const auto &identifier : identifiers)
-        {
-          scanner_.set_currently_scanning_plugin (
-            utils::Utf8String::from_juce_string (identifier).to_qstring ());
-          juce::OwnedArray<juce::PluginDescription> types;
-          bool has_new = scanner_.known_plugin_list_->scanAndAddFile (
-            identifier, true, types, *format);
-          if (has_new)
-            {
-              z_info (
-                "Found new plugins for identifier '{}' (total types {})",
-                identifier, types.size ());
-            }
-          if (types.isEmpty ())
-            {
-              z_warning ("Blacklisting plugin: {}", identifier);
-              scanner_.known_plugin_list_->addToBlacklist (identifier);
-            }
-        }
-    }
-  z_debug ("Scanning in thread finished");
-  Q_EMIT finished ();
-}
-
-//==============================================================================
-
-PluginScanner::PluginScanner (
-  std::shared_ptr<juce::KnownPluginList> known_plugins,
-  QObject *                              parent)
-    : QObject (parent), known_plugin_list_ (known_plugins),
-      currently_scanning_plugin_ (tr ("Scanning..."))
-{
-}
-
-void
-PluginScanner::beginScan ()
-{
-  Q_EMIT scanningFinished ();
-  return;
-  auto * scan_thread = new QThread ();
-  auto * worker = new Worker (*this);
-  worker->moveToThread (scan_thread);
-  QObject::connect (scan_thread, &QThread::started, worker, &Worker::process);
-  QObject::connect (worker, &Worker::finished, scan_thread, &QThread::quit);
-  QObject::connect (worker, &Worker::finished, worker, &Worker::deleteLater);
-  QObject::connect (
-    scan_thread, &QThread::finished, scan_thread, &QThread::deleteLater);
-  QObject::connect (
-    worker, &Worker::finished, this, &PluginScanner::scan_finished);
-  scan_thread->start ();
-}
-
-void
-PluginScanner::scan_finished ()
-{
-  auto xml = known_plugin_list_->createXml ();
-  auto str = xml->toString ();
-  z_debug ("Plugins:\n{}", str);
-  Q_EMIT scanningFinished ();
-}
-
-QString
-PluginScanner::getCurrentlyScanningPlugin () const
-{
-  QMutexLocker locker (&currently_scanning_plugin_mutex_);
-  return currently_scanning_plugin_;
-}
-
-void
-PluginScanner::set_currently_scanning_plugin (const QString &plugin)
-{
-  QMutexLocker locker (&currently_scanning_plugin_mutex_);
-  if (currently_scanning_plugin_ == plugin)
-    return;
-
-  currently_scanning_plugin_ = plugin;
-
-  Q_EMIT currentlyScanningPluginChanged (currently_scanning_plugin_);
-}
-
-PluginScanner::~PluginScanner () = default;

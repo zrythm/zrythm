@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "dsp/plugin_slot.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
-#include "gui/dsp/plugin_descriptor.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_span.h"
 #include "gui/dsp/track_fwd.h"
+#include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_slot.h"
 #include "utils/types.h"
 
 namespace zrythm::gui
@@ -61,9 +61,13 @@ class Plugin
 {
 public:
   using PortIdentifier = dsp::PortIdentifier;
-  using PluginSlot = dsp::PluginSlot;
-  using PluginSlotType = dsp::PluginSlotType;
+  using PluginSlot = zrythm::plugins::PluginSlot;
+  using PluginSlotType = zrythm::plugins::PluginSlotType;
   using PluginSlotNo = PluginSlot::SlotNo;
+  using PluginDescriptor = zrythm::plugins::PluginDescriptor;
+  using Protocol = zrythm::plugins::Protocol;
+  using ZPluginCategory = zrythm::plugins::ZPluginCategory;
+
   using Channel = gui::Channel;
   using TrackResolver =
     utils::UuidIdentifiablObjectResolver<TrackPtrVariant, TrackUuid>;

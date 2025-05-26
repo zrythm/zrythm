@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "dsp/plugin_slot.h"
 #include "dsp/port_identifier.h"
-#include "gui/dsp/plugin_descriptor.h"
+#include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_slot.h"
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -36,7 +36,7 @@ public:
    * Creates a plugin setting with the recommended settings for the given plugin
    * descriptor based on the current setup.
    */
-  PluginSetting (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr);
+  PluginSetting (const zrythm::plugins::PluginDescriptor &descr);
 
   enum class HostingType
   {
@@ -101,7 +101,7 @@ public:
   }
 #endif
 
-  zrythm::gui::old_dsp::plugins::PluginDescriptor * get_descriptor () const
+  zrythm::plugins::PluginDescriptor * get_descriptor () const
   {
     return descr_.get ();
   }
@@ -133,7 +133,7 @@ private:
 
 public:
   /** The descriptor of the plugin this setting is for. */
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::PluginDescriptor> descr_;
+  std::unique_ptr<zrythm::plugins::PluginDescriptor> descr_;
 
   HostingType hosting_type_ = HostingType::Carla;
 
@@ -144,8 +144,7 @@ public:
   bool force_generic_ui_ = false;
 
   /** Requested carla bridge mode. */
-  zrythm::gui::old_dsp::plugins::CarlaBridgeMode bridge_mode_ =
-    (zrythm::gui::old_dsp::plugins::CarlaBridgeMode) 0;
+  zrythm::plugins::CarlaBridgeMode bridge_mode_{};
 
   /** Last datetime instantiated (number of microseconds since January 1, 1970
    * UTC). */
@@ -196,8 +195,7 @@ public:
    *
    * @return The found setting or NULL.
    */
-  PluginSetting *
-  find (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr);
+  PluginSetting * find (const zrythm::plugins::PluginDescriptor &descr);
 
   /**
    * Replaces a setting or appends a setting to the cache.

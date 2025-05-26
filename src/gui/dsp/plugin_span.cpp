@@ -9,7 +9,7 @@
 using namespace zrythm;
 
 void
-PluginSpan::paste_to_slot (Plugin::Channel &ch, dsp::PluginSlot slot) const
+PluginSpan::paste_to_slot (Plugin::Channel &ch, plugins::PluginSlot slot) const
 {
   try
     {
@@ -23,7 +23,7 @@ PluginSpan::paste_to_slot (Plugin::Channel &ch, dsp::PluginSlot slot) const
 }
 
 bool
-PluginSpan::can_be_pasted (const dsp::PluginSlot &slot) const
+PluginSpan::can_be_pasted (const plugins::PluginSlot &slot) const
 {
   if (std::ranges::distance (*this) == 0)
     return false;

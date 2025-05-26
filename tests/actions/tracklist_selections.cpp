@@ -714,7 +714,7 @@ TEST_F (ZrythmFixture, DeleteInstrumentTrackWithAutomation)
   auto setting = test_plugin_manager_get_plugin_setting (
     TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::dsp::PluginSlotType::Insert, *track, 0, setting));
+    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting));
 
   AUDIO_ENGINE->activate (true);
 
@@ -1243,7 +1243,7 @@ TEST_F (ZrythmFixture, CheckTrackDeletionWithMixerSelections)
   ASSERT_NONNULL (pl_track);
 
   MIXER_SELECTIONS->add_slot (
-    *pl_track, zrythm::dsp::PluginSlotType::Insert, 0, false);
+    *pl_track, zrythm::plugins::PluginSlotType::Insert, 0, false);
   ASSERT_TRUE (MIXER_SELECTIONS->has_any_);
   ASSERT_EQ (MIXER_SELECTIONS->track_id_, pl_track->get_name_hash ());
 

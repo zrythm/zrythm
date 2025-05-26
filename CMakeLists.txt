@@ -73,6 +73,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Prefer static libraries for easier linking
 set(BUILD_SHARED_LIBS OFF)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/products/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/products/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/products/lib_static)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS YES)
 
 message(STATUS "Project version: ${PROJECT_VERSION} (${ZRYTHM_VERSION_STRING_FULL})")
@@ -1065,6 +1069,7 @@ find_package(Qt6
     QuickControls2
     Concurrent
     LinguistTools
+    Test
   REQUIRED
 )
 qt_standard_project_setup(

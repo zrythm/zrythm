@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/settings_manager.h"
@@ -9,7 +9,7 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 
-using namespace zrythm::gui::old_dsp::plugins;
+using namespace zrythm::plugins;
 using namespace zrythm;
 
 static void
@@ -153,7 +153,7 @@ PluginProtocolPaths::get_lv2_paths ()
 
   /* add special paths */
   auto &dir_mgr =
-    dynamic_cast<ZrythmApplication *> (qApp)->get_directory_manager ();
+    dynamic_cast<gui::ZrythmApplication *> (qApp)->get_directory_manager ();
   auto builtin_plugins_path = dir_mgr.get_dir (
     DirectoryManager::DirectoryType::SYSTEM_BUNDLED_PLUGINSDIR);
   auto special_plugins_path = dir_mgr.get_dir (

@@ -4,10 +4,10 @@
 qt_add_library(zrythm_gui_lib STATIC)
 
 # each executable/library has its own subdirectory
-add_subdirectory(plugin-scanner)
 add_subdirectory(utils)
 # add_subdirectory(lv2apply)
 add_subdirectory(dsp)
+add_subdirectory(plugins)
 add_subdirectory(gui)
 
 target_sources(zrythm_gui_lib PRIVATE globals.cpp)
@@ -49,6 +49,7 @@ target_link_libraries(zrythm_gui_lib
   PUBLIC
     ${zrythm_link_libs}
     zrythm_dsp_lib
+    zrythm_plugins_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )

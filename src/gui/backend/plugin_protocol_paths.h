@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "gui/dsp/plugin_descriptor.h"
+#include "plugins/plugin_protocol.h"
 #include "utils/file_path_list.h"
 
-namespace zrythm::gui::old_dsp::plugins
+namespace zrythm::plugins
 {
 
 class PluginProtocolPaths
@@ -29,4 +29,4 @@ public:
   static std::unique_ptr<utils::FilePathList> get_au_paths ();
 };
 
-} // namespace zrythm::gui::old_dsp::plugins
+} // namespace zrythm::plugins

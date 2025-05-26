@@ -214,7 +214,7 @@ AutomatableTrack::validate_base () const
                   if (
                     !pl_slot.has_slot_index ()
                     && pl_slot.get_slot_type_only ()
-                         == dsp::PluginSlotType::Instrument)
+                         == plugins::PluginSlotType::Instrument)
                     {
                       const auto * channel_track =
                         dynamic_cast<const ChannelTrack *> (this);

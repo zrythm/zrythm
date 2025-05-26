@@ -1,15 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/zrythm.h"
-#include "gui/backend/plugin_collections.h"
-#include "gui/backend/plugin_manager.h"
-#include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/plugin_descriptor.h"
-#include "gui/dsp/track.h"
-#include "utils/objects.h"
+#include "plugins/plugin_descriptor.h"
 
-using namespace zrythm::gui::old_dsp::plugins;
+using namespace zrythm::plugins;
 
 void
 PluginDescriptor::init_after_cloning (
@@ -37,11 +31,8 @@ PluginDescriptor::init_after_cloning (
   unique_id_ = other.unique_id_;
   min_bridge_mode_ = other.min_bridge_mode_;
   has_custom_ui_ = other.has_custom_ui_;
-  ghash_ = other.ghash_;
   sha1_ = other.sha1_;
 }
-
-#define IS_CAT(x) (category_ == ZPluginCategory::x)
 
 bool
 PluginDescriptor::is_instrument () const
@@ -67,28 +58,70 @@ PluginDescriptor::is_instrument () const
 bool
 PluginDescriptor::is_effect () const
 {
-  return (this->category_ > ZPluginCategory::NONE
-          && (IS_CAT (DELAY) || IS_CAT (REVERB) || IS_CAT (DISTORTION) || IS_CAT (WAVESHAPER) || IS_CAT (DYNAMICS) || IS_CAT (AMPLIFIER) || IS_CAT (COMPRESSOR) || IS_CAT (ENVELOPE) || IS_CAT (EXPANDER) || IS_CAT (GATE) || IS_CAT (LIMITER) || IS_CAT (FILTER) || IS_CAT (ALLPASS_FILTER) || IS_CAT (BANDPASS_FILTER) || IS_CAT (COMB_FILTER) || IS_CAT (EQ) || IS_CAT (MULTI_EQ) || IS_CAT (PARA_EQ) || IS_CAT (HIGHPASS_FILTER) || IS_CAT (LOWPASS_FILTER) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (CHORUS) || IS_CAT (FLANGER) || IS_CAT (PHASER) || IS_CAT (SIMULATOR) || IS_CAT (SIMULATOR_REVERB) || IS_CAT (SPATIAL) || IS_CAT (SPECTRAL) || IS_CAT (PITCH) || IS_CAT (UTILITY) || IS_CAT (ANALYZER) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION) || IS_CAT (MIXER)))
-         || (this->category_ == ZPluginCategory::NONE && this->num_audio_ins_ > 0 && this->num_audio_outs_ > 0);
+  constexpr std::array<ZPluginCategory, 37> effect_categories = {
+    ZPluginCategory::DELAY,
+    ZPluginCategory::REVERB,
+    ZPluginCategory::DISTORTION,
+    ZPluginCategory::WAVESHAPER,
+    ZPluginCategory::DYNAMICS,
+    ZPluginCategory::AMPLIFIER,
+    ZPluginCategory::COMPRESSOR,
+    ZPluginCategory::ENVELOPE,
+    ZPluginCategory::EXPANDER,
+    ZPluginCategory::GATE,
+    ZPluginCategory::LIMITER,
+    ZPluginCategory::FILTER,
+    ZPluginCategory::ALLPASS_FILTER,
+    ZPluginCategory::BANDPASS_FILTER,
+    ZPluginCategory::COMB_FILTER,
+    ZPluginCategory::EQ,
+    ZPluginCategory::MULTI_EQ,
+    ZPluginCategory::PARA_EQ,
+    ZPluginCategory::HIGHPASS_FILTER,
+    ZPluginCategory::LOWPASS_FILTER,
+    ZPluginCategory::GENERATOR,
+    ZPluginCategory::CONSTANT,
+    ZPluginCategory::OSCILLATOR,
+    ZPluginCategory::MODULATOR,
+    ZPluginCategory::CHORUS,
+    ZPluginCategory::FLANGER,
+    ZPluginCategory::PHASER,
+    ZPluginCategory::SIMULATOR,
+    ZPluginCategory::SIMULATOR_REVERB,
+    ZPluginCategory::SPATIAL,
+    ZPluginCategory::SPECTRAL,
+    ZPluginCategory::PITCH,
+    ZPluginCategory::UTILITY,
+    ZPluginCategory::ANALYZER,
+    ZPluginCategory::CONVERTER,
+    ZPluginCategory::FUNCTION,
+    ZPluginCategory::MIXER
+  };
+  return (category_ > ZPluginCategory::NONE
+          && std::ranges::contains (effect_categories, category_))
+         || (category_ == ZPluginCategory::NONE && num_audio_ins_ > 0 && num_audio_outs_ > 0);
 }
 
 bool
 PluginDescriptor::is_modulator () const
 {
-  return (this->category_ == ZPluginCategory::NONE
-          || (this->category_ > ZPluginCategory::NONE && (IS_CAT (ENVELOPE) || IS_CAT (GENERATOR) || IS_CAT (CONSTANT) || IS_CAT (OSCILLATOR) || IS_CAT (MODULATOR) || IS_CAT (UTILITY) || IS_CAT (CONVERTER) || IS_CAT (FUNCTION))))
-         && this->num_cv_outs_ > 0;
+  constexpr std::array<ZPluginCategory, 37> modulator_categories = {
+    ZPluginCategory::ENVELOPE,  ZPluginCategory::GENERATOR,
+    ZPluginCategory::CONSTANT,  ZPluginCategory::OSCILLATOR,
+    ZPluginCategory::MODULATOR, ZPluginCategory::UTILITY,
+    ZPluginCategory::CONVERTER, ZPluginCategory::FUNCTION,
+  };
+  return (category_ == ZPluginCategory::NONE
+          || (category_ > ZPluginCategory::NONE && (std::ranges::contains (modulator_categories, category_))))
+         && num_cv_outs_ > 0;
 }
 
 bool
 PluginDescriptor::is_midi_modifier () const
 {
-  return (this->category_ > ZPluginCategory::NONE
-          && this->category_ == ZPluginCategory::MIDI)
-         || (this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != Protocol::ProtocolType::VST);
+  return (category_ > ZPluginCategory::NONE && category_ == ZPluginCategory::MIDI)
+         || (category_ == ZPluginCategory::NONE && num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != Protocol::ProtocolType::VST);
 }
-
-#undef IS_CAT
 
 static const std::unordered_map<ZPluginCategory, std::string_view> category_map = {
   { ZPluginCategory::DELAY,            "Delay"           },
@@ -166,35 +199,6 @@ PluginDescriptor::category_to_string (ZPluginCategory category)
 }
 
 bool
-PluginDescriptor::is_valid_for_slot_type (
-  zrythm::dsp::PluginSlotType slot_type,
-  int                         track_type) const
-{
-  const auto tt = ENUM_INT_TO_VALUE (Track::Type, track_type);
-  switch (slot_type)
-    {
-    case zrythm::dsp::PluginSlotType::Insert:
-      if (tt == Track::Type::Midi)
-        {
-          return num_midi_outs_ > 0;
-        }
-      else
-        {
-          return num_audio_outs_ > 0;
-        }
-    case zrythm::dsp::PluginSlotType::MidiFx:
-      return num_midi_outs_ > 0;
-      break;
-    case zrythm::dsp::PluginSlotType::Instrument:
-      return tt == Track::Type::Instrument && is_instrument ();
-    default:
-      break;
-    }
-
-  z_return_val_if_reached (false);
-}
-
-bool
 PluginDescriptor::has_custom_ui () const
 {
   switch (protocol_)
@@ -223,105 +227,14 @@ PluginDescriptor::has_custom_ui () const
 CarlaBridgeMode
 PluginDescriptor::get_min_bridge_mode () const
 {
-  zrythm::gui::old_dsp::plugins::CarlaBridgeMode mode =
-    zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None;
+  zrythm::plugins::CarlaBridgeMode mode = zrythm::plugins::CarlaBridgeMode::None;
 
   if (arch_ == PluginArchitecture::ARCH_32_BIT)
     {
-      mode = zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full;
+      mode = zrythm::plugins::CarlaBridgeMode::Full;
     }
 
   return mode;
-}
-
-bool
-PluginDescriptor::is_whitelisted () const
-{
-  return false;
-#if 0
-  /* on wayland nothing is whitelisted */
-  if (z_gtk_is_wayland ())
-    {
-      return false;
-    }
-
-  static const char * authors[] = {
-    "Alexandros Theodotou",
-    "Andrew Deryabin",
-    "AnnieShin",
-    "Artican",
-    "Aurelien Leblond",
-    "Automatl",
-    "Breakfast Quay",
-    "brummer",
-    "Clearly Broken Software",
-    "Creative Intent",
-    "Damien Zammit",
-    "Datsounds",
-    "David Robillard",
-    "Digital Suburban",
-    "DISTRHO",
-    "dRowAudio",
-    "DrumGizmo Team",
-    "falkTX",
-    "Filipe Coelho",
-    "Guitarix team",
-    "Hanspeter Portner",
-    "Hermann Meyer",
-    "IEM",
-    "Iurie Nistor",
-    "Jean Pierre Cimalando",
-    "Klangfreund",
-    "kRAkEn/gORe",
-    "Lkjb",
-    "LSP LADSPA",
-    "LSP LV2",
-    "LSP VST",
-    "Luciano Dato",
-    "Martin Eastwood, falkTX",
-    "Matt Tytel",
-    "Michael Willis",
-    "Michael Willis and Rob vd Berg",
-    "ndc Plugs",
-    "OpenAV",
-    "Patrick Desaulniers",
-    "Paul Ferrand",
-    "Plainweave Software",
-    "Punk Labs LLC",
-    "Resonant DSP",
-    "Robin Gareus",
-    "RockHardbuns",
-    "SFZTools",
-    "Spencer Jackson",
-    "Stefan Westerfeld",
-    "Surge Synth Team",
-    "Sven Jaehnichen",
-    "TAL-Togu Audio Line",
-    "TheWaveWarden",
-    "Tom Szilagyi",
-    "tumbetoene",
-    "Zrythm DAW",
-  };
-
-  if (author_.empty ())
-    {
-      return false;
-    }
-
-  for (size_t i = 0; i < G_N_ELEMENTS (authors); i++)
-    {
-      if (author_ == authors[i])
-        {
-#  if 0
-          z_debug (
-            "author '%s' is whitelisted", this->author);
-#  endif
-          return true;
-        }
-    }
-
-  return false;
-#endif
 }
 
 utils::Utf8String
@@ -363,7 +276,7 @@ PluginDescriptor::generate_context_menu () const
   /* add option for native generic LV2 UI */
   if (this->protocol == ProtocolType::LV2
       &&
-      this->min_bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
+      this->min_bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
     {
       menuitem =
         z_gtk_create_menu_item (
@@ -382,7 +295,7 @@ PluginDescriptor::generate_context_menu () const
   PluginSetting new_setting (*this);
   if (
     has_custom_ui_
-    && this->min_bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None
+    && this->min_bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None
     && !new_setting.force_generic_ui_)
     {
       sprintf (
@@ -477,7 +390,7 @@ PluginDescriptor::generate_context_menu () const
 
 bool
 PluginDescriptor::is_same_plugin (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &other) const
+  const zrythm::plugins::PluginDescriptor &other) const
 {
   return *this == other;
 }

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 if(NOT ZRYTHM_TESTS)
@@ -26,6 +26,24 @@ function(zrythm_discover_tests TARGET_NAME)
     gtest_discover_tests(${TARGET_NAME})
   endif()
 endfunction()
+
+add_library(zrythm_test_helpers_lib STATIC
+  helpers/scoped_qcoreapplication.h
+  helpers/scoped_juce_message_thread.h
+)
+target_link_libraries(zrythm_test_helpers_lib
+  PUBLIC
+    zrythm::gtest_for_tests
+    zrythm::include_dirs
+    ${zrythm_link_libs}
+    zrythm::all_compile_options
+    zrythm_utils_lib
+    Qt6::Test
+)
+target_include_directories(zrythm_test_helpers_lib
+  INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 set(test_lv2_plugins)
 set(test_lv2_plugin_libs)

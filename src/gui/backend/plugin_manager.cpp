@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -31,9 +31,9 @@
 
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/cached_plugin_descriptors.h"
-#include "gui/backend/carla_discovery.h"
 #include "gui/backend/plugin_manager.h"
+#include "gui/backend/plugin_protocol_paths.h"
+#include "plugins/out_of_process_scanner.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 
@@ -43,16 +43,27 @@ using namespace zrythm::gui::old_dsp::plugins;
 
 PluginManager::PluginManager (QObject * parent)
     : QObject (parent),
-      plugin_descriptors_ (std::make_unique<gui::PluginDescriptorList> ()),
+      plugin_descriptors_ (
+        std::make_unique<zrythm::plugins::discovery::PluginDescriptorList> ()),
       known_plugin_list_ (std::make_shared<juce::KnownPluginList> ()),
       // cached_plugin_descriptors_ (CachedPluginDescriptors::read_or_new ()),
-      collections_ (PluginCollections::read_or_new ()),
-      scanner_ (std::make_unique<PluginScanner> (known_plugin_list_))
+      collections_ (PluginCollections::read_or_new ())
 #if HAVE_CARLA
       ,
       carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
 #endif
 {
+  auto format_manager = std::make_shared<juce::AudioPluginFormatManager> ();
+  format_manager->addDefaultFormats ();
+#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
+  format_manager->addFormat (new juce::CLAPPluginFormat ());
+#endif
+  known_plugin_list_->setCustomScanner (
+    std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
+  scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (
+    known_plugin_list_, format_manager, [] (Protocol::ProtocolType protocol) {
+      return zrythm::plugins::PluginProtocolPaths::get_for_protocol (protocol);
+    });
 }
 
 PluginManager *
@@ -137,8 +148,7 @@ PluginManager::supports_protocol (Protocol::ProtocolType protocol)
 }
 
 void
-PluginManager::add_descriptor (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
+PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 {
   z_return_if_fail (descr.protocol_ > Protocol::ProtocolType::Internal);
   plugin_descriptors_->addDescriptor (descr);
@@ -223,13 +233,14 @@ PluginManager::beginScan ()
 
   // relay currently scanning plugin
   QObject::connect (
-    scanner_.get (), &PluginScanner::currentlyScanningPluginChanged, this,
+    scanner_.get (),
+    &::zrythm::plugins::PluginScanManager::currentlyScanningPluginChanged, this,
     &PluginManager::currentlyScanningPluginChanged);
 
   // get notified by the scanner when it has finished scanning
   QObject::connect (
-    scanner_.get (), &PluginScanner::scanningFinished, this,
-    &PluginManager::onScanFinished);
+    scanner_.get (), &::zrythm::plugins::PluginScanManager::scanningFinished,
+    this, &PluginManager::onScanFinished);
 
   deserialize_known_plugins ();
 
@@ -260,14 +271,14 @@ PluginManager::beginScan ()
 #endif
 }
 
-std::unique_ptr<PluginDescriptor>
+std::unique_ptr<zrythm::plugins::PluginDescriptor>
 PluginManager::find_plugin_from_uri (const utils::Utf8String &uri) const
 {
 // TODO
 #if 0
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
-    [&uri] (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr) {
+    [&uri] (const zrythm::plugins::PluginDescriptor &descr) {
       return uri == descr.uri_;
     });
   if (it != plugin_descriptors_.end ())
@@ -283,15 +294,15 @@ PluginManager::find_plugin_from_uri (const utils::Utf8String &uri) const
   return nullptr;
 }
 
-std::unique_ptr<PluginDescriptor>
+std::unique_ptr<zrythm::plugins::PluginDescriptor>
 PluginManager::find_from_descriptor (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &src_descr) const
+  const zrythm::plugins::PluginDescriptor &src_descr) const
 {
 // TODO
 #if 0
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
-    [&src_descr] (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr) {
+    [&src_descr] (const zrythm::plugins::PluginDescriptor &descr) {
       return src_descr.is_same_plugin (descr);
     });
   if (it != plugin_descriptors_.end ())
@@ -307,7 +318,7 @@ PluginManager::find_from_descriptor (
   return nullptr;
 }
 
-std::unique_ptr<PluginDescriptor>
+std::unique_ptr<zrythm::plugins::PluginDescriptor>
 PluginManager::pick_instrument () const
 {
 // TODO

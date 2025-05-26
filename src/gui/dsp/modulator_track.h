@@ -49,23 +49,23 @@ public:
    * other modulators forward if false).
    */
   PluginPtrVariant insert_modulator (
-    dsp::PluginSlot::SlotNo slot,
-    PluginUuidReference     modulator_id,
-    bool                    replace_mode,
-    bool                    confirm,
-    bool                    gen_automatables,
-    bool                    recalc_graph,
-    bool                    pub_events);
+    plugins::PluginSlot::SlotNo slot,
+    PluginUuidReference         modulator_id,
+    bool                        replace_mode,
+    bool                        confirm,
+    bool                        gen_automatables,
+    bool                        recalc_graph,
+    bool                        pub_events);
 
   /**
    * Removes the modulator (plugin) at the given slot.
    */
-  PluginPtrVariant remove_modulator (dsp::PluginSlot::SlotNo slot);
+  PluginPtrVariant remove_modulator (plugins::PluginSlot::SlotNo slot);
 
   std::optional<PluginPtrVariant>
-  get_modulator (dsp::PluginSlot::SlotNo slot) const;
+  get_modulator (plugins::PluginSlot::SlotNo slot) const;
 
-  dsp::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
+  plugins::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
 
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)

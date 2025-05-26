@@ -16,7 +16,7 @@ using namespace zrythm::gui::old_dsp::plugins;
 
 bool
 PluginCollection::contains_descriptor (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr) const
+  const zrythm::plugins::PluginDescriptor &descr) const
 {
   return std::ranges::any_of (descriptors_, [&descr] (const auto &cur_descr) {
     return descr.is_same_plugin (*cur_descr);
@@ -24,8 +24,7 @@ PluginCollection::contains_descriptor (
 }
 
 void
-PluginCollection::add_descriptor (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
+PluginCollection::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 {
   if (contains_descriptor (descr))
     {
@@ -44,7 +43,7 @@ PluginCollection::add_descriptor (
 
 void
 PluginCollection::remove_descriptor (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
+  const zrythm::plugins::PluginDescriptor &descr)
 {
   std::erase_if (descriptors_, [&descr] (const auto &cur_descr) {
     return cur_descr->is_same_plugin (descr);
@@ -198,9 +197,9 @@ PluginCollections::add (
 const zrythm::gui::old_dsp::plugins::PluginCollection *
 PluginCollections::find_from_name (std::string_view name) const
 {
-  auto it = std::find_if (
-    collections_.begin (), collections_.end (),
-    [&name] (const auto &collection) { return collection->name_ == name; });
+  auto it = std::ranges::find_if (collections_, [&name] (const auto &collection) {
+    return collection->name_ == name;
+  });
 
   return it == collections_.end () ? nullptr : (*it).get ();
 }

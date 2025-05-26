@@ -5,10 +5,8 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/plugin_slot.h"
-#include "gui/dsp/plugin_protocol.h"
+#include "plugins/plugin_protocol.h"
 #include "utils/icloneable.h"
-#include "utils/serialization.h"
 
 #include <QObject>
 
@@ -18,10 +16,8 @@
  * @{
  */
 
-namespace zrythm::gui::old_dsp::plugins
+namespace zrythm::plugins
 {
-
-using PluginSlotType = zrythm::dsp::PluginSlotType;
 
 /**
  * Plugin category.
@@ -125,11 +121,6 @@ public:
   bool is_midi_modifier () const;
 
   /**
-   * Returns if this can be dropped in a slot of the given type.
-   */
-  bool is_valid_for_slot_type (PluginSlotType slot_type, int track_type) const;
-
-  /**
    * Returns whether the two descriptors describe the same plugin, ignoring
    * irrelevant fields.
    */
@@ -144,17 +135,6 @@ public:
    * Returns the minimum bridge mode required for this plugin.
    */
   CarlaBridgeMode get_min_bridge_mode () const;
-
-  /**
-   * Returns whether the plugin is known to work, so it should be whitelisted.
-   *
-   * Non-whitelisted plugins will run in full bridge mode. This is to prevent
-   * crashes when Zrythm is not at fault.
-   *
-   * These must all be free-software plugins so that they can be debugged if
-   * issues arise.
-   */
-  bool is_whitelisted () const;
 
   /**
    * Gets an appropriate icon name.
@@ -190,7 +170,6 @@ private:
   static constexpr auto kUriKey = "uri"sv;
   static constexpr auto kMinBridgeModeKey = "minBridgeMode"sv;
   static constexpr auto kHasCustomUIKey = "hasCustomUI"sv;
-  static constexpr auto kGHashKey = "ghash"sv;
   static constexpr auto kSha1Key = "sha1"sv;
   friend void           to_json (nlohmann::json &j, const PluginDescriptor &p)
   {
@@ -215,7 +194,6 @@ private:
       { kUriKey,            p.uri_             },
       { kMinBridgeModeKey,  p.min_bridge_mode_ },
       { kHasCustomUIKey,    p.has_custom_ui_   },
-      { kGHashKey,          p.ghash_           },
       { kSha1Key,           p.sha1_            },
     };
   }
@@ -241,8 +219,14 @@ private:
     j.at (kUriKey).get_to (p.uri_);
     j.at (kMinBridgeModeKey).get_to (p.min_bridge_mode_);
     j.at (kHasCustomUIKey).get_to (p.has_custom_ui_);
-    j.at (kGHashKey).get_to (p.ghash_);
     j.at (kSha1Key).get_to (p.sha1_);
+  }
+
+  friend bool operator== (const PluginDescriptor &a, const PluginDescriptor &b)
+  {
+    return a.arch_ == b.arch_ && a.protocol_ == b.protocol_
+           && a.unique_id_ == b.unique_id_ && a.sha1_ == b.sha1_
+           && a.uri_ == b.uri_;
   }
 
 public:
@@ -278,34 +262,18 @@ public:
   utils::Utf8String uri_;
 
   /** Used for VST. */
-  int64_t unique_id_ = 0;
+  int64_t unique_id_{};
 
   /** Minimum required bridge mode. */
   CarlaBridgeMode min_bridge_mode_ = CarlaBridgeMode::None;
 
-  bool has_custom_ui_ = false;
-
-  /**
-   * Hash of the plugin's bundle (.so/.ddl for VST) used when caching
-   * PluginDescriptor's, obtained using g_file_hash().
-   *
-   * @deprecated Kept so that older projects still work.
-   */
-  unsigned int ghash_ = 0;
+  bool has_custom_ui_{};
 
   /** SHA1 of the file (replaces ghash). */
   std::string sha1_;
 };
 
-inline bool
-operator== (const PluginDescriptor &a, const PluginDescriptor &b)
-{
-  return a.arch_ == b.arch_ && a.protocol_ == b.protocol_
-         && a.unique_id_ == b.unique_id_ && a.ghash_ == b.ghash_
-         && a.sha1_ == b.sha1_ && a.uri_ == b.uri_;
-}
-
-} // namespace zrythm::gui::old_dsp::plugins
+} // namespace zrythm::plugins
 
 /**
  * @}

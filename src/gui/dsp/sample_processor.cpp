@@ -460,7 +460,8 @@ SampleProcessor::queue_file_or_chord_preset (
           z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
 
           instrument_track->channel_->add_plugin (
-            pl_ref, dsp::PluginSlot (zrythm::dsp::PluginSlotType::Instrument),
+            pl_ref,
+            plugins::PluginSlot (zrythm::plugins::PluginSlotType::Instrument),
             false, false, true, false, false);
 
           int num_tracks =

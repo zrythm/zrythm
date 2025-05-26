@@ -143,11 +143,7 @@ target_sources(zrythm_gui_lib
     piano_roll_track.cpp
     plugin.h
     plugin.cpp
-    plugin_descriptor.h
-    plugin_descriptor.cpp
     plugin_factory.h
-    plugin_protocol.h
-    plugin_protocol.cpp
     plugin_span.h
     plugin_span.cpp
     pool.h

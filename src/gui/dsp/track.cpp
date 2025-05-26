@@ -288,7 +288,7 @@ Track::is_auditioner () const
 
 Track::Type
 Track::type_get_from_plugin_descriptor (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
+  const zrythm::plugins::PluginDescriptor &descr)
 {
   if (descr.is_instrument ())
     return Track::Type::Instrument;

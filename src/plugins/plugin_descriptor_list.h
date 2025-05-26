@@ -1,13 +1,13 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "gui/dsp/plugin_descriptor.h"
+#include "plugins/plugin_descriptor.h"
 
-#include <qqmlregistration.h>
+#include <QtQmlIntegration>
 
-namespace zrythm::gui
+namespace zrythm::plugins::discovery
 {
 
 class PluginDescriptorList : public QAbstractListModel
@@ -53,7 +53,7 @@ public:
   }
 
 public:
-  void addDescriptor (const gui::old_dsp::plugins::PluginDescriptor &descriptor)
+  void addDescriptor (const PluginDescriptor &descriptor)
   {
     beginInsertRows (
       QModelIndex (), static_cast<int> (descriptors_.size ()),
@@ -76,6 +76,6 @@ public:
   auto at (int index) const { return descriptors_.at (index); }
 
 private:
-  QList<gui::old_dsp::plugins::PluginDescriptor *> descriptors_;
+  QList<PluginDescriptor *> descriptors_;
 };
 }

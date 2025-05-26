@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/plugin_slot.h"
+#include "plugins/plugin_slot.h"
 #include "utils/gtest_wrapper.h"
 
-using namespace zrythm::dsp;
+using namespace zrythm::plugins;
 
 TEST (PluginSlotTest, ConstructionAndValidation)
 {

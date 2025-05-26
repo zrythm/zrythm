@@ -59,7 +59,9 @@
  * license.
  *
  * TODO: maybe replace with
- * https://github.com/erez-strauss/lockfree_mpmc_queue ?
+ * https://github.com/erez-strauss/lockfree_mpmc_queue or
+ * https://github.com/rigtorp/MPMCQueue/blob
+ * ?
  */
 template <typename T> class MPMCQueue
 {

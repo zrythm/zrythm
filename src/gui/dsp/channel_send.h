@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "dsp/plugin_slot.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/track.h"
+#include "plugins/plugin_slot.h"
 #include "utils/icloneable.h"
 
 class StereoPorts;

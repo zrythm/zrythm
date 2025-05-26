@@ -1,0 +1,88 @@
+' SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+' SPDX-License-Identifier: LicenseRef-ZrythmLicense
+' note: the part inside foreach plugin path/URI is unfinished
+@startuml Plugin Scanning Sequence Diagram
+title Plugin Scanning Sequence Diagram
+
+participant "PluginManager" as PM
+participant "PluginScanner" as PS
+participant "Worker" as W
+participant "OutOfProcessPluginScanner" as OOPS
+participant "SubprocessCoordinator" as SC
+participant "PluginScannerSubprocess" as PSSP
+participant "KnownPluginList" as KPL
+
+PM -> PS: beginScan() [async]
+
+PS -> W: Create scan QThread\nwith Worker [async]
+
+activate W
+
+W -> OOPS: new OutOfProcessScanner()
+W -> KPL: setCustomScanner(OutOfProcessScanner)
+W -> W: add supported formats
+
+loop foreach Format
+  W -> W: format.searchPathsForPlugins()\n(note: this simply gets plugin paths/URIs)
+  loop foreach Plugin Path or URI
+    W -> KPL: scanAndAddFile()
+    activate KPL
+
+    KPL -> OOPS: findPluginTypesFor()
+    activate OOPS
+
+    OOPS -> SC: add_plugin_descriptions()
+    activate SC
+
+    SC -> SC: launchWorkerProcess()
+    activate SC
+    SC --> PSSP: START (executable)
+    activate PSSP
+
+    SC -> SC: sendMessageToWorker()
+    SC -> PSSP: handleMessageFromCoordinator()
+    activate PSSP
+
+    group Plugin Scanning Subprocess
+      PSSP -> PSSP: do_scan()
+      PSSP -> PSSP: formatManager.getFormats()
+      loop For Each Format
+        PSSP -> PSSP: findAllTypesForFile()
+        PSSP -> PSSP: create XML results
+      end
+      PSSP -> SC: send_results()
+      activate SC
+      SC --> OOPS: handleMessageFromWorker()
+      deactivate SC
+    end
+
+    alt Timeout Handling
+      SC -> SC: getResponse() [with timeout]
+      SC --> OOPS: Timeout detected
+      OOPS --> SC: Retry scan
+    else Valid Response
+      OOPS -> KPL: add plugin descriptions
+    end
+
+    PSSP --> SC: Connection closed
+    deactivate PSSP
+
+    deactivate SC
+    deactivate OOPS
+    deactivate KPL
+  end
+end
+
+
+W -> PS: scan_finished() [Signal]
+deactivate W
+
+PS -> PM: scanningFinished() [Signal]
+deactivate PS
+
+PM -> PM: serialize_known_plugins()
+PM -> KPL: createXml()\nwriteToFile()
+
+PM -> PM: update GUI state
+
+@enduml

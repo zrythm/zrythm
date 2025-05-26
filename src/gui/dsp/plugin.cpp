@@ -8,7 +8,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/cached_plugin_descriptors.h"
 #include "gui/backend/channel.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/ui.h"
@@ -56,7 +55,7 @@ Plugin::Plugin (PortRegistry &port_registry, const PluginSetting &setting)
 Plugin::Plugin (PortRegistry &port_registry, ZPluginCategory cat)
     : port_registry_ (port_registry)
 {
-  zrythm::gui::old_dsp::plugins::PluginDescriptor descr;
+  zrythm::plugins::PluginDescriptor descr;
   descr.author_ = u8"Hoge";
   descr.name_ = u8"Dummy Plugin";
   descr.category_ = cat;
@@ -523,7 +522,7 @@ struct PluginMoveData
 {
   Plugin *                pl = nullptr;
   OptionalTrackPtrVariant track_var;
-  dsp::PluginSlot         slot;
+  plugins::PluginSlot         slot;
   bool                    fire_events = false;
 };
 
@@ -606,7 +605,7 @@ overwrite_plugin_response_cb (
 void
 Plugin::move (
   AutomatableTrack * track,
-  dsp::PluginSlot    slot,
+  PluginSlot    slot,
   bool               confirm_overwrite,
   bool               fire_events)
 {
@@ -763,7 +762,7 @@ Plugin::generate_window_title () const
       std::string bridge_mode;
       if (
         setting_->bridge_mode_
-        != zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
+        != zrythm::plugins::CarlaBridgeMode::None)
         {
           bridge_mode =
             fmt::format (" - bridge: {}", ENUM_NAME (setting_->bridge_mode_));
@@ -772,7 +771,7 @@ Plugin::generate_window_title () const
       const auto  slot = *get_slot ();
       std::string slot_str;
       const auto  slot_type = get_slot_type ();
-      if (slot_type == zrythm::dsp::PluginSlotType::Instrument)
+      if (slot_type == zrythm::plugins::PluginSlotType::Instrument)
         {
           slot_str = "instrument";
         }
@@ -869,7 +868,7 @@ void
 Plugin::move_automation (
   AutomatableTrack &prev_track,
   AutomatableTrack &track,
-  dsp::PluginSlot   new_slot)
+  PluginSlot   new_slot)
 {
   z_debug (
     "moving plugin '{}' automation from {} to {} -> {}", get_name (),

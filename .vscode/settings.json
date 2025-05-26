@@ -18,6 +18,7 @@
         "-DZRYTHM_ENABLE_SANITIZER_ADDRESS=ON",
         "-DZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON",
         "-DZRYTHM_ENABLE_SANITIZER_MEMORY=OFF",
+        "-DZRYTHM_ENABLE_SANITIZER_THREAD=OFF"
     ],
     "cmake.environment": {
         "VIRTUAL_ENV": "${workspaceFolder}/venv",

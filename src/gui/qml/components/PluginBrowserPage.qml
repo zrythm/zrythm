@@ -10,6 +10,8 @@ import ZrythmStyle 1.0
 ColumnLayout {
     id: root
 
+    required property var pluginManager
+
     Item {
         id: filters
     }
@@ -19,9 +21,16 @@ ColumnLayout {
     }
 
     ListView {
-        // TODO
-
         id: pluginListView
+
+        model: root.pluginManager.pluginDescriptors
+        delegate: ItemDelegate {
+          required property var descriptor
+
+          Label {
+            text: descriptor.name
+          }
+        }
 
         Layout.fillWidth: true
         Layout.fillHeight: true

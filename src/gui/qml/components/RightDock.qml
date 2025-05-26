@@ -8,6 +8,8 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 ColumnLayout {
+   id: root
+
     TabBar {
         id: tabBar
 
@@ -58,6 +60,8 @@ ColumnLayout {
 
         PluginBrowserPage {
           id: pluginBrowserPage
+
+          pluginManager: GlobalState.zrythm.pluginManager
         }
 
         Repeater {

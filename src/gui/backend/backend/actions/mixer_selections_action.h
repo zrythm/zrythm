@@ -43,7 +43,7 @@ public:
     ChangeLoadBehavior,
   };
 
-  using PluginSlotType = zrythm::dsp::PluginSlotType;
+  using PluginSlotType = zrythm::plugins::PluginSlotType;
   using Plugin = old_dsp::plugins::Plugin;
   using PluginUuid = Plugin::PluginUuid;
   using PluginPtrVariant = old_dsp::plugins::PluginPtrVariant;
@@ -62,16 +62,16 @@ public:
    * @param num_plugins The number of plugins to create, if creating plugins.
    */
   MixerSelectionsAction (
-    std::optional<PluginSpan>                      ms,
-    const PortConnectionsManager *                 connections_mgr,
-    Type                                           type,
-    std::optional<Track::TrackUuid>                to_track_id,
-    std::optional<dsp::PluginSlot>                 to_slot,
-    const PluginSetting *                          setting,
-    int                                            num_plugins,
-    int                                            new_val,
-    zrythm::gui::old_dsp::plugins::CarlaBridgeMode new_bridge_mode,
-    QObject *                                      parent = nullptr);
+    std::optional<PluginSpan>          ms,
+    const PortConnectionsManager *     connections_mgr,
+    Type                               type,
+    std::optional<Track::TrackUuid>    to_track_id,
+    std::optional<plugins::PluginSlot> to_slot,
+    const PluginSetting *              setting,
+    int                                num_plugins,
+    int                                new_val,
+    zrythm::plugins::CarlaBridgeMode   new_bridge_mode,
+    QObject *                          parent = nullptr);
 
   QString to_string () const override;
 
@@ -107,8 +107,10 @@ private:
    *
    * @param deleted Whether to use deleted_ats.
    */
-  void
-  revert_automation (AutomatableTrack &track, dsp::PluginSlot slot, bool deleted);
+  void revert_automation (
+    AutomatableTrack   &track,
+    plugins::PluginSlot slot,
+    bool                deleted);
 
   /**
    * Save an existing plugin about to be replaced into @p tmp_ms.
@@ -118,11 +120,11 @@ private:
   void save_existing_plugin (
     std::vector<PluginPtrVariant> tmp_plugins,
     Track *                       from_tr,
-    dsp::PluginSlot               from_slot,
+    plugins::PluginSlot           from_slot,
     Track *                       to_tr,
-    dsp::PluginSlot               to_slot);
+    plugins::PluginSlot           to_slot);
 
-  void revert_deleted_plugin (Track &to_tr, dsp::PluginSlot to_slot);
+  void revert_deleted_plugin (Track &to_tr, plugins::PluginSlot to_slot);
 
   void do_or_undo_create_or_delete (bool do_it, bool create);
   void do_or_undo_change_status (bool do_it);
@@ -139,7 +141,7 @@ public:
    * The rest of the slots will start from this so they can be calculated when
    * doing/undoing.
    */
-  std::optional<dsp::PluginSlot> to_slot_;
+  std::optional<plugins::PluginSlot> to_slot_;
 
   /** To track position. */
   std::optional<Track::TrackUuid> to_track_uuid_;
@@ -155,8 +157,8 @@ public:
   int new_val_ = 0;
 
   /** Used when changing load behavior. */
-  zrythm::gui::old_dsp::plugins::CarlaBridgeMode new_bridge_mode_ =
-    zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None;
+  zrythm::plugins::CarlaBridgeMode new_bridge_mode_ =
+    zrythm::plugins::CarlaBridgeMode::None;
 
   /**
    * PluginSetting to use when creating.
@@ -199,7 +201,7 @@ class MixerSelectionsCreateAction : public MixerSelectionsAction
 public:
   MixerSelectionsCreateAction (
     const Track         &to_track,
-    dsp::PluginSlot      to_slot,
+    plugins::PluginSlot  to_slot,
     const PluginSetting &setting,
     int                  num_plugins = 1)
       : MixerSelectionsAction (
@@ -211,7 +213,7 @@ public:
           &setting,
           num_plugins,
           0,
-          zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -224,7 +226,7 @@ public:
     const PortConnectionsManager &connections_mgr,
     MixerSelectionsAction::Type   type,
     const Track *                 to_track,
-    dsp::PluginSlot               to_slot)
+    plugins::PluginSlot           to_slot)
       : MixerSelectionsAction (
           plugins,
           &connections_mgr,
@@ -234,7 +236,7 @@ public:
           nullptr,
           0,
           0,
-          zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -246,7 +248,7 @@ public:
     PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr,
     const Track *                 to_track,
-    dsp::PluginSlot               to_slot)
+    plugins::PluginSlot           to_slot)
       : MixerSelectionsTargetedAction (
           plugins,
           connections_mgr,
@@ -264,7 +266,7 @@ public:
     PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr,
     const Track *                 to_track,
-    dsp::PluginSlot               to_slot)
+    plugins::PluginSlot           to_slot)
       : MixerSelectionsTargetedAction (
           plugins,
           connections_mgr,
@@ -282,7 +284,7 @@ public:
     PluginSpan                    plugins,
     const PortConnectionsManager &connections_mgr,
     const Track *                 to_track,
-    dsp::PluginSlot               to_slot)
+    plugins::PluginSlot           to_slot)
       : MixerSelectionsTargetedAction (
           plugins,
           connections_mgr,
@@ -308,7 +310,7 @@ public:
           nullptr,
           0,
           0,
-          zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -326,7 +328,7 @@ public:
           nullptr,
           0,
           new_val,
-          zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -335,8 +337,8 @@ class MixerSelectionsChangeLoadBehaviorAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsChangeLoadBehaviorAction (
-    PluginSpan                                     plugins,
-    zrythm::gui::old_dsp::plugins::CarlaBridgeMode new_bridge_mode)
+    PluginSpan                       plugins,
+    zrythm::plugins::CarlaBridgeMode new_bridge_mode)
       : MixerSelectionsAction (
           plugins,
           nullptr,

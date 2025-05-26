@@ -85,7 +85,7 @@ apply_plugin (
   channels_t   channels,
   GError **    error)
 {
-  zrythm::gui::old_dsp::plugins::PluginDescriptor * descr =
+  zrythm::plugins::PluginDescriptor * descr =
     plugin_manager_find_plugin_from_uri (zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance (), uri);
   z_return_val_if_fail (descr, -1);
   PluginSetting * setting = plugin_setting_new_default (descr);
@@ -93,7 +93,7 @@ apply_plugin (
   setting->force_generic_ui = true;
   GError * err = NULL;
   zrythm::gui::old_dsp::plugins::Plugin * pl =
-    plugin_new_from_setting (setting, 0, zrythm::dsp::PluginSlotType::Insert, 0, &err);
+    plugin_new_from_setting (setting, 0, zrythm::plugins::PluginSlotType::Insert, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
       PROPAGATE_PREFIXED_ERROR (error, err, "%s", QObject::tr ("Failed to create plugin"));

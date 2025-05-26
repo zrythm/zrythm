@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: © 2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/plugin_slot.h"
+#include "plugins/plugin_slot.h"
 
-namespace zrythm::dsp
+namespace zrythm::plugins
 {
 
 size_t

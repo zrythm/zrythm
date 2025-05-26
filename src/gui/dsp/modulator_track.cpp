@@ -166,7 +166,7 @@ overwrite_plugin_response_cb (
 
 ModulatorTrack::PluginPtrVariant
 ModulatorTrack::insert_modulator (
-  dsp::PluginSlot::SlotNo slot,
+  plugins::PluginSlot::SlotNo slot,
   PluginUuidReference     modulator_id,
   bool                    replace_mode,
   bool                    confirm,
@@ -211,7 +211,7 @@ ModulatorTrack::insert_modulator (
 }
 
 ModulatorTrack::PluginPtrVariant
-ModulatorTrack::remove_modulator (dsp::PluginSlot::SlotNo slot)
+ModulatorTrack::remove_modulator (plugins::PluginSlot::SlotNo slot)
 {
   auto plugin_id = modulators_[slot];
   auto plugin_var = plugin_id.get_object ();
@@ -273,21 +273,21 @@ ModulatorTrack::init_after_cloning (
 }
 
 std::optional<ModulatorTrack::PluginPtrVariant>
-ModulatorTrack::get_modulator (dsp::PluginSlot::SlotNo slot) const
+ModulatorTrack::get_modulator (plugins::PluginSlot::SlotNo slot) const
 {
   auto modulator_var = modulators_[slot].get_object ();
   return modulator_var;
 }
 
-dsp::PluginSlot
+plugins::PluginSlot
 ModulatorTrack::get_plugin_slot (const PluginUuid &plugin_id) const
 {
   const auto it =
     std::ranges::find (modulators_, plugin_id, &PluginUuidReference::id);
   if (it == modulators_.end ())
     throw std::runtime_error ("Plugin not found");
-  return dsp::PluginSlot (
-    dsp::PluginSlotType::Modulator, std::distance (modulators_.begin (), it));
+  return plugins::PluginSlot (
+    plugins::PluginSlotType::Modulator, std::distance (modulators_.begin (), it));
 }
 
 void

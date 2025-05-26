@@ -8,9 +8,7 @@
 #include "utils/serialization.h"
 #include "utils/uuid_identifiable_object.h"
 
-class Track;
-
-namespace zrythm::dsp
+namespace zrythm::plugins
 {
 
 enum class PluginSlotType
@@ -113,9 +111,9 @@ private:
 }; // namespace zrythm::dsp
 
 DEFINE_OBJECT_FORMATTER (
-  zrythm::dsp::PluginSlot,
+  zrythm::plugins::PluginSlot,
   PluginSlot,
-  [] (const zrythm::dsp::PluginSlot &slot) {
+  [] (const zrythm::plugins::PluginSlot &slot) {
     if (slot.has_slot_index ())
       {
         auto ret = slot.get_slot_with_index ();

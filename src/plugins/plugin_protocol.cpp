@@ -1,13 +1,13 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/dsp/plugin_protocol.h"
+#include "plugins/plugin_protocol.h"
 #include "utils/logger.h"
 #include "utils/types.h"
 
-using namespace zrythm::gui::old_dsp::plugins;
+using namespace zrythm::plugins;
 
-constexpr std::array<const char *, 11> plugin_protocol_strings = {
+constexpr std::array<std::string_view, 11> plugin_protocol_strings = {
   "Internal",  "LV2", "DSSI", "LADSPA", "VST",  "VST3",
   "AudioUnit", "SFZ", "SF2",  "CLAP",   "JSFX",
 };
@@ -45,14 +45,14 @@ Protocol::get_icon_name (ProtocolType prot)
 std::string
 Protocol::to_string (ProtocolType prot)
 {
-  return plugin_protocol_strings.at (ENUM_VALUE_TO_INT (prot));
+  return std::string{ plugin_protocol_strings.at (ENUM_VALUE_TO_INT (prot)) };
 }
 
 Protocol::ProtocolType
 Protocol::from_string (const std::string &str)
 {
   size_t i = 0;
-  for (auto &cur_str : plugin_protocol_strings)
+  for (const auto &cur_str : plugin_protocol_strings)
     {
       if (cur_str == str)
         {
@@ -60,7 +60,7 @@ Protocol::from_string (const std::string &str)
         }
       ++i;
     }
-  z_return_val_if_reached (ProtocolType::LV2);
+  throw std::runtime_error ("Invalid protocol type: " + str);
 }
 
 bool
@@ -101,5 +101,5 @@ Protocol::from_juce_format_name (const juce::String &str)
   if (str == "JSFX")
     return ProtocolType::JSFX;
 
-  z_return_val_if_reached (ProtocolType::Internal);
+  throw std::runtime_error ("Unknown protocol type: " + str.toStdString ());
 }

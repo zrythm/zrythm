@@ -90,7 +90,7 @@ IncludeCategories:
   - Regex:           '^<(assert|errno|inttypes|signal|cstring|cstd.+|sys/.+|cmath|cfloat)\.h>$'
     Priority:        -2
     CaseSensitive:   true
-  - Regex:           '^"((utils|dsp|gui)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
+  - Regex:           '^"((utils|dsp|gui|plugins)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
     Priority:        3
     CaseSensitive:   true
   - Regex:           '^<(Q|qqml).*>$'

@@ -286,7 +286,7 @@ public:
   using PortType = dsp::PortType;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
   using PluginPtrVariant = PluginRegistry::VariantType;
-  using PluginSlot = dsp::PluginSlot;
+  using PluginSlot = plugins::PluginSlot;
 
   using TrackSelectionStatusGetter = std::function<bool (const TrackUuid &)>;
 
@@ -434,7 +434,7 @@ public:
   }
 
   static Type type_get_from_plugin_descriptor (
-    const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr);
+    const zrythm::plugins::PluginDescriptor &descr);
 
   static consteval bool type_has_mono_compat_switch (const Type tt)
   {
@@ -1060,16 +1060,16 @@ public:
    */
   template <typename DerivedT>
   PluginPtrVariant insert_plugin (
-    this DerivedT &&self,
-    PluginUuid      plugin_id,
-    dsp::PluginSlot slot,
-    bool            instantiate_plugin,
-    bool            replacing_plugin,
-    bool            moving_plugin,
-    bool            confirm,
-    bool            gen_automatables,
-    bool            recalc_graph,
-    bool            fire_events)
+    this DerivedT     &&self,
+    PluginUuid          plugin_id,
+    plugins::PluginSlot slot,
+    bool                instantiate_plugin,
+    bool                replacing_plugin,
+    bool                moving_plugin,
+    bool                confirm,
+    bool                gen_automatables,
+    bool                recalc_graph,
+    bool                fire_events)
     requires std::derived_from<base_type<DerivedT>, Track>
              && FinalClass<base_type<DerivedT>>
   {
@@ -1123,7 +1123,7 @@ public:
    * ModulatorTrack::remove_modulator().
    */
   template <typename SelfT>
-  void remove_plugin (this SelfT &self, dsp::PluginSlot slot)
+  void remove_plugin (this SelfT &self, plugins::PluginSlot slot)
     requires (
       std::derived_from<SelfT, ChannelTrack>
       || std::is_same_v<SelfT, ModulatorTrack>)
@@ -1142,7 +1142,7 @@ public:
   }
 
   template <typename SelfT>
-  dsp::PluginSlot
+  plugins::PluginSlot
   get_plugin_slot (this const SelfT &self, const PluginUuid &plugin_id)
     requires (
       std::derived_from<SelfT, ChannelTrack>
@@ -1159,8 +1159,40 @@ public:
   }
 
   /**
-   * Disconnects the track from the processing chain and removes any plugins it
-   * contains.
+   * Returns if @p descr can be dropped at @p slot_type in a track of type @p
+   * track_type.
+   */
+  static bool is_plugin_descriptor_valid_for_slot_type (
+    const plugins::PluginDescriptor &descr,
+    zrythm::plugins::PluginSlotType  slot_type,
+    Track::Type                      track_type)
+  {
+    switch (slot_type)
+      {
+      case zrythm::plugins::PluginSlotType::Insert:
+        if (track_type == Track::Type::Midi)
+          {
+            return descr.num_midi_outs_ > 0;
+          }
+        else
+          {
+            return descr.num_audio_outs_ > 0;
+          }
+      case zrythm::plugins::PluginSlotType::MidiFx:
+        return descr.num_midi_outs_ > 0;
+        break;
+      case zrythm::plugins::PluginSlotType::Instrument:
+        return track_type == Track::Type::Instrument && descr.is_instrument ();
+      default:
+        break;
+      }
+
+    z_return_val_if_reached (false);
+  }
+
+  /**
+   * Disconnects the track from the processing chain and removes any plugins
+   * it contains.
    */
   void disconnect_track ();
 

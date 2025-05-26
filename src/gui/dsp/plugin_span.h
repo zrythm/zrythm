@@ -92,7 +92,7 @@ public:
   /**
    * Returns whether the plugins can be pasted to the given slot.
    */
-  bool can_be_pasted (const dsp::PluginSlot &slot) const;
+  bool can_be_pasted (const plugins::PluginSlot &slot) const;
 
   /**
    * Paste the selections starting at the slot in the given channel.
@@ -100,7 +100,7 @@ public:
    * This calls gen_full_from_this() internally to generate FullMixerSelections
    * with cloned plugins (calling init_loaded() on each), which are then pasted.
    */
-  void paste_to_slot (Plugin::Channel &ch, dsp::PluginSlot slot) const;
+  void paste_to_slot (Plugin::Channel &ch, plugins::PluginSlot slot) const;
 
   void get_plugins (std::vector<Plugin *> &plugins) const
   {

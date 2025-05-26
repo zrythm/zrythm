@@ -26,16 +26,16 @@ MixerSelectionsAction::MixerSelectionsAction (QObject * parent)
 }
 
 MixerSelectionsAction::MixerSelectionsAction (
-  std::optional<PluginSpan>                      plugins,
-  const PortConnectionsManager *                 connections_mgr,
-  Type                                           type,
-  std::optional<Track::TrackUuid>                to_track_id,
-  std::optional<dsp::PluginSlot>                 to_slot,
-  const PluginSetting *                          setting,
-  int                                            num_plugins,
-  int                                            new_val,
-  zrythm::gui::old_dsp::plugins::CarlaBridgeMode new_bridge_mode,
-  QObject *                                      parent)
+  std::optional<PluginSpan>          plugins,
+  const PortConnectionsManager *     connections_mgr,
+  Type                               type,
+  std::optional<Track::TrackUuid>    to_track_id,
+  std::optional<plugins::PluginSlot> to_slot,
+  const PluginSetting *              setting,
+  int                                num_plugins,
+  int                                new_val,
+  zrythm::plugins::CarlaBridgeMode   new_bridge_mode,
+  QObject *                          parent)
     : MixerSelectionsAction (parent)
 
 {
@@ -206,9 +206,9 @@ MixerSelectionsAction::copy_at_regions (
 
 void
 MixerSelectionsAction::revert_automation (
-  AutomatableTrack &track,
-  dsp::PluginSlot   slot,
-  bool              deleted)
+  AutomatableTrack   &track,
+  plugins::PluginSlot slot,
+  bool                deleted)
 {
   z_debug ("reverting automation for {}#{}", track.get_name (), slot);
 
@@ -251,9 +251,9 @@ void
 MixerSelectionsAction::save_existing_plugin (
   std::vector<PluginPtrVariant> tmp_plugins,
   Track *                       from_tr,
-  dsp::PluginSlot               from_slot,
+  plugins::PluginSlot           from_slot,
   Track *                       to_tr,
-  dsp::PluginSlot               to_slot)
+  plugins::PluginSlot           to_slot)
 {
   auto to_track_var = convert_to_variant<TrackPtrVariant> (to_tr);
   std::visit (
@@ -288,8 +288,8 @@ MixerSelectionsAction::save_existing_plugin (
 
 void
 MixerSelectionsAction::revert_deleted_plugin (
-  Track          &to_tr_base,
-  dsp::PluginSlot to_slot)
+  Track              &to_tr_base,
+  plugins::PluginSlot to_slot)
 {
   std::visit (
     [&] (auto &&to_tr) {
@@ -305,7 +305,7 @@ MixerSelectionsAction::revert_deleted_plugin (
 
       auto deleted_type =
         PluginSpan{ *deleted_ms_ }.get_slot_type_of_first_plugin ();
-      if (deleted_type == dsp::PluginSlotType::Modulator)
+      if (deleted_type == plugins::PluginSlotType::Modulator)
         {
           /* modulators are never replaced */
           return;
@@ -393,7 +393,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                   to_slot_->has_slot_index ()
                     ? to_slot_->get_slot_with_index ().second
                     : 0;
-                return dsp::PluginSlot (slot_type, to_slot_i + i);
+                return plugins::PluginSlot (slot_type, to_slot_i + i);
               }
 
             return PluginSpan::slot_projection (own_ms[i]);
@@ -467,8 +467,9 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                       /* save any plugin about to be deleted */
                       // FIXME: what is the point of from_slot?
                       save_existing_plugin (
-                        *deleted_ms_, nullptr, dsp::PluginSlot (slot_type, -1),
-                        slot_type == zrythm::dsp::PluginSlotType::Modulator
+                        *deleted_ms_, nullptr,
+                        plugins::PluginSlot (slot_type, -1),
+                        slot_type == zrythm::plugins::PluginSlotType::Modulator
                           ? (Track *) P_MODULATOR_TRACK
                           : track,
                         slot);
@@ -669,11 +670,11 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 
       switch (pl->setting_->bridge_mode_)
         {
-        case zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full:
+        case zrythm::plugins::CarlaBridgeMode::Full:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, nullptr);
           break;
-        case zrythm::gui::old_dsp::plugins::CarlaBridgeMode::UI:
+        case zrythm::plugins::CarlaBridgeMode::UI:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, true, nullptr);
           break;

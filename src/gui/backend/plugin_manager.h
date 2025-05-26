@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H
@@ -6,12 +6,10 @@
 
 #include <filesystem>
 
-#include "gui/backend/cached_plugin_descriptors.h"
-#include "gui/backend/carla_discovery.h"
 #include "gui/backend/plugin_collections.h"
-#include "gui/backend/plugin_descriptor_list.h"
-#include "gui/backend/plugin_scanner.h"
-#include "gui/dsp/plugin_descriptor.h"
+#include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_descriptor_list.h"
+#include "plugins/plugin_scan_manager.h"
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -25,13 +23,16 @@ class PluginManager final : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    gui::PluginDescriptorList * pluginDescriptors READ getPluginDescriptors
-      CONSTANT FINAL)
-  Q_PROPERTY (plugins::PluginScanner * scanner READ getScanner CONSTANT FINAL)
+    zrythm::plugins::discovery::PluginDescriptorList * pluginDescriptors READ
+      getPluginDescriptors CONSTANT FINAL)
+  Q_PROPERTY (
+    ::zrythm::plugins::PluginScanManager * scanner READ getScanner CONSTANT FINAL)
   Q_PROPERTY (
     QString currentlyScanningPlugin READ getCurrentlyScanningPlugin NOTIFY
       currentlyScanningPluginChanged FINAL)
 public:
+  using Protocol = zrythm::plugins::Protocol;
+
   PluginManager (QObject * parent = nullptr);
 
   QString getCurrentlyScanningPlugin () const
@@ -39,9 +40,13 @@ public:
     return scanner_->getCurrentlyScanningPlugin ();
   }
 
-  plugins::PluginScanner * getScanner () const { return scanner_.get (); }
+  ::zrythm::plugins::PluginScanManager * getScanner () const
+  {
+    return scanner_.get ();
+  }
 
-  gui::PluginDescriptorList * getPluginDescriptors () const
+  zrythm::plugins::discovery::PluginDescriptorList *
+  getPluginDescriptors () const
   {
     return plugin_descriptors_.get ();
   }
@@ -51,31 +56,32 @@ public:
   /**
    * Adds a new descriptor.
    */
-  void add_descriptor (const PluginDescriptor &descr);
+  void add_descriptor (const zrythm::plugins::PluginDescriptor &descr);
 
   static PluginManager * get_active_instance ();
 
   /**
    * Returns a PluginDescriptor for the given URI.
    */
-  std::unique_ptr<PluginDescriptor>
+  std::unique_ptr<zrythm::plugins::PluginDescriptor>
   find_plugin_from_uri (const utils::Utf8String &uri) const;
 
   /**
    * Finds and returns a PluginDescriptor matching the given descriptor.
    */
-  std::unique_ptr<PluginDescriptor>
-  find_from_descriptor (const PluginDescriptor &src_descr) const;
+  std::unique_ptr<zrythm::plugins::PluginDescriptor> find_from_descriptor (
+    const zrythm::plugins::PluginDescriptor &src_descr) const;
 
   /**
    * Returns if the plugin manager supports the given plugin protocol.
    */
-  static bool supports_protocol (Protocol::ProtocolType protocol);
+  static bool
+  supports_protocol (zrythm::plugins::Protocol::ProtocolType protocol);
 
   /**
    * Returns an instrument plugin, if any.
    */
-  std::unique_ptr<PluginDescriptor> pick_instrument () const;
+  std::unique_ptr<zrythm::plugins::PluginDescriptor> pick_instrument () const;
 
   void clear_plugins ();
 
@@ -110,7 +116,8 @@ public:
   /**
    * Scanned plugin descriptors.
    */
-  std::unique_ptr<zrythm::gui::PluginDescriptorList> plugin_descriptors_;
+  std::unique_ptr<zrythm::plugins::discovery::PluginDescriptorList>
+    plugin_descriptors_;
   // std::vector<PluginDescriptor> plugin_descriptors_;
 
   /** Plugin categories. */
@@ -126,7 +133,7 @@ public:
   /** Plugin collections. */
   std::unique_ptr<PluginCollections> collections_;
 
-  std::unique_ptr<PluginScanner> scanner_;
+  std::unique_ptr<::zrythm::plugins::PluginScanManager> scanner_;
 
   /** Whether the plugin manager has been set up already. */
   bool setup_ = false;

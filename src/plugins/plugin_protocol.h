@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,7 +8,7 @@
 
 #include "juce_wrapper.h"
 
-namespace zrythm::gui::old_dsp::plugins
+namespace zrythm::plugins
 {
 
 class Protocol : public QObject
@@ -50,4 +50,4 @@ public:
   static std::string get_icon_name (ProtocolType prot);
 };
 
-} // namespace zrythm::gui::old_dsp::plugins
+} // namespace zrythm::plugins

@@ -34,8 +34,6 @@ target_sources(zrythm_dsp_lib
   peak_dsp.cpp
   peak_fall_smooth.h
   peak_fall_smooth.cpp
-  plugin_slot.h
-  plugin_slot.cpp
   port_identifier.h
   port_identifier.cpp
   position.h

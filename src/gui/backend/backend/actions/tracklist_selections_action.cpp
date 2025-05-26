@@ -540,9 +540,9 @@ TracklistSelectionsAction::create_track (int idx)
                   added_track->channel_->add_plugin (
                     *added_plugin_if_has_plugin,
                     std::is_same_v<TrackT, InstrumentTrack>
-                      ? dsp::PluginSlot (dsp::PluginSlotType::Instrument)
-                      : dsp::PluginSlot (
-                          dsp::PluginSlotType::Insert,
+                      ? plugins::PluginSlot (plugins::PluginSlotType::Instrument)
+                      : plugins::PluginSlot (
+                          plugins::PluginSlotType::Insert,
                           PluginSpan::slot_projection (
                             added_plugin_if_has_plugin->get_object ())
                             .get_slot_with_index ()

@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "gui/dsp/plugin_descriptor.h"
+#include "plugins/plugin_descriptor.h"
 
 /**
  * @addtogroup plugins
@@ -22,6 +22,8 @@ namespace zrythm::gui::old_dsp::plugins
 class PluginCollection final : public ICloneable<PluginCollection>
 {
 public:
+  using PluginDescriptor = zrythm::plugins::PluginDescriptor;
+
   std::string get_name () const { return name_; }
 
   void set_name (std::string_view name) { name_ = name; }

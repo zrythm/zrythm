@@ -21,7 +21,6 @@ class Port;
 namespace zrythm::gui::old_dsp::plugins
 {
 
-class PluginDescriptor;
 using CarlaPluginHandle = void *;
 
 /**

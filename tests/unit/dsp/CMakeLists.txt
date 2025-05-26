@@ -14,7 +14,6 @@ add_executable(zrythm_dsp_unit_tests
   panning_test.cpp
   peak_dsp_test.cpp
   peak_fall_smooth_test.cpp
-  plugin_slot_test.cpp
   port_identifier_test.cpp
   position_test.cpp
   stretcher_test.cpp

@@ -57,6 +57,9 @@ public:
   using PortIdentifier = dsp::PortIdentifier;
   using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
   using Plugin = gui::old_dsp::plugins::Plugin;
+  using PluginDescriptor = zrythm::plugins::PluginDescriptor;
+  using PluginSlot = zrythm::plugins::PluginSlot;
+  using PluginSlotType = zrythm::plugins::PluginSlotType;
   using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
   using PluginUuid = Plugin::Uuid;
 
@@ -167,12 +170,12 @@ public:
    * overwrites existing plugins.
    */
   void handle_plugin_import (
-    const zrythm::gui::old_dsp::plugins::Plugin *           pl,
-    std::optional<PluginSpan>                               plugins,
-    const zrythm::gui::old_dsp::plugins::PluginDescriptor * descr,
-    dsp::PluginSlot                                         slot,
-    bool                                                    copy,
-    bool                                                    ask_if_overwrite);
+    const zrythm::gui::old_dsp::plugins::Plugin * pl,
+    std::optional<PluginSpan>                     plugins,
+    const PluginDescriptor *                      descr,
+    PluginSlot                                    slot,
+    bool                                          copy,
+    bool                                          ask_if_overwrite);
 
   /**
    * @brief Prepares the channel for processing.
@@ -208,7 +211,7 @@ public:
    */
   PluginPtrVariant add_plugin (
     PluginUuidReference plugin_id,
-    dsp::PluginSlot     slot,
+    PluginSlot          slot,
     bool                confirm,
     bool                moving_plugin,
     bool                gen_automatables,
@@ -243,9 +246,9 @@ public:
    * @return The plugin that was removed (in case we want to move it).
    */
   PluginUuid remove_plugin_from_channel (
-    dsp::PluginSlot slot,
-    bool            moving_plugin,
-    bool            deleting_plugin);
+    PluginSlot slot,
+    bool       moving_plugin,
+    bool       deleting_plugin);
 
   /**
    * @brief Returns all existing plugins in the channel.
@@ -274,10 +277,9 @@ public:
    */
   void set_swap_phase (bool enabled, bool fire_events);
 
-  std::optional<PluginPtrVariant>
-  get_plugin_at_slot (dsp::PluginSlot slot) const;
+  std::optional<PluginPtrVariant> get_plugin_at_slot (PluginSlot slot) const;
 
-  dsp::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
+  auto get_plugin_slot (const PluginUuid &plugin_id) const -> PluginSlot;
 
   std::optional<PluginPtrVariant> get_plugin_from_id (PluginUuid id) const;
 
@@ -289,7 +291,7 @@ public:
   /**
    * Selects/deselects all plugins in the given slot type.
    */
-  void select_all (dsp::PluginSlotType type, bool select);
+  void select_all (PluginSlotType type, bool select);
 
   /**
    * Sets caches for processing.
@@ -491,7 +493,7 @@ private:
   // void init_stereo_out_ports (bool loading);
 
   void disconnect_plugin_from_strip (
-    dsp::PluginSlot                        slot,
+    PluginSlot                             slot,
     zrythm::gui::old_dsp::plugins::Plugin &pl);
 
   /**
