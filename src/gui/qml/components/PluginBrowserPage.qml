@@ -32,6 +32,10 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
         clip: true
+        focus: true
+        activeFocusOnTab: true
+        Keys.onUpPressed: decrementCurrentIndex()
+        Keys.onDownPressed: incrementCurrentIndex()
 
         Binding {
             target: pluginInfoLabel
@@ -51,6 +55,7 @@ ColumnLayout {
 
             MouseArea {
                 id: descriptorItemMouseArea
+
                 anchors.fill: parent
                 onClicked: pluginListView.currentIndex = itemDelegate.index
                 drag.target: dragItem
