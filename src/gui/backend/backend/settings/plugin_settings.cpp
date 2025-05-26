@@ -9,8 +9,8 @@
 #include "gui/backend/zrythm_application.h"
 #include "gui/dsp/audio_bus_track.h"
 #include "gui/dsp/channel_track.h"
-#include "plugins/plugin_descriptor.h"
 #include "gui/dsp/tracklist.h"
+#include "plugins/plugin_descriptor.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
@@ -40,8 +40,7 @@ PluginSetting::init_after_cloning (
   copy_fields_from (other);
 }
 
-PluginSetting::PluginSetting (
-  const zrythm::plugins::PluginDescriptor &descr)
+PluginSetting::PluginSetting (const zrythm::plugins::PluginDescriptor &descr)
 {
   PluginSetting * existing = nullptr;
   if (S_PLUGIN_SETTINGS && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
@@ -137,9 +136,7 @@ PluginSetting::validate (bool print_result)
   if (this->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
     {
       this->bridge_mode_ = get_descriptor ()->min_bridge_mode_;
-      if (
-        this->bridge_mode_
-        == zrythm::plugins::CarlaBridgeMode::None)
+      if (this->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
         {
 #  if 0
           /* bridge if plugin is not whitelisted */
@@ -160,8 +157,7 @@ PluginSetting::validate (bool print_result)
   else
     {
       this->open_with_carla_ = true;
-      zrythm::plugins::CarlaBridgeMode mode =
-        descr_->min_bridge_mode_;
+      zrythm::plugins::CarlaBridgeMode mode = descr_->min_bridge_mode_;
 
       if (mode == zrythm::plugins::CarlaBridgeMode::Full)
         {
@@ -558,8 +554,7 @@ PluginSettings::delete_file ()
 }
 
 PluginSetting *
-PluginSettings::find (
-  const zrythm::plugins::PluginDescriptor &descr)
+PluginSettings::find (const zrythm::plugins::PluginDescriptor &descr)
 {
   auto it = std::ranges::find_if (settings_, [&descr] (const auto &s) {
     return s->descr_->is_same_plugin (descr);

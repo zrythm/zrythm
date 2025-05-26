@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "plugins/plugin_descriptor.h"
 
 #include <QtQmlIntegration>
@@ -16,16 +18,31 @@ class PluginDescriptorList : public QAbstractListModel
   QML_ELEMENT
 
 public:
-  explicit PluginDescriptorList (QObject * parent = nullptr)
-      : QAbstractListModel (parent)
+  explicit PluginDescriptorList (
+    std::shared_ptr<juce::KnownPluginList> known_plugin_list,
+    QObject *                              parent = nullptr)
+      : QAbstractListModel (parent),
+        known_plugin_list_ (std::move (known_plugin_list))
   {
+  }
+
+  enum PluginDescriptorRole
+  {
+    DescriptorRole = Qt::UserRole + 1,
+  };
+
+  QHash<int, QByteArray> roleNames () const override
+  {
+    return {
+      { DescriptorRole, "descriptor" },
+    };
   }
 
   QModelIndex
   index (int row, int column, const QModelIndex &parent = QModelIndex ())
     const override
   {
-    if (row < 0 || row >= descriptors_.size ())
+    if (row < 0 || row >= known_plugin_list_->getNumTypes ())
       return {};
     return createIndex (row, column);
   }
@@ -34,7 +51,7 @@ public:
 
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override
   {
-    return static_cast<int> (descriptors_.size ());
+    return known_plugin_list_->getNumTypes ();
   }
 
   int columnCount (const QModelIndex &parent = QModelIndex ()) const override
@@ -42,40 +59,22 @@ public:
     return 1;
   }
 
+  auto at (int index) const
+  {
+    return PluginDescriptor::from_juce_description (
+      known_plugin_list_->getTypes ().getReference (index));
+  }
+
   QVariant
-  data (const QModelIndex &index, int role = Qt::DisplayRole) const override
-  {
-    if (index.row () < 0 || index.row () >= descriptors_.size ())
-      return {};
-    if (role == Qt::DisplayRole)
-      return descriptors_.at (index.row ())->name_.to_qstring ();
-    return {};
-  }
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-public:
-  void addDescriptor (const PluginDescriptor &descriptor)
-  {
-    beginInsertRows (
-      QModelIndex (), static_cast<int> (descriptors_.size ()),
-      static_cast<int> (descriptors_.size ()));
-    auto * new_obj = descriptor.clone_qobject (this);
-    descriptors_.push_back (new_obj);
-    endInsertRows ();
-  }
-
-  void clear ()
+  void reset_model ()
   {
     beginResetModel ();
-    std::ranges::for_each (descriptors_, [] (auto * descriptor) {
-      delete descriptor;
-    });
-    descriptors_.clear ();
     endResetModel ();
   }
 
-  auto at (int index) const { return descriptors_.at (index); }
-
 private:
-  QList<PluginDescriptor *> descriptors_;
+  std::shared_ptr<juce::KnownPluginList> known_plugin_list_;
 };
 }

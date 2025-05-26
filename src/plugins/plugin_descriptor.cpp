@@ -5,6 +5,17 @@
 
 using namespace zrythm::plugins;
 
+std::unique_ptr<PluginDescriptor>
+PluginDescriptor::from_juce_description (
+  const juce::PluginDescription &juce_desc)
+{
+  auto descr = std::make_unique<PluginDescriptor> ();
+  descr->name_ = utils::Utf8String::from_juce_string (juce_desc.name);
+  descr->author_ =
+    utils::Utf8String::from_juce_string (juce_desc.manufacturerName);
+  return descr;
+}
+
 void
 PluginDescriptor::init_after_cloning (
   const PluginDescriptor &other,

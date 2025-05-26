@@ -522,7 +522,7 @@ struct PluginMoveData
 {
   Plugin *                pl = nullptr;
   OptionalTrackPtrVariant track_var;
-  plugins::PluginSlot         slot;
+  plugins::PluginSlot     slot;
   bool                    fire_events = false;
 };
 
@@ -605,7 +605,7 @@ overwrite_plugin_response_cb (
 void
 Plugin::move (
   AutomatableTrack * track,
-  PluginSlot    slot,
+  PluginSlot         slot,
   bool               confirm_overwrite,
   bool               fire_events)
 {
@@ -760,9 +760,7 @@ Plugin::generate_window_title () const
       z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
       std::string bridge_mode;
-      if (
-        setting_->bridge_mode_
-        != zrythm::plugins::CarlaBridgeMode::None)
+      if (setting_->bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None)
         {
           bridge_mode =
             fmt::format (" - bridge: {}", ENUM_NAME (setting_->bridge_mode_));
@@ -868,7 +866,7 @@ void
 Plugin::move_automation (
   AutomatableTrack &prev_track,
   AutomatableTrack &track,
-  PluginSlot   new_slot)
+  PluginSlot        new_slot)
 {
   z_debug (
     "moving plugin '{}' automation from {} to {} -> {}", get_name (),

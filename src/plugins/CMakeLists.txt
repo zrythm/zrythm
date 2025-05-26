@@ -15,6 +15,7 @@ target_sources(zrythm_plugins_lib
     plugin_slot.h
     plugin_slot.cpp
     plugin_descriptor_list.h
+    plugin_descriptor_list.cpp
     plugin_scan_manager.h
     plugin_scan_manager.cpp
 )
@@ -27,10 +28,10 @@ target_precompile_headers(zrythm_plugins_lib REUSE_FROM zrythm_dsp_lib)
 
 target_link_libraries(zrythm_plugins_lib
   PUBLIC
-  zrythm::include_dirs
-  ${zrythm_link_libs}
-  zrythm::all_compile_options
-  zrythm_dsp_lib
+    zrythm::include_dirs
+    ${zrythm_link_libs}
+    zrythm::all_compile_options
+    zrythm_dsp_lib
 )
 
 add_library(zrythm::plugins_lib ALIAS zrythm_plugins_lib)

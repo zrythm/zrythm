@@ -167,12 +167,12 @@ overwrite_plugin_response_cb (
 ModulatorTrack::PluginPtrVariant
 ModulatorTrack::insert_modulator (
   plugins::PluginSlot::SlotNo slot,
-  PluginUuidReference     modulator_id,
-  bool                    replace_mode,
-  bool                    confirm,
-  bool                    gen_automatables,
-  bool                    recalc_graph,
-  bool                    pub_events)
+  PluginUuidReference         modulator_id,
+  bool                        replace_mode,
+  bool                        confirm,
+  bool                        gen_automatables,
+  bool                        recalc_graph,
+  bool                        pub_events)
 {
   z_return_val_if_fail (slot <= (int) modulators_.size (), nullptr);
 
@@ -287,7 +287,8 @@ ModulatorTrack::get_plugin_slot (const PluginUuid &plugin_id) const
   if (it == modulators_.end ())
     throw std::runtime_error ("Plugin not found");
   return plugins::PluginSlot (
-    plugins::PluginSlotType::Modulator, std::distance (modulators_.begin (), it));
+    plugins::PluginSlotType::Modulator,
+    std::distance (modulators_.begin (), it));
 }
 
 void

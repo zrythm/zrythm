@@ -183,7 +183,7 @@ public:
   /**
    * @brief To be called after scanning is finished to obtain the scan result.
    */
-  auto get_scanned_plugins () const { return known_plugin_list_; }
+  // auto get_scanned_plugins () const { return known_plugin_list_; }
 
 private:
   void scan_for_plugins ();

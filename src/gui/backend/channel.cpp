@@ -1501,13 +1501,13 @@ Channel::get_plugin_slot (const PluginUuid &plugin_id) const -> PluginSlot
 
 struct PluginImportData
 {
-  Channel *                                  ch{};
-  const Channel::Plugin *                    pl{};
-  std::optional<PluginSpan>                  sel;
-  const zrythm::plugins::PluginDescriptor *  descr{};
-  plugins::PluginSlot                        slot;
-  bool                                       copy{};
-  bool                                       ask_if_overwrite{};
+  Channel *                                 ch{};
+  const Channel::Plugin *                   pl{};
+  std::optional<PluginSpan>                 sel;
+  const zrythm::plugins::PluginDescriptor * descr{};
+  plugins::PluginSlot                       slot;
+  bool                                      copy{};
+  bool                                      ask_if_overwrite{};
 
   void do_import ()
   {

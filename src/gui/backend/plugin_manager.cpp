@@ -43,10 +43,10 @@ using namespace zrythm::gui::old_dsp::plugins;
 
 PluginManager::PluginManager (QObject * parent)
     : QObject (parent),
-      plugin_descriptors_ (
-        std::make_unique<zrythm::plugins::discovery::PluginDescriptorList> ()),
       known_plugin_list_ (std::make_shared<juce::KnownPluginList> ()),
-      // cached_plugin_descriptors_ (CachedPluginDescriptors::read_or_new ()),
+      plugin_descriptors_ (new zrythm::plugins::discovery::PluginDescriptorList (
+        known_plugin_list_,
+        this)),
       collections_ (PluginCollections::read_or_new ())
 #if HAVE_CARLA
       ,
@@ -150,9 +150,11 @@ PluginManager::supports_protocol (Protocol::ProtocolType protocol)
 void
 PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 {
+#if 0
   z_return_if_fail (descr.protocol_ > Protocol::ProtocolType::Internal);
   plugin_descriptors_->addDescriptor (descr);
   add_category_and_author (descr.category_str_, descr.author_);
+#endif
 }
 
 fs::path
@@ -172,8 +174,20 @@ PluginManager::serialize_known_plugins ()
   const auto known_plugins_xml_path_str =
     utils::Utf8String::from_path (known_plugins_xml_path);
   z_return_if_fail (known_plugin_list_);
+
+  // create parent dir
+  try
+    {
+      utils::io::mkdir (known_plugins_xml_path.parent_path ());
+    }
+  catch (const std::exception &e)
+    {
+      z_warning ("Failed to create directory for known plugins: {}", e.what ());
+      return;
+    }
+
   if (known_plugin_list_->createXml ()->writeTo (
-        juce::File (known_plugins_xml_path_str.to_juce_file ())))
+        known_plugins_xml_path_str.to_juce_file ()))
     {
       z_debug ("Saved known plugins to {}", known_plugins_xml_path_str);
     }
@@ -213,10 +227,13 @@ PluginManager::deserialize_known_plugins ()
 }
 
 void
-PluginManager::onScanFinished ()
+PluginManager::onScannerScanFinished ()
 {
   // serialize
   serialize_known_plugins ();
+
+  known_plugin_list_->sort (juce::KnownPluginList::sortAlphabetically, true);
+  plugin_descriptors_->reset_model ();
 
   // relay the signal
   Q_EMIT scanFinished ();
@@ -240,7 +257,7 @@ PluginManager::beginScan ()
   // get notified by the scanner when it has finished scanning
   QObject::connect (
     scanner_.get (), &::zrythm::plugins::PluginScanManager::scanningFinished,
-    this, &PluginManager::onScanFinished);
+    this, &PluginManager::onScannerScanFinished);
 
   deserialize_known_plugins ();
 
@@ -342,7 +359,7 @@ PluginManager::pick_instrument () const
 void
 PluginManager::clear_plugins ()
 {
-  plugin_descriptors_->clear ();
+  known_plugin_list_->clear ();
   plugin_categories_.clear ();
   plugin_authors_.clear ();
 }

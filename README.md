@@ -8,8 +8,7 @@ Zrythm
 
 > [!WARNING]
 > Zrythm is undergoing major refactoring in this branch.
-> **DO NOT USE THIS BRANCH** if you are looking for a usable version.
-> Instead, use the `v1` branch.
+> Use the `v1` branch if you are looking for a usable version.
 
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 

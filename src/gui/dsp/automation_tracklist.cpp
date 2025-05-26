@@ -163,7 +163,7 @@ AutomationTracklist::add_automation_track (AutomationTrack &at)
 
 AutomationTrack *
 AutomationTracklist::get_plugin_at (
-  plugins::PluginSlot          slot,
+  plugins::PluginSlot      slot,
   const int                port_index,
   const utils::Utf8String &symbol)
 {

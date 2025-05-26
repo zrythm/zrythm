@@ -97,7 +97,7 @@ public:
   /**
    * @brief Called by the scanner when it has finished scanning.
    */
-  Q_SLOT void onScanFinished ();
+  Q_SLOT void onScannerScanFinished ();
 
 private:
   /**
@@ -113,13 +113,6 @@ private:
   void            deserialize_known_plugins ();
 
 public:
-  /**
-   * Scanned plugin descriptors.
-   */
-  std::unique_ptr<zrythm::plugins::discovery::PluginDescriptorList>
-    plugin_descriptors_;
-  // std::vector<PluginDescriptor> plugin_descriptors_;
-
   /** Plugin categories. */
   std::vector<utils::Utf8String> plugin_categories_;
 
@@ -129,6 +122,12 @@ public:
   /** Current known plugin list. */
   // std::unique_ptr<CachedPluginDescriptors> cached_plugin_descriptors_;
   std::shared_ptr<juce::KnownPluginList> known_plugin_list_;
+
+  /**
+   * Wrapper over known_plugin_list_ that provides QML list functionality.
+   */
+  std::unique_ptr<zrythm::plugins::discovery::PluginDescriptorList>
+    plugin_descriptors_;
 
   /** Plugin collections. */
   std::unique_ptr<PluginCollections> collections_;

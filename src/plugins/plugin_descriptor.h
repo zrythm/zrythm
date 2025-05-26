@@ -112,6 +112,9 @@ class PluginDescriptor final : public QObject, public ICloneable<PluginDescripto
   Q_PROPERTY (QString name READ getName CONSTANT FINAL)
 
 public:
+  static std::unique_ptr<PluginDescriptor>
+  from_juce_description (const juce::PluginDescription &juce_desc);
+
   static ZPluginCategory   string_to_category (const utils::Utf8String &str);
   static utils::Utf8String category_to_string (ZPluginCategory category);
 
