@@ -13,7 +13,66 @@ PluginDescriptor::from_juce_description (
   descr->name_ = utils::Utf8String::from_juce_string (juce_desc.name);
   descr->author_ =
     utils::Utf8String::from_juce_string (juce_desc.manufacturerName);
+  descr->unique_id_ = juce_desc.uniqueId;
+  descr->juce_compat_deprecated_unique_id_ = juce_desc.deprecatedUid;
+  descr->protocol_ =
+    Protocol::from_juce_format_name (juce_desc.pluginFormatName);
+
+  {
+    const auto tmp =
+      utils::Utf8String::from_juce_string (juce_desc.fileOrIdentifier);
+    switch (descr->protocol_)
+      {
+      case Protocol::ProtocolType::LV2:
+      case Protocol::ProtocolType::AudioUnit:
+        descr->path_or_id_ = tmp;
+        break;
+      case Protocol::ProtocolType::LADSPA:
+      case Protocol::ProtocolType::VST:
+      case Protocol::ProtocolType::VST3:
+      case Protocol::ProtocolType::CLAP:
+        descr->path_or_id_ = tmp.to_path ();
+        break;
+      default:
+        break;
+      }
+  }
   return descr;
+}
+
+std::unique_ptr<juce::PluginDescription>
+PluginDescriptor::to_juce_description () const
+{
+  auto juce_desc = std::make_unique<juce::PluginDescription> ();
+  std::visit (
+    [&] (auto &&val) {
+      using T = std::decay_t<decltype (val)>;
+      if constexpr (std::is_same_v<T, utils::Utf8String>)
+        {
+          juce_desc->fileOrIdentifier = val.to_juce_string ();
+        }
+      else if constexpr (std::is_same_v<T, std::filesystem::path>)
+        {
+          juce_desc->fileOrIdentifier =
+            utils::Utf8String::from_path (val).to_juce_string ();
+        }
+    },
+    path_or_id_);
+  juce_desc->pluginFormatName = Protocol::to_juce_format_name (protocol_);
+  juce_desc->name = name_.to_juce_string ();
+  juce_desc->manufacturerName = author_.to_juce_string ();
+  juce_desc->category = category_str_.to_juce_string ();
+  juce_desc->uniqueId = static_cast<int> (unique_id_);
+  juce_desc->deprecatedUid = juce_compat_deprecated_unique_id_;
+  return juce_desc;
+}
+
+QString
+PluginDescriptor::getFormat () const
+{
+  return utils::Utf8String::
+    from_juce_string (to_juce_description ()->pluginFormatName)
+      .to_qstring ();
 }
 
 void
@@ -37,12 +96,10 @@ PluginDescriptor::init_after_cloning (
   num_cv_outs_ = other.num_cv_outs_;
   arch_ = other.arch_;
   protocol_ = other.protocol_;
-  path_ = other.path_;
-  uri_ = other.uri_;
+  path_or_id_ = other.path_or_id_;
   unique_id_ = other.unique_id_;
   min_bridge_mode_ = other.min_bridge_mode_;
   has_custom_ui_ = other.has_custom_ui_;
-  sha1_ = other.sha1_;
 }
 
 bool

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_protocol.h"
-#include "utils/logger.h"
+#include "utils/bidirectional_map.h"
 #include "utils/types.h"
 
 using namespace zrythm::plugins;
@@ -81,25 +81,33 @@ Protocol::is_supported (ProtocolType protocol)
   return true;
 }
 
+namespace
+{
+const zrythm::utils::ConstBidirectionalMap<Protocol::ProtocolType, juce::String>
+  juce_format_mappings = {
+    { Protocol::ProtocolType::LV2,       "LV2"    },
+    { Protocol::ProtocolType::LADSPA,    "LADSPA" },
+    { Protocol::ProtocolType::VST3,      "VST3"   },
+    { Protocol::ProtocolType::AudioUnit, "AU"     },
+    { Protocol::ProtocolType::CLAP,      "CLAP"   },
+};
+}
+
 Protocol::ProtocolType
 Protocol::from_juce_format_name (const juce::String &str)
 {
-  if (str == "LV2")
-    return ProtocolType::LV2;
-  if (str == "LADSPA")
-    return ProtocolType::LADSPA;
-  if (str == "VST3")
-    return ProtocolType::VST3;
-  if (str == "AudioUnit")
-    return ProtocolType::AudioUnit;
-  if (str == "SFZ")
-    return ProtocolType::SFZ;
-  if (str == "SF2")
-    return ProtocolType::SF2;
-  if (str == "CLAP")
-    return ProtocolType::CLAP;
-  if (str == "JSFX")
-    return ProtocolType::JSFX;
-
+  const auto ret = juce_format_mappings.find_by_value (str);
+  if (ret)
+    return *ret;
   throw std::runtime_error ("Unknown protocol type: " + str.toStdString ());
+}
+
+juce::String
+Protocol::to_juce_format_name (ProtocolType type)
+{
+  const auto ret = juce_format_mappings.find_by_key (type);
+  if (ret)
+    return *ret;
+  throw std::runtime_error (
+    fmt::format ("Unknown protocol type: {}", ENUM_NAME (type)));
 }

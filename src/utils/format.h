@@ -247,6 +247,22 @@ struct fmt::formatter<std::optional<T>> : fmt::formatter<std::string_view>
   }
 };
 
+// Formatter for std::variant
+template <typename... Ts>
+struct fmt::formatter<std::variant<Ts...>> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const std::variant<Ts...> &variant, FormatContext &ctx) const
+  {
+    return std::visit (
+      [&] (auto &&val) {
+        return fmt::formatter<std::string_view>::format (
+          fmt::format ("{}", val), ctx);
+      },
+      variant);
+  }
+};
+
 // Universal formatter for all types described by BOOST_DESCRIBE_STRUCT or
 // BOOST_DESCRIBE_CLASS.
 template <class T>

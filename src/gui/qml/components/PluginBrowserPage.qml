@@ -53,22 +53,19 @@ ColumnLayout {
             width: pluginListView.width
             highlighted: ListView.isCurrentItem
 
+            // This avoids the delegate onClicked triggering the action
             MouseArea {
-                id: descriptorItemMouseArea
-
                 anchors.fill: parent
                 onClicked: pluginListView.currentIndex = itemDelegate.index
-                drag.target: dragItem
+                onDoubleClicked: itemDelegate.animateClick()
+            }
 
-                Item {
-                    id: dragItem
-
-                    width: itemDelegate.width
-                    height: itemDelegate.height
-                    Drag.keys: ["application/x-zrythm-plugin-descriptor"]
-                    Drag.dragType: Drag.Automatic
+            action: Action {
+                text: "Activate"
+                onTriggered: {
+                    console.log("activated", descriptor, descriptor.name);
+                    root.pluginManager.createPluginInstance(descriptor);
                 }
-
             }
 
         }
@@ -83,7 +80,7 @@ ColumnLayout {
 
         property var descriptor
 
-        text: descriptor ? "Plugin Info: " + descriptor.name : "No plugin selected"
+        text: descriptor ? "Plugin Info:\n" + descriptor.name + "\n" + descriptor.format : "No plugin selected"
         Layout.fillWidth: true
     }
 

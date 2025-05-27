@@ -67,13 +67,13 @@ PluginSetting::print () const
 {
   z_debug (
     "[PluginSetting]\n"
-    "descr.uri={}, "
+    "descr.path_or_id={}, "
     "open_with_carla={}, "
     "force_generic_ui={}, "
     "bridge_mode={}, "
     "last_instantiated_time={}, "
     "num_instantiations={}",
-    this->descr_->uri_, this->open_with_carla_, this->force_generic_ui_,
+    this->descr_->path_or_id_, this->open_with_carla_, this->force_generic_ui_,
     ENUM_NAME (this->bridge_mode_), this->last_instantiated_time_,
     this->num_instantiations_);
 }

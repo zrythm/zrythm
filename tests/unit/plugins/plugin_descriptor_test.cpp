@@ -82,9 +82,8 @@ TEST (PluginDescriptorTest, CloneAndEquality)
 TEST (PluginDescriptorTest, Serialization)
 {
   auto original = create_test_descriptor (ZPluginCategory::DELAY);
-  original->uri_ = u8"http://example.org/plugin";
+  original->path_or_id_ = utils::Utf8String (u8"http://example.org/plugin");
   original->unique_id_ = 12345;
-  original->sha1_ = "abcdef123456";
 
   nlohmann::json j = *original;
   auto           deserialized = std::make_unique<PluginDescriptor> ();

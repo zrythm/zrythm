@@ -53,6 +53,9 @@ public:
 
   Q_INVOKABLE void beginScan ();
 
+  Q_INVOKABLE void
+  createPluginInstance (const zrythm::plugins::PluginDescriptor * descr);
+
   /**
    * Adds a new descriptor.
    */
@@ -118,6 +121,8 @@ public:
 
   /** Plugin authors. */
   std::vector<utils::Utf8String> plugin_authors_;
+
+  std::shared_ptr<juce::AudioPluginFormatManager> format_manager_;
 
   /** Current known plugin list. */
   // std::unique_ptr<CachedPluginDescriptors> cached_plugin_descriptors_;

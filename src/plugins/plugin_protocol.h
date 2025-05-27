@@ -44,6 +44,7 @@ public:
   static ProtocolType from_string (const std::string &str);
 
   static ProtocolType from_juce_format_name (const juce::String &str);
+  static juce::String to_juce_format_name (ProtocolType prot);
 
   static bool is_supported (ProtocolType protocol);
 

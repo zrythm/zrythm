@@ -13,6 +13,7 @@ target_sources(zrythm_utils_lib
     backtrace.h
     backtrace.cpp
     base64.h
+    bidirectional_map.h
     chromaprint.h
     chromaprint.cpp
     color.h

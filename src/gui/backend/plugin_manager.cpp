@@ -43,6 +43,7 @@ using namespace zrythm::gui::old_dsp::plugins;
 
 PluginManager::PluginManager (QObject * parent)
     : QObject (parent),
+      format_manager_ (std::make_shared<juce::AudioPluginFormatManager> ()),
       known_plugin_list_ (std::make_shared<juce::KnownPluginList> ()),
       plugin_descriptors_ (new zrythm::plugins::discovery::PluginDescriptorList (
         known_plugin_list_,
@@ -53,15 +54,14 @@ PluginManager::PluginManager (QObject * parent)
       carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
 #endif
 {
-  auto format_manager = std::make_shared<juce::AudioPluginFormatManager> ();
-  format_manager->addDefaultFormats ();
+  format_manager_->addDefaultFormats ();
 #if ZRYTHM_WITH_JUCE_CLAP_HOSTING
-  format_manager->addFormat (new juce::CLAPPluginFormat ());
+  format_manager_->addFormat (new juce::CLAPPluginFormat ());
 #endif
   known_plugin_list_->setCustomScanner (
     std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (
-    known_plugin_list_, format_manager, [] (Protocol::ProtocolType protocol) {
+    known_plugin_list_, format_manager_, [] (Protocol::ProtocolType protocol) {
       return zrythm::plugins::PluginProtocolPaths::get_for_protocol (protocol);
     });
 }
@@ -71,6 +71,54 @@ PluginManager::get_active_instance ()
 {
   return Zrythm::getInstance ()->getPluginManager ();
 }
+
+void
+PluginManager::createPluginInstance (
+  const zrythm::plugins::PluginDescriptor * descr)
+{
+  // FIXME: this is temporary test code
+  z_debug ("creating plugin instance for: {}", descr->getName ());
+  auto         juce_desc = descr->to_juce_description ();
+  juce::String err;
+  auto         plugin_instance = format_manager_->createPluginInstance (
+    *juce_desc, AUDIO_ENGINE->sample_rate_, AUDIO_ENGINE->block_length_, err);
+  if (!plugin_instance)
+    {
+      z_error ("Failed to create plugin instance: {}", err);
+      return;
+    }
+  if (plugin_instance->hasEditor ())
+    {
+      auto * editor = plugin_instance->createEditorIfNeeded ();
+      editor->setOpaque (true);
+      editor->setVisible (true); // Ensure visibility
+      auto * window = new juce::DocumentWindow (
+        plugin_instance->getName (), juce::Colours::cadetblue,
+        juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton);
+      window->setAlwaysOnTop (true); // Optional: keep on top
+      window->setUsingNativeTitleBar (true);
+      window->setContentOwned (editor, true);
+      window->centreWithSize (
+        editor->getWidth (), editor->getHeight ()); // Center on screen
+      // window->setOpaque (true);
+      window->setResizable (true, true);
+      window->setVisible (true);
+      auto instance_ptr = plugin_instance.release ();
+
+      // schedule processing to be called every 10ms
+      QTimer * timer = new QTimer ();
+      timer->setInterval (10);
+      QObject::connect (timer, &QTimer::timeout, timer, [instance_ptr, editor] () {
+        juce::AudioSampleBuffer buf;
+        buf.setSize (2, AUDIO_ENGINE->block_length_);
+        juce::MidiBuffer midi_buf;
+        // z_debug ("processing block");
+        instance_ptr->processBlock (buf, midi_buf);
+        editor->repaint ();
+      });
+      timer->start ();
+    }
+};
 
 void
 PluginManager::add_category_and_author (
