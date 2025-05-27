@@ -52,7 +52,7 @@ Plugin::Plugin (PortRegistry &port_registry, const PluginSetting &setting)
   init ();
 }
 
-Plugin::Plugin (PortRegistry &port_registry, ZPluginCategory cat)
+Plugin::Plugin (PortRegistry &port_registry, PluginCategory cat)
     : port_registry_ (port_registry)
 {
   zrythm::plugins::PluginDescriptor descr;

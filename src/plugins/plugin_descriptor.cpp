@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_descriptor.h"
+#include "utils/bidirectional_map.h"
 
 using namespace zrythm::plugins;
 
@@ -37,6 +38,11 @@ PluginDescriptor::from_juce_description (
         break;
       }
   }
+  if (juce_desc.isInstrument)
+    {
+      descr->category_ = PluginCategory::Instrument;
+    }
+
   return descr;
 }
 
@@ -110,7 +116,7 @@ PluginDescriptor::is_instrument () const
       return false;
     }
 
-  if (this->category_ == ZPluginCategory::INSTRUMENT)
+  if (this->category_ == PluginCategory::Instrument)
     {
       return true;
     }
@@ -119,148 +125,149 @@ PluginDescriptor::is_instrument () const
     /* if VSTs are instruments their category must be INSTRUMENT, otherwise
        they are not */
     this->protocol_ != Protocol::ProtocolType::VST
-    && this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0
+    && this->category_ == PluginCategory::None && this->num_midi_ins_ > 0
     && this->num_audio_outs_ > 0;
 }
 
 bool
 PluginDescriptor::is_effect () const
 {
-  constexpr std::array<ZPluginCategory, 37> effect_categories = {
-    ZPluginCategory::DELAY,
-    ZPluginCategory::REVERB,
-    ZPluginCategory::DISTORTION,
-    ZPluginCategory::WAVESHAPER,
-    ZPluginCategory::DYNAMICS,
-    ZPluginCategory::AMPLIFIER,
-    ZPluginCategory::COMPRESSOR,
-    ZPluginCategory::ENVELOPE,
-    ZPluginCategory::EXPANDER,
-    ZPluginCategory::GATE,
-    ZPluginCategory::LIMITER,
-    ZPluginCategory::FILTER,
-    ZPluginCategory::ALLPASS_FILTER,
-    ZPluginCategory::BANDPASS_FILTER,
-    ZPluginCategory::COMB_FILTER,
-    ZPluginCategory::EQ,
-    ZPluginCategory::MULTI_EQ,
-    ZPluginCategory::PARA_EQ,
-    ZPluginCategory::HIGHPASS_FILTER,
-    ZPluginCategory::LOWPASS_FILTER,
-    ZPluginCategory::GENERATOR,
-    ZPluginCategory::CONSTANT,
-    ZPluginCategory::OSCILLATOR,
-    ZPluginCategory::MODULATOR,
-    ZPluginCategory::CHORUS,
-    ZPluginCategory::FLANGER,
-    ZPluginCategory::PHASER,
-    ZPluginCategory::SIMULATOR,
-    ZPluginCategory::SIMULATOR_REVERB,
-    ZPluginCategory::SPATIAL,
-    ZPluginCategory::SPECTRAL,
-    ZPluginCategory::PITCH,
-    ZPluginCategory::UTILITY,
-    ZPluginCategory::ANALYZER,
-    ZPluginCategory::CONVERTER,
-    ZPluginCategory::FUNCTION,
-    ZPluginCategory::MIXER
+  constexpr std::array<PluginCategory, 37> effect_categories = {
+    PluginCategory::Delay,
+    PluginCategory::REVERB,
+    PluginCategory::DISTORTION,
+    PluginCategory::WAVESHAPER,
+    PluginCategory::DYNAMICS,
+    PluginCategory::AMPLIFIER,
+    PluginCategory::COMPRESSOR,
+    PluginCategory::ENVELOPE,
+    PluginCategory::EXPANDER,
+    PluginCategory::GATE,
+    PluginCategory::LIMITER,
+    PluginCategory::FILTER,
+    PluginCategory::ALLPASS_FILTER,
+    PluginCategory::BANDPASS_FILTER,
+    PluginCategory::COMB_FILTER,
+    PluginCategory::EQ,
+    PluginCategory::MULTI_EQ,
+    PluginCategory::PARA_EQ,
+    PluginCategory::HIGHPASS_FILTER,
+    PluginCategory::LOWPASS_FILTER,
+    PluginCategory::GENERATOR,
+    PluginCategory::CONSTANT,
+    PluginCategory::OSCILLATOR,
+    PluginCategory::MODULATOR,
+    PluginCategory::CHORUS,
+    PluginCategory::FLANGER,
+    PluginCategory::PHASER,
+    PluginCategory::SIMULATOR,
+    PluginCategory::SIMULATOR_REVERB,
+    PluginCategory::SPATIAL,
+    PluginCategory::SPECTRAL,
+    PluginCategory::PITCH,
+    PluginCategory::UTILITY,
+    PluginCategory::ANALYZER,
+    PluginCategory::CONVERTER,
+    PluginCategory::FUNCTION,
+    PluginCategory::MIXER
   };
-  return (category_ > ZPluginCategory::NONE
+  return (category_ > PluginCategory::None
           && std::ranges::contains (effect_categories, category_))
-         || (category_ == ZPluginCategory::NONE && num_audio_ins_ > 0 && num_audio_outs_ > 0);
+         || (category_ == PluginCategory::None && num_audio_ins_ > 0 && num_audio_outs_ > 0);
 }
 
 bool
 PluginDescriptor::is_modulator () const
 {
-  constexpr std::array<ZPluginCategory, 37> modulator_categories = {
-    ZPluginCategory::ENVELOPE,  ZPluginCategory::GENERATOR,
-    ZPluginCategory::CONSTANT,  ZPluginCategory::OSCILLATOR,
-    ZPluginCategory::MODULATOR, ZPluginCategory::UTILITY,
-    ZPluginCategory::CONVERTER, ZPluginCategory::FUNCTION,
+  constexpr std::array<PluginCategory, 37> modulator_categories = {
+    PluginCategory::ENVELOPE,  PluginCategory::GENERATOR,
+    PluginCategory::CONSTANT,  PluginCategory::OSCILLATOR,
+    PluginCategory::MODULATOR, PluginCategory::UTILITY,
+    PluginCategory::CONVERTER, PluginCategory::FUNCTION,
   };
-  return (category_ == ZPluginCategory::NONE
-          || (category_ > ZPluginCategory::NONE && (std::ranges::contains (modulator_categories, category_))))
+  return (category_ == PluginCategory::None
+          || (category_ > PluginCategory::None && (std::ranges::contains (modulator_categories, category_))))
          && num_cv_outs_ > 0;
 }
 
 bool
 PluginDescriptor::is_midi_modifier () const
 {
-  return (category_ > ZPluginCategory::NONE && category_ == ZPluginCategory::MIDI)
-         || (category_ == ZPluginCategory::NONE && num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != Protocol::ProtocolType::VST);
+  return (category_ > PluginCategory::None && category_ == PluginCategory::MIDI)
+         || (category_ == PluginCategory::None && num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != Protocol::ProtocolType::VST);
 }
 
-static const std::unordered_map<ZPluginCategory, std::string_view> category_map = {
-  { ZPluginCategory::DELAY,            "Delay"           },
-  { ZPluginCategory::REVERB,           "Reverb"          },
-  { ZPluginCategory::DISTORTION,       "Distortion"      },
-  { ZPluginCategory::WAVESHAPER,       "Waveshaper"      },
-  { ZPluginCategory::DYNAMICS,         "Dynamics"        },
-  { ZPluginCategory::AMPLIFIER,        "Amplifier"       },
-  { ZPluginCategory::COMPRESSOR,       "Compressor"      },
-  { ZPluginCategory::ENVELOPE,         "Envelope"        },
-  { ZPluginCategory::EXPANDER,         "Expander"        },
-  { ZPluginCategory::GATE,             "Gate"            },
-  { ZPluginCategory::LIMITER,          "Limiter"         },
-  { ZPluginCategory::FILTER,           "Filter"          },
-  { ZPluginCategory::ALLPASS_FILTER,   "Allpass"         },
-  { ZPluginCategory::BANDPASS_FILTER,  "Bandpass"        },
-  { ZPluginCategory::COMB_FILTER,      "Comb"            },
-  { ZPluginCategory::EQ,               "Equaliser"       },
-  { ZPluginCategory::MULTI_EQ,         "Multiband"       },
-  { ZPluginCategory::PARA_EQ,          "Para"            },
-  { ZPluginCategory::HIGHPASS_FILTER,  "Highpass"        },
-  { ZPluginCategory::LOWPASS_FILTER,   "Lowpass"         },
-  { ZPluginCategory::GENERATOR,        "Generator"       },
-  { ZPluginCategory::CONSTANT,         "Constant"        },
-  { ZPluginCategory::INSTRUMENT,       "Instrument"      },
-  { ZPluginCategory::OSCILLATOR,       "Oscillator"      },
-  { ZPluginCategory::MIDI,             "MIDI"            },
-  { ZPluginCategory::MODULATOR,        "Modulator"       },
-  { ZPluginCategory::CHORUS,           "Chorus"          },
-  { ZPluginCategory::FLANGER,          "Flanger"         },
-  { ZPluginCategory::PHASER,           "Phaser"          },
-  { ZPluginCategory::SIMULATOR,        "Simulator"       },
-  { ZPluginCategory::SIMULATOR_REVERB, "SimulatorReverb" },
-  { ZPluginCategory::SPATIAL,          "Spatial"         },
-  { ZPluginCategory::SPECTRAL,         "Spectral"        },
-  { ZPluginCategory::PITCH,            "Pitch"           },
-  { ZPluginCategory::UTILITY,          "Utility"         },
-  { ZPluginCategory::ANALYZER,         "Analyzer"        },
-  { ZPluginCategory::CONVERTER,        "Converter"       },
-  { ZPluginCategory::FUNCTION,         "Function"        },
-  { ZPluginCategory::MIXER,            "Mixer"           }
+namespace
+{
+const utils::ConstBidirectionalMap<PluginCategory, std::string_view> category_map = {
+  { PluginCategory::Delay,            "Delay"           },
+  { PluginCategory::REVERB,           "Reverb"          },
+  { PluginCategory::DISTORTION,       "Distortion"      },
+  { PluginCategory::WAVESHAPER,       "Waveshaper"      },
+  { PluginCategory::DYNAMICS,         "Dynamics"        },
+  { PluginCategory::AMPLIFIER,        "Amplifier"       },
+  { PluginCategory::COMPRESSOR,       "Compressor"      },
+  { PluginCategory::ENVELOPE,         "Envelope"        },
+  { PluginCategory::EXPANDER,         "Expander"        },
+  { PluginCategory::GATE,             "Gate"            },
+  { PluginCategory::LIMITER,          "Limiter"         },
+  { PluginCategory::FILTER,           "Filter"          },
+  { PluginCategory::ALLPASS_FILTER,   "Allpass"         },
+  { PluginCategory::BANDPASS_FILTER,  "Bandpass"        },
+  { PluginCategory::COMB_FILTER,      "Comb"            },
+  { PluginCategory::EQ,               "Equaliser"       },
+  { PluginCategory::MULTI_EQ,         "Multiband"       },
+  { PluginCategory::PARA_EQ,          "Para"            },
+  { PluginCategory::HIGHPASS_FILTER,  "Highpass"        },
+  { PluginCategory::LOWPASS_FILTER,   "Lowpass"         },
+  { PluginCategory::GENERATOR,        "Generator"       },
+  { PluginCategory::CONSTANT,         "Constant"        },
+  { PluginCategory::Instrument,       "Instrument"      },
+  { PluginCategory::OSCILLATOR,       "Oscillator"      },
+  { PluginCategory::MIDI,             "MIDI"            },
+  { PluginCategory::MODULATOR,        "Modulator"       },
+  { PluginCategory::CHORUS,           "Chorus"          },
+  { PluginCategory::FLANGER,          "Flanger"         },
+  { PluginCategory::PHASER,           "Phaser"          },
+  { PluginCategory::SIMULATOR,        "Simulator"       },
+  { PluginCategory::SIMULATOR_REVERB, "SimulatorReverb" },
+  { PluginCategory::SPATIAL,          "Spatial"         },
+  { PluginCategory::SPECTRAL,         "Spectral"        },
+  { PluginCategory::PITCH,            "Pitch"           },
+  { PluginCategory::UTILITY,          "Utility"         },
+  { PluginCategory::ANALYZER,         "Analyzer"        },
+  { PluginCategory::CONVERTER,        "Converter"       },
+  { PluginCategory::FUNCTION,         "Function"        },
+  { PluginCategory::MIXER,            "Mixer"           }
 };
+}
 
-ZPluginCategory
+PluginCategory
 PluginDescriptor::string_to_category (const utils::Utf8String &str)
 {
   // Search through category_map
-  for (const auto &[category, name] : category_map)
+  const auto res = category_map.find_by_value (str.str ());
+  if (res)
     {
-      if (str.str ().find (std::string{ name }) != std::string::npos)
-        {
-          return category;
-        }
+      return *res;
     }
 
   // Special case for "Equalizer" spelling variant
   if (str.str ().find ("Equalizer") != std::string::npos)
     {
-      return ZPluginCategory::EQ;
+      return PluginCategory::EQ;
     }
 
-  return ZPluginCategory::NONE;
+  return PluginCategory::None;
 }
 
 utils::Utf8String
-PluginDescriptor::category_to_string (ZPluginCategory category)
+PluginDescriptor::category_to_string (PluginCategory category)
 {
-  if (auto it = category_map.find (category); it != category_map.end ())
+  const auto res = category_map.find_by_key (category);
+  if (res)
     {
-      return utils::Utf8String::from_utf8_encoded_string (std::string{
-        it->second });
+      return utils::Utf8String::from_utf8_encoded_string (std::string{ *res });
     }
 
   return u8"Plugin";

@@ -66,7 +66,7 @@ public:
   using PluginSlotNo = PluginSlot::SlotNo;
   using PluginDescriptor = zrythm::plugins::PluginDescriptor;
   using Protocol = zrythm::plugins::Protocol;
-  using ZPluginCategory = zrythm::plugins::ZPluginCategory;
+  using PluginCategory = zrythm::plugins::PluginCategory;
 
   using Channel = gui::Channel;
   using TrackResolver =
@@ -643,7 +643,7 @@ protected:
   /**
    * Create a dummy plugin for tests.
    */
-  Plugin (PortRegistry &port_registry, ZPluginCategory cat);
+  Plugin (PortRegistry &port_registry, PluginCategory cat);
 
 private:
   static constexpr auto kTrackIdKey = "trackId"sv;

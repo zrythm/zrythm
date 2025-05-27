@@ -33,7 +33,7 @@ test_modulator_connection (
   auto &descr = setting.descr_;
   if (is_instrument)
     {
-      descr.category_ = ZPluginCategory::INSTRUMENT;
+      descr.category_ = PluginCategory::INSTRUMENT;
     }
   descr.category_str_ =
     zrythm::plugins::PluginDescriptor::category_to_string (descr.category_);
@@ -94,7 +94,7 @@ _test_port_connection (
   auto &descr = setting.descr_;
   if (is_instrument)
     {
-      descr.category_ = ZPluginCategory::INSTRUMENT;
+      descr.category_ = PluginCategory::INSTRUMENT;
     }
   descr.category_str_ =
     zrythm::plugins::PluginDescriptor::category_to_string (descr.category_);

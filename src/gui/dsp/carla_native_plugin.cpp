@@ -714,33 +714,33 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
 }
 
 #if 0
-static ZPluginCategory
+static PluginCategory
 carla_category_to_zrythm_category (CarlaBackend::PluginCategory category)
 {
   switch (category)
     {
     case CarlaBackend::PLUGIN_CATEGORY_NONE:
-      return ZPluginCategory::NONE;
+      return PluginCategory::NONE;
     case CarlaBackend::PLUGIN_CATEGORY_SYNTH:
-      return ZPluginCategory::INSTRUMENT;
+      return PluginCategory::INSTRUMENT;
     case CarlaBackend::PLUGIN_CATEGORY_DELAY:
-      return ZPluginCategory::DELAY;
+      return PluginCategory::DELAY;
     case CarlaBackend::PLUGIN_CATEGORY_EQ:
-      return ZPluginCategory::EQ;
+      return PluginCategory::EQ;
     case CarlaBackend::PLUGIN_CATEGORY_FILTER:
-      return ZPluginCategory::FILTER;
+      return PluginCategory::FILTER;
     case CarlaBackend::PLUGIN_CATEGORY_DISTORTION:
-      return ZPluginCategory::DISTORTION;
+      return PluginCategory::DISTORTION;
     case CarlaBackend::PLUGIN_CATEGORY_DYNAMICS:
-      return ZPluginCategory::DYNAMICS;
+      return PluginCategory::DYNAMICS;
     case CarlaBackend::PLUGIN_CATEGORY_MODULATOR:
-      return ZPluginCategory::MODULATOR;
+      return PluginCategory::MODULATOR;
     case CarlaBackend::PLUGIN_CATEGORY_UTILITY:
-      return ZPluginCategory::UTILITY;
+      return PluginCategory::UTILITY;
     case CarlaBackend::PLUGIN_CATEGORY_OTHER:
-      return ZPluginCategory::NONE;
+      return PluginCategory::NONE;
     }
-  z_return_val_if_reached (ZPluginCategory::NONE);
+  z_return_val_if_reached (PluginCategory::NONE);
 }
 
 static std::string

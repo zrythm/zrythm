@@ -22,11 +22,11 @@ namespace zrythm::plugins
 /**
  * Plugin category.
  */
-enum class ZPluginCategory
+enum class PluginCategory
 {
   /** None specified. */
-  NONE,
-  DELAY,
+  None,
+  Delay,
   REVERB,
   DISTORTION,
   WAVESHAPER,
@@ -48,7 +48,7 @@ enum class ZPluginCategory
   LOWPASS_FILTER,
   GENERATOR,
   CONSTANT,
-  INSTRUMENT,
+  Instrument,
   OSCILLATOR,
   MIDI,
   MODULATOR,
@@ -118,8 +118,8 @@ public:
 
   std::unique_ptr<juce::PluginDescription> to_juce_description () const;
 
-  static ZPluginCategory   string_to_category (const utils::Utf8String &str);
-  static utils::Utf8String category_to_string (ZPluginCategory category);
+  static PluginCategory    string_to_category (const utils::Utf8String &str);
+  static utils::Utf8String category_to_string (PluginCategory category);
 
   bool is_instrument () const;
   bool is_effect () const;
@@ -253,7 +253,7 @@ public:
   utils::Utf8String author_;
   utils::Utf8String name_;
   utils::Utf8String website_;
-  ZPluginCategory   category_ = ZPluginCategory::NONE;
+  PluginCategory    category_ = PluginCategory::None;
   /** Lv2 plugin subcategory. */
   utils::Utf8String category_str_;
   /** Number of audio input ports. */

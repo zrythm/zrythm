@@ -174,7 +174,7 @@ test_plugin_manager_create_tracks_from_plugin (
     {
       /* fix the descriptor (for some reason lilv reports it as Plugin instead
        * of Instrument if you don't do lilv_world_load_all) */
-      setting.descr_.category_ = ZPluginCategory::INSTRUMENT;
+      setting.descr_.category_ = PluginCategory::INSTRUMENT;
       setting.descr_.category_str_ =
         PluginDescriptor::category_to_string (setting.descr_.category_);
       track_type = Track::Type::Instrument;

@@ -84,7 +84,7 @@ ZCarlaDiscovery::create_au_descriptor_from_info (
   /* get category */
   if (info->hints & CarlaBackend::PLUGIN_IS_SYNTH)
     {
-      ret->category_ = ZPluginCategory::INSTRUMENT;
+      ret->category_ = PluginCategory::INSTRUMENT;
     }
   else
     {
@@ -144,9 +144,9 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
     get_category_from_carla_category (meta->category);
   if (
     meta->hints & CarlaBackend::PLUGIN_IS_SYNTH
-    && descr->category_ == ZPluginCategory::NONE)
+    && descr->category_ == PluginCategory::NONE)
     {
-      descr->category_ = ZPluginCategory::INSTRUMENT;
+      descr->category_ = PluginCategory::INSTRUMENT;
     }
   descr->category_str_ =
     zrythm::plugins::PluginDescriptor::category_to_string (descr->category_);

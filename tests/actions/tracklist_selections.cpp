@@ -845,7 +845,7 @@ _test_move_tracks (
    * Instrument if you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      setting.descr_.category_ = ZPluginCategory::INSTRUMENT;
+      setting.descr_.category_ = PluginCategory::INSTRUMENT;
     }
   setting.descr_.category_str_ = zrythm::gui::old_dsp::plugins::
     PluginDescriptor::category_to_string (setting.descr_.category_);
