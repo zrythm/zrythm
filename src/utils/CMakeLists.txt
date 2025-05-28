@@ -78,6 +78,7 @@ target_sources(zrythm_utils_lib
     string.cpp
     symap.h
     symap.cpp
+    thread_safe_fftw.h
     traits.h
     types.h
     utils.h

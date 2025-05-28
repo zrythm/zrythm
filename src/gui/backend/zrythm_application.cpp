@@ -8,6 +8,7 @@
 #include "gui/backend/realtime_updater.h"
 #include "utils/directory_manager.h"
 #include "utils/pcg_rand.h"
+#include "utils/thread_safe_fftw.h"
 
 #include <QFontDatabase>
 #include <QIcon>
@@ -20,10 +21,6 @@
 
 #include "engine/ipc_message.h"
 #include "zrythm_application.h"
-
-#if HAVE_FFTW3
-#  include <fftw3.h>
-#endif
 
 using namespace zrythm::gui;
 using namespace Qt::StringLiterals;
@@ -43,11 +40,8 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   setApplicationDisplayName (u"Zrythm"_s);
   // setWindowIcon (QIcon (":/org.zrythm.Zrythm/resources/icons/zrythm.svg"));
 
-#if HAVE_FFTW3
   // # https://github.com/FFTW/fftw3/issues/16
-  fftw_make_planner_thread_safe ();
-  fftwf_make_planner_thread_safe ();
-#endif
+  ThreadSafeFFTW ();
 
   settings_manager_ = new SettingsManager (this);
   dir_manager_ = std::make_unique<DirectoryManager> (

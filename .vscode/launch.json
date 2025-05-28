@@ -73,16 +73,16 @@
                 },
                 {
                     "name": "QT_QPA_PLATFORM",
-                    "value": "xcb",
+                    "value": "wayland",
                   },
                   {
                     "name": "QT_DEBUG_PLUGINS",
-                    "value": "1",
+                    "value": "0",
                   },
                   {
                     "name": "QT_FATAL_WARNINGS",
                     "value": "0",
-                }
+                },
             ],
             "args": [
                 "--dummy",

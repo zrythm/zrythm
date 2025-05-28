@@ -190,11 +190,6 @@ option(ZRYTHM_IS_FLATPAK "Whether building for a Flatpak" OFF)
 cmake_dependent_option(ZRYTHM_FOR_FLATHUB "Build for FlatHub (for packaging)" OFF "ZRYTHM_IS_FLATPAK" OFF)
 option(ZRYTHM_YAML_PROJECT_COMPATIBILITY "Compatibility with old CYAML-based projects (requires libcyaml)." OFF)
 option(ZRYTHM_RECORD_SWITCHES "Record compiler switches for debugging (if supported)" OFF)
-# Whether to look for fftw3_threads pkgconfig files (or libs directly if not found) separate from the main fftw3 one
-option(ZRYTHM_FFTW3_THREADS_SEPARATE "Look for fftw3_threads separately" ON)
-set(ZRYTHM_FFTW3_THREADS_SEPARATE_TYPE "auto" CACHE STRING "Method to look for separate fftw3_threads")
-set_property(CACHE ZRYTHM_FFTW3_THREADS_SEPARATE_TYPE PROPERTY STRINGS auto dependency library)
-option(ZRYTHM_FFTW3F_SEPARATE "Look for fftw3f separately of fftw3" ON)
 option(ZRYTHM_ENABLE_SANITIZER_ADDRESS "Compile with address sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Compile with undefined behavior sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_THREAD "Compile with thread sanitizer" OFF)
@@ -761,39 +756,6 @@ set(HAVE_OPUS TRUE)
 # pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
 # pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
 
-# We only use FFTW to solve this issue:
-# https://github.com/FFTW/fftw3/issues/16
-# This is only an issue on GNU/Linux when using distro-built plugins as they
-# are usually dynamically linked to system FFTW
-if(OS_GNU)
-  # include(FindFFTW3)
-  set(ENABLE_THREADS ON)
-  set(WITH_COMBINED_THREADS ON)
-  set(BUILD_TESTS OFF)
-  set(BUILD_SHARED_LIBS ON)
-  FetchContent_Declare(
-    fftw3
-    URL       http://fftw.org/fftw-3.3.10.tar.gz
-    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
-  )
-  FetchContent_MakeAvailable(fftw3)
-  set(ENABLE_FLOAT ON)
-  FetchContent_Declare(
-    fftw3f
-    URL       http://fftw.org/fftw-3.3.10.tar.gz
-    URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
-  )
-  FetchContent_MakeAvailable(fftw3f)
-  add_library(fftw3_libs INTERFACE)
-  target_link_libraries(fftw3_libs INTERFACE fftw3 fftw3f)
-  target_include_directories(fftw3_libs SYSTEM INTERFACE ${fftw3_SOURCE_DIR}/api)
-  set(HAVE_FFTW3 TRUE)
-  set(BUILD_SHARED_LIBS OFF)
-else()
-  add_library(fftw3_libs INTERFACE)
-endif()
-add_library(zrythm::fftw3_libs ALIAS fftw3_libs)
-
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
 add_library(_zrythm_chromaprint_lib INTERFACE)
 if(CHROMAPRINT_FOUND AND FALSE) # disable for now
@@ -1116,7 +1078,6 @@ list(APPEND zrythm_link_libs
   Threads::Threads
   zrythm::rubberband
   ${CMAKE_DL_LIBS}
-  zrythm::fftw3_libs
   xxHash::xxhash
   nlohmann_json::nlohmann_json
   magic_enum::magic_enum
@@ -1377,12 +1338,6 @@ elseif(APPLE)
   "
   COMPONENT Runtime)
 else()
-  install(
-    TARGETS
-      fftw3 fftw3f
-    LIBRARY
-      COMPONENT Runtime
-  )
   install(
     IMPORTED_RUNTIME_ARTIFACTS
       Qt6::Core
