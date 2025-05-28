@@ -147,6 +147,96 @@ Tracklist::setExclusivelySelectedTrack (QVariant track)
 // ========================================================================
 
 void
+Tracklist::move_plugin_automation (
+  const Plugin::Uuid         &plugin_id,
+  const Track::Uuid          &prev_track_id,
+  const Track::Uuid          &track_id_to_move_to,
+  zrythm::plugins::PluginSlot new_slot)
+{
+  auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
+  auto prev_track_var = track_registry_->find_by_id_or_throw (prev_track_id);
+  auto track_var = track_registry_->find_by_id_or_throw (track_id_to_move_to);
+  std::visit (
+    [&] (auto &&plugin, auto &&prev_track, auto &&track) {
+      using PrevTrackT = base_type<decltype (prev_track)>;
+      using TrackT = base_type<decltype (track)>;
+      z_debug (
+        "moving plugin '{}' automation from {} to {} -> {}", plugin->get_name (),
+        prev_track->get_name (), track->get_name (), new_slot);
+
+      if constexpr (
+        std::derived_from<PrevTrackT, AutomatableTrack>
+        && std::derived_from<TrackT, AutomatableTrack>)
+        {
+          auto &prev_atl = prev_track->get_automation_tracklist ();
+          auto &atl = track->get_automation_tracklist ();
+
+          for (auto * at : prev_atl.get_automation_tracks ())
+            {
+              auto port_var = port_registry_->find_by_id (at->port_id_);
+              if (!port_var)
+                continue;
+
+              z_return_if_fail (
+                std::holds_alternative<ControlPort *> (port_var->get ()));
+              auto * port = std::get<ControlPort *> (port_var->get ());
+              if (
+                port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+                {
+                  auto port_pl = plugin_registry_->find_by_id (
+                    port->id_->plugin_id_.value ());
+                  if (!port_pl.has_value ())
+                    continue;
+
+                  bool match = std::visit (
+                    [&] (auto &&p) { return p == plugin; }, port_pl->get ());
+                  if (!match)
+                    continue;
+                }
+              else
+                continue;
+
+              z_return_if_fail (port->at_ == at);
+
+              /* delete from prev channel */
+              auto   num_regions_before = at->get_children_vector ().size ();
+              auto * removed_at = prev_atl.remove_at (*at, false, false);
+
+              /* add to new channel */
+              auto added_at = atl.add_automation_track (*removed_at);
+              z_return_if_fail (
+                added_at == atl.get_automation_track_at (added_at->index_)
+                && added_at->get_children_vector ().size () == num_regions_before);
+            }
+        }
+    },
+    pl_var, prev_track_var, track_var);
+}
+
+zrythm::gui::Channel *
+Tracklist::get_channel_for_plugin (const Plugin::Uuid &plugin_id)
+{
+  auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
+  return std::visit (
+    [&] (auto &&pl) {
+      assert (pl->track_id_.has_value ());
+      auto track_var = get_track (*pl->track_id_);
+      assert (track_var.has_value ());
+      return std::visit (
+        [] (auto &&track) -> zrythm::gui::Channel * {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+            {
+              return track->get_channel ();
+            }
+          throw std::runtime_error ("Plugin not in a channel");
+        },
+        *track_var);
+    },
+    pl_var);
+}
+
+void
 Tracklist::mark_track_for_bounce (
   TrackPtrVariant track_var,
   bool            bounce,

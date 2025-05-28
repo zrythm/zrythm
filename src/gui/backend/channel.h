@@ -170,12 +170,12 @@ public:
    * overwrites existing plugins.
    */
   void handle_plugin_import (
-    const zrythm::gui::old_dsp::plugins::Plugin * pl,
-    std::optional<PluginSpan>                     plugins,
-    const PluginDescriptor *                      descr,
-    PluginSlot                                    slot,
-    bool                                          copy,
-    bool                                          ask_if_overwrite);
+    const Plugin *            pl,
+    std::optional<PluginSpan> plugins,
+    const PluginDescriptor *  descr,
+    PluginSlot                slot,
+    bool                      copy,
+    bool                      ask_if_overwrite);
 
   /**
    * @brief Prepares the channel for processing.
@@ -256,6 +256,14 @@ public:
    * @param pls Vector to add plugins to.
    */
   void get_plugins (std::vector<Plugin *> &pls);
+
+  /**
+   * Paste the selections starting at the slot in the given channel.
+   *
+   * This calls gen_full_from_this() internally to generate FullMixerSelections
+   * with cloned plugins (calling init_loaded() on each), which are then pasted.
+   */
+  void paste_plugins_to_slot (PluginSpan plugins, PluginSlot slot);
 
   /**
    * Gets whether mono compatibility is enabled.
@@ -429,56 +437,56 @@ private:
   /**
    * Connect ports in the case of !prev && !next.
    */
-  void connect_no_prev_no_next (zrythm::gui::old_dsp::plugins::Plugin &pl);
+  void connect_no_prev_no_next (Plugin &pl);
 
   /**
    * Connect ports in the case of !prev && next.
    */
-  void connect_no_prev_next (
-    zrythm::gui::old_dsp::plugins::Plugin &pl,
-    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
+  void connect_no_prev_next (Plugin &pl, Plugin &next_pl);
 
   /**
    * Connect ports in the case of prev && !next.
    */
-  void connect_prev_no_next (
-    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::old_dsp::plugins::Plugin &pl);
+  void connect_prev_no_next (Plugin &prev_pl, Plugin &pl);
 
   /**
    * Connect ports in the case of prev && next.
    */
-  void connect_prev_next (
-    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::old_dsp::plugins::Plugin &pl,
-    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
+  void connect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
 
   /**
    * Disconnect ports in the case of !prev && !next.
    */
-  void disconnect_no_prev_no_next (zrythm::gui::old_dsp::plugins::Plugin &pl);
+  void disconnect_no_prev_no_next (Plugin &pl);
 
   /**
    * Disconnect ports in the case of !prev && next.
    */
-  void disconnect_no_prev_next (
-    zrythm::gui::old_dsp::plugins::Plugin &pl,
-    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
+  void disconnect_no_prev_next (Plugin &pl, Plugin &next_pl);
 
   /**
    * Connect ports in the case of prev && !next.
    */
-  void disconnect_prev_no_next (
-    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::old_dsp::plugins::Plugin &pl);
+  void disconnect_prev_no_next (Plugin &prev_pl, Plugin &pl);
 
   /**
    * Connect ports in the case of prev && next.
    */
-  void disconnect_prev_next (
-    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::old_dsp::plugins::Plugin &pl,
-    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
+  void disconnect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
+
+  /**
+   * Connects the Plugin's output Port's to the input Port's of the given
+   * Channel's prefader.
+   *
+   * Used when doing automatic connections.
+   */
+  void connect_plugin_to_prefader (Plugin &pl);
+
+  /**
+   * Disconnect the automatic connections from the Plugin to the Channel's
+   * prefader (if last Plugin).
+   */
+  void disconnect_plugin_from_prefader (Plugin &pl);
 
   void connect_plugins ();
 
@@ -492,9 +500,7 @@ private:
    */
   // void init_stereo_out_ports (bool loading);
 
-  void disconnect_plugin_from_strip (
-    PluginSlot                             slot,
-    zrythm::gui::old_dsp::plugins::Plugin &pl);
+  void disconnect_plugin_from_strip (PluginSlot slot, Plugin &pl);
 
   /**
    * Disconnects all hardware inputs from the port.

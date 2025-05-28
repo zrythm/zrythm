@@ -206,7 +206,7 @@ Channel::connect_no_prev_no_next (Channel::Plugin &pl)
    * ------------------------------------*/
 
   /* connect plugin to stereo out */
-  pl.connect_to_prefader (*this);
+  connect_plugin_to_prefader (pl);
 }
 
 void
@@ -244,7 +244,7 @@ Channel::connect_prev_no_next (Channel::Plugin &prev_pl, Channel::Plugin &pl)
    * disconnect ports
    * ----------------------------------------- */
   /* prev plugin is connected to channel stereo out. disconnect it */
-  prev_pl.disconnect_from_prefader (*this);
+  disconnect_plugin_from_prefader (prev_pl);
 
   /* -------------------------------------------
    * connect input ports
@@ -258,7 +258,7 @@ Channel::connect_prev_no_next (Channel::Plugin &prev_pl, Channel::Plugin &pl)
    * ------------------------------------*/
 
   /* connect plugin output ports to stereo_out */
-  pl.connect_to_prefader (*this);
+  connect_plugin_to_prefader (pl);
 }
 
 void
@@ -305,7 +305,7 @@ Channel::disconnect_no_prev_no_next (Channel::Plugin &pl)
    * ------------------------------------*/
 
   /* disconnect plugin from stereo out */
-  pl.disconnect_from_prefader (*this);
+  disconnect_plugin_from_prefader (pl);
 
   /* -----------------------------------------
    * connect ports
@@ -353,13 +353,13 @@ Channel::disconnect_prev_no_next (Channel::Plugin &prev_pl, Channel::Plugin &pl)
    * ------------------------------------*/
 
   /* disconnect plugin output ports from stereo out */
-  pl.disconnect_from_prefader (*this);
+  disconnect_plugin_from_prefader (pl);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to channel stereo out. connect it */
-  prev_pl.connect_to_prefader (*this);
+  connect_plugin_to_prefader (prev_pl);
 }
 
 void
@@ -387,6 +387,88 @@ Channel::disconnect_prev_next (
    * ----------------------------------------- */
   /* prev plugin should be connected to the next pl. connect them */
   prev_pl.connect_to_plugin (next_pl);
+}
+
+void
+Channel::connect_plugin_to_prefader (Plugin &pl)
+{
+  z_return_if_fail (pl.instantiated_ || pl.instantiation_failed_);
+
+  auto &track = get_track ();
+  auto  type = track.get_output_signal_type ();
+
+  auto * mgr = PORT_CONNECTIONS_MGR; // FIXME global var
+  if (type == dsp::PortType::Event)
+    {
+      for (
+        auto * out_port :
+        pl.get_output_port_span ().get_elements_by_type<MidiPort> ())
+        {
+          if (
+            ENUM_BITSET_TEST (
+              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi)
+            && out_port->id_->flow_ == dsp::PortFlow::Output)
+            {
+              mgr->ensure_connect_default (
+                out_port->get_uuid (), midi_out_id_->id (), true);
+            }
+        }
+    }
+  else if (type == dsp::PortType::Audio)
+    {
+      if (pl.l_out_ && pl.r_out_)
+        {
+          mgr->ensure_connect_default (
+            pl.l_out_->get_uuid (), prefader_->get_stereo_in_left_id (), true);
+          mgr->ensure_connect_default (
+            pl.r_out_->get_uuid (), prefader_->get_stereo_in_right_id (), true);
+        }
+    }
+}
+
+void
+Channel::disconnect_plugin_from_prefader (Plugin &pl)
+{
+  auto      &track = get_track ();
+  const auto type = track.get_output_signal_type ();
+
+  auto * port_connections_mgr = PORT_CONNECTIONS_MGR;
+  for (const auto &out_port_var : pl.get_output_port_span ())
+    {
+      std::visit (
+        [&] (auto &&out_port) {
+          using PortT = base_type<decltype (out_port)>;
+          if (type == dsp::PortType::Audio && std::is_same_v<PortT, AudioPort>)
+            {
+              if (port_connections_mgr->are_ports_connected (
+                    out_port->get_uuid (), prefader_->get_stereo_in_left_id ()))
+                {
+                  port_connections_mgr->ensure_disconnect (
+                    out_port->get_uuid (), prefader_->get_stereo_in_left_id ());
+                }
+              if (
+                port_connections_mgr->are_ports_connected (
+                  out_port->get_uuid (), prefader_->get_stereo_in_right_id ()))
+                {
+                  port_connections_mgr->ensure_disconnect (
+                    out_port->get_uuid (), prefader_->get_stereo_in_right_id ());
+                }
+            }
+          else if (
+            type == dsp::PortType::Event && std::is_same_v<PortT, MidiPort>
+            && ENUM_BITSET_TEST (
+              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
+            {
+              if (port_connections_mgr->are_ports_connected (
+                    out_port->get_uuid (), prefader_->get_midi_in_id ()))
+                {
+                  port_connections_mgr->ensure_disconnect (
+                    out_port->get_uuid (), prefader_->get_midi_in_id ());
+                }
+            }
+        },
+        out_port_var);
+    }
 }
 
 void
@@ -995,6 +1077,20 @@ Channel::connect_channel (PortConnectionsManager &mgr, AudioEngine &engine)
   reconnect_ext_input_ports (engine);
 
   z_info ("done connecting channel {}", track_->get_name ());
+}
+
+void
+Channel::paste_plugins_to_slot (PluginSpan plugins, PluginSlot slot)
+{
+  try
+    {
+      UNDO_MANAGER->perform (new gui::actions::MixerSelectionsPasteAction (
+        plugins, *PORT_CONNECTIONS_MGR, &get_track (), slot));
+    }
+  catch (const ZrythmException &e)
+    {
+      e.handle (QObject::tr ("Failed to paste plugins"));
+    }
 }
 
 GroupTargetTrack *

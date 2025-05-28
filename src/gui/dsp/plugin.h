@@ -9,27 +9,18 @@
 #include <string>
 #include <vector>
 
-#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_span.h"
 #include "gui/dsp/track_fwd.h"
+#include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_slot.h"
 #include "utils/types.h"
 
-namespace zrythm::gui
-{
-class Channel;
-};
-
-class Project;
-class AutomationTrack;
 class AutomatableTrack;
 
 namespace zrythm::gui::old_dsp::plugins
 {
-
-class Lv2Plugin;
 
 /**
  * @addtogroup plugins
@@ -60,7 +51,6 @@ public:
   using PluginCategory = zrythm::plugins::PluginCategory;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
-  using Channel = gui::Channel;
   using TrackResolver =
     utils::UuidIdentifiablObjectResolver<TrackPtrVariant, TrackUuid>;
 
@@ -197,11 +187,6 @@ public:
   bool is_auditioner () const;
 
   /**
-   * Adds an AutomationTrack to the Plugin.
-   */
-  void add_automation_track (AutomationTrack &at);
-
-  /**
    * Sets the UI refresh rate on the Plugin.
    */
   void set_ui_refresh_rate ();
@@ -278,14 +263,6 @@ public:
   }
 
   /**
-   * @brief Moves the Plugin's automation from one Channel to another.
-   */
-  void move_automation (
-    AutomatableTrack &prev_track,
-    AutomatableTrack &track,
-    PluginSlot        new_slot);
-
-  /**
    * @brief Appends this plugin's ports to the given vector.
    */
   void append_ports (std::vector<Port *> &ports);
@@ -357,8 +334,6 @@ public:
    * exist.
    */
   void ensure_state_dir (bool is_backup);
-
-  Channel * get_channel () const;
 
   std::optional<TrackPtrVariant> get_track () const;
 
@@ -500,20 +475,6 @@ public:
    * given destination Plugin.
    */
   void disconnect_from_plugin (Plugin &dest);
-
-  /**
-   * Connects the Plugin's output Port's to the input Port's of the given
-   * Channel's prefader.
-   *
-   * Used when doing automatic connections.
-   */
-  void connect_to_prefader (Channel &ch);
-
-  /**
-   * Disconnect the automatic connections from the Plugin to the Channel's
-   * prefader (if last Plugin).
-   */
-  void disconnect_from_prefader (Channel &ch);
 
   /**
    * To be called immediately when a channel or plugin
@@ -798,9 +759,6 @@ public:
 
   /** Whether the plugin is used for functions. */
   bool is_function_ = false;
-
-  /** Pointer to owner track, if any. */
-  // AutomatableTrack * track_ = nullptr;
 };
 
 inline bool

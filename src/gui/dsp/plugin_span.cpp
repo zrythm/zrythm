@@ -8,20 +8,6 @@
 
 using namespace zrythm;
 
-void
-PluginSpan::paste_to_slot (Plugin::Channel &ch, plugins::PluginSlot slot) const
-{
-  try
-    {
-      UNDO_MANAGER->perform (new gui::actions::MixerSelectionsPasteAction (
-        *this, *PORT_CONNECTIONS_MGR, &ch.get_track (), slot));
-    }
-  catch (const ZrythmException &e)
-    {
-      e.handle (QObject::tr ("Failed to paste plugins"));
-    }
-}
-
 bool
 PluginSpan::can_be_pasted (const plugins::PluginSlot &slot) const
 {

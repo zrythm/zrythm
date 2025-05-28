@@ -1,14 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Tracklist backend.
- */
-
-#ifndef __AUDIO_TRACKLIST_H__
-#define __AUDIO_TRACKLIST_H__
+#pragma once
 
 #include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/track.h"
@@ -18,12 +11,6 @@
 
 struct FileImportInfo;
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
-
 #define TRACKLIST (PROJECT->tracklist_)
 
 class ChordTrack;
@@ -32,6 +19,7 @@ class ModulatorTrack;
 class MasterTrack;
 class MarkerTrack;
 class Router;
+class Project;
 
 /**
  * The Tracklist contains all the tracks in the Project.
@@ -340,6 +328,17 @@ public:
     int                      index);
 
   /**
+   * @brief Moves the Plugin's automation from one Channel to another.
+   */
+  void move_plugin_automation (
+    const Plugin::Uuid         &plugin_id,
+    const Track::Uuid          &prev_track_id,
+    const Track::Uuid          &track_id_to_move_to,
+    zrythm::plugins::PluginSlot new_slot);
+
+  zrythm::gui::Channel * get_channel_for_plugin (const Plugin::Uuid &plugin_id);
+
+  /**
    * Begins file import Handles a file drop inside the timeline or in empty
    * space in the tracklist.
    *
@@ -573,9 +572,3 @@ public:
 
   QPointer<PortConnectionsManager> port_connections_manager_;
 };
-
-/**
- * @}
- */
-
-#endif

@@ -528,7 +528,7 @@ do_move (PluginMoveData * data)
   auto   prev_slot = *pl->get_slot ();
   auto * prev_track = TrackSpan::derived_type_transformation<AutomatableTrack> (
     *pl->get_track ());
-  auto * prev_ch = pl->get_channel ();
+  auto * prev_ch = TRACKLIST->get_channel_for_plugin (pl->get_uuid ());
   z_return_if_fail (prev_ch);
 
   std::visit (
@@ -545,7 +545,9 @@ do_move (PluginMoveData * data)
             }
 
           /* move plugin's automation from src to dest */
-          pl->move_automation (*prev_track, *data_track, data->slot);
+          TRACKLIST->move_plugin_automation (
+            pl->get_uuid (), prev_track->get_uuid (), data_track->get_uuid (),
+            data->slot);
 
           /* remove plugin from its channel */
           PluginUuidReference plugin_ref{
@@ -652,17 +654,6 @@ Plugin::get_slot () const -> std::optional<PluginSlot>
       throw std::runtime_error ("Plugin::get_slot: invalid track type");
     },
     *get_track ());
-}
-
-gui::Channel *
-Plugin::get_channel () const
-{
-  auto track =
-    TrackSpan::derived_type_transformation<ChannelTrack> (*get_track ());
-  auto ch = track->channel_;
-  z_return_val_if_fail (ch, nullptr);
-
-  return ch;
 }
 
 utils::Utf8String
@@ -846,56 +837,6 @@ Plugin::add_out_port (const PortUuidReference &port_id)
 {
   set_port_index (port_id);
   out_ports_.push_back (port_id);
-}
-
-void
-Plugin::move_automation (
-  AutomatableTrack &prev_track,
-  AutomatableTrack &track,
-  PluginSlot        new_slot)
-{
-  z_debug (
-    "moving plugin '{}' automation from {} to {} -> {}", get_name (),
-    prev_track.get_name (), track.get_name (), new_slot);
-
-  auto &prev_atl = prev_track.get_automation_tracklist ();
-  auto &atl = track.get_automation_tracklist ();
-
-  for (auto * at : prev_atl.get_automation_tracks ())
-    {
-      auto port_var = PROJECT->find_port_by_id (at->port_id_);
-      if (!port_var)
-        continue;
-
-      z_return_if_fail (std::holds_alternative<ControlPort *> (*port_var));
-      auto * port = std::get<ControlPort *> (*port_var);
-      if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
-        {
-          auto port_pl =
-            PROJECT->find_plugin_by_id (port->id_->plugin_id_.value ());
-          if (!port_pl.has_value ())
-            continue;
-
-          bool match =
-            std::visit ([&] (auto &&p) { return p == this; }, port_pl.value ());
-          if (!match)
-            continue;
-        }
-      else
-        continue;
-
-      z_return_if_fail (port->at_ == at);
-
-      /* delete from prev channel */
-      auto   num_regions_before = at->get_children_vector ().size ();
-      auto * removed_at = prev_atl.remove_at (*at, false, false);
-
-      /* add to new channel */
-      auto added_at = atl.add_automation_track (*removed_at);
-      z_return_if_fail (
-        added_at == atl.get_automation_track_at (added_at->index_)
-        && added_at->get_children_vector ().size () == num_regions_before);
-    }
 }
 
 void
@@ -1604,91 +1545,6 @@ done1:
             }
           break;
         }
-    }
-}
-
-void
-Plugin::connect_to_prefader (Channel &ch)
-{
-  z_return_if_fail (instantiated_ || instantiation_failed_);
-
-  auto &track = ch.get_track ();
-  auto  type = track.get_output_signal_type ();
-
-  auto * mgr = PORT_CONNECTIONS_MGR; // FIXME global var
-  if (type == dsp::PortType::Event)
-    {
-      for (
-        auto out_port :
-        get_output_port_span ().get_elements_by_type<MidiPort> ())
-        {
-          if (
-            ENUM_BITSET_TEST (
-              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi)
-            && out_port->id_->flow_ == dsp::PortFlow::Output)
-            {
-              mgr->ensure_connect_default (
-                out_port->get_uuid (), ch.midi_out_id_->id (), true);
-            }
-        }
-    }
-  else if (type == dsp::PortType::Audio)
-    {
-      if (l_out_ && r_out_)
-        {
-          mgr->ensure_connect_default (
-            l_out_->get_uuid (), ch.prefader_->get_stereo_in_left_id (), true);
-          mgr->ensure_connect_default (
-            r_out_->get_uuid (), ch.prefader_->get_stereo_in_right_id (), true);
-        }
-    }
-}
-
-void
-Plugin::disconnect_from_prefader (Channel &ch)
-{
-  auto      &track = ch.get_track ();
-  const auto type = track.get_output_signal_type ();
-
-  auto * port_connections_mgr = PORT_CONNECTIONS_MGR;
-  for (const auto &out_port_var : get_output_port_span ())
-    {
-      std::visit (
-        [&] (auto &&out_port) {
-          using PortT = base_type<decltype (out_port)>;
-          if (type == dsp::PortType::Audio && std::is_same_v<PortT, AudioPort>)
-            {
-              if (
-                port_connections_mgr->are_ports_connected (
-                  out_port->get_uuid (), ch.prefader_->get_stereo_in_left_id ()))
-                {
-                  port_connections_mgr->ensure_disconnect (
-                    out_port->get_uuid (),
-                    ch.prefader_->get_stereo_in_left_id ());
-                }
-              if (
-                port_connections_mgr->are_ports_connected (
-                  out_port->get_uuid (), ch.prefader_->get_stereo_in_right_id ()))
-                {
-                  port_connections_mgr->ensure_disconnect (
-                    out_port->get_uuid (),
-                    ch.prefader_->get_stereo_in_right_id ());
-                }
-            }
-          else if (
-            type == dsp::PortType::Event && std::is_same_v<PortT, MidiPort>
-            && ENUM_BITSET_TEST (
-              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
-            {
-              if (port_connections_mgr->are_ports_connected (
-                    out_port->get_uuid (), ch.prefader_->get_midi_in_id ()))
-                {
-                  port_connections_mgr->ensure_disconnect (
-                    out_port->get_uuid (), ch.prefader_->get_midi_in_id ());
-                }
-            }
-        },
-        out_port_var);
     }
 }
 
