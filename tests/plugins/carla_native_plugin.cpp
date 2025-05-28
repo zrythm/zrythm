@@ -144,7 +144,7 @@ test_has_custom_ui (void)
 
 #    if HAVE_CARLA
 #      ifdef HAVE_HELM
-  PluginSetting * setting =
+  PluginConfiguration * setting =
     test_plugin_manager_get_plugin_setting (
       HELM_BUNDLE, HELM_URI, false);
   ASSERT_NONNULL (setting);
@@ -166,7 +166,7 @@ TEST_F (ZrythmFixture, CrashHandling)
 
   auto setting = test_plugin_manager_get_plugin_setting (
     SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
-  setting.bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
+  setting.bridge_mode_ = zrythm::plugins::BridgeMode::Full;
 
   /* create a track from the plugin */
   auto track = Track::create_for_plugin_at_idx_w_action<AudioBusTrack> (

@@ -8,6 +8,8 @@
 #include "dsp/position.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/channel.h"
 #include "gui/dsp/automation_track.h"
 #include "gui/dsp/automation_tracklist.h"
@@ -1577,19 +1579,22 @@ struct PluginImportData
         if (Track::is_plugin_descriptor_valid_for_slot_type (
               *this->descr, slot_type, this->ch->track_->get_type ()))
           {
-            PluginSetting setting (*this->descr);
+            auto setting =
+              SETTINGS->plugin_settings_->create_configuration_for_descriptor (
+                *this->descr);
             try
               {
                 UNDO_MANAGER->perform (
                   new gui::actions::MixerSelectionsCreateAction (
-                    *this->ch->track_, this->slot, setting));
-                setting.increment_num_instantiations ();
+                    *this->ch->track_, this->slot, *setting));
+                SETTINGS->plugin_settings_
+                  ->increment_num_instantiations_for_plugin (*this->descr);
               }
             catch (const ZrythmException &e)
               {
                 e.handle (format_qstr (
                   QObject::tr ("Failed to create plugin {}"),
-                  setting.get_name ()));
+                  setting->get_name ()));
                 return;
               }
           }

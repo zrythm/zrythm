@@ -29,6 +29,7 @@
 
 #include "zrythm-config.h"
 
+#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
@@ -74,7 +75,7 @@ PluginManager::get_active_instance ()
 
 void
 PluginManager::createPluginInstance (
-  const zrythm::plugins::PluginDescriptor * descr)
+  const zrythm::plugins::PluginDescriptor * descr) const
 {
   // FIXME: this is temporary test code
   z_debug ("creating plugin instance for: {}", descr->getName ());

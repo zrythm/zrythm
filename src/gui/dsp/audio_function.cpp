@@ -88,7 +88,7 @@ apply_plugin (
   zrythm::plugins::PluginDescriptor * descr =
     plugin_manager_find_plugin_from_uri (zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance (), uri);
   z_return_val_if_fail (descr, -1);
-  PluginSetting * setting = plugin_setting_new_default (descr);
+  PluginConfiguration * setting = plugin_setting_new_default (descr);
   z_return_val_if_fail (setting, -1);
   setting->force_generic_ui = true;
   GError * err = NULL;

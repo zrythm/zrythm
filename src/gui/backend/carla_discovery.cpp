@@ -165,7 +165,7 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
       ? PluginArchitecture::ARCH_64_BIT
       : PluginArchitecture::ARCH_32_BIT;
   descr->has_custom_ui_ = meta->hints & CarlaBackend::PLUGIN_HAS_CUSTOM_UI;
-  descr->min_bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
+  descr->min_bridge_mode_ = zrythm::plugins::BridgeMode::Full;
 
   return descr;
 }

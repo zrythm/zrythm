@@ -12,9 +12,8 @@
 
 #include <memory>
 
+#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings/user_shortcuts.h"
-
-class PluginSettings;
 
 /**
  * @addtogroup project Settings
@@ -36,7 +35,7 @@ public:
    */
   void init ();
 
-  std::unique_ptr<PluginSettings> plugin_settings_;
+  std::unique_ptr<PluginConfigurationManager> plugin_settings_;
 
   UserShortcuts user_shortcuts_;
 };

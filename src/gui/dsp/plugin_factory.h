@@ -22,6 +22,8 @@ class PluginFactory : public QObject
   Q_OBJECT
   QML_ELEMENT
 public:
+  using PluginConfiguration = zrythm::plugins::PluginConfiguration;
+
   PluginFactory () = delete;
   PluginFactory (
     PluginRegistry       &registry,
@@ -51,7 +53,7 @@ public:
       return *this;
     }
 
-    Builder &with_setting (const PluginSetting &setting)
+    Builder &with_setting (const PluginConfiguration &setting)
     {
       setting_ = setting;
       return *this;
@@ -70,10 +72,10 @@ public:
     }
 
   private:
-    PluginRegistry                   &registry_;
-    PortRegistry                     &port_registry_;
-    OptionalRef<gui::SettingsManager> settings_manager_;
-    OptionalRef<const PluginSetting>  setting_;
+    PluginRegistry                        &registry_;
+    PortRegistry                          &port_registry_;
+    OptionalRef<gui::SettingsManager>      settings_manager_;
+    OptionalRef<const PluginConfiguration> setting_;
   };
 
   template <typename PluginT> auto get_builder () const
@@ -86,7 +88,7 @@ public:
 
 public:
   PluginUuidReference
-  create_plugin_from_setting (const PluginSetting &setting) const
+  create_plugin_from_setting (const PluginConfiguration &setting) const
   {
     auto obj_ref =
       get_builder<CarlaNativePlugin> ().with_setting (setting).build ();

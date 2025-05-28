@@ -174,7 +174,7 @@ _test_create_plugins (
   bool           is_instrument,
   bool           with_carla)
 {
-  std::optional<PluginSetting> setting;
+  std::optional<PluginConfiguration> setting;
 
 #ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
   if (string_is_equal (pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
@@ -948,7 +948,7 @@ _test_replace_instrument (
   using SrcTrackType = InstrumentTrack;
   using LspTrackType = AudioBusTrack;
 
-  PluginSetting setting;
+  PluginConfiguration setting;
 
   switch (prot)
     {
@@ -1189,7 +1189,7 @@ TEST_F (ZrythmFixture, ReplaceInstrument)
 TEST_F (ZrythmFixture, SaveModulators)
 {
 #if defined(HAVE_CARLA) && defined(HAVE_GEONKICK)
-  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+  PluginConfiguration * setting = test_plugin_manager_get_plugin_setting (
     GEONKICK_BUNDLE, GEONKICK_URI, false);
   z_return_if_fail (setting);
   bool ret = mixer_selections_action_perform_create (

@@ -74,7 +74,9 @@ public:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  CarlaNativePlugin (PortRegistry &port_registry, const PluginSetting &setting);
+  CarlaNativePlugin (
+    PortRegistry              &port_registry,
+    const PluginConfiguration &setting);
 
   /**
    * Deactivates, cleanups and frees the instance.

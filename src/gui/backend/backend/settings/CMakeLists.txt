@@ -6,7 +6,8 @@ target_sources(zrythm_gui_lib
     chord_preset.cpp
     chord_preset_pack.cpp
     chord_preset_pack_manager.cpp
-    plugin_settings.cpp
+    plugin_configuration_manager.h
+    plugin_configuration_manager.cpp
     settings.cpp
     # g_settings_manager.cpp
     user_shortcuts.cpp

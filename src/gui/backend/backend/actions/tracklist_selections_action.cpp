@@ -135,7 +135,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
   const PortConnectionsManager * port_connections_mgr,
   std::optional<TrackPtrVariant> track_var,
   Track::Type                    track_type,
-  const PluginSetting *          pl_setting,
+  const PluginConfiguration *    pl_setting,
   const FileDescriptor *         file_descr,
   int                            track_pos,
   int                            lane_pos,

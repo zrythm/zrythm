@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __PLUGINS_BASE_PLUGIN_H__
-#define __PLUGINS_BASE_PLUGIN_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -10,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "gui/backend/backend/settings/plugin_settings.h"
+#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_span.h"
 #include "gui/dsp/track_fwd.h"
@@ -25,13 +24,7 @@ class Channel;
 
 class Project;
 class AutomationTrack;
-// using ModulatorWidget = struct _ModulatorWidget;
-class MidiPort;
-class AudioPort;
-class CVPort;
-class ControlPort;
 class AutomatableTrack;
-// using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -43,8 +36,6 @@ class Lv2Plugin;
  *
  * @{
  */
-
-constexpr auto PLUGIN_MAGIC = 43198683;
 
 /**
  * This class provides the core functionality for managing a plugin, including
@@ -67,6 +58,7 @@ public:
   using PluginDescriptor = zrythm::plugins::PluginDescriptor;
   using Protocol = zrythm::plugins::Protocol;
   using PluginCategory = zrythm::plugins::PluginCategory;
+  using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
   using Channel = gui::Channel;
   using TrackResolver =
@@ -638,12 +630,7 @@ protected:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  Plugin (PortRegistry &port_registry, const PluginSetting &setting);
-
-  /**
-   * Create a dummy plugin for tests.
-   */
-  Plugin (PortRegistry &port_registry, PluginCategory cat);
+  Plugin (PortRegistry &port_registry, const PluginConfiguration &setting);
 
 private:
   static constexpr auto kTrackIdKey = "trackId"sv;
@@ -689,7 +676,7 @@ public:
   std::optional<TrackUuid> track_id_;
 
   /** Setting this plugin was instantiated with. */
-  std::unique_ptr<PluginSetting> setting_;
+  std::unique_ptr<PluginConfiguration> setting_;
 
   /** Ports coming in as input. */
   std::vector<PortUuidReference> in_ports_;
@@ -837,5 +824,3 @@ void
 from_json (
   const nlohmann::json                  &j,
   gui::old_dsp::plugins::PluginRegistry &registry);
-
-#endif

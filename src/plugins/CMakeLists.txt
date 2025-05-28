@@ -8,6 +8,8 @@ target_sources(zrythm_plugins_lib
   PRIVATE
     out_of_process_scanner.h
     out_of_process_scanner.cpp
+    plugin_configuration.h
+    plugin_configuration.cpp
     plugin_descriptor.h
     plugin_descriptor.cpp
     plugin_protocol.h

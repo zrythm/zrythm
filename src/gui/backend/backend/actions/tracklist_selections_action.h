@@ -5,7 +5,7 @@
 #define __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
 
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/settings/plugin_settings.h"
+#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "gui/dsp/channel_send.h"
 #include "gui/dsp/port_connections_manager.h"
@@ -73,6 +73,7 @@ public:
   using Position = zrythm::dsp::Position;
   using Color = zrythm::utils::Color;
   using PortType = zrythm::dsp::PortType;
+  using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
 public:
   TracklistSelectionsAction () = default;
@@ -96,7 +97,7 @@ public:
     const PortConnectionsManager * port_connections_mgr,
     std::optional<TrackPtrVariant> track_var,
     Track::Type                    track_type,
-    const PluginSetting *          pl_setting,
+    const PluginConfiguration *    pl_setting,
     const FileDescriptor *         file_descr,
     int                            track_pos,
     int                            lane_pos,
@@ -115,13 +116,13 @@ public:
 
    */
   TracklistSelectionsAction (
-    Track::Type            track_type,
-    const PluginSetting *  pl_setting,
-    const FileDescriptor * file_descr,
-    int                    track_pos,
-    const Position *       pos,
-    int                    num_tracks,
-    int                    disable_track_pos)
+    Track::Type                 track_type,
+    const PluginConfiguration * pl_setting,
+    const FileDescriptor *      file_descr,
+    int                         track_pos,
+    const Position *            pos,
+    int                         num_tracks,
+    int                         disable_track_pos)
       : TracklistSelectionsAction (
           Type::Create,
           std::nullopt,
@@ -275,11 +276,12 @@ public:
   /** Flag to know if we are making an empty track. */
   bool is_empty_ = false;
 
-  /** PluginSetting, if making an instrument or bus track from a plugin.
+  /** PluginConfiguration, if making an instrument or bus track
+   * from a plugin.
    *
    * If this is empty and the track type is instrument, it is assumed that
    * it's an empty track. */
-  std::unique_ptr<PluginSetting> pl_setting_;
+  std::unique_ptr<PluginConfiguration> pl_setting_;
 
   /**
    * The basename of the file, if any.
@@ -385,13 +387,13 @@ public:
    * @param disable_track_pos Position of track to disable, or -1.
    */
   CreateTracksAction (
-    Track::Type            track_type,
-    const PluginSetting *  pl_setting,
-    const FileDescriptor * file_descr,
-    int                    track_pos,
-    const Position *       pos,
-    int                    num_tracks,
-    int                    disable_track_pos)
+    Track::Type                 track_type,
+    const PluginConfiguration * pl_setting,
+    const FileDescriptor *      file_descr,
+    int                         track_pos,
+    const Position *            pos,
+    int                         num_tracks,
+    int                         disable_track_pos)
       : TracklistSelectionsAction (
           Type::Create,
           std::nullopt,
@@ -424,10 +426,10 @@ class CreatePluginTrackAction : public CreateTracksAction
 {
 public:
   CreatePluginTrackAction (
-    Track::Type           track_type,
-    const PluginSetting * pl_setting,
-    int                   track_pos,
-    int                   num_tracks = 1)
+    Track::Type                 track_type,
+    const PluginConfiguration * pl_setting,
+    int                         track_pos,
+    int                         num_tracks = 1)
       : CreateTracksAction (
           track_type,
           pl_setting,

@@ -263,6 +263,18 @@ struct fmt::formatter<std::variant<Ts...>> : fmt::formatter<std::string_view>
   }
 };
 
+// Formatter for enum classes
+template <EnumType T>
+struct fmt::formatter<T> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const T &val, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (
+      fmt::format ("{}", ENUM_NAME (val)), ctx);
+  }
+};
+
 // Universal formatter for all types described by BOOST_DESCRIBE_STRUCT or
 // BOOST_DESCRIBE_CLASS.
 template <class T>

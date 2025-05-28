@@ -926,14 +926,14 @@ Track::get_total_bars (const Transport &transport, int total_bars) const
 
 void
 Track::create_with_action (
-  Type                   type,
-  const PluginSetting *  pl_setting,
-  const FileDescriptor * file_descr,
-  const Position *       pos,
-  int                    index,
-  int                    num_tracks,
-  int                    disable_track_idx,
-  TracksReadyCallback    ready_cb)
+  Type                                         type,
+  const zrythm::plugins::PluginConfiguration * pl_setting,
+  const FileDescriptor *                       file_descr,
+  const Position *                             pos,
+  int                                          index,
+  int                                          num_tracks,
+  int                                          disable_track_idx,
+  TracksReadyCallback                          ready_cb)
 {
   z_return_if_fail (num_tracks > 0);
 
@@ -967,18 +967,18 @@ Track::create_empty_with_action (Type type)
 
 Track *
 Track::create_for_plugin_at_idx_w_action (
-  Type                  type,
-  const PluginSetting * pl_setting,
-  int                   index)
+  Type                                         type,
+  const zrythm::plugins::PluginConfiguration * pl_setting,
+  int                                          index)
 {
   return create_without_file_with_action (type, pl_setting, index);
 }
 
 Track *
 Track::create_without_file_with_action (
-  Type                  type,
-  const PluginSetting * pl_setting,
-  int                   index)
+  Type                                         type,
+  const zrythm::plugins::PluginConfiguration * pl_setting,
+  int                                          index)
 {
   /* this may throw, and if it does we don't care - caller is expected to catch
    * it */

@@ -30,7 +30,7 @@
 /**
  * Get a plugin setting clone from the given URI in the given bundle.
  */
-PluginSetting
+PluginConfiguration
 test_plugin_manager_get_plugin_setting (
   const char * pl_bundle,
   const char * pl_uri,
@@ -58,7 +58,7 @@ test_plugin_manager_create_tracks_from_plugin (
  *
  * If non-LV2, the path should be passed to pl_bundle.
  */
-PluginSetting
+PluginConfiguration
 test_plugin_manager_get_plugin_setting (
   const char * pl_bundle,
   const char * pl_uri,
@@ -132,7 +132,7 @@ test_plugin_manager_get_plugin_setting (
     }
   EXPECT_HAS_VALUE (descr);
 
-  PluginSetting setting (descr.value ());
+  PluginConfiguration setting (descr.value ());
 
   /* always open with carla */
   setting.open_with_carla_ = true;
@@ -166,7 +166,7 @@ test_plugin_manager_create_tracks_from_plugin (
   bool         with_carla,
   int          num_tracks)
 {
-  PluginSetting setting =
+  PluginConfiguration setting =
     test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
 
   Track::Type track_type = Track::Type::AudioBus;

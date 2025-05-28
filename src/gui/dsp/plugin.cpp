@@ -41,27 +41,13 @@
 using namespace zrythm;
 using namespace zrythm::gui::old_dsp::plugins;
 
-Plugin::Plugin (PortRegistry &port_registry, const PluginSetting &setting)
+Plugin::Plugin (PortRegistry &port_registry, const PluginConfiguration &setting)
     : port_registry_ (port_registry), setting_ (setting.clone_unique ())
 {
   const auto &descr = setting_->descr_;
 
   z_debug (
     "creating plugin: {} ({})", descr->name_, ENUM_NAME (descr->protocol_));
-
-  init ();
-}
-
-Plugin::Plugin (PortRegistry &port_registry, PluginCategory cat)
-    : port_registry_ (port_registry)
-{
-  zrythm::plugins::PluginDescriptor descr;
-  descr.author_ = u8"Hoge";
-  descr.name_ = u8"Dummy Plugin";
-  descr.category_ = cat;
-  descr.category_str_ = u8"Dummy Plugin Category";
-
-  setting_ = std::make_unique<PluginSetting> (descr);
 
   init ();
 }
@@ -760,7 +746,7 @@ Plugin::generate_window_title () const
       z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
       std::string bridge_mode;
-      if (setting_->bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None)
+      if (setting_->bridge_mode_ != zrythm::plugins::BridgeMode::None)
         {
           bridge_mode =
             fmt::format (" - bridge: {}", ENUM_NAME (setting_->bridge_mode_));

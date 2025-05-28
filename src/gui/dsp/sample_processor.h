@@ -5,7 +5,7 @@
 
 #include "dsp/graph.h"
 #include "dsp/position.h"
-#include "gui/backend/backend/settings/plugin_settings.h"
+#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/metronome.h"
 #include "gui/dsp/midi_event.h"
@@ -40,11 +40,12 @@ class SampleProcessor final
 {
 public:
   using Position = zrythm::dsp::Position;
+  using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
 public:
   SampleProcessor () = default;
   SampleProcessor (AudioEngine * engine);
-  Q_DISABLE_COPY_MOVE (SampleProcessor)
+  Z_DISABLE_COPY_MOVE (SampleProcessor)
   ~SampleProcessor () override;
 
   bool is_in_active_project () const;
@@ -167,7 +168,7 @@ public:
   std::unique_ptr<Tracklist> tracklist_;
 
   /** Instrument for MIDI auditioning. */
-  std::unique_ptr<PluginSetting> instrument_setting_;
+  std::unique_ptr<zrythm::plugins::PluginConfiguration> instrument_setting_;
 
   std::unique_ptr<MidiEvents> midi_events_;
 

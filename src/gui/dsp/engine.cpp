@@ -1067,6 +1067,8 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
   /* TODO make function that fetches all plugins in the project */
   std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
   TRACKLIST->get_track_span ().get_plugins (plugins);
+// TODO: needed?
+#if 0
   for (auto &pl : plugins)
     {
       if (pl && !pl->instantiation_failed_ && pl->setting_->open_with_carla_)
@@ -1075,7 +1077,8 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
             zrythm::gui::old_dsp::plugins::CarlaNativePlugin *> (pl);
           carla->update_buffer_size_and_sample_rate ();
         }
-    }
+      }
+#endif
   nframes_ = nframes;
 
   ROUTER->recalc_graph (false);

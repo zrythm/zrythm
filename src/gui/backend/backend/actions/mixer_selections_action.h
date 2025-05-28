@@ -35,7 +35,7 @@ public:
     Copy,
     /** Create new from clipboard. */
     Paste,
-    /** Create new from PluginSetting. */
+    /** Create new from PluginConfiguration. */
     Create,
     Delete,
     Move,
@@ -48,6 +48,7 @@ public:
   using PluginUuid = Plugin::PluginUuid;
   using PluginPtrVariant = old_dsp::plugins::PluginPtrVariant;
   using CarlaNativePlugin = old_dsp::plugins::CarlaNativePlugin;
+  using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
   MixerSelectionsAction (QObject * parent = nullptr);
 
@@ -67,10 +68,10 @@ public:
     Type                               type,
     std::optional<Track::TrackUuid>    to_track_id,
     std::optional<plugins::PluginSlot> to_slot,
-    const PluginSetting *              setting,
+    const PluginConfiguration *        setting,
     int                                num_plugins,
     int                                new_val,
-    zrythm::plugins::CarlaBridgeMode   new_bridge_mode,
+    zrythm::plugins::BridgeMode        new_bridge_mode,
     QObject *                          parent = nullptr);
 
   QString to_string () const override;
@@ -157,13 +158,13 @@ public:
   int new_val_ = 0;
 
   /** Used when changing load behavior. */
-  zrythm::plugins::CarlaBridgeMode new_bridge_mode_ =
-    zrythm::plugins::CarlaBridgeMode::None;
+  zrythm::plugins::BridgeMode new_bridge_mode_ =
+    zrythm::plugins::BridgeMode::None;
 
   /**
-   * PluginSetting to use when creating.
+   * PluginConfiguration to use when creating.
    */
-  std::unique_ptr<PluginSetting> setting_;
+  std::unique_ptr<PluginConfiguration> setting_;
 
   /**
    * Clone of mixer selections at start.
@@ -200,10 +201,10 @@ class MixerSelectionsCreateAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsCreateAction (
-    const Track         &to_track,
-    plugins::PluginSlot  to_slot,
-    const PluginSetting &setting,
-    int                  num_plugins = 1)
+    const Track               &to_track,
+    plugins::PluginSlot        to_slot,
+    const PluginConfiguration &setting,
+    int                        num_plugins = 1)
       : MixerSelectionsAction (
           std::nullopt,
           nullptr,
@@ -213,7 +214,7 @@ public:
           &setting,
           num_plugins,
           0,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::BridgeMode::None)
   {
   }
 };
@@ -236,7 +237,7 @@ public:
           nullptr,
           0,
           0,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::BridgeMode::None)
   {
   }
 };
@@ -310,7 +311,7 @@ public:
           nullptr,
           0,
           0,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::BridgeMode::None)
   {
   }
 };
@@ -328,7 +329,7 @@ public:
           nullptr,
           0,
           new_val,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::plugins::BridgeMode::None)
   {
   }
 };
@@ -337,8 +338,8 @@ class MixerSelectionsChangeLoadBehaviorAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsChangeLoadBehaviorAction (
-    PluginSpan                       plugins,
-    zrythm::plugins::CarlaBridgeMode new_bridge_mode)
+    PluginSpan                  plugins,
+    zrythm::plugins::BridgeMode new_bridge_mode)
       : MixerSelectionsAction (
           plugins,
           nullptr,

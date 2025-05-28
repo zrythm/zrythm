@@ -31,10 +31,10 @@ MixerSelectionsAction::MixerSelectionsAction (
   Type                               type,
   std::optional<Track::TrackUuid>    to_track_id,
   std::optional<plugins::PluginSlot> to_slot,
-  const PluginSetting *              setting,
+  const PluginConfiguration *        setting,
   int                                num_plugins,
   int                                new_val,
-  zrythm::plugins::CarlaBridgeMode   new_bridge_mode,
+  zrythm::plugins::BridgeMode        new_bridge_mode,
   QObject *                          parent)
     : MixerSelectionsAction (parent)
 
@@ -670,11 +670,11 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 
       switch (pl->setting_->bridge_mode_)
         {
-        case zrythm::plugins::CarlaBridgeMode::Full:
+        case zrythm::plugins::BridgeMode::Full:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, nullptr);
           break;
-        case zrythm::plugins::CarlaBridgeMode::UI:
+        case zrythm::plugins::BridgeMode::UI:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, true, nullptr);
           break;

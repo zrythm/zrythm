@@ -473,7 +473,7 @@ test_track_deletion_with_sends (
   const char * pl_bundle,
   const char * pl_uri)
 {
-  PluginSetting setting =
+  PluginConfiguration setting =
     test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, false);
 
   /* create an audio fx track and send both prefader and postfader to a new

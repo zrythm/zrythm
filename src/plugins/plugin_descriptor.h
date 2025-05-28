@@ -10,6 +10,8 @@
 
 #include <QObject>
 
+#include <boost/describe.hpp>
+
 /**
  * @addtogroup plugins
  *
@@ -22,7 +24,7 @@ namespace zrythm::plugins
 /**
  * Plugin category.
  */
-enum class PluginCategory
+enum class PluginCategory : std::uint_fast8_t
 {
   /** None specified. */
   None,
@@ -70,16 +72,16 @@ enum class PluginCategory
 /**
  * 32 or 64 bit.
  */
-enum class PluginArchitecture
+enum class PluginArchitecture : std::uint_fast8_t
 {
   ARCH_32_BIT,
   ARCH_64_BIT
 };
 
 /**
- * Carla bridge mode.
+ * Plugin bridge mode.
  */
-enum class CarlaBridgeMode
+enum class BridgeMode : std::uint_fast8_t
 {
   None,
   UI,
@@ -140,7 +142,7 @@ public:
   /**
    * Returns the minimum bridge mode required for this plugin.
    */
-  CarlaBridgeMode get_min_bridge_mode () const;
+  BridgeMode get_min_bridge_mode () const;
 
   /**
    * Gets an appropriate icon name.
@@ -290,12 +292,56 @@ public:
   int juce_compat_deprecated_unique_id_{};
 
   /** Minimum required bridge mode. */
-  CarlaBridgeMode min_bridge_mode_ = CarlaBridgeMode::None;
+  BridgeMode min_bridge_mode_ = BridgeMode::None;
 
   bool has_custom_ui_{};
+
+  BOOST_DESCRIBE_CLASS (
+    PluginDescriptor,
+    (),
+    (author_,
+     name_,
+     website_,
+     category_,
+     category_str_,
+     protocol_,
+     path_or_id_,
+     unique_id_,
+     juce_compat_deprecated_unique_id_,
+     num_cv_ins_,
+     num_cv_outs_,
+     arch_,
+     min_bridge_mode_,
+     has_custom_ui_),
+    (),
+    ())
 };
 
 } // namespace zrythm::plugins
+
+namespace std
+{
+template <> struct hash<zrythm::plugins::PluginDescriptor>
+{
+  size_t operator() (const zrythm::plugins::PluginDescriptor &d) const
+  {
+    size_t h{};
+    h = h ^ qHash (d.protocol_);
+    h = h ^ qHash (d.arch_);
+    if (std::holds_alternative<fs::path> (d.path_or_id_))
+      {
+        h = h ^ qHash (std::get<fs::path> (d.path_or_id_).string ());
+      }
+    else
+      {
+        h = h ^ qHash (std::get<utils::Utf8String> (d.path_or_id_).str ());
+      }
+    h = h ^ qHash (d.unique_id_);
+    h = h ^ qHash (d.juce_compat_deprecated_unique_id_);
+    return h;
+  }
+};
+}
 
 /**
  * @}

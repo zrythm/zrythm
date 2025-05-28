@@ -59,7 +59,7 @@ TEST_F (ZrythmFixture, QueueMidiAndRollTransport)
    * process manually */
   test_project_stop_dummy_engine ();
 
-  SAMPLE_PROCESSOR->instrument_setting_ = std::make_unique<PluginSetting> (
+  SAMPLE_PROCESSOR->instrument_setting_ = std::make_unique<PluginConfiguration> (
     test_plugin_manager_get_plugin_setting (HELM_BUNDLE, HELM_URI, false));
 
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "1_track_with_data.mid");

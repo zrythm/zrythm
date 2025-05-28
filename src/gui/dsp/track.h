@@ -1225,14 +1225,14 @@ public:
    * @throw ZrythmException on error.
    */
   static void create_with_action (
-    Type                   type,
-    const PluginSetting *  pl_setting,
-    const FileDescriptor * file_descr,
-    const dsp::Position *  pos,
-    int                    index,
-    int                    num_tracks,
-    int                    disable_track_idx,
-    TracksReadyCallback    ready_cb);
+    Type                                         type,
+    const zrythm::plugins::PluginConfiguration * pl_setting,
+    const FileDescriptor *                       file_descr,
+    const dsp::Position *                        pos,
+    int                                          index,
+    int                                          num_tracks,
+    int                                          disable_track_idx,
+    TracksReadyCallback                          ready_cb);
 
   /**
    * @brief Creates a new empty track at the given index.
@@ -1256,13 +1256,14 @@ public:
    * @throw ZrythmException on error.
    */
   static Track * create_for_plugin_at_idx_w_action (
-    Type                  type,
-    const PluginSetting * pl_setting,
-    int                   index);
+    Type                                         type,
+    const zrythm::plugins::PluginConfiguration * pl_setting,
+    int                                          index);
 
   template <typename T = Track>
-  static T *
-  create_for_plugin_at_idx_w_action (const PluginSetting * pl_setting, int index)
+  static T * create_for_plugin_at_idx_w_action (
+    const zrythm::plugins::PluginConfiguration * pl_setting,
+    int                                          index)
   {
     return dynamic_cast<T *> (create_for_plugin_at_idx_w_action (
       get_type_for_class<T> (), pl_setting, index));
@@ -1413,9 +1414,9 @@ private:
    * @throw ZrythmException on error.
    */
   static Track * create_without_file_with_action (
-    Type                  type,
-    const PluginSetting * pl_setting,
-    int                   index);
+    Type                                         type,
+    const zrythm::plugins::PluginConfiguration * pl_setting,
+    int                                          index);
 
 protected:
   PluginRegistry         &plugin_registry_;

@@ -299,14 +299,14 @@ PluginDescriptor::has_custom_ui () const
   z_return_val_if_reached (false);
 }
 
-CarlaBridgeMode
+BridgeMode
 PluginDescriptor::get_min_bridge_mode () const
 {
-  zrythm::plugins::CarlaBridgeMode mode = zrythm::plugins::CarlaBridgeMode::None;
+  zrythm::plugins::BridgeMode mode = zrythm::plugins::BridgeMode::None;
 
   if (arch_ == PluginArchitecture::ARCH_32_BIT)
     {
-      mode = zrythm::plugins::CarlaBridgeMode::Full;
+      mode = zrythm::plugins::BridgeMode::Full;
     }
 
   return mode;
@@ -351,7 +351,7 @@ PluginDescriptor::generate_context_menu () const
   /* add option for native generic LV2 UI */
   if (this->protocol == ProtocolType::LV2
       &&
-      this->min_bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
+      this->min_bridge_mode_ == zrythm::plugins::BridgeMode::None)
     {
       menuitem =
         z_gtk_create_menu_item (
@@ -367,10 +367,10 @@ PluginDescriptor::generate_context_menu () const
   menuitem = z_gtk_create_menu_item (QObject::tr ("Add to project"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
-  PluginSetting new_setting (*this);
+  PluginConfiguration new_setting (*this);
   if (
     has_custom_ui_
-    && this->min_bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None
+    && this->min_bridge_mode_ == zrythm::plugins::BridgeMode::None
     && !new_setting.force_generic_ui_)
     {
       sprintf (

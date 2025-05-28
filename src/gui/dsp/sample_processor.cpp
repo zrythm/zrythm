@@ -3,7 +3,7 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset.h"
-#include "gui/backend/backend/settings/plugin_settings.h"
+#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -34,13 +34,13 @@ SampleProcessor::load_instrument_if_empty ()
     {
       auto _setting_json = gui::SettingsManager::fileBrowserInstrument ();
       auto setting_json = utils::Utf8String::from_qstring (_setting_json);
-      std::unique_ptr<PluginSetting> setting;
-      bool                           json_read = false;
+      std::unique_ptr<PluginConfiguration> setting;
+      bool                                 json_read = false;
       if (!setting_json.empty ())
         {
           try
             {
-              setting = std::make_unique<PluginSetting> ();
+              setting = std::make_unique<PluginConfiguration> ();
               nlohmann::json j = nlohmann::json::parse (setting_json.view ());
               from_json (j, *setting);
               json_read = true;
@@ -65,7 +65,8 @@ SampleProcessor::load_instrument_if_empty ()
           auto found_setting = S_PLUGIN_SETTINGS->find (*instrument);
           if (!found_setting)
             {
-              setting = std::make_unique<PluginSetting> (*instrument);
+              setting = S_PLUGIN_SETTINGS->create_configuration_for_descriptor (
+                *instrument);
             }
         }
 

@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H
-#define ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H
+#pragma once
 
 #include <filesystem>
 
+#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/plugin_collections.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_descriptor_list.h"
@@ -32,6 +32,7 @@ class PluginManager final : public QObject
       currentlyScanningPluginChanged FINAL)
 public:
   using Protocol = zrythm::plugins::Protocol;
+  using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
   PluginManager (QObject * parent = nullptr);
 
@@ -54,7 +55,7 @@ public:
   Q_INVOKABLE void beginScan ();
 
   Q_INVOKABLE void
-  createPluginInstance (const zrythm::plugins::PluginDescriptor * descr);
+  createPluginInstance (const zrythm::plugins::PluginDescriptor * descr) const;
 
   /**
    * Adds a new descriptor.
@@ -115,7 +116,7 @@ private:
   void            serialize_known_plugins ();
   void            deserialize_known_plugins ();
 
-public:
+private:
   /** Plugin categories. */
   std::vector<utils::Utf8String> plugin_categories_;
 
@@ -125,7 +126,6 @@ public:
   std::shared_ptr<juce::AudioPluginFormatManager> format_manager_;
 
   /** Current known plugin list. */
-  // std::unique_ptr<CachedPluginDescriptors> cached_plugin_descriptors_;
   std::shared_ptr<juce::KnownPluginList> known_plugin_list_;
 
   /**
@@ -147,5 +147,3 @@ public:
 };
 
 } // namespace zrythm::gui::old_dsp::plugins
-
-#endif // ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H

@@ -832,11 +832,10 @@ CarlaNativePlugin::get_descriptor_from_cached (
 #endif // HAVE_CARLA
 
 CarlaNativePlugin::CarlaNativePlugin (
-  PortRegistry        &port_registry,
-  const PluginSetting &setting)
+  PortRegistry              &port_registry,
+  const PluginConfiguration &setting)
     : Plugin (port_registry, setting)
 {
-  z_return_if_fail (setting.open_with_carla_);
 }
 
 void
@@ -1434,13 +1433,13 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set bridging on if needed */
   switch (setting_->bridge_mode_)
     {
-    case zrythm::plugins::CarlaBridgeMode::Full:
+    case zrythm::plugins::BridgeMode::Full:
       z_debug ("plugin must be bridged whole, using plugin bridge");
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true,
         nullptr);
       break;
-    case zrythm::plugins::CarlaBridgeMode::UI:
+    case zrythm::plugins::BridgeMode::UI:
       z_debug ("using UI bridge only");
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_PREFER_UI_BRIDGES, true,
@@ -1452,8 +1451,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
 
   /* raise bridge timeout to 8 sec */
   if (
-    setting_->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::Full
-    || setting_->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::UI)
+    setting_->bridge_mode_ == zrythm::plugins::BridgeMode::Full
+    || setting_->bridge_mode_ == zrythm::plugins::BridgeMode::UI)
     {
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_UI_BRIDGES_TIMEOUT, 8000,
