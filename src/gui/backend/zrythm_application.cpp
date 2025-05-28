@@ -38,7 +38,9 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   setOrganizationName (u"Zrythm.org"_s);
   setOrganizationDomain (u"zrythm.org"_s);
   setApplicationDisplayName (u"Zrythm"_s);
-  // setWindowIcon (QIcon (":/org.zrythm.Zrythm/resources/icons/zrythm.svg"));
+
+  // doesn't work for some reason but the path is correct
+  setWindowIcon (QIcon (":/qt/qml/Zrythm/icons/zrythm-dark/zrythm.svg"));
 
   // # https://github.com/FFTW/fftw3/issues/16
   ThreadSafeFFTW ();
