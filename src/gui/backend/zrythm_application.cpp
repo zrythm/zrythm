@@ -25,8 +25,6 @@
 using namespace zrythm::gui;
 using namespace Qt::StringLiterals;
 
-JUCE_CREATE_APPLICATION_DEFINE (ZrythmJuceApplicationWrapper)
-
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     : QApplication (argc, argv), qt_thread_id_ (current_thread_id.get ())
 {
@@ -68,8 +66,9 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   cmd_line_parser_.process (*this);
 
   // Initialize JUCE
-  juce ::JUCEApplicationBase ::createInstance = &juce_CreateApplication;
-  juce::MessageManager::getInstance ()->setCurrentThreadAsMessageThread ();
+  juce_message_handler_initializer_ =
+    std::make_unique<juce::ScopedJuceInitialiser_GUI> ();
+  // juce::MessageManager::getInstance ()->setCurrentThreadAsMessageThread ();
 
   alert_manager_ = new AlertManager (this);
   theme_manager_ = new ThemeManager (this);
@@ -358,11 +357,16 @@ ZrythmApplication::launch_engine_process ()
 bool
 ZrythmApplication::notify (QObject * receiver, QEvent * event)
 {
+  // below is not needed according to
+  // https://forum.juce.com/t/integrating-tracktion-engine-into-another-event-loop/31641/2
+  // if everything works fine, eventually delete this
+#if 0
   // Run JUCE's dispatch loop before processing Qt events
-  if (juce_app_wrapper_)
+  if (juce_message_handler_initializer_)
     {
       juce::MessageManager::getInstance ()->runDispatchLoop ();
     }
+#endif
 
   // Process Qt event
   return QApplication::notify (receiver, event);
