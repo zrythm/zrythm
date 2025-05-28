@@ -19,6 +19,7 @@ FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
   GIT_TAG 10a589619b452c261b2940767eb253171eb5a823  # 8.0.7
+  # GIT_TAG 4f43011b96eb0636104cb3e433894cda98243626  # 7.0.12
   GIT_SHALLOW TRUE
   EXCLUDE_FROM_ALL
 )

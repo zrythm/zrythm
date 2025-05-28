@@ -53,7 +53,7 @@ target_link_libraries(zrythm_gui_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )
-target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_dsp_lib)
+target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_plugins_lib)
 
 # add resource file with icon
 if(WIN32)

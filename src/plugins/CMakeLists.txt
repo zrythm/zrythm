@@ -26,7 +26,8 @@ set_target_properties(zrythm_plugins_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
 
-target_precompile_headers(zrythm_plugins_lib REUSE_FROM zrythm_dsp_lib)
+target_precompile_headers(zrythm_plugins_lib PUBLIC
+  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/plugins.h>)
 
 target_link_libraries(zrythm_plugins_lib
   PUBLIC

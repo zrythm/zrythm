@@ -262,7 +262,7 @@ append_files_from_dir_ending_in (
       opt_end_string
         ? utils::Utf8String (u8"*").to_juce_string ()
             + (*opt_end_string).to_juce_string ()
-        : u8"*",
+        : juce::String::fromUTF8 ("*"),
       juce::File::findFiles))
     {
       files.push_back (
