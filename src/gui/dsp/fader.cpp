@@ -770,23 +770,23 @@ Fader::get_track () const
 }
 
 void
-Fader::clear_buffers ()
+Fader::clear_buffers (std::size_t block_length)
 {
   if (has_audio_ports ())
     {
       auto stereo_in = get_stereo_in_ports ();
-      stereo_in.first.clear_buffer (*AUDIO_ENGINE);
-      stereo_in.second.clear_buffer (*AUDIO_ENGINE);
+      stereo_in.first.clear_buffer (block_length);
+      stereo_in.second.clear_buffer (block_length);
       auto stereo_out = get_stereo_out_ports ();
-      stereo_out.first.clear_buffer (*AUDIO_ENGINE);
-      stereo_out.second.clear_buffer (*AUDIO_ENGINE);
+      stereo_out.first.clear_buffer (block_length);
+      stereo_out.second.clear_buffer (block_length);
     }
   else if (has_midi_ports ())
     {
       auto &midi_in = get_midi_in_port ();
-      midi_in.clear_buffer (*AUDIO_ENGINE);
+      midi_in.clear_buffer (block_length);
       auto &midi_out = get_midi_out_port ();
-      midi_out.clear_buffer (*AUDIO_ENGINE);
+      midi_out.clear_buffer (block_length);
     }
 }
 

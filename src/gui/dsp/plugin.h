@@ -17,6 +17,8 @@
 #include "plugins/plugin_slot.h"
 #include "utils/types.h"
 
+class AudioEngine;
+
 namespace zrythm::gui::old_dsp::plugins
 {
 
@@ -349,7 +351,7 @@ public:
   /**
    * Prepare plugin for processing.
    */
-  [[gnu::hot]] void prepare_process ();
+  [[gnu::hot]] void prepare_process (std::size_t block_length);
 
   /**
    * Instantiates the plugin (e.g. when adding to a channel).

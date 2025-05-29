@@ -507,31 +507,31 @@ TrackProcessor::append_ports (std::vector<Port *> &ports)
  * Clears all buffers.
  */
 void
-TrackProcessor::clear_buffers ()
+TrackProcessor::clear_buffers (std::size_t block_length)
 {
   if (stereo_in_left_id_.has_value ())
     {
       iterate_tuple (
-        [&] (auto &port) { port.clear_buffer (*AUDIO_ENGINE); },
+        [&] (auto &port) { port.clear_buffer (block_length); },
         get_stereo_in_ports ());
     }
   if (stereo_out_left_id_.has_value ())
     {
       iterate_tuple (
-        [&] (auto &port) { port.clear_buffer (*AUDIO_ENGINE); },
+        [&] (auto &port) { port.clear_buffer (block_length); },
         get_stereo_out_ports ());
     }
   if (midi_in_id_)
     {
-      get_midi_in_port ().clear_buffer (*AUDIO_ENGINE);
+      get_midi_in_port ().clear_buffer (block_length);
     }
   if (midi_out_id_)
     {
-      get_midi_out_port ().clear_buffer (*AUDIO_ENGINE);
+      get_midi_out_port ().clear_buffer (block_length);
     }
   if (piano_roll_id_)
     {
-      get_piano_roll_port ().clear_buffer (*AUDIO_ENGINE);
+      get_piano_roll_port ().clear_buffer (block_length);
     }
 }
 

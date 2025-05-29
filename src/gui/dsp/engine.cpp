@@ -562,11 +562,11 @@ AudioEngine::setup ()
   }
   setup_ = true;
 
-  midi_in_->set_expose_to_backend (*this, true);
+  set_port_exposed_to_backend (*midi_in_, true);
   iterate_tuple (
-    [&] (auto &port) { port.set_expose_to_backend (*this, true); },
+    [&] (auto &port) { set_port_exposed_to_backend (port, true); },
     get_monitor_out_ports ());
-  midi_clock_out_->set_expose_to_backend (*this, true);
+  set_port_exposed_to_backend (*midi_clock_out_, true);
 
   z_debug ("processing engine events");
   process_events ();
@@ -1096,8 +1096,9 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
 
   /* clear the monitor output (used by rtaudio) */
   iterate_tuple (
-    [&] (auto &port) { port.clear_buffer (*this); }, get_monitor_out_ports ());
-  midi_clock_out_->clear_buffer (*this);
+    [&] (auto &port) { port.clear_buffer (block_length_); },
+    get_monitor_out_ports ());
+  midi_clock_out_->clear_buffer (block_length_);
 
   /* if not running, do not attempt to access any possibly deleted ports */
   if (!run_.load ()) [[unlikely]]
@@ -1227,9 +1228,9 @@ AudioEngine::process_prepare (
   }
 
   /* reset all buffers */
-  control_room_->monitor_fader_->clear_buffers ();
-  midi_in_->clear_buffer (*this);
-  midi_editor_manual_press_->clear_buffer (*this);
+  control_room_->monitor_fader_->clear_buffers (block_length_);
+  midi_in_->clear_buffer (block_length_);
+  midi_editor_manual_press_->clear_buffer (block_length_);
 
   sample_processor_->prepare_process (nframes);
 
@@ -1616,6 +1617,146 @@ AudioEngine::samplerate_enum_to_int (SampleRate samplerate)
       break;
     }
   z_return_val_if_reached (-1);
+}
+
+void
+AudioEngine::set_port_exposed_to_backend (Port &port, bool expose)
+{
+  if (!setup_)
+    {
+      z_warning (
+        "audio engine not set up, skipping expose to backend for {}",
+        port.id_->sym_);
+      return;
+    }
+
+  if (port.id_->type_ == Port::PortType::Audio)
+    {
+      auto * audio_port = dynamic_cast<AudioPort *> (&port);
+      (void) audio_port;
+      switch (audio_backend_)
+        {
+        case AudioBackend::AUDIO_BACKEND_DUMMY:
+          z_debug ("called with dummy audio backend");
+          return;
+#ifdef HAVE_JACK
+        case AudioBackend::AUDIO_BACKEND_JACK:
+          if (
+            !port.backend_
+            || (dynamic_cast<JackPortBackend *> (port.backend_.get ()) == nullptr))
+            {
+              port.backend_ = std::make_unique<JackPortBackend> (*client_);
+            }
+          break;
+#endif
+#if HAVE_RTAUDIO
+        case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
+        case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
+        case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+        case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+        case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
+        case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
+          if (
+            !backend_
+            || (dynamic_cast<RtAudioPortBackend *> (backend_.get ()) == nullptr))
+            {
+              bool is_stereo_l =
+                ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL);
+              bool is_stereo_r =
+                ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR);
+              if (!is_stereo_l && !is_stereo_r)
+                {
+                  return;
+                }
+
+              // FIXME: get_track() unimplemented
+              // this is bad design anyway
+              auto track = dynamic_cast<ChannelTrack *> (get_track (false));
+              if (!track)
+                return;
+
+              auto &ch = track->channel_;
+
+              backend_ = std::make_unique<RtAudioPortBackend> (
+                [ch, is_stereo_l] (
+                  std::vector<RtAudioPortBackend::RtAudioPortInfo> &nfo) {
+                  for (
+                    const auto &ext_port :
+                    is_stereo_l ? ch->ext_stereo_l_ins_ : ch->ext_stereo_r_ins_)
+                    {
+                      nfo.emplace_back (
+                        ext_port->rtaudio_is_input_, ext_port->rtaudio_id_,
+                        ext_port->rtaudio_channel_idx_);
+                    }
+                },
+                [ch, is_stereo_l] () {
+                  return is_stereo_l ? ch->all_stereo_l_ins_ : ch->all_stereo_r_ins_;
+                });
+            }
+          break;
+#endif
+        default:
+          break;
+        }
+    }
+  else if (port.id_->type_ == Port::PortType::Event)
+    {
+      auto * midi_port = dynamic_cast<MidiPort *> (&port);
+      (void) midi_port;
+      switch (midi_backend_)
+        {
+        case MidiBackend::MIDI_BACKEND_DUMMY:
+          z_debug ("called with MIDI dummy backend");
+          return;
+#ifdef HAVE_JACK
+        case MidiBackend::MIDI_BACKEND_JACK:
+          if (
+            !port.backend_
+            || (dynamic_cast<JackPortBackend *> (port.backend_.get ()) == nullptr))
+            {
+              port.backend_ = std::make_unique<JackPortBackend> (*client_);
+            }
+          break;
+#endif
+#if HAVE_RTMIDI
+        case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
+        case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
+        case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+        case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
+#  if HAVE_RTMIDI_6
+        case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
+#  endif
+          if (
+            !backend_
+            || (dynamic_cast<RtMidiPortBackend *> (backend_.get ()) == nullptr))
+            {
+              backend_ = std::make_unique<RtMidiPortBackend> ();
+            }
+          break;
+#endif
+        default:
+          break;
+        }
+    }
+  else /* else if not audio or MIDI */
+    {
+      z_return_if_reached ();
+    }
+
+  if (port.backend_)
+    {
+      if (expose)
+        {
+          port.backend_->expose (*port.id_, [&port] () {
+            return port.get_full_designation ();
+          });
+        }
+      else
+        {
+          port.backend_->unexpose ();
+        }
+      port.exposed_to_backend_ = expose;
+    }
 }
 
 void

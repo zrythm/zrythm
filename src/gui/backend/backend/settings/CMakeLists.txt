@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 target_sources(zrythm_gui_lib
@@ -9,6 +9,5 @@ target_sources(zrythm_gui_lib
     plugin_configuration_manager.h
     plugin_configuration_manager.cpp
     settings.cpp
-    # g_settings_manager.cpp
     user_shortcuts.cpp
 )

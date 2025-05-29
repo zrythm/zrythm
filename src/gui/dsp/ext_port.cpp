@@ -130,7 +130,7 @@ ExtPort::activate (Port * port, bool activate)
                       full_name_);
                     return false;
                   }
-                port_->set_expose_to_backend (*AUDIO_ENGINE, true);
+                AUDIO_ENGINE->set_port_exposed_to_backend (*port_, true);
 
                 auto * jack_backend =
                   dynamic_cast<JackPortBackend *> (port_->backend_.get ());
@@ -228,7 +228,7 @@ ExtPort::activate (Port * port, bool activate)
                       full_name_);
                     return false;
                   }
-                port_->set_expose_to_backend (*AUDIO_ENGINE, true);
+                AUDIO_ENGINE->set_port_exposed_to_backend (*port_, true);
 
                 auto * jack_backend =
                   dynamic_cast<JackPortBackend *> (port_->backend_.get ());

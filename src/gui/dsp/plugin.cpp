@@ -852,25 +852,25 @@ Plugin::instantiate ()
 }
 
 void
-Plugin::prepare_process ()
+Plugin::prepare_process (std::size_t block_length)
 {
   for (auto &port : audio_in_ports_)
     {
-      port->clear_buffer (*AUDIO_ENGINE);
+      port->clear_buffer (block_length);
     }
   for (auto &port : cv_in_ports_)
     {
-      port->clear_buffer (*AUDIO_ENGINE);
+      port->clear_buffer (block_length);
     }
   for (auto &port : midi_in_ports_)
     {
-      port->clear_buffer (*AUDIO_ENGINE);
+      port->clear_buffer (block_length);
     }
 
   for (auto port_var : get_output_port_span ())
     {
       std::visit (
-        [&] (auto &&port) { port->clear_buffer (*AUDIO_ENGINE); }, port_var);
+        [&] (auto &&port) { port->clear_buffer (block_length); }, port_var);
     }
 }
 
@@ -1574,7 +1574,7 @@ Plugin::expose_ports (AudioEngine &engine, bool expose, bool inputs, bool output
   auto set_expose = [expose, &engine] (auto &port) {
     bool is_exposed = port->is_exposed_to_backend ();
     if (expose != is_exposed)
-      port->set_expose_to_backend (engine, expose);
+      engine.set_port_exposed_to_backend (*port, expose);
   };
 
   if (inputs)

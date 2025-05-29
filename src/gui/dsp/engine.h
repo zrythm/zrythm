@@ -325,6 +325,27 @@ public:
   void realloc_port_buffers (nframes_t buf_size);
 
   /**
+   * Renames the port on the backend side.
+   */
+  void rename_port_backend (Port &port)
+  {
+    if (!port.is_exposed_to_backend ())
+      return;
+
+    // just re-expose - this causes a rename if already exposed
+    set_port_exposed_to_backend (port, true);
+  }
+
+  /**
+   * Sets whether to expose the port to the backend and exposes it or removes
+   * it.
+   *
+   * It checks what the backend is using the engine's audio backend or midi
+   * backend settings.
+   */
+  void set_port_exposed_to_backend (Port &port, bool expose);
+
+  /**
    * @brief
    *
    * @param project

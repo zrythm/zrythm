@@ -233,7 +233,7 @@ public:
   /**
    * Clears all buffers.
    */
-  [[gnu::hot]] void clear_buffers ();
+  [[gnu::hot]] void clear_buffers (std::size_t block_length);
 
   /**
    * Sets the fader levels from a normalized value

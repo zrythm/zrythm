@@ -25,10 +25,9 @@ CVPort::allocate_bufs ()
 }
 
 void
-CVPort::clear_buffer (AudioEngine &engine)
+CVPort::clear_buffer (std::size_t block_length)
 {
-  utils::float_ranges::fill (
-    buf_.data (), DENORMAL_PREVENTION_VAL (&engine), engine.block_length_);
+  utils::float_ranges::fill (buf_.data (), 0.f, block_length);
 }
 
 void

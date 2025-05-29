@@ -15,10 +15,7 @@
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
 
-class AudioEngine;
-class Track;
 class PortConnection;
-struct EngineProcessTimeInfo;
 
 /**
  * @addtogroup dsp
@@ -239,7 +236,7 @@ public:
    * @note Only the Zrythm buffer is cleared. Use port_clear_external_buffer()
    * to clear backend buffers.
    */
-  virtual void clear_buffer (AudioEngine &engine) = 0;
+  virtual void clear_buffer (std::size_t block_length) = 0;
 
   /**
    * If MIDI port, returns if there are any events, if audio port, returns if
@@ -261,23 +258,9 @@ public:
   void print_full_designation () const;
 
   /**
-   * Sets whether to expose the port to the backend and exposes it or removes
-   * it.
-   *
-   * It checks what the backend is using the engine's audio backend or midi
-   * backend settings.
-   */
-  void set_expose_to_backend (AudioEngine &engine, bool expose);
-
-  /**
    * Returns if the port is exposed to the backend.
    */
   bool is_exposed_to_backend () const;
-
-  /**
-   * Renames the port on the backend side.
-   */
-  void rename_backend (AudioEngine &engine);
 
   /**
    * Returns the number of unlocked (user-editable) sources.
@@ -375,7 +358,6 @@ public:
    */
   std::unique_ptr<PortIdentifier> id_;
 
-protected:
   /**
    * Flag to indicate that this port is exposed to the backend.
    *

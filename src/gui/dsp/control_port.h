@@ -250,7 +250,7 @@ public:
 
   void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
 
-  void clear_buffer (AudioEngine &engine) override { }
+  void clear_buffer (std::size_t block_length) override { }
 
   void copy_metadata_from_project (const Port &project_port) override
   {

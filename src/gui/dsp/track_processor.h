@@ -93,7 +93,7 @@ public:
   /**
    * Clears all buffers.
    */
-  void clear_buffers ();
+  void clear_buffers (std::size_t block_length);
 
   /**
    * Disconnects all ports connected to the TrackProcessor.

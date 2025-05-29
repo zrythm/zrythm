@@ -725,7 +725,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     {
       if (port->is_exposed_to_backend ())
         {
-          port->set_expose_to_backend (*AUDIO_ENGINE, true);
+          AUDIO_ENGINE->set_port_exposed_to_backend (port, true);
         }
     }
 

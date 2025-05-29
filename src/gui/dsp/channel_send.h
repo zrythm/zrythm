@@ -271,7 +271,7 @@ public:
     const PortConnectionsManager * mgr,
     std::vector<PortConnection *> &arr) const;
 
-  void prepare_process ();
+  void prepare_process (std::size_t block_length);
 
   void process_block (EngineProcessTimeInfo time_nfo) override;
 

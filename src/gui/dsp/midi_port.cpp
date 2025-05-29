@@ -33,7 +33,7 @@ MidiPort::allocate_bufs ()
 }
 
 void
-MidiPort::clear_buffer (AudioEngine &engine)
+MidiPort::clear_buffer (std::size_t block_length)
 {
   midi_events_.active_events_.clear ();
   // midi_events_.queued_events_.clear ();

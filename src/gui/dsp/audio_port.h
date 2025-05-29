@@ -74,7 +74,7 @@ public:
 
   void allocate_bufs () override;
 
-  void clear_buffer (AudioEngine &engine) override;
+  void clear_buffer (std::size_t block_length) override;
 
   bool is_stereo_port () const
   {

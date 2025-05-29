@@ -477,25 +477,25 @@ Channel::prepare_process (nframes_t nframes)
   const auto out_type = track_->get_output_signal_type ();
 
   /* clear buffers */
-  track_->processor_->clear_buffers ();
-  prefader_->clear_buffers ();
-  fader_->clear_buffers ();
+  track_->processor_->clear_buffers (nframes);
+  prefader_->clear_buffers (nframes);
+  fader_->clear_buffers (nframes);
 
   if (out_type == PortType::Audio)
     {
-      get_stereo_out_ports ().first.clear_buffer (*AUDIO_ENGINE);
-      get_stereo_out_ports ().second.clear_buffer (*AUDIO_ENGINE);
+      get_stereo_out_ports ().first.clear_buffer (nframes);
+      get_stereo_out_ports ().second.clear_buffer (nframes);
     }
   else if (out_type == PortType::Event)
     {
-      get_midi_out_port ().clear_buffer (*AUDIO_ENGINE);
+      get_midi_out_port ().clear_buffer (nframes);
     }
 
   auto process_plugin = [&] (auto &&pl_id) {
     if (pl_id.has_value ())
       {
         std::visit (
-          [&] (auto &&plugin) { plugin->prepare_process (); },
+          [&] (auto &&plugin) { plugin->prepare_process (nframes); },
           pl_id->get_object ());
       }
   };
@@ -506,7 +506,7 @@ Channel::prepare_process (nframes_t nframes)
 
   for (auto &send : sends_)
     {
-      send->prepare_process ();
+      send->prepare_process (nframes);
     }
 
   if (track_->get_input_signal_type () == PortType::Event)
@@ -547,10 +547,10 @@ Channel::init_loaded ()
       /* make sure master is exposed to backend */
       if (track_->is_master ())
         {
-          get_stereo_out_ports ().first.set_expose_to_backend (
-            *AUDIO_ENGINE, true);
-          get_stereo_out_ports ().second.set_expose_to_backend (
-            *AUDIO_ENGINE, true);
+          AUDIO_ENGINE->set_port_exposed_to_backend (
+            get_stereo_out_ports ().first, true);
+          AUDIO_ENGINE->set_port_exposed_to_backend (
+            get_stereo_out_ports ().second, true);
         }
       break;
     default:
@@ -596,23 +596,23 @@ Channel::expose_ports_to_backend (AudioEngine &engine)
   if (track_->get_input_signal_type () == PortType::Audio)
     {
       iterate_tuple (
-        [&] (auto &port) { port.set_expose_to_backend (engine, true); },
+        [&] (auto &port) { engine.set_port_exposed_to_backend (port, true); },
         track_->processor_->get_stereo_in_ports ());
     }
   if (track_->get_input_signal_type () == PortType::Event)
     {
-      track_->processor_->get_midi_in_port ().set_expose_to_backend (
-        engine, true);
+      engine.set_port_exposed_to_backend (
+        track_->processor_->get_midi_in_port (), true);
     }
   if (track_->get_output_signal_type () == PortType::Audio)
     {
       iterate_tuple (
-        [&] (auto &port) { port.set_expose_to_backend (engine, true); },
+        [&] (auto &port) { engine.set_port_exposed_to_backend (port, true); },
         get_stereo_out_ports ());
     }
   if (track_->get_output_signal_type () == PortType::Event)
     {
-      get_midi_out_port ().set_expose_to_backend (engine, true);
+      engine.set_port_exposed_to_backend (get_midi_out_port (), true);
     }
 }
 
@@ -651,7 +651,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
 
           /* if the project was loaded with another backend, the port might not
            * be exposed yet, so expose it */
-          midi_in.set_expose_to_backend (engine, true);
+          engine.set_port_exposed_to_backend (midi_in, true);
 
           /* disconnect all connections to hardware */
           disconnect_port_hardware_inputs (midi_in);
@@ -693,7 +693,9 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
           /* if the project was loaded with another backend, the port might not
            * be exposed yet, so expose it */
           iterate_tuple (
-            [&] (auto &port) { port.set_expose_to_backend (engine, true); },
+            [&] (auto &port) {
+              engine.set_port_exposed_to_backend (port, true);
+            },
             track_->processor_->get_stereo_in_ports ());
 
           /* disconnect all connections to hardware */

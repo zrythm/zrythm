@@ -107,7 +107,7 @@ SampleProcessor::SampleProcessor (AudioEngine * engine) : audio_engine_ (engine)
 void
 SampleProcessor::prepare_process (const nframes_t nframes)
 {
-  fader_->clear_buffers ();
+  fader_->clear_buffers (nframes);
 }
 
 void
@@ -220,7 +220,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
               if constexpr (std::derived_from<TrackT, ProcessableTrack>)
                 {
 
-                  track->processor_->clear_buffers ();
+                  track->processor_->clear_buffers (AUDIO_ENGINE->block_length_);
 
                   EngineProcessTimeInfo inner_time_nfo = {
                     .g_start_frame_ =
@@ -257,7 +257,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                         return;
                       std::visit (
                         [&] (auto &&ins) {
-                          ins->prepare_process ();
+                          ins->prepare_process (AUDIO_ENGINE->block_length_);
                           ins->midi_in_port_->midi_events_.active_events_.append (
                             midi_events_->active_events_, cycle_offset, nframes);
                           ins->process_block (inner_time_nfo);

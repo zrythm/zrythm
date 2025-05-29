@@ -36,10 +36,9 @@ AudioPort::allocate_bufs ()
 }
 
 void
-AudioPort::clear_buffer (AudioEngine &engine)
+AudioPort::clear_buffer (std::size_t block_length)
 {
-  utils::float_ranges::fill (
-    buf_.data (), DENORMAL_PREVENTION_VAL (&engine), engine.block_length_);
+  utils::float_ranges::fill (buf_.data (), 0.f, block_length);
 }
 
 void

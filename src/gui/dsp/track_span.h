@@ -7,6 +7,8 @@
 #include "utils/uuid_identifiable_object.h"
 #include "utils/views.h"
 
+class AudioEngine;
+
 /**
  * @brief Track span that offers helper methods on a range of tracks.
  */

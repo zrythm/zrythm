@@ -5,7 +5,6 @@ qt_add_library(zrythm_gui_lib STATIC)
 
 # each executable/library has its own subdirectory
 add_subdirectory(utils)
-# add_subdirectory(lv2apply)
 add_subdirectory(dsp)
 add_subdirectory(plugins)
 add_subdirectory(gui)

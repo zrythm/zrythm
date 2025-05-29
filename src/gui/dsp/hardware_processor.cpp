@@ -290,7 +290,7 @@ HardwareProcessor::process (nframes_t nframes)
         using PortType = base_type<decltype (port)>;
         if constexpr (std::is_same_v<PortType, AudioPort>)
           {
-            port->clear_buffer (*AUDIO_ENGINE);
+            port->clear_buffer (nframes);
           }
         else if constexpr (std::is_same_v<PortType, MidiPort>)
           {

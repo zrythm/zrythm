@@ -40,3 +40,4 @@ target_link_libraries(zrythm_plugins_lib
 add_library(zrythm::plugins_lib ALIAS zrythm_plugins_lib)
 
 add_subdirectory(plugin-scanner)
+# add_subdirectory(lv2apply)

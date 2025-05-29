@@ -237,20 +237,19 @@ ChannelSend::is_target_sidechain ()
 }
 
 void
-ChannelSend::prepare_process ()
+ChannelSend::prepare_process (std::size_t block_length)
 {
-  AudioEngine &engine = *AUDIO_ENGINE;
   if (is_midi ())
     {
-      get_midi_in_port ().clear_buffer (engine);
-      get_midi_out_port ().clear_buffer (engine);
+      get_midi_in_port ().clear_buffer (block_length);
+      get_midi_out_port ().clear_buffer (block_length);
     }
   if (is_audio ())
     {
-      get_stereo_in_ports ().first.clear_buffer (engine);
-      get_stereo_in_ports ().second.clear_buffer (engine);
-      get_stereo_out_ports ().first.clear_buffer (engine);
-      get_stereo_out_ports ().second.clear_buffer (engine);
+      get_stereo_in_ports ().first.clear_buffer (block_length);
+      get_stereo_in_ports ().second.clear_buffer (block_length);
+      get_stereo_out_ports ().first.clear_buffer (block_length);
+      get_stereo_out_ports ().second.clear_buffer (block_length);
     }
 }
 

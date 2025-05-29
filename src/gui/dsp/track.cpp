@@ -695,7 +695,7 @@ Track::set_name (
     {
       if (port->is_exposed_to_backend ())
         {
-          port->rename_backend (*tracklist.project_->audio_engine_);
+          tracklist.project_->audio_engine_->rename_port_backend (*port);
         }
     }
 
