@@ -119,6 +119,13 @@ public:
     return std::nullopt;
   }
 
+  /**
+   * Generates automatables for the plugin.
+   *
+   * @note The plugin must be instantiated already.
+   */
+  void generate_automation_tracks_for_plugin (const Plugin::Uuid &plugin_id);
+
 protected:
   void
   copy_members_from (const AutomatableTrack &other, ObjectCloneType clone_type);

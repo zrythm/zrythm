@@ -69,11 +69,11 @@ MixerSelectionsAction::init_loaded_impl ()
 {
   if (ms_before_)
     {
-      PluginSpan{ *ms_before_ }.init_loaded (nullptr);
+      PluginSpan{ *ms_before_ }.init_loaded ();
     }
   if (deleted_ms_)
     {
-      PluginSpan{ *deleted_ms_ }.init_loaded (nullptr);
+      PluginSpan{ *deleted_ms_ }.init_loaded ();
     }
 
   for (auto &at : ats_)
@@ -839,7 +839,9 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                 {
                                   std::visit (
                                     [&] (auto &&pl) {
-                                      pl->move (to_tr, to_slot, false, false);
+                                      TRACKLIST->move_plugin (
+                                        pl->get_uuid (), to_tr->get_uuid (),
+                                        to_slot, false);
                                     },
                                     pl_var);
                                 }
@@ -1017,8 +1019,10 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                         std::derived_from<
                                           FromTrackT, AutomatableTrack>)
                                         {
-                                          pl->move (
-                                            from_tr, from_slot, false, false);
+                                          TRACKLIST->move_plugin (
+                                            pl->get_uuid (),
+                                            from_tr->get_uuid (), from_slot,
+                                            false);
                                         }
                                     }
                                 }

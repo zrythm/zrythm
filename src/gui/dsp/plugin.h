@@ -17,8 +17,6 @@
 #include "plugins/plugin_slot.h"
 #include "utils/types.h"
 
-class AutomatableTrack;
-
 namespace zrythm::gui::old_dsp::plugins
 {
 
@@ -161,12 +159,9 @@ public:
    *
    * This may attempt to instantiate the plugin, which can throw an exception.
    *
-   * @param track
-   * @param ms
-   *
    * @throw ZrythmException If an error occured during initialization.
    */
-  void init_loaded (AutomatableTrack * track);
+  void init_loaded ();
 
   bool is_in_active_project () const override;
 
@@ -235,20 +230,6 @@ public:
    * @throw ZrythmException If an error occured during activation.
    */
   void activate (bool activate = true);
-
-  /**
-   * Moves the plugin to the given slot in the given channel.
-   *
-   * If a plugin already exists, it deletes it and replaces it.
-   *
-   * @param confirm_overwrite Whether to show a dialog to confirm the
-   * overwrite when a plugin already exists.
-   */
-  void move (
-    AutomatableTrack * track,
-    PluginSlot         slot,
-    bool               confirm_overwrite,
-    bool               fire_events);
 
   auto get_slot_type () const
   {
@@ -364,16 +345,6 @@ public:
    * function and stores the result in the plugin.
    */
   // void update_latency ();
-
-  /**
-   * Generates automatables for the plugin.
-   *
-   * The plugin must be instantiated already.
-   *
-   * @param track The Track this plugin belongs to. This is passed because the
-   * track might not be in the project yet so we can't fetch it through indices.
-   */
-  void generate_automation_tracks (AutomatableTrack &track);
 
   /**
    * Prepare plugin for processing.

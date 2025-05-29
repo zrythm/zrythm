@@ -70,7 +70,7 @@ ModulatorTrack::init_loaded (
   for (auto &modulator_id : modulators_)
     {
       auto modulator = modulator_id.get_object ();
-      std::visit ([&] (auto &&pl) { pl->init_loaded (this); }, modulator);
+      std::visit ([&] (auto &&pl) { pl->init_loaded (); }, modulator);
     }
   for (auto &macro : modulator_macro_processors_)
     {
@@ -130,7 +130,7 @@ struct ModulatorImportData
 
         if (this->gen_automatables)
           {
-            mod->generate_automation_tracks (*self);
+            self->generate_automation_tracks_for_plugin (mod->get_uuid ());
           }
 
         if (this->pub_events)

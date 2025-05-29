@@ -159,6 +159,37 @@ AutomatableTrack::generate_automation_tracks ()
 }
 
 void
+AutomatableTrack::generate_automation_tracks_for_plugin (
+  const Plugin::Uuid &plugin_id)
+{
+  auto pl_var = get_plugin_registry ().find_by_id_or_throw (plugin_id);
+  std::visit (
+    [&] (auto &&plugin) {
+      z_debug ("generating automation tracks for {}...", plugin->get_name ());
+
+      auto &atl = get_automation_tracklist ();
+      for (
+        auto port :
+        plugin->get_input_port_span ()
+          .template get_elements_by_type<ControlPort> ())
+        {
+          if (
+            port->id_->type_ != dsp::PortType::Control
+            || !(ENUM_BITSET_TEST (
+              port->id_->flags_, dsp::PortIdentifier::Flags::Automatable)))
+            continue;
+
+          auto * at = new AutomationTrack (
+            get_port_registry (), get_object_registry (),
+            [&] () { return convert_to_variant<TrackPtrVariant> (this); },
+            port->get_uuid ());
+          atl.add_automation_track (*at);
+        }
+    },
+    pl_var);
+}
+
+void
 AutomatableTrack::set_automation_visible (const bool visible)
 {
   automation_visible_ = visible;

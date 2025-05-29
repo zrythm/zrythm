@@ -532,6 +532,130 @@ Tracklist::get_chord_track () const
     *std::ranges::find_if (span, TrackSpan::type_projection<ChordTrack>));
 }
 
+struct PluginMoveData
+{
+  Plugin *                pl = nullptr;
+  OptionalTrackPtrVariant track_var;
+  plugins::PluginSlot     slot;
+};
+
+#if 0
+static void
+plugin_move_data_free (void * _data, GClosure * closure)
+{
+  PluginMoveData * self = (PluginMoveData *) _data;
+  object_delete_and_null (self);
+}
+#endif
+
+static void
+do_move (PluginMoveData * data)
+{
+  auto * pl = data->pl;
+  auto   prev_slot = *pl->get_slot ();
+  auto * prev_track = TrackSpan::derived_type_transformation<AutomatableTrack> (
+    *pl->get_track ());
+  auto * prev_ch = TRACKLIST->get_channel_for_plugin (pl->get_uuid ());
+  z_return_if_fail (prev_ch);
+
+  std::visit (
+    [&] (auto &&data_track) {
+      using TrackT = base_type<decltype (data_track)>;
+      if constexpr (std::derived_from<TrackT, ChannelTrack>)
+        {
+          /* if existing plugin exists, delete it */
+          auto existing_pl = data_track->get_plugin_at_slot (data->slot);
+          if (existing_pl)
+            {
+              data_track->channel_->remove_plugin_from_channel (
+                data->slot, false, true);
+            }
+
+          /* move plugin's automation from src to dest */
+          TRACKLIST->move_plugin_automation (
+            pl->get_uuid (), prev_track->get_uuid (), data_track->get_uuid (),
+            data->slot);
+
+          /* remove plugin from its channel */
+          PluginUuidReference plugin_ref{
+            pl->get_uuid (), data_track->get_plugin_registry ()
+          };
+          prev_ch->remove_plugin_from_channel (prev_slot, true, false);
+
+          /* add plugin to its new channel */
+          data_track->channel_->add_plugin (
+            plugin_ref, data->slot, false, true, false, true, true);
+
+#if 0
+          if (data->fire_events)
+            {
+      // EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, prev_ch);
+      EVENTS_PUSH (
+        EventType::ET_CHANNEL_SLOTS_CHANGED,
+        data_channel_track->channel_.get ());
+      }
+#endif
+        }
+    },
+    *data->track_var);
+}
+
+#if 0
+static void
+overwrite_plugin_response_cb (
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
+{
+  PluginMoveData * data = (PluginMoveData *) user_data;
+  if (!string_is_equal (response, "overwrite"))
+    {
+      return;
+    }
+
+  do_move (data);
+}
+#endif
+
+void
+Tracklist::move_plugin (
+  const Plugin::Uuid &plugin_id,
+  const Track::Uuid  &target_track_id,
+  plugins::PluginSlot slot,
+  bool                confirm_overwrite)
+{
+  auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
+  auto track_var = get_track (target_track_id);
+  std::visit (
+    [&] (auto &&plugin, auto &&track) {
+      using TrackT = base_type<decltype (track)>;
+      auto data = std::make_unique<PluginMoveData> ();
+      data->pl = plugin;
+      data->track_var = track;
+      data->slot = slot;
+
+      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+        {
+          auto existing_pl = track->get_plugin_at_slot (slot);
+          if (existing_pl && confirm_overwrite && ZRYTHM_HAVE_UI)
+            {
+#if 0
+      auto dialog =
+        dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
+      gtk_window_present (GTK_WINDOW (dialog));
+      g_signal_connect_data (
+        dialog, "response", G_CALLBACK (overwrite_plugin_response_cb),
+        data.release (), plugin_move_data_free, G_CONNECT_DEFAULT);
+#endif
+              return;
+            }
+
+          do_move (data.get ());
+        }
+    },
+    pl_var, *track_var);
+}
+
 bool
 Tracklist::multiply_track_heights (
   double multiplier,

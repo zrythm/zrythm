@@ -68,7 +68,6 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   // Initialize JUCE
   juce_message_handler_initializer_ =
     std::make_unique<juce::ScopedJuceInitialiser_GUI> ();
-  // juce::MessageManager::getInstance ()->setCurrentThreadAsMessageThread ();
 
   alert_manager_ = new AlertManager (this);
   theme_manager_ = new ThemeManager (this);
@@ -360,6 +359,8 @@ ZrythmApplication::notify (QObject * receiver, QEvent * event)
   // below is not needed according to
   // https://forum.juce.com/t/integrating-tracktion-engine-into-another-event-loop/31641/2
   // if everything works fine, eventually delete this
+  // seealso this that says otherwise:
+  // https://github.com/nikeocom/qt_with_juce_example?tab=readme-ov-file#now-juce-code-is-added-and-we-can-compile-it-but
 #if 0
   // Run JUCE's dispatch loop before processing Qt events
   if (juce_message_handler_initializer_)

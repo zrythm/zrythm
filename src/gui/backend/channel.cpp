@@ -564,7 +564,7 @@ Channel::init_loaded ()
         std::visit (
           [&] (auto &&plugin) {
             plugin->set_track (track_->get_uuid ());
-            plugin->init_loaded (track_);
+            plugin->init_loaded ();
           },
           plugin_var);
       }
@@ -1503,7 +1503,7 @@ Channel::add_plugin (
 
       if (gen_automatables)
         {
-          plugin->generate_automation_tracks (*track_);
+          track_->generate_automation_tracks_for_plugin (plugin->get_uuid ());
         }
 
       if (pub_events)

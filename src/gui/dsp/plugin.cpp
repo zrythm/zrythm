@@ -252,10 +252,8 @@ Plugin::is_auditioner () const
 }
 
 void
-Plugin::init_loaded (AutomatableTrack * track)
+Plugin::init_loaded ()
 {
-  track_id_ = track->get_uuid ();
-
   std::vector<Port *> ports;
   append_ports (ports);
   z_return_if_fail (!ports.empty ());
@@ -502,130 +500,6 @@ Plugin::validate () const
     }
 
   return true;
-}
-
-struct PluginMoveData
-{
-  Plugin *                pl = nullptr;
-  OptionalTrackPtrVariant track_var;
-  plugins::PluginSlot     slot;
-  bool                    fire_events = false;
-};
-
-#if 0
-static void
-plugin_move_data_free (void * _data, GClosure * closure)
-{
-  PluginMoveData * self = (PluginMoveData *) _data;
-  object_delete_and_null (self);
-}
-#endif
-
-static void
-do_move (PluginMoveData * data)
-{
-  auto * pl = data->pl;
-  auto   prev_slot = *pl->get_slot ();
-  auto * prev_track = TrackSpan::derived_type_transformation<AutomatableTrack> (
-    *pl->get_track ());
-  auto * prev_ch = TRACKLIST->get_channel_for_plugin (pl->get_uuid ());
-  z_return_if_fail (prev_ch);
-
-  std::visit (
-    [&] (auto &&data_track) {
-      using TrackT = base_type<decltype (data_track)>;
-      if constexpr (std::derived_from<TrackT, ChannelTrack>)
-        {
-          /* if existing plugin exists, delete it */
-          auto existing_pl = data_track->get_plugin_at_slot (data->slot);
-          if (existing_pl)
-            {
-              data_track->channel_->remove_plugin_from_channel (
-                data->slot, false, true);
-            }
-
-          /* move plugin's automation from src to dest */
-          TRACKLIST->move_plugin_automation (
-            pl->get_uuid (), prev_track->get_uuid (), data_track->get_uuid (),
-            data->slot);
-
-          /* remove plugin from its channel */
-          PluginUuidReference plugin_ref{
-            pl->get_uuid (), data_track->get_plugin_registry ()
-          };
-          prev_ch->remove_plugin_from_channel (prev_slot, true, false);
-
-          /* add plugin to its new channel */
-          data_track->channel_->add_plugin (
-            plugin_ref, data->slot, false, true, false, true, true);
-
-          if (data->fire_events)
-            {
-#if 0
-      // EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, prev_ch);
-      EVENTS_PUSH (
-        EventType::ET_CHANNEL_SLOTS_CHANGED,
-        data_channel_track->channel_.get ());
-#endif
-            }
-        }
-    },
-    *data->track_var);
-}
-
-#if 0
-static void
-overwrite_plugin_response_cb (
-  AdwMessageDialog * dialog,
-  char *             response,
-  gpointer           user_data)
-{
-  PluginMoveData * data = (PluginMoveData *) user_data;
-  if (!string_is_equal (response, "overwrite"))
-    {
-      return;
-    }
-
-  do_move (data);
-}
-#endif
-
-void
-Plugin::move (
-  AutomatableTrack * track,
-  PluginSlot         slot,
-  bool               confirm_overwrite,
-  bool               fire_events)
-{
-  auto data = std::make_unique<PluginMoveData> ();
-  data->pl = this;
-  data->track_var = convert_to_variant<TrackPtrVariant> (track);
-  data->slot = slot;
-  data->fire_events = fire_events;
-
-  std::visit (
-    [&] (auto &&tr) {
-      using TrackT = base_type<decltype (tr)>;
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
-        {
-          auto existing_pl = tr->get_plugin_at_slot (slot);
-          if (existing_pl && confirm_overwrite && ZRYTHM_HAVE_UI)
-            {
-#if 0
-      auto dialog =
-        dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
-      gtk_window_present (GTK_WINDOW (dialog));
-      g_signal_connect_data (
-        dialog, "response", G_CALLBACK (overwrite_plugin_response_cb),
-        data.release (), plugin_move_data_free, G_CONNECT_DEFAULT);
-#endif
-              return;
-            }
-
-          do_move (data.get ());
-        }
-    },
-    *data->track_var);
 }
 
 std::optional<TrackPtrVariant>
@@ -909,28 +783,6 @@ return_refresh_rate_and_scale_factor:
   z_debug ("refresh rate set to {:f}", (double) ui_update_hz_);
   z_debug ("scale factor set to {:f}", (double) ui_scale_factor_);
 #endif
-}
-
-void
-Plugin::generate_automation_tracks (AutomatableTrack &track)
-{
-  z_debug ("generating automation tracks for {}...", get_name ());
-
-  auto &atl = track.get_automation_tracklist ();
-  for (auto port : get_input_port_span ().get_elements_by_type<ControlPort> ())
-    {
-      if (
-        port->id_->type_ != dsp::PortType::Control
-        || !(ENUM_BITSET_TEST (
-          port->id_->flags_, PortIdentifier::Flags::Automatable)))
-        continue;
-
-      auto * at = new AutomationTrack (
-        track.get_port_registry (), track.get_object_registry (),
-        [&track] () { return convert_to_variant<TrackPtrVariant> (&track); },
-        port->get_uuid ());
-      atl.add_automation_track (*at);
-    }
 }
 
 /**

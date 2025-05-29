@@ -1,4 +1,5 @@
-
+// SPDX-FileCopyrightText: © 2021-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings/settings.h"

@@ -100,11 +100,11 @@ public:
     plugins.insert (plugins.end (), base_plugins.begin (), base_plugins.end ());
   }
 
-  void init_loaded (AutomatableTrack * track)
+  void init_loaded ()
   {
     for (const auto &pl_var : *this)
       {
-        std::visit ([&] (auto &&pl) { pl->init_loaded (track); }, pl_var);
+        std::visit ([&] (auto &&pl) { pl->init_loaded (); }, pl_var);
       }
   }
 

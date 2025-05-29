@@ -336,6 +336,20 @@ public:
     const Track::Uuid          &track_id_to_move_to,
     zrythm::plugins::PluginSlot new_slot);
 
+  /**
+   * Moves the plugin to the given slot in the given channel.
+   *
+   * If a plugin already exists, it deletes it and replaces it.
+   *
+   * @param confirm_overwrite Whether to show a dialog to confirm the
+   * overwrite when a plugin already exists.
+   */
+  void move_plugin (
+    const Plugin::Uuid &plugin_id,
+    const Track::Uuid  &target_track_id,
+    plugins::PluginSlot slot,
+    bool                confirm_overwrite);
+
   zrythm::gui::Channel * get_channel_for_plugin (const Plugin::Uuid &plugin_id);
 
   /**
