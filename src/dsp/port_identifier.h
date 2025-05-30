@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_PORT_IDENTIFIER_H
-#define ZRYTHM_DSP_PORT_IDENTIFIER_H
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -486,5 +485,3 @@ template <> struct hash<zrythm::utils::UuidIdentifiableObject<Port>::Uuid>
   }
 };
 }
-
-#endif

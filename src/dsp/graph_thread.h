@@ -10,7 +10,7 @@
 
 #include "juce_wrapper.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 class GraphScheduler;
@@ -68,6 +68,6 @@ public:
   GraphScheduler &scheduler_;
 };
 
-} // namespace zrythm::dsp
+} // namespace zrythm::dsp::graph
 
 #endif

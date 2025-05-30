@@ -9,7 +9,7 @@
 
 using namespace testing;
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 class GraphNodeTest : public ::testing::Test
@@ -295,4 +295,4 @@ TEST_F (GraphNodeTest, ProcessableSearch)
   EXPECT_EQ (not_found, nullptr);
 }
 
-} // namespace zrythm::dsp
+} // namespace zrythm::dsp::graph

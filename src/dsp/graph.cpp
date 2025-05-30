@@ -3,7 +3,7 @@
 
 #include "dsp/graph.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 bool
@@ -55,7 +55,7 @@ Graph::print () const
 
 GraphNode *
 Graph::add_node_for_processable (
-  dsp::IProcessable     &node,
+  IProcessable          &node,
   const dsp::ITransport &transport)
 {
   setup_nodes_.graph_nodes_.emplace_back (std::make_unique<GraphNode> (

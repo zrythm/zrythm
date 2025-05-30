@@ -48,7 +48,10 @@ graph_export_as_simple (GraphExportType type, const char * export_path);
  * Engine must be paused before calling this.
  */
 void
-graph_export_as (dsp::Graph * graph, GraphExportType type, const char * path);
+graph_export_as (
+  dsp::graph::Graph * graph,
+  GraphExportType     type,
+  const char *        path);
 
 /**
  * @}

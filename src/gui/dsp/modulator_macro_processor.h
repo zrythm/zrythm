@@ -24,7 +24,7 @@ class ModulatorTrack;
  */
 class ModulatorMacroProcessor final
     : public ICloneable<ModulatorMacroProcessor>,
-      public dsp::IProcessable,
+      public dsp::graph::IProcessable,
       public IPortOwner
 {
 public:

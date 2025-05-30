@@ -91,7 +91,7 @@
 #include "dsp/graph_thread.h"
 #include "utils/rt_thread_id.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 constexpr bool DEBUG_THREADS = false;
@@ -163,7 +163,7 @@ GraphThread::run_worker () [[clang::nonblocking]]
 
   for (;;)
     {
-      dsp::GraphNode * to_run = nullptr;
+      GraphNode * to_run = nullptr;
 
       if (threadShouldExit ()) [[unlikely]]
         {
@@ -354,4 +354,4 @@ GraphThread::
 {
 }
 
-} // namespace zrythm::dsp
+} // namespace zrythm::dsp::graph

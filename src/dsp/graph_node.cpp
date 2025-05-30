@@ -32,13 +32,13 @@
 #include "dsp/itransport.h"
 #include "utils/debug.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 GraphNode::GraphNode (
   NodeId                 id,
   const dsp::ITransport &transport,
-  dsp::IProcessable     &processable)
+  IProcessable          &processable)
     : node_id_ (id), transport_ (transport), processable_ (processable)
 {
 }
@@ -320,9 +320,9 @@ GraphNodeCollection::set_initial_and_terminal_nodes ()
     }
 }
 
-dsp::GraphNode *
+GraphNode *
 GraphNodeCollection::find_node_for_processable (
-  const dsp::IProcessable &processable) const
+  const IProcessable &processable) const
 {
   auto it = std::ranges::find_if (graph_nodes_, [&] (const auto &node) {
     return std::addressof (node->get_processable ())
@@ -336,9 +336,9 @@ GraphNodeCollection::find_node_for_processable (
 }
 
 void
-GraphNodeCollection::add_special_node (dsp::GraphNode &node)
+GraphNodeCollection::add_special_node (GraphNode &node)
 {
   special_nodes_.emplace_back (node);
 }
 
-} // namespace zrythm::dsp
+} // namespace zrythm::dsp::graph

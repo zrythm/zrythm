@@ -24,12 +24,11 @@
  * ---
  */
 
-#ifndef ZRYTHM_DSP_GRAPH_H
-#define ZRYTHM_DSP_GRAPH_H
+#pragma once
 
 #include "dsp/graph_node.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 /**
@@ -48,13 +47,12 @@ public:
   /**
    * Creates a new node, adds it to the graph and returns it.
    */
-  GraphNode * add_node_for_processable (
-    dsp::IProcessable     &node,
-    const dsp::ITransport &transport);
+  GraphNode *
+  add_node_for_processable (IProcessable &node, const dsp::ITransport &transport);
 
   GraphNode * add_initial_processor (const dsp::ITransport &transport)
   {
-    setup_nodes_.initial_processor_ = std::make_unique<dsp::InitialProcessor> ();
+    setup_nodes_.initial_processor_ = std::make_unique<InitialProcessor> ();
     return add_node_for_processable (
       *setup_nodes_.initial_processor_, transport);
   };
@@ -85,9 +83,7 @@ private:
    * processing. They just hold the initial (setup) topology of the graph that
    * can be used to generate a "live" collection.
    */
-  dsp::GraphNodeCollection setup_nodes_;
+  GraphNodeCollection setup_nodes_;
 };
 
-} // namespace zrythm::dsp
-
-#endif
+} // namespace zrythm::dsp::graph

@@ -10,7 +10,7 @@ using namespace zrythm;
 class Project;
 class Port;
 
-class ProjectGraphBuilder final : public dsp::IGraphBuilder
+class ProjectGraphBuilder final : public dsp::graph::IGraphBuilder
 {
 public:
   ProjectGraphBuilder (Project &project, bool drop_unnecessary_ports)
@@ -29,7 +29,7 @@ public:
   can_ports_be_connected (Project &project, const Port &src, const Port &dest);
 
 private:
-  void build_graph_impl (dsp::Graph &graph) override;
+  void build_graph_impl (dsp::graph::Graph &graph) override;
 
 private:
   Project &project_;

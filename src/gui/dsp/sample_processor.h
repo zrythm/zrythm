@@ -34,7 +34,7 @@ class AudioEngine;
  */
 class SampleProcessor final
     : public ICloneable<SampleProcessor>,
-      public dsp::IProcessable
+      public dsp::graph::IProcessable
 {
 public:
   using Position = zrythm::dsp::Position;

@@ -37,7 +37,7 @@ namespace zrythm::gui::old_dsp::plugins
  * class provides a common interface for working with them.
  */
 class Plugin
-    : public dsp::IProcessable,
+    : public dsp::graph::IProcessable,
       public IPortOwner,
       public utils::UuidIdentifiableObject<Plugin>
 {

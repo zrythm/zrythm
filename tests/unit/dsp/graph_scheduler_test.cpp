@@ -13,7 +13,7 @@
 using namespace testing;
 using namespace std::chrono_literals;
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 class MockProcessable : public IProcessable

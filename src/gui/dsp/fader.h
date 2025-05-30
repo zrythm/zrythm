@@ -46,7 +46,7 @@ constexpr int FADER_DEFAULT_FADE_FRAMES_SHORT = 1024;
 class Fader final
     : public QObject,
       public ICloneable<Fader>,
-      public dsp::IProcessable,
+      public dsp::graph::IProcessable,
       public IPortOwner
 {
   Q_OBJECT

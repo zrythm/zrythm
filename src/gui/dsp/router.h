@@ -124,7 +124,7 @@ public:
   void queue_control_port_change (const ControlPort::ChangeEvent &change);
 
 public:
-  std::unique_ptr<dsp::GraphScheduler> scheduler_;
+  std::unique_ptr<dsp::graph::GraphScheduler> scheduler_;
 
   /** An atomic variable to check if the graph is currently being setup (so that
    * we can avoid accessing buffers changed by this). */

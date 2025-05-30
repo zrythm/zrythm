@@ -69,7 +69,7 @@ struct ChannelSendTarget
  */
 class ChannelSend final
     : public ICloneable<ChannelSend>,
-      public dsp::IProcessable,
+      public dsp::graph::IProcessable,
       public IPortOwner
 {
 public:

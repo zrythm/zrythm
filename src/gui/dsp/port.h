@@ -174,7 +174,9 @@ public:
  * as tracks, plugins, and the audio engine. The `set_owner()` method is used
  * to set the owner of the port.
  */
-class Port : public dsp::IProcessable, public utils::UuidIdentifiableObject<Port>
+class Port
+    : public dsp::graph::IProcessable,
+      public utils::UuidIdentifiableObject<Port>
 {
   Z_DISABLE_COPY_MOVE (Port)
 public:

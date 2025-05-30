@@ -10,7 +10,7 @@
 #include <gmock/gmock.h>
 
 using namespace testing;
-using namespace zrythm::dsp;
+using namespace zrythm::dsp::graph;
 
 class MockProcessable : public IProcessable
 {
@@ -26,21 +26,21 @@ public:
     (const, override));
 };
 
-class MockTransport : public ITransport
+class MockTransport : public dsp::ITransport
 {
 public:
   MOCK_METHOD (
     void,
     position_add_frames,
-    (Position &, signed_frame_t),
+    (dsp::Position &, signed_frame_t),
     (const, override));
   MOCK_METHOD (
-    (std::pair<Position, Position>),
+    (std::pair<dsp::Position, dsp::Position>),
     get_loop_range_positions,
     (),
     (const, override));
   MOCK_METHOD (PlayState, get_play_state, (), (const, override));
-  MOCK_METHOD (Position, get_playhead_position, (), (const, override));
+  MOCK_METHOD (dsp::Position, get_playhead_position, (), (const, override));
   MOCK_METHOD (bool, get_loop_enabled, (), (const, override));
   MOCK_METHOD (
     nframes_t,
@@ -66,7 +66,7 @@ protected:
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (0));
     ON_CALL (*transport_, get_play_state ())
-      .WillByDefault (Return (ITransport::PlayState::Rolling));
+      .WillByDefault (Return (dsp::ITransport::PlayState::Rolling));
 
     // Simulate actual processing work
     ON_CALL (*processable_, process_block (_)).WillByDefault ([] (auto) {

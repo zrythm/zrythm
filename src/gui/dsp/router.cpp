@@ -122,7 +122,7 @@ Router::recalc_graph (bool soft)
   auto rebuild_graph = [&] () {
     graph_setup_in_progress_.store (true);
     ProjectGraphBuilder builder (*PROJECT, true);
-    dsp::Graph          graph;
+    dsp::graph::Graph   graph;
     builder.build_graph (graph);
     PROJECT->clip_editor_->set_caches ();
     TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
@@ -132,7 +132,7 @@ Router::recalc_graph (bool soft)
 
   if (!scheduler_ && !soft)
     {
-      scheduler_ = std::make_unique<dsp::GraphScheduler> ();
+      scheduler_ = std::make_unique<dsp::graph::GraphScheduler> ();
       rebuild_graph ();
       scheduler_->start_threads ();
       return;

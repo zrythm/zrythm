@@ -22,7 +22,7 @@
  */
 class HardwareProcessor final
     : public ICloneable<HardwareProcessor>,
-      public dsp::IProcessable
+      public dsp::graph::IProcessable
 {
 public:
   using PortFlow = zrythm::dsp::PortFlow;

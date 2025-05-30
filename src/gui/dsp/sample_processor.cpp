@@ -599,7 +599,7 @@ SampleProcessor::queue_file_or_chord_preset (
    * operation lock is released.
    */
   SemaphoreRAII       port_op_raii (AUDIO_ENGINE->port_operation_lock_);
-  dsp::Graph          graph;
+  dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*PROJECT, true);
   builder.build_graph (graph);
   tracklist_->get_track_span ().set_caches (ALL_CACHE_TYPES);

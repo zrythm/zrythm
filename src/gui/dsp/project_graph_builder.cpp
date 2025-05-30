@@ -8,7 +8,7 @@
 using namespace zrythm;
 
 void
-ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
+ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 {
   z_debug ("building graph...");
 
@@ -133,7 +133,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
       PortPtrVariant port_var, dsp::PortConnectionsManager &mgr,
       const bool drop_if_unnecessary) {
       return std::visit (
-        [&] (auto &&port) -> dsp::GraphNode * {
+        [&] (auto &&port) -> dsp::graph::GraphNode * {
           using PortT = base_type<decltype (port)>;
           auto owner = port->id_->owner_type_;
 
@@ -313,7 +313,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
   }
 
   /* connect the HW input processor */
-  dsp::GraphNode * hw_processor_node =
+  dsp::graph::GraphNode * hw_processor_node =
     graph.get_nodes ().find_node_for_processable (*hw_in_processor);
   for (auto &port : hw_in_processor->audio_ports_)
     {
@@ -771,7 +771,7 @@ ProjectGraphBuilder::
   z_debug ("validating for {} to {}", src.get_label (), dest.get_label ());
 
   ProjectGraphBuilder builder (project, false);
-  dsp::Graph          graph;
+  dsp::graph::Graph   graph;
   builder.build_graph (graph);
 
   /* connect the src/dest if not NULL */

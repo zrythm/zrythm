@@ -28,7 +28,7 @@
 #include "utils/audio.h"
 #include "utils/env.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 GraphScheduler::GraphScheduler () = default;
@@ -54,7 +54,7 @@ GraphScheduler::trigger_node (GraphNode &node)
 }
 
 void
-GraphScheduler::rechain_from_node_collection (dsp::GraphNodeCollection &&nodes)
+GraphScheduler::rechain_from_node_collection (GraphNodeCollection &&nodes)
 {
   z_debug ("rechaining graph...");
 
@@ -284,4 +284,4 @@ GraphScheduler::~GraphScheduler ()
     }
 }
 
-} // namespace zrythm::dsp
+} // namespace zrythm::dsp::graph

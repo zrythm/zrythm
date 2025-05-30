@@ -9,7 +9,7 @@
 
 using namespace testing;
 
-using namespace zrythm::dsp;
+using namespace zrythm::dsp::graph;
 
 namespace graph_builder_test
 {
@@ -21,21 +21,21 @@ public:
   MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
 };
 
-class MockTransport : public ITransport
+class MockTransport : public dsp::ITransport
 {
 public:
   MOCK_METHOD (
     void,
     position_add_frames,
-    (Position &, signed_frame_t),
+    (dsp::Position &, signed_frame_t),
     (const, override));
   MOCK_METHOD (
-    (std::pair<Position, Position>),
+    (std::pair<dsp::Position, dsp::Position>),
     get_loop_range_positions,
     (),
     (const, override));
   MOCK_METHOD (PlayState, get_play_state, (), (const, override));
-  MOCK_METHOD (Position, get_playhead_position, (), (const, override));
+  MOCK_METHOD (dsp::Position, get_playhead_position, (), (const, override));
   MOCK_METHOD (bool, get_loop_enabled, (), (const, override));
   MOCK_METHOD (
     nframes_t,

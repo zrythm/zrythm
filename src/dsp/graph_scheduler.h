@@ -24,8 +24,7 @@
  * ---
  */
 
-#ifndef ZRYTHM_DSP_GRAPH_SCHEDULER_H
-#define ZRYTHM_DSP_GRAPH_SCHEDULER_H
+#pragma once
 
 #include "dsp/graph_node.h"
 #include "utils/mpmc_queue.h"
@@ -33,7 +32,7 @@
 
 #include <moodycamel/lightweightsemaphore.h>
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 class GraphThread;
@@ -69,7 +68,7 @@ public:
    * @brief Steals the nodes from the given collection and prepares for
    * processing.
    */
-  void rechain_from_node_collection (dsp::GraphNodeCollection &&nodes);
+  void rechain_from_node_collection (GraphNodeCollection &&nodes);
 
   /**
    * Starts the threads that will be processing the graph.
@@ -101,8 +100,11 @@ public:
    */
   bool contains_thread (RTThreadId::IdType thread_id);
 
-  auto get_time_nfo () { return time_nfo_; }
-  auto get_remaining_preroll_frames () { return remaining_preroll_frames_; }
+  auto get_time_nfo () const { return time_nfo_; }
+  auto get_remaining_preroll_frames () const
+  {
+    return remaining_preroll_frames_;
+  }
 
   void clear_external_output_buffers (nframes_t block_length);
 
@@ -110,7 +112,7 @@ private:
   std::vector<GraphThreadPtr> threads_;
   GraphThreadPtr              main_thread_;
 
-  std::vector<std::reference_wrapper<dsp::IProcessable>>
+  std::vector<std::reference_wrapper<IProcessable>>
     processables_that_need_external_buffer_clear_when_returning_early_from_processing_cycle_;
 
   /**
@@ -142,12 +144,10 @@ private:
   /**
    * @brief Live graph nodes.
    */
-  dsp::GraphNodeCollection graph_nodes_;
+  GraphNodeCollection graph_nodes_;
 
   /** Remaining unprocessed terminal nodes in this cycle. */
   std::atomic<int> terminal_refcnt_ = 0;
 };
 
-} // namespace zrythm::dsp
-
-#endif
+} // namespace zrythm::dsp::graph

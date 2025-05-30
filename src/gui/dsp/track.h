@@ -276,7 +276,7 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  * MIDI tracks, instrument tracks, and audio tracks.
  */
 class Track
-    : public dsp::IProcessable,
+    : public dsp::graph::IProcessable,
       public IPortOwner,
       public utils::UuidIdentifiableObject<Track>
 {

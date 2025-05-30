@@ -31,7 +31,7 @@
 #include "dsp/itransport.h"
 #include "utils/types.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 /**
@@ -271,16 +271,15 @@ public:
     update_latencies ();
   }
 
-  dsp::GraphNode *
-  find_node_for_processable (const dsp::IProcessable &processable) const;
+  GraphNode * find_node_for_processable (const IProcessable &processable) const;
 
-  void add_special_node (dsp::GraphNode &node);
+  void add_special_node (GraphNode &node);
 
 public:
   /**
    * @brief All nodes in the graph.
    */
-  std::vector<std::unique_ptr<dsp::GraphNode>> graph_nodes_;
+  std::vector<std::unique_ptr<GraphNode>> graph_nodes_;
 
   /**
    * @brief A subset of @ref graph_nodes_ that are trigger nodes.
@@ -288,16 +287,16 @@ public:
    * Trigger nodes are nodes without incoming edges. They run
    * concurrently at the start of each cycle to kick off processing.
    */
-  std::vector<std::reference_wrapper<dsp::GraphNode>> trigger_nodes_;
+  std::vector<std::reference_wrapper<GraphNode>> trigger_nodes_;
 
   /**
    * @brief A subset of @ref graph_nodes_ that are terminal nodes.
    *
    * Terminal nodes are nodes without outgoing edges.
    */
-  std::vector<std::reference_wrapper<dsp::GraphNode>> terminal_nodes_;
+  std::vector<std::reference_wrapper<GraphNode>> terminal_nodes_;
 
-  std::unique_ptr<dsp::InitialProcessor> initial_processor_;
+  std::unique_ptr<InitialProcessor> initial_processor_;
 
   /**
    * @brief Special nodes that are processed separately at the start of
@@ -312,7 +311,7 @@ public:
    * splitting at n samples or at loop points (how does that affect position
    * conversions)? Should there even be a BPM node?
    */
-  std::vector<std::reference_wrapper<dsp::GraphNode>> special_nodes_;
+  std::vector<std::reference_wrapper<GraphNode>> special_nodes_;
 };
 
-} // namespace zrythm::dsp
+} // namespace zrythm::dsp::graph

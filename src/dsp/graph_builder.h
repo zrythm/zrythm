@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "dsp/graph.h"
 
-namespace zrythm::dsp
+namespace zrythm::dsp::graph
 {
 
 /**
@@ -37,4 +37,4 @@ protected:
   virtual void build_graph_impl (Graph &graph) = 0;
 };
 
-} // namespace zrythm::dsp
+} // namespace zrythm::dsp::graph
