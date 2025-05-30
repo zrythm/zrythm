@@ -40,7 +40,10 @@ public:
   {
   }
 
-  float clamp_to_range (float val) { return std::clamp (val, minf_, maxf_); }
+  float clamp_to_range (float val) const
+  {
+    return std::clamp (val, minf_, maxf_);
+  }
 
 private:
   static constexpr std::string_view kMinKey = "minf";

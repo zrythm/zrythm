@@ -231,7 +231,7 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
 {
   auto track = get_track ();
   z_return_if_fail (track);
-  auto                             midi_track_pos = track->get_index ();
+  auto                                  midi_track_pos = track->get_index ();
   std::unique_ptr<dsp::MidiEventVector> own_events;
   if (lanes_as_tracks)
     {

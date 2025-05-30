@@ -45,4 +45,3 @@
 #include "./string.h"
 #include "./symap.h"
 #include "./variant_helpers.h"
-#include "./yaml.h"

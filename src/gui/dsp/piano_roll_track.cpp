@@ -20,7 +20,7 @@ PianoRollTrack::write_to_midi_file (
   bool                   lanes_as_tracks,
   bool                   use_track_pos)
 {
-  int                              midi_track_pos = pos_;
+  int                                   midi_track_pos = pos_;
   std::unique_ptr<dsp::MidiEventVector> own_events;
   if (!lanes_as_tracks && use_track_pos)
     {
