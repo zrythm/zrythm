@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_GUI_DSP_PORT_H
-#define ZRYTHM_GUI_DSP_PORT_H
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -454,5 +453,3 @@ from_json (const nlohmann::json &j, PortRegistry &registry);
 /**
  * @}
  */
-
-#endif

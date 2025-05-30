@@ -67,14 +67,6 @@ target_sources(zrythm_gui_lib
     engine_dummy.cpp
     engine_jack.h
     engine_jack.cpp
-    engine_pa.h
-    engine_pa.cpp
-    engine_pulse.h
-    engine_pulse.cpp
-    engine_rtaudio.h
-    engine_rtaudio.cpp
-    engine_rtmidi.h
-    engine_rtmidi.cpp
     exporter.h
     exporter.cpp
     ext_port.h
@@ -175,10 +167,6 @@ target_sources(zrythm_gui_lib
     region_owned_object.cpp
     router.h
     router.cpp
-    rtaudio_device.h
-    rtaudio_device.cpp
-    rtmidi_device.h
-    rtmidi_device.cpp
     sample_processor.h
     sample_processor.cpp
     scale_object.h

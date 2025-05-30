@@ -21,7 +21,6 @@
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"
-#include "gui/dsp/rtmidi_device.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"

@@ -51,6 +51,7 @@ class IProcessable
 {
 public:
   virtual ~IProcessable () = default;
+
   /**
    * Returns a human friendly name of the node.
    */

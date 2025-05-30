@@ -19,10 +19,6 @@
 #  include "weakjack/weak_libjack.h"
 #endif
 
-#if HAVE_RTMIDI
-#  include <rtmidi_c.h>
-#endif
-
 class HardwareProcessor;
 enum class AudioBackend;
 enum class MidiBackend;
@@ -171,22 +167,17 @@ private:
   static constexpr std::string_view kAlias1Key = "alias1";
   static constexpr std::string_view kAlias2Key = "alias2";
   static constexpr std::string_view kNumAliasesKey = "numAliases";
-  static constexpr std::string_view kRtAudioDeviceNameKey = "rtAudioDeviceName";
-  static constexpr std::string_view kRtAudioChannelIndexKey =
-    "rtAudioChannelIndex";
   static constexpr std::string_view kIsMidiKey = "isMidi";
   friend void to_json (nlohmann::json &j, const ExtPort &port)
   {
     j = nlohmann::json{
-      { kTypeKey,                port.type_                },
-      { kFullNameKey,            port.full_name_           },
-      { kShortNameKey,           port.short_name_          },
-      { kAlias1Key,              port.alias1_              },
-      { kAlias2Key,              port.alias2_              },
-      { kNumAliasesKey,          port.num_aliases_         },
-      { kRtAudioDeviceNameKey,   port.rtaudio_dev_name_    },
-      { kRtAudioChannelIndexKey, port.rtaudio_channel_idx_ },
-      { kIsMidiKey,              port.is_midi_             },
+      { kTypeKey,       port.type_        },
+      { kFullNameKey,   port.full_name_   },
+      { kShortNameKey,  port.short_name_  },
+      { kAlias1Key,     port.alias1_      },
+      { kAlias2Key,     port.alias2_      },
+      { kNumAliasesKey, port.num_aliases_ },
+      { kIsMidiKey,     port.is_midi_     },
     };
   }
   friend void from_json (const nlohmann::json &j, ExtPort &port)
@@ -197,9 +188,12 @@ private:
     j.at (kAlias1Key).get_to (port.alias1_);
     j.at (kAlias2Key).get_to (port.alias2_);
     j.at (kNumAliasesKey).get_to (port.num_aliases_);
-    j.at (kRtAudioDeviceNameKey).get_to (port.rtaudio_dev_name_);
-    j.at (kRtAudioChannelIndexKey).get_to (port.rtaudio_channel_idx_);
     j.at (kIsMidiKey).get_to (port.is_midi_);
+  }
+
+  friend bool operator== (const ExtPort &a, const ExtPort &b)
+  {
+    return a.type_ == b.type_ && a.full_name_ == b.full_name_;
   }
 
 public:
@@ -223,40 +217,6 @@ public:
   utils::Utf8String alias2_;
 
   int num_aliases_ = 0;
-
-  /** RtAudio channel index. */
-  unsigned int rtaudio_channel_idx_ = 0;
-
-  /** RtAudio device name. */
-  utils::Utf8String rtaudio_dev_name_;
-
-  /** RtAudio device ID (NOT index!!!). */
-  unsigned int rtaudio_id_ = 0;
-
-  /** Whether the channel is input. */
-  bool rtaudio_is_input_ = false;
-  bool rtaudio_is_duplex_ = false;
-
-  std::shared_ptr<
-#if HAVE_RTAUDIO
-    RtAudioDevice
-#else
-    int
-#endif
-    >
-    rtaudio_dev_;
-
-  /** RtMidi port index. */
-  unsigned int rtmidi_id_ = 0;
-
-  std::shared_ptr<
-#if HAVE_RTMIDI
-    RtMidiDevice
-#else
-    int
-#endif
-    >
-    rtmidi_dev_;
 
   Type type_ = (Type) 0;
 
@@ -285,12 +245,6 @@ public:
    */
   Port * port_ = nullptr;
 };
-
-inline bool
-operator== (const ExtPort &a, const ExtPort &b)
-{
-  return a.type_ == b.type_ && a.full_name_ == b.full_name_;
-}
 
 /**
  * @}

@@ -10,7 +10,6 @@
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/rtmidi_device.h"
 #include "utils/dsp.h"
 #include "utils/hash.h"
 #include "utils/rt_thread_id.h"

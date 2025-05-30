@@ -44,10 +44,6 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/engine_dummy.h"
 #include "gui/dsp/engine_jack.h"
-#include "gui/dsp/engine_pa.h"
-#include "gui/dsp/engine_pulse.h"
-#include "gui/dsp/engine_rtaudio.h"
-#include "gui/dsp/engine_rtmidi.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/metronome.h"
 #include "gui/dsp/midi_event.h"
@@ -406,26 +402,6 @@ AudioEngine::pre_setup ()
       ret = engine_jack_setup (this);
       break;
 #endif
-#if HAVE_PULSEAUDIO
-    case AudioBackend::AUDIO_BACKEND_PULSEAUDIO:
-      ret = engine_pulse_setup (this);
-      break;
-#endif
-#ifdef HAVE_PORT_AUDIO
-    case AudioBackend::AUDIO_BACKEND_PORT_AUDIO:
-      ret = engine_pa_setup (this);
-      break;
-#endif
-#if HAVE_RTAUDIO
-    case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-      ret = engine_rtaudio_setup (this);
-      break;
-#endif
     default:
       z_warning ("Unhandled audio backend");
       break;
@@ -475,17 +451,6 @@ AudioEngine::pre_setup ()
           midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
           mret = engine_dummy_midi_setup (this);
         }
-      break;
-#endif
-#if HAVE_RTMIDI
-    case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
-    case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-    case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-    case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  if HAVE_RTMIDI_6
-    case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
-#  endif
-      mret = engine_rtmidi_setup (this);
       break;
 #endif
     default:
@@ -612,25 +577,6 @@ AudioEngine::init_common ()
       audio_backend_ = AudioBackend::AUDIO_BACKEND_JACK;
       break;
 #endif
-#if HAVE_PULSEAUDIO
-    case AudioBackend::AUDIO_BACKEND_PULSEAUDIO:
-      audio_backend_ = AudioBackend::AUDIO_BACKEND_PULSEAUDIO;
-      break;
-#endif
-#ifdef HAVE_PORT_AUDIO
-    case AudioBackend::AUDIO_BACKEND_PORT_AUDIO:
-      audio_backend_ = AudioBackend::AUDIO_BACKEND_PORT_AUDIO;
-      break;
-#endif
-#if HAVE_RTAUDIO
-    case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-      audio_backend_ = ab_code;
-      break;
-#endif
     default:
       audio_backend_ = AudioBackend::AUDIO_BACKEND_DUMMY;
       z_warning ("selected audio backend not found. switching to dummy");
@@ -668,13 +614,6 @@ AudioEngine::init_common ()
 #ifdef HAVE_JACK
     case MidiBackend::MIDI_BACKEND_JACK:
       midi_backend_ = MidiBackend::MIDI_BACKEND_JACK;
-      break;
-#endif
-#if HAVE_RTMIDI
-    case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-    case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-    case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-      midi_backend_ = mb_code;
       break;
 #endif
     default:
@@ -1017,28 +956,10 @@ AudioEngine::activate (bool activate)
       engine_jack_activate (this, activate);
     }
 #endif
-#if HAVE_PULSEAUDIO
-  if (audio_backend_ == AudioBackend::AUDIO_BACKEND_PULSEAUDIO)
-    {
-      engine_pulse_activate (this, activate);
-    }
-#endif
   if (audio_backend_ == AudioBackend::AUDIO_BACKEND_DUMMY)
     {
       engine_dummy_activate (this, activate);
     }
-#if HAVE_RTMIDI
-  if (midi_backend_is_rtmidi (midi_backend_))
-    {
-      engine_rtmidi_activate (this, activate);
-    }
-#endif
-#if HAVE_RTAUDIO
-  if (audio_backend_is_rtaudio (audio_backend_))
-    {
-      engine_rtaudio_activate (this, activate);
-    }
-#endif
 
   if (activate)
     {
@@ -1196,10 +1117,6 @@ AudioEngine::process_prepare (
 #ifdef HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       engine_jack_prepare_process (this);
-      break;
-#endif
-#ifdef HAVE_ALSA
-    case AudioBackend::AUDIO_BACKEND_ALSA:
       break;
 #endif
     default:
@@ -1540,26 +1457,10 @@ AudioEngine::fill_out_bufs (const nframes_t nframes)
     {
     case AudioBackend::AUDIO_BACKEND_DUMMY:
       break;
-#ifdef HAVE_ALSA
-    case AudioBackend::AUDIO_BACKEND_ALSA:
-#  if 0
-      engine_alsa_fill_out_bufs (self, nframes);
-#  endif
-      break;
-#endif
 #ifdef HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       /*engine_jack_fill_out_bufs (self, nframes);*/
       break;
-#endif
-#ifdef HAVE_PORT_AUDIO
-    case AudioBackend::AUDIO_BACKEND_PORT_AUDIO:
-      engine_pa_fill_out_bufs (self, nframes);
-      break;
-#endif
-#if HAVE_RTAUDIO
-      /*case AudioBackend::AUDIO_BACKEND_RTAUDIO:*/
-      /*break;*/
 #endif
     default:
       break;
@@ -1650,52 +1551,6 @@ AudioEngine::set_port_exposed_to_backend (Port &port, bool expose)
             }
           break;
 #endif
-#if HAVE_RTAUDIO
-        case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-          if (
-            !backend_
-            || (dynamic_cast<RtAudioPortBackend *> (backend_.get ()) == nullptr))
-            {
-              bool is_stereo_l =
-                ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL);
-              bool is_stereo_r =
-                ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR);
-              if (!is_stereo_l && !is_stereo_r)
-                {
-                  return;
-                }
-
-              // FIXME: get_track() unimplemented
-              // this is bad design anyway
-              auto track = dynamic_cast<ChannelTrack *> (get_track (false));
-              if (!track)
-                return;
-
-              auto &ch = track->channel_;
-
-              backend_ = std::make_unique<RtAudioPortBackend> (
-                [ch, is_stereo_l] (
-                  std::vector<RtAudioPortBackend::RtAudioPortInfo> &nfo) {
-                  for (
-                    const auto &ext_port :
-                    is_stereo_l ? ch->ext_stereo_l_ins_ : ch->ext_stereo_r_ins_)
-                    {
-                      nfo.emplace_back (
-                        ext_port->rtaudio_is_input_, ext_port->rtaudio_id_,
-                        ext_port->rtaudio_channel_idx_);
-                    }
-                },
-                [ch, is_stereo_l] () {
-                  return is_stereo_l ? ch->all_stereo_l_ins_ : ch->all_stereo_r_ins_;
-                });
-            }
-          break;
-#endif
         default:
           break;
         }
@@ -1716,22 +1571,6 @@ AudioEngine::set_port_exposed_to_backend (Port &port, bool expose)
             || (dynamic_cast<JackPortBackend *> (port.backend_.get ()) == nullptr))
             {
               port.backend_ = std::make_unique<JackPortBackend> (*client_);
-            }
-          break;
-#endif
-#if HAVE_RTMIDI
-        case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  if HAVE_RTMIDI_6
-        case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
-#  endif
-          if (
-            !backend_
-            || (dynamic_cast<RtMidiPortBackend *> (backend_.get ()) == nullptr))
-            {
-              backend_ = std::make_unique<RtMidiPortBackend> ();
             }
           break;
 #endif
@@ -1796,48 +1635,6 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
       midi_set = true;
     }
 #  endif
-
-#  if HAVE_PULSEAUDIO
-  if (!audio_set && engine_pulse_test (nullptr))
-    {
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "audio-backend",
-        ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_PULSEAUDIO));
-      audio_set = true;
-    }
-#  endif
-
-  /* default to RtAudio if above failed */
-  if (!audio_set)
-    {
-#  ifdef _WIN32
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "audio-backend",
-        ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO));
-      audio_set = true;
-#  elifdef __APPLE__
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "audio-backend",
-        ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO));
-      audio_set = true;
-#  endif
-    }
-
-  /* default to RtMidi if above failed */
-  if (!midi_set)
-    {
-#  ifdef _WIN32
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "midi-backend",
-        ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI));
-      audio_set = true;
-#  elifdef __APPLE__
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "midi-backend",
-        ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI));
-      audio_set = true;
-#  endif
-    }
 #endif
 }
 
@@ -1896,21 +1693,6 @@ AudioEngine::~AudioEngine ()
 #ifdef HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       engine_jack_tear_down (this);
-      break;
-#endif
-#if HAVE_RTAUDIO
-    case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-    case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-      engine_rtaudio_tear_down (this);
-      break;
-#endif
-#if HAVE_PULSEAUDIO
-    case AudioBackend::AUDIO_BACKEND_PULSEAUDIO:
-      engine_pulse_tear_down (this);
       break;
 #endif
     case AudioBackend::AUDIO_BACKEND_DUMMY:

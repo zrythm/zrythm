@@ -125,15 +125,6 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 #ifdef MANUAL_PATH
     "    +manual\n"
 #endif
-#if HAVE_PULSEAUDIO
-    "    +pulse\n"
-#endif
-#if HAVE_RTMIDI
-    "    +rtmidi\n"
-#endif
-#if HAVE_RTAUDIO
-    "    +rtaudio\n"
-#endif
 
     "",
     PROGRAM_NAME,

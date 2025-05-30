@@ -1,5 +1,4 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -17,25 +16,12 @@
 #include "gui/dsp/sample_processor.h"
 #include "gui/dsp/transport.h"
 #include "utils/audio.h"
-#include "utils/backtrace.h"
 #include "utils/concurrency.h"
 #include "utils/object_pool.h"
 #include "utils/types.h"
 
 #ifdef HAVE_JACK
 #  include "weakjack/weak_libjack.h"
-#endif
-
-#if HAVE_PULSEAUDIO
-#  include <pulse/pulseaudio.h>
-#endif
-
-#ifdef HAVE_PORT_AUDIO
-#  include <portaudio.h>
-#endif
-
-#if HAVE_RTAUDIO
-#  include <rtaudio_c.h>
 #endif
 
 namespace zrythm::gui::old_dsp::plugins
@@ -88,34 +74,8 @@ constexpr int ENGINE_MAX_EVENTS = 128;
 enum class AudioBackend
 {
   AUDIO_BACKEND_DUMMY,
-  AUDIO_BACKEND_DUMMY_LIBSOUNDIO,
-  AUDIO_BACKEND_ALSA,
-  AUDIO_BACKEND_ALSA_LIBSOUNDIO,
-  AUDIO_BACKEND_ALSA_RTAUDIO,
   AUDIO_BACKEND_JACK,
-  AUDIO_BACKEND_JACK_LIBSOUNDIO,
-  AUDIO_BACKEND_JACK_RTAUDIO,
-  AUDIO_BACKEND_PULSEAUDIO,
-  AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO,
-  AUDIO_BACKEND_PULSEAUDIO_RTAUDIO,
-  AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO,
-  AUDIO_BACKEND_COREAUDIO_RTAUDIO,
-  AUDIO_BACKEND_SDL,
-  AUDIO_BACKEND_WASAPI_LIBSOUNDIO,
-  AUDIO_BACKEND_WASAPI_RTAUDIO,
-  AUDIO_BACKEND_ASIO_RTAUDIO,
 };
-
-static inline bool
-audio_backend_is_rtaudio (AudioBackend backend)
-{
-  return backend == AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO
-         || backend == AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO
-         || backend == AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO
-         || backend == AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO
-         || backend == AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO
-         || backend == AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO;
-}
 
 /**
  * Mode used when bouncing, either during exporting
@@ -141,25 +101,8 @@ enum class BounceMode
 enum class MidiBackend
 {
   MIDI_BACKEND_DUMMY,
-  MIDI_BACKEND_ALSA,
-  MIDI_BACKEND_ALSA_RTMIDI,
   MIDI_BACKEND_JACK,
-  MIDI_BACKEND_JACK_RTMIDI,
-  MIDI_BACKEND_WINDOWS_MME,
-  MIDI_BACKEND_WINDOWS_MME_RTMIDI,
-  MIDI_BACKEND_COREMIDI_RTMIDI,
-  MIDI_BACKEND_WINDOWS_UWP_RTMIDI,
 };
-
-static inline bool
-midi_backend_is_rtmidi (MidiBackend backend)
-{
-  return backend == MidiBackend::MIDI_BACKEND_ALSA_RTMIDI
-         || backend == MidiBackend::MIDI_BACKEND_JACK_RTMIDI
-         || backend == MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI
-         || backend == MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI
-         || backend == MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI;
-}
 
 /**
  * The audio engine.
@@ -692,38 +635,6 @@ public:
   /** Send note off MIDI everywhere. */
   std::atomic_bool panic_{ false };
 
-#ifdef HAVE_PORT_AUDIO
-  PaStream * port_audio_stream_ = nullptr;
-#else
-  void * port_audio_stream_ = nullptr;
-#endif
-
-  /**
-   * Port Audio output buffer.
-   *
-   * Unlike JACK, the audio goes directly here.
-   * FIXME: this is not really needed, just do the calculations in
-   * port_audio_stream_cb.
-   */
-  float * port_audio_out_buf_ = nullptr;
-
-#if HAVE_RTAUDIO
-  rtaudio_t rtaudio_ = nullptr;
-#else
-  void * rtaudio_ = nullptr;
-#endif
-
-#if HAVE_PULSEAUDIO
-  pa_threaded_mainloop * pulse_mainloop_ = nullptr;
-  pa_context *           pulse_context_ = nullptr;
-  pa_stream *            pulse_stream_ = nullptr;
-#else
-  void * pulse_mainloop_ = nullptr;
-  void * pulse_context_ = nullptr;
-  void * pulse_stream_ = nullptr;
-#endif
-  std::atomic_bool pulse_notified_underflow_{ false };
-
   /**
    * @brief Dummy audio DSP processing thread.
    *
@@ -895,47 +806,25 @@ DEFINE_ENUM_FORMATTER (
   AudioBackend,
   /* TRANSLATORS: Dummy backend */
   QT_TR_NOOP_UTF8 ("Dummy"),
-  QT_TR_NOOP_UTF8 ("Dummy (libsoundio)"),
-  "ALSA (not working)",
-  "ALSA (libsoundio)",
-  "ALSA (rtaudio)",
-  "JACK",
-  "JACK (libsoundio)",
-  "JACK (rtaudio)",
-  "PulseAudio",
-  "PulseAudio (libsoundio)",
-  "PulseAudio (rtaudio)",
-  "CoreAudio (libsoundio)",
-  "CoreAudio (rtaudio)",
-  "SDL",
-  "WASAPI (libsoundio)",
-  "WASAPI (rtaudio)",
-  "ASIO (rtaudio)")
+  "JACK")
 
 DEFINE_ENUM_FORMATTER (
   MidiBackend,
   MidiBackend,
   /* TRANSLATORS: Dummy backend */
   QT_TR_NOOP_UTF8 ("Dummy"),
-  QT_TR_NOOP_UTF8 ("ALSA Sequencer (not working)"),
-  QT_TR_NOOP_UTF8 ("ALSA Sequencer (rtmidi)"),
-  "JACK MIDI",
-  "JACK MIDI (rtmidi)",
-  "Windows MME",
-  "Windows MME (rtmidi)",
-  "CoreMIDI (rtmidi)",
-  "Windows UWP (rtmidi)")
+  "JACK MIDI")
 
 DEFINE_ENUM_FORMATTER (
   AudioEngine::SampleRate,
   AudioEngine_SampleRate,
-  QT_TR_NOOP_UTF8 ("22,050"),
-  QT_TR_NOOP_UTF8 ("32,000"),
-  QT_TR_NOOP_UTF8 ("44,100"),
-  QT_TR_NOOP_UTF8 ("48,000"),
-  QT_TR_NOOP_UTF8 ("88,200"),
-  QT_TR_NOOP_UTF8 ("96,000"),
-  QT_TR_NOOP_UTF8 ("192,000"))
+  "22,050",
+  "32,000",
+  "44,100",
+  "48,000",
+  "88,200",
+  "96,000",
+  "192,000")
 
 DEFINE_ENUM_FORMATTER (
   AudioEngine::BufferSize,
@@ -946,9 +835,9 @@ DEFINE_ENUM_FORMATTER (
   "128",
   "256",
   "512",
-  QT_TR_NOOP_UTF8 ("1,024"),
-  QT_TR_NOOP_UTF8 ("2,048"),
-  QT_TR_NOOP_UTF8 ("4,096"))
+  "1,024",
+  "2,048",
+  "4,096")
 
 /**
  * @}

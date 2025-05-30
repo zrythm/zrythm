@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -6,11 +6,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/engine_jack.h"
-#include "gui/dsp/engine_rtaudio.h"
-#include "gui/dsp/engine_rtmidi.h"
 #include "gui/dsp/ext_port.h"
-#include "gui/dsp/rtaudio_device.h"
-#include "gui/dsp/rtmidi_device.h"
 #include "utils/dsp.h"
 #include "utils/string.h"
 
@@ -46,12 +42,6 @@ ExtPort::get_buffer (nframes_t nframes) const
 #ifdef HAVE_JACK
     case Type::JACK:
       return static_cast<float *> (jack_port_get_buffer (jport_, nframes));
-#endif
-#ifdef HAVE_ALSA
-    case Type::ALSA:
-#endif
-#if HAVE_RTMIDI
-    case Type::RtMidi:
 #endif
     default:
       z_return_val_if_reached (nullptr);
@@ -154,48 +144,6 @@ ExtPort::activate (Port * port, bool activate)
               }
               break;
 #endif
-#if HAVE_RTMIDI
-            case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
-            case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-            case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-            case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  if HAVE_RTMIDI_6
-            case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
-#  endif
-              {
-                if (type_ != Type::RtMidi)
-                  {
-                    z_info ("skipping {} (not RtMidi)", full_name_);
-                    return false;
-                  }
-                auto midi_port = dynamic_cast<MidiPort *> (port);
-                z_return_val_if_fail (midi_port, false);
-                port_ = midi_port;
-                rtmidi_dev_ = std::make_shared<RtMidiDevice> (
-                  true, 0,
-                  [midi_port] () { return midi_port->get_full_designation (); },
-                  full_name_); // use rtmidi_id_ instead of 0?
-                if (!rtmidi_dev_)
-                  {
-                    z_warning (
-                      "Failed creating RtMidi device for {}", full_name_);
-                    return false;
-                  }
-                rtmidi_dev_->open ();
-                auto * rtmidi_backend =
-                  dynamic_cast<RtMidiPortBackend *> (port_->backend_.get ());
-                rtmidi_dev_->start ([rtmidi_backend] () {
-                  auto cur_time =
-                    rtmidi_backend->get_time_provider ()
-                      .get_monotonic_time_usecs ();
-                  return cur_time - rtmidi_backend->get_last_dequeue_time_usecs ();
-                });
-                std::vector<std::shared_ptr<RtMidiDevice>> new_ins;
-                new_ins.push_back (rtmidi_dev_);
-                rtmidi_backend->set_devices (new_ins);
-              }
-              break;
-#endif
             default:
               break;
             }
@@ -245,38 +193,6 @@ ExtPort::activate (Port * port, bool activate)
               }
               break;
 #endif
-#if HAVE_RTAUDIO
-            case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
-            case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-            case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-            case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-            case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-            case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-              {
-                if (type_ != Type::RtAudio)
-                  {
-                    z_info ("skipping {} (not RtAudio)", full_name_);
-                    return false;
-                  }
-                auto * audio_port = dynamic_cast<AudioPort *> (port);
-                z_return_val_if_fail (audio_port, false);
-                port_ = port;
-                rtaudio_dev_ = std::make_shared<RtAudioDevice> (
-                  true, 0, rtaudio_channel_idx_,
-                  rtaudio_dev_name_); // use rtaudio_id_ instead of 0?
-                rtaudio_dev_->open (true);
-                if (!rtaudio_dev_)
-                  {
-                    return false;
-                  }
-                auto * rtaudio_backend =
-                  dynamic_cast<RtAudioPortBackend *> (port_->backend_.get ());
-                std::vector<std::shared_ptr<RtAudioDevice>> new_ins;
-                new_ins.push_back (rtaudio_dev_);
-                rtaudio_backend->set_devices (new_ins);
-              }
-              break;
-#endif
             default:
               break;
             }
@@ -305,19 +221,6 @@ ExtPort::matches_backend () const
         case AudioBackend::AUDIO_BACKEND_JACK:
           return type_ == Type::JACK;
 #endif
-#if HAVE_RTAUDIO
-        case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-          return type_ == Type::RtAudio;
-#endif
-#ifdef HAVE_ALSA
-        case AudioBackend::AUDIO_BACKEND_ALSA:
-          break;
-#endif
         default:
           break;
         }
@@ -329,20 +232,6 @@ ExtPort::matches_backend () const
 #ifdef HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           return type_ == Type::JACK;
-#endif
-#ifdef HAVE_ALSA
-        case MidiBackend::MIDI_BACKEND_ALSA:
-          break;
-#endif
-#if HAVE_RTMIDI
-        case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  if HAVE_RTMIDI_6
-        case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
-#  endif
-          return type_ == Type::RtMidi;
 #endif
         default:
           break;
@@ -436,131 +325,6 @@ get_ext_ports_from_jack (
 }
 #endif
 
-#if HAVE_RTMIDI
-/**
- * Creates an ExtPort from a RtMidi port.
- */
-static std::unique_ptr<ExtPort>
-ext_port_from_rtmidi (unsigned int id)
-{
-  auto self = std::make_unique<ExtPort> ();
-
-  auto dev = std::make_unique<RtMidiDevice> (true, id, nullptr);
-  self->rtmidi_id_ = id;
-  int buf_len;
-  rtmidi_get_port_name (dev->in_handle_, id, nullptr, &buf_len);
-  std::string buf (buf_len + 1, '\0');
-  rtmidi_get_port_name (dev->in_handle_, id, buf.data (), &buf_len);
-  self->full_name_ = buf;
-  self->type_ = ExtPort::Type::RtMidi;
-
-  return self;
-}
-
-static void
-get_ext_ports_from_rtmidi (
-  dsp::PortFlow         flow,
-  std::vector<ExtPort> &ports,
-  AudioEngine          &engine)
-{
-  if (flow == dsp::PortFlow::Output)
-    {
-      unsigned int num_ports = engine_rtmidi_get_num_in_ports (&engine);
-      for (unsigned int i = 0; i < num_ports; i++)
-        {
-          ports.push_back (*ext_port_from_rtmidi (i));
-        }
-    }
-  else if (flow == dsp::PortFlow::Input)
-    {
-      /* MIDI out devices not handled yet */
-    }
-}
-#endif
-
-#if HAVE_RTAUDIO
-/**
- * Creates an ExtPort from a RtAudio port.
- *
- * @param device_name Device name (from RtAudio).
- */
-static std::unique_ptr<ExtPort>
-ext_port_from_rtaudio (
-  unsigned int       id,
-  unsigned int       channel_idx,
-  const std::string &device_name,
-  bool               is_input,
-  bool               is_duplex)
-{
-  auto self = std::make_unique<ExtPort> ();
-
-  self->rtaudio_id_ = id;
-  self->rtaudio_channel_idx_ = channel_idx;
-  self->rtaudio_is_input_ = is_input;
-  self->rtaudio_is_duplex_ = is_duplex;
-  self->rtaudio_dev_name_ = device_name;
-  self->full_name_ =
-    fmt::format ("{} (in {})", self->rtaudio_dev_name_, channel_idx);
-  self->type_ = ExtPort::Type::RtAudio;
-
-  return self;
-}
-
-static void
-get_ext_ports_from_rtaudio (
-  dsp::PortFlow         flow,
-  std::vector<ExtPort> &ports,
-  AudioEngine          &engine)
-{
-  /* note: this is an output port from the graph side that will be used as an
-   * input port on the zrythm side */
-  if (flow == dsp::PortFlow::Output || flow == dsp::PortFlow::Input)
-    {
-      bool      reuse_rtaudio = true;
-      rtaudio_t rtaudio = engine.rtaudio_;
-      if (!rtaudio)
-        {
-          reuse_rtaudio = false;
-          rtaudio =
-            engine_rtaudio_create_rtaudio (&engine, engine.audio_backend_);
-        }
-      if (!rtaudio)
-        {
-          z_warn_if_reached ();
-          return;
-        }
-      int num_devs = rtaudio_device_count (rtaudio);
-      z_debug ("RtAudio devices found: {}", num_devs);
-      for (int i = 0; i < num_devs; i++)
-        {
-          unsigned int          dev_id = rtaudio_get_device_id (rtaudio, i);
-          rtaudio_device_info_t dev_nfo =
-            rtaudio_get_device_info (rtaudio, dev_id);
-
-          unsigned int channels =
-            (flow == dsp::PortFlow::Output)
-              ? dev_nfo.input_channels
-              : dev_nfo.output_channels;
-
-          if (channels > 0)
-            {
-              for (unsigned int j = 0; j < channels; j++)
-                {
-                  ports.push_back (*ext_port_from_rtaudio (
-                    dev_id, j, dev_nfo.name, flow == dsp::PortFlow::Output,
-                    false));
-                }
-              /* TODO? duplex channels */
-            }
-        }
-      if (!reuse_rtaudio)
-        {
-          rtaudio_destroy (rtaudio);
-        }
-    }
-}
-#endif
-
 void
 ExtPort::ext_ports_get (
   PortType              type,
@@ -578,20 +342,6 @@ ExtPort::ext_ports_get (
           get_ext_ports_from_jack (type, flow, hw, ports, engine);
           break;
 #endif
-#if HAVE_RTAUDIO
-        case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-          get_ext_ports_from_rtaudio (flow, ports, engine);
-          break;
-#endif
-#ifdef HAVE_ALSA
-        case AudioBackend::AUDIO_BACKEND_ALSA:
-          break;
-#endif
         default:
           break;
         }
@@ -603,21 +353,6 @@ ExtPort::ext_ports_get (
 #ifdef HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           get_ext_ports_from_jack (type, flow, hw, ports, engine);
-          break;
-#endif
-#ifdef HAVE_ALSA
-        case MidiBackend::MIDI_BACKEND_ALSA:
-          break;
-#endif
-#if HAVE_RTMIDI
-        case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  if HAVE_RTMIDI_6
-        case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
-#  endif
-          get_ext_ports_from_rtmidi (flow, ports, engine);
           break;
 #endif
         default:
