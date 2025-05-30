@@ -88,8 +88,7 @@ target_sources(zrythm_utils_lib
     # vamp.cpp
     variant_helpers.h
     views.h
-    yaml.h
-    yaml.cpp)
+)
 
 set_target_properties(zrythm_utils_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}

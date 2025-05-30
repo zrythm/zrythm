@@ -116,185 +116,6 @@ ProjectInitFlowManager::setup_main_window (Project &project)
 }
 #endif
 
-#if HAVE_CYAML
-/**
- * Upgrades the given project YAML's schema if needed.
- *
- * @return True if the schema was upgraded.
- */
-void
-ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
-{
-  z_info ("upgrading project schema from version {}...", src_ver);
-  switch (src_ver)
-    {
-    case 1:
-      {
-        /* deserialize into the previous version of the struct */
-        Project_v1 * self =
-          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1);
-        if (!self)
-          {
-            throw ZrythmException (
-              QObject::tr ("Failed to deserialize v1 project file"));
-          }
-
-        /* only dropping undo history, so just re-serialize
-         * into YAML */
-        free (*yaml);
-        auto ret = yaml_serialize (self, &project_schema_v1);
-        if (ret.empty ())
-          {
-            throw ZrythmException (
-              QObject::tr ("Failed to serialize v1 project file"));
-          }
-        *yaml = strdup (ret.c_str ());
-        cyaml_config_t cyaml_config;
-        yaml_get_cyaml_config (&cyaml_config);
-
-        /* free memory allocated by libcyaml */
-        cyaml_free (&cyaml_config, &project_schema_v1, self, 0);
-
-        /* call again for next iteration (may throw) */
-        upgrade_schema (yaml, 3);
-        return;
-      }
-      break;
-    case 2:
-    case 3:
-      {
-        /* deserialize into the previous version of the struct */
-        Project_v1 * old_prj =
-          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1);
-        if (!old_prj)
-          {
-            throw ZrythmException (
-              QObject::tr ("Failed to deserialize v1/2/3 project file"));
-          }
-
-        /* create the new project and serialize it */
-        Project_v5   _new_prj;
-        Project_v5 * new_prj = &_new_prj;
-        memset (new_prj, 0, sizeof (Project_v5));
-        new_prj->schema_version = 4;
-        new_prj->title = old_prj->title;
-        new_prj->datetime_str =
-          strdup (utils::datetime::get_current_as_string ().c_str ());
-        new_prj->version = strdup (Zrythm::get_version (false).c_str ());
-
-        /* upgrade */
-        new_prj->tracklist = tracklist_upgrade_from_v1 (old_prj->tracklist);
-        new_prj->audio_engine = engine_upgrade_from_v1 (old_prj->audio_engine);
-        new_prj->tracklist_selections =
-          tracklist_selections_upgrade_from_v1 (old_prj->tracklist_selections);
-
-        new_prj->clip_editor = old_prj->clip_editor;
-        new_prj->timeline = old_prj->timeline;
-        new_prj->snap_grid_timeline = old_prj->snap_grid_timeline;
-        new_prj->snap_grid_editor = old_prj->snap_grid_editor;
-        new_prj->quantize_opts_timeline = old_prj->quantize_opts_timeline;
-        new_prj->quantize_opts_editor = old_prj->quantize_opts_editor;
-        new_prj->region_link_group_manager = old_prj->region_link_group_manager;
-        new_prj->port_connections_manager = old_prj->port_connections_manager;
-        new_prj->midi_mappings = old_prj->midi_mappings;
-        new_prj->last_selection = old_prj->last_selection;
-
-        /* re-serialize */
-        free (*yaml);
-        auto ret = yaml_serialize (new_prj, &project_schema_v5);
-        if (ret.empty ())
-          {
-            throw ZrythmException (
-              QObject::tr ("Failed to serialize v3 project file"));
-          }
-        *yaml = strdup (ret.c_str ());
-        cyaml_config_t cyaml_config;
-        yaml_get_cyaml_config (&cyaml_config);
-
-        /* free memory allocated by libcyaml */
-        cyaml_free (&cyaml_config, &project_schema_v1, old_prj, 0);
-
-        /* free memory allocated now */
-        g_free_and_null (new_prj->datetime_str);
-        g_free_and_null (new_prj->version);
-        return;
-      }
-      break;
-    case 4:
-      /* v4 note:
-       * AutomationSelections had schema_version instead of base as the first
-       * member. This was an issue and was fixed, but projects before this
-       * change have wrong values. We are lucky they are all primitive types.
-       * This can be fixed by simply dropping the undo history and the
-       * selections. */
-      {
-        /* deserialize into the current version of the struct */
-        Project_v5 * old_prj =
-          (Project_v5 *) yaml_deserialize (*yaml, &project_schema_v5);
-        if (!old_prj)
-          {
-            throw ZrythmException (
-              QObject::tr ("Failed to deserialize v4 project file"));
-          }
-
-        /* create the new project and serialize it */
-        Project_v5   _new_prj;
-        Project_v5 * new_prj = &_new_prj;
-        memset (new_prj, 0, sizeof (Project_v5));
-        *new_prj = *old_prj;
-        new_prj->schema_version = 5;
-        new_prj->title = old_prj->title;
-        new_prj->datetime_str =
-          strdup (utils::datetime::get_current_as_string ().c_str ());
-        new_prj->version = strdup (Zrythm::get_version (false).c_str ());
-
-        /* re-serialize */
-        free (*yaml);
-        auto ret = yaml_serialize (new_prj, &project_schema_v5);
-        if (ret.empty ())
-          {
-            throw ZrythmException (
-              QObject::tr ("Failed to serialize v4 project file"));
-          }
-        *yaml = strdup (ret.c_str ());
-        cyaml_config_t cyaml_config;
-        yaml_get_cyaml_config (&cyaml_config);
-
-        /* free memory allocated by libcyaml */
-        cyaml_free (&cyaml_config, &project_schema_v5, old_prj, 0);
-
-        /* free memory allocated now */
-        g_free_and_null (new_prj->datetime_str);
-        g_free_and_null (new_prj->version);
-        return;
-      }
-      break;
-    default:
-      return;
-    }
-}
-
-void
-ProjectInitFlowManager::upgrade_to_json (char ** txt)
-{
-  Project_v5 * old_prj =
-    (Project_v5 *) yaml_deserialize (*txt, &project_schema_v5);
-  if (!old_prj)
-    {
-      throw ZrythmException (
-        QObject::tr ("Failed to deserialize v5 project file"));
-    }
-
-  auto ret = project_v5_serialize_to_json_str (old_prj);
-  if (ret.empty ())
-    {
-      throw ZrythmException (
-        QObject::tr ("Failed to convert v5 YAML project file to JSON"));
-    }
-  *txt = strdup (ret.c_str ());
-}
-#endif
-
 void
 ProjectInitFlowManager::create_default (
   std::unique_ptr<Project> &prj,
@@ -480,15 +301,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
               try
                 {
                   /* upgrade project */
-#if HAVE_CYAML
-                  char * txt_copy = strdup (text.c_str ());
-                  upgrade_schema (&txt_copy, schema_ver);
-                  text = txt_copy;
-                  free (txt_copy);
-                  upgraded = true;
-#else
                   upgraded = false;
-#endif
                 }
               catch (const ZrythmException &e)
                 {
@@ -501,15 +314,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
           try
             {
               /* upgrade latest yaml to json */
-#if HAVE_CYAML
-              char * txt_copy = strdup (text.c_str ());
-              upgrade_to_json (&txt_copy);
-              text = txt_copy;
-              free (txt_copy);
-              upgraded = true;
-#else
               upgraded = false;
-#endif
             }
           catch (const ZrythmException &e)
             {

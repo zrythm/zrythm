@@ -24,7 +24,4 @@ target_sources(zrythm_gui_lib
     )
 
 add_subdirectory(actions)
-if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
-  add_subdirectory(cyaml_schemas)
-endif()
 add_subdirectory(settings)

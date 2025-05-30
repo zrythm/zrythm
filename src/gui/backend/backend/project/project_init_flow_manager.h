@@ -98,23 +98,6 @@ private:
    */
   void save_and_activate_after_successful_load_or_create ();
 
-#if HAVE_CYAML
-  /**
-   * Upgrades the given project YAML's schema if needed.
-   *
-   * @throw ZrythmException if an error occurred.
-   */
-  [[gnu::cold]] static void upgrade_schema (char ** yaml, int src_ver);
-
-  /**
-   * @brief Upgrades from YAML to JSON.
-   *
-   * @param txt
-   * @throw ZrythmException if an error occurred.
-   */
-  [[gnu::cold]] static void upgrade_to_json (char ** txt);
-#endif
-
   /**
    * Creates a default project.
    *

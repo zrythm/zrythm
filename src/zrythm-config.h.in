@@ -80,21 +80,9 @@
 
 #cmakedefine01 HAVE_CHROMAPRINT
 
-#cmakedefine01 HAVE_CYAML
-
-#cmakedefine01 HAVE_FFTW3
-
 #cmakedefine01 HAVE_MLOCK
 
 #cmakedefine01 HAVE_OPUS
-
-#cmakedefine01 HAVE_PULSEAUDIO
-
-#cmakedefine01 HAVE_RTAUDIO
-
-#cmakedefine01 HAVE_RTMIDI
-
-#cmakedefine01 HAVE_RTMIDI_6
 
 #cmakedefine01 HAVE_VALGRIND
 

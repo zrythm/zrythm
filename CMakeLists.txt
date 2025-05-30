@@ -188,7 +188,6 @@ endif()
 option(ZRYTHM_CHECK_UPDATES "Check for updates on startup" ON)
 option(ZRYTHM_IS_FLATPAK "Whether building for a Flatpak" OFF)
 cmake_dependent_option(ZRYTHM_FOR_FLATHUB "Build for FlatHub (for packaging)" OFF "ZRYTHM_IS_FLATPAK" OFF)
-option(ZRYTHM_YAML_PROJECT_COMPATIBILITY "Compatibility with old CYAML-based projects (requires libcyaml)." OFF)
 option(ZRYTHM_RECORD_SWITCHES "Record compiler switches for debugging (if supported)" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_ADDRESS "Compile with address sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Compile with undefined behavior sanitizer" OFF)
@@ -709,24 +708,6 @@ FetchContent_MakeAvailable(nlohmann_json)
 
 add_subdirectory(ext)
 
-if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
-  pkg_check_modules(LIBCYAML libcyaml>=1.2.0 IMPORTED_TARGET)
-  if(LIBCYAML_FOUND)
-    add_library(cyaml::cyaml ALIAS PkgConfig::LIBCYAML)
-  else()
-    message(WARNING "libcyaml not found, falling back to bundled libcyaml")
-    FetchContent_Declare(
-      libcyaml
-      GIT_REPOSITORY https://gitlab.zrythm.org/zrythm/zrythm-libcyaml.git
-      GIT_TAG 6cae0db42e28900a9c5bbba11816fb1c5caf0f7b
-      GIT_SHALLOW TRUE
-      EXCLUDE_FROM_ALL
-    )
-    FetchContent_MakeAvailable(libcyaml)
-  endif()
-  set(HAVE_CYAML TRUE)
-endif()
-
 FetchContent_Declare(
   SndFile
   GIT_REPOSITORY https://github.com/libsndfile/libsndfile
@@ -1098,10 +1079,6 @@ list(APPEND zrythm_link_libs
 if(ZRYTHM_WITH_JACK)
   include(FindJACK)
   list(APPEND zrythm_link_libs zrythm::jack)
-endif()
-
-if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
-  list(APPEND zrythm_link_libs cyaml::cyaml)
 endif()
 
 if(APPLE)
