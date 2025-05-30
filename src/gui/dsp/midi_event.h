@@ -1,14 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * MIDI events.
- */
-
-#ifndef __AUDIO_MIDI_EVENT_H__
-#define __AUDIO_MIDI_EVENT_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -16,7 +9,6 @@
 #include <cstdint>
 #include <cstring>
 
-#include "dsp/chord_descriptor.h"
 #include "utils/types.h"
 
 #include <crill/spin_mutex.h>
@@ -198,9 +190,7 @@ public:
   void remove_if (std::function<bool (const MidiEvent &)> predicate)
   {
     const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.erase (
-      std::remove_if (events_.begin (), events_.end (), predicate),
-      events_.end ());
+    std::erase_if(events_, std::move(predicate));
   }
 
   /**
@@ -209,6 +199,12 @@ public:
   void remove (const MidiEvent &event)
   {
     remove_if ([&event] (const MidiEvent &e) { return e == event; });
+  }
+
+  void foreach_event (std::function<void (const MidiEvent &)> func) const
+  {
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
+    std::ranges::for_each (events_, func);
   }
 
   size_t capacity () const
@@ -249,6 +245,8 @@ public:
    */
   void transform_chord_and_append (
     MidiEventVector &src,
+    std::function<const ChordDescriptor* (midi_byte_t)> note_number_to_chord_descriptor,
+    midi_byte_t velocity_to_use,
     nframes_t        local_offset,
     nframes_t        nframes);
 
@@ -415,24 +413,12 @@ public:
 
   void delete_event (const MidiEvent * ev);
 
-#ifdef HAVE_JACK
-  /**
-   * Writes the events to the given JACK buffer.
-   */
-  void
-  copy_to_jack (nframes_t local_start_frames, nframes_t nframes, void * buff)
-    const;
-#endif
-
 private:
   std::vector<MidiEvent> events_;
 
   /** Spinlock for exclusive read/write. */
   mutable crill::spin_mutex lock_;
 };
-
-class MidiEvents;
-class Port;
 
 /**
  * Container for passing midi events through ports.
@@ -442,9 +428,6 @@ class Port;
 class MidiEvents final
 {
 public:
-  // Rule of 5
-  // MidiEvents ();
-
   /**
    * Copies the queue contents to the original struct
    *
@@ -452,13 +435,6 @@ public:
    * @param nframes Number of frames to process.
    */
   void dequeue (nframes_t local_offset, nframes_t nframes);
-
-  /**
-   * Queues MIDI note off to event queues.
-   *
-   * @note This pushes the events to the queued events, not the active events.
-   */
-  static void panic_all ();
 
 public:
   /** Events to use in this cycle. */
@@ -475,16 +451,5 @@ public:
 };
 
 /**
- * Used by Windows MME and RtMidi when adding events to the ring.
- */
-using MidiEventHeader = struct MidiEventHeader
-{
-  uint_fast64_t time;
-  uint_fast32_t size;
-};
-
-/**
  * @}
  */
-
-#endif

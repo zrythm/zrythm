@@ -236,13 +236,13 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
 }
 
 void
-GraphScheduler::clear_external_output_buffers ()
+GraphScheduler::clear_external_output_buffers (nframes_t block_length)
 {
   for (
     const auto processable :
     processables_that_need_external_buffer_clear_when_returning_early_from_processing_cycle_)
     {
-      processable.get ().clear_external_buffer ();
+      processable.get ().clear_external_buffer (block_length);
     }
 }
 

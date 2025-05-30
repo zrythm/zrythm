@@ -1925,7 +1925,7 @@ Channel::disconnect_channel ()
           return;
         }
 
-      port->disconnect_all ();
+      port->disconnect_all (*PORT_CONNECTIONS_MGR);
     }
 }
 

@@ -104,7 +104,7 @@ public:
   auto get_time_nfo () { return time_nfo_; }
   auto get_remaining_preroll_frames () { return remaining_preroll_frames_; }
 
-  void clear_external_output_buffers ();
+  void clear_external_output_buffers (nframes_t block_length);
 
 private:
   std::vector<GraphThreadPtr> threads_;

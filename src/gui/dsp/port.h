@@ -20,6 +20,11 @@
  * @{
  */
 
+namespace zrythm::dsp
+{
+class PortConnectionsManager;
+}
+
 constexpr int TIME_TO_RESET_PEAK = 4800000;
 
 template <typename T>
@@ -168,16 +173,14 @@ public:
  */
 class Port : public dsp::IProcessable, public utils::UuidIdentifiableObject<Port>
 {
-  Q_DISABLE_COPY_MOVE (Port)
+  Z_DISABLE_COPY_MOVE (Port)
 public:
   using PortIdentifier = dsp::PortIdentifier;
   using PortType = dsp::PortType;
   using PortFlow = dsp::PortFlow;
   using PortConnection = dsp::PortConnection;
 
-  ~Port () override { disconnect_all (); }
-
-  static std::unique_ptr<Port> create_unique_from_type (PortType type);
+  ~Port () override = default;
 
   /**
    * This function finds the Ports corresponding to the PortIdentifiers for
@@ -221,13 +224,11 @@ public:
 
   nframes_t get_single_playback_latency () const override { return 0; }
 
-  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
-
   /**
    * Clears the port buffer.
    *
-   * @note Only the Zrythm buffer is cleared. Use port_clear_external_buffer()
-   * to clear backend buffers.
+   * @note Only the Port buffer is cleared. Use clear_external_buffer() to clear
+   * backend buffers.
    */
   virtual void clear_buffer (std::size_t block_length) = 0;
 
@@ -258,25 +259,25 @@ public:
   /**
    * Returns the number of unlocked (user-editable) sources.
    */
-  int get_num_unlocked_srcs () const;
+  auto get_num_unlocked_srcs (
+    const dsp::PortConnectionsManager &connections_manager) const
+  {
+    return get_num_unlocked (connections_manager, true);
+  }
 
   /**
    * Returns the number of unlocked (user-editable) destinations.
    */
-  int get_num_unlocked_dests () const;
+  auto get_num_unlocked_dests (
+    const dsp::PortConnectionsManager &connections_manager) const
+  {
+    return get_num_unlocked (connections_manager, false);
+  }
 
   /**
    * Updates the owner track identifier.
    */
   void change_track (IPortOwner::TrackUuid new_track_id);
-
-  /**
-   * @brief Process the port for the given time range.
-   *
-   * @param noroll Whether to clear the port buffer in this range.
-   */
-  [[gnu::hot]] virtual void
-  process (EngineProcessTimeInfo time_nfo, bool noroll) = 0;
 
   /**
    * Copies the metadata from a project port to the given port.
@@ -298,14 +299,16 @@ public:
   /**
    * Clears the backend's port buffer.
    */
-  [[gnu::hot]] void clear_external_buffer () override;
+  [[gnu::hot]] void clear_external_buffer (nframes_t block_length) override;
 
   bool needs_external_buffer_clear_on_early_return () const override;
 
   /**
    * Disconnects all srcs and dests from port.
    */
-  void disconnect_all ();
+  void disconnect_all (
+    std::optional<std::reference_wrapper<dsp::PortConnectionsManager>>
+      connections_manager);
 
   /**
    * Generates a hash for a given port.
@@ -329,7 +332,9 @@ protected:
 
   void copy_members_from (const Port &other, ObjectCloneType clone_type);
 
-  int get_num_unlocked (bool sources) const;
+  int get_num_unlocked (
+    const dsp::PortConnectionsManager &connections_manager,
+    bool                               sources) const;
 
 private:
   static constexpr std::string_view kIdKey = "id";

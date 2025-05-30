@@ -280,7 +280,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
 }
 
 void
-ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
+ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
   if (
     !is_input ()

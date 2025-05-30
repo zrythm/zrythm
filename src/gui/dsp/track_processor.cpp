@@ -544,23 +544,26 @@ TrackProcessor::disconnect_all ()
   auto track = get_track ();
   z_return_if_fail (track);
 
+  const auto disconnect_port = [&] (auto &port) {
+    port.disconnect_all (*get_port_connections_manager ());
+  };
+
   switch (track->get_input_signal_type ())
     {
     case PortType::Audio:
-      get_mono_port ().disconnect_all ();
-      get_input_gain_port ().disconnect_all ();
-      get_output_gain_port ().disconnect_all ();
-      get_monitor_audio_port ().disconnect_all ();
-      iterate_tuple (
-        [&] (auto &port) { port.disconnect_all (); }, get_stereo_in_ports ());
-      iterate_tuple (
-        [&] (auto &port) { port.disconnect_all (); }, get_stereo_out_ports ());
+      disconnect_port (get_mono_port ());
+      disconnect_port (get_input_gain_port ());
+      disconnect_port (get_output_gain_port ());
+      disconnect_port (get_monitor_audio_port ());
+      iterate_tuple (disconnect_port, get_stereo_in_ports ());
+      iterate_tuple (disconnect_port, get_stereo_out_ports ());
+
       break;
     case PortType::Event:
-      get_midi_in_port ().disconnect_all ();
-      get_midi_out_port ().disconnect_all ();
+      disconnect_port (get_midi_in_port ());
+      disconnect_port (get_midi_out_port ());
       if (track->has_piano_roll ())
-        get_piano_roll_port ().disconnect_all ();
+        disconnect_port (get_piano_roll_port ());
       break;
     default:
       break;
@@ -1009,7 +1012,11 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
               get_midi_out_port ()
                 .midi_events_.active_events_.transform_chord_and_append (
                   get_midi_in_port ().midi_events_.active_events_,
-                  time_nfo.local_offset_, time_nfo.nframes_);
+                  [] (midi_byte_t note_number) {
+                    return CHORD_EDITOR->get_chord_from_note_number (
+                      note_number);
+                  },
+                  VELOCITY_DEFAULT, time_nfo.local_offset_, time_nfo.nframes_);
             }
           /* else if not chord track, simply pass the input MIDI data to the
            * output port */

@@ -421,6 +421,13 @@ public:
   std::pair<AudioPort &, AudioPort &> get_monitor_out_ports ();
   std::pair<AudioPort &, AudioPort &> get_dummy_input_ports ();
 
+  /**
+   * Queues MIDI note off to event queues.
+   *
+   * @note This pushes the events to the queued events, not the active events.
+   */
+  void panic_all ();
+
 private:
   static constexpr auto kTransportTypeKey = "transportType"sv;
   static constexpr auto kSampleRateKey = "sampleRate"sv;

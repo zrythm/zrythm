@@ -814,7 +814,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
   if (!destroying_)
     {
       /* send panic */
-      midi_in_->midi_events_.panic_all ();
+      panic_all ();
     }
 
   if (state.playing_)
@@ -1027,7 +1027,7 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
     return;
 
   /* clear outputs exposed to the backend */
-  router_->scheduler_->clear_external_output_buffers ();
+  router_->scheduler_->clear_external_output_buffers (block_length_);
 }
 
 void
@@ -1447,6 +1447,30 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   if (max_time_taken_ < last_time_taken)
     {
       max_time_taken_ = last_time_taken;
+    }
+}
+
+void
+AudioEngine::panic_all ()
+{
+  z_info ("~ midi panic all ~");
+
+  midi_editor_manual_press_->midi_events_.queued_events_.panic ();
+
+  for (auto track_var : TRACKLIST->get_track_span ())
+    {
+      std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (
+            std::derived_from<TrackT, PianoRollTrack>
+            || std::is_same_v<TrackT, ChordTrack>)
+            {
+              track->processor_->get_piano_roll_port ()
+                .midi_events_.queued_events_.panic ();
+            }
+        },
+        track_var);
     }
 }
 

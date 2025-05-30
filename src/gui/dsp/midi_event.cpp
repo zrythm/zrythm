@@ -1,42 +1,10 @@
-/*
- * SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * ---
- *
- * Copyright (C) 2015 Tim Mayberry <mojofunk@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * ---
- */
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/engine.h"
 #include "gui/dsp/midi_event.h"
-#include "gui/dsp/processable_track.h"
-#include "gui/dsp/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
-#include "utils/rt_thread_id.h"
 
 #include <fmt/format.h>
 
@@ -49,7 +17,7 @@ using namespace zrythm;
  *
  * See libs/ardour/midi_buffer.cc for more.
  */
-enum class MidiEventType
+enum class MidiEventType : std::uint_fast8_t
 {
   MIDI_EVENT_TYPE_NOTE_ON,
   MIDI_EVENT_TYPE_NOTE_OFF,
@@ -66,8 +34,8 @@ enum class MidiEventType
   MIDI_EVENT_TYPE_RAW,
 };
 
-static const char * midi_event_type_strings[] = {
-  "pitchbend", "controller", "note off", "note on", "all notes off",
+constexpr std::array<std::string_view, 5> midi_event_type_strings = {
+  "pitchbend"sv, "controller"sv, "note off"sv, "note on"sv, "all notes off"sv,
 };
 
 void
@@ -82,8 +50,11 @@ MidiEventVector::append (
 void
 MidiEventVector::transform_chord_and_append (
   MidiEventVector &src,
-  const nframes_t  local_offset,
-  const nframes_t  nframes)
+  std::function<const ChordDescriptor *(midi_byte_t)>
+                  note_number_to_chord_descriptor,
+  midi_byte_t     velocity_to_use,
+  const nframes_t local_offset,
+  const nframes_t nframes)
 {
   {
     const std::lock_guard<crill::spin_mutex> lock (src.lock_);
@@ -93,12 +64,6 @@ MidiEventVector::transform_chord_and_append (
         if (
           src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes)
           {
-            if (ZRYTHM_TESTING)
-              {
-                z_debug (fmt::format (
-                  "skipping event: time {} (local offset {} nframes {})",
-                  src_ev.time_, local_offset, nframes));
-              }
             continue;
           }
 
@@ -114,15 +79,14 @@ MidiEventVector::transform_chord_and_append (
 
         /* only use middle octave */
         midi_byte_t note_number = utils::midi::midi_get_note_number (buf);
-        const auto &descr =
-          CHORD_EDITOR->get_chord_from_note_number (note_number);
+        const auto * descr = note_number_to_chord_descriptor (note_number);
         if (!descr)
           continue;
 
         if (utils::midi::midi_is_note_on (buf))
           {
             add_note_ons_from_chord_descr (
-              *descr, 1, VELOCITY_DEFAULT, src_ev.time_);
+              *descr, 1, velocity_to_use, src_ev.time_);
           }
         else if (utils::midi::midi_is_note_off (buf))
           {
@@ -361,37 +325,6 @@ MidiEventVector::write_to_midi_file (MIDI_FILE * mf, int midi_track) const
       last_time += delta_time;
     }
 }
-
-#ifdef HAVE_JACK
-void
-MidiEventVector::copy_to_jack (
-  const nframes_t local_start_frames,
-  const nframes_t nframes,
-  void *          buff) const
-{
-  const std::lock_guard<crill::spin_mutex> lock (lock_);
-  /*jack_midi_clear_buffer (buff);*/
-
-  for (const auto &ev : events_)
-    {
-      jack_midi_data_t midi_data[3];
-
-      if (
-        ev.time_ < local_start_frames
-        || ev.time_ >= local_start_frames + nframes)
-        {
-          continue;
-        }
-
-      std::copy_n (midi_data, ev.raw_buffer_sz_, (jack_midi_data_t *) buff);
-      jack_midi_event_write (buff, ev.time_, midi_data, ev.raw_buffer_sz_);
-#  if 0
-      z_info (
-        "wrote MIDI event to JACK MIDI out at %d", ev.time);
-#  endif
-    }
-}
-#endif
 
 void
 MidiEventVector::
@@ -676,38 +609,14 @@ MidiEventVector::print () const
 }
 
 void
-MidiEvents::panic_all ()
-{
-  z_info ("~ midi panic all ~");
-
-  AUDIO_ENGINE->midi_editor_manual_press_->midi_events_.queued_events_.panic ();
-
-  for (auto track_var : TRACKLIST->get_track_span ())
-    {
-      std::visit (
-        [&] (auto &&track) {
-          using TrackT = base_type<decltype (track)>;
-          if constexpr (
-            std::derived_from<TrackT, PianoRollTrack>
-            || std::is_same_v<TrackT, ChordTrack>)
-            {
-              track->processor_->get_piano_roll_port ()
-                .midi_events_.queued_events_.panic ();
-            }
-        },
-        track_var);
-    }
-}
-
-void
 MidiEventVector::clear_duplicates ()
 {
   const std::lock_guard<crill::spin_mutex> lock (lock_);
 
   /* push duplicates to the end of the vector and get iterator to first
    * duplicate*/
-  auto last = std::unique (events_.begin (), events_.end ());
+  auto subrange_to_erase = std::ranges::unique (events_);
 
   /* remove duplicates */
-  events_.erase (last, events_.end ());
+  events_.erase (subrange_to_erase.begin (), subrange_to_erase.end ());
 }

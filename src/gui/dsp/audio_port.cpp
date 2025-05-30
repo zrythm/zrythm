@@ -90,13 +90,12 @@ AudioPort::has_sound () const
 }
 
 void
-AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
+AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
-  if (noroll)
+  if (id_->is_monitor_fader_stereo_in_or_out_port () && AUDIO_ENGINE->exporting_)
     {
-      utils::float_ranges::fill (
-        &buf_[time_nfo.local_offset_], DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
-        time_nfo.nframes_);
+      /* if exporting and the port is not a project port, skip
+       * processing */
       return;
     }
 

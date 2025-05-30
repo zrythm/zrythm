@@ -68,7 +68,7 @@ public:
    */
   void reset_peak () { peak_ = 0.f; }
 
-  void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
+  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   void allocate_bufs () override;
 

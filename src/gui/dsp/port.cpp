@@ -1,18 +1,12 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
+#include "dsp/port_connections_manager.h"
 #include "dsp/port_identifier.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
-#include "gui/dsp/cv_port.h"
-#include "gui/dsp/midi_port.h"
-#include "gui/dsp/port.h"
-#include "utils/dsp.h"
+#include "gui/dsp/port_all.h"
 #include "utils/hash.h"
-#include "utils/rt_thread_id.h"
 
 #include <fmt/format.h>
 
@@ -35,24 +29,6 @@ Port::Port (
   id_->flow_ = flow;
 }
 
-std::unique_ptr<Port>
-Port::create_unique_from_type (PortType type)
-{
-  switch (type)
-    {
-    case PortType::Audio:
-      return std::make_unique<AudioPort> ();
-    case PortType::Event:
-      return std::make_unique<MidiPort> ();
-    case PortType::Control:
-      return std::make_unique<ControlPort> ();
-    case PortType::CV:
-      return std::make_unique<CVPort> ();
-    default:
-      z_return_val_if_reached (nullptr);
-    }
-}
-
 bool
 Port::is_exposed_to_backend () const
 {
@@ -66,58 +42,14 @@ Port::needs_external_buffer_clear_on_early_return () const
   return id_->flow_ == dsp::PortFlow::Output && is_exposed_to_backend ();
 }
 
-void
-Port::process_block (EngineProcessTimeInfo time_nfo)
-{
-  // FIXME: avoid this mess and calling another process function
-  std::visit (
-    [&] (auto &&port) {
-      using PortT = base_type<decltype (port)>;
-      if constexpr (std::is_same_v<PortT, MidiPort>)
-        {
-          if (ENUM_BITSET_TEST (
-                port->id_->flags_, dsp::PortIdentifier::Flags::ManualPress))
-            {
-              port->midi_events_.dequeue (
-                time_nfo.local_offset_, time_nfo.nframes_);
-              return;
-            }
-        }
-      if constexpr (std::is_same_v<PortT, AudioPort>)
-        {
-          if (
-            port->id_->is_monitor_fader_stereo_in_or_out_port ()
-            && AUDIO_ENGINE->exporting_)
-            {
-              /* if exporting and the port is not a project port, skip
-               * processing */
-              return;
-            }
-        }
-
-      port->process (time_nfo, false);
-    },
-    convert_to_variant<PortPtrVariant> (this));
-}
-
 int
-Port::get_num_unlocked (bool sources) const
+Port::get_num_unlocked (
+  const dsp::PortConnectionsManager &connections_manager,
+  bool                               sources) const
 {
   z_return_val_if_fail (is_in_active_project (), 0);
-  return PORT_CONNECTIONS_MGR->get_unlocked_sources_or_dests (
+  return connections_manager.get_unlocked_sources_or_dests (
     nullptr, get_uuid (), sources);
-}
-
-int
-Port::get_num_unlocked_dests () const
-{
-  return get_num_unlocked (false);
-}
-
-int
-Port::get_num_unlocked_srcs () const
-{
-  return get_num_unlocked (true);
 }
 
 void
@@ -134,13 +66,17 @@ Port::get_label () const
 }
 
 void
-Port::disconnect_all ()
+Port::disconnect_all (
+  std::optional<std::reference_wrapper<dsp::PortConnectionsManager>>
+    connections_manager)
 {
   srcs_.clear ();
   dests_.clear ();
 
-  if (!gZrythm || !PROJECT || !PORT_CONNECTIONS_MGR)
-    return;
+  if (!connections_manager.has_value ())
+    {
+      return;
+    }
 
   if (!is_in_active_project ())
     {
@@ -150,18 +86,19 @@ Port::disconnect_all ()
       return;
     }
 
+  auto &mgr = connections_manager->get ();
   dsp::PortConnectionsManager::ConnectionsVector srcs;
-  PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, get_uuid (), true);
+  mgr.get_sources_or_dests (&srcs, get_uuid (), true);
   for (const auto &conn : srcs)
     {
-      PORT_CONNECTIONS_MGR->remove_connection (conn->src_id_, conn->dest_id_);
+      mgr.remove_connection (conn->src_id_, conn->dest_id_);
     }
 
   dsp::PortConnectionsManager::ConnectionsVector dests;
-  PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, get_uuid (), false);
+  mgr.get_sources_or_dests (&dests, get_uuid (), false);
   for (const auto &conn : dests)
     {
-      PORT_CONNECTIONS_MGR->remove_connection (conn->src_id_, conn->dest_id_);
+      mgr.remove_connection (conn->src_id_, conn->dest_id_);
     }
 
   if (backend_)
@@ -191,14 +128,14 @@ Port::print_full_designation () const
 }
 
 void
-Port::clear_external_buffer ()
+Port::clear_external_buffer (nframes_t block_length)
 {
   if (!is_exposed_to_backend () || !backend_)
     {
       return;
     }
 
-  backend_->clear_backend_buffer (id_->type_, AUDIO_ENGINE->block_length_);
+  backend_->clear_backend_buffer (id_->type_, block_length);
 }
 
 size_t

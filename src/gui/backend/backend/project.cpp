@@ -72,7 +72,7 @@ Project::Project (QObject * parent)
         *this,
         *port_registry_,
         *track_registry_,
-        port_connections_manager_.get())),
+        port_connections_manager_.get ())),
       undo_manager_ (new gui::actions::UndoManager (this)),
       arranger_object_factory_ (new ArrangerObjectFactory (
         *arranger_object_registry_,
@@ -1261,7 +1261,8 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
   quantize_opts_editor_ =
     std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
   region_link_group_manager_ = other.region_link_group_manager_;
-  port_connections_manager_ .reset(other.port_connections_manager_->clone_qobject (this));
+  port_connections_manager_.reset (
+    other.port_connections_manager_->clone_qobject (this));
   midi_mappings_ = other.midi_mappings_->clone_unique ();
   undo_manager_ = other.undo_manager_->clone_qobject (this);
   tool_ = other.tool_->clone_qobject (this);

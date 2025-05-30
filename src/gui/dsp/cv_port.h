@@ -26,7 +26,7 @@ public:
 
   bool has_sound () const override;
 
-  void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
+  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   void allocate_bufs () override;
 

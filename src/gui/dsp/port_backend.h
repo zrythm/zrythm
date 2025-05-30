@@ -111,6 +111,37 @@ public:
       &buf[range.start_frame], &in[range.start_frame], range.nframes);
   }
 
+  /**
+   * Writes the events to the given JACK buffer.
+   */
+  void copy_midi_event_vector_to_jack (
+    const MidiEventVector &src,
+    const nframes_t        local_start_frames,
+    const nframes_t        nframes,
+    void *                 buff) const
+  {
+    /*jack_midi_clear_buffer (buff);*/
+
+    src.foreach_event ([&] (const auto &ev) {
+      if (
+        ev.time_ < local_start_frames
+        || ev.time_ >= local_start_frames + nframes)
+        {
+          return;
+        }
+
+      std::array<jack_midi_data_t, 3> midi_data{};
+      std::copy_n (
+        midi_data.data (), ev.raw_buffer_sz_, (jack_midi_data_t *) buff);
+      jack_midi_event_write (
+        buff, ev.time_, midi_data.data (), ev.raw_buffer_sz_);
+#  if 0
+      z_info (
+        "wrote MIDI event to JACK MIDI out at %d", ev.time);
+#  endif
+    });
+  }
+
   void sum_midi_data (
     MidiEvents               &midi_events,
     FrameRange                range,
@@ -165,8 +196,8 @@ public:
       }
 
     void * buf = jack_port_get_buffer (port_, range.start_frame + range.nframes);
-    midi_events.active_events_.copy_to_jack (
-      range.start_frame, range.nframes, buf);
+    copy_midi_event_vector_to_jack (
+      midi_events.active_events_, range.start_frame, range.nframes, buf);
   }
 
   void expose (

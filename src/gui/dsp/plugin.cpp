@@ -1531,9 +1531,9 @@ Plugin::disconnect ()
 
       /* disconnect all ports */
       for (auto port : get_input_port_span ().as_base_type ())
-        port->disconnect_all ();
+        port->disconnect_all (*PORT_CONNECTIONS_MGR);
       for (auto port : get_output_port_span ().as_base_type ())
-        port->disconnect_all ();
+        port->disconnect_all (*PORT_CONNECTIONS_MGR);
       z_debug (
         "disconnected all ports of {} in ports: {} out ports: {}", get_name (),
         in_ports_.size (), out_ports_.size ());

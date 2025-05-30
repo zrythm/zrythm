@@ -31,20 +31,10 @@ CVPort::clear_buffer (std::size_t block_length)
 }
 
 void
-CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
+CVPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
-  if (noroll)
+  for (const auto &[src_port, conn] : std::views::zip (srcs_, src_connections_))
     {
-      utils::float_ranges::fill (
-        &buf_.data ()[time_nfo.local_offset_],
-        DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo.nframes_);
-      return;
-    }
-
-  for (size_t k = 0; k < srcs_.size (); k++)
-    {
-      const auto * src_port = srcs_[k];
-      const auto  &conn = src_connections_[k];
       if (!conn->enabled_)
         continue;
 
@@ -73,7 +63,7 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
           /* this limiting wastes around 50% of port processing so only
            * do it on CV connections and faders if they exceed maxf */
           utils::float_ranges::clip (
-            &buf_.data ()[time_nfo.local_offset_], range_.minf_, range_.maxf_,
+            &buf_[time_nfo.local_offset_], range_.minf_, range_.maxf_,
             time_nfo.nframes_);
         }
     } /* foreach source */
@@ -81,7 +71,7 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)
     {
       audio_ring_->force_write_multiple (
-        &buf_.data ()[0], AUDIO_ENGINE->block_length_);
+        buf_.data (), AUDIO_ENGINE->block_length_);
     }
 }
 

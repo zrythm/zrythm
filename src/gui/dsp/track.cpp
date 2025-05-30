@@ -484,7 +484,7 @@ Track::disconnect_track ()
           return;
         }
 
-      port->disconnect_all ();
+      port->disconnect_all (*get_port_connections_manager ());
     }
 
   if (is_in_active_project () && !is_auditioner ())

@@ -18,7 +18,7 @@ public:
   MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
   MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
   MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
-  MOCK_METHOD (void, clear_external_buffer, (), (override));
+  MOCK_METHOD (void, clear_external_buffer, (nframes_t block_length), (override));
   MOCK_METHOD (
     bool,
     needs_external_buffer_clear_on_early_return,

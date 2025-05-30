@@ -25,13 +25,14 @@
 #include <cstring>
 #include <vector>
 
+#include "utils/symap.h"
+
 #include "lv2/atom/atom.h"
 #include "lv2/buf-size/buf-size.h"
 #include "lv2/core/lv2.h"
 #include "lv2/options/options.h"
 #include "lv2/parameters/parameters.h"
 #include "lv2/urid/urid.h"
-#include "utils/symap.h"
 #include <lilv/lilv.h>
 #include <sndfile.h>
 

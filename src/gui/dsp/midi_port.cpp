@@ -40,10 +40,13 @@ MidiPort::clear_buffer (std::size_t block_length)
 }
 
 void
-MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
+MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
-  if (noroll)
-    return;
+  if (ENUM_BITSET_TEST (id_->flags_, dsp::PortIdentifier::Flags::ManualPress))
+    {
+      midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
+      return;
+    }
 
   midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
 

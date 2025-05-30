@@ -248,7 +248,7 @@ public:
 
   void allocate_bufs () override { }
 
-  void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
+  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   void clear_buffer (std::size_t block_length) override { }
 
