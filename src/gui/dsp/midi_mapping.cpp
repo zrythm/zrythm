@@ -3,10 +3,10 @@
 
 #include <memory>
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_mapping.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
@@ -159,7 +159,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 }
 
 void
-MidiMappings::apply_from_cc_events (MidiEventVector &events)
+MidiMappings::apply_from_cc_events (dsp::MidiEventVector &events)
 {
   for (const auto &ev : events)
     {

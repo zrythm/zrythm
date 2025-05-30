@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_track.h"
 #include "utils/midi.h"
 

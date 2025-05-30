@@ -47,7 +47,7 @@ public:
    */
   void fill_midi_events (
     const EngineProcessTimeInfo &time_nfo,
-    MidiEventVector             &midi_events);
+    dsp::MidiEventVector        &midi_events);
 
   void process_block (EngineProcessTimeInfo time_nfo) override;
 
@@ -64,7 +64,7 @@ protected:
    */
   void fill_events_common (
     const EngineProcessTimeInfo                       &time_nfo,
-    MidiEventVector *                                  midi_events,
+    dsp::MidiEventVector *                             midi_events,
     std::optional<std::pair<AudioPort &, AudioPort &>> stereo_ports) const;
 
   void

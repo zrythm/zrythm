@@ -26,6 +26,8 @@ target_sources(zrythm_dsp_lib
   itransport.h
   kmeter_dsp.h
   kmeter_dsp.cpp
+  midi_event.h
+  midi_event.cpp
   musical_scale.h
   musical_scale.cpp
   panning.h

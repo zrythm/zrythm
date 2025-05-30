@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "dsp/position.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_note.h"
 #include "gui/dsp/piano_roll_track.h"
 #include "gui/dsp/velocity.h"

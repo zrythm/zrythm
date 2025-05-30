@@ -1068,6 +1068,8 @@ list(APPEND zrythm_link_libs
   fmt::fmt
   zrythm::spdlog
   type_safe
+  midilib::midilib
+  kissfft::kissfft
   Boost::describe
   Boost::stl_interfaces
   zrythm::qt_libs

@@ -3,11 +3,11 @@
 
 #include "zrythm-test-config.h"
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/engine_dummy.h"
 #include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_track.h"
 #include "gui/dsp/recording_manager.h"
 

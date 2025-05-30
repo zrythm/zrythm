@@ -6,7 +6,7 @@
 
 #include <format>
 
-#include "gui/dsp/midi_event.h"
+#include "dsp/midi_event.h"
 #include "gui/dsp/track.h"
 #include "utils/types.h"
 
@@ -15,6 +15,8 @@
  *
  * @{
  */
+
+using namespace zrythm;
 
 /**
  * A recording event.
@@ -70,7 +72,7 @@ public:
     g_start_frame_w_offset_ = time_nfo.g_start_frame_w_offset_;
     local_offset_ = time_nfo.local_offset_;
     has_midi_event_ = false;
-    midi_event_ = MidiEvent{};
+    midi_event_ = dsp::MidiEvent{};
     automation_track_idx_ = 0;
     nframes_ = time_nfo.nframes_;
     file_ = file;
@@ -109,7 +111,7 @@ public:
   /**
    * MidiEvent, if midi.
    */
-  MidiEvent midi_event_;
+  dsp::MidiEvent midi_event_;
 
   /* debug info */
   const char * file_ = nullptr;

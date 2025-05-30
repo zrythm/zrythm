@@ -4,6 +4,7 @@
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
+#include "dsp/midi_event.h"
 #include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/lane_owned_object.h"
 #include "gui/dsp/midi_note.h"
@@ -13,7 +14,6 @@ using namespace zrythm;
 
 class Track;
 class MidiNote;
-class MidiEventVector;
 namespace zrythm::dsp
 {
 class ChordDescriptor;
@@ -165,11 +165,11 @@ public:
    * @param end Events after this (global) position will be skipped.
    */
   void add_events (
-    MidiEventVector &events,
-    const Position * start,
-    const Position * end,
-    bool             add_region_start,
-    bool             full) const;
+    dsp::MidiEventVector &events,
+    const Position *      start,
+    const Position *      end,
+    bool                  add_region_start,
+    bool                  full) const;
 
   /**
    * Fills in the array with all the velocities in the project that are within

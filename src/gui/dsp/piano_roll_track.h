@@ -5,14 +5,13 @@
 
 #include <vector>
 
+#include "dsp/midi_event.h"
 #include "dsp/position.h"
 #include "gui/dsp/laned_track.h"
 #include "gui/dsp/midi_region.h"
 #include "gui/dsp/recordable_track.h"
 #include "utils/types.h"
 
-class MidiEvents;
-class Velocity;
 using MIDI_FILE = void;
 
 #define DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES(ClassType) \
@@ -48,12 +47,12 @@ public:
    * @param end Events after this position will be skipped.
    */
   void write_to_midi_file (
-    MIDI_FILE *       mf,
-    MidiEventVector * events,
-    const Position *  start,
-    const Position *  end,
-    bool              lanes_as_tracks,
-    bool              use_track_pos);
+    MIDI_FILE *            mf,
+    dsp::MidiEventVector * events,
+    const Position *       start,
+    const Position *       end,
+    bool                   lanes_as_tracks,
+    bool                   use_track_pos);
 
   /**
    * Fills in the array with all the velocities in the project that are within

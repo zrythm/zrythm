@@ -33,13 +33,14 @@ CVPort::clear_buffer (std::size_t block_length)
 void
 CVPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
-  for (const auto &[src_port, conn] : std::views::zip (srcs_, src_connections_))
+  for (const auto &[_src_port, conn] : std::views::zip (srcs_, src_connections_))
     {
       if (!conn->enabled_)
         continue;
 
-      const float depth_range = (range_.maxf_ - range_.minf_) * 0.5f;
-      const float multiplier = depth_range * conn->multiplier_;
+      const auto * src_port = dynamic_cast<const CVPort *> (_src_port);
+      const float  depth_range = (range_.maxf_ - range_.minf_) * 0.5f;
+      const float  multiplier = depth_range * conn->multiplier_;
 
       /* sum the signals */
       if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]

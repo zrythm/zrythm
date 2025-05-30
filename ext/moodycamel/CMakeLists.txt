@@ -3,7 +3,7 @@
 
 add_library(_lightweight_semaphore INTERFACE)
 
-target_include_directories(_lightweight_semaphore INTERFACE SYSTEM
+target_include_directories(_lightweight_semaphore SYSTEM INTERFACE
   $<BUILD_LOCAL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
 )
 

@@ -69,7 +69,7 @@ ProcessableTrack::
 void
 ProcessableTrack::fill_midi_events (
   const EngineProcessTimeInfo &time_nfo,
-  MidiEventVector             &midi_events)
+  dsp::MidiEventVector        &midi_events)
 {
   fill_events_common (time_nfo, &midi_events, std::nullopt);
 }
@@ -77,7 +77,7 @@ ProcessableTrack::fill_midi_events (
 void
 ProcessableTrack::fill_events_common (
   const EngineProcessTimeInfo                       &time_nfo,
-  MidiEventVector *                                  midi_events,
+  dsp::MidiEventVector *                             midi_events,
   std::optional<std::pair<AudioPort &, AudioPort &>> stereo_ports) const
 {
   if (!is_auditioner () && !TRANSPORT->isRolling ())

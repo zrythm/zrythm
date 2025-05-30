@@ -343,7 +343,8 @@ ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
       Port * src_port = srcs_[k];
       if (src_port->id_->type_ == PortType::CV)
         {
-          const float depth_range = (range_.maxf_ - range_.minf_) / 2.f;
+          const auto * cv_src_port = dynamic_cast<const CVPort *> (src_port);
+          const float  depth_range = (range_.maxf_ - range_.minf_) / 2.f;
 
           /* figure out whether to use base value or the current value */
           float val_to_use;
@@ -358,7 +359,7 @@ ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
             }
 
           control_ = std::clamp<float> (
-            val_to_use + depth_range * src_port->buf_[0] * conn->multiplier_,
+            val_to_use + (depth_range * cv_src_port->buf_[0] * conn->multiplier_),
             range_.minf_, range_.maxf_);
           if (owner_)
             {

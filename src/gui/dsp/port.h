@@ -408,11 +408,20 @@ public:
   bool write_ring_buffers_ = false;
 
   /**
+   * @brief Backend functionality.
+   */
+  std::unique_ptr<PortBackend> backend_;
+
+  IPortOwner * owner_{};
+};
+
+class AudioAndCVPortMixin
+{
+public:
+  /**
    * Buffer to be reallocated every time the buffer size changes.
    *
    * The buffer size is AUDIO_ENGINE->block_length_.
-   *
-   * Used only by CV and Audio ports.
    */
   std::vector<float> buf_;
 
@@ -424,20 +433,11 @@ public:
    * least 10 cycles' worth of buffers.
    *
    * This is also used for CV.
-   *
-   * FIXME should be moved to a class inherited by AudioPort and CVPort.
    */
   std::unique_ptr<RingBuffer<float>> audio_ring_;
 
   /** Last allocated buffer size (used for audio ports). */
   size_t last_buf_sz_ = 0;
-
-  /**
-   * @brief Backend functionality.
-   */
-  std::unique_ptr<PortBackend> backend_;
-
-  IPortOwner * owner_{};
 };
 
 class MidiPort;

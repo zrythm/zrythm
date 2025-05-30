@@ -55,8 +55,8 @@ AudioPort::sum_data_from_dummy (
 
   if (AUDIO_ENGINE->dummy_left_input_)
     {
-      auto   dummy_inputs = AUDIO_ENGINE->get_dummy_input_ports ();
-      Port * port = nullptr;
+      auto        dummy_inputs = AUDIO_ENGINE->get_dummy_input_ports ();
+      AudioPort * port{};
       if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL))
         {
           port = &dummy_inputs.first;
@@ -121,12 +121,13 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
         }
     }
 
-  for (const auto &[src_port, conn] : std::views::zip (srcs_, src_connections_))
+  for (const auto &[_src_port, conn] : std::views::zip (srcs_, src_connections_))
     {
       if (!conn->enabled_)
         continue;
 
-      const float multiplier = conn->multiplier_;
+      const auto * src_port = dynamic_cast<const AudioPort *> (_src_port);
+      const float  multiplier = conn->multiplier_;
 
       /* sum the signals */
       if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]

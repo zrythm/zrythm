@@ -3,6 +3,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
@@ -17,7 +18,6 @@
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/foldable_track.h"
 #include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_note.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/router.h"

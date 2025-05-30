@@ -315,7 +315,7 @@ public:
     const EngineProcessTimeInfo &time_nfo,
     bool                         note_off_at_end,
     bool                         is_note_off_for_loop_or_region_end,
-    MidiEventVector             &midi_events) const
+    dsp::MidiEventVector        &midi_events) const
     requires RegionTypeWithMidiEvents<RegionT>;
 
   auto get_object_ptr (const ArrangerObject::Uuid id) const
@@ -476,7 +476,7 @@ private:
    * single all notes off event will be sent.
    */
   [[gnu::hot]] void send_note_offs (
-    MidiEventVector      &events,
+    dsp::MidiEventVector &events,
     EngineProcessTimeInfo time_nfo,
     bool                  is_note_off_for_loop_or_region_end) const
     requires RegionTypeWithMidiEvents<RegionT>;

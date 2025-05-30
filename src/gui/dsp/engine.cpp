@@ -33,6 +33,7 @@
 #include <cstdlib>
 
 #include "dsp/graph_scheduler.h"
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -46,7 +47,6 @@
 #include "gui/dsp/engine_jack.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/metronome.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/pool.h"
 #include "gui/dsp/port.h"

@@ -13,20 +13,20 @@
 
 void
 PianoRollTrack::write_to_midi_file (
-  MIDI_FILE *       mf,
-  MidiEventVector * events,
-  const Position *  start,
-  const Position *  end,
-  bool              lanes_as_tracks,
-  bool              use_track_pos)
+  MIDI_FILE *            mf,
+  dsp::MidiEventVector * events,
+  const Position *       start,
+  const Position *       end,
+  bool                   lanes_as_tracks,
+  bool                   use_track_pos)
 {
   int                              midi_track_pos = pos_;
-  std::unique_ptr<MidiEventVector> own_events;
+  std::unique_ptr<dsp::MidiEventVector> own_events;
   if (!lanes_as_tracks && use_track_pos)
     {
       z_return_if_fail (!events);
       midiTrackAddText (mf, pos_, textTrackName, name_.c_str ());
-      own_events = std::make_unique<MidiEventVector> ();
+      own_events = std::make_unique<dsp::MidiEventVector> ();
     }
 
   for (auto &lane_var : lanes_)

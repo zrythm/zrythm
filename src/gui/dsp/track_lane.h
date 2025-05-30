@@ -3,9 +3,9 @@
 
 #pragma once
 
+#include "dsp/midi_event.h"
 #include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/arranger_object_owner.h"
-#include "gui/dsp/midi_event.h"
 
 using MIDI_FILE = void;
 class MidiLane;
@@ -211,12 +211,12 @@ public:
    * @param end Events after this position will be skipped.
    */
   void write_to_midi_file (
-    MIDI_FILE *       mf,
-    MidiEventVector * events,
-    const Position *  start,
-    const Position *  end,
-    bool              lanes_as_tracks,
-    bool              use_track_or_lane_pos)
+    MIDI_FILE *            mf,
+    dsp::MidiEventVector * events,
+    const Position *       start,
+    const Position *       end,
+    bool                   lanes_as_tracks,
+    bool                   use_track_or_lane_pos)
     requires std::derived_from<MidiRegion, RegionT>;
 
   Tracklist * get_tracklist () const;

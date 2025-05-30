@@ -3,6 +3,7 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
@@ -14,7 +15,6 @@
 #include "gui/dsp/control_room.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/fader.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_mapping.h"
 #include "gui/dsp/midi_track.h"
 #include "gui/dsp/port.h"

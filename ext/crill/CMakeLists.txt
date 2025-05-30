@@ -3,7 +3,7 @@
 
 add_library(_crill_lib INTERFACE)
 
-target_include_directories(_crill_lib INTERFACE SYSTEM
+target_include_directories(_crill_lib SYSTEM INTERFACE
   $<BUILD_LOCAL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
 )
 

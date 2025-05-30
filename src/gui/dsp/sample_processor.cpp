@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
@@ -12,7 +13,6 @@
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/metronome.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/project_graph_builder.h"
@@ -83,7 +83,7 @@ SampleProcessor::init_common ()
     *this, audio_engine_->get_port_registry (),
     audio_engine_->get_track_registry (),
     audio_engine_->port_connections_manager_);
-  midi_events_ = std::make_unique<MidiEvents> ();
+  midi_events_ = std::make_unique<dsp::MidiEvents> ();
   current_samples_.reserve (256);
 }
 

@@ -141,7 +141,7 @@ public:
    *
    * @note Must only be called while transport is recording.
    */
-  void apply_from_cc_events (MidiEventVector &events);
+  void apply_from_cc_events (dsp::MidiEventVector &events);
 
   /**
    * Applies the given buffer to the matching ports.

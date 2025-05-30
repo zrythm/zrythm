@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "./graph_thread.h"
 #include "./itransport.h"
 #include "./kmeter_dsp.h"
+#include "./midi_event.h"
 #include "./musical_scale.h"
 #include "./panning.h"
 #include "./peak_dsp.h"

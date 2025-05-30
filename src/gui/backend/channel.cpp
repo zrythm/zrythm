@@ -5,6 +5,7 @@
 
 #include <ranges>
 
+#include "dsp/midi_event.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
@@ -17,7 +18,6 @@
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/group_target_track.h"
 #include "gui/dsp/hardware_processor.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"

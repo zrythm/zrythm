@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_dsp_unit_tests
@@ -10,6 +10,7 @@ add_executable(zrythm_dsp_unit_tests
   graph_node_test.cpp
   graph_scheduler_test.cpp
   graph_test.cpp
+  midi_event_test.cpp
   musical_scale_test.cpp
   panning_test.cpp
   peak_dsp_test.cpp

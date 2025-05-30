@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -8,7 +9,6 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/hardware_processor.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/port.h"
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"

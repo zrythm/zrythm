@@ -14,18 +14,9 @@
 #include <crill/spin_mutex.h>
 #include <midilib/src/midifile.h>
 
-using namespace zrythm;
-
 namespace zrythm::dsp
 {
 class ChordDescriptor;
-}
-
-/**
- * @addtogroup dsp
- *
- * @{
- */
 
 /** Max events to hold in queues. */
 constexpr int MAX_MIDI_EVENTS = 2560;
@@ -190,7 +181,7 @@ public:
   void remove_if (std::function<bool (const MidiEvent &)> predicate)
   {
     const std::lock_guard<crill::spin_mutex> lock (lock_);
-    std::erase_if(events_, std::move(predicate));
+    std::erase_if (events_, std::move (predicate));
   }
 
   /**
@@ -245,10 +236,11 @@ public:
    */
   void transform_chord_and_append (
     MidiEventVector &src,
-    std::function<const ChordDescriptor* (midi_byte_t)> note_number_to_chord_descriptor,
+    std::function<const ChordDescriptor *(midi_byte_t)>
+                note_number_to_chord_descriptor,
     midi_byte_t velocity_to_use,
-    nframes_t        local_offset,
-    nframes_t        nframes);
+    nframes_t   local_offset,
+    nframes_t   nframes);
 
   /**
    * Adds a note on event to the given MidiEvents.
@@ -450,6 +442,4 @@ public:
   MidiEventVector queued_events_;
 };
 
-/**
- * @}
- */
+} // namespace zrythm::dsp

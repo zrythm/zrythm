@@ -16,7 +16,11 @@
 /**
  * @brief CV port specifics.
  */
-class CVPort final : public QObject, public Port, public ICloneable<CVPort>
+class CVPort final
+    : public QObject,
+      public Port,
+      public AudioAndCVPortMixin,
+      public ICloneable<CVPort>
 {
   Q_OBJECT
   QML_ELEMENT

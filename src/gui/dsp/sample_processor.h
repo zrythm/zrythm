@@ -4,12 +4,10 @@
 #pragma once
 
 #include "dsp/graph.h"
+#include "dsp/midi_event.h"
 #include "dsp/position.h"
-#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/metronome.h"
-#include "gui/dsp/midi_event.h"
-#include "gui/dsp/port.h"
 #include "gui/dsp/sample_playback.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/types.h"
@@ -170,7 +168,7 @@ public:
   /** Instrument for MIDI auditioning. */
   std::unique_ptr<zrythm::plugins::PluginConfiguration> instrument_setting_;
 
-  std::unique_ptr<MidiEvents> midi_events_;
+  std::unique_ptr<dsp::MidiEvents> midi_events_;
 
   /** Fader connected to the main output. */
   std::unique_ptr<Fader> fader_;

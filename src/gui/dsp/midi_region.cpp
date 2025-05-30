@@ -29,11 +29,11 @@
 
 #include <algorithm>
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_note.h"
 #include "gui/dsp/midi_region.h"
 #include "gui/dsp/piano_roll_track.h"
@@ -175,7 +175,7 @@ MidiRegion::write_to_midi_file (
   const bool  add_region_start,
   bool        export_full) const
 {
-  MidiEventVector events;
+  dsp::MidiEventVector events;
   add_events (events, nullptr, nullptr, add_region_start, export_full);
 
   midiFileSetTracksDefaultChannel (mf, 1, MIDI_CHANNEL_1);
@@ -300,11 +300,11 @@ MidiRegion::is_note_export_start_pos_in_full_region (
 
 void
 MidiRegion::add_events (
-  MidiEventVector &events,
-  const Position * start,
-  const Position * end,
-  const bool       add_region_start,
-  const bool       full) const
+  dsp::MidiEventVector &events,
+  const Position *      start,
+  const Position *      end,
+  const bool            add_region_start,
+  const bool            full) const
 {
   double region_start = 0;
   if (add_region_start)

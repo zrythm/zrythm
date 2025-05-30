@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/carla_discovery.h"
@@ -12,7 +13,6 @@
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"

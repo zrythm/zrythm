@@ -11,15 +11,9 @@
 #include "juce_wrapper.h"
 
 /**
- * @addtogroup utils
- *
- * @{
- */
-
-/**
  * @brief Networking utilities.
  */
-namespace networking
+namespace zrythm::networking
 {
 
 class URL final
@@ -79,7 +73,3 @@ private:
 };
 
 }
-
-/**
- * @}
- */

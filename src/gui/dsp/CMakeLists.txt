@@ -105,8 +105,6 @@ target_sources(zrythm_gui_lib
     metronome.cpp
     midi_bus_track.h
     midi_bus_track.cpp
-    midi_event.h
-    midi_event.cpp
     midi_function.h
     midi_function.cpp
     midi_group_track.h

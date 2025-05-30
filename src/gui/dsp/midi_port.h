@@ -48,7 +48,7 @@ public:
   /**
    * Contains raw MIDI data (MIDI ports only)
    */
-  MidiEvents midi_events_;
+  dsp::MidiEvents midi_events_;
 
   /**
    * @brief Ring buffer for saving MIDI events to be used in the UI instead of
@@ -60,7 +60,7 @@ public:
    * Currently there is only 1 reader for each port so this wont be a problem
    * for now, but we should have one ring for each reader.
    */
-  std::unique_ptr<RingBuffer<MidiEvent>> midi_ring_;
+  std::unique_ptr<RingBuffer<dsp::MidiEvent>> midi_ring_;
 
   /**
    * @brief Whether the port has midi events not yet processed by the UI.

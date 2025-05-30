@@ -7,13 +7,13 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/router.h"
 #include "utils/color.h"

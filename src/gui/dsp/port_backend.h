@@ -5,8 +5,8 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/midi_event.h"
 #include "dsp/port_identifier.h"
-#include "gui/dsp/midi_event.h"
 #include "utils/concurrency.h"
 #include "utils/dsp.h"
 #include "utils/jack.h"
@@ -57,7 +57,7 @@ public:
    * current cycle (ie, already added the start_frames in this cycle).
    */
   virtual void sum_midi_data (
-    MidiEvents               &midi_events,
+    dsp::MidiEvents          &midi_events,
     FrameRange                range,
     IsMidiChannelAcceptedFunc approve_func)
   {
@@ -67,7 +67,9 @@ public:
    * Sends the port data to the backend, after the port is processed.
    */
   virtual void send_data (const float * buf, FrameRange range) { }
-  virtual void send_data (const MidiEvents &midi_events, FrameRange range) { }
+  virtual void send_data (const dsp::MidiEvents &midi_events, FrameRange range)
+  {
+  }
 
   /**
    * Exposes the port to the backend, if not already exposed. If already
@@ -115,10 +117,10 @@ public:
    * Writes the events to the given JACK buffer.
    */
   void copy_midi_event_vector_to_jack (
-    const MidiEventVector &src,
-    const nframes_t        local_start_frames,
-    const nframes_t        nframes,
-    void *                 buff) const
+    const dsp::MidiEventVector &src,
+    const nframes_t             local_start_frames,
+    const nframes_t             nframes,
+    void *                      buff) const
   {
     /*jack_midi_clear_buffer (buff);*/
 
@@ -143,7 +145,7 @@ public:
   }
 
   void sum_midi_data (
-    MidiEvents               &midi_events,
+    dsp::MidiEvents          &midi_events,
     FrameRange                range,
     IsMidiChannelAcceptedFunc approve_func) override
   {
@@ -188,7 +190,7 @@ public:
     utils::float_ranges::copy (
       &out[range.start_frame], &buf[range.start_frame], range.nframes);
   }
-  void send_data (const MidiEvents &midi_events, FrameRange range) override
+  void send_data (const dsp::MidiEvents &midi_events, FrameRange range) override
   {
     if (jack_port_connected (port_) <= 0)
       {

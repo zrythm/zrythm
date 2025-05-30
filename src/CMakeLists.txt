@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 qt_add_library(zrythm_gui_lib STATIC)
@@ -29,11 +29,6 @@ if(0) # TODO
     PRIVATE
       ${CMAKE_CURRENT_BINARY_DIR}/translators.h)
 endif()
-
-list(APPEND zrythm_link_libs
-  midilib::midilib
-  kissfft::kissfft
-)
 
 if(WIN32)
   # There are problems if added to zrythm_srcs directly

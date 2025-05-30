@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "dsp/panning.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -14,7 +15,6 @@
 #include "gui/dsp/fader.h"
 #include "gui/dsp/group_target_track.h"
 #include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"

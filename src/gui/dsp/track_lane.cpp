@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/laned_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/track_lane.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/rt_thread_id.h"
@@ -221,23 +221,23 @@ TrackLaneImpl<RegionT>::calculate_lane_idx_for_midi_serialization () const
 template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::write_to_midi_file (
-  MIDI_FILE *       mf,
-  MidiEventVector * events,
-  const Position *  start,
-  const Position *  end,
-  bool              lanes_as_tracks,
-  bool              use_track_or_lane_pos)
+  MIDI_FILE *            mf,
+  dsp::MidiEventVector * events,
+  const Position *       start,
+  const Position *       end,
+  bool                   lanes_as_tracks,
+  bool                   use_track_or_lane_pos)
   requires std::derived_from<MidiRegion, RegionT>
 {
   auto track = get_track ();
   z_return_if_fail (track);
   auto                             midi_track_pos = track->get_index ();
-  std::unique_ptr<MidiEventVector> own_events;
+  std::unique_ptr<dsp::MidiEventVector> own_events;
   if (lanes_as_tracks)
     {
       z_return_if_fail (!events);
       midi_track_pos = calculate_lane_idx_for_midi_serialization ();
-      own_events = std::make_unique<MidiEventVector> ();
+      own_events = std::make_unique<dsp::MidiEventVector> ();
     }
   else if (!use_track_or_lane_pos)
     {

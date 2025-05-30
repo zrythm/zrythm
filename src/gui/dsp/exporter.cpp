@@ -3,9 +3,8 @@
 
 #include "zrythm-config.h"
 
-#include <cstdio>
-
 #include "dsp/ditherer.h"
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/channel.h"
@@ -18,13 +17,13 @@
 #ifdef HAVE_JACK
 #  include "gui/dsp/engine_jack.h"
 #endif
+#include "dsp/midi_event.h"
 #include "dsp/position.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/exporter.h"
 #include "gui/dsp/marker_track.h"
 #include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/transport.h"
@@ -394,10 +393,10 @@ Exporter::export_midi (Settings &info)
               using TrackT = base_type<decltype (track)>;
               if constexpr (std::derived_from<TrackT, PianoRollTrack>)
                 {
-                  std::unique_ptr<MidiEventVector> events;
+                  std::unique_ptr<dsp::MidiEventVector> events;
                   if (midi_version == 0)
                     {
-                      events = std::make_unique<MidiEventVector> ();
+                      events = std::make_unique<dsp::MidiEventVector> ();
                     }
 
                   /* write track to midi file */

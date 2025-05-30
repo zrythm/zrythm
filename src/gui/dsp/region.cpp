@@ -40,7 +40,7 @@ Region::copy_members_from (const Region &other, ObjectCloneType clone_type)
 template <typename RegionT>
 void
 RegionImpl<RegionT>::send_note_offs (
-  MidiEventVector            &midi_events,
+  dsp::MidiEventVector       &midi_events,
   const EngineProcessTimeInfo time_nfo,
   bool                        is_note_off_for_loop_or_region_end) const
   requires RegionTypeWithMidiEvents<RegionT>
@@ -89,7 +89,7 @@ RegionImpl<RegionT>::fill_midi_events (
   const EngineProcessTimeInfo &time_nfo,
   bool                         note_off_at_end,
   bool                         is_note_off_for_loop_or_region_end,
-  MidiEventVector             &midi_events) const
+  dsp::MidiEventVector        &midi_events) const
   requires RegionTypeWithMidiEvents<RegionT>
 {
   std::visit (

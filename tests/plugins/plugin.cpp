@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#include "dsp/midi_event.h"
 #include "gui/dsp/fader.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/router.h"
 #include "utils/math.h"
 

@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/kmeter_dsp.h"
+#include "dsp/midi_event.h"
 #include "gui/backend/meter.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/track.h"
 #include "utils/math.h"
@@ -199,7 +199,7 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
           bool on = false;
           if (port->write_ring_buffers_)
             {
-              MidiEvent event;
+              zrythm::dsp::MidiEvent event;
               while (port->midi_ring_->peek (event))
                 {
                   if (event.systime_ > last_midi_trigger_time_)

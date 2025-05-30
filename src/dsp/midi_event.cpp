@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
-#include "gui/dsp/midi_event.h"
+#include "dsp/midi_event.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
 
 #include <fmt/format.h>
 
-using namespace zrythm;
+namespace zrythm::dsp
+{
 
 /**
  * Type of MIDI event.
@@ -78,7 +79,7 @@ MidiEventVector::transform_chord_and_append (
           continue;
 
         /* only use middle octave */
-        midi_byte_t note_number = utils::midi::midi_get_note_number (buf);
+        midi_byte_t  note_number = utils::midi::midi_get_note_number (buf);
         const auto * descr = note_number_to_chord_descriptor (note_number);
         if (!descr)
           continue;
@@ -619,4 +620,6 @@ MidiEventVector::clear_duplicates ()
 
   /* remove duplicates */
   events_.erase (subrange_to_erase.begin (), subrange_to_erase.end ());
+}
+
 }

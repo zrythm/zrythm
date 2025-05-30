@@ -6,7 +6,7 @@ add_library(zita-resampler STATIC
   resampler-table.cc
 )
 
-target_include_directories(zita-resampler PUBLIC SYSTEM
+target_include_directories(zita-resampler SYSTEM PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

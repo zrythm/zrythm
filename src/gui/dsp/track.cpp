@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
@@ -20,7 +21,6 @@
 #include "gui/dsp/instrument_track.h"
 #include "gui/dsp/marker_track.h"
 #include "gui/dsp/midi_bus_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_group_track.h"
 #include "gui/dsp/midi_lane.h"
 #include "gui/dsp/midi_track.h"

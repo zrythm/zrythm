@@ -29,7 +29,7 @@ MidiPort::init_after_cloning (const MidiPort &other, ObjectCloneType clone_type)
 void
 MidiPort::allocate_bufs ()
 {
-  midi_ring_ = std::make_unique<RingBuffer<MidiEvent>> (11);
+  midi_ring_ = std::make_unique<RingBuffer<dsp::MidiEvent>> (11);
 }
 
 void

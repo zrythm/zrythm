@@ -3,6 +3,7 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/midi_event.h"
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
@@ -19,7 +20,6 @@
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/modulator_track.h"
 #include "gui/dsp/plugin.h"

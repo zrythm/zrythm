@@ -11,6 +11,7 @@
 #include <httplib.h>
 
 using namespace std::chrono_literals;
+using namespace zrythm::networking;
 
 class NetworkingTest : public ::testing::Test
 {

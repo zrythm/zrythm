@@ -8,7 +8,8 @@
 #include "utils/logger.h"
 #include "utils/networking.h"
 
-using namespace networking;
+namespace zrythm::networking
+{
 
 URL::URL (const std::string &url) : url_ (url)
 {
@@ -118,4 +119,6 @@ URL::get_page_contents_async (
         callback (std::current_exception ());
       }
   });
+}
+
 }

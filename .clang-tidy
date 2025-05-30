@@ -25,6 +25,7 @@ Checks: >
 WarningsAsErrors: >
   bugprone-undelegated-constructor,
   bugprone-string-constructor,
+  bugprone-forward-declaration-namespace,
   modernize-use-override,
   readability-redundant-declaration,
   readability-redundant-inline-specifier,
