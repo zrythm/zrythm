@@ -5,6 +5,7 @@
 
 #include <ranges>
 
+#include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -19,7 +20,6 @@
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/rtmidi_device.h"
 #include "gui/dsp/track.h"
@@ -409,7 +409,7 @@ Channel::connect_plugin_to_prefader (Plugin &pl)
               out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi)
             && out_port->id_->flow_ == dsp::PortFlow::Output)
             {
-              mgr->ensure_connect_default (
+              mgr->add_default_connection (
                 out_port->get_uuid (), midi_out_id_->id (), true);
             }
         }
@@ -418,9 +418,9 @@ Channel::connect_plugin_to_prefader (Plugin &pl)
     {
       if (pl.l_out_ && pl.r_out_)
         {
-          mgr->ensure_connect_default (
+          mgr->add_default_connection (
             pl.l_out_->get_uuid (), prefader_->get_stereo_in_left_id (), true);
-          mgr->ensure_connect_default (
+          mgr->add_default_connection (
             pl.r_out_->get_uuid (), prefader_->get_stereo_in_right_id (), true);
         }
     }
@@ -440,17 +440,17 @@ Channel::disconnect_plugin_from_prefader (Plugin &pl)
           using PortT = base_type<decltype (out_port)>;
           if (type == dsp::PortType::Audio && std::is_same_v<PortT, AudioPort>)
             {
-              if (port_connections_mgr->are_ports_connected (
+              if (port_connections_mgr->connection_exists (
                     out_port->get_uuid (), prefader_->get_stereo_in_left_id ()))
                 {
-                  port_connections_mgr->ensure_disconnect (
+                  port_connections_mgr->remove_connection (
                     out_port->get_uuid (), prefader_->get_stereo_in_left_id ());
                 }
               if (
-                port_connections_mgr->are_ports_connected (
+                port_connections_mgr->connection_exists (
                   out_port->get_uuid (), prefader_->get_stereo_in_right_id ()))
                 {
-                  port_connections_mgr->ensure_disconnect (
+                  port_connections_mgr->remove_connection (
                     out_port->get_uuid (), prefader_->get_stereo_in_right_id ());
                 }
             }
@@ -459,10 +459,10 @@ Channel::disconnect_plugin_from_prefader (Plugin &pl)
             && ENUM_BITSET_TEST (
               out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
             {
-              if (port_connections_mgr->are_ports_connected (
+              if (port_connections_mgr->connection_exists (
                     out_port->get_uuid (), prefader_->get_midi_in_id ()))
                 {
-                  port_connections_mgr->ensure_disconnect (
+                  port_connections_mgr->remove_connection (
                     out_port->get_uuid (), prefader_->get_midi_in_id ());
                 }
             }
@@ -668,7 +668,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                       z_warning ("port for {} not found", port_id);
                       continue;
                     }
-                  PORT_CONNECTIONS_MGR->ensure_connect (
+                  PORT_CONNECTIONS_MGR->add_connection (
                     source->get_uuid (), midi_in.get_uuid (), 1.f, true, true);
                 }
             }
@@ -683,7 +683,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                       z_warning ("port for {} not found", ext_port->get_id ());
                       continue;
                     }
-                  PORT_CONNECTIONS_MGR->ensure_connect (
+                  PORT_CONNECTIONS_MGR->add_connection (
                     source->get_uuid (), midi_in.get_uuid (), 1.f, true, true);
                 }
             }
@@ -717,7 +717,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                       z_warning ("port for {} not found", port_id);
                       continue;
                     }
-                  PORT_CONNECTIONS_MGR->ensure_connect (
+                  PORT_CONNECTIONS_MGR->add_connection (
                     source->get_uuid (), l.get_uuid (), 1.f, true, true);
                 }
             }
@@ -733,7 +733,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                       z_warning ("port for {} not found", ext_port->get_id ());
                       continue;
                     }
-                  PORT_CONNECTIONS_MGR->ensure_connect (
+                  PORT_CONNECTIONS_MGR->add_connection (
                     source->get_uuid (), l.get_uuid (), 1.f, true, true);
                 }
             }
@@ -750,7 +750,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                       z_warning ("port for {} not found", port_id);
                       continue;
                     }
-                  PORT_CONNECTIONS_MGR->ensure_connect (
+                  PORT_CONNECTIONS_MGR->add_connection (
                     source->get_uuid (), r.get_uuid (), 1.f, true, true);
                 }
             }
@@ -766,7 +766,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                       z_warning ("port for {} not found", ext_port->get_id ());
                       continue;
                     }
-                  PORT_CONNECTIONS_MGR->ensure_connect (
+                  PORT_CONNECTIONS_MGR->add_connection (
                     source->get_uuid (), r.get_uuid (), 1.f, true, true);
                 }
             }
@@ -1008,7 +1008,7 @@ Channel::connect_plugins ()
 }
 
 void
-Channel::connect_channel (PortConnectionsManager &mgr, AudioEngine &engine)
+Channel::connect_channel (dsp::PortConnectionsManager &mgr, AudioEngine &engine)
 {
   auto &tr = track_;
 
@@ -1020,12 +1020,12 @@ Channel::connect_channel (PortConnectionsManager &mgr, AudioEngine &engine)
   if (tr->is_master () && !tr->is_auditioner ())
     {
       output_track_uuid_ = std::nullopt;
-      mgr.ensure_connect (
+      mgr.add_connection (
         get_stereo_out_ports ().first.get_uuid (),
         engine.control_room_->monitor_fader_->get_stereo_in_ports ()
           .first.get_uuid (),
         1.f, true, true);
-      mgr.ensure_connect (
+      mgr.add_connection (
         get_stereo_out_ports ().second.get_uuid (),
         engine.control_room_->monitor_fader_->get_stereo_in_ports ()
           .second.get_uuid (),
@@ -1035,25 +1035,25 @@ Channel::connect_channel (PortConnectionsManager &mgr, AudioEngine &engine)
   if (tr->get_output_signal_type () == PortType::Audio)
     {
       /* connect stereo in to stereo out through fader */
-      mgr.ensure_connect (
+      mgr.add_connection (
         prefader_->get_stereo_out_ports ().first.get_uuid (),
         fader_->get_stereo_in_ports ().first.get_uuid (), 1.f, true, true);
-      mgr.ensure_connect (
+      mgr.add_connection (
         prefader_->get_stereo_out_ports ().second.get_uuid (),
         fader_->get_stereo_in_ports ().second.get_uuid (), 1.f, true, true);
-      mgr.ensure_connect (
+      mgr.add_connection (
         fader_->get_stereo_out_ports ().first.get_uuid (),
         get_stereo_out_ports ().first.get_uuid (), 1.f, true, true);
-      mgr.ensure_connect (
+      mgr.add_connection (
         fader_->get_stereo_out_ports ().second.get_uuid (),
         get_stereo_out_ports ().second.get_uuid (), 1.f, true, true);
     }
   else if (tr->get_output_signal_type () == PortType::Event)
     {
-      mgr.ensure_connect (
+      mgr.add_connection (
         prefader_->get_midi_out_id (), fader_->get_midi_in_port ().get_uuid (),
         1.f, true, true);
-      mgr.ensure_connect (
+      mgr.add_connection (
         fader_->get_midi_out_id (), midi_out_id_->id (), 1.f, true, true);
     }
 
@@ -1241,7 +1241,7 @@ Channel::init ()
 void
 Channel::disconnect_port_hardware_inputs (Port &port)
 {
-  PortConnectionsManager::ConnectionsVector srcs;
+  dsp::PortConnectionsManager::ConnectionsVector srcs;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, port.get_uuid (), true);
   for (const auto &conn : srcs)
     {
@@ -1252,7 +1252,7 @@ Channel::disconnect_port_hardware_inputs (Port &port)
           if (
             src_port->id_->owner_type_
             == PortIdentifier::OwnerType::HardwareProcessor)
-            PORT_CONNECTIONS_MGR->ensure_disconnect (
+            PORT_CONNECTIONS_MGR->remove_connection (
               src_port->get_uuid (), port.get_uuid ());
         },
         src_port_var.value ());

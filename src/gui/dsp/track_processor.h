@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "dsp/port_connections_manager.h"
 #include "gui/dsp/midi_mapping.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/port_connections_manager.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
@@ -70,7 +70,7 @@ public:
 
   void on_midi_activity (const dsp::PortIdentifier &id) override;
 
-  PortConnectionsManager * get_port_connections_manager () const;
+  dsp::PortConnectionsManager * get_port_connections_manager () const;
 
   ProcessableTrack * get_track () const
   {

@@ -772,6 +772,8 @@ public:
    * nodes. */
   nframes_t remaining_latency_preroll_ = 0;
 
+  QPointer<dsp::PortConnectionsManager> port_connections_manager_;
+
   std::unique_ptr<SampleProcessor> sample_processor_;
 
   /** To be set to 1 when the CC from the Midi in port should be captured. */

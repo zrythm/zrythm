@@ -135,6 +135,16 @@ public:
     return cloned;
   }
 
+  template <typename... Args>
+  QScopedPointer<Derived> clone_unique_qobject (
+    QObject *       parent,
+    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+    Args &&... args) const
+  {
+    return QScopedPointer<Derived> (
+      clone_qobject (parent, clone_type, std::forward<Args> (args)...));
+  }
+
 protected:
   ICloneable () = default;
 

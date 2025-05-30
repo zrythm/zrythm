@@ -173,19 +173,21 @@ UndoableAction::save_or_load_port_connections (bool performing)
   else if (performing && port_connections_after_ != nullptr)
     {
       z_debug ("resetting port connections from cached after");
-      PORT_CONNECTIONS_MGR->reset_connections (port_connections_after_.get ());
+      PORT_CONNECTIONS_MGR->reset_connections_from_other (
+        port_connections_after_.get ());
       z_return_if_fail (
-        PORT_CONNECTIONS_MGR->connections_.size ()
-        == port_connections_after_->connections_.size ());
+        PORT_CONNECTIONS_MGR->get_connection_count ()
+        == port_connections_after_->get_connection_count ());
     }
   /* else if undoing and have connections from before */
   else if (!performing && port_connections_before_ != nullptr)
     {
       /* reset the connections */
       z_debug ("resetting port connections from cached before");
-      PORT_CONNECTIONS_MGR->reset_connections (port_connections_before_.get ());
+      PORT_CONNECTIONS_MGR->reset_connections_from_other (
+        port_connections_before_.get ());
       z_return_if_fail (
-        PORT_CONNECTIONS_MGR->connections_.size ()
-        == port_connections_before_->connections_.size ());
+        PORT_CONNECTIONS_MGR->get_connection_count ()
+        == port_connections_before_->get_connection_count ());
     }
 }

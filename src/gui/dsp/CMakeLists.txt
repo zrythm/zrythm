@@ -153,10 +153,6 @@ target_sources(zrythm_gui_lib
     port_all.h
     port_backend.h
     port_span.h
-    port_connection.h
-    port_connection.cpp
-    port_connections_manager.h
-    port_connections_manager.cpp
     processable_track.h
     processable_track.cpp
     project_graph_builder.h

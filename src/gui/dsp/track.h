@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/port_connections_manager.h"
 #include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/automation_tracklist.h"
 #include "gui/dsp/fader.h"
@@ -547,7 +548,7 @@ public:
 
   Tracklist * get_tracklist () const;
 
-  PortConnectionsManager * get_port_connections_manager () const;
+  dsp::PortConnectionsManager * get_port_connections_manager () const;
 
   bool has_piano_roll () const { return type_has_piano_roll (type_); }
 

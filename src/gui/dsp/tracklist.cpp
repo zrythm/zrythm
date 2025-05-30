@@ -24,10 +24,10 @@
 Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
 
 Tracklist::Tracklist (
-  Project                 &project,
-  PortRegistry            &port_registry,
-  TrackRegistry           &track_registry,
-  PortConnectionsManager * port_connections_manager)
+  Project                      &project,
+  PortRegistry                 &port_registry,
+  TrackRegistry                &track_registry,
+  dsp::PortConnectionsManager * port_connections_manager)
     : QAbstractListModel (&project), track_registry_ (track_registry),
       port_registry_ (port_registry), project_ (&project),
       port_connections_manager_ (port_connections_manager)
@@ -35,10 +35,10 @@ Tracklist::Tracklist (
 }
 
 Tracklist::Tracklist (
-  SampleProcessor         &sample_processor,
-  PortRegistry            &port_registry,
-  TrackRegistry           &track_registry,
-  PortConnectionsManager * port_connections_manager)
+  SampleProcessor              &sample_processor,
+  PortRegistry                 &port_registry,
+  TrackRegistry                &track_registry,
+  dsp::PortConnectionsManager * port_connections_manager)
     : track_registry_ (track_registry), port_registry_ (port_registry),
       sample_processor_ (&sample_processor),
       port_connections_manager_ (port_connections_manager)

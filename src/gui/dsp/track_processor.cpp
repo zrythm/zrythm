@@ -1152,7 +1152,7 @@ TrackProcessor::connect_ports (const PortUuid &src, const PortUuid &dest)
 {
   auto * mgr = get_port_connections_manager ();
   z_return_if_fail (mgr);
-  mgr->ensure_connect_default (src, dest, true);
+  mgr->add_default_connection (src, dest, true);
 }
 
 void
@@ -1160,9 +1160,9 @@ TrackProcessor::disconnect_ports (const PortUuid &src, const PortUuid &dest)
 {
   auto * mgr = get_port_connections_manager ();
   z_return_if_fail (mgr);
-  if (mgr->are_ports_connected (src, dest))
+  if (mgr->connection_exists (src, dest))
     {
-      mgr->ensure_disconnect (src, dest);
+      mgr->remove_connection (src, dest);
     }
 }
 
@@ -1266,7 +1266,7 @@ TrackProcessor::connect_to_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl)
     }
 }
 
-PortConnectionsManager *
+dsp::PortConnectionsManager *
 TrackProcessor::get_port_connections_manager () const
 {
   auto * track = get_track ();

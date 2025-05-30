@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/timeline.h"
@@ -13,7 +14,6 @@
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_factory.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/quantize_options.h"
 #include "gui/dsp/region_link_group_manager.h"
 #include "gui/dsp/track_factory.h"
@@ -28,6 +28,7 @@
 using namespace zrythm;
 
 #define PROJECT (Project::get_active_instance ())
+#define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_.get ())
 
 enum class ProjectPath
 {
@@ -363,7 +364,7 @@ public:
     return get_arranger_object_registry ().find_by_id (id);
   }
 
-  std::string print_port_connection (const PortConnection &conn) const;
+  std::string print_port_connection (const dsp::PortConnection &conn) const;
 
   /**
    * To be called when the port's identifier changes to update corresponding
@@ -551,7 +552,7 @@ public:
    *
    * Must be free'd after engine.
    */
-  PortConnectionsManager * port_connections_manager_ = nullptr;
+  QScopedPointer<dsp::PortConnectionsManager> port_connections_manager_;
 
   /**
    * The audio backend.

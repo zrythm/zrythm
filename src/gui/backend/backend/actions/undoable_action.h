@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
+#include "dsp/port_connections_manager.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/port_connections_manager.h"
 #include "utils/types.h"
 
 class AudioClip;
@@ -29,6 +29,8 @@ public: \
 class UndoableAction
 {
 public:
+  using PortConnectionsManager = dsp::PortConnectionsManager;
+
   /**
    * Type of UndoableAction.
    */
@@ -218,10 +220,10 @@ public:
    * @brief An (optional) clone of the port connections at the start of the
    * action, used for reverting port connections when undoing.
    */
-  std::unique_ptr<PortConnectionsManager> port_connections_before_;
+  std::unique_ptr<dsp::PortConnectionsManager> port_connections_before_;
 
   /** @see port_connections_before_. */
-  std::unique_ptr<PortConnectionsManager> port_connections_after_;
+  std::unique_ptr<dsp::PortConnectionsManager> port_connections_after_;
 };
 
 class ArrangerSelectionsAction;

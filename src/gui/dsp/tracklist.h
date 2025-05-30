@@ -56,15 +56,15 @@ public:
 public:
   Tracklist (QObject * parent = nullptr);
   explicit Tracklist (
-    Project                 &project,
-    PortRegistry            &port_registry,
-    TrackRegistry           &track_registry,
-    PortConnectionsManager * port_connections_manager);
+    Project                      &project,
+    PortRegistry                 &port_registry,
+    TrackRegistry                &track_registry,
+    dsp::PortConnectionsManager * port_connections_manager);
   explicit Tracklist (
-    SampleProcessor         &sample_processor,
-    PortRegistry            &port_registry,
-    TrackRegistry           &track_registry,
-    PortConnectionsManager * port_connections_manager);
+    SampleProcessor              &sample_processor,
+    PortRegistry                 &port_registry,
+    TrackRegistry                &track_registry,
+    dsp::PortConnectionsManager * port_connections_manager);
   Z_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
@@ -584,5 +584,5 @@ public:
   /** Width of track widgets. */
   // int width_ = 0;
 
-  QPointer<PortConnectionsManager> port_connections_manager_;
+  QPointer<dsp::PortConnectionsManager> port_connections_manager_;
 };

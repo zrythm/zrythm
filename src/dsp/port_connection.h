@@ -1,17 +1,16 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_PORT_CONNECTION_H__
-#define __AUDIO_PORT_CONNECTION_H__
+#pragma once
 
 #include "zrythm-config.h"
 
 #include "dsp/port_identifier.h"
-#include "utils/math.h"
 
 #include <QtQmlIntegration>
 
-using namespace zrythm;
+namespace zrythm::dsp
+{
 
 /**
  * A connection between two ports.
@@ -73,6 +72,14 @@ private:
     j.at (kBaseValueKey).get_to (port_connection.base_value_);
   }
 
+  friend bool operator== (const PortConnection &lhs, const PortConnection &rhs)
+  {
+    return lhs.src_id_ == rhs.src_id_ && lhs.dest_id_ == rhs.dest_id_;
+    //  && utils::math::floats_equal (lhs.multiplier_, rhs.multiplier_)
+    //  && lhs.locked_ == rhs.locked_ && lhs.enabled_ == rhs.enabled_
+    //  && utils::math::floats_equal (lhs.base_value_, rhs.base_value_);
+  }
+
 public:
   PortUuid src_id_;
   PortUuid dest_id_;
@@ -102,19 +109,13 @@ public:
 
   /** Used for CV -> control port connections. */
   float base_value_ = 0.0f;
+
+  BOOST_DESCRIBE_CLASS (
+    PortConnection,
+    (),
+    (src_id_, dest_id_, multiplier_, locked_, enabled_),
+    (),
+    ())
 };
 
-bool
-operator== (const PortConnection &lhs, const PortConnection &rhs);
-
-DEFINE_OBJECT_FORMATTER (
-  PortConnection,
-  port_connection,
-  [] (const PortConnection &conn) {
-    return fmt::format (
-      "PortConnection{{src: {}, dest: {}, mult: {:.2f}, locked: {}, enabled: {}}}",
-      conn.src_id_, conn.dest_id_, conn.multiplier_, conn.locked_,
-      conn.enabled_);
-  })
-
-#endif /* __AUDIO_PORT_CONNECTION_H__ */
+} // namespace zrythm::dsp

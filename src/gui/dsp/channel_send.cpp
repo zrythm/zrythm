@@ -379,7 +379,7 @@ ChannelSend::connect_to_owner ()
             }
 
           /* make the connection if not exists */
-          mgr->ensure_connect (
+          mgr->add_connection (
             src_port_id.value (), self_port_id, 1.f, true, true);
         }
     }
@@ -397,7 +397,7 @@ ChannelSend::connect_to_owner ()
         }
 
       /* make the connection if not exists */
-      mgr->ensure_connect (src_port_id.value (), self_port_id, 1.f, true, true);
+      mgr->add_connection (src_port_id.value (), self_port_id, 1.f, true, true);
     }
 }
 
@@ -441,9 +441,9 @@ ChannelSend::connect_stereo (
   disconnect (false);
 
   /* connect */
-  mgr->ensure_connect (
+  mgr->add_connection (
     stereo_out_left_id_->id (), l.get_uuid (), 1.f, true, true);
-  mgr->ensure_connect (
+  mgr->add_connection (
     stereo_out_right_id_->id (), r.get_uuid (), 1.f, true, true);
 
   get_enabled_port ().set_control_value (1.f, false, true);
@@ -478,7 +478,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
 
   disconnect (false);
 
-  mgr->ensure_connect (midi_out_id_->id (), port.get_uuid (), 1.f, true, true);
+  mgr->add_connection (midi_out_id_->id (), port.get_uuid (), 1.f, true, true);
 
   get_enabled_port ().set_control_value (1.f, false, true);
 
@@ -503,7 +503,7 @@ ChannelSend::disconnect_midi ()
     dest_port_var && std::holds_alternative<MidiPort *> (dest_port_var->get ()));
   auto * dest_port = std::get<MidiPort *> (dest_port_var->get ());
 
-  mgr->ensure_disconnect (midi_out_id_->id (), dest_port->get_uuid ());
+  mgr->remove_connection (midi_out_id_->id (), dest_port->get_uuid ());
 }
 
 void
@@ -525,7 +525,7 @@ ChannelSend::disconnect_audio ()
         dest_port_var
         && std::holds_alternative<AudioPort *> (dest_port_var->get ()));
       auto * dest_port = std::get<AudioPort *> (dest_port_var->get ());
-      mgr->ensure_disconnect (src_port_id, dest_port->get_uuid ());
+      mgr->remove_connection (src_port_id, dest_port->get_uuid ());
     }
 }
 
@@ -559,7 +559,7 @@ ChannelSend::disconnect (bool recalc_graph)
     ROUTER->recalc_graph (false);
 }
 
-PortConnectionsManager *
+dsp::PortConnectionsManager *
 ChannelSend::get_port_connections_manager () const
 {
   auto * track = get_track ();
@@ -857,8 +857,8 @@ ChannelSend::append_ports (std::vector<Port *> &ports)
 
 int
 ChannelSend::append_connection (
-  const PortConnectionsManager *             mgr,
-  PortConnectionsManager::ConnectionsVector &arr) const
+  const dsp::PortConnectionsManager *             mgr,
+  dsp::PortConnectionsManager::ConnectionsVector &arr) const
 {
   if (is_empty ())
     return 0;
@@ -892,7 +892,7 @@ ChannelSend::is_connected_to (
   auto * mgr = get_port_connections_manager ();
   z_return_val_if_fail (mgr, false);
 
-  std::unique_ptr<PortConnectionsManager::ConnectionsVector> conns;
+  std::unique_ptr<dsp::PortConnectionsManager::ConnectionsVector> conns;
   int num_conns = append_connection (mgr, *conns);
   for (int i = 0; i < num_conns; i++)
     {

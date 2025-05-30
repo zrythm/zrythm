@@ -151,18 +151,18 @@ Port::disconnect_all ()
       return;
     }
 
-  PortConnectionsManager::ConnectionsVector srcs;
+  dsp::PortConnectionsManager::ConnectionsVector srcs;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, get_uuid (), true);
   for (const auto &conn : srcs)
     {
-      PORT_CONNECTIONS_MGR->ensure_disconnect (conn->src_id_, conn->dest_id_);
+      PORT_CONNECTIONS_MGR->remove_connection (conn->src_id_, conn->dest_id_);
     }
 
-  PortConnectionsManager::ConnectionsVector dests;
+  dsp::PortConnectionsManager::ConnectionsVector dests;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, get_uuid (), false);
   for (const auto &conn : dests)
     {
-      PORT_CONNECTIONS_MGR->ensure_disconnect (conn->src_id_, conn->dest_id_);
+      PORT_CONNECTIONS_MGR->remove_connection (conn->src_id_, conn->dest_id_);
     }
 
   if (backend_)

@@ -71,7 +71,7 @@ Track::get_tracklist () const
     }
 }
 
-PortConnectionsManager *
+dsp::PortConnectionsManager *
 Track::get_port_connections_manager () const
 {
   auto * tracklist = get_tracklist ();

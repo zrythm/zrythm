@@ -545,18 +545,18 @@ AudioEngine::setup ()
   buf_size_set_ = false;
 
   {
-    project_->port_connections_manager_->ensure_connect_default (
+    project_->port_connections_manager_->add_default_connection (
       sample_processor_->fader_->get_stereo_out_left_id (),
       control_room_->monitor_fader_->get_stereo_out_left_id (), true);
-    project_->port_connections_manager_->ensure_connect_default (
+    project_->port_connections_manager_->add_default_connection (
       sample_processor_->fader_->get_stereo_out_right_id (),
       control_room_->monitor_fader_->get_stereo_out_right_id (), true);
   }
   {
-    project_->port_connections_manager_->ensure_connect_default (
+    project_->port_connections_manager_->add_default_connection (
       control_room_->monitor_fader_->get_stereo_out_left_id (),
       monitor_out_left_->id (), true);
-    project_->port_connections_manager_->ensure_connect_default (
+    project_->port_connections_manager_->add_default_connection (
       control_room_->monitor_fader_->get_stereo_out_right_id (),
       monitor_out_right_->id (), true);
   }
@@ -791,6 +791,7 @@ AudioEngine::AudioEngine (Project * project)
           return project->get_path (ProjectPath::POOL, backup);
         },
         [this] () { return sample_rate_; })),
+      port_connections_manager_ (project->port_connections_manager_.get ()),
       sample_processor_ (std::make_unique<SampleProcessor> (this))
 {
   z_debug ("Creating audio engine...");

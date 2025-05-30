@@ -1,12 +1,11 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __ACTION_PORT_CONNECTION_ACTION_H__
-#define __ACTION_PORT_CONNECTION_ACTION_H__
+#pragma once
 
+#include "dsp/port_connection.h"
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/port_connection.h"
 #include "utils/icloneable.h"
 
 namespace zrythm::gui::actions
@@ -61,7 +60,7 @@ private:
 public:
   Type type_ = Type ();
 
-  PortConnection * connection_ = nullptr;
+  QScopedPointer<dsp::PortConnection> connection_;
 
   /**
    * Value before/after the change.
@@ -120,5 +119,3 @@ public:
 };
 
 }; // namespace zrythm::gui::actions
-
-#endif

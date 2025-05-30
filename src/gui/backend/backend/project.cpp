@@ -5,13 +5,13 @@
 
 #include <filesystem>
 
+#include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/tracklist.h"
 #include "gui/dsp/transport.h"
@@ -37,7 +37,7 @@ Project::Project (QObject * parent)
       track_registry_ (new TrackRegistry (this)),
       version_ (Zrythm::get_version (false)),
       tool_ (new gui::backend::Tool (this)),
-      port_connections_manager_ (new PortConnectionsManager (this)),
+      port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       audio_engine_ (std::make_unique<AudioEngine> (this)),
       transport_ (new Transport (this)),
       quantize_opts_editor_ (std::make_unique<QuantizeOptions> (
@@ -72,7 +72,7 @@ Project::Project (QObject * parent)
         *this,
         *port_registry_,
         *track_registry_,
-        port_connections_manager_)),
+        port_connections_manager_.get())),
       undo_manager_ (new gui::actions::UndoManager (this)),
       arranger_object_factory_ (new ArrangerObjectFactory (
         *arranger_object_registry_,
@@ -125,7 +125,7 @@ Project::~Project ()
 }
 
 std::string
-Project::print_port_connection (const PortConnection &conn) const
+Project::print_port_connection (const dsp::PortConnection &conn) const
 {
   auto src_var = get_port_registry ().find_by_id_or_throw (conn.src_id_);
   auto dest_var = get_port_registry ().find_by_id_or_throw (conn.dest_id_);
@@ -1261,8 +1261,7 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
   quantize_opts_editor_ =
     std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
   region_link_group_manager_ = other.region_link_group_manager_;
-  port_connections_manager_ =
-    other.port_connections_manager_->clone_qobject (this);
+  port_connections_manager_ .reset(other.port_connections_manager_->clone_qobject (this));
   midi_mappings_ = other.midi_mappings_->clone_unique ();
   undo_manager_ = other.undo_manager_->clone_qobject (this);
   tool_ = other.tool_->clone_qobject (this);

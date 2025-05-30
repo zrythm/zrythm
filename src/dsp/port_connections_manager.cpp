@@ -1,14 +1,14 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/channel_send.h"
-#include "gui/dsp/port_connections_manager.h"
-#include "utils/rt_thread_id.h"
+#include <algorithm>
+
+#include "dsp/port_connections_manager.h"
 
 #include <fmt/format.h>
+
+namespace zrythm::dsp
+{
 
 PortConnectionsManager::PortConnectionsManager (QObject * parent)
     : QObject (parent)
@@ -29,6 +29,7 @@ PortConnectionsManager::init_after_cloning (
   regenerate_hashtables ();
 }
 
+#if 0
 void
 PortConnectionsManager::disconnect_port_collection (
   std::vector<Port *> &ports,
@@ -40,12 +41,13 @@ PortConnectionsManager::disconnect_port_collection (
   /* go through each port */
   for (auto * port : ports)
     {
-      ensure_disconnect_all (port->get_uuid ());
+      remove_all_connections (port->get_uuid ());
       port->srcs_.clear ();
       port->dests_.clear ();
       port->deleting_ = deleting;
     }
 }
+#endif
 
 void
 PortConnectionsManager::add_or_replace_connection (
@@ -68,11 +70,11 @@ PortConnectionsManager::add_or_replace_connection (
 }
 
 bool
-PortConnectionsManager::replace_connection (
+PortConnectionsManager::update_connection (
   const PortConnection &before,
   const PortConnection &after)
 {
-  auto it = std::find (connections_.begin (), connections_.end (), before);
+  auto it = std::ranges::find (connections_, before, connection_ref_predicate);
   if (it == connections_.end ())
     {
       z_return_val_if_reached (false);
@@ -80,10 +82,26 @@ PortConnectionsManager::replace_connection (
 
   (*it)->setParent (nullptr);
   (*it)->deleteLater ();
-  *it = after.clone_raw_ptr ();
-  (*it)->setParent (this);
+  *it = after.clone_qobject (this);
   regenerate_hashtables ();
 
+  return true;
+}
+
+bool
+PortConnectionsManager::update_connection (
+  const PortUuid &src,
+  const PortUuid &dest,
+  float           multiplier,
+  bool            locked,
+  bool            enabled)
+{
+  auto * conn = get_connection (src, dest);
+  if (conn == nullptr)
+    {
+      return false;
+    }
+  conn->update (multiplier, locked, enabled);
   return true;
 }
 
@@ -197,7 +215,7 @@ PortConnectionsManager::get_unlocked_sources_or_dests (
     }
 
   /* return number of connections found */
-  return (int) ret;
+  return ret;
 }
 
 PortConnection *
@@ -217,27 +235,24 @@ PortConnectionsManager::get_source_or_dest (const PortUuid &id, bool sources) co
 }
 
 PortConnection *
-PortConnectionsManager::find_connection (
+PortConnectionsManager::get_connection (
   const PortUuid &src,
   const PortUuid &dest) const
 {
-  auto it = std::find_if (
-    connections_.begin (), connections_.end (), [&] (const auto &conn) {
-      return conn->src_id_ == src && conn->dest_id_ == dest;
-    });
+  auto it = std::ranges::find_if (connections_, [&] (const auto &conn) {
+    return conn->src_id_ == src && conn->dest_id_ == dest;
+  });
   return it != connections_.end () ? (*it) : nullptr;
 }
 
 const PortConnection *
-PortConnectionsManager::ensure_connect (
+PortConnectionsManager::add_connection (
   const PortUuid &src,
   const PortUuid &dest,
   float           multiplier,
   bool            locked,
   bool            enabled)
 {
-  z_warn_if_fail (ZRYTHM_IS_QT_THREAD);
-
   for (auto &conn : connections_)
     {
       if (conn->src_id_ == src && conn->dest_id_ == dest)
@@ -252,12 +267,8 @@ PortConnectionsManager::ensure_connect (
     new PortConnection (src, dest, multiplier, locked, enabled, this));
   const auto &conn = connections_.back ();
 
-  if (this == get_active_instance ())
-    {
-      z_debug (
-        "New connection: <{}>; have {} connections", *conn,
-        connections_.size ());
-    }
+  z_debug (
+    "New connection: <{}>; have {} connections", *conn, connections_.size ());
 
   regenerate_hashtables ();
 
@@ -267,26 +278,21 @@ PortConnectionsManager::ensure_connect (
 void
 PortConnectionsManager::remove_connection (const size_t idx)
 {
-  const auto conn = connections_[idx];
+  auto * const conn = connections_[idx];
 
-  connections_.erase (connections_.begin () + idx);
+  connections_.erase (std::next (connections_.begin (), (int) idx));
 
-  if (this == get_active_instance ())
-    {
-      z_debug (
-        "Disconnected <{}>; have {} connections", *conn, connections_.size ());
-    }
+  z_debug (
+    "Disconnected <{}>; have {} connections", *conn, connections_.size ());
 
   regenerate_hashtables ();
 }
 
 bool
-PortConnectionsManager::ensure_disconnect (
+PortConnectionsManager::remove_connection (
   const PortUuid &src,
   const PortUuid &dest)
 {
-  z_return_val_if_fail (ZRYTHM_IS_QT_THREAD, false);
-
   for (size_t i = 0; i < connections_.size (); i++)
     {
       const auto &conn = connections_[i];
@@ -301,10 +307,8 @@ PortConnectionsManager::ensure_disconnect (
 }
 
 void
-PortConnectionsManager::ensure_disconnect_all (const PortUuid &pi)
+PortConnectionsManager::remove_all_connections (const PortUuid &pi)
 {
-  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
-
   for (size_t i = 0; i < connections_.size (); i++)
     {
       const auto &conn = connections_[i];
@@ -318,14 +322,14 @@ PortConnectionsManager::ensure_disconnect_all (const PortUuid &pi)
 bool
 PortConnectionsManager::contains_connection (const PortConnection &conn) const
 {
-  return std::find (connections_.begin (), connections_.end (), conn)
-         != connections_.end ();
+  return std::ranges::contains (connections_, conn, connection_ref_predicate);
 }
 
 void
-PortConnectionsManager::reset_connections (const PortConnectionsManager * other)
+PortConnectionsManager::reset_connections_from_other (
+  const PortConnectionsManager * other)
 {
-  clear_connections ();
+  clear_all ();
 
   if (other)
     {
@@ -362,14 +366,4 @@ PortConnectionsManager::print () const
   z_info ("{}", str.c_str ());
 }
 
-PortConnectionsManager *
-PortConnectionsManager::get_active_instance ()
-{
-  auto prj = Project::get_active_instance ();
-  if (prj)
-    {
-
-      return prj->port_connections_manager_;
-    }
-  return nullptr;
-}
+} // namespace zrythm::dsp

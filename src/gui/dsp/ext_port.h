@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_EXT_PORT_H__
-#define __AUDIO_EXT_PORT_H__
+#pragma once
 
 /**
  * @file
@@ -296,5 +295,3 @@ operator== (const ExtPort &a, const ExtPort &b)
 /**
  * @}
  */
-
-#endif

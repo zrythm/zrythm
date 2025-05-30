@@ -81,7 +81,8 @@ SampleProcessor::init_common ()
 {
   tracklist_ = std::make_unique<Tracklist> (
     *this, audio_engine_->get_port_registry (),
-    audio_engine_->get_track_registry (), PORT_CONNECTIONS_MGR);
+    audio_engine_->get_track_registry (),
+    audio_engine_->port_connections_manager_);
   midi_events_ = std::make_unique<MidiEvents> ();
   current_samples_.reserve (256);
 }

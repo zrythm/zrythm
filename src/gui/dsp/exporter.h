@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/port_connections_manager.h"
 #include "utils/audio.h"
 
 class ProgressInfo;
@@ -258,7 +258,7 @@ private:
   /**
    * @brief Owned PortConnection pointers.
    */
-  std::unique_ptr<PortConnectionsManager::ConnectionsVector> connections_;
+  std::unique_ptr<dsp::PortConnectionsManager::ConnectionsVector> connections_;
 
   /**
    * @brief Engine state when export was started so that it can be re-set after

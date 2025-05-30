@@ -4,11 +4,11 @@
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
 
+#include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "gui/dsp/channel_send.h"
-#include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/track_span.h"
 #include "utils/color.h"

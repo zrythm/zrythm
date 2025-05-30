@@ -7,15 +7,13 @@
 #include "zrythm-config.h"
 
 #include "dsp/graph_node.h"
+#include "dsp/port_connection.h"
 #include "dsp/port_identifier.h"
 #include "gui/dsp/port_backend.h"
-#include "gui/dsp/port_connection.h"
 #include "utils/audio.h"
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
-
-class PortConnection;
 
 /**
  * @addtogroup dsp
@@ -158,11 +156,6 @@ public:
   }
 };
 
-class IPortConnectionManager
-{
-  virtual ~IPortConnectionManager () = default;
-};
-
 /**
  * @brief The Port class represents a port in the audio processing graph.
  *
@@ -181,6 +174,7 @@ public:
   using PortIdentifier = dsp::PortIdentifier;
   using PortType = dsp::PortType;
   using PortFlow = dsp::PortFlow;
+  using PortConnection = dsp::PortConnection;
 
   ~Port () override { disconnect_all (); }
 

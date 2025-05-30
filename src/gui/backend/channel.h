@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CHANNEL_H__
-#define __AUDIO_CHANNEL_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -320,7 +319,7 @@ public:
    *
    * This should only be called on project tracks.
    */
-  void connect_channel (PortConnectionsManager &mgr, AudioEngine &engine);
+  void connect_channel (dsp::PortConnectionsManager &mgr, AudioEngine &engine);
 
   void init_loaded ();
 
@@ -633,5 +632,3 @@ public:
 };
 
 }; // namespace zrythm::gui
-
-#endif

@@ -519,7 +519,8 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
   TRACKLIST->get_track_span ().activate_all_plugins (false);
   TRACKLIST->get_track_span ().activate_all_plugins (true);
 
-  connections_ = std::make_unique<PortConnectionsManager::ConnectionsVector> ();
+  connections_ =
+    std::make_unique<dsp::PortConnectionsManager::ConnectionsVector> ();
   if (settings_.mode_ != Exporter::Mode::Full)
     {
       /* disconnect all track faders from their channel outputs so that sends
@@ -542,22 +543,22 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
           const auto &l_dest_id =
             cur_tr->channel_->get_stereo_out_ports ().first.get_uuid ();
           auto l_conn =
-            PORT_CONNECTIONS_MGR->find_connection (l_src_id, l_dest_id);
+            PORT_CONNECTIONS_MGR->get_connection (l_src_id, l_dest_id);
           z_return_if_fail (l_conn);
           connections_->push_back (l_conn->clone_raw_ptr ());
           connections_->back ()->setParent (this);
-          PORT_CONNECTIONS_MGR->ensure_disconnect (l_src_id, l_dest_id);
+          PORT_CONNECTIONS_MGR->remove_connection (l_src_id, l_dest_id);
 
           const auto &r_src_id =
             cur_tr->channel_->fader_->get_stereo_out_right_id ();
           const auto &r_dest_id =
             cur_tr->channel_->get_stereo_out_ports ().second.get_uuid ();
           auto r_conn =
-            PORT_CONNECTIONS_MGR->find_connection (r_src_id, r_dest_id);
+            PORT_CONNECTIONS_MGR->get_connection (r_src_id, r_dest_id);
           z_return_if_fail (r_conn);
           connections_->push_back (r_conn->clone_raw_ptr ());
           connections_->back ()->setParent (this);
-          PORT_CONNECTIONS_MGR->ensure_disconnect (r_src_id, r_dest_id);
+          PORT_CONNECTIONS_MGR->remove_connection (r_src_id, r_dest_id);
         }
 
       /* recalculate the graph to apply the changes */
@@ -586,7 +587,7 @@ Exporter::post_export ()
       /* re-connect disconnected connections */
       for (const auto &conn : *connections_)
         {
-          PORT_CONNECTIONS_MGR->ensure_connect_from_connection (conn);
+          PORT_CONNECTIONS_MGR->add_connection (*conn);
         }
       connections_.reset ();
 

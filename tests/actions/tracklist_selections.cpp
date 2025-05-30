@@ -925,10 +925,10 @@ _test_move_tracks (
   ASSERT_EQ (clip_editor_region, ar.get ());
 
   /* check that the stereo out of the audio fx track points to the master track */
-  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
+  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->get_connection (
     fx_track->channel_->stereo_out_->get_l ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_l ().id_));
-  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
+  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->get_connection (
     fx_track->channel_->stereo_out_->get_r ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_r ().id_));
 
@@ -974,10 +974,10 @@ _test_move_tracks (
   }
 
   /* check that the stereo out of the audio fx track points to the master track */
-  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
+  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->get_connection (
     fx_track->channel_->stereo_out_->get_l ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_l ().id_));
-  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
+  ASSERT_HAS_VALUE (PORT_CONNECTIONS_MGR->get_connection (
     fx_track->channel_->stereo_out_->get_r ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_r ().id_));
 
@@ -1192,10 +1192,10 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
   ASSERT_TRUE (new_track->is_audio ());
   ASSERT_EQ (
     new_track->channel_->output_name_hash_, group_track->get_name_hash ());
-  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->connection_exists (
     *new_track->channel_->stereo_out_->get_l ().id_,
     *group_track->processor_->stereo_in_->get_l ().id_));
-  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->connection_exists (
     *new_track->channel_->stereo_out_->get_r ().id_,
     *group_track->processor_->stereo_in_->get_r ().id_));
 
@@ -1205,10 +1205,10 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
   ASSERT_EQ (
     new_group_track->channel_->output_name_hash_,
     group_track2->get_name_hash ());
-  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->connection_exists (
     *new_group_track->channel_->stereo_out_->get_l ().id_,
     *group_track2->processor_->stereo_in_->get_l ().id_));
-  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->connection_exists (
     *new_group_track->channel_->stereo_out_->get_r ().id_,
     *group_track2->processor_->stereo_in_->get_r ().id_));
 

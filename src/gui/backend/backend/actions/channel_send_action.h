@@ -1,12 +1,11 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UNDO_CHANNEL_SEND_ACTION_H__
-#define __UNDO_CHANNEL_SEND_ACTION_H__
+#pragma once
 
+#include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/dsp/channel_send.h"
-#include "gui/dsp/port_connections_manager.h"
 
 namespace zrythm::gui::actions
 {
@@ -54,7 +53,7 @@ public:
     const Port *                                                   port,
     std::optional<std::pair<const AudioPort &, const AudioPort &>> stereo,
     float                                                          amount,
-    const PortConnectionsManager * port_connections_mgr);
+    const dsp::PortConnectionsManager * port_connections_mgr);
 
   QString to_string () const override;
 
@@ -87,8 +86,8 @@ class ChannelSendDisconnectAction final : public ChannelSendAction
 {
 public:
   ChannelSendDisconnectAction (
-    const ChannelSend            &send,
-    const PortConnectionsManager &port_connections_mgr)
+    const ChannelSend                 &send,
+    const dsp::PortConnectionsManager &port_connections_mgr)
       : ChannelSendAction (Type::Disconnect, send, nullptr, std::nullopt, 0.f, &port_connections_mgr)
   {
   }
@@ -98,9 +97,9 @@ class ChannelSendConnectMidiAction final : public ChannelSendAction
 {
 public:
   ChannelSendConnectMidiAction (
-    const ChannelSend            &send,
-    const Port                   &midi,
-    const PortConnectionsManager &port_connections_mgr)
+    const ChannelSend                 &send,
+    const Port                        &midi,
+    const dsp::PortConnectionsManager &port_connections_mgr)
       : ChannelSendAction (Type::ConnectMidi, send, &midi, std::nullopt, 0.f, &port_connections_mgr)
   {
   }
@@ -112,7 +111,7 @@ public:
   ChannelSendConnectStereoAction (
     const ChannelSend                              &send,
     std::pair<const AudioPort &, const AudioPort &> stereo,
-    const PortConnectionsManager                   &port_connections_mgr)
+    const dsp::PortConnectionsManager              &port_connections_mgr)
       : ChannelSendAction (Type::ConnectStereo, send, nullptr, stereo, 0.f, &port_connections_mgr)
   {
   }
@@ -124,7 +123,7 @@ public:
   ChannelSendConnectSidechainAction (
     const ChannelSend                              &send,
     std::pair<const AudioPort &, const AudioPort &> sidechain,
-    const PortConnectionsManager                   &port_connections_mgr)
+    const dsp::PortConnectionsManager              &port_connections_mgr)
       : ChannelSendAction (
           Type::ConnectSidechain,
           send,
@@ -146,5 +145,3 @@ public:
 };
 
 }; // namespace zrythm::gui::actions
-
-#endif

@@ -1284,7 +1284,7 @@ Plugin::close_ui ()
 void
 Plugin::connect_to_plugin (Plugin &dest)
 {
-  PortConnectionsManager * connections_mgr = PORT_CONNECTIONS_MGR;
+  auto * connections_mgr = PORT_CONNECTIONS_MGR;
 
   const auto num_src_audio_outs = std::ranges::distance (
     get_output_port_span ().get_elements_by_type<AudioPort> ());
@@ -1301,7 +1301,7 @@ Plugin::connect_to_plugin (Plugin &dest)
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<AudioPort> ())
             {
-              connections_mgr->ensure_connect_default (
+              connections_mgr->add_default_connection (
                 out_port->get_uuid (), in_port->get_uuid (), true);
               goto done1;
             }
@@ -1319,7 +1319,7 @@ Plugin::connect_to_plugin (Plugin &dest)
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<AudioPort> ())
             {
-              connections_mgr->ensure_connect_default (
+              connections_mgr->add_default_connection (
                 out_port->get_uuid (), in_port->get_uuid (), true);
             }
           break;
@@ -1337,7 +1337,7 @@ Plugin::connect_to_plugin (Plugin &dest)
             auto out_port :
             get_output_port_span ().get_elements_by_type<AudioPort> ())
             {
-              connections_mgr->ensure_connect_default (
+              connections_mgr->add_default_connection (
                 out_port->get_uuid (), in_port->get_uuid (), true);
               goto done1;
             }
@@ -1361,7 +1361,7 @@ Plugin::connect_to_plugin (Plugin &dest)
               auto in_port_var = dest.get_input_port_span ()[last_index];
               if (std::holds_alternative<AudioPort *> (in_port_var))
                 {
-                  connections_mgr->ensure_connect_default (
+                  connections_mgr->add_default_connection (
                     out_port->get_uuid (),
                     std::get<AudioPort *> (in_port_var)->get_uuid (), true);
                   last_index++;
@@ -1391,7 +1391,7 @@ done1:
                 ENUM_BITSET_TEST (
                   in_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
                 {
-                  connections_mgr->ensure_connect_default (
+                  connections_mgr->add_default_connection (
                     out_port->get_uuid (), in_port->get_uuid (), true);
                 }
             }
@@ -1420,7 +1420,7 @@ Plugin::disconnect_from_plugin (Plugin &dest)
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<AudioPort> ())
             {
-              mgr->ensure_disconnect (
+              mgr->remove_connection (
                 out_port->get_uuid (), in_port->get_uuid ());
               goto done2;
             }
@@ -1438,7 +1438,7 @@ Plugin::disconnect_from_plugin (Plugin &dest)
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<AudioPort> ())
             {
-              mgr->ensure_disconnect (
+              mgr->remove_connection (
                 out_port->get_uuid (), in_port->get_uuid ());
             }
           break;
@@ -1456,7 +1456,7 @@ Plugin::disconnect_from_plugin (Plugin &dest)
             auto out_port :
             get_output_port_span ().get_elements_by_type<AudioPort> ())
             {
-              mgr->ensure_disconnect (
+              mgr->remove_connection (
                 out_port->get_uuid (), in_port->get_uuid ());
               goto done2;
             }
@@ -1480,7 +1480,7 @@ Plugin::disconnect_from_plugin (Plugin &dest)
               auto in_port_var = dest.get_input_port_span ()[last_index];
               if (std::holds_alternative<AudioPort *> (in_port_var))
                 {
-                  mgr->ensure_disconnect (
+                  mgr->remove_connection (
                     out_port->get_uuid (),
                     std::get<AudioPort *> (in_port_var)->get_uuid ());
                   last_index++;
@@ -1509,7 +1509,7 @@ done2:
                 ENUM_BITSET_TEST (
                   in_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
                 {
-                  mgr->ensure_disconnect (
+                  mgr->remove_connection (
                     out_port->get_uuid (), in_port->get_uuid ());
                 }
             }

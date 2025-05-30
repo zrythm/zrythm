@@ -130,7 +130,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
 
   auto add_port =
     [&] (
-      PortPtrVariant port_var, PortConnectionsManager &mgr,
+      PortPtrVariant port_var, dsp::PortConnectionsManager &mgr,
       const bool drop_if_unnecessary) {
       return std::visit (
         [&] (auto &&port) -> dsp::GraphNode * {
@@ -138,7 +138,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
           auto owner = port->id_->owner_type_;
 
           /* reset port sources/dests */
-          PortConnectionsManager::ConnectionsVector srcs;
+          dsp::PortConnectionsManager::ConnectionsVector srcs;
           mgr.get_sources_or_dests (&srcs, port->get_uuid (), true);
           port->srcs_.clear ();
           port->src_connections_.clear ();
@@ -156,7 +156,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
               port->src_connections_.emplace_back (conn->clone_unique ());
             }
 
-          PortConnectionsManager::ConnectionsVector dests;
+          dsp::PortConnectionsManager::ConnectionsVector dests;
           mgr.get_sources_or_dests (&dests, port->get_uuid (), false);
           port->dests_.clear ();
           port->dest_connections_.clear ();

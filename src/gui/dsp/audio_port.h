@@ -14,8 +14,6 @@
  * @{
  */
 
-class PortConnectionsManager;
-
 /**
  * @brief Audio port specifics.
  */

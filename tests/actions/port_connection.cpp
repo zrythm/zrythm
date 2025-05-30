@@ -207,9 +207,9 @@ _test_port_connection (
   check_num_dests (src_port1, 1);
   check_num_dests (src_port2, 1);
   ASSERT_HAS_VALUE (
-    PORT_CONNECTIONS_MGR->find_connection (src_port1->id_, dest_port->id_));
+    PORT_CONNECTIONS_MGR->get_connection (src_port1->id_, dest_port->id_));
   ASSERT_HAS_VALUE (
-    PORT_CONNECTIONS_MGR->find_connection (src_port2->id_, dest_port->id_));
+    PORT_CONNECTIONS_MGR->get_connection (src_port2->id_, dest_port->id_));
   ASSERT_EQ (dest_port->srcs_[0], src_port1);
   ASSERT_EQ (dest_port, src_port1->dests_[0]);
   ASSERT_EQ (dest_port->srcs_[1], src_port2);

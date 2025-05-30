@@ -24,8 +24,7 @@ PortConnectionAction::init_after_cloning (
   type_ = other.type_;
   if (other.connection_ != nullptr)
     {
-      connection_ = other.connection_->clone_raw_ptr ();
-      connection_->setParent (this);
+      connection_.reset (other.connection_->clone_qobject (this));
     }
   val_ = other.val_;
 }
@@ -37,14 +36,14 @@ PortConnectionAction::PortConnectionAction (
   float    new_val)
     : type_ (type), val_ (new_val)
 {
-  auto * const conn = PORT_CONNECTIONS_MGR->find_connection (src_id, dest_id);
+  auto * const conn = PORT_CONNECTIONS_MGR->get_connection (src_id, dest_id);
   if (conn != nullptr)
     {
-      connection_ = conn->clone_raw_ptr ();
-      connection_->setParent (this);
+      connection_.reset (conn->clone_qobject (this));
     }
   else
-    connection_ = new PortConnection (src_id, dest_id, 1.f, false, true, this);
+    connection_.reset (
+      new dsp::PortConnection (src_id, dest_id, 1.f, false, true, this));
 }
 
 void
@@ -70,7 +69,7 @@ PortConnectionAction::do_or_undo (bool _do)
       using SourcePortT = base_type<decltype (src)>;
       using DestPortT = base_type<decltype (dest)>;
       z_return_if_fail (src && dest);
-      auto prj_connection = PORT_CONNECTIONS_MGR->find_connection (
+      auto prj_connection = PORT_CONNECTIONS_MGR->get_connection (
         connection_->src_id_, connection_->dest_id_);
 
       switch (type_)
@@ -88,7 +87,7 @@ PortConnectionAction::do_or_undo (bool _do)
                     "'{}' cannot be connected to '{}'", src->get_label (),
                     dest->get_label ()));
                 }
-              PORT_CONNECTIONS_MGR->ensure_connect (
+              PORT_CONNECTIONS_MGR->add_connection (
                 src->get_uuid (), dest->get_uuid (), 1.f, false, true);
 
               /* set base value if cv -> control */
@@ -101,7 +100,7 @@ PortConnectionAction::do_or_undo (bool _do)
             }
           else
             {
-              PORT_CONNECTIONS_MGR->ensure_disconnect (
+              PORT_CONNECTIONS_MGR->remove_connection (
                 src->get_uuid (), dest->get_uuid ());
             }
           ROUTER->recalc_graph (false);

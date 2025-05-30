@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/port_connection.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/midi_port.h"
@@ -10,11 +11,7 @@
 #include "plugins/plugin_slot.h"
 #include "utils/icloneable.h"
 
-class StereoPorts;
 class ChannelTrack;
-class Port;
-class PortConnectionsManager;
-class PortConnection;
 
 /**
  * @addtogroup dsp
@@ -77,6 +74,8 @@ class ChannelSend final
 {
 public:
   using PortType = dsp::PortType;
+  using PortConnection = dsp::PortConnection;
+
   struct SlotTag
   {
     int value_{};
@@ -268,8 +267,8 @@ public:
    * nullptr) and returns the number of connections added.
    */
   int append_connection (
-    const PortConnectionsManager * mgr,
-    std::vector<PortConnection *> &arr) const;
+    const zrythm::dsp::PortConnectionsManager * mgr,
+    std::vector<PortConnection *>              &arr) const;
 
   void prepare_process (std::size_t block_length);
 
@@ -344,7 +343,7 @@ private:
 
   void construct_for_slot (ChannelTrack &track, int slot);
 
-  PortConnectionsManager * get_port_connections_manager () const;
+  dsp::PortConnectionsManager * get_port_connections_manager () const;
 
   /**
    * Returns whether the send is connected to the given ports.

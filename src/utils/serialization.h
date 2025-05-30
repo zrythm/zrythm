@@ -178,6 +178,28 @@ template <typename T> struct adl_serializer<std::shared_ptr<T>>
   }
 };
 
+/// QScopedPointer specialization
+template <typename T> struct adl_serializer<QScopedPointer<T>>
+{
+  static void to_json (json &json_value, const QScopedPointer<T> &ptr)
+  {
+    if (ptr.get ())
+      {
+        json_value = *ptr;
+      }
+    else
+      {
+        json_value = nullptr;
+      }
+  }
+  static void from_json (const json &json_value, QScopedPointer<T> &ptr)
+    requires std::is_default_constructible_v<T>
+  {
+    ptr = new T ();
+    json_value.get_to (*ptr);
+  }
+};
+
 /// StrongTypedef specialization
 template <StrongTypedef T> struct adl_serializer<T>
 {

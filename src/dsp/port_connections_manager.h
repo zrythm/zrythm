@@ -1,26 +1,15 @@
 // SPDX-FileCopyrightText: © 2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_PORT_CONNECTIONS_MANAGER_H__
-#define __AUDIO_PORT_CONNECTIONS_MANAGER_H__
+#pragma once
 
 #include "zrythm-config.h"
 
-#include "gui/dsp/port_connection.h"
+#include "dsp/port_connection.h"
 #include "utils/icloneable.h"
-#include "utils/types.h"
 
-class Port;
-
-using namespace zrythm;
-
-/**
- * @addtogroup dsp
- *
- * @{
- */
-
-#define PORT_CONNECTIONS_MGR (PortConnectionsManager::get_active_instance ())
+namespace zrythm::dsp
+{
 
 /**
  * Port connections manager.
@@ -33,6 +22,7 @@ class PortConnectionsManager final
   QML_ELEMENT
 
 public:
+  using PortConnection = dsp::PortConnection;
   using PortUuid = PortConnection::PortUuid;
   using ConnectionsVector = std::vector<PortConnection *>;
 
@@ -46,6 +36,11 @@ private:
    * Value: A vector of PortConnection references from @ref connections_.
    */
   using ConnectionHashTable = std::unordered_map<PortUuid, ConnectionsVector>;
+
+  static const auto &connection_ref_predicate (const PortConnection * conn)
+  {
+    return *conn;
+  }
 
 public:
   /**
@@ -81,7 +76,16 @@ public:
     return get_sources_or_dests (arr, id, false);
   }
 
-  static PortConnectionsManager * get_active_instance ();
+  int get_num_sources (const PortUuid &id) const
+  {
+    return get_sources (nullptr, id);
+  }
+  int get_num_dests (const PortUuid &id) const
+  {
+    return get_dests (nullptr, id);
+  }
+
+  auto get_connection_count () const noexcept { return connections_.size (); }
 
   /**
    * Adds the sources/destinations of @ref id in the given array.
@@ -118,11 +122,11 @@ public:
    * @return The connection, owned by this, or null.
    */
   PortConnection *
-  find_connection (const PortUuid &src, const PortUuid &dest) const;
+  get_connection (const PortUuid &src, const PortUuid &dest) const;
 
-  bool are_ports_connected (const PortUuid &src, const PortUuid &dest) const
+  bool connection_exists (const PortUuid &src, const PortUuid &dest) const
   {
-    return find_connection (src, dest) != nullptr;
+    return get_connection (src, dest) != nullptr;
   }
 
   /**
@@ -131,15 +135,24 @@ public:
    * @return Whether the connection was replaced.
    */
   bool
-  replace_connection (const PortConnection &before, const PortConnection &after);
+  update_connection (const PortConnection &before, const PortConnection &after);
+
+  bool update_connection (
+    const PortUuid &src,
+    const PortUuid &dest,
+    float           multiplier,
+    bool            locked,
+    bool            enabled);
 
   /**
    * Stores the connection for the given ports if it doesn't exist, otherwise
    * updates the existing connection.
    *
+   * @note To be called from the main thread only.
+   *
    * @return The connection.
    */
-  const PortConnection * ensure_connect (
+  const PortConnection * add_connection (
     const PortUuid &src,
     const PortUuid &dest,
     float           multiplier,
@@ -150,15 +163,14 @@ public:
    * @brief Overload for default settings (multiplier = 1.0, enabled = true).
    */
   const PortConnection *
-  ensure_connect_default (const PortUuid &src, const PortUuid &dest, bool locked)
+  add_default_connection (const PortUuid &src, const PortUuid &dest, bool locked)
   {
-    return ensure_connect (src, dest, 1.0f, locked, true);
+    return add_connection (src, dest, 1.0f, locked, true);
   }
 
-  const PortConnection *
-  ensure_connect_from_connection (const PortConnection &conn)
+  const PortConnection * add_connection (const PortConnection &conn)
   {
-    return ensure_connect (
+    return add_connection (
       conn.src_id_, conn.dest_id_, conn.multiplier_, conn.locked_,
       conn.enabled_);
   }
@@ -166,15 +178,20 @@ public:
   /**
    * Removes the connection for the given ports if it exists.
    *
+   * @note To be called from the main thread only.
+   *
    * @return Whether a connection was removed.
    */
-  bool ensure_disconnect (const PortUuid &src, const PortUuid &dest);
+  bool remove_connection (const PortUuid &src, const PortUuid &dest);
 
   /**
    * Disconnect all sources and dests of the given port identifier.
+   *
+   * @note To be called from the main thread only.
    */
-  void ensure_disconnect_all (const PortUuid &pi);
+  void remove_all_connections (const PortUuid &pi);
 
+#if 0
   /**
    * @brief Disconnects all the given ports
    *
@@ -182,13 +199,14 @@ public:
    * @param deleting Whether to set the `deleting` flag on the ports.
    */
   void disconnect_port_collection (std::vector<Port *> &ports, bool deleting);
+#endif
 
   /**
    * Removes all connections from this.
    *
    * @param src If non-nullptr, the connections are copied from this to this.
    */
-  void reset_connections (const PortConnectionsManager * other);
+  void reset_connections_from_other (const PortConnectionsManager * other);
 
   bool contains_connection (const PortConnection &conn) const;
 
@@ -200,8 +218,14 @@ public:
     const PortConnectionsManager &other,
     ObjectCloneType               clone_type) override;
 
+  void clear_all ()
+  {
+    connections_.clear ();
+    regenerate_hashtables ();
+  }
+
 private:
-  static constexpr std::string_view kConnectionsKey = "connections";
+  static constexpr auto kConnectionsKey = "connections"sv;
   friend void to_json (nlohmann::json &j, const PortConnectionsManager &pcm)
   {
     j[kConnectionsKey] = pcm.connections_;
@@ -224,9 +248,7 @@ private:
 
   void remove_connection (size_t idx);
 
-  void clear_connections () { connections_.clear (); }
-
-public:
+private:
   /** Connections (owned pointers). */
   std::vector<PortConnection *> connections_;
 
@@ -247,8 +269,4 @@ public:
   ConnectionHashTable dest_ht_;
 };
 
-/**
- * @}
- */
-
-#endif /* __AUDIO_PORT_CONNECTIONS_MANAGER_H__ */
+} // namespace zrythm::dsp

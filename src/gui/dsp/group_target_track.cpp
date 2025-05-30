@@ -29,15 +29,15 @@ GroupTargetTrack::update_child_output (
       switch (track->in_signal_type_)
         {
         case PortType::Audio:
-          PORT_CONNECTIONS_MGR->ensure_disconnect (
+          PORT_CONNECTIONS_MGR->remove_connection (
             ch->get_stereo_out_ports ().first.get_uuid (),
             track->processor_->stereo_in_left_id_->id ());
-          PORT_CONNECTIONS_MGR->ensure_disconnect (
+          PORT_CONNECTIONS_MGR->remove_connection (
             ch->get_stereo_out_ports ().second.get_uuid (),
             track->processor_->stereo_in_right_id_->id ());
           break;
         case PortType::Event:
-          PORT_CONNECTIONS_MGR->ensure_disconnect (
+          PORT_CONNECTIONS_MGR->remove_connection (
             ch->get_midi_out_port ().get_uuid (),
             track->processor_->get_midi_in_port ().get_uuid ());
           break;
@@ -52,15 +52,15 @@ GroupTargetTrack::update_child_output (
       switch (output->in_signal_type_)
         {
         case PortType::Audio:
-          PORT_CONNECTIONS_MGR->ensure_connect_default (
+          PORT_CONNECTIONS_MGR->add_default_connection (
             ch->get_stereo_out_ports ().first.get_uuid (),
             output->processor_->stereo_in_left_id_->id (), true);
-          PORT_CONNECTIONS_MGR->ensure_connect_default (
+          PORT_CONNECTIONS_MGR->add_default_connection (
             ch->get_stereo_out_ports ().second.get_uuid (),
             output->processor_->stereo_in_right_id_->id (), true);
           break;
         case PortType::Event:
-          PORT_CONNECTIONS_MGR->ensure_connect_default (
+          PORT_CONNECTIONS_MGR->add_default_connection (
             ch->get_midi_out_port ().get_uuid (),
             output->processor_->get_midi_in_port ().get_uuid (), true);
           break;
