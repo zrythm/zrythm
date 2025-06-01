@@ -353,7 +353,7 @@ ZrythmApplication::launch_engine_process ()
     }
 }
 
-#if JUCE_LINUX
+#ifdef __linux__
 // see the following:
 // - juce_audio_plugin_client/detail/juce_LinuxMessageThread.h
 // - juce_events/native/juce_Messaging_linux.cpp
@@ -367,7 +367,7 @@ dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
 bool
 ZrythmApplication::notify (QObject * receiver, QEvent * event)
 {
-#if JUCE_LINUX
+#ifdef __linux__
   if (juce_message_handler_initializer_)
     {
       // we need to do this on GNU/Linux otherwise plugin UIs appear blank
