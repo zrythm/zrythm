@@ -3,12 +3,12 @@
 
 #include "zrythm-test-config.h"
 
+#include "engine/session/exporter.h"
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/exporter.h"
-#include "gui/dsp/fader.h"
-#include "gui/dsp/router.h"
+#include "structure/tracks/fader.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

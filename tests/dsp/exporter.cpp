@@ -3,12 +3,12 @@
 
 #include "zrythm-test-config.h"
 
+#include "engine/session/exporter.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/file_descriptor.h"
-#include "gui/dsp/exporter.h"
 #include "utils/chromaprint.h"
 #include "utils/progress_info.h"
 

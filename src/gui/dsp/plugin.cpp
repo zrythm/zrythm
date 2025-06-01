@@ -5,27 +5,27 @@
 
 #include "dsp/midi_event.h"
 #include "dsp/port_identifier.h"
+#include "engine/device_io/engine.h"
+#include "engine/session/transport.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/channel.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/audio_port.h"
-#include "gui/dsp/automatable_track.h"
-#include "gui/dsp/automation_tracklist.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/channel_track.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
-#include "gui/dsp/engine.h"
 #include "gui/dsp/midi_port.h"
-#include "gui/dsp/modulator_track.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/track.h"
-#include "gui/dsp/tracklist.h"
-#include "gui/dsp/transport.h"
+#include "structure/tracks/automatable_track.h"
+#include "structure/tracks/automation_tracklist.h"
+#include "structure/tracks/channel.h"
+#include "structure/tracks/channel_track.h"
+#include "structure/tracks/modulator_track.h"
+#include "structure/tracks/track.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/dsp.h"
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
@@ -156,7 +156,8 @@ Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
   auto track = get_track ();
   z_return_val_if_fail (track, {});
   return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "{}/{}/{}", TrackSpan::name_projection (*track), get_name (), id.label_));
+    "{}/{}/{}", structure::tracks::TrackSpan::name_projection (*track),
+    get_name (), id.label_));
 }
 
 void
@@ -457,14 +458,15 @@ Plugin::get_node_name () const
   auto track = get_track ();
   return utils::Utf8String::from_utf8_encoded_string (fmt::format (
     "{}/{} (Plugin)",
-    track ? TrackSpan::name_projection (*track) : u8"(No track)", get_name ()));
+    track ? structure::tracks::TrackSpan::name_projection (*track) : u8"(No track)",
+    get_name ()));
 }
 
 void
 Plugin::remove_ats_from_automation_tracklist (bool free_ats, bool fire_events)
 {
-  auto * track =
-    TrackSpan::derived_type_transformation<AutomatableTrack> (*get_track ());
+  auto * track = structure::tracks::TrackSpan::derived_type_transformation<
+    structure::tracks::AutomatableTrack> (*get_track ());
   auto &atl = track->get_automation_tracklist ();
   for (auto * at : atl.get_automation_tracks () | std::views::reverse)
     {
@@ -502,8 +504,8 @@ Plugin::validate () const
   return true;
 }
 
-std::optional<TrackPtrVariant>
-Plugin::get_track () const
+auto
+Plugin::get_track () const -> std::optional<TrackPtrVariant>
 {
   if (!track_resolver_.has_value () || !track_id_.has_value ())
     return std::nullopt;
@@ -520,8 +522,8 @@ Plugin::get_slot () const -> std::optional<PluginSlot>
     [&] (auto &&track) -> std::optional<PluginSlot> {
       using TrackT = base_type<decltype (track)>;
       if constexpr (
-        std::derived_from<TrackT, ChannelTrack>
-        || std::is_same_v<TrackT, ModulatorTrack>)
+        std::derived_from<TrackT, structure::tracks::ChannelTrack>
+        || std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
         {
           return track->get_plugin_slot (get_uuid ());
         }
@@ -536,8 +538,8 @@ Plugin::get_full_port_group_designation (
 {
   assert (has_track ());
   return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "{}/{}/{}", TrackSpan::name_projection (*get_track ()), get_name (),
-    port_group));
+    "{}/{}/{}", structure::tracks::TrackSpan::name_projection (*get_track ()),
+    get_name (), port_group));
 }
 
 Port *
@@ -928,10 +930,12 @@ Plugin::print () const
 {
   const auto track_name =
     is_in_active_project ()
-      ? TrackSpan::name_projection (*get_track ())
+      ? structure::tracks::TrackSpan::name_projection (*get_track ())
       : u8"<no track>";
   const auto track_pos =
-    is_in_active_project () ? TrackSpan::position_projection (*get_track ()) : -1;
+    is_in_active_project ()
+      ? structure::tracks::TrackSpan::position_projection (*get_track ())
+      : -1;
   return fmt::format (
     "{} ({}):{} - {}", track_name, track_pos, get_slot (), get_name ());
 }
@@ -1164,8 +1168,8 @@ Plugin::is_enabled (bool check_track) const
 
   if (check_track)
     {
-      auto * track =
-        TrackSpan::derived_type_transformation<ChannelTrack> (*get_track ());
+      auto * track = structure::tracks::TrackSpan::derived_type_transformation<
+        structure::tracks::ChannelTrack> (*get_track ());
       return track->is_enabled ();
     }
   else
@@ -1569,7 +1573,11 @@ Plugin::delete_state_files ()
 }
 
 void
-Plugin::expose_ports (AudioEngine &engine, bool expose, bool inputs, bool outputs)
+Plugin::expose_ports (
+  engine::device_io::AudioEngine &engine,
+  bool                            expose,
+  bool                            inputs,
+  bool                            outputs)
 {
   auto set_expose = [expose, &engine] (auto &port) {
     bool is_exposed = port->is_exposed_to_backend ();

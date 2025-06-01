@@ -12,8 +12,12 @@
 
 #include <QObject>
 #include <QString>
+#include <QUuid>
 
-#include "juce_wrapper.h"
+namespace juce
+{
+class String;
+}
 
 #if defined(__clang__)
 #  pragma clang diagnostic push
@@ -244,6 +248,49 @@ struct fmt::formatter<std::optional<T>> : fmt::formatter<std::string_view>
           fmt::format ("{}", *opt), ctx);
       }
     return fmt::formatter<std::string_view>::format ("(nullopt)", ctx);
+  }
+};
+
+// Formatter for QPointer
+template <typename T>
+struct fmt::formatter<QPointer<T>> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const QPointer<T> &opt, FormatContext &ctx) const
+  {
+    if (!opt.isNull ())
+      {
+        return fmt::formatter<std::string_view>::format (
+          fmt::format ("{}", *opt), ctx);
+      }
+    return fmt::formatter<std::string_view>::format ("(null)", ctx);
+  }
+};
+
+// Formatter for QScopedPointer
+template <typename T>
+struct fmt::formatter<QScopedPointer<T>> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const QScopedPointer<T> &opt, FormatContext &ctx) const
+  {
+    if (!opt.isNull ())
+      {
+        return fmt::formatter<std::string_view>::format (
+          fmt::format ("{}", *opt), ctx);
+      }
+    return fmt::formatter<std::string_view>::format ("(null)", ctx);
+  }
+};
+
+// Formatter for QUuid
+template <> struct fmt::formatter<QUuid> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const QUuid &uuid, FormatContext &ctx) const
+  {
+    return fmt::formatter<QString>{}.format (
+      uuid.toString (QUuid::WithoutBraces), ctx);
   }
 };
 

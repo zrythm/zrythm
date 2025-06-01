@@ -5,7 +5,7 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/track.h"
 
 #include "tests/helpers/project_helper.h"
 

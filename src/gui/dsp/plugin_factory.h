@@ -7,7 +7,7 @@
 
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/dsp/plugin_all.h"
-#include "gui/dsp/track_all.h"
+#include "structure/tracks/track_all.h"
 
 /**
  * @brief Factory for plugins.

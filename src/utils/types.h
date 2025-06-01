@@ -1,14 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Custom types.
- */
-
-#ifndef __UTILS_TYPES_H__
-#define __UTILS_TYPES_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -385,8 +378,8 @@ iterate_tuple (Callable c, Tuple &&t)
 
 using SampleRateGetter = std::function<sample_rate_t ()>;
 
+using basic_enum_base_type_t = std::uint_fast8_t;
+
 /**
  * @}
  */
-
-#endif

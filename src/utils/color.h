@@ -155,6 +155,8 @@ public:
   float green_ = 0.f;  ///< Green.
   float blue_ = 0.f;   ///< Blue.
   float alpha_ = 1.0f; ///< Alpha.
+
+  BOOST_DESCRIBE_CLASS (Color, (), (red_, green_, blue_, alpha_), (), ())
 };
 
 }; // namespace zrythm::utils

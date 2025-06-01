@@ -150,14 +150,15 @@ PluginConfigurationManager::activate_plugin_configuration (
   bool                       autoroute_multiout,
   bool                       has_stereo_outputs)
 {
+  using namespace structure::tracks;
   bool has_errors = false;
 
   const auto &descr = *config.descr_;
-  auto        type = Track::type_get_from_plugin_descriptor (descr);
+  auto type = structure::tracks::Track::type_get_from_plugin_descriptor (descr);
 
   /* stop the engine so it doesn't restart all the time until all the actions
    * are performed */
-  AudioEngine::State state{};
+  zrythm::engine::device_io::AudioEngine::State state{};
   AUDIO_ENGINE->wait_for_pause (state, false, true);
 
   try
@@ -170,13 +171,13 @@ PluginConfigurationManager::activate_plugin_configuration (
           int num_actions = 0;
 
           /* create group */
-          Track * group =
-            Track::create_empty_with_action (Track::Type::AudioGroup);
+          auto * group = structure::tracks::Track::create_empty_with_action (
+            Track::Type::AudioGroup);
           num_actions++;
 
           /* create the plugin track */
-          auto * pl_track = dynamic_cast<ChannelTrack *> (
-            Track::create_for_plugin_at_idx_w_action (
+          auto * pl_track = dynamic_cast<structure::tracks::ChannelTrack *> (
+            structure::tracks::Track::create_for_plugin_at_idx_w_action (
               type, &config, TRACKLIST->track_count ()));
           num_actions++;
 
@@ -188,7 +189,7 @@ PluginConfigurationManager::activate_plugin_configuration (
             pl_track->get_uuid ());
           UNDO_MANAGER->perform (
             new gui::actions::MoveTracksInsideFoldableTrackAction (
-              TrackSpan{ std::ranges::to<std::vector> (
+              structure::tracks::TrackSpan{ std::ranges::to<std::vector> (
                 TRACKLIST->get_track_span ().get_selected_tracks ()) },
               group->get_index ()));
           num_actions++;
@@ -197,7 +198,7 @@ PluginConfigurationManager::activate_plugin_configuration (
           TRACKLIST->get_selection_manager ().select_unique (
             pl_track->get_uuid ());
           UNDO_MANAGER->perform (new gui::actions::RemoveTracksDirectOutAction (
-            TrackSpan{ std::ranges::to<std::vector> (
+            structure::tracks::TrackSpan{ std::ranges::to<std::vector> (
               TRACKLIST->get_track_span ().get_selected_tracks ()) },
             *PORT_CONNECTIONS_MGR));
           num_actions++;
@@ -221,8 +222,9 @@ PluginConfigurationManager::activate_plugin_configuration (
           for (int i = 0; i < num_pairs; i++)
             {
               /* create the audio fx track */
-              auto * fx_track = dynamic_cast<AudioBusTrack *> (
-                Track::create_empty_with_action (Track::Type::AudioBus));
+              auto * fx_track = dynamic_cast<structure::tracks::AudioBusTrack *> (
+                Track::create_empty_with_action (
+                  structure::tracks::Track::Type::AudioBus));
               num_actions++;
 
               /* rename fx track */
@@ -358,6 +360,7 @@ void
 PluginConfigurationManager::activate_plugin_configuration_async (
   const PluginConfiguration &config)
 {
+  using namespace structure::tracks;
   Track::Type type =
     Track::type_get_from_plugin_descriptor (*config.get_descriptor ());
 

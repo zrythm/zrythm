@@ -8,6 +8,8 @@ add_subdirectory(utils)
 add_subdirectory(dsp)
 add_subdirectory(plugins)
 add_subdirectory(gui)
+add_subdirectory(structure)
+add_subdirectory(engine)
 
 target_sources(zrythm_gui_lib PRIVATE globals.cpp)
 if(MSVC)
@@ -69,7 +71,7 @@ if(WIN32)
   endif()
 endif()
 
-add_subdirectory(engine)
+add_subdirectory(engine-process)
 add_dependencies(zrythm zrythm-engine plugin-scanner)
 
 install(

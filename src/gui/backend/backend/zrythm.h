@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __ZRYTHM_H__
@@ -8,12 +8,12 @@
 
 #include <memory>
 
+#include "engine/session/recording_manager.h"
 #include "gui/backend/backend/file_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/plugin_manager.h"
-#include "gui/dsp/recording_manager.h"
 #include "utils/dsp_context.h"
 #include "utils/monotonic_time_provider.h"
 #include "utils/networking.h"
@@ -215,7 +215,7 @@ public:
   std::unique_ptr<zrythm::gui::old_dsp::plugins::PluginManager> plugin_manager_;
 
   /** Recording manager. */
-  RecordingManager * recording_manager_ = nullptr;
+  engine::session::RecordingManager * recording_manager_ = nullptr;
 
   /**
    * Project data.

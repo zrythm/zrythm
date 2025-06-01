@@ -32,6 +32,8 @@ public:
   {
     from_json (json_value, static_cast<UuidIdentifiableObject &> (obj));
   }
+
+  BOOST_DESCRIBE_CLASS (BaseTestObject, (UuidIdentifiableObject), (), (), ())
 };
 
 static_assert (UuidIdentifiable<BaseTestObject>);
@@ -71,6 +73,8 @@ public:
 
 private:
   std::string name_;
+
+  BOOST_DESCRIBE_CLASS (DerivedTestObject, (BaseTestObject), (), (), (name_))
 };
 
 class TestObjectBuilder

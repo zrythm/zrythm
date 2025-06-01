@@ -7,8 +7,8 @@
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/automation_region.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/arrangement/automation_region.h"
+#include "structure/tracks/tracklist.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

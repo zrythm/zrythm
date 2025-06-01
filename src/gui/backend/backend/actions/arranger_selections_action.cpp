@@ -2,25 +2,27 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_identifier.h"
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/audio_region.h"
-#include "gui/dsp/automation_region.h"
-#include "gui/dsp/automation_track.h"
-#include "gui/dsp/chord_track.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/laned_track.h"
-#include "gui/dsp/marker_track.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/track.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/automation_region.h"
+#include "structure/tracks/automation_track.h"
+#include "structure/tracks/chord_track.h"
+#include "structure/tracks/laned_track.h"
+#include "structure/tracks/marker_track.h"
+#include "structure/tracks/track.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/views.h"
 
 using namespace zrythm::gui::actions;
+using namespace zrythm::structure::arrangement;
+using namespace zrythm::structure::tracks;
 
 ArrangerSelectionsAction::ArrangerSelectionsAction ()
     : UndoableAction (UndoableAction::Type::ArrangerSelections)
@@ -115,8 +117,9 @@ ArrangerSelectionsAction::init_after_cloning (
   resize_type_ = other.resize_type_;
 }
 
-ArrangerObjectRegistry &
+auto
 ArrangerSelectionsAction::get_arranger_object_registry () const
+  -> ArrangerObjectRegistry &
 {
   return PROJECT->get_arranger_object_registry ();
 }
@@ -129,7 +132,8 @@ ArrangerSelectionsAction::init_loaded_impl ()
     o->update_positions (true, false, frames_per_tick_);
     if constexpr (std::derived_from<ObjectT, Region>)
       {
-        if constexpr (std::is_same_v<AudioRegion, ObjectT>)
+        if constexpr (
+          std::is_same_v<ObjectT, structure::arrangement::AudioRegion>)
           {
             o->fix_positions (frames_per_tick_);
             o->validate (false, frames_per_tick_);
@@ -169,15 +173,15 @@ ArrangerSelectionsAction::init_loaded_impl ()
 void
 ArrangerSelectionsAction::set_before_selections (ArrangerObjectSpan src_var)
 {
-  sel_ =
-    src_var.create_snapshots (*ArrangerObjectFactory::get_instance (), *this);
+  sel_ = src_var.create_snapshots (
+    *structure::arrangement::ArrangerObjectFactory::get_instance (), *this);
 }
 
 void
 ArrangerSelectionsAction::set_after_selections (ArrangerObjectSpan src_var)
 {
-  sel_after_ =
-    src_var.create_snapshots (*ArrangerObjectFactory::get_instance (), *this);
+  sel_after_ = src_var.create_snapshots (
+    *structure::arrangement::ArrangerObjectFactory::get_instance (), *this);
 }
 
 bool
@@ -191,8 +195,9 @@ ArrangerSelectionsAction::needs_transport_total_bar_update (bool perform) const
   return true;
 }
 
-std::vector<ArrangerObjectPtrVariant>
+auto
 ArrangerSelectionsAction::get_project_arranger_objects () const
+  -> std::vector<ArrangerObjectPtrVariant>
 {
   return *sel_ | std::views::transform ([] (auto &&obj_var) {
     return std::visit (
@@ -341,12 +346,12 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
 }
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
-  Region::Uuid                     region_id,
-  const dsp::Position             &sel_start,
-  const dsp::Position             &sel_end,
-  AudioFunctionType                audio_func_type,
-  AudioFunctionOpts                opts,
-  std::optional<utils::Utf8String> uri)
+  Region::Uuid                              region_id,
+  const dsp::Position                      &sel_start,
+  const dsp::Position                      &sel_end,
+  structure::arrangement::AudioFunctionType audio_func_type,
+  structure::arrangement::AudioFunctionOpts opts,
+  std::optional<utils::Utf8String>          uri)
     : EditArrangerSelectionsAction (
         ArrangerObjectSpan{
           PROJECT->get_arranger_object_registry ().find_by_id_or_throw (
@@ -392,7 +397,8 @@ ArrangerSelectionsAction::ResizeAction::ResizeAction (
   auto sel_before_span = ArrangerObjectSpan{ *sel_ };
   bool have_unresizable = !std::ranges::all_of (
     sel_before_span,
-    ArrangerObjectSpan::derived_from_type_projection<BoundedObject>);
+    ArrangerObjectSpan::derived_from_type_projection<
+      structure::arrangement::BoundedObject>);
   if (have_unresizable)
     {
       throw ZrythmException (
@@ -1555,7 +1561,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                             own_dest_obj->get_position ());
                           if constexpr (std::derived_from<ObjT, BoundedObject>)
                             {
-                              obj->end_pos_ = own_dest_obj->end_pos_;
+                              obj->end_pos_->set_to_position (
+                                *own_dest_obj->end_pos_);
                             }
                           if constexpr (std::derived_from<ObjT, LoopableObject>)
                             {
@@ -1608,7 +1615,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                             own_dest_obj->get_position ());
                           if constexpr (std::derived_from<ObjT, BoundedObject>)
                             {
-                              obj->end_pos_ = own_dest_obj->end_pos_;
+                              obj->end_pos_->set_to_position (
+                                *own_dest_obj->end_pos_);
                             }
                           if constexpr (std::derived_from<ObjT, LoopableObject>)
                             {
@@ -2046,11 +2054,12 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
 
                   /* remember the quantized position so we can find the
                    * object when undoing */
-                  own_quantized_obj->get_position ().set_to_pos (
+                  own_quantized_obj->get_position ().set_to_position (
                     obj->get_position ());
                   if constexpr (std::derived_from<ObjT, BoundedObject>)
                     {
-                      own_quantized_obj->end_pos_->set_to_pos (*obj->end_pos_);
+                      own_quantized_obj->end_pos_->set_to_position (
+                        *obj->end_pos_);
                     }
                 }
               else

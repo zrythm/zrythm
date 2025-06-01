@@ -6,10 +6,10 @@
 
 #include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/automation_track.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_span.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/automation_track.h"
+#include "structure/tracks/track.h"
 
 namespace zrythm::gui::actions
 {
@@ -27,6 +27,9 @@ class MixerSelectionsAction
   Q_OBJECT
   QML_ELEMENT
   DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (MixerSelectionsAction)
+
+  using Track = structure::tracks::Track;
+  using AutomationTrack = structure::tracks::AutomationTrack;
 
 public:
   enum class Type
@@ -109,9 +112,9 @@ private:
    * @param deleted Whether to use deleted_ats.
    */
   void revert_automation (
-    AutomatableTrack   &track,
-    plugins::PluginSlot slot,
-    bool                deleted);
+    structure::tracks::AutomatableTrack &track,
+    plugins::PluginSlot                  slot,
+    bool                                 deleted);
 
   /**
    * Save an existing plugin about to be replaced into @p tmp_ms.

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/session/project_graph_builder.h"
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/project_graph_builder.h"
-#include "gui/dsp/router.h"
 
 using namespace zrythm::gui::actions;
 

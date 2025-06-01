@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/position.h"
+#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/quantize_options.h"
 #include "gui/dsp/snap_grid.h"
-#include "gui/dsp/transport.h"
 #include "utils/algorithms.h"
 #include "utils/pcg_rand.h"
 
@@ -14,7 +14,8 @@ namespace zrythm::gui::old_dsp
 {
 
 void
-QuantizeOptions::update_quantize_points (const Transport &transport)
+QuantizeOptions::update_quantize_points (
+  const engine::session::Transport &transport)
 {
   auto    &audio_engine = transport.project_->audio_engine_;
   Position tmp, end_pos;

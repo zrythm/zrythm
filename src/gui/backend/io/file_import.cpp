@@ -6,10 +6,10 @@
 #include "gui/backend/io/file_descriptor.h"
 #include "gui/backend/io/file_import.h"
 #include "gui/backend/io/midi_file.h"
-#include "gui/dsp/audio_region.h"
-#include "gui/dsp/midi_region.h"
-#include "gui/dsp/track.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/midi_region.h"
+#include "structure/tracks/track.h"
+#include "structure/tracks/tracklist.h"
 
 // TODO
 #if 0

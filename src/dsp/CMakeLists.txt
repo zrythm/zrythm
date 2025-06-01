@@ -5,7 +5,6 @@ qt_add_library(zrythm_dsp_lib STATIC)
 
 target_sources(zrythm_dsp_lib
   PRIVATE
-  channel.h
   chord_descriptor.h
   chord_descriptor.cpp
   curve.h

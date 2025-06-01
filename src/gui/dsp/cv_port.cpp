@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/device_io/engine.h"
 #include "gui/backend/backend/project.h"
 #include "gui/dsp/cv_port.h"
-#include "gui/dsp/engine.h"
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
 

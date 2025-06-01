@@ -6,13 +6,13 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/midi_event.h"
+#include "engine/device_io/engine.h"
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
-#include "gui/dsp/engine.h"
-#include "gui/dsp/fader.h"
-#include "gui/dsp/master_track.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/tracks/fader.h"
+#include "structure/tracks/master_track.h"
+#include "structure/tracks/tracklist.h"
 
 #include "helpers/project_helper.h"
 #include "tests/helpers/plugin_manager.h"

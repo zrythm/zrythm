@@ -3,195 +3,30 @@
 
 target_sources(zrythm_gui_lib
   PRIVATE
-    arranger_object.h
-    arranger_object.cpp
-    arranger_object_all.h
-    arranger_object_factory.h
-    arranger_object_factory.cpp
-    arranger_object_owner.h
-    arranger_object_list_model.h
-    arranger_object_span.h
-    arranger_object_span.cpp
-    arranger_object_fwd.h
-    audio_bus_track.h
-    audio_bus_track.cpp
-    audio_function.h
-    audio_function.cpp
-    audio_group_track.h
-    audio_group_track.cpp
-    audio_lane.h
-    audio_lane.cpp
     audio_port.h
     audio_port.cpp
-    audio_region.h
-    audio_region.cpp
-    audio_track.h
-    audio_track.cpp
-    automatable_track.h
-    automatable_track.cpp
-    automation_function.h
-    automation_function.cpp
-    automation_point.h
-    automation_point.cpp
-    automation_region.h
-    automation_region.cpp
-    automation_track.h
-    automation_track.cpp
-    automation_tracklist.h
-    automation_tracklist.cpp
     carla_native_plugin.h
     carla_native_plugin.cpp
-    channel_send.h
-    channel_send.cpp
-    channel_track.h
-    channel_track.cpp
-    chord_object.h
-    chord_object.cpp
-    chord_region.h
-    chord_region.cpp
-    chord_track.h
-    chord_track.cpp
-    clip.h
-    clip.cpp
-    colored_object.h
-    colored_object.cpp
     control_port.h
     control_port.cpp
-    control_room.h
-    control_room.cpp
     cv_port.h
     cv_port.cpp
-    engine.h
-    engine.cpp
-    engine_dummy.h
-    engine_dummy.cpp
-    engine_jack.h
-    engine_jack.cpp
-    exporter.h
-    exporter.cpp
-    ext_port.h
-    ext_port.cpp
-    fadeable_object.h
-    fadeable_object.cpp
-    fader.h
-    fader.cpp
-    foldable_track.h
-    foldable_track.cpp
-    folder_track.h
-    folder_track.cpp
-    graph_export.h
-    graph_export.cpp
-    group_target_track.h
-    group_target_track.cpp
-    hardware_processor.h
-    hardware_processor.cpp
-    instrument_track.h
-    instrument_track.cpp
-    lane_owned_object.h
-    lane_owned_object.cpp
-    laned_track.h
-    laned_track.cpp
-    bounded_object.h
-    bounded_object.cpp
-    loopable_object.h
-    loopable_object.cpp
-    marker.h
-    marker.cpp
-    marker_track.h
-    marker_track.cpp
-    master_track.h
-    master_track.cpp
-    metronome.h
-    metronome.cpp
-    midi_bus_track.h
-    midi_bus_track.cpp
-    midi_function.h
-    midi_function.cpp
-    midi_group_track.h
-    midi_group_track.cpp
-    midi_lane.h
-    midi_lane.cpp
-    midi_mapping.h
-    midi_mapping.cpp
-    midi_note.h
-    midi_note.cpp
     midi_port.h
     midi_port.cpp
-    midi_region.h
-    midi_region.cpp
-    midi_track.h
-    midi_track.cpp
     modulator_macro_processor.h
     modulator_macro_processor.cpp
-    modulator_track.h
-    modulator_track.cpp
-    muteable_object.h
-    muteable_object.cpp
-    named_object.h
-    named_object.cpp
-    piano_roll_track.h
-    piano_roll_track.cpp
     plugin.h
     plugin.cpp
     plugin_factory.h
     plugin_span.h
     plugin_span.cpp
-    pool.h
-    pool.cpp
     port.h
     port.cpp
     port_all.h
     port_backend.h
     port_span.h
-    processable_track.h
-    processable_track.cpp
-    project_graph_builder.h
-    project_graph_builder.cpp
     quantize_options.h
     quantize_options.cpp
-    recordable_track.h
-    recordable_track.cpp
-    recording_event.h
-    recording_event.cpp
-    recording_manager.h
-    recording_manager.cpp
-    region.h
-    region.cpp
-    region_link_group.h
-    region_link_group.cpp
-    region_link_group_manager.h
-    region_link_group_manager.cpp
-    region_owned_object.h
-    region_owned_object.cpp
-    router.h
-    router.cpp
-    sample_processor.h
-    sample_processor.cpp
-    scale_object.h
-    scale_object.cpp
     snap_grid.h
     snap_grid.cpp
-    tempo_track.h
-    tempo_track.cpp
-    timeline_object.h
-    timeline_object.cpp
-    track.h
-    track.cpp
-    track_all.h
-    track_factory.h
-    track_fwd.h
-    track_lane.h
-    track_lane.cpp
-    track_lane_list.h
-    track_lane_list.cpp
-    track_processor.h
-    track_processor.cpp
-    track_span.h
-    track_span.cpp
-    tracklist.h
-    tracklist.cpp
-    transport.h
-    transport.cpp
-    velocity.h
-    velocity.cpp
 )

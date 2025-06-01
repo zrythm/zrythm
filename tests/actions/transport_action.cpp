@@ -3,11 +3,11 @@
 
 #include "zrythm-test-config.h"
 
+#include "engine/session/transport.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/transport.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

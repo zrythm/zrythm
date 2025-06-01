@@ -7,7 +7,10 @@
 #include "gui/dsp/cv_port.h"
 #include "utils/types.h"
 
+namespace zrythm::structure::tracks
+{
 class ModulatorTrack;
+}
 
 /**
  * @addtogroup dsp
@@ -27,6 +30,8 @@ class ModulatorMacroProcessor final
       public dsp::graph::IProcessable,
       public IPortOwner
 {
+  using ModulatorTrack = structure::tracks::ModulatorTrack;
+
 public:
   ModulatorMacroProcessor (
     PortRegistry      &port_registry,

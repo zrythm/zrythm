@@ -4,8 +4,8 @@
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/modulator_macro_processor.h"
-#include "gui/dsp/modulator_track.h"
 #include "gui/dsp/port.h"
+#include "structure/tracks/modulator_track.h"
 #include "utils/debug.h"
 
 #include <fmt/format.h>

@@ -3,11 +3,11 @@
 
 #include "zrythm-config.h"
 
+#include "engine/device_io/engine.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/engine.h"
 #include "gui/dsp/midi_port.h"
-#include "gui/dsp/piano_roll_track.h"
+#include "structure/tracks/piano_roll_track.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 

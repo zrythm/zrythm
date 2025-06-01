@@ -12,7 +12,7 @@
 #include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
 #include "gui/backend/backend/editor_settings.h"
-#include "gui/dsp/arranger_object_all.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
 
 class ChordPreset;
@@ -126,7 +126,8 @@ public:
   std::vector<ChordDescriptor> chords_;
 
 private:
-  ArrangerObjectSelectionManager::UuidSet selected_objects_;
+  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
+    selected_objects_;
 };
 
 /**

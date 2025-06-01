@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
+#include "engine/session/router.h"
 #include "gui/dsp/carla_discovery.h"
-#include "gui/dsp/fader.h"
-#include "gui/dsp/router.h"
+#include "structure/tracks/fader.h"
 #include "utils/math.h"
 
 #include "tests/helpers/plugin_manager.h"

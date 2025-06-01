@@ -14,7 +14,10 @@
  * @{
  */
 
+namespace zrythm::structure::tracks
+{
 class AutomationTrack;
+}
 
 /**
  * @brief Control port specifics.
@@ -361,7 +364,7 @@ public:
    *
    * To be set at runtime only (not serialized).
    */
-  AutomationTrack * at_{};
+  structure::tracks::AutomationTrack * at_{};
 
   /**
    * Whether the port received a UI event from the plugin UI in this cycle.

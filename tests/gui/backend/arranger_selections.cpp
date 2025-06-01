@@ -6,8 +6,8 @@
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/midi_region.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/arrangement/midi_region.h"
+#include "structure/tracks/tracklist.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

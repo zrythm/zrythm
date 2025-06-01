@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
+#include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_mapping.h"
+#include "structure/tracks/master_track.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 

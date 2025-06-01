@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/session/router.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/track_all.h"
+#include "structure/tracks/track_all.h"
 #include "utils/rt_thread_id.h"
 
 ClipEditor::ClipEditor (
@@ -127,8 +127,8 @@ ClipEditor::set_region (
 }
 #endif
 
-std::optional<TrackUuid>
-ClipEditor::get_track_id () const
+auto
+ClipEditor::get_track_id () const -> std::optional<TrackUuid>
 {
   if (!has_region ())
     return std::nullopt;
@@ -153,8 +153,8 @@ ClipEditor::unset_region_if_belongs_to_track (const TrackUuid &track_id)
     }
 }
 
-std::optional<RegionPtrVariant>
-ClipEditor::get_region () const
+auto
+ClipEditor::get_region () const -> std::optional<RegionPtrVariant>
 {
   auto region_var = std::visit (
     [&] (auto &&obj) -> RegionPtrVariant {
@@ -168,8 +168,8 @@ ClipEditor::get_region () const
   return region_var;
 }
 
-std::optional<TrackPtrVariant>
-ClipEditor::get_track () const
+auto
+ClipEditor::get_track () const -> std::optional<TrackPtrVariant>
 {
 #if 0
   if (ROUTER->is_processing_thread ())
@@ -184,7 +184,7 @@ ClipEditor::get_track () const
     return std::nullopt;
 
   return std::visit (
-    [&] (auto &&region) -> OptionalTrackPtrVariant {
+    [&] (auto &&region) -> structure::tracks::OptionalTrackPtrVariant {
       const auto id = region->get_track_id ();
       if (id)
         {

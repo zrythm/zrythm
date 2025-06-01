@@ -4,12 +4,12 @@
 #include "zrythm-test-config.h"
 
 #include "dsp/midi_event.h"
+#include "engine/device_io/engine_dummy.h"
+#include "engine/session/recording_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/engine_dummy.h"
-#include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_track.h"
-#include "gui/dsp/recording_manager.h"
+#include "structure/tracks/master_track.h"
+#include "structure/tracks/midi_track.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
@@ -455,7 +455,7 @@ do_takes_loop_no_punch (
   pos.zero();
   pos.add_frames (r_length_frames);
   ASSERT_POSITION_EQ (pos, mr_obj->loop_end_pos_);
-  position_set_to_pos (
+  position_set_to_position (
     &pos, &TRANSPORT->playhead_pos);
   ASSERT_POSITION_EQ (pos, mr_obj->end_pos_);
 
@@ -481,7 +481,7 @@ do_takes_loop_no_punch (
   pos.zero();
   pos.add_frames (r_length_frames);
   ASSERT_POSITION_EQ (pos, audio_r_obj->loop_end_pos_);
-  position_set_to_pos (
+  position_set_to_position (
     &pos, &TRANSPORT->playhead_pos);
   ASSERT_POSITION_EQ (pos, audio_r_obj->end_pos_);
 
@@ -510,7 +510,7 @@ do_takes_loop_no_punch (
   pos.add_frames (r_length_frames);
   g_assert_cmppos (
     &pos, &latch_r_obj->loop_end_pos_);
-  position_set_to_pos (
+  position_set_to_position (
     &pos, &TRANSPORT->playhead_pos);
   ASSERT_POSITION_EQ (pos, latch_r_obj->end_pos_);
 

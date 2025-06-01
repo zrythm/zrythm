@@ -5,12 +5,12 @@
 
 #include "zrythm-test-config.h"
 
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/master_track.h"
-#include "gui/dsp/region.h"
-#include "gui/dsp/router.h"
+#include "structure/arrangement/region.h"
+#include "structure/tracks/master_track.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

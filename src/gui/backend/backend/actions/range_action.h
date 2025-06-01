@@ -1,13 +1,12 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UNDO_RANGE_ACTION_H__
-#define __UNDO_RANGE_ACTION_H__
+#pragma once
 
 #include "dsp/position.h"
+#include "engine/session/transport.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/arranger_object_span.h"
-#include "gui/dsp/transport.h"
+#include "structure/arrangement/arranger_object_span.h"
 
 namespace zrythm::gui::actions
 {
@@ -20,6 +19,10 @@ class RangeAction
   Q_OBJECT
   QML_ELEMENT
   DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (RangeAction)
+
+  using ArrangerObjectSpan = structure::arrangement::ArrangerObjectSpan;
+  using ArrangerObject = structure::arrangement::ArrangerObject;
+  using Transport = engine::session::Transport;
 
 public:
   enum class Type
@@ -126,5 +129,3 @@ public:
 };
 
 }; // namespace zrythm::gui::actions
-
-#endif

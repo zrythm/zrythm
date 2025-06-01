@@ -7,8 +7,8 @@
 #include "gui/backend/backend/automation_editor.h"
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/backend/backend/piano_roll.h"
-#include "gui/dsp/arranger_object_span.h"
-#include "gui/dsp/region.h"
+#include "structure/arrangement/arranger_object_span.h"
+#include "structure/arrangement/region.h"
 
 class ArrangerSelections;
 
@@ -36,6 +36,14 @@ class ClipEditor final : public QObject, public ICloneable<ClipEditor>
     AudioClipEditor * audioEditor READ getAudioClipEditor CONSTANT FINAL)
   Q_PROPERTY (
     AutomationEditor * automationEditor READ getAutomationEditor CONSTANT FINAL)
+
+  using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
+  using TrackResolver = structure::tracks::TrackResolver;
+  using Region = structure::arrangement::Region;
+  using RegionPtrVariant = structure::arrangement::RegionPtrVariant;
+  using TrackPtrVariant = structure::tracks::TrackPtrVariant;
+  using TrackUuid = structure::tracks::TrackUuid;
+  using ArrangerObject = structure::arrangement::ArrangerObject;
 
 public:
   ClipEditor (

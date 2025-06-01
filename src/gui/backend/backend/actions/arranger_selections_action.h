@@ -1,16 +1,15 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef UNDO_ARRANGER_SELECTIONS_ACTION_H
-#define UNDO_ARRANGER_SELECTIONS_ACTION_H
+#pragma once
 
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/arranger_object_span.h"
-#include "gui/dsp/audio_function.h"
-#include "gui/dsp/automation_function.h"
-#include "gui/dsp/midi_function.h"
 #include "gui/dsp/quantize_options.h"
+#include "structure/arrangement/arranger_object_span.h"
+#include "structure/arrangement/audio_function.h"
+#include "structure/arrangement/automation_function.h"
+#include "structure/arrangement/midi_function.h"
 
 namespace zrythm::gui::actions
 {
@@ -36,6 +35,15 @@ class ArrangerSelectionsAction
   Q_OBJECT
   QML_ELEMENT
   DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (ArrangerSelectionsAction)
+
+  using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
+  using ArrangerObjectPtrVariant =
+    structure::arrangement::ArrangerObjectPtrVariant;
+  using ArrangerObjectSpan = structure::arrangement::ArrangerObjectSpan;
+  using ArrangerObject = structure::arrangement::ArrangerObject;
+  using Region = structure::arrangement::Region;
+  using MidiFunction = structure::arrangement::MidiFunction;
+  using AutomationFunction = structure::arrangement::AutomationFunction;
 
 public:
   enum class Type
@@ -573,12 +581,12 @@ public:
    * @brief Wrapper for audio functions.
    */
   EditArrangerSelectionsAction (
-    Region::Uuid                     region_id,
-    const dsp::Position             &sel_start,
-    const dsp::Position             &sel_end,
-    AudioFunctionType                audio_func_type,
-    AudioFunctionOpts                opts,
-    std::optional<utils::Utf8String> uri);
+    Region::Uuid                              region_id,
+    const dsp::Position                      &sel_start,
+    const dsp::Position                      &sel_end,
+    structure::arrangement::AudioFunctionType audio_func_type,
+    structure::arrangement::AudioFunctionOpts opts,
+    std::optional<utils::Utf8String>          uri);
 };
 
 class ArrangerSelectionsAction::AutomationFillAction
@@ -592,7 +600,7 @@ public:
    * @param region_after The region after the change.
    * @param already_changed Whether the change was already made.
    */
-  template <FinalRegionSubclass RegionT>
+  template <structure::arrangement::FinalRegionSubclass RegionT>
   AutomationFillAction (
     const RegionT &region_before,
     const RegionT &region_after,
@@ -666,5 +674,3 @@ DEFINE_ENUM_FORMATTER (
   "Resize R (fade)",
   "Stretch L",
   "Stretch R");
-
-#endif

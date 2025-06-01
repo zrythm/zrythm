@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __GUI_BACKEND_POSITION_PROXY_H__
-#define __GUI_BACKEND_POSITION_PROXY_H__
+#pragma once
 
 #include "dsp/position.h"
 #include "utils/icloneable.h"
@@ -13,15 +12,21 @@
 
 #include "realtime_property.h"
 
+namespace zrythm::engine::session
+{
 class Transport;
+}
+namespace zrythm::structure::tracks
+{
 class TempoTrack;
+}
 
 using namespace zrythm;
 
-Q_DECLARE_OPAQUE_POINTER (Transport *)
-Q_DECLARE_OPAQUE_POINTER (const Transport *)
-Q_DECLARE_OPAQUE_POINTER (TempoTrack *)
-Q_DECLARE_OPAQUE_POINTER (const TempoTrack *)
+Q_DECLARE_OPAQUE_POINTER (zrythm::engine::session::Transport *)
+Q_DECLARE_OPAQUE_POINTER (const zrythm::engine::session::Transport *)
+Q_DECLARE_OPAQUE_POINTER (zrythm::structure::tracks::TempoTrack *)
+Q_DECLARE_OPAQUE_POINTER (const zrythm::structure::tracks::TempoTrack *)
 
 class PositionProxy
     : public QObject,
@@ -65,9 +70,9 @@ public:
 
   Q_INVOKABLE void addTicks (double ticks) { setTicks (getTicks () + ticks); }
 
-  Q_INVOKABLE QString
-  getStringDisplay (const Transport * transport, const TempoTrack * tempo_track)
-    const;
+  Q_INVOKABLE QString getStringDisplay (
+    const zrythm::engine::session::Transport *    transport,
+    const zrythm::structure::tracks::TempoTrack * tempo_track) const;
 
 public:
   // RT-safe wrappers
@@ -141,5 +146,3 @@ private:
 DEFINE_OBJECT_FORMATTER (PositionProxy, PositionProxy, [] (const auto &obj) {
   return Position_to_string (obj);
 });
-
-#endif // __GUI_BACKEND_POSITION_PROXY_H__

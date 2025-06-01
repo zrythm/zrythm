@@ -3,7 +3,7 @@
 
 #pragma once
 #include "gui/backend/backend/editor_settings.h"
-#include "gui/dsp/arranger_object_all.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
 
 #include <QtQmlIntegration>
@@ -54,5 +54,6 @@ private:
   /** Width of the left side of the timeline panel. */
   int tracks_width_ = 0;
 
-  ArrangerObjectSelectionManager::UuidSet selected_objects_;
+  zrythm::structure::arrangement::ArrangerObjectSelectionManager::UuidSet
+    selected_objects_;
 };

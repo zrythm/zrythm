@@ -7,8 +7,6 @@ target_sources(zrythm_gui_lib
     alert_manager.cpp
     carla_discovery.h
     carla_discovery.cpp
-    channel.h
-    channel.cpp
     curve_preset.h
     curve_preset.cpp
     plugin_collections.h

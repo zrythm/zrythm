@@ -83,6 +83,8 @@ private:
   static constexpr std::string_view kUuidKey = "id";
 
   Uuid uuid_;
+
+  BOOST_DESCRIBE_CLASS (UuidIdentifiableObject, (), (), (), (uuid_))
 };
 
 template <typename T>
@@ -235,6 +237,8 @@ private:
 
   std::optional<UuidType> id_;
   OptionalRef<RegistryT>  registry_;
+
+  BOOST_DESCRIBE_CLASS (UuidReference<RegistryT>, (), (), (), (id_))
 };
 
 template <typename ReturnType, typename UuidType>
@@ -929,10 +933,6 @@ private:
 
 } // namespace zrythm::utils
 
-DEFINE_OBJECT_FORMATTER (QUuid, utils_uuid, [] (const auto &uuid) {
-  return fmt::format ("{}", uuid.toString (QUuid::WithoutBraces));
-})
-
 // Concept to detect UuidIdentifiableObject::Uuid types
 template <typename T>
 concept UuidType = requires (T t) {
@@ -949,23 +949,5 @@ struct fmt::formatter<T> : fmt::formatter<std::string_view>
   {
     return fmt::formatter<QString>{}.format (
       type_safe::get (uuid).toString (QUuid::WithoutBraces), ctx);
-  }
-};
-
-// Concept to detect UuidReference types
-template <typename T>
-concept UuidReferenceType = requires (T t) {
-  { type_safe::get (t.id ()) } -> std::convertible_to<QUuid>;
-};
-
-// Formatter for UuidReference
-template <UuidReferenceType T>
-struct fmt::formatter<T> : fmt::formatter<std::string_view>
-{
-  template <typename FormatContext>
-  auto format (const T &uuid_ref, FormatContext &ctx) const
-  {
-    return fmt::formatter<std::string_view>::format (
-      fmt::format ("{}", uuid_ref.id ()), ctx);
   }
 };

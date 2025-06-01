@@ -4,7 +4,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/gtk_widgets/track.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/track.h"
 
 #include "tests/helpers/fishbowl.h"
 #include "tests/helpers/fishbowl_window.h"

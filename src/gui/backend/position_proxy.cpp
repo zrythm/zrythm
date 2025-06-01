@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/device_io/engine.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/position_proxy.h"
 #include "gui/backend/realtime_updater.h"
-#include "gui/dsp/engine.h"
-#include "gui/dsp/tempo_track.h"
+#include "structure/tracks/tempo_track.h"
 #include "utils/math.h"
 
 PositionProxy::PositionProxy (
@@ -68,8 +68,8 @@ PositionProxy::setTicks (double ticks)
 
 QString
 PositionProxy::getStringDisplay (
-  const Transport *  transport,
-  const TempoTrack * tempo_track) const
+  const engine::session::Transport *    transport,
+  const structure::tracks::TempoTrack * tempo_track) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
            to_string (

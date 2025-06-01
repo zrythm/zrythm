@@ -19,7 +19,7 @@
 #include <QQuickStyle>
 #include <QTimer>
 
-#include "engine/ipc_message.h"
+#include "engine-process/ipc_message.h"
 #include "zrythm_application.h"
 
 using namespace zrythm::gui;
@@ -81,7 +81,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     utils::Utf8String::from_qstring (applicationFilePath ()).to_path (), true,
     true);
 
-  AudioEngine::set_default_backends (false);
+  engine::device_io::AudioEngine::set_default_backends (false);
 
   setup_ui ();
 

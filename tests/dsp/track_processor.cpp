@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/dsp/master_track.h"
-#include "gui/dsp/track_processor.h"
+#include "structure/tracks/master_track.h"
+#include "structure/tracks/track_processor.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

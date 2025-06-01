@@ -3,11 +3,11 @@
 
 #include "dsp/kmeter_dsp.h"
 #include "dsp/midi_event.h"
+#include "engine/device_io/engine.h"
 #include "gui/backend/meter.h"
 #include "gui/dsp/audio_port.h"
-#include "gui/dsp/engine.h"
 #include "gui/dsp/midi_port.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/track.h"
 #include "utils/math.h"
 #include "utils/ring_buffer.h"
 

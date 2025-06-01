@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/device_io/engine.h"
+#include "engine/session/router.h"
+#include "engine/session/transport.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/engine.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/tempo_track.h"
-#include "gui/dsp/tracklist.h"
-#include "gui/dsp/transport.h"
+#include "structure/tracks/tempo_track.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 
 using namespace zrythm::gui::actions;
@@ -90,8 +90,8 @@ TransportAction::do_or_undo (bool do_it)
       break;
     case Type::BeatUnitChange:
       change.flag2 = PortIdentifier::Flags2::BeatUnit;
-      change.beat_unit =
-        TempoTrack::beat_unit_to_enum (do_it ? int_after_ : int_before_);
+      change.beat_unit = structure::tracks::TempoTrack::beat_unit_to_enum (
+        do_it ? int_after_ : int_before_);
       break;
     }
 

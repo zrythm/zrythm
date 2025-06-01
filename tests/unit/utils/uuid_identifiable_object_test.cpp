@@ -70,6 +70,51 @@ TEST (UuidIdentifiableObjectTest, UuidTypeOperations)
   EXPECT_NE (uuid1, uuid2);
 }
 
+TEST (UuidIdentifiableObjectTest, BoostDescribeFormatter)
+{
+  // Test BaseTestObject formatting
+  BaseTestObject baseObj;
+  std::string    baseStr = fmt::format ("{}", baseObj);
+  EXPECT_THAT (baseStr, testing::StartsWith ("{ { .uuid_="));
+  EXPECT_THAT (baseStr, testing::EndsWith ("}"));
+
+  // Test DerivedTestObject formatting
+  DerivedTestObject derivedObj (TestUuid{ QUuid::createUuid () }, "TestObject");
+  std::string       derivedStr = fmt::format ("{}", derivedObj);
+  EXPECT_THAT (derivedStr, testing::StartsWith ("{ { { .uuid_="));
+  EXPECT_THAT (derivedStr, testing::HasSubstr (".name_=TestObject"));
+  EXPECT_THAT (derivedStr, testing::EndsWith ("}"));
+}
+
+TEST (UuidIdentifiableObjectTest, UuidTypeFormatter)
+{
+  TestUuid    uuid{ QUuid::createUuid () };
+  std::string uuidStr = fmt::format ("{}", uuid);
+  EXPECT_EQ (
+    uuidStr,
+    type_safe::get (uuid).toString (QUuid::WithoutBraces).toStdString ());
+}
+
+TEST (UuidIdentifiableObjectTest, UuidReferenceFormatter)
+{
+  using TestRegistry = UuidIdentifiableObjectRegistryTest::TestRegistry;
+
+  auto * obj =
+    new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "RefTest");
+  TestRegistry registry;
+  registry.register_object (obj);
+
+  utils::UuidReference<TestRegistry> ref (obj->get_uuid (), registry);
+  std::string                        refStr = fmt::format ("{}", ref);
+  EXPECT_EQ (
+    refStr,
+    std::string ("{ .id_=")
+      + type_safe::get (obj->get_uuid ())
+          .toString (QUuid::WithoutBraces)
+          .toStdString ()
+      + std::string (" }"));
+}
+
 TEST_F (UuidIdentifiableObjectRegistryTest, BasicRegistration)
 {
   EXPECT_EQ (registry_.size (), 3);

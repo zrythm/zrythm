@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/dsp/track_all.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/tracks/track_all.h"
+#include "structure/tracks/tracklist.h"
 
 #include "track_filter_proxy_model.h"
 
@@ -42,7 +42,9 @@ TrackFilterProxyModel::filterAcceptsRow (
   int                source_row,
   const QModelIndex &source_parent) const
 {
-  if (auto * tracklist = dynamic_cast<Tracklist *> (sourceModel ()))
+  if (
+    auto * tracklist =
+      dynamic_cast<structure::tracks::Tracklist *> (sourceModel ()))
     {
       auto tr = tracklist->get_track_at_index (source_row);
       return std::visit (

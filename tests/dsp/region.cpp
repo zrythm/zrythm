@@ -5,8 +5,8 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/midi_region.h"
-#include "gui/dsp/region.h"
+#include "structure/arrangement/midi_region.h"
+#include "structure/arrangement/region.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

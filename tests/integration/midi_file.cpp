@@ -6,11 +6,11 @@
 #include <random>
 
 #include "dsp/midi_event.h"
+#include "engine/device_io/engine_dummy.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/engine_dummy.h"
-#include "gui/dsp/midi_track.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/midi_track.h"
+#include "structure/tracks/track.h"
 #include "utils/io.h"
 
 #include "tests/helpers/project_helper.h"

@@ -24,7 +24,8 @@ PluginSpan::can_be_pasted (const plugins::PluginSlot &slot) const
         (*highest_slot_it).get_slot_with_index ().second
         - (*lowest_slot_it).get_slot_with_index ().second;
 
-      return slot.get_slot_with_index ().second + delta < (int) dsp::STRIP_SIZE;
+      return slot.get_slot_with_index ().second + delta
+             < (int) structure::tracks::Channel::STRIP_SIZE;
     }
   // non-indexed slots not supported yet
   return false;

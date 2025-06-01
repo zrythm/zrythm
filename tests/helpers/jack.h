@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include "engine/device_io/engine.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/engine.h"
 
 #ifdef HAVE_JACK
 

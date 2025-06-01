@@ -5,7 +5,7 @@
 
 #include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/channel_send.h"
+#include "structure/tracks/channel_send.h"
 
 namespace zrythm::gui::actions
 {
@@ -21,6 +21,8 @@ class ChannelSendAction
   Q_OBJECT
   QML_ELEMENT
   DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (ChannelSendAction)
+
+  using ChannelSend = structure::tracks::ChannelSend;
 
 public:
   enum class Type

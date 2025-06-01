@@ -6,15 +6,15 @@
 #include <filesystem>
 
 #include "dsp/port_connections_manager.h"
+#include "engine/device_io/engine.h"
+#include "engine/session/router.h"
+#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/ui.h"
-#include "gui/dsp/audio_region.h"
-#include "gui/dsp/engine.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/tracklist.h"
-#include "gui/dsp/transport.h"
+#include "structure/arrangement/audio_region.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
@@ -33,13 +33,14 @@ using namespace zrythm;
 Project::Project (QObject * parent)
     : QObject (parent), port_registry_ (new PortRegistry (this)),
       plugin_registry_ (new PluginRegistry (this)),
-      arranger_object_registry_ (new ArrangerObjectRegistry (this)),
-      track_registry_ (new TrackRegistry (this)),
+      arranger_object_registry_ (
+        new structure::arrangement::ArrangerObjectRegistry (this)),
+      track_registry_ (new structure::tracks::TrackRegistry (this)),
       version_ (Zrythm::get_version (false)),
       tool_ (new gui::backend::Tool (this)),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
-      audio_engine_ (std::make_unique<AudioEngine> (this)),
-      transport_ (new Transport (this)),
+      audio_engine_ (std::make_unique<engine::device_io::AudioEngine> (this)),
+      transport_ (new engine::session::Transport (this)),
       quantize_opts_editor_ (std::make_unique<QuantizeOptions> (
         zrythm::utils::NoteLength::Note_1_8)),
       quantize_opts_timeline_ (std::make_unique<QuantizeOptions> (
@@ -63,20 +64,20 @@ Project::Project (QObject * parent)
       timeline_ (new Timeline (this)),
       clip_editor_ (new ClipEditor (
         *arranger_object_registry_,
-        [&] (const Track::Uuid &id) {
+        [&] (const auto &id) {
           return get_track_registry ().find_by_id_or_throw (id);
         },
         this)),
-      midi_mappings_ (std::make_unique<MidiMappings> ()),
-      tracklist_ (new Tracklist (
+      midi_mappings_ (std::make_unique<engine::session::MidiMappings> ()),
+      tracklist_ (new structure::tracks::Tracklist (
         *this,
         *port_registry_,
         *track_registry_,
         port_connections_manager_.get ())),
       undo_manager_ (new gui::actions::UndoManager (this)),
-      arranger_object_factory_ (new ArrangerObjectFactory (
+      arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
         *arranger_object_registry_,
-        [&] (const Track::Uuid &id) {
+        [&] (const auto &id) {
           return get_track_registry ().find_by_id_or_throw (id);
         },
         *gui::SettingsManager::get_instance (),
@@ -91,15 +92,15 @@ Project::Project (QObject * parent)
         },
         [&] () { return audio_engine_->sample_rate_; },
         [&] () { return tracklist_->getTempoTrack ()->get_current_bpm (); },
-        ArrangerObjectSelectionManager{
+        structure::arrangement::ArrangerObjectSelectionManager{
           timeline_->get_selected_object_ids (), *arranger_object_registry_ },
-        ArrangerObjectSelectionManager{
+        structure::arrangement::ArrangerObjectSelectionManager{
           clip_editor_->getPianoRoll ()->get_selected_object_ids (),
           *arranger_object_registry_ },
-        ArrangerObjectSelectionManager{
+        structure::arrangement::ArrangerObjectSelectionManager{
           clip_editor_->getChordEditor ()->get_selected_object_ids (),
           *arranger_object_registry_ },
-        ArrangerObjectSelectionManager{
+        structure::arrangement::ArrangerObjectSelectionManager{
           clip_editor_->getAutomationEditor ()->get_selected_object_ids (),
           *arranger_object_registry_ },
         this)),
@@ -108,7 +109,7 @@ Project::Project (QObject * parent)
         *port_registry_,
         *gui::SettingsManager::get_instance (),
         this)),
-      track_factory_ (new TrackFactory (
+      track_factory_ (new structure::tracks::TrackFactory (
         *track_registry_,
         *plugin_registry_,
         *port_registry_,
@@ -168,11 +169,12 @@ Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) con
         return std::visit (
           [&] (auto &&track) {
             using TrackT = base_type<decltype (track)>;
-            if constexpr (std::is_same_v<TrackT, AudioTrack>)
+            if constexpr (std::is_same_v<TrackT, structure::tracks::AudioTrack>)
               {
                 for (auto &lane_var : track->lanes_)
                   {
-                    auto * lane = std::get<AudioLane *> (lane_var);
+                    auto * lane =
+                      std::get<structure::tracks::AudioLane *> (lane_var);
                     for (auto * region : lane->get_children_view ())
                       {
                         if (region->get_clip_id () == clip.get_uuid ())
@@ -403,7 +405,7 @@ Project::activate ()
   audio_engine_->activate (true);
 
   /* pause engine */
-  AudioEngine::State state{};
+  engine::device_io::AudioEngine::State state{};
   audio_engine_->wait_for_pause (state, true, false);
 
   /* connect channel inputs to hardware and re-expose ports to
@@ -427,6 +429,7 @@ Project::activate ()
 void
 Project::add_default_tracks ()
 {
+  using namespace zrythm::structure::tracks;
   z_return_if_fail (tracklist_);
 
   /* init pinned tracks */
@@ -486,7 +489,7 @@ Project::add_default_tracks ()
           marker_track_inner,
           utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
           pos.ticks_);
-        marker->marker_type_ = Marker::Type::Start;
+        marker->marker_type_ = structure::arrangement::Marker::Type::Start;
       }
 
       {
@@ -497,7 +500,7 @@ Project::add_default_tracks ()
           marker_track_inner,
           utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
           pos.ticks_);
-        marker->marker_type_ = Marker::Type::End;
+        marker->marker_type_ = structure::arrangement::Marker::Type::End;
       }
     };
   add_default_markers (
@@ -1020,8 +1023,8 @@ Project::save (
     _dir, is_backup, show_notification, async);
 
   /* pause engine */
-  AudioEngine::State state{};
-  bool               engine_paused = false;
+  engine::device_io::AudioEngine::State state{};
+  bool                                  engine_paused = false;
   z_return_if_fail (audio_engine_);
   if (audio_engine_->activated_)
     {
@@ -1250,7 +1253,7 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
   audio_engine_ = other.audio_engine_->clone_unique (clone_type, this);
   tracklist_ = other.tracklist_->clone_qobject (this);
   clip_editor_ = other.clip_editor_->clone_qobject (
-    this, clone_type, *arranger_object_registry_, [&] (const Track::Uuid &id) {
+    this, clone_type, *arranger_object_registry_, [&] (const TrackUuid &id) {
       return get_track_registry ().find_by_id_or_throw (id);
     });
   timeline_ = other.timeline_->clone_qobject (this);
@@ -1304,7 +1307,7 @@ Project::setDirectory (const QString &directory)
   Q_EMIT directoryChanged (directory);
 }
 
-Tracklist *
+structure::tracks::Tracklist *
 Project::getTracklist () const
 {
   return tracklist_;
@@ -1316,7 +1319,7 @@ Project::getTimeline () const
   return timeline_;
 }
 
-Transport *
+engine::session::Transport *
 Project::getTransport () const
 {
   return transport_;
@@ -1340,7 +1343,7 @@ Project::getUndoManager () const
   return undo_manager_;
 }
 
-ArrangerObjectFactory *
+structure::arrangement::ArrangerObjectFactory *
 Project::getArrangerObjectFactory () const
 {
   return arranger_object_factory_;
@@ -1352,7 +1355,7 @@ Project::getPluginFactory () const
   return plugin_factory_;
 }
 
-TrackFactory *
+structure::tracks::TrackFactory *
 Project::getTrackFactory () const
 {
   return track_factory_;

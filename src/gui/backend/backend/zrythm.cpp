@@ -11,12 +11,12 @@
 #  include <sys/mman.h>
 #endif
 
+#include "engine/session/recording_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
-#include "gui/dsp/recording_manager.h"
 #include "utils/dsp.h"
 #include "utils/env.h"
 #include "utils/exceptions.h"
@@ -24,7 +24,7 @@
 #include "utils/networking.h"
 #include "utils/string.h"
 
-#include "engine/audio_engine_application.h"
+#include "engine-process/audio_engine_application.h"
 
 using namespace zrythm;
 
@@ -63,7 +63,7 @@ void
 Zrythm::init ()
 {
   settings_->init ();
-  recording_manager_ = new RecordingManager (this);
+  recording_manager_ = new engine::session::RecordingManager (this);
   chord_preset_pack_manager_ = std::make_unique<ChordPresetPackManager> (
     have_ui_ && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING);
 

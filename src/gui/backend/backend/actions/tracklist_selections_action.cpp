@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -9,8 +10,7 @@
 #include "gui/backend/io/midi_file.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/base64.h"
 #include "utils/debug.h"
 #include "utils/exceptions.h"
@@ -20,6 +20,7 @@
 #include "utils/views.h"
 
 using namespace zrythm::gui::actions;
+using namespace zrythm::structure::tracks;
 
 void
 TracklistSelectionsAction::init_after_cloning (
@@ -557,7 +558,7 @@ TracklistSelectionsAction::create_track (int idx)
               if constexpr (std::is_same_v<TrackT, AudioTrack>)
                 {
                   /* create an audio region & add to track*/
-                  ArrangerObjectFactory::get_instance ()
+                  structure::arrangement::ArrangerObjectFactory::get_instance ()
                     ->add_audio_region_with_clip (
                       added_track->get_lane_at (0), *pool_id_, start_pos.ticks_);
                 }
@@ -580,10 +581,11 @@ TracklistSelectionsAction::create_track (int idx)
                     full_path, data.constData (), data.size ());
 
                   /* create a MIDI region from the MIDI file & add to track */
-                  ArrangerObjectFactory::get_instance ()->addMidiRegionFromMidiFile (
-                    &added_track->get_lane_at (0),
-                    utils::Utf8String::from_path (full_path).to_qstring (),
-                    pos_.ticks_, idx);
+                  structure::arrangement::ArrangerObjectFactory::get_instance ()
+                    ->addMidiRegionFromMidiFile (
+                      &added_track->get_lane_at (0),
+                      utils::Utf8String::from_path (full_path).to_qstring (),
+                      pos_.ticks_, idx);
                 }
             }
 
@@ -1020,10 +1022,11 @@ TracklistSelectionsAction::
 
           /* get outputs & sends */
           std::vector<GroupTargetTrack *> outputs_in_prj (num_tracks);
-          std::vector<std::array<std::unique_ptr<ChannelSend>, dsp::STRIP_SIZE>>
+          std::vector<
+            std::array<std::unique_ptr<ChannelSend>, Channel::STRIP_SIZE>>
             sends (num_tracks);
           std::vector<std::array<
-            PortConnectionsManager::ConnectionsVector, dsp::STRIP_SIZE>>
+            PortConnectionsManager::ConnectionsVector, Channel::STRIP_SIZE>>
             send_conns (num_tracks);
           for (size_t i = 0; i < num_tracks; i++)
             {
@@ -1036,7 +1039,7 @@ TracklistSelectionsAction::
                       outputs_in_prj.push_back (
                         own_track->get_channel ()->get_output_track ());
 
-                      for (size_t j = 0; j < dsp::STRIP_SIZE; ++j)
+                      for (size_t j = 0; j < Channel::STRIP_SIZE; ++j)
                         {
                           auto &send = own_track->get_channel ()->sends_.at (j);
                           sends.at (i).at (j) = send->clone_unique (

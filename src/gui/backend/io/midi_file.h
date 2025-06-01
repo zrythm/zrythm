@@ -12,8 +12,14 @@
 
 #include "juce_wrapper.h"
 
+namespace zrythm::structure::arrangement
+{
 class MidiRegion;
+}
+namespace zrythm::engine::session
+{
 class Transport;
+}
 
 /**
  * @addtogroup io
@@ -78,9 +84,10 @@ public:
    * 5 and 7, it will use track 7.
    * @throw ZrythmException On error.
    */
-  void
-  into_region (MidiRegion &region, Transport &transport, int midi_track_idx)
-    const;
+  void into_region (
+    structure::arrangement::MidiRegion &region,
+    engine::session::Transport         &transport,
+    int                                 midi_track_idx) const;
 
 private:
   juce::MidiFile midi_file_;

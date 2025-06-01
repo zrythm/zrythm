@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UNDO_MIDI_MAPPING_ACTION_H__
-#define __UNDO_MIDI_MAPPING_ACTION_H__
+#pragma once
 
 #include "dsp/port_identifier.h"
+#include "engine/device_io/ext_port.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/ext_port.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
@@ -57,9 +56,9 @@ public:
    * @param dest_port
    */
   MidiMappingAction (
-    std::array<midi_byte_t, 3> buf,
-    const ExtPort *            device_port,
-    const Port                &dest_port);
+    std::array<midi_byte_t, 3>         buf,
+    const engine::device_io::ExtPort * device_port,
+    const Port                        &dest_port);
 
   QString to_string () const override;
 
@@ -83,11 +82,9 @@ public:
 
   std::optional<dsp::PortIdentifier::PortUuid> dest_port_id_;
 
-  std::unique_ptr<ExtPort> dev_port_;
+  std::unique_ptr<engine::device_io::ExtPort> dev_port_;
 
   std::array<midi_byte_t, 3> buf_{};
 };
 
 }; // namespace zrythm::gui::actions
-
-#endif

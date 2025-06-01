@@ -4,7 +4,6 @@
 #pragma once
 
 #include "../utils/utils.h"
-#include "./channel.h"
 #include "./chord_descriptor.h"
 #include "./curve.h"
 #include "./ditherer.h"

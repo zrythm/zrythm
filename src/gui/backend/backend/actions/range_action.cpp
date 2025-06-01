@@ -53,8 +53,8 @@ RangeAction::init_after_cloning (
   first_run_ = other.first_run_;
 }
 
-ArrangerObjectSpan
-RangeAction::get_before_objects () const
+auto
+RangeAction::get_before_objects () const -> ArrangerObjectSpan
 {
   return ArrangerObjectSpan{
     PROJECT->get_arranger_object_registry (), affected_objects_before_
@@ -130,8 +130,8 @@ RangeAction::perform_impl ()
     [] (auto &prj_obj, const auto &start_pos) {
       using ObjT = base_type<decltype (prj_obj)>;
       if constexpr (
-        std::derived_from<ObjT, BoundedObject>
-        && std::derived_from<ObjT, TimelineObject>)
+        std::derived_from<ObjT, structure::arrangement::BoundedObject>
+        && std::derived_from<ObjT, structure::arrangement::TimelineObject>)
         {
           return prj_obj.is_hit (start_pos);
         }
@@ -170,12 +170,16 @@ RangeAction::perform_impl ()
                   /* if need split, split at range start */
                   if (need_to_split_object_at_pos (*obj, start_pos_))
                     {
-                      if constexpr (std::derived_from<ObjT, BoundedObject>)
+                      if constexpr (
+                        std::derived_from<
+                          ObjT, structure::arrangement::BoundedObject>)
                         {
                           /* split at range start */
                           auto [part1, part2] =
                             ArrangerObjectSpan::split_bounded_object (
-                              *obj, *ArrangerObjectFactory::get_instance (),
+                              *obj,
+                              *structure::arrangement::ArrangerObjectFactory::
+                                get_instance (),
                               start_pos_, AUDIO_ENGINE->frames_per_tick_);
 
                           /* move part2 by the range amount */
@@ -223,7 +227,9 @@ RangeAction::perform_impl ()
                       z_debug ("looping backwards. current object {}", *obj);
 
                       bool ends_inside_range = false;
-                      if constexpr (std::derived_from<ObjT, BoundedObject>)
+                      if constexpr (
+                        std::derived_from<
+                          ObjT, structure::arrangement::BoundedObject>)
                         {
                           ends_inside_range =
                             obj->get_position () >= start_pos_
@@ -240,12 +246,16 @@ RangeAction::perform_impl ()
                        * start - split at range start */
                       if (need_to_split_object_at_pos (*obj, start_pos_))
                         {
-                          if constexpr (std::derived_from<ObjT, BoundedObject>)
+                          if constexpr (
+                            std::derived_from<
+                              ObjT, structure::arrangement::BoundedObject>)
                             {
                               /* split at range start */
                               auto [part1_ref, part2_ref] =
                                 ArrangerObjectSpan::split_bounded_object (
-                                  *obj, *ArrangerObjectFactory::get_instance (),
+                                  *obj,
+                                  *structure::arrangement::
+                                    ArrangerObjectFactory::get_instance (),
                                   start_pos_, AUDIO_ENGINE->frames_per_tick_);
 
                               auto part2_opt = std::make_optional (part2_ref);
@@ -261,7 +271,8 @@ RangeAction::perform_impl ()
                                   auto [part3, part4] =
                                     ArrangerObjectSpan::split_bounded_object (
                                       *std::get<ObjT *> (part2_ref.get_object ()),
-                                      *ArrangerObjectFactory::get_instance (),
+                                      *structure::arrangement::
+                                        ArrangerObjectFactory::get_instance (),
                                       end_pos_, AUDIO_ENGINE->frames_per_tick_);
 // TODO...
 #if 0
@@ -312,13 +323,17 @@ RangeAction::perform_impl ()
                        * - split at range end */
                       else if (need_to_split_object_at_pos (*obj, end_pos_))
                         {
-                          if constexpr (std::derived_from<ObjT, BoundedObject>)
+                          if constexpr (
+                            std::derived_from<
+                              ObjT, structure::arrangement::BoundedObject>)
                             {
                               /* split at range end */
                               // part1 will be discarded
                               auto [part1, part2] =
                                 ArrangerObjectSpan::split_bounded_object (
-                                  *obj, *ArrangerObjectFactory::get_instance (),
+                                  *obj,
+                                  *structure::arrangement::
+                                    ArrangerObjectFactory::get_instance (),
                                   end_pos_, AUDIO_ENGINE->frames_per_tick_);
 // TODO
 #if 0
@@ -364,9 +379,10 @@ RangeAction::perform_impl ()
                                 AUDIO_ENGINE->frames_per_tick_);
                             }
 
-                          ArrangerObjectFactory::get_instance ()
-                            ->get_selection_manager_for_object (*obj)
-                            .append_to_selection (obj->get_uuid ());
+                          structure::arrangement::ArrangerObjectFactory::
+                            get_instance ()
+                              ->get_selection_manager_for_object (*obj)
+                              .append_to_selection (obj->get_uuid ());
                         }
                     },
                     obj_var);

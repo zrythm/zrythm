@@ -4,7 +4,7 @@
 #pragma once
 
 #include "gui/backend/backend/editor_settings.h"
-#include "gui/dsp/arranger_object_all.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
 
 /**
@@ -52,7 +52,8 @@ private:
   }
 
 private:
-  ArrangerObjectSelectionManager::UuidSet selected_objects_;
+  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
+    selected_objects_;
 };
 
 /**

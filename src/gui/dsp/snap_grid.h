@@ -6,8 +6,17 @@
 #include "dsp/position.h"
 #include "utils/note_type.h"
 
+namespace zrythm::structure
+{
+namespace tracks
+{
 class Track;
+}
+namespace arrangement
+{
 class Region;
+}
+}
 
 namespace zrythm::gui
 {
@@ -47,6 +56,8 @@ public:
   using TicksPerBarProvider = std::function<int (void)>;
   using TicksPerBeatProvider = std::function<int (void)>;
   using Position = zrythm::dsp::Position;
+  using Track = structure::tracks::Track;
+  using Region = structure::arrangement::Region;
 
 public:
   SnapGrid () = default;

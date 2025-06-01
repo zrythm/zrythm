@@ -4,8 +4,8 @@
 #include "zrythm-test-config.h"
 
 #include "gui/backend/backend/actions/arranger_selections_action.h"
-#include "gui/dsp/midi_function.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/arrangement/midi_function.h"
+#include "structure/tracks/tracklist.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

@@ -1,0 +1,66 @@
+# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+target_sources(zrythm_gui_lib
+  PRIVATE
+    audio_function.h
+    audio_function.cpp
+    audio_region.h
+    audio_region.cpp
+    automation_point.h
+    automation_point.cpp
+    automation_region.h
+    automation_region.cpp
+    arranger_object.h
+    arranger_object.cpp
+    arranger_object_all.h
+    arranger_object_factory.h
+    arranger_object_factory.cpp
+    arranger_object_owner.h
+    arranger_object_list_model.h
+    arranger_object_span.h
+    arranger_object_span.cpp
+    arranger_object_fwd.h
+    automation_function.h
+    automation_function.cpp
+    bounded_object.h
+    bounded_object.cpp
+    chord_object.h
+    chord_object.cpp
+    chord_region.h
+    chord_region.cpp
+    colored_object.h
+    colored_object.cpp
+    fadeable_object.h
+    fadeable_object.cpp
+    lane_owned_object.h
+    lane_owned_object.cpp
+    loopable_object.h
+    loopable_object.cpp
+    marker.h
+    marker.cpp
+    midi_function.h
+    midi_function.cpp
+    midi_note.h
+    midi_note.cpp
+    midi_region.h
+    midi_region.cpp
+    muteable_object.h
+    muteable_object.cpp
+    named_object.h
+    named_object.cpp
+    region.h
+    region.cpp
+    region_link_group.h
+    region_link_group.cpp
+    region_link_group_manager.h
+    region_link_group_manager.cpp
+    region_owned_object.h
+    region_owned_object.cpp
+    scale_object.h
+    scale_object.cpp
+    timeline_object.h
+    timeline_object.cpp
+    velocity.h
+    velocity.cpp
+)

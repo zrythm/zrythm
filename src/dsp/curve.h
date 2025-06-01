@@ -123,6 +123,8 @@ public:
 
   /** Curve algorithm to use. */
   Algorithm algo_{};
+
+  BOOST_DESCRIBE_CLASS (CurveOptions, (), (curviness_, algo_), (), ())
 };
 
 } // namespace zrythm::dsp

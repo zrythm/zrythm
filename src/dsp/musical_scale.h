@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_MUSICAL_SCALE_H
-#define ZRYTHM_DSP_MUSICAL_SCALE_H
+#pragma once
 
 #include "dsp/chord_descriptor.h"
 #include "utils/serialization.h"
@@ -178,8 +177,8 @@ public:
 
   /** Root key of the scale. */
   MusicalNote root_key_ = MusicalNote::A;
+
+  BOOST_DESCRIBE_CLASS (MusicalScale, (), (type_, root_key_), (), ())
 };
 
 } // namespace zrythm::dsp
-
-#endif

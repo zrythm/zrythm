@@ -4,8 +4,8 @@
 #include "zrythm-test-config.h"
 
 #include "dsp/position.h"
-#include "gui/dsp/metronome.h"
-#include "gui/dsp/sample_processor.h"
+#include "engine/session/metronome.h"
+#include "engine/session/sample_processor.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

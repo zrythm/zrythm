@@ -1,16 +1,15 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
-#define __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
+#pragma once
 
 #include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/io/file_descriptor.h"
-#include "gui/dsp/channel_send.h"
-#include "gui/dsp/track.h"
-#include "gui/dsp/track_span.h"
+#include "structure/tracks/channel_send.h"
+#include "structure/tracks/track.h"
+#include "structure/tracks/track_span.h"
 #include "utils/color.h"
 
 namespace zrythm::gui::actions
@@ -27,6 +26,11 @@ class TracklistSelectionsAction
   Q_OBJECT
   QML_ELEMENT
   DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (TracklistSelectionsAction)
+
+  using TrackSpan = structure::tracks::TrackSpan;
+  using Track = structure::tracks::Track;
+  using TrackPtrVariant = structure::tracks::TrackPtrVariant;
+  using ChannelSend = structure::tracks::ChannelSend;
 
 public:
   enum class Type
@@ -620,11 +624,11 @@ public:
 class TrackLaneIntAction : public TracklistSelectionsAction
 {
 protected:
-  template <RegionSubclass T>
+  template <structure::arrangement::RegionSubclass T>
   TrackLaneIntAction (
-    EditType                edit_type,
-    const TrackLaneImpl<T> &track_lane,
-    int                     value_after)
+    EditType                                   edit_type,
+    const structure::tracks::TrackLaneImpl<T> &track_lane,
+    int                                        value_after)
       : TracklistSelectionsAction (
           Type::Edit,
           std::nullopt,
@@ -652,8 +656,10 @@ protected:
 class MuteTrackLaneAction : public TrackLaneIntAction
 {
 public:
-  template <RegionSubclass T>
-  MuteTrackLaneAction (const TrackLaneImpl<T> &track_lane, bool mute_new)
+  template <structure::arrangement::RegionSubclass T>
+  MuteTrackLaneAction (
+    const structure::tracks::TrackLaneImpl<T> &track_lane,
+    bool                                       mute_new)
       : TrackLaneIntAction (EditType::MuteLane, track_lane, mute_new)
   {
   }
@@ -680,8 +686,10 @@ public:
 class SoloTrackLaneAction : public TrackLaneIntAction
 {
 public:
-  template <RegionSubclass T>
-  SoloTrackLaneAction (const TrackLaneImpl<T> &track_lane, bool solo_new)
+  template <structure::arrangement::RegionSubclass T>
+  SoloTrackLaneAction (
+    const structure::tracks::TrackLaneImpl<T> &track_lane,
+    bool                                       solo_new)
       : TrackLaneIntAction (EditType::SoloLane, track_lane, solo_new)
   {
   }
@@ -926,10 +934,10 @@ public:
 class RenameTrackLaneAction : public TracklistSelectionsAction
 {
 public:
-  template <RegionSubclass T>
+  template <structure::arrangement::RegionSubclass T>
   RenameTrackLaneAction (
-    const TrackLaneImpl<T>  &track_lane,
-    const utils::Utf8String &name)
+    const structure::tracks::TrackLaneImpl<T> &track_lane,
+    const utils::Utf8String                   &name)
       : TracklistSelectionsAction (
           Type::Edit,
           std::nullopt,
@@ -1176,5 +1184,3 @@ public:
 };
 
 }; // namespace zrythm::gui::actions
-
-#endif

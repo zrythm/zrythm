@@ -11,13 +11,16 @@
 
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_span.h"
-#include "gui/dsp/track_fwd.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_slot.h"
+#include "structure/tracks/track_fwd.h"
 #include "utils/types.h"
 
+namespace zrythm::engine::device_io
+{
 class AudioEngine;
+}
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -41,6 +44,7 @@ class Plugin
       public IPortOwner,
       public utils::UuidIdentifiableObject<Plugin>
 {
+  Z_DISABLE_COPY_MOVE (Plugin)
 public:
   using PortIdentifier = dsp::PortIdentifier;
   using PluginSlot = zrythm::plugins::PluginSlot;
@@ -50,9 +54,8 @@ public:
   using Protocol = zrythm::plugins::Protocol;
   using PluginCategory = zrythm::plugins::PluginCategory;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
-
-  using TrackResolver =
-    utils::UuidIdentifiablObjectResolver<TrackPtrVariant, TrackUuid>;
+  using TrackPtrVariant = zrythm::structure::tracks::TrackPtrVariant;
+  using TrackResolver = zrythm::structure::tracks::TrackResolver;
 
   /**
    * Preset identifier.
@@ -257,8 +260,11 @@ public:
    * @param inputs Expose/unexpose inputs.
    * @param outputs Expose/unexpose outputs.
    */
-  void
-  expose_ports (AudioEngine &engine, bool expose, bool inputs, bool outputs);
+  void expose_ports (
+    engine::device_io::AudioEngine &engine,
+    bool                            expose,
+    bool                            inputs,
+    bool                            outputs);
 
   /**
    * Gets a port by its symbol.

@@ -8,15 +8,15 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 
+#include "engine/session/router.h"
 #include "gui/backend/backend/cyaml_schemas/project.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/ui.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/tempo_track.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/tracks/tempo_track.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"

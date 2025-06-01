@@ -15,7 +15,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 

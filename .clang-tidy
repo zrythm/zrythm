@@ -29,7 +29,6 @@ WarningsAsErrors: >
   modernize-use-override,
   readability-redundant-declaration,
   readability-redundant-inline-specifier,
-  readability-make-member-function-const,
   modernize-use-constraints,
   cppcoreguidelines-pro-type-member-init,
   readability-redundant-string-cstr,

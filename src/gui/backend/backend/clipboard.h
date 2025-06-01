@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "gui/dsp/arranger_object_span.h"
-#include "gui/dsp/track_span.h"
+#include "structure/arrangement/arranger_object_span.h"
+#include "structure/tracks/track_span.h"
 
 /**
  * @addtogroup gui_backend
@@ -31,7 +31,9 @@ public:
 public:
   Clipboard () = default;
   Clipboard (std::ranges::range auto arranger_objects)
-    requires std::is_same_v<decltype (*arranger_objects.begin ()), ArrangerObjectPtrVariant>
+    requires std::is_same_v<
+               decltype (*arranger_objects.begin ()),
+               structure::arrangement::ArrangerObjectPtrVariant>
       : type_ (Type::ArrangerObjects),
         arranger_objects_ (std::ranges::to (arranger_objects))
   {
@@ -51,7 +53,7 @@ public:
    * @throw ZrythmException on error.
    */
   Clipboard (std::ranges::range auto tracks)
-    requires std::is_same_v<decltype (*tracks.begin ()), TrackPtrVariant>
+    requires std::is_same_v<decltype (*tracks.begin ()), structure::tracks::TrackPtrVariant>
       : type_ (Type::Tracks), tracks_ (std::ranges::to (tracks))
   {
   }
@@ -69,10 +71,10 @@ private:
     plugins_)
 
 public:
-  Type                              type_{};
-  std::vector<ArrangerObject::Uuid> arranger_objects_;
-  std::vector<Track::Uuid>          tracks_;
-  std::vector<PluginUuid>           plugins_;
+  Type                                                      type_{};
+  std::vector<structure::arrangement::ArrangerObject::Uuid> arranger_objects_;
+  std::vector<structure::tracks::Track::Uuid>               tracks_;
+  std::vector<PluginUuid>                                   plugins_;
 };
 
 /**

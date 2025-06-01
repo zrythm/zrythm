@@ -2,11 +2,15 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
+
 #include "gui/backend/backend/editor_settings.h"
-#include "gui/dsp/arranger_object_all.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
 
+namespace zrythm::structure::tracks
+{
 class Track;
+}
 
 /**
  * @addtogroup gui_backend
@@ -26,8 +30,6 @@ enum class MidiModifier
   ModWheel,
   Aftertouch,
 };
-
-class Region;
 
 /**
  * A descriptor for a MidiNote, used by the piano roll.
@@ -170,7 +172,7 @@ public:
   /**
    * Returns the current track whose regions are being shown in the piano roll.
    */
-  Track * get_current_track () const;
+  structure::tracks::Track * get_current_track () const;
 
   void set_notes_zoom (float notes_zoom, bool fire_events);
 
@@ -294,5 +296,6 @@ public:
   std::vector<MidiNoteDescriptor> drum_descriptors_ =
     std::vector<MidiNoteDescriptor> (128);
 
-  ArrangerObjectSelectionManager::UuidSet selected_objects_;
+  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
+    selected_objects_;
 };

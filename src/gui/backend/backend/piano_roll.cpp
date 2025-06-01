@@ -5,7 +5,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/track.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
@@ -225,7 +225,7 @@ PianoRoll::set_highlighting (Highlighting highlighting)
   /* EVENTS_PUSH (EventType::ET_PIANO_ROLL_HIGHLIGHTING_CHANGED, nullptr); */
 }
 
-Track *
+structure::tracks::Track *
 PianoRoll::get_current_track () const
 {
   /* TODO */

@@ -5,8 +5,8 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/tempo_track.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/tempo_track.h"
+#include "structure/tracks/track.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

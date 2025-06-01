@@ -9,7 +9,10 @@
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
 
+namespace zrythm::structure::tracks
+{
 class Track;
+}
 namespace zrythm::gui::old_dsp::plugins
 {
 class Plugin;
@@ -67,7 +70,8 @@ enum class PortUnit
 class PortIdentifier : public ICloneable<PortIdentifier>
 {
 public:
-  using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
+  using TrackUuid =
+    utils::UuidIdentifiableObject<zrythm::structure::tracks::Track>::Uuid;
   using PluginUuid =
     utils::UuidIdentifiableObject<gui::old_dsp::plugins::Plugin>::Uuid;
   using PortUuid = utils::UuidIdentifiableObject<Port>::Uuid;

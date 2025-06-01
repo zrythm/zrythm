@@ -3,11 +3,11 @@
 
 #include "zrythm-test-config.h"
 
+#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/midi_region.h"
-#include "gui/dsp/region.h"
-#include "gui/dsp/transport.h"
+#include "structure/arrangement/midi_region.h"
+#include "structure/arrangement/region.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

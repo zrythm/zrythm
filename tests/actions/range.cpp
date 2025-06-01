@@ -10,7 +10,7 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/region.h"
+#include "structure/arrangement/region.h"
 
 #include "tests/helpers/project_helper.h"
 

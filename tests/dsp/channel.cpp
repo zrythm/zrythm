@@ -5,7 +5,7 @@
 
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/track.h"
+#include "structure/tracks/track.h"
 
 #include "tests/helpers/exporter.h"
 #include "tests/helpers/plugin_manager.h"

@@ -1,24 +1,25 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/channel.h"
 #include "gui/backend/ui.h"
-#include "gui/dsp/automation_region.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/channel_track.h"
-#include "gui/dsp/modulator_track.h"
 #include "gui/dsp/plugin_span.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/track.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/arrangement/automation_region.h"
+#include "structure/tracks/channel.h"
+#include "structure/tracks/channel_track.h"
+#include "structure/tracks/modulator_track.h"
+#include "structure/tracks/track.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
 
 using namespace zrythm::gui::actions;
+using namespace zrythm::structure::tracks;
 
 MixerSelectionsAction::MixerSelectionsAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::MixerSelections)

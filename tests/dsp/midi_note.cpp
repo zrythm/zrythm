@@ -5,8 +5,8 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/midi_note.h"
-#include "gui/dsp/region.h"
+#include "structure/arrangement/midi_note.h"
+#include "structure/arrangement/region.h"
 
 #include "helpers/project_helper.h"
 #include "helpers/zrythm_helper.h"
@@ -48,7 +48,7 @@ test_new_midi_note ()
     midi_note_new (
       &fixture->region->id,
       &start_pos, &end_pos, val,
-      VELOCITY_DEFAULT);
+      Velocity::DEFAULT_VALUE);
   ArrangerObject * mn_obj =
     (ArrangerObject *) mn;
 

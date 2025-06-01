@@ -4,19 +4,19 @@
 #pragma once
 
 #include "dsp/port_connections_manager.h"
+#include "engine/device_io/engine.h"
+#include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/timeline.h"
 #include "gui/backend/tool.h"
-#include "gui/dsp/arranger_object_factory.h"
-#include "gui/dsp/engine.h"
-#include "gui/dsp/midi_mapping.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_factory.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/quantize_options.h"
-#include "gui/dsp/region_link_group_manager.h"
-#include "gui/dsp/track_factory.h"
+#include "structure/arrangement/arranger_object_factory.h"
+#include "structure/arrangement/region_link_group_manager.h"
+#include "structure/tracks/track_factory.h"
 #include "utils/progress_info.h"
 
 /**
@@ -77,23 +77,27 @@ class Project final : public QObject, public ICloneable<Project>
   Q_PROPERTY (
     QString directory READ getDirectory WRITE setDirectory NOTIFY
       directoryChanged FINAL)
-  Q_PROPERTY (Tracklist * tracklist READ getTracklist CONSTANT FINAL)
+  Q_PROPERTY (
+    structure::tracks::Tracklist * tracklist READ getTracklist CONSTANT FINAL)
   Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
-  Q_PROPERTY (Transport * transport READ getTransport CONSTANT FINAL)
+  Q_PROPERTY (
+    engine::session::Transport * transport READ getTransport CONSTANT FINAL)
   Q_PROPERTY (gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (
     gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
   Q_PROPERTY (
-    ArrangerObjectFactory * arrangerObjectFactory READ getArrangerObjectFactory
-      CONSTANT FINAL)
+    structure::arrangement::ArrangerObjectFactory * arrangerObjectFactory READ
+      getArrangerObjectFactory CONSTANT FINAL)
   Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
-  Q_PROPERTY (TrackFactory * trackFactory READ getTrackFactory CONSTANT FINAL)
+  Q_PROPERTY (
+    structure::tracks::TrackFactory * trackFactory READ getTrackFactory CONSTANT
+      FINAL)
 
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
   using SnapGrid = zrythm::gui::SnapGrid;
-  using TrackUuid = Track::Uuid;
+  using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
 
@@ -156,19 +160,20 @@ public:
   // QML interface
   // =========================================================
 
-  QString                     getTitle () const;
-  void                        setTitle (const QString &title);
-  QString                     getDirectory () const;
-  void                        setDirectory (const QString &directory);
-  Tracklist *                 getTracklist () const;
-  Timeline *                  getTimeline () const;
-  Transport *                 getTransport () const;
-  gui::backend::Tool *        getTool () const;
-  ClipEditor *                getClipEditor () const;
-  gui::actions::UndoManager * getUndoManager () const;
-  ArrangerObjectFactory *     getArrangerObjectFactory () const;
-  PluginFactory *             getPluginFactory () const;
-  TrackFactory *              getTrackFactory () const;
+  QString                        getTitle () const;
+  void                           setTitle (const QString &title);
+  QString                        getDirectory () const;
+  void                           setDirectory (const QString &directory);
+  structure::tracks::Tracklist * getTracklist () const;
+  Timeline *                     getTimeline () const;
+  engine::session::Transport *   getTransport () const;
+  gui::backend::Tool *           getTool () const;
+  ClipEditor *                   getClipEditor () const;
+  gui::actions::UndoManager *    getUndoManager () const;
+  structure::arrangement::ArrangerObjectFactory *
+                                    getArrangerObjectFactory () const;
+  PluginFactory *                   getPluginFactory () const;
+  structure::tracks::TrackFactory * getTrackFactory () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -353,13 +358,15 @@ public:
     return get_plugin_registry ().find_by_id (id);
   }
 
-  std::optional<TrackPtrVariant> find_track_by_id (Track::Uuid id) const
+  std::optional<zrythm::structure::tracks::TrackPtrVariant>
+  find_track_by_id (structure::tracks::Track::Uuid id) const
   {
     return get_track_registry ().find_by_id (id);
   }
 
-  std::optional<ArrangerObjectPtrVariant>
-  find_arranger_object_by_id (ArrangerObject::Uuid id) const
+  std::optional<zrythm::structure::arrangement::ArrangerObjectPtrVariant>
+  find_arranger_object_by_id (
+    structure::arrangement::ArrangerObject::Uuid id) const
   {
     return get_arranger_object_registry ().find_by_id (id);
   }
@@ -479,10 +486,10 @@ private:
   friend void           from_json (const nlohmann::json &j, Project &project);
 
 private:
-  PortRegistry *           port_registry_{};
-  PluginRegistry *         plugin_registry_{};
-  ArrangerObjectRegistry * arranger_object_registry_{};
-  TrackRegistry *          track_registry_{};
+  PortRegistry *                                   port_registry_{};
+  PluginRegistry *                                 plugin_registry_{};
+  structure::arrangement::ArrangerObjectRegistry * arranger_object_registry_{};
+  structure::tracks::TrackRegistry *               track_registry_{};
 
 public:
   /** Project title. */
@@ -557,19 +564,19 @@ public:
   /**
    * The audio backend.
    */
-  std::unique_ptr<AudioEngine> audio_engine_;
+  std::unique_ptr<engine::device_io::AudioEngine> audio_engine_;
 
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  Transport * transport_;
+  engine::session::Transport * transport_;
 
   /** Zoom levels. TODO & move to clip_editor */
   double piano_roll_zoom_ = 0;
   double timeline_zoom_ = 0;
 
   /** Manager for region link groups. */
-  RegionLinkGroupManager region_link_group_manager_;
+  structure::arrangement::RegionLinkGroupManager region_link_group_manager_;
 
   /** Quantize info for the piano roll. */
   std::unique_ptr<QuantizeOptions> quantize_opts_editor_;
@@ -590,20 +597,20 @@ public:
   ClipEditor * clip_editor_;
 
   /** MIDI bindings. */
-  std::unique_ptr<MidiMappings> midi_mappings_;
+  std::unique_ptr<engine::session::MidiMappings> midi_mappings_;
 
   /**
    * @brief Tracklist.
    *
    * Must be free'd before engine and port connection manager.
    */
-  Tracklist * tracklist_{};
+  structure::tracks::Tracklist * tracklist_{};
 
   gui::actions::UndoManager * undo_manager_{};
 
-  ArrangerObjectFactory * arranger_object_factory_{};
-  PluginFactory *         plugin_factory_{};
-  TrackFactory *          track_factory_{};
+  structure::arrangement::ArrangerObjectFactory * arranger_object_factory_{};
+  PluginFactory *                                 plugin_factory_{};
+  zrythm::structure::tracks::TrackFactory *       track_factory_{};
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

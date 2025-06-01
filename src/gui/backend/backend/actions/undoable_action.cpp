@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/device_io/engine.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/actions/chord_action.h"
@@ -14,7 +15,6 @@
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/engine.h"
 #include "utils/logger.h"
 
 #include <fmt/format.h>
@@ -96,7 +96,7 @@ UndoableAction::copy_members_from (
 void
 UndoableAction::do_or_undo (bool perform)
 {
-  AudioEngine::State state{};
+  engine::device_io::AudioEngine::State state{};
   if (needs_pause ())
     {
       /* stop engine and give it some time to stop running */

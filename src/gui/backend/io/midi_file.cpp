@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/session/transport.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
-#include "gui/dsp/midi_region.h"
-#include "gui/dsp/transport.h"
+#include "structure/arrangement/midi_region.h"
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
@@ -87,11 +87,11 @@ MidiFile::get_ppqn () const
 
 void
 MidiFile::into_region (
-  MidiRegion &region,
-  Transport  &transport,
-  const int   midi_track_idx) const
+  structure::arrangement::MidiRegion &region,
+  engine::session::Transport         &transport,
+  const int                           midi_track_idx) const
 {
-  using Position = MidiRegion::Position;
+  using Position = structure::arrangement::MidiRegion::Position;
   const int    num_tracks = midi_file_.getNumTracks ();
   const auto   ppqn = static_cast<double> (get_ppqn ());
   const double transport_ppqn = transport.get_ppqn ();

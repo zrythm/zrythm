@@ -13,7 +13,10 @@
 #define QUANTIZE_OPTIONS_TIMELINE (PROJECT->quantize_opts_timeline_)
 #define QUANTIZE_OPTIONS_EDITOR (PROJECT->quantize_opts_editor_)
 
+namespace zrythm::engine::session
+{
 class Transport;
+}
 
 namespace zrythm::gui::old_dsp
 {
@@ -35,7 +38,8 @@ public:
   /**
    * Updates snap points.
    */
-  void update_quantize_points (const Transport &transport);
+  void
+  update_quantize_points (const zrythm::engine::session::Transport &transport);
 
   float get_swing () const;
 

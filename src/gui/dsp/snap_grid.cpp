@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "engine/device_io/engine.h"
+#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/engine.h"
 #include "gui/dsp/snap_grid.h"
-#include "gui/dsp/transport.h"
 #include "utils/gtest_wrapper.h"
 
 #include <fmt/printf.h>
@@ -286,7 +286,7 @@ SnapGrid::get_prev_or_next_snap_point (
       std::visit (
         [&] (auto &&t) {
           using TrackT = base_type<decltype (t)>;
-          if constexpr (std::derived_from<TrackT, LanedTrack>)
+          if constexpr (std::derived_from<TrackT, structure::tracks::LanedTrack>)
             {
               for (auto &lane_var : t->lanes_)
                 {
@@ -316,7 +316,7 @@ SnapGrid::get_prev_or_next_snap_point (
                 }
             }
         },
-        convert_to_variant<TrackPtrVariant> (track));
+        convert_to_variant<structure::tracks::TrackPtrVariant> (track));
     }
   else if (region)
     {

@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_identifier.h"
+#include "engine/session/router.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/channel.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/tracks/channel.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/rt_thread_id.h"
 
 using namespace zrythm::gui::actions;

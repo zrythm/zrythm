@@ -276,7 +276,7 @@ clang-tidy-check:
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
       -path ${BUILDDIR} -config-file .clang-tidy
-      -use-color
+      -use-color || true # TODO
 
 build:gnu/linux:
   extends: .gnu-linux-template

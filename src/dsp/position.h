@@ -437,7 +437,7 @@ public:
    */
   double get_ticks_part (FramesPerTick frames_per_tick) const;
 
-  void set_to_pos (const Position &pos)
+  void set_to_position (const Position &pos)
   {
     ticks_ = pos.ticks_;
     frames_ = pos.frames_;

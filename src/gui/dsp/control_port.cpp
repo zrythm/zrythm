@@ -3,17 +3,17 @@
 
 #include <cmath>
 
+#include "engine/device_io/engine.h"
+#include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/channel_track.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/engine.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/tempo_track.h"
-#include "gui/dsp/tracklist.h"
+#include "structure/tracks/channel_track.h"
+#include "structure/tracks/tempo_track.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
@@ -301,7 +301,8 @@ ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
     }
   if (ZRYTHM_TESTING && at)
     {
-      auto found_at = AutomationTrack::find_from_port (*this, nullptr, true);
+      auto found_at = structure::tracks::AutomationTrack::find_from_port (
+        *this, nullptr, true);
       z_return_if_fail (at == found_at);
     }
 
