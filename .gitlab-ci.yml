@@ -254,6 +254,8 @@ exif-check:
   - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
 
 clang-tidy-check:
+  rules:
+    - when: never # temporarily disable due to compilation issues
   extends: .gnu-linux-template
   tags:
     - archlinux
@@ -276,7 +278,7 @@ clang-tidy-check:
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
       -path ${BUILDDIR} -config-file .clang-tidy
-      -use-color || true # TODO
+      -use-color
 
 build:gnu/linux:
   extends: .gnu-linux-template

@@ -545,11 +545,11 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
       if constexpr (std::is_same_v<TrackT, ChordTrack>)
         {
           std::ranges::copy (
-            self->arrangement::ArrangerObjectOwner<
+            self->arrangement::template ArrangerObjectOwner<
               arrangement::ChordRegion>::get_children_view (),
             std::back_inserter (objs));
           std::ranges::copy (
-            self->arrangement::ArrangerObjectOwner<
+            self->arrangement::template ArrangerObjectOwner<
               arrangement::ScaleObject>::get_children_view (),
             std::back_inserter (objs));
         }

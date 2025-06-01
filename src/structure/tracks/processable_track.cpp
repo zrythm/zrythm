@@ -229,7 +229,7 @@ ProcessableTrack::fill_events_common (
           if (use_caches)
             {
               std::ranges::for_each (
-                track->structure::arrangement::ArrangerObjectOwner<
+                track->structure::arrangement::template ArrangerObjectOwner<
                   structure::arrangement::ChordRegion>::
                   get_children_snapshots_view (),
                 process_single_region);
@@ -237,7 +237,7 @@ ProcessableTrack::fill_events_common (
           else
             {
               std::ranges::for_each (
-                track->structure::arrangement::ArrangerObjectOwner<
+                track->structure::arrangement::template ArrangerObjectOwner<
                   structure::arrangement::ChordRegion>::get_children_view (),
                 process_single_region);
             }

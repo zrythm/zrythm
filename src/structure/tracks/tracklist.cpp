@@ -277,7 +277,7 @@ Tracklist::mark_track_for_bounce (
           if constexpr (std::is_same_v<TrackT, ChordTrack>)
             for (
               auto * region :
-              track->arrangement::ArrangerObjectOwner<
+              track->arrangement::template ArrangerObjectOwner<
                 arrangement::ChordRegion>::get_children_view ())
               {
                 region->bounce_ = bounce;

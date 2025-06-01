@@ -109,7 +109,7 @@ PluginManager::createPluginInstance (
       QTimer * timer = new QTimer ();
       timer->setInterval (10);
       auto instance_ptr = plugin_instance.release ();
-      QObject::connect (timer, &QTimer::timeout, timer, [instance_ptr, editor] () {
+      QObject::connect (timer, &QTimer::timeout, timer, [instance_ptr] () {
         juce::AudioSampleBuffer buf;
         buf.setSize (2, AUDIO_ENGINE->block_length_);
         juce::MidiBuffer midi_buf;
