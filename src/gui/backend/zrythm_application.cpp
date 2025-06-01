@@ -353,19 +353,25 @@ ZrythmApplication::launch_engine_process ()
     }
 }
 
+#if JUCE_LINUX
+// see the following:
+// - juce_audio_plugin_client/detail/juce_LinuxMessageThread.h
+// - juce_events/native/juce_Messaging_linux.cpp
+namespace juce::detail
+{
+bool
+dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
+}
+#endif
+
 bool
 ZrythmApplication::notify (QObject * receiver, QEvent * event)
 {
-  // below is not needed according to
-  // https://forum.juce.com/t/integrating-tracktion-engine-into-another-event-loop/31641/2
-  // if everything works fine, eventually delete this
-  // seealso this that says otherwise:
-  // https://github.com/nikeocom/qt_with_juce_example?tab=readme-ov-file#now-juce-code-is-added-and-we-can-compile-it-but
-#if 0
-  // Run JUCE's dispatch loop before processing Qt events
+#if JUCE_LINUX
   if (juce_message_handler_initializer_)
     {
-      juce::MessageManager::getInstance ()->runDispatchLoop ();
+      // we need to do this on GNU/Linux otherwise plugin UIs appear blank
+      juce::detail::dispatchNextMessageOnSystemQueue (true);
     }
 #endif
 

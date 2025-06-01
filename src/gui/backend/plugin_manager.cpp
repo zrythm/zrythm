@@ -91,7 +91,6 @@ PluginManager::createPluginInstance (
   if (plugin_instance->hasEditor ())
     {
       auto * editor = plugin_instance->createEditorIfNeeded ();
-      editor->setOpaque (true);
       editor->setVisible (true); // Ensure visibility
       auto * window = new juce::DocumentWindow (
         plugin_instance->getName (), juce::Colours::cadetblue,
@@ -101,21 +100,21 @@ PluginManager::createPluginInstance (
       window->setContentOwned (editor, true);
       window->centreWithSize (
         editor->getWidth (), editor->getHeight ()); // Center on screen
-      // window->setOpaque (true);
       window->setResizable (true, true);
+      window->addToDesktop ();
       window->setVisible (true);
-      auto instance_ptr = plugin_instance.release ();
+      window->toFront (true);
 
       // schedule processing to be called every 10ms
       QTimer * timer = new QTimer ();
       timer->setInterval (10);
+      auto instance_ptr = plugin_instance.release ();
       QObject::connect (timer, &QTimer::timeout, timer, [instance_ptr, editor] () {
         juce::AudioSampleBuffer buf;
         buf.setSize (2, AUDIO_ENGINE->block_length_);
         juce::MidiBuffer midi_buf;
         // z_debug ("processing block");
         instance_ptr->processBlock (buf, midi_buf);
-        editor->repaint ();
       });
       timer->start ();
     }
