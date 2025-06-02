@@ -97,108 +97,101 @@ ExtPort::activate (Port * port, bool activate)
     {
       if (is_midi_)
         {
-          switch (AUDIO_ENGINE->midi_backend_)
-            {
 #ifdef HAVE_JACK
-            case MidiBackend::MIDI_BACKEND_JACK:
-              {
-                if (type_ != Type::JACK)
-                  {
-                    z_info ("skipping {} (not JACK)", full_name_);
-                    return false;
-                  }
+          if (
+            auto * jack_driver =
+              dynamic_cast<JackDriver *> (AUDIO_ENGINE->midi_driver_.get ()))
+            {
+              if (type_ != Type::JACK)
+                {
+                  z_info ("skipping {} (not JACK)", full_name_);
+                  return false;
+                }
 
-                port_ = port;
+              port_ = port;
 
-                /* expose the port and connect to JACK port */
-                if (!jport_)
-                  {
-                    jport_ = jack_port_by_name (
-                      AUDIO_ENGINE->client_, full_name_.c_str ());
-                  }
-                if (!jport_)
-                  {
-                    z_warning (
-                      "Could not find external JACK port '{}', skipping...",
-                      full_name_);
-                    return false;
-                  }
-                AUDIO_ENGINE->set_port_exposed_to_backend (*port_, true);
+              /* expose the port and connect to JACK port */
+              if (jport_ == nullptr)
+                {
+                  jport_ = jack_port_by_name (
+                    jack_driver->get_client (), full_name_.c_str ());
+                }
+              if (jport_ == nullptr)
+                {
+                  z_warning (
+                    "Could not find external JACK port '{}', skipping...",
+                    full_name_);
+                  return false;
+                }
+              AUDIO_ENGINE->set_port_exposed_to_backend (*port_, true);
 
-                auto * jack_backend =
-                  dynamic_cast<JackPortBackend *> (port_->backend_.get ());
-                auto * target_port = jack_backend->get_jack_port ();
-                z_info (
-                  "attempting to connect jack port {} to jack port {}",
-                  jack_port_name (jport_), jack_port_name (target_port));
+              auto * jack_backend =
+                dynamic_cast<JackPortBackend *> (port_->backend_.get ());
+              auto * target_port = jack_backend->get_jack_port ();
+              z_info (
+                "attempting to connect jack port {} to jack port {}",
+                jack_port_name (jport_), jack_port_name (target_port));
 
-                int ret = jack_connect (
-                  AUDIO_ENGINE->client_, jack_port_name (jport_),
-                  jack_port_name (target_port));
-                if (ret != 0 && ret != EEXIST)
-                  {
-                    const auto msg = utils::jack::get_error_message (
-                      static_cast<jack_status_t> (ret));
-                    z_warning (
-                      "Failed connecting {} to {}:\n{}", jack_port_name (jport_),
-                      jack_port_name (target_port), msg);
-                    return false;
-                  }
-              }
-              break;
-#endif
-            default:
-              break;
+              int ret = jack_connect (
+                jack_driver->get_client (), jack_port_name (jport_),
+                jack_port_name (target_port));
+              if (ret != 0 && ret != EEXIST)
+                {
+                  const auto msg = utils::jack::get_error_message (
+                    static_cast<jack_status_t> (ret));
+                  z_warning (
+                    "Failed connecting {} to {}:\n{}", jack_port_name (jport_),
+                    jack_port_name (target_port), msg);
+                  return false;
+                }
             }
+#endif
         }
       /* else if not midi */
       else
         {
-          switch (AUDIO_ENGINE->audio_backend_)
-            {
 #ifdef HAVE_JACK
-            case AudioBackend::AUDIO_BACKEND_JACK:
-              {
-                if (type_ != Type::JACK)
-                  {
-                    z_info ("skipping {} (not JACK)", full_name_);
-                    return false;
-                  }
-                port_ = port;
+          if (
+            auto * jack_driver =
+              dynamic_cast<JackDriver *> (AUDIO_ENGINE->audio_driver_.get ()))
+            {
 
-                /* expose the port and connect to JACK port */
-                if (!jport_)
-                  {
-                    jport_ = jack_port_by_name (
-                      AUDIO_ENGINE->client_, full_name_.c_str ());
-                  }
-                if (!jport_)
-                  {
-                    z_warning (
-                      "Could not find external JACK port '{}', skipping...",
-                      full_name_);
-                    return false;
-                  }
-                AUDIO_ENGINE->set_port_exposed_to_backend (*port_, true);
-
-                auto * jack_backend =
-                  dynamic_cast<JackPortBackend *> (port_->backend_.get ());
-                auto * target_port = jack_backend->get_jack_port ();
-                z_info (
-                  "attempting to connect jack port {} to jack port {}",
-                  jack_port_name (jport_), jack_port_name (target_port));
-
-                int ret = jack_connect (
-                  AUDIO_ENGINE->client_, jack_port_name (jport_),
-                  jack_port_name (target_port));
-                if (ret != 0 && ret != EEXIST)
+              if (type_ != Type::JACK)
+                {
+                  z_info ("skipping {} (not JACK)", full_name_);
                   return false;
-              }
-              break;
-#endif
-            default:
-              break;
+                }
+              port_ = port;
+
+              /* expose the port and connect to JACK port */
+              if (jport_ == nullptr)
+                {
+                  jport_ = jack_port_by_name (
+                    jack_driver->get_client (), full_name_.c_str ());
+                }
+              if (jport_ == nullptr)
+                {
+                  z_warning (
+                    "Could not find external JACK port '{}', skipping...",
+                    full_name_);
+                  return false;
+                }
+              AUDIO_ENGINE->set_port_exposed_to_backend (*port_, true);
+
+              auto * jack_backend =
+                dynamic_cast<JackPortBackend *> (port_->backend_.get ());
+              auto * target_port = jack_backend->get_jack_port ();
+              z_info (
+                "attempting to connect jack port {} to jack port {}",
+                jack_port_name (jport_), jack_port_name (target_port));
+
+              int ret = jack_connect (
+                jack_driver->get_client (), jack_port_name (jport_),
+                jack_port_name (target_port));
+              if (ret != 0 && ret != EEXIST)
+                return false;
             }
+#endif
         }
     }
 
@@ -221,7 +214,7 @@ ExtPort::matches_backend () const
       switch (AUDIO_ENGINE->audio_backend_)
         {
 #ifdef HAVE_JACK
-        case AudioBackend::AUDIO_BACKEND_JACK:
+        case AudioBackend::Jack:
           return type_ == Type::JACK;
 #endif
         default:
@@ -233,7 +226,7 @@ ExtPort::matches_backend () const
       switch (AUDIO_ENGINE->midi_backend_)
         {
 #ifdef HAVE_JACK
-        case MidiBackend::MIDI_BACKEND_JACK:
+        case MidiBackend::Jack:
           return type_ == Type::JACK;
 #endif
         default:
@@ -285,90 +278,7 @@ ExtPort::ExtPort (jack_port_t * jport)
   free (aliases[0]);
   free (aliases[1]);
 }
-
-static void
-get_ext_ports_from_jack (
-  dsp::PortType         type,
-  dsp::PortFlow         flow,
-  bool                  hw,
-  std::vector<ExtPort> &ports,
-  AudioEngine          &engine)
-{
-  unsigned long flags = 0;
-  if (hw)
-    flags |= JackPortIsPhysical;
-  if (flow == dsp::PortFlow::Input)
-    flags |= JackPortIsInput;
-  else if (flow == dsp::PortFlow::Output)
-    flags |= JackPortIsOutput;
-  const char * jtype = JackPortBackend::get_jack_type (type);
-  if (!jtype)
-    return;
-
-  if (!engine.client_)
-    {
-      z_error (
-        "JACK client is NULL. make sure to call engine_pre_setup() before calling this");
-      return;
-    }
-
-  const char ** jports = jack_get_ports (engine.client_, nullptr, jtype, flags);
-
-  if (!jports)
-    return;
-
-  for (size_t i = 0; jports[i] != nullptr; ++i)
-    {
-      jack_port_t * jport = jack_port_by_name (engine.client_, jports[i]);
-
-      ports.emplace_back (jport);
-    }
-
-  jack_free (jports);
-}
 #endif
-
-void
-ExtPort::ext_ports_get (
-  PortType              type,
-  PortFlow              flow,
-  bool                  hw,
-  std::vector<ExtPort> &ports,
-  AudioEngine          &engine)
-{
-  if (type == PortType::Audio)
-    {
-      switch (engine.audio_backend_)
-        {
-#ifdef HAVE_JACK
-        case AudioBackend::AUDIO_BACKEND_JACK:
-          get_ext_ports_from_jack (type, flow, hw, ports, engine);
-          break;
-#endif
-        default:
-          break;
-        }
-    }
-  else if (type == PortType::Event)
-    {
-      switch (engine.midi_backend_)
-        {
-#ifdef HAVE_JACK
-        case MidiBackend::MIDI_BACKEND_JACK:
-          get_ext_ports_from_jack (type, flow, hw, ports, engine);
-          break;
-#endif
-        default:
-          break;
-        } /* end switch MIDI backend */
-
-      for (auto &port : ports)
-        {
-          port.is_midi_ = true;
-        }
-
-    } /* endif MIDI */
-}
 
 void
 ExtPort::print () const

@@ -187,18 +187,20 @@ Exporter::export_audio (Settings &info)
 
   AUDIO_ENGINE->bounce_mode_ =
     info.mode_ == Mode::Full
-      ? engine::device_io::BounceMode::BOUNCE_OFF
-      : engine::device_io::BounceMode::BOUNCE_ON;
+      ? engine::device_io::BounceMode::Off
+      : engine::device_io::BounceMode::On;
   AUDIO_ENGINE->bounce_step_ = info.bounce_step_;
   AUDIO_ENGINE->bounce_with_parents_ = info.bounce_with_parents_;
 
+// TODO
+#if 0
   /* set jack freewheeling mode and temporarily disable transport link */
-#ifdef HAVE_JACK
+#  ifdef HAVE_JACK
   engine::device_io::AudioEngine::JackTransportType transport_type =
     AUDIO_ENGINE->transport_type_;
   if (
     AUDIO_ENGINE->audio_backend_
-    == engine::device_io::AudioBackend::AUDIO_BACKEND_JACK)
+    == engine::device_io::AudioBackend::Jack)
     {
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
@@ -206,12 +208,13 @@ Exporter::export_audio (Settings &info)
 
       /* FIXME this is not how freewheeling should
        * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
-#  if 0
+#    if 0
       z_info ("setting freewheel on");
       jack_set_freewheel (
         AUDIO_ENGINE->client, 1);
-#  endif
+#    endif
     }
+#  endif
 #endif
 
   /* init ditherer */
@@ -311,24 +314,26 @@ Exporter::export_audio (Settings &info)
 
   progress_info_->update_progress (1.0, {});
 
-  /* set jack freewheeling mode and transport type */
-#ifdef HAVE_JACK
+/* TODO:set jack freewheeling mode and transport type */
+#if 0
+#  ifdef HAVE_JACK
   if (
     AUDIO_ENGINE->audio_backend_
-    == engine::device_io::AudioBackend::AUDIO_BACKEND_JACK)
+    == engine::device_io::AudioBackend::Jack)
     {
       /* FIXME this is not how freewheeling should
        * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
-#  if 0
+#    if 0
       z_info ("setting freewheel off");
       jack_set_freewheel (
         AUDIO_ENGINE->client, 0);
-#  endif
+#    endif
       engine_jack_set_transport_type (AUDIO_ENGINE, transport_type);
     }
+#  endif
 #endif
 
-  AUDIO_ENGINE->bounce_mode_ = engine::device_io::BounceMode::BOUNCE_OFF;
+  AUDIO_ENGINE->bounce_mode_ = engine::device_io::BounceMode::Off;
   AUDIO_ENGINE->bounce_with_parents_ = false;
   TRANSPORT->move_playhead (prev_playhead_pos, true, false, false);
 

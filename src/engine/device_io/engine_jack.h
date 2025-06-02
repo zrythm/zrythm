@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2022, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -13,109 +13,160 @@
 
 #  define JACK_PORT_T(exp) (static_cast<jack_port_t *> (exp))
 
-#  if 0
-/**
- * Tests if JACK is working properly.
- *
- * Returns 0 if ok, non-null if has errors.
- *
- * If win is not null, it displays error messages
- * to it.
- */
-int
-engine_jack_test (GtkWindow * win);
-#  endif
+namespace zrythm::engine::device_io
+{
+class JackDriver : public AudioEngine::AudioDriver, public AudioEngine::MidiDriver
+{
+public:
+  enum class TransportType : basic_enum_base_type_t
+  {
+    TimebaseMaster,
+    TransportClient,
+    NoJackTransport,
+  };
 
-/**
- * Refreshes the list of external ports.
- */
-void
-engine_jack_rescan_ports (engine::device_io::AudioEngine * self);
+  JackDriver (AudioEngine &engine) : engine_ (engine) { }
 
-/**
- * Disconnects and reconnects the monitor output
- * port to the selected devices.
- *
- * @throw ZrythmException on error.
- */
-void
-engine_jack_reconnect_monitor (engine::device_io::AudioEngine * self, bool left);
+  utils::Utf8String get_driver_name () const override { return u8"JACK"; }
 
-void
-engine_jack_handle_position_change (engine::device_io::AudioEngine * self);
+  // Audio driver implementation
+  void set_buffer_size (uint32_t buf_size) override
+  {
+    jack_set_buffer_size (client_, buf_size);
+    z_debug ("called jack_set_buffer_size");
+  }
+  bool buffer_size_change_handled () const override
+  {
+    return handled_jack_buffer_size_change_;
+  }
+  void handle_buf_size_change (uint32_t frames) override;
+  void handle_sample_rate_change (uint32_t samplerate) override;
+  bool setup_audio () override;
+  bool activate_audio (bool activate) override;
+  void tear_down_audio () override;
+  void handle_start () override;
+  void handle_stop () override;
+  void prepare_process_audio () override;
+  bool
+  sanity_check_should_return_early (nframes_t total_frames_to_process) override;
+  void                         handle_position_change () override;
+  std::unique_ptr<PortBackend> create_audio_port_backend () const override
+  {
+    return std::make_unique<JackPortBackend> (*client_);
+  }
+  std::vector<ExtPort>
+  get_ext_audio_ports (dsp::PortFlow flow, bool hw) const override;
 
-void
-engine_jack_handle_start (engine::device_io::AudioEngine * self);
+  // MIDI driver implementation
+  bool setup_midi () override;
+  bool activate_midi (bool activate) override { /* noop */ return true; }
+  void tear_down_midi () override { /* noop */ }
+  std::unique_ptr<PortBackend> create_midi_port_backend () const override
+  {
+    return std::make_unique<JackPortBackend> (*client_);
+  }
+  std::vector<ExtPort>
+  get_ext_midi_ports (dsp::PortFlow flow, bool hw) const override;
 
-void
-engine_jack_handle_stop (engine::device_io::AudioEngine * self);
+  jack_client_t * get_client () const { return client_; }
 
-void
-engine_jack_handle_buf_size_change (
-  engine::device_io::AudioEngine * self,
-  uint32_t                         frames);
+private:
+  /**
+   * Refreshes the list of external ports.
+   */
+  void rescan_ports ();
 
-void
-engine_jack_handle_sample_rate_change (
-  engine::device_io::AudioEngine * self,
-  uint32_t                         samplerate);
+  /**
+   * Disconnects and reconnects the monitor output
+   * port to the selected devices.
+   *
+   * @throw ZrythmException on error.
+   */
+  void reconnect_monitor (bool left);
 
-/**
- * Prepares for processing.
- *
- * Called at the start of each process cycle.
- */
-void
-engine_jack_prepare_process (engine::device_io::AudioEngine * self);
+  /**
+   * Updates the JACK Transport type.
+   */
+  void set_transport_type (TransportType type);
 
-/**
- * Updates the JACK Transport type.
- */
-void
-engine_jack_set_transport_type (
-  engine::device_io::AudioEngine *                  self,
-  engine::device_io::AudioEngine::JackTransportType type);
+  /**
+   * Fills the external out bufs.
+   */
+  void fill_out_bufs (const nframes_t nframes);
 
-/**
- * Fills the external out bufs.
- */
-void
-engine_jack_fill_out_bufs (
-  engine::device_io::AudioEngine * self,
-  const nframes_t                  nframes);
+  void process_change_request ();
 
-/**
- * Sets up the MIDI engine to use jack.
- *
- * @param loading Loading a Project or not.
- */
-int
-engine_jack_midi_setup (engine::device_io::AudioEngine * self);
+  /**
+   * Jack sample rate callback.
+   *
+   * This is called in a non-RT thread by JACK in between its processing cycles,
+   * and will block until this function returns so it is safe to change the
+   * buffers here.
+   */
+  static int sample_rate_cb (uint32_t nframes, void * data);
 
-/**
- * Sets up the audio engine to use jack.
- *
- * @param loading Loading a Project or not.
- */
-int
-engine_jack_setup (engine::device_io::AudioEngine * self);
+  /** Jack buffer size callback. */
+  static int buffer_size_cb (uint32_t nframes, void * data);
+  /**
+   * The process callback for this JACK application is called in a special
+   * realtime thread once for each audio cycle.
+   */
+  static int process_cb (uint32_t nframes, void * data);
+  /**
+   * Client-supplied function that is called whenever an xrun has occurred.
+   *
+   * @see jack_get_xrun_delayed_usecs()
+   *
+   * @return zero on success, non-zero on error
+   */
+  static int xrun_cb (void * data);
 
-void
-engine_jack_tear_down (engine::device_io::AudioEngine * self);
+  static void timebase_cb (
+    jack_transport_state_t state,
+    jack_nframes_t         nframes,
+    jack_position_t *      pos,
+    int                    new_pos,
+    void *                 arg);
+  /**
+   * JACK calls this shutdown_callback if the server ever shuts down or decides
+   * to disconnect the client.
+   */
+  static void shutdown_cb (void * arg);
+  static void freewheel_cb (int starting, void * arg);
+  static void
+  port_registration_cb (jack_port_id_t port_id, int registered, void * arg);
+  static void
+  port_connect_cb (jack_port_id_t a, jack_port_id_t b, int connect, void * arg);
 
-int
-engine_jack_activate (engine::device_io::AudioEngine * self, bool activate);
+  /**
+   * Returns if this is a pipewire session.
+   */
+  bool is_pipewire () const;
 
-/** Jack buffer size callback. */
-int
-engine_jack_buffer_size_cb (
-  uint32_t                         nframes,
-  engine::device_io::AudioEngine * self);
+  void get_ext_ports (
+    dsp::PortType         type,
+    dsp::PortFlow         flow,
+    bool                  hw,
+    std::vector<ExtPort> &ports) const;
 
-/**
- * Returns if this is a pipewire session.
- */
-bool
-engine_jack_is_pipewire (engine::device_io::AudioEngine * self);
+private:
+  AudioEngine &engine_;
 
+  /**
+   * Whether transport master/client or no connection with jack transport.
+   */
+  TransportType transport_type_{};
+
+  /**
+   * Whether pending jack buffer change was handled (buffers reallocated).
+   *
+   * To be set to zero when a change starts and 1 when the change is fully
+   * processed.
+   */
+  std::atomic_bool handled_jack_buffer_size_change_ = false;
+
+  /** JACK client. */
+  jack_client_t * client_ = nullptr;
+};
+}
 #endif // HAVE_JACK

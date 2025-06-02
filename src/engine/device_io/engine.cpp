@@ -1,5 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -72,7 +71,6 @@ AudioEngine::init_after_cloning (
   const AudioEngine &other,
   ObjectCloneType    clone_type)
 {
-  transport_type_ = other.transport_type_;
   sample_rate_ = other.sample_rate_;
   frames_per_tick_ = other.frames_per_tick_;
   monitor_out_left_ = other.monitor_out_left_;
@@ -124,13 +122,7 @@ AudioEngine::set_buffer_size (uint32_t buf_size)
 
   z_debug ("request to set engine buffer size to {}", buf_size);
 
-#ifdef HAVE_JACK
-  if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-    {
-      jack_set_buffer_size (client_, buf_size);
-      z_debug ("called jack_set_buffer_size");
-    }
-#endif
+  audio_driver_->set_buffer_size (buf_size);
 }
 
 void
@@ -271,21 +263,11 @@ AudioEngine::process_events ()
       switch (ev->type_)
         {
         case AudioEngineEventType::AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE:
-#ifdef HAVE_JACK
-          if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-            {
-              engine_jack_handle_buf_size_change (this, ev->uint_arg_);
-            }
-#endif
+          audio_driver_->handle_buf_size_change (ev->uint_arg_);
           // EVENTS_PUSH (EventType::ET_ENGINE_BUFFER_SIZE_CHANGED, nullptr);
           break;
         case AudioEngineEventType::AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE:
-#ifdef HAVE_JACK
-          if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-            {
-              engine_jack_handle_sample_rate_change (this, ev->uint_arg_);
-            }
-#endif
+          audio_driver_->handle_sample_rate_change (ev->uint_arg_);
           // EVENTS_PUSH (EventType::ET_ENGINE_SAMPLE_RATE_CHANGED, nullptr);
           break;
         default:
@@ -391,91 +373,49 @@ AudioEngine::pre_setup ()
       sigc::mem_fun (*this, &AudioEngine::process_events), 12);
 #endif
 
-  z_return_if_fail (!setup_ && !pre_setup_);
+  assert (!setup_ && !pre_setup_);
 
-  int ret = 0;
+  // create drivers
+  auto dummy_driver = std::make_shared<DummyDriver> (*this);
+  audio_driver_ = dummy_driver;
+  midi_driver_ = dummy_driver;
+
   switch (audio_backend_)
     {
-    case AudioBackend::AUDIO_BACKEND_DUMMY:
-      ret = engine_dummy_setup (this);
+    case AudioBackend::Jack:
+      audio_driver_ = std::make_shared<JackDriver> (*this);
       break;
-#ifdef HAVE_JACK
-    case AudioBackend::AUDIO_BACKEND_JACK:
-      ret = engine_jack_setup (this);
-      break;
-#endif
     default:
-      z_warning ("Unhandled audio backend");
       break;
     }
-
-  if (ret)
-    {
-      if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
-        {
-// TODO
-#if 0
-          ui_show_message_printf (
-            QObject::tr ("Backend Initialization Failed"),
-            QObject::tr (
-              "Failed to initialize the %s audio backend. Will use the dummy backend instead. Please check your backend settings in the Preferences."),
-            AudioBackend_to_string (audio_backend_).c_str ());
-#endif
-        }
-
-      audio_backend_ = AudioBackend::AUDIO_BACKEND_DUMMY;
-      midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
-      engine_dummy_setup (this);
-    }
-
-  int mret = 0;
   switch (midi_backend_)
     {
-    case MidiBackend::MIDI_BACKEND_DUMMY:
-      mret = engine_dummy_midi_setup (this);
-      break;
-#ifdef HAVE_JACK
-    case MidiBackend::MIDI_BACKEND_JACK:
-      if (client_)
+    case MidiBackend::Jack:
+      if (audio_driver_->get_driver_name () != u8"JACK")
         {
-          mret = engine_jack_midi_setup (this);
-        }
-      else
-        {
-// TODO
-#  if 0
-          ui_show_message_printf (
-            QObject::tr ("Backend Error"),
-            QObject::tr (
-              "The JACK MIDI backend can only be used with the JACK audio backend (your current audio backend is %s). Will use the dummy MIDI backend instead."),
-            AudioBackend_to_string (audio_backend_).c_str ());
-#  endif
-          midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
-          mret = engine_dummy_midi_setup (this);
+          throw std::runtime_error (
+            "Jack MIDI backend requires Jack audio backend");
         }
       break;
-#endif
     default:
-      z_warning ("Unhandled MIDI backend");
       break;
     }
 
-  if (mret)
+  bool success = audio_driver_->setup_audio ();
+  if (!success)
     {
-      if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
-        {
-// TODO
-#if 0
-          ui_show_message_printf (
-            QObject::tr ("Backend Initialization Failed"),
-            QObject::tr (
-              "Failed to initialize the %s MIDI backend. Will use the dummy backend instead. Please check your backend settings in the Preferences."),
-            MidiBackend_to_string (midi_backend_).c_str ());
-#endif
-        }
-
-      midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
-      engine_dummy_midi_setup (this);
+      // fallback to dummy driver
+      z_warning (
+        "Failed to setup audio driver {}", audio_driver_->get_driver_name ());
+      audio_driver_ = dummy_driver;
+    }
+  success = midi_driver_->setup_midi ();
+  if (!success)
+    {
+      // fallback to dummy driver
+      z_warning (
+        "Failed to setup midi driver {}", midi_driver_->get_driver_name ());
+      midi_driver_ = dummy_driver;
     }
 
   z_debug ("processing engine events");
@@ -496,9 +436,8 @@ AudioEngine::setup ()
   hw_out_processor_->setup ();
 
   if (
-    (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK
-     && midi_backend_ != MidiBackend::MIDI_BACKEND_JACK)
-    || (audio_backend_ != AudioBackend::AUDIO_BACKEND_JACK && midi_backend_ == MidiBackend::MIDI_BACKEND_JACK))
+    (audio_backend_ == AudioBackend::Jack && midi_backend_ != MidiBackend::Jack)
+    || (audio_backend_ != AudioBackend::Jack && midi_backend_ == MidiBackend::Jack))
     {
 // TODO
 #if 0
@@ -547,13 +486,11 @@ AudioEngine::init_common ()
   metronome_ = std::make_unique<session::Metronome> (*this);
   router_ = std::make_unique<session::Router> (this);
 
-  auto ab_code = AudioBackend::AUDIO_BACKEND_DUMMY;
+  auto ab_code = AudioBackend::Dummy;
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       ab_code =
-        gZrythm->use_pipewire_in_tests_
-          ? AudioBackend::AUDIO_BACKEND_JACK
-          : AudioBackend::AUDIO_BACKEND_DUMMY;
+        gZrythm->use_pipewire_in_tests_ ? AudioBackend::Jack : AudioBackend::Dummy;
     }
 #if 0
   else if (!zrythm_app->audio_backend_.empty ())
@@ -571,30 +508,28 @@ AudioEngine::init_common ()
 
   switch (ab_code)
     {
-    case AudioBackend::AUDIO_BACKEND_DUMMY:
-      audio_backend_ = AudioBackend::AUDIO_BACKEND_DUMMY;
+    case AudioBackend::Dummy:
+      audio_backend_ = AudioBackend::Dummy;
       break;
 #ifdef HAVE_JACK
-    case AudioBackend::AUDIO_BACKEND_JACK:
-      audio_backend_ = AudioBackend::AUDIO_BACKEND_JACK;
+    case AudioBackend::Jack:
+      audio_backend_ = AudioBackend::Jack;
       break;
 #endif
     default:
-      audio_backend_ = AudioBackend::AUDIO_BACKEND_DUMMY;
+      audio_backend_ = AudioBackend::Dummy;
       z_warning ("selected audio backend not found. switching to dummy");
       zrythm::gui::SettingsManager::get_instance ()->set_audioBackend (
-        ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_DUMMY));
+        ENUM_VALUE_TO_INT (AudioBackend::Dummy));
       backend_reset_to_dummy = true;
       break;
     }
 
-  auto mb_code = MidiBackend::MIDI_BACKEND_DUMMY;
+  auto mb_code = MidiBackend::Dummy;
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       mb_code =
-        gZrythm->use_pipewire_in_tests_
-          ? MidiBackend::MIDI_BACKEND_JACK
-          : MidiBackend::MIDI_BACKEND_DUMMY;
+        gZrythm->use_pipewire_in_tests_ ? MidiBackend::Jack : MidiBackend::Dummy;
     }
 #if 0
   else if (!zrythm_app->midi_backend_.empty ())
@@ -610,19 +545,19 @@ AudioEngine::init_common ()
 
   switch (mb_code)
     {
-    case MidiBackend::MIDI_BACKEND_DUMMY:
-      midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
+    case MidiBackend::Dummy:
+      midi_backend_ = MidiBackend::Dummy;
       break;
 #ifdef HAVE_JACK
-    case MidiBackend::MIDI_BACKEND_JACK:
-      midi_backend_ = MidiBackend::MIDI_BACKEND_JACK;
+    case MidiBackend::Jack:
+      midi_backend_ = MidiBackend::Jack;
       break;
 #endif
     default:
-      midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
+      midi_backend_ = MidiBackend::Dummy;
       z_warning ("selected midi backend not found. switching to dummy");
       zrythm::gui::SettingsManager::get_instance ()->set_midiBackend (
-        ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY));
+        ENUM_VALUE_TO_INT (MidiBackend::Dummy));
       backend_reset_to_dummy = true;
       break;
     }
@@ -791,7 +726,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
   if (
     with_fadeout && state.running_
-    && (dummy_audio_thread_ == nullptr || !dummy_audio_thread_->threadShouldExit ())
+
     && has_handled_buffer_size_change ())
     {
       z_debug (
@@ -833,8 +768,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
         {
           while (
             project_->transport_->play_state_
-              == session::Transport::PlayState::PauseRequested
-            && !dummy_audio_thread_->threadShouldExit ())
+            == session::Transport::PlayState::PauseRequested)
             {
               std::this_thread::sleep_for (std::chrono::microseconds (100));
             }
@@ -855,7 +789,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
   control_room_->monitor_fader_->fading_out_.store (false);
 
-  if (project_ && project_->loaded_)
+  if ((project_ != nullptr) && project_->loaded_)
     {
       /* run 1 more time to flush panic messages */
       SemaphoreRAII sem (port_operation_lock_, true);
@@ -954,16 +888,7 @@ AudioEngine::activate (bool activate)
       hw_in_processor_->activate (false);
     }
 
-#ifdef HAVE_JACK
-  if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-    {
-      engine_jack_activate (this, activate);
-    }
-#endif
-  if (audio_backend_ == AudioBackend::AUDIO_BACKEND_DUMMY)
-    {
-      engine_dummy_activate (this, activate);
-    }
+  audio_driver_->activate_audio (activate);
 
   if (activate)
     {
@@ -1095,12 +1020,7 @@ AudioEngine::process_prepare (
           z_debug ("pause requested handled");
         }
       transport_->set_play_state_rt_safe (session::Transport::PlayState::Paused);
-#ifdef HAVE_JACK
-      if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-        {
-          engine_jack_handle_stop (this);
-        }
-#endif
+      audio_driver_->handle_stop ();
     }
   else if (
     transport_->play_state_ == session::Transport::PlayState::RollRequested
@@ -1109,24 +1029,10 @@ AudioEngine::process_prepare (
       transport_->set_play_state_rt_safe (
         session::Transport::PlayState::Rolling);
       remaining_latency_preroll_ = router_->get_max_route_playback_latency ();
-#ifdef HAVE_JACK
-      if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-        {
-          engine_jack_handle_start (this);
-        }
-#endif
+      audio_driver_->handle_start ();
     }
 
-  switch (audio_backend_)
-    {
-#ifdef HAVE_JACK
-    case AudioBackend::AUDIO_BACKEND_JACK:
-      engine_jack_prepare_process (this);
-      break;
-#endif
-    default:
-      break;
-    }
+  audio_driver_->prepare_process_audio ();
 
   clear_output_buffers (nframes);
 
@@ -1180,8 +1086,7 @@ AudioEngine::receive_midi_events (uint32_t nframes)
   if (midi_in_->backend_ && midi_in_->backend_->is_exposed ())
     {
       midi_in_->backend_->sum_midi_data (
-        midi_in_->midi_events_, { .start_frame = 0, .nframes = nframes },
-        [] (midi_byte_t) { return true; });
+        midi_in_->midi_events_, { .start_frame = 0, .nframes = nframes });
     }
 }
 
@@ -1217,21 +1122,10 @@ AudioEngine::process (const nframes_t total_frames_to_process)
       return 0;
     }
 
-    /* Work around a bug in Pipewire that doesn't inform the host about buffer
-     * size (block length) changes */
-#ifdef HAVE_JACK
-  if (
-    audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK && run_.load ()
-    && block_length_ != jack_get_buffer_size (client_))
+  if (audio_driver_->sanity_check_should_return_early (total_frames_to_process))
     {
-      clear_output_buffers (total_frames_to_process);
-      z_warning (
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! JACK buffer size changed from {} to {} without notifying us (likely pipewire bug #1591). Attempting workaround...",
-        block_length_, jack_get_buffer_size (client_));
-      engine_jack_buffer_size_cb (jack_get_buffer_size (client_), this);
       return 0;
     }
-#endif
 
   /* run pre-process code */
   bool skip_cycle =
@@ -1441,12 +1335,7 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   if (transport_->isRolling () && remaining_latency_preroll_ == 0)
     {
       transport_->add_to_playhead (roll_nframes);
-#ifdef HAVE_JACK
-      if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-        {
-          engine_jack_handle_position_change (this);
-        }
-#endif
+      audio_driver_->handle_position_change ();
     }
 
   /* update max time taken (for calculating DSP %) */
@@ -1487,10 +1376,10 @@ AudioEngine::fill_out_bufs (const nframes_t nframes)
 {
   switch (audio_backend_)
     {
-    case AudioBackend::AUDIO_BACKEND_DUMMY:
+    case AudioBackend::Dummy:
       break;
 #ifdef HAVE_JACK
-    case AudioBackend::AUDIO_BACKEND_JACK:
+    case AudioBackend::Jack:
       /*engine_jack_fill_out_bufs (self, nframes);*/
       break;
 #endif
@@ -1566,48 +1455,16 @@ AudioEngine::set_port_exposed_to_backend (Port &port, bool expose)
 
   if (port.id_->type_ == Port::PortType::Audio)
     {
-      auto * audio_port = dynamic_cast<AudioPort *> (&port);
-      (void) audio_port;
-      switch (audio_backend_)
+      if (!port.backend_)
         {
-        case AudioBackend::AUDIO_BACKEND_DUMMY:
-          z_debug ("called with dummy audio backend");
-          return;
-#ifdef HAVE_JACK
-        case AudioBackend::AUDIO_BACKEND_JACK:
-          if (
-            !port.backend_
-            || (dynamic_cast<JackPortBackend *> (port.backend_.get ()) == nullptr))
-            {
-              port.backend_ = std::make_unique<JackPortBackend> (*client_);
-            }
-          break;
-#endif
-        default:
-          break;
+          port.backend_ = audio_driver_->create_audio_port_backend ();
         }
     }
   else if (port.id_->type_ == Port::PortType::Event)
     {
-      auto * midi_port = dynamic_cast<MidiPort *> (&port);
-      (void) midi_port;
-      switch (midi_backend_)
+      if (!port.backend_)
         {
-        case MidiBackend::MIDI_BACKEND_DUMMY:
-          z_debug ("called with MIDI dummy backend");
-          return;
-#ifdef HAVE_JACK
-        case MidiBackend::MIDI_BACKEND_JACK:
-          if (
-            !port.backend_
-            || (dynamic_cast<JackPortBackend *> (port.backend_.get ()) == nullptr))
-            {
-              port.backend_ = std::make_unique<JackPortBackend> (*client_);
-            }
-          break;
-#endif
-        default:
-          break;
+          port.backend_ = midi_driver_->create_midi_port_backend ();
         }
     }
   else /* else if not audio or MIDI */
@@ -1634,7 +1491,7 @@ AudioEngine::set_port_exposed_to_backend (Port &port, bool expose)
 void
 AudioEngine::reset_bounce_mode ()
 {
-  bounce_mode_ = BounceMode::BOUNCE_OFF;
+  bounce_mode_ = BounceMode::Off;
 
   TRACKLIST->mark_all_tracks_for_bounce (false);
 }
@@ -1648,9 +1505,9 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
   if (reset_to_dummy)
     {
       zrythm::gui::SettingsManager::get_instance ()->set_audioBackend (
-        ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_DUMMY));
+        ENUM_VALUE_TO_INT (AudioBackend::Dummy));
       zrythm::gui::SettingsManager::get_instance ()->set_midiBackend (
-        ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY));
+        ENUM_VALUE_TO_INT (MidiBackend::Dummy));
     }
 
 #if 0
@@ -1720,19 +1577,8 @@ AudioEngine::~AudioEngine ()
       activate (false);
     }
 
-  switch (audio_backend_)
-    {
-#ifdef HAVE_JACK
-    case AudioBackend::AUDIO_BACKEND_JACK:
-      engine_jack_tear_down (this);
-      break;
-#endif
-    case AudioBackend::AUDIO_BACKEND_DUMMY:
-      engine_dummy_tear_down (this);
-      break;
-    default:
-      break;
-    }
+  audio_driver_->tear_down_audio ();
+  midi_driver_->tear_down_midi ();
 
 // TODO
 #if 0
@@ -1752,7 +1598,7 @@ AudioEngine *
 AudioEngine::get_active_instance ()
 {
   auto prj = Project::get_active_instance ();
-  if (prj)
+  if (prj != nullptr)
     {
       return prj->audio_engine_.get ();
     }
@@ -1762,7 +1608,6 @@ AudioEngine::get_active_instance ()
 void
 from_json (const nlohmann::json &j, AudioEngine &engine)
 {
-  j.at (AudioEngine::kTransportTypeKey).get_to (engine.transport_type_);
   j.at (AudioEngine::kSampleRateKey).get_to (engine.sample_rate_);
   j.at (AudioEngine::kFramesPerTickKey).get_to (engine.frames_per_tick_);
   j.at (AudioEngine::kMonitorOutLKey).get_to (engine.monitor_out_left_);

@@ -49,10 +49,8 @@ AudioPort::sum_data_from_dummy (
   if (
     id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
     || id_->flow_ != PortFlow::Input || id_->type_ != PortType::Audio
-    || AUDIO_ENGINE->audio_backend_
-         != engine::device_io::AudioBackend::AUDIO_BACKEND_DUMMY
-    || AUDIO_ENGINE->midi_backend_
-         != engine::device_io::MidiBackend::MIDI_BACKEND_DUMMY)
+    || AUDIO_ENGINE->audio_backend_ != engine::device_io::AudioBackend::Dummy
+    || AUDIO_ENGINE->midi_backend_ != engine::device_io::MidiBackend::Dummy)
     return;
 
   if (AUDIO_ENGINE->dummy_left_input_)
@@ -116,8 +114,7 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
               .nframes = time_nfo.nframes_ });
         }
       else if (
-        AUDIO_ENGINE->audio_backend_
-        == engine::device_io::AudioBackend::AUDIO_BACKEND_DUMMY)
+        AUDIO_ENGINE->audio_backend_ == engine::device_io::AudioBackend::Dummy)
         {
           // TODO: make this a PortBackend implementation too, then it will get
           // handled by the above code
@@ -201,7 +198,7 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
   const auto master_processor_stereo_ins = std::pair (
     P_MASTER_TRACK->processor_->stereo_in_left_id_->id (),
     P_MASTER_TRACK->processor_->stereo_in_right_id_->id ());
-  if (AUDIO_ENGINE->bounce_mode_ > engine::device_io::BounceMode::BOUNCE_OFF && !AUDIO_ENGINE->bounce_with_parents_ &&
+  if (AUDIO_ENGINE->bounce_mode_ > engine::device_io::BounceMode::Off && !AUDIO_ENGINE->bounce_with_parents_ &&
     (get_uuid() == master_processor_stereo_ins.first
     || get_uuid() == master_processor_stereo_ins.second)) [[unlikely]]
     {
@@ -213,8 +210,8 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
   /* if bouncing directly to master (e.g., when bouncing a track on
    * its own without parents), add the buffer to master output */
   if (
-    AUDIO_ENGINE->bounce_mode_ > engine::device_io::BounceMode::BOUNCE_OFF
-    && is_stereo && is_output ()
+    AUDIO_ENGINE->bounce_mode_ > engine::device_io::BounceMode::Off && is_stereo
+    && is_output ()
     && owner_->should_bounce_to_master (AUDIO_ENGINE->bounce_step_)) [[unlikely]]
     {
       auto &dest =

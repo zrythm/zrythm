@@ -117,7 +117,7 @@ ProcessableTrack::fill_events_common (
 
         /* skip if in bounce mode and the region should not be bounced */
         if (
-          AUDIO_ENGINE->bounce_mode_ != engine::device_io::BounceMode::BOUNCE_OFF
+          AUDIO_ENGINE->bounce_mode_ != engine::device_io::BounceMode::Off
           && (!r->bounce_ || !bounce_))
           {
             return;

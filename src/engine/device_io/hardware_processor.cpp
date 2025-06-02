@@ -108,8 +108,13 @@ HardwareProcessor::rescan_ext_ports ()
 
   // Function to collect and add ports
   auto collect_and_add_ports = [&] (dsp::PortType type) {
-    std::vector<ExtPort> ports;
-    ExtPort::ext_ports_get (type, flow, true, ports, *engine_);
+    auto ports = [&] () {
+      if (type == dsp::PortType::Audio)
+        {
+          return engine_->audio_driver_->get_ext_audio_ports (flow, true);
+        }
+      return engine_->midi_driver_->get_ext_midi_ports (flow, true);
+    }();
 
     for (const auto &ext_port : ports)
       {
@@ -309,8 +314,7 @@ HardwareProcessor::process (nframes_t nframes)
             else if constexpr (std::is_same_v<PortType, MidiPort>)
               {
                 port->backend_->sum_midi_data (
-                  port->midi_events_, { 0, nframes },
-                  [] (midi_byte_t) { return true; });
+                  port->midi_events_, { 0, nframes });
               }
           }
       }

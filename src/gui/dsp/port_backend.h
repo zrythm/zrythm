@@ -32,14 +32,9 @@ public:
   };
 
   /**
-   * @brief Function used to approve or reject MIDI events on the given channel.
-   *
-   * Currently should be used to filter out events based on @ref
-   * Channel.all_midi_channels_ and @ref Channel.midi_channels_.
-   *
-   * @param channel The channel to approve or reject (0-based).
+   * @brief Function used to filter MIDI events.
    */
-  using IsMidiChannelAcceptedFunc = std::function<bool (midi_byte_t channel)>;
+  using MidiEventFilter = std::function<bool (const dsp::MidiEvent &)>;
 
   using PortDesignationProvider = std::function<utils::Utf8String ()>;
 
@@ -57,9 +52,9 @@ public:
    * current cycle (ie, already added the start_frames in this cycle).
    */
   virtual void sum_midi_data (
-    dsp::MidiEvents          &midi_events,
-    FrameRange                range,
-    IsMidiChannelAcceptedFunc approve_func)
+    dsp::MidiEvents &midi_events,
+    FrameRange       range,
+    MidiEventFilter  filter_func = [] (const auto &) { return true; })
   {
   }
 
@@ -145,9 +140,9 @@ public:
   }
 
   void sum_midi_data (
-    dsp::MidiEvents          &midi_events,
-    FrameRange                range,
-    IsMidiChannelAcceptedFunc approve_func) override
+    dsp::MidiEvents &midi_events,
+    FrameRange       range,
+    MidiEventFilter  filter_func) override
   {
     const auto start_frame = range.start_frame;
     const auto nframes = range.nframes;
@@ -161,8 +156,11 @@ public:
 
         if (jack_ev.time >= start_frame && jack_ev.time < start_frame + nframes)
           {
-            midi_byte_t channel = jack_ev.buffer[0] & 0xf;
-            if (jack_ev.size == 3 && approve_func (channel))
+            if (
+              jack_ev.size == 3
+              && filter_func (dsp::MidiEvent{
+                jack_ev.buffer[0], jack_ev.buffer[1], jack_ev.buffer[2],
+                jack_ev.time }))
               {
                 /*z_debug ("received event at {}", jack_ev.time);*/
                 midi_events.active_events_.add_event_from_buf (

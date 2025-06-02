@@ -136,21 +136,6 @@ connect (
    */
   bool get_enabled () const;
 
-  /**
-   * Collects external ports of the given type.
-   *
-   * @param flow The signal flow. Note that this is inverse to what Zrythm sees.
-   * E.g., to get MIDI inputs like MIDI keyboards, pass @ref Z_PORT_FLOW_OUTPUT
-   * here.
-   * @param hw Hardware or not.
-   */
-  static void ext_ports_get (
-    PortType              type,
-    PortFlow              flow,
-    bool                  hw,
-    std::vector<ExtPort> &ports,
-    AudioEngine          &engine);
-
 private:
   static constexpr std::string_view kTypeKey = "type";
   static constexpr std::string_view kFullNameKey = "fullName";

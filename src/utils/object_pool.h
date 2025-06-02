@@ -18,7 +18,7 @@ template <typename T, bool EnableDebug = false> class ObjectPool
 {
 public:
   static_assert (
-    std::is_default_constructible<T>::value,
+    std::is_default_constructible_v<T>,
     "T must be default-constructible");
 
   ObjectPool (size_t initial_capacity = 64) { reserve (initial_capacity); }

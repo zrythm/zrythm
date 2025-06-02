@@ -35,38 +35,16 @@ class Plugin;
 
 #define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val_)
 
-/**
- * Push events.
- */
-#define ENGINE_EVENTS_PUSH(et, _arg, _uint_arg, _float_arg) \
-  { \
-    auto _ev = AUDIO_ENGINE->ev_pool_.acquire (); \
-    _ev->file_ = __FILE__; \
-    _ev->func_ = __func__; \
-    _ev->lineno_ = __LINE__; \
-    _ev->type_ = et; \
-    _ev->arg_ = (void *) _arg; \
-    _ev->uint_arg_ = _uint_arg; \
-    _ev->float_arg_ = _float_arg; \
-    AUDIO_ENGINE->ev_queue_.push_back (_ev); \
-  }
-
 class Project;
 
 namespace zrythm::engine::device_io
 {
-// should be set by backend
-constexpr int BLOCK_LENGTH = 4096;
-
-// should be set by backend
-constexpr int MIDI_BUF_SIZE = 1024;
-
 constexpr int ENGINE_MAX_EVENTS = 128;
 
 enum class AudioBackend : basic_enum_base_type_t
 {
-  AUDIO_BACKEND_DUMMY,
-  AUDIO_BACKEND_JACK,
+  Dummy,
+  Jack,
 };
 
 /**
@@ -76,24 +54,23 @@ enum class AudioBackend : basic_enum_base_type_t
 enum class BounceMode : basic_enum_base_type_t
 {
   /** Don't bounce. */
-  BOUNCE_OFF,
+  Off,
 
   /** Bounce. */
-  BOUNCE_ON,
+  On,
 
   /**
    * Bounce if parent is bouncing.
    *
-   * To be used on regions to bounce if their track
-   * is bouncing.
+   * To be used on regions to bounce if their track is bouncing.
    */
-  BOUNCE_INHERIT,
+  Inherit,
 };
 
 enum class MidiBackend : basic_enum_base_type_t
 {
-  MIDI_BACKEND_DUMMY,
-  MIDI_BACKEND_JACK,
+  Dummy,
+  Jack,
 };
 
 /**
@@ -102,13 +79,6 @@ enum class MidiBackend : basic_enum_base_type_t
 class AudioEngine final : public ICloneable<AudioEngine>, public IPortOwner
 {
 public:
-  enum class JackTransportType
-  {
-    TimebaseMaster,
-    TransportClient,
-    NoJackTransport,
-  };
-
   /**
    * Samplerates to be used in comboboxes.
    */
@@ -133,24 +103,97 @@ public:
   };
 
   /**
+   * @brief Implementation that drives the audio callbacks.
+   */
+  class AudioDriver
+  {
+  public:
+    virtual ~AudioDriver () = default;
+    virtual bool buffer_size_change_handled () const { return true; }
+    virtual void set_buffer_size (uint32_t buf_size) { }
+    virtual void handle_buf_size_change (uint32_t frames) { };
+    virtual void handle_sample_rate_change (uint32_t samplerate) { };
+    virtual utils::Utf8String get_driver_name () const = 0;
+
+    /**
+     * @brief Sets up the driver.
+     * @return True if the driver was successfully setup, false otherwise.
+     */
+    virtual bool setup_audio () = 0;
+
+    virtual bool activate_audio (bool activate) = 0;
+    virtual void tear_down_audio () = 0;
+    virtual void handle_start () { }
+    virtual void handle_stop () { }
+    // optional additional logic during AudioEngine::prepare_process()
+    virtual void prepare_process_audio () { }
+    // This is used to work around a bug in PipeWire (see the JACK audio driver
+    // for details)
+    virtual bool
+    sanity_check_should_return_early (nframes_t total_frames_to_process)
+    {
+      return false;
+    }
+    virtual void                         handle_position_change () { }
+    virtual std::unique_ptr<PortBackend> create_audio_port_backend () const
+    {
+      return nullptr;
+    }
+    /**
+     * Collects external ports of the given type.
+     *
+     * @param flow The signal flow. Note that this is inverse to what Zrythm
+     * sees. E.g., to get MIDI inputs like MIDI keyboards, pass @ref
+     * Z_PORT_FLOW_OUTPUT here.
+     * @param hw Hardware or not.
+     */
+    virtual std::vector<ExtPort>
+    get_ext_audio_ports (dsp::PortFlow flow, bool hw) const
+    {
+      return {};
+    }
+  };
+
+  /**
+   * @brief Implementation that handles MIDI from/to devices.
+   */
+  class MidiDriver
+  {
+  public:
+    virtual ~MidiDriver () = default;
+    virtual bool                         setup_midi () = 0;
+    virtual bool                         activate_midi (bool activate) = 0;
+    virtual void                         tear_down_midi () = 0;
+    virtual std::unique_ptr<PortBackend> create_midi_port_backend () const
+    {
+      return nullptr;
+    }
+    virtual utils::Utf8String get_driver_name () const = 0;
+    virtual std::vector<ExtPort>
+    get_ext_midi_ports (dsp::PortFlow flow, bool hw) const
+    {
+      return {};
+    }
+  };
+
+  /**
    * Audio engine event.
    */
   class Event
   {
   public:
     Event () : file_ (nullptr), func_ (nullptr) { }
-
-  public:
     AudioEngineEventType type_ =
       AudioEngineEventType::AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE;
-    void *            arg_ = nullptr;
-    uint32_t          uint_arg_ = 0;
-    float             float_arg_ = 0.0f;
-    const char *      file_ = nullptr;
-    const char *      func_ = nullptr;
-    int               lineno_ = 0;
+    void *            arg_{};
+    uint32_t          uint_arg_{};
+    float             float_arg_{};
+    const char *      file_{};
+    const char *      func_{};
+    int               lineno_{};
     utils::Utf8String backtrace_;
   };
+  static_assert (std::is_default_constructible_v<Event>);
 
   /**
    * Buffer sizes to be used in combo boxes.
@@ -238,8 +281,7 @@ public:
 
   bool has_handled_buffer_size_change () const
   {
-    return audio_backend_ != AudioBackend::AUDIO_BACKEND_JACK
-           || (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK && handled_jack_buffer_size_change_.load());
+    return audio_driver_->buffer_size_change_handled ();
   }
 
   bool is_in_active_project () const override;
@@ -249,6 +291,24 @@ public:
 
   utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+
+  void push_event (
+    AudioEngineEventType       type,
+    void *                     arg = nullptr,
+    uint32_t                   uint_arg = 0,
+    float                      float_arg = 0.0f,
+    const std::source_location loc = std::source_location::current ())
+  {
+    auto ev = ev_pool_.acquire ();
+    ev->file_ = loc.file_name ();
+    ev->func_ = loc.function_name ();
+    ev->lineno_ = loc.line ();
+    ev->type_ = type;
+    ev->arg_ = arg;
+    ev->uint_arg_ = uint_arg;
+    ev->float_arg_ = float_arg;
+    ev_queue_.push_back (ev);
+  }
 
   /**
    * @param force_pause Whether to force transport
@@ -420,8 +480,14 @@ public:
    */
   void panic_all ();
 
+  /**
+   * Clears the underlying backend's output buffers.
+   *
+   * Used when returning early.
+   */
+  void clear_output_buffers (nframes_t nframes);
+
 private:
-  static constexpr auto kTransportTypeKey = "transportType"sv;
   static constexpr auto kSampleRateKey = "sampleRate"sv;
   static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
   static constexpr auto kMonitorOutLKey = "monitorOutL"sv;
@@ -436,7 +502,6 @@ private:
   friend void           to_json (nlohmann::json &j, const AudioEngine &engine)
   {
     j = nlohmann::json{
-      { kTransportTypeKey,         engine.transport_type_           },
       { kSampleRateKey,            engine.sample_rate_              },
       { kFramesPerTickKey,         engine.frames_per_tick_          },
       { kMonitorOutLKey,           engine.monitor_out_left_         },
@@ -461,13 +526,6 @@ private:
 
   void update_position_info (PositionInfo &pos_nfo, nframes_t frames_to_add);
 
-  /**
-   * Clears the underlying backend's output buffers.
-   *
-   * Used when returning early.
-   */
-  void clear_output_buffers (nframes_t nframes);
-
   void receive_midi_events (uint32_t nframes);
 
   /**
@@ -484,37 +542,23 @@ public:
   Project * project_ = nullptr;
 
   /**
+   * @note For JACK, set the MIDI driver to the audio driver.
+   */
+  std::shared_ptr<AudioDriver> audio_driver_;
+  std::shared_ptr<MidiDriver>  midi_driver_;
+
+  /**
    * Cycle count to know which cycle we are in.
    *
    * Useful for debugging.
    */
   std::atomic_uint64_t cycle_ = 0;
 
-#ifdef HAVE_JACK
-  /** JACK client. */
-  jack_client_t * client_ = nullptr;
-#else
-  void * client_ = nullptr;
-#endif
-
-  /**
-   * Whether pending jack buffer change was handled (buffers reallocated).
-   *
-   * To be set to zero when a change starts and 1 when the change is fully
-   * processed.
-   */
-  std::atomic_bool handled_jack_buffer_size_change_ = false;
-
-  /**
-   * Whether transport master/client or no connection with jack transport.
-   */
-  JackTransportType transport_type_ = (JackTransportType) 0;
-
   /** Current audio backend. */
-  AudioBackend audio_backend_ = (AudioBackend) 0;
+  AudioBackend audio_backend_{};
 
   /** Current MIDI backend. */
-  MidiBackend midi_backend_ = (MidiBackend) 0;
+  MidiBackend midi_backend_{};
 
   /** Audio buffer size (block length), per channel. */
   nframes_t block_length_ = 0;
@@ -534,7 +578,7 @@ public:
   dsp::TicksPerFrame ticks_per_frame_;
 
   /** True iff buffer size callback fired. */
-  int buf_size_set_ = 0;
+  bool buf_size_set_{};
 
   /** The processing graph router. */
   std::unique_ptr<session::Router> router_;
@@ -634,17 +678,6 @@ public:
   /** Send note off MIDI everywhere. */
   std::atomic_bool panic_{ false };
 
-  /**
-   * @brief Dummy audio DSP processing thread.
-   *
-   * Used during tests or when no audio backend is available.
-   *
-   * Use signalThreadShouldExit() to stop the thread.
-   *
-   * @note The thread will join automatically when the engine is destroyed.
-   */
-  std::unique_ptr<juce::Thread> dummy_audio_thread_;
-
   /* note: these 2 are ignored at the moment */
   /** Pan law. */
   dsp::PanLaw pan_law_ = {};
@@ -718,7 +751,7 @@ public:
    *
    * Automation and everything else will work as normal.
    */
-  BounceMode bounce_mode_ = BounceMode::BOUNCE_OFF;
+  BounceMode bounce_mode_ = BounceMode::Off;
 
   /** Bounce step cache. */
   utils::audio::BounceStep bounce_step_ = {};

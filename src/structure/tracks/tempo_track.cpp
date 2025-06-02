@@ -203,13 +203,6 @@ TempoTrack::on_control_change_event (
 void
 TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_events)
 {
-  if (
-    AUDIO_ENGINE->transport_type_
-    == engine::device_io::AudioEngine::JackTransportType::NoJackTransport)
-    {
-      z_debug ("bpm <{:f}>, temporary <{}>", bpm, temporary);
-    }
-
   if (bpm < TEMPO_TRACK_MIN_BPM)
     {
       bpm = TEMPO_TRACK_MIN_BPM;

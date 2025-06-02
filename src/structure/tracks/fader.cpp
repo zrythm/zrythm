@@ -886,7 +886,7 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
          && TRACKLIST->get_track_span().has_soloed() && !get_soloed() && !get_implied_soloed()
          && track != P_MASTER_TRACK)
         ||
-        (AUDIO_ENGINE->bounce_mode_ == engine::device_io::BounceMode::BOUNCE_ON
+        (AUDIO_ENGINE->bounce_mode_ == engine::device_io::BounceMode::On
          &&
          (type_ == Type::AudioChannel
           || type_ == Type::MidiChannel)

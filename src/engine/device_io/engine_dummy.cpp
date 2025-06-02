@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 
-#include "engine/device_io/engine.h"
 #include "engine/device_io/engine_dummy.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
@@ -11,13 +10,15 @@
 #include "utils/dsp.h"
 #include "utils/dsp_context.h"
 
-using namespace zrythm::engine::device_io;
+namespace zrythm::engine::device_io
+{
 
 class DummyEngineThread : public juce::Thread
 {
 public:
-  DummyEngineThread (AudioEngine &engine)
-      : juce::Thread ("DummyEngineThread"), engine_ (engine)
+  DummyEngineThread (DummyDriver &driver)
+      : juce::Thread ("DummyEngineThread"), driver_ (driver),
+        engine_ (driver.engine_)
   {
   }
 
@@ -45,14 +46,15 @@ public:
   }
 
 public:
+  DummyDriver &driver_;
   AudioEngine &engine_;
 };
 
-int
-engine_dummy_setup (AudioEngine * self)
+bool
+DummyDriver::setup_audio ()
 {
   /* Set audio engine properties */
-  self->midi_buf_size_ = 4096;
+  engine_.midi_buf_size_ = 4096;
 
 #if 0
   if (ZRYTHM_HAVE_UI && zrythm_app->buf_size_ > 0)
@@ -75,52 +77,53 @@ engine_dummy_setup (AudioEngine * self)
 #endif
 
   int beats_per_bar =
-    self->project_->tracklist_->tempo_track_->get_beats_per_bar ();
+    engine_.project_->tracklist_->tempo_track_->get_beats_per_bar ();
   z_warn_if_fail (beats_per_bar >= 1);
 
-  z_info ("Dummy Engine set up [samplerate: {}]", self->sample_rate_);
+  z_info ("Dummy Engine set up [samplerate: {}]", engine_.sample_rate_);
 
-  return 0;
+  return true;
 }
 
-int
-engine_dummy_midi_setup (AudioEngine * self)
+bool
+DummyDriver::setup_midi ()
 {
   z_info ("Setting up dummy MIDI engine");
 
-  self->midi_buf_size_ = 4096;
+  engine_.midi_buf_size_ = 4096;
 
-  return 0;
+  return true;
 }
 
-int
-engine_dummy_activate (AudioEngine * self, bool activate)
+bool
+DummyDriver::activate_audio (bool activate)
 {
   if (activate)
     {
       z_info ("activating...");
 
       int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
-      self->update_frames_per_tick (
-        beats_per_bar, P_TEMPO_TRACK->get_current_bpm (), self->sample_rate_,
+      engine_.update_frames_per_tick (
+        beats_per_bar, P_TEMPO_TRACK->get_current_bpm (), engine_.sample_rate_,
         true, true, false);
 
-      self->dummy_audio_thread_ = std::make_unique<DummyEngineThread> (*self);
-      self->dummy_audio_thread_->startThread ();
+      dummy_audio_thread_ = std::make_unique<DummyEngineThread> (*this);
+      dummy_audio_thread_->startThread ();
     }
   else
     {
       z_info ("deactivating...");
-      self->dummy_audio_thread_->signalThreadShouldExit ();
-      self->dummy_audio_thread_->waitForThreadToExit (1'000);
+      dummy_audio_thread_->signalThreadShouldExit ();
+      dummy_audio_thread_->waitForThreadToExit (1'000);
     }
 
   z_info ("done");
 
-  return 0;
+  return true;
 }
 
 void
-engine_dummy_tear_down (AudioEngine * self)
+DummyDriver::tear_down_audio ()
 {
+}
 }

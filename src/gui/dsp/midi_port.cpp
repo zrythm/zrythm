@@ -97,8 +97,9 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
       backend_->sum_midi_data (
         midi_events_,
         { .start_frame = time_nfo.local_offset_, .nframes = time_nfo.nframes_ },
-        [this] (midi_byte_t channel) {
-          return owner_->are_events_on_midi_channel_approved (channel);
+        [this] (const auto &ev) {
+          return owner_->are_events_on_midi_channel_approved (
+            utils::midi::midi_get_channel_0_to_15 (ev.raw_buffer_));
         });
     }
 
