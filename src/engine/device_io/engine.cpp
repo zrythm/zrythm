@@ -383,7 +383,11 @@ AudioEngine::pre_setup ()
   switch (audio_backend_)
     {
     case AudioBackend::Jack:
+#ifdef HAVE_JACK
       audio_driver_ = std::make_shared<JackDriver> (*this);
+#else
+      z_warning ("Jack backend not available - falling back to dummy");
+#endif
       break;
     default:
       break;
@@ -396,6 +400,7 @@ AudioEngine::pre_setup ()
           throw std::runtime_error (
             "Jack MIDI backend requires Jack audio backend");
         }
+      midi_driver_ = std::dynamic_pointer_cast<MidiDriver> (audio_driver_);
       break;
     default:
       break;
