@@ -12,6 +12,8 @@
 
 #include <QtTypes>
 
+#include <gsl-lite/gsl-lite.hpp>
+
 #if defined(__GNUC__) || defined(__clang__)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wshadow"
@@ -30,6 +32,7 @@
 
 using namespace magic_enum::bitwise_operators;
 using namespace std::literals;
+namespace gsl = ::gsl_lite;
 
 // For compilers without __cpp_size_t_suffix
 constexpr size_t

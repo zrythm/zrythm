@@ -1003,6 +1003,12 @@ elseif(compiler_gnulike)
 endif()
 add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
+CPMFindPackage(
+  NAME gsl-lite
+  # 1.0.1
+  URI "gh:gsl-lite/gsl-lite#56dab5ce071c4ca17d3e0dbbda9a94bd5a1cbca1"
+)
+
 FetchContent_Declare(
   cpp_httplib
   GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
@@ -1089,6 +1095,7 @@ list(APPEND zrythm_link_libs
   kissfft::kissfft
   Boost::describe
   Boost::stl_interfaces
+  gsl-lite::gsl-lite
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers

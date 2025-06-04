@@ -557,14 +557,14 @@ public:
   std::optional<std::array<bool, 16>> midi_channels_;
 
   /** The channel fader. */
-  Fader * fader_ = nullptr;
+  gsl::owner<Fader *> fader_{};
 
   /**
    * Prefader.
    *
    * The last plugin should connect to this.
    */
-  Fader * prefader_ = nullptr;
+  gsl::owner<Fader *> prefader_{};
 
   /**
    * MIDI output for sending MIDI signals to other destinations, such as
