@@ -92,6 +92,7 @@ include(TestBigEndian)
 include(FetchContent)
 include(CheckLibraryExists)
 include(PreventInSourceBuilds)
+include(CPM)
 set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
 find_package(PkgConfig)
 find_package(Threads REQUIRED)
@@ -695,36 +696,30 @@ add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 # More dependencies
 ##############################################################
 
-FetchContent_Declare(
-  nlohmann_json
-  GIT_REPOSITORY https://github.com/nlohmann/json.git
+CPMFindPackage(
+  NAME nlohmann_json
   # 3.12.0 + some commits later
-  GIT_TAG 230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48
-  FIND_PACKAGE_ARGS NAMES nlohmann_json 3.12.1 REQUIRED
-  EXCLUDE_FROM_ALL
+  URI "gh:nlohmann/json#230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48"
+  OPTIONS
+    "JSON_ImplicitConversions OFF"
+    "JSON_SystemInclude ON"
 )
-set(JSON_ImplicitConversions OFF)
-set(JSON_SystemInclude ON)
-FetchContent_MakeAvailable(nlohmann_json)
 
 add_subdirectory(ext)
 
-FetchContent_Declare(
-  SndFile
-  GIT_REPOSITORY https://github.com/libsndfile/libsndfile
-  # 1.2.2
-  GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
-  GIT_SHALLOW TRUE
-  # FIND_PACKAGE_ARGS NAMES SndFile 1.0.29 REQUIRED
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL
+CPMFindPackage(
+  NAME SndFile
+  #1.2.2
+  URI "gh:libsndfile/libsndfile#72f6af15e8f85157bd622ed45b979025828b7001"
+  OPTIONS
+    "BUILD_EXAMPLES OFF"
+    "BUILD_TESTING OFF"
+    "ENABLE_EXTERNAL_LIBS ON"
+    "ENABLE_CPACK OFF"
+    "ENABLE_PACKAGE_CONFIG OFF"
+    "INSTALL_PKGCONFIG_MODULE OFF"
+    "INSTALL_MANPAGES OFF"
 )
-set(BUILD_EXAMPLES OFF)
-set(BUILD_TESTING OFF)
-set(ENABLE_EXTERNAL_LIBS ON)
-set(INSTALL_PKGCONFIG_MODULE OFF)
-FetchContent_MakeAvailable(SndFile)
-set_target_properties(sndfile PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(HAVE_OPUS TRUE)
 
 # add_library(lv2_lib INTERFACE)

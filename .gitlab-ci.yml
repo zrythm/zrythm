@@ -20,6 +20,7 @@ variables:
     -DZRYTHM_TESTS=ON
     -DZRYTHM_BENCHMARKS=ON
     -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+    -DCPM_DOWNLOAD_ALL=ON
 
 stages:
   - setup
@@ -81,7 +82,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-25-$CI_RUNNER_DESCRIPTION
+  - key: cache-26-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - '${BUILDDIR}*/_deps/*-src'
@@ -190,6 +191,7 @@ configure:windows:
       -DZRYTHM_TESTS=ON
       -DZRYTHM_BENCHMARKS=ON
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+      -DCPM_DOWNLOAD_ALL=ON
       "-DCMAKE_PREFIX_PATH=C:\Qt-Zrythm\Qt-6.9.0-${env:BUILD_TYPE}"
       -G "Visual Studio 17 2022"
       "-DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}"
