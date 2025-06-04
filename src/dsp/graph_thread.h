@@ -29,7 +29,11 @@ public:
    * @param scheduler The scheduler that owns the thread.
    * @throw ZrythmException if the thread could not be started.
    */
-  explicit GraphThread (int id, bool is_main, GraphScheduler &scheduler);
+  explicit GraphThread (
+    int                                 id,
+    bool                                is_main,
+    GraphScheduler                     &scheduler,
+    std::optional<juce::AudioWorkgroup> workgroup = std::nullopt);
 
 public:
   /**
@@ -66,6 +70,13 @@ public:
 
   /** Pointer back to the owner scheduler. */
   GraphScheduler &scheduler_;
+
+  /**
+   * @brief Non-owning pointer (optional) to a workgroup to join.
+   *
+   * @see juce::AudioDeviceManager::getDeviceAudioWorkgroup().
+   */
+  std::optional<juce::AudioWorkgroup> audio_workgroup_;
 };
 
 } // namespace zrythm::dsp::graph

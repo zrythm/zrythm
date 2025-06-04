@@ -123,7 +123,14 @@ Router::recalc_graph (bool soft)
 
   if (!scheduler_ && !soft)
     {
-      scheduler_ = std::make_unique<dsp::graph::GraphScheduler> ();
+      auto device_mgr = audio_engine_->get_device_manager ();
+      scheduler_ = std::make_unique<dsp::graph::GraphScheduler> (
+        juce::Thread::RealtimeOptions ()
+          .withPriority (9)
+          .withApproximateAudioProcessingTime (
+            device_mgr->getCurrentAudioDevice ()->getCurrentBufferSizeSamples (),
+            device_mgr->getCurrentAudioDevice ()->getCurrentSampleRate ()),
+        device_mgr->getDeviceAudioWorkgroup ());
       rebuild_graph ();
       scheduler_->start_threads ();
       return;

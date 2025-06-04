@@ -60,7 +60,9 @@ class GraphScheduler
   static constexpr int MAX_GRAPH_THREADS = 128;
 
 public:
-  GraphScheduler ();
+  GraphScheduler (
+    std::optional<juce::Thread::RealtimeOptions> realtime_options = std::nullopt,
+    std::optional<juce::AudioWorkgroup> thread_workgroup = std::nullopt);
   ~GraphScheduler ();
   Z_DISABLE_COPY_MOVE (GraphScheduler); // copy/move don't make sense here
 
@@ -143,6 +145,15 @@ private:
 
   /** Remaining unprocessed terminal nodes in this cycle. */
   std::atomic<int> terminal_refcnt_ = 0;
+
+  /**
+   * @brief If this contains a value, realtime threads will be created with
+   * these options, otherwise default options will be used.
+   */
+  std::optional<juce::Thread::RealtimeOptions> realtime_thread_options_;
+
+  /** Audio workgroup for threads. */
+  std::optional<juce::AudioWorkgroup> thread_workgroup_;
 };
 
 } // namespace zrythm::dsp::graph

@@ -273,6 +273,13 @@ GraphThread::run ()
   /* pre-create the unique identifier of this thread */
   rt_thread_id_ = current_thread_id.get ();
 
+  // join a workgroup if any
+  juce::WorkgroupToken workgroup_token;
+  if (audio_workgroup_.has_value ())
+    {
+      audio_workgroup_->join (workgroup_token);
+    }
+
   if (is_main_)
     {
       auto graph = &scheduler_;
@@ -345,12 +352,16 @@ get_stack_size ()
   return rv;
 }
 
-GraphThread::
-  GraphThread (const int id, const bool is_main, GraphScheduler &scheduler)
+GraphThread::GraphThread (
+  const int                           id,
+  const bool                          is_main,
+  GraphScheduler                     &scheduler,
+  std::optional<juce::AudioWorkgroup> workgroup)
     : juce::Thread (
         is_main ? "GraphWorkerMain" : fmt::format ("GraphWorker{}", id),
         THREAD_STACK_SIZE + get_stack_size ()),
-      id_ (id), is_main_ (is_main), scheduler_ (scheduler)
+      id_ (id), is_main_ (is_main), scheduler_ (scheduler),
+      audio_workgroup_ (workgroup)
 {
 }
 

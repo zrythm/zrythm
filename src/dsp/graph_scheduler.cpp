@@ -31,7 +31,12 @@
 namespace zrythm::dsp::graph
 {
 
-GraphScheduler::GraphScheduler () = default;
+GraphScheduler::GraphScheduler (
+  std::optional<juce::Thread::RealtimeOptions> rt_options,
+  std::optional<juce::AudioWorkgroup>          thread_workgroup)
+    : realtime_thread_options_ (rt_options), thread_workgroup_ (thread_workgroup)
+{
+}
 
 void
 GraphScheduler::trigger_node (GraphNode &node)
@@ -103,11 +108,12 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
       for (int i = 0; i < num_threads.value (); ++i)
         {
           threads_.emplace_back (
-            std::make_unique<GraphThread> (i, false, *this));
+            std::make_unique<GraphThread> (i, false, *this, thread_workgroup_));
         }
 
       /* and the main thread */
-      main_thread_ = std::make_unique<GraphThread> (-1, true, *this);
+      main_thread_ =
+        std::make_unique<GraphThread> (-1, true, *this, thread_workgroup_);
     }
   catch (const std::exception &e)
     {
@@ -120,7 +126,9 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
     try
       {
         auto success = thread->startRealtimeThread (
-          juce::Thread::RealtimeOptions ().withPriority (9));
+          realtime_thread_options_
+            ? realtime_thread_options_.value ()
+            : juce::Thread::RealtimeOptions ().withPriority (9));
         if (!success)
           {
             z_warning ("failed to start realtime thread, trying normal thread");
