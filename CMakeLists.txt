@@ -89,7 +89,6 @@ include(GNUInstallDirs)
 include(CMakeDependentOption)
 include(CheckSymbolExists)
 include(TestBigEndian)
-include(FetchContent)
 include(CheckLibraryExists)
 include(PreventInSourceBuilds)
 include(CPM)
@@ -702,6 +701,8 @@ CPMFindPackage(
   VERSION 3.12.1
   # 3.12.0 + some commits later
   GIT_TAG 230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
   OPTIONS
     "JSON_ImplicitConversions OFF"
     "JSON_SystemInclude ON"
@@ -714,6 +715,8 @@ CPMFindPackage(
   GITHUB_REPOSITORY libsndfile/libsndfile
   VERSION 1.2.2
   GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
   OPTIONS
     "BUILD_EXAMPLES OFF"
     "BUILD_TESTING OFF"
@@ -787,56 +790,37 @@ set(CMAKE_REQUIRED_LIBRARIES)
 endif()
 set(HAVE_CARLA FALSE)
 
-if(0)
-  pkg_search_module(RTAUDIO librtaudio>=5.1.0 rtaudio>=5.1.0 REQUIRED IMPORTED_TARGET)
-  set(HAVE_RTAUDIO TRUE)
-  string(REGEX MATCH "^([0-9]+)\\.([0-9]+)" _ ${RTAUDIO_VERSION})
-  set(RTAUDIO_MAJOR_VER ${CMAKE_MATCH_1})
-  set(RTAUDIO_MINOR_VER ${CMAKE_MATCH_2})
-endif()
-if(0)
-  pkg_search_module(RTMIDI librtmidi>=5.0.0 rtmidi>=5.0.0 REQUIRED IMPORTED_TARGET)
-  if(RTMIDI_VERSION VERSION_GREATER_EQUAL 6.0.0)
-    set(HAVE_RTMIDI_6 TRUE)
-  endif()
-  set(HAVE_RTMIDI TRUE)
-endif()
-
-set(ZSTD_BUILD_STATIC ON)
-set(ZSTD_BUILD_SHARED OFF)
-set(ZSTD_LEGACY_SUPPORT OFF)
-set(ZSTD_BUILD_PROGRAMS OFF)
-set(ZSTD_BUILD_CONTRIB OFF)
-set(ZSTD_BUILD_TESTS OFF)
-FetchContent_Declare(
-  zstd
-  GIT_REPOSITORY https://github.com/facebook/zstd
-  # 1.5.7
+CPMFindPackage(
+  NAME zstd
+  GITHUB_REPOSITORY facebook/zstd
+  VERSION 1.5.7
   GIT_TAG f8745da6ff1ad1e7bab384bd1f9d742439278e99
-  GIT_SHALLOW TRUE
   SOURCE_SUBDIR build/cmake
-  # FIND_PACKAGE_ARGS zstd REQUIRED
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+  OPTIONS
+    "ZSTD_BUILD_STATIC ON"
+    "ZSTD_BUILD_SHARED OFF"
+    "ZSTD_LEGACY_SUPPORT OFF"
+    "ZSTD_BUILD_PROGRAMS OFF"
+    "ZSTD_BUILD_CONTRIB OFF"
+    "ZSTD_BUILD_TESTS OFF"
 )
-FetchContent_MakeAvailable(zstd)
 add_library(_zstd_lib INTERFACE)
 target_link_libraries(_zstd_lib INTERFACE libzstd_static)
 add_library(zrythm::zstd ALIAS _zstd_lib)
 
-FetchContent_Declare(
-  xxHash
-  GIT_REPOSITORY https://github.com/Cyan4973/xxHash
-  # 0.8.2
+CPMFindPackage(
+  NAME xxHash
+  GITHUB_REPOSITORY Cyan4973/xxHash
+  VERSION 0.8.2
   GIT_TAG bbb27a5efb85b92a0486cf361a8635715a53f6ba
-  GIT_SHALLOW TRUE
   SOURCE_SUBDIR cmake_unofficial
-  # FIND_PACKAGE_ARGS NAMES xxHash 0.8 REQUIRED
-  OVERRIDE_FIND_PACKAGE
-  EXCLUDE_FROM_ALL
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+  OPTIONS
+    "XXHASH_BUILD_XXHSUM OFF"
 )
-set(XXHASH_BUILD_XXHSUM OFF)
-FetchContent_MakeAvailable(xxHash)
 
 # not used, might use in the future
 if(0)
@@ -859,58 +843,54 @@ if(0)
 endif()
 
 # magic_enum
-FetchContent_Declare(
-  magic_enum
-  GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
-  # 0.9.6
+CPMFindPackage(
+  NAME magic_enum
+  GITHUB_REPOSITORY Neargye/magic_enum
+  VERSION 0.9.6
   GIT_TAG dd6a39d0ba1852cf06907e0f0573a2a10d23c2ad
-  GIT_SHALLOW TRUE
-  FIND_PACKAGE_ARGS NAMES magic_enum 0.9.5 REQUIRED
-  EXCLUDE_FROM_ALL
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
 )
-FetchContent_MakeAvailable(magic_enum)
 
 # fmt
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  # 11.2.0
+CPMFindPackage(
+  NAME fmt
+  GITHUB_REPOSITORY fmtlib/fmt
+  VERSION 11.2.0
   GIT_TAG 40626af88bd7df9a5fb80be7b25ac85b122d6c21
-  GIT_SHALLOW TRUE
-  FIND_PACKAGE_ARGS NAMES fmt REQUIRED
-  EXCLUDE_FROM_ALL
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+  OPTIONS
+    "FMT_INSTALL OFF"
 )
-set(FMT_INSTALL OFF)
-FetchContent_MakeAvailable(fmt)
 
 # spdlog
-FetchContent_Declare(
-  spdlog
-  GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  # 1.15.3
+CPMFindPackage(
+  NAME spdlog
+  GITHUB_REPOSITORY gabime/spdlog
+  VERSION 1.15.3
   GIT_TAG 6fa36017cfd5731d617e1a934f0e5ea9c4445b13
-  GIT_SHALLOW TRUE
-  FIND_PACKAGE_ARGS NAMES spdlog REQUIRED
-  EXCLUDE_FROM_ALL
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+  OPTIONS
+    "SPDLOG_INSTALL OFF"
 )
-set(SPDLOG_INSTALL OFF)
-FetchContent_MakeAvailable(spdlog)
-add_library(spdlog_lib INTERFACE)
-target_link_libraries(spdlog_lib INTERFACE spdlog::spdlog)
-target_compile_definitions(spdlog_lib INTERFACE
+add_library(_spdlog_lib INTERFACE)
+target_link_libraries(_spdlog_lib INTERFACE spdlog::spdlog)
+target_compile_definitions(_spdlog_lib INTERFACE
   SPDLOG_FMT_EXTERNAL
   SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-  target_compile_definitions(spdlog_lib INTERFACE
+  target_compile_definitions(_spdlog_lib INTERFACE
     SPDLOG_FUNCTION=__PRETTY_FUNCTION__
   )
 else()
-  target_compile_definitions(spdlog_lib INTERFACE
+  target_compile_definitions(_spdlog_lib INTERFACE
     SPDLOG_FUNCTION=__FUNCTION__
   )
 endif()
-add_library(zrythm::spdlog ALIAS spdlog_lib)
+add_library(zrythm::spdlog ALIAS _spdlog_lib)
 
 # pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
@@ -961,19 +941,18 @@ if(0)
   # mp-units::mp-units
 endif()
 
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest
-  # 1.16.0
-  GIT_TAG 6910c9d9165801d8827d628cb72eb7ea9dd538c5
-  GIT_SHALLOW TRUE
-  FIND_PACKAGE_ARGS NAMES GTest REQUIRED
-  EXCLUDE_FROM_ALL
-)
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-set(INSTALL_GTEST OFF)
-FetchContent_MakeAvailable(googletest)
+CPMFindPackage(
+  NAME GTest
+  GITHUB_REPOSITORY google/googletest
+  VERSION 1.16.0
+  GIT_TAG 6910c9d9165801d8827d628cb72eb7ea9dd538c5
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+  OPTIONS
+    "INSTALL_GTEST OFF"
+)
 add_library(_gtest_libs INTERFACE)
 target_link_libraries(_gtest_libs INTERFACE gtest)
 add_library(_gtest_main_libs INTERFACE)
@@ -981,22 +960,19 @@ target_link_libraries(_gtest_main_libs INTERFACE gtest_main gmock_main)
 add_library(zrythm::gtest ALIAS _gtest_libs)
 add_library(zrythm::gtest_for_tests ALIAS _gtest_main_libs)
 
-FetchContent_Declare(
-  benchmark
-  GIT_REPOSITORY https://github.com/google/benchmark
-  # 1.9.2
+CPMFindPackage(
+  NAME benchmark
+  GITHUB_REPOSITORY google/benchmark
+  VERSION 1.9.2
   GIT_TAG afa23b7699c17f1e26c88cbf95257b20d78d6247
-  GIT_SHALLOW TRUE
-  FIND_PACKAGE_ARGS NAMES benchmark REQUIRED
-  EXCLUDE_FROM_ALL
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+  OPTIONS
+    "BENCHMARK_ENABLE_TESTING OFF"
+    "BENCHMARK_ENABLE_INSTALL OFF"
+    "BENCHMARK_INSTALL_DOCS OFF"
+    "CMAKE_BUILD_TYPE Release"
 )
-set(BENCHMARK_ENABLE_TESTING OFF)
-set(BENCHMARK_ENABLE_INSTALL OFF)
-set(BENCHMARK_INSTALL_DOCS OFF)
-set(CMAKE_BUILD_TYPE_BEFORE ${CMAKE_BUILD_TYPE})
-set(CMAKE_BUILD_TYPE Release)
-FetchContent_MakeAvailable(benchmark)
-set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE_BEFORE})
 add_library(_benchmark_libs INTERFACE)
 target_link_libraries(_benchmark_libs INTERFACE benchmark::benchmark_main gmock)
 if(MSVC)
@@ -1011,23 +987,23 @@ CPMFindPackage(
   GITHUB_REPOSITORY "gsl-lite/gsl-lite"
   VERSION 1.0.1
   GIT_TAG 56dab5ce071c4ca17d3e0dbbda9a94bd5a1cbca1
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
 )
 
-FetchContent_Declare(
-  cpp_httplib
-  GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-  # 0.20.1
-  GIT_TAG 3af7f2c16147f3fbc6e4d717032daf505dc1652c
-  GIT_SHALLOW TRUE
-  EXCLUDE_FROM_ALL
-)
 if(ZRYTHM_TESTS)
-  set(HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF)
-  set(HTTPLIB_USE_ZSTD_IF_AVAILABLE OFF)
-  set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF)
-  set(HTTPLIB_USE_ZLIB_IF_AVAILABLE OFF)
-  set(HTTPLIB_INSTALL OFF)
-  FetchContent_MakeAvailable(cpp_httplib)
+  CPMFindPackage(
+    NAME cpp_httplib
+    GITHUB_REPOSITORY "yhirose/cpp-httplib"
+    VERSION 0.20.1
+    GIT_TAG 3af7f2c16147f3fbc6e4d717032daf505dc1652c
+    OPTIONS
+      "HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF"
+      "HTTPLIB_USE_ZSTD_IF_AVAILABLE OFF"
+      "HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF"
+      "HTTPLIB_USE_ZLIB_IF_AVAILABLE OFF"
+      "HTTPLIB_INSTALL OFF"
+  )
 endif()
 
 find_package(Qt6
