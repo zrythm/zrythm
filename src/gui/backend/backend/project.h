@@ -113,7 +113,9 @@ public:
   static constexpr auto PROJECT_FINISHED_FILE = "FINISHED"sv;
 
 public:
-  Project (QObject * parent = nullptr);
+  Project (
+    std::shared_ptr<engine::device_io::DeviceManager> device_manager,
+    QObject *                                         parent = nullptr);
   ~Project () override;
   Z_DISABLE_COPY_MOVE (Project)
 
@@ -615,6 +617,8 @@ public:
   /** Used when deserializing projects. */
   int format_major_ = 0;
   int format_minor_ = 0;
+
+  std::shared_ptr<engine::device_io::DeviceManager> device_manager_;
 };
 
 /**

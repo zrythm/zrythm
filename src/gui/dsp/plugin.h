@@ -254,19 +254,6 @@ public:
   void append_ports (std::vector<Port *> &ports);
 
   /**
-   * Exposes or unexposes plugin ports to the backend.
-   *
-   * @param expose Expose or not.
-   * @param inputs Expose/unexpose inputs.
-   * @param outputs Expose/unexpose outputs.
-   */
-  void expose_ports (
-    engine::device_io::AudioEngine &engine,
-    bool                            expose,
-    bool                            inputs,
-    bool                            outputs);
-
-  /**
    * Gets a port by its symbol.
    *
    * @note Only works on LV2 plugins.

@@ -691,16 +691,6 @@ Track::set_name (
   auto new_name = get_unique_name (tracklist, name);
   name_ = new_name;
 
-  std::vector<Port *> ports;
-  append_ports (ports, true);
-  for (auto * port : ports)
-    {
-      if (port->is_exposed_to_backend ())
-        {
-          tracklist.project_->audio_engine_->rename_port_backend (*port);
-        }
-    }
-
   if (pub_events)
     {
       // EVENTS_PUSH (EventType::ET_TRACK_NAME_CHANGED, this);

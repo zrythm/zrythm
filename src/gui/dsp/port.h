@@ -8,17 +8,10 @@
 #include "dsp/graph_node.h"
 #include "dsp/port_connection.h"
 #include "dsp/port_identifier.h"
-#include "gui/dsp/port_backend.h"
 #include "utils/audio.h"
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
-
-/**
- * @addtogroup dsp
- *
- * @{
- */
 
 namespace zrythm::dsp
 {
@@ -200,7 +193,7 @@ public:
    */
   bool is_in_active_project () const
   {
-    return owner_ && owner_->is_in_active_project ();
+    return (owner_ != nullptr) && owner_->is_in_active_project ();
   }
 
   void set_owner (IPortOwner &owner);
@@ -231,9 +224,6 @@ public:
 
   /**
    * Clears the port buffer.
-   *
-   * @note Only the Port buffer is cleared. Use clear_external_buffer() to clear
-   * backend buffers.
    */
   virtual void clear_buffer (std::size_t block_length) = 0;
 
@@ -255,11 +245,6 @@ public:
   }
 
   void print_full_designation () const;
-
-  /**
-   * Returns if the port is exposed to the backend.
-   */
-  bool is_exposed_to_backend () const;
 
   /**
    * Returns the number of unlocked (user-editable) sources.
@@ -302,13 +287,6 @@ public:
   virtual void restore_from_non_project (const Port &non_project) { };
 
   /**
-   * Clears the backend's port buffer.
-   */
-  [[gnu::hot]] void clear_external_buffer (nframes_t block_length) override;
-
-  bool needs_external_buffer_clear_on_early_return () const override;
-
-  /**
    * Disconnects all srcs and dests from port.
    */
   void disconnect_all (
@@ -343,16 +321,10 @@ protected:
 
 private:
   static constexpr std::string_view kIdKey = "id";
-  static constexpr std::string_view kExposedToBackendKey = "exposedToBackend";
-  friend void                       to_json (nlohmann::json &j, const Port &p)
-  {
-    j[kIdKey] = p.id_;
-    j[kExposedToBackendKey] = p.exposed_to_backend_;
-  }
+  friend void to_json (nlohmann::json &j, const Port &p) { j[kIdKey] = p.id_; }
   friend void from_json (const nlohmann::json &j, Port &p)
   {
     j.at (kIdKey).get_to (p.id_);
-    j.at (kExposedToBackendKey).get_to (p.exposed_to_backend_);
   }
 
 public:
@@ -360,13 +332,6 @@ public:
    * @brief Owned pointer.
    */
   std::unique_ptr<PortIdentifier> id_;
-
-  /**
-   * Flag to indicate that this port is exposed to the backend.
-   *
-   * @note This is used for serialization only.
-   */
-  bool exposed_to_backend_ = false;
 
 public:
   /** Caches filled when recalculating the graph. */
@@ -412,11 +377,6 @@ public:
    */
   bool write_ring_buffers_ = false;
 
-  /**
-   * @brief Backend functionality.
-   */
-  std::unique_ptr<PortBackend> backend_;
-
   IPortOwner * owner_{};
 };
 
@@ -459,7 +419,3 @@ using PortUuidReference = utils::UuidReference<PortRegistry>;
 
 void
 from_json (const nlohmann::json &j, PortRegistry &registry);
-
-/**
- * @}
- */

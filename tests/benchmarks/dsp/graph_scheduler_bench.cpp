@@ -18,12 +18,6 @@ public:
   MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
   MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
   MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
-  MOCK_METHOD (void, clear_external_buffer, (nframes_t block_length), (override));
-  MOCK_METHOD (
-    bool,
-    needs_external_buffer_clear_on_early_return,
-    (),
-    (const, override));
 };
 
 class MockTransport : public dsp::ITransport
@@ -62,7 +56,7 @@ protected:
     scheduler_ = std::make_unique<GraphScheduler> ();
 
     ON_CALL (*processable_, get_node_name ())
-      .WillByDefault (Return (u8"bench_node"));
+      .WillByDefault (Return (utils::Utf8String (u8"bench_node")));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (0));
     ON_CALL (*transport_, get_play_state ())
@@ -88,8 +82,6 @@ protected:
 
     // silence GMock warnings
     EXPECT_CALL (*processable_, get_node_name ()).Times (AnyNumber ());
-    EXPECT_CALL (*processable_, needs_external_buffer_clear_on_early_return ())
-      .Times (AnyNumber ());
     EXPECT_CALL (*processable_, get_single_playback_latency ())
       .Times (AnyNumber ());
     EXPECT_CALL (*processable_, process_block (_)).Times (AnyNumber ());

@@ -66,13 +66,6 @@ public:
   }
 
   [[gnu::hot]] virtual void process_block (EngineProcessTimeInfo time_nfo) { };
-
-  virtual void clear_external_buffer (nframes_t block_length) { };
-
-  virtual bool needs_external_buffer_clear_on_early_return () const
-  {
-    return false;
-  };
 };
 
 class InitialProcessor final : public IProcessable

@@ -90,20 +90,19 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
         }
     }
 
-  if (
-    is_input () && backend_ && backend_->is_exposed ()
-    && owner_->should_sum_data_from_backend ())
+  if (is_input () && owner_->should_sum_data_from_backend ())
     {
-      backend_->sum_midi_data (
-        midi_events_,
-        { .start_frame = time_nfo.local_offset_, .nframes = time_nfo.nframes_ },
-        [this] (const auto &ev) {
-          return owner_->are_events_on_midi_channel_approved (
-            utils::midi::midi_get_channel_0_to_15 (ev.raw_buffer_));
-        });
+      // TODO
+      // backend_->sum_midi_data (
+      // midi_events_,
+      // { .start_frame = time_nfo.local_offset_, .nframes = time_nfo.nframes_ },
+      // [this] (const auto &ev) {
+      // return owner_->are_events_on_midi_channel_approved (
+      // utils::midi::midi_get_channel_0_to_15 (ev.raw_buffer_));
+      // });
     }
 
-  /* set midi capture if hardware */
+  /* set midi capture if hardware - TODO */
   if (owner_type == PortIdentifier::OwnerType::HardwareProcessor)
     {
       if (events.has_any ())
@@ -200,14 +199,12 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
     }
 
   /* append data from each source */
-  for (size_t k = 0; k < srcs_.size (); k++)
+  for (const auto &[src_port, conn] : std::views::zip (srcs_, src_connections_))
     {
-      const auto * src_port = srcs_[k];
-      const auto  &conn = src_connections_[k];
       if (!conn->enabled_)
         continue;
 
-      z_return_if_fail (src_port->id_->type_ == PortType::Event);
+      assert (src_port->id_->type_ == PortType::Event);
       const auto * src_midi_port = dynamic_cast<const MidiPort *> (src_port);
 
       /* if hardware device connected to track processor input, only allow
@@ -245,12 +242,6 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
             time_nfo.nframes_);
         }
     } /* foreach source */
-
-  if (id->is_output () && backend_ && backend_->is_exposed ())
-    {
-      backend_->send_data (
-        midi_events_, { time_nfo.local_offset_, time_nfo.nframes_ });
-    }
 
   /* send UI notification */
   if (events.has_any ())

@@ -83,6 +83,9 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   engine::device_io::AudioEngine::set_default_backends (false);
 
+  device_manager_ = std::make_shared<engine::device_io::DeviceManager> (
+    [] () { return nullptr; }, [] (const juce::XmlElement &) {});
+
   setup_ui ();
 
   gZrythm->init ();
@@ -399,7 +402,7 @@ ZrythmApplication::onAboutToQuit ()
 
 ZrythmApplication::~ZrythmApplication ()
 {
-  if (socket_)
+  if (socket_ != nullptr)
     {
       if (socket_->state () == QLocalSocket::ConnectedState)
         {
@@ -407,7 +410,7 @@ ZrythmApplication::~ZrythmApplication ()
         }
       socket_->close ();
     }
-  if (engine_process_)
+  if (engine_process_ != nullptr)
     {
       engine_process_->terminate ();
       engine_process_->waitForFinished ();

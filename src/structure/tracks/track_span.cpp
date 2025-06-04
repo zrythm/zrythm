@@ -47,22 +47,7 @@ TrackSpan::mark_all_tracks_for_bounce (Tracklist &tracklist, bool bounce)
   });
 }
 
-void
-TrackSpan::expose_ports_to_backend (engine::device_io::AudioEngine &engine)
-{
-  std::ranges::for_each (*this, [&] (auto &&track_var) {
-    std::visit (
-      [&] (auto &&tr) {
-        using TrackT = base_type<decltype (tr)>;
-        if constexpr (std::derived_from<TrackT, ChannelTrack>)
-          {
-            tr->get_channel ()->expose_ports_to_backend (engine);
-          }
-      },
-      track_var);
-  });
-}
-
+#if 0
 void
 TrackSpan::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
 {
@@ -78,6 +63,7 @@ TrackSpan::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
       track_var);
   });
 }
+#endif
 
 bool
 TrackSpan::fix_audio_regions (dsp::FramesPerTick frames_per_tick)

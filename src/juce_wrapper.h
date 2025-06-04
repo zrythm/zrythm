@@ -21,6 +21,7 @@
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_core/juce_core.h"
 // #include "ext/juce/modules/juce_dsp/juce_dsp.h"
+#include "juce_audio_devices/juce_audio_devices.h"
 #include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_audio_processors/juce_audio_processors.h"
 #if ZRYTHM_WITH_JUCE_CLAP_HOSTING

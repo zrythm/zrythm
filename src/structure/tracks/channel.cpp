@@ -8,8 +8,6 @@
 #include "dsp/midi_event.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
-#include "engine/device_io/ext_port.h"
-#include "engine/device_io/hardware_processor.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -80,20 +78,17 @@ Channel::init_after_cloning (const Channel &other, ObjectCloneType clone_type)
   output_track_uuid_ = other.output_track_uuid_;
   width_ = other.width_;
 
+  ext_midi_ins_ = other.ext_midi_ins_;
+  ext_stereo_l_ins_ = other.ext_stereo_l_ins_;
+  ext_stereo_r_ins_ = other.ext_stereo_r_ins_;
+  midi_channels_ = other.midi_channels_;
+
   if (clone_type == ObjectCloneType::Snapshot)
     {
       midi_fx_ = other.midi_fx_;
       inserts_ = other.inserts_;
       instrument_ = other.instrument_;
       clone_unique_ptr_container (sends_, other.sends_);
-      clone_unique_ptr_container (ext_midi_ins_, other.ext_midi_ins_);
-      all_midi_ins_ = other.all_midi_ins_;
-      clone_unique_ptr_container (ext_stereo_l_ins_, other.ext_stereo_l_ins_);
-      all_stereo_l_ins_ = other.all_stereo_l_ins_;
-      clone_unique_ptr_container (ext_stereo_r_ins_, other.ext_stereo_r_ins_);
-      all_stereo_r_ins_ = other.all_stereo_r_ins_;
-      midi_channels_ = other.midi_channels_;
-      all_midi_channels_ = other.all_midi_channels_;
       fader_ = other.fader_->clone_qobject (this, clone_type);
       prefader_ = other.prefader_->clone_qobject (this, clone_type);
       midi_out_id_ = other.midi_out_id_;
@@ -535,27 +530,6 @@ Channel::init_loaded ()
   prefader_->init_loaded (port_registry_, track_, nullptr, nullptr);
   fader_->init_loaded (port_registry_, track_, nullptr, nullptr);
 
-  const auto out_type = track_->get_output_signal_type ();
-
-  switch (out_type)
-    {
-    case PortType::Event:
-      // this->midi_out->midi_events_ = midi_events_new ();
-      break;
-    case PortType::Audio:
-      /* make sure master is exposed to backend */
-      if (track_->is_master ())
-        {
-          AUDIO_ENGINE->set_port_exposed_to_backend (
-            get_stereo_out_ports ().first, true);
-          AUDIO_ENGINE->set_port_exposed_to_backend (
-            get_stereo_out_ports ().second, true);
-        }
-      break;
-    default:
-      break;
-    }
-
   auto init_plugin = [&] (auto &plugin_id, PluginSlot slot) {
     if (plugin_id.has_value ())
       {
@@ -584,37 +558,7 @@ Channel::init_loaded ()
     }
 }
 
-void
-Channel::expose_ports_to_backend (engine::device_io::AudioEngine &engine)
-{
-  /* skip if auditioner */
-  if (track_->is_auditioner ())
-    return;
-
-  z_debug ("exposing ports to backend: {}", track_->get_name ());
-  if (track_->get_input_signal_type () == PortType::Audio)
-    {
-      iterate_tuple (
-        [&] (auto &port) { engine.set_port_exposed_to_backend (port, true); },
-        track_->processor_->get_stereo_in_ports ());
-    }
-  if (track_->get_input_signal_type () == PortType::Event)
-    {
-      engine.set_port_exposed_to_backend (
-        track_->processor_->get_midi_in_port (), true);
-    }
-  if (track_->get_output_signal_type () == PortType::Audio)
-    {
-      iterate_tuple (
-        [&] (auto &port) { engine.set_port_exposed_to_backend (port, true); },
-        get_stereo_out_ports ());
-    }
-  if (track_->get_output_signal_type () == PortType::Event)
-    {
-      engine.set_port_exposed_to_backend (get_midi_out_port (), true);
-    }
-}
-
+#if 0
 void
 Channel::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
 {
@@ -648,15 +592,13 @@ Channel::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
         {
           auto &midi_in = track->processor_->get_midi_in_port ();
 
-          /* if the project was loaded with another backend, the port might not
-           * be exposed yet, so expose it */
-          engine.set_port_exposed_to_backend (midi_in, true);
-
           /* disconnect all connections to hardware */
           disconnect_port_hardware_inputs (midi_in);
 
-          if (all_midi_ins_)
+          if (!ext_midi_ins_.has_value())
             {
+              // TODO
+#  if 0
               for (
                 const auto &port_id :
                 engine.hw_in_processor_->selected_midi_ports_)
@@ -670,6 +612,7 @@ Channel::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
                   PORT_CONNECTIONS_MGR->add_connection (
                     source->get_uuid (), midi_in.get_uuid (), 1.f, true, true);
                 }
+#  endif
             }
           else
             {
@@ -689,14 +632,6 @@ Channel::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
         }
       else if constexpr (std::is_same_v<TrackT, AudioTrack>)
         {
-          /* if the project was loaded with another backend, the port might not
-           * be exposed yet, so expose it */
-          iterate_tuple (
-            [&] (auto &port) {
-              engine.set_port_exposed_to_backend (port, true);
-            },
-            track_->processor_->get_stereo_in_ports ());
-
           /* disconnect all connections to hardware */
           iterate_tuple (
             [&] (auto &port) { disconnect_port_hardware_inputs (port); },
@@ -775,6 +710,7 @@ Channel::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
     },
     convert_to_variant<ChannelTrackPtrVariant> (this));
 }
+#endif
 
 void
 Channel::add_balance_control (float pan)
@@ -1064,12 +1000,6 @@ Channel::connect_channel (
   /* connect plugins */
   connect_plugins ();
 
-  /* expose ports to backend */
-  if (engine.setup_)
-    {
-      expose_ports_to_backend (engine);
-    }
-
   /* connect sends */
   for (auto &send : sends_)
     {
@@ -1077,7 +1007,7 @@ Channel::connect_channel (
     }
 
   /* connect the designated midi inputs */
-  reconnect_ext_input_ports (engine);
+  // reconnect_ext_input_ports (engine);
 
   z_info ("done connecting channel {}", track_->get_name ());
 }
@@ -1394,9 +1324,6 @@ Channel::disconnect_plugin_from_strip (PluginSlot slot, Channel::Plugin &pl)
     {
       disconnect_prev_next (*prev_plugin, pl, *next_plugin);
     }
-
-  /* unexpose all JACK ports */
-  pl.expose_ports (*AUDIO_ENGINE, false, true, true);
 }
 
 Channel::PluginUuid
@@ -1961,22 +1888,18 @@ from_json (const nlohmann::json &j, Channel &c)
     {
       j.at (Channel::kExtMidiInputsKey).get_to (c.ext_midi_ins_);
     }
-  j.at (Channel::kAllMidiInputsKey).get_to (c.all_midi_ins_);
   if (j.contains (Channel::kMidiChannelsKey))
     {
       j.at (Channel::kMidiChannelsKey).get_to (c.midi_channels_);
     }
-  j.at (Channel::kAllMidiChannelsKey).get_to (c.all_midi_channels_);
   if (j.contains (Channel::kExtStereoLInputsKey))
     {
       j.at (Channel::kExtStereoLInputsKey).get_to (c.ext_stereo_l_ins_);
     }
-  j.at (Channel::kAllStereoLInputsKey).get_to (c.all_stereo_l_ins_);
   if (j.contains (Channel::kExtStereoRInputsKey))
     {
       j.at (Channel::kExtStereoRInputsKey).get_to (c.ext_stereo_r_ins_);
     }
-  j.at (Channel::kAllStereoRInputsKey).get_to (c.all_stereo_r_ins_);
   j.at (Channel::kWidthKey).get_to (c.width_);
 }
 

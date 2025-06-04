@@ -23,8 +23,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   auto *      sample_processor = engine->sample_processor_.get ();
   auto *      tracklist = project_.tracklist_;
   auto *      monitor_fader = engine->control_room_->monitor_fader_.get ();
-  auto *      hw_in_processor = engine->hw_in_processor_.get ();
-  auto *      transport = project.transport_;
+  // auto *      hw_in_processor = engine->hw_in_processor_.get ();
+  auto * transport = project.transport_;
 
   auto add_node_for_processable = [&] (auto &processable) {
     return graph.add_node_for_processable (processable, *transport);
@@ -40,7 +40,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   auto * initial_processor_node = graph.add_initial_processor (*transport);
 
   /* add the hardware input processor */
-  add_node_for_processable (*hw_in_processor);
+  // add_node_for_processable (*hw_in_processor);
 
   auto add_plugin = [&] (auto &pl) {
     z_return_if_fail (!pl.deleting_);
@@ -315,6 +315,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   }
 
   /* connect the HW input processor */
+#if 0
   dsp::graph::GraphNode * hw_processor_node =
     graph.get_nodes ().find_node_for_processable (*hw_in_processor);
   for (auto &port : hw_in_processor->audio_ports_)
@@ -328,6 +329,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       auto node2 = graph.get_nodes ().find_node_for_processable (*port);
       hw_processor_node->connect_to (*node2);
     }
+#endif
 
   /* connect MIDI editor manual press */
   {

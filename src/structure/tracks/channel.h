@@ -5,7 +5,6 @@
 
 #include "zrythm-config.h"
 
-#include "engine/device_io/ext_port.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_span.h"
 #include "structure/tracks/channel_send.h"
@@ -223,7 +222,7 @@ public:
   /**
    * Called when the input has changed for Midi, Instrument or Audio tracks.
    */
-  void reconnect_ext_input_ports (engine::device_io::AudioEngine &engine);
+  // void reconnect_ext_input_ports (engine::device_io::AudioEngine &engine);
 
   /**
    * Convenience function to get the automation track of the given type for
@@ -339,11 +338,6 @@ public:
    */
   void append_ports (std::vector<Port *> &ports, bool include_plugins);
 
-  /**
-   * Exposes the channel's ports to the backend.
-   */
-  void expose_ports_to_backend (engine::device_io::AudioEngine &engine);
-
   void set_phase (float phase);
 
   float get_phase () const;
@@ -388,13 +382,9 @@ private:
   static constexpr auto kOutputIdKey = "outputId"sv;
   static constexpr auto kTrackIdKey = "trackId"sv;
   static constexpr auto kExtMidiInputsKey = "extMidiIns"sv;
-  static constexpr auto kAllMidiInputsKey = "allMidiIns"sv;
   static constexpr auto kMidiChannelsKey = "midiChannels"sv;
-  static constexpr auto kAllMidiChannelsKey = "allMidiChannels"sv;
   static constexpr auto kExtStereoLInputsKey = "extStereoLIns"sv;
-  static constexpr auto kAllStereoLInputsKey = "allStereoLIns"sv;
   static constexpr auto kExtStereoRInputsKey = "extStereoRIns"sv;
-  static constexpr auto kAllStereoRInputsKey = "allStereoRIns"sv;
   static constexpr auto kWidthKey = "width"sv;
 
   friend void to_json (nlohmann::json &j, const Channel &c)
@@ -410,26 +400,10 @@ private:
     j[kStereoOutRKey] = c.stereo_out_right_id_;
     j[kOutputIdKey] = c.output_track_uuid_;
     j[kTrackIdKey] = c.track_uuid_;
-    if (!c.all_midi_ins_)
-      {
-        j[kExtMidiInputsKey] = c.ext_midi_ins_;
-      }
-    j[kAllMidiInputsKey] = c.all_midi_ins_;
-    if (!c.all_midi_channels_)
-      {
-        j[kMidiChannelsKey] = c.midi_channels_;
-      }
-    j[kAllMidiChannelsKey] = c.all_midi_channels_;
-    if (!c.all_stereo_l_ins_)
-      {
-        j[kExtStereoLInputsKey] = c.ext_stereo_l_ins_;
-      }
-    j[kAllStereoLInputsKey] = c.all_stereo_l_ins_;
-    if (!c.all_stereo_r_ins_)
-      {
-        j[kExtStereoRInputsKey] = c.ext_stereo_r_ins_;
-      }
-    j[kAllStereoRInputsKey] = c.all_stereo_r_ins_;
+    j[kExtMidiInputsKey] = c.ext_midi_ins_;
+    j[kMidiChannelsKey] = c.midi_channels_;
+    j[kExtStereoLInputsKey] = c.ext_stereo_l_ins_;
+    j[kExtStereoRInputsKey] = c.ext_stereo_r_ins_;
     j[kWidthKey] = c.width_;
   }
   friend void from_json (const nlohmann::json &j, Channel &c);
@@ -537,32 +511,30 @@ public:
   std::array<std::unique_ptr<ChannelSend>, STRIP_SIZE> sends_;
 
   /**
-   * External MIDI inputs that are currently connected to this channel as
-   * official inputs, unless all_midi_ins is enabled.
+   * External MIDI inputs (juce::MidiDeviceInfo::identifier) that are currently
+   * connected to this channel as official inputs, unless all_midi_ins is
+   * enabled.
    *
    * These should be serialized every time and connected to when the
    * project gets loaded if @ref Channel.all_midi_ins is not enabled.
    *
-   * If all_midi_ins is enabled, these are ignored.
+   * If nullopt, the channel will accept all MIDI inputs.
    */
-  std::vector<std::unique_ptr<engine::device_io::ExtPort>> ext_midi_ins_;
-
-  /** If true, the channel will connect to all MIDI ins found. */
-  bool all_midi_ins_ = true;
+  std::optional<std::vector<utils::Utf8String>> ext_midi_ins_;
 
   /**
-   * External audio L inputs that are currently connected to this channel
-   * as official inputs, unless all_stereo_l_ins is enabled.
+   * External audio L inputs  that are
+   * currently connected to this channel as official inputs, unless
+   * all_stereo_l_ins is enabled.
    *
    * These should be serialized every time and if all_stereo_l_ins is not
    * enabled, connected to when the project gets loaded.
    *
-   * If all_stereo_l_ins is enabled, these are ignored.
+   * If nullopt, the channel will connect to all stereo L inputs found.
+   *
+   * @warning Currently not sure what to save here.
    */
-  std::vector<std::unique_ptr<engine::device_io::ExtPort>> ext_stereo_l_ins_;
-
-  /** If true, the channel will connect to all stereo L ins found. */
-  bool all_stereo_l_ins_ = false;
+  std::optional<std::vector<utils::Utf8String>> ext_stereo_l_ins_;
 
   /**
    * External audio R inputs that are currently connected to this channel
@@ -571,23 +543,18 @@ public:
    * These should be serialized every time and if all_stereo_r_ins is not
    * enabled, connected to when the project gets loaded.
    *
-   * If all_stereo_r_ins is enabled, these are ignored.
+   * If nullopt, the channel will connect to all stereo R inputs found.
+   *
+   * @warning Currently not sure what to save here.
    */
-  std::vector<std::unique_ptr<engine::device_io::ExtPort>> ext_stereo_r_ins_;
-
-  /** If true, the channel will connect to all stereo R ins found. */
-  bool all_stereo_r_ins_ = false;
+  std::optional<std::vector<utils::Utf8String>> ext_stereo_r_ins_;
 
   /**
    * 1 or 0 flags for each channel to enable it or disable it.
    *
-   * If all_midi_channels is enabled, this is ignored.
+   * If nullopt, the channel will accept MIDI messages from all MIDI channels.
    */
-  std::array<bool, 16> midi_channels_{};
-
-  /** If true, the channel will accept MIDI messages from all MIDI channels.
-   */
-  bool all_midi_channels_ = true;
+  std::optional<std::array<bool, 16>> midi_channels_;
 
   /** The channel fader. */
   Fader * fader_ = nullptr;

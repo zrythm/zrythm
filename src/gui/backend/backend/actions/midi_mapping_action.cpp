@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_identifier.h"
@@ -25,10 +25,7 @@ MidiMappingAction::init_after_cloning (
   idx_ = other.idx_;
   type_ = other.type_;
   dest_port_id_ = other.dest_port_id_;
-  dev_port_ =
-    other.dev_port_
-      ? std::make_unique<engine::device_io::ExtPort> (*other.dev_port_)
-      : nullptr;
+  dev_id_ = other.dev_id_;
   buf_ = other.buf_;
 }
 
@@ -40,16 +37,11 @@ MidiMappingAction::MidiMappingAction (int idx_to_enable_or_disable, bool enable)
 }
 
 MidiMappingAction::MidiMappingAction (
-  const std::array<midi_byte_t, 3>   buf,
-  const engine::device_io::ExtPort * device_port,
-  const Port                        &dest_port)
+  const std::array<midi_byte_t, 3> buf,
+  std::optional<utils::Utf8String> device_id,
+  const Port                      &dest_port)
     : UndoableAction (UndoableAction::Type::MidiMapping), type_ (Type::Bind),
-      dest_port_id_ (dest_port.get_uuid ()),
-      dev_port_ (
-        (device_port != nullptr)
-          ? std::make_unique<engine::device_io::ExtPort> (*device_port)
-          : nullptr),
-      buf_ (buf)
+      dest_port_id_ (dest_port.get_uuid ()), dev_id_ (device_id), buf_ (buf)
 {
 }
 
@@ -69,7 +61,7 @@ MidiMappingAction::bind_or_unbind (bool bind)
       std::visit (
         [&] (auto &&port) {
           idx_ = MIDI_MAPPINGS->mappings_.size ();
-          MIDI_MAPPINGS->bind_device (buf_, dev_port_.get (), *port, false);
+          MIDI_MAPPINGS->bind_device (buf_, dev_id_, *port, false);
         },
         *port_var);
     }
@@ -77,10 +69,7 @@ MidiMappingAction::bind_or_unbind (bool bind)
     {
       auto &mapping = MIDI_MAPPINGS->mappings_[idx_];
       buf_ = mapping->key_;
-      dev_port_ =
-        mapping->device_port_
-          ? std::make_unique<engine::device_io::ExtPort> (*mapping->device_port_)
-          : nullptr;
+      dev_id_ = mapping->device_id_;
       dest_port_id_ = mapping->dest_id_;
       MIDI_MAPPINGS->unbind (idx_, false);
     }

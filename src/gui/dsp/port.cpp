@@ -29,19 +29,6 @@ Port::Port (
   id_->flow_ = flow;
 }
 
-bool
-Port::is_exposed_to_backend () const
-{
-  return (is_audio () || is_midi ())
-         && ((backend_ && backend_->is_exposed ()) || id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine || exposed_to_backend_);
-}
-
-bool
-Port::needs_external_buffer_clear_on_early_return () const
-{
-  return id_->flow_ == dsp::PortFlow::Output && is_exposed_to_backend ();
-}
-
 int
 Port::get_num_unlocked (
   const dsp::PortConnectionsManager &connections_manager,
@@ -100,11 +87,6 @@ Port::disconnect_all (
     {
       mgr.remove_connection (conn->src_id_, conn->dest_id_);
     }
-
-  if (backend_)
-    {
-      backend_->unexpose ();
-    }
 }
 
 void
@@ -117,7 +99,6 @@ void
 Port::copy_members_from (const Port &other, ObjectCloneType clone_type)
 {
   id_ = other.id_->clone_unique ();
-  exposed_to_backend_ = other.exposed_to_backend_;
   range_ = other.range_;
 }
 
@@ -125,17 +106,6 @@ void
 Port::print_full_designation () const
 {
   z_info ("{}", get_full_designation ());
-}
-
-void
-Port::clear_external_buffer (nframes_t block_length)
-{
-  if (!is_exposed_to_backend () || !backend_)
-    {
-      return;
-    }
-
-  backend_->clear_backend_buffer (id_->type_, block_length);
 }
 
 size_t

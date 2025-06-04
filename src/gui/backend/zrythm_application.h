@@ -48,6 +48,11 @@ public:
 
   bool notify (QObject * receiver, QEvent * event) override;
 
+  std::shared_ptr<engine::device_io::DeviceManager> get_device_manager () const
+  {
+    return device_manager_;
+  }
+
 private:
   void setup_command_line_options ();
 
@@ -85,6 +90,7 @@ private:
 
   std::unique_ptr<juce::ScopedJuceInitialiser_GUI>
     juce_message_handler_initializer_;
+  std::shared_ptr<engine::device_io::DeviceManager> device_manager_;
 };
 
 } // namespace zrythm::gui

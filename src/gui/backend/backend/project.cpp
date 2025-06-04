@@ -30,7 +30,9 @@
 
 using namespace zrythm;
 
-Project::Project (QObject * parent)
+Project::Project (
+  std::shared_ptr<engine::device_io::DeviceManager> device_manager,
+  QObject *                                         parent)
     : QObject (parent), port_registry_ (new PortRegistry (this)),
       plugin_registry_ (new PluginRegistry (this)),
       arranger_object_registry_ (
@@ -39,7 +41,8 @@ Project::Project (QObject * parent)
       version_ (Zrythm::get_version (false)),
       tool_ (new gui::backend::Tool (this)),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
-      audio_engine_ (std::make_unique<engine::device_io::AudioEngine> (this)),
+      audio_engine_ (
+        std::make_unique<engine::device_io::AudioEngine> (this, device_manager)),
       transport_ (new engine::session::Transport (this)),
       quantize_opts_editor_ (std::make_unique<QuantizeOptions> (
         zrythm::utils::NoteLength::Note_1_8)),
@@ -115,7 +118,8 @@ Project::Project (QObject * parent)
         *port_registry_,
         *arranger_object_registry_,
         *gui::SettingsManager::get_instance (),
-        this))
+        this)),
+      device_manager_ (device_manager)
 {
   // audio_engine_ = std::make_unique<AudioEngine> (this);
 }
@@ -410,9 +414,8 @@ Project::activate ()
 
   /* connect channel inputs to hardware and re-expose ports to
    * backend. has to be done after engine activation */
-  auto track_span = tracklist_->get_track_span ();
-  track_span.reconnect_ext_input_ports (*audio_engine_);
-  track_span.expose_ports_to_backend (*audio_engine_);
+  // auto track_span = tracklist_->get_track_span ();
+  // track_span.reconnect_ext_input_ports (*audio_engine_);
 
   /* reconnect graph */
   audio_engine_->router_->recalc_graph (false);
@@ -1250,7 +1253,8 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
   datetime_str_ = other.datetime_str_;
   version_ = other.version_;
   transport_ = other.transport_->clone_qobject (this);
-  audio_engine_ = other.audio_engine_->clone_unique (clone_type, this);
+  audio_engine_ =
+    other.audio_engine_->clone_unique (clone_type, this, device_manager_);
   tracklist_ = other.tracklist_->clone_qobject (this);
   clip_editor_ = other.clip_editor_->clone_qobject (
     this, clone_type, *arranger_object_registry_, [&] (const TrackUuid &id) {
@@ -1370,7 +1374,7 @@ Project::get_active_instance ()
 Project *
 Project::clone (bool for_backup) const
 {
-  auto ret = clone_raw_ptr (ObjectCloneType::Snapshot);
+  auto ret = clone_raw_ptr (ObjectCloneType::Snapshot, device_manager_);
   if (for_backup)
     {
       /* no undo history in backups */

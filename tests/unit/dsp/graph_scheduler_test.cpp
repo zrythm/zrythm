@@ -22,12 +22,6 @@ public:
   MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
   MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
   MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
-  MOCK_METHOD (void, clear_external_buffer, (nframes_t block_length), (override));
-  MOCK_METHOD (
-    bool,
-    needs_external_buffer_clear_on_early_return,
-    (),
-    (const, override));
 };
 
 class MockTransport : public ITransport
@@ -113,27 +107,6 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
 
   scheduler_->terminate_threads ();
 }
-
-// FIXME: ON_CALL crashes for some reason
-#if 0
-TEST_F (GraphSchedulerTest, ExternalBufferClearing)
-{
-  auto collection = create_test_collection ();
-
-  ON_CALL (*processable_, needs_external_buffer_clear_on_early_return ())
-    .WillByDefault (Return (true));
-  EXPECT_CALL (*processable_, clear_external_buffer ()).Times (AtLeast (1));
-
-  scheduler_->rechain_from_node_collection (std::move (collection));
-
-  scheduler_->start_threads (2);
-  std::this_thread::sleep_for (10ms);
-
-  scheduler_->clear_external_output_buffers ();
-
-  scheduler_->terminate_threads ();
-}
-#endif
 
 TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
 {

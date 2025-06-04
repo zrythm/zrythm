@@ -17,7 +17,6 @@ class Fader;
 namespace engine::device_io
 {
 class AudioEngine;
-class ExtPort;
 }
 }
 
@@ -34,7 +33,6 @@ class ControlRoom final : public ICloneable<ControlRoom>
 public:
   using Fader = structure::tracks::Fader;
   using AudioEngine = engine::device_io::AudioEngine;
-  using ExtPort = engine::device_io::ExtPort;
 
   ControlRoom () = default;
   ControlRoom (PortRegistry &port_registry, AudioEngine * engine);
@@ -98,13 +96,6 @@ public:
    * @note This needs to be serialized because some ports connect to it.
    */
   std::unique_ptr<Fader> monitor_fader_;
-
-  std::string hw_out_l_id_;
-  std::string hw_out_r_id_;
-
-  /* caches */
-  ExtPort * hw_out_l_ = nullptr;
-  ExtPort * hw_out_r_ = nullptr;
 
   /** Pointer to owner audio engine, if any. */
   AudioEngine * audio_engine_ = nullptr;

@@ -66,7 +66,7 @@ AudioPort::sum_data_from_dummy (
           port = &dummy_inputs.second;
         }
 
-      if (port)
+      if (port != nullptr)
         {
           utils::float_ranges::add2 (
             &buf_[start_frame], &port->buf_[start_frame], nframes);
@@ -106,20 +106,7 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
 
   if (is_input () && owner_->should_sum_data_from_backend ())
     {
-      if (backend_ && backend_->is_exposed ())
-        {
-          backend_->sum_audio_data (
-            buf_.data (),
-            { .start_frame = time_nfo.local_offset_,
-              .nframes = time_nfo.nframes_ });
-        }
-      else if (
-        AUDIO_ENGINE->audio_backend_ == engine::device_io::AudioBackend::Dummy)
-        {
-          // TODO: make this a PortBackend implementation too, then it will get
-          // handled by the above code
-          sum_data_from_dummy (time_nfo.local_offset_, time_nfo.nframes_);
-        }
+      // TODO
     }
 
   for (const auto &[_src_port, conn] : std::views::zip (srcs_, src_connections_))
@@ -159,12 +146,6 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
                 &buf_[time_nfo.local_offset_], minf, maxf, time_nfo.nframes_);
             }
         }
-    }
-
-  if (is_output () && backend_ && backend_->is_exposed ())
-    {
-      backend_->send_data (
-        buf_.data (), { time_nfo.local_offset_, time_nfo.nframes_ });
     }
 
   if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)

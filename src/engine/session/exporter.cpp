@@ -5,31 +5,27 @@
 
 #include "dsp/ditherer.h"
 #include "dsp/midi_event.h"
-#include "engine/device_io/engine.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/tracks/channel.h"
-#include "structure/tracks/piano_roll_track.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/logger.h"
-#include "utils/views.h"
-#ifdef HAVE_JACK
-#  include "engine/device_io/engine_jack.h"
-#endif
-#include "dsp/midi_event.h"
 #include "dsp/position.h"
+#include "engine/device_io/engine.h"
 #include "engine/session/exporter.h"
 #include "engine/session/router.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
+#include "structure/tracks/channel.h"
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/master_track.h"
+#include "structure/tracks/piano_roll_track.h"
 #include "structure/tracks/tempo_track.h"
+#include "structure/tracks/tracklist.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
+#include "utils/logger.h"
 #include "utils/math.h"
 #include "utils/progress_info.h"
+#include "utils/views.h"
 
 #include "juce_wrapper.h"
 #include <midilib/src/midifile.h>
@@ -192,31 +188,6 @@ Exporter::export_audio (Settings &info)
   AUDIO_ENGINE->bounce_step_ = info.bounce_step_;
   AUDIO_ENGINE->bounce_with_parents_ = info.bounce_with_parents_;
 
-// TODO
-#if 0
-  /* set jack freewheeling mode and temporarily disable transport link */
-#  ifdef HAVE_JACK
-  engine::device_io::AudioEngine::JackTransportType transport_type =
-    AUDIO_ENGINE->transport_type_;
-  if (
-    AUDIO_ENGINE->audio_backend_
-    == engine::device_io::AudioBackend::Jack)
-    {
-      engine_jack_set_transport_type (
-        AUDIO_ENGINE,
-        engine::device_io::AudioEngine::JackTransportType::NoJackTransport);
-
-      /* FIXME this is not how freewheeling should
-       * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
-#    if 0
-      z_info ("setting freewheel on");
-      jack_set_freewheel (
-        AUDIO_ENGINE->client, 1);
-#    endif
-    }
-#  endif
-#endif
-
   /* init ditherer */
   zrythm::dsp::Ditherer ditherer;
   if (info.dither_)
@@ -314,25 +285,6 @@ Exporter::export_audio (Settings &info)
 
   progress_info_->update_progress (1.0, {});
 
-/* TODO:set jack freewheeling mode and transport type */
-#if 0
-#  ifdef HAVE_JACK
-  if (
-    AUDIO_ENGINE->audio_backend_
-    == engine::device_io::AudioBackend::Jack)
-    {
-      /* FIXME this is not how freewheeling should
-       * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
-#    if 0
-      z_info ("setting freewheel off");
-      jack_set_freewheel (
-        AUDIO_ENGINE->client, 0);
-#    endif
-      engine_jack_set_transport_type (AUDIO_ENGINE, transport_type);
-    }
-#  endif
-#endif
-
   AUDIO_ENGINE->bounce_mode_ = engine::device_io::BounceMode::Off;
   AUDIO_ENGINE->bounce_with_parents_ = false;
   TRANSPORT->move_playhead (prev_playhead_pos, true, false, false);
@@ -375,8 +327,10 @@ Exporter::export_midi (Settings &info)
 
   auto [start_pos, end_pos] = info.get_export_time_range ();
 
-  if ((mf = midiFileCreate (
-         utils::Utf8String::from_path (info.file_uri_).c_str (), TRUE)))
+  if (
+    (mf = midiFileCreate (
+       utils::Utf8String::from_path (info.file_uri_).c_str (), TRUE))
+    != nullptr)
     {
       /* Write tempo information out to track 1 */
       midiSongAddTempo (mf, 1, (int) P_TEMPO_TRACK->get_current_bpm ());

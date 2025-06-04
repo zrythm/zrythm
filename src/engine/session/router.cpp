@@ -28,29 +28,18 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/graph.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/project_graph_builder.h"
-#include "gui/dsp/control_port.h"
-#include "structure/tracks/audio_track.h"
-#include "utils/debug.h"
-#ifdef HAVE_JACK
-#  include "engine/device_io/engine_jack.h"
-#endif
-#ifdef HAVE_PORT_AUDIO
-#  include "engine/device_io/engine_pa.h"
-#endif
-#include "dsp/graph.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/control_port.h"
 #include "gui/dsp/port.h"
 #include "structure/tracks/tempo_track.h"
 #include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
-
-#ifdef HAVE_JACK
-#  include "weakjack/weak_libjack.h"
-#endif
+#include "utils/debug.h"
 
 namespace zrythm::engine::session
 {

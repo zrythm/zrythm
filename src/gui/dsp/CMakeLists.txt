@@ -23,7 +23,6 @@ target_sources(zrythm_gui_lib
     port.h
     port.cpp
     port_all.h
-    port_backend.h
     port_span.h
     quantize_options.h
     quantize_options.cpp

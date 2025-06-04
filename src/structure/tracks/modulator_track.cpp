@@ -225,9 +225,6 @@ ModulatorTrack::remove_modulator (plugins::PluginSlot::SlotNo slot)
 
       z_debug ("Removing {} from {}:{}", plugin->get_name (), name_, slot);
 
-      /* unexpose all JACK ports */
-      plugin->expose_ports (*AUDIO_ENGINE, false, true, true);
-
       /* if deleting plugin disconnect the plugin entirely */
       plugin->set_selected (false);
       plugin->Plugin::disconnect ();

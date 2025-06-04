@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "engine/device_io/ext_port.h"
 #include "gui/dsp/port.h"
 #include "utils/icloneable.h"
 
@@ -34,22 +33,22 @@ public:
 
 private:
   static constexpr auto kKeyKey = "key"sv;
-  static constexpr auto kDevicePortKey = "devicePort"sv;
+  static constexpr auto kDeviceIdKey = "deviceIdentifier"sv;
   static constexpr auto kDestIdKey = "destId"sv;
   static constexpr auto kEnabledKey = "enabled"sv;
   friend void           to_json (nlohmann::json &j, const MidiMapping &mapping)
   {
     j = nlohmann::json{
-      { kKeyKey,        mapping.key_             },
-      { kDevicePortKey, mapping.device_port_     },
-      { kDestIdKey,     mapping.dest_id_         },
-      { kEnabledKey,    mapping.enabled_.load () },
+      { kKeyKey,      mapping.key_             },
+      { kDeviceIdKey, mapping.device_id_       },
+      { kDestIdKey,   mapping.dest_id_         },
+      { kEnabledKey,  mapping.enabled_.load () },
     };
   }
   friend void from_json (const nlohmann::json &j, MidiMapping &mapping)
   {
     j.at (kKeyKey).get_to (mapping.key_);
-    j.at (kDevicePortKey).get_to (mapping.device_port_);
+    j.at (kDeviceIdKey).get_to (mapping.device_id_);
     j.at (kDestIdKey).get_to (mapping.dest_id_);
     mapping.enabled_.store (j.at (kEnabledKey).get<bool> ());
   }
@@ -58,8 +57,12 @@ public:
   /** Raw MIDI signal. */
   std::array<midi_byte_t, 3> key_ = {};
 
-  /** The device that this connection will be mapped for. */
-  std::unique_ptr<engine::device_io::ExtPort> device_port_;
+  /**
+   * @brief The device that this connection will be mapped for.
+   *
+   * If nullopt, all devices will be considered.
+   */
+  std::optional<utils::Utf8String> device_id_;
 
   /** Destination. */
   std::optional<PortIdentifier::PortUuid> dest_id_;
@@ -82,8 +85,6 @@ public:
 class MidiMappings final : public ICloneable<MidiMappings>
 {
 public:
-  using ExtPort = engine::device_io::ExtPort;
-
   void init_loaded ();
 
   /**
@@ -92,14 +93,14 @@ public:
    *
    * @param idx Index to insert at.
    * @param buf The buffer used for matching at [0] and [1].
-   * @param device_port Device port, if custom mapping.
+   * @param device_id Device ID, if custom mapping.
    */
   void bind_at (
-    std::array<midi_byte_t, 3> buf,
-    ExtPort *                  device_port,
-    Port                      &dest_port,
-    int                        idx,
-    bool                       fire_events);
+    std::array<midi_byte_t, 3>       buf,
+    std::optional<utils::Utf8String> device_id,
+    Port                            &dest_port,
+    int                              idx,
+    bool                             fire_events);
 
   /**
    * Unbinds the given binding.
@@ -110,13 +111,13 @@ public:
   void unbind (int idx, bool fire_events);
 
   void bind_device (
-    std::array<midi_byte_t, 3> buf,
-    ExtPort *                  dev_port,
-    Port                      &dest_port,
-    bool                       fire_events)
+    std::array<midi_byte_t, 3>       buf,
+    std::optional<utils::Utf8String> device_id,
+    Port                            &dest_port,
+    bool                             fire_events)
   {
     bind_at (
-      buf, dev_port, dest_port, static_cast<int> (mappings_.size ()),
+      buf, device_id, dest_port, static_cast<int> (mappings_.size ()),
       fire_events);
   }
 
@@ -124,7 +125,7 @@ public:
   bind_track (std::array<midi_byte_t, 3> buf, Port &dest_port, bool fire_events)
   {
     bind_at (
-      buf, nullptr, dest_port, static_cast<int> (mappings_.size ()),
+      buf, std::nullopt, dest_port, static_cast<int> (mappings_.size ()),
       fire_events);
   }
 

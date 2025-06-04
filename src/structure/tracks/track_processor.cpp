@@ -324,7 +324,7 @@ TrackProcessor::is_midi () const
 bool
 TrackProcessor::is_in_active_project () const
 {
-  return track_ && track_->is_in_active_project ();
+  return (track_ != nullptr) && track_->is_in_active_project ();
 }
 
 void
@@ -404,8 +404,8 @@ TrackProcessor::are_events_on_midi_channel_approved (midi_byte_t channel) const
 
   if (
     (track->is_midi () || track->is_instrument ())
-    && !track->channel_->all_midi_channels_
-    && !track->channel_->midi_channels_[channel])
+    && track->channel_->midi_channels_.has_value ()
+    && !track->channel_->midi_channels_->at (channel))
     {
       /* different channel */
       /*z_debug ("received event on different channel");*/
@@ -932,7 +932,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
                 && std::get<TrackT *> (clip_editor_track_var.value ()) == tr)
                 {
                   /* if not set to "all channels", filter-append */
-                  if (!tr->channel_->all_midi_channels_)
+                  if (tr->channel_->midi_channels_.has_value ())
                     {
                       get_midi_in_port ()
                         .midi_events_.active_events_.append_w_filter (

@@ -359,16 +359,9 @@ public:
   }
 
   /**
-   * Exposes each track's ports that should be exposed to the backend.
-   *
-   * This should be called after setting up the engine.
-   */
-  void expose_ports_to_backend (engine::device_io::AudioEngine &engine);
-
-  /**
    * @brief @see Channel.reconnect_ext_input_ports().
    */
-  void reconnect_ext_input_ports (engine::device_io::AudioEngine &engine);
+  // void reconnect_ext_input_ports (engine::device_io::AudioEngine &engine);
 
   /**
    * @brief Fixes audio regions and returns whether positions were adjusted.

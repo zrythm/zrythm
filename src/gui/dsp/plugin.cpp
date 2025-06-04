@@ -1572,31 +1572,6 @@ Plugin::delete_state_files ()
     }
 }
 
-void
-Plugin::expose_ports (
-  engine::device_io::AudioEngine &engine,
-  bool                            expose,
-  bool                            inputs,
-  bool                            outputs)
-{
-  auto set_expose = [expose, &engine] (auto &port) {
-    bool is_exposed = port->is_exposed_to_backend ();
-    if (expose != is_exposed)
-      engine.set_port_exposed_to_backend (*port, expose);
-  };
-
-  if (inputs)
-    {
-      for (auto port : get_input_port_span ().as_base_type ())
-        set_expose (port);
-    }
-  if (outputs)
-    {
-      for (auto port : get_output_port_span ().as_base_type ())
-        set_expose (port);
-    }
-}
-
 std::optional<PortPtrVariant>
 Plugin::get_port_by_symbol (const utils::Utf8String &sym)
 {

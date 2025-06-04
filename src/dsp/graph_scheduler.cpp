@@ -62,18 +62,6 @@ GraphScheduler::rechain_from_node_collection (GraphNodeCollection &&nodes)
 
   graph_nodes_ = std::move (nodes);
 
-  processables_that_need_external_buffer_clear_when_returning_early_from_processing_cycle_
-    .clear ();
-  for (const auto &node : graph_nodes_.graph_nodes_)
-    {
-      if (
-        node->get_processable ().needs_external_buffer_clear_on_early_return ())
-        {
-          processables_that_need_external_buffer_clear_when_returning_early_from_processing_cycle_
-            .emplace_back (node->get_processable ());
-        }
-    }
-
   terminal_refcnt_.store (
     static_cast<int> (graph_nodes_.terminal_nodes_.size ()));
 
@@ -233,17 +221,6 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
     }
 
   return main_thread_ && thread_id == main_thread_->rt_thread_id_;
-}
-
-void
-GraphScheduler::clear_external_output_buffers (nframes_t block_length)
-{
-  for (
-    const auto processable :
-    processables_that_need_external_buffer_clear_when_returning_early_from_processing_cycle_)
-    {
-      processable.get ().clear_external_buffer (block_length);
-    }
 }
 
 void

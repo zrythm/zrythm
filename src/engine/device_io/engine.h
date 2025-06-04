@@ -6,23 +6,17 @@
 #include "zrythm-config.h"
 
 #include "dsp/panning.h"
-#include "engine/device_io/ext_port.h"
-#include "engine/device_io/hardware_processor.h"
+#include "engine/device_io/audio_callback.h"
+#include "engine/device_io/device_manager.h"
 #include "engine/session/control_room.h"
 #include "engine/session/pool.h"
 #include "engine/session/sample_processor.h"
 #include "engine/session/transport.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/midi_port.h"
-#include "structure/tracks/channel.h"
 #include "utils/audio.h"
 #include "utils/concurrency.h"
-#include "utils/object_pool.h"
 #include "utils/types.h"
-
-#ifdef HAVE_JACK
-#  include "weakjack/weak_libjack.h"
-#endif
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -94,111 +88,9 @@ public:
   };
 
   /**
-   * Audio engine event type.
-   */
-  enum class AudioEngineEventType
-  {
-    AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE,
-    AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE,
-  };
-
-  /**
-   * @brief Implementation that drives the audio callbacks.
-   */
-  class AudioDriver
-  {
-  public:
-    virtual ~AudioDriver () = default;
-    virtual bool buffer_size_change_handled () const { return true; }
-    virtual void set_buffer_size (uint32_t buf_size) { }
-    virtual void handle_buf_size_change (uint32_t frames) { };
-    virtual void handle_sample_rate_change (uint32_t samplerate) { };
-    virtual utils::Utf8String get_driver_name () const = 0;
-
-    /**
-     * @brief Sets up the driver.
-     * @return True if the driver was successfully setup, false otherwise.
-     */
-    virtual bool setup_audio () = 0;
-
-    virtual bool activate_audio (bool activate) = 0;
-    virtual void tear_down_audio () = 0;
-    virtual void handle_start () { }
-    virtual void handle_stop () { }
-    // optional additional logic during AudioEngine::prepare_process()
-    virtual void prepare_process_audio () { }
-    // This is used to work around a bug in PipeWire (see the JACK audio driver
-    // for details)
-    virtual bool
-    sanity_check_should_return_early (nframes_t total_frames_to_process)
-    {
-      return false;
-    }
-    virtual void                         handle_position_change () { }
-    virtual std::unique_ptr<PortBackend> create_audio_port_backend () const
-    {
-      return nullptr;
-    }
-    /**
-     * Collects external ports of the given type.
-     *
-     * @param flow The signal flow. Note that this is inverse to what Zrythm
-     * sees. E.g., to get MIDI inputs like MIDI keyboards, pass @ref
-     * Z_PORT_FLOW_OUTPUT here.
-     * @param hw Hardware or not.
-     */
-    virtual std::vector<ExtPort>
-    get_ext_audio_ports (dsp::PortFlow flow, bool hw) const
-    {
-      return {};
-    }
-  };
-
-  /**
-   * @brief Implementation that handles MIDI from/to devices.
-   */
-  class MidiDriver
-  {
-  public:
-    virtual ~MidiDriver () = default;
-    virtual bool                         setup_midi () = 0;
-    virtual bool                         activate_midi (bool activate) = 0;
-    virtual void                         tear_down_midi () = 0;
-    virtual std::unique_ptr<PortBackend> create_midi_port_backend () const
-    {
-      return nullptr;
-    }
-    virtual utils::Utf8String get_driver_name () const = 0;
-    virtual std::vector<ExtPort>
-    get_ext_midi_ports (dsp::PortFlow flow, bool hw) const
-    {
-      return {};
-    }
-  };
-
-  /**
-   * Audio engine event.
-   */
-  class Event
-  {
-  public:
-    Event () : file_ (nullptr), func_ (nullptr) { }
-    AudioEngineEventType type_ =
-      AudioEngineEventType::AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE;
-    void *            arg_{};
-    uint32_t          uint_arg_{};
-    float             float_arg_{};
-    const char *      file_{};
-    const char *      func_{};
-    int               lineno_{};
-    utils::Utf8String backtrace_;
-  };
-  static_assert (std::is_default_constructible_v<Event>);
-
-  /**
    * Buffer sizes to be used in combo boxes.
    */
-  enum class BufferSize
+  enum class BufferSize : basic_enum_base_type_t
   {
     _16,
     _32,
@@ -267,7 +159,12 @@ public:
    *
    * This only initializes the engine and does not connect to any backend.
    */
-  AudioEngine (Project * project = nullptr);
+  AudioEngine (
+    Project *                      project = nullptr,
+    std::shared_ptr<DeviceManager> device_mgr = std::make_shared<
+      engine::device_io::DeviceManager> (
+      [] () { return nullptr; },
+      [] (const juce::XmlElement &) {}));
 
   /**
    * Closes any connections and free's data.
@@ -279,11 +176,6 @@ public:
   structure::tracks::TrackRegistry &get_track_registry ();
   structure::tracks::TrackRegistry &get_track_registry () const;
 
-  bool has_handled_buffer_size_change () const
-  {
-    return audio_driver_->buffer_size_change_handled ();
-  }
-
   bool is_in_active_project () const override;
 
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
@@ -291,24 +183,6 @@ public:
 
   utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
-
-  void push_event (
-    AudioEngineEventType       type,
-    void *                     arg = nullptr,
-    uint32_t                   uint_arg = 0,
-    float                      float_arg = 0.0f,
-    const std::source_location loc = std::source_location::current ())
-  {
-    auto ev = ev_pool_.acquire ();
-    ev->file_ = loc.file_name ();
-    ev->func_ = loc.function_name ();
-    ev->lineno_ = loc.line ();
-    ev->type_ = type;
-    ev->arg_ = arg;
-    ev->uint_arg_ = uint_arg;
-    ev->float_arg_ = float_arg;
-    ev_queue_.push_back (ev);
-  }
 
   /**
    * @param force_pause Whether to force transport
@@ -318,27 +192,6 @@ public:
   void wait_for_pause (State &state, bool force_pause, bool with_fadeout);
 
   void realloc_port_buffers (nframes_t buf_size);
-
-  /**
-   * Renames the port on the backend side.
-   */
-  void rename_port_backend (Port &port)
-  {
-    if (!port.is_exposed_to_backend ())
-      return;
-
-    // just re-expose - this causes a rename if already exposed
-    set_port_exposed_to_backend (port, true);
-  }
-
-  /**
-   * Sets whether to expose the port to the backend and exposes it or removes
-   * it.
-   *
-   * It checks what the backend is using the engine's audio backend or midi
-   * backend settings.
-   */
-  void set_port_exposed_to_backend (Port &port, bool expose);
 
   /**
    * @brief
@@ -361,13 +214,21 @@ public:
 
   /**
    * Sets up the audio engine before the project is initialized/loaded.
+   *
+   * This opens the required device(s) and gets the samplerate/block length.
    */
-  void pre_setup ();
+  void pre_setup_open_devices ();
+
+  using BeatsPerBarGetter = std::function<int ()>;
+  using BpmGetter = std::function<bpm_t ()>;
 
   /**
    * Sets up the audio engine after the project is initialized/loaded.
+   *
+   * This also calls update_frames_per_tick() which requires the project to be
+   * initialized/loaded.
    */
-  void setup ();
+  void setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter);
 
   static AudioEngine * get_active_instance ();
 
@@ -394,11 +255,6 @@ public:
     bool          thread_check,
     bool          update_from_ticks,
     bool          bpm_change);
-
-  /**
-   * Timeout function to be called periodically by Glib.
-   */
-  bool process_events ();
 
   /**
    * To be called by each implementation to prepare the structures before
@@ -487,6 +343,8 @@ public:
    */
   void clear_output_buffers (nframes_t nframes);
 
+  auto get_device_manager () const { return device_manager_; }
+
 private:
   static constexpr auto kSampleRateKey = "sampleRate"sv;
   static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
@@ -511,28 +369,15 @@ private:
       { kPoolKey,                  engine.pool_                     },
       { kControlRoomKey,           engine.control_room_             },
       { kSampleProcessorKey,       engine.sample_processor_         },
-      { kHwInProcessorKey,         engine.hw_in_processor_          },
-      { kHwOutProcessorKey,        engine.hw_out_processor_         },
     };
   }
   friend void from_json (const nlohmann::json &j, AudioEngine &engine);
-
-  /**
-   * Cleans duplicate events and copies the events to the given vector.
-   */
-  int clean_duplicate_events_and_copy (std::array<Event *, 100> &ret);
 
   [[gnu::cold]] void init_common ();
 
   void update_position_info (PositionInfo &pos_nfo, nframes_t frames_to_add);
 
   void receive_midi_events (uint32_t nframes);
-
-  /**
-   * @brief Stops events from getting fired.
-   *
-   */
-  void stop_events ();
 
 private:
   OptionalRef<PortRegistry> port_registry_;
@@ -541,11 +386,7 @@ public:
   /** Pointer to owner project, if any. */
   Project * project_ = nullptr;
 
-  /**
-   * @note For JACK, set the MIDI driver to the audio driver.
-   */
-  std::shared_ptr<AudioDriver> audio_driver_;
-  std::shared_ptr<MidiDriver>  midi_driver_;
+  std::shared_ptr<DeviceManager> device_manager_;
 
   /**
    * Cycle count to know which cycle we are in.
@@ -582,12 +423,6 @@ public:
 
   /** The processing graph router. */
   std::unique_ptr<session::Router> router_;
-
-  /** Input device processor. */
-  std::unique_ptr<HardwareProcessor> hw_in_processor_;
-
-  /** Output device processor. */
-  std::unique_ptr<HardwareProcessor> hw_out_processor_;
 
   /**
    * MIDI Clock input TODO.
@@ -726,14 +561,6 @@ public:
   std::array<midi_byte_t, 3> last_cc_captured_{};
 
   /**
-   * Last time an XRUN notification was shown.
-   *
-   * This is to prevent multiple XRUN notifications being shown so quickly
-   * that Zrythm becomes unusable.
-   */
-  SteadyTimePoint last_xrun_notification_;
-
-  /**
    * Whether the denormal prevention value (1e-12 ~ 1e-20) is positive.
    *
    * This should be swapped often to avoid DC offset prevention algorithms
@@ -761,38 +588,6 @@ public:
 
   /** The metronome. */
   std::unique_ptr<session::Metronome> metronome_;
-
-  /* --- events --- */
-
-  /**
-   * Event queue.
-   *
-   * Events such as buffer size change request and sample size change
-   * request should be queued here.
-   *
-   * The engine will skip processing while the queue still has events or is
-   * currently processing events.
-   */
-  MPMCQueue<Event *> ev_queue_{ ENGINE_MAX_EVENTS };
-
-  /**
-   * Object pool of event structs to avoid allocation.
-   */
-  ObjectPool<Event> ev_pool_{ ENGINE_MAX_EVENTS };
-
-  /** ID of the event processing source func. */
-  // sigc::scoped_connection process_source_id_;
-
-  /** Whether currently processing events. */
-  bool processing_events_ = false;
-
-  /** Time last event processing started. */
-  SteadyTimePoint last_events_process_started_;
-
-  /** Time last event processing completed. */
-  SteadyTimePoint last_events_processed_;
-
-  /* --- end events --- */
 
   /** Whether the cycle is currently running. */
   std::atomic_bool cycle_running_{ false };
@@ -831,6 +626,8 @@ public:
    * Expected position info at the end of the current cycle.
    */
   PositionInfo pos_nfo_at_end_ = {};
+
+  std::unique_ptr<AudioCallback> audio_callback_;
 };
 }
 

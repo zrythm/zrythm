@@ -4,7 +4,6 @@
 #pragma once
 
 #include "dsp/port_identifier.h"
-#include "engine/device_io/ext_port.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
@@ -52,13 +51,13 @@ public:
    * @brief Construct a new action for binding a MIDI mapping.
    *
    * @param buf
-   * @param device_port
+   * @param device_id
    * @param dest_port
    */
   MidiMappingAction (
-    std::array<midi_byte_t, 3>         buf,
-    const engine::device_io::ExtPort * device_port,
-    const Port                        &dest_port);
+    std::array<midi_byte_t, 3>       buf,
+    std::optional<utils::Utf8String> device_id,
+    const Port                      &dest_port);
 
   QString to_string () const override;
 
@@ -82,7 +81,7 @@ public:
 
   std::optional<dsp::PortIdentifier::PortUuid> dest_port_id_;
 
-  std::unique_ptr<engine::device_io::ExtPort> dev_port_;
+  std::optional<utils::Utf8String> dev_id_;
 
   std::array<midi_byte_t, 3> buf_{};
 };

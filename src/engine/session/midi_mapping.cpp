@@ -32,27 +32,22 @@ MidiMapping::init_after_cloning (
   ObjectCloneType    clone_type)
 {
   key_ = other.key_;
-  if (other.device_port_)
-    device_port_ = std::make_unique<device_io::ExtPort> (*other.device_port_);
+  device_id_ = other.device_id_;
   dest_id_ = other.dest_id_;
   enabled_.store (other.enabled_.load ());
 }
 
 void
 MidiMappings::bind_at (
-  std::array<midi_byte_t, 3> buf,
-  ExtPort *                  device_port,
-  Port                      &dest_port,
-  int                        idx,
-  bool                       fire_events)
+  std::array<midi_byte_t, 3>       buf,
+  std::optional<utils::Utf8String> device_id,
+  Port                            &dest_port,
+  int                              idx,
+  bool                             fire_events)
 {
   auto mapping = std::make_unique<MidiMapping> ();
   mapping->key_ = buf;
-  ;
-  if (device_port)
-    {
-      mapping->device_port_ = std::make_unique<ExtPort> (*device_port);
-    }
+  mapping->device_id_ = device_id;
   mapping->dest_id_ = dest_port.get_uuid ();
   mapping->dest_ = &dest_port;
   mapping->enabled_.store (true);
@@ -60,8 +55,10 @@ MidiMappings::bind_at (
   mappings_.insert (mappings_.begin () + idx, std::move (mapping));
 
   auto str = utils::midi::midi_ctrl_change_get_description (buf);
-  if (!(ENUM_BITSET_TEST (
-        dest_port.id_->flags_, dsp::PortIdentifier::Flags::MidiAutomatable)))
+  if (
+    (ENUM_BITSET_TEST (
+      dest_port.id_->flags_, dsp::PortIdentifier::Flags::MidiAutomatable))
+    == 0)
     {
       z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get_label ());
     }
@@ -199,7 +196,7 @@ MidiMappings::get_for_port (
     {
       if (mapping->dest_ == &dest_port)
         {
-          if (arr)
+          if (arr != nullptr)
             {
               arr->push_back (mapping.get ());
             }

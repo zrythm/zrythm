@@ -106,14 +106,9 @@ public:
     return remaining_preroll_frames_;
   }
 
-  void clear_external_output_buffers (nframes_t block_length);
-
 private:
   std::vector<GraphThreadPtr> threads_;
   GraphThreadPtr              main_thread_;
-
-  std::vector<std::reference_wrapper<IProcessable>>
-    processables_that_need_external_buffer_clear_when_returning_early_from_processing_cycle_;
 
   /**
    * @brief Time info for the current process cycle.

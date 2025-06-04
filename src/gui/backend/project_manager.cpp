@@ -132,7 +132,8 @@ ProjectManager::create_default (
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
-  auto * prj = new Project ();
+  auto * prj = new Project (
+    dynamic_cast<ZrythmApplication *> (qApp)->get_device_manager ());
   prj->setTitle (name.to_qstring ());
   prj->add_default_tracks ();
 
@@ -141,20 +142,13 @@ ProjectManager::create_default (
   z_return_val_if_fail (engine, nullptr);
   if (with_engine)
     {
-      engine->pre_setup ();
+      engine->pre_setup_open_devices ();
     }
 
-  engine->setup ();
-
-  if (with_engine)
-    {
-      prj->tracklist_->get_track_span ().expose_ports_to_backend (*engine);
-    }
-
-  auto beats_per_bar = prj->tracklist_->getTempoTrack ()->get_beats_per_bar ();
-  engine->update_frames_per_tick (
-    beats_per_bar, prj->tracklist_->getTempoTrack ()->get_current_bpm (),
-    engine->sample_rate_, true, true, false);
+  const auto * tempo_track = prj->getTracklist ()->getTempoTrack ();
+  engine->setup (
+    [tempo_track] () { return tempo_track->getBeatsPerBar (); },
+    [tempo_track] () { return tempo_track->getBpm (); });
 
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;
@@ -242,7 +236,7 @@ ProjectManager::setActiveProject (Project * project)
   if (active_project_ == project)
     return;
 
-  if (active_project_)
+  if (active_project_ != nullptr)
     {
       active_project_->setParent (nullptr);
       active_project_->aboutToBeDeleted ();
@@ -250,7 +244,7 @@ ProjectManager::setActiveProject (Project * project)
     }
 
   active_project_ = project;
-  if (active_project_)
+  if (active_project_ != nullptr)
     {
       active_project_->setParent (this);
     }
