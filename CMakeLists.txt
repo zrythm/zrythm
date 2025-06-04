@@ -698,8 +698,10 @@ add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 
 CPMFindPackage(
   NAME nlohmann_json
+  GITHUB_REPOSITORY nlohmann/json
+  VERSION 3.12.1
   # 3.12.0 + some commits later
-  URI "gh:nlohmann/json#230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48"
+  GIT_TAG 230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48
   OPTIONS
     "JSON_ImplicitConversions OFF"
     "JSON_SystemInclude ON"
@@ -709,8 +711,9 @@ add_subdirectory(ext)
 
 CPMFindPackage(
   NAME SndFile
-  #1.2.2
-  URI "gh:libsndfile/libsndfile#72f6af15e8f85157bd622ed45b979025828b7001"
+  GITHUB_REPOSITORY libsndfile/libsndfile
+  VERSION 1.2.2
+  GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
   OPTIONS
     "BUILD_EXAMPLES OFF"
     "BUILD_TESTING OFF"
@@ -1005,8 +1008,9 @@ add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
 CPMFindPackage(
   NAME gsl-lite
-  # 1.0.1
-  URI "gh:gsl-lite/gsl-lite#56dab5ce071c4ca17d3e0dbbda9a94bd5a1cbca1"
+  GITHUB_REPOSITORY "gsl-lite/gsl-lite"
+  VERSION 1.0.1
+  GIT_TAG 56dab5ce071c4ca17d3e0dbbda9a94bd5a1cbca1
 )
 
 FetchContent_Declare(
