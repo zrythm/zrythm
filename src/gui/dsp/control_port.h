@@ -249,8 +249,6 @@ public:
    */
   [[gnu::hot]] float get_control_value (bool normalize) const;
 
-  void allocate_bufs () override { }
-
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   void clear_buffer (std::size_t block_length) override { }

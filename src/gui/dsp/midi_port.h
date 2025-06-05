@@ -27,7 +27,7 @@ public:
 
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  void allocate_bufs () override;
+  void allocate_midi_bufs (size_t max_midi_events = 24);
 
   void clear_buffer (std::size_t block_length) override;
 

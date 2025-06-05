@@ -58,10 +58,10 @@ namespace zrythm::engine::device_io
 {
 
 AudioEngine::AudioEngine (
-  Project *                      project,
-  std::shared_ptr<DeviceManager> device_mgr)
+  Project *                                 project,
+  std::shared_ptr<juce::AudioDeviceManager> device_mgr)
     : port_registry_ (project->get_port_registry ()), project_ (project),
-      device_manager_ (std::move (device_mgr)), sample_rate_ (44000),
+      device_manager_ (std::move (device_mgr)),
       control_room_ (std::make_unique<session::ControlRoom> (
         project->get_port_registry (),
         this)),
@@ -69,7 +69,7 @@ AudioEngine::AudioEngine (
         [project] (bool backup) {
           return project->get_path (ProjectPath::POOL, backup);
         },
-        [this] () { return sample_rate_; })),
+        [this] () { return get_sample_rate (); })),
       port_connections_manager_ (project->port_connections_manager_.get ()),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
       audio_callback_ (
@@ -107,7 +107,6 @@ AudioEngine::init_after_cloning (
   const AudioEngine &other,
   ObjectCloneType    clone_type)
 {
-  sample_rate_ = other.sample_rate_;
   frames_per_tick_ = other.frames_per_tick_;
   monitor_out_left_ = other.monitor_out_left_;
   monitor_out_right_ = other.monitor_out_right_;
@@ -118,7 +117,7 @@ AudioEngine::init_after_cloning (
     [this] (bool backup) {
       return project_->get_path (ProjectPath::POOL, backup);
     },
-    [this] () { return sample_rate_; });
+    [this] () { return get_sample_rate (); });
   control_room_ = other.control_room_->clone_unique ();
   sample_processor_ = other.sample_processor_->clone_unique ();
   sample_processor_->audio_engine_ = this;
@@ -263,39 +262,9 @@ AudioEngine::append_ports (std::vector<Port *> &ports)
 }
 
 void
-AudioEngine::pre_setup_open_devices ()
-{
-  assert (!setup_ && !pre_setup_);
-
-  device_manager_->initialize (2, 2, true);
-  block_length_ =
-    device_manager_->getCurrentAudioDevice ()->getCurrentBufferSizeSamples ();
-  sample_rate_ = static_cast<decltype (sample_rate_)> (
-    device_manager_->getCurrentAudioDevice ()->getCurrentSampleRate ());
-  z_debug ("block length set to: {}", block_length_);
-  z_debug ("sample rate set to: {}", sample_rate_);
-
-  pre_setup_ = true;
-}
-
-void
 AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter)
 {
   z_debug ("Setting up...");
-
-  if (
-    (audio_backend_ == AudioBackend::Jack && midi_backend_ != MidiBackend::Jack)
-    || (audio_backend_ != AudioBackend::Jack && midi_backend_ == MidiBackend::Jack))
-    {
-// TODO
-#if 0
-      ui_show_message_literal (
-        QObject::tr ("Invalid Backend Combination"),
-        QObject::tr (
-          "Your selected combination of backends may not work properly. If you want to use JACK, please select JACK as both your audio and MIDI backend."));
-#endif
-    }
-
   buf_size_set_ = false;
 
   {
@@ -316,7 +285,8 @@ AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter
   }
 
   update_frames_per_tick (
-    beats_per_bar_getter (), bpm_getter (), sample_rate_, true, true, false);
+    beats_per_bar_getter (), bpm_getter (), get_sample_rate (), true, true,
+    false);
 
   setup_ = true;
 
@@ -329,99 +299,6 @@ AudioEngine::init_common ()
   metronome_ = std::make_unique<session::Metronome> (*this);
   router_ = std::make_unique<session::Router> (this);
 
-  auto ab_code = AudioBackend::Dummy;
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      ab_code =
-        gZrythm->use_pipewire_in_tests_ ? AudioBackend::Jack : AudioBackend::Dummy;
-    }
-#if 0
-  else if (!zrythm_app->audio_backend_.empty ())
-    {
-      ab_code = AudioBackend_from_string (zrythm_app->audio_backend_);
-    }
-#endif
-  else
-    {
-      ab_code = static_cast<AudioBackend> (
-        zrythm::gui::SettingsManager::get_instance ()->get_audioBackend ());
-    }
-
-  bool backend_reset_to_dummy = false;
-
-  switch (ab_code)
-    {
-    case AudioBackend::Dummy:
-      audio_backend_ = AudioBackend::Dummy;
-      break;
-#ifdef HAVE_JACK
-    case AudioBackend::Jack:
-      audio_backend_ = AudioBackend::Jack;
-      break;
-#endif
-    default:
-      audio_backend_ = AudioBackend::Dummy;
-      z_warning ("selected audio backend not found. switching to dummy");
-      zrythm::gui::SettingsManager::get_instance ()->set_audioBackend (
-        ENUM_VALUE_TO_INT (AudioBackend::Dummy));
-      backend_reset_to_dummy = true;
-      break;
-    }
-
-  auto mb_code = MidiBackend::Dummy;
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      mb_code =
-        gZrythm->use_pipewire_in_tests_ ? MidiBackend::Jack : MidiBackend::Dummy;
-    }
-#if 0
-  else if (!zrythm_app->midi_backend_.empty ())
-    {
-      mb_code = MidiBackend_from_string (zrythm_app->midi_backend_);
-    }
-#endif
-  else
-    {
-      mb_code = static_cast<MidiBackend> (
-        zrythm::gui::SettingsManager::get_instance ()->get_midiBackend ());
-    }
-
-  switch (mb_code)
-    {
-    case MidiBackend::Dummy:
-      midi_backend_ = MidiBackend::Dummy;
-      break;
-#ifdef HAVE_JACK
-    case MidiBackend::Jack:
-      midi_backend_ = MidiBackend::Jack;
-      break;
-#endif
-    default:
-      midi_backend_ = MidiBackend::Dummy;
-      z_warning ("selected midi backend not found. switching to dummy");
-      zrythm::gui::SettingsManager::get_instance ()->set_midiBackend (
-        ENUM_VALUE_TO_INT (MidiBackend::Dummy));
-      backend_reset_to_dummy = true;
-      break;
-    }
-
-  if (backend_reset_to_dummy && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
-    {
-// TODO
-#if 0
-      ui_show_message_printf (
-        QObject::tr ("Selected Backend Not Found"),
-        QObject::tr (
-          "The selected MIDI/audio backend was not "
-          "found in the version of %s you have "
-          "installed. The audio and MIDI backends "
-          "were set to \"Dummy\". Please set your "
-          "preferred backend from the "
-          "preferences."),
-        PROGRAM_NAME);
-#endif
-    }
-
   pan_law_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? zrythm::dsp::PanLaw::Minus3dB
@@ -432,15 +309,6 @@ AudioEngine::init_common ()
       ? zrythm::dsp::PanAlgorithm::SineLaw
       : static_cast<zrythm::dsp::PanAlgorithm> (
           zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ());
-
-  if (block_length_ == 0)
-    {
-      block_length_ = 8192;
-    }
-  if (midi_buf_size_ == 0)
-    {
-      midi_buf_size_ = 8192;
-    }
 
   midi_clock_out_ =
     std::make_unique<MidiPort> (u8"MIDI Clock Out", dsp::PortFlow::Output);
@@ -655,7 +523,7 @@ AudioEngine::activate (bool activate)
           return;
         }
 
-      realloc_port_buffers (block_length_);
+      realloc_port_buffers (get_block_length ());
 
       sample_processor_->load_instrument_if_empty ();
     }
@@ -694,9 +562,9 @@ AudioEngine::activate (bool activate)
 void
 AudioEngine::realloc_port_buffers (nframes_t nframes)
 {
-  block_length_ = nframes;
   buf_size_set_ = true;
-  z_info ("Block length changed to {}. reallocating buffers...", block_length_);
+  z_info (
+    "Block length changed to {}. reallocating buffers...", get_block_length ());
 
   /* TODO make function that fetches all plugins in the project */
   std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
@@ -730,9 +598,9 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
 
   /* clear the monitor output (used by rtaudio) */
   iterate_tuple (
-    [&] (auto &port) { port.clear_buffer (block_length_); },
+    [&] (auto &port) { port.clear_buffer (get_block_length ()); },
     get_monitor_out_ports ());
-  midi_clock_out_->clear_buffer (block_length_);
+  midi_clock_out_->clear_buffer (get_block_length ());
 
   /* if not running, do not attempt to access any possibly deleted ports */
   if (!run_.load ()) [[unlikely]]
@@ -780,6 +648,8 @@ AudioEngine::process_prepare (
   nframes_t                                         nframes,
   SemaphoreRAII<moodycamel::LightweightSemaphore> * sem)
 {
+  const auto block_length = get_block_length ();
+
   if (denormal_prevention_val_positive_)
     {
       denormal_prevention_val_ = -1e-20f;
@@ -829,9 +699,9 @@ AudioEngine::process_prepare (
   }
 
   /* reset all buffers */
-  control_room_->monitor_fader_->clear_buffers (block_length_);
-  midi_in_->clear_buffer (block_length_);
-  midi_editor_manual_press_->clear_buffer (block_length_);
+  control_room_->monitor_fader_->clear_buffers (block_length);
+  midi_in_->clear_buffer (block_length);
+  midi_editor_manual_press_->clear_buffer (block_length);
 
   sample_processor_->prepare_process (nframes);
 
@@ -1078,12 +948,6 @@ finalize_processing:
 void
 AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes)
 {
-  if (!exporting_)
-    {
-      /* fill in the external buffers */
-      fill_out_bufs (nframes);
-    }
-
   /* stop panicking */
   panic_.store (false);
 
@@ -1131,113 +995,11 @@ AudioEngine::panic_all ()
 }
 
 void
-AudioEngine::fill_out_bufs (const nframes_t nframes)
-{
-  switch (audio_backend_)
-    {
-    case AudioBackend::Dummy:
-      break;
-#ifdef HAVE_JACK
-    case AudioBackend::Jack:
-      /*engine_jack_fill_out_bufs (self, nframes);*/
-      break;
-#endif
-    default:
-      break;
-    }
-}
-
-int
-AudioEngine::buffer_size_enum_to_int (BufferSize buffer_size)
-{
-  switch (buffer_size)
-    {
-    case BufferSize::_16:
-      return 16;
-    case BufferSize::_32:
-      return 32;
-    case BufferSize::_64:
-      return 64;
-    case BufferSize::_128:
-      return 128;
-    case BufferSize::_256:
-      return 256;
-    case BufferSize::_512:
-      return 512;
-    case BufferSize::_1024:
-      return 1024;
-    case BufferSize::_2048:
-      return 2048;
-    case BufferSize::_4096:
-      return 4096;
-    default:
-      break;
-    }
-  z_return_val_if_reached (-1);
-}
-
-int
-AudioEngine::samplerate_enum_to_int (SampleRate samplerate)
-{
-  switch (samplerate)
-    {
-    case SampleRate::SR_22050:
-      return 22050;
-    case SampleRate::SR_32000:
-      return 32000;
-    case SampleRate::SR_44100:
-      return 44100;
-    case SampleRate::SR_48000:
-      return 48000;
-    case SampleRate::SR_88200:
-      return 88200;
-    case SampleRate::SR_96000:
-      return 96000;
-    case SampleRate::SR_192000:
-      return 192000;
-    default:
-      break;
-    }
-  z_return_val_if_reached (-1);
-}
-
-void
 AudioEngine::reset_bounce_mode ()
 {
   bounce_mode_ = BounceMode::Off;
 
   TRACKLIST->mark_all_tracks_for_bounce (false);
-}
-
-void
-AudioEngine::set_default_backends (bool reset_to_dummy)
-{
-  // bool audio_set = false;
-  // bool midi_set = false;
-
-  if (reset_to_dummy)
-    {
-      zrythm::gui::SettingsManager::get_instance ()->set_audioBackend (
-        ENUM_VALUE_TO_INT (AudioBackend::Dummy));
-      zrythm::gui::SettingsManager::get_instance ()->set_midiBackend (
-        ENUM_VALUE_TO_INT (MidiBackend::Dummy));
-    }
-
-#if 0
-#  if defined(HAVE_JACK) && !defined(_WIN32) && !defined(__APPLE__)
-  if (engine_jack_test (nullptr))
-    {
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "audio-backend",
-        ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_JACK));
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "midi-backend",
-        ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_JACK));
-      audio_set = true;
-      midi_set = true;
-    }
-#  endif
-#endif
 }
 
 bool
@@ -1306,7 +1068,6 @@ AudioEngine::get_active_instance ()
 void
 from_json (const nlohmann::json &j, AudioEngine &engine)
 {
-  j.at (AudioEngine::kSampleRateKey).get_to (engine.sample_rate_);
   j.at (AudioEngine::kFramesPerTickKey).get_to (engine.frames_per_tick_);
   j.at (AudioEngine::kMonitorOutLKey).get_to (engine.monitor_out_left_);
   j.at (AudioEngine::kMonitorOutRKey).get_to (engine.monitor_out_right_);
@@ -1317,7 +1078,7 @@ from_json (const nlohmann::json &j, AudioEngine &engine)
     [&engine] (bool backup) {
       return engine.project_->get_path (ProjectPath::POOL, backup);
     },
-    [&engine] () { return engine.sample_rate_; });
+    [&engine] () { return engine.get_sample_rate (); });
   j.at (AudioEngine::kPoolKey).get_to (*engine.pool_);
   j.at (AudioEngine::kControlRoomKey).get_to (engine.control_room_);
   j.at (AudioEngine::kSampleProcessorKey).get_to (engine.sample_processor_);

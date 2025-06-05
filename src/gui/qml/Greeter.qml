@@ -33,11 +33,16 @@ ApplicationWindow {
         return GlobalState.alertManager;
     }
 
+    function deviceManager() {
+        return GlobalState.deviceManager;
+    }
+
     function openProjectWindow(project) {
         let component = Qt.createComponent("views/ProjectWindow.qml");
         if (component.status === Component.Ready) {
             let newWindow = component.createObject(project, {
-                "project": project
+                "project": project,
+                "deviceManager": deviceManager()
             });
             newWindow.show();
             root.close();
@@ -388,17 +393,16 @@ ApplicationWindow {
                         }
 
                         ToolButton {
-                            //   icon.name: "open-menu-symbolic"
+                            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
                             onClicked: menu.open()
 
                             Menu {
                                 id: menu
 
-                                MenuItem {
-                                    // Handle preferences action
-
-                                    text: qsTr("Preferences")
+                                Action {
+                                    text: qsTr("Device Selector")
                                     onTriggered: {
+                                      deviceManager().showDeviceSelector()
                                     }
                                 }
 

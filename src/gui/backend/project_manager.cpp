@@ -137,14 +137,9 @@ ProjectManager::create_default (
   prj->setTitle (name.to_qstring ());
   prj->add_default_tracks ();
 
-  /* pre-setup engine */
+  /* setup engine */
   auto * engine = prj->audio_engine_.get ();
-  z_return_val_if_fail (engine, nullptr);
-  if (with_engine)
-    {
-      engine->pre_setup_open_devices ();
-    }
-
+  assert (engine != nullptr);
   const auto * tempo_track = prj->getTracklist ()->getTempoTrack ();
   engine->setup (
     [tempo_track] () { return tempo_track->getBeatsPerBar (); },

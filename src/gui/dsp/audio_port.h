@@ -74,7 +74,7 @@ public:
 
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  void allocate_bufs () override;
+  void allocate_audio_bufs (nframes_t max_samples) override;
 
   void clear_buffer (std::size_t block_length) override;
 
@@ -96,12 +96,6 @@ private:
   {
     from_json (j, static_cast<Port &> (port));
   }
-
-  /**
-   * Sums the inputs coming in from the dummy engine StereoPorts, before the
-   * port is processed.
-   */
-  void sum_data_from_dummy (nframes_t start_frame, nframes_t nframes);
 
 private:
   /** Max amplitude during processing (fabsf). */

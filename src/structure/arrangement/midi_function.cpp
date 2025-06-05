@@ -181,7 +181,7 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
               mn->get_end_position ().ticks_ - mn->get_position ().ticks_ < 1.0)
               {
                 mn->end_pos_->add_ms (
-                  40.0, AUDIO_ENGINE->sample_rate_,
+                  40.0, AUDIO_ENGINE->get_sample_rate (),
                   AUDIO_ENGINE->ticks_per_frame_);
               }
           }
@@ -199,14 +199,15 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
             auto next_mn = std::get<MidiNote *> (*(it + 1));
             mn->set_end_position_unvalidated (next_mn->get_position ());
             mn->end_pos_->add_ms (
-              -80.0, AUDIO_ENGINE->sample_rate_, AUDIO_ENGINE->ticks_per_frame_);
+              -80.0, AUDIO_ENGINE->get_sample_rate (),
+              AUDIO_ENGINE->ticks_per_frame_);
             /* make sure the note has a length */
             if (
               mn->get_end_position ().ticks_ - mn->get_position ().ticks_ < 1.0)
               {
                 mn->set_end_position_unvalidated (next_mn->get_position ());
                 mn->end_pos_->add_ms (
-                  40.0, AUDIO_ENGINE->sample_rate_,
+                  40.0, AUDIO_ENGINE->get_sample_rate (),
                   AUDIO_ENGINE->ticks_per_frame_);
               }
           }
@@ -219,7 +220,8 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
             auto mn = std::get<MidiNote *> (*it);
             mn->set_end_position_unvalidated (mn->get_position ());
             mn->end_pos_->add_ms (
-              140.0, AUDIO_ENGINE->sample_rate_, AUDIO_ENGINE->ticks_per_frame_);
+              140.0, AUDIO_ENGINE->get_sample_rate (),
+              AUDIO_ENGINE->ticks_per_frame_);
           }
       }
       break;
@@ -255,7 +257,7 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
             mn->set_position_unvalidated (first_mn->get_position ());
             auto tmp_pos = mn->get_position ();
             tmp_pos.add_ms (
-              ms_to_add, AUDIO_ENGINE->sample_rate_,
+              ms_to_add, AUDIO_ENGINE->get_sample_rate (),
               AUDIO_ENGINE->ticks_per_frame_);
             mn->set_position_unvalidated (tmp_pos);
             mn->set_end_position_unvalidated (mn->get_position ());

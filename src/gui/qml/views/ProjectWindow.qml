@@ -12,6 +12,7 @@ ApplicationWindow {
     id: root
 
     required property var project
+    required property var deviceManager
 
     function closeAndDestroy() {
         console.log("Closing and destroying project window");
@@ -111,6 +112,8 @@ ApplicationWindow {
 
     menuBar: MainMenuBar {
         id: mainMenuBar
+        project: root.project
+        deviceManager: root.deviceManager
     }
 
     header: MainToolbar {

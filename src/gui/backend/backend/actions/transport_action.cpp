@@ -116,7 +116,7 @@ TransportAction::do_or_undo (bool do_it)
   bool update_from_ticks = need_update_positions_from_ticks ();
   AUDIO_ENGINE->update_frames_per_tick (
     beats_per_bar, P_TEMPO_TRACK->get_current_bpm (),
-    AUDIO_ENGINE->sample_rate_, true, update_from_ticks, false);
+    AUDIO_ENGINE->get_sample_rate (), true, update_from_ticks, false);
 
   if (type_ == Type::TempoChange)
     {
@@ -150,8 +150,8 @@ TransportAction::perform_impl ()
 
       bool update_from_ticks = need_update_positions_from_ticks ();
       AUDIO_ENGINE->update_frames_per_tick (
-        beats_per_bar, bpm, AUDIO_ENGINE->sample_rate_, true, update_from_ticks,
-        false);
+        beats_per_bar, bpm, AUDIO_ENGINE->get_sample_rate (), true,
+        update_from_ticks, false);
     }
   else
     {

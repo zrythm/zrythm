@@ -173,7 +173,8 @@ TempoTrack::on_control_change_event (
 
       int beats_per_bar = get_beats_per_bar ();
       AUDIO_ENGINE->update_frames_per_tick (
-        beats_per_bar, value, AUDIO_ENGINE->sample_rate_, false, true, true);
+        beats_per_bar, value, AUDIO_ENGINE->get_sample_rate (), false, true,
+        true);
       // EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
     }
 
@@ -194,7 +195,7 @@ TempoTrack::on_control_change_event (
       bool update_from_ticks =
         ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::BeatsPerBar);
       AUDIO_ENGINE->update_frames_per_tick (
-        beats_per_bar, bpm, AUDIO_ENGINE->sample_rate_, false,
+        beats_per_bar, bpm, AUDIO_ENGINE->get_sample_rate (), false,
         update_from_ticks, false);
       // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
     }

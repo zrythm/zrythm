@@ -57,9 +57,9 @@ Metronome::Metronome (device_io::AudioEngine &engine)
   normal_ = std::make_unique<zrythm::utils::audio::AudioBuffer> ();
 
   utils::audio::AudioFile file (emphasis_path_);
-  file.read_full (*emphasis_, engine.sample_rate_);
+  file.read_full (*emphasis_, engine.get_sample_rate ());
   file = utils::audio::AudioFile (normal_path_);
-  file.read_full (*normal_, engine.sample_rate_);
+  file.read_full (*normal_, engine.get_sample_rate ());
 
   /* set volume */
   volume_ =

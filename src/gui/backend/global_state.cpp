@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/zrythm_application.h"
@@ -44,4 +44,12 @@ GlobalState::getTranslationManager ()
 {
   return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
     ->get_translation_manager ();
+}
+
+zrythm::engine::device_io::DeviceManager *
+GlobalState::getDeviceManager ()
+{
+  return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
+    ->get_device_manager ()
+    .get ();
 }

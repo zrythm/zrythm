@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -27,9 +27,9 @@ MidiPort::init_after_cloning (const MidiPort &other, ObjectCloneType clone_type)
 }
 
 void
-MidiPort::allocate_bufs ()
+MidiPort::allocate_midi_bufs (size_t max_midi_events)
 {
-  midi_ring_ = std::make_unique<RingBuffer<dsp::MidiEvent>> (11);
+  midi_ring_ = std::make_unique<RingBuffer<dsp::MidiEvent>> (max_midi_events);
 }
 
 void
@@ -180,8 +180,8 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
               double ninetysixth_ticks =
                 i * dsp::Position::TICKS_PER_NINETYSIXTH_NOTE_DBL;
               double      ratio = (ninetysixth_ticks - AUDIO_ENGINE->pos_nfo_current_.playhead_ticks_) / (AUDIO_ENGINE->pos_nfo_at_end_.playhead_ticks_ - AUDIO_ENGINE->pos_nfo_current_.playhead_ticks_);
-              auto midi_time = static_cast<midi_time_t> (
-                std::floor (ratio * (double) AUDIO_ENGINE->block_length_));
+              auto midi_time = static_cast<midi_time_t> (std::floor (
+                ratio * (double) AUDIO_ENGINE->get_block_length ()));
               if (
                 midi_time >= time_nfo.local_offset_
                 && midi_time < time_nfo.local_offset_ + time_nfo.nframes_)
@@ -249,7 +249,11 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
       owner_->on_midi_activity (*id_);
     }
 
-  if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)
+  // FIXME: this is an ugly predicate to check if this is the last block to be
+  // procesed in this cycle
+  if (
+    time_nfo.local_offset_ + time_nfo.nframes_
+    == AUDIO_ENGINE->get_block_length ())
     {
       if (write_ring_buffers_)
         {

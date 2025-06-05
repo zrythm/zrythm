@@ -1,14 +1,14 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 /* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
 
-#ifndef ZRYTHM_APPLICATION_H_INCLUDED
-#define ZRYTHM_APPLICATION_H_INCLUDED
+#pragma once
 
 #include "zrythm-config.h"
 
 #include "gui/backend/alert_manager.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
+#include "gui/backend/device_manager.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
 #include "utils/directory_manager.h"
@@ -30,8 +30,8 @@ class ZrythmApplication final : public QApplication
 
 public:
   ZrythmApplication (int &argc, char ** argv);
-
   ~ZrythmApplication () override;
+  Z_DISABLE_COPY_MOVE(ZrythmApplication)
 
   void setup_ui ();
   void setup_ipc ();
@@ -57,6 +57,8 @@ private:
   void setup_command_line_options ();
 
   void post_exec_initialization ();
+
+  void setup_device_manager ();
 
 private Q_SLOTS:
   void onEngineOutput ();
@@ -94,9 +96,3 @@ private:
 };
 
 } // namespace zrythm::gui
-
-/**
- * @}
- */
-
-#endif /* ZRYTHM_APPLICATION_H_INCLUDED */

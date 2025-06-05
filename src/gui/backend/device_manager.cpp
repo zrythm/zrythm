@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "engine/device_io/device_manager.h"
+#include "gui/backend/device_manager.h"
 
 namespace zrythm::engine::device_io
 {
@@ -30,7 +30,16 @@ DeviceManager::initialize (
 void
 DeviceManager::save_state ()
 {
-  state_setter_ (*createStateXml ());
+  auto xml = createStateXml ();
+  if (xml)
+    {
+      z_debug ("saving device manager state");
+      state_setter_ (*createStateXml ());
+    }
+  else
+    {
+      z_warning ("Can't save state: state XML was empty");
+    }
 }
 
 void
@@ -60,6 +69,38 @@ DeviceManager::createAudioDeviceTypes (
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_Oboe ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_OpenSLES ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_Android ());
+}
+
+void
+DeviceManager::showDeviceSelector ()
+{
+  if (device_selector_window_)
+    {
+      device_selector_window_->toFront (true);
+      return;
+    }
+  device_selector_window_ = std::make_unique<DeviceSelectorWindow> (*this);
+}
+
+DeviceManager::DeviceSelectorWindow::DeviceSelectorWindow (
+  DeviceManager &dev_manager)
+    : juce::DocumentWindow (
+        "Device Selector",
+        juce::Colours::grey,
+        DocumentWindow::allButtons,
+        true),
+      dev_manager_ (dev_manager)
+{
+  auto * component = new juce::AudioDeviceSelectorComponent (
+    dev_manager, 0, 2, 0, 2, true, true, true, true);
+  setContentOwned (component, true);
+  setUsingNativeTitleBar (true);
+  // for some reason width is 0 otherwise
+  centreWithSize (
+    std::max (component->getWidth (), 400), component->getHeight ());
+  setVisible (true);
+  toFront (true);
+  setAlwaysOnTop (true);
 }
 
 } // namespace zrythm::engine::device_io

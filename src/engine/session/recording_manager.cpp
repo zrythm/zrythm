@@ -175,7 +175,7 @@ RecordingManager::handle_recording (
 
   z_return_if_fail_cmp (
     time_nfo->local_offset_ + time_nfo->nframes_, <=,
-    AUDIO_ENGINE->block_length_);
+    AUDIO_ENGINE->get_block_length ());
 
   if (TRANSPORT->punch_mode_)
     {

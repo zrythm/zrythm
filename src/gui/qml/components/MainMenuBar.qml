@@ -8,6 +8,11 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 MenuBar {
+    id: root
+
+    required property var project
+    required property var deviceManager
+
     Menu {
         title: qsTr("&File")
 
@@ -113,6 +118,18 @@ MenuBar {
 
             }
 
+        }
+
+    }
+
+    Menu {
+        title: qsTr("Devices")
+
+        Action {
+            text: qsTr("Audio/MIDI Setup")
+            onTriggered: {
+                root.deviceManager.showDeviceSelector();
+            }
         }
 
     }

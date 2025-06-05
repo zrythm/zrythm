@@ -330,8 +330,8 @@ RegionImpl<RegionT>::stretch (double ratio)
       get_derived ().set_clip_id (new_clip->get_uuid ());
 
       auto stretcher = dsp::Stretcher::create_rubberband (
-        AUDIO_ENGINE->sample_rate_, new_clip->get_num_channels (), ratio, 1.0,
-        false);
+        AUDIO_ENGINE->get_sample_rate (), new_clip->get_num_channels (), ratio,
+        1.0, false);
 
       auto buf = new_clip->get_samples ();
       buf.interleave_samples ();

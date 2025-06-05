@@ -17,6 +17,7 @@
 namespace juce
 {
 class String;
+class File;
 }
 
 #if defined(__clang__)
@@ -204,6 +205,17 @@ struct fmt::formatter<juce::String> : fmt::formatter<std::string_view>
   {
     return fmt::formatter<std::string_view>::format (
       utils::Utf8String::from_juce_string (s).view (), ctx);
+  }
+};
+
+// Formatter for juce::File
+template <> struct fmt::formatter<juce::File> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const juce::File &s, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (
+      utils::Utf8String::from_juce_string (s.getFullPathName ()).view (), ctx);
   }
 };
 

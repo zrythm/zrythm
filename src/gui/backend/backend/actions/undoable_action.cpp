@@ -31,7 +31,10 @@ UndoableAction::UndoableAction (
 }
 
 UndoableAction::UndoableAction (Type type)
-    : UndoableAction (type, AUDIO_ENGINE->frames_per_tick_, AUDIO_ENGINE->sample_rate_)
+    : UndoableAction (
+        type,
+        AUDIO_ENGINE->frames_per_tick_,
+        AUDIO_ENGINE->get_sample_rate ())
 {
 }
 

@@ -49,8 +49,26 @@ public:
   void createAudioDeviceTypes (
     juce::OwnedArray<juce::AudioIODeviceType> &types) override;
 
+  Q_INVOKABLE void showDeviceSelector ();
+
 private:
-  XmlStateGetter state_getter_;
-  XmlStateSetter state_setter_;
+  class DeviceSelectorWindow : public juce::DocumentWindow
+  {
+  public:
+    DeviceSelectorWindow (DeviceManager &dev_manager);
+    void closeButtonPressed () override
+    {
+      dev_manager_.save_state ();
+      dev_manager_.device_selector_window_.reset ();
+    }
+
+  private:
+    DeviceManager &dev_manager_;
+  };
+
+private:
+  XmlStateGetter                        state_getter_;
+  XmlStateSetter                        state_setter_;
+  std::unique_ptr<DeviceSelectorWindow> device_selector_window_;
 };
 } // namespace zrythm::engine::device_io

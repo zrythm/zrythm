@@ -212,7 +212,14 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             }
 
           /* allocate buffers to be used during DSP */
-          port->allocate_bufs ();
+          if constexpr (std::is_same_v<PortT, MidiPort>)
+            {
+              port->allocate_midi_bufs ();
+            }
+          else if constexpr (std::derived_from<PortT, AudioAndCVPortMixin>)
+            {
+              port->allocate_audio_bufs (engine->get_block_length ());
+            }
 
           return add_node_for_processable (*port);
         },

@@ -81,10 +81,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     utils::Utf8String::from_qstring (applicationFilePath ()).to_path (), true,
     true);
 
-  engine::device_io::AudioEngine::set_default_backends (false);
-
-  device_manager_ = std::make_shared<engine::device_io::DeviceManager> (
-    [] () { return nullptr; }, [] (const juce::XmlElement &) {});
+  setup_device_manager ();
 
   setup_ui ();
 
@@ -133,6 +130,45 @@ ZrythmApplication::post_exec_initialization ()
       return;
     }
 #endif
+}
+
+void
+ZrythmApplication::setup_device_manager ()
+{
+  const auto data_dir =
+    QStandardPaths::writableLocation (QStandardPaths::AppDataLocation);
+  const auto filepath =
+    utils::Utf8String::from_path (
+      utils::Utf8String::from_qstring (data_dir).to_path ()
+      / u8"device_setup.xml")
+      .to_juce_file ();
+  device_manager_ = std::make_shared<engine::device_io::DeviceManager> (
+    [filepath] () -> std::unique_ptr<juce::XmlElement> {
+      auto xml = juce::parseXML (filepath);
+      if (xml)
+        {
+          z_info (
+            "Successfully parsed device setup XML contents from {}", filepath);
+          z_debug ("Parsed contents:\n{}", xml->toString ());
+          return xml;
+        }
+      z_warning (
+        "Failed to parse device setup XML conents from file: {}", filepath);
+      return nullptr;
+    },
+    [filepath] (const juce::XmlElement &el) {
+      const auto str = utils::Utf8String::from_juce_string (el.toString ());
+      z_debug ("Audio/MIDI device setup:\n{}", str);
+      if (el.writeTo (filepath))
+        {
+          z_info ("Saved audio/MIDI device setup to: {}", filepath);
+        }
+      else
+        {
+          z_warning ("Failed to write device setup file: {}", filepath);
+        }
+    });
+  device_manager_->initialize (2, 2, true);
 }
 
 void
@@ -419,6 +455,4 @@ ZrythmApplication::~ZrythmApplication ()
           engine_process_->kill ();
         }
     }
-
-  juce::MessageManager::deleteInstance ();
 }

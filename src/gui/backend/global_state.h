@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -7,6 +7,7 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/device_manager.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
 
@@ -30,12 +31,16 @@ public:
   Q_PROPERTY (
     zrythm::gui::TranslationManager * translationManager READ
       getTranslationManager CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::engine::device_io::DeviceManager * deviceManager READ
+      getDeviceManager CONSTANT FINAL)
 public:
   GlobalState (QObject * parent = nullptr) : QObject (parent) { }
-  Zrythm *                          getZrythm ();
-  zrythm::gui::ThemeManager *       getThemeManager ();
-  zrythm::gui::SettingsManager *    getSettingsManager ();
-  zrythm::gui::ProjectManager *     getProjectManager ();
-  zrythm::gui::AlertManager *       getAlertManager ();
-  zrythm::gui::TranslationManager * getTranslationManager ();
+  Zrythm *                                   getZrythm ();
+  zrythm::gui::ThemeManager *                getThemeManager ();
+  zrythm::gui::SettingsManager *             getSettingsManager ();
+  zrythm::gui::ProjectManager *              getProjectManager ();
+  zrythm::gui::AlertManager *                getAlertManager ();
+  zrythm::gui::TranslationManager *          getTranslationManager ();
+  zrythm::engine::device_io::DeviceManager * getDeviceManager ();
 };

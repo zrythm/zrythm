@@ -9,6 +9,8 @@ target_sources(zrythm_gui_lib
     carla_discovery.cpp
     curve_preset.h
     curve_preset.cpp
+    device_manager.h
+    device_manager.cpp
     plugin_collections.h
     plugin_collections.cpp
     plugin_manager.h

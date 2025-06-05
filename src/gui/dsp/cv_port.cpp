@@ -15,11 +15,11 @@ CVPort::CVPort (utils::Utf8String label, PortFlow flow)
 }
 
 void
-CVPort::allocate_bufs ()
+CVPort::allocate_audio_bufs (nframes_t max_samples)
 {
   audio_ring_ = std::make_unique<RingBuffer<float>> (AudioPort::AUDIO_RING_SIZE);
 
-  size_t max = std::max (AUDIO_ENGINE->block_length_, 1u);
+  size_t max = std::max (max_samples, 1u);
   buf_.resize (max);
   last_buf_sz_ = max;
 }
@@ -69,18 +69,21 @@ CVPort::process_block (const EngineProcessTimeInfo time_nfo)
         }
     } /* foreach source */
 
-  if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)
+  if (
+    time_nfo.local_offset_ + time_nfo.nframes_
+    == AUDIO_ENGINE->get_block_length ())
     {
       audio_ring_->force_write_multiple (
-        buf_.data (), AUDIO_ENGINE->block_length_);
+        buf_.data (), AUDIO_ENGINE->get_block_length ());
     }
 }
 
 bool
 CVPort::has_sound () const
 {
-  z_return_val_if_fail (buf_.size () >= AUDIO_ENGINE->block_length_, false);
-  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
+  z_return_val_if_fail (
+    buf_.size () >= AUDIO_ENGINE->get_block_length (), false);
+  for (nframes_t i = 0; i < AUDIO_ENGINE->get_block_length (); i++)
     {
       if (fabsf (buf_[i]) > 0.0000001f)
         {

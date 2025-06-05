@@ -7,7 +7,6 @@
 
 #include "dsp/panning.h"
 #include "engine/device_io/audio_callback.h"
-#include "engine/device_io/device_manager.h"
 #include "engine/session/control_room.h"
 #include "engine/session/pool.h"
 #include "engine/session/sample_processor.h"
@@ -33,14 +32,6 @@ class Project;
 
 namespace zrythm::engine::device_io
 {
-constexpr int ENGINE_MAX_EVENTS = 128;
-
-enum class AudioBackend : basic_enum_base_type_t
-{
-  Dummy,
-  Jack,
-};
-
 /**
  * Mode used when bouncing, either during exporting
  * or when bouncing tracks or regions to audio.
@@ -59,12 +50,6 @@ enum class BounceMode : basic_enum_base_type_t
    * To be used on regions to bounce if their track is bouncing.
    */
   Inherit,
-};
-
-enum class MidiBackend : basic_enum_base_type_t
-{
-  Dummy,
-  Jack,
 };
 
 /**
@@ -160,11 +145,9 @@ public:
    * This only initializes the engine and does not connect to any backend.
    */
   AudioEngine (
-    Project *                      project = nullptr,
-    std::shared_ptr<DeviceManager> device_mgr = std::make_shared<
-      engine::device_io::DeviceManager> (
-      [] () { return nullptr; },
-      [] (const juce::XmlElement &) {}));
+    Project *                                 project = nullptr,
+    std::shared_ptr<juce::AudioDeviceManager> device_mgr =
+      std::make_shared<juce::AudioDeviceManager> ());
 
   /**
    * Closes any connections and free's data.
@@ -211,13 +194,6 @@ public:
   void wait_n_cycles (int n);
 
   void append_ports (std::vector<Port *> &ports);
-
-  /**
-   * Sets up the audio engine before the project is initialized/loaded.
-   *
-   * This opens the required device(s) and gets the samplerate/block length.
-   */
-  void pre_setup_open_devices ();
 
   using BeatsPerBarGetter = std::function<int ()>;
   using BpmGetter = std::function<bpm_t ()>;
@@ -287,41 +263,9 @@ public:
   [[gnu::hot]] void post_process (nframes_t roll_nframes, nframes_t nframes);
 
   /**
-   * Called to fill in the external buffers at the end of the processing cycle.
-   */
-  void fill_out_bufs (nframes_t nframes);
-
-  /**
-   * Returns the int value corresponding to the given AudioEngineBufferSize.
-   */
-  static int buffer_size_enum_to_int (BufferSize buffer_size);
-
-  /**
-   * Returns the int value corresponding to the given AudioEngineSamplerate.
-   */
-  static int samplerate_enum_to_int (SampleRate samplerate);
-
-  /**
-   * Request the backend to set the buffer size.
-   *
-   * The backend is expected to call the buffer size change callbacks.
-   *
-   * @see jack_set_buffer_size().
-   */
-  void set_buffer_size (uint32_t buf_size);
-
-  /**
    * Reset the bounce mode on the engine, all tracks and regions to OFF.
    */
   void reset_bounce_mode ();
-
-  /**
-   * Detects the best backends on the system and sets them to GSettings.
-   *
-   * @param reset_to_dummy Whether to reset the backends to dummy before
-   * attempting to set defaults.
-   */
-  static void set_default_backends (bool reset_to_dummy);
 
   void init_after_cloning (const AudioEngine &other, ObjectCloneType clone_type)
     override;
@@ -345,8 +289,21 @@ public:
 
   auto get_device_manager () const { return device_manager_; }
 
+  nframes_t get_block_length () const
+  {
+    auto * dev = device_manager_->getCurrentAudioDevice ();
+    assert (dev != nullptr);
+    return dev->getCurrentBufferSizeSamples ();
+  }
+
+  sample_rate_t get_sample_rate () const
+  {
+    auto * dev = device_manager_->getCurrentAudioDevice ();
+    assert (dev != nullptr);
+    return static_cast<sample_rate_t> (dev->getCurrentSampleRate ());
+  }
+
 private:
-  static constexpr auto kSampleRateKey = "sampleRate"sv;
   static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
   static constexpr auto kMonitorOutLKey = "monitorOutL"sv;
   static constexpr auto kMonitorOutRKey = "monitorOutR"sv;
@@ -360,7 +317,6 @@ private:
   friend void           to_json (nlohmann::json &j, const AudioEngine &engine)
   {
     j = nlohmann::json{
-      { kSampleRateKey,            engine.sample_rate_              },
       { kFramesPerTickKey,         engine.frames_per_tick_          },
       { kMonitorOutLKey,           engine.monitor_out_left_         },
       { kMonitorOutRKey,           engine.monitor_out_right_        },
@@ -386,7 +342,7 @@ public:
   /** Pointer to owner project, if any. */
   Project * project_ = nullptr;
 
-  std::shared_ptr<DeviceManager> device_manager_;
+  std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
   /**
    * Cycle count to know which cycle we are in.
@@ -394,21 +350,6 @@ public:
    * Useful for debugging.
    */
   std::atomic_uint64_t cycle_ = 0;
-
-  /** Current audio backend. */
-  AudioBackend audio_backend_{};
-
-  /** Current MIDI backend. */
-  MidiBackend midi_backend_{};
-
-  /** Audio buffer size (block length), per channel. */
-  nframes_t block_length_ = 0;
-
-  /** Size of MIDI port buffers in bytes. */
-  size_t midi_buf_size_ = 0;
-
-  /** Sample rate. */
-  sample_rate_t sample_rate_ = 0;
 
   /** Number of frames/samples per tick. */
   dsp::FramesPerTick frames_per_tick_;
@@ -592,9 +533,6 @@ public:
   /** Whether the cycle is currently running. */
   std::atomic_bool cycle_running_{ false };
 
-  /** Whether the engine is already pre-set up. */
-  bool pre_setup_ = false;
-
   /** Whether the engine is already set up. */
   bool setup_ = false;
 
@@ -630,41 +568,3 @@ public:
   std::unique_ptr<AudioCallback> audio_callback_;
 };
 }
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::engine::device_io::AudioBackend,
-  AudioBackend,
-  /* TRANSLATORS: Dummy backend */
-  QT_TR_NOOP_UTF8 ("Dummy"),
-  "JACK")
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::engine::device_io::MidiBackend,
-  MidiBackend,
-  /* TRANSLATORS: Dummy backend */
-  QT_TR_NOOP_UTF8 ("Dummy"),
-  "JACK MIDI")
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::engine::device_io::AudioEngine::SampleRate,
-  AudioEngine_SampleRate,
-  "22,050",
-  "32,000",
-  "44,100",
-  "48,000",
-  "88,200",
-  "96,000",
-  "192,000")
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::engine::device_io::AudioEngine::BufferSize,
-  AudioEngine_BufferSize,
-  "16",
-  "32",
-  "64",
-  "128",
-  "256",
-  "512",
-  "1,024",
-  "2,048",
-  "4,096")

@@ -82,42 +82,48 @@ PluginManager::createPluginInstance (
   auto         juce_desc = descr->to_juce_description ();
   juce::String err;
   auto         plugin_instance = format_manager_->createPluginInstance (
-    *juce_desc, AUDIO_ENGINE->sample_rate_, AUDIO_ENGINE->block_length_, err);
+    *juce_desc, AUDIO_ENGINE->get_sample_rate (),
+    AUDIO_ENGINE->get_block_length (), err);
   if (!plugin_instance)
     {
       z_error ("Failed to create plugin instance: {}", err);
       return;
     }
+  juce::AudioProcessorEditor * editor{};
   if (plugin_instance->hasEditor ())
     {
-      auto * editor = plugin_instance->createEditorIfNeeded ();
-      editor->setVisible (true); // Ensure visibility
-      auto * window = new juce::DocumentWindow (
-        plugin_instance->getName (), juce::Colours::cadetblue,
-        juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton);
-      window->setAlwaysOnTop (true); // Optional: keep on top
-      window->setUsingNativeTitleBar (true);
-      window->setContentOwned (editor, true);
-      window->centreWithSize (
-        editor->getWidth (), editor->getHeight ()); // Center on screen
-      window->setResizable (true, true);
-      window->addToDesktop ();
-      window->setVisible (true);
-      window->toFront (true);
-
-      // schedule processing to be called every 10ms
-      QTimer * timer = new QTimer ();
-      timer->setInterval (10);
-      auto instance_ptr = plugin_instance.release ();
-      QObject::connect (timer, &QTimer::timeout, timer, [instance_ptr] () {
-        juce::AudioSampleBuffer buf;
-        buf.setSize (2, AUDIO_ENGINE->block_length_);
-        juce::MidiBuffer midi_buf;
-        // z_debug ("processing block");
-        instance_ptr->processBlock (buf, midi_buf);
-      });
-      timer->start ();
+      editor = plugin_instance->createEditorIfNeeded ();
     }
+  else
+    {
+      editor = new juce::GenericAudioProcessorEditor (*plugin_instance);
+    }
+  editor->setVisible (true); // Ensure visibility
+  auto * window = new juce::DocumentWindow (
+    plugin_instance->getName (), juce::Colours::cadetblue,
+    juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton);
+  window->setAlwaysOnTop (true); // Optional: keep on top
+  window->setUsingNativeTitleBar (true);
+  window->setContentOwned (editor, true);
+  window->centreWithSize (
+    editor->getWidth (), editor->getHeight ()); // Center on screen
+  window->setResizable (true, true);
+  window->addToDesktop ();
+  window->setVisible (true);
+  window->toFront (true);
+
+  // schedule processing to be called every 10ms
+  QTimer * timer = new QTimer ();
+  timer->setInterval (10);
+  auto instance_ptr = plugin_instance.release ();
+  QObject::connect (timer, &QTimer::timeout, timer, [instance_ptr] () {
+    juce::AudioSampleBuffer buf;
+    buf.setSize (2, AUDIO_ENGINE->get_block_length ());
+    juce::MidiBuffer midi_buf;
+    // z_debug ("processing block");
+    instance_ptr->processBlock (buf, midi_buf);
+  });
+  timer->start ();
 };
 
 void

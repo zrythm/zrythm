@@ -26,11 +26,11 @@ AudioPort::init_after_cloning (const AudioPort &other, ObjectCloneType clone_typ
 }
 
 void
-AudioPort::allocate_bufs ()
+AudioPort::allocate_audio_bufs (nframes_t max_samples)
 {
   audio_ring_ = std::make_unique<RingBuffer<float>> (AUDIO_RING_SIZE);
 
-  size_t max = std::max (AUDIO_ENGINE->block_length_, 1u);
+  size_t max = std::max (max_samples, 1u);
   buf_.resize (max);
   last_buf_sz_ = max;
 }
@@ -41,45 +41,12 @@ AudioPort::clear_buffer (std::size_t block_length)
   utils::float_ranges::fill (buf_.data (), 0.f, block_length);
 }
 
-void
-AudioPort::sum_data_from_dummy (
-  const nframes_t start_frame,
-  const nframes_t nframes)
-{
-  if (
-    id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
-    || id_->flow_ != PortFlow::Input || id_->type_ != PortType::Audio
-    || AUDIO_ENGINE->audio_backend_ != engine::device_io::AudioBackend::Dummy
-    || AUDIO_ENGINE->midi_backend_ != engine::device_io::MidiBackend::Dummy)
-    return;
-
-  if (AUDIO_ENGINE->dummy_left_input_)
-    {
-      auto        dummy_inputs = AUDIO_ENGINE->get_dummy_input_ports ();
-      AudioPort * port{};
-      if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL))
-        {
-          port = &dummy_inputs.first;
-        }
-      else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR))
-        {
-          port = &dummy_inputs.second;
-        }
-
-      if (port != nullptr)
-        {
-          utils::float_ranges::add2 (
-            &buf_[start_frame], &port->buf_[start_frame], nframes);
-        }
-    }
-}
-
 bool
 AudioPort::has_sound () const
 {
   z_return_val_if_fail (
-    this->buf_.size () >= AUDIO_ENGINE->block_length_, false);
-  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
+    this->buf_.size () >= AUDIO_ENGINE->get_block_length (), false);
+  for (nframes_t i = 0; i < AUDIO_ENGINE->get_block_length (); i++)
     {
       if (fabsf (this->buf_[i]) > 0.0000001f)
         {
@@ -148,11 +115,13 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
         }
     }
 
-  if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)
+  if (
+    time_nfo.local_offset_ + time_nfo.nframes_
+    == AUDIO_ENGINE->get_block_length ())
     {
       // z_debug ("writing to ring for {}", get_label ());
       audio_ring_->force_write_multiple (
-        buf_.data (), AUDIO_ENGINE->block_length_);
+        buf_.data (), AUDIO_ENGINE->get_block_length ());
     }
 
   /* if track output (to be shown on mixer) */

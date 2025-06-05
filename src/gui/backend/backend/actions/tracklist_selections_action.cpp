@@ -152,7 +152,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     : UndoableAction (
         UndoableAction::Type::TracklistSelections,
         AUDIO_ENGINE->frames_per_tick_,
-        AUDIO_ENGINE->sample_rate_),
+        AUDIO_ENGINE->get_sample_rate ()),
       tracklist_selections_action_type_ (type), track_pos_ (track_pos),
       lane_pos_ (lane_pos), track_type_ (track_type),
       pl_setting_ (pl_setting ? pl_setting->clone_unique () : nullptr),
@@ -266,7 +266,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       else if (track_type == Track::Type::Audio)
         {
           auto clip = std::make_shared<AudioClip> (
-            file_descr->abs_path_, AUDIO_ENGINE->sample_rate_,
+            file_descr->abs_path_, AUDIO_ENGINE->get_sample_rate (),
             P_TEMPO_TRACK->get_current_bpm ());
           AUDIO_POOL->register_clip (clip);
           pool_id_ = clip->get_uuid ();

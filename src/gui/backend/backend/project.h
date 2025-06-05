@@ -114,8 +114,8 @@ public:
 
 public:
   Project (
-    std::shared_ptr<engine::device_io::DeviceManager> device_manager,
-    QObject *                                         parent = nullptr);
+    std::shared_ptr<juce::AudioDeviceManager> device_manager,
+    QObject *                                 parent = nullptr);
   ~Project () override;
   Z_DISABLE_COPY_MOVE (Project)
 
@@ -618,7 +618,7 @@ public:
   int format_major_ = 0;
   int format_minor_ = 0;
 
-  std::shared_ptr<engine::device_io::DeviceManager> device_manager_;
+  std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 };
 
 /**

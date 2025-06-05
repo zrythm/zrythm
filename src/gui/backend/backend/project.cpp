@@ -31,8 +31,8 @@
 using namespace zrythm;
 
 Project::Project (
-  std::shared_ptr<engine::device_io::DeviceManager> device_manager,
-  QObject *                                         parent)
+  std::shared_ptr<juce::AudioDeviceManager> device_manager,
+  QObject *                                 parent)
     : QObject (parent), port_registry_ (new PortRegistry (this)),
       plugin_registry_ (new PluginRegistry (this)),
       arranger_object_registry_ (
@@ -93,7 +93,7 @@ Project::Project (
         [&] (std::shared_ptr<AudioClip> clip) {
           audio_engine_->pool_->register_clip (clip);
         },
-        [&] () { return audio_engine_->sample_rate_; },
+        [&] () { return audio_engine_->get_sample_rate (); },
         [&] () { return tracklist_->getTempoTrack ()->get_current_bpm (); },
         structure::arrangement::ArrangerObjectSelectionManager{
           timeline_->get_selected_object_ids (), *arranger_object_registry_ },
@@ -466,7 +466,7 @@ Project::add_default_tracks ()
   bpm_t bpm = tracklist_->tempo_track_->get_current_bpm ();
   transport_->update_caches (beats_per_bar, beat_unit);
   audio_engine_->update_frames_per_tick (
-    beats_per_bar, bpm, audio_engine_->sample_rate_, true, true, false);
+    beats_per_bar, bpm, audio_engine_->get_sample_rate (), true, true, false);
 
   /* add a scale */
   arranger_object_factory_->add_scale_object (

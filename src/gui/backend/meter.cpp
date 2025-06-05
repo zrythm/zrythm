@@ -59,13 +59,13 @@ MeterProcessor::setPort (QVariant port_var)
                   algorithm_ = MeterAlgorithm::METER_ALGORITHM_K;
                   kmeter_processor_ =
                     std::make_unique<zrythm::dsp::KMeterDsp> ();
-                  kmeter_processor_->init (AUDIO_ENGINE->sample_rate_);
+                  kmeter_processor_->init (AUDIO_ENGINE->get_sample_rate ());
                 }
               else
                 {
                   algorithm_ = MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK;
                   peak_processor_ = std::make_unique<zrythm::dsp::PeakDsp> ();
-                  peak_processor_->init (AUDIO_ENGINE->sample_rate_);
+                  peak_processor_->init (AUDIO_ENGINE->get_sample_rate ());
                 }
 
               tmp_buf_.reserve (AudioPort::AUDIO_RING_SIZE);
@@ -143,7 +143,7 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
         std::derived_from<PortT, AudioPort> || std::derived_from<PortT, CVPort>)
         {
           size_t       read_space_avail = port->audio_ring_->read_space ();
-          const size_t block_length = AUDIO_ENGINE->block_length_;
+          const size_t block_length = AUDIO_ENGINE->get_block_length ();
           size_t       blocks_to_read =
             block_length == 0 ? 0 : read_space_avail / block_length;
           /* if no blocks available, skip */

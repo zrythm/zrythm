@@ -598,7 +598,7 @@ Track::update_positions (
   dsp::FramesPerTick frames_per_tick)
 {
   /* not ready yet */
-  if (!PROJECT || !AUDIO_ENGINE->pre_setup_)
+  if (!PROJECT)
     {
       z_warning ("not ready to update positions for {} yet", name_);
       return;

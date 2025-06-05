@@ -110,7 +110,7 @@ Transport::Transport (Project * parent)
   /* set initial total number of beats this is applied to the ruler */
   total_bars_ = TRANSPORT_DEFAULT_TOTAL_BARS;
 
-  z_return_if_fail (project_->audio_engine_->sample_rate_ > 0);
+  z_return_if_fail (project_->audio_engine_->get_sample_rate () > 0);
 
   double ticks_per_bar = Position::TICKS_PER_QUARTER_NOTE * 4.0;
   loop_end_pos_->ticks_ = 4 * ticks_per_bar;
@@ -731,8 +731,8 @@ Transport::goto_prev_marker ()
 
       if (
         isRolling () && i > 0
-        && (playhead_pos_->to_ms (AUDIO_ENGINE->sample_rate_)
-            - markers[i].to_ms (AUDIO_ENGINE->sample_rate_))
+        && (playhead_pos_->to_ms (AUDIO_ENGINE->get_sample_rate ())
+            - markers[i].to_ms (AUDIO_ENGINE->get_sample_rate ()))
              < REPEATED_BACKWARD_MS)
         {
           continue;
@@ -1011,7 +1011,7 @@ Transport::move_backward (bool with_wait)
    * more */
   if (
     pos.frames_ > 0
-    && (pos == *playhead_pos_ || (isRolling () && (playhead_pos_->to_ms (audio_engine_->sample_rate_) - pos.to_ms (audio_engine_->sample_rate_)) < REPEATED_BACKWARD_MS)))
+    && (pos == *playhead_pos_ || (isRolling () && (playhead_pos_->to_ms (audio_engine_->get_sample_rate()) - pos.to_ms (audio_engine_->get_sample_rate())) < REPEATED_BACKWARD_MS)))
     {
       Position tmp = pos;
       tmp.add_ticks (-1, audio_engine_->frames_per_tick_);

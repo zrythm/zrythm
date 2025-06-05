@@ -165,7 +165,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
         [&] (nframes_t fader_buf_offset, nframes_t len) {
           // ensure we don't overflow the fader buffer
           z_return_if_fail_cmp (
-            fader_buf_offset + len, <=, AUDIO_ENGINE->block_length_);
+            fader_buf_offset + len, <=, AUDIO_ENGINE->get_block_length ());
           // ensure we don't overflow the sample playback buffer
           z_return_if_fail_cmp (
             sp.offset_ + len, <=, (unsigned_frame_t) sp.buf_->getNumSamples ());
@@ -224,7 +224,8 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
               if constexpr (std::derived_from<TrackT, ProcessableTrack>)
                 {
 
-                  track->processor_->clear_buffers (AUDIO_ENGINE->block_length_);
+                  track->processor_->clear_buffers (
+                    AUDIO_ENGINE->get_block_length ());
 
                   EngineProcessTimeInfo inner_time_nfo = {
                     .g_start_frame_ =
@@ -261,7 +262,8 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                         return;
                       std::visit (
                         [&] (auto &&ins) {
-                          ins->prepare_process (AUDIO_ENGINE->block_length_);
+                          ins->prepare_process (
+                            AUDIO_ENGINE->get_block_length ());
                           ins->midi_in_port_->midi_events_.active_events_.append (
                             midi_events_->active_events_, cycle_offset, nframes);
                           ins->process_block (inner_time_nfo);
@@ -333,7 +335,7 @@ void
 SampleProcessor::queue_metronome (Metronome::Type type, nframes_t offset)
 {
   z_return_if_fail (METRONOME->emphasis_ && METRONOME->normal_);
-  z_return_if_fail (offset < AUDIO_ENGINE->block_length_);
+  z_return_if_fail (offset < AUDIO_ENGINE->get_block_length ());
 
   if (type == Metronome::Type::Emphasis)
     {
@@ -528,7 +530,7 @@ SampleProcessor::queue_file_or_chord_preset (
                        */
                       Position end_pos;
                       end_pos.from_seconds (
-                        13.0, audio_engine_->sample_rate_,
+                        13.0, audio_engine_->get_sample_rate (),
                         audio_engine_->ticks_per_frame_);
                       auto mr =
                         structure::arrangement::ArrangerObjectFactory::
@@ -548,10 +550,10 @@ SampleProcessor::queue_file_or_chord_preset (
 
                           Position cur_pos, cur_end_pos;
                           cur_pos.from_seconds (
-                            j * 1.0, audio_engine_->sample_rate_,
+                            j * 1.0, audio_engine_->get_sample_rate (),
                             audio_engine_->ticks_per_frame_);
                           cur_end_pos.from_seconds (
-                            j * 1.0 + 0.5, audio_engine_->sample_rate_,
+                            j * 1.0 + 0.5, audio_engine_->get_sample_rate (),
                             audio_engine_->ticks_per_frame_);
                           for (
                             const auto k : std::views::iota (
@@ -715,7 +717,8 @@ SampleProcessor::find_and_queue_metronome (
         bar_offset_long + (signed_frame_t) loffset;
       z_return_if_fail_cmp (metronome_offset_long, >=, 0);
       auto metronome_offset = (nframes_t) metronome_offset_long;
-      z_return_if_fail_cmp (metronome_offset, <, audio_engine_->block_length_);
+      z_return_if_fail_cmp (
+        metronome_offset, <, audio_engine_->get_block_length ());
       queue_metronome (Metronome::Type::Emphasis, metronome_offset);
     }
 
@@ -760,7 +763,7 @@ SampleProcessor::find_and_queue_metronome (
 
           auto metronome_offset = (nframes_t) metronome_offset_long;
           z_return_if_fail_cmp (
-            metronome_offset, <, AUDIO_ENGINE->block_length_);
+            metronome_offset, <, AUDIO_ENGINE->get_block_length ());
           queue_metronome (Metronome::Type::Normal, metronome_offset);
         }
     }

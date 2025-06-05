@@ -208,13 +208,6 @@ public:
   bool is_input () const { return id_->flow_ == PortFlow::Input; }
   bool is_output () const { return id_->flow_ == PortFlow::Output; }
 
-  /**
-   * @brief Allocates buffers used during DSP.
-   *
-   * To be called only where necessary to save RAM.
-   */
-  virtual void allocate_bufs () = 0;
-
   utils::Utf8String get_node_name () const override
   {
     return get_full_designation ();
@@ -382,6 +375,14 @@ public:
 
 class AudioAndCVPortMixin
 {
+public:
+  /**
+   * @brief Allocates buffers used during DSP.
+   *
+   * To be called only where necessary to save RAM.
+   */
+  virtual void allocate_audio_bufs (nframes_t max_block_size) = 0;
+
 public:
   /**
    * Buffer to be reallocated every time the buffer size changes.

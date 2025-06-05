@@ -7,8 +7,11 @@
 
 namespace zrythm::engine::device_io
 {
-AudioCallback::AudioCallback (EngineProcessCallback process_cb)
-    : process_cb_ (std::move (process_cb))
+AudioCallback::AudioCallback (
+  EngineProcessCallback                     process_cb,
+  std::optional<DeviceAboutToStartCallback> device_about_to_start_cb)
+    : process_cb_ (std::move (process_cb)),
+      device_about_to_start_cb_ (device_about_to_start_cb)
 {
 }
 
@@ -22,7 +25,7 @@ AudioCallback::audioDeviceIOCallbackWithContext (
   const juce::AudioIODeviceCallbackContext &context)
 {
   juce::ScopedNoDenormals no_denormals;
-  for (const auto ch : std::views::iota (0, numInputChannels))
+  for (const auto ch : std::views::iota (0, numOutputChannels))
     {
       auto * ch_data = outputChannelData[ch];
       utils::float_ranges::fill (ch_data, 0.f, numSamples);
@@ -36,14 +39,18 @@ AudioCallback::audioDeviceIOCallbackWithContext (
 void
 AudioCallback::audioDeviceAboutToStart (juce::AudioIODevice * device)
 {
-  z_debug (
+  z_info (
     "{} device '{}' about to start", device->getTypeName (), device->getName ());
+  if (device_about_to_start_cb_.has_value ())
+    {
+      std::invoke (device_about_to_start_cb_.value (), device);
+    }
 }
 
 void
 AudioCallback::audioDeviceStopped ()
 {
-  z_debug ("audio device stopped");
+  z_info ("audio device stopped");
 }
 
 void

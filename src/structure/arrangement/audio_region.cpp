@@ -160,7 +160,7 @@ AudioRegion::fill_stereo_ports (
       unsigned_frame_t current_local_frame = time_nfo.local_offset_ + j;
       signed_frame_t   r_local_pos = timeline_frames_to_local (
         (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j), true);
-      if (r_local_pos < 0 || j > AUDIO_ENGINE->block_length_)
+      if (r_local_pos < 0 || j > AUDIO_ENGINE->get_block_length ())
         {
           z_error (
             "invalid r_local_pos {}, j {}, "
@@ -353,7 +353,7 @@ AudioRegion::detect_bpm (std::vector<float> &candidates)
 
   return utils::audio::detect_bpm (
     clip->get_samples ().getReadPointer (0), (size_t) clip->get_num_frames (),
-    (unsigned int) AUDIO_ENGINE->sample_rate_, candidates);
+    (unsigned int) AUDIO_ENGINE->get_sample_rate (), candidates);
 }
 
 bool

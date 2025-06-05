@@ -167,7 +167,7 @@ Exporter::export_audio (Settings &info)
   metadata.set ("software", PROGRAM_NAME);
 
   juce::AudioFormatWriter * writer = format->createWriterFor (
-    file_output_stream, AUDIO_ENGINE->sample_rate_, EXPORT_CHANNELS,
+    file_output_stream, AUDIO_ENGINE->get_sample_rate (), EXPORT_CHANNELS,
     utils::audio::bit_depth_enum_to_int (info.depth_), metadata, 0);
   if (writer == nullptr)
     {
@@ -205,7 +205,7 @@ Exporter::export_audio (Settings &info)
   float  clip_amp = 0.f;
 
   zrythm::utils::audio::AudioBuffer buffer (
-    EXPORT_CHANNELS, AUDIO_ENGINE->block_length_);
+    EXPORT_CHANNELS, AUDIO_ENGINE->get_block_length ());
 
   do
     {
@@ -214,7 +214,7 @@ Exporter::export_audio (Settings &info)
         end_pos.ticks_ - TRANSPORT->playhead_pos_->getTicks ();
       const nframes_t nframes = (nframes_t) std::min (
         (long) ceil (type_safe::get (AUDIO_ENGINE->frames_per_tick_) * nticks),
-        (long) AUDIO_ENGINE->block_length_);
+        (long) AUDIO_ENGINE->get_block_length ());
       z_return_if_fail (nframes > 0);
 
       /* run process code */
@@ -437,7 +437,7 @@ Exporter::Settings::set_bounce_defaults (
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 100
       : gui::SettingsManager::bounceTailLength (),
-    AUDIO_ENGINE->sample_rate_, AUDIO_ENGINE->ticks_per_frame_);
+    AUDIO_ENGINE->get_sample_rate (), AUDIO_ENGINE->ticks_per_frame_);
 
   bounce_step_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING

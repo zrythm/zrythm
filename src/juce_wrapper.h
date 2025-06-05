@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __ZRYTHM_JUCE_H__
-#define __ZRYTHM_JUCE_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -24,6 +23,7 @@
 #include "juce_audio_devices/juce_audio_devices.h"
 #include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_audio_processors/juce_audio_processors.h"
+#include "juce_audio_utils/juce_audio_utils.h"
 #if ZRYTHM_WITH_JUCE_CLAP_HOSTING
 #include "juce_clap_hosting.h"
 #endif
@@ -32,5 +32,3 @@
 #ifdef __GNUC__
 #  pragma GCC diagnostic pop
 #endif // __GNUC__
-
-#endif /* __ZRYTHM_JUCE_H__ */
