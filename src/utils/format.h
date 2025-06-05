@@ -14,11 +14,7 @@
 #include <QString>
 #include <QUuid>
 
-namespace juce
-{
-class String;
-class File;
-}
+#include <juce_wrapper.h>
 
 #if defined(__clang__)
 #  pragma clang diagnostic push

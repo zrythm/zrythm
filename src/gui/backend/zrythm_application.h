@@ -31,7 +31,7 @@ class ZrythmApplication final : public QApplication
 public:
   ZrythmApplication (int &argc, char ** argv);
   ~ZrythmApplication () override;
-  Z_DISABLE_COPY_MOVE(ZrythmApplication)
+  Z_DISABLE_COPY_MOVE (ZrythmApplication)
 
   void setup_ui ();
   void setup_ipc ();
