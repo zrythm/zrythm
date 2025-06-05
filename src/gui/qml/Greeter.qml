@@ -52,7 +52,6 @@ ApplicationWindow {
     }
 
     title: "Zrythm"
-    modality: Qt.ApplicationModal
     minimumWidth: 256
     width: 640
     height: 420
