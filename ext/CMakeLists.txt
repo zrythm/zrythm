@@ -3,6 +3,7 @@
 
 add_subdirectory(backward-cpp)
 add_subdirectory(crill)
+add_subdirectory(dirent)
 add_subdirectory(lv2)
 add_subdirectory(moodycamel)
 
@@ -193,4 +194,5 @@ add_subdirectory(soxr EXCLUDE_FROM_ALL)
 add_library(zrythm::soxr ALIAS soxr)
 
 add_subdirectory(weakjack)
+add_subdirectory(whereami)
 add_subdirectory(zita-resampler)
