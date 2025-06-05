@@ -920,6 +920,15 @@ FetchContent_Declare(
 set(BOOST_INCLUDE_LIBRARIES circular_buffer stl_interfaces describe)
 FetchContent_MakeAvailable(Boost)
 
+CPMFindPackage(
+  NAME type_safe
+  GITHUB_REPOSITORY foonathan/type_safe
+  VERSION 0.2.4
+  GIT_TAG 1dbea7936a1e389caa692d01bb3f5ba4b6da7d82
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+)
+
 if(0)
   # getting compiler errors so unused for now
   FetchContent_Declare(
