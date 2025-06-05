@@ -37,8 +37,6 @@ public:
   ControlRoom () = default;
   ControlRoom (PortRegistry &port_registry, AudioEngine * engine);
 
-  bool is_in_active_project () const;
-
   /**
    * Inits the control room from a project.
    */

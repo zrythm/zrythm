@@ -111,12 +111,6 @@ TempoTrack::initialize ()
   return true;
 }
 
-bool
-TempoTrack::validate () const
-{
-  return Track::validate_base () && AutomatableTrack::validate_base ();
-}
-
 bpm_t
 TempoTrack::get_bpm_at_pos (const Position pos)
 {

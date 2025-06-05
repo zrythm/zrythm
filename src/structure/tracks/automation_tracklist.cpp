@@ -556,23 +556,6 @@ AutomationTracklist::get_num_visible () const
   });
 }
 
-bool
-AutomationTracklist::validate () const
-{
-  auto track_uuid = track_.get_uuid ();
-  for (int i = 0; i < static_cast<int> (ats_.size ()); i++)
-    {
-      const auto &at = ats_[i];
-      const auto &port = get_port (at->port_id_);
-      z_return_val_if_fail (port.id_->get_track_id () == track_uuid, false);
-      z_return_val_if_fail (at->index_ == i, false);
-      if (!at->validate ())
-        return false;
-    }
-
-  return true;
-}
-
 int
 AutomationTracklist::get_num_regions () const
 {

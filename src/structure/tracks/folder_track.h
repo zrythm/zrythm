@@ -28,8 +28,6 @@ class FolderTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (FolderTrack)
 
 public:
-  bool validate () const override;
-
   bool get_listened () const override
   {
     return is_status (MixerStatus::Listened);

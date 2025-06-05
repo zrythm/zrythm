@@ -101,8 +101,6 @@ public:
 
   void init_loaded ();
 
-  bool validate () const;
-
   /**
    * @note This is expensive and should only be used
    *   if @ref PortIdentifier.at_idx is not set. Use

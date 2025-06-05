@@ -152,8 +152,6 @@ public:
    */
   TrackLaneImpl (LanedTrackT * track) : track_ (track) { }
 
-  bool is_in_active_project () const;
-
   bool is_auditioner () const;
 
   /**

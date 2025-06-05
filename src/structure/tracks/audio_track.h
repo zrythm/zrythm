@@ -68,8 +68,6 @@ public:
 
   void clear_objects () override;
 
-  bool validate () const override;
-
   void get_regions_in_range (
     std::vector<Region *> &regions,
     const Position *       p1,

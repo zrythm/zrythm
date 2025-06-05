@@ -112,28 +112,4 @@ RegionLinkGroup::update (const Region &main_region)
     }
 }
 
-bool
-RegionLinkGroup::validate () const
-{
-// TODO
-#if 0
-  for (const auto &id : ids_)
-    {
-      auto region_var = PROJECT->find_arranger_object_by_id (ids_.front ());
-      z_return_val_if_fail (region_var.has_value (), false);
-      return std::visit (
-        [&] (auto &&region) {
-          if constexpr (std::derived_from<base_type<decltype (region)>, Region>)
-          {
-            RegionLinkGroup * link_group = region->get_link_group ();
-            z_return_val_if_fail (link_group == this, false);
-            return true;
-          }
-        },
-        region_var.value ());
-    }
-#endif
-
-  return true;
-}
 }

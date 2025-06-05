@@ -38,8 +38,6 @@ public:
     PortRegistry     &port_registry,
     bool              new_identity);
 
-  bool is_in_active_project () const override;
-
   bool is_audio () const;
 
   bool is_midi () const;

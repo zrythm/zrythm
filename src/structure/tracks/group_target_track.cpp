@@ -143,29 +143,6 @@ GroupTargetTrack::
     }
 }
 
-bool
-GroupTargetTrack::validate_base () const
-{
-  for (const auto &child_id : children_)
-    {
-      auto track_var = get_tracklist ()->get_track (child_id);
-      auto ret = std::visit (
-        [&] (auto &&track) {
-          using TrackT = base_type<decltype (track)>;
-          if constexpr (std::derived_from<TrackT, ChannelTrack>)
-            {
-              auto out_track = track->get_channel ()->get_output_track ();
-              z_return_val_if_fail (this == out_track, false);
-            }
-          return true;
-        },
-        *track_var);
-      z_return_val_if_fail (ret, false);
-    }
-
-  return true;
-}
-
 void
 GroupTargetTrack::add_child (
   Track::Uuid child_id,

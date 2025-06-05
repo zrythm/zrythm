@@ -29,8 +29,6 @@ public:
    */
   void remove_group (int group_id);
 
-  bool validate () const;
-
 private:
   static constexpr auto kGroupsKey = "groups"sv;
   friend void to_json (nlohmann::json &j, const RegionLinkGroupManager &mgr)

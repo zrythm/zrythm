@@ -458,9 +458,8 @@ Tracklist::insert_track (
       track->set_index (pos);
 
       if (
-        is_in_active_project ()
         /* auditioner doesn't need automation */
-        && !is_auditioner ())
+        !is_auditioner ())
         {
           /* make the track the only selected track */
           get_selection_manager ().select_unique (track->get_uuid ());
@@ -494,20 +493,7 @@ Tracklist::insert_track (
             }
         }
 
-      if (is_in_active_project ())
-        {
-          track->activate_all_plugins (true);
-        }
-
-      if (!is_auditioner ())
-        {
-          /* verify */
-          if (!track->validate ())
-            {
-              throw ZrythmException (
-                fmt::format ("{} is invalid", track->get_name ()));
-            }
-        }
+      track->activate_all_plugins (true);
 
       if (recalc_graph)
         {
@@ -698,55 +684,6 @@ Tracklist::multiply_track_heights (
   return true;
 }
 
-bool
-Tracklist::validate () const
-{
-  /* this validates tracks in parallel */
-  std::vector<std::future<bool>> ret_vals;
-  ret_vals.reserve (tracks_.size ());
-  auto span = get_track_span ();
-  for (const auto [index, track_var] : utils::views::enumerate (span))
-    {
-      ret_vals.emplace_back (std::async ([this, index, track_var] () {
-        // z_return_val_if_fail (track && track->is_in_active_project (), false);
-        auto * tr = Track::from_variant (track_var);
-        z_return_val_if_fail (tr, false);
-
-        if (!tr->validate ())
-          return false;
-
-        if (tr->get_index () != static_cast<int> (index))
-          {
-            return false;
-          }
-
-        /* validate size */
-        int track_size = 1;
-        if (const auto * foldable_track = dynamic_cast<FoldableTrack *> (tr))
-          {
-            track_size = foldable_track->size_;
-          }
-        z_return_val_if_fail (
-          tr->get_index () + track_size <= (int) tracks_.size (), false);
-
-        /* validate connections */
-        if (const auto * channel_track = dynamic_cast<ChannelTrack *> (tr))
-          {
-            const auto &channel = channel_track->get_channel ();
-            for (const auto &send : channel->get_sends ())
-              {
-                send->validate ();
-              }
-          }
-        return true;
-      }));
-    }
-
-  return std::all_of (ret_vals.begin (), ret_vals.end (), [] (auto &t) {
-    return t.get ();
-  });
-}
-
 int
 Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 {
@@ -774,13 +711,6 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 
   return std::visit (
     [&] (const auto &track) { return track->get_index (); }, span.front ());
-}
-
-bool
-Tracklist::is_in_active_project () const
-{
-  return project_ == PROJECT
-         || (sample_processor_ && sample_processor_->is_in_active_project ());
 }
 
 std::optional<TrackPtrVariant>
@@ -1003,7 +933,7 @@ Tracklist::move_track (
       auto prev_visible = get_prev_visible_track (track_id);
       auto next_visible = get_next_visible_track (track_id);
 
-      if (is_in_active_project () && !is_auditioner ())
+      if (!is_auditioner ())
         {
           /* clear the editor region if it exists and belongs to this track */
           CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
@@ -1344,11 +1274,6 @@ Tracklist::move_region_to_track (
                 }
 
               // z_debug ("after: {}", get_derived ());
-
-              if (ZRYTHM_TESTING)
-                {
-                  REGION_LINK_GROUP_MANAGER.validate ();
-                }
             },
             from_track_var);
         }

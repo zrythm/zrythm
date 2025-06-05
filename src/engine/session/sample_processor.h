@@ -44,8 +44,6 @@ public:
   Z_DISABLE_COPY_MOVE (SampleProcessor)
   ~SampleProcessor () override;
 
-  bool is_in_active_project () const;
-
   void
   init_after_cloning (const SampleProcessor &other, ObjectCloneType clone_type)
     override;

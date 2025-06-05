@@ -67,12 +67,6 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
     }
 }
 
-bool
-ModulatorMacroProcessor::is_in_active_project () const
-{
-  return track_ && track_->is_in_active_project ();
-}
-
 void
 ModulatorMacroProcessor::init_loaded (ModulatorTrack &track)
 {

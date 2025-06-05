@@ -106,12 +106,6 @@ ControlRoom::init_after_cloning (
   monitor_fader_ = other.monitor_fader_->clone_unique ();
 }
 
-bool
-ControlRoom::is_in_active_project () const
-{
-  return audio_engine_ && audio_engine_->is_in_active_project ();
-}
-
 void
 ControlRoom::init_loaded (PortRegistry &port_registry, AudioEngine * engine)
 {

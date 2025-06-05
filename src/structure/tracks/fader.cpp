@@ -573,14 +573,6 @@ Fader::db_string_getter () const
     "{:.1f}", utils::math::amp_to_dbfs (get_amp_port ().control_));
 }
 
-bool
-Fader::is_in_active_project () const
-{
-  return (track_ && track_->is_in_active_project ())
-         || (sample_processor_ && sample_processor_->is_in_active_project ())
-         || (control_room_ && control_room_->is_in_active_project ());
-}
-
 void
 Fader::set_listened (bool listen, bool fire_events)
 {

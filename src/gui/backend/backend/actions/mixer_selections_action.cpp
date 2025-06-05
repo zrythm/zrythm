@@ -546,8 +546,6 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                     }
                 }
 
-              track->validate ();
-
               /* EVENTS_PUSH (EventType::ET_PLUGINS_ADDED, track); */
             }
           /* else if deleting plugins (create undo or delete do) */
@@ -930,8 +928,6 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                             pl_var);
                         }
 
-                      to_tr->validate ();
-
                       if (new_channel_)
                         {
                           /* EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr); */
@@ -1064,8 +1060,6 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                         {
                           TRACKLIST->remove_track (to_tr->get_uuid ());
                         }
-
-                      from_tr->validate ();
 
                       /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED,
                        * to_ch); */

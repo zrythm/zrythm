@@ -22,8 +22,6 @@ RangeAction::
   type_ = type;
   first_run_ = true;
 
-  z_return_if_fail (start_pos.validate () && end_pos.validate ());
-
   /* create selections for overlapping objects */
   Position inf;
   inf.set_to_bar (

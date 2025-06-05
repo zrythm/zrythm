@@ -102,17 +102,6 @@ MarkerTrack::init_after_cloning (
   Track::copy_members_from (other, clone_type);
 }
 
-bool
-MarkerTrack::validate () const
-{
-  if (!Track::validate_base ())
-    {
-      return false;
-    }
-
-  return true;
-}
-
 void
 MarkerTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
 {

@@ -45,8 +45,6 @@ public:
    */
   void clear_objects () override;
 
-  bool validate () const override;
-
   auto get_marker_at (size_t index) const
   {
     return get_children_view ()[index];

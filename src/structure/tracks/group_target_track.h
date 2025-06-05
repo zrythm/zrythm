@@ -73,8 +73,6 @@ protected:
   void
   copy_members_from (const GroupTargetTrack &other, ObjectCloneType clone_type);
 
-  bool validate_base () const;
-
 private:
   static constexpr auto kChildrenKey = "children"sv;
   friend void to_json (nlohmann::json &j, const GroupTargetTrack &track)

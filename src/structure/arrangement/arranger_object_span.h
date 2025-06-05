@@ -232,11 +232,6 @@ public:
   }
 
   /**
-   * @brief Used for debugging.
-   */
-  bool validate () const;
-
-  /**
    * Returns if the selections contain an undeletable object (such as the
    * start marker).
    */

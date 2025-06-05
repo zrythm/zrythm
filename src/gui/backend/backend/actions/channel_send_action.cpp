@@ -209,8 +209,6 @@ ChannelSendAction::undo_impl ()
       save_or_load_port_connections (false);
 
       ROUTER->recalc_graph (false);
-
-      TRACKLIST->validate ();
     }
 
   /* EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send); */

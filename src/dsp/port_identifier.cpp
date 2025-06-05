@@ -45,12 +45,6 @@ PortIdentifier::print () const
   z_info (print_to_str ());
 }
 
-bool
-PortIdentifier::validate () const
-{
-  return true;
-}
-
 size_t
 PortIdentifier::get_hash () const
 {

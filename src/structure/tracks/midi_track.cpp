@@ -32,13 +32,6 @@ MidiTrack::MidiTrack (
   automation_tracklist_->setParent (this);
 }
 
-bool
-MidiTrack::validate () const
-{
-  return Track::validate_base () && ChannelTrack::validate_base ()
-         && AutomatableTrack::validate_base () && LanedTrackImpl::validate_base ();
-}
-
 void
 MidiTrack::init_loaded (
   PluginRegistry &plugin_registry,

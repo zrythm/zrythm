@@ -49,8 +49,6 @@ AutomatableTrack::init_loaded (
   auto this_id = get_uuid ();
   for (auto &port : ports)
     {
-      if (is_in_active_project ())
-        {
           z_return_if_fail (port->id_->get_track_id ().value () == this_id);
 
           /* set automation tracks on ports */
@@ -63,7 +61,6 @@ AutomatableTrack::init_loaded (
               z_return_if_fail (at);
               ctrl->at_ = at;
             }
-        }
     }
 }
 
@@ -221,73 +218,4 @@ AutomatableTrack::set_automation_visible (const bool visible)
   // EVENTS_PUSH (EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, this);
 }
 
-bool
-AutomatableTrack::validate_base () const
-{
-  if (ZRYTHM_TESTING)
-    {
-      /* verify port identifiers */
-      std::vector<Port *> ports;
-      append_ports (ports, true);
-      auto this_id = get_uuid ();
-      for (const auto * port : ports)
-        {
-          z_return_val_if_fail (port->id_->get_track_id () == this_id, false);
-          if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
-            {
-              const auto &pid_opt = port->id_->plugin_id_;
-              z_return_val_if_fail (pid_opt.has_value (), false);
-              const auto &pid = pid_opt.value ();
-              auto        pl_var = PROJECT->find_plugin_by_id (pid);
-              z_return_val_if_fail (pl_var.has_value (), false);
-              auto pl_valid = std::visit (
-                [&] (auto &&pl) {
-                  z_return_val_if_fail (pl->get_track_id () == this_id, false);
-                  const auto pl_slot = *pl->get_slot ();
-                  if (
-                    !pl_slot.has_slot_index ()
-                    && pl_slot.get_slot_type_only ()
-                         == plugins::PluginSlotType::Instrument)
-                    {
-                      const auto * channel_track =
-                        dynamic_cast<const ChannelTrack *> (this);
-                      z_return_val_if_fail (
-                        pl->get_uuid ()
-                          == channel_track->channel_->instrument_->id (),
-                        false);
-                    }
-                  return true;
-                },
-                pl_var.value ());
-              z_return_val_if_fail (pl_valid, false);
-            }
-
-          /* check that the automation track is there */
-          if (ENUM_BITSET_TEST (
-                port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
-            {
-              const auto * ctrl = dynamic_cast<const ControlPort *> (port);
-              const auto * at =
-                AutomationTrack::find_from_port (*ctrl, this, true);
-              if (at == nullptr)
-                {
-                  z_error (
-                    "Could not find automation track for port '{}'",
-                    port->get_full_designation ());
-                  return false;
-                }
-              z_return_val_if_fail (
-                AutomationTrack::find_from_port (*ctrl, this, false), false);
-              z_return_val_if_fail (ctrl->at_ == at, false);
-
-              z_return_val_if_fail (at->verify (), false);
-            }
-        }
-    }
-
-  /* verify tracklist identifiers */
-  z_return_val_if_fail (automation_tracklist_->validate (), false);
-
-  return true;
-}
 }

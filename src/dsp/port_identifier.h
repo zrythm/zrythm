@@ -373,7 +373,6 @@ public:
 
   std::string print_to_str () const;
   void        print () const;
-  bool        validate () const;
   size_t      get_hash () const;
 
   static utils::Utf8String port_unit_to_string (PortUnit unit);

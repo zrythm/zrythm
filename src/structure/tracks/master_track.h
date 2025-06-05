@@ -33,8 +33,6 @@ public:
   void init_after_cloning (const MasterTrack &other, ObjectCloneType clone_type)
     override;
 
-  bool validate () const override;
-
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 

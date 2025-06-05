@@ -168,8 +168,6 @@ public:
    */
   void init_loaded ();
 
-  bool is_in_active_project () const override;
-
   utils::Utf8String
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
@@ -195,16 +193,6 @@ public:
    * Gets the enable/disable port for this plugin.
    */
   ControlPort * get_enabled_port ();
-
-  /**
-   * Verifies that the plugin identifiers are valid.
-   */
-  bool validate () const;
-
-  /**
-   * Prints the plugin to string.
-   */
-  std::string print () const;
 
   /**
    * Removes the automation tracks associated with this plugin from the

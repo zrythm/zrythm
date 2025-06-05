@@ -321,12 +321,6 @@ TrackProcessor::is_midi () const
   return track_->get_input_signal_type () == PortType::Event;
 }
 
-bool
-TrackProcessor::is_in_active_project () const
-{
-  return (track_ != nullptr) && track_->is_in_active_project ();
-}
-
 void
 TrackProcessor::set_port_metadata_from_owner (
   dsp::PortIdentifier &id,

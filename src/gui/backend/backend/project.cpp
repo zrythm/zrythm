@@ -521,41 +521,6 @@ Project::add_default_tracks ()
 }
 
 bool
-Project::validate () const
-{
-  z_debug ("validating project...");
-
-#if 0
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  port_get_all (
-    &ports, &max_size, true, &num_ports);
-  for (int i = 0; i < num_ports; i++)
-    {
-      Port * port = ports[i];
-      port_update_identifier (
-        port, &port->id_, port->track,
-        F_UPDATE_AUTOMATION_TRACK);
-    }
-  free (ports);
-#endif
-
-  if (!tracklist_->validate ())
-    return false;
-
-  region_link_group_manager_.validate ();
-
-  /* TODO add arranger_object_get_all and check
-   * positions (arranger_object_validate) */
-
-  z_debug ("project validation passed");
-
-  return true;
-}
-
-bool
 Project::fix_audio_regions ()
 {
   return tracklist_->get_track_span ().fix_audio_regions (
@@ -1041,8 +1006,6 @@ Project::save (
       undo_manager_->action_sem_.acquire ();
     }
 
-  validate ();
-
   /* set the dir and create it if it doesn't exist */
   dir_ = _dir;
   try
@@ -1209,9 +1172,6 @@ Project::save (
       get_path (ProjectPath::FINISHED_FILE, is_backup);
     utils::io::touch_file (finished_file_path);
   }
-
-  if (ZRYTHM_TESTING)
-    tracklist_->validate ();
 
   auto last_action = undo_manager_->get_last_action ();
   if (is_backup)

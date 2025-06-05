@@ -846,13 +846,6 @@ public:
   virtual void clear_objects () { };
 
   /**
-   * Verifies the identifiers on a live Track (in the project, not a clone).
-   *
-   * @return True if pass.
-   */
-  virtual bool validate () const = 0;
-
-  /**
    * Adds the track's folder parents to the given vector.
    *
    * @param prepend Whether to prepend instead of append.
@@ -1300,8 +1293,6 @@ public:
 
   // GMenu * generate_edit_context_menu (int num_selected);
 
-  bool is_in_active_project () const override;
-
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
@@ -1346,8 +1337,6 @@ public:
 
 protected:
   void copy_members_from (const Track &other, ObjectCloneType clone_type);
-
-  bool validate_base () const;
 
   /**
    * @brief Set the playback caches for a track.

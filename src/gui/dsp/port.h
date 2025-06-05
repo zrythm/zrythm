@@ -83,8 +83,6 @@ public:
 
   virtual ~IPortOwner () = default;
 
-  virtual bool is_in_active_project () const = 0;
-
   /**
    * @brief Function that will be called by the Port to update the identifier's
    * relevant members based on this port owner.
@@ -187,14 +185,6 @@ public:
    * Should be called after the ports are deserialized from JSON.
    */
   void init_loaded (IPortOwner &owner) { set_owner (owner); }
-
-  /**
-   * @brief Returns whether the port is in the active project.
-   */
-  bool is_in_active_project () const
-  {
-    return (owner_ != nullptr) && owner_->is_in_active_project ();
-  }
 
   void set_owner (IPortOwner &owner);
 

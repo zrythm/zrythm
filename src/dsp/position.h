@@ -443,8 +443,6 @@ public:
     frames_ = pos.frames_;
   }
 
-  bool validate () const;
-
   /**
    * @brief Returns the closest position.
    *

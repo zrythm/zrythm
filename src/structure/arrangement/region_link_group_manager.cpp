@@ -7,20 +7,6 @@
 
 namespace zrythm::structure::arrangement
 {
-bool
-RegionLinkGroupManager::validate () const
-{
-  for (const auto &group : groups_)
-    {
-      if (!group.validate ())
-        {
-          z_return_val_if_reached (false);
-        }
-    }
-
-  return true;
-}
-
 int
 RegionLinkGroupManager::add_group ()
 {

@@ -129,8 +129,6 @@ private:
 public:
   void init_loaded (ChannelTrack * track);
 
-  bool is_in_active_project () const override;
-
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
@@ -286,8 +284,6 @@ public:
 
   bool is_audio () const { return get_signal_type () == PortType::Audio; }
   bool is_midi () const { return get_signal_type () == PortType::Event; }
-
-  bool validate ();
 
 private:
   static constexpr auto kSlotKey = "slot"sv;

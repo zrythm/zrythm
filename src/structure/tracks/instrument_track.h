@@ -51,8 +51,6 @@ public:
    */
   void toggle_plugin_visible ();
 
-  bool validate () const override;
-
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 

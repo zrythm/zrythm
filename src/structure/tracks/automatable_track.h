@@ -132,8 +132,6 @@ protected:
   void
   copy_members_from (const AutomatableTrack &other, ObjectCloneType clone_type);
 
-  bool validate_base () const;
-
   void set_playback_caches () override
   {
     get_automation_tracklist ().set_caches (CacheType::PlaybackSnapshots);

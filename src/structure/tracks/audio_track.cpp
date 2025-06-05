@@ -135,13 +135,6 @@ AudioTrack::get_regions_in_range (
   AutomatableTrack::get_regions_in_range (regions, p1, p2);
 }
 
-bool
-AudioTrack::validate () const
-{
-  return Track::validate_base () && LanedTrackImpl::validate_base ()
-         && AutomatableTrack::validate_base () && ChannelTrack::validate_base ();
-}
-
 void
 AudioTrack::set_playback_caches ()
 {

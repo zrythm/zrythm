@@ -67,11 +67,6 @@ public:
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
 
-  bool is_in_active_project () const override
-  {
-    return Track::is_in_active_project ();
-  }
-
   ScaleObject * get_scale_at (size_t index) const;
 
 /**
@@ -90,8 +85,6 @@ public:
    * in the TimelineArranger.
    */
   ScaleObject * get_scale_at_pos (Position pos) const;
-
-  bool validate () const override;
 
   void clear_objects () override;
 

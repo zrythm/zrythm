@@ -35,8 +35,6 @@ public:
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
     PortRegistry                          &port_registry) override;
 
-  bool validate () const override;
-
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 

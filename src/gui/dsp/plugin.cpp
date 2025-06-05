@@ -36,8 +36,6 @@
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
 
-#include <fmt/printf.h>
-
 using namespace zrythm;
 using namespace zrythm::gui::old_dsp::plugins;
 
@@ -139,17 +137,6 @@ Plugin::set_enabled_and_gain ()
   z_return_if_fail (enabled_ && gain_);
 }
 
-bool
-Plugin::is_in_active_project () const
-{
-  auto track_var = get_track ();
-  if (!track_var)
-    return false;
-
-  return std::visit (
-    [&] (auto &&track) { return track->is_in_active_project (); }, *track_var);
-}
-
 utils::Utf8String
 Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
@@ -189,9 +176,7 @@ Plugin::on_control_change_event (
 {
   /* if plugin enabled port, also set plugin's own enabled port value and
    * vice versa */
-  if (
-    is_in_active_project ()
-    && ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::PluginEnabled))
+  if (ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::PluginEnabled))
     {
       if (ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::GenericPluginPort))
         {
@@ -265,8 +250,6 @@ Plugin::init_loaded ()
 
   set_enabled_and_gain ();
 
-  if (is_in_active_project ())
-    {
       bool was_enabled = this->is_enabled (false);
       try
         {
@@ -283,7 +266,6 @@ Plugin::init_loaded ()
 
       activate (true);
       set_enabled (was_enabled, false);
-    }
 }
 
 void
@@ -491,19 +473,6 @@ Plugin::remove_ats_from_automation_tracklist (bool free_ats, bool fire_events)
     }
 }
 
-bool
-Plugin::validate () const
-{
-  if (is_in_active_project ())
-    {
-      /* assert instantiated and activated, or instantiation failed */
-      z_return_val_if_fail (
-        instantiation_failed_ || (instantiated_ && activated_), false);
-    }
-
-  return true;
-}
-
 auto
 Plugin::get_track () const -> std::optional<TrackPtrVariant>
 {
@@ -602,8 +571,6 @@ Plugin::get_port_in_same_group (const Port &port)
 utils::Utf8String
 Plugin::generate_window_title () const
 {
-  z_return_val_if_fail (is_in_active_project (), {});
-
   auto track_var = get_track ();
 
   return std::visit (
@@ -738,7 +705,7 @@ Plugin::set_ui_refresh_rate ()
   else
     {
       // ui_update_hz_ = (float) z_gtk_get_primary_monitor_refresh_rate ();
-      z_debug ("refresh rate returned by GDK: %.01f", (double) ui_update_hz_);
+      z_debug ("refresh rate returned by GDK: {}", ui_update_hz_);
     }
 
   /* if no preferred scale factor is set, use the monitor's scale factor */
@@ -755,7 +722,7 @@ Plugin::set_ui_refresh_rate ()
         /* set the scale factor */
         // ui_scale_factor_ = (float) z_gtk_get_primary_monitor_scale_factor ();
         z_debug (
-          "scale factor returned by GDK: %.01f", (double) ui_scale_factor_);
+          "scale factor returned by GDK: {}",  ui_scale_factor_);
       }
   }
 
@@ -763,9 +730,9 @@ Plugin::set_ui_refresh_rate ()
   if (ui_update_hz_ < MIN_REFRESH_RATE || ui_update_hz_ > MAX_REFRESH_RATE)
     {
       z_warning (
-        "Invalid refresh rate of %.01f received, "
+        "Invalid refresh rate of {} received, "
         "clamping to reasonable bounds",
-        (double) ui_update_hz_);
+        ui_update_hz_);
       ui_update_hz_ =
         std::clamp<float> (ui_update_hz_, MIN_REFRESH_RATE, MAX_REFRESH_RATE);
     }
@@ -774,9 +741,9 @@ Plugin::set_ui_refresh_rate ()
   if (ui_scale_factor_ < MIN_SCALE_FACTOR || ui_scale_factor_ > MAX_SCALE_FACTOR)
     {
       z_warning (
-        "Invalid scale factor of %.01f received, "
+        "Invalid scale factor of {} received, "
         "clamping to reasonable bounds",
-        (double) ui_scale_factor_);
+        ui_scale_factor_);
       ui_scale_factor_ = std::clamp<float> (
         ui_scale_factor_, MIN_SCALE_FACTOR, MAX_SCALE_FACTOR);
     }
@@ -925,21 +892,6 @@ Plugin::process_block (const EngineProcessTimeInfo time_nfo)
     }
 }
 
-std::string
-Plugin::print () const
-{
-  const auto track_name =
-    is_in_active_project ()
-      ? structure::tracks::TrackSpan::name_projection (*get_track ())
-      : u8"<no track>";
-  const auto track_pos =
-    is_in_active_project ()
-      ? structure::tracks::TrackSpan::position_projection (*get_track ())
-      : -1;
-  return fmt::format (
-    "{} ({}):{} - {}", track_name, track_pos, get_slot (), get_name ());
-}
-
 void
 Plugin::set_caches ()
 {
@@ -969,13 +921,11 @@ Plugin::set_caches ()
 void
 Plugin::open_ui ()
 {
-  z_return_if_fail (is_in_active_project ());
-
-  z_debug ("opening plugin UI [{}]", print ());
+  z_debug ("opening plugin UI [{}]", get_name ());
 
   if (instantiation_failed_)
     {
-      z_warning ("plugin {} instantiation failed, no UI to open", print ());
+      z_warning ("plugin {} instantiation failed, no UI to open", get_name ());
       return;
     }
 
@@ -985,7 +935,7 @@ Plugin::open_ui ()
   if (GTK_IS_WINDOW (window_))
     {
       /* present it */
-      z_debug ("presenting plugin [{}] window {}", print (), (void *) window_);
+      z_debug ("presenting plugin [{}] window {}", get_name (), (void *) window_);
       gtk_window_present (GTK_WINDOW (window_));
     }
   else
@@ -1011,8 +961,6 @@ Plugin::open_ui ()
 void
 Plugin::select (bool select, bool exclusive)
 {
-  z_return_if_fail (is_in_active_project ());
-
   if (exclusive)
     {
       MIXER_SELECTIONS->clear (true);
@@ -1117,7 +1065,7 @@ Plugin::ensure_state_dir (bool is_backup)
 void
 Plugin::copy_members_from (Plugin &other)
 {
-  z_debug ("[0/5] cloning plugin '{}'", other.print ());
+  z_debug ("[0/5] cloning plugin '{}'", other.get_name ());
 
   /* save the state of the original plugin */
   z_debug ("[1/5] saving state of source plugin (if instantiated)");
@@ -1260,7 +1208,6 @@ void
 Plugin::close_ui ()
 {
   z_return_if_fail (ZRYTHM_HAVE_UI);
-  z_return_if_fail (is_in_active_project ());
 
   if (instantiation_failed_)
     {
@@ -1528,8 +1475,6 @@ Plugin::disconnect ()
 
   deleting_ = true;
 
-  if (is_in_active_project ())
-    {
       if (visible_ && ZRYTHM_HAVE_UI)
         close_ui ();
 
@@ -1543,15 +1488,8 @@ Plugin::disconnect ()
         in_ports_.size (), out_ports_.size ());
 
       close ();
-    }
-  else
-    {
-      z_debug ("{} is not a project plugin, skipping disconnect", get_name ());
 
-      visible_ = false;
-    }
-
-  z_debug ("finished disconnecting plugin {}", get_name ());
+      z_debug ("finished disconnecting plugin {}", get_name ());
 }
 
 void

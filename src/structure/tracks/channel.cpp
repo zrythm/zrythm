@@ -142,12 +142,6 @@ Channel::set_track_ptr (ChannelTrack &track)
     }
 }
 
-bool
-Channel::is_in_active_project () const
-{
-  return track_->is_in_active_project ();
-}
-
 void
 Channel::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
   const
@@ -582,8 +576,6 @@ Channel::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
       z_warning ("unimplemented!!!!!!!!!!!!!!!!!!!!!! FIXME!!!!");
       return;
 
-      z_return_if_fail (is_in_active_project ());
-
       z_debug ("reconnecting ext inputs for {}", track_->get_name ());
 
       if constexpr (
@@ -948,8 +940,6 @@ Channel::connect_channel (
   engine::device_io::AudioEngine &engine)
 {
   auto &tr = track_;
-
-  // z_return_if_fail (tr->is_in_active_project () || tr->is_auditioner ());
 
   z_debug ("connecting channel...");
 
@@ -1350,7 +1340,6 @@ Channel::remove_plugin_from_channel (
             deleting_plugin, !deleting_plugin);
         }
 
-      if (is_in_active_project ())
         disconnect_plugin_from_strip (slot, *plugin);
 
       /* if deleting plugin disconnect the plugin entirely */
@@ -1424,10 +1413,7 @@ Channel::add_plugin (
 
       plugin->set_track (track_->get_uuid ());
 
-      if (track_->is_in_active_project ())
-        {
-          connect_plugins ();
-        }
+      connect_plugins ();
 
       track_->set_enabled (prev_enabled);
 
@@ -1830,7 +1816,7 @@ Channel::disconnect_channel ()
   }
 
   /* disconnect from output */
-  if (is_in_active_project () && has_output ())
+  if (has_output ())
     {
       auto * out_track = get_output_track ();
       z_return_if_fail (out_track);
@@ -1846,9 +1832,7 @@ Channel::disconnect_channel ()
   append_ports (ports, true);
   for (auto * port : ports)
     {
-      if (
-        !port
-        || port->is_in_active_project () != track_->is_in_active_project ())
+      if (!port)
         {
           z_error ("invalid port");
           return;

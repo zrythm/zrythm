@@ -513,9 +513,6 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   // replace_main_window (mww);
 
-  /* sanity check */
-  z_warn_if_fail (prj->validate ());
-
   engine->setup ();
 
   /* init ports */

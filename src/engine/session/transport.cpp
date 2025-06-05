@@ -951,12 +951,6 @@ Transport::recalculate_total_bars (
   update_total_bars (total_bars, true);
 }
 
-bool
-Transport::is_in_active_project () const
-{
-  return project_ == Project::get_active_instance ();
-}
-
 void
 Transport::set_port_metadata_from_owner (
   dsp::PortIdentifier &id,

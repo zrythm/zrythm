@@ -39,8 +39,6 @@ public:
    */
   void update (const Region &region);
 
-  bool validate () const;
-
 private:
   static constexpr auto kIdsKey = "ids"sv;
   friend void to_json (nlohmann::json &j, const RegionLinkGroup &group)

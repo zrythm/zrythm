@@ -1002,12 +1002,6 @@ AudioEngine::reset_bounce_mode ()
   TRACKLIST->mark_all_tracks_for_bounce (false);
 }
 
-bool
-AudioEngine::is_in_active_project () const
-{
-  return project_ == PROJECT;
-}
-
 void
 AudioEngine::set_port_metadata_from_owner (
   dsp::PortIdentifier &id,

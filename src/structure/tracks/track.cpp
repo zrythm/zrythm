@@ -259,12 +259,6 @@ Track::create_unique_from_type (Type type)
     }
 }
 
-bool
-Track::is_in_active_project () const
-{
-  return tracklist_ && tracklist_->is_in_active_project ();
-}
-
 void
 Track::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
   const
@@ -464,7 +458,7 @@ Track::disconnect_track ()
   disconnecting_ = true;
 
   /* if this is a group track and has children, remove them */
-  if (is_in_active_project () && !is_auditioner () && can_be_group_target ())
+  if (!is_auditioner () && can_be_group_target ())
     {
       auto * group_target = dynamic_cast<GroupTargetTrack *> (this);
       if (group_target)
@@ -478,16 +472,10 @@ Track::disconnect_track ()
   append_ports (ports, true);
   for (auto * port : ports)
     {
-      if (port->is_in_active_project () != is_in_active_project ())
-        {
-          z_error ("invalid port");
-          return;
-        }
-
       port->disconnect_all (*get_port_connections_manager ());
     }
 
-  if (is_in_active_project () && !is_auditioner ())
+  if (!is_auditioner ())
     {
       /* disconnect from folders */
       remove_from_folder_parents ();
@@ -570,25 +558,6 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
         }
     },
     convert_to_variant<TrackPtrVariant> (const_cast<Track *> (this)));
-}
-
-bool
-Track::validate_base () const
-{
-  std::vector<Port *> ports;
-  append_ports (ports, true);
-  return std::ranges::all_of (ports, [this] (const Port * port) {
-    const auto port_in_active_prj = port->is_in_active_project ();
-    const auto track_in_active_prj = is_in_active_project ();
-    if (port_in_active_prj != track_in_active_prj)
-      {
-        z_warning (
-          "port '{}' in active project ({}) != track '{}' in active project ({})",
-          port->get_label (), port_in_active_prj, get_name (),
-          track_in_active_prj);
-      }
-    return port_in_active_prj == track_in_active_prj;
-  });
 }
 
 void

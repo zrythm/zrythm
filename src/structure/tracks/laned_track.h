@@ -161,8 +161,6 @@ protected:
   void
   copy_members_from (const LanedTrackImpl &other, ObjectCloneType clone_type);
 
-  bool validate_base () const;
-
   void set_playback_caches () override;
 
 private:

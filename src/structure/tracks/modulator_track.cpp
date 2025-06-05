@@ -317,12 +317,6 @@ ModulatorTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
     }
 }
 
-bool
-ModulatorTrack::validate () const
-{
-  return Track::validate_base () && AutomatableTrack::validate_base ();
-}
-
 void
 from_json (const nlohmann::json &j, ModulatorTrack &track)
 {

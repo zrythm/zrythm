@@ -75,8 +75,6 @@ public:
   void init_after_cloning (const TempoTrack &other, ObjectCloneType clone_type)
     override;
 
-  bool validate () const override;
-
   /**
    * Returns the current BPM.
    */

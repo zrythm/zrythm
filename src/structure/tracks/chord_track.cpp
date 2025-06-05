@@ -158,31 +158,4 @@ ChordTrack::get_chord_at_pos (const Position pos) const -> ChordObject *
   return it != chord_objects_view.end () ? (*it) : nullptr;
 }
 
-bool
-ChordTrack::validate () const
-{
-  if (
-    !Track::validate_base () || !ChannelTrack::validate_base ()
-    || !AutomatableTrack::validate_base ())
-    return false;
-
-  bool valid = std::ranges::all_of (
-    ArrangerObjectOwner<ChordRegion>::get_children_view (),
-    [&] (const auto * region) {
-      return region->validate (
-        Track::is_in_active_project (), AUDIO_ENGINE->frames_per_tick_);
-    });
-  z_return_val_if_fail (valid, false);
-
-#if 0
-  for (size_t i = 0; i < scales_.size (); i++)
-    {
-      auto &m = scales_[i];
-      z_return_val_if_fail (
-        m->index_in_chord_track_ == static_cast<int> (i), false);
-    }
-#endif
-
-  return true;
-}
 }

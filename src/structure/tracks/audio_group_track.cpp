@@ -48,13 +48,6 @@ AudioGroupTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
   ProcessableTrack::append_member_ports (ports, include_plugins);
 }
 
-bool
-AudioGroupTrack::validate () const
-{
-  return Track::validate_base () && GroupTargetTrack::validate_base ()
-         && ChannelTrack::validate_base () && AutomatableTrack::validate_base ();
-}
-
 void
 AudioGroupTrack::init_loaded (
   gui::old_dsp::plugins::PluginRegistry &plugin_registry,

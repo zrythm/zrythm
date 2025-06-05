@@ -191,11 +191,6 @@ public:
    */
   fs::path get_path (ProjectPath path, bool backup);
 
-  /**
-   * Checks that everything is okay with the project.
-   */
-  bool validate () const;
-
   static Project * get_active_instance ();
 
   /**

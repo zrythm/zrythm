@@ -247,8 +247,6 @@ public:
    */
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  bool is_in_active_project () const override;
-
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 

@@ -171,13 +171,6 @@ TrackLaneImpl<RegionT>::is_effectively_muted () const
 
 template <typename RegionT>
 bool
-TrackLaneImpl<RegionT>::is_in_active_project () const
-{
-  return track_ != nullptr && track_->is_in_active_project ();
-}
-
-template <typename RegionT>
-bool
 TrackLaneImpl<RegionT>::is_auditioner () const
 {
   return track_ && track_->is_auditioner ();

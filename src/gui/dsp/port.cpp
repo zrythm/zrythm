@@ -34,7 +34,6 @@ Port::get_num_unlocked (
   const dsp::PortConnectionsManager &connections_manager,
   bool                               sources) const
 {
-  z_return_val_if_fail (is_in_active_project (), 0);
   return connections_manager.get_unlocked_sources_or_dests (
     nullptr, get_uuid (), sources);
 }
@@ -62,14 +61,6 @@ Port::disconnect_all (
 
   if (!connections_manager.has_value ())
     {
-      return;
-    }
-
-  if (!is_in_active_project ())
-    {
-#if 0
-      z_debug ("{} ({}) is not a project port, skipping", this->id_.label, fmt::ptr(this));
-#endif
       return;
     }
 

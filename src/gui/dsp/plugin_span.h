@@ -59,14 +59,6 @@ public:
     });
   }
 
-  bool validate () const
-  {
-    return std::ranges::all_of (*this, [&] (const auto &pl_var) {
-      return std::visit (
-        [] (const auto &pl) { return pl->validate (); }, pl_var);
-    });
-  }
-
   bool contains_uninstantiated_due_to_failure () const
   {
     return !std::ranges::all_of (*this, instantiation_failed_projection);

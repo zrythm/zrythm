@@ -769,12 +769,6 @@ SampleProcessor::find_and_queue_metronome (
     }
 }
 
-bool
-SampleProcessor::is_in_active_project () const
-{
-  return audio_engine_ && audio_engine_->is_in_active_project ();
-}
-
 SampleProcessor::~SampleProcessor ()
 {
   if (

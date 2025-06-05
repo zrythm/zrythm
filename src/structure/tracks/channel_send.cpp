@@ -52,12 +52,6 @@ ChannelSend::get_signal_type () const
   return track->get_output_signal_type ();
 }
 
-bool
-ChannelSend::is_in_active_project () const
-{
-  return get_track ()->is_in_active_project ();
-}
-
 utils::Utf8String
 ChannelSendTarget::describe () const
 {
@@ -430,7 +424,7 @@ ChannelSend::connect_stereo (
   z_return_val_if_fail (mgr, false);
 
   /* verify can be connected */
-  if (validate && l.is_in_active_project ())
+  if (validate)
     {
       const auto &src = get_stereo_out_ports ().first;
       if (!ProjectGraphBuilder::can_ports_be_connected (*PROJECT, src, l))
@@ -468,7 +462,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
   z_return_val_if_fail (mgr, false);
 
   /* verify can be connected */
-  if (validate && port.is_in_active_project ())
+  if (validate)
     {
       const auto &src = get_midi_out_port ();
       if (!ProjectGraphBuilder::can_ports_be_connected (*PROJECT, src, port))
@@ -804,35 +798,6 @@ ChannelSend *
 ChannelSend::find_in_project () const
 {
   return get_track ()->channel_->sends_[slot_].get ();
-}
-
-bool
-ChannelSend::validate ()
-{
-  auto * mgr = get_port_connections_manager ();
-  z_return_val_if_fail (mgr, false);
-
-  if (is_enabled ())
-    {
-      PortType signal_type = get_signal_type ();
-      if (signal_type == PortType::Audio)
-        {
-          int num_dests = mgr->get_sources_or_dests (
-            nullptr, stereo_out_left_id_->id (), false);
-          z_return_val_if_fail (num_dests == 1, false);
-          num_dests = mgr->get_sources_or_dests (
-            nullptr, stereo_out_right_id_->id (), false);
-          z_return_val_if_fail (num_dests == 1, false);
-        }
-      else if (signal_type == PortType::Event)
-        {
-          int num_dests =
-            mgr->get_sources_or_dests (nullptr, midi_out_id_->id (), false);
-          z_return_val_if_fail (num_dests == 1, false);
-        }
-    } /* endif channel send is enabled */
-
-  return true;
 }
 
 void

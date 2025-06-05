@@ -128,8 +128,6 @@ protected:
   void
   copy_members_from (const ChannelTrack &other, ObjectCloneType clone_type);
 
-  bool validate_base () const;
-
   /**
    * @brief Initializes the channel.
    */

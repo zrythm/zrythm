@@ -199,14 +199,6 @@ public:
   int get_num_visible () const;
 
   /**
-   * Verifies the identifiers on a live automation tracklist (in the project,
-   * not a clone).
-   *
-   * @return True if pass.
-   */
-  bool validate () const;
-
-  /**
    * Counts the total number of regions in the automation tracklist.
    */
   int get_num_regions () const;

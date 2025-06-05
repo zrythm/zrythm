@@ -98,37 +98,6 @@ AutomationTrack::set_port_id (const PortUuid &id)
   Q_EMIT labelChanged (getLabel ());
 }
 
-bool
-AutomationTrack::validate () const
-{
-  /* this is expensive so only do this during tests */
-  if (ZRYTHM_TESTING)
-    {
-      auto found_at = find_from_port_id (port_id_, !ZRYTHM_TESTING);
-      if (found_at != this)
-        {
-          z_warning (
-            "The automation track for port ID {} was not found", port_id_);
-          z_warning ("automation tracks:");
-          auto * atl = get_automation_tracklist ();
-          atl->print_ats ();
-          z_return_val_if_reached (false);
-        }
-    }
-
-  for (auto * region : get_children_view ())
-    {
-      for (const auto &ap : region->get_children_view ())
-        {
-          z_return_val_if_fail (
-            ap->get_track_id () == TrackSpan::uuid_projection (track_getter_ ()),
-            false);
-        }
-    }
-
-  return true;
-}
-
 AutomationTracklist *
 AutomationTrack::get_automation_tracklist () const
 {

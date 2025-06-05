@@ -68,10 +68,4 @@ MidiBusTrack::init_after_cloning (
   Track::copy_members_from (other, clone_type);
 }
 
-bool
-MidiBusTrack::validate () const
-{
-  return Track::validate_base () && ChannelTrack::validate_base ()
-         && AutomatableTrack::validate_base ();
-}
 }

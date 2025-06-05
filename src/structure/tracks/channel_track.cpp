@@ -153,39 +153,6 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
     }
 }
 
-bool
-ChannelTrack::validate_base () const
-{
-  z_return_val_if_fail (channel_ != nullptr, false);
-  for (auto &send : channel_->sends_)
-    {
-      z_return_val_if_fail (
-        send->track_id_ == send->get_amount_port ().id_->get_track_id (), false);
-    }
-
-  /* verify output and sends */
-  auto out_track = channel_->get_output_track ();
-  z_return_val_if_fail (
-    static_cast<Track *> (out_track) != static_cast<const Track *> (this),
-    false);
-
-  /* verify plugins */
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
-  channel_->get_plugins (plugins);
-  for (auto pl : plugins)
-    {
-      z_return_val_if_fail (pl->validate (), false);
-    }
-
-  /* verify sends */
-  for (auto &send : channel_->sends_)
-    {
-      z_return_val_if_fail (send->validate (), false);
-    }
-
-  return true;
-}
-
 Fader *
 ChannelTrack::get_fader (bool post_fader)
 {

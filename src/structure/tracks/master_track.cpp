@@ -70,10 +70,4 @@ MasterTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) con
   ProcessableTrack::append_member_ports (ports, include_plugins);
 }
 
-bool
-MasterTrack::validate () const
-{
-  return Track::validate_base () && GroupTargetTrack::validate_base ()
-         && ChannelTrack::validate_base () && AutomatableTrack::validate_base ();
-}
 }

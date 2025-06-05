@@ -1678,8 +1678,6 @@ void
 CarlaNativePlugin::open_custom_ui (bool show)
 {
 #if HAVE_CARLA
-  z_return_if_fail (is_in_active_project ());
-
   z_debug ("show/hide '{} ({})' UI: {}", get_name (), fmt::ptr (this), show);
 
   if (
@@ -1934,7 +1932,7 @@ CarlaNativePlugin::load_state (std::optional<fs::path> abs_path)
       carla_load_plugin_state (host_handle_, 1, state_file);
     }
   loading_state_ = false;
-  if (visible_ && is_in_active_project ())
+  if (visible_)
     {
       // EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, this);
     }

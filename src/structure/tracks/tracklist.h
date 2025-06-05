@@ -102,12 +102,7 @@ public:
 
   auto get_track_span () const { return TrackSpan{ tracks_ }; }
 
-  bool is_in_active_project () const;
-
-  bool is_auditioner () const
-  {
-    return sample_processor_ && is_in_active_project ();
-  }
+  bool is_auditioner () const { return sample_processor_; }
 
   void init_after_cloning (const Tracklist &other, ObjectCloneType clone_type)
     override;
@@ -200,8 +195,6 @@ public:
     bool      pinned,
     int       publish_events,
     int       recalc_graph);
-
-  bool validate () const;
 
   ChordTrack * get_chord_track () const;
 

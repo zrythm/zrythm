@@ -49,14 +49,6 @@ InstrumentTrack::initialize ()
   return true;
 }
 
-bool
-InstrumentTrack::validate () const
-{
-  return Track::validate_base () && ChannelTrack::validate_base ()
-         && AutomatableTrack::validate_base () && LanedTrackImpl::validate_base ()
-         && GroupTargetTrack::validate_base ();
-}
-
 InstrumentTrack::Plugin *
 InstrumentTrack::get_instrument ()
 {

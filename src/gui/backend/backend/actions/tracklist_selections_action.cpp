@@ -876,11 +876,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
   save_or_load_port_connections (_do);
 
   TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
-  TRACKLIST->validate ();
 
   ROUTER->recalc_graph (false);
-
-  TRACKLIST->validate ();
 }
 
 void
@@ -1284,7 +1281,6 @@ TracklistSelectionsAction::
   save_or_load_port_connections (_do);
 
   TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
-  TRACKLIST->validate ();
 
   ROUTER->recalc_graph (false);
 }

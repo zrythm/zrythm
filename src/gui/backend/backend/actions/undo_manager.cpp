@@ -57,9 +57,6 @@ UndoManager::do_or_undo_action (
   /* push action to the redo stack */
   z_return_if_fail (action);
   opposite_stack.push (action);
-
-  if (ZRYTHM_TESTING)
-    PROJECT->validate ();
 }
 
 void

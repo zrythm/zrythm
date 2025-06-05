@@ -106,24 +106,6 @@ LanedTrackImpl<TrackLaneT>::add_lane ()
 }
 
 template <typename TrackLaneT>
-bool
-LanedTrackImpl<TrackLaneT>::validate_base () const
-{
-  /* verify regions */
-  for (const auto &lane_var : lanes_)
-    {
-      auto lane = std::get<TrackLaneT *> (lane_var);
-      for (auto * region : lane->get_children_view ())
-        {
-          region->validate (
-            is_in_active_project (), AUDIO_ENGINE->frames_per_tick_);
-        }
-    }
-
-  return true;
-}
-
-template <typename TrackLaneT>
 void
 LanedTrackImpl<TrackLaneT>::set_playback_caches ()
 {

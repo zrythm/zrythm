@@ -1073,8 +1073,6 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                       /* remember link groups */
                       own_orig_obj->set_link_group (link_group, true);
                       own_obj->set_link_group (link_group, true);
-
-                      REGION_LINK_GROUP_MANAGER.validate ();
                     }
                   else /* else if we are not linking */
                     {
@@ -1183,8 +1181,6 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                 }
 
             } /* endif undo */
-
-          REGION_LINK_GROUP_MANAGER.validate ();
         },
         own_obj_var);
     }
@@ -1209,12 +1205,6 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
             }
         }
     }
-
-  /* validate */
-  P_MARKER_TRACK->validate ();
-  P_CHORD_TRACK->validate ();
-  REGION_LINK_GROUP_MANAGER.validate ();
-  CLIP_EDITOR->get_region ();
 
   if (do_it)
     {
@@ -1341,10 +1331,6 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
     {
       /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel); */
     }
-
-  P_MARKER_TRACK->validate ();
-  P_CHORD_TRACK->validate ();
-  REGION_LINK_GROUP_MANAGER.validate ();
 
   first_run_ = false;
 
