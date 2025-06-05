@@ -250,22 +250,22 @@ Plugin::init_loaded ()
 
   set_enabled_and_gain ();
 
-      bool was_enabled = this->is_enabled (false);
-      try
-        {
-          instantiate ();
-        }
-      catch (const ZrythmException &err)
-        {
-          /* disable plugin, instantiation failed */
-          instantiation_failed_ = true;
-          throw ZrythmException (format_qstr (
-            QObject::tr ("Instantiation failed for plugin '{}'. Disabling..."),
-            get_name ()));
-        }
+  bool was_enabled = this->is_enabled (false);
+  try
+    {
+      instantiate ();
+    }
+  catch (const ZrythmException &err)
+    {
+      /* disable plugin, instantiation failed */
+      instantiation_failed_ = true;
+      throw ZrythmException (format_qstr (
+        QObject::tr ("Instantiation failed for plugin '{}'. Disabling..."),
+        get_name ()));
+    }
 
-      activate (true);
-      set_enabled (was_enabled, false);
+  activate (true);
+  set_enabled (was_enabled, false);
 }
 
 void
@@ -1475,21 +1475,21 @@ Plugin::disconnect ()
 
   deleting_ = true;
 
-      if (visible_ && ZRYTHM_HAVE_UI)
-        close_ui ();
+  if (visible_ && ZRYTHM_HAVE_UI)
+    close_ui ();
 
-      /* disconnect all ports */
-      for (auto port : get_input_port_span ().as_base_type ())
-        port->disconnect_all (*PORT_CONNECTIONS_MGR);
-      for (auto port : get_output_port_span ().as_base_type ())
-        port->disconnect_all (*PORT_CONNECTIONS_MGR);
-      z_debug (
-        "disconnected all ports of {} in ports: {} out ports: {}", get_name (),
-        in_ports_.size (), out_ports_.size ());
+  /* disconnect all ports */
+  for (auto port : get_input_port_span ().as_base_type ())
+    port->disconnect_all (*PORT_CONNECTIONS_MGR);
+  for (auto port : get_output_port_span ().as_base_type ())
+    port->disconnect_all (*PORT_CONNECTIONS_MGR);
+  z_debug (
+    "disconnected all ports of {} in ports: {} out ports: {}", get_name (),
+    in_ports_.size (), out_ports_.size ());
 
-      close ();
+  close ();
 
-      z_debug ("finished disconnecting plugin {}", get_name ());
+  z_debug ("finished disconnecting plugin {}", get_name ());
 }
 
 void

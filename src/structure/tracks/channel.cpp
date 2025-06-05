@@ -1340,7 +1340,7 @@ Channel::remove_plugin_from_channel (
             deleting_plugin, !deleting_plugin);
         }
 
-        disconnect_plugin_from_strip (slot, *plugin);
+      disconnect_plugin_from_strip (slot, *plugin);
 
       /* if deleting plugin disconnect the plugin entirely */
       if (deleting_plugin)

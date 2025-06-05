@@ -49,18 +49,18 @@ AutomatableTrack::init_loaded (
   auto this_id = get_uuid ();
   for (auto &port : ports)
     {
-          z_return_if_fail (port->id_->get_track_id ().value () == this_id);
+      z_return_if_fail (port->id_->get_track_id ().value () == this_id);
 
-          /* set automation tracks on ports */
-          if (ENUM_BITSET_TEST (
-                port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
-            {
-              auto *            ctrl = dynamic_cast<ControlPort *> (port);
-              AutomationTrack * at =
-                AutomationTrack::find_from_port (*ctrl, this, true);
-              z_return_if_fail (at);
-              ctrl->at_ = at;
-            }
+      /* set automation tracks on ports */
+      if (ENUM_BITSET_TEST (
+            port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
+        {
+          auto *            ctrl = dynamic_cast<ControlPort *> (port);
+          AutomationTrack * at =
+            AutomationTrack::find_from_port (*ctrl, this, true);
+          z_return_if_fail (at);
+          ctrl->at_ = at;
+        }
     }
 }
 
