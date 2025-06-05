@@ -194,5 +194,4 @@ add_subdirectory(soxr EXCLUDE_FROM_ALL)
 add_library(zrythm::soxr ALIAS soxr)
 
 add_subdirectory(weakjack)
-add_subdirectory(whereami)
 add_subdirectory(zita-resampler)
