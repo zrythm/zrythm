@@ -13,7 +13,7 @@ namespace zrythm::engine::session
 /**
  * A mapping from a MIDI CC value to a destination ControlPort.
  */
-class MidiMapping final : public QObject, public ICloneable<MidiMapping>
+class MidiMapping final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -24,8 +24,10 @@ public:
   MidiMapping (QObject * parent = nullptr);
 
 public:
-  void init_after_cloning (const MidiMapping &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiMapping           &obj,
+    const MidiMapping     &other,
+    utils::ObjectCloneType clone_type);
 
   void set_enabled (bool enabled) { enabled_.store (enabled); }
 
@@ -82,7 +84,7 @@ public:
 /**
  * All MIDI mappings in Zrythm.
  */
-class MidiMappings final : public ICloneable<MidiMappings>
+class MidiMappings final
 {
 public:
   void init_loaded ();
@@ -155,11 +157,13 @@ public:
   int
   get_for_port (const Port &dest_port, std::vector<MidiMapping *> * arr) const;
 
-  void
-  init_after_cloning (const MidiMappings &other, ObjectCloneType clone_type)
-    override
+  friend void init_from (
+    MidiMappings          &obj,
+    const MidiMappings    &other,
+    utils::ObjectCloneType clone_type)
+
   {
-    clone_unique_ptr_container (mappings_, other.mappings_);
+    utils::clone_unique_ptr_container (obj.mappings_, other.mappings_);
   }
 
 private:

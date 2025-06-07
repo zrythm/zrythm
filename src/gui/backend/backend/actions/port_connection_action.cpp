@@ -8,7 +8,8 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/port.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 PortConnectionAction::PortConnectionAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::PortConnection)
@@ -16,17 +17,20 @@ PortConnectionAction::PortConnectionAction (QObject * parent)
 }
 
 void
-PortConnectionAction::init_after_cloning (
+init_from (
+  PortConnectionAction       &obj,
   const PortConnectionAction &other,
-  ObjectCloneType             clone_type)
+  utils::ObjectCloneType      clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  type_ = other.type_;
-  if (other.connection_ != nullptr)
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.type_ = other.type_;
+  if (other.connection_)
     {
-      connection_.reset (other.connection_->clone_qobject (this));
+      obj.connection_.reset (utils::clone_qobject (*other.connection_, &obj));
     }
-  val_ = other.val_;
+  obj.val_ = other.val_;
 }
 
 PortConnectionAction::PortConnectionAction (
@@ -39,7 +43,7 @@ PortConnectionAction::PortConnectionAction (
   auto * const conn = PORT_CONNECTIONS_MGR->get_connection (src_id, dest_id);
   if (conn != nullptr)
     {
-      connection_.reset (conn->clone_qobject (this));
+      connection_.reset (utils::clone_qobject (*conn, this));
     }
   else
     connection_.reset (
@@ -144,4 +148,5 @@ PortConnectionAction::to_string () const
       z_warn_if_reached ();
       return {};
     }
+}
 }

@@ -11,10 +11,7 @@
 namespace zrythm::gui::actions
 {
 
-class PortConnectionAction
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<PortConnectionAction>
+class PortConnectionAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -46,9 +43,10 @@ public:
 
   QString to_string () const override;
 
-  void init_after_cloning (
+  friend void init_from (
+    PortConnectionAction       &obj,
     const PortConnectionAction &other,
-    ObjectCloneType             clone_type) override;
+    utils::ObjectCloneType      clone_type);
 
 private:
   void init_loaded_impl () override { }
@@ -60,7 +58,7 @@ private:
 public:
   Type type_ = Type ();
 
-  QScopedPointer<dsp::PortConnection> connection_;
+  utils::QObjectUniquePtr<dsp::PortConnection> connection_;
 
   /**
    * Value before/after the change.

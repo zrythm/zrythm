@@ -73,12 +73,18 @@ public:
    */
   std::vector<VariantType> create_snapshots (QObject &owner) const
   {
+    // TODO
+    return {};
+#if 0
     return std::ranges::to<std::vector> (
       *this | std::views::transform ([&] (const auto &plugin_var) {
         return std::visit (
-          [&] (auto &&pl) -> VariantType { return pl->clone_qobject (&owner); },
+          [&] (auto &&pl) -> VariantType {
+            return utils::clone_qobject (*pl, &owner);
+          },
           plugin_var);
       }));
+#endif
   }
 
   /**

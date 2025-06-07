@@ -17,7 +17,6 @@ class AudioGroupTrack final
     : public QObject,
       public FoldableTrack,
       public GroupTargetTrack,
-      public ICloneable<AudioGroupTrack>,
       public utils::InitializableObject<AudioGroupTrack>
 {
   Q_OBJECT
@@ -30,9 +29,10 @@ class AudioGroupTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (AudioGroupTrack)
 
 public:
-  void
-  init_after_cloning (const AudioGroupTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioGroupTrack       &obj,
+    const AudioGroupTrack &other,
+    utils::ObjectCloneType clone_type);
 
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)

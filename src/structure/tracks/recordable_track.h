@@ -102,11 +102,13 @@ public:
   }
 
 protected:
-  void
-  copy_members_from (const RecordableTrack &other, ObjectCloneType clone_type)
+  friend void init_from (
+    RecordableTrack       &obj,
+    const RecordableTrack &other,
+    utils::ObjectCloneType clone_type)
   {
-    recording_id_ = other.recording_id_;
-    record_set_automatically_ = other.record_set_automatically_;
+    obj.recording_id_ = other.recording_id_;
+    obj.record_set_automatically_ = other.record_set_automatically_;
   }
 
   void

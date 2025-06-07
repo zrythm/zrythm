@@ -35,7 +35,7 @@ class MarkerTrack;
  * Tracklist should be concerned with Tracks in the arranger, and the Mixer
  * should be concerned with Channels, routing and Port connections.
  */
-class Tracklist final : public QAbstractListModel, public ICloneable<Tracklist>
+class Tracklist final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
@@ -104,8 +104,10 @@ public:
 
   bool is_auditioner () const { return sample_processor_; }
 
-  void init_after_cloning (const Tracklist &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    Tracklist             &obj,
+    const Tracklist       &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Initializes the tracklist when loading a project.

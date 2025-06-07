@@ -7,14 +7,15 @@
 namespace zrythm::structure::arrangement
 {
 void
-FadeableObject::copy_members_from (
-  const FadeableObject &other,
-  ObjectCloneType       clone_type)
+init_from (
+  FadeableObject        &obj,
+  const FadeableObject  &other,
+  utils::ObjectCloneType clone_type)
 {
-  fade_in_pos_ = other.fade_in_pos_;
-  fade_out_pos_ = other.fade_out_pos_;
-  fade_in_opts_ = other.fade_in_opts_;
-  fade_out_opts_ = other.fade_out_opts_;
+  obj.fade_in_pos_ = other.fade_in_pos_;
+  obj.fade_out_pos_ = other.fade_out_pos_;
+  obj.fade_in_opts_ = other.fade_in_opts_;
+  obj.fade_out_opts_ = other.fade_out_opts_;
 }
 
 bool

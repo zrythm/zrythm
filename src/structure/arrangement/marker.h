@@ -14,11 +14,7 @@ namespace zrythm::structure::arrangement
 /**
  * Marker for the MarkerTrack.
  */
-class Marker final
-    : public QObject,
-      public TimelineObject,
-      public NamedObject,
-      public ICloneable<Marker>
+class Marker final : public QObject, public TimelineObject, public NamedObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -53,8 +49,8 @@ public:
     return marker_type_ != Type::Start && marker_type_ != Type::End;
   }
 
-  void
-  init_after_cloning (const Marker &other, ObjectCloneType clone_type) override;
+  friend void
+  init_from (Marker &obj, const Marker &other, utils::ObjectCloneType clone_type);
 
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;

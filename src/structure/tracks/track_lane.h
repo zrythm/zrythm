@@ -251,8 +251,22 @@ public:
   }
 
 protected:
-  void
-  copy_members_from (const TrackLaneImpl &other, ObjectCloneType clone_type);
+  friend void init_from (
+    TrackLaneImpl         &obj,
+    const TrackLaneImpl   &other,
+    utils::ObjectCloneType clone_type)
+  {
+    obj.name_ = other.name_;
+    // y_ = other.y_;
+    obj.height_ = other.height_;
+    obj.mute_ = other.mute_;
+    obj.solo_ = other.solo_;
+    for (auto * region : obj.get_children_view ())
+      {
+        // region->is_auditioner_ = is_auditioner ();
+        region->set_lane (dynamic_cast<TrackLaneT *> (&obj));
+      }
+  }
 
 private:
   static constexpr std::string_view kNameKey = "name";

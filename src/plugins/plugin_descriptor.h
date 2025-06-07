@@ -107,7 +107,7 @@ enum class BridgeMode : std::uint_fast8_t
  * metadata, such as its author, name, website, category, port counts,
  * architecture, protocol, and unique ID (for VST plugins).
  */
-class PluginDescriptor final : public QObject, public ICloneable<PluginDescriptor>
+class PluginDescriptor final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -154,9 +154,10 @@ public:
   [[nodiscard]] QString getName () const { return name_.to_qstring (); }
   QString               getFormat () const;
 
-  void
-  init_after_cloning (const PluginDescriptor &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    PluginDescriptor       &obj,
+    const PluginDescriptor &other,
+    utils::ObjectCloneType  clone_type);
 
 private:
   static constexpr auto kAuthorKey = "author"sv;

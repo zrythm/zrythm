@@ -12,7 +12,6 @@ namespace zrythm::structure::tracks
 class AudioBusTrack final
     : public QObject,
       public ChannelTrack,
-      public ICloneable<AudioBusTrack>,
       public utils::InitializableObject<AudioBusTrack>
 {
 public:
@@ -27,9 +26,10 @@ public:
   DECLARE_FINAL_TRACK_CONSTRUCTORS (AudioBusTrack)
 
 public:
-  void
-  init_after_cloning (const AudioBusTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioBusTrack         &obj,
+    const AudioBusTrack   &other,
+    utils::ObjectCloneType clone_type);
 
   void init_loaded (
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,

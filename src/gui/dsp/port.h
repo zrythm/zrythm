@@ -18,8 +18,6 @@ namespace zrythm::dsp
 class PortConnectionsManager;
 }
 
-constexpr int TIME_TO_RESET_PEAK = 4800000;
-
 template <typename T>
 concept FinalPortSubclass = std::derived_from<T, Port> && FinalClass<T>;
 
@@ -296,7 +294,8 @@ protected:
     float             maxf = 1.f,
     float             zerof = 0.f);
 
-  void copy_members_from (const Port &other, ObjectCloneType clone_type);
+  friend void
+  init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type);
 
   int get_num_unlocked (
     const dsp::PortConnectionsManager &connections_manager,

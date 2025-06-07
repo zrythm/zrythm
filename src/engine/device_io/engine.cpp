@@ -70,7 +70,7 @@ AudioEngine::AudioEngine (
           return project->get_path (ProjectPath::POOL, backup);
         },
         [this] () { return get_sample_rate (); })),
-      port_connections_manager_ (project->port_connections_manager_.get ()),
+      port_connections_manager_ (project->port_connections_manager_),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
       audio_callback_ (
         std::make_unique<AudioCallback> ([this] (nframes_t frames_to_process) {
@@ -103,25 +103,27 @@ AudioEngine::AudioEngine (
 }
 
 void
-AudioEngine::init_after_cloning (
-  const AudioEngine &other,
-  ObjectCloneType    clone_type)
+init_from (
+  AudioEngine           &obj,
+  const AudioEngine     &other,
+  utils::ObjectCloneType clone_type)
 {
-  frames_per_tick_ = other.frames_per_tick_;
-  monitor_out_left_ = other.monitor_out_left_;
-  monitor_out_right_ = other.monitor_out_right_;
-  midi_editor_manual_press_ = other.midi_editor_manual_press_->clone_unique ();
-  midi_in_ = other.midi_in_->clone_unique ();
-  pool_ = other.pool_->clone_unique (
-    clone_type,
-    [this] (bool backup) {
-      return project_->get_path (ProjectPath::POOL, backup);
+  obj.frames_per_tick_ = other.frames_per_tick_;
+  obj.monitor_out_left_ = other.monitor_out_left_;
+  obj.monitor_out_right_ = other.monitor_out_right_;
+  obj.midi_editor_manual_press_ =
+    utils::clone_unique (*other.midi_editor_manual_press_);
+  obj.midi_in_ = utils::clone_unique (*other.midi_in_);
+  obj.pool_ = utils::clone_unique (
+    *other.pool_, clone_type,
+    [&obj] (bool backup) {
+      return obj.project_->get_path (ProjectPath::POOL, backup);
     },
-    [this] () { return get_sample_rate (); });
-  control_room_ = other.control_room_->clone_unique ();
-  sample_processor_ = other.sample_processor_->clone_unique ();
-  sample_processor_->audio_engine_ = this;
-  midi_clock_out_ = other.midi_clock_out_->clone_unique ();
+    [&obj] () { return obj.get_sample_rate (); });
+  obj.control_room_ = utils::clone_unique (*other.control_room_);
+  obj.sample_processor_ = utils::clone_unique (*other.sample_processor_);
+  obj.sample_processor_->audio_engine_ = &obj;
+  obj.midi_clock_out_ = utils::clone_unique (*other.midi_clock_out_);
 }
 
 std::pair<AudioPort &, AudioPort &>

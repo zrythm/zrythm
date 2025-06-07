@@ -9,11 +9,12 @@
 namespace zrythm::structure::arrangement
 {
 void
-MuteableObject::copy_members_from (
-  const MuteableObject &other,
-  ObjectCloneType       clone_type)
+init_from (
+  MuteableObject        &obj,
+  const MuteableObject  &other,
+  utils::ObjectCloneType clone_type)
 {
-  muted_ = other.muted_;
+  obj.muted_ = other.muted_;
 }
 
 void

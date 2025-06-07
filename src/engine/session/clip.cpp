@@ -116,16 +116,21 @@ AudioClip::init_loaded (const fs::path &full_path)
 }
 
 void
-AudioClip::init_after_cloning (const AudioClip &other, ObjectCloneType clone_type)
+init_from (
+  AudioClip             &obj,
+  const AudioClip       &other,
+  utils::ObjectCloneType clone_type)
 {
-  UuidIdentifiableObject::copy_members_from (other);
-  name_ = other.name_;
-  ch_frames_ = other.ch_frames_;
-  bpm_ = other.bpm_;
-  samplerate_ = other.samplerate_;
-  bit_depth_ = other.bit_depth_;
-  use_flac_ = other.use_flac_;
-  file_hash_ = other.file_hash_;
+  init_from (
+    static_cast<AudioClip::UuidIdentifiableObject &> (obj),
+    static_cast<const AudioClip::UuidIdentifiableObject &> (other), clone_type);
+  obj.name_ = other.name_;
+  obj.ch_frames_ = other.ch_frames_;
+  obj.bpm_ = other.bpm_;
+  obj.samplerate_ = other.samplerate_;
+  obj.bit_depth_ = other.bit_depth_;
+  obj.use_flac_ = other.use_flac_;
+  obj.file_hash_ = other.file_hash_;
 }
 
 void

@@ -162,26 +162,28 @@ Track::create_track (Track::Type type, const utils::Utf8String &name, int pos)
 }
 
 void
-Track::copy_members_from (const Track &other, ObjectCloneType clone_type)
+init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
 {
-  UuidIdentifiableObject::copy_members_from (other);
-  pos_ = other.pos_;
-  type_ = other.type_;
-  name_ = other.name_;
-  icon_name_ = other.icon_name_;
-  visible_ = other.visible_;
-  filtered_ = other.filtered_;
-  main_height_ = other.main_height_;
-  enabled_ = other.enabled_;
-  color_ = other.color_;
-  trigger_midi_activity_ = other.trigger_midi_activity_;
-  in_signal_type_ = other.in_signal_type_;
-  out_signal_type_ = other.out_signal_type_;
-  comment_ = other.comment_;
-  bounce_ = other.bounce_;
-  bounce_to_master_ = other.bounce_to_master_;
-  frozen_clip_id_ = other.frozen_clip_id_;
-  disconnecting_ = other.disconnecting_;
+  init_from (
+    static_cast<Track::UuidIdentifiableObject &> (obj),
+    static_cast<const Track::UuidIdentifiableObject &> (other), clone_type);
+  obj.pos_ = other.pos_;
+  obj.type_ = other.type_;
+  obj.name_ = other.name_;
+  obj.icon_name_ = other.icon_name_;
+  obj.visible_ = other.visible_;
+  obj.filtered_ = other.filtered_;
+  obj.main_height_ = other.main_height_;
+  obj.enabled_ = other.enabled_;
+  obj.color_ = other.color_;
+  obj.trigger_midi_activity_ = other.trigger_midi_activity_;
+  obj.in_signal_type_ = other.in_signal_type_;
+  obj.out_signal_type_ = other.out_signal_type_;
+  obj.comment_ = other.comment_;
+  obj.bounce_ = other.bounce_;
+  obj.bounce_to_master_ = other.bounce_to_master_;
+  obj.frozen_clip_id_ = other.frozen_clip_id_;
+  obj.disconnecting_ = other.disconnecting_;
 }
 
 TrackUniquePtrVariant

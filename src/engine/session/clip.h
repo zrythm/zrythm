@@ -20,8 +20,7 @@ using namespace zrythm;
  * These should be loaded in the project's sample rate.
  */
 class AudioClip final
-    : public ICloneable<AudioClip>,
-      public utils::UuidIdentifiableObject<AudioClip>,
+    : public utils::UuidIdentifiableObject<AudioClip>,
       private utils::QElapsedTimeProvider
 {
 public:
@@ -110,8 +109,10 @@ public:
 #endif
   }
 
-  void init_after_cloning (const AudioClip &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioClip             &obj,
+    const AudioClip       &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Inits after loading a Project.

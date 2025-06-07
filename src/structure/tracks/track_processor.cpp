@@ -409,38 +409,40 @@ TrackProcessor::are_events_on_midi_channel_approved (midi_byte_t channel) const
 }
 
 void
-TrackProcessor::init_after_cloning (
-  const TrackProcessor &other,
-  ObjectCloneType       clone_type)
+init_from (
+  TrackProcessor        &obj,
+  const TrackProcessor  &other,
+  utils::ObjectCloneType clone_type)
 {
-  stereo_in_left_id_ = other.stereo_in_left_id_;
-  stereo_in_right_id_ = other.stereo_in_right_id_;
-  mono_id_ = other.mono_id_;
-  input_gain_id_ = other.input_gain_id_;
-  output_gain_id_ = other.output_gain_id_;
-  stereo_out_left_id_ = other.stereo_out_left_id_;
-  stereo_out_right_id_ = other.stereo_out_right_id_;
-  midi_in_id_ = other.midi_in_id_;
-  midi_out_id_ = other.midi_out_id_;
-  piano_roll_id_ = other.piano_roll_id_;
-  monitor_audio_id_ = other.monitor_audio_id_;
+  obj.stereo_in_left_id_ = other.stereo_in_left_id_;
+  obj.stereo_in_right_id_ = other.stereo_in_right_id_;
+  obj.mono_id_ = other.mono_id_;
+  obj.input_gain_id_ = other.input_gain_id_;
+  obj.output_gain_id_ = other.output_gain_id_;
+  obj.stereo_out_left_id_ = other.stereo_out_left_id_;
+  obj.stereo_out_right_id_ = other.stereo_out_right_id_;
+  obj.midi_in_id_ = other.midi_in_id_;
+  obj.midi_out_id_ = other.midi_out_id_;
+  obj.piano_roll_id_ = other.piano_roll_id_;
+  obj.monitor_audio_id_ = other.monitor_audio_id_;
   if (other.cc_mappings_)
-    cc_mappings_ = other.cc_mappings_->clone_unique ();
+    obj.cc_mappings_ = utils::clone_unique (*other.cc_mappings_);
 
-  midi_cc_ids_ = std::make_unique<decltype (midi_cc_ids_)::element_type> ();
-  pitch_bend_ids_ =
-    std::make_unique<decltype (pitch_bend_ids_)::element_type> ();
-  poly_key_pressure_ids_ =
-    std::make_unique<decltype (poly_key_pressure_ids_)::element_type> ();
-  channel_pressure_ids_ =
-    std::make_unique<decltype (channel_pressure_ids_)::element_type> ();
+  obj.midi_cc_ids_ =
+    std::make_unique<decltype (obj.midi_cc_ids_)::element_type> ();
+  obj.pitch_bend_ids_ =
+    std::make_unique<decltype (obj.pitch_bend_ids_)::element_type> ();
+  obj.poly_key_pressure_ids_ =
+    std::make_unique<decltype (obj.poly_key_pressure_ids_)::element_type> ();
+  obj.channel_pressure_ids_ =
+    std::make_unique<decltype (obj.channel_pressure_ids_)::element_type> ();
 
-  *midi_cc_ids_ = *other.midi_cc_ids_;
-  *pitch_bend_ids_ = *other.pitch_bend_ids_;
-  *poly_key_pressure_ids_ = *other.poly_key_pressure_ids_;
-  *channel_pressure_ids_ = *other.channel_pressure_ids_;
+  *obj.midi_cc_ids_ = *other.midi_cc_ids_;
+  *obj.pitch_bend_ids_ = *other.pitch_bend_ids_;
+  *obj.poly_key_pressure_ids_ = *other.poly_key_pressure_ids_;
+  *obj.channel_pressure_ids_ = *other.channel_pressure_ids_;
 
-  init_common ();
+  obj.init_common ();
 }
 
 void

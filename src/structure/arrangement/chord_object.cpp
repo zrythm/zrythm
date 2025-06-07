@@ -22,14 +22,21 @@ ChordObject::ChordObject (
   ArrangerObject::set_parent_on_base_qproperties (*this);
 }
 void
-ChordObject::init_after_cloning (
-  const ChordObject &other,
-  ObjectCloneType    clone_type)
+init_from (
+  ChordObject           &obj,
+  const ChordObject     &other,
+  utils::ObjectCloneType clone_type)
 {
-  MuteableObject::copy_members_from (other, clone_type);
-  RegionOwnedObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
-  chord_index_ = other.chord_index_;
+  init_from (
+    static_cast<MuteableObject &> (obj),
+    static_cast<const MuteableObject &> (other), clone_type);
+  init_from (
+    static_cast<RegionOwnedObject &> (obj),
+    static_cast<const RegionOwnedObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
+  obj.chord_index_ = other.chord_index_;
 }
 
 /**

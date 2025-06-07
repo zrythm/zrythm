@@ -518,8 +518,7 @@ Exporter::prepare_tracks_for_export (
           auto l_conn =
             PORT_CONNECTIONS_MGR->get_connection (l_src_id, l_dest_id);
           z_return_if_fail (l_conn);
-          connections_->push_back (l_conn->clone_raw_ptr ());
-          connections_->back ()->setParent (this);
+          connections_->push_back (utils::clone_qobject (*l_conn, this));
           PORT_CONNECTIONS_MGR->remove_connection (l_src_id, l_dest_id);
 
           const auto &r_src_id =
@@ -529,8 +528,7 @@ Exporter::prepare_tracks_for_export (
           auto r_conn =
             PORT_CONNECTIONS_MGR->get_connection (r_src_id, r_dest_id);
           z_return_if_fail (r_conn);
-          connections_->push_back (r_conn->clone_raw_ptr ());
-          connections_->back ()->setParent (this);
+          connections_->push_back (utils::clone_qobject (*r_conn, this));
           PORT_CONNECTIONS_MGR->remove_connection (r_src_id, r_dest_id);
         }
 

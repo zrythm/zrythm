@@ -16,8 +16,7 @@ namespace zrythm::structure::arrangement
 class AutomationRegion final
     : public QObject,
       public RegionImpl<AutomationRegion>,
-      public ArrangerObjectOwner<AutomationPoint>,
-      public ICloneable<AutomationRegion>
+      public ArrangerObjectOwner<AutomationPoint>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -103,9 +102,10 @@ public:
     return "automationPoints";
   }
 
-  void
-  init_after_cloning (const AutomationRegion &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AutomationRegion       &obj,
+    const AutomationRegion &other,
+    utils::ObjectCloneType  clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const AutomationRegion &ar)

@@ -87,10 +87,10 @@ Port::change_track (IPortOwner::TrackUuid new_track_id)
 }
 
 void
-Port::copy_members_from (const Port &other, ObjectCloneType clone_type)
+init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type)
 {
-  id_ = other.id_->clone_unique ();
-  range_ = other.range_;
+  obj.id_ = utils::clone_unique (*other.id_);
+  obj.range_ = other.range_;
 }
 
 void

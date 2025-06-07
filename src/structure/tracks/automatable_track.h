@@ -129,8 +129,10 @@ public:
   void generate_automation_tracks_for_plugin (const Plugin::Uuid &plugin_id);
 
 protected:
-  void
-  copy_members_from (const AutomatableTrack &other, ObjectCloneType clone_type);
+  friend void init_from (
+    AutomatableTrack       &obj,
+    const AutomatableTrack &other,
+    utils::ObjectCloneType  clone_type);
 
   void set_playback_caches () override
   {

@@ -31,8 +31,7 @@ Q_DECLARE_OPAQUE_POINTER (const zrythm::structure::tracks::TempoTrack *)
 class PositionProxy
     : public QObject,
       public IRealtimeProperty,
-      public zrythm::dsp::Position,
-      public ICloneable<PositionProxy>
+      public zrythm::dsp::Position
 {
   Q_OBJECT
   QML_ELEMENT
@@ -123,9 +122,10 @@ public:
 
   bool processUpdates () override;
 
-  void
-  init_after_cloning (const PositionProxy &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    PositionProxy         &obj,
+    const PositionProxy   &other,
+    utils::ObjectCloneType clone_type);
 
   friend auto operator<=> (const PositionProxy &lhs, const PositionProxy &rhs)
   {

@@ -19,7 +19,8 @@
 
 #include <fmt/format.h>
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 UndoableAction::UndoableAction (
   Type               type,
@@ -81,19 +82,22 @@ UndoableAction::init_loaded (sample_rate_t engine_sample_rate)
 }
 
 void
-UndoableAction::copy_members_from (
-  const UndoableAction &other,
-  ObjectCloneType       clone_type)
+init_from (
+  UndoableAction        &obj,
+  const UndoableAction  &other,
+  utils::ObjectCloneType clone_type)
 {
-  undoable_action_type_ = other.undoable_action_type_;
-  frames_per_tick_ = other.frames_per_tick_;
-  sample_rate_ = other.sample_rate_;
+  obj.undoable_action_type_ = other.undoable_action_type_;
+  obj.frames_per_tick_ = other.frames_per_tick_;
+  obj.sample_rate_ = other.sample_rate_;
   // stack_idx_ = other.stack_idx_;
-  num_actions_ = other.num_actions_;
+  obj.num_actions_ = other.num_actions_;
   if (other.port_connections_before_)
-    port_connections_before_ = other.port_connections_before_->clone_unique ();
+    obj.port_connections_before_ =
+      utils::clone_unique (*other.port_connections_before_);
   if (other.port_connections_after_)
-    port_connections_after_ = other.port_connections_after_->clone_unique ();
+    obj.port_connections_after_ =
+      utils::clone_unique (*other.port_connections_after_);
 }
 
 void
@@ -171,7 +175,7 @@ UndoableAction::save_or_load_port_connections (bool performing)
     && port_connections_after_ == nullptr)
     {
       z_debug ("updating and caching port connections after doing action");
-      port_connections_after_ = PORT_CONNECTIONS_MGR->clone_unique ();
+      port_connections_after_ = utils::clone_unique (*PORT_CONNECTIONS_MGR);
     }
   else if (performing && port_connections_after_ != nullptr)
     {
@@ -193,4 +197,5 @@ UndoableAction::save_or_load_port_connections (bool performing)
         PORT_CONNECTIONS_MGR->get_connection_count ()
         == port_connections_before_->get_connection_count ());
     }
+}
 }

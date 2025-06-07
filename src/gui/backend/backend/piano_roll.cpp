@@ -267,7 +267,13 @@ PianoRoll::init ()
 
   midi_modifier_ = MidiModifier::Velocity;
 
-  EditorSettings::copy_members_from (PianoRoll (), ObjectCloneType::Snapshot);
+  {
+    PianoRoll tmp;
+    init_from (
+      static_cast<EditorSettings &> (*this),
+      static_cast<const EditorSettings &> (tmp),
+      utils::ObjectCloneType::Snapshot);
+  }
 
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {

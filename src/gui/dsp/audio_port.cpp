@@ -20,9 +20,13 @@ AudioPort::AudioPort (utils::Utf8String label, PortFlow flow)
 }
 
 void
-AudioPort::init_after_cloning (const AudioPort &other, ObjectCloneType clone_type)
+init_from (
+  AudioPort             &obj,
+  const AudioPort       &other,
+  utils::ObjectCloneType clone_type)
 {
-  Port::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<Port &> (obj), static_cast<const Port &> (other), clone_type);
 }
 
 void

@@ -20,7 +20,8 @@
 #include "utils/math.h"
 #include "utils/views.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 using namespace zrythm::structure::arrangement;
 using namespace zrythm::structure::tracks;
 
@@ -42,13 +43,16 @@ CreateOrDeleteArrangerSelectionsAction::CreateOrDeleteArrangerSelectionsAction (
 }
 
 void
-ArrangerSelectionsAction::init_after_cloning (
+init_from (
+  ArrangerSelectionsAction       &obj,
   const ArrangerSelectionsAction &other,
-  ObjectCloneType                 clone_type)
+  utils::ObjectCloneType          clone_type)
 {
-  assert (clone_type == ObjectCloneType::Snapshot);
-  UndoableAction::copy_members_from (other, clone_type);
-  type_ = other.type_;
+  assert (clone_type == utils::ObjectCloneType::Snapshot);
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.type_ = other.type_;
 
 // TODO
 #if 0
@@ -75,22 +79,23 @@ ArrangerSelectionsAction::init_after_cloning (
   clone_collection (sel_after_, other.sel_after_);
 #endif
 
-  edit_type_ = other.edit_type_;
-  ticks_ = other.ticks_;
-  delta_tracks_ = other.delta_tracks_;
-  delta_lanes_ = other.delta_lanes_;
-  delta_chords_ = other.delta_chords_;
-  delta_pitch_ = other.delta_pitch_;
-  delta_vel_ = other.delta_vel_;
-  delta_normalized_amount_ = other.delta_normalized_amount_;
-  target_port_ = other.target_port_;
-  str_ = other.str_;
-  pos_ = other.pos_;
-  r1_ = other.r1_;
-  r2_ = other.r2_;
-  first_run_ = other.first_run_;
+  obj.edit_type_ = other.edit_type_;
+  obj.ticks_ = other.ticks_;
+  obj.delta_tracks_ = other.delta_tracks_;
+  obj.delta_lanes_ = other.delta_lanes_;
+  obj.delta_chords_ = other.delta_chords_;
+  obj.delta_pitch_ = other.delta_pitch_;
+  obj.delta_vel_ = other.delta_vel_;
+  obj.delta_normalized_amount_ = other.delta_normalized_amount_;
+  obj.target_port_ = other.target_port_;
+  obj.str_ = other.str_;
+  obj.pos_ = other.pos_;
+  obj.r1_ = other.r1_;
+  obj.r2_ = other.r2_;
+  obj.first_run_ = other.first_run_;
   if (other.opts_)
-    opts_ = std::make_unique<old_dsp::QuantizeOptions> (*other.opts_);
+    obj.opts_ =
+      std::make_unique<zrythm::gui::old_dsp::QuantizeOptions> (*other.opts_);
   // TODO
 #if 0
     if (other.region_before_)
@@ -114,7 +119,7 @@ ArrangerSelectionsAction::init_after_cloning (
         other.region_after_.value ());
     }
 #endif
-  resize_type_ = other.resize_type_;
+  obj.resize_type_ = other.resize_type_;
 }
 
 auto
@@ -2216,4 +2221,5 @@ ArrangerSelectionsAction::to_string () const
     }
 
   z_return_val_if_reached ({});
+}
 }

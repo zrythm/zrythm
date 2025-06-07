@@ -21,7 +21,7 @@
 /**
  * Chord preset pack.
  */
-class ChordPresetPack final : public QObject, public ICloneable<ChordPresetPack>
+class ChordPresetPack final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -48,9 +48,10 @@ public:
   int         get_format_major_version () const { return 2; }
   int         get_format_minor_version () const { return 0; }
 
-  void
-  init_after_cloning (const ChordPresetPack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChordPresetPack       &obj,
+    const ChordPresetPack &other,
+    utils::ObjectCloneType clone_type);
 
   bool contains_name (const NameT &name) const;
 

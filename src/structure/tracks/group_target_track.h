@@ -70,8 +70,10 @@ public:
   int find_child (Track::Uuid track_name_hash);
 
 protected:
-  void
-  copy_members_from (const GroupTargetTrack &other, ObjectCloneType clone_type);
+  friend void init_from (
+    GroupTargetTrack       &obj,
+    const GroupTargetTrack &other,
+    utils::ObjectCloneType  clone_type);
 
 private:
   static constexpr auto kChildrenKey = "children"sv;

@@ -22,7 +22,7 @@ class AutomationTrack;
 /**
  * @brief Control port specifics.
  */
-class ControlPort final : public QObject, public Port, public ICloneable<ControlPort>
+class ControlPort final : public QObject, public Port
 {
   Q_OBJECT
   QML_ELEMENT
@@ -263,8 +263,10 @@ public:
     copy_metadata_from_project (non_project);
   }
 
-  void init_after_cloning (const ControlPort &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ControlPort           &obj,
+    const ControlPort     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kControlKey = "control";

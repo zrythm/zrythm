@@ -8,6 +8,15 @@
 
 #include <QColor>
 
+struct _GdkRGBA
+{
+  double red = 0.0;
+  double green = 0.0;
+  double blue = 0.0;
+  double alpha = 1.0;
+};
+using GdkRGBA = _GdkRGBA;
+
 namespace zrythm::utils
 {
 

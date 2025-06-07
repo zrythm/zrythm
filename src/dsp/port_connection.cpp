@@ -23,16 +23,17 @@ PortConnection::PortConnection (
 }
 
 void
-PortConnection::init_after_cloning (
-  const PortConnection &other,
-  ObjectCloneType       clone_type)
+init_from (
+  PortConnection        &obj,
+  const PortConnection  &other,
+  utils::ObjectCloneType clone_type)
 {
-  src_id_ = other.src_id_;
-  dest_id_ = other.dest_id_;
-  multiplier_ = other.multiplier_;
-  locked_ = other.locked_;
-  enabled_ = other.enabled_;
-  base_value_ = other.base_value_;
+  obj.src_id_ = other.src_id_;
+  obj.dest_id_ = other.dest_id_;
+  obj.multiplier_ = other.multiplier_;
+  obj.locked_ = other.locked_;
+  obj.enabled_ = other.enabled_;
+  obj.base_value_ = other.base_value_;
 }
 
 }

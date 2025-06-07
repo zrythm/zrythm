@@ -19,53 +19,59 @@
 #include "utils/types.h"
 #include "utils/views.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 using namespace zrythm::structure::tracks;
 
 void
-TracklistSelectionsAction::init_after_cloning (
+init_from (
+  TracklistSelectionsAction       &obj,
   const TracklistSelectionsAction &other,
-  ObjectCloneType                  clone_type)
+  utils::ObjectCloneType           clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  tracklist_selections_action_type_ = other.tracklist_selections_action_type_;
-  track_type_ = other.track_type_;
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.tracklist_selections_action_type_ =
+    other.tracklist_selections_action_type_;
+  obj.track_type_ = other.track_type_;
   if (other.pl_setting_)
-    pl_setting_ = other.pl_setting_->clone_unique ();
-  is_empty_ = other.is_empty_;
-  track_pos_ = other.track_pos_;
-  lane_pos_ = other.lane_pos_;
-  have_pos_ = other.have_pos_;
-  pos_ = other.pos_;
-  ival_before_ = other.ival_before_;
-  colors_before_ = other.colors_before_;
-  track_positions_before_ = other.track_positions_before_;
-  track_positions_after_ = other.track_positions_after_;
-  num_tracks_ = other.num_tracks_;
-  ival_after_ = other.ival_after_;
-  new_color_ = other.new_color_;
-  file_basename_ = other.file_basename_;
-  base64_midi_ = other.base64_midi_;
-  pool_id_ = other.pool_id_;
+    obj.pl_setting_ = utils::clone_unique (*other.pl_setting_);
+  obj.is_empty_ = other.is_empty_;
+  obj.track_pos_ = other.track_pos_;
+  obj.lane_pos_ = other.lane_pos_;
+  obj.have_pos_ = other.have_pos_;
+  obj.pos_ = other.pos_;
+  obj.ival_before_ = other.ival_before_;
+  obj.colors_before_ = other.colors_before_;
+  obj.track_positions_before_ = other.track_positions_before_;
+  obj.track_positions_after_ = other.track_positions_after_;
+  obj.num_tracks_ = other.num_tracks_;
+  obj.ival_after_ = other.ival_after_;
+  obj.new_color_ = other.new_color_;
+  obj.file_basename_ = other.file_basename_;
+  obj.base64_midi_ = other.base64_midi_;
+  obj.pool_id_ = other.pool_id_;
   if (other.tls_before_)
-    tls_before_ = TrackSpan{ *other.tls_before_ }.create_snapshots (
-      *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+    obj.tls_before_ = TrackSpan{ *other.tls_before_ }.create_snapshots (
+      obj, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
       PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
   if (other.tls_after_)
-    tls_after_ = TrackSpan{ *other.tls_after_ }.create_snapshots (
-      *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+    obj.tls_after_ = TrackSpan{ *other.tls_after_ }.create_snapshots (
+      obj, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
       PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
   if (other.foldable_tls_before_)
-    foldable_tls_before_ = TrackSpan{ *foldable_tls_before_ }.create_snapshots (
-      *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-      PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
-  out_track_uuids_ = other.out_track_uuids_;
-  clone_unique_ptr_container (src_sends_, other.src_sends_);
-  edit_type_ = other.edit_type_;
-  new_txt_ = other.new_txt_;
-  val_before_ = other.val_before_;
-  val_after_ = other.val_after_;
-  num_fold_change_tracks_ = other.num_fold_change_tracks_;
+    obj.foldable_tls_before_ =
+      TrackSpan{ *obj.foldable_tls_before_ }.create_snapshots (
+        obj, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
+  obj.out_track_uuids_ = other.out_track_uuids_;
+  utils::clone_unique_ptr_container (obj.src_sends_, other.src_sends_);
+  obj.edit_type_ = other.edit_type_;
+  obj.new_txt_ = other.new_txt_;
+  obj.val_before_ = other.val_before_;
+  obj.val_after_ = other.val_after_;
+  obj.num_fold_change_tracks_ = other.num_fold_change_tracks_;
 }
 
 void
@@ -155,7 +161,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         AUDIO_ENGINE->get_sample_rate ()),
       tracklist_selections_action_type_ (type), track_pos_ (track_pos),
       lane_pos_ (lane_pos), track_type_ (track_type),
-      pl_setting_ (pl_setting ? pl_setting->clone_unique () : nullptr),
+      pl_setting_ (pl_setting ? utils::clone_unique (*pl_setting) : nullptr),
       edit_type_ (edit_type), ival_after_ (ival_after),
       already_edited_ (already_edited), val_before_ (val_before),
       val_after_ (val_after)
@@ -405,8 +411,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                       if (
                         target_track->get_index () == clone_track->get_index ())
                         {
-                          src_sends_.emplace_back (send->clone_unique (
-                            ObjectCloneType::Snapshot,
+                          src_sends_.emplace_back (utils::clone_unique (
+                            *send, utils::ObjectCloneType::Snapshot,
                             PROJECT->get_track_registry (),
                             PROJECT->get_port_registry ()));
                         }
@@ -442,7 +448,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 
   if (port_connections_mgr)
     {
-      port_connections_before_ = port_connections_mgr->clone_unique ();
+      port_connections_before_ = utils::clone_unique (*port_connections_mgr);
     }
 
   if (!validate ())
@@ -1039,8 +1045,8 @@ TracklistSelectionsAction::
                       for (size_t j = 0; j < Channel::STRIP_SIZE; ++j)
                         {
                           auto &send = own_track->get_channel ()->sends_.at (j);
-                          sends.at (i).at (j) = send->clone_unique (
-                            ObjectCloneType::Snapshot,
+                          sends.at (i).at (j) = utils::clone_unique (
+                            *send, utils::ObjectCloneType::Snapshot,
                             PROJECT->get_track_registry (),
                             PROJECT->get_port_registry ());
 
@@ -1840,4 +1846,5 @@ TracklistSelectionsAction::to_string () const
     }
 
   z_return_val_if_reached ({});
+}
 }

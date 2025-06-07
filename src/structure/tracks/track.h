@@ -1336,7 +1336,8 @@ public:
   }
 
 protected:
-  void copy_members_from (const Track &other, ObjectCloneType clone_type);
+  friend void
+  init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type);
 
   /**
    * @brief Set the playback caches for a track.

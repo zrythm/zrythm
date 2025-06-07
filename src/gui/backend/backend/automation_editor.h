@@ -18,10 +18,7 @@
 /**
  * Backend for the automation editor.
  */
-class AutomationEditor final
-    : public QObject,
-      public EditorSettings,
-      public ICloneable<AutomationEditor>
+class AutomationEditor final : public QObject, public EditorSettings
 {
   Q_OBJECT
   QML_ELEMENT
@@ -30,13 +27,15 @@ public:
   AutomationEditor (QObject * parent = nullptr) : QObject (parent) { }
 
 public:
-  void
-  init_after_cloning (const AutomationEditor &other, ObjectCloneType clone_type)
-    override
+  friend void init_from (
+    AutomationEditor       &obj,
+    const AutomationEditor &other,
+    utils::ObjectCloneType  clone_type)
+
   {
-    static_cast<EditorSettings &> (*this) =
+    static_cast<EditorSettings &> (obj) =
       static_cast<const EditorSettings &> (other);
-    selected_objects_ = other.selected_objects_;
+    obj.selected_objects_ = other.selected_objects_;
   }
 
   auto &get_selected_object_ids () { return selected_objects_; }

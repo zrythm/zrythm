@@ -16,11 +16,7 @@
 /**
  * @brief CV port specifics.
  */
-class CVPort final
-    : public QObject,
-      public Port,
-      public AudioAndCVPortMixin,
-      public ICloneable<CVPort>
+class CVPort final : public QObject, public Port, public AudioAndCVPortMixin
 {
   Q_OBJECT
   QML_ELEMENT
@@ -36,8 +32,8 @@ public:
 
   void clear_buffer (std::size_t block_length) override;
 
-  void
-  init_after_cloning (const CVPort &other, ObjectCloneType clone_type) override;
+  friend void
+  init_from (CVPort &obj, const CVPort &other, utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kRangeKey = "range";

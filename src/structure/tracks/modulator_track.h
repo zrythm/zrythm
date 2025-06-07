@@ -19,7 +19,6 @@ namespace zrythm::structure::tracks
 class ModulatorTrack final
     : public QObject,
       public ProcessableTrack,
-      public ICloneable<ModulatorTrack>,
       public utils::InitializableObject<ModulatorTrack>
 {
   Q_OBJECT
@@ -67,9 +66,10 @@ public:
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
 
-  void
-  init_after_cloning (const ModulatorTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ModulatorTrack        &obj,
+    const ModulatorTrack  &other,
+    utils::ObjectCloneType clone_type);
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;

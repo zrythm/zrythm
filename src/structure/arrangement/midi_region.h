@@ -29,8 +29,7 @@ class MidiRegion final
     : public QObject,
       public LaneOwnedObject,
       public RegionImpl<MidiRegion>,
-      public ArrangerObjectOwner<MidiNote>,
-      public ICloneable<MidiRegion>
+      public ArrangerObjectOwner<MidiNote>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -178,8 +177,10 @@ public:
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
-  void init_after_cloning (const MidiRegion &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiRegion            &obj,
+    const MidiRegion      &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Set positions to the exact values in the export region as it is played

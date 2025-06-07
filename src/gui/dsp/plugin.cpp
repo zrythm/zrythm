@@ -40,7 +40,7 @@ using namespace zrythm;
 using namespace zrythm::gui::old_dsp::plugins;
 
 Plugin::Plugin (PortRegistry &port_registry, const PluginConfiguration &setting)
-    : port_registry_ (port_registry), setting_ (setting.clone_unique ())
+    : port_registry_ (port_registry), setting_ (utils::clone_unique (setting))
 {
   const auto &descr = setting_->descr_;
 
@@ -809,7 +809,7 @@ Plugin::instantiate ()
   save_state (false, std::nullopt);
 
   z_return_if_fail (enabled_);
-  enabled_->set_val_from_normalized (1.f, 0);
+  enabled_->set_val_from_normalized (1.f, false);
 
   /* set the L/R outputs */
   set_stereo_outs_and_midi_in ();
@@ -1077,7 +1077,7 @@ Plugin::copy_members_from (Plugin &other)
 
   /* create a new plugin with same descriptor */
   z_debug ("[2/5] creating new plugin with same setting");
-  setting_ = other.setting_->clone_unique ();
+  setting_ = utils::clone_unique (*other.setting_);
   init ();
 
   /* copy ports */

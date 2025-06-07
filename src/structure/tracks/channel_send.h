@@ -63,10 +63,7 @@ struct ChannelSendTarget
  *
  * The actual connection is tracked separately by PortConnectionsManager.
  */
-class ChannelSend final
-    : public ICloneable<ChannelSend>,
-      public dsp::graph::IProcessable,
-      public IPortOwner
+class ChannelSend final : public dsp::graph::IProcessable, public IPortOwner
 {
 public:
   using PortType = dsp::PortType;
@@ -244,8 +241,10 @@ public:
 
   void copy_values_from (const ChannelSend &other);
 
-  void init_after_cloning (const ChannelSend &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChannelSend           &obj,
+    const ChannelSend     &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Connects the ports to the owner track if not connected.

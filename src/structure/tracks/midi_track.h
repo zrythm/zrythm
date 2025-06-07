@@ -14,7 +14,6 @@ class MidiTrack final
     : public QObject,
       public PianoRollTrack,
       public ChannelTrack,
-      public ICloneable<MidiTrack>,
       public utils::InitializableObject<MidiTrack>
 {
   Q_OBJECT
@@ -37,8 +36,10 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-  void init_after_cloning (const MidiTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiTrack             &obj,
+    const MidiTrack       &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const MidiTrack &track)

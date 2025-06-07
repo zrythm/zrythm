@@ -25,10 +25,7 @@ class ModulatorTrack;
  *
  * Can only belong to modulator track.
  */
-class ModulatorMacroProcessor final
-    : public ICloneable<ModulatorMacroProcessor>,
-      public dsp::graph::IProcessable,
-      public IPortOwner
+class ModulatorMacroProcessor final : public dsp::graph::IProcessable, public IPortOwner
 {
   using ModulatorTrack = structure::tracks::ModulatorTrack;
 
@@ -62,9 +59,10 @@ public:
 
   void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  void init_after_cloning (
+  friend void init_from (
+    ModulatorMacroProcessor       &obj,
     const ModulatorMacroProcessor &other,
-    ObjectCloneType                clone_type) override;
+    utils::ObjectCloneType         clone_type);
 
   CVPort &get_cv_in_port ()
   {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/colored_object.h"
@@ -7,12 +7,13 @@
 namespace zrythm::structure::arrangement
 {
 void
-ColoredObject::copy_members_from (
-  const ColoredObject &other,
-  ObjectCloneType      clone_type)
+init_from (
+  ColoredObject         &obj,
+  const ColoredObject   &other,
+  utils::ObjectCloneType clone_type)
 {
-  color_ = other.color_;
-  use_color_ = other.use_color_;
+  obj.color_ = other.color_;
+  obj.use_color_ = other.use_color_;
 }
 
 QColor

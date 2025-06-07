@@ -7,7 +7,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/midi_port.h"
-#include "structure/tracks/piano_roll_track.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 
@@ -21,9 +20,10 @@ MidiPort::MidiPort (utils::Utf8String label, PortFlow flow)
 MidiPort::~MidiPort () = default;
 
 void
-MidiPort::init_after_cloning (const MidiPort &other, ObjectCloneType clone_type)
+init_from (MidiPort &obj, const MidiPort &other, utils::ObjectCloneType clone_type)
 {
-  Port::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<Port &> (obj), static_cast<const Port &> (other), clone_type);
 }
 
 void

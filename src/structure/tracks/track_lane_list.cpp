@@ -77,12 +77,13 @@ TrackLaneList::erase (const size_t pos)
 }
 
 void
-TrackLaneList::copy_members_from (
-  const TrackLaneList &other,
-  ObjectCloneType      clone_type)
+init_from (
+  TrackLaneList         &obj,
+  const TrackLaneList   &other,
+  utils::ObjectCloneType clone_type)
 {
-  clear ();
-  lanes_.reserve (other.size ());
+  obj.clear ();
+  obj.lanes_.reserve (other.size ());
 // TODO
 #if 0
   for (const auto lane_var : other)

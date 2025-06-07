@@ -532,7 +532,7 @@ ChordPresetPackManager::get_pack_at (size_t idx)
 void
 ChordPresetPackManager::add_pack (const ChordPresetPack &pack, bool _serialize)
 {
-  packs_.emplace_back (pack.clone_unique ());
+  packs_.emplace_back (utils::clone_unique (pack));
 
   if (_serialize)
     {

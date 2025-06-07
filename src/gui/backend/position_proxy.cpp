@@ -79,14 +79,16 @@ PositionProxy::getStringDisplay (
 }
 
 void
-PositionProxy::init_after_cloning (
-  const PositionProxy &other,
-  ObjectCloneType      clone_type)
+init_from (
+  PositionProxy         &obj,
+  const PositionProxy   &other,
+  utils::ObjectCloneType clone_type)
 {
-  static_cast<Position &> (*this) = static_cast<const Position &> (other);
-  realtime_updateable_ = other.realtime_updateable_;
-  if (realtime_updateable_)
+  using Position = PositionProxy::Position;
+  static_cast<Position &> (obj) = static_cast<const Position &> (other);
+  obj.realtime_updateable_ = other.realtime_updateable_;
+  if (obj.realtime_updateable_)
     {
-      RealtimeUpdater::instance ().registerObject (this);
+      RealtimeUpdater::instance ().registerObject (&obj);
     }
 }

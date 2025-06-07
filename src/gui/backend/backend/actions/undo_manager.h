@@ -17,7 +17,7 @@ namespace zrythm::gui::actions
 /**
  * Undo manager.
  */
-class UndoManager final : public QObject, public ICloneable<UndoManager>
+class UndoManager final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -84,8 +84,10 @@ public:
    */
   void clear_stacks ();
 
-  void init_after_cloning (const UndoManager &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    UndoManager           &obj,
+    const UndoManager     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr auto kUndoStackKey = "undoStack"sv;

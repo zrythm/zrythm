@@ -28,7 +28,7 @@
 using namespace zrythm;
 
 #define PROJECT (Project::get_active_instance ())
-#define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_.get ())
+#define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_)
 
 enum class ProjectPath
 {
@@ -68,7 +68,7 @@ enum class ProjectPath
  * A project (or song), contains all the project data as opposed to zrythm_app.h
  * which manages global things like plugin descriptors and global settings.
  **/
-class Project final : public QObject, public ICloneable<Project>
+class Project final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -277,8 +277,10 @@ public:
 
   bool has_unsaved_changes () const;
 
-  void
-  init_after_cloning (const Project &other, ObjectCloneType clone_type) override;
+  friend void init_from (
+    Project               &obj,
+    const Project         &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Deep-clones the given project.
@@ -556,7 +558,7 @@ public:
    *
    * Must be free'd after engine.
    */
-  QScopedPointer<dsp::PortConnectionsManager> port_connections_manager_;
+  dsp::PortConnectionsManager * port_connections_manager_{};
 
   /**
    * The audio backend.

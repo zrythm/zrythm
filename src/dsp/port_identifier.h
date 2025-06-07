@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -67,7 +67,7 @@ enum class PortUnit
 /**
  * Struct used to identify Ports in the project.
  */
-class PortIdentifier : public ICloneable<PortIdentifier>
+class PortIdentifier
 {
 public:
   using TrackUuid =
@@ -377,11 +377,12 @@ public:
 
   static utils::Utf8String port_unit_to_string (PortUnit unit);
 
-  void
-  init_after_cloning (const PortIdentifier &other, ObjectCloneType clone_type)
-    override
+  friend void init_from (
+    PortIdentifier        &obj,
+    const PortIdentifier  &other,
+    utils::ObjectCloneType clone_type)
   {
-    *this = other;
+    obj = other;
   }
 
 public:

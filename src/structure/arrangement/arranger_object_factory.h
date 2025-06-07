@@ -672,20 +672,21 @@ public:
     if constexpr (std::is_same_v<ObjT, AudioRegion>)
       {
         // TODO
-        new_obj = other.clone_qobject (
-          &owner, ObjectCloneType::Snapshot, object_registry_, track_resolver_,
-          clip_resolver_func_);
+        new_obj = utils::clone_qobject (
+          other, &owner, utils::ObjectCloneType::Snapshot, object_registry_,
+          track_resolver_, clip_resolver_func_);
       }
     else if constexpr (std::is_same_v<ObjT, Marker>)
       {
-        new_obj = other.clone_qobject (
-          &owner, ObjectCloneType::Snapshot, object_registry_, track_resolver_,
-          [] (const auto &name) { return true; });
+        new_obj = utils::clone_qobject (
+          other, &owner, utils::ObjectCloneType::Snapshot, object_registry_,
+          track_resolver_, [] (const auto &name) { return true; });
       }
     else
       {
-        new_obj = other.clone_qobject (
-          &owner, ObjectCloneType::Snapshot, object_registry_, track_resolver_);
+        new_obj = utils::clone_qobject (
+          other, &owner, utils::ObjectCloneType::Snapshot, object_registry_,
+          track_resolver_);
       }
     return new_obj;
   }

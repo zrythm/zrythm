@@ -56,8 +56,10 @@ public:
   operator== (const RegionOwnedObject &lhs, const RegionOwnedObject &rhs);
 
 protected:
-  void
-  copy_members_from (const RegionOwnedObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    RegionOwnedObject       &obj,
+    const RegionOwnedObject &other,
+    utils::ObjectCloneType   clone_type);
 
 private:
   static constexpr std::string_view kRegionIdKey = "regionId";

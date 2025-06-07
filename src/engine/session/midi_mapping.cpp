@@ -27,14 +27,15 @@ MidiMappings::init_loaded ()
 }
 
 void
-MidiMapping::init_after_cloning (
-  const MidiMapping &other,
-  ObjectCloneType    clone_type)
+init_from (
+  MidiMapping           &obj,
+  const MidiMapping     &other,
+  utils::ObjectCloneType clone_type)
 {
-  key_ = other.key_;
-  device_id_ = other.device_id_;
-  dest_id_ = other.dest_id_;
-  enabled_.store (other.enabled_.load ());
+  obj.key_ = other.key_;
+  obj.device_id_ = other.device_id_;
+  obj.dest_id_ = other.dest_id_;
+  obj.enabled_.store (other.enabled_.load ());
 }
 
 void

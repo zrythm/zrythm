@@ -106,8 +106,8 @@ public:
   {
     PluginT * new_obj{};
 
-    new_obj =
-      other.clone_qobject (&owner, ObjectCloneType::Snapshot, plugin_registry_);
+    new_obj = utils::clone_qobject (
+      other, &owner, utils::ObjectCloneType::Snapshot, plugin_registry_);
     return new_obj;
   }
 

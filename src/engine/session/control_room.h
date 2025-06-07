@@ -28,7 +28,7 @@ namespace zrythm::engine::session
  * to set overall volume after the Master Channel so you can change the volume
  * without touching the Master Fader.
  */
-class ControlRoom final : public ICloneable<ControlRoom>
+class ControlRoom final
 {
 public:
   using Fader = structure::tracks::Fader;
@@ -47,8 +47,10 @@ public:
    */
   void set_dim_output (bool dim_output) { dim_output_ = dim_output; }
 
-  void init_after_cloning (const ControlRoom &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ControlRoom           &obj,
+    const ControlRoom     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr auto kMonitorFaderKey = "monitorFader"sv;

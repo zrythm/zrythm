@@ -34,7 +34,7 @@ struct PluginImportData;
  *
  * @see Track
  */
-class Channel final : public QObject, public ICloneable<Channel>, public IPortOwner
+class Channel final : public QObject, public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
@@ -301,8 +301,10 @@ public:
    */
   void set_caches ();
 
-  void
-  init_after_cloning (const Channel &other, ObjectCloneType clone_type) override;
+  friend void init_from (
+    Channel               &obj,
+    const Channel         &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Disconnects the channel from the processing chain and removes any plugins

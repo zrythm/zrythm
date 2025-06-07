@@ -417,8 +417,8 @@ public:
       *this | std::views::transform ([&] (const auto &track_var) {
         return std::visit (
           [&] (auto &&track) -> VariantType {
-            return track->clone_qobject (
-              &owner, ObjectCloneType::Snapshot, track_registry,
+            return utils::clone_qobject (
+              *track, &owner, utils::ObjectCloneType::Snapshot, track_registry,
               plugin_registry, port_registry, obj_registry, false);
           },
           track_var);

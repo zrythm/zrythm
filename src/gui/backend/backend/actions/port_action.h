@@ -12,7 +12,7 @@
 namespace zrythm::gui::actions
 {
 
-class PortAction : public QObject, public UndoableAction, public ICloneable<PortAction>
+class PortAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -46,8 +46,10 @@ public:
 
   QString to_string () const override;
 
-  void init_after_cloning (const PortAction &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    PortAction            &obj,
+    const PortAction      &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   void init_loaded_impl () override { }

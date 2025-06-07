@@ -24,14 +24,21 @@ ScaleObject::ScaleObject (
 }
 
 void
-ScaleObject::init_after_cloning (
-  const ScaleObject &other,
-  ObjectCloneType    clone_type)
+init_from (
+  ScaleObject           &obj,
+  const ScaleObject     &other,
+  utils::ObjectCloneType clone_type)
 {
-  scale_ = other.scale_;
-  TimelineObject::copy_members_from (other, clone_type);
-  MuteableObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
+  obj.scale_ = other.scale_;
+  init_from (
+    static_cast<TimelineObject &> (obj),
+    static_cast<const TimelineObject &> (other), clone_type);
+  init_from (
+    static_cast<MuteableObject &> (obj),
+    static_cast<const MuteableObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
 }
 
 utils::Utf8String

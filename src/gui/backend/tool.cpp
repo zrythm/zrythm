@@ -3,7 +3,8 @@
 
 #include "gui/backend/tool.h"
 
-using namespace zrythm::gui::backend;
+namespace zrythm::gui::backend
+{
 
 Tool::Tool (QObject * parent) : QObject (parent) { }
 
@@ -25,7 +26,8 @@ Tool::setToolValue (int tool)
 }
 
 void
-Tool::init_after_cloning (const Tool &other, ObjectCloneType clone_type)
+init_from (Tool &obj, const Tool &other, utils::ObjectCloneType clone_type)
 {
-  tool_ = other.tool_;
+  obj.tool_ = other.tool_;
 }
+} // namespace zrythm::gui::backend

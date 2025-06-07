@@ -55,10 +55,12 @@ public:
     owner_lane_ = lane;
   }
 
-  void
-  copy_members_from (const LaneOwnedObject &other, ObjectCloneType clone_type)
+  friend void init_from (
+    LaneOwnedObject       &obj,
+    const LaneOwnedObject &other,
+    utils::ObjectCloneType clone_type)
   {
-    index_in_prev_lane_ = other.index_in_prev_lane_;
+    obj.index_in_prev_lane_ = other.index_in_prev_lane_;
   }
 
 private:

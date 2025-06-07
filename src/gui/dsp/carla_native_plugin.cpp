@@ -30,7 +30,8 @@
 #include <fmt/format.h>
 #include <fmt/printf.h>
 
-using namespace zrythm::gui::old_dsp::plugins;
+namespace zrythm::gui::old_dsp::plugins
+{
 
 #if HAVE_CARLA
 static GdkGLContext *
@@ -66,19 +67,20 @@ return_gl_context (GdkGLContext * context)
 bool
 CarlaNativePlugin::idle_cb ()
 {
+#if HAVE_CARLA
   if (visible_) // && MAIN_WINDOW)
     {
-#if HAVE_CARLA
       GdkGLContext * context = clear_gl_context ();
       /*z_debug ("calling ui_idle()...");*/
       native_plugin_descriptor_->ui_idle (native_plugin_handle_);
       /*z_debug ("done calling ui_idle()");*/
       return_gl_context (context);
-#endif
       return SourceFuncContinue;
     }
   else
     return SourceFuncRemove;
+#endif
+  return false;
 }
 
 #if HAVE_CARLA
@@ -1941,11 +1943,12 @@ CarlaNativePlugin::load_state (std::optional<fs::path> abs_path)
 }
 
 void
-CarlaNativePlugin::init_after_cloning (
+init_from (
+  gui::old_dsp::plugins::CarlaNativePlugin               &obj,
   const zrythm::gui::old_dsp::plugins::CarlaNativePlugin &other,
-  ObjectCloneType                                         clone_type)
+  utils::ObjectCloneType                                  clone_type)
 {
-  Plugin::copy_members_from (
+  obj.Plugin::copy_members_from (
     const_cast<Plugin &> (*dynamic_cast<const Plugin *> (&other)));
 }
 
@@ -1987,4 +1990,5 @@ CarlaNativePlugin::close ()
 CarlaNativePlugin::~CarlaNativePlugin ()
 {
   close ();
+}
 }

@@ -19,10 +19,7 @@
 /**
  * @brief Timeline settings.
  */
-class Timeline final
-    : public QObject,
-      public EditorSettings,
-      public ICloneable<Timeline>
+class Timeline final : public QObject, public EditorSettings
 {
   Q_OBJECT
   QML_ELEMENT
@@ -34,8 +31,10 @@ public:
 public:
   auto &get_selected_object_ids () { return selected_objects_; }
 
-  void init_after_cloning (const Timeline &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    Timeline              &obj,
+    const Timeline        &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr auto kTracksWidthKey = "tracksWidth";

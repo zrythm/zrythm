@@ -39,14 +39,16 @@ ChannelTrack::init_loaded (
 }
 
 void
-ChannelTrack::copy_members_from (
-  const ChannelTrack &other,
-  ObjectCloneType     clone_type)
+init_from (
+  ChannelTrack          &obj,
+  const ChannelTrack    &other,
+  utils::ObjectCloneType clone_type)
 {
-  channel_.reset (other.channel_->clone_qobject (
-    dynamic_cast<QObject *> (this), ObjectCloneType::Snapshot, track_registry_,
-    plugin_registry_, port_registry_, OptionalRef<ChannelTrack>{}));
-  channel_->set_track_ptr (*this);
+  obj.channel_.reset (clone_qobject (
+    *other.channel_, dynamic_cast<QObject *> (&obj),
+    utils::ObjectCloneType::Snapshot, obj.track_registry_, obj.plugin_registry_,
+    obj.port_registry_, OptionalRef<ChannelTrack>{}));
+  obj.channel_->set_track_ptr (obj);
 }
 
 void
@@ -157,7 +159,7 @@ Fader *
 ChannelTrack::get_fader (bool post_fader)
 {
   auto ch = get_channel ();
-  if (ch)
+  if (ch != nullptr)
     {
       if (post_fader)
         {

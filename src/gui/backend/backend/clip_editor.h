@@ -23,7 +23,7 @@ class ArrangerSelections;
 /**
  * Backend for the clip editor part of the UI.
  */
-class ClipEditor final : public QObject, public ICloneable<ClipEditor>
+class ClipEditor final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -120,14 +120,17 @@ public:
    */
   void set_caches ();
 
-  void init_after_cloning (const ClipEditor &other, ObjectCloneType clone_type)
-    override
+  friend void init_from (
+    ClipEditor            &obj,
+    const ClipEditor      &other,
+    utils::ObjectCloneType clone_type)
+
   {
-    region_id_ = other.region_id_;
-    audio_clip_editor_ = other.audio_clip_editor_;
-    automation_editor_ = other.automation_editor_;
-    chord_editor_ = other.chord_editor_;
-    track_ = other.track_;
+    obj.region_id_ = other.region_id_;
+    obj.audio_clip_editor_ = other.audio_clip_editor_;
+    obj.automation_editor_ = other.automation_editor_;
+    obj.chord_editor_ = other.chord_editor_;
+    obj.track_ = other.track_;
   }
 
 private:

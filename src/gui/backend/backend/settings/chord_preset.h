@@ -23,7 +23,7 @@ class ChordPresetPack;
 /**
  * A preset of chord descriptors.
  */
-class ChordPreset final : public QObject, public ICloneable<ChordPreset>
+class ChordPreset final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -50,8 +50,10 @@ public:
 
   // GMenuModel * generate_context_menu () const;
 
-  void init_after_cloning (const ChordPreset &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChordPreset           &obj,
+    const ChordPreset     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kNameKey = "name";

@@ -9,11 +9,12 @@
 namespace zrythm::structure::arrangement
 {
 void
-RegionOwnedObject::copy_members_from (
+init_from (
+  RegionOwnedObject       &obj,
   const RegionOwnedObject &other,
-  ObjectCloneType          clone_type)
+  utils::ObjectCloneType   clone_type)
 {
-  region_id_ = other.region_id_;
+  obj.region_id_ = other.region_id_;
 }
 
 void

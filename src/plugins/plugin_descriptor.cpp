@@ -4,7 +4,8 @@
 #include "plugins/plugin_descriptor.h"
 #include "utils/bidirectional_map.h"
 
-using namespace zrythm::plugins;
+namespace zrythm::plugins
+{
 
 std::unique_ptr<PluginDescriptor>
 PluginDescriptor::from_juce_description (
@@ -82,30 +83,31 @@ PluginDescriptor::getFormat () const
 }
 
 void
-PluginDescriptor::init_after_cloning (
+init_from (
+  PluginDescriptor       &obj,
   const PluginDescriptor &other,
-  ObjectCloneType         clone_type)
+  utils::ObjectCloneType  clone_type)
 {
-  author_ = other.author_;
-  name_ = other.name_;
-  website_ = other.website_;
-  category_ = other.category_;
-  category_str_ = other.category_str_;
-  protocol_ = other.protocol_;
-  num_audio_ins_ = other.num_audio_ins_;
-  num_audio_outs_ = other.num_audio_outs_;
-  num_midi_ins_ = other.num_midi_ins_;
-  num_midi_outs_ = other.num_midi_outs_;
-  num_ctrl_ins_ = other.num_ctrl_ins_;
-  num_ctrl_outs_ = other.num_ctrl_outs_;
-  num_cv_ins_ = other.num_cv_ins_;
-  num_cv_outs_ = other.num_cv_outs_;
-  arch_ = other.arch_;
-  protocol_ = other.protocol_;
-  path_or_id_ = other.path_or_id_;
-  unique_id_ = other.unique_id_;
-  min_bridge_mode_ = other.min_bridge_mode_;
-  has_custom_ui_ = other.has_custom_ui_;
+  obj.author_ = other.author_;
+  obj.name_ = other.name_;
+  obj.website_ = other.website_;
+  obj.category_ = other.category_;
+  obj.category_str_ = other.category_str_;
+  obj.protocol_ = other.protocol_;
+  obj.num_audio_ins_ = other.num_audio_ins_;
+  obj.num_audio_outs_ = other.num_audio_outs_;
+  obj.num_midi_ins_ = other.num_midi_ins_;
+  obj.num_midi_outs_ = other.num_midi_outs_;
+  obj.num_ctrl_ins_ = other.num_ctrl_ins_;
+  obj.num_ctrl_outs_ = other.num_ctrl_outs_;
+  obj.num_cv_ins_ = other.num_cv_ins_;
+  obj.num_cv_outs_ = other.num_cv_outs_;
+  obj.arch_ = other.arch_;
+  obj.protocol_ = other.protocol_;
+  obj.path_or_id_ = other.path_or_id_;
+  obj.unique_id_ = other.unique_id_;
+  obj.min_bridge_mode_ = other.min_bridge_mode_;
+  obj.has_custom_ui_ = other.has_custom_ui_;
 }
 
 bool
@@ -469,3 +471,4 @@ PluginDescriptor::is_same_plugin (
 {
   return *this == other;
 }
+} // namespace zrythm::plugins

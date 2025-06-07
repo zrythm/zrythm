@@ -41,8 +41,10 @@ public:
   }
 
 protected:
-  void
-  copy_members_from (const FadeableObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    FadeableObject        &obj,
+    const FadeableObject  &other,
+    utils::ObjectCloneType clone_type);
 
   bool
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;

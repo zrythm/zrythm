@@ -26,8 +26,10 @@ public:
   Z_DISABLE_COPY_MOVE (TimelineObject)
 
 protected:
-  void
-  copy_members_from (const TimelineObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    TimelineObject        &obj,
+    const TimelineObject  &other,
+    utils::ObjectCloneType clone_type);
 
   BOOST_DESCRIBE_CLASS (TimelineObject, (ArrangerObject), (), (), ())
 };

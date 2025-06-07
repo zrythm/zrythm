@@ -335,6 +335,15 @@ public:
   [[gnu::hot]] void prepare_process (std::size_t block_length);
 
   /**
+   * @brief
+   *
+   * @param other
+   * @note @p other is not const because we will attempt to save its state.
+   * @throw ZrymException if an error occurred.
+   */
+  void copy_members_from (Plugin &other);
+
+  /**
    * Instantiates the plugin (e.g. when adding to a channel).
    *
    * @throw ZrymException if an error occurred.
@@ -470,15 +479,6 @@ protected:
   Bank * add_bank_if_not_exists (
     std::optional<utils::Utf8String> uri,
     const utils::Utf8String         &name);
-
-  /**
-   * @brief
-   *
-   * @param other
-   * @note @p other is not const because we will attempt to save its state.
-   * @throw ZrymException if an error occurred.
-   */
-  void copy_members_from (Plugin &other);
 
 protected:
   Plugin () = default;

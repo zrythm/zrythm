@@ -223,10 +223,11 @@ GroupTargetTrack::update_children ()
 }
 
 void
-GroupTargetTrack::copy_members_from (
+init_from (
+  GroupTargetTrack       &obj,
   const GroupTargetTrack &other,
-  ObjectCloneType         clone_type)
+  utils::ObjectCloneType  clone_type)
 {
-  children_ = other.children_;
+  obj.children_ = other.children_;
 }
 }

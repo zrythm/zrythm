@@ -7,7 +7,8 @@
 #include "gui/backend/backend/zrythm.h"
 #include "utils/gtest_wrapper.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 UndoStack::UndoStack (QObject * parent) : QAbstractListModel (parent)
 {
@@ -45,15 +46,20 @@ UndoStack::init_loaded (sample_rate_t engine_sample_rate)
 }
 
 void
-UndoStack::init_after_cloning (const UndoStack &other, ObjectCloneType clone_type)
+init_from (
+  UndoStack             &obj,
+  const UndoStack       &other,
+  utils::ObjectCloneType clone_type)
 {
-  max_size_ = other.max_size_;
+  obj.max_size_ = other.max_size_;
 
   /* clone all actions */
   for (const auto &action : other.actions_)
     {
       std::visit (
-        [this] (auto * ptr) { actions_.push_back (ptr->clone_qobject (this)); },
+        [&obj] (auto * ptr) {
+          obj.actions_.push_back (utils::clone_qobject (*ptr, &obj));
+        },
         action);
     }
 
@@ -259,3 +265,4 @@ template bool
 UndoStack::contains_action (const TracklistSelectionsAction &action) const;
 template bool
 UndoStack::contains_action (const TransportAction &action) const;
+}

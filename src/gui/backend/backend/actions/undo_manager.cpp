@@ -9,7 +9,8 @@
 #include "gui/backend/backend/zrythm.h"
 #include "utils/gtest_wrapper.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 UndoManager::UndoManager (QObject * parent) : QObject (parent)
 {
@@ -179,12 +180,13 @@ UndoManager::clear_stacks ()
 }
 
 void
-UndoManager::init_after_cloning (
-  const UndoManager &other,
-  ObjectCloneType    clone_type)
+init_from (
+  UndoManager           &obj,
+  const UndoManager     &other,
+  utils::ObjectCloneType clone_type)
 {
-  undo_stack_ = other.undo_stack_->clone_qobject (this);
-  redo_stack_ = other.redo_stack_->clone_qobject (this);
+  obj.undo_stack_ = utils::clone_qobject (*other.undo_stack_, &obj);
+  obj.redo_stack_ = utils::clone_qobject (*other.redo_stack_, &obj);
 }
 
 template void
@@ -237,3 +239,4 @@ UndoManager::do_or_undo_action (
   TransportAction * action,
   UndoStack        &main_stack,
   UndoStack        &opposite_stack);
+}

@@ -12,7 +12,7 @@
 namespace zrythm::gui::backend
 {
 
-class Tool : public QObject, public ICloneable<Tool>
+class Tool : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -39,8 +39,8 @@ public:
   void              setToolValue (int tool);
   Q_SIGNAL void     toolValueChanged (int tool);
 
-  void
-  init_after_cloning (const Tool &other, ObjectCloneType clone_type) override;
+  friend void
+  init_from (Tool &obj, const Tool &other, utils::ObjectCloneType clone_type);
 
 private:
   static constexpr auto kToolValueKey = "toolValue"sv;

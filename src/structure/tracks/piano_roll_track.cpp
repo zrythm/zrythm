@@ -81,13 +81,14 @@ PianoRollTrack::get_regions_in_range (
 }
 
 void
-PianoRollTrack::copy_members_from (
-  const PianoRollTrack &other,
-  ObjectCloneType       clone_type)
+init_from (
+  PianoRollTrack        &obj,
+  const PianoRollTrack  &other,
+  utils::ObjectCloneType clone_type)
 {
-  drum_mode_ = other.drum_mode_;
-  midi_ch_ = other.midi_ch_;
-  passthrough_midi_input_ = other.passthrough_midi_input_;
+  obj.drum_mode_ = other.drum_mode_;
+  obj.midi_ch_ = other.midi_ch_;
+  obj.passthrough_midi_input_ = other.passthrough_midi_input_;
 }
 
 void

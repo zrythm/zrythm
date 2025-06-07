@@ -12,8 +12,7 @@ namespace zrythm::structure::arrangement
 class ChordRegion final
     : public QObject,
       public RegionImpl<ChordRegion>,
-      public ArrangerObjectOwner<ChordObject>,
-      public ICloneable<ChordRegion>
+      public ArrangerObjectOwner<ChordObject>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -45,8 +44,10 @@ public:
     return "chordObjects";
   }
 
-  void init_after_cloning (const ChordRegion &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChordRegion           &obj,
+    const ChordRegion     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const ChordRegion &cr)

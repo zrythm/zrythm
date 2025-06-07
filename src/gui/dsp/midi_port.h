@@ -15,7 +15,7 @@
 /**
  * @brief MIDI port specifics.
  */
-class MidiPort final : public QObject, public Port, public ICloneable<MidiPort>
+class MidiPort final : public QObject, public Port
 {
   Q_OBJECT
   QML_ELEMENT
@@ -31,8 +31,10 @@ public:
 
   void clear_buffer (std::size_t block_length) override;
 
-  void init_after_cloning (const MidiPort &original, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiPort              &obj,
+    const MidiPort        &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const MidiPort &p)

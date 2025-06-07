@@ -1,12 +1,80 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef UTILS_QT_H
-#define UTILS_QT_H
+#pragma once
+
+#include <memory>
+
+#include "utils/types.h"
+
+#include <QPointer>
 
 namespace zrythm::utils
 {
 
-} // namespace zrythm::utils
+template <typename T>
+concept QObjectDerived = std::is_base_of_v<QObject, T>;
 
-#endif // UTILS_QT_H
+/**
+ * @brief A unique pointer for QObject objects that also works with
+ * QObject-based ownership.
+ *
+ * @tparam T
+ */
+template <QObjectDerived T> class QObjectUniquePtr
+{
+public:
+  QObjectUniquePtr (T * ptr = nullptr) : ptr_ (ptr) { }
+
+  ~QObjectUniquePtr () { reset (); }
+
+  Z_DISABLE_COPY (QObjectUniquePtr)
+
+  // Allow moving
+  QObjectUniquePtr (QObjectUniquePtr &&other) noexcept : ptr_ (other.release ())
+  {
+  }
+  QObjectUniquePtr &operator= (QObjectUniquePtr &&other) noexcept
+  {
+    if (this != &other)
+      {
+        reset (other.release ());
+      }
+    return *this;
+  }
+
+  void reset (T * ptr = nullptr)
+  {
+    if (ptr_ != ptr)
+      {
+        if (ptr_ != nullptr)
+          {
+            delete ptr_.get ();
+          }
+        ptr_ = ptr;
+      }
+  }
+
+  T * release ()
+  {
+    auto ptr = ptr_;
+    ptr_ = nullptr;
+    return ptr.get ();
+  }
+
+  T *      get () const { return ptr_; }
+  T *      operator->() const { return ptr_; }
+  T       &operator* () const { return *ptr_; }
+  explicit operator bool () const { return !ptr_.isNull (); }
+
+private:
+  QPointer<T> ptr_;
+};
+
+template <typename T, typename... Args>
+QObjectUniquePtr<T>
+make_qobject_unique (Args &&... args)
+{
+  return QObjectUniquePtr<T> (new T (std::forward<Args> (args)...));
+}
+} // namespace zrythm::utils

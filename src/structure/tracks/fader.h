@@ -40,11 +40,7 @@ class Channel;
 /**
  * A Fader is a processor that is used for volume controls and pan.
  */
-class Fader final
-    : public QObject,
-      public ICloneable<Fader>,
-      public dsp::graph::IProcessable,
-      public IPortOwner
+class Fader final : public QObject, public dsp::graph::IProcessable, public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
@@ -270,8 +266,8 @@ public:
 
   bool has_midi_ports () const { return type_ == Type::MidiChannel; }
 
-  void
-  init_after_cloning (const Fader &other, ObjectCloneType clone_type) override;
+  friend void
+  init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type);
 
   ControlPort &get_amp_port () const
   {

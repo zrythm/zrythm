@@ -17,14 +17,12 @@
 /**
  * @brief Audio port specifics.
  */
-class AudioPort final
-    : public QObject,
-      public Port,
-      public AudioAndCVPortMixin,
-      public ICloneable<AudioPort>
+class AudioPort final : public QObject, public Port, public AudioAndCVPortMixin
 {
   Q_OBJECT
   QML_ELEMENT
+
+  static constexpr int TIME_TO_RESET_PEAK = 4800000;
 
 public:
   AudioPort ();
@@ -84,8 +82,10 @@ public:
            || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR);
   }
 
-  void init_after_cloning (const AudioPort &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioPort             &obj,
+    const AudioPort       &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const AudioPort &port)

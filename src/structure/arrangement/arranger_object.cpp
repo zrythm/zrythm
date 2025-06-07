@@ -529,13 +529,19 @@ ArrangerObject::are_members_valid (
 }
 
 void
-ArrangerObject::copy_members_from (
-  const ArrangerObject &other,
-  ObjectCloneType       clone_type)
+init_from (
+  ArrangerObject        &obj,
+  const ArrangerObject  &other,
+  utils::ObjectCloneType clone_type)
 {
-  pos_.reset (other.pos_->clone_qobject (dynamic_cast<QObject *> (this)));
-  type_ = other.type_;
-  track_id_ = other.track_id_;
+  init_from (
+    static_cast<ArrangerObject::UuidIdentifiableObject &> (obj),
+    static_cast<const ArrangerObject::UuidIdentifiableObject &> (other),
+    clone_type);
+  obj.pos_.reset (
+    utils::clone_qobject (*other.pos_, dynamic_cast<QObject *> (&obj)));
+  obj.type_ = other.type_;
+  obj.track_id_ = other.track_id_;
 }
 
 } // namespace zrythm::structure:arrangement

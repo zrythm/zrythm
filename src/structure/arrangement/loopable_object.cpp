@@ -9,13 +9,14 @@
 namespace zrythm::structure::arrangement
 {
 void
-LoopableObject::copy_members_from (
-  const LoopableObject &other,
-  ObjectCloneType       clone_type)
+init_from (
+  LoopableObject        &obj,
+  const LoopableObject  &other,
+  utils::ObjectCloneType clone_type)
 {
-  clip_start_pos_ = other.clip_start_pos_;
-  loop_start_pos_ = other.loop_start_pos_;
-  loop_end_pos_ = other.loop_end_pos_;
+  obj.clip_start_pos_ = other.clip_start_pos_;
+  obj.loop_start_pos_ = other.loop_start_pos_;
+  obj.loop_end_pos_ = other.loop_end_pos_;
 }
 
 int

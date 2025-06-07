@@ -26,15 +26,17 @@ ControlPort::ControlPort (utils::Utf8String label)
 }
 
 void
-ControlPort::init_after_cloning (
-  const ControlPort &other,
-  ObjectCloneType    clone_type)
+init_from (
+  ControlPort           &obj,
+  const ControlPort     &other,
+  utils::ObjectCloneType clone_type)
 {
-  Port::copy_members_from (other, clone_type);
-  control_ = other.control_;
-  base_value_ = other.base_value_;
-  deff_ = other.deff_;
-  carla_param_id_ = other.carla_param_id_;
+  init_from (
+    static_cast<Port &> (obj), static_cast<const Port &> (other), clone_type);
+  obj.control_ = other.control_;
+  obj.base_value_ = other.base_value_;
+  obj.deff_ = other.deff_;
+  obj.carla_param_id_ = other.carla_param_id_;
 }
 
 void

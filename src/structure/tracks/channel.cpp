@@ -73,30 +73,30 @@ Channel::Channel (
 }
 
 void
-Channel::init_after_cloning (const Channel &other, ObjectCloneType clone_type)
+init_from (Channel &obj, const Channel &other, utils::ObjectCloneType clone_type)
 {
-  output_track_uuid_ = other.output_track_uuid_;
-  width_ = other.width_;
+  obj.output_track_uuid_ = other.output_track_uuid_;
+  obj.width_ = other.width_;
 
-  ext_midi_ins_ = other.ext_midi_ins_;
-  ext_stereo_l_ins_ = other.ext_stereo_l_ins_;
-  ext_stereo_r_ins_ = other.ext_stereo_r_ins_;
-  midi_channels_ = other.midi_channels_;
+  obj.ext_midi_ins_ = other.ext_midi_ins_;
+  obj.ext_stereo_l_ins_ = other.ext_stereo_l_ins_;
+  obj.ext_stereo_r_ins_ = other.ext_stereo_r_ins_;
+  obj.midi_channels_ = other.midi_channels_;
 
-  if (clone_type == ObjectCloneType::Snapshot)
+  if (clone_type == utils::ObjectCloneType::Snapshot)
     {
-      midi_fx_ = other.midi_fx_;
-      inserts_ = other.inserts_;
-      instrument_ = other.instrument_;
-      clone_unique_ptr_container (sends_, other.sends_);
-      fader_ = other.fader_->clone_qobject (this, clone_type);
-      prefader_ = other.prefader_->clone_qobject (this, clone_type);
-      midi_out_id_ = other.midi_out_id_;
-      stereo_out_left_id_ = other.stereo_out_left_id_;
-      stereo_out_right_id_ = other.stereo_out_right_id_;
-      track_uuid_ = other.track_uuid_;
+      obj.midi_fx_ = other.midi_fx_;
+      obj.inserts_ = other.inserts_;
+      obj.instrument_ = other.instrument_;
+      utils::clone_unique_ptr_container (obj.sends_, other.sends_);
+      obj.fader_ = utils::clone_qobject (*other.fader_, &obj, clone_type);
+      obj.prefader_ = utils::clone_qobject (*other.prefader_, &obj, clone_type);
+      obj.midi_out_id_ = other.midi_out_id_;
+      obj.stereo_out_left_id_ = other.stereo_out_left_id_;
+      obj.stereo_out_right_id_ = other.stereo_out_right_id_;
+      obj.track_uuid_ = other.track_uuid_;
     }
-  else if (clone_type == ObjectCloneType::NewIdentity)
+  else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
       const auto clone_from_registry = [] (auto &vec, const auto &other_vec) {
         for (const auto &[index, other_el] : utils::views::enumerate (other_vec))
@@ -108,11 +108,11 @@ Channel::init_after_cloning (const Channel &other, ObjectCloneType clone_type)
           }
       };
 
-      clone_from_registry (midi_fx_, other.midi_fx_);
-      clone_from_registry (inserts_, other.inserts_);
+      clone_from_registry (obj.midi_fx_, other.midi_fx_);
+      clone_from_registry (obj.inserts_, other.inserts_);
       if (other.instrument_.has_value ())
         {
-          instrument_ = other.instrument_->clone_new_identity ();
+          obj.instrument_ = other.instrument_->clone_new_identity ();
         }
 
       // Rest TODO

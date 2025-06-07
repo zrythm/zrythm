@@ -14,10 +14,7 @@ namespace zrythm::gui::actions
 /**
  * Transport action.
  */
-class TransportAction final
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<TransportAction>
+class TransportAction final : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -64,9 +61,10 @@ public:
     bool      already_done,
     QObject * parent = nullptr);
 
-  void
-  init_after_cloning (const TransportAction &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    TransportAction       &obj,
+    const TransportAction &other,
+    utils::ObjectCloneType clone_type);
 
   QString to_string () const override;
 

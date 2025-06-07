@@ -13,10 +13,7 @@ namespace zrythm::gui::actions
 /**
  * Action for channel send changes.
  */
-class ChannelSendAction
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<ChannelSendAction>
+class ChannelSendAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -59,9 +56,10 @@ public:
 
   QString to_string () const override;
 
-  void
-  init_after_cloning (const ChannelSendAction &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChannelSendAction       &obj,
+    const ChannelSendAction &other,
+    utils::ObjectCloneType   clone_type);
 
 private:
   void init_loaded_impl () override { }

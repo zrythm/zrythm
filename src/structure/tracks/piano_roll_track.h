@@ -76,8 +76,10 @@ public:
     const Position *       p2) override;
 
 protected:
-  void
-  copy_members_from (const PianoRollTrack &other, ObjectCloneType clone_type);
+  friend void init_from (
+    PianoRollTrack        &obj,
+    const PianoRollTrack  &other,
+    utils::ObjectCloneType clone_type);
 
   void set_playback_caches () override;
 

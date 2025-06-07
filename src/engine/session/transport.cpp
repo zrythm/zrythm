@@ -255,32 +255,35 @@ Transport::moveForward ()
 }
 
 void
-Transport::init_after_cloning (const Transport &other, ObjectCloneType clone_type)
+init_from (
+  Transport             &obj,
+  const Transport       &other,
+  utils::ObjectCloneType clone_type)
 {
-  total_bars_ = other.total_bars_;
-  has_range_ = other.has_range_;
-  position_ = other.position_;
+  obj.total_bars_ = other.total_bars_;
+  obj.has_range_ = other.has_range_;
+  obj.position_ = other.position_;
 
-  loop_start_pos_->set_position_rtsafe (*other.loop_start_pos_);
-  playhead_pos_->set_position_rtsafe (*other.playhead_pos_);
-  loop_end_pos_->set_position_rtsafe (*other.loop_end_pos_);
-  cue_pos_->set_position_rtsafe (*other.cue_pos_);
-  punch_in_pos_->set_position_rtsafe (*other.punch_in_pos_);
-  punch_out_pos_->set_position_rtsafe (*other.punch_out_pos_);
-  range_1_ = other.range_1_;
-  range_2_ = other.range_2_;
+  obj.loop_start_pos_->set_position_rtsafe (*other.loop_start_pos_);
+  obj.playhead_pos_->set_position_rtsafe (*other.playhead_pos_);
+  obj.loop_end_pos_->set_position_rtsafe (*other.loop_end_pos_);
+  obj.cue_pos_->set_position_rtsafe (*other.cue_pos_);
+  obj.punch_in_pos_->set_position_rtsafe (*other.punch_in_pos_);
+  obj.punch_out_pos_->set_position_rtsafe (*other.punch_out_pos_);
+  obj.range_1_ = other.range_1_;
+  obj.range_2_ = other.range_2_;
 
   // Clone ports if they exit using a lambda
   auto clone_port = [] (const auto &port) {
-    return port ? port->clone_unique () : nullptr;
+    return port ? utils::clone_unique (*port) : nullptr;
   };
 
-  roll_ = clone_port (other.roll_);
-  stop_ = clone_port (other.stop_);
-  backward_ = clone_port (other.backward_);
-  forward_ = clone_port (other.forward_);
-  loop_toggle_ = clone_port (other.loop_toggle_);
-  rec_toggle_ = clone_port (other.rec_toggle_);
+  obj.roll_ = clone_port (other.roll_);
+  obj.stop_ = clone_port (other.stop_);
+  obj.backward_ = clone_port (other.backward_);
+  obj.forward_ = clone_port (other.forward_);
+  obj.loop_toggle_ = clone_port (other.loop_toggle_);
+  obj.rec_toggle_ = clone_port (other.rec_toggle_);
 }
 
 void

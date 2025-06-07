@@ -85,12 +85,14 @@ public:
   void append_scroll (double dx, double dy, bool validate);
 
 protected:
-  void
-  copy_members_from (const EditorSettings &other, ObjectCloneType clone_type)
+  friend void init_from (
+    EditorSettings        &obj,
+    const EditorSettings  &other,
+    utils::ObjectCloneType clone_type)
   {
-    scroll_start_x_ = other.scroll_start_x_;
-    scroll_start_y_ = other.scroll_start_y_;
-    hzoom_level_ = other.hzoom_level_;
+    obj.scroll_start_x_ = other.scroll_start_x_;
+    obj.scroll_start_y_ = other.scroll_start_y_;
+    obj.hzoom_level_ = other.hzoom_level_;
   }
 
 private:

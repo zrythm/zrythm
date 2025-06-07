@@ -20,7 +20,7 @@
  * edited counterparts after some hard editing like stretching) are saved in
  * the pool.
  */
-struct AudioPool final : public ICloneable<AudioPool>
+struct AudioPool final
 {
 public:
   using ProjectPoolPathGetter = std::function<fs::path (bool backup)>;
@@ -142,8 +142,10 @@ public:
 
   void print () const;
 
-  void init_after_cloning (const AudioPool &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioPool             &obj,
+    const AudioPool       &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr auto kClipsKey = "clips"sv;

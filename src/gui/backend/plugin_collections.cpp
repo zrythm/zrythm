@@ -11,8 +11,8 @@
 constexpr const char * PLUGIN_COLLECTIONS_JSON_FILENAME =
   "plugin-collections.json";
 
-using namespace zrythm;
-using namespace zrythm::gui::old_dsp::plugins;
+namespace zrythm::gui::old_dsp::plugins
+{
 
 bool
 PluginCollection::contains_descriptor (
@@ -31,7 +31,7 @@ PluginCollection::add_descriptor (const zrythm::plugins::PluginDescriptor &descr
       return;
     }
 
-  auto new_descr = descr.clone_unique ();
+  auto new_descr = utils::clone_unique (descr);
   descriptors_.emplace_back (std::move (new_descr));
 }
 
@@ -61,13 +61,14 @@ PluginCollection::generate_context_menu () const
 #endif
 
 void
-PluginCollection::init_after_cloning (
+init_from (
+  PluginCollection       &obj,
   const PluginCollection &other,
-  ObjectCloneType         clone_type)
+  utils::ObjectCloneType  clone_type)
 {
-  name_ = other.name_;
-  description_ = other.description_;
-  clone_unique_ptr_container (descriptors_, other.descriptors_);
+  obj.name_ = other.name_;
+  obj.description_ = other.description_;
+  utils::clone_unique_ptr_container (obj.descriptors_, other.descriptors_);
 }
 
 /* ============================================================================ */
@@ -180,7 +181,7 @@ PluginCollections::add (
   const zrythm::gui::old_dsp::plugins::PluginCollection &collection,
   bool                                                   serialize)
 {
-  collections_.emplace_back (collection.clone_unique ());
+  collections_.emplace_back (utils::clone_unique (collection));
 
   if (serialize)
     {
@@ -209,4 +210,5 @@ PluginCollections::remove (PluginCollection &collection, bool serialize)
     {
       serialize_to_file_no_throw ();
     }
+}
 }

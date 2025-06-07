@@ -18,7 +18,8 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 using namespace zrythm::structure::tracks;
 
 MixerSelectionsAction::MixerSelectionsAction (QObject * parent)
@@ -49,7 +50,7 @@ MixerSelectionsAction::MixerSelectionsAction (
   new_bridge_mode_ = new_bridge_mode;
   if (setting)
     {
-      setting_ = setting->clone_unique ();
+      setting_ = utils::clone_unique (*setting);
       setting_->validate ();
     }
 
@@ -62,7 +63,7 @@ MixerSelectionsAction::MixerSelectionsAction (
     }
 
   if (connections_mgr)
-    port_connections_before_ = connections_mgr->clone_unique ();
+    port_connections_before_ = utils::clone_unique (*connections_mgr);
 }
 
 void
@@ -88,20 +89,23 @@ MixerSelectionsAction::init_loaded_impl ()
 }
 
 void
-MixerSelectionsAction::init_after_cloning (
+init_from (
+  MixerSelectionsAction       &obj,
   const MixerSelectionsAction &other,
-  ObjectCloneType              clone_type)
+  utils::ObjectCloneType       clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  mixer_selections_action_type_ = other.mixer_selections_action_type_;
-  to_slot_ = other.to_slot_;
-  to_track_uuid_ = other.to_track_uuid_;
-  new_channel_ = other.new_channel_;
-  num_plugins_ = other.num_plugins_;
-  new_val_ = other.new_val_;
-  new_bridge_mode_ = other.new_bridge_mode_;
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.mixer_selections_action_type_ = other.mixer_selections_action_type_;
+  obj.to_slot_ = other.to_slot_;
+  obj.to_track_uuid_ = other.to_track_uuid_;
+  obj.new_channel_ = other.new_channel_;
+  obj.num_plugins_ = other.num_plugins_;
+  obj.new_val_ = other.new_val_;
+  obj.new_bridge_mode_ = other.new_bridge_mode_;
   if (other.setting_)
-    setting_ = other.setting_->clone_unique ();
+    obj.setting_ = utils::clone_unique (*other.setting_);
   // TODO
 #if 0
     if (other.ms_before_)
@@ -1109,7 +1113,7 @@ MixerSelectionsAction::do_or_undo (bool do_it)
 
   /* if first do and keeping track of connections, clone the new connections */
   if (do_it && port_connections_before_ && !port_connections_after_)
-    port_connections_after_ = PORT_CONNECTIONS_MGR->clone_unique ();
+    port_connections_after_ = utils::clone_unique (*PORT_CONNECTIONS_MGR);
 }
 
 void
@@ -1204,4 +1208,5 @@ MixerSelectionsAction::to_string () const
     }
 
   return {};
+}
 }

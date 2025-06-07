@@ -27,10 +27,7 @@ class AutomationRegion;
 /**
  * An automation point inside an AutomationTrack.
  */
-class AutomationPoint final
-    : public QObject,
-      public RegionOwnedObject,
-      public ICloneable<AutomationPoint>
+class AutomationPoint final : public QObject, public RegionOwnedObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -112,9 +109,10 @@ public:
    */
   bool curves_up () const;
 
-  void
-  init_after_cloning (const AutomationPoint &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AutomationPoint       &obj,
+    const AutomationPoint &other,
+    utils::ObjectCloneType clone_type);
 
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;
@@ -141,7 +139,7 @@ public:
     /* note: we don't care about the index, only the position and the value */
     /* note2: previously, this code was comparing position ticks, now it only
      * compares frames. TODO: if no problems are caused delete this note */
-    return a.pos_ == b.pos_
+    return *a.pos_ == *b.pos_
            && utils::math::floats_near (a.fvalue_, b.fvalue_, 0.001f);
   }
 

@@ -179,8 +179,10 @@ public:
   virtual QString to_string () const = 0;
 
 protected:
-  void
-  copy_members_from (const UndoableAction &other, ObjectCloneType clone_type);
+  friend void init_from (
+    UndoableAction        &obj,
+    const UndoableAction  &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   /** NVI pattern. */

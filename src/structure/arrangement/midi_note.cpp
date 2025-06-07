@@ -177,18 +177,25 @@ MidiNote::shift_pitch (const int delta)
 }
 
 void
-MidiNote::init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
-
+init_from (MidiNote &obj, const MidiNote &other, utils::ObjectCloneType clone_type)
 {
-  pitch_ = other.pitch_;
-  vel_->setValue (other.vel_->getValue ());
-  currently_listened_ = other.currently_listened_;
-  last_listened_pitch_ = other.last_listened_pitch_;
-  vel_->vel_at_start_ = other.vel_->vel_at_start_;
-  BoundedObject::copy_members_from (other, clone_type);
-  MuteableObject::copy_members_from (other, clone_type);
-  RegionOwnedObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
+  obj.pitch_ = other.pitch_;
+  obj.vel_->setValue (other.vel_->getValue ());
+  obj.currently_listened_ = other.currently_listened_;
+  obj.last_listened_pitch_ = other.last_listened_pitch_;
+  obj.vel_->vel_at_start_ = other.vel_->vel_at_start_;
+  init_from (
+    static_cast<BoundedObject &> (obj),
+    static_cast<const BoundedObject &> (other), clone_type);
+  init_from (
+    static_cast<MuteableObject &> (obj),
+    static_cast<const MuteableObject &> (other), clone_type);
+  init_from (
+    static_cast<RegionOwnedObject &> (obj),
+    static_cast<const RegionOwnedObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
 }
 
 bool

@@ -9,18 +9,19 @@ namespace zrythm::plugins
 void
 PluginConfiguration::copy_fields_from (const PluginConfiguration &other)
 {
-  descr_ = other.descr_->clone_unique ();
+  descr_ = utils::clone_unique (*other.descr_);
   hosting_type_ = other.hosting_type_;
   force_generic_ui_ = other.force_generic_ui_;
   bridge_mode_ = other.bridge_mode_;
 }
 
 void
-PluginConfiguration::init_after_cloning (
+init_from (
+  PluginConfiguration       &obj,
   const PluginConfiguration &other,
-  ObjectCloneType            clone_type)
+  utils::ObjectCloneType     clone_type)
 {
-  copy_fields_from (other);
+  obj.copy_fields_from (other);
 }
 
 std::unique_ptr<PluginConfiguration>
@@ -28,7 +29,7 @@ PluginConfiguration::create_new_for_descriptor (
   const zrythm::plugins::PluginDescriptor &descr)
 {
   auto ret = std::make_unique<PluginConfiguration> ();
-  ret->descr_ = descr.clone_unique ();
+  ret->descr_ = utils::clone_unique (descr);
   ret->validate ();
   return ret;
 }

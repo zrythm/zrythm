@@ -642,11 +642,12 @@ SampleProcessor::disconnect ()
 }
 
 void
-SampleProcessor::init_after_cloning (
+init_from (
+  SampleProcessor       &obj,
   const SampleProcessor &other,
-  ObjectCloneType        clone_type)
+  utils::ObjectCloneType clone_type)
 {
-  fader_ = other.fader_->clone_unique ();
+  obj.fader_ = utils::clone_unique (*other.fader_);
 }
 
 TempoTrack *
@@ -771,9 +772,6 @@ SampleProcessor::find_and_queue_metronome (
 
 SampleProcessor::~SampleProcessor ()
 {
-  if (
-    PROJECT && AUDIO_ENGINE && SAMPLE_PROCESSOR
-    && this == SAMPLE_PROCESSOR.get ())
-    disconnect ();
+  disconnect ();
 }
 }

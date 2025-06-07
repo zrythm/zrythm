@@ -93,18 +93,34 @@ InstrumentTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
 }
 
 void
-InstrumentTrack::init_after_cloning (
+init_from (
+  InstrumentTrack       &obj,
   const InstrumentTrack &other,
-  ObjectCloneType        clone_type)
+  utils::ObjectCloneType clone_type)
 {
-  Track::copy_members_from (other, clone_type);
-  AutomatableTrack::copy_members_from (other, clone_type);
-  ProcessableTrack::copy_members_from (other, clone_type);
-  ChannelTrack::copy_members_from (other, clone_type);
-  GroupTargetTrack::copy_members_from (other, clone_type);
-  RecordableTrack::copy_members_from (other, clone_type);
-  LanedTrackImpl<MidiLane>::copy_members_from (other, clone_type);
-  PianoRollTrack::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
+  init_from (
+    static_cast<AutomatableTrack &> (obj),
+    static_cast<const AutomatableTrack &> (other), clone_type);
+  init_from (
+    static_cast<ProcessableTrack &> (obj),
+    static_cast<const ProcessableTrack &> (other), clone_type);
+  init_from (
+    static_cast<ChannelTrack &> (obj),
+    static_cast<const ChannelTrack &> (other), clone_type);
+  init_from (
+    static_cast<GroupTargetTrack &> (obj),
+    static_cast<const GroupTargetTrack &> (other), clone_type);
+  init_from (
+    static_cast<RecordableTrack &> (obj),
+    static_cast<const RecordableTrack &> (other), clone_type);
+  init_from (
+    static_cast<LanedTrackImpl<MidiLane> &> (obj),
+    static_cast<const LanedTrackImpl<MidiLane> &> (other), clone_type);
+  init_from (
+    static_cast<PianoRollTrack &> (obj),
+    static_cast<const PianoRollTrack &> (other), clone_type);
 }
 
 void

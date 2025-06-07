@@ -23,7 +23,7 @@ class ProcessableTrack;
  * A TrackProcessor is a processor that is used as the first entry point when
  * processing a track.
  */
-class TrackProcessor final : public ICloneable<TrackProcessor>, public IPortOwner
+class TrackProcessor final : public IPortOwner
 {
   using PortType = zrythm::dsp::PortType;
   using PortFlow = zrythm::dsp::PortFlow;
@@ -138,9 +138,10 @@ public:
 
   void append_ports (std::vector<Port *> &ports);
 
-  void
-  init_after_cloning (const TrackProcessor &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    TrackProcessor        &obj,
+    const TrackProcessor  &other,
+    utils::ObjectCloneType clone_type);
 
   std::pair<AudioPort &, AudioPort &> get_stereo_in_ports () const
   {

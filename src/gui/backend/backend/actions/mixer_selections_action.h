@@ -19,10 +19,7 @@ namespace zrythm::gui::actions
  *
  * @see MixerSelections
  */
-class MixerSelectionsAction
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<MixerSelectionsAction>
+class MixerSelectionsAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -87,9 +84,10 @@ public:
       PluginSpan{ *deleted_ms_ }.get_plugins (plugins);
   }
 
-  void init_after_cloning (
+  friend void init_from (
+    MixerSelectionsAction       &obj,
     const MixerSelectionsAction &other,
-    ObjectCloneType              clone_type) override;
+    utils::ObjectCloneType       clone_type);
 
 private:
   void init_loaded_impl () override;

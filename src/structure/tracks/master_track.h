@@ -12,7 +12,6 @@ namespace zrythm::structure::tracks
 class MasterTrack final
     : public QObject,
       public GroupTargetTrack,
-      public ICloneable<MasterTrack>,
       public utils::InitializableObject<MasterTrack>
 {
   Q_OBJECT
@@ -30,8 +29,10 @@ public:
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
 
-  void init_after_cloning (const MasterTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MasterTrack           &obj,
+    const MasterTrack     &other,
+    utils::ObjectCloneType clone_type);
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;

@@ -17,9 +17,7 @@ class Channel;
  * Each track has an automation tracklist with automation tracks to be generated
  * at runtime, and filled in with automation points/curves when loading projects.
  */
-class AutomationTracklist final
-    : public QAbstractListModel,
-      public ICloneable<AutomationTracklist>
+class AutomationTracklist final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
@@ -54,9 +52,10 @@ public:
 
   // ========================================================================
 
-  void init_after_cloning (
+  friend void init_from (
+    AutomationTracklist       &obj,
     const AutomationTracklist &other,
-    ObjectCloneType            clone_type) override;
+    utils::ObjectCloneType     clone_type);
 
   /**
    * Inits a loaded AutomationTracklist.

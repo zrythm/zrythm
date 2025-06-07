@@ -7,6 +7,7 @@
 
 #include <filesystem>
 
+#include "utils/qt.h"
 #include "utils/string.h"
 #include "utils/traits.h"
 
@@ -275,14 +276,15 @@ struct fmt::formatter<QPointer<T>> : fmt::formatter<std::string_view>
   }
 };
 
-// Formatter for QScopedPointer
+// Formatter for utils::QObjectUniquePtr
 template <typename T>
-struct fmt::formatter<QScopedPointer<T>> : fmt::formatter<std::string_view>
+struct fmt::formatter<utils::QObjectUniquePtr<T>>
+    : fmt::formatter<std::string_view>
 {
   template <typename FormatContext>
-  auto format (const QScopedPointer<T> &opt, FormatContext &ctx) const
+  auto format (const utils::QObjectUniquePtr<T> &opt, FormatContext &ctx) const
   {
-    if (!opt.isNull ())
+    if (!opt)
       {
         return fmt::formatter<std::string_view>::format (
           fmt::format ("{}", *opt), ctx);

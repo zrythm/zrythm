@@ -7,6 +7,7 @@
 #include <string>
 
 #include "utils/exceptions.h"
+#include "utils/qt.h"
 #include "utils/traits.h"
 #include "utils/types.h"
 
@@ -178,10 +179,10 @@ template <typename T> struct adl_serializer<std::shared_ptr<T>>
   }
 };
 
-/// QScopedPointer specialization
-template <typename T> struct adl_serializer<QScopedPointer<T>>
+/// QObjectUniquePtr specialization
+template <typename T> struct adl_serializer<utils::QObjectUniquePtr<T>>
 {
-  static void to_json (json &json_value, const QScopedPointer<T> &ptr)
+  static void to_json (json &json_value, const utils::QObjectUniquePtr<T> &ptr)
   {
     if (ptr.get ())
       {
@@ -192,7 +193,8 @@ template <typename T> struct adl_serializer<QScopedPointer<T>>
         json_value = nullptr;
       }
   }
-  static void from_json (const json &json_value, QScopedPointer<T> &ptr)
+  static void
+  from_json (const json &json_value, utils::QObjectUniquePtr<T> &ptr)
     requires std::is_default_constructible_v<T>
   {
     ptr = new T ();

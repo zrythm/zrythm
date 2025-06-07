@@ -158,8 +158,19 @@ public:
   }
 
 protected:
-  void
-  copy_members_from (const LanedTrackImpl &other, ObjectCloneType clone_type);
+  friend void init_from (
+    LanedTrackImpl        &obj,
+    const LanedTrackImpl  &other,
+    utils::ObjectCloneType clone_type)
+  {
+    init_from (obj.lanes_, other.lanes_, clone_type);
+    for (auto &lane_var : obj.lanes_)
+      {
+        auto lane = std::get<TrackLaneT *> (lane_var);
+        lane->track_ = &obj;
+      }
+    obj.lanes_visible_ = other.lanes_visible_;
+  }
 
   void set_playback_caches () override;
 

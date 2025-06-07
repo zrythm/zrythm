@@ -125,8 +125,10 @@ protected:
   void
   append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
 
-  void
-  copy_members_from (const ChannelTrack &other, ObjectCloneType clone_type);
+  friend void init_from (
+    ChannelTrack          &obj,
+    const ChannelTrack    &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * @brief Initializes the channel.
@@ -157,7 +159,7 @@ public:
   /**
    * @brief Owned channel object.
    */
-  QScopedPointer<Channel> channel_;
+  utils::QObjectUniquePtr<Channel> channel_;
 
 private:
   TrackRegistry &track_registry_;

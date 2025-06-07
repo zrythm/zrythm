@@ -284,24 +284,6 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
 }
 
 template <typename RegionT>
-void
-TrackLaneImpl<RegionT>::copy_members_from (
-  const TrackLaneImpl &other,
-  ObjectCloneType      clone_type)
-{
-  name_ = other.name_;
-  // y_ = other.y_;
-  height_ = other.height_;
-  mute_ = other.mute_;
-  solo_ = other.solo_;
-  for (auto * region : this->get_children_view ())
-    {
-      // region->is_auditioner_ = is_auditioner ();
-      region->set_lane (dynamic_cast<TrackLaneT *> (this));
-    }
-}
-
-template <typename RegionT>
 std::unique_ptr<typename TrackLaneImpl<RegionT>::TrackLaneT>
 TrackLaneImpl<RegionT>::gen_snapshot () const
 {

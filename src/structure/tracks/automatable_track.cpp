@@ -23,18 +23,16 @@ AutomatableTrack::AutomatableTrack (
 }
 
 void
-AutomatableTrack::copy_members_from (
+init_from (
+  AutomatableTrack       &obj,
   const AutomatableTrack &other,
-  ObjectCloneType         clone_type)
+  utils::ObjectCloneType  clone_type)
 {
-  automation_tracklist_ = other.automation_tracklist_->clone_raw_ptr (
-    ObjectCloneType::Snapshot, port_registry_,
-    PROJECT->get_arranger_object_registry (), *this);
-  if (auto * qobject = dynamic_cast<QObject *> (this))
-    {
-      automation_tracklist_->setParent (qobject);
-    }
-  automation_visible_ = other.automation_visible_;
+  obj.automation_tracklist_ = utils::clone_qobject (
+    *other.automation_tracklist_, dynamic_cast<QObject *> (&obj),
+    utils::ObjectCloneType::Snapshot, obj.port_registry_,
+    PROJECT->get_arranger_object_registry (), obj);
+  obj.automation_visible_ = other.automation_visible_;
 }
 
 void

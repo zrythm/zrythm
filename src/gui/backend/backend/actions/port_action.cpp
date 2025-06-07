@@ -7,17 +7,21 @@
 #include "gui/dsp/port.h"
 #include "utils/format.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 void
-PortAction::init_after_cloning (
-  const PortAction &other,
-  ObjectCloneType   clone_type)
+init_from (
+  PortAction            &obj,
+  const PortAction      &other,
+  utils::ObjectCloneType clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  type_ = other.type_;
-  port_id_ = other.port_id_;
-  val_ = other.val_;
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.type_ = other.type_;
+  obj.port_id_ = other.port_id_;
+  obj.val_ = other.val_;
 }
 
 PortAction::PortAction (QObject * parent)
@@ -97,4 +101,5 @@ PortAction::to_string () const
     }
 
   z_return_val_if_reached ({});
+}
 }

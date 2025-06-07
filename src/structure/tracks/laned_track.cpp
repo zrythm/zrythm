@@ -120,21 +120,6 @@ LanedTrackImpl<TrackLaneT>::set_playback_caches ()
 }
 
 template <typename TrackLaneT>
-void
-LanedTrackImpl<TrackLaneT>::copy_members_from (
-  const LanedTrackImpl &other,
-  ObjectCloneType       clone_type)
-{
-  lanes_.copy_members_from (other.lanes_, clone_type);
-  for (auto &lane_var : lanes_)
-    {
-      auto lane = std::get<TrackLaneT *> (lane_var);
-      lane->track_ = this;
-    }
-  lanes_visible_ = other.lanes_visible_;
-}
-
-template <typename TrackLaneT>
 bool
 LanedTrackImpl<TrackLaneT>::create_missing_lanes (const int pos)
 {

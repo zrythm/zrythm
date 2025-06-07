@@ -249,8 +249,10 @@ public:
   }
 
 protected:
-  void
-  copy_members_from (const BoundedObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    BoundedObject         &obj,
+    const BoundedObject   &other,
+    utils::ObjectCloneType clone_type);
 
   bool
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
@@ -295,7 +297,7 @@ public:
    * This is exclusive of the material, i.e., the data at this position is not
    * counted (for audio regions at least, TODO check for others).
    */
-  QScopedPointer<PositionProxy> end_pos_;
+  utils::QObjectUniquePtr<PositionProxy> end_pos_;
 
   BOOST_DESCRIBE_CLASS (BoundedObject, (ArrangerObject), (end_pos_), (), ())
 };

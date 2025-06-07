@@ -35,7 +35,6 @@ class ChordTrack final
       public ChannelTrack,
       public arrangement::ArrangerObjectOwner<arrangement::ChordRegion>,
       public arrangement::ArrangerObjectOwner<arrangement::ScaleObject>,
-      public ICloneable<ChordTrack>,
       public utils::InitializableObject<ChordTrack>
 {
   Q_OBJECT
@@ -98,8 +97,10 @@ public:
     });
   }
 
-  void init_after_cloning (const ChordTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChordTrack            &obj,
+    const ChordTrack      &other,
+    utils::ObjectCloneType clone_type);
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;

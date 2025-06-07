@@ -43,12 +43,13 @@ AutomationTracklist::init_loaded ()
 }
 
 void
-AutomationTracklist::init_after_cloning (
+init_from (
+  AutomationTracklist       &obj,
   const AutomationTracklist &other,
-  ObjectCloneType            clone_type)
+  utils::ObjectCloneType     clone_type)
 {
-  ats_.clear ();
-  ats_.reserve (other.ats_.size ());
+  obj.ats_.clear ();
+  obj.ats_.reserve (other.ats_.size ());
 // TODO
 #if 0
   for (const auto &at : other.ats_)

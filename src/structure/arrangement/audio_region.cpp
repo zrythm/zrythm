@@ -460,23 +460,44 @@ AudioRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick) cons
 }
 
 void
-AudioRegion::init_after_cloning (
-  const AudioRegion &other,
-  ObjectCloneType    clone_type)
+init_from (
+  AudioRegion           &obj,
+  const AudioRegion     &other,
+  utils::ObjectCloneType clone_type)
 {
-  clip_id_ = other.clip_id_;
-  gain_ = other.gain_;
-  musical_mode_ = other.musical_mode_;
-  LaneOwnedObject::copy_members_from (other, clone_type);
-  RegionImpl::copy_members_from (other, clone_type);
-  FadeableObject::copy_members_from (other, clone_type);
-  TimelineObject::copy_members_from (other, clone_type);
-  NamedObject::copy_members_from (other, clone_type);
-  LoopableObject::copy_members_from (other, clone_type);
-  MuteableObject::copy_members_from (other, clone_type);
-  BoundedObject::copy_members_from (other, clone_type);
-  ColoredObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
+  obj.clip_id_ = other.clip_id_;
+  obj.gain_ = other.gain_;
+  obj.musical_mode_ = other.musical_mode_;
+  init_from (
+    static_cast<LaneOwnedObject &> (obj),
+    static_cast<const LaneOwnedObject &> (other), clone_type);
+  init_from (
+    static_cast<AudioRegion::RegionImpl &> (obj),
+    static_cast<const AudioRegion::RegionImpl &> (other), clone_type);
+  init_from (
+    static_cast<FadeableObject &> (obj),
+    static_cast<const FadeableObject &> (other), clone_type);
+  init_from (
+    static_cast<TimelineObject &> (obj),
+    static_cast<const TimelineObject &> (other), clone_type);
+  init_from (
+    static_cast<NamedObject &> (obj), static_cast<const NamedObject &> (other),
+    clone_type);
+  init_from (
+    static_cast<LoopableObject &> (obj),
+    static_cast<const LoopableObject &> (other), clone_type);
+  init_from (
+    static_cast<MuteableObject &> (obj),
+    static_cast<const MuteableObject &> (other), clone_type);
+  init_from (
+    static_cast<BoundedObject &> (obj),
+    static_cast<const BoundedObject &> (other), clone_type);
+  init_from (
+    static_cast<ColoredObject &> (obj),
+    static_cast<const ColoredObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
 }
 
 void

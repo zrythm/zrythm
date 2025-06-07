@@ -94,8 +94,9 @@ CVPort::has_sound () const
 }
 
 void
-CVPort::init_after_cloning (const CVPort &other, ObjectCloneType clone_type)
+init_from (CVPort &obj, const CVPort &other, utils::ObjectCloneType clone_type)
 
 {
-  Port::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<Port &> (obj), static_cast<const Port &> (other), clone_type);
 }

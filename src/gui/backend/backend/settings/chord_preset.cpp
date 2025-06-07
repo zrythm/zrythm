@@ -12,12 +12,13 @@ ChordPreset::ChordPreset (const ChordPreset::NameT &name, QObject * parent)
 }
 
 void
-ChordPreset::init_after_cloning (
-  const ChordPreset &other,
-  ObjectCloneType    clone_type)
+init_from (
+  ChordPreset           &obj,
+  const ChordPreset     &other,
+  utils::ObjectCloneType clone_type)
 {
-  name_ = other.name_;
-  descr_ = other.descr_;
+  obj.name_ = other.name_;
+  obj.descr_ = other.descr_;
 }
 
 utils::Utf8String

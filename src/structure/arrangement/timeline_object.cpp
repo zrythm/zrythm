@@ -7,9 +7,10 @@
 namespace zrythm::structure::arrangement
 {
 void
-TimelineObject::copy_members_from (
-  const TimelineObject &other,
-  ObjectCloneType       clone_type)
+init_from (
+  TimelineObject        &obj,
+  const TimelineObject  &other,
+  utils::ObjectCloneType clone_type)
 {
 }
 }

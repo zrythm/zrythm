@@ -71,7 +71,7 @@ TEST (PluginDescriptorTest, CategoryConversion)
 TEST (PluginDescriptorTest, CloneAndEquality)
 {
   auto original = create_test_descriptor (PluginCategory::COMPRESSOR);
-  auto clone = original->clone_unique ();
+  auto clone = utils::clone_unique (*original);
 
   EXPECT_TRUE (original->is_same_plugin (*clone));
 

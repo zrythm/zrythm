@@ -60,14 +60,24 @@ AudioGroupTrack::init_loaded (
 }
 
 void
-AudioGroupTrack::init_after_cloning (
+init_from (
+  AudioGroupTrack       &obj,
   const AudioGroupTrack &other,
-  ObjectCloneType        clone_type)
+  utils::ObjectCloneType clone_type)
 {
-  FoldableTrack::copy_members_from (other, clone_type);
-  ChannelTrack::copy_members_from (other, clone_type);
-  ProcessableTrack::copy_members_from (other, clone_type);
-  AutomatableTrack::copy_members_from (other, clone_type);
-  Track::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<FoldableTrack &> (obj),
+    static_cast<const FoldableTrack &> (other), clone_type);
+  init_from (
+    static_cast<ChannelTrack &> (obj),
+    static_cast<const ChannelTrack &> (other), clone_type);
+  init_from (
+    static_cast<ProcessableTrack &> (obj),
+    static_cast<const ProcessableTrack &> (other), clone_type);
+  init_from (
+    static_cast<AutomatableTrack &> (obj),
+    static_cast<const AutomatableTrack &> (other), clone_type);
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 }
 }

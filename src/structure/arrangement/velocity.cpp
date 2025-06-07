@@ -12,13 +12,15 @@ namespace zrythm::structure::arrangement
 Velocity::Velocity (QObject * parent) : QObject (parent) { }
 
 void
-Velocity::init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
+init_from (Velocity &obj, const Velocity &other, utils::ObjectCloneType clone_type)
 
 {
-  vel_ = other.vel_;
-  vel_at_start_ = other.vel_at_start_;
-  // RegionOwnedObject::copy_members_from (other, clone_type);
-  // ArrangerObject::copy_members_from (other, clone_type);
+  obj.vel_ = other.vel_;
+  obj.vel_at_start_ = other.vel_at_start_;
+  // init_from(static_cast<RegionOwnedObject&> (obj), static_cast<const
+  // RegionOwnedObject&> (other), clone_type);
+  // init_from(static_cast<ArrangerObject&> (obj), static_cast<const
+  // ArrangerObject&> (other), clone_type);
 }
 
 void

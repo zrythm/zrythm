@@ -11,10 +11,7 @@
 namespace zrythm::gui::actions
 {
 
-class RangeAction
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<RangeAction>
+class RangeAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -52,8 +49,10 @@ public:
     return end_pos_.ticks_ - start_pos_.ticks_;
   }
 
-  void init_after_cloning (const RangeAction &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    RangeAction           &obj,
+    const RangeAction     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   void init_loaded_impl () override;

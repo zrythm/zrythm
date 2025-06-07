@@ -196,7 +196,7 @@ AutomationRegion::get_ap_around (
   pos = *_pos;
   AutomationTrack * at = get_automation_track ();
   AutomationPoint * ap = at->get_ap_before_pos (pos, true, use_snapshots);
-  if (ap && pos.ticks_ - ap->get_position ().ticks_ <= (double) delta_ticks)
+  if ((ap != nullptr) && pos.ticks_ - ap->get_position ().ticks_ <= delta_ticks)
     {
       return ap;
     }
@@ -204,7 +204,7 @@ AutomationRegion::get_ap_around (
     {
       pos.add_ticks (delta_ticks, AUDIO_ENGINE->frames_per_tick_);
       ap = at->get_ap_before_pos (pos, true, use_snapshots);
-      if (ap)
+      if (ap != nullptr)
         {
           double diff = ap->get_position ().ticks_ - _pos->ticks_;
           if (diff >= 0.0)
@@ -216,21 +216,41 @@ AutomationRegion::get_ap_around (
 }
 
 void
-AutomationRegion::init_after_cloning (
+init_from (
+  AutomationRegion       &obj,
   const AutomationRegion &other,
-  ObjectCloneType         clone_type)
+  utils::ObjectCloneType  clone_type)
 {
 
-  RegionImpl::copy_members_from (other, clone_type);
-  TimelineObject::copy_members_from (other, clone_type);
-  NamedObject::copy_members_from (other, clone_type);
-  LoopableObject::copy_members_from (other, clone_type);
-  MuteableObject::copy_members_from (other, clone_type);
-  BoundedObject::copy_members_from (other, clone_type);
-  ColoredObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
-  ArrangerObjectOwner::copy_members_from (other, clone_type);
-  force_sort ();
+  init_from (
+    static_cast<AutomationRegion::RegionImpl &> (obj),
+    static_cast<const AutomationRegion::RegionImpl &> (other), clone_type);
+  init_from (
+    static_cast<TimelineObject &> (obj),
+    static_cast<const TimelineObject &> (other), clone_type);
+  init_from (
+    static_cast<NamedObject &> (obj), static_cast<const NamedObject &> (other),
+    clone_type);
+  init_from (
+    static_cast<LoopableObject &> (obj),
+    static_cast<const LoopableObject &> (other), clone_type);
+  init_from (
+    static_cast<MuteableObject &> (obj),
+    static_cast<const MuteableObject &> (other), clone_type);
+  init_from (
+    static_cast<BoundedObject &> (obj),
+    static_cast<const BoundedObject &> (other), clone_type);
+  init_from (
+    static_cast<ColoredObject &> (obj),
+    static_cast<const ColoredObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
+  init_from (
+    static_cast<AutomationRegion::ArrangerObjectOwner &> (obj),
+    static_cast<const AutomationRegion::ArrangerObjectOwner &> (other),
+    clone_type);
+  obj.force_sort ();
 }
 
 bool

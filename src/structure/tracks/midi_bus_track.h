@@ -18,7 +18,6 @@ namespace zrythm::structure::tracks
 class MidiBusTrack final
     : public QObject,
       public ChannelTrack,
-      public ICloneable<MidiBusTrack>,
       public utils::InitializableObject<MidiBusTrack>
 {
   Q_OBJECT
@@ -32,9 +31,10 @@ class MidiBusTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiBusTrack)
 
 public:
-  void
-  init_after_cloning (const MidiBusTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiBusTrack          &obj,
+    const MidiBusTrack    &other,
+    utils::ObjectCloneType clone_type);
 
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)

@@ -187,10 +187,12 @@ public:
   virtual std::string
   get_field_name_for_serialization (const ChildT *) const = 0;
 
-  void
-  copy_members_from (const ArrangerObjectOwner &other, ObjectCloneType clone_type)
+  friend void init_from (
+    ArrangerObjectOwner       &obj,
+    const ArrangerObjectOwner &other,
+    utils::ObjectCloneType     clone_type)
   {
-    children_.reserve (other.children_.size ());
+    obj.children_.reserve (other.children_.size ());
     // TODO
 #if 0
   for (const auto &ap : other.get_children_view ())

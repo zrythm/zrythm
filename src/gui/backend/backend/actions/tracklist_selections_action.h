@@ -18,10 +18,7 @@ namespace zrythm::gui::actions
 /**
  * Tracklist selections (tracks) action.
  */
-class TracklistSelectionsAction
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<TracklistSelectionsAction>
+class TracklistSelectionsAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -204,9 +201,10 @@ public:
 
   bool contains_clip (const AudioClip &clip) const override;
 
-  void init_after_cloning (
+  friend void init_from (
+    TracklistSelectionsAction       &obj,
     const TracklistSelectionsAction &other,
-    ObjectCloneType                  clone_type) override;
+    utils::ObjectCloneType           clone_type);
 
 private:
   void init_loaded_impl () final;

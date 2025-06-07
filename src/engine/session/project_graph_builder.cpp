@@ -155,7 +155,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 [&] (auto &&src) { port->srcs_.push_back (src); },
                 src_var.value ());
               z_return_val_if_fail (port->srcs_.back (), nullptr);
-              port->src_connections_.emplace_back (conn->clone_unique ());
+              port->src_connections_.emplace_back (utils::clone_unique (*conn));
             }
 
           dsp::PortConnectionsManager::ConnectionsVector dests;
@@ -170,7 +170,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 [&] (auto &&dest) { port->dests_.push_back (dest); },
                 dest_var.value ());
               z_return_val_if_fail (port->dests_.back (), nullptr);
-              port->dest_connections_.emplace_back (conn->clone_unique ());
+              port->dest_connections_.emplace_back (utils::clone_unique (*conn));
             }
 
           /* skip unnecessary control ports */

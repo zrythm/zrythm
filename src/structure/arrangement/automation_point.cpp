@@ -35,9 +35,10 @@ AutomationPoint::AutomationPoint (
 }
 
 void
-AutomationPoint::init_after_cloning (
+init_from (
+  AutomationPoint       &obj,
   const AutomationPoint &other,
-  ObjectCloneType        clone_type)
+  utils::ObjectCloneType clone_type)
 {
   if (ZRYTHM_TESTING)
     {
@@ -46,13 +47,17 @@ AutomationPoint::init_after_cloning (
         && utils::math::assert_nonnann (other.fvalue_));
     }
 
-  fvalue_ = other.fvalue_;
-  normalized_val_ = other.normalized_val_;
-  curve_opts_ = other.curve_opts_;
-  region_id_ = other.region_id_;
+  obj.fvalue_ = other.fvalue_;
+  obj.normalized_val_ = other.normalized_val_;
+  obj.curve_opts_ = other.curve_opts_;
+  obj.region_id_ = other.region_id_;
   // index_ = other.index_;
-  RegionOwnedObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<RegionOwnedObject &> (obj),
+    static_cast<const RegionOwnedObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
 }
 
 ArrangerObjectPtrVariant

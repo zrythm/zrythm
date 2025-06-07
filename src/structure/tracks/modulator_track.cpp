@@ -245,14 +245,20 @@ ModulatorTrack::remove_modulator (plugins::PluginSlot::SlotNo slot)
 }
 
 void
-ModulatorTrack::init_after_cloning (
-  const ModulatorTrack &other,
-  ObjectCloneType       clone_type)
+init_from (
+  ModulatorTrack        &obj,
+  const ModulatorTrack  &other,
+  utils::ObjectCloneType clone_type)
 {
-  ProcessableTrack::copy_members_from (other, clone_type);
-  AutomatableTrack::copy_members_from (other, clone_type);
-  Track::copy_members_from (other, clone_type);
-  if (clone_type == ObjectCloneType::NewIdentity)
+  init_from (
+    static_cast<ProcessableTrack &> (obj),
+    static_cast<const ProcessableTrack &> (other), clone_type);
+  init_from (
+    static_cast<AutomatableTrack &> (obj),
+    static_cast<const AutomatableTrack &> (other), clone_type);
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
+  if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
       const auto clone_from_registry = [] (auto &vec, const auto &other_vec) {
         for (const auto &other_el : other_vec)
@@ -261,14 +267,14 @@ ModulatorTrack::init_after_cloning (
           }
       };
 
-      clone_from_registry (modulators_, other.modulators_);
+      clone_from_registry (obj.modulators_, other.modulators_);
     }
-  else if (clone_type == ObjectCloneType::Snapshot)
+  else if (clone_type == utils::ObjectCloneType::Snapshot)
     {
-      modulators_ = other.modulators_;
+      obj.modulators_ = other.modulators_;
     }
-  clone_unique_ptr_container (
-    modulator_macro_processors_, other.modulator_macro_processors_);
+  utils::clone_unique_ptr_container (
+    obj.modulator_macro_processors_, other.modulator_macro_processors_);
 }
 
 std::optional<ModulatorTrack::PluginPtrVariant>

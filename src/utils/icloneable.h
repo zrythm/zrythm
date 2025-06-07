@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_ICLONEABLE_H__
-#define __UTILS_ICLONEABLE_H__
+#pragma once
 
 #include <memory>
 #include <type_traits>
@@ -10,16 +9,12 @@
 #include <vector>
 
 #include "utils/initializable_object.h"
+#include "utils/qt.h"
 #include "utils/traits.h"
 #include "utils/variant_helpers.h"
 
-/**
- * @addtogroup utils
- *
- * @{
- */
-
-using namespace zrythm;
+namespace zrythm::utils
+{
 
 enum class ObjectCloneType
 {
@@ -36,140 +31,111 @@ enum class ObjectCloneType
   NewIdentity,
 };
 
-#define DEFINE_ICLONEABLE_QML_PROPERTIES(ClassType) \
-public: \
-  /* ================================================================ */ \
-  /* helpers */ \
-  /* ================================================================ */ \
-  Q_INVOKABLE ClassType * clone##ClassType () const \
-  { \
-    return clone_raw_ptr (ObjectCloneType::NewIdentity); \
-  }
-
 /**
- * Interface for objects that can be cloned.
- *
- * Clones are mainly used for serialization, so inheriting classes are only
- * expected to copy serializable members.
- *
- * @note Throws ZrythmException if cloning fails.
- */
-template <typename Derived> class ICloneable
-{
-public:
-  virtual ~ICloneable () = default;
-
-  friend Derived;
-
-private:
-  constexpr Derived * get_derived () { return static_cast<Derived *> (this); }
-  constexpr const Derived * get_derived () const
-  {
-    return static_cast<const Derived *> (this);
-  }
-
-public:
-  template <typename... Args>
-  std::unique_ptr<Derived> clone_unique (
-    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
-    Args &&... args) const
-  {
-    std::unique_ptr<Derived> cloned;
-    if constexpr (utils::Initializable<Derived>)
-      {
-        auto result = Derived::create_unique (std::forward<Args> (args)...);
-        if (!result)
-          return nullptr;
-        cloned = std::move (result);
-      }
-    else
-      {
-        cloned = std::make_unique<Derived> (std::forward<Args> (args)...);
-      }
-    cloned->init_after_cloning (*get_derived (), clone_type);
-    return cloned;
-  }
-
-  template <typename... Args>
-  std::shared_ptr<Derived> clone_shared (
-    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
-    Args &&... args) const
-  {
-    std::shared_ptr<Derived> cloned;
-    if constexpr (utils::Initializable<Derived>)
-      {
-        auto result = Derived::template create_shared<Derived> (
-          std::forward<Args> (args)...);
-        if (!result)
-          return nullptr;
-        cloned = std::move (result);
-      }
-    else
-      {
-        cloned = std::make_shared<Derived> (std::forward<Args> (args)...);
-      }
-    cloned->init_after_cloning (*get_derived (), clone_type);
-    return cloned;
-  }
-
-  template <typename... Args>
-  Derived * clone_raw_ptr (
-    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
-    Args &&... args) const
-  {
-    auto unique_ptr = clone_unique (clone_type, std::forward<Args> (args)...);
-    return unique_ptr.release ();
-  }
-
-  template <typename... Args>
-  Derived * clone_qobject (
-    QObject *       parent,
-    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
-    Args &&... args) const
-  {
-    auto * cloned = clone_raw_ptr (clone_type, std::forward<Args> (args)...);
-    if (cloned)
-      {
-        cloned->setParent (parent);
-      }
-    return cloned;
-  }
-
-  template <typename... Args>
-  QScopedPointer<Derived> clone_unique_qobject (
-    QObject *       parent,
-    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
-    Args &&... args) const
-  {
-    return QScopedPointer<Derived> (
-      clone_qobject (parent, clone_type, std::forward<Args> (args)...));
-  }
-
-protected:
-  ICloneable () = default;
-
-private:
-  /**
-   * @brief Initializes the cloned object.
-   *
-   * @note Only final classes should implement this.
-   *
-   * @throw ZrythmException If the object could not be cloned.
-   */
-  virtual void init_after_cloning (
-    const Derived  &other,
-    ObjectCloneType clone_type = ObjectCloneType::Snapshot) = 0;
-};
-
-/**
- * @brief Concept that checks if a type is cloneable (i.e., inherits from
- * ICloneable).
+ * @brief Concept that checks if a type is cloneable.
  * @tparam T The type to check.
  */
 template <typename T>
-concept Cloneable =
-  std::derived_from<T, ICloneable<T>> && std::is_final_v<T>
-  && std::default_initializable<T>;
+concept CloneableObject =
+  requires (T &obj, const T &other, ObjectCloneType clone_type) {
+    { init_from (obj, other, clone_type) } -> std::same_as<void>;
+  };
+
+template <CloneableObject Derived, typename... Args>
+std::unique_ptr<Derived>
+clone_unique (
+  const Derived  &obj,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+  Args &&... args)
+{
+  std::unique_ptr<Derived> cloned;
+  if constexpr (utils::Initializable<Derived>)
+    {
+      auto result = Derived::create_unique (std::forward<Args> (args)...);
+      if (!result)
+        return nullptr;
+      cloned = std::move (result);
+    }
+  else
+    {
+      cloned = std::make_unique<Derived> (std::forward<Args> (args)...);
+    }
+  init_from (*cloned, obj, clone_type);
+  return cloned;
+}
+
+template <CloneableObject Derived, typename... Args>
+std::shared_ptr<Derived>
+clone_shared (
+  const Derived  &obj,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+  Args &&... args)
+{
+  std::shared_ptr<Derived> cloned;
+  if constexpr (utils::Initializable<Derived>)
+    {
+      auto result =
+        Derived::template create_shared<Derived> (std::forward<Args> (args)...);
+      if (!result)
+        return nullptr;
+      cloned = std::move (result);
+    }
+  else
+    {
+      cloned = std::make_shared<Derived> (std::forward<Args> (args)...);
+    }
+  init_from (*cloned, obj, clone_type);
+  return cloned;
+}
+
+template <CloneableObject Derived, typename... Args>
+Derived *
+clone_raw_ptr (
+  const Derived  &obj,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+  Args &&... args)
+{
+  auto unique_ptr = clone_unique (obj, clone_type, std::forward<Args> (args)...);
+  return unique_ptr.release ();
+}
+
+template <CloneableObject Derived, typename... Args>
+Derived *
+clone_qobject (
+  const Derived  &obj,
+  QObject *       parent,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+  Args &&... args)
+  requires utils::QObjectDerived<Derived>
+{
+  auto * cloned = clone_raw_ptr (obj, clone_type, std::forward<Args> (args)...);
+  if (cloned)
+    {
+      cloned->setParent (parent);
+    }
+  return cloned;
+}
+
+template <CloneableObject Derived, typename... Args>
+utils::QObjectUniquePtr<Derived>
+clone_unique_qobject (
+  const Derived  &obj,
+  QObject *       parent,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+  Args &&... args)
+  requires utils::QObjectDerived<Derived>
+{
+  return utils::QObjectUniquePtr<Derived> (
+    clone_qobject (obj, parent, clone_type, std::forward<Args> (args)...));
+}
+
+/**
+ * @brief Concept that checks if a type is cloneable.
+ * @tparam T The type to check.
+ */
+template <typename T>
+concept CloneableDefaultInitializableObject =
+  CloneableObject<T> && std::default_initializable<T>;
 
 /** Concept to check if a type inherits from a base class */
 template <typename T, typename Base>
@@ -184,71 +150,6 @@ concept AllInheritFromBase = requires {
       "All types in Variant must inherit from Base");
   }(static_cast<Variant *> (nullptr));
 };
-
-/**
- * Clone a unique pointer using a variant
- * @tparam Variant The variant type containing possible derived classes
- * @tparam Base The base class type
- * @param base_ptr Pointer to the base class object
- * @return A unique pointer to the cloned object
- */
-template <typename Variant, typename Base>
-  requires AllInheritFromBase<Variant, Base>
-auto
-clone_unique_with_variant (
-  const Base *    base_ptr,
-  ObjectCloneType clone_type = ObjectCloneType::Snapshot)
-  -> std::unique_ptr<Base>
-{
-  using VariantPtr = to_pointer_variant<Variant>;
-  auto variant_ptr = convert_to_variant<VariantPtr> (base_ptr);
-
-  return std::visit (
-    [clone_type] (auto * ptr) -> std::unique_ptr<Base> {
-      using T = base_type<decltype (ptr)>;
-      if constexpr (!std::is_same_v<T, std::nullptr_t>)
-        {
-          if (ptr)
-            {
-              if constexpr (std::is_base_of_v<Base, T>)
-                {
-                  return std::unique_ptr<Base> (ptr->clone_unique (clone_type));
-                }
-            }
-        }
-      return nullptr;
-    },
-    variant_ptr);
-}
-
-template <typename Variant, typename Base>
-  requires AllInheritFromBase<Variant, Base>
-auto
-clone_shared_with_variant (
-  const Base *    base_ptr,
-  ObjectCloneType clone_type = ObjectCloneType::Snapshot)
-  -> std::shared_ptr<Base>
-{
-  using VariantPtr = to_pointer_variant<Variant>;
-  auto variant_ptr = convert_to_variant<VariantPtr> (base_ptr);
-
-  return std::visit (
-    [clone_type] (auto * ptr) -> std::shared_ptr<Base> {
-      using T = base_type<decltype (ptr)>;
-      if constexpr (!std::is_same_v<T, std::nullptr_t>)
-        {
-          if (ptr)
-            {
-              if constexpr (std::is_base_of_v<Base, T>)
-                {
-                  return std::shared_ptr<Base> (ptr->clone_shared (clone_type));
-                }
-            }
-        }
-      return nullptr;
-    },
-    variant_ptr);
-}
 
 /**
  * @brief Clones the elements of a std::array of std::unique_ptr into the
@@ -269,10 +170,10 @@ clone_unique_ptr_array (
     {
       if (src[i])
         {
-          if constexpr (Cloneable<T>)
+          if constexpr (CloneableDefaultInitializableObject<T>)
             {
               dest[i] =
-                src[i]->clone_unique (clone_type = ObjectCloneType::Snapshot);
+                clone_unique (*src[i], clone_type = ObjectCloneType::Snapshot);
             }
           else
             {
@@ -308,17 +209,17 @@ clone_ptr_vector (
     {
       if (ptr)
         {
-          if constexpr (Cloneable<T>)
+          if constexpr (CloneableDefaultInitializableObject<T>)
             {
               if constexpr (std::is_same_v<Ptr<T>, std::unique_ptr<T>>)
                 {
-                  dest.push_back (
-                    ptr->clone_unique (clone_type = ObjectCloneType::Snapshot));
+                  dest.push_back (clone_unique (
+                    *ptr, clone_type = ObjectCloneType::Snapshot));
                 }
               else if constexpr (std::is_same_v<Ptr<T>, std::shared_ptr<T>>)
                 {
-                  dest.push_back (
-                    ptr->clone_shared (clone_type = ObjectCloneType::Snapshot));
+                  dest.push_back (clone_shared (
+                    *ptr, clone_type = ObjectCloneType::Snapshot));
                 }
             }
           else
@@ -459,4 +360,4 @@ clone_variant_container (
     }
 }
 
-#endif
+} // namespace zrythm::utils

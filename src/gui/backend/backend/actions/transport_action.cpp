@@ -13,7 +13,8 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 TransportAction::TransportAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::Transport)
@@ -60,18 +61,21 @@ TransportAction::TransportAction (
       : gui::SettingsManager::get_instance ()->get_musicalMode ();
 }
 void
-TransportAction::init_after_cloning (
+init_from (
+  TransportAction       &obj,
   const TransportAction &other,
-  ObjectCloneType        clone_type)
+  utils::ObjectCloneType clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  type_ = other.type_;
-  bpm_before_ = other.bpm_before_;
-  bpm_after_ = other.bpm_after_;
-  int_before_ = other.int_before_;
-  int_after_ = other.int_after_;
-  already_done_ = other.already_done_;
-  musical_mode_ = other.musical_mode_;
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.type_ = other.type_;
+  obj.bpm_before_ = other.bpm_before_;
+  obj.bpm_after_ = other.bpm_after_;
+  obj.int_before_ = other.int_before_;
+  obj.int_after_ = other.int_after_;
+  obj.already_done_ = other.already_done_;
+  obj.musical_mode_ = other.musical_mode_;
 }
 
 void
@@ -191,4 +195,5 @@ TransportAction::to_string () const
     }
 
   z_return_val_if_reached ({});
+}
 }

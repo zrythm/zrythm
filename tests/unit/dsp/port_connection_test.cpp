@@ -95,7 +95,7 @@ TEST_F (PortConnectionTest, CloneBehavior)
   original.base_value_ = 0.5f;
 
   // Clone it
-  auto clone = original.clone_unique ();
+  auto clone = utils::clone_unique (original);
 
   // Verify clone matches original
   EXPECT_EQ (clone->src_id_, original.src_id_);

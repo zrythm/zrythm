@@ -94,12 +94,18 @@ MarkerTrack::set_playback_caches ()
 }
 
 void
-MarkerTrack::init_after_cloning (
-  const MarkerTrack &other,
-  ObjectCloneType    clone_type)
+init_from (
+  MarkerTrack           &obj,
+  const MarkerTrack     &other,
+  utils::ObjectCloneType clone_type)
 {
-  ArrangerObjectOwner::copy_members_from (other, clone_type);
-  Track::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<arrangement::ArrangerObjectOwner<arrangement::Marker> &> (obj),
+    static_cast<const arrangement::ArrangerObjectOwner<arrangement::Marker> &> (
+      other),
+    clone_type);
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 }
 
 void

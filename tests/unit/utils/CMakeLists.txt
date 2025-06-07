@@ -20,6 +20,7 @@ add_executable(zrythm_utils_unit_tests
   mpmc_queue_test.cpp
   networking_test.cpp
   object_pool_test.cpp
+  qt_test.cpp
   ring_buffer_test.cpp
   string_test.cpp
   uuid_identifiable_object_test.h

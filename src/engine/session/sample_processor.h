@@ -30,9 +30,7 @@ namespace zrythm::engine::session
  *
  * Also used for auditioning files.
  */
-class SampleProcessor final
-    : public ICloneable<SampleProcessor>,
-      public dsp::graph::IProcessable
+class SampleProcessor final : public dsp::graph::IProcessable
 {
 public:
   using Position = zrythm::dsp::Position;
@@ -44,9 +42,10 @@ public:
   Z_DISABLE_COPY_MOVE (SampleProcessor)
   ~SampleProcessor () override;
 
-  void
-  init_after_cloning (const SampleProcessor &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    SampleProcessor       &obj,
+    const SampleProcessor &other,
+    utils::ObjectCloneType clone_type);
 
   void init_loaded (engine::device_io::AudioEngine * engine);
 

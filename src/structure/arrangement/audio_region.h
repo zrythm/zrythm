@@ -35,8 +35,7 @@ class AudioRegion final
     : public QObject,
       public RegionImpl<AudioRegion>,
       public LaneOwnedObject,
-      public FadeableObject,
-      public ICloneable<AudioRegion>
+      public FadeableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -117,8 +116,10 @@ public:
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
-  void init_after_cloning (const AudioRegion &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioRegion           &obj,
+    const AudioRegion     &other,
+    utils::ObjectCloneType clone_type);
 
   // ==========================================================================
   // Playback caches

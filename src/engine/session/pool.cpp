@@ -32,11 +32,14 @@ AudioPool::init_loaded ()
 }
 
 void
-AudioPool::init_after_cloning (const AudioPool &other, ObjectCloneType clone_type)
+init_from (
+  AudioPool             &obj,
+  const AudioPool       &other,
+  utils::ObjectCloneType clone_type)
 {
   std::ranges::for_each (other.clips_, [&] (const auto &other_clip) {
-    auto new_clip = other_clip->clone_unique (clone_type);
-    register_clip (std::move (new_clip));
+    auto new_clip = utils::clone_unique (*other_clip, clone_type);
+    obj.register_clip (std::move (new_clip));
   });
 }
 

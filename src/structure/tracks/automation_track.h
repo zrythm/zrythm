@@ -22,7 +22,6 @@ class AutomationTracklist;
 
 class AutomationTrack final
     : public QObject,
-      public ICloneable<AutomationTrack>,
       public arrangement::ArrangerObjectOwner<arrangement::AutomationRegion>
 {
   Q_OBJECT
@@ -180,9 +179,10 @@ public:
   /**
    * Clones the AutomationTrack.
    */
-  void
-  init_after_cloning (const AutomationTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AutomationTrack       &obj,
+    const AutomationTrack &other,
+    utils::ObjectCloneType clone_type);
 
   TrackPtrVariant get_track () const;
 

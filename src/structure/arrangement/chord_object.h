@@ -27,11 +27,7 @@ class ChordRegion;
  * identify valid ChordObject instances. The layout member variable is a cache
  * for the Pango layout used to draw the chord name.
  */
-class ChordObject final
-    : public QObject,
-      public MuteableObject,
-      public RegionOwnedObject,
-      public ICloneable<ChordObject>
+class ChordObject final : public QObject, public MuteableObject, public RegionOwnedObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -83,8 +79,10 @@ public:
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
-  void init_after_cloning (const ChordObject &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChordObject           &obj,
+    const ChordObject     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kChordIndexKey = "chordIndex";

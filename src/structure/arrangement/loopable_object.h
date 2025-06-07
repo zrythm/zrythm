@@ -121,8 +121,10 @@ public:
   }
 
 protected:
-  void
-  copy_members_from (const LoopableObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    LoopableObject        &obj,
+    const LoopableObject  &other,
+    utils::ObjectCloneType clone_type);
 
   bool
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;

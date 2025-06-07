@@ -21,13 +21,19 @@ Marker::Marker (
 }
 
 void
-Marker::init_after_cloning (const Marker &other, ObjectCloneType clone_type)
+init_from (Marker &obj, const Marker &other, utils::ObjectCloneType clone_type)
 
 {
-  marker_type_ = other.marker_type_;
-  NamedObject::copy_members_from (other, clone_type);
-  TimelineObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
+  obj.marker_type_ = other.marker_type_;
+  init_from (
+    static_cast<NamedObject &> (obj), static_cast<const NamedObject &> (other),
+    clone_type);
+  init_from (
+    static_cast<TimelineObject &> (obj),
+    static_cast<const TimelineObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
 }
 
 ArrangerObjectPtrVariant

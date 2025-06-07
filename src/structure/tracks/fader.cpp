@@ -1230,33 +1230,33 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
 }
 
 void
-Fader::init_after_cloning (const Fader &other, ObjectCloneType clone_type)
+init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
 {
-  port_registry_ = other.port_registry_;
+  obj.port_registry_ = other.port_registry_;
 
-  type_ = other.type_;
-  volume_ = other.volume_;
-  phase_ = other.phase_;
-  midi_mode_ = other.midi_mode_;
-  passthrough_ = other.passthrough_;
+  obj.type_ = other.type_;
+  obj.volume_ = other.volume_;
+  obj.phase_ = other.phase_;
+  obj.midi_mode_ = other.midi_mode_;
+  obj.passthrough_ = other.passthrough_;
 
-  if (clone_type == ObjectCloneType::Snapshot)
+  if (clone_type == utils::ObjectCloneType::Snapshot)
     {
-      amp_id_ = other.amp_id_;
-      balance_id_ = other.balance_id_;
-      mute_id_ = other.mute_id_;
-      solo_id_ = other.solo_id_;
-      listen_id_ = other.listen_id_;
-      mono_compat_enabled_id_ = other.mono_compat_enabled_id_;
-      swap_phase_id_ = other.swap_phase_id_;
-      midi_in_id_ = other.midi_in_id_;
-      midi_out_id_ = other.midi_out_id_;
-      stereo_in_left_id_ = other.stereo_in_left_id_;
-      stereo_in_right_id_ = other.stereo_in_right_id_;
-      stereo_out_left_id_ = other.stereo_out_left_id_;
-      stereo_out_right_id_ = other.stereo_out_right_id_;
+      obj.amp_id_ = other.amp_id_;
+      obj.balance_id_ = other.balance_id_;
+      obj.mute_id_ = other.mute_id_;
+      obj.solo_id_ = other.solo_id_;
+      obj.listen_id_ = other.listen_id_;
+      obj.mono_compat_enabled_id_ = other.mono_compat_enabled_id_;
+      obj.swap_phase_id_ = other.swap_phase_id_;
+      obj.midi_in_id_ = other.midi_in_id_;
+      obj.midi_out_id_ = other.midi_out_id_;
+      obj.stereo_in_left_id_ = other.stereo_in_left_id_;
+      obj.stereo_in_right_id_ = other.stereo_in_right_id_;
+      obj.stereo_out_left_id_ = other.stereo_out_left_id_;
+      obj.stereo_out_right_id_ = other.stereo_out_right_id_;
     }
-  else if (clone_type == ObjectCloneType::NewIdentity)
+  else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
       auto deep_clone_port = [&] (auto &own_port_id, const auto &other_port_id) {
         if (!other_port_id.has_value ())
@@ -1265,27 +1265,28 @@ Fader::init_after_cloning (const Fader &other, ObjectCloneType clone_type)
         auto other_amp_port = other_port_id->get_object ();
         std::visit (
           [&] (auto &&other_port) {
-            own_port_id = port_registry_->clone_object (*other_port);
+            own_port_id = obj.port_registry_->clone_object (*other_port);
           },
           other_amp_port);
       };
-      deep_clone_port (amp_id_, other.amp_id_);
-      deep_clone_port (balance_id_, other.balance_id_);
-      deep_clone_port (mute_id_, other.mute_id_);
-      deep_clone_port (solo_id_, other.solo_id_);
-      deep_clone_port (listen_id_, other.listen_id_);
-      deep_clone_port (mono_compat_enabled_id_, other.mono_compat_enabled_id_);
-      deep_clone_port (swap_phase_id_, other.swap_phase_id_);
-      deep_clone_port (midi_in_id_, other.midi_in_id_);
-      deep_clone_port (midi_out_id_, other.midi_out_id_);
-      deep_clone_port (stereo_in_left_id_, other.stereo_in_left_id_);
-      deep_clone_port (stereo_in_right_id_, other.stereo_in_right_id_);
-      deep_clone_port (stereo_out_left_id_, other.stereo_out_left_id_);
-      deep_clone_port (stereo_out_right_id_, other.stereo_out_right_id_);
+      deep_clone_port (obj.amp_id_, other.amp_id_);
+      deep_clone_port (obj.balance_id_, other.balance_id_);
+      deep_clone_port (obj.mute_id_, other.mute_id_);
+      deep_clone_port (obj.solo_id_, other.solo_id_);
+      deep_clone_port (obj.listen_id_, other.listen_id_);
+      deep_clone_port (
+        obj.mono_compat_enabled_id_, other.mono_compat_enabled_id_);
+      deep_clone_port (obj.swap_phase_id_, other.swap_phase_id_);
+      deep_clone_port (obj.midi_in_id_, other.midi_in_id_);
+      deep_clone_port (obj.midi_out_id_, other.midi_out_id_);
+      deep_clone_port (obj.stereo_in_left_id_, other.stereo_in_left_id_);
+      deep_clone_port (obj.stereo_in_right_id_, other.stereo_in_right_id_);
+      deep_clone_port (obj.stereo_out_left_id_, other.stereo_out_left_id_);
+      deep_clone_port (obj.stereo_out_right_id_, other.stereo_out_right_id_);
 
       /* set owner */
       std::vector<Port *> ports;
-      append_ports (ports);
+      obj.append_ports (ports);
       for (auto &port : ports)
         {
           if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
@@ -1293,7 +1294,7 @@ Fader::init_after_cloning (const Fader &other, ObjectCloneType clone_type)
               /* note: don't call set_owner() because get_track () won't work
                * here. also, all other port fields are already copied*/
               // FIXME: set_owner() should eventually cover this case
-              port->owner_ = this;
+              port->owner_ = &obj;
             }
         }
     }

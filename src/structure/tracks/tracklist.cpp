@@ -1646,30 +1646,33 @@ Tracklist::handle_move_or_copy (
 #endif
 
 void
-Tracklist::init_after_cloning (const Tracklist &other, ObjectCloneType clone_type)
+init_from (
+  Tracklist             &obj,
+  const Tracklist       &other,
+  utils::ObjectCloneType clone_type)
 {
-  pinned_tracks_cutoff_ = other.pinned_tracks_cutoff_;
-  track_registry_ = other.track_registry_;
+  obj.pinned_tracks_cutoff_ = other.pinned_tracks_cutoff_;
+  obj.track_registry_ = other.track_registry_;
 
-  if (clone_type == ObjectCloneType::Snapshot)
+  if (clone_type == utils::ObjectCloneType::Snapshot)
     {
-      tracks_ = other.tracks_;
-      selected_tracks_ = other.selected_tracks_;
+      obj.tracks_ = other.tracks_;
+      obj.selected_tracks_ = other.selected_tracks_;
     }
-  else if (clone_type == ObjectCloneType::NewIdentity)
+  else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
-      tracks_.clear ();
-      tracks_.reserve (other.tracks_.size ());
+      obj.tracks_.clear ();
+      obj.tracks_.reserve (other.tracks_.size ());
       auto span = other.get_track_span ();
       for (const auto &track_var : span)
         {
           std::visit (
             [&] (auto &tr) {
-              auto id_ref = track_registry_->clone_object (
-                *tr, *track_registry_, PROJECT->get_plugin_registry (),
+              auto id_ref = obj.track_registry_->clone_object (
+                *tr, *obj.track_registry_, PROJECT->get_plugin_registry (),
                 PROJECT->get_port_registry (),
                 PROJECT->get_arranger_object_registry (), true);
-              tracks_.push_back (id_ref);
+              obj.tracks_.push_back (id_ref);
             },
             track_var);
         }

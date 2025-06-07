@@ -12,8 +12,7 @@ namespace zrythm::structure::tracks
 {
 class AudioLane final
     : public QObject,
-      public TrackLaneImpl<arrangement::AudioRegion>,
-      public ICloneable<AudioLane>
+      public TrackLaneImpl<arrangement::AudioRegion>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -29,8 +28,10 @@ public:
    */
   AudioLane (LanedTrackImpl<AudioLane> * track);
 
-  void init_after_cloning (const AudioLane &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioLane             &obj,
+    const AudioLane       &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const AudioLane &lane)

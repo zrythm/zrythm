@@ -15,7 +15,7 @@ namespace zrythm::dsp
 /**
  * A connection between two ports.
  */
-class PortConnection final : public QObject, public ICloneable<PortConnection>
+class PortConnection final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -32,10 +32,6 @@ public:
     bool            locked,
     bool            enabled,
     QObject *       parent = nullptr);
-
-  void
-  init_after_cloning (const PortConnection &other, ObjectCloneType clone_type)
-    override;
 
   void update (float multiplier, bool locked, bool enabled)
   {
@@ -71,6 +67,11 @@ private:
     j.at (kEnabledKey).get_to (port_connection.enabled_);
     j.at (kBaseValueKey).get_to (port_connection.base_value_);
   }
+
+  friend void init_from (
+    PortConnection        &obj,
+    const PortConnection  &other,
+    utils::ObjectCloneType clone_type);
 
   friend bool operator== (const PortConnection &lhs, const PortConnection &rhs)
   {

@@ -14,10 +14,7 @@ namespace zrythm::gui::actions
 /**
  * Action for chord pad changes.
  */
-class ChordAction final
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<ChordAction>
+class ChordAction final : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -66,8 +63,10 @@ public:
 
   QString to_string () const override;
 
-  void init_after_cloning (const ChordAction &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ChordAction           &obj,
+    const ChordAction     &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   void init_loaded_impl () override { }

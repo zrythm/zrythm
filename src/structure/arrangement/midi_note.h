@@ -22,8 +22,7 @@ class MidiNote final
     : public QObject,
       public MuteableObject,
       public RegionOwnedObject,
-      public BoundedObject,
-      public ICloneable<MidiNote>
+      public BoundedObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -110,8 +109,10 @@ public:
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
-  void init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiNote              &obj,
+    const MidiNote        &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kVelocityKey = "velocity";
@@ -150,7 +151,7 @@ private:
 
 public:
   /** Velocity. */
-  QScopedPointer<Velocity> vel_;
+  utils::QObjectUniquePtr<Velocity> vel_;
 
   /** The note/pitch, (0-127). */
   uint8_t pitch_{};

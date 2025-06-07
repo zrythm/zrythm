@@ -9,7 +9,8 @@
 #include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/channel.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 MidiMappingAction::MidiMappingAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::MidiMapping)
@@ -17,16 +18,19 @@ MidiMappingAction::MidiMappingAction (QObject * parent)
 }
 
 void
-MidiMappingAction::init_after_cloning (
+init_from (
+  MidiMappingAction       &obj,
   const MidiMappingAction &other,
-  ObjectCloneType          clone_type)
+  utils::ObjectCloneType   clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  idx_ = other.idx_;
-  type_ = other.type_;
-  dest_port_id_ = other.dest_port_id_;
-  dev_id_ = other.dev_id_;
-  buf_ = other.buf_;
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.idx_ = other.idx_;
+  obj.type_ = other.type_;
+  obj.dest_port_id_ = other.dest_port_id_;
+  obj.dev_id_ = other.dev_id_;
+  obj.buf_ = other.buf_;
 }
 
 MidiMappingAction::MidiMappingAction (int idx_to_enable_or_disable, bool enable)
@@ -135,4 +139,5 @@ MidiMappingAction::to_string () const
     default:
       z_return_val_if_reached ({});
     }
+}
 }

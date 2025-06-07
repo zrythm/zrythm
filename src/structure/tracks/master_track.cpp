@@ -52,15 +52,25 @@ MasterTrack::init_loaded (
 }
 
 void
-MasterTrack::init_after_cloning (
-  const MasterTrack &other,
-  ObjectCloneType    clone_type)
+init_from (
+  MasterTrack           &obj,
+  const MasterTrack     &other,
+  utils::ObjectCloneType clone_type)
 {
-  Track::copy_members_from (other, clone_type);
-  AutomatableTrack::copy_members_from (other, clone_type);
-  ProcessableTrack::copy_members_from (other, clone_type);
-  ChannelTrack::copy_members_from (other, clone_type);
-  GroupTargetTrack::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
+  init_from (
+    static_cast<AutomatableTrack &> (obj),
+    static_cast<const AutomatableTrack &> (other), clone_type);
+  init_from (
+    static_cast<ProcessableTrack &> (obj),
+    static_cast<const ProcessableTrack &> (other), clone_type);
+  init_from (
+    static_cast<ChannelTrack &> (obj),
+    static_cast<const ChannelTrack &> (other), clone_type);
+  init_from (
+    static_cast<GroupTargetTrack &> (obj),
+    static_cast<const GroupTargetTrack &> (other), clone_type);
 }
 
 void

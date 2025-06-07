@@ -58,9 +58,19 @@ public:
 
   auto get_uuid () const { return uuid_; }
 
-  void copy_members_from (const UuidIdentifiableObject &other)
+  friend void init_from (
+    UuidIdentifiableObject       &obj,
+    const UuidIdentifiableObject &other,
+    utils::ObjectCloneType        clone_type)
   {
-    uuid_ = other.uuid_;
+    if (clone_type == utils::ObjectCloneType::NewIdentity)
+      {
+        obj.uuid_ = Uuid (QUuid::createUuid ());
+      }
+    else
+      {
+        obj.uuid_ = other.uuid_;
+      }
   }
 
   friend void to_json (nlohmann::json &j, const UuidIdentifiableObject &obj)
@@ -300,8 +310,8 @@ public:
     -> UuidReference<OwningObjectRegistry>
     requires std::derived_from<CreateType, BaseT>
   {
-    CreateType * obj = other.clone_raw_ptr (
-      ObjectCloneType::NewIdentity, std::forward<Args> (args)...);
+    CreateType * obj = clone_raw_ptr (
+      other, ObjectCloneType::NewIdentity, std::forward<Args> (args)...);
     register_object (obj);
     return { obj->get_uuid (), *this };
   }

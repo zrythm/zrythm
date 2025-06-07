@@ -16,17 +16,17 @@ PortConnectionsManager::PortConnectionsManager (QObject * parent)
 }
 
 void
-PortConnectionsManager::init_after_cloning (
+init_from (
+  PortConnectionsManager       &obj,
   const PortConnectionsManager &other,
-  ObjectCloneType               clone_type)
+  utils::ObjectCloneType        clone_type)
 {
-  connections_.reserve (other.connections_.size ());
+  obj.connections_.reserve (other.connections_.size ());
   for (const auto &conn : other.connections_)
     {
-      connections_.push_back (conn->clone_raw_ptr ());
-      connections_.back ()->setParent (this);
+      obj.connections_.push_back (utils::clone_qobject (*conn, &obj));
     }
-  regenerate_hashtables ();
+  obj.regenerate_hashtables ();
 }
 
 #if 0
@@ -56,8 +56,7 @@ PortConnectionsManager::add_or_replace_connection (
   const PortConnection &conn)
 {
   auto   it = ht.find (id);
-  auto * clone_conn = conn.clone_raw_ptr ();
-  clone_conn->setParent (this);
+  auto * clone_conn = utils::clone_qobject (conn, this);
   if (it != ht.end ())
     {
       z_return_if_fail (it->first == id);
@@ -82,7 +81,7 @@ PortConnectionsManager::update_connection (
 
   (*it)->setParent (nullptr);
   (*it)->deleteLater ();
-  *it = after.clone_qobject (this);
+  *it = utils::clone_qobject (after, this);
   regenerate_hashtables ();
 
   return true;

@@ -15,7 +15,7 @@ class MidiRegion;
 /**
  * The MidiNote velocity.
  */
-class Velocity final : public QObject, public ICloneable<Velocity>
+class Velocity final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -66,8 +66,10 @@ public:
   static size_t setting_str_to_enum (const char * str);
 #endif
 
-  void init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    Velocity              &obj,
+    const Velocity        &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kVelocityKey = "value";

@@ -638,14 +638,15 @@ ChannelSend::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 }
 
 void
-ChannelSend::init_after_cloning (
-  const ChannelSend &other,
-  ObjectCloneType    clone_type)
+init_from (
+  ChannelSend           &obj,
+  const ChannelSend     &other,
+  utils::ObjectCloneType clone_type)
 {
-  slot_ = other.slot_;
-  is_sidechain_ = other.is_sidechain_;
-  track_id_ = other.track_id_;
-  if (clone_type == ObjectCloneType::NewIdentity)
+  obj.slot_ = other.slot_;
+  obj.is_sidechain_ = other.is_sidechain_;
+  obj.track_id_ = other.track_id_;
+  if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
       auto deep_clone_port = [&] (auto &own_port_id, const auto &other_port_id) {
         if (!other_port_id.has_value ())
@@ -654,38 +655,38 @@ ChannelSend::init_after_cloning (
         auto other_amp_port = other_port_id->get_object ();
         std::visit (
           [&] (auto &&other_port) {
-            own_port_id = port_registry_.clone_object (*other_port);
+            own_port_id = obj.port_registry_.clone_object (*other_port);
           },
           other_amp_port);
       };
 
-      deep_clone_port (enabled_id_, other.enabled_id_);
-      deep_clone_port (amount_id_, other.amount_id_);
-      deep_clone_port (stereo_in_left_id_, other.stereo_in_left_id_);
-      deep_clone_port (stereo_in_right_id_, other.stereo_in_right_id_);
-      deep_clone_port (midi_in_id_, other.midi_in_id_);
-      deep_clone_port (stereo_out_left_id_, other.stereo_out_left_id_);
-      deep_clone_port (stereo_out_right_id_, other.stereo_out_right_id_);
-      deep_clone_port (midi_out_id_, other.midi_out_id_);
+      deep_clone_port (obj.enabled_id_, other.enabled_id_);
+      deep_clone_port (obj.amount_id_, other.amount_id_);
+      deep_clone_port (obj.stereo_in_left_id_, other.stereo_in_left_id_);
+      deep_clone_port (obj.stereo_in_right_id_, other.stereo_in_right_id_);
+      deep_clone_port (obj.midi_in_id_, other.midi_in_id_);
+      deep_clone_port (obj.stereo_out_left_id_, other.stereo_out_left_id_);
+      deep_clone_port (obj.stereo_out_right_id_, other.stereo_out_right_id_);
+      deep_clone_port (obj.midi_out_id_, other.midi_out_id_);
 
       // set owner
       std::vector<Port *> ports;
-      append_ports (ports);
+      obj.append_ports (ports);
       for (auto * port : ports)
         {
-          port->set_owner (*this);
+          port->set_owner (obj);
         }
     }
-  else if (clone_type == ObjectCloneType::Snapshot)
+  else if (clone_type == utils::ObjectCloneType::Snapshot)
     {
-      enabled_id_ = other.enabled_id_;
-      amount_id_ = other.amount_id_;
-      stereo_in_left_id_ = other.stereo_in_left_id_;
-      stereo_in_right_id_ = other.stereo_in_right_id_;
-      midi_in_id_ = other.midi_in_id_;
-      stereo_out_left_id_ = other.stereo_out_left_id_;
-      stereo_out_right_id_ = other.stereo_out_right_id_;
-      midi_out_id_ = other.midi_out_id_;
+      obj.enabled_id_ = other.enabled_id_;
+      obj.amount_id_ = other.amount_id_;
+      obj.stereo_in_left_id_ = other.stereo_in_left_id_;
+      obj.stereo_in_right_id_ = other.stereo_in_right_id_;
+      obj.midi_in_id_ = other.midi_in_id_;
+      obj.stereo_out_left_id_ = other.stereo_out_left_id_;
+      obj.stereo_out_right_id_ = other.stereo_out_right_id_;
+      obj.midi_out_id_ = other.midi_out_id_;
     }
 }
 

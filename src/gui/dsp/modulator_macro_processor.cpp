@@ -128,12 +128,13 @@ ModulatorMacroProcessor::get_full_designation_for_port (
 }
 
 void
-ModulatorMacroProcessor::init_after_cloning (
+init_from (
+  ModulatorMacroProcessor       &obj,
   const ModulatorMacroProcessor &other,
-  ObjectCloneType                clone_type)
+  utils::ObjectCloneType         clone_type)
 {
-  name_ = other.name_;
-  cv_in_id_ = other.cv_in_id_;
-  cv_out_id_ = other.cv_out_id_;
-  macro_id_ = other.macro_id_;
+  obj.name_ = other.name_;
+  obj.cv_in_id_ = other.cv_in_id_;
+  obj.cv_out_id_ = other.cv_out_id_;
+  obj.macro_id_ = other.macro_id_;
 }

@@ -159,18 +159,30 @@ AudioTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) cons
 }
 
 void
-AudioTrack::init_after_cloning (
-  const AudioTrack &other,
-  ObjectCloneType   clone_type)
+init_from (
+  AudioTrack            &obj,
+  const AudioTrack      &other,
+  utils::ObjectCloneType clone_type)
 {
-  samplerate_ = other.samplerate_;
-  rt_stretcher_ =
-    dsp::Stretcher::create_rubberband (samplerate_, 2, 1.0, 1.0, true);
-  Track::copy_members_from (other, clone_type);
-  ChannelTrack::copy_members_from (other, clone_type);
-  ProcessableTrack::copy_members_from (other, clone_type);
-  AutomatableTrack::copy_members_from (other, clone_type);
-  RecordableTrack::copy_members_from (other, clone_type);
-  LanedTrackImpl::copy_members_from (other, clone_type);
+  obj.samplerate_ = other.samplerate_;
+  obj.rt_stretcher_ =
+    dsp::Stretcher::create_rubberband (obj.samplerate_, 2, 1.0, 1.0, true);
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
+  init_from (
+    static_cast<ChannelTrack &> (obj),
+    static_cast<const ChannelTrack &> (other), clone_type);
+  init_from (
+    static_cast<ProcessableTrack &> (obj),
+    static_cast<const ProcessableTrack &> (other), clone_type);
+  init_from (
+    static_cast<AutomatableTrack &> (obj),
+    static_cast<const AutomatableTrack &> (other), clone_type);
+  init_from (
+    static_cast<RecordableTrack &> (obj),
+    static_cast<const RecordableTrack &> (other), clone_type);
+  init_from (
+    static_cast<AudioTrack::LanedTrackImpl &> (obj),
+    static_cast<const AudioTrack::LanedTrackImpl &> (other), clone_type);
 }
 }

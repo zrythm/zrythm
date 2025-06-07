@@ -43,10 +43,7 @@ DEFINE_UUID_HASH_SPECIALIZATION (BaseTestObject::Uuid);
 
 using TestUuid = BaseTestObject::Uuid;
 
-class DerivedTestObject
-    : public QObject,
-      public BaseTestObject,
-      public ICloneable<DerivedTestObject>
+class DerivedTestObject : public QObject, public BaseTestObject
 {
   Q_OBJECT
 public:
@@ -60,11 +57,13 @@ public:
 
   [[nodiscard]] std::string name () const { return name_; }
 
-  void
-  init_after_cloning (const DerivedTestObject &other, ObjectCloneType clone_type)
-    final
+  friend void init_from (
+    DerivedTestObject       &obj,
+    const DerivedTestObject &other,
+    ObjectCloneType          clone_type)
+
   {
-    name_ = other.name_;
+    obj.name_ = other.name_;
   }
 
   Q_SIGNAL void selectedChanged (bool selected);

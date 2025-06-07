@@ -13,10 +13,17 @@ MidiLane::MidiLane (LanedTrackImpl<MidiLane> * track)
 }
 
 void
-MidiLane::init_after_cloning (const MidiLane &other, ObjectCloneType clone_type)
-
+init_from (MidiLane &obj, const MidiLane &other, utils::ObjectCloneType clone_type)
 {
-  ArrangerObjectOwner::copy_members_from (other, clone_type);
-  TrackLaneImpl::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<arrangement::ArrangerObjectOwner<arrangement::MidiRegion> &> (
+      obj),
+    static_cast<
+      const arrangement::ArrangerObjectOwner<arrangement::MidiRegion> &> (other),
+    clone_type);
+  init_from (
+    static_cast<TrackLaneImpl<arrangement::MidiRegion> &> (obj),
+    static_cast<const TrackLaneImpl<arrangement::MidiRegion> &> (other),
+    clone_type);
 }
 }

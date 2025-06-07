@@ -11,9 +11,16 @@ AudioLane::AudioLane (LanedTrackImpl<AudioLane> * track)
 }
 
 void
-AudioLane::init_after_cloning (const AudioLane &other, ObjectCloneType clone_type)
+init_from (
+  AudioLane             &obj,
+  const AudioLane       &other,
+  utils::ObjectCloneType clone_type)
 {
-  ArrangerObjectOwner::copy_members_from (other, clone_type);
-  TrackLaneImpl::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<AudioLane::ArrangerObjectOwner &> (obj),
+    static_cast<const AudioLane::ArrangerObjectOwner &> (other), clone_type);
+  init_from (
+    static_cast<AudioLane::TrackLaneImpl &> (obj),
+    static_cast<const AudioLane::TrackLaneImpl &> (other), clone_type);
 }
 }

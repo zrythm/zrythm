@@ -99,11 +99,12 @@ ControlRoom::init_common ()
 }
 
 void
-ControlRoom::init_after_cloning (
-  const ControlRoom &other,
-  ObjectCloneType    clone_type)
+init_from (
+  ControlRoom           &obj,
+  const ControlRoom     &other,
+  utils::ObjectCloneType clone_type)
 {
-  monitor_fader_ = other.monitor_fader_->clone_unique ();
+  obj.monitor_fader_ = utils::clone_unique (*other.monitor_fader_);
 }
 
 void

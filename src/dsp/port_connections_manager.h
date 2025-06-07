@@ -14,9 +14,7 @@ namespace zrythm::dsp
 /**
  * Port connections manager.
  */
-class PortConnectionsManager final
-    : public QObject,
-      public ICloneable<PortConnectionsManager>
+class PortConnectionsManager final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -214,9 +212,10 @@ public:
 
   void print () const;
 
-  void init_after_cloning (
+  friend void init_from (
+    PortConnectionsManager       &obj,
     const PortConnectionsManager &other,
-    ObjectCloneType               clone_type) override;
+    utils::ObjectCloneType        clone_type);
 
   void clear_all ()
   {

@@ -479,19 +479,23 @@ AutomationTrack::set_caches (CacheType types)
 }
 
 void
-AutomationTrack::init_after_cloning (
+init_from (
+  AutomationTrack       &obj,
   const AutomationTrack &other,
-  ObjectCloneType        clone_type)
+  utils::ObjectCloneType clone_type)
 {
-  ArrangerObjectOwner::copy_members_from (other, clone_type);
-  visible_ = other.visible_;
-  created_ = other.created_;
-  index_ = other.index_;
-  y_ = other.y_;
-  automation_mode_ = other.automation_mode_;
-  record_mode_ = other.record_mode_;
-  height_ = other.height_;
-  assert (height_ >= Track::MIN_HEIGHT);
-  port_id_ = other.port_id_;
+  init_from (
+    static_cast<AutomationTrack::ArrangerObjectOwner &> (obj),
+    static_cast<const AutomationTrack::ArrangerObjectOwner &> (other),
+    clone_type);
+  obj.visible_ = other.visible_;
+  obj.created_ = other.created_;
+  obj.index_ = other.index_;
+  obj.y_ = other.y_;
+  obj.automation_mode_ = other.automation_mode_;
+  obj.record_mode_ = other.record_mode_;
+  obj.height_ = other.height_;
+  assert (obj.height_ >= Track::MIN_HEIGHT);
+  obj.port_id_ = other.port_id_;
 }
 }

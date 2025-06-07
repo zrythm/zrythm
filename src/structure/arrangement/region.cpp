@@ -33,9 +33,9 @@ namespace zrythm::structure::arrangement
 {
 
 void
-Region::copy_members_from (const Region &other, ObjectCloneType clone_type)
+init_from (Region &obj, const Region &other, utils::ObjectCloneType clone_type)
 {
-  bounce_ = other.bounce_;
+  obj.bounce_ = other.bounce_;
 }
 
 template <typename RegionT>

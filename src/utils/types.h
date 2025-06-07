@@ -268,10 +268,6 @@ using SteadyClock = std::chrono::steady_clock;
 using SteadyTimePoint = SteadyClock::time_point;
 using SteadyDuration = SteadyClock::duration;
 
-/* return types for Glib source functions */
-constexpr bool SourceFuncContinue = true;
-constexpr bool SourceFuncRemove = false;
-
 namespace fs = std::filesystem;
 
 #if __has_attribute(noipa)
@@ -281,15 +277,6 @@ namespace fs = std::filesystem;
 #endif
 
 #define ZRYTHM_IS_QT_THREAD (QThread::currentThread () == qApp->thread ())
-
-struct _GdkRGBA
-{
-  double red = 0.0;
-  double green = 0.0;
-  double blue = 0.0;
-  double alpha = 1.0;
-};
-using GdkRGBA = _GdkRGBA;
 
 template <typename T>
 std::string

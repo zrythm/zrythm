@@ -12,7 +12,6 @@ class MidiGroupTrack final
     : public QObject,
       public FoldableTrack,
       public GroupTargetTrack,
-      public ICloneable<MidiGroupTrack>,
       public utils::InitializableObject<MidiGroupTrack>
 {
   Q_OBJECT
@@ -26,9 +25,10 @@ class MidiGroupTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiGroupTrack)
 
 public:
-  void
-  init_after_cloning (const MidiGroupTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiGroupTrack        &obj,
+    const MidiGroupTrack  &other,
+    utils::ObjectCloneType clone_type);
 
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)

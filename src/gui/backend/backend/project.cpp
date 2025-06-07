@@ -76,7 +76,7 @@ Project::Project (
         *this,
         *port_registry_,
         *track_registry_,
-        port_connections_manager_.get ())),
+        port_connections_manager_)),
       undo_manager_ (new gui::actions::UndoManager (this)),
       arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
         *arranger_object_registry_,
@@ -1203,36 +1203,38 @@ Project::has_unsaved_changes () const
 }
 
 void
-Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
-
+init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type)
 {
   z_return_if_fail (ZRYTHM_IS_QT_THREAD);
   z_debug ("cloning project...");
 
-  title_ = other.title_;
-  datetime_str_ = other.datetime_str_;
-  version_ = other.version_;
-  transport_ = other.transport_->clone_qobject (this);
-  audio_engine_ =
-    other.audio_engine_->clone_unique (clone_type, this, device_manager_);
-  tracklist_ = other.tracklist_->clone_qobject (this);
-  clip_editor_ = other.clip_editor_->clone_qobject (
-    this, clone_type, *arranger_object_registry_, [&] (const TrackUuid &id) {
-      return get_track_registry ().find_by_id_or_throw (id);
+  obj.title_ = other.title_;
+  obj.datetime_str_ = other.datetime_str_;
+  obj.version_ = other.version_;
+  obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
+  obj.audio_engine_ = utils::clone_unique (
+    *other.audio_engine_, clone_type, &obj, obj.device_manager_);
+  obj.tracklist_ = utils::clone_qobject (*other.tracklist_, &obj);
+  obj.clip_editor_ = utils::clone_qobject (
+    *other.clip_editor_, &obj, clone_type, *obj.arranger_object_registry_,
+    [&] (const Project::TrackUuid &id) {
+      return obj.get_track_registry ().find_by_id_or_throw (id);
     });
-  timeline_ = other.timeline_->clone_qobject (this);
-  snap_grid_timeline_ = std::make_unique<SnapGrid> (*other.snap_grid_timeline_);
-  snap_grid_editor_ = std::make_unique<SnapGrid> (*other.snap_grid_editor_);
-  quantize_opts_timeline_ =
-    std::make_unique<QuantizeOptions> (*other.quantize_opts_timeline_);
-  quantize_opts_editor_ =
-    std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
-  region_link_group_manager_ = other.region_link_group_manager_;
-  port_connections_manager_.reset (
-    other.port_connections_manager_->clone_qobject (this));
-  midi_mappings_ = other.midi_mappings_->clone_unique ();
-  undo_manager_ = other.undo_manager_->clone_qobject (this);
-  tool_ = other.tool_->clone_qobject (this);
+  obj.timeline_ = utils::clone_qobject (*other.timeline_, &obj);
+  obj.snap_grid_timeline_ =
+    std::make_unique<Project::SnapGrid> (*other.snap_grid_timeline_);
+  obj.snap_grid_editor_ =
+    std::make_unique<zrythm::gui::SnapGrid> (*other.snap_grid_editor_);
+  obj.quantize_opts_timeline_ =
+    std::make_unique<Project::QuantizeOptions> (*other.quantize_opts_timeline_);
+  obj.quantize_opts_editor_ =
+    std::make_unique<Project::QuantizeOptions> (*other.quantize_opts_editor_);
+  obj.region_link_group_manager_ = other.region_link_group_manager_;
+  obj.port_connections_manager_ =
+    utils::clone_qobject (*other.port_connections_manager_, &obj);
+  obj.midi_mappings_ = utils::clone_unique (*other.midi_mappings_);
+  obj.undo_manager_ = utils::clone_qobject (*other.undo_manager_, &obj);
+  obj.tool_ = utils::clone_qobject (*other.tool_, &obj);
 
   z_debug ("finished cloning project");
 }
@@ -1334,7 +1336,8 @@ Project::get_active_instance ()
 Project *
 Project::clone (bool for_backup) const
 {
-  auto ret = clone_raw_ptr (ObjectCloneType::Snapshot, device_manager_);
+  auto ret = utils::clone_raw_ptr (
+    *this, utils::ObjectCloneType::Snapshot, device_manager_);
   if (for_backup)
     {
       /* no undo history in backups */

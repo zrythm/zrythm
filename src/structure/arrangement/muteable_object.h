@@ -32,8 +32,10 @@ public:
   void set_muted (bool muted, bool fire_events);
 
 protected:
-  void
-  copy_members_from (const MuteableObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    MuteableObject        &obj,
+    const MuteableObject  &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kMutedKey = "muted";

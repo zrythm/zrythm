@@ -362,8 +362,10 @@ public:
 protected:
   ArrangerObject (Type type, TrackResolver track_resolver) noexcept;
 
-  void
-  copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    ArrangerObject        &obj,
+    const ArrangerObject  &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * @brief To be called by @ref validate() implementations.
@@ -397,7 +399,7 @@ protected:
   /**
    * Position (or start Position if the object has length).
    */
-  QScopedPointer<PositionProxy> pos_;
+  utils::QObjectUniquePtr<PositionProxy> pos_;
 
 private:
   Type type_{};

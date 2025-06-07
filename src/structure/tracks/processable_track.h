@@ -69,8 +69,10 @@ protected:
     dsp::MidiEventVector *                             midi_events,
     std::optional<std::pair<AudioPort &, AudioPort &>> stereo_ports) const;
 
-  void
-  copy_members_from (const ProcessableTrack &other, ObjectCloneType clone_type);
+  friend void init_from (
+    ProcessableTrack       &obj,
+    const ProcessableTrack &other,
+    utils::ObjectCloneType  clone_type);
 
   void
   append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;

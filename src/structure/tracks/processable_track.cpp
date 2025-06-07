@@ -35,13 +35,15 @@ ProcessableTrack::init_loaded (
 }
 
 void
-ProcessableTrack::copy_members_from (
+init_from (
+  ProcessableTrack       &obj,
   const ProcessableTrack &other,
-  ObjectCloneType         clone_type)
+  utils::ObjectCloneType  clone_type)
 {
-  processor_ = other.processor_->clone_unique (
-    ObjectCloneType::Snapshot, *this, port_registry_, false);
-  processor_->track_ = this;
+  obj.processor_ = utils::clone_unique (
+    *other.processor_, utils::ObjectCloneType::Snapshot, obj,
+    obj.port_registry_, false);
+  obj.processor_->track_ = &obj;
 }
 
 void

@@ -72,8 +72,10 @@ public:
   QColor get_effective_color () const;
 
 protected:
-  void
-  copy_members_from (const ColoredObject &other, ObjectCloneType clone_type);
+  friend void init_from (
+    ColoredObject         &obj,
+    const ColoredObject   &other,
+    utils::ObjectCloneType clone_type);
 
   template <typename Derived> void init_colored_object (this Derived &self)
   {

@@ -6,9 +6,11 @@
 Timeline::Timeline (QObject * parent) : QObject (parent) { }
 
 void
-Timeline::init_after_cloning (const Timeline &other, ObjectCloneType clone_type)
+init_from (Timeline &obj, const Timeline &other, utils::ObjectCloneType clone_type)
 {
-  EditorSettings::copy_members_from (other, clone_type);
-  tracks_width_ = other.tracks_width_;
-  selected_objects_ = other.selected_objects_;
+  init_from (
+    static_cast<EditorSettings &> (obj),
+    static_cast<const EditorSettings &> (other), clone_type);
+  obj.tracks_width_ = other.tracks_width_;
+  obj.selected_objects_ = other.selected_objects_;
 }

@@ -9,7 +9,8 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/rt_thread_id.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 ChannelSendAction::ChannelSendAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::ChannelSend)
@@ -24,8 +25,9 @@ ChannelSendAction::ChannelSendAction (
   float                                                          amount,
   const PortConnectionsManager * port_connections_mgr)
     : UndoableAction (UndoableAction::Type::ChannelSend),
-      send_before_ (send.clone_unique (
-        ObjectCloneType::Snapshot,
+      send_before_ (utils::clone_unique (
+        send,
+        utils::ObjectCloneType::Snapshot,
         PROJECT->get_track_registry (),
         PROJECT->get_port_registry ())),
       amount_ (amount), send_action_type_ (type)
@@ -41,26 +43,29 @@ ChannelSendAction::ChannelSendAction (
       r_id_ = stereo->second.get_uuid ();
     }
 
-  if (port_connections_mgr)
+  if (port_connections_mgr != nullptr)
     {
-      port_connections_before_ = port_connections_mgr->clone_unique ();
+      port_connections_before_ = utils::clone_unique (*port_connections_mgr);
     }
 }
 
 void
-ChannelSendAction::init_after_cloning (
+init_from (
+  ChannelSendAction       &obj,
   const ChannelSendAction &other,
-  ObjectCloneType          clone_type)
+  utils::ObjectCloneType   clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  send_before_ = other.send_before_->clone_unique (
-    clone_type, other.send_before_->track_registry_,
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.send_before_ = utils::clone_unique (
+    *other.send_before_, clone_type, other.send_before_->track_registry_,
     other.send_before_->port_registry_);
-  amount_ = other.amount_;
-  l_id_ = other.l_id_;
-  r_id_ = other.r_id_;
-  midi_id_ = other.midi_id_;
-  send_action_type_ = other.send_action_type_;
+  obj.amount_ = other.amount_;
+  obj.l_id_ = other.l_id_;
+  obj.r_id_ = other.r_id_;
+  obj.midi_id_ = other.midi_id_;
+  obj.send_action_type_ = other.send_action_type_;
 }
 
 bool
@@ -233,4 +238,5 @@ ChannelSendAction::to_string () const
       return QObject::tr ("Change ports");
     }
   return QObject::tr ("Channel send connection");
+}
 }

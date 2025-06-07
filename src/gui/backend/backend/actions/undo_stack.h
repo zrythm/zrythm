@@ -17,7 +17,7 @@ namespace zrythm::gui::actions
  *
  * This is used for both undo and redo.
  */
-class UndoStack final : public QAbstractListModel, public ICloneable<UndoStack>
+class UndoStack final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
@@ -108,8 +108,10 @@ public:
   void
   get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const;
 
-  void init_after_cloning (const UndoStack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    UndoStack             &obj,
+    const UndoStack       &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr auto kMaxLengthKey = "maxLength"sv;

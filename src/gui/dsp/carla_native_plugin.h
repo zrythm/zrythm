@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
-#define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -62,10 +61,7 @@ struct CarlaPatchbayPortInfo
   std::string  port_name;
 };
 
-class CarlaNativePlugin final
-    : public QObject,
-      public Plugin,
-      public ICloneable<CarlaNativePlugin>
+class CarlaNativePlugin final : public QObject, public Plugin
 {
 public:
   CarlaNativePlugin () = default;
@@ -146,9 +142,10 @@ public:
    */
   bool add_internal_plugin_from_descr (const PluginDescriptor &descr);
 
-  void
-  init_after_cloning (const CarlaNativePlugin &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    CarlaNativePlugin       &obj,
+    const CarlaNativePlugin &other,
+    utils::ObjectCloneType   clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const CarlaNativePlugin &plugin)
@@ -267,5 +264,3 @@ public:
 /**
  * @}
  */
-
-#endif

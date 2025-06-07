@@ -12,6 +12,7 @@
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
 #include "utils/directory_manager.h"
+#include "utils/qt.h"
 #include "utils/rt_thread_id.h"
 
 #include <QApplication>
@@ -69,17 +70,20 @@ public:
   QCommandLineParser cmd_line_parser_;
 
 private:
+  std::unique_ptr<juce::ScopedJuceInitialiser_GUI>
+    juce_message_handler_initializer_;
+
   /**
    * @brief Socket for communicating with the engine process.
    */
   QLocalSocket * socket_ = nullptr;
 
-  std::unique_ptr<DirectoryManager> dir_manager_;
-  AlertManager *                    alert_manager_ = nullptr;
-  SettingsManager *                 settings_manager_ = nullptr;
-  ThemeManager *                    theme_manager_ = nullptr;
-  ProjectManager *                  project_manager_ = nullptr;
-  TranslationManager *              translation_manager_ = nullptr;
+  std::unique_ptr<DirectoryManager>           dir_manager_;
+  utils::QObjectUniquePtr<AlertManager>       alert_manager_;
+  utils::QObjectUniquePtr<SettingsManager>    settings_manager_;
+  utils::QObjectUniquePtr<ThemeManager>       theme_manager_;
+  utils::QObjectUniquePtr<ProjectManager>     project_manager_;
+  utils::QObjectUniquePtr<TranslationManager> translation_manager_;
 
   /**
    * @brief Engine process handle.
@@ -90,8 +94,6 @@ private:
 
   QTranslator * translator_ = nullptr;
 
-  std::unique_ptr<juce::ScopedJuceInitialiser_GUI>
-    juce_message_handler_initializer_;
   std::shared_ptr<engine::device_io::DeviceManager> device_manager_;
 };
 

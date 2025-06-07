@@ -51,11 +51,7 @@ static const char * preroll_count_bars_str[] = {
  * engine. It manages playback, recording, and other transport-related
  * functionality.
  */
-class Transport final
-    : public QObject,
-      public ICloneable<Transport>,
-      public dsp::ITransport,
-      public IPortOwner
+class Transport final : public QObject, public dsp::ITransport, public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
@@ -485,8 +481,10 @@ frames_add_frames (
    */
   void set_recording (bool record, bool with_wait);
 
-  void init_after_cloning (const Transport &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    Transport             &obj,
+    const Transport       &other,
+    utils::ObjectCloneType clone_type);
 
   Q_INVOKABLE QString getPlayheadPositionString (
     const structure::tracks::TempoTrack * tempo_track) const;

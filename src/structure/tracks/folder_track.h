@@ -16,7 +16,6 @@ class FolderTrack final
     : public QObject,
       public FoldableTrack,
       // public ChannelTrack,
-      public ICloneable<FolderTrack>,
       public utils::InitializableObject<FolderTrack>
 {
   Q_OBJECT
@@ -45,8 +44,11 @@ public:
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
 
-  void init_after_cloning (const FolderTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    FolderTrack           &obj,
+    const FolderTrack     &other,
+    utils::ObjectCloneType clone_type);
+
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 

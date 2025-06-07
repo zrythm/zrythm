@@ -14,10 +14,7 @@ namespace zrythm::gui::actions
 /**
  * MIDI mapping action.
  */
-class MidiMappingAction final
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<MidiMappingAction>
+class MidiMappingAction final : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -61,9 +58,10 @@ public:
 
   QString to_string () const override;
 
-  void
-  init_after_cloning (const MidiMappingAction &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiMappingAction       &obj,
+    const MidiMappingAction &other,
+    utils::ObjectCloneType   clone_type);
 
 private:
   void init_loaded_impl () override { }

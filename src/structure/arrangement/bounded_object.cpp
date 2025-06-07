@@ -23,15 +23,13 @@ BoundedObject::parent_base_qproperties (QObject &derived)
 }
 
 void
-BoundedObject::copy_members_from (
-  const BoundedObject &other,
-  ObjectCloneType      clone_type)
+init_from (
+  BoundedObject         &obj,
+  const BoundedObject   &other,
+  utils::ObjectCloneType clone_type)
 {
-  end_pos_.reset (other.end_pos_->clone_raw_ptr ());
-  if (auto * qobject = dynamic_cast<QObject *> (this))
-    {
-      end_pos_->setParent (qobject);
-    }
+  obj.end_pos_.reset (
+    utils::clone_qobject (*other.end_pos_, dynamic_cast<QObject *> (&obj)));
 }
 
 bool

@@ -30,7 +30,6 @@ constexpr auto  TEMPO_TRACK_MAX_BEAT_UNIT = BeatUnit::Sixteen;
 class TempoTrack final
     : public QObject,
       public AutomatableTrack,
-      public ICloneable<TempoTrack>,
       public utils::InitializableObject<TempoTrack>
 {
   Q_OBJECT
@@ -72,8 +71,10 @@ public:
    */
   bpm_t get_bpm_at_pos (Position pos);
 
-  void init_after_cloning (const TempoTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    TempoTrack            &obj,
+    const TempoTrack      &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Returns the current BPM.

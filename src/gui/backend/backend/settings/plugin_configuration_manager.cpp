@@ -406,7 +406,7 @@ PluginConfigurationManager::set (
     }
   else
     {
-      auto new_setting = setting.clone_unique ();
+      auto new_setting = utils::clone_unique (setting);
       new_setting->validate ();
       settings_.emplace_back (std::move (new_setting));
     }

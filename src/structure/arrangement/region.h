@@ -183,9 +183,10 @@ protected:
       : object_registry_ (object_registry)
   {
   }
-  Q_DISABLE_COPY_MOVE (Region)
+  Z_DISABLE_COPY_MOVE (Region)
 
-  void copy_members_from (const Region &other, ObjectCloneType clone_type);
+  friend void
+  init_from (Region &obj, const Region &other, utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kLinkGroupKey = "linkGroup";

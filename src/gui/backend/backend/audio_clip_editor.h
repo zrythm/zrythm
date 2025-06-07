@@ -21,10 +21,7 @@
  *
  * The actual widgets should reflect the* information here.
  */
-class AudioClipEditor final
-    : public QObject,
-      public EditorSettings,
-      public ICloneable<AudioClipEditor>
+class AudioClipEditor final : public QObject, public EditorSettings
 {
   Q_OBJECT
   QML_ELEMENT
@@ -33,11 +30,12 @@ public:
   AudioClipEditor (QObject * parent = nullptr) : QObject (parent) { }
 
 public:
-  void
-  init_after_cloning (const AudioClipEditor &other, ObjectCloneType clone_type)
-    override
+  friend void init_from (
+    AudioClipEditor       &obj,
+    const AudioClipEditor &other,
+    utils::ObjectCloneType clone_type)
   {
-    static_cast<EditorSettings &> (*this) =
+    static_cast<EditorSettings &> (obj) =
       static_cast<const EditorSettings &> (other);
   }
 

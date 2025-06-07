@@ -55,7 +55,7 @@ enum class BounceMode : basic_enum_base_type_t
 /**
  * The audio engine.
  */
-class AudioEngine final : public ICloneable<AudioEngine>, public IPortOwner
+class AudioEngine final : public IPortOwner
 {
 public:
   /**
@@ -265,8 +265,10 @@ public:
    */
   void reset_bounce_mode ();
 
-  void init_after_cloning (const AudioEngine &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioEngine           &obj,
+    const AudioEngine     &other,
+    utils::ObjectCloneType clone_type);
 
   std::pair<AudioPort &, AudioPort &> get_monitor_out_ports ();
   std::pair<AudioPort &, AudioPort &> get_dummy_input_ports ();

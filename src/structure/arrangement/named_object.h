@@ -120,10 +120,13 @@ public:
   utils::Utf8String gen_human_friendly_name () const final { return name_; }
 
 protected:
-  void copy_members_from (const NamedObject &other, ObjectCloneType clone_type)
+  friend void init_from (
+    NamedObject           &obj,
+    const NamedObject     &other,
+    utils::ObjectCloneType clone_type)
   {
-    name_ = other.name_;
-    escaped_name_ = other.escaped_name_;
+    obj.name_ = other.name_;
+    obj.escaped_name_ = other.escaped_name_;
   }
 
 private:

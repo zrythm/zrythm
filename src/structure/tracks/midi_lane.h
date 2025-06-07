@@ -10,10 +10,7 @@
 
 namespace zrythm::structure::tracks
 {
-class MidiLane final
-    : public QObject,
-      public TrackLaneImpl<arrangement::MidiRegion>,
-      public ICloneable<MidiLane>
+class MidiLane final : public QObject, public TrackLaneImpl<arrangement::MidiRegion>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -26,8 +23,10 @@ public:
 public:
   MidiLane (LanedTrackImpl<MidiLane> * track);
 
-  void init_after_cloning (const MidiLane &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MidiLane              &obj,
+    const MidiLane        &other,
+    utils::ObjectCloneType clone_type);
 
 private:
   friend void to_json (nlohmann::json &j, const MidiLane &lane)

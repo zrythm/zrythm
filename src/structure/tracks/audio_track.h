@@ -22,7 +22,6 @@ class AudioTrack final
       public ChannelTrack,
       public LanedTrackImpl<AudioLane>,
       public RecordableTrack,
-      public ICloneable<AudioTrack>,
       public utils::InitializableObject<AudioTrack>
 {
   Q_OBJECT
@@ -51,8 +50,10 @@ public:
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
 
-  void init_after_cloning (const AudioTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    AudioTrack            &obj,
+    const AudioTrack      &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Wrapper for audio tracks to fill in StereoPorts from the timeline data.

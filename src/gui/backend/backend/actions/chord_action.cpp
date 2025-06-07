@@ -6,7 +6,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 ChordAction::ChordAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::Chord)
@@ -38,15 +39,18 @@ ChordAction::ChordAction (
 }
 
 void
-ChordAction::init_after_cloning (
-  const ChordAction &other,
-  ObjectCloneType    clone_type)
+init_from (
+  ChordAction           &obj,
+  const ChordAction     &other,
+  utils::ObjectCloneType clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  type_ = other.type_;
-  chord_before_ = other.chord_before_;
-  chord_after_ = other.chord_after_;
-  chord_idx_ = other.chord_idx_;
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.type_ = other.type_;
+  obj.chord_before_ = other.chord_before_;
+  obj.chord_after_ = other.chord_after_;
+  obj.chord_idx_ = other.chord_idx_;
 }
 
 void
@@ -80,4 +84,5 @@ QString
 ChordAction::to_string () const
 {
   return QObject::tr ("Change chords");
+}
 }

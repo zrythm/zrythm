@@ -13,7 +13,7 @@ namespace zrythm::plugins
  *
  * (Previously `PluginSetting`).
  */
-class PluginConfiguration final : public ICloneable<PluginConfiguration>
+class PluginConfiguration final
 {
 public:
   PluginConfiguration () = default;
@@ -49,9 +49,10 @@ public:
 
   void print () const;
 
-  void init_after_cloning (
+  friend void init_from (
+    PluginConfiguration       &obj,
     const PluginConfiguration &other,
-    ObjectCloneType            clone_type) override;
+    utils::ObjectCloneType     clone_type);
 
   zrythm::plugins::PluginDescriptor * get_descriptor () const
   {

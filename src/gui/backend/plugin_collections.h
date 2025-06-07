@@ -19,7 +19,7 @@ namespace zrythm::gui::old_dsp::plugins
 /**
  * Plugin collection used in the plugin browser.
  */
-class PluginCollection final : public ICloneable<PluginCollection>
+class PluginCollection final
 {
 public:
   using PluginDescriptor = zrythm::plugins::PluginDescriptor;
@@ -50,9 +50,10 @@ public:
    */
   // Glib::RefPtr<Gio::MenuModel> generate_context_menu () const;
 
-  void
-  init_after_cloning (const PluginCollection &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    PluginCollection       &obj,
+    const PluginCollection &other,
+    utils::ObjectCloneType  clone_type);
 
 private:
   static constexpr auto kNameKey = "name"sv;

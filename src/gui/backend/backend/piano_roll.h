@@ -83,10 +83,7 @@ public:
  *
  * The actual widgets should reflect the information here.
  */
-class PianoRoll final
-    : public QObject,
-      public EditorSettings,
-      public ICloneable<PianoRoll>
+class PianoRoll final : public QObject, public EditorSettings
 {
   Q_OBJECT
   QML_ELEMENT
@@ -226,12 +223,14 @@ public:
 
   auto &get_selected_object_ids () { return selected_objects_; }
 
-  void
-  init_after_cloning (const PianoRoll &other, ObjectCloneType clone_type) override
+  friend void init_from (
+    PianoRoll             &obj,
+    const PianoRoll       &other,
+    utils::ObjectCloneType clone_type)
   {
-    static_cast<EditorSettings &> (*this) =
+    static_cast<EditorSettings &> (obj) =
       static_cast<const EditorSettings &> (other);
-    selected_objects_ = other.selected_objects_;
+    obj.selected_objects_ = other.selected_objects_;
   }
 
 private:

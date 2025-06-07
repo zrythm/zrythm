@@ -194,31 +194,31 @@ ZrythmApplication::setup_command_line_options ()
 SettingsManager *
 ZrythmApplication::get_settings_manager () const
 {
-  return settings_manager_;
+  return settings_manager_.get ();
 }
 
 ThemeManager *
 ZrythmApplication::get_theme_manager () const
 {
-  return theme_manager_;
+  return theme_manager_.get ();
 }
 
 ProjectManager *
 ZrythmApplication::get_project_manager () const
 {
-  return project_manager_;
+  return project_manager_.get ();
 }
 
 AlertManager *
 ZrythmApplication::get_alert_manager () const
 {
-  return alert_manager_;
+  return alert_manager_.get ();
 }
 
 TranslationManager *
 ZrythmApplication::get_translation_manager () const
 {
-  return translation_manager_;
+  return translation_manager_.get ();
 }
 
 void

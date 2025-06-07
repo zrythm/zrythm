@@ -32,10 +32,7 @@ constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 /**
  * Backend for the chord editor.
  */
-class ChordEditor final
-    : public QObject,
-      public EditorSettings,
-      public ICloneable<ChordEditor>
+class ChordEditor final : public QObject, public EditorSettings
 {
   Q_OBJECT
   QML_ELEMENT
@@ -79,12 +76,15 @@ public:
   auto &get_chord_at_index (size_t index) { return chords_.at (index); }
   auto &get_chord_at_index (size_t index) const { return chords_.at (index); }
 
-  void init_after_cloning (const ChordEditor &other, ObjectCloneType clone_type)
-    override
+  friend void init_from (
+    ChordEditor           &obj,
+    const ChordEditor     &other,
+    utils::ObjectCloneType clone_type)
+
   {
-    static_cast<EditorSettings &> (*this) =
+    static_cast<EditorSettings &> (obj) =
       static_cast<const EditorSettings &> (other);
-    selected_objects_ = other.selected_objects_;
+    obj.selected_objects_ = other.selected_objects_;
   }
 
   void add_chord_descriptor (ChordDescriptor &&chord_descr)

@@ -27,10 +27,7 @@ namespace zrythm::gui::actions
  * actions, there is an EditType enum that specifies the type of edit operation,
  * such as changing the name or position of the selected objects.
  */
-class ArrangerSelectionsAction
-    : public QObject,
-      public UndoableAction,
-      public ICloneable<ArrangerSelectionsAction>
+class ArrangerSelectionsAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT
@@ -144,9 +141,10 @@ public:
 
   bool contains_clip (const AudioClip &clip) const override;
 
-  void init_after_cloning (
+  friend void init_from (
+    ArrangerSelectionsAction       &obj,
     const ArrangerSelectionsAction &other,
-    ObjectCloneType                 clone_type) override;
+    utils::ObjectCloneType          clone_type);
 
   bool needs_transport_total_bar_update (bool perform) const override;
 

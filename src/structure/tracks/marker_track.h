@@ -15,7 +15,6 @@ class MarkerTrack final
     : public QObject,
       public Track,
       public arrangement::ArrangerObjectOwner<arrangement::Marker>,
-      public ICloneable<MarkerTrack>,
       public utils::InitializableObject<MarkerTrack>
 {
   Q_OBJECT
@@ -68,8 +67,10 @@ public:
    */
   Marker * get_end_marker () const;
 
-  void init_after_cloning (const MarkerTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    MarkerTrack           &obj,
+    const MarkerTrack     &other,
+    utils::ObjectCloneType clone_type);
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;

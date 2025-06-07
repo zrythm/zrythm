@@ -13,11 +13,7 @@
 namespace zrythm::structure::arrangement
 {
 
-class ScaleObject final
-    : public QObject,
-      public TimelineObject,
-      public MuteableObject,
-      public ICloneable<ScaleObject>
+class ScaleObject final : public QObject, public TimelineObject, public MuteableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -39,8 +35,10 @@ public:
 
   // =========================================================
 
-  void init_after_cloning (const ScaleObject &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    ScaleObject           &obj,
+    const ScaleObject     &other,
+    utils::ObjectCloneType clone_type);
 
   void set_scale (const MusicalScale &scale) { scale_ = scale; }
 

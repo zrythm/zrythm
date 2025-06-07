@@ -45,12 +45,16 @@ FolderTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) con
 }
 
 void
-FolderTrack::init_after_cloning (
-  const FolderTrack &other,
-  ObjectCloneType    clone_type)
+init_from (
+  FolderTrack           &obj,
+  const FolderTrack     &other,
+  utils::ObjectCloneType clone_type)
 {
-  FoldableTrack::copy_members_from (other, clone_type);
-  Track::copy_members_from (other, clone_type);
+  init_from (
+    static_cast<FoldableTrack &> (obj),
+    static_cast<const FoldableTrack &> (other), clone_type);
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 }
 
 void

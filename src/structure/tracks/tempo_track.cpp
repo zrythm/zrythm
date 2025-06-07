@@ -338,14 +338,18 @@ TempoTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) cons
 }
 
 void
-TempoTrack::init_after_cloning (
-  const TempoTrack &other,
-  ObjectCloneType   clone_type)
+init_from (
+  TempoTrack            &obj,
+  const TempoTrack      &other,
+  utils::ObjectCloneType clone_type)
 {
-  bpm_port_ = other.bpm_port_;
-  beats_per_bar_port_ = other.beats_per_bar_port_;
-  beat_unit_port_ = other.beat_unit_port_;
-  Track::copy_members_from (other, clone_type);
-  AutomatableTrack::copy_members_from (other, clone_type);
+  obj.bpm_port_ = other.bpm_port_;
+  obj.beats_per_bar_port_ = other.beats_per_bar_port_;
+  obj.beat_unit_port_ = other.beat_unit_port_;
+  init_from (
+    static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
+  init_from (
+    static_cast<AutomatableTrack &> (obj),
+    static_cast<const AutomatableTrack &> (other), clone_type);
 }
 }

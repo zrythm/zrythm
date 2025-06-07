@@ -13,7 +13,6 @@ class InstrumentTrack final
     : public QObject,
       public GroupTargetTrack,
       public PianoRollTrack,
-      public ICloneable<InstrumentTrack>,
       public utils::InitializableObject<InstrumentTrack>
 {
   Q_OBJECT
@@ -33,9 +32,10 @@ public:
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
     PortRegistry                          &port_registry) override;
 
-  void
-  init_after_cloning (const InstrumentTrack &other, ObjectCloneType clone_type)
-    override;
+  friend void init_from (
+    InstrumentTrack       &obj,
+    const InstrumentTrack &other,
+    utils::ObjectCloneType clone_type);
 
   zrythm::gui::old_dsp::plugins::Plugin * get_instrument ();
 

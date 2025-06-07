@@ -6,7 +6,8 @@
 #include "gui/backend/backend/zrythm.h"
 #include "utils/rt_thread_id.h"
 
-using namespace zrythm::gui::actions;
+namespace zrythm::gui::actions
+{
 
 RangeAction::RangeAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::Range)
@@ -31,24 +32,27 @@ RangeAction::
     TRACKLIST->get_timeline_objects_in_range (std::make_pair (start_pos, inf))
     | std::views::transform (ArrangerObjectSpan::uuid_projection));
 
-  transport_ = TRANSPORT->clone_unique ();
+  transport_ = utils::clone_unique (*TRANSPORT);
 }
 
 void
-RangeAction::init_after_cloning (
-  const RangeAction &other,
-  ObjectCloneType    clone_type)
+init_from (
+  RangeAction           &obj,
+  const RangeAction     &other,
+  utils::ObjectCloneType clone_type)
 {
-  UndoableAction::copy_members_from (other, clone_type);
-  start_pos_ = other.start_pos_;
-  end_pos_ = other.end_pos_;
-  type_ = other.type_;
-  affected_objects_before_ = other.affected_objects_before_;
-  objects_removed_ = other.objects_removed_;
-  objects_added_ = other.objects_added_;
-  objects_moved_ = other.objects_moved_;
-  transport_ = other.transport_->clone_unique ();
-  first_run_ = other.first_run_;
+  init_from (
+    static_cast<UndoableAction &> (obj),
+    static_cast<const UndoableAction &> (other), clone_type);
+  obj.start_pos_ = other.start_pos_;
+  obj.end_pos_ = other.end_pos_;
+  obj.type_ = other.type_;
+  obj.affected_objects_before_ = other.affected_objects_before_;
+  obj.objects_removed_ = other.objects_removed_;
+  obj.objects_added_ = other.objects_added_;
+  obj.objects_moved_ = other.objects_moved_;
+  obj.transport_ = utils::clone_unique (*other.transport_);
+  obj.first_run_ = other.first_run_;
 }
 
 auto
@@ -480,3 +484,4 @@ RangeAction::to_string () const
 }
 
 #undef _MOVE_TRANSPORT_MARKER
+}
