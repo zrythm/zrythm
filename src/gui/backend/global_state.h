@@ -32,15 +32,15 @@ public:
     zrythm::gui::TranslationManager * translationManager READ
       getTranslationManager CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::engine::device_io::DeviceManager * deviceManager READ
-      getDeviceManager CONSTANT FINAL)
+    zrythm::gui::backend::DeviceManager * deviceManager READ getDeviceManager
+      CONSTANT FINAL)
 public:
   GlobalState (QObject * parent = nullptr) : QObject (parent) { }
-  Zrythm *                                   getZrythm ();
-  zrythm::gui::ThemeManager *                getThemeManager ();
-  zrythm::gui::SettingsManager *             getSettingsManager ();
-  zrythm::gui::ProjectManager *              getProjectManager ();
-  zrythm::gui::AlertManager *                getAlertManager ();
-  zrythm::gui::TranslationManager *          getTranslationManager ();
-  zrythm::engine::device_io::DeviceManager * getDeviceManager ();
+  Zrythm *                              getZrythm ();
+  zrythm::gui::ThemeManager *           getThemeManager ();
+  zrythm::gui::SettingsManager *        getSettingsManager ();
+  zrythm::gui::ProjectManager *         getProjectManager ();
+  zrythm::gui::AlertManager *           getAlertManager ();
+  zrythm::gui::TranslationManager *     getTranslationManager ();
+  zrythm::gui::backend::DeviceManager * getDeviceManager ();
 };

@@ -28,8 +28,6 @@ public:
 
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  void allocate_audio_bufs (nframes_t max_samples) override;
-
   void clear_buffer (std::size_t block_length) override;
 
   friend void

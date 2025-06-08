@@ -49,7 +49,7 @@ namespace zrythm::dsp::graph
 class IProcessable
 {
 public:
-  virtual ~IProcessable () = default;
+  virtual ~IProcessable () { release_resources (); }
 
   /**
    * Returns a human friendly name of the node.
@@ -65,7 +65,26 @@ public:
     return 0;
   }
 
+  /**
+   * @brief Called to allocate resources required for processing.
+   *
+   * @param sample_rate
+   * @param max_block_length
+   */
+  virtual void
+  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
+  {
+  }
+
   [[gnu::hot]] virtual void process_block (EngineProcessTimeInfo time_nfo) { };
+
+  /**
+   * @brief Called to release resources allocated by @ref
+   * prepare_for_processing().
+   *
+   * This may be called multiple times.
+   */
+  virtual void release_resources () { }
 };
 
 class InitialProcessor final : public IProcessable

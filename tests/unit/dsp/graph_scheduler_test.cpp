@@ -8,6 +8,7 @@
 #include "dsp/graph_thread.h"
 #include "utils/gtest_wrapper.h"
 
+#include "./graph_helpers.h"
 #include <gmock/gmock.h>
 
 using namespace testing;
@@ -15,51 +16,25 @@ using namespace std::chrono_literals;
 
 namespace zrythm::dsp::graph
 {
-
-class MockProcessable : public IProcessable
-{
-public:
-  MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
-  MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
-  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
-};
-
-class MockTransport : public ITransport
-{
-public:
-  MOCK_METHOD (
-    void,
-    position_add_frames,
-    (Position &, signed_frame_t),
-    (const, override));
-  MOCK_METHOD (
-    (std::pair<Position, Position>),
-    get_loop_range_positions,
-    (),
-    (const, override));
-  MOCK_METHOD (PlayState, get_play_state, (), (const, override));
-  MOCK_METHOD (Position, get_playhead_position, (), (const, override));
-  MOCK_METHOD (bool, get_loop_enabled, (), (const, override));
-  MOCK_METHOD (
-    nframes_t,
-    is_loop_point_met,
-    (signed_frame_t, nframes_t),
-    (const, override));
-};
-
 class GraphSchedulerTest : public ::testing::Test
 {
 protected:
+  using MockProcessable = zrythm::dsp::graph_test::MockProcessable;
+  using MockTransport = zrythm::dsp::graph_test::MockTransport;
+
   void SetUp () override
   {
     transport_ = std::make_unique<MockTransport> ();
     processable_ = std::make_unique<MockProcessable> ();
-    scheduler_ = std::make_unique<GraphScheduler> ();
+    scheduler_ = std::make_unique<GraphScheduler> (48000, 256);
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (0));
+    ON_CALL (*processable_, prepare_for_processing (_, _))
+      .WillByDefault (Return ());
+    ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
   }
 
   GraphNodeCollection create_test_collection ()
@@ -151,4 +126,20 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
   scheduler_->terminate_threads ();
 }
 
+TEST_F (GraphSchedulerTest, ResourceManagement)
+{
+  auto collection = create_test_collection ();
+
+  // Expect prepare to be called for each node
+  EXPECT_CALL (*processable_, prepare_for_processing (48000, 256)).Times (3);
+
+  // Expect release to be called when scheduler is destroyed
+  EXPECT_CALL (*processable_, release_resources ()).Times (3);
+
+  scheduler_->rechain_from_node_collection (std::move (collection));
+  scheduler_->start_threads (2);
+
+  // Trigger resource release
+  scheduler_->terminate_threads ();
+}
 }

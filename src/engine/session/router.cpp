@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -110,6 +110,9 @@ Router::recalc_graph (bool soft)
 {
   z_info ("Recalculating{}...", soft ? " (soft)" : "");
 
+  auto         device_mgr = audio_engine_->get_device_manager ();
+  const auto   current_device = device_mgr->getCurrentAudioDevice ();
+
   auto rebuild_graph = [&] () {
     graph_setup_in_progress_.store (true);
     ProjectGraphBuilder builder (*PROJECT, true);
@@ -123,13 +126,9 @@ Router::recalc_graph (bool soft)
 
   if (!scheduler_ && !soft)
     {
-      auto device_mgr = audio_engine_->get_device_manager ();
       scheduler_ = std::make_unique<dsp::graph::GraphScheduler> (
-        juce::Thread::RealtimeOptions ()
-          .withPriority (9)
-          .withApproximateAudioProcessingTime (
-            device_mgr->getCurrentAudioDevice ()->getCurrentBufferSizeSamples (),
-            device_mgr->getCurrentAudioDevice ()->getCurrentSampleRate ()),
+        static_cast<sample_rate_t> (current_device->getCurrentSampleRate ()),
+        current_device->getCurrentBufferSizeSamples (), std::nullopt,
         device_mgr->getDeviceAudioWorkgroup ());
       rebuild_graph ();
       scheduler_->start_threads ();

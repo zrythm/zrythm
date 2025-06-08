@@ -8,10 +8,12 @@
 namespace zrythm::engine::device_io
 {
 AudioCallback::AudioCallback (
-  EngineProcessCallback                     process_cb,
-  std::optional<DeviceAboutToStartCallback> device_about_to_start_cb)
+  EngineProcessCallback      process_cb,
+  DeviceAboutToStartCallback device_about_to_start_cb,
+  DeviceStoppedCallback      device_stopped_cb)
     : process_cb_ (std::move (process_cb)),
-      device_about_to_start_cb_ (device_about_to_start_cb)
+      device_about_to_start_cb_ (device_about_to_start_cb),
+      device_stopped_cb_ (device_stopped_cb)
 {
 }
 
@@ -51,6 +53,10 @@ void
 AudioCallback::audioDeviceStopped ()
 {
   z_info ("audio device stopped");
+  if (device_stopped_cb_.has_value ())
+    {
+      std::invoke (device_stopped_cb_.value ());
+    }
 }
 
 void

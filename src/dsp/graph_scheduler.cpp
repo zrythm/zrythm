@@ -32,10 +32,25 @@ namespace zrythm::dsp::graph
 {
 
 GraphScheduler::GraphScheduler (
+  sample_rate_t                                sample_rate,
+  nframes_t                                    max_block_length,
   std::optional<juce::Thread::RealtimeOptions> rt_options,
   std::optional<juce::AudioWorkgroup>          thread_workgroup)
-    : realtime_thread_options_ (rt_options), thread_workgroup_ (thread_workgroup)
+    : thread_workgroup_ (thread_workgroup), sample_rate_ (sample_rate),
+      max_block_length_ (max_block_length)
 {
+  if (rt_options)
+    {
+      realtime_thread_options_ = rt_options.value ();
+    }
+  else
+    {
+      realtime_thread_options_ =
+        juce::Thread::RealtimeOptions ().withPriority (9);
+    }
+  realtime_thread_options_ =
+    realtime_thread_options_.withApproximateAudioProcessingTime (
+      max_block_length, sample_rate);
 }
 
 void
@@ -71,6 +86,8 @@ GraphScheduler::rechain_from_node_collection (GraphNodeCollection &&nodes)
     static_cast<int> (graph_nodes_.terminal_nodes_.size ()));
 
   trigger_queue_.reserve (graph_nodes_.graph_nodes_.size ());
+
+  prepare_nodes_for_processing ();
 
   z_debug ("rechaining done");
 }
@@ -125,10 +142,7 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
   auto start_thread = [&] (auto &thread) {
     try
       {
-        auto success = thread->startRealtimeThread (
-          realtime_thread_options_
-            ? realtime_thread_options_.value ()
-            : juce::Thread::RealtimeOptions ().withPriority (9));
+        auto success = thread->startRealtimeThread (realtime_thread_options_);
         if (!success)
           {
             z_warning ("failed to start realtime thread, trying normal thread");
@@ -256,6 +270,25 @@ GraphScheduler::run_cycle (
     }
 }
 
+void
+GraphScheduler::prepare_nodes_for_processing ()
+{
+  for (auto &node : graph_nodes_.graph_nodes_)
+    {
+      node->get_processable ().prepare_for_processing (
+        sample_rate_, max_block_length_);
+    }
+}
+
+void
+GraphScheduler::release_node_resources ()
+{
+  for (auto &node : graph_nodes_.graph_nodes_)
+    {
+      node->get_processable ().release_resources ();
+    }
+}
+
 GraphScheduler::~GraphScheduler ()
 {
   if (main_thread_ || !threads_.empty ())
@@ -267,6 +300,8 @@ GraphScheduler::~GraphScheduler ()
     {
       z_info ("graph already terminated");
     }
+
+  release_node_resources ();
 }
 
 } // namespace zrythm::dsp::graph

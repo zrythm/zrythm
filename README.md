@@ -119,6 +119,7 @@ See [HACKING.md](HACKING.md) and the [developer docs](https://docs.zrythm.org/).
 See [our forum](https://forum.zrythm.org).
 
 ## Chat
+* [Zrythm server on Discord](https://discord.gg/ScHUMcNtPb)
 * [#zrythmdaw:matrix.org on Matrix](https://matrix.to/#/#zrythmdaw:matrix.org).
 * [#zrythm on Libera.Chat IRC](https://web.libera.chat/#zrythm).
 

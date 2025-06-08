@@ -46,7 +46,7 @@ GlobalState::getTranslationManager ()
     ->get_translation_manager ();
 }
 
-zrythm::engine::device_io::DeviceManager *
+zrythm::gui::backend::DeviceManager *
 GlobalState::getDeviceManager ()
 {
   return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)

@@ -7,7 +7,7 @@
 
 #include <juce_wrapper.h>
 
-namespace zrythm::engine::device_io
+namespace zrythm::gui::backend
 {
 /**
  * @brief Wrapper over juce::AudioDeviceManager that exposes changes as signals.
@@ -71,4 +71,4 @@ private:
   XmlStateSetter                        state_setter_;
   std::unique_ptr<DeviceSelectorWindow> device_selector_window_;
 };
-} // namespace zrythm::engine::device_io
+} // namespace zrythm::gui::backend

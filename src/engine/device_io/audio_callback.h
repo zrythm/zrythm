@@ -10,11 +10,12 @@ class AudioCallback : public juce::AudioIODeviceCallback
 public:
   using EngineProcessCallback = std::function<void (nframes_t)>;
   using DeviceAboutToStartCallback = std::function<void (juce::AudioIODevice *)>;
+  using DeviceStoppedCallback = std::function<void ()>;
 
   AudioCallback (
-    EngineProcessCallback                     process_cb,
-    std::optional<DeviceAboutToStartCallback> device_about_to_start_cb =
-      std::nullopt);
+    EngineProcessCallback      process_cb,
+    DeviceAboutToStartCallback device_about_to_start_cb,
+    DeviceStoppedCallback      device_stopped_cb);
 
 public:
   void audioDeviceIOCallbackWithContext (
@@ -31,5 +32,6 @@ public:
 private:
   EngineProcessCallback                     process_cb_;
   std::optional<DeviceAboutToStartCallback> device_about_to_start_cb_;
+  std::optional<DeviceStoppedCallback>      device_stopped_cb_;
 };
 } // namespace zrythm::engine::device_io

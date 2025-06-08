@@ -7,6 +7,7 @@ add_executable(zrythm_dsp_unit_tests
   ditherer_test.cpp
   kmeter_dsp_test.cpp
   graph_builder_test.cpp
+  graph_helpers.h
   graph_node_test.cpp
   graph_scheduler_test.cpp
   graph_test.cpp

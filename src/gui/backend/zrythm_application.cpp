@@ -142,7 +142,7 @@ ZrythmApplication::setup_device_manager ()
       utils::Utf8String::from_qstring (data_dir).to_path ()
       / u8"device_setup.xml")
       .to_juce_file ();
-  device_manager_ = std::make_shared<engine::device_io::DeviceManager> (
+  device_manager_ = std::make_shared<gui::backend::DeviceManager> (
     [filepath] () -> std::unique_ptr<juce::XmlElement> {
       auto xml = juce::parseXML (filepath);
       if (xml)

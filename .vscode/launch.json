@@ -85,7 +85,7 @@
                 },
             ],
             "args": [
-                "--dummy",
+                // "--gtest_filter='*ResourceManage*'",
             ],
             "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
         },

@@ -84,10 +84,6 @@ ModulatorMacroProcessor::process_block (const EngineProcessTimeInfo time_nfo)
   auto &cv_in = get_cv_in_port ();
   auto &cv_out = get_cv_out_port ();
 
-  z_return_if_fail_cmp (
-    time_nfo.local_offset_ + time_nfo.nframes_, <=,
-    get_cv_out_port ().last_buf_sz_);
-
   /* if there are inputs, multiply by the knob value */
   if (!cv_in.srcs_.empty ())
     {

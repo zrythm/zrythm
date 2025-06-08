@@ -30,16 +30,6 @@ init_from (
 }
 
 void
-AudioPort::allocate_audio_bufs (nframes_t max_samples)
-{
-  audio_ring_ = std::make_unique<RingBuffer<float>> (AUDIO_RING_SIZE);
-
-  size_t max = std::max (max_samples, 1u);
-  buf_.resize (max);
-  last_buf_sz_ = max;
-}
-
-void
 AudioPort::clear_buffer (std::size_t block_length)
 {
   utils::float_ranges::fill (buf_.data (), 0.f, block_length);

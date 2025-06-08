@@ -72,10 +72,12 @@ AudioEngine::AudioEngine (
         [this] () { return get_sample_rate (); })),
       port_connections_manager_ (project->port_connections_manager_),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
-      audio_callback_ (
-        std::make_unique<AudioCallback> ([this] (nframes_t frames_to_process) {
+      audio_callback_ (std::make_unique<AudioCallback> (
+        [this] (nframes_t frames_to_process) {
           this->process (frames_to_process);
-        }))
+        },
+        [this] (juce::AudioIODevice * _) {},
+        [this] () {}))
 {
   z_debug ("Creating audio engine...");
 
@@ -1023,18 +1025,16 @@ AudioEngine::~AudioEngine ()
   z_debug ("freeing engine...");
   destroying_ = true;
 
-  if (router_ && router_->scheduler_)
-    {
-      /* terminate graph threads */
-      router_->scheduler_->terminate_threads ();
-    }
+  // if (router_ && router_->scheduler_)
+  // {
+  /* terminate graph threads */
+  // router_->scheduler_->terminate_threads ();
+  // }
 
   if (activated_)
     {
       activate (false);
     }
-
-  device_manager_->closeAudioDevice ();
 
 // TODO
 #if 0

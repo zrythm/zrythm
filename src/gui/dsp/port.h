@@ -164,7 +164,7 @@ public:
  * to set the owner of the port.
  */
 class Port
-    : public dsp::graph::IProcessable,
+    : public virtual dsp::graph::IProcessable,
       public utils::UuidIdentifiableObject<Port>
 {
   Z_DISABLE_COPY_MOVE (Port)
@@ -362,21 +362,31 @@ public:
   IPortOwner * owner_{};
 };
 
-class AudioAndCVPortMixin
+class AudioAndCVPortMixin : public virtual dsp::graph::IProcessable
 {
 public:
-  /**
-   * @brief Allocates buffers used during DSP.
-   *
-   * To be called only where necessary to save RAM.
-   */
-  virtual void allocate_audio_bufs (nframes_t max_block_size) = 0;
+  ~AudioAndCVPortMixin () override = default;
+
+  void
+  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
+    final
+  {
+    size_t max = std::max (max_block_length, 1u);
+    buf_.resize (max);
+
+    // 8 cycles
+    audio_ring_ = std::make_unique<RingBuffer<float>> (max * 8);
+  }
+
+  void release_resources () final
+  {
+    buf_.clear ();
+    audio_ring_.reset ();
+  }
 
 public:
   /**
-   * Buffer to be reallocated every time the buffer size changes.
-   *
-   * The buffer size is AUDIO_ENGINE->block_length_.
+   * Audio-like data buffer.
    */
   std::vector<float> buf_;
 
@@ -390,9 +400,6 @@ public:
    * This is also used for CV.
    */
   std::unique_ptr<RingBuffer<float>> audio_ring_;
-
-  /** Last allocated buffer size (used for audio ports). */
-  size_t last_buf_sz_ = 0;
 };
 
 class MidiPort;

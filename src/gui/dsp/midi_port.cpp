@@ -27,9 +27,18 @@ init_from (MidiPort &obj, const MidiPort &other, utils::ObjectCloneType clone_ty
 }
 
 void
-MidiPort::allocate_midi_bufs (size_t max_midi_events)
+MidiPort::prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
 {
+  constexpr auto max_midi_events = 24;
   midi_ring_ = std::make_unique<RingBuffer<dsp::MidiEvent>> (max_midi_events);
+}
+
+void
+MidiPort::release_resources ()
+{
+  midi_ring_.reset ();
 }
 
 void

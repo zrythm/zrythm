@@ -5,7 +5,7 @@
 
 #include "gui/backend/device_manager.h"
 
-namespace zrythm::engine::device_io
+namespace zrythm::gui::backend
 {
 
 DeviceManager::DeviceManager (
@@ -98,9 +98,10 @@ DeviceManager::DeviceSelectorWindow::DeviceSelectorWindow (
   // for some reason width is 0 otherwise
   centreWithSize (
     std::max (component->getWidth (), 400), component->getHeight ());
+
+  setAlwaysOnTop (true);
   setVisible (true);
   toFront (true);
-  setAlwaysOnTop (true);
 }
 
 } // namespace zrythm::engine::device_io

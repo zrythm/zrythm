@@ -49,7 +49,7 @@ public:
 
   bool notify (QObject * receiver, QEvent * event) override;
 
-  std::shared_ptr<engine::device_io::DeviceManager> get_device_manager () const
+  std::shared_ptr<gui::backend::DeviceManager> get_device_manager () const
   {
     return device_manager_;
   }
@@ -82,8 +82,8 @@ private:
   utils::QObjectUniquePtr<AlertManager>       alert_manager_;
   utils::QObjectUniquePtr<SettingsManager>    settings_manager_;
   utils::QObjectUniquePtr<ThemeManager>       theme_manager_;
-  utils::QObjectUniquePtr<ProjectManager>     project_manager_;
   utils::QObjectUniquePtr<TranslationManager> translation_manager_;
+  utils::QObjectUniquePtr<ProjectManager>     project_manager_;
 
   /**
    * @brief Engine process handle.
@@ -94,7 +94,7 @@ private:
 
   QTranslator * translator_ = nullptr;
 
-  std::shared_ptr<engine::device_io::DeviceManager> device_manager_;
+  std::shared_ptr<gui::backend::DeviceManager> device_manager_;
 };
 
 } // namespace zrythm::gui

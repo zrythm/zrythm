@@ -60,7 +60,22 @@ class GraphScheduler
   static constexpr int MAX_GRAPH_THREADS = 128;
 
 public:
+  /**
+   * @brief Construct a new Graph Scheduler.
+   *
+   * @param sample_rate Sample rate.
+   * @param max_block_length Maximum block length @ref run_cycle() is expected
+   * to be called with.
+   * @param realtime_options Optional realtime options to pass to the created
+   * threads. If nullopt, the default options will be used.
+   * withApproximateAudioProcessingTime() will be appended by GraphScheduler
+   * automatically in either case based on @p max_block_length and @p
+   * sample_rate.
+   * @param thread_workgroup Optional workgroup (used on Mac).
+   */
   GraphScheduler (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length,
     std::optional<juce::Thread::RealtimeOptions> realtime_options = std::nullopt,
     std::optional<juce::AudioWorkgroup> thread_workgroup = std::nullopt);
   ~GraphScheduler ();
@@ -69,6 +84,13 @@ public:
   /**
    * @brief Steals the nodes from the given collection and prepares for
    * processing.
+   *
+   * @warning Nodes added here are expected to be unique for their
+   * IProcessable's. This means that an IProcessable-derived object may not be
+   * in more than one graph at a time, otherwise @ref release_node_resources()
+   * may be called while another graph is using them.
+   *
+   * @param nodes Nodes to steal.
    */
   void rechain_from_node_collection (GraphNodeCollection &&nodes);
 
@@ -87,13 +109,14 @@ public:
    */
   void terminate_threads ();
 
-  /**
-   * Called when an upstream (parent) node has completed processing.
-   */
-  [[gnu::hot]] void trigger_node (GraphNode &node);
-
   auto &get_nodes () { return graph_nodes_; }
 
+  /**
+   * @brief To be called repeatedly by a system audio callback thread.
+   *
+   * @param time_nfo
+   * @param remaining_preroll_frames
+   */
   void
   run_cycle (EngineProcessTimeInfo time_nfo, nframes_t remaining_preroll_frames);
 
@@ -107,6 +130,24 @@ public:
   {
     return remaining_preroll_frames_;
   }
+
+private:
+  /**
+   * Called when an upstream (parent) node has completed processing.
+   */
+  [[gnu::hot]] void trigger_node (GraphNode &node);
+
+  /**
+   * @brief Called before calling run_cycle() to make sure each node has
+   * its buffers ready.
+   */
+  void prepare_nodes_for_processing ();
+
+  /**
+   * @brief Called when processing is finished (in this destructor) to clean up
+   * resources allocated by @ref prepare_for_processing().
+   */
+  void release_node_resources ();
 
 private:
   std::vector<GraphThreadPtr> threads_;
@@ -150,10 +191,13 @@ private:
    * @brief If this contains a value, realtime threads will be created with
    * these options, otherwise default options will be used.
    */
-  std::optional<juce::Thread::RealtimeOptions> realtime_thread_options_;
+  juce::Thread::RealtimeOptions realtime_thread_options_;
 
   /** Audio workgroup for threads. */
   std::optional<juce::AudioWorkgroup> thread_workgroup_;
+
+  sample_rate_t sample_rate_;
+  nframes_t     max_block_length_;
 };
 
 } // namespace zrythm::dsp::graph

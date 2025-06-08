@@ -846,15 +846,6 @@ Fader::get_node_name () const
 void
 Fader::process_block (const EngineProcessTimeInfo time_nfo)
 {
-  if (ZRYTHM_TESTING)
-    {
-#if 0
-      z_debug (
-        "g_start %ld, start frame {}, nframes {}", time_nfo->g_start_frame_w_offset,
-        time_nfo->local_offset, time_nfo->nframes);
-#endif
-    }
-
   Track * track = nullptr;
   if (type_ == Type::AudioChannel)
     {
