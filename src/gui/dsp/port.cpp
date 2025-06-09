@@ -29,15 +29,6 @@ Port::Port (
   id_->flow_ = flow;
 }
 
-int
-Port::get_num_unlocked (
-  const dsp::PortConnectionsManager &connections_manager,
-  bool                               sources) const
-{
-  return connections_manager.get_unlocked_sources_or_dests (
-    nullptr, get_uuid (), sources);
-}
-
 void
 Port::set_owner (IPortOwner &owner)
 {

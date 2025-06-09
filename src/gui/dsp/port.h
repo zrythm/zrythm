@@ -228,24 +228,6 @@ public:
   void print_full_designation () const;
 
   /**
-   * Returns the number of unlocked (user-editable) sources.
-   */
-  auto get_num_unlocked_srcs (
-    const dsp::PortConnectionsManager &connections_manager) const
-  {
-    return get_num_unlocked (connections_manager, true);
-  }
-
-  /**
-   * Returns the number of unlocked (user-editable) destinations.
-   */
-  auto get_num_unlocked_dests (
-    const dsp::PortConnectionsManager &connections_manager) const
-  {
-    return get_num_unlocked (connections_manager, false);
-  }
-
-  /**
    * Updates the owner track identifier.
    */
   void change_track (IPortOwner::TrackUuid new_track_id);
@@ -296,10 +278,6 @@ protected:
 
   friend void
   init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type);
-
-  int get_num_unlocked (
-    const dsp::PortConnectionsManager &connections_manager,
-    bool                               sources) const;
 
 private:
   static constexpr std::string_view kIdKey = "id";
