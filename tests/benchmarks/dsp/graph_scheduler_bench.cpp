@@ -19,7 +19,7 @@ protected:
   using MockProcessable = zrythm::dsp::graph_test::MockProcessable;
   using MockTransport = zrythm::dsp::graph_test::MockTransport;
 
-  void SetUp (const benchmark::State &) override
+  void SetUp (benchmark::State &) override
   {
     zrythm::utils::LoggerProvider::logger ().get_logger ()->set_level (
       spdlog::level::off);
@@ -71,6 +71,16 @@ protected:
     EXPECT_CALL (*transport_, get_playhead_position ()).Times (AnyNumber ());
     EXPECT_CALL (*transport_, position_add_frames (_, _)).Times (AnyNumber ());
     EXPECT_CALL (*transport_, is_loop_point_met (_, _)).Times (AnyNumber ());
+  }
+
+  void TearDown (benchmark::State &state) override
+  {
+    // needed to reset these explicitly here otherwise the mock expectations
+    // won't be checked. see:
+    // https://stackoverflow.com/questions/10286514/why-is-googlemock-leaking-my-shared-ptr
+    scheduler_.reset ();
+    transport_.reset ();
+    processable_.reset ();
   }
 
   GraphNodeCollection create_linear_chain (size_t num_nodes)
