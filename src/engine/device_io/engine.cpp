@@ -76,8 +76,8 @@ AudioEngine::AudioEngine (
         [this] (nframes_t frames_to_process) {
           this->process (frames_to_process);
         },
-        [this] (juce::AudioIODevice * _) {},
-        [this] () {}))
+        [] (juce::AudioIODevice * _) {},
+        [] () {}))
 {
   z_debug ("Creating audio engine...");
 
