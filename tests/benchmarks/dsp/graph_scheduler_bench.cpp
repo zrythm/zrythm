@@ -6,54 +6,30 @@
 #include "dsp/graph_thread.h"
 #include "utils/dsp.h"
 
+#include "../tests/unit/dsp/graph_helpers.h"
 #include <benchmark/benchmark.h>
 #include <gmock/gmock.h>
 
 using namespace testing;
 using namespace zrythm::dsp::graph;
 
-class MockProcessable : public IProcessable
-{
-public:
-  MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
-  MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
-  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
-};
-
-class MockTransport : public dsp::ITransport
-{
-public:
-  MOCK_METHOD (
-    void,
-    position_add_frames,
-    (dsp::Position &, signed_frame_t),
-    (const, override));
-  MOCK_METHOD (
-    (std::pair<dsp::Position, dsp::Position>),
-    get_loop_range_positions,
-    (),
-    (const, override));
-  MOCK_METHOD (PlayState, get_play_state, (), (const, override));
-  MOCK_METHOD (dsp::Position, get_playhead_position, (), (const, override));
-  MOCK_METHOD (bool, get_loop_enabled, (), (const, override));
-  MOCK_METHOD (
-    nframes_t,
-    is_loop_point_met,
-    (signed_frame_t, nframes_t),
-    (const, override));
-};
-
 class GraphSchedulerBenchmark : public benchmark::Fixture
 {
 protected:
+  using MockProcessable = zrythm::dsp::graph_test::MockProcessable;
+  using MockTransport = zrythm::dsp::graph_test::MockTransport;
+
   void SetUp (const benchmark::State &) override
   {
     zrythm::utils::LoggerProvider::logger ().get_logger ()->set_level (
       spdlog::level::off);
 
+    // old processable is still used during release_node_resources() so destruct
+    // here before assigning processable_ to a new processable
+    scheduler_.reset ();
     transport_ = std::make_unique<MockTransport> ();
     processable_ = std::make_unique<MockProcessable> ();
-    scheduler_ = std::make_unique<GraphScheduler> ();
+    scheduler_ = std::make_unique<GraphScheduler> (48000, 1024);
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return (utils::Utf8String (u8"bench_node")));
@@ -61,6 +37,9 @@ protected:
       .WillByDefault (Return (0));
     ON_CALL (*transport_, get_play_state ())
       .WillByDefault (Return (dsp::ITransport::PlayState::Rolling));
+    ON_CALL (*processable_, prepare_for_processing (_, _))
+      .WillByDefault (Return ());
+    ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
 
     // Simulate actual processing work
     ON_CALL (*processable_, process_block (_)).WillByDefault ([] (auto) {
@@ -85,6 +64,9 @@ protected:
     EXPECT_CALL (*processable_, get_single_playback_latency ())
       .Times (AnyNumber ());
     EXPECT_CALL (*processable_, process_block (_)).Times (AnyNumber ());
+    EXPECT_CALL (*processable_, prepare_for_processing (_, _))
+      .Times (AnyNumber ());
+    EXPECT_CALL (*processable_, release_resources ()).Times (AnyNumber ());
     EXPECT_CALL (*transport_, get_play_state ()).Times (AnyNumber ());
     EXPECT_CALL (*transport_, get_playhead_position ()).Times (AnyNumber ());
     EXPECT_CALL (*transport_, position_add_frames (_, _)).Times (AnyNumber ());

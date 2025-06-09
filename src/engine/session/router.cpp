@@ -110,8 +110,8 @@ Router::recalc_graph (bool soft)
 {
   z_info ("Recalculating{}...", soft ? " (soft)" : "");
 
-  auto         device_mgr = audio_engine_->get_device_manager ();
-  const auto   current_device = device_mgr->getCurrentAudioDevice ();
+  auto       device_mgr = audio_engine_->get_device_manager ();
+  const auto current_device = device_mgr->getCurrentAudioDevice ();
 
   auto rebuild_graph = [&] () {
     graph_setup_in_progress_.store (true);
