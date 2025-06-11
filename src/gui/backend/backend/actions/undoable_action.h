@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UNDO_UNDOABLE_ACTION_H__
-#define __UNDO_UNDOABLE_ACTION_H__
+#pragma once
 
 #include "dsp/port_connections_manager.h"
 #include "gui/dsp/plugin.h"
@@ -74,16 +73,6 @@ public:
   virtual ~UndoableAction () = default;
 
   /**
-   * @brief Create a unique from id object
-   *
-   * @param type
-   * @return std::unique_ptr<UndoableAction>
-   *
-   * @throw ZrythmException on error.
-   */
-  static std::unique_ptr<UndoableAction> create_unique_from_type (Type type);
-
-  /**
    * @brief Non virtual function following the NVI pattern.
    *
    * @see init_loaded_impl().
@@ -120,12 +109,18 @@ public:
    *
    * No attempt is made to remove unused files from the pool for actions that
    * can't contain audio clips.
+   *
+   * @deprecated Will be removed in the future in favor of UuidReference's to
+   * AudioClip's.
    */
   virtual bool can_contain_clip () const { return false; };
 
   /**
    * Checks whether the action actually contains or refers to the given audio
    * clip.
+   *
+   * @deprecated Will be removed in the future in favor of UuidReference's to
+   * AudioClip's.
    */
   virtual bool contains_clip (const AudioClip &clip) const { return false; };
 
@@ -256,5 +251,3 @@ concept UndoableActionSubclass =
   std::derived_from<T, UndoableAction> && !std::is_same_v<T, UndoableAction>;
 
 }; // namespace zrythm::gui::actions
-
-#endif

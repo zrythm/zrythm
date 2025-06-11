@@ -39,36 +39,6 @@ UndoableAction::UndoableAction (Type type)
 {
 }
 
-std::unique_ptr<UndoableAction>
-UndoableAction::create_unique_from_type (Type type)
-{
-  switch (type)
-    {
-    case Type::TracklistSelections:
-      return std::make_unique<TracklistSelectionsAction> ();
-    case Type::ChannelSend:
-      return std::make_unique<ChannelSendAction> ();
-    case Type::MixerSelections:
-      return std::make_unique<MixerSelectionsAction> ();
-    case Type::ArrangerSelections:
-      return std::make_unique<ArrangerSelectionsAction> ();
-    case Type::MidiMapping:
-      return std::make_unique<MidiMappingAction> ();
-    case Type::PortConnection:
-      return std::make_unique<PortConnectionAction> ();
-    case Type::Port:
-      return std::make_unique<PortAction> ();
-    case Type::Range:
-      return std::make_unique<RangeAction> ();
-    case Type::Transport:
-      return std::make_unique<TransportAction> ();
-    case Type::Chord:
-      return std::make_unique<ChordAction> ();
-    default:
-      z_return_val_if_reached (nullptr);
-    }
-}
-
 void
 UndoableAction::init_loaded (sample_rate_t engine_sample_rate)
 {

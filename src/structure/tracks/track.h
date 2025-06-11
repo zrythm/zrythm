@@ -517,10 +517,7 @@ public:
 
 public:
   ~Track () override;
-  Q_DISABLE_COPY_MOVE (Track)
-
-  [[nodiscard]] static TrackUniquePtrVariant
-  create_unique_from_type (Type type);
+  Z_DISABLE_COPY_MOVE (Track)
 
 protected:
   /**
