@@ -42,11 +42,12 @@
 using namespace zrythm::gui::old_dsp::plugins;
 
 PluginScannerSubprocess::PluginScannerSubprocess ()
-    : file_logger_ (std::make_unique<juce::FileLogger> (
-        juce::File::getSpecialLocation (
-          juce::File::SpecialLocationType::tempDirectory)
-          .getChildFile ("plugin_scanner_subprocess_log.txt"),
-        "PluginScannerSubprocess"))
+    : file_logger_ (
+        std::make_unique<juce::FileLogger> (
+          juce::File::getSpecialLocation (
+            juce::File::SpecialLocationType::tempDirectory)
+            .getChildFile ("plugin_scanner_subprocess_log.txt"),
+          "PluginScannerSubprocess"))
 {
   juce::Logger::setCurrentLogger (file_logger_.get ());
 }

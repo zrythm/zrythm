@@ -76,8 +76,8 @@ Utf8String::to_lower () const
 Utf8String
 Utf8String::convert_to_filename () const
 { /* convert illegal characters to '_' */
-  return from_utf8_encoded_string (std::regex_replace (
-    str_, std::regex (R"([#%&{}\\<>*?/$!'":@+`|= ])"), "_"));
+  return from_utf8_encoded_string (
+    std::regex_replace (str_, std::regex (R"([#%&{}\\<>*?/$!'":@+`|= ])"), "_"));
 }
 
 Utf8String

@@ -49,9 +49,10 @@ get_file_hash (const std::filesystem::path &path)
   QByteArray       buf;
   while (!(buf = file.read (buf_size)).isEmpty ())
     {
-      hasher.update (std::span<const std::byte>{
-        reinterpret_cast<const std::byte *> (buf.data ()),
-        static_cast<size_t> (buf.size ()) });
+      hasher.update (
+        std::span<const std::byte>{
+          reinterpret_cast<const std::byte *> (buf.data ()),
+          static_cast<size_t> (buf.size ()) });
     }
 
   return hasher.finalize ();

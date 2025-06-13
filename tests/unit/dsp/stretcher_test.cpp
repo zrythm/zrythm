@@ -36,8 +36,9 @@ TEST_F (StretcherTest, Creation)
   EXPECT_NE (rt_stretcher, nullptr);
 
   // Test invalid parameters
-  EXPECT_ANY_THROW (Stretcher::create_rubberband (
-    0, channels_, time_ratio_, pitch_ratio_, false));
+  EXPECT_ANY_THROW (
+    Stretcher::create_rubberband (
+      0, channels_, time_ratio_, pitch_ratio_, false));
 }
 
 TEST_F (StretcherTest, BasicStretching)

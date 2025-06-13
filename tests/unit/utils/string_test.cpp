@@ -34,8 +34,9 @@ TEST (StringTest, ContainsSubstring)
   EXPECT_TRUE (
     Utf8String::from_utf8_encoded_string ("Hello World")
       .contains_substr ({ u8"World" }));
-  EXPECT_TRUE (Utf8String{ u8"Hello World" }.contains_substr_case_insensitive (
-    { u8"WORLD" }));
+  EXPECT_TRUE (
+    Utf8String{ u8"Hello World" }.contains_substr_case_insensitive (
+      { u8"WORLD" }));
   EXPECT_FALSE (
     Utf8String::from_utf8_encoded_string ("Hello World")
       .contains_substr ({ u8"Goodbye" }));

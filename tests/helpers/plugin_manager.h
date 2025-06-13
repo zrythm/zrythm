@@ -181,9 +181,10 @@ test_plugin_manager_create_tracks_from_plugin (
     }
 
   /* create a track from the plugin */
-  EXPECT_NO_THROW (Track::create_with_action (
-    track_type, &setting, nullptr, nullptr, TRACKLIST->get_num_tracks (),
-    num_tracks, -1, nullptr));
+  EXPECT_NO_THROW (
+    Track::create_with_action (
+      track_type, &setting, nullptr, nullptr, TRACKLIST->get_num_tracks (),
+      num_tracks, -1, nullptr));
 
   return TRACKLIST->get_num_tracks () - 1;
 }

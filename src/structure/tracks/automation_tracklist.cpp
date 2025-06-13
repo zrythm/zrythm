@@ -542,8 +542,9 @@ AutomationTracklist::print_ats () const
     {
       const auto &at = ats_[i];
       const auto &port = get_port (at->port_id_);
-      str += utils::Utf8String::from_utf8_encoded_string (fmt::format (
-        "[{}] '{}' (sym '{}')\n", i, at->getLabel (), port.id_->get_symbol ()));
+      str += utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "[{}] '{}' (sym '{}')\n", i, at->getLabel (), port.id_->get_symbol ()));
     }
 
   z_info (str);

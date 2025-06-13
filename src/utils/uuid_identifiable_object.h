@@ -372,8 +372,8 @@ public:
       [&] (auto &&obj) {
         if (contains (obj->get_uuid ()))
           {
-            throw std::runtime_error (fmt::format (
-              "Object with id {} already exists", obj->get_uuid ()));
+            throw std::runtime_error (
+              fmt::format ("Object with id {} already exists", obj->get_uuid ()));
           }
         z_trace ("Registering (inserting) object {}", obj->get_uuid ());
         obj->setParent (this);

@@ -356,8 +356,8 @@ carla_engine_callback (
           || (!is_cv_variant && plugin_id >= 5))
           {
             auto port_hints = static_cast<unsigned int> (val2);
-            self->patchbay_port_info_.push_back (CarlaPatchbayPortInfo{
-              plugin_id, port_hints, port_id, val_str });
+            self->patchbay_port_info_.push_back (
+              CarlaPatchbayPortInfo{ plugin_id, port_hints, port_id, val_str });
           }
       }
       break;

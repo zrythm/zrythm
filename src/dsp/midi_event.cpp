@@ -117,9 +117,9 @@ MidiEventVector::append_w_filter (
           {
             if (ZRYTHM_TESTING)
               {
-                z_debug (fmt::format (
+                z_debug (
                   "skipping event: time {} (local offset {} nframes {})",
-                  src_ev.time_, local_offset, nframes));
+                  src_ev.time_, local_offset, nframes);
               }
             continue;
           }

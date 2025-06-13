@@ -179,15 +179,16 @@ ZrythmApplication::setup_command_line_options ()
   cmd_line_parser_.addHelpOption ();
   cmd_line_parser_.addVersionOption ();
 
-  cmd_line_parser_.addOptions ({
-    { u"project"_s, tr ("Open project"), u"project"_s, u"project"_s },
-    { u"new-project"_s, tr ("Create new project"), u"new-project"_s,
-     u"new-project"_s },
-    { u"new-project-with-template"_s, tr ("Create new project with template"),
-     u"new-project-with-template"_s, u"new-project-with-template"_s },
+  cmd_line_parser_.addOptions (
     {
-     u"dummy"_s, tr ("Use dummy audio/midi engine"),
-     },
+      { u"project"_s, tr ("Open project"), u"project"_s, u"project"_s },
+      { u"new-project"_s, tr ("Create new project"), u"new-project"_s,
+       u"new-project"_s },
+      { u"new-project-with-template"_s, tr ("Create new project with template"),
+       u"new-project-with-template"_s, u"new-project-with-template"_s },
+      {
+       u"dummy"_s, tr ("Use dummy audio/midi engine"),
+       },
   });
 }
 

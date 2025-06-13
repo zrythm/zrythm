@@ -100,15 +100,17 @@ TEST_F (ZrythmFixture, MonoPlugin)
   auto audio_track = TRACKLIST->get_last_track<AudioTrack> ();
 
   /* hard pan right */
-  UNDO_MANAGER->perform (std::make_unique<SingleTrackFloatAction> (
-    SingleTrackFloatAction::EditType::Pan, audio_track, 0.5f, 1.f, false));
+  UNDO_MANAGER->perform (
+    std::make_unique<SingleTrackFloatAction> (
+      SingleTrackFloatAction::EditType::Pan, audio_track, 0.5f, 1.f, false));
 
   /* add a mono insert */
   auto setting = test_plugin_manager_get_plugin_setting (
     LSP_COMPRESSOR_MONO_BUNDLE, LSP_COMPRESSOR_MONO_URI, true);
 
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *audio_track, 0, setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Insert, *audio_track, 0, setting, 1));
 
   const auto &pl = audio_track->channel_->inserts_[0];
   ASSERT_NONNULL (pl);

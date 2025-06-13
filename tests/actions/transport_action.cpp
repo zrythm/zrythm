@@ -46,8 +46,9 @@ TEST_F (ZrythmFixture, ChangeBPMAndTimeSignature)
   ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
 
   /* perform the change */
-  UNDO_MANAGER->perform (std::make_unique<TransportAction> (
-    TransportAction::Type::BeatUnitChange, 4, 16, true));
+  UNDO_MANAGER->perform (
+    std::make_unique<TransportAction> (
+      TransportAction::Type::BeatUnitChange, 4, 16, true));
   ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
   AUDIO_ENGINE->wait_n_cycles (3);
   ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);

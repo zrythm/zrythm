@@ -21,8 +21,9 @@ TEST_F (ZrythmFixture, RouteMasterSendToFx)
 
   /* route master to it */
   ASSERT_THROW (
-    UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
-      *P_MASTER_TRACK->channel_->sends_[0], *audio_fx->processor_->stereo_in_,
-      *PORT_CONNECTIONS_MGR));
+    UNDO_MANAGER->perform (
+      std::make_unique<ChannelSendConnectStereoAction> (
+        *P_MASTER_TRACK->channel_->sends_[0], *audio_fx->processor_->stereo_in_,
+        *PORT_CONNECTIONS_MGR));
     , ZrythmException);
 }

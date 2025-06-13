@@ -114,8 +114,9 @@ TrackSpan::move_after_copying_or_moving_inside (
     }
   catch (const ZrythmException &e)
     {
-      e.handle (QObject::tr (
-        "Failed to move tracks after copying or moving inside folder"));
+      e.handle (
+        QObject::tr (
+          "Failed to move tracks after copying or moving inside folder"));
       return;
     }
 

@@ -422,8 +422,9 @@ RangeAction::undo_impl ()
 
   /* remove all objects added during perform() */
   for (
-    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectSpan{
-      PROJECT->get_arranger_object_registry (), objects_added_ }))
+    const auto &obj_var : std::ranges::reverse_view (
+      ArrangerObjectSpan{
+        PROJECT->get_arranger_object_registry (), objects_added_ }))
     {
       std::visit (
         [&] (auto &&obj) { obj->remove_from_project (true); }, obj_var);
@@ -431,8 +432,9 @@ RangeAction::undo_impl ()
 
   // move all moved objects backwards
   for (
-    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectSpan{
-      PROJECT->get_arranger_object_registry (), objects_moved_ }))
+    const auto &obj_var : std::ranges::reverse_view (
+      ArrangerObjectSpan{
+        PROJECT->get_arranger_object_registry (), objects_moved_ }))
     {
       std::visit (
         [&] (auto &&obj) {

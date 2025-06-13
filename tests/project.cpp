@@ -51,9 +51,10 @@ TEST_F (BootstrapTimelineFixture, SaveBackupWithPoolAndPlugins)
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, true, 1);
   auto track = TRACKLIST->get_track<InstrumentTrack> (track_pos);
   track->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
 
   auto dir = PROJECT->dir_;
 

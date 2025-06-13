@@ -63,8 +63,9 @@ _test_edit_tracks (
     {
     case TracklistSelectionsAction::EditType::Mute:
       {
-        UNDO_MANAGER->perform (std::make_unique<MuteTracksAction> (
-          *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
+        UNDO_MANAGER->perform (
+          std::make_unique<MuteTracksAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
         if (is_instrument)
           {
             ASSERT_TRUE (ins_track->channel_->instrument_->instantiated_);
@@ -90,9 +91,10 @@ _test_edit_tracks (
         ASSERT_TRUE (!midi_track->channel_->has_output_);
 
         /* change the direct out to the instrument */
-        UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-          *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-          *PORT_CONNECTIONS_MGR, *ins_track));
+        UNDO_MANAGER->perform (
+          std::make_unique<ChangeTracksDirectOutAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+            *PORT_CONNECTIONS_MGR, *ins_track));
 
         /* verify direct out established */
         ASSERT_TRUE (midi_track->channel_->has_output_);
@@ -109,8 +111,9 @@ _test_edit_tracks (
         ins_track = TRACKLIST->get_track<InstrumentTrack> (4);
         ASSERT_EQ (ins_track->type_, Track::Type::Instrument);
         ins_track->select (true, true, false);
-        UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-          *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 1));
+        UNDO_MANAGER->perform (
+          std::make_unique<MoveTracksAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 1));
         UNDO_MANAGER->undo ();
 
         /* create an audio group track and test routing instrument track to
@@ -120,9 +123,10 @@ _test_edit_tracks (
         UNDO_MANAGER->redo ();
         auto audio_group = TRACKLIST->get_last_track<AudioGroupTrack> ();
         ins_track->select (true, true, false);
-        UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-          *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-          *PORT_CONNECTIONS_MGR, *audio_group));
+        UNDO_MANAGER->perform (
+          std::make_unique<ChangeTracksDirectOutAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+            *PORT_CONNECTIONS_MGR, *audio_group));
         UNDO_MANAGER->undo ();
         UNDO_MANAGER->redo ();
         UNDO_MANAGER->undo ();
@@ -143,14 +147,16 @@ _test_edit_tracks (
 
         /* route the instrument to the group track */
         ins_track->select (true, true, false);
-        UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-          *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-          *PORT_CONNECTIONS_MGR, *group_track));
+        UNDO_MANAGER->perform (
+          std::make_unique<ChangeTracksDirectOutAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+            *PORT_CONNECTIONS_MGR, *group_track));
 
         /* solo the group track */
         group_track->select (true, true, false);
-        UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
-          *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
+        UNDO_MANAGER->perform (
+          std::make_unique<SoloTracksAction> (
+            *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
 
         /* run the engine for 1 cycle to clear any pending events */
         AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
@@ -241,8 +247,9 @@ _test_edit_tracks (
           {
             val_before = ins_track->channel_->get_balance_control ();
           }
-        UNDO_MANAGER->perform (std::make_unique<SingleTrackFloatAction> (
-          type, ins_track, val_before, new_val, false));
+        UNDO_MANAGER->perform (
+          std::make_unique<SingleTrackFloatAction> (
+            type, ins_track, val_before, new_val, false));
 
         /* verify */
         if (type == TracklistSelectionsAction::EditType::Pan)
@@ -420,9 +427,10 @@ TEST_F (ZrythmFixture, EditMidiDirectOutToInstrumentTrack)
   midi_track->select (true, true, false);
 
   /* route the MIDI track to the instrument track */
-  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    *ins_track));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChangeTracksDirectOutAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      *ins_track));
 
   const auto &ch = midi_track->channel_;
   auto        direct_out = ch->get_output_track ();
@@ -434,8 +442,9 @@ TEST_F (ZrythmFixture, EditMidiDirectOutToInstrumentTrack)
    * the MIDI track's output is the instrument */
   ins_track->select (true, true, false);
 
-  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<DeleteTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
   direct_out = ch->get_output_track ();
   g_assert_null (direct_out);
@@ -467,13 +476,15 @@ TEST_F (ZrythmFixture, EditMultiTTrackDirectOut)
   /* route the ins tracks to the audio group */
   ins_track->select (true, true, false);
   ins_track2->select (true, false, false);
-  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    *audio_group));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChangeTracksDirectOutAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      *audio_group));
 
   /* change the name of the group track - tests track_update_children() */
-  UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
-    *audio_group, *PORT_CONNECTIONS_MGR, "new name"));
+  UNDO_MANAGER->perform (
+    std::make_unique<RenameTrackAction> (
+      *audio_group, *PORT_CONNECTIONS_MGR, "new name"));
 
   const auto &ch = ins_track->channel_;
   const auto &ch2 = ins_track2->channel_;
@@ -488,8 +499,9 @@ TEST_F (ZrythmFixture, EditMultiTTrackDirectOut)
   /* delete the audio group, undo and verify that
    * the ins track output is the audio group */
   audio_group->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<DeleteTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
   direct_out = ch->get_output_track ();
   direct_out2 = ch2->get_output_track ();
@@ -500,9 +512,10 @@ TEST_F (ZrythmFixture, EditMultiTTrackDirectOut)
    * master */
   ins_track->select (true, true, false);
   ins_track2->select (true, false, false);
-  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    *P_MASTER_TRACK));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChangeTracksDirectOutAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      *P_MASTER_TRACK));
   auto ua = UNDO_MANAGER->get_last_action ();
   ua->set_num_actions (2);
 
@@ -537,8 +550,9 @@ TEST_F (ZrythmFixture, RenameMidiTrackWithEvents)
   midi_track->select (true, true, false);
 
   /* change the name of the track */
-  UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
-    *midi_track, *PORT_CONNECTIONS_MGR, "new name"));
+  UNDO_MANAGER->perform (
+    std::make_unique<RenameTrackAction> (
+      *midi_track, *PORT_CONNECTIONS_MGR, "new name"));
 
   TRACKLIST->validate ();
 
@@ -550,9 +564,10 @@ TEST_F (ZrythmFixture, RenameMidiTrackWithEvents)
   UNDO_MANAGER->redo ();
 
   /* duplicate and let engine run */
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
 
   /* play and let engine run */
   TRANSPORT->requestRoll (true);
@@ -568,13 +583,15 @@ TEST_F (ZrythmFixture, RenameTrackWithSend)
   auto audio_fx = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* send from group to fx */
-  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
-    *audio_group->channel_->sends_[0], *audio_fx->processor_->stereo_in_,
-    *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChannelSendConnectStereoAction> (
+      *audio_group->channel_->sends_[0], *audio_fx->processor_->stereo_in_,
+      *PORT_CONNECTIONS_MGR));
 
   /* change the name of the fx track */
-  UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
-    *audio_fx, *PORT_CONNECTIONS_MGR, "new name"));
+  UNDO_MANAGER->perform (
+    std::make_unique<RenameTrackAction> (
+      *audio_fx, *PORT_CONNECTIONS_MGR, "new name"));
 
   TRACKLIST->validate ();
 
@@ -583,8 +600,9 @@ TEST_F (ZrythmFixture, RenameTrackWithSend)
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* change the name of the group track */
-  UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
-    *audio_group, *PORT_CONNECTIONS_MGR, "new name2"));
+  UNDO_MANAGER->perform (
+    std::make_unique<RenameTrackAction> (
+      *audio_group, *PORT_CONNECTIONS_MGR, "new name2"));
 
   TRACKLIST->validate ();
 

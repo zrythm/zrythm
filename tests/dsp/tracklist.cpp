@@ -45,8 +45,8 @@ TEST_F (ZrythmFixture, SwapWithAutomationRegions)
     auto ap = std::make_shared<AutomationPoint> (0.1f, 0.1f, start);
     region->append_object (ap);
     ap->select (true, false, false);
-    UNDO_MANAGER->perform (std::make_unique<CreateArrangerSelectionsAction> (
-      *AUTOMATION_SELECTIONS));
+    UNDO_MANAGER->perform (
+      std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
   };
 
   create_automation_region (TRACKLIST->get_last_pos ());
@@ -62,8 +62,9 @@ TEST_F (ZrythmFixture, SwapWithAutomationRegions)
     TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 1);
   track2->select (true, true, false);
   ASSERT_TRUE (TRACKLIST->validate ());
-  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), track1->pos_));
+  UNDO_MANAGER->perform (
+    std::make_unique<MoveTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), track1->pos_));
   ASSERT_TRUE (TRACKLIST->validate ());
 
   for (int i = 0; i < 7; ++i)

@@ -79,8 +79,8 @@ PianoRoll::init_descriptors ()
           ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12))
         + utils::Utf8String::from_utf8_encoded_string (
           std::to_string ((i / 12) - 1));
-      descr.note_name_pango_ =
-        utils::Utf8String::from_utf8_encoded_string (fmt::format (
+      descr.note_name_pango_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
           "{}<sup>{}</sup>",
           dsp::ChordDescriptor::note_to_string (
             ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
@@ -106,8 +106,8 @@ PianoRoll::init_descriptors ()
           ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12))
         + utils::Utf8String::from_utf8_encoded_string (
           std::to_string ((i / 12) - 1));
-      descr.note_name_pango_ =
-        utils::Utf8String::from_utf8_encoded_string (fmt::format (
+      descr.note_name_pango_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
           "{}<sup>{}</sup>",
           dsp::ChordDescriptor::note_to_string (
             ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
@@ -125,20 +125,20 @@ PianoRoll::init_descriptors ()
       descr.value_ = i;
       descr.marked_ = false;
       descr.visible_ = true;
-      descr
-        .custom_name_ = utils::Utf8String::from_utf8_encoded_string (fmt::format (
-        "#{}: {}{}", i,
-        dsp::ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
-        (i / 12) - 1));
+      descr.custom_name_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "#{}: {}{}", i,
+          dsp::ChordDescriptor::note_to_string (
+            ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
+          (i / 12) - 1));
 
       descr.note_name_ =
         dsp::ChordDescriptor::note_to_string (
           ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12))
         + utils::Utf8String::from_utf8_encoded_string (
           std::to_string ((i / 12) - 1));
-      descr.note_name_pango_ =
-        utils::Utf8String::from_utf8_encoded_string (fmt::format (
+      descr.note_name_pango_ = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
           "{}<sup>{}</sup>",
           dsp::ChordDescriptor::note_to_string (
             ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),

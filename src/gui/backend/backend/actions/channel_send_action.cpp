@@ -25,11 +25,12 @@ ChannelSendAction::ChannelSendAction (
   float                                                          amount,
   const PortConnectionsManager * port_connections_mgr)
     : UndoableAction (UndoableAction::Type::ChannelSend),
-      send_before_ (utils::clone_unique (
-        send,
-        utils::ObjectCloneType::Snapshot,
-        PROJECT->get_track_registry (),
-        PROJECT->get_port_registry ())),
+      send_before_ (
+        utils::clone_unique (
+          send,
+          utils::ObjectCloneType::Snapshot,
+          PROJECT->get_track_registry (),
+          PROJECT->get_port_registry ())),
       amount_ (amount), send_action_type_ (type)
 {
   if (port != nullptr)

@@ -37,14 +37,16 @@ TEST (IoTest, FileOperations)
 {
   // Test file creation and removal
   auto tmp_file = zrythm::utils::io::make_tmp_file ();
-  EXPECT_TRUE (fs::exists (
-    utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path ()));
+  EXPECT_TRUE (
+    fs::exists (
+      utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path ()));
 
   // Test file contents
   utils::Utf8String test_data = u8"Hello, World!";
-  EXPECT_NO_THROW (zrythm::utils::io::set_file_contents (
-    utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path (),
-    test_data));
+  EXPECT_NO_THROW (
+    zrythm::utils::io::set_file_contents (
+      utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path (),
+      test_data));
 
   auto read_data = zrythm::utils::io::read_file_contents (
     utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path ());

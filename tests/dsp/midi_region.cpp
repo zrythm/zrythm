@@ -53,8 +53,9 @@ TEST_P (MidiRegionExportTest, Export)
   region->export_to_midi_file (export_filepath, 0, false);
   region->export_to_midi_file (export_filepath, 0, true);
 
-  ASSERT_TRUE (Glib::file_test (
-    export_filepath, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
+  ASSERT_TRUE (
+    Glib::file_test (
+      export_filepath, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
 
   io_remove (export_filepath);
 
@@ -99,8 +100,9 @@ TEST_F (ZrythmFixture, FullExport)
 
   auto base_midi_file = Glib::build_filename (TESTS_SRCDIR, "loopbase.mid");
 
-  ASSERT_TRUE (Glib::file_test (
-    base_midi_file, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
+  ASSERT_TRUE (
+    Glib::file_test (
+      base_midi_file, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
 
   char * export_dir = g_dir_make_tmp ("test_midi_full_export_XXXXXX", nullptr);
 
@@ -128,10 +130,12 @@ TEST_F (ZrythmFixture, FullExport)
   auto compare_files_hash = [] (const auto &filepath1, const auto &filepath2) {
     z_info ("Comparing: {} - {}", filepath1, filepath2);
 
-    ASSERT_TRUE (Glib::file_test (
-      filepath1, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
-    ASSERT_TRUE (Glib::file_test (
-      filepath2, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
+    ASSERT_TRUE (
+      Glib::file_test (
+        filepath1, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
+    ASSERT_TRUE (
+      Glib::file_test (
+        filepath2, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
     uint32_t file1_hash = hash_get_from_file_simple (filepath1.c_str ());
     uint32_t file2_hash = hash_get_from_file_simple (filepath2.c_str ());
 

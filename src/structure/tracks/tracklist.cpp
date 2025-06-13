@@ -1546,8 +1546,9 @@ Tracklist::import_files (
         {
           if (track && !track->has_piano_roll ())
             {
-              throw ZrythmException (QObject::tr (
-                "Can only drop MIDI files on MIDI/instrument tracks"));
+              throw ZrythmException (
+                QObject::tr (
+                  "Can only drop MIDI files on MIDI/instrument tracks"));
             }
         }
       else

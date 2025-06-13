@@ -81,8 +81,9 @@ public:
     const auto &track,
     const auto &at)
   {
-    self.set_name (utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("{} - {}", track.get_name (), at.getLabel ())));
+    self.set_name (
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("{} - {}", track.get_name (), at.getLabel ())));
   }
   void generate_name_from_track (this auto &self, const auto &track)
   {

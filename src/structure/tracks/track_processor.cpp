@@ -233,8 +233,8 @@ TrackProcessor::init_midi_cc_ports ()
       for (const auto j : std::views::iota (0, 128))
         {
           (*midi_cc_ids_)[(i * 128) + j] = port_registry_.create_object<
-            ControlPort> (
-            utils::Utf8String::from_utf8_encoded_string (fmt::format (
+            ControlPort> (utils::Utf8String::from_utf8_encoded_string (
+            fmt::format (
               "Ch{} {}", channel, utils::midi::midi_get_controller_name (j))));
           auto * cc = std::get<ControlPort *> (
             (*midi_cc_ids_)[(i * 128) + j].get_object ());

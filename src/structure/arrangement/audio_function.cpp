@@ -463,9 +463,10 @@ audio_function_apply (
                   (unsigned int) avail);
                 if ((int) retrieved_out_samples != avail)
                   {
-                    throw ZrythmException (fmt::format (
-                      "rubberband: retrieved out samples ({}) != available samples ({})",
-                      retrieved_out_samples, avail));
+                    throw ZrythmException (
+                      fmt::format (
+                        "rubberband: retrieved out samples ({}) != available samples ({})",
+                        retrieved_out_samples, avail));
                   }
                 frames_read += retrieved_out_samples;
                 z_debug (
@@ -475,9 +476,10 @@ audio_function_apply (
           }
         if (frames_read != num_frames)
           {
-            throw ZrythmException (fmt::format (
-              "rubberband: expected {} frames but read {}", num_frames,
-              frames_read));
+            throw ZrythmException (
+              fmt::format (
+                "rubberband: expected {} frames but read {}", num_frames,
+                frames_read));
           }
       }
       break;
@@ -490,8 +492,8 @@ audio_function_apply (
         }
       else
         {
-          throw ZrythmException (fmt::format (
-            "copy_lto_r: expected 2 channels but got {}", channels));
+          throw ZrythmException (
+            fmt::format ("copy_lto_r: expected 2 channels but got {}", channels));
         }
       break;
     case AudioFunctionType::ExternalProgram:

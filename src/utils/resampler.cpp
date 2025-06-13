@@ -61,15 +61,17 @@ public:
 
     if (serror)
       {
-        throw ZrythmException (fmt::format (
-          "Failed to create soxr instance: {}", std::string{ serror }));
+        throw ZrythmException (
+          fmt::format (
+            "Failed to create soxr instance: {}", std::string{ serror }));
       }
 
     serror = soxr_set_input_fn (priv_, input_func, this, block_size_);
     if (serror)
       {
-        throw ZrythmException (fmt::format (
-          "Failed to set soxr input function: {}", std::string{ serror }));
+        throw ZrythmException (
+          fmt::format (
+            "Failed to set soxr input function: {}", std::string{ serror }));
       }
   }
 
@@ -157,8 +159,9 @@ Resampler::Resampler (
   const double                             output_rate,
   const Quality                            quality,
   size_t                                   block_size)
-    : pimpl_ (std::make_unique<
-              Impl> (in_frames, input_rate, output_rate, quality, block_size))
+    : pimpl_ (
+        std::make_unique<
+          Impl> (in_frames, input_rate, output_rate, quality, block_size))
 {
 }
 

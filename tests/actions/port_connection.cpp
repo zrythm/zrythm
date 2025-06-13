@@ -39,8 +39,10 @@ test_modulator_connection (
     zrythm::plugins::PluginDescriptor::category_to_string (descr.category_);
 
   /* create a modulator */
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK, 0, setting));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK, 0,
+      setting));
 
   const auto         &macro = P_MODULATOR_TRACK->modulator_macro_processors_[0];
   const auto         &pl = P_MODULATOR_TRACK->modulators_[0];
@@ -69,13 +71,15 @@ test_modulator_connection (
     }
 
   /* connect the plugin's CV out to the macro button */
-  UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-    pl_cv_port->id_, macro->cv_in_->id_));
+  UNDO_MANAGER->perform (
+    std::make_unique<PortConnectionConnectAction> (
+      pl_cv_port->id_, macro->cv_in_->id_));
 
   /* connect the macro button to the plugin's control input */
   ASSERT_ANY_THROW ({
-    UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-      macro->cv_out_->id_, pl_control_port->id_));
+    UNDO_MANAGER->perform (
+      std::make_unique<PortConnectionConnectAction> (
+        macro->cv_out_->id_, pl_control_port->id_));
   });
 }
 
@@ -112,8 +116,9 @@ _test_port_connection (
     {
       /* create an audio fx track and add the plugin */
       auto last_track = Track::create_empty_with_action<AudioBusTrack> ();
-      UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-        zrythm::plugins::PluginSlotType::Insert, *last_track, 0, setting));
+      UNDO_MANAGER->perform (
+        std::make_unique<MixerSelectionsCreateAction> (
+          zrythm::plugins::PluginSlotType::Insert, *last_track, 0, setting));
     }
 
   auto src_track =
@@ -184,8 +189,9 @@ _test_port_connection (
   check_num_sources (dest_port, 0);
   check_num_dests (src_port1, 0);
 
-  UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-    src_port1->id_, dest_port->id_));
+  UNDO_MANAGER->perform (
+    std::make_unique<PortConnectionConnectAction> (
+      src_port1->id_, dest_port->id_));
 
   check_num_sources (dest_port, 1);
   check_num_dests (src_port1, 1);
@@ -200,8 +206,9 @@ _test_port_connection (
   check_num_sources (dest_port, 1);
   check_num_dests (src_port1, 1);
 
-  UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-    src_port2->id_, dest_port->id_));
+  UNDO_MANAGER->perform (
+    std::make_unique<PortConnectionConnectAction> (
+      src_port2->id_, dest_port->id_));
 
   check_num_sources (dest_port, 2);
   check_num_dests (src_port1, 1);
@@ -251,8 +258,8 @@ TEST_F (ZrythmFixture, ConnectCvToControl)
   const auto &cv_out_port = ams_lfo->out_ports_[3];
   const auto &freq_port = lp_filter->in_ports_[4];
 
-  ASSERT_NO_THROW (
-    UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
+  ASSERT_NO_THROW (UNDO_MANAGER->perform (
+    std::make_unique<PortConnectionConnectAction> (
       cv_out_port->id_, freq_port->id_)));
 #endif // HAVE_AMS_LFO
 }

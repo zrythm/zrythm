@@ -53,8 +53,9 @@ _test (
     NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, with_carla);
 
   /* 2. add no delay line */
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
 
   /* 3. set delay to high value */
   auto pl = track->channel_->inserts_[0].get ();

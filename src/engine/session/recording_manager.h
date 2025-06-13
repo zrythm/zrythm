@@ -142,10 +142,11 @@ private:
   static utils::Utf8String
   gen_name_for_recording_clip (const utils::Utf8String &track_name, int lane)
   {
-    return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-      "{} - lane {} - recording", track_name,
-      /* add 1 to get human friendly index */
-      lane + 1));
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format (
+        "{} - lane {} - recording", track_name,
+        /* add 1 to get human friendly index */
+        lane + 1));
   }
 
 public:

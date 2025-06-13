@@ -63,8 +63,9 @@ ArrangerObjectFactory::addMidiRegionFromMidiFile (
       mf.into_region (*mr, *TRANSPORT, midi_track_idx);
       if (*mr->pos_ >= *mr->end_pos_)
         {
-          throw ZrythmException (fmt::format (
-            "Invalid positions: start {} end {}", *mr->pos_, *mr->end_pos_));
+          throw ZrythmException (
+            fmt::format (
+              "Invalid positions: start {} end {}", *mr->pos_, *mr->end_pos_));
         }
     }
   catch (const ZrythmException &e)

@@ -516,9 +516,10 @@ SampleProcessor::queue_file_or_chord_preset (
                     }
                   catch (const ZrythmException &e)
                     {
-                      throw ZrythmException (fmt::format (
-                        "Failed to create MIDI region from file {}",
-                        file->abs_path_));
+                      throw ZrythmException (
+                        fmt::format (
+                          "Failed to create MIDI region from file {}",
+                          file->abs_path_));
                     }
                 }
               else if (chord_pset)

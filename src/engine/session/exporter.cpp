@@ -585,14 +585,15 @@ Exporter::Settings::print () const
   utils::Utf8String time_range;
   if (time_range_ == Exporter::TimeRange::Custom)
     {
-      time_range = utils::Utf8String::from_utf8_encoded_string (fmt::format (
-        "Custom: {} ~ {}",
-        custom_start_.to_string (
-          P_TEMPO_TRACK->get_beats_per_bar (), TRANSPORT->sixteenths_per_beat_,
-          AUDIO_ENGINE->frames_per_tick_),
-        custom_end_.to_string (
-          P_TEMPO_TRACK->get_beats_per_bar (), TRANSPORT->sixteenths_per_beat_,
-          AUDIO_ENGINE->frames_per_tick_)));
+      time_range = utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "Custom: {} ~ {}",
+          custom_start_.to_string (
+            P_TEMPO_TRACK->get_beats_per_bar (),
+            TRANSPORT->sixteenths_per_beat_, AUDIO_ENGINE->frames_per_tick_),
+          custom_end_.to_string (
+            P_TEMPO_TRACK->get_beats_per_bar (),
+            TRANSPORT->sixteenths_per_beat_, AUDIO_ENGINE->frames_per_tick_)));
     }
   else
     {

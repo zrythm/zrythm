@@ -182,16 +182,18 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 
   if (is_copy_action && tls_before_var->contains_uncopyable_track ())
     {
-      throw ZrythmException (QObject::tr (
-        "Cannot copy tracks: selection contains an uncopyable track"));
+      throw ZrythmException (
+        QObject::tr (
+          "Cannot copy tracks: selection contains an uncopyable track"));
     }
 
   if (
     tracklist_selections_action_type_ == Type::Delete
     && tls_before_var->contains_undeletable_track ())
     {
-      throw ZrythmException (QObject::tr (
-        "Cannot delete tracks: selection contains an undeletable track"));
+      throw ZrythmException (
+        QObject::tr (
+          "Cannot delete tracks: selection contains an undeletable track"));
     }
 
   if (
@@ -265,8 +267,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
             }
           catch (const std::exception &e)
             {
-              throw ZrythmException (fmt::format (
-                "Failed to get MIDI file contents: {}", e.what ()));
+              throw ZrythmException (
+                fmt::format ("Failed to get MIDI file contents: {}", e.what ()));
             }
         }
       else if (track_type == Track::Type::Audio)
@@ -411,10 +413,11 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                       if (
                         target_track->get_index () == clone_track->get_index ())
                         {
-                          src_sends_.emplace_back (utils::clone_unique (
-                            *send, utils::ObjectCloneType::Snapshot,
-                            PROJECT->get_track_registry (),
-                            PROJECT->get_port_registry ()));
+                          src_sends_.emplace_back (
+                            utils::clone_unique (
+                              *send, utils::ObjectCloneType::Snapshot,
+                              PROJECT->get_track_registry (),
+                              PROJECT->get_port_registry ()));
                         }
                     }
                 }

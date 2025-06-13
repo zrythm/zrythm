@@ -40,34 +40,39 @@ static auto perform_delete_arranger_sel = [] (const auto &selections) {
 #endif
 
 static auto perform_delete = [] () {
-  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<DeleteTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 };
 
 static auto perform_copy_to_end = [] () {
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
 };
 
 static auto perform_move_to_end = [] () {
-  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<MoveTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+      TRACKLIST->get_num_tracks ()));
 };
 
 static auto perform_delete_track = [] (const auto &track) {
   track->select (true, true, false);
   z_return_if_fail (PORT_CONNECTIONS_MGR);
-  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<DeleteTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 };
 
 static auto perform_set_direct_out = [] (const auto &from, const auto &to) {
   from->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    *to));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChangeTracksDirectOutAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      *to));
 };
 
 #if defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
@@ -211,9 +216,10 @@ test_num_tracks_with_file (const fs::path &filepath, const int num_tracks)
 
   int num_tracks_before = TRACKLIST->tracks_.size ();
 
-  ASSERT_NO_THROW (Track::create_with_action (
-    Track::Type::Midi, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
-    nullptr));
+  ASSERT_NO_THROW (
+    Track::create_with_action (
+      Track::Type::Midi, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
+      nullptr));
 
   auto &first_track = TRACKLIST->tracks_[num_tracks_before];
 
@@ -488,14 +494,16 @@ test_track_deletion_with_sends (
     audio_fx_for_receiving->channel_->sends_[0]->amount_->id_.track_name_hash_);
 
   const auto &prefader_send = audio_fx_for_sending->channel_->sends_[0];
-  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
-    *prefader_send, *audio_fx_for_receiving->processor_->stereo_in_,
-    *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChannelSendConnectStereoAction> (
+      *prefader_send, *audio_fx_for_receiving->processor_->stereo_in_,
+      *PORT_CONNECTIONS_MGR));
   const auto &postfader_send =
     audio_fx_for_sending->channel_->sends_[CHANNEL_SEND_POST_FADER_START_SLOT];
-  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
-    *postfader_send, *audio_fx_for_receiving->processor_->stereo_in_,
-    *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChannelSendConnectStereoAction> (
+      *postfader_send, *audio_fx_for_receiving->processor_->stereo_in_,
+      *PORT_CONNECTIONS_MGR));
 
   ASSERT_TRUE (TRACKLIST->validate ());
 
@@ -538,8 +546,8 @@ test_track_deletion_with_sends (
       }
   }
 
-  UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-    out_port->id_, in_port->id_));
+  UNDO_MANAGER->perform (
+    std::make_unique<PortConnectionConnectAction> (out_port->id_, in_port->id_));
 
   /* assert they are connected */
   assert_sends_connected (
@@ -713,8 +721,9 @@ TEST_F (ZrythmFixture, DeleteInstrumentTrackWithAutomation)
   /* add an effect */
   auto setting = test_plugin_manager_get_plugin_setting (
     TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Insert, *track, 0, setting));
 
   AUDIO_ENGINE->activate (true);
 
@@ -832,8 +841,9 @@ _test_move_tracks (
   /* move markers track to the top */
   int prev_pos = P_MARKER_TRACK->pos_;
   P_MARKER_TRACK->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 0));
+  UNDO_MANAGER->perform (
+    std::make_unique<MoveTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 0));
 
   ASSERT_TRUE (TRACKLIST->get_track_at_index (prev_pos)->validate ());
   ASSERT_TRUE (TRACKLIST->get_track_at_index (0)->validate ());
@@ -894,8 +904,9 @@ _test_move_tracks (
   /* swap tracks */
   ins_track->select (true, true, false);
   AUDIO_ENGINE->wait_n_cycles (40);
-  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 5));
+  UNDO_MANAGER->perform (
+    std::make_unique<MoveTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 5));
 
   /* check that ids are updated */
   ins_track = TRACKLIST->get_track<ChannelTrack> (4);
@@ -1052,9 +1063,10 @@ TEST_F (ZrythmFixture, DuplicateMultipleTracks)
   TRACKLIST->tracks_[start_pos]->select (true, true, false);
   TRACKLIST->tracks_[start_pos + 1]->select (true, false, false);
   TRACKLIST->tracks_[start_pos + 2]->select (true, false, false);
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    start_pos + 3));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      start_pos + 3));
 
   /* check order correct */
   ASSERT_TRUE (TRACKLIST->tracks_[start_pos]->is_midi ());
@@ -1074,9 +1086,10 @@ TEST_F (ZrythmFixture, DuplicateMultipleTracks)
   TRACKLIST->tracks_[start_pos]->select (true, true, false);
   TRACKLIST->tracks_[start_pos + 1]->select (true, false, false);
   TRACKLIST->tracks_[start_pos + 2]->select (true, false, false);
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    start_pos + 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      start_pos + 1));
 
   /* check order correct */
   ASSERT_TRUE (TRACKLIST->tracks_[start_pos]->is_midi ());
@@ -1122,8 +1135,9 @@ TEST_F (ZrythmFixture, UnpinMarkerTrack)
 
   P_MARKER_TRACK->select (true, true, false);
 
-  UNDO_MANAGER->perform (std::make_unique<UnpinTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<UnpinTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
   require_pin_status (false);
 
@@ -1159,9 +1173,10 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
   auto fx_track = TRACKLIST->get_track<AudioBusTrack> (start_pos + 3);
 
   /* send from audio track to fx track */
-  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
-    *audio_track->channel_->sends_[0], *fx_track->processor_->stereo_in_,
-    *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChannelSendConnectStereoAction> (
+      *audio_track->channel_->sends_[0], *fx_track->processor_->stereo_in_,
+      *PORT_CONNECTIONS_MGR));
 
   ASSERT_TRUE (TRACKLIST->get_track_at_index (start_pos)->is_audio ());
   ASSERT_TRUE (TRACKLIST->get_track_at_index (start_pos + 1)->is_audio_group ());
@@ -1182,9 +1197,10 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
   ASSERT_EQ (TRACKLIST_SELECTIONS->track_ids_[0], group_track->name_);
   ASSERT_EQ (TRACKLIST_SELECTIONS->track_ids_[1], audio_track->name_);
   AUDIO_ENGINE->wait_n_cycles (40);
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    start_pos + 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      start_pos + 1));
 
   /* assert group of new audio track is group of original audio track */
   auto new_track = TRACKLIST->get_track<AudioTrack> (start_pos + 1);
@@ -1270,16 +1286,18 @@ TEST_F (ZrythmFixture, DuplicateInstrumentTrackWithSend)
   ASSERT_NONNULL (audio_fx_track);
 
   /* send from audio track to fx track */
-  UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
-    *ins_track->channel_->sends_[0], *audio_fx_track->processor_->stereo_in_,
-    *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChannelSendConnectStereoAction> (
+      *ins_track->channel_->sends_[0], *audio_fx_track->processor_->stereo_in_,
+      *PORT_CONNECTIONS_MGR));
 
   /* duplicate the instrument track */
   ins_track->select (true, true, false);
   AUDIO_ENGINE->wait_n_cycles (40);
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    audio_fx_track_pos));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      audio_fx_track_pos));
   auto new_ins_track =
     TRACKLIST->get_track<InstrumentTrack> (audio_fx_track_pos);
   ASSERT_NONNULL (new_ins_track);
@@ -1384,9 +1402,10 @@ TEST_F (ZrythmFixture, MoveMultipleTracks)
   track4->select (true, true, false);
   track5->select (true, false, false);
   ASSERT_LT (track4->pos_, track5->pos_);
-  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-    TRACKLIST->get_num_tracks () - 5));
+  UNDO_MANAGER->perform (
+    std::make_unique<MoveTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+      TRACKLIST->get_num_tracks () - 5));
 
   ASSERT_EQ (track4->pos_, TRACKLIST->tracks_.size () - 5);
   ASSERT_EQ (track5->pos_, TRACKLIST->tracks_.size () - 4);
@@ -1418,9 +1437,10 @@ TEST_F (ZrythmFixture, MoveMultipleTracks)
   /* move the first and last tracks to the middle */
   track1->select (true, true, false);
   track5->select (true, false, false);
-  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-    TRACKLIST->get_num_tracks () - 2));
+  UNDO_MANAGER->perform (
+    std::make_unique<MoveTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+      TRACKLIST->get_num_tracks () - 2));
 
   ASSERT_EQ (track2->pos_, TRACKLIST->tracks_.size () - 5);
   ASSERT_EQ (track3->pos_, TRACKLIST->tracks_.size () - 4);
@@ -2438,9 +2458,10 @@ TEST_F (ZrythmFixture, MoveTrackWithClipEditorRegion)
     fs::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
   FileDescriptor file (midi_file);
   const auto     num_tracks_before = TRACKLIST->get_num_tracks ();
-  ASSERT_NO_THROW (Track::create_with_action (
-    Track::Type::Midi, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
-    nullptr));
+  ASSERT_NO_THROW (
+    Track::create_with_action (
+      Track::Type::Midi, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
+      nullptr));
   auto first_track = TRACKLIST->get_track<MidiTrack> (num_tracks_before);
   first_track->select (true, true, false);
   const auto &r = first_track->lanes_[0]->regions_[0];

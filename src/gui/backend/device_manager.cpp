@@ -52,12 +52,15 @@ DeviceManager::createAudioDeviceTypes (
         types.add (dev);
       }
   };
-  add_device (juce::AudioIODeviceType::createAudioIODeviceType_WASAPI (
-    juce::WASAPIDeviceMode::shared));
-  add_device (juce::AudioIODeviceType::createAudioIODeviceType_WASAPI (
-    juce::WASAPIDeviceMode::exclusive));
-  add_device (juce::AudioIODeviceType::createAudioIODeviceType_WASAPI (
-    juce::WASAPIDeviceMode::sharedLowLatency));
+  add_device (
+    juce::AudioIODeviceType::createAudioIODeviceType_WASAPI (
+      juce::WASAPIDeviceMode::shared));
+  add_device (
+    juce::AudioIODeviceType::createAudioIODeviceType_WASAPI (
+      juce::WASAPIDeviceMode::exclusive));
+  add_device (
+    juce::AudioIODeviceType::createAudioIODeviceType_WASAPI (
+      juce::WASAPIDeviceMode::sharedLowLatency));
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_DirectSound ());
   // cannot distribute builds with ASIO support for legal reasons
   // add_device (juce::AudioIODeviceType::createAudioIODeviceType_ASIO ());

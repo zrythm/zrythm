@@ -117,13 +117,15 @@ TEST_F (ZrythmFixture, FaderSolo)
 
   /* route audio tracks to group track */
   audio_track->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    *group_track));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChangeTracksDirectOutAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      *group_track));
   audio_track2->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    *group_track));
+  UNDO_MANAGER->perform (
+    std::make_unique<ChangeTracksDirectOutAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      *group_track));
 
   /* stop dummy audio engine processing so we can process manually */
   test_project_stop_dummy_engine ();
@@ -147,8 +149,9 @@ TEST_F (ZrythmFixture, FaderSolo)
   /* test solo both audio tracks */
   audio_track->select (true, true, false);
   audio_track2->select (true, false, false);
-  UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
+  UNDO_MANAGER->perform (
+    std::make_unique<SoloTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -157,14 +160,16 @@ TEST_F (ZrythmFixture, FaderSolo)
 
   /* test undo/redo */
   audio_track->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
+  UNDO_MANAGER->perform (
+    std::make_unique<SoloTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
   ASSERT_TRUE (audio_track->get_soloed ());
   ASSERT_FALSE (audio_track2->get_soloed ());
   audio_track->select (true, true, false);
   audio_track2->select (true, false, false);
-  UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
+  UNDO_MANAGER->perform (
+    std::make_unique<SoloTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
   ASSERT_TRUE (audio_track->get_soloed ());
   ASSERT_TRUE (audio_track2->get_soloed ());
   UNDO_MANAGER->undo ();

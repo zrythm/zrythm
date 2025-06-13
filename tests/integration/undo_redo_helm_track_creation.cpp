@@ -30,8 +30,9 @@ _test (
   helm_track->select (true, true, false);
 
   /* 2. delete track */
-  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<DeleteTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
   /* 3. undo track deletion */
   UNDO_MANAGER->undo ();

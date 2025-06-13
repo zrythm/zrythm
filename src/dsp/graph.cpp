@@ -58,8 +58,9 @@ Graph::add_node_for_processable (
   IProcessable          &node,
   const dsp::ITransport &transport)
 {
-  setup_nodes_.graph_nodes_.emplace_back (std::make_unique<GraphNode> (
-    setup_nodes_.graph_nodes_.size (), transport, node));
+  setup_nodes_.graph_nodes_.emplace_back (
+    std::make_unique<GraphNode> (
+      setup_nodes_.graph_nodes_.size (), transport, node));
   return setup_nodes_.graph_nodes_.back ().get ();
 }
 

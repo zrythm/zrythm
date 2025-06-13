@@ -118,8 +118,9 @@ MidiFile::into_region (
         }
 
       // set a temp name
-      region.set_name (utils::Utf8String::from_qstring (
-        format_qstr (QObject::tr ("Untitled Track {}"), i)));
+      region.set_name (
+        utils::Utf8String::from_qstring (
+          format_qstr (QObject::tr ("Untitled Track {}"), i)));
 
       const auto * track = midi_file_.getTrack (i);
       for (const auto * event : *track)

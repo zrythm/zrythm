@@ -69,8 +69,8 @@ namespace zrythm::utils::io
 utils::Utf8String
 get_path_separator_string ()
 {
-  return utils::Utf8String::from_utf8_encoded_string (std::string{
-    QDir::listSeparator ().toLatin1 () });
+  return utils::Utf8String::from_utf8_encoded_string (
+    std::string{ QDir::listSeparator ().toLatin1 () });
 }
 
 fs::path
@@ -120,8 +120,9 @@ mkdir (const fs::path &dir)
         {
           return;
         }
-      throw ZrythmException (fmt::format (
-        "Failed to make directory {} with parents: {}", dir, ec.message ()));
+      throw ZrythmException (
+        fmt::format (
+          "Failed to make directory {} with parents: {}", dir, ec.message ()));
     }
 }
 
@@ -329,8 +330,9 @@ copy_dir (
 
           if (!QFile::copy (src_path, dest_path))
             {
-              throw ZrythmException (fmt::format (
-                "Failed copying file {} to {}", src_path, dest_path));
+              throw ZrythmException (
+                fmt::format (
+                  "Failed copying file {} to {}", src_path, dest_path));
             }
         }
     }
@@ -342,9 +344,10 @@ copy_file (const fs::path &destfile, const fs::path &srcfile)
   auto src_file = QFile (srcfile);
   if (!src_file.copy (destfile))
     {
-      throw ZrythmException (fmt::format (
-        "Failed to copy '{}' to '{}': {}", Utf8String::from_path (srcfile),
-        Utf8String::from_path (destfile), src_file.errorString ()));
+      throw ZrythmException (
+        fmt::format (
+          "Failed to copy '{}' to '{}': {}", Utf8String::from_path (srcfile),
+          Utf8String::from_path (destfile), src_file.errorString ()));
     }
 }
 
@@ -540,8 +543,9 @@ read_file_contents (const fs::path &path)
     {
       return file.readAll ();
     }
-  throw ZrythmException (fmt::format (
-    "Failed to open file for reading: '{}' ({})", path, file.errorString ()));
+  throw ZrythmException (
+    fmt::format (
+      "Failed to open file for reading: '{}' ({})", path, file.errorString ()));
 }
 
 void
@@ -554,9 +558,10 @@ set_file_contents (const fs::path &path, const char * contents, size_t size)
     }
   else
     {
-      throw ZrythmException (fmt::format (
-        "Failed to open file for writing: '{}' ({})", path,
-        file.errorString ()));
+      throw ZrythmException (
+        fmt::format (
+          "Failed to open file for writing: '{}' ({})", path,
+          file.errorString ()));
     }
 }
 

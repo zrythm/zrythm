@@ -59,8 +59,9 @@ decompress_string_from_base64 (const QByteArray &b64)
     {
       free (dest);
 
-      throw ZrythmException (fmt::format (
-        "Failed to decompress string: {}", ZSTD_getErrorName (dest_size)));
+      throw ZrythmException (
+        fmt::format (
+          "Failed to decompress string: {}", ZSTD_getErrorName (dest_size)));
     }
   if (dest_size != frame_content_size)
     {

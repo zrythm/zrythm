@@ -240,8 +240,9 @@ ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
     {
       if (sel_var.contains_unclonable_object ())
         {
-          throw ZrythmException (QObject::tr (
-            "Arranger selections contain an object that cannot be duplicated"));
+          throw ZrythmException (
+            QObject::tr (
+              "Arranger selections contain an object that cannot be duplicated"));
         }
     }
 
@@ -376,8 +377,9 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
   audio_function_apply (
     region_id, sel_start, sel_end, audio_func_type, opts, uri);
 
-  set_after_selections (ArrangerObjectSpan{
-    PROJECT->get_arranger_object_registry ().find_by_id_or_throw (region_id) });
+  set_after_selections (
+    ArrangerObjectSpan{
+      PROJECT->get_arranger_object_registry ().find_by_id_or_throw (region_id) });
 }
 
 ArrangerSelectionsAction::SplitAction::SplitAction (

@@ -142,9 +142,10 @@ Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
   auto track = get_track ();
   z_return_val_if_fail (track, {});
-  return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "{}/{}/{}", structure::tracks::TrackSpan::name_projection (*track),
-    get_name (), id.label_));
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format (
+      "{}/{}/{}", structure::tracks::TrackSpan::name_projection (*track),
+      get_name (), id.label_));
 }
 
 void
@@ -438,10 +439,12 @@ utils::Utf8String
 Plugin::get_node_name () const
 {
   auto track = get_track ();
-  return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "{}/{} (Plugin)",
-    track ? structure::tracks::TrackSpan::name_projection (*track) : u8"(No track)",
-    get_name ()));
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format (
+      "{}/{} (Plugin)",
+      track ? structure::tracks::TrackSpan::name_projection (*track)
+            : u8"(No track)",
+      get_name ()));
 }
 
 void
@@ -506,9 +509,10 @@ Plugin::get_full_port_group_designation (
   const utils::Utf8String &port_group) const
 {
   assert (has_track ());
-  return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "{}/{}/{}", structure::tracks::TrackSpan::name_projection (*get_track ()),
-    get_name (), port_group));
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format (
+      "{}/{}/{}", structure::tracks::TrackSpan::name_projection (*get_track ()),
+      get_name (), port_group));
 }
 
 Port *
@@ -599,12 +603,13 @@ Plugin::generate_window_title () const
           slot_str = fmt::format ("#{}", slot_no + 1);
         }
 
-      return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-        "{} ({} {}{}{})", plugin_name, track_name, slot,
-        /* assume all plugins use carla for now */
-        "",
-        /*setting->open_with_carla_ ? " carla" : "",*/
-        bridge_mode));
+      return utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "{} ({} {}{}{})", plugin_name, track_name, slot,
+          /* assume all plugins use carla for now */
+          "",
+          /*setting->open_with_carla_ ? " carla" : "",*/
+          bridge_mode));
     },
     track_var.value ());
 }

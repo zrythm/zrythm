@@ -117,8 +117,9 @@ AudioFile::read_samples_interleaved (
     static_cast<int64_t> (start_from), true, true);
   if (!success)
     {
-      throw ZrythmException (fmt::format (
-        "Failed to read frames at {} from file '{}'", start_from, filepath_));
+      throw ZrythmException (
+        fmt::format (
+          "Failed to read frames at {} from file '{}'", start_from, filepath_));
     }
 
   buffer.interleave_samples ();

@@ -39,14 +39,15 @@ URL::get_page_contents (int timeout)
       auto res = stream->readEntireStreamAsString ();
       if (res.isEmpty ())
         {
-          throw ZrythmException (fmt::format (
-            "Failed to get page contents for {}.", url_.toString (true)));
+          throw ZrythmException (
+            fmt::format (
+              "Failed to get page contents for {}.", url_.toString (true)));
         }
       return utils::Utf8String::from_juce_string (res).str ();
     }
 
-  throw ZrythmException (fmt::format (
-    "Failed to create input stream for {}.", url_.toString (true)));
+  throw ZrythmException (
+    fmt::format ("Failed to create input stream for {}.", url_.toString (true)));
 }
 
 utils::Utf8String

@@ -48,16 +48,18 @@ TEST_F (ZrythmFixture, Crescendo)
   /* test crescendo */
   opts.start_vel_ = 30;
   opts.end_vel_ = 90;
-  UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
-    *MIDI_SELECTIONS, MidiFunctionType::Crescendo, opts));
+  UNDO_MANAGER->perform (
+    EditArrangerSelectionsAction::create (
+      *MIDI_SELECTIONS, MidiFunctionType::Crescendo, opts));
   ASSERT_EQ (mn1->vel_->vel_, 30);
   ASSERT_EQ (mn2->vel_->vel_, 90);
 
   /* test diminuendo */
   opts.start_vel_ = 90;
   opts.end_vel_ = 30;
-  UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
-    *MIDI_SELECTIONS, MidiFunctionType::Crescendo, opts));
+  UNDO_MANAGER->perform (
+    EditArrangerSelectionsAction::create (
+      *MIDI_SELECTIONS, MidiFunctionType::Crescendo, opts));
   ASSERT_EQ (mn1->vel_->vel_, 90);
   ASSERT_EQ (mn2->vel_->vel_, 30);
 }

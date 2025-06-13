@@ -62,22 +62,24 @@ AudioEngine::AudioEngine (
   std::shared_ptr<juce::AudioDeviceManager> device_mgr)
     : port_registry_ (project->get_port_registry ()), project_ (project),
       device_manager_ (std::move (device_mgr)),
-      control_room_ (std::make_unique<session::ControlRoom> (
-        project->get_port_registry (),
-        this)),
-      pool_ (std::make_unique<AudioPool> (
-        [project] (bool backup) {
-          return project->get_path (ProjectPath::POOL, backup);
-        },
-        [this] () { return get_sample_rate (); })),
+      control_room_ (
+        std::make_unique<
+          session::ControlRoom> (project->get_port_registry (), this)),
+      pool_ (
+        std::make_unique<AudioPool> (
+          [project] (bool backup) {
+            return project->get_path (ProjectPath::POOL, backup);
+          },
+          [this] () { return get_sample_rate (); })),
       port_connections_manager_ (project->port_connections_manager_),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
-      audio_callback_ (std::make_unique<AudioCallback> (
-        [this] (nframes_t frames_to_process) {
-          this->process (frames_to_process);
-        },
-        [] (juce::AudioIODevice * _) {},
-        [] () {}))
+      audio_callback_ (
+        std::make_unique<AudioCallback> (
+          [this] (nframes_t frames_to_process) {
+            this->process (frames_to_process);
+          },
+          [] (juce::AudioIODevice * _) {},
+          [] () {}))
 {
   z_debug ("Creating audio engine...");
 

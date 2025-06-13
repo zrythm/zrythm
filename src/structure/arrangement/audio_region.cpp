@@ -418,9 +418,10 @@ AudioRegion::fix_positions (dsp::FramesPerTick frames_per_tick)
         }
       else
         {
-          z_error (fmt::format (
-            "Audio region loop length in frames ({}) is greater than the number of frames in the clip ({}). ",
-            loop_len, clip->get_num_frames ()));
+          z_error (
+            fmt::format (
+              "Audio region loop length in frames ({}) is greater than the number of frames in the clip ({}). ",
+              loop_len, clip->get_num_frames ()));
           return false;
         }
     }

@@ -213,10 +213,10 @@ Position::print (
   int           sixteenths_per_beat,
   FramesPerTick frames_per_tick) const
 {
-  z_debug (fmt::format (
+  z_debug (
     "{} ({} frames | {} ticks)",
     to_string (beats_per_bar, sixteenths_per_beat, frames_per_tick), frames_,
-    ticks_));
+    ticks_);
 }
 
 void
@@ -227,12 +227,12 @@ Position::print_range (
   const Position &p1,
   const Position &p2)
 {
-  z_debug (fmt::format (
+  z_debug (
     "{} ({}) - {} ({}) <delta {} frames {} ticks>",
     p1.to_string (beats_per_bar, sixteenths_per_beat, frames_per_tick),
     p1.frames_,
     p2.to_string (beats_per_bar, sixteenths_per_beat, frames_per_tick),
-    p2.frames_, p2.frames_ - p1.frames_, p2.ticks_ - p1.ticks_));
+    p2.frames_, p2.frames_ - p1.frames_, p2.ticks_ - p1.ticks_);
 }
 
 int

@@ -41,12 +41,14 @@ TEST_F (BootstrapTimelineFixture, TimelineSelectionsSortByIndices)
             start, end, midi_track->get_name_hash (), random_i, random_j);
           sel.add_object_owned (std::move (mr));
 
-          sel.add_object_owned (std::make_unique<AudioRegion> (
-            -1, std::nullopt, false, dummy_frames.data (), num_frames,
-            "test clip name", 1, BitDepth::BIT_DEPTH_16, start,
-            audio_track->get_name_hash (), random_i, random_j));
-          sel.add_object_owned (std::make_unique<AutomationRegion> (
-            start, end, audio_track->get_name_hash (), random_i, random_j));
+          sel.add_object_owned (
+            std::make_unique<AudioRegion> (
+              -1, std::nullopt, false, dummy_frames.data (), num_frames,
+              "test clip name", 1, BitDepth::BIT_DEPTH_16, start,
+              audio_track->get_name_hash (), random_i, random_j));
+          sel.add_object_owned (
+            std::make_unique<AutomationRegion> (
+              start, end, audio_track->get_name_hash (), random_i, random_j));
         }
       auto random_i = dis (gen);
       sel.add_object_owned (

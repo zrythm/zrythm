@@ -87,9 +87,10 @@ PortConnectionAction::do_or_undo (bool _do)
               if (!ProjectGraphBuilder::can_ports_be_connected (
                     *PROJECT, *src, *dest))
                 {
-                  throw ZrythmException (fmt::format (
-                    "'{}' cannot be connected to '{}'", src->get_label (),
-                    dest->get_label ()));
+                  throw ZrythmException (
+                    fmt::format (
+                      "'{}' cannot be connected to '{}'", src->get_label (),
+                      dest->get_label ()));
                 }
               PORT_CONNECTIONS_MGR->add_connection (
                 src->get_uuid (), dest->get_uuid (), 1.f, false, true);

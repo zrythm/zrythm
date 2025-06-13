@@ -796,8 +796,9 @@ Fader::get_node_name () const
   if (type_ == Type::AudioChannel || type_ == Type::MidiChannel)
     {
       auto * track = get_track ();
-      return utils::Utf8String::from_utf8_encoded_string (fmt::format (
-        "{} {}", track->get_name (), passthrough_ ? "Pre-Fader" : "Fader"));
+      return utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "{} {}", track->get_name (), passthrough_ ? "Pre-Fader" : "Fader"));
     }
   if (type_ == Type::Monitor)
     {

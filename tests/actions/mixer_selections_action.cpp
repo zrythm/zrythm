@@ -33,8 +33,8 @@ TEST_F (ZrythmFixture, DeleteMidiFxSlot)
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
   auto track_pos = TRACKLIST->get_last_pos ();
   auto track = TRACKLIST->get_track<ChannelTrack> (track_pos);
-  ASSERT_NO_THROW (
-    UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
+  ASSERT_NO_THROW (UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
       zrythm::plugins::PluginSlotType::MidiFx, *track, slot, setting)));
 
   auto pl = track->channel_->midi_fx_[slot].get ();
@@ -46,8 +46,9 @@ TEST_F (ZrythmFixture, DeleteMidiFxSlot)
 
   /* delete slot */
   pl->select (true, true);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsDeleteAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
 
   /* undo and check port value is restored */
   UNDO_MANAGER->undo ();
@@ -94,9 +95,10 @@ _test_copy_plugins (
   auto selected_track = TRACKLIST->get_last_track ();
   track->select (true, true, false);
 
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
   num_master_children++;
   ASSERT_SIZE_EQ (P_MASTER_TRACK->children_, num_master_children);
   track = TRACKLIST->get_last_track ();
@@ -144,9 +146,10 @@ _test_copy_plugins (
       MIXER_SELECTIONS->clear (false);
       MIXER_SELECTIONS->add_slot (
         *selected_track, zrythm::plugins::PluginSlotType::Insert, 0, false);
-      UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCopyAction> (
-        *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-        zrythm::plugins::PluginSlotType::Insert, new_track, 1));
+      UNDO_MANAGER->perform (
+        std::make_unique<MixerSelectionsCopyAction> (
+          *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+          zrythm::plugins::PluginSlotType::Insert, new_track, 1));
     }
 
   std::this_thread::sleep_for (std::chrono::microseconds (100));
@@ -212,8 +215,9 @@ _test_create_plugins (
     {
       /* create an audio fx track and add the plugin */
       auto track = Track::create_empty_with_action<AudioBusTrack> ();
-      UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-        zrythm::plugins::PluginSlotType::Insert, *track, 0, *setting));
+      UNDO_MANAGER->perform (
+        std::make_unique<MixerSelectionsCreateAction> (
+          zrythm::plugins::PluginSlotType::Insert, *track, 0, *setting));
     }
 
   setting.reset ();
@@ -238,9 +242,10 @@ _test_create_plugins (
   /* duplicate the track */
   src_track->select (true, true, false);
   ASSERT_TRUE (src_track->validate ());
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
 
   auto dest_track_pos = TRACKLIST->get_last_pos ();
   auto dest_track = TRACKLIST->get_track<ChannelTrack> (dest_track_pos);
@@ -368,9 +373,10 @@ _test_port_and_plugin_track_pos_after_move (
 
   /* duplicate it */
   ASSERT_TRUE (src_track->validate ());
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
 
   auto dest_track = TRACKLIST->get_track_at_index (dest_track_pos);
 
@@ -381,9 +387,10 @@ _test_port_and_plugin_track_pos_after_move (
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *src_track, zrythm::plugins::PluginSlotType::Insert, 0, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, dest_track, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, dest_track, 1));
 
   /* let the engine run */
   std::this_thread::sleep_for (std::chrono::seconds (1));
@@ -407,9 +414,10 @@ _test_port_and_plugin_track_pos_after_move (
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *src_track, zrythm::plugins::PluginSlotType::Insert, 0, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, src_track, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, src_track, 1));
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
@@ -421,9 +429,10 @@ _test_port_and_plugin_track_pos_after_move (
   src_track = TRACKLIST->get_track<AutomatableTrack> (src_track_pos);
   MIXER_SELECTIONS->add_slot (
     *src_track, zrythm::plugins::PluginSlotType::Insert, 1, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, nullptr, 0));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, nullptr, 0));
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
@@ -545,9 +554,10 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 0, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCopyAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, track, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCopyAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, track, 1));
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
@@ -558,8 +568,9 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 0, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsDeleteAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
   UNDO_MANAGER->undo ();
@@ -575,9 +586,10 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
     *track, zrythm::plugins::PluginSlotType::Insert, 0, false);
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 1, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, track, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, track, 1));
   ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
   ASSERT_TRUE (track->validate ());
@@ -595,9 +607,10 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
     *track, zrythm::plugins::PluginSlotType::Insert, 1, false);
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 2, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, track, 2));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, track, 2));
   ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
   ASSERT_TRUE (track->validate ());
@@ -615,9 +628,10 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
     *track, zrythm::plugins::PluginSlotType::Insert, 2, false);
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 3, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, track, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, track, 1));
   ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
   ASSERT_TRUE (track->validate ());
@@ -635,9 +649,10 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
     *track, zrythm::plugins::PluginSlotType::Insert, 2, false);
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 1, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, track, 0));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, track, 0));
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
@@ -649,9 +664,10 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 1, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, track, 0));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, track, 0));
 
   /* verify that first plugin was replaced by 2nd
    * plugin */
@@ -678,8 +694,9 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
   /* add plugin to slot 0 (replacing current) */
   setting = test_plugin_manager_get_plugin_setting (
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
 
   /* undo and verify that the original plugin is
    * back */
@@ -708,9 +725,10 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 1, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, track, 0));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, track, 0));
 
   test_project_save_and_reload ();
   track = get_track_and_validate ();
@@ -758,18 +776,20 @@ TEST_F (ZrythmFixture, CreateModulator)
   /* create a track with an insert */
   auto setting =
     test_plugin_manager_get_plugin_setting (AMS_LFO_BUNDLE, AMS_LFO_URI, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK,
-    P_MODULATOR_TRACK->modulators_.size (), setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK,
+      P_MODULATOR_TRACK->modulators_.size (), setting, 1));
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
   /* create another one */
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK,
-    P_MODULATOR_TRACK->modulators_.size (), setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK,
+      P_MODULATOR_TRACK->modulators_.size (), setting, 1));
 
   /* connect a cv output from the first modulator to a control of the 2nd */
   auto p1 =
@@ -797,8 +817,8 @@ TEST_F (ZrythmFixture, CreateModulator)
   sel->add_slot (
     *P_MODULATOR_TRACK, zrythm::plugins::PluginSlotType::Modulator,
     P_MODULATOR_TRACK->modulators_.size () - 2, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
-    *sel, *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsDeleteAction> (*sel, *PORT_CONNECTIONS_MGR));
   UNDO_MANAGER->undo ();
 
   /* verify port connection is back */
@@ -843,15 +863,17 @@ TEST_F (ZrythmFixture, MovePluginAfterDuplicatingTrack)
 
   /* create sidechain connection from instrument track to lsp plugin in lsp
    * track */
-  UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-    ins_track->channel_->fader_->stereo_out_->get_l ().id_,
-    sidechain_port->id_));
+  UNDO_MANAGER->perform (
+    std::make_unique<PortConnectionConnectAction> (
+      ins_track->channel_->fader_->stereo_out_->get_l ().id_,
+      sidechain_port->id_));
 
   /* duplicate instrument track */
   ins_track->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
 
   auto dest_track = TRACKLIST->get_last_track ();
 
@@ -859,9 +881,10 @@ TEST_F (ZrythmFixture, MovePluginAfterDuplicatingTrack)
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *lsp_track, zrythm::plugins::PluginSlotType::Insert, 0, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::Insert, dest_track, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::Insert, dest_track, 1));
 
 #endif
 }
@@ -874,8 +897,9 @@ TEST_F (ZrythmFixture, MovePluginFromInsertsToMidiFx)
   int  track_pos = TRACKLIST->get_last_pos ();
   auto setting = test_plugin_manager_get_plugin_setting (
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
 
   /* select it */
   track->select (true, true, false);
@@ -884,9 +908,10 @@ TEST_F (ZrythmFixture, MovePluginFromInsertsToMidiFx)
   MIXER_SELECTIONS->clear ();
   MIXER_SELECTIONS->add_slot (
     *track, zrythm::plugins::PluginSlotType::Insert, 0, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-    zrythm::plugins::PluginSlotType::MidiFx, track, 0));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsMoveAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
+      zrythm::plugins::PluginSlotType::MidiFx, track, 0));
   ASSERT_NONNULL (track->channel_->midi_fx_[0]);
   ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
@@ -913,14 +938,16 @@ TEST_F (ZrythmFixture, UndoDeletionOfMultipleInserts)
   int  slot = 0;
   auto setting = test_plugin_manager_get_plugin_setting (
     COMPRESSOR_BUNDLE, COMPRESSOR_URI, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *ins_track, slot, setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Insert, *ins_track, slot, setting, 1));
 
   slot = 1;
   setting = test_plugin_manager_get_plugin_setting (
     CUBIC_DISTORTION_BUNDLE, CUBIC_DISTORTION_URI, false);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *ins_track, slot, setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Insert, *ins_track, slot, setting, 1));
 
   auto compressor = ins_track->channel_->inserts_[0].get ();
   auto no_delay_line = ins_track->channel_->inserts_[1].get ();
@@ -930,8 +957,9 @@ TEST_F (ZrythmFixture, UndoDeletionOfMultipleInserts)
   no_delay_line->select (true, false);
 
   /* delete inserts */
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsDeleteAction> (
+      *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
 
   /* undo deletion */
   UNDO_MANAGER->undo ();
@@ -1014,8 +1042,9 @@ _test_replace_instrument (
 
   PortIdentifier helm_l_out_port_id = PortIdentifier ();
   helm_l_out_port_id = src_track->channel_->instrument_->l_out_->id_;
-  UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-    src_track->channel_->instrument_->l_out_->id_, sidechain_port->id_));
+  UNDO_MANAGER->perform (
+    std::make_unique<PortConnectionConnectAction> (
+      src_track->channel_->instrument_->l_out_->id_, sidechain_port->id_));
   ASSERT_SIZE_EQ (sidechain_port->srcs_, 1);
   auto connection_action = dynamic_cast<PortConnectionAction *> (
     UNDO_MANAGER->undo_stack_->actions_.back ().get ());
@@ -1059,8 +1088,9 @@ _test_replace_instrument (
   const int num_ats = atl->ats_.size ();
 
   /* replace the instrument with a new instance */
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Instrument, *src_track, -1, setting, 1));
+  UNDO_MANAGER->perform (
+    std::make_unique<MixerSelectionsCreateAction> (
+      zrythm::plugins::PluginSlotType::Instrument, *src_track, -1, setting, 1));
   ASSERT_TRUE (src_track->validate ());
 
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
@@ -1127,9 +1157,10 @@ _test_replace_instrument (
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
   src_track->select (true, true, false);
   ASSERT_TRUE (src_track->validate ());
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
+  UNDO_MANAGER->perform (
+    std::make_unique<CopyTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+      TRACKLIST->get_num_tracks ()));
 
   Track * dest_track = TRACKLIST->get_last_track ();
 

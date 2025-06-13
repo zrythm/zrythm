@@ -198,10 +198,12 @@ public:
   static Utf8String
   join (const RangeOf<Utf8String> auto &strings, const Utf8String &delimiter)
   {
-    return Utf8String::from_utf8_encoded_string (fmt::format (
-      "{}",
-      fmt::join (
-        std::views::transform (strings, &Utf8String::view), delimiter.view ())));
+    return Utf8String::from_utf8_encoded_string (
+      fmt::format (
+        "{}",
+        fmt::join (
+          std::views::transform (strings, &Utf8String::view),
+          delimiter.view ())));
   }
 
   // --- Comparisons ---

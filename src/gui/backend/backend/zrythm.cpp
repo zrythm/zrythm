@@ -109,47 +109,48 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 {
   const auto ver = get_version (false);
 
-  auto gstr = utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "{} {}{} ({})\n"
-    "  built with {} {} for {}{}\n"
+  auto gstr = utils::Utf8String::from_utf8_encoded_string (
+    fmt::format (
+      "{} {}{} ({})\n"
+      "  built with {} {} for {}{}\n"
 #if HAVE_CARLA
-    "    +carla\n"
+      "    +carla\n"
 #endif
 
 #ifdef HAVE_JACK2
-    "    +jack2\n"
+      "    +jack2\n"
 #elifdef HAVE_JACK
-    "    +jack1\n"
+      "    +jack1\n"
 #endif
 
 #ifdef MANUAL_PATH
-    "    +manual\n"
+      "    +manual\n"
 #endif
 
-    "",
-    PROGRAM_NAME,
+      "",
+      PROGRAM_NAME,
 
 #if ZRYTHM_IS_TRIAL_VER
-    "(trial) ",
+      "(trial) ",
 #else
-    "",
+      "",
 #endif
 
-    ver,
+      ver,
 
-    BUILD_TYPE,
+      BUILD_TYPE,
 
-    COMPILER, COMPILER_VERSION, HOST_MACHINE_SYSTEM,
+      COMPILER, COMPILER_VERSION, HOST_MACHINE_SYSTEM,
 
 #ifdef APPIMAGE_BUILD
-    " (appimage)"
+      " (appimage)"
 #elif ZRYTHM_IS_INSTALLER_VER
-    " (installer)"
+      " (installer)"
 #else
-    ""
+      ""
 #endif
 
-    ));
+      ));
 
   if (include_system_info)
     {
@@ -175,8 +176,9 @@ Zrythm::get_system_info ()
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
   gstr += utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("XDG_SESSION_TYPE={}\n", env.value (u"XDG_SESSION_ID"_s)));
-  gstr += utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "XDG_CURRENT_DESKTOP={}\n", env.value (u"XDG_CURRENT_DESKTOP"_s)));
+  gstr += utils::Utf8String::from_utf8_encoded_string (
+    fmt::format (
+      "XDG_CURRENT_DESKTOP={}\n", env.value (u"XDG_CURRENT_DESKTOP"_s)));
   gstr += utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("DESKTOP_SESSION={}\n", env.value (u"DESKTOP_SESSION"_s)));
 
@@ -197,9 +199,10 @@ Zrythm::get_system_info ()
     panel_get_minor_version (), panel_get_micro_version ());
 #endif
 
-  gstr += utils::Utf8String::from_utf8_encoded_string (fmt::format (
-    "QT version: {}.{}.{}\n", QT_VERSION_MAJOR, QT_VERSION_MINOR,
-    QT_VERSION_PATCH));
+  gstr += utils::Utf8String::from_utf8_encoded_string (
+    fmt::format (
+      "QT version: {}.{}.{}\n", QT_VERSION_MAJOR, QT_VERSION_MINOR,
+      QT_VERSION_PATCH));
 
   return gstr;
 }

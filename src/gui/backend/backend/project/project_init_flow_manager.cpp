@@ -283,8 +283,9 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
             utils::string::get_regex_group (text, "\nversion: (.*)\n", 1);
           if (prj_ver_str.empty ())
             {
-              call_last_callback_fail (utils::to_std_string (
-                QObject::tr ("Invalid project: missing version")));
+              call_last_callback_fail (
+                utils::to_std_string (
+                  QObject::tr ("Invalid project: missing version")));
               return;
             }
           z_info ("project from text (version {})...", prj_ver_str);
@@ -301,8 +302,9 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
                 }
               catch (const ZrythmException &e)
                 {
-                  call_last_callback_fail (utils::to_std_string (
-                    QObject::tr ("Failed to upgrade YAML project schema")));
+                  call_last_callback_fail (
+                    utils::to_std_string (
+                      QObject::tr ("Failed to upgrade YAML project schema")));
                   return;
                 }
             }
@@ -314,8 +316,9 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
             }
           catch (const ZrythmException &e)
             {
-              call_last_callback_fail (utils::to_std_string (
-                QObject::tr ("Failed to upgrade project schema to JSON")));
+              call_last_callback_fail (
+                utils::to_std_string (
+                  QObject::tr ("Failed to upgrade project schema to JSON")));
               return;
             }
         }
@@ -340,8 +343,9 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     }
   catch (const ZrythmException &e)
     {
-      call_last_callback_fail (utils::to_std_string (
-        QObject::tr ("Failed to deserialize project YAML")));
+      call_last_callback_fail (
+        utils::to_std_string (
+          QObject::tr ("Failed to deserialize project YAML")));
       return;
     }
   deserialized_project->backup_dir_ = PROJECT->backup_dir_;
@@ -355,8 +359,9 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       if (!finished_file_exists)
         {
           call_last_callback_fail (format_str (
-            utils::qstring_to_std_string (QObject::tr (
-              "Could not load project: Corrupted project detected (missing FINISHED file at '{}').")),
+            utils::qstring_to_std_string (
+              QObject::tr (
+                "Could not load project: Corrupted project detected (missing FINISHED file at '{}').")),
             finished_file_path));
           return;
         }

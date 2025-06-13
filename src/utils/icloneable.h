@@ -297,8 +297,9 @@ clone_variant_container (
         {
           if (ptr)
             {
-              dest.push_back (clone_unique_with_variant<Variant, Base> (
-                ptr.get (), clone_type = ObjectCloneType::Snapshot));
+              dest.push_back (
+                clone_unique_with_variant<Variant, Base> (
+                  ptr.get (), clone_type = ObjectCloneType::Snapshot));
             }
           else
             {
@@ -349,8 +350,9 @@ clone_variant_container (
         {
           if (ptr)
             {
-              dest.push_back (clone_unique_with_variant<Variant, Base> (
-                ptr.get (), clone_type = ObjectCloneType::Snapshot));
+              dest.push_back (
+                clone_unique_with_variant<Variant, Base> (
+                  ptr.get (), clone_type = ObjectCloneType::Snapshot));
             }
           else
             {

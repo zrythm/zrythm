@@ -104,9 +104,10 @@ struct ModulatorImportData
         if (this->slot < (decltype (this->slot)) self->modulators_.size ())
           {
             auto existing_id = self->modulators_.at (this->slot);
-            self->remove_plugin (plugins::PluginSlot{
-              plugins::PluginSlotType::Modulator,
-              static_cast<plugins::PluginSlot::SlotNo> (this->slot) });
+            self->remove_plugin (
+              plugins::PluginSlot{
+                plugins::PluginSlotType::Modulator,
+                static_cast<plugins::PluginSlot::SlotNo> (this->slot) });
           }
       }
 

@@ -44,8 +44,9 @@ TEST_P (AudioPoolRemoveUnusedTest, RemoveUnused)
    * (pushed off undo stack) */
   TRACKLIST->tracks_[num_tracks_before]->select (true, false, false);
 
-  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<DeleteTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
   /* if second iteration, clear undo stacks (happens e.g. when removing an
    * uninstantiated plugin), then attempt to save a backup and then

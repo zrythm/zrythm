@@ -549,8 +549,9 @@ TEST_F (ArrangerSelectionsFixture, CopyAudioRegionAndPasteAfterChangingBPM)
     }
   auto serialized = clipboard.serialize_to_json_string ();
 
-  UNDO_MANAGER->perform (std::make_unique<TransportAction> (
-    P_TEMPO_TRACK->get_current_bpm (), 110.f, false));
+  UNDO_MANAGER->perform (
+    std::make_unique<TransportAction> (
+      P_TEMPO_TRACK->get_current_bpm (), 110.f, false));
 
   Clipboard new_clipboard;
   clipboard.deserialize_from_json_string (serialized.c_str ());
@@ -588,9 +589,10 @@ TEST_F (ArrangerSelectionsFixture, DuplicateAutomationRegion)
   ap->select (true, false, false);
   auto before = AUTOMATION_SELECTIONS->clone_unique ();
   ap->curve_opts_.curviness_ = curviness_after;
-  UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
-    *before, AUTOMATION_SELECTIONS.get (),
-    ArrangerSelectionsAction::EditType::Primitive, true));
+  UNDO_MANAGER->perform (
+    std::make_unique<EditArrangerSelectionsAction> (
+      *before, AUTOMATION_SELECTIONS.get (),
+      ArrangerSelectionsAction::EditType::Primitive, true));
 
   ap = r1->aps_[0];
   ASSERT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
@@ -696,8 +698,9 @@ TEST_F (ArrangerSelectionsFixture, LinkAndDelete)
   auto move_and_perform_link = [] () {
     auto sel_before = TL_SELECTIONS->clone_unique ();
     TL_SELECTIONS->add_ticks (MOVE_TICKS);
-    UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::LinkAction> (
-      *sel_before, *TL_SELECTIONS, MOVE_TICKS, 0, 0, true));
+    UNDO_MANAGER->perform (
+      std::make_unique<ArrangerSelectionsAction::LinkAction> (
+        *sel_before, *TL_SELECTIONS, MOVE_TICKS, 0, 0, true));
   };
 
   /* create linked object */
@@ -990,9 +993,10 @@ TEST_F (ArrangerSelectionsFixture, EditMarker)
     auto clone_sel = TL_SELECTIONS->clone_unique ();
     auto m2 = clone_sel->get_objects_of_type<Marker> ().front ();
     m2->set_name ("bb", false);
-    UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
-      *TL_SELECTIONS, clone_sel.get (),
-      ArrangerSelectionsAction::EditType::Name, false));
+    UNDO_MANAGER->perform (
+      std::make_unique<EditArrangerSelectionsAction> (
+        *TL_SELECTIONS, clone_sel.get (),
+        ArrangerSelectionsAction::EditType::Name, false));
   }
 
   /* assert name changed */
@@ -1021,8 +1025,9 @@ TEST_F (ArrangerSelectionsFixture, MuteObjects)
 
   auto &r = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
 
-  UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
-    *TL_SELECTIONS, nullptr, ArrangerSelectionsAction::EditType::Mute, false));
+  UNDO_MANAGER->perform (
+    std::make_unique<EditArrangerSelectionsAction> (
+      *TL_SELECTIONS, nullptr, ArrangerSelectionsAction::EditType::Mute, false));
 
   auto assert_muted = [&] (bool muted) {
     ASSERT_TRUE (r->is_region ());
@@ -1202,8 +1207,9 @@ TEST_F (ArrangerSelectionsFixture, AudioFunctions)
 
   /* invert */
   AudioFunctionOpts opts = {};
-  UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
-    *AUDIO_SELECTIONS, AudioFunctionType::Invert, opts, nullptr));
+  UNDO_MANAGER->perform (
+    EditArrangerSelectionsAction::create (
+      *AUDIO_SELECTIONS, AudioFunctionType::Invert, opts, nullptr));
 
   verify_audio_function (inverted_frames, frames_per_channel);
 
@@ -1545,8 +1551,9 @@ TEST_F (ArrangerSelectionsFixture, PinUnpin)
 {
   auto &r = P_CHORD_TRACK->regions_.at (0);
   P_CHORD_TRACK->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<UnpinTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
+  UNDO_MANAGER->perform (
+    std::make_unique<UnpinTracksAction> (
+      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
   REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (r, *P_CHORD_TRACK);
 
@@ -2263,9 +2270,10 @@ TEST_F (ZrythmFixture, ResizeLoopFromLeftSide)
   /* resize L */
   r->select (true, false, false);
   const double move_ticks = 100.0;
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::ResizeAction> (
-    *TL_SELECTIONS, nullptr, ArrangerSelectionsAction::ResizeType::LLoop,
-    -move_ticks));
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::ResizeAction> (
+      *TL_SELECTIONS, nullptr, ArrangerSelectionsAction::ResizeType::LLoop,
+      -move_ticks));
 
   r = lane->regions_[0];
 
@@ -2545,9 +2553,10 @@ TEST_F (ZrythmFixture, MoveRegionFromLane3ToLane1)
     ASSERT_SIZE_EQ (lane->regions_, 1);
 
     /* duplicate track */
-    UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-      *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-      track->pos_ + 1));
+    UNDO_MANAGER->perform (
+      std::make_unique<CopyTracksAction> (
+        *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+        *PORT_CONNECTIONS_MGR, track->pos_ + 1));
   }
 
   {
@@ -2666,8 +2675,9 @@ TEST_F (ZrythmFixture, MoveAudioRegionAndLowerBPM)
   Position       pos;
   int            track_pos = TRACKLIST->tracks_.size ();
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
-  ASSERT_NO_THROW (Track::create_with_action (
-    Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr));
+  ASSERT_NO_THROW (
+    Track::create_with_action (
+      Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr));
   auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
   ASSERT_NONNULL (track);
   check_actions (2);
