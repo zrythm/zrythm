@@ -10,7 +10,8 @@ function(
   ENABLE_SANITIZER_LEAK
   ENABLE_SANITIZER_UNDEFINED_BEHAVIOR
   ENABLE_SANITIZER_THREAD
-  ENABLE_SANITIZER_MEMORY)
+  ENABLE_SANITIZER_MEMORY
+  ENABLE_SANITIZER_REALTIME)
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     set(SANITIZERS "")
@@ -36,6 +37,18 @@ function(
       endif()
     endif()
 
+    if(${ENABLE_SANITIZER_REALTIME})
+      if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        message(FATAL_ERROR "Realtime sanitizer is not available in GCC")
+      elseif(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 20)
+        message(FATAL_ERROR "Realtime sanitizer requires Clang 20 or newer")
+      elseif("address" IN_LIST SANITIZERS OR "undefined" IN_LIST SANITIZERS)
+        message(FATAL_ERROR "Realtime sanitizer does not work with Address and UB sanitizer enabled")
+      else()
+        list(APPEND SANITIZERS "realtime")
+      endif()
+    endif()
+
     if(${ENABLE_SANITIZER_MEMORY} AND CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
       message(
         WARNING
@@ -57,7 +70,8 @@ function(
     if(${ENABLE_SANITIZER_LEAK}
        OR ${ENABLE_SANITIZER_UNDEFINED_BEHAVIOR}
        OR ${ENABLE_SANITIZER_THREAD}
-       OR ${ENABLE_SANITIZER_MEMORY})
+       OR ${ENABLE_SANITIZER_MEMORY}
+       OR ${ENABLE_SANITIZER_REALTIME})
       message(FATAL_ERROR "MSVC only supports address sanitizer")
     endif()
   endif()

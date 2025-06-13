@@ -193,6 +193,7 @@ option(ZRYTHM_ENABLE_SANITIZER_ADDRESS "Compile with address sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Compile with undefined behavior sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_THREAD "Compile with thread sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_MEMORY "Compile with memory sanitizer" OFF)
+option(ZRYTHM_ENABLE_SANITIZER_REALTIME "Compile with realtime sanitizer" OFF)
 option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay variant in carla" ON)
 option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 
@@ -688,6 +689,7 @@ enable_sanitizers(_sanitizers_lib
   ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR
   ZRYTHM_ENABLE_SANITIZER_THREAD
   ZRYTHM_ENABLE_SANITIZER_MEMORY
+  ZRYTHM_ENABLE_SANITIZER_REALTIME
 )
 add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 
