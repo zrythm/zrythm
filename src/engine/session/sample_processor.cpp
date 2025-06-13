@@ -362,7 +362,7 @@ SampleProcessor::queue_file_or_chord_preset (
   const FileDescriptor * file,
   const ChordPreset *    chord_pset)
 {
-  SemaphoreRAII<std::binary_semaphore> sem_raii (rebuilding_sem_);
+  SemaphoreRAII<decltype (rebuilding_sem_)> sem_raii (rebuilding_sem_);
 
   /* clear tracks */
   for (auto track_var : tracklist_->get_track_span () | std::views::reverse)

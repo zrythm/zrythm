@@ -58,7 +58,7 @@ MidiEventVector::transform_chord_and_append (
   const nframes_t nframes)
 {
   {
-    const std::lock_guard<crill::spin_mutex> lock (src.lock_);
+    SemaphoreRAII<decltype (lock_)> lock (lock_);
     for (const auto &src_ev : src.events_)
       {
         /* only copy events inside the current time range */
@@ -108,7 +108,7 @@ MidiEventVector::append_w_filter (
   const nframes_t                     nframes)
 {
   {
-    const std::lock_guard<crill::spin_mutex> lock (src.lock_);
+    SemaphoreRAII<decltype (lock_)> lock (lock_);
     for (const auto &src_ev : src.events_)
       {
         /* only copy events inside the current time range */
@@ -147,7 +147,7 @@ MidiEventVector::append_w_filter (
 void
 MidiEventVector::set_channel (const midi_byte_t channel)
 {
-  const std::lock_guard<crill::spin_mutex> lock (lock_);
+  SemaphoreRAII<decltype (lock_)> lock (lock_);
   for (auto &ev : events_)
     {
       /* do this on all MIDI events that have channels */
@@ -280,14 +280,14 @@ MidiEventVector::
 
   if (with_lock)
     {
-      lock_.lock ();
+      lock_.wait ();
     }
 
   events_.push_back (ev);
 
   if (with_lock)
     {
-      lock_.unlock ();
+      lock_.signal ();
     }
 }
 
@@ -300,18 +300,18 @@ MidiEventVector::panic ()
   //     zrythm_app->gtk_thread_id_);
   //   }
 
-  while (lock_.try_lock ())
+  while (!lock_.tryWait ())
     {
       std::this_thread::sleep_for (std::chrono::milliseconds (10));
     }
   panic_without_lock ();
-  lock_.unlock ();
+  lock_.signal ();
 }
 
 void
 MidiEventVector::write_to_midi_file (MIDI_FILE * mf, int midi_track) const
 {
-  const std::lock_guard<crill::spin_mutex> lock (lock_);
+  SemaphoreRAII<decltype (lock_)> lock (lock_);
   z_return_if_fail (midi_track > 0);
 
   int last_time = 0;
@@ -445,7 +445,7 @@ get_event_type (const std::array<midi_byte_t, 3> short_msg)
 void
 MidiEventVector::sort ()
 {
-  const std::lock_guard<crill::spin_mutex> lock (lock_);
+  SemaphoreRAII<decltype (lock_)> lock (lock_);
 
   std::ranges::sort (events_, [] (const MidiEvent &a, const MidiEvent &b) {
     if (a.time_ == b.time_) [[unlikely]]
@@ -602,7 +602,7 @@ MidiEvent::print () const
 void
 MidiEventVector::print () const
 {
-  const std::lock_guard<crill::spin_mutex> lock (lock_);
+  SemaphoreRAII<decltype (lock_)> lock (lock_);
   for (const auto &ev : events_)
     {
       ev.print ();
@@ -612,7 +612,7 @@ MidiEventVector::print () const
 void
 MidiEventVector::clear_duplicates ()
 {
-  const std::lock_guard<crill::spin_mutex> lock (lock_);
+  SemaphoreRAII<decltype (lock_)> lock (lock_);
 
   /* push duplicates to the end of the vector and get iterator to first
    * duplicate*/

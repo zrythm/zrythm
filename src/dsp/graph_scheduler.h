@@ -164,10 +164,8 @@ private:
   nframes_t remaining_preroll_frames_{};
 
   /** Synchronization with main process callback. */
-  /* FIXME: this should probably be binary semaphore but i left it as a
-   * counting one out of caution while refactoring from ZixSem */
-  std::binary_semaphore callback_start_sem_{ 0 };
-  std::binary_semaphore callback_done_sem_{ 0 };
+  moodycamel::LightweightSemaphore callback_start_sem_{ 0 };
+  moodycamel::LightweightSemaphore callback_done_sem_{ 0 };
 
   /** Number of threads waiting for work. */
   std::atomic<int> idle_thread_cnt_ = 0;

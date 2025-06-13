@@ -12,6 +12,8 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/types.h"
 
+#include <moodycamel/lightweightsemaphore.h>
+
 class FileDescriptor;
 class ChordPreset;
 
@@ -187,7 +189,7 @@ public:
 
   /** Semaphore to be locked while rebuilding the sample processor tracklist and
    * graph. */
-  std::binary_semaphore rebuilding_sem_{ 1 };
+  moodycamel::LightweightSemaphore rebuilding_sem_{ 1 };
 };
 
 }

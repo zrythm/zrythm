@@ -217,7 +217,7 @@ GraphScheduler::terminate_threads ()
     }
 
   /* and the main thread */
-  callback_start_sem_.release ();
+  callback_start_sem_.signal ();
 
   /* join threads */
   for (auto &thread : threads_)
@@ -260,8 +260,8 @@ GraphScheduler::run_cycle (
       node.get ().set_skip_processing (true);
     }
 
-  callback_start_sem_.release ();
-  callback_done_sem_.acquire ();
+  callback_start_sem_.signal ();
+  callback_done_sem_.wait ();
 
   /* reset bypass state of special nodes */
   for (const auto node : graph_nodes_.special_nodes_)

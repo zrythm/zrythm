@@ -91,6 +91,10 @@
 #include "dsp/graph_thread.h"
 #include "utils/rt_thread_id.h"
 
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+#  include <sanitizer/rtsan_interface.h>
+#endif
+
 namespace zrythm::dsp::graph
 {
 
@@ -111,7 +115,7 @@ GraphThread::on_reached_terminal_node ()
       /* all terminal nodes have completed, we're done with this cycle. */
 
       /* Notify caller */
-      scheduler_.callback_done_sem_.release ();
+      scheduler_.callback_done_sem_.signal ();
 
       /* Ensure that all background threads are idle.
        * When freewheeling there may be an immediate restart:
@@ -120,13 +124,18 @@ GraphThread::on_reached_terminal_node ()
       while (
         scheduler_.idle_thread_cnt_.load ()
         != static_cast<int> (scheduler_.threads_.size ()))
-        yield ();
+        {
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+          __rtsan::ScopedDisabler d;
+#endif
+          yield ();
+        }
 
       if (threadShouldExit ())
         return;
 
       /* now wait for the next cycle to begin */
-      scheduler_.callback_start_sem_.acquire ();
+      scheduler_.callback_start_sem_.wait ();
 
       if (threadShouldExit ())
         return;
@@ -145,21 +154,9 @@ GraphThread::on_reached_terminal_node ()
 }
 
 void
-GraphThread::run_worker () [[clang::nonblocking]]
+GraphThread::run_worker () noexcept [[clang::nonblocking]]
 {
   auto * scheduler = &scheduler_;
-
-  DspContextRAII dsp_context_raii;
-
-  z_info (
-    "Worker thread {} created (num threads {})", id_,
-    scheduler->threads_.size ());
-
-  /* wait for all threads to get created */
-  if (id_ < static_cast<int> (scheduler->threads_.size ()) - 1)
-    {
-      yield ();
-    }
 
   for (;;)
     {
@@ -167,14 +164,6 @@ GraphThread::run_worker () [[clang::nonblocking]]
 
       if (threadShouldExit ()) [[unlikely]]
         {
-          if (id_ == -1)
-            {
-              z_info ("terminating main thread");
-            }
-          else
-            {
-              z_info ("[{}]: terminating thread", id_);
-            }
           return;
         }
 
@@ -293,7 +282,7 @@ GraphThread::run ()
         }
 
       /* wait for initial process callback */
-      graph->callback_start_sem_.acquire ();
+      graph->callback_start_sem_.wait ();
 
       /* first time setup */
 
@@ -309,10 +298,32 @@ GraphThread::run ()
           /*z_info ("[main] pushing back node {} during bootstrap", i);*/
           graph->trigger_queue_.push_back (std::addressof (node.get ()));
         }
+
+      /* after setup, the main-thread just becomes a normal worker */
     }
 
-  /* after setup, the main-thread just becomes a normal worker */
+  DspContextRAII dsp_context_raii;
+
+  z_info (
+    "Worker thread {} created (num threads {})", id_,
+    scheduler_.threads_.size ());
+
+  /* wait for all threads to get created */
+  if (id_ < static_cast<int> (scheduler_.threads_.size ()) - 1)
+    {
+      yield ();
+    }
+
   run_worker ();
+
+  if (id_ == -1)
+    {
+      z_info ("terminating main thread");
+    }
+  else
+    {
+      z_info ("[{}]: terminating thread", id_);
+    }
 }
 
 static size_t
