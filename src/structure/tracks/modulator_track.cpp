@@ -104,7 +104,9 @@ struct ModulatorImportData
         if (this->slot < (decltype (this->slot)) self->modulators_.size ())
           {
             auto existing_id = self->modulators_.at (this->slot);
-            self->remove_modulator (this->slot);
+            self->remove_plugin (plugins::PluginSlot{
+              plugins::PluginSlotType::Modulator,
+              static_cast<plugins::PluginSlot::SlotNo> (this->slot) });
           }
       }
 
@@ -210,38 +212,6 @@ ModulatorTrack::insert_modulator (
       return modulator;
     },
     modulator_id.get_object ());
-}
-
-ModulatorTrack::PluginPtrVariant
-ModulatorTrack::remove_modulator (plugins::PluginSlot::SlotNo slot)
-{
-  auto plugin_id = modulators_[slot];
-  auto plugin_var = plugin_id.get_object ();
-  return std::visit (
-    [&] (auto &&plugin) -> PluginPtrVariant {
-      assert (plugin->get_track_id () == get_uuid ());
-
-      plugin->remove_ats_from_automation_tracklist (true, !false && !true);
-
-      z_debug ("Removing {} from {}:{}", plugin->get_name (), name_, slot);
-
-      /* if deleting plugin disconnect the plugin entirely */
-      plugin->set_selected (false);
-      plugin->Plugin::disconnect ();
-
-      auto it = modulators_.erase (modulators_.begin () + slot);
-      for (; it != modulators_.end (); ++it)
-        {
-          const auto &mod_id = *it;
-          auto        mod_var = mod_id.get_object ();
-          std::visit (
-            [&] (auto &&mod) { mod->set_track (get_uuid ()); }, mod_var);
-        }
-
-      auto ret_id = *it;
-      return ret_id.get_object ();
-    },
-    plugin_var);
 }
 
 void

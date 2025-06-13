@@ -52,11 +52,6 @@ public:
     bool                        recalc_graph,
     bool                        pub_events);
 
-  /**
-   * Removes the modulator (plugin) at the given slot.
-   */
-  PluginPtrVariant remove_modulator (plugins::PluginSlot::SlotNo slot);
-
   std::optional<PluginPtrVariant>
   get_modulator (plugins::PluginSlot::SlotNo slot) const;
 
@@ -96,7 +91,7 @@ private:
 
   bool initialize ();
 
-private:
+public:
   /** Modulators. */
   std::vector<PluginUuidReference> modulators_;
 

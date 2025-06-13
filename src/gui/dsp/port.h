@@ -250,13 +250,6 @@ public:
   virtual void restore_from_non_project (const Port &non_project) { };
 
   /**
-   * Disconnects all srcs and dests from port.
-   */
-  void disconnect_all (
-    std::optional<std::reference_wrapper<dsp::PortConnectionsManager>>
-      connections_manager);
-
-  /**
    * Generates a hash for a given port.
    */
   size_t get_hash () const;

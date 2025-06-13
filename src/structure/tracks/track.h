@@ -293,6 +293,8 @@ public:
   static constexpr int MIN_HEIGHT = 26;
   static constexpr int DEF_HEIGHT = 52;
 
+  friend class Tracklist;
+
   /**
    * The Track's type.
    */
@@ -1111,11 +1113,17 @@ public:
   }
 
   /**
-   * Wrapper over Channel::remove_plugin() and
-   * ModulatorTrack::remove_modulator().
+   * Removes a plugin at the given slot from the track.
+   *
+   * @param moving_plugin Whether or not we are moving the plugin.
+   * @param deleting_plugin Whether or not we are deleting the plugin.
    */
   template <typename SelfT>
-  void remove_plugin (this SelfT &self, plugins::PluginSlot slot)
+  void remove_plugin (
+    this SelfT         &self,
+    plugins::PluginSlot slot,
+    bool                moving_plugin = false,
+    bool                deleting_plugin = true)
     requires (
       std::derived_from<SelfT, ChannelTrack>
       || std::is_same_v<SelfT, ModulatorTrack>)
@@ -1124,12 +1132,72 @@ public:
     if constexpr (std::is_same_v<SelfT, ModulatorTrack>)
       {
         assert (slot.is_modulator ());
-        self.remove_modulator (slot.get_slot_with_index ().second);
+        const auto slot_idx = slot.get_slot_with_index ().second;
+        auto       plugin_id = self.modulators_[slot_idx];
+        auto       plugin_var = plugin_id.get_object ();
+        std::visit (
+          [&] (auto &&plugin) {
+            assert (plugin->get_track_id () == self.get_uuid ());
+
+            plugin->remove_ats_from_automation_tracklist (true, !false && !true);
+
+            z_debug (
+              "Removing {} from {}:{}", plugin->get_name (), self.get_name (),
+              slot);
+
+            /* if deleting plugin disconnect the plugin entirely */
+            plugin->set_selected (false);
+            self.tracklist_->disconnect_plugin (plugin->get_uuid ());
+
+            auto it =
+              self.modulators_.erase (self.modulators_.begin () + slot_idx);
+            for (; it != self.modulators_.end (); ++it)
+              {
+                const auto &mod_id = *it;
+                auto        mod_var = mod_id.get_object ();
+                std::visit (
+                  [&] (auto &&mod) { mod->set_track (self.get_uuid ()); },
+                  mod_var);
+              }
+          },
+          plugin_var);
       }
     else if constexpr (std::derived_from<SelfT, ChannelTrack>)
       {
         assert (!slot.is_modulator ());
-        self.get_channel ()->remove_plugin_from_channel (slot, false, true);
+        auto channel = self.get_channel ();
+        auto plugin_opt = channel->get_plugin_at_slot (slot);
+        assert (plugin_opt);
+        auto plugin_ptr = *plugin_opt;
+
+        std::visit (
+          [&] (auto &&plugin) {
+            z_debug (
+              "Removing {} from {}:{}", plugin->get_name (), self.get_name (),
+              slot);
+
+            /* if moving, the move is already handled in
+             * plugin_move_automation() inside plugin_move(). */
+            if (!moving_plugin)
+              {
+                plugin->remove_ats_from_automation_tracklist (
+                  deleting_plugin, !deleting_plugin);
+              }
+
+            channel->disconnect_plugin_from_strip (slot, *plugin);
+
+            /* if deleting plugin disconnect the plugin entirely */
+            if (deleting_plugin)
+              {
+                if (plugin->is_selected ())
+                  {
+                    plugin->set_selected (false);
+                  }
+
+                self.tracklist_->disconnect_plugin (plugin->get_uuid ());
+              }
+          },
+          plugin_ptr);
       }
   }
 
@@ -1181,12 +1249,6 @@ public:
 
     z_return_val_if_reached (false);
   }
-
-  /**
-   * Disconnects the track from the processing chain and removes any plugins
-   * it contains.
-   */
-  void disconnect_track ();
 
   bool is_enabled () const { return enabled_; }
   bool get_enabled () const { return enabled_; }

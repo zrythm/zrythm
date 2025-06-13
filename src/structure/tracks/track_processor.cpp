@@ -534,41 +534,6 @@ TrackProcessor::clear_buffers (std::size_t block_length)
     }
 }
 
-/**
- * Disconnects all ports connected to the TrackProcessor.
- */
-void
-TrackProcessor::disconnect_all ()
-{
-  auto track = get_track ();
-  z_return_if_fail (track);
-
-  const auto disconnect_port = [&] (auto &port) {
-    port.disconnect_all (*get_port_connections_manager ());
-  };
-
-  switch (track->get_input_signal_type ())
-    {
-    case PortType::Audio:
-      disconnect_port (get_mono_port ());
-      disconnect_port (get_input_gain_port ());
-      disconnect_port (get_output_gain_port ());
-      disconnect_port (get_monitor_audio_port ());
-      iterate_tuple (disconnect_port, get_stereo_in_ports ());
-      iterate_tuple (disconnect_port, get_stereo_out_ports ());
-
-      break;
-    case PortType::Event:
-      disconnect_port (get_midi_in_port ());
-      disconnect_port (get_midi_out_port ());
-      if (track->has_piano_roll ())
-        disconnect_port (get_piano_roll_port ());
-      break;
-    default:
-      break;
-    }
-}
-
 void
 TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 {

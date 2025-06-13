@@ -782,39 +782,6 @@ Fader::clear_buffers (std::size_t block_length)
     }
 }
 
-void
-Fader::disconnect_all ()
-{
-  const auto disconnect_port = [] (auto &port) {
-    port.disconnect_all (*PORT_CONNECTIONS_MGR);
-  };
-
-  if (has_audio_ports ())
-    {
-      auto stereo_in = get_stereo_in_ports ();
-      disconnect_port (stereo_in.first);
-      disconnect_port (stereo_in.second);
-      auto stereo_out = get_stereo_out_ports ();
-      disconnect_port (stereo_out.first);
-      disconnect_port (stereo_out.second);
-    }
-  else if (has_midi_ports ())
-    {
-      auto &midi_in = get_midi_in_port ();
-      disconnect_port (midi_in);
-      auto &midi_out = get_midi_out_port ();
-      disconnect_port (midi_out);
-    }
-
-  disconnect_port (get_amp_port ());
-  disconnect_port (get_balance_port ());
-  disconnect_port (get_mute_port ());
-  disconnect_port (get_solo_port ());
-  disconnect_port (get_listen_port ());
-  disconnect_port (get_mono_compat_enabled_port ());
-  disconnect_port (get_swap_phase_port ());
-}
-
 int
 Fader::fade_frames_for_type (Type type)
 {

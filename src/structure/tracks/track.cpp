@@ -77,7 +77,7 @@ Track::get_port_connections_manager () const
   auto * tracklist = get_tracklist ();
   z_return_val_if_fail (tracklist, nullptr);
   z_return_val_if_fail (tracklist_->port_connections_manager_, nullptr);
-  return tracklist->port_connections_manager_;
+  return tracklist->port_connections_manager_.get ();
 }
 
 Track *
@@ -376,47 +376,6 @@ track_freeze (Track * self, bool freeze, GError ** error)
   return true;
 }
 #endif
-
-void
-Track::disconnect_track ()
-{
-  z_debug ("disconnecting track '{}' ({})...", name_, pos_);
-
-  disconnecting_ = true;
-
-  /* if this is a group track and has children, remove them */
-  if (!is_auditioner () && can_be_group_target ())
-    {
-      auto * group_target = dynamic_cast<GroupTargetTrack *> (this);
-      if (group_target)
-        {
-          group_target->remove_all_children (true, false, false);
-        }
-    }
-
-  /* disconnect all ports and free buffers */
-  std::vector<Port *> ports;
-  append_ports (ports, true);
-  for (auto * port : ports)
-    {
-      port->disconnect_all (*get_port_connections_manager ());
-    }
-
-  if (!is_auditioner ())
-    {
-      /* disconnect from folders */
-      remove_from_folder_parents ();
-    }
-
-  if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
-    {
-      channel_track->channel_->disconnect_channel ();
-    }
-
-  disconnecting_ = false;
-
-  z_debug ("done disconnecting");
-}
 
 void
 Track::unselect_all ()

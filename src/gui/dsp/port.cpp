@@ -43,35 +43,6 @@ Port::get_label () const
 }
 
 void
-Port::disconnect_all (
-  std::optional<std::reference_wrapper<dsp::PortConnectionsManager>>
-    connections_manager)
-{
-  srcs_.clear ();
-  dests_.clear ();
-
-  if (!connections_manager.has_value ())
-    {
-      return;
-    }
-
-  auto &mgr = connections_manager->get ();
-  dsp::PortConnectionsManager::ConnectionsVector srcs;
-  mgr.get_sources_or_dests (&srcs, get_uuid (), true);
-  for (const auto &conn : srcs)
-    {
-      mgr.remove_connection (conn->src_id_, conn->dest_id_);
-    }
-
-  dsp::PortConnectionsManager::ConnectionsVector dests;
-  mgr.get_sources_or_dests (&dests, get_uuid (), false);
-  for (const auto &conn : dests)
-    {
-      mgr.remove_connection (conn->src_id_, conn->dest_id_);
-    }
-}
-
-void
 Port::change_track (IPortOwner::TrackUuid new_track_id)
 {
   id_->set_track_id (new_track_id);

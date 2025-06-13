@@ -272,18 +272,18 @@ AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter
   buf_size_set_ = false;
 
   {
-    project_->port_connections_manager_->add_default_connection (
+    port_connections_manager_->add_default_connection (
       sample_processor_->fader_->get_stereo_out_left_id (),
       control_room_->monitor_fader_->get_stereo_out_left_id (), true);
-    project_->port_connections_manager_->add_default_connection (
+    port_connections_manager_->add_default_connection (
       sample_processor_->fader_->get_stereo_out_right_id (),
       control_room_->monitor_fader_->get_stereo_out_right_id (), true);
   }
   {
-    project_->port_connections_manager_->add_default_connection (
+    port_connections_manager_->add_default_connection (
       control_room_->monitor_fader_->get_stereo_out_left_id (),
       monitor_out_left_->id (), true);
-    project_->port_connections_manager_->add_default_connection (
+    port_connections_manager_->add_default_connection (
       control_room_->monitor_fader_->get_stereo_out_right_id (),
       monitor_out_right_->id (), true);
   }

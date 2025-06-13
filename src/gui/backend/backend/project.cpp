@@ -44,26 +44,26 @@ Project::Project (
       audio_engine_ (
         std::make_unique<engine::device_io::AudioEngine> (this, device_manager)),
       transport_ (new engine::session::Transport (this)),
-      quantize_opts_editor_ (std::make_unique<QuantizeOptions> (
-        zrythm::utils::NoteLength::Note_1_8)),
-      quantize_opts_timeline_ (std::make_unique<QuantizeOptions> (
-        zrythm::utils::NoteLength::Note_1_1)),
-      snap_grid_editor_ (std::make_unique<SnapGrid> (
-        SnapGrid::Type::Editor,
-        utils::NoteLength::Note_1_8,
-        true,
-        [&] { return audio_engine_->frames_per_tick_; },
-        [&] { return transport_->ticks_per_bar_; },
-        [&] { return transport_->ticks_per_beat_; })),
-      snap_grid_timeline_ (std::make_unique<SnapGrid> (
-        SnapGrid::Type::Timeline,
-        utils::NoteLength::Bar,
-        true,
-        [&] { return audio_engine_->frames_per_tick_; },
-        [&] { return transport_->ticks_per_bar_; },
-        [&] { return transport_->ticks_per_beat_; }
-
-        )),
+      quantize_opts_editor_ (
+        std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
+      quantize_opts_timeline_ (
+        std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_1)),
+      snap_grid_editor_ (
+        std::make_unique<SnapGrid> (
+          SnapGrid::Type::Editor,
+          utils::NoteLength::Note_1_8,
+          true,
+          [&] { return audio_engine_->frames_per_tick_; },
+          [&] { return transport_->ticks_per_bar_; },
+          [&] { return transport_->ticks_per_beat_; })),
+      snap_grid_timeline_ (
+        std::make_unique<SnapGrid> (
+          SnapGrid::Type::Timeline,
+          utils::NoteLength::Bar,
+          true,
+          [&] { return audio_engine_->frames_per_tick_; },
+          [&] { return transport_->ticks_per_bar_; },
+          [&] { return transport_->ticks_per_beat_; })),
       timeline_ (new Timeline (this)),
       clip_editor_ (new ClipEditor (
         *arranger_object_registry_,
@@ -76,7 +76,7 @@ Project::Project (
         *this,
         *port_registry_,
         *track_registry_,
-        port_connections_manager_)),
+        *port_connections_manager_)),
       undo_manager_ (new gui::actions::UndoManager (this)),
       arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
         *arranger_object_registry_,
@@ -127,41 +127,6 @@ Project::Project (
 Project::~Project ()
 {
   loaded_ = false;
-}
-
-std::string
-Project::print_port_connection (const dsp::PortConnection &conn) const
-{
-  auto src_var = get_port_registry ().find_by_id_or_throw (conn.src_id_);
-  auto dest_var = get_port_registry ().find_by_id_or_throw (conn.dest_id_);
-  return std::visit (
-    [&] (auto &&src, auto &&dest) {
-      auto is_send =
-        src->id_->owner_type_ == dsp::PortIdentifier::OwnerType::ChannelSend;
-      const char * send_str = is_send ? " (send)" : "";
-      if (port_connections_manager_->contains_connection (conn))
-        {
-          auto src_track_var = get_track_registry ().find_by_id_or_throw (
-            src->id_->track_id_.value ());
-          auto dest_track_var = get_track_registry ().find_by_id_or_throw (
-            dest->id_->track_id_.value ());
-          return std::visit (
-            [&] (auto &&src_track, auto &&dest_track) {
-              return fmt::format (
-                "[{} ({})] {} => [{} ({})] {}{}",
-                (src_track != nullptr) ? src_track->get_name () : u8"(none)",
-                src->id_->track_id_, src->get_label (),
-                dest_track ? dest_track->get_name () : u8"(none)",
-                dest->id_->track_id_, dest->get_label (), send_str);
-            },
-            src_track_var, dest_track_var);
-        }
-
-      return fmt::format (
-        "[track {}] {} => [track {}] {}{}", src->id_->track_id_,
-        src->get_label (), dest->id_->track_id_, dest->get_label (), send_str);
-    },
-    src_var, dest_var);
 }
 
 bool

@@ -1316,48 +1316,6 @@ Channel::disconnect_plugin_from_strip (PluginSlot slot, Channel::Plugin &pl)
     }
 }
 
-Channel::PluginUuid
-Channel::remove_plugin_from_channel (
-  PluginSlot slot,
-  bool       moving_plugin,
-  bool       deleting_plugin)
-{
-  auto plugin_opt = get_plugin_at_slot (slot);
-  assert (plugin_opt);
-  auto plugin_ptr = *plugin_opt;
-
-  return std::visit (
-    [&] (auto &&plugin) {
-      z_debug (
-        "Removing {} from {}:{}", plugin->get_name (), track_->get_name (),
-        slot);
-
-      /* if moving, the move is already handled in plugin_move_automation()
-       * inside plugin_move(). */
-      if (!moving_plugin)
-        {
-          plugin->remove_ats_from_automation_tracklist (
-            deleting_plugin, !deleting_plugin);
-        }
-
-      disconnect_plugin_from_strip (slot, *plugin);
-
-      /* if deleting plugin disconnect the plugin entirely */
-      if (deleting_plugin)
-        {
-          if (plugin->is_selected ())
-            {
-              plugin->set_selected (false);
-            }
-
-          plugin->Plugin::disconnect ();
-        }
-
-      return plugin->get_uuid ();
-    },
-    plugin_ptr);
-}
-
 Channel::PluginPtrVariant
 Channel::add_plugin (
   PluginUuidReference plugin_id,
@@ -1387,7 +1345,7 @@ Channel::add_plugin (
   if (existing_pl_id.has_value ())
     {
       z_debug ("existing plugin exists at {}:{}", track_->get_name (), slot);
-      remove_plugin_from_channel (slot, moving_plugin, true);
+      track_->remove_plugin (slot, moving_plugin, true);
     }
 
   auto plugin_var = plugin_id.get_object ();
@@ -1563,15 +1521,15 @@ struct PluginImportData
                   {
                     UNDO_MANAGER->perform (
                       new gui::actions::MixerSelectionsCopyAction (
-                        *this->sel, *PROJECT->port_connections_manager_,
-                        this->ch->track_, this->slot));
+                        *this->sel, *PORT_CONNECTIONS_MGR, this->ch->track_,
+                        this->slot));
                   }
                 else
                   {
                     UNDO_MANAGER->perform (
                       new gui::actions::MixerSelectionsMoveAction (
-                        *this->sel, *PROJECT->port_connections_manager_,
-                        this->ch->track_, this->slot));
+                        *this->sel, *PORT_CONNECTIONS_MGR, this->ch->track_,
+                        this->slot));
                   }
               }
             catch (const ZrythmException &e)
@@ -1799,47 +1757,6 @@ Channel::get_plugins (std::vector<Channel::Plugin *> &pls)
   std::ranges::transform (uuids, std::back_inserter (pls), [&] (const auto &uuid) {
     return Plugin::from_variant (*get_plugin_from_id (uuid));
   });
-}
-
-void
-Channel::disconnect_channel ()
-{
-  z_debug ("disconnecting channel {}", track_->get_name ());
-  {
-    std::vector<Plugin *> plugins;
-    get_plugins (plugins);
-    for (const auto &pl : plugins)
-      {
-        const auto slot = get_plugin_slot (pl->get_uuid ());
-        remove_plugin_from_channel (slot, false, true);
-      }
-  }
-
-  /* disconnect from output */
-  if (has_output ())
-    {
-      auto * out_track = get_output_track ();
-      z_return_if_fail (out_track);
-      out_track->remove_child (track_->get_uuid (), true, false, false);
-    }
-
-  /* disconnect fader/prefader */
-  prefader_->disconnect_all ();
-  fader_->disconnect_all ();
-
-  /* disconnect all ports */
-  std::vector<Port *> ports;
-  append_ports (ports, true);
-  for (auto * port : ports)
-    {
-      if (!port)
-        {
-          z_error ("invalid port");
-          return;
-        }
-
-      port->disconnect_all (*PORT_CONNECTIONS_MGR);
-    }
 }
 
 void

@@ -230,22 +230,6 @@ public:
   get_automation_track (PortIdentifier::Flags port_flags) const;
 
   /**
-   * Removes a plugin at the given slot from the channel.
-   *
-   * FIXME this is the same as modulator_track_remove_modulator().
-   * TODO refactor into track_remove_plugin().
-   *
-   * @param moving_plugin Whether or not we are moving the plugin.
-   * @param deleting_plugin Whether or not we are deleting the plugin.
-   *
-   * @return The plugin that was removed (in case we want to move it).
-   */
-  PluginUuid remove_plugin_from_channel (
-    PluginSlot slot,
-    bool       moving_plugin,
-    bool       deleting_plugin);
-
-  /**
    * @brief Returns all existing plugins in the channel.
    *
    * @param pls Vector to add plugins to.
@@ -307,12 +291,6 @@ public:
     utils::ObjectCloneType clone_type);
 
   /**
-   * Disconnects the channel from the processing chain and removes any plugins
-   * it contains.
-   */
-  void disconnect_channel ();
-
-  /**
    * Connects the channel's ports.
    *
    * This should only be called on project tracks.
@@ -368,6 +346,8 @@ public:
   Fader &get_pre_fader () const { return *prefader_; }
 
   auto &get_sends () const { return sends_; }
+
+  void disconnect_plugin_from_strip (PluginSlot slot, Plugin &pl);
 
 private:
   static constexpr auto kMidiFxKey = "midiFx"sv;
@@ -473,8 +453,6 @@ private:
    * @param loading 1 if loading a channel, 0 if new.
    */
   // void init_stereo_out_ports (bool loading);
-
-  void disconnect_plugin_from_strip (PluginSlot slot, Plugin &pl);
 
   /**
    * Disconnects all hardware inputs from the port.

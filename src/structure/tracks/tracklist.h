@@ -66,15 +66,15 @@ public:
 public:
   Tracklist (QObject * parent = nullptr);
   explicit Tracklist (
-    Project                      &project,
-    PortRegistry                 &port_registry,
-    TrackRegistry                &track_registry,
-    dsp::PortConnectionsManager * port_connections_manager);
+    Project                     &project,
+    PortRegistry                &port_registry,
+    TrackRegistry               &track_registry,
+    dsp::PortConnectionsManager &port_connections_manager);
   explicit Tracklist (
     engine::session::SampleProcessor &sample_processor,
     PortRegistry                     &port_registry,
     TrackRegistry                    &track_registry,
-    dsp::PortConnectionsManager *     port_connections_manager);
+    dsp::PortConnectionsManager      &port_connections_manager);
   Z_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
@@ -102,7 +102,7 @@ public:
 
   auto get_track_span () const { return TrackSpan{ tracks_ }; }
 
-  bool is_auditioner () const { return sample_processor_; }
+  bool is_auditioner () const { return sample_processor_ != nullptr; }
 
   friend void init_from (
     Tracklist             &obj,
@@ -497,6 +497,10 @@ public:
     get_track_span ().mark_all_tracks_for_bounce (*this, bounce);
   }
 
+  void disconnect_plugin (const Plugin::Uuid &plugin_id);
+
+  std::string print_port_connection (const dsp::PortConnection &conn) const;
+
 private:
   static constexpr auto kPinnedTracksCutoffKey = "pinnedTracksCutoff"sv;
   static constexpr auto kTracksKey = "tracks"sv;
@@ -517,6 +521,40 @@ private:
   }
 
   void swap_tracks (size_t index1, size_t index2);
+
+  /**
+   * @brief To be called internally when removing port owners like Fader's,
+   * Channel's, Plugin's etc., to break connections.
+   *
+   * @param port_id
+   */
+  void disconnect_port (const Port::Uuid &port_id);
+
+  /**
+   * Disconnects the channel from the processing chain and removes any plugins
+   * it contains.
+   *
+   * FIXME refactor.
+   */
+  void disconnect_channel (Channel &channel);
+
+  // FIXME: public access
+public:
+  /**
+   * Disconnects all ports connected to the fader.
+   */
+  void disconnect_fader (Fader &fader);
+
+private:
+  /**
+   * Disconnects all ports connected to the TrackProcessor.
+   */
+  void disconnect_track_processor (TrackProcessor &track_processor);
+
+  /**
+   * @brief Disconnects all ports in the track (including channel, faders, etc.).
+   */
+  void disconnect_track (Track &track);
 
   auto &get_track_registry () const { return *track_registry_; }
   auto &get_track_registry () { return *track_registry_; }

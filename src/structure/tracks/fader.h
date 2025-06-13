@@ -235,10 +235,6 @@ public:
   void set_fader_val_with_action_from_db (const std::string &str);
 
   /**
-   * Disconnects all ports connected to the fader.
-   */
-  void disconnect_all ();
-  /**
    * Process the Fader.
    */
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;

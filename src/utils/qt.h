@@ -67,6 +67,9 @@ public:
   T       &operator* () const { return *ptr_; }
   explicit operator bool () const { return !ptr_.isNull (); }
 
+  // Conversion to QPointer
+  explicit operator QPointer<T> () const { return ptr_; }
+
 private:
   QPointer<T> ptr_;
 };

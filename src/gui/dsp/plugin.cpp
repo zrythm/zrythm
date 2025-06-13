@@ -1469,30 +1469,6 @@ done2:
 }
 
 void
-Plugin::disconnect ()
-{
-  z_info ("disconnecting plugin {}...", get_name ());
-
-  deleting_ = true;
-
-  if (visible_ && ZRYTHM_HAVE_UI)
-    close_ui ();
-
-  /* disconnect all ports */
-  for (auto port : get_input_port_span ().as_base_type ())
-    port->disconnect_all (*PORT_CONNECTIONS_MGR);
-  for (auto port : get_output_port_span ().as_base_type ())
-    port->disconnect_all (*PORT_CONNECTIONS_MGR);
-  z_debug (
-    "disconnected all ports of {} in ports: {} out ports: {}", get_name (),
-    in_ports_.size (), out_ports_.size ());
-
-  close ();
-
-  z_debug ("finished disconnecting plugin {}", get_name ());
-}
-
-void
 Plugin::delete_state_files ()
 {
   z_debug ("deleting state files for plugin {} ({})", get_name (), state_dir_);

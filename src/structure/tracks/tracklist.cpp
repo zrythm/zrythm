@@ -27,13 +27,13 @@ namespace zrythm::structure::tracks
 Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
 
 Tracklist::Tracklist (
-  Project                      &project,
-  PortRegistry                 &port_registry,
-  TrackRegistry                &track_registry,
-  dsp::PortConnectionsManager * port_connections_manager)
+  Project                     &project,
+  PortRegistry                &port_registry,
+  TrackRegistry               &track_registry,
+  dsp::PortConnectionsManager &port_connections_manager)
     : QAbstractListModel (&project), track_registry_ (track_registry),
       port_registry_ (port_registry), project_ (&project),
-      port_connections_manager_ (port_connections_manager)
+      port_connections_manager_ (&port_connections_manager)
 {
 }
 
@@ -41,10 +41,10 @@ Tracklist::Tracklist (
   engine::session::SampleProcessor &sample_processor,
   PortRegistry                     &port_registry,
   TrackRegistry                    &track_registry,
-  dsp::PortConnectionsManager *     port_connections_manager)
+  dsp::PortConnectionsManager      &port_connections_manager)
     : track_registry_ (track_registry), port_registry_ (port_registry),
       sample_processor_ (&sample_processor),
-      port_connections_manager_ (port_connections_manager)
+      port_connections_manager_ (&port_connections_manager)
 {
 }
 
@@ -148,6 +148,221 @@ Tracklist::setExclusivelySelectedTrack (QVariant track)
 }
 
 // ========================================================================
+
+void
+Tracklist::disconnect_port (const Port::Uuid &port_id)
+{
+  port_connections_manager_->remove_all_connections (port_id);
+}
+
+void
+Tracklist::disconnect_plugin (const Plugin::Uuid &plugin_id)
+{
+  auto plugin_var = plugin_registry_->find_by_id_or_throw (plugin_id);
+  std::visit (
+    [&] (auto &&pl) {
+      z_info ("disconnecting plugin {}...", pl->get_name ());
+
+      pl->deleting_ = true;
+
+      if (pl->visible_)
+        pl->close_ui ();
+
+      /* disconnect all ports */
+      for (auto port : pl->get_input_port_span ().as_base_type ())
+        {
+          disconnect_port (port->get_uuid ());
+        }
+      for (auto port : pl->get_output_port_span ().as_base_type ())
+        {
+          disconnect_port (port->get_uuid ());
+        }
+      z_debug (
+        "disconnected all ports of {} in ports: {} out ports: {}",
+        pl->get_name (), pl->in_ports_.size (), pl->out_ports_.size ());
+
+      pl->close ();
+
+      z_debug ("finished disconnecting plugin {}", pl->get_name ());
+    },
+    plugin_var);
+}
+
+void
+Tracklist::disconnect_channel (Channel &channel)
+{
+  z_debug ("disconnecting channel {}", channel.track_->get_name ());
+  {
+    std::vector<Plugin *> plugins;
+    channel.get_plugins (plugins);
+    for (const auto &pl : plugins)
+      {
+        const auto slot = channel.get_plugin_slot (pl->get_uuid ());
+        channel.track_->remove_plugin (slot, false, true);
+      }
+  }
+
+  /* disconnect from output */
+  if (channel.has_output ())
+    {
+      auto * out_track = channel.get_output_track ();
+      assert (out_track);
+      out_track->remove_child (channel.track_->get_uuid (), true, false, false);
+    }
+
+  /* disconnect fader/prefader */
+  disconnect_fader (*channel.prefader_);
+  disconnect_fader (*channel.fader_);
+
+  /* disconnect all ports */
+  std::vector<Port *> ports;
+  channel.append_ports (ports, true);
+  for (auto * port : ports)
+    {
+      disconnect_port (port->get_uuid ());
+    }
+}
+
+void
+Tracklist::disconnect_fader (Fader &fader)
+{
+  const auto disconnect = [&] (auto &port) {
+    disconnect_port (port.get_uuid ());
+  };
+
+  if (fader.has_audio_ports ())
+    {
+      auto stereo_in = fader.get_stereo_in_ports ();
+      disconnect (stereo_in.first);
+      disconnect (stereo_in.second);
+      auto stereo_out = fader.get_stereo_out_ports ();
+      disconnect (stereo_out.first);
+      disconnect (stereo_out.second);
+    }
+  else if (fader.has_midi_ports ())
+    {
+      auto &midi_in = fader.get_midi_in_port ();
+      disconnect (midi_in);
+      auto &midi_out = fader.get_midi_out_port ();
+      disconnect (midi_out);
+    }
+
+  disconnect (fader.get_amp_port ());
+  disconnect (fader.get_balance_port ());
+  disconnect (fader.get_mute_port ());
+  disconnect (fader.get_solo_port ());
+  disconnect (fader.get_listen_port ());
+  disconnect (fader.get_mono_compat_enabled_port ());
+  disconnect (fader.get_swap_phase_port ());
+}
+
+void
+Tracklist::disconnect_track_processor (TrackProcessor &track_processor)
+{
+  auto track = track_processor.get_track ();
+  z_return_if_fail (track);
+
+  const auto disconnect_port = [&] (auto &port) {
+    port_connections_manager_->remove_all_connections (port.get_uuid ());
+  };
+
+  switch (track->get_input_signal_type ())
+    {
+    case dsp::PortType::Audio:
+      disconnect_port (track_processor.get_mono_port ());
+      disconnect_port (track_processor.get_input_gain_port ());
+      disconnect_port (track_processor.get_output_gain_port ());
+      disconnect_port (track_processor.get_monitor_audio_port ());
+      iterate_tuple (disconnect_port, track_processor.get_stereo_in_ports ());
+      iterate_tuple (disconnect_port, track_processor.get_stereo_out_ports ());
+
+      break;
+    case dsp::PortType::Event:
+      disconnect_port (track_processor.get_midi_in_port ());
+      disconnect_port (track_processor.get_midi_out_port ());
+      if (track->has_piano_roll ())
+        disconnect_port (track_processor.get_piano_roll_port ());
+      break;
+    default:
+      break;
+    }
+}
+
+void
+Tracklist::disconnect_track (Track &track)
+{
+  z_debug ("disconnecting track '{}' ({})...", track.get_name (), track.pos_);
+
+  track.disconnecting_ = true;
+
+  /* if this is a group track and has children, remove them */
+  if (!track.is_auditioner () && track.can_be_group_target ())
+    {
+      auto * group_target = dynamic_cast<GroupTargetTrack *> (&track);
+      if (group_target != nullptr)
+        {
+          group_target->remove_all_children (true, false, false);
+        }
+    }
+
+  /* disconnect all ports and free buffers */
+  std::vector<Port *> ports;
+  track.append_ports (ports, true);
+  for (auto * port : ports)
+    {
+      port_connections_manager_->remove_all_connections (port->get_uuid ());
+    }
+
+  if (!track.is_auditioner ())
+    {
+      /* disconnect from folders */
+      track.remove_from_folder_parents ();
+    }
+
+  if (auto channel_track = dynamic_cast<ChannelTrack *> (&track))
+    {
+      disconnect_channel (*channel_track->channel_);
+    }
+
+  track.disconnecting_ = false;
+
+  z_debug ("done disconnecting");
+}
+
+std::string
+Tracklist::print_port_connection (const dsp::PortConnection &conn) const
+{
+  auto src_var = port_registry_->find_by_id_or_throw (conn.src_id_);
+  auto dest_var = port_registry_->find_by_id_or_throw (conn.dest_id_);
+  return std::visit (
+    [&] (auto &&src, auto &&dest) {
+      auto is_send =
+        src->id_->owner_type_ == dsp::PortIdentifier::OwnerType::ChannelSend;
+      const char * send_str = is_send ? " (send)" : "";
+      if (port_connections_manager_->contains_connection (conn))
+        {
+          auto src_track_var = get_track_registry ().find_by_id_or_throw (
+            src->id_->track_id_.value ());
+          auto dest_track_var = get_track_registry ().find_by_id_or_throw (
+            dest->id_->track_id_.value ());
+          return std::visit (
+            [&] (auto &&src_track, auto &&dest_track) {
+              return fmt::format (
+                "[{} ({})] {} => [{} ({})] {}{}",
+                (src_track != nullptr) ? src_track->get_name () : u8"(none)",
+                src->id_->track_id_, src->get_label (),
+                dest_track ? dest_track->get_name () : u8"(none)",
+                dest->id_->track_id_, dest->get_label (), send_str);
+            },
+            src_track_var, dest_track_var);
+        }
+
+      return fmt::format (
+        "[track {}] {} => [track {}] {}{}", src->id_->track_id_,
+        src->get_label (), dest->id_->track_id_, dest->get_label (), send_str);
+    },
+    src_var, dest_var);
+}
 
 void
 Tracklist::move_plugin_automation (
@@ -557,8 +772,7 @@ do_move (PluginMoveData * data)
           auto existing_pl = data_track->get_plugin_at_slot (data->slot);
           if (existing_pl)
             {
-              data_track->channel_->remove_plugin_from_channel (
-                data->slot, false, true);
+              data_track->remove_plugin (data->slot, false, true);
             }
 
           /* move plugin's automation from src to dest */
@@ -570,7 +784,7 @@ do_move (PluginMoveData * data)
           PluginUuidReference plugin_ref{
             pl->get_uuid (), data_track->get_plugin_registry ()
           };
-          prev_ch->remove_plugin_from_channel (prev_slot, true, false);
+          prev_ch->track_->remove_plugin (prev_slot, true, false);
 
           /* add plugin to its new channel */
           data_track->channel_->add_plugin (
@@ -781,7 +995,7 @@ Tracklist::remove_track (const TrackUuid &track_id)
       /* remove/deselect all objects */
       track->clear_objects ();
 
-      track->disconnect_track ();
+      disconnect_track (*track);
 
       /* move track to the end */
       auto end_pos = std::ssize (tracks_) - 1;

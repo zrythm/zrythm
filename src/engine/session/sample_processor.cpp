@@ -65,7 +65,7 @@ SampleProcessor::load_instrument_if_empty ()
             return;
 
           auto found_setting = S_PLUGIN_SETTINGS->find (*instrument);
-          if (!found_setting)
+          if (found_setting == nullptr)
             {
               setting = S_PLUGIN_SETTINGS->create_configuration_for_descriptor (
                 *instrument);
@@ -84,7 +84,7 @@ SampleProcessor::init_common ()
   tracklist_ = std::make_unique<Tracklist> (
     *this, audio_engine_->get_port_registry (),
     audio_engine_->get_track_registry (),
-    audio_engine_->port_connections_manager_);
+    *audio_engine_->port_connections_manager_);
   midi_events_ = std::make_unique<dsp::MidiEvents> ();
   current_samples_.reserve (256);
 }
@@ -410,7 +410,7 @@ SampleProcessor::queue_file_or_chord_preset (
       false, false);
   }
 
-  if (file && file->is_audio ())
+  if ((file != nullptr) && file->is_audio ())
     {
       z_debug ("creating audio track...");
       auto audio_track_ref =
@@ -638,7 +638,7 @@ SampleProcessor::stop_file_playback ()
 void
 SampleProcessor::disconnect ()
 {
-  fader_->disconnect_all ();
+  TRACKLIST->disconnect_fader (*fader_);
 }
 
 void

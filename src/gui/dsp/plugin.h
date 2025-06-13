@@ -440,15 +440,6 @@ public:
   void disconnect_from_plugin (Plugin &dest);
 
   /**
-   * To be called immediately when a channel or plugin
-   * is deleted.
-   *
-   * A call to plugin_free can be made at any point
-   * later just to free the resources.
-   */
-  void disconnect ();
-
-  /**
    * Deletes any state files associated with this plugin.
    *
    * This should be called when a plugin instance is removed from the project
