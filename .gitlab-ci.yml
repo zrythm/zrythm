@@ -30,6 +30,7 @@ stages:
 
 .unix-activate-venv: &unix-activate-venv
   - source ./venv/bin/activate
+  - export CPM_SOURCE_CACHE="${HOME}/.cache/CPM"
 
 .windows-activate-venv: &windows-activate-venv
   - ./venv/Scripts/Activate.ps1
@@ -53,7 +54,6 @@ stages:
     BUILDDIR: "build_gnu_linux"
     QT_QPA_PLATFORM: "offscreen"
     GIT_SUBMODULE_STRATEGY: recursive
-    CPM_SOURCE_CACHE: "${HOME}/.cache/CPM"
   before_script:
     - *unix-activate-venv
 
@@ -62,7 +62,6 @@ stages:
     - mac-arm
   variables:
     BUILDDIR: "build_mac_arm"
-    CPM_SOURCE_CACHE: "${HOME}/.cache/CPM"
   before_script:
     - *unix-activate-venv
 
@@ -85,7 +84,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-28-$CI_RUNNER_DESCRIPTION
+  - key: cache-29-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - '${BUILDDIR}*/_deps/*-src'
