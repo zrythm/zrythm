@@ -188,7 +188,7 @@ public:
   void set_real_val (float val) { set_control_value (val, false, false); }
 
   /**
-   * Get the default real value of the control and sends UI events.
+   * Set the default real value of the control and sends UI events.
    */
   void set_real_val_w_events (float val)
   {
@@ -255,16 +255,6 @@ public:
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   void clear_buffer (std::size_t block_length) override { }
-
-  void copy_metadata_from_project (const Port &project_port) override
-  {
-    control_ = dynamic_cast<const ControlPort &> (project_port).control_;
-  }
-
-  void restore_from_non_project (const Port &non_project) override
-  {
-    copy_metadata_from_project (non_project);
-  }
 
   friend void init_from (
     ControlPort           &obj,

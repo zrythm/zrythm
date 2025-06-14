@@ -520,7 +520,9 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                     {
                       std::visit (
                         [&] (auto &&pl) {
-                          /* restore port connections */
+                    /* restore port connections */
+// TODO
+#if 0
                           z_debug (
                             "restoring custom connections for plugin '{}'",
                             pl->get_name ());
@@ -537,7 +539,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                                 },
                                 *prj_port_var);
                             }
-
+#endif
                           /* copy automation from before deletion */
                           if constexpr (
                             std::derived_from<TrackT, AutomatableTrack>)
@@ -562,10 +564,13 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                   /* if doing deletion, remember port metadata */
                   if (do_it)
                     {
+                    // TODO
+#if 0
                       auto own_pl_var = own_ms[i];
                       auto prj_pl_var = track->get_plugin_at_slot (slot);
 
-                      /* remember any custom connections */
+/* remember any custom connections */
+
                       std::visit (
                         [&] (auto &&own_pl, auto &&prj_pl) {
                           z_debug (
@@ -587,6 +592,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                             }
                         },
                         own_pl_var, *prj_pl_var);
+#endif
                     }
 
                   /* remove the plugin at given slot */

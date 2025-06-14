@@ -55,18 +55,6 @@ init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type)
   obj.range_ = other.range_;
 }
 
-void
-Port::print_full_designation () const
-{
-  z_info ("{}", get_full_designation ());
-}
-
-size_t
-Port::get_hash () const
-{
-  return utils::hash::get_object_hash (*this);
-}
-
 struct PortRegistryBuilder
 {
   template <typename T> std::unique_ptr<T> build () const

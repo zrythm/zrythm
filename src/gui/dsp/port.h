@@ -228,34 +228,10 @@ public:
              : get_label ();
   }
 
-  void print_full_designation () const;
-
   /**
    * Updates the owner track identifier.
    */
   void change_track (IPortOwner::TrackUuid new_track_id);
-
-  /**
-   * Copies the metadata from a project port to the given port.
-   *
-   * Used when doing delete actions so that ports can be restored on undo.
-   */
-  virtual void copy_metadata_from_project (const Port &project_port) { };
-
-  /**
-   * Reverts the data on the corresponding project port for the given
-   * non-project port.
-   *
-   * This restores src/dest connections and the control value.
-   *
-   * @param non_project Non-project port.
-   */
-  virtual void restore_from_non_project (const Port &non_project) { };
-
-  /**
-   * Generates a hash for a given port.
-   */
-  size_t get_hash () const;
 
   bool     has_label () const { return !id_->label_.empty (); }
   PortType get_type () const { return id_->type_; }

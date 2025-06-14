@@ -759,6 +759,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                         }
 
                       /* reconnect any custom connections */
+// TODO
+#if 0
                       std::vector<Port *> ports;
                       own_track->append_ports (ports, true);
                       for (auto * port : ports)
@@ -772,6 +774,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                             },
                             *prj_port_var);
                         }
+#endif
                     }
                 },
                 own_track_var);
@@ -860,7 +863,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                         }
                       z_return_if_fail (clone_port);
 
-                      clone_port->copy_metadata_from_project (*prj_port);
+                      // TODO
+                      // clone_port->copy_metadata_from_project (*prj_port);
                     }
 
                   /* if group track, remove all children */
