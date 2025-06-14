@@ -144,7 +144,7 @@ MixerSelectionsAction::clone_ats (PluginSpan plugins, bool deleted, int start_sl
                       const auto &port_id = at->get_port ().id_;
                       if (
                         port_id->owner_type_
-                        != dsp::PortIdentifier::OwnerType::Plugin)
+                        != structure::tracks::PortIdentifier::OwnerType::Plugin)
                         continue;
 
                       auto plugin_uuid = port_id->get_plugin_id ();

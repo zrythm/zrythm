@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
+#include "structure/tracks/port_identifier.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
@@ -77,7 +77,7 @@ public:
   /** Action type. */
   Type type_ = (Type) 0;
 
-  std::optional<dsp::PortIdentifier::PortUuid> dest_port_id_;
+  std::optional<structure::tracks::PortIdentifier::PortUuid> dest_port_id_;
 
   std::optional<utils::Utf8String> dev_id_;
 

@@ -6,7 +6,6 @@
 #include <ranges>
 
 #include "dsp/midi_event.h"
-#include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
@@ -20,6 +19,7 @@
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/group_target_track.h"
+#include "structure/tracks/port_connections_manager.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
@@ -51,9 +51,9 @@ Channel::Channel (
         case PortType::Audio:
           {
             stereo_out_left_id_ = get_port_registry ().create_object<AudioPort> (
-              u8"Stereo out L", dsp::PortFlow::Output);
+              u8"Stereo out L", structure::tracks::PortFlow::Output);
             stereo_out_right_id_ = get_port_registry ().create_object<AudioPort> (
-              u8"Stereo out R", dsp::PortFlow::Output);
+              u8"Stereo out R", structure::tracks::PortFlow::Output);
             get_stereo_out_ports ().first.id_->sym_ = u8"stereo_out_l";
             get_stereo_out_ports ().second.id_->sym_ = u8"stereo_out_r";
           }
@@ -62,7 +62,7 @@ Channel::Channel (
           {
             midi_out_id_ = get_port_registry ().create_object<MidiPort> (
               utils::Utf8String::from_qstring (QObject::tr ("MIDI out")),
-              dsp::PortFlow::Output);
+              structure::tracks::PortFlow::Output);
             get_midi_out_port ().id_->sym_ = u8"midi_out";
           }
           break;
@@ -143,15 +143,17 @@ Channel::set_track_ptr (ChannelTrack &track)
 }
 
 void
-Channel::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-  const
+Channel::set_port_metadata_from_owner (
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
   id.track_id_ = get_track ().get_uuid ();
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::Channel;
+  id.owner_type_ = structure::tracks::PortIdentifier::OwnerType::Channel;
 }
 
 utils::Utf8String
-Channel::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Channel::get_full_designation_for_port (
+  const structure::tracks::PortIdentifier &id) const
 {
   const auto &tr = get_track ();
   return utils::Utf8String::from_utf8_encoded_string (
@@ -386,7 +388,7 @@ Channel::connect_plugin_to_prefader (Plugin &pl)
   auto  type = track.get_output_signal_type ();
 
   auto * mgr = PORT_CONNECTIONS_MGR; // FIXME global var
-  if (type == dsp::PortType::Event)
+  if (type == structure::tracks::PortType::Event)
     {
       for (
         auto * out_port :
@@ -395,14 +397,14 @@ Channel::connect_plugin_to_prefader (Plugin &pl)
           if (
             ENUM_BITSET_TEST (
               out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi)
-            && out_port->id_->flow_ == dsp::PortFlow::Output)
+            && out_port->id_->flow_ == structure::tracks::PortFlow::Output)
             {
               mgr->add_default_connection (
                 out_port->get_uuid (), midi_out_id_->id (), true);
             }
         }
     }
-  else if (type == dsp::PortType::Audio)
+  else if (type == structure::tracks::PortType::Audio)
     {
       if (pl.l_out_ && pl.r_out_)
         {
@@ -426,7 +428,9 @@ Channel::disconnect_plugin_from_prefader (Plugin &pl)
       std::visit (
         [&] (auto &&out_port) {
           using PortT = base_type<decltype (out_port)>;
-          if (type == dsp::PortType::Audio && std::is_same_v<PortT, AudioPort>)
+          if (
+            type == structure::tracks::PortType::Audio
+            && std::is_same_v<PortT, AudioPort>)
             {
               if (port_connections_mgr->connection_exists (
                     out_port->get_uuid (), prefader_->get_stereo_in_left_id ()))
@@ -443,7 +447,8 @@ Channel::disconnect_plugin_from_prefader (Plugin &pl)
                 }
             }
           else if (
-            type == dsp::PortType::Event && std::is_same_v<PortT, MidiPort>
+            type == structure::tracks::PortType::Event
+            && std::is_same_v<PortT, MidiPort>
             && ENUM_BITSET_TEST (
               out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
             {
@@ -936,8 +941,8 @@ Channel::connect_plugins ()
 
 void
 Channel::connect_channel (
-  dsp::PortConnectionsManager    &mgr,
-  engine::device_io::AudioEngine &engine)
+  structure::tracks::PortConnectionsManager &mgr,
+  engine::device_io::AudioEngine            &engine)
 {
   auto &tr = track_;
 
@@ -1162,7 +1167,7 @@ Channel::init ()
 void
 Channel::disconnect_port_hardware_inputs (Port &port)
 {
-  dsp::PortConnectionsManager::ConnectionsVector srcs;
+  structure::tracks::PortConnectionsManager::ConnectionsVector srcs;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, port.get_uuid (), true);
   for (const auto &conn : srcs)
     {

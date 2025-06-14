@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "dsp/port_connections_manager.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
+#include "structure/tracks/port_connections_manager.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
@@ -25,9 +25,9 @@ class ProcessableTrack;
  */
 class TrackProcessor final : public IPortOwner
 {
-  using PortType = zrythm::dsp::PortType;
-  using PortFlow = zrythm::dsp::PortFlow;
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortType = zrythm::structure::tracks::PortType;
+  using PortFlow = zrythm::structure::tracks::PortFlow;
+  using PortIdentifier = zrythm::structure::tracks::PortIdentifier;
 
 public:
   /**
@@ -42,16 +42,17 @@ public:
 
   bool is_midi () const;
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const override;
 
   void on_control_change_event (
-    const dsp::PortIdentifier::PortUuid &port_uuid,
-    const dsp::PortIdentifier           &id,
-    float                                value) override;
+    const structure::tracks::PortIdentifier::PortUuid &port_uuid,
+    const structure::tracks::PortIdentifier           &id,
+    float                                              value) override;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const override;
 
   bool should_sum_data_from_backend () const override;
 
@@ -59,9 +60,10 @@ public:
 
   bool are_events_on_midi_channel_approved (midi_byte_t channel) const override;
 
-  void on_midi_activity (const dsp::PortIdentifier &id) override;
+  void on_midi_activity (const structure::tracks::PortIdentifier &id) override;
 
-  dsp::PortConnectionsManager * get_port_connections_manager () const;
+  structure::tracks::PortConnectionsManager *
+  get_port_connections_manager () const;
 
   ProcessableTrack * get_track () const
   {

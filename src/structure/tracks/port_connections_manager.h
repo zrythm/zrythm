@@ -5,10 +5,10 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/port_connection.h"
+#include "structure/tracks/port_connection.h"
 #include "utils/icloneable.h"
 
-namespace zrythm::dsp
+namespace zrythm::structure::tracks
 {
 
 /**
@@ -20,7 +20,7 @@ class PortConnectionsManager final : public QObject
   QML_ELEMENT
 
 public:
-  using PortConnection = dsp::PortConnection;
+  using PortConnection = structure::tracks::PortConnection;
   using PortUuid = PortConnection::PortUuid;
   using ConnectionsVector = std::vector<PortConnection *>;
 

@@ -58,7 +58,8 @@ MidiMappings::bind_at (
   auto str = utils::midi::midi_ctrl_change_get_description (buf);
   if (
     (ENUM_BITSET_TEST (
-      dest_port.id_->flags_, dsp::PortIdentifier::Flags::MidiAutomatable))
+      dest_port.id_->flags_,
+      structure::tracks::PortIdentifier::Flags::MidiAutomatable))
     == 0)
     {
       z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get_label ());
@@ -97,7 +98,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 {
   z_return_if_fail (dest_);
 
-  if (dest_->id_->type_ == dsp::PortType::Control)
+  if (dest_->id_->type_ == structure::tracks::PortType::Control)
     {
       auto * dest = dynamic_cast<ControlPort *> (dest_);
       /* if toggle, reverse value */
@@ -112,7 +113,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
           dest->set_control_value (normalized_val, true, true);
         }
     }
-  else if (dest_->id_->type_ == dsp::PortType::Event)
+  else if (dest_->id_->type_ == structure::tracks::PortType::Event)
     {
       /* FIXME these are called during processing they should be queued as UI
        * events instead */

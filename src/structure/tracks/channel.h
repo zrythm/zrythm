@@ -45,8 +45,8 @@ class Channel final : public QObject, public IPortOwner
   Q_PROPERTY (MidiPort * midiOut READ getMidiOut CONSTANT)
 
 public:
-  using PortType = zrythm::dsp::PortType;
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortType = zrythm::structure::tracks::PortType;
+  using PortIdentifier = structure::tracks::PortIdentifier;
   using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
   using Plugin = gui::old_dsp::plugins::Plugin;
   using PluginDescriptor = zrythm::plugins::PluginDescriptor;
@@ -130,11 +130,12 @@ public:
    */
   void init ();
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const override;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const override;
 
   bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 
@@ -296,8 +297,8 @@ public:
    * This should only be called on project tracks.
    */
   void connect_channel (
-    dsp::PortConnectionsManager    &mgr,
-    engine::device_io::AudioEngine &engine);
+    structure::tracks::PortConnectionsManager &mgr,
+    engine::device_io::AudioEngine            &engine);
 
   void init_loaded ();
 

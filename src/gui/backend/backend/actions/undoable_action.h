@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "dsp/port_connections_manager.h"
 #include "gui/dsp/plugin.h"
+#include "structure/tracks/port_connections_manager.h"
 #include "utils/types.h"
 
 class AudioClip;
@@ -28,7 +28,7 @@ public: \
 class UndoableAction
 {
 public:
-  using PortConnectionsManager = dsp::PortConnectionsManager;
+  using PortConnectionsManager = structure::tracks::PortConnectionsManager;
 
   /**
    * Type of UndoableAction.
@@ -217,10 +217,12 @@ public:
    * @brief An (optional) clone of the port connections at the start of the
    * action, used for reverting port connections when undoing.
    */
-  std::unique_ptr<dsp::PortConnectionsManager> port_connections_before_;
+  std::unique_ptr<structure::tracks::PortConnectionsManager>
+    port_connections_before_;
 
   /** @see port_connections_before_. */
-  std::unique_ptr<dsp::PortConnectionsManager> port_connections_after_;
+  std::unique_ptr<structure::tracks::PortConnectionsManager>
+    port_connections_after_;
 };
 
 class ArrangerSelectionsAction;

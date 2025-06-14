@@ -135,9 +135,9 @@ public:
   int get_beat_unit () const;
 
   void on_control_change_event (
-    const PortUuid            &port_uuid,
-    const dsp::PortIdentifier &id,
-    float                      value) override;
+    const PortUuid                          &port_uuid,
+    const structure::tracks::PortIdentifier &id,
+    float                                    value) override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;

@@ -4,3 +4,4 @@
 add_subdirectory(utils)
 add_subdirectory(dsp)
 add_subdirectory(plugins)
+add_subdirectory(structure)

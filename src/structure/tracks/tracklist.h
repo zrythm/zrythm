@@ -66,15 +66,15 @@ public:
 public:
   Tracklist (QObject * parent = nullptr);
   explicit Tracklist (
-    Project                     &project,
-    PortRegistry                &port_registry,
-    TrackRegistry               &track_registry,
-    dsp::PortConnectionsManager &port_connections_manager);
+    Project                                   &project,
+    PortRegistry                              &port_registry,
+    TrackRegistry                             &track_registry,
+    structure::tracks::PortConnectionsManager &port_connections_manager);
   explicit Tracklist (
-    engine::session::SampleProcessor &sample_processor,
-    PortRegistry                     &port_registry,
-    TrackRegistry                    &track_registry,
-    dsp::PortConnectionsManager      &port_connections_manager);
+    engine::session::SampleProcessor          &sample_processor,
+    PortRegistry                              &port_registry,
+    TrackRegistry                             &track_registry,
+    structure::tracks::PortConnectionsManager &port_connections_manager);
   Z_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
@@ -499,7 +499,8 @@ public:
 
   void disconnect_plugin (const Plugin::Uuid &plugin_id);
 
-  std::string print_port_connection (const dsp::PortConnection &conn) const;
+  std::string
+  print_port_connection (const structure::tracks::PortConnection &conn) const;
 
 private:
   static constexpr auto kPinnedTracksCutoffKey = "pinnedTracksCutoff"sv;
@@ -628,6 +629,6 @@ public:
   /** Width of track widgets. */
   // int width_ = 0;
 
-  QPointer<dsp::PortConnectionsManager> port_connections_manager_;
+  QPointer<structure::tracks::PortConnectionsManager> port_connections_manager_;
 };
 }

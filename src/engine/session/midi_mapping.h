@@ -19,7 +19,7 @@ class MidiMapping final : public QObject
   QML_ELEMENT
 
 public:
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortIdentifier = zrythm::structure::tracks::PortIdentifier;
 
   MidiMapping (QObject * parent = nullptr);
 

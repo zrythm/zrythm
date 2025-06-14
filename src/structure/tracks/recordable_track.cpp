@@ -17,8 +17,9 @@ RecordableTrack::RecordableTrack (PortRegistry &port_registry, bool new_identity
       auto * recording = &get_recording_port ();
       recording->id_->sym_ = u8"track_record";
       recording->set_toggled (false, false);
-      recording->id_->flags2_ |= dsp::PortIdentifier::Flags2::TrackRecording;
-      recording->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+      recording->id_->flags2_ |=
+        structure::tracks::PortIdentifier::Flags2::TrackRecording;
+      recording->id_->flags_ |= structure::tracks::PortIdentifier::Flags::Toggle;
     }
 }
 

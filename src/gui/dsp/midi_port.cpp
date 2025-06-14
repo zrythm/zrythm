@@ -51,7 +51,8 @@ MidiPort::clear_buffer (std::size_t block_length)
 void
 MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
-  if (ENUM_BITSET_TEST (id_->flags_, dsp::PortIdentifier::Flags::ManualPress))
+  if (ENUM_BITSET_TEST (
+        id_->flags_, structure::tracks::PortIdentifier::Flags::ManualPress))
     {
       midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
       return;

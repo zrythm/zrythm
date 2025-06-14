@@ -143,8 +143,8 @@ public:
   /**
    * Returns the AutomationTrack corresponding to the given Port.
    */
-  AutomationTrack *
-  get_automation_track_by_port_id (dsp::PortIdentifier::PortUuid id) const;
+  AutomationTrack * get_automation_track_by_port_id (
+    structure::tracks::PortIdentifier::PortUuid id) const;
 
   /**
    * Unselects all arranger objects.
@@ -210,7 +210,7 @@ public:
   auto &get_automation_tracks () { return ats_; }
   auto &get_automation_tracks () const { return ats_; }
 
-  ControlPort &get_port (dsp::PortIdentifier::PortUuid id) const;
+  ControlPort &get_port (structure::tracks::PortIdentifier::PortUuid id) const;
 
   void set_caches (CacheType types);
 

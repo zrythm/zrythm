@@ -3,9 +3,9 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/port_connections_manager.h"
-#include "dsp/port_identifier.h"
 #include "gui/dsp/port_all.h"
+#include "structure/tracks/port_connections_manager.h"
+#include "structure/tracks/port_identifier.h"
 #include "utils/hash.h"
 
 #include <fmt/format.h>

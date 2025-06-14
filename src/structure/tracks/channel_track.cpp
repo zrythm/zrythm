@@ -146,9 +146,12 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
       const auto &port_id = *at->get_port ().id_;
       const auto  flags = port_id.flags_;
       if (
-        ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::ChannelFader)
-        || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::FaderMute)
-        || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::StereoBalance))
+        ENUM_BITSET_TEST (
+          flags, structure::tracks::PortIdentifier::Flags::ChannelFader)
+        || ENUM_BITSET_TEST (
+          flags, structure::tracks::PortIdentifier::Flags::FaderMute)
+        || ENUM_BITSET_TEST (
+          flags, structure::tracks::PortIdentifier::Flags::StereoBalance))
         {
           atl.remove_at (*at, false, fire_events);
         }

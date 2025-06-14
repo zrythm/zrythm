@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
+#include "structure/tracks/port_identifier.h"
 
-namespace zrythm::dsp
+namespace zrythm::structure::tracks
 {
 
 utils::Utf8String

@@ -956,14 +956,15 @@ Transport::recalculate_total_bars (
 
 void
 Transport::set_port_metadata_from_owner (
-  dsp::PortIdentifier &id,
-  PortRange           &range) const
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
   id.owner_type_ = PortIdentifier::OwnerType::Transport;
 }
 
 utils::Utf8String
-Transport::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Transport::get_full_designation_for_port (
+  const structure::tracks::PortIdentifier &id) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("Transport/{}", id.label_));

@@ -71,7 +71,7 @@ Track::get_tracklist () const
     }
 }
 
-dsp::PortConnectionsManager *
+structure::tracks::PortConnectionsManager *
 Track::get_port_connections_manager () const
 {
   auto * tracklist = get_tracklist ();
@@ -187,15 +187,17 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
 }
 
 void
-Track::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-  const
+Track::set_port_metadata_from_owner (
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
   id.set_track_id (get_uuid ());
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::Track;
+  id.owner_type_ = structure::tracks::PortIdentifier::OwnerType::Track;
 }
 
 utils::Utf8String
-Track::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Track::get_full_designation_for_port (
+  const structure::tracks::PortIdentifier &id) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("{}/{}", get_name (), id.label_));

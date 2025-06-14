@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_connection.h"
+#include "structure/tracks/port_connection.h"
 
-namespace zrythm::dsp
+namespace zrythm::structure::tracks
 {
 
 PortConnection::PortConnection (QObject * parent) : QObject (parent) { }

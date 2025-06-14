@@ -206,15 +206,19 @@ StereoPorts::create_stereo_ports (
   auto l_names = get_name_and_symbols (true, name, symbol);
   auto r_names = get_name_and_symbols (false, name, symbol);
   auto l_port_ref = port_registry.create_object<AudioPort> (
-    l_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);
+    l_names.first,
+    input ? structure::tracks::PortFlow::Input
+          : structure::tracks::PortFlow::Output);
   auto r_port_ref = port_registry.create_object<AudioPort> (
-    r_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);
+    r_names.first,
+    input ? structure::tracks::PortFlow::Input
+          : structure::tracks::PortFlow::Output);
   {
     auto * l_port = std::get<AudioPort *> (l_port_ref.get_object ());
     auto * r_port = std::get<AudioPort *> (r_port_ref.get_object ());
-    l_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
+    l_port->id_->flags_ |= structure::tracks::PortIdentifier::Flags::StereoL;
     l_port->id_->sym_ = l_names.second;
-    r_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
+    r_port->id_->flags_ |= structure::tracks::PortIdentifier::Flags::StereoR;
     r_port->id_->sym_ = r_names.second;
   }
   return std::make_pair (l_port_ref, r_port_ref);

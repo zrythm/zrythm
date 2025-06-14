@@ -44,6 +44,7 @@ set_target_properties(zrythm_gui_lib PROPERTIES
 target_link_libraries(zrythm_gui_lib
   PUBLIC
     ${zrythm_link_libs}
+    zrythm_structure_tracks_lib
     zrythm_dsp_lib
     zrythm_plugins_lib
     zrythm::include_dirs

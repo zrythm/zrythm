@@ -84,13 +84,14 @@ AudioEngine::AudioEngine (
   z_debug ("Creating audio engine...");
 
   midi_editor_manual_press_ = std::make_unique<MidiPort> (
-    u8"MIDI Editor Manual Press", dsp::PortFlow::Input);
+    u8"MIDI Editor Manual Press", structure::tracks::PortFlow::Input);
   midi_editor_manual_press_->set_owner (*this);
   midi_editor_manual_press_->id_->sym_ = u8"midi_editor_manual_press";
   midi_editor_manual_press_->id_->flags_ |=
-    dsp::PortIdentifier::Flags::ManualPress;
+    structure::tracks::PortIdentifier::Flags::ManualPress;
 
-  midi_in_ = std::make_unique<MidiPort> (u8"MIDI in", dsp::PortFlow::Input);
+  midi_in_ = std::make_unique<MidiPort> (
+    u8"MIDI in", structure::tracks::PortFlow::Input);
   midi_in_->set_owner (*this);
   midi_in_->id_->sym_ = u8"midi_in";
 
@@ -316,10 +317,11 @@ AudioEngine::init_common ()
       : static_cast<zrythm::dsp::PanAlgorithm> (
           zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ());
 
-  midi_clock_out_ =
-    std::make_unique<MidiPort> (u8"MIDI Clock Out", dsp::PortFlow::Output);
+  midi_clock_out_ = std::make_unique<MidiPort> (
+    u8"MIDI Clock Out", structure::tracks::PortFlow::Output);
   midi_clock_out_->set_owner (*this);
-  midi_clock_out_->id_->flags2_ |= dsp::PortIdentifier::Flags2::MidiClock;
+  midi_clock_out_->id_->flags2_ |=
+    structure::tracks::PortIdentifier::Flags2::MidiClock;
 }
 
 void
@@ -342,12 +344,15 @@ AudioEngine::init_loaded (Project * project)
   for (auto * port : ports)
     {
       auto &id = *port->id_;
-      if (id.owner_type_ == dsp::PortIdentifier::OwnerType::AudioEngine)
+      if (
+        id.owner_type_
+        == structure::tracks::PortIdentifier::OwnerType::AudioEngine)
         {
           port->init_loaded (*this);
         }
       else if (
-        id.owner_type_ == dsp::PortIdentifier::OwnerType::HardwareProcessor)
+        id.owner_type_
+        == structure::tracks::PortIdentifier::OwnerType::HardwareProcessor)
         {
 // FIXME? this has been either broken or unused for a while
 #if 0
@@ -357,14 +362,18 @@ AudioEngine::init_loaded (Project * project)
             port->init_loaded (*hw_out_processor_);
 #endif
         }
-      else if (id.owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
+      else if (
+        id.owner_type_ == structure::tracks::PortIdentifier::OwnerType::Fader)
         {
-          if (ENUM_BITSET_TEST (
-                id.flags2_, dsp::PortIdentifier::Flags2::SampleProcessorFader))
+          if (
+            ENUM_BITSET_TEST (
+              id.flags2_,
+              structure::tracks::PortIdentifier::Flags2::SampleProcessorFader))
             port->init_loaded (*sample_processor_->fader_);
           else if (
             ENUM_BITSET_TEST (
-              id.flags2_, dsp::PortIdentifier::Flags2::MonitorFader))
+              id.flags2_,
+              structure::tracks::PortIdentifier::Flags2::MonitorFader))
             port->init_loaded (*control_room_->monitor_fader_);
         }
     }
@@ -1010,14 +1019,15 @@ AudioEngine::reset_bounce_mode ()
 
 void
 AudioEngine::set_port_metadata_from_owner (
-  dsp::PortIdentifier &id,
-  PortRange           &range) const
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::AudioEngine;
+  id.owner_type_ = structure::tracks::PortIdentifier::OwnerType::AudioEngine;
 }
 
 utils::Utf8String
-AudioEngine::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+AudioEngine::get_full_designation_for_port (
+  const structure::tracks::PortIdentifier &id) const
 {
   return id.get_label ();
 }

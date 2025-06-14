@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "dsp/port_identifier.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/arranger_object_list_model.h"
+#include "structure/tracks/port_identifier.h"
 
 #define DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES( \
   ClassType, QPropertyName, ChildType) \
@@ -29,7 +29,7 @@ class Region;
 template <FinalArrangerObjectSubclass ChildT> class ArrangerObjectOwner
 {
 public:
-  using PortUuid = dsp::PortIdentifier::PortUuid;
+  using PortUuid = structure::tracks::PortIdentifier::PortUuid;
   using ArrangerObjectChildType = ChildT;
   using TrackUuid = structure::tracks::TrackUuid;
   using ArrangerObjectListModel =

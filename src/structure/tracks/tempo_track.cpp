@@ -66,8 +66,9 @@ TempoTrack::initialize ()
     bpm_port.range_ = { 60.f, 360.f };
     bpm_port.deff_ = 140.f;
     bpm_port.set_control_value (bpm_port.deff_, false, false);
-    bpm_port.id_->flags_ |= dsp::PortIdentifier::Flags::Bpm;
-    bpm_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+    bpm_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::Bpm;
+    bpm_port.id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::Automatable;
   }
 
   {
@@ -83,9 +84,12 @@ TempoTrack::initialize ()
     beats_per_bar_port.deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
     beats_per_bar_port.set_control_value (
       TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-    beats_per_bar_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatsPerBar;
-    beats_per_bar_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-    beats_per_bar_port.id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
+    beats_per_bar_port.id_->flags2_ |=
+      structure::tracks::PortIdentifier::Flags2::BeatsPerBar;
+    beats_per_bar_port.id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::Automatable;
+    beats_per_bar_port.id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::Integer;
   }
 
   {
@@ -101,9 +105,12 @@ TempoTrack::initialize ()
     beat_unit_port.deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
     beat_unit_port.set_control_value (
       static_cast<float> (TEMPO_TRACK_DEFAULT_BEAT_UNIT), false, false);
-    beat_unit_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatUnit;
-    beat_unit_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-    beat_unit_port.id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
+    beat_unit_port.id_->flags2_ |=
+      structure::tracks::PortIdentifier::Flags2::BeatUnit;
+    beat_unit_port.id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::Automatable;
+    beat_unit_port.id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::Integer;
   }
 
   generate_automation_tracks ();
@@ -151,11 +158,11 @@ TempoTrack::get_current_bpm_as_str () const
 
 void
 TempoTrack::on_control_change_event (
-  const PortUuid            &port_uuid,
-  const dsp::PortIdentifier &id,
-  float                      value)
+  const PortUuid                          &port_uuid,
+  const structure::tracks::PortIdentifier &id,
+  float                                    value)
 {
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortIdentifier = structure::tracks::PortIdentifier;
 
   /* if bpm, update engine */
   if (ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::Bpm))

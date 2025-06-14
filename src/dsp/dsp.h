@@ -19,8 +19,6 @@
 #include "./panning.h"
 #include "./peak_dsp.h"
 #include "./peak_fall_smooth.h"
-#include "./port_connection.h"
-#include "./port_identifier.h"
 #include "./position.h"
 #include "./stretcher.h"
 #include "./true_peak_dsp.h"

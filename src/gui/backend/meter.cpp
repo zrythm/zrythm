@@ -39,7 +39,7 @@ MeterProcessor::setPort (QVariant port_var)
               bool is_master_fader = false;
               if (
                 port_->id_->owner_type_
-                == zrythm::dsp::PortIdentifier::OwnerType::Track)
+                == zrythm::structure::tracks::PortIdentifier::OwnerType::Track)
                 {
                   auto track_var = PROJECT->find_track_by_id (
                     port_->id_->get_track_id ().value ());

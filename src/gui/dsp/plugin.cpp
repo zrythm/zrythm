@@ -4,7 +4,6 @@
 #include "zrythm-config.h"
 
 #include "dsp/midi_event.h"
-#include "dsp/port_identifier.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/actions/undo_manager.h"
@@ -24,6 +23,7 @@
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_track.h"
 #include "structure/tracks/modulator_track.h"
+#include "structure/tracks/port_identifier.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/dsp.h"
@@ -138,7 +138,8 @@ Plugin::set_enabled_and_gain ()
 }
 
 utils::Utf8String
-Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Plugin::get_full_designation_for_port (
+  const structure::tracks::PortIdentifier &id) const
 {
   auto track = get_track ();
   z_return_val_if_fail (track, {});
@@ -149,8 +150,9 @@ Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 }
 
 void
-Plugin::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-  const
+Plugin::set_port_metadata_from_owner (
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
   id.plugin_id_ = get_uuid ();
   id.track_id_ = track_id_;
@@ -171,9 +173,9 @@ Plugin::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
 
 void
 Plugin::on_control_change_event (
-  const dsp::PortIdentifier::PortUuid &port_uuid,
-  const dsp::PortIdentifier           &id,
-  float                                val)
+  const structure::tracks::PortIdentifier::PortUuid &port_uuid,
+  const structure::tracks::PortIdentifier           &id,
+  float                                              val)
 {
   /* if plugin enabled port, also set plugin's own enabled port value and
    * vice versa */
@@ -552,7 +554,7 @@ Plugin::get_port_in_same_group (const Port &port)
     }
 
   const auto &ports =
-    port.id_->flow_ == dsp::PortFlow::Input
+    port.id_->flow_ == structure::tracks::PortFlow::Input
       ? get_input_port_span ()
       : get_output_port_span ();
 

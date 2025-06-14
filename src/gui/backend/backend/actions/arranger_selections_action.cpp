@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -14,6 +13,7 @@
 #include "structure/tracks/chord_track.h"
 #include "structure/tracks/laned_track.h"
 #include "structure/tracks/marker_track.h"
+#include "structure/tracks/port_identifier.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"

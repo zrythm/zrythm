@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "dsp/port_connections_manager.h"
 #include "gui/dsp/plugin.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/fader.h"
+#include "structure/tracks/port_connections_manager.h"
 #include "structure/tracks/track_lane.h"
 #include "utils/format.h"
 
@@ -278,7 +278,7 @@ class Track
   QML_ELEMENT
 
 public:
-  using PortType = dsp::PortType;
+  using PortType = structure::tracks::PortType;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
   using PluginPtrVariant = PluginRegistry::VariantType;
   using PluginSlot = plugins::PluginSlot;
@@ -546,7 +546,8 @@ public:
 
   Tracklist * get_tracklist () const;
 
-  dsp::PortConnectionsManager * get_port_connections_manager () const;
+  structure::tracks::PortConnectionsManager *
+  get_port_connections_manager () const;
 
   bool has_piano_roll () const { return type_has_piano_roll (type_); }
 
@@ -1352,11 +1353,12 @@ public:
 
   // GMenu * generate_edit_context_menu (int num_selected);
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const override;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const override;
 
   virtual bool get_muted () const { return false; }
 

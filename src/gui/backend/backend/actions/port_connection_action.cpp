@@ -46,8 +46,8 @@ PortConnectionAction::PortConnectionAction (
       connection_.reset (utils::clone_qobject (*conn, this));
     }
   else
-    connection_.reset (
-      new dsp::PortConnection (src_id, dest_id, 1.f, false, true, this));
+    connection_.reset (new structure::tracks::PortConnection (
+      src_id, dest_id, 1.f, false, true, this));
 }
 
 void

@@ -159,11 +159,12 @@ public:
   structure::tracks::TrackRegistry &get_track_registry ();
   structure::tracks::TrackRegistry &get_track_registry () const;
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const override;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const override;
 
   /**
    * @param force_pause Whether to force transport
@@ -491,7 +492,7 @@ public:
    * nodes. */
   nframes_t remaining_latency_preroll_ = 0;
 
-  QPointer<dsp::PortConnectionsManager> port_connections_manager_;
+  QPointer<structure::tracks::PortConnectionsManager> port_connections_manager_;
 
   std::unique_ptr<session::SampleProcessor> sample_processor_;
 

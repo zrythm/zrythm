@@ -3,11 +3,11 @@
 
 #include <algorithm>
 
-#include "dsp/port_connections_manager.h"
+#include "structure/tracks/port_connections_manager.h"
 
 #include <fmt/format.h>
 
-namespace zrythm::dsp
+namespace zrythm::structure::tracks
 {
 
 PortConnectionsManager::PortConnectionsManager (QObject * parent)
@@ -129,8 +129,8 @@ PortConnectionsManager::regenerate_hashtables ()
 #if 0
 void
 PortConnectionsManager::update_connections (
-  const dsp::PortIdentifier &prev_id,
-  const dsp::PortIdentifier &new_id)
+  const structure::tracks::PortIdentifier &prev_id,
+  const structure::tracks::PortIdentifier &new_id)
 {
   /* update in all sources */
   PortConnectionsManager::ConnectionsVector srcs;

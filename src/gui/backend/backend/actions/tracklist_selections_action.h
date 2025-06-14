@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "structure/tracks/channel_send.h"
+#include "structure/tracks/port_connections_manager.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_span.h"
 #include "utils/color.h"
@@ -73,7 +73,7 @@ public:
 
   using Position = zrythm::dsp::Position;
   using Color = zrythm::utils::Color;
-  using PortType = zrythm::dsp::PortType;
+  using PortType = zrythm::structure::tracks::PortType;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
 public:
@@ -317,7 +317,8 @@ public:
   /**
    * Direct out tracks of the original tracks.
    */
-  std::vector<std::optional<dsp::PortIdentifier::TrackUuid>> out_track_uuids_;
+  std::vector<std::optional<structure::tracks::PortIdentifier::TrackUuid>>
+    out_track_uuids_;
 
   /**
    * Number of tracks under folder affected.

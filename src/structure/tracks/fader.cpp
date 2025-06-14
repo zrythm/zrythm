@@ -105,12 +105,14 @@ Fader::Fader (
     amp_port.range_.maxf_ = 2.f;
     amp_port.set_control_value (amp, false, false);
     fader_val_ = utils::math::get_fader_val_from_amp (amp);
-    amp_port.id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
+    amp_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::Amplitude;
     if (
       (type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough)
       {
-        amp_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-        amp_port.id_->flags_ |= dsp::PortIdentifier::Flags::ChannelFader;
+        amp_port.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::Automatable;
+        amp_port.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::ChannelFader;
       }
 
     {
@@ -127,11 +129,13 @@ Fader::Fader (
     balance_port.id_->sym_ =
       passthrough ? u8"prefader_balance" : u8"fader_balance";
     balance_port.set_control_value (balance, 0, 0);
-    balance_port.id_->flags_ |= dsp::PortIdentifier::Flags::StereoBalance;
+    balance_port.id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::StereoBalance;
     if (
       (type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough)
       {
-        balance_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+        balance_port.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::Automatable;
       }
   }
 
@@ -145,12 +149,13 @@ Fader::Fader (
     mute_port.set_owner (*this);
     mute_port.id_->sym_ = passthrough ? u8"prefader_mute" : u8"fader_mute";
     mute_port.set_toggled (false, false);
-    mute_port.id_->flags_ |= dsp::PortIdentifier::Flags::FaderMute;
-    mute_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+    mute_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::FaderMute;
+    mute_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::Toggle;
     if (
       (type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough)
       {
-        mute_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+        mute_port.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::Automatable;
       }
   }
 
@@ -164,8 +169,9 @@ Fader::Fader (
     solo_port.set_owner (*this);
     solo_port.id_->sym_ = passthrough ? u8"prefader_solo" : u8"fader_solo";
     solo_port.set_toggled (false, false);
-    solo_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderSolo;
-    solo_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+    solo_port.id_->flags2_ |=
+      structure::tracks::PortIdentifier::Flags2::FaderSolo;
+    solo_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::Toggle;
   }
 
   {
@@ -178,8 +184,9 @@ Fader::Fader (
     listen_port.set_owner (*this);
     listen_port.id_->sym_ = passthrough ? u8"prefader_listen" : u8"fader_listen";
     listen_port.set_toggled (false, false);
-    listen_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderListen;
-    listen_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+    listen_port.id_->flags2_ |=
+      structure::tracks::PortIdentifier::Flags2::FaderListen;
+    listen_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::Toggle;
   }
 
   {
@@ -196,8 +203,9 @@ Fader::Fader (
         : u8"fader_mono_compat_enabled";
     mono_compat_enabled_port.set_toggled (false, false);
     mono_compat_enabled_port.id_->flags2_ |=
-      dsp::PortIdentifier::Flags2::FaderMonoCompat;
-    mono_compat_enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+      structure::tracks::PortIdentifier::Flags2::FaderMonoCompat;
+    mono_compat_enabled_port.id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::Toggle;
   }
 
   {
@@ -210,8 +218,9 @@ Fader::Fader (
       swap_phase_ptr->id_->sym_ =
         passthrough ? u8"prefader_swap_phase" : u8"fader_swap_phase";
       swap_phase_ptr->id_->flags2_ |=
-        dsp::PortIdentifier::Flags2::FaderSwapPhase;
-      swap_phase_ptr->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+        structure::tracks::PortIdentifier::Flags2::FaderSwapPhase;
+      swap_phase_ptr->id_->flags_ |=
+        structure::tracks::PortIdentifier::Flags::Toggle;
       return swap_phase;
     };
 
@@ -329,8 +338,8 @@ Fader::Fader (
               QObject::tr ("Ch MIDI Fader in"));
             sym = u8"ch_midi_fader_in";
           }
-        midi_in_id_ =
-          port_registry_->create_object<MidiPort> (name, dsp::PortFlow::Input);
+        midi_in_id_ = port_registry_->create_object<MidiPort> (
+          name, structure::tracks::PortFlow::Input);
         auto &midi_in_port = get_midi_in_port ();
         midi_in_port.set_owner (*this);
         midi_in_port.id_->sym_ = sym;
@@ -352,8 +361,8 @@ Fader::Fader (
               QObject::tr ("Ch MIDI Fader out"));
             sym = u8"ch_midi_fader_out";
           }
-        midi_out_id_ =
-          port_registry_->create_object<MidiPort> (name, dsp::PortFlow::Output);
+        midi_out_id_ = port_registry_->create_object<MidiPort> (
+          name, structure::tracks::PortFlow::Output);
         auto &midi_out_port = get_midi_out_port ();
         midi_out_port.set_owner (*this);
         midi_out_port.id_->sym_ = sym;
@@ -362,12 +371,13 @@ Fader::Fader (
 }
 
 void
-Fader::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-  const
+Fader::set_port_metadata_from_owner (
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::Fader;
+  id.owner_type_ = structure::tracks::PortIdentifier::OwnerType::Fader;
 
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortIdentifier = structure::tracks::PortIdentifier;
 
   if (type_ == Fader::Type::AudioChannel || type_ == Fader::Type::MidiChannel)
     {
@@ -407,24 +417,30 @@ Fader::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
 }
 
 utils::Utf8String
-Fader::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Fader::get_full_designation_for_port (
+  const structure::tracks::PortIdentifier &id) const
 {
   if (
-    ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::Prefader)
-    || ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::Postfader))
+    ENUM_BITSET_TEST (
+      id.flags2_, structure::tracks::PortIdentifier::Flags2::Prefader)
+    || ENUM_BITSET_TEST (
+      id.flags2_, structure::tracks::PortIdentifier::Flags2::Postfader))
     {
       auto * tr = get_track ();
       z_return_val_if_fail (tr, {});
       return utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("{}/{}", tr->get_name (), id.get_label ()));
     }
-  if (ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::MonitorFader))
+  if (ENUM_BITSET_TEST (
+        id.flags2_, structure::tracks::PortIdentifier::Flags2::MonitorFader))
     {
       return utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("Engine/{}", id.get_label ()));
     }
-  if (ENUM_BITSET_TEST (
-        id.flags2_, dsp::PortIdentifier::Flags2::SampleProcessorFader))
+  if (
+    ENUM_BITSET_TEST (
+      id.flags2_,
+      structure::tracks::PortIdentifier::Flags2::SampleProcessorFader))
     {
       return id.get_label ();
     }
@@ -433,11 +449,11 @@ Fader::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 
 void
 Fader::on_control_change_event (
-  const PortUuid            &port_uuid,
-  const dsp::PortIdentifier &id,
-  float                      val)
+  const PortUuid                          &port_uuid,
+  const structure::tracks::PortIdentifier &id,
+  float                                    val)
 {
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortIdentifier = structure::tracks::PortIdentifier;
   if (
     ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::FaderMute)
     || ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::FaderSolo)
@@ -926,7 +942,7 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
                             {
                               if (
                                 t->get_output_signal_type ()
-                                  == dsp::PortType::Audio
+                                  == structure::tracks::PortType::Audio
                                 && t->get_listened ())
                                 {
                                   auto f = t->get_fader (true);
@@ -1248,7 +1264,9 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
       obj.append_ports (ports);
       for (auto &port : ports)
         {
-          if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
+          if (
+            port->id_->owner_type_
+            == structure::tracks::PortIdentifier::OwnerType::Fader)
             {
               /* note: don't call set_owner() because get_track () won't work
                * here. also, all other port fields are already copied*/

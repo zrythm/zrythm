@@ -5,11 +5,11 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/port_identifier.h"
+#include "structure/tracks/port_identifier.h"
 
 #include <QtQmlIntegration>
 
-namespace zrythm::dsp
+namespace zrythm::structure::tracks
 {
 
 /**
@@ -21,7 +21,7 @@ class PortConnection final : public QObject
   QML_ELEMENT
 
 public:
-  using PortUuid = dsp::PortIdentifier::PortUuid;
+  using PortUuid = structure::tracks::PortIdentifier::PortUuid;
 
   PortConnection (QObject * parent = nullptr);
 

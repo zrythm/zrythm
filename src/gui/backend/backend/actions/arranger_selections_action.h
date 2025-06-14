@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/arrangement/arranger_object_span.h"
 #include "structure/arrangement/audio_function.h"
 #include "structure/arrangement/automation_function.h"
 #include "structure/arrangement/midi_function.h"
+#include "structure/tracks/port_identifier.h"
 
 namespace zrythm::gui::actions
 {
@@ -115,7 +115,7 @@ public:
   };
 
   using Position = zrythm::dsp::Position;
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortIdentifier = structure::tracks::PortIdentifier;
 
 public:
   ArrangerSelectionsAction ();

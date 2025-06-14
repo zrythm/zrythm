@@ -50,8 +50,10 @@ AutomatableTrack::init_loaded (
       z_return_if_fail (port->id_->get_track_id ().value () == this_id);
 
       /* set automation tracks on ports */
-      if (ENUM_BITSET_TEST (
-            port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
+      if (
+        ENUM_BITSET_TEST (
+          port->id_->flags_,
+          structure::tracks::PortIdentifier::Flags::Automatable))
         {
           auto *            ctrl = dynamic_cast<ControlPort *> (port);
           AutomationTrack * at =
@@ -171,9 +173,10 @@ AutomatableTrack::generate_automation_tracks_for_plugin (
           .template get_elements_by_type<ControlPort> ())
         {
           if (
-            port->id_->type_ != dsp::PortType::Control
+            port->id_->type_ != structure::tracks::PortType::Control
             || !(ENUM_BITSET_TEST (
-              port->id_->flags_, dsp::PortIdentifier::Flags::Automatable)))
+              port->id_->flags_,
+              structure::tracks::PortIdentifier::Flags::Automatable)))
             continue;
 
           auto * at = new AutomationTrack (

@@ -6,8 +6,8 @@
 #include "zrythm-config.h"
 
 #include "dsp/graph_node.h"
-#include "dsp/port_connection.h"
-#include "dsp/port_identifier.h"
+#include "structure/tracks/port_connection.h"
+#include "structure/tracks/port_identifier.h"
 #include "utils/audio.h"
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
@@ -75,9 +75,9 @@ public:
 class IPortOwner
 {
 public:
-  using TrackUuid = dsp::PortIdentifier::TrackUuid;
-  using PluginUuid = dsp::PortIdentifier::PluginUuid;
-  using PortUuid = dsp::PortIdentifier::PortUuid;
+  using TrackUuid = structure::tracks::PortIdentifier::TrackUuid;
+  using PluginUuid = structure::tracks::PortIdentifier::PluginUuid;
+  using PortUuid = structure::tracks::PortIdentifier::PortUuid;
 
   virtual ~IPortOwner () = default;
 
@@ -87,12 +87,12 @@ public:
    *
    * @param id The identifier to update.
    */
-  virtual void
-  set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const = 0;
+  virtual void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const = 0;
 
-  virtual utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const
+  virtual utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const
   {
     return id.get_label ();
   };
@@ -105,14 +105,15 @@ public:
    * @attention This may be called from the audio thread so it must not block.
    */
   virtual void on_control_change_event (
-    const PortUuid            &port_uuid,
-    const dsp::PortIdentifier &id,
-    float                      val) { };
+    const PortUuid                          &port_uuid,
+    const structure::tracks::PortIdentifier &id,
+    float                                    val) { };
 
   /**
    * @brief Called during processing if the MIDI port contains new MIDI events.
    */
-  virtual void on_midi_activity (const dsp::PortIdentifier &id) { }
+  virtual void on_midi_activity (const structure::tracks::PortIdentifier &id) {
+  }
 
   /**
    * @brief Whether during processing, the port should sum the data from its
@@ -169,10 +170,10 @@ class Port
 {
   Z_DISABLE_COPY_MOVE (Port)
 public:
-  using PortIdentifier = dsp::PortIdentifier;
-  using PortType = dsp::PortType;
-  using PortFlow = dsp::PortFlow;
-  using PortConnection = dsp::PortConnection;
+  using PortIdentifier = structure::tracks::PortIdentifier;
+  using PortType = structure::tracks::PortType;
+  using PortFlow = structure::tracks::PortFlow;
+  using PortConnection = structure::tracks::PortConnection;
 
   ~Port () override = default;
 

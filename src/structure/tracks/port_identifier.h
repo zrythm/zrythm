@@ -20,7 +20,7 @@ class Plugin;
 
 class Port;
 
-namespace zrythm::dsp
+namespace zrythm::structure::tracks
 {
 
 /**
@@ -475,8 +475,8 @@ public:
 
 }; // namespace zrythm::dsp
 
-ENUM_ENABLE_BITSET (zrythm::dsp::PortIdentifier::Flags);
-ENUM_ENABLE_BITSET (zrythm::dsp::PortIdentifier::Flags2);
+ENUM_ENABLE_BITSET (zrythm::structure::tracks::PortIdentifier::Flags);
+ENUM_ENABLE_BITSET (zrythm::structure::tracks::PortIdentifier::Flags2);
 
 namespace std
 {

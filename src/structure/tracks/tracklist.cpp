@@ -27,10 +27,10 @@ namespace zrythm::structure::tracks
 Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
 
 Tracklist::Tracklist (
-  Project                     &project,
-  PortRegistry                &port_registry,
-  TrackRegistry               &track_registry,
-  dsp::PortConnectionsManager &port_connections_manager)
+  Project                                   &project,
+  PortRegistry                              &port_registry,
+  TrackRegistry                             &track_registry,
+  structure::tracks::PortConnectionsManager &port_connections_manager)
     : QAbstractListModel (&project), track_registry_ (track_registry),
       port_registry_ (port_registry), project_ (&project),
       port_connections_manager_ (&port_connections_manager)
@@ -38,10 +38,10 @@ Tracklist::Tracklist (
 }
 
 Tracklist::Tracklist (
-  engine::session::SampleProcessor &sample_processor,
-  PortRegistry                     &port_registry,
-  TrackRegistry                    &track_registry,
-  dsp::PortConnectionsManager      &port_connections_manager)
+  engine::session::SampleProcessor          &sample_processor,
+  PortRegistry                              &port_registry,
+  TrackRegistry                             &track_registry,
+  structure::tracks::PortConnectionsManager &port_connections_manager)
     : track_registry_ (track_registry), port_registry_ (port_registry),
       sample_processor_ (&sample_processor),
       port_connections_manager_ (&port_connections_manager)
@@ -268,7 +268,7 @@ Tracklist::disconnect_track_processor (TrackProcessor &track_processor)
 
   switch (track->get_input_signal_type ())
     {
-    case dsp::PortType::Audio:
+    case structure::tracks::PortType::Audio:
       disconnect_port (track_processor.get_mono_port ());
       disconnect_port (track_processor.get_input_gain_port ());
       disconnect_port (track_processor.get_output_gain_port ());
@@ -277,7 +277,7 @@ Tracklist::disconnect_track_processor (TrackProcessor &track_processor)
       iterate_tuple (disconnect_port, track_processor.get_stereo_out_ports ());
 
       break;
-    case dsp::PortType::Event:
+    case structure::tracks::PortType::Event:
       disconnect_port (track_processor.get_midi_in_port ());
       disconnect_port (track_processor.get_midi_out_port ());
       if (track->has_piano_roll ())
@@ -330,14 +330,16 @@ Tracklist::disconnect_track (Track &track)
 }
 
 std::string
-Tracklist::print_port_connection (const dsp::PortConnection &conn) const
+Tracklist::print_port_connection (
+  const structure::tracks::PortConnection &conn) const
 {
   auto src_var = port_registry_->find_by_id_or_throw (conn.src_id_);
   auto dest_var = port_registry_->find_by_id_or_throw (conn.dest_id_);
   return std::visit (
     [&] (auto &&src, auto &&dest) {
       auto is_send =
-        src->id_->owner_type_ == dsp::PortIdentifier::OwnerType::ChannelSend;
+        src->id_->owner_type_
+        == structure::tracks::PortIdentifier::OwnerType::ChannelSend;
       const char * send_str = is_send ? " (send)" : "";
       if (port_connections_manager_->contains_connection (conn))
         {
@@ -399,7 +401,8 @@ Tracklist::move_plugin_automation (
                 std::holds_alternative<ControlPort *> (port_var->get ()));
               auto * port = std::get<ControlPort *> (port_var->get ());
               if (
-                port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+                port->id_->owner_type_
+                == structure::tracks::PortIdentifier::OwnerType::Plugin)
                 {
                   auto port_pl = plugin_registry_->find_by_id (
                     port->id_->plugin_id_.value ());
@@ -657,7 +660,7 @@ Tracklist::insert_track (
           for (auto * port : ports)
             {
               port->id_->flags2_ |=
-                dsp::PortIdentifier::Flags2::SampleProcessorTrack;
+                structure::tracks::PortIdentifier::Flags2::SampleProcessorTrack;
             }
         }
 
@@ -701,7 +704,7 @@ Tracklist::insert_track (
       if constexpr (!std::is_same_v<TrackT, MasterTrack>)
         {
           if (
-            track->get_output_signal_type () == dsp::PortType::Audio
+            track->get_output_signal_type () == structure::tracks::PortType::Audio
             && master_track_)
             {
               master_track_->add_child (track->get_uuid (), true, false, false);

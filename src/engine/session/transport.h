@@ -130,8 +130,8 @@ public:
   Q_ENUM (RecordingMode)
 
   using Position = zrythm::dsp::Position;
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
-  using PortFlow = zrythm::dsp::PortFlow;
+  using PortIdentifier = zrythm::structure::tracks::PortIdentifier;
+  using PortFlow = zrythm::structure::tracks::PortFlow;
 
 public:
   Transport (Project * parent = nullptr);
@@ -188,11 +188,12 @@ public:
     return -1;
   }
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const override;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const override;
 
   Q_INVOKABLE bool isRolling () const
   {

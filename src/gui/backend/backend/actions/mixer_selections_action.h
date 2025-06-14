@@ -4,11 +4,11 @@
 #ifndef __UNDO_MIXER_SELECTIONS_ACTION_H__
 #define __UNDO_MIXER_SELECTIONS_ACTION_H__
 
-#include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_span.h"
 #include "structure/tracks/automation_track.h"
+#include "structure/tracks/port_connections_manager.h"
 #include "structure/tracks/track.h"
 
 namespace zrythm::gui::actions
@@ -63,16 +63,16 @@ public:
    * @param num_plugins The number of plugins to create, if creating plugins.
    */
   MixerSelectionsAction (
-    std::optional<PluginSpan>           ms,
-    const dsp::PortConnectionsManager * connections_mgr,
-    Type                                type,
-    std::optional<Track::TrackUuid>     to_track_id,
-    std::optional<plugins::PluginSlot>  to_slot,
-    const PluginConfiguration *         setting,
-    int                                 num_plugins,
-    int                                 new_val,
-    zrythm::plugins::BridgeMode         new_bridge_mode,
-    QObject *                           parent = nullptr);
+    std::optional<PluginSpan>                         ms,
+    const structure::tracks::PortConnectionsManager * connections_mgr,
+    Type                                              type,
+    std::optional<Track::TrackUuid>                   to_track_id,
+    std::optional<plugins::PluginSlot>                to_slot,
+    const PluginConfiguration *                       setting,
+    int                                               num_plugins,
+    int                                               new_val,
+    zrythm::plugins::BridgeMode                       new_bridge_mode,
+    QObject *                                         parent = nullptr);
 
   QString to_string () const override;
 
@@ -224,11 +224,11 @@ class MixerSelectionsTargetedAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsTargetedAction (
-    PluginSpan                         plugins,
-    const dsp::PortConnectionsManager &connections_mgr,
-    MixerSelectionsAction::Type        type,
-    const Track *                      to_track,
-    plugins::PluginSlot                to_slot)
+    PluginSpan                                       plugins,
+    const structure::tracks::PortConnectionsManager &connections_mgr,
+    MixerSelectionsAction::Type                      type,
+    const Track *                                    to_track,
+    plugins::PluginSlot                              to_slot)
       : MixerSelectionsAction (
           plugins,
           &connections_mgr,
@@ -247,10 +247,10 @@ class MixerSelectionsCopyAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsCopyAction (
-    PluginSpan                         plugins,
-    const dsp::PortConnectionsManager &connections_mgr,
-    const Track *                      to_track,
-    plugins::PluginSlot                to_slot)
+    PluginSpan                                       plugins,
+    const structure::tracks::PortConnectionsManager &connections_mgr,
+    const Track *                                    to_track,
+    plugins::PluginSlot                              to_slot)
       : MixerSelectionsTargetedAction (
           plugins,
           connections_mgr,
@@ -265,10 +265,10 @@ class MixerSelectionsPasteAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsPasteAction (
-    PluginSpan                         plugins,
-    const dsp::PortConnectionsManager &connections_mgr,
-    const Track *                      to_track,
-    plugins::PluginSlot                to_slot)
+    PluginSpan                                       plugins,
+    const structure::tracks::PortConnectionsManager &connections_mgr,
+    const Track *                                    to_track,
+    plugins::PluginSlot                              to_slot)
       : MixerSelectionsTargetedAction (
           plugins,
           connections_mgr,
@@ -283,10 +283,10 @@ class MixerSelectionsMoveAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsMoveAction (
-    PluginSpan                         plugins,
-    const dsp::PortConnectionsManager &connections_mgr,
-    const Track *                      to_track,
-    plugins::PluginSlot                to_slot)
+    PluginSpan                                       plugins,
+    const structure::tracks::PortConnectionsManager &connections_mgr,
+    const Track *                                    to_track,
+    plugins::PluginSlot                              to_slot)
       : MixerSelectionsTargetedAction (
           plugins,
           connections_mgr,
@@ -301,8 +301,8 @@ class MixerSelectionsDeleteAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsDeleteAction (
-    PluginSpan                         plugins,
-    const dsp::PortConnectionsManager &connections_mgr)
+    PluginSpan                                       plugins,
+    const structure::tracks::PortConnectionsManager &connections_mgr)
       : MixerSelectionsAction (
           plugins,
           &connections_mgr,

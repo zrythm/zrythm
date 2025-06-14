@@ -139,7 +139,8 @@ AutomationTracklist::get_track () const
 }
 
 ControlPort &
-AutomationTracklist::get_port (dsp::PortIdentifier::PortUuid id) const
+AutomationTracklist::get_port (
+  structure::tracks::PortIdentifier::PortUuid id) const
 {
   return *std::get<ControlPort *> (port_registry_.find_by_id_or_throw (id));
 }
@@ -174,7 +175,7 @@ AutomationTracklist::get_plugin_at (
     const auto &port = get_port (at->port_id_);
     const auto &port_id = *port.id_;
     if (
-      port_id.owner_type_ != dsp::PortIdentifier::OwnerType::Plugin
+      port_id.owner_type_ != structure::tracks::PortIdentifier::OwnerType::Plugin
       || port_index != static_cast<int> (port_id.port_index_)
       || symbol != port_id.get_symbol ())
       return false;
@@ -388,7 +389,7 @@ AutomationTracklist::get_at_from_port (const ControlPort &port) const
 
 AutomationTrack *
 AutomationTracklist::get_automation_track_by_port_id (
-  dsp::PortIdentifier::PortUuid id) const
+  structure::tracks::PortIdentifier::PortUuid id) const
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&id] (const auto &at) {
     return at->port_id_ == id;

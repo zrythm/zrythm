@@ -101,7 +101,8 @@ TrackProcessor::TrackProcessor (
       output_gain->id_->sym_ = u8"track_processor_output_gain";
       output_gain->range_ = { 0.f, 4.f, 0.f };
       output_gain->deff_ = 1.f;
-      output_gain->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpOutputGain;
+      output_gain->id_->flags2_ |=
+        structure::tracks::PortIdentifier::Flags2::TpOutputGain;
       output_gain->set_control_value (1.f, false, false);
 
       monitor_audio_id_ =
@@ -109,8 +110,10 @@ TrackProcessor::TrackProcessor (
       auto * monitor_audio = &get_monitor_audio_port ();
       monitor_audio->set_owner (*this);
       monitor_audio->id_->sym_ = u8"track_processor_monitor_audio";
-      monitor_audio->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
-      monitor_audio->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpMonitorAudio;
+      monitor_audio->id_->flags_ |=
+        structure::tracks::PortIdentifier::Flags::Toggle;
+      monitor_audio->id_->flags2_ |=
+        structure::tracks::PortIdentifier::Flags2::TpMonitorAudio;
       monitor_audio->set_control_value (0.f, false, false);
     }
 
@@ -191,16 +194,17 @@ TrackProcessor::init_midi_port (bool in)
   if (in)
     {
       midi_in_id_ = port_registry_.create_object<MidiPort> (
-        u8"TP MIDI in", dsp::PortFlow::Input);
+        u8"TP MIDI in", structure::tracks::PortFlow::Input);
       auto * midi_in = &get_midi_in_port ();
       midi_in->set_owner (*this);
       midi_in->id_->sym_ = u8"track_processor_midi_in";
-      midi_in->id_->flags_ |= dsp::PortIdentifier::Flags::SendReceivable;
+      midi_in->id_->flags_ |=
+        structure::tracks::PortIdentifier::Flags::SendReceivable;
     }
   else
     {
       midi_out_id_ = port_registry_.create_object<MidiPort> (
-        u8"TP MIDI out", dsp::PortFlow::Output);
+        u8"TP MIDI out", structure::tracks::PortFlow::Output);
       auto * midi_out = &get_midi_out_port ();
       midi_out->set_owner (*this);
       midi_out->id_->sym_ = u8"track_processor_midi_out";
@@ -211,8 +215,9 @@ void
 TrackProcessor::init_midi_cc_ports ()
 {
   constexpr auto init_midi_port = [&] (const auto &port, const auto &index) {
-    port->id_->flags_ |= dsp::PortIdentifier::Flags::MidiAutomatable;
-    port->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+    port->id_->flags_ |=
+      structure::tracks::PortIdentifier::Flags::MidiAutomatable;
+    port->id_->flags_ |= structure::tracks::PortIdentifier::Flags::Automatable;
     port->id_->midi_channel_ = index + 1;
     port->id_->port_index_ = index;
   };
@@ -323,8 +328,8 @@ TrackProcessor::is_midi () const
 
 void
 TrackProcessor::set_port_metadata_from_owner (
-  dsp::PortIdentifier &id,
-  PortRange           &range) const
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
   auto * track = get_track ();
   z_return_if_fail (track);
@@ -334,7 +339,7 @@ TrackProcessor::set_port_metadata_from_owner (
 
 utils::Utf8String
 TrackProcessor::get_full_designation_for_port (
-  const dsp::PortIdentifier &id) const
+  const structure::tracks::PortIdentifier &id) const
 {
   auto * tr = get_track ();
   z_return_val_if_fail (tr, {});
@@ -344,9 +349,9 @@ TrackProcessor::get_full_designation_for_port (
 
 void
 TrackProcessor::on_control_change_event (
-  const dsp::PortIdentifier::PortUuid &port_uuid,
-  const dsp::PortIdentifier           &id,
-  float                                value)
+  const structure::tracks::PortIdentifier::PortUuid &port_uuid,
+  const structure::tracks::PortIdentifier           &id,
+  float                                              value)
 {
   if (ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::MidiAutomatable))
     {
@@ -360,7 +365,7 @@ TrackProcessor::on_control_change_event (
 }
 
 void
-TrackProcessor::on_midi_activity (const dsp::PortIdentifier &id)
+TrackProcessor::on_midi_activity (const structure::tracks::PortIdentifier &id)
 {
   auto * track = get_track ();
   z_return_if_fail (track);
@@ -881,7 +886,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 
       /* if currently active track on the piano roll, fetch events */
       if (
-        tr->get_input_signal_type () == dsp::PortType::Event
+        tr->get_input_signal_type () == structure::tracks::PortType::Event
         && CLIP_EDITOR->has_region ())
         {
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
@@ -1238,7 +1243,7 @@ TrackProcessor::connect_to_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl)
     }
 }
 
-dsp::PortConnectionsManager *
+structure::tracks::PortConnectionsManager *
 TrackProcessor::get_port_connections_manager () const
 {
   auto * track = get_track ();

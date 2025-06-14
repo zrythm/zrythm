@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "dsp/port_connection.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/midi_port.h"
 #include "plugins/plugin_slot.h"
+#include "structure/tracks/port_connection.h"
 #include "structure/tracks/track.h"
 #include "utils/icloneable.h"
 
@@ -66,8 +66,8 @@ struct ChannelSendTarget
 class ChannelSend final : public dsp::graph::IProcessable, public IPortOwner
 {
 public:
-  using PortType = dsp::PortType;
-  using PortConnection = dsp::PortConnection;
+  using PortType = structure::tracks::PortType;
+  using PortConnection = structure::tracks::PortConnection;
 
   struct SlotTag
   {
@@ -126,11 +126,12 @@ private:
 public:
   void init_loaded (ChannelTrack * track);
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const override;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const override;
 
   bool is_prefader () const
   {
@@ -260,8 +261,8 @@ public:
    * nullptr) and returns the number of connections added.
    */
   int append_connection (
-    const zrythm::dsp::PortConnectionsManager * mgr,
-    std::vector<PortConnection *>              &arr) const;
+    const zrythm::structure::tracks::PortConnectionsManager * mgr,
+    std::vector<PortConnection *>                            &arr) const;
 
   void prepare_process (std::size_t block_length);
 
@@ -334,7 +335,8 @@ private:
 
   void construct_for_slot (ChannelTrack &track, int slot);
 
-  dsp::PortConnectionsManager * get_port_connections_manager () const;
+  structure::tracks::PortConnectionsManager *
+  get_port_connections_manager () const;
 
   /**
    * Returns whether the send is connected to the given ports.

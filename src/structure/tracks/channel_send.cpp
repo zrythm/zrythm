@@ -44,7 +44,7 @@ ChannelSend::ChannelSend (
     }
 }
 
-dsp::PortType
+structure::tracks::PortType
 ChannelSend::get_signal_type () const
 {
   auto track = get_track ();
@@ -133,8 +133,9 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
   auto &enabled_port = get_enabled_port ();
   enabled_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("channel_send_{}_enabled", slot + 1));
-  enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
-  enabled_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendEnabled;
+  enabled_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::Toggle;
+  enabled_port.id_->flags2_ |=
+    structure::tracks::PortIdentifier::Flags2::ChannelSendEnabled;
   enabled_port.set_owner (*this);
   enabled_port.set_control_value (0.f, false, false);
 
@@ -145,9 +146,11 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
 
   amount_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("channel_send_{}_amount", slot + 1));
-  amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
-  amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-  amount_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendAmount;
+  amount_port.id_->flags_ |= structure::tracks::PortIdentifier::Flags::Amplitude;
+  amount_port.id_->flags_ |=
+    structure::tracks::PortIdentifier::Flags::Automatable;
+  amount_port.id_->flags2_ |=
+    structure::tracks::PortIdentifier::Flags2::ChannelSendAmount;
   amount_port.set_owner (*this);
   amount_port.set_control_value (1.f, false, false);
 
@@ -189,7 +192,7 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
       midi_in_id_ = get_port_registry ().create_object<MidiPort> (
         utils::Utf8String::from_qstring (
           format_qstr (QObject::tr ("Channel Send {} MIDI in"), slot + 1)),
-        dsp::PortFlow::Input);
+        structure::tracks::PortFlow::Input);
       auto &midi_in_port = get_midi_in_port ();
       midi_in_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("channel_send_{}_midi_in", slot + 1));
@@ -198,7 +201,7 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
       midi_out_id_ = get_port_registry ().create_object<MidiPort> (
         utils::Utf8String::from_qstring (
           format_qstr (QObject::tr ("Channel Send {} MIDI out"), slot + 1)),
-        dsp::PortFlow::Output);
+        structure::tracks::PortFlow::Output);
       auto &midi_out_port = get_midi_out_port ();
       midi_out_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("channel_send_{}_midi_out", slot + 1));
@@ -554,7 +557,7 @@ ChannelSend::disconnect (bool recalc_graph)
     ROUTER->recalc_graph (false);
 }
 
-dsp::PortConnectionsManager *
+structure::tracks::PortConnectionsManager *
 ChannelSend::get_port_connections_manager () const
 {
   auto * track = get_track ();
@@ -607,7 +610,7 @@ ChannelSend::get_dest_name () const
       /* else if not sidechain */
       switch (dest->id_->owner_type_)
         {
-        case dsp::PortIdentifier::OwnerType::TrackProcessor:
+        case structure::tracks::PortIdentifier::OwnerType::TrackProcessor:
           {
             auto track_var = track_registry_.find_by_id_or_throw (
               dest->id_->get_track_id ().value ());
@@ -629,7 +632,8 @@ ChannelSend::get_dest_name () const
 }
 
 utils::Utf8String
-ChannelSend::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+ChannelSend::get_full_designation_for_port (
+  const structure::tracks::PortIdentifier &id) const
 {
   auto * tr = get_track ();
   z_return_val_if_fail (tr, {});
@@ -714,7 +718,9 @@ ChannelSend::is_enabled () const
           auto * dest = search_port.dests_[0];
           z_return_val_if_fail (dest, false);
 
-          if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+          if (
+            dest->id_->owner_type_
+            == structure::tracks::PortIdentifier::OwnerType::Plugin)
             {
               auto pl_var =
                 PROJECT->find_plugin_by_id (dest->id_->plugin_id_.value ());
@@ -741,7 +747,9 @@ ChannelSend::is_enabled () const
     [&] (auto &&dest) {
       /* if dest port is a plugin port and plugin instantiation failed, assume
        * that the send is disabled */
-      if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+      if (
+        dest->id_->owner_type_
+        == structure::tracks::PortIdentifier::OwnerType::Plugin)
         {
           auto pl_var =
             PROJECT->find_plugin_by_id (dest->id_->plugin_id_.value ());
@@ -772,22 +780,24 @@ ChannelSend::find_widget ()
 
 void
 ChannelSend::set_port_metadata_from_owner (
-  dsp::PortIdentifier &id,
-  PortRange           &range) const
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
   id.set_track_id (track_id_);
   id.port_index_ = slot_;
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::ChannelSend;
+  id.owner_type_ = structure::tracks::PortIdentifier::OwnerType::ChannelSend;
 
-  if (ENUM_BITSET_TEST (
-        id.flags2_, dsp::PortIdentifier::Flags2::ChannelSendEnabled))
+  if (
+    ENUM_BITSET_TEST (
+      id.flags2_, structure::tracks::PortIdentifier::Flags2::ChannelSendEnabled))
     {
       range.minf_ = 0.f;
       range.maxf_ = 1.f;
       range.zerof_ = 0.0f;
     }
   else if (
-    ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::ChannelSendAmount))
+    ENUM_BITSET_TEST (
+      id.flags2_, structure::tracks::PortIdentifier::Flags2::ChannelSendAmount))
     {
       range.minf_ = 0.f;
       range.maxf_ = 2.f;
@@ -824,8 +834,8 @@ ChannelSend::append_ports (std::vector<Port *> &ports)
 
 int
 ChannelSend::append_connection (
-  const dsp::PortConnectionsManager *             mgr,
-  dsp::PortConnectionsManager::ConnectionsVector &arr) const
+  const structure::tracks::PortConnectionsManager *             mgr,
+  structure::tracks::PortConnectionsManager::ConnectionsVector &arr) const
 {
   if (is_empty ())
     return 0;
@@ -859,7 +869,8 @@ ChannelSend::is_connected_to (
   auto * mgr = get_port_connections_manager ();
   z_return_val_if_fail (mgr, false);
 
-  std::unique_ptr<dsp::PortConnectionsManager::ConnectionsVector> conns;
+  std::unique_ptr<structure::tracks::PortConnectionsManager::ConnectionsVector>
+      conns;
   int num_conns = append_connection (mgr, *conns);
   for (int i = 0; i < num_conns; i++)
     {

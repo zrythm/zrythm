@@ -75,3 +75,29 @@ target_sources(zrythm_gui_lib
     tracklist.h
     tracklist.cpp
 )
+
+qt_add_library(zrythm_structure_tracks_lib STATIC)
+
+target_sources(zrythm_structure_tracks_lib
+  PRIVATE
+    port_connection.h
+    port_connection.cpp
+    port_connections_manager.h
+    port_connections_manager.cpp
+    port_identifier.h
+    port_identifier.cpp
+)
+
+set_target_properties(zrythm_structure_tracks_lib PROPERTIES
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+)
+
+target_precompile_headers(zrythm_structure_tracks_lib REUSE_FROM zrythm_dsp_lib)
+
+target_link_libraries(zrythm_structure_tracks_lib
+  PUBLIC
+    ${zrythm_link_libs}
+    zrythm_dsp_lib
+    zrythm::include_dirs
+    zrythm::all_compile_options
+)

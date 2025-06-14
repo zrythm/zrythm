@@ -46,7 +46,7 @@ class Plugin
 {
   Z_DISABLE_COPY_MOVE (Plugin)
 public:
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortIdentifier = structure::tracks::PortIdentifier;
   using PluginSlot = zrythm::plugins::PluginSlot;
   using PluginSlotType = zrythm::plugins::PluginSlotType;
   using PluginSlotNo = PluginSlot::SlotNo;
@@ -168,16 +168,17 @@ public:
    */
   void init_loaded ();
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (
+    const structure::tracks::PortIdentifier &id) const override;
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  void set_port_metadata_from_owner (
+    structure::tracks::PortIdentifier &id,
+    PortRange                         &range) const override;
 
   void on_control_change_event (
-    const dsp::PortIdentifier::PortUuid &port_uuid,
-    const dsp::PortIdentifier           &id,
-    float                                val) override;
+    const structure::tracks::PortIdentifier::PortUuid &port_uuid,
+    const structure::tracks::PortIdentifier           &id,
+    float                                              val) override;
 
   bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 

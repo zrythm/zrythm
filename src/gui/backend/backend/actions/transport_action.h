@@ -28,7 +28,7 @@ public:
     BeatUnitChange,
   };
 
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortIdentifier = zrythm::structure::tracks::PortIdentifier;
 
   TransportAction (QObject * parent = nullptr);
 

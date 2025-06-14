@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
+#include "structure/tracks/port_identifier.h"
 #include "utils/gtest_wrapper.h"
 
-using namespace zrythm::dsp;
+namespace zrythm::structure::tracks
+{
 
 TEST (PortIdentifier, Construction)
 {
@@ -170,4 +171,5 @@ TEST (PortIdentifier, Serialization)
   EXPECT_EQ (id1.midi_channel_, id2.midi_channel_);
   EXPECT_EQ (id1.get_track_id (), id2.get_track_id ());
   EXPECT_EQ (id1.get_plugin_id (), id2.get_plugin_id ());
+}
 }

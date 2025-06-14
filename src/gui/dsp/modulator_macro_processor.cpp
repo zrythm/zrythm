@@ -34,8 +34,10 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
         macro.range_ = { 0.f, 1.f };
         macro.deff_ = 0.f;
         macro.set_control_value (0.75f, false, false);
-        macro.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-        macro.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
+        macro.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::Automatable;
+        macro.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::ModulatorMacro;
         macro.id_->port_index_ = *idx;
       }
 
@@ -43,12 +45,13 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
         cv_in_id_ = port_registry.create_object<CVPort> (
           utils::Utf8String::from_qstring (
             format_qstr (QObject::tr ("Macro CV In {}"), *idx + 1)),
-          dsp::PortFlow::Input);
+          structure::tracks::PortFlow::Input);
         auto &cv_in = get_cv_in_port ();
         cv_in.set_owner (*this);
         cv_in.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("macro_cv_in_{}", *idx + 1));
-        cv_in.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
+        cv_in.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::ModulatorMacro;
         cv_in.id_->port_index_ = *idx;
       }
 
@@ -56,12 +59,13 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
         cv_out_id_ = port_registry.create_object<CVPort> (
           utils::Utf8String::from_qstring (
             format_qstr (QObject::tr ("Macro CV Out {}"), *idx + 1)),
-          dsp::PortFlow::Output);
+          structure::tracks::PortFlow::Output);
         auto &cv_out = get_cv_out_port ();
         cv_out.set_owner (*this);
         cv_out.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("macro_cv_out_{}", *idx + 1));
-        cv_out.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
+        cv_out.id_->flags_ |=
+          structure::tracks::PortIdentifier::Flags::ModulatorMacro;
         cv_out.id_->port_index_ = *idx;
       }
     }
@@ -107,17 +111,18 @@ ModulatorMacroProcessor::process_block (const EngineProcessTimeInfo time_nfo)
 
 void
 ModulatorMacroProcessor::set_port_metadata_from_owner (
-  dsp::PortIdentifier &id,
-  PortRange           &range) const
+  structure::tracks::PortIdentifier &id,
+  PortRange                         &range) const
 {
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::ModulatorMacroProcessor;
+  id.owner_type_ =
+    structure::tracks::PortIdentifier::OwnerType::ModulatorMacroProcessor;
   z_return_if_fail (get_track ());
   id.set_track_id (get_track ()->get_uuid ());
 }
 
 utils::Utf8String
 ModulatorMacroProcessor::get_full_designation_for_port (
-  const dsp::PortIdentifier &id) const
+  const structure::tracks::PortIdentifier &id) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("Modulator Macro Processor/{}", id.label_));

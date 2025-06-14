@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_connection.h"
+#include "structure/tracks/port_connection.h"
 #include "utils/gtest_wrapper.h"
 
-namespace zrythm::dsp
+namespace zrythm::structure::tracks
 {
 
 class PortConnectionTest : public ::testing::Test

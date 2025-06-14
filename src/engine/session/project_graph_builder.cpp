@@ -115,8 +115,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
               /* add sends */
               if (
-                tr->get_output_signal_type () == dsp::PortType::Audio
-                || tr->get_output_signal_type () == dsp::PortType::Event)
+                tr->get_output_signal_type () == structure::tracks::PortType::Audio
+                || tr->get_output_signal_type ()
+                     == structure::tracks::PortType::Event)
                 {
                   for (auto &send : channel->sends_)
                     {
@@ -132,7 +133,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   auto add_port =
     [&] (
-      PortPtrVariant port_var, dsp::PortConnectionsManager &mgr,
+      PortPtrVariant port_var, structure::tracks::PortConnectionsManager &mgr,
       const bool drop_if_unnecessary) {
       return std::visit (
         [&] (auto &&port) -> dsp::graph::GraphNode * {
@@ -140,7 +141,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           auto owner = port->id_->owner_type_;
 
           /* reset port sources/dests */
-          dsp::PortConnectionsManager::ConnectionsVector srcs;
+          structure::tracks::PortConnectionsManager::ConnectionsVector srcs;
           mgr.get_sources_or_dests (&srcs, port->get_uuid (), true);
           port->srcs_.clear ();
           port->src_connections_.clear ();
@@ -158,7 +159,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               port->src_connections_.emplace_back (utils::clone_unique (*conn));
             }
 
-          dsp::PortConnectionsManager::ConnectionsVector dests;
+          structure::tracks::PortConnectionsManager::ConnectionsVector dests;
           mgr.get_sources_or_dests (&dests, port->get_uuid (), false);
           port->dests_.clear ();
           port->dest_connections_.clear ();
@@ -179,7 +180,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               if (
                 drop_if_unnecessary
                 && ENUM_BITSET_TEST (
-                  port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
+                  port->id_->flags_,
+                  structure::tracks::PortIdentifier::Flags::Automatable))
                 {
                   auto found_at = port->at_;
                   z_return_val_if_fail (found_at, nullptr);
@@ -195,18 +197,19 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           /* drop ports without sources and dests */
           if (
             drop_if_unnecessary && port->dests_.empty () && port->srcs_.empty ()
-            && owner != dsp::PortIdentifier::OwnerType::Plugin
-            && owner != dsp::PortIdentifier::OwnerType::Fader
-            && owner != dsp::PortIdentifier::OwnerType::TrackProcessor
-            && owner != dsp::PortIdentifier::OwnerType::Track
-            && owner != dsp::PortIdentifier::OwnerType::ModulatorMacroProcessor
-            && owner != dsp::PortIdentifier::OwnerType::Channel
-            && owner != dsp::PortIdentifier::OwnerType::ChannelSend
-            && owner != dsp::PortIdentifier::OwnerType::AudioEngine
-            && owner != dsp::PortIdentifier::OwnerType::HardwareProcessor
-            && owner != dsp::PortIdentifier::OwnerType::Transport
+            && owner != structure::tracks::PortIdentifier::OwnerType::Plugin
+            && owner != structure::tracks::PortIdentifier::OwnerType::Fader
+            && owner != structure::tracks::PortIdentifier::OwnerType::TrackProcessor
+            && owner != structure::tracks::PortIdentifier::OwnerType::Track
+            && owner != structure::tracks::PortIdentifier::OwnerType::ModulatorMacroProcessor
+            && owner != structure::tracks::PortIdentifier::OwnerType::Channel
+            && owner != structure::tracks::PortIdentifier::OwnerType::ChannelSend
+            && owner != structure::tracks::PortIdentifier::OwnerType::AudioEngine
+            && owner != structure::tracks::PortIdentifier::OwnerType::HardwareProcessor
+            && owner != structure::tracks::PortIdentifier::OwnerType::Transport
             && !(ENUM_BITSET_TEST (
-              port->id_->flags_, dsp::PortIdentifier::Flags::ManualPress)))
+              port->id_->flags_,
+              structure::tracks::PortIdentifier::Flags::ManualPress)))
             {
               return nullptr;
             }
@@ -225,7 +228,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       if (port->deleting_)
         continue;
 
-      if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+      if (
+        port->id_->owner_type_
+        == structure::tracks::PortIdentifier::OwnerType::Plugin)
         {
           auto pl_var =
             project.find_plugin_by_id (port->id_->plugin_id_.value ());
@@ -364,7 +369,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           auto * const track_node =
             graph.get_nodes ().find_node_for_processable (*tr);
           z_return_if_fail (track_node);
-          if (tr->get_input_signal_type () == dsp::PortType::Audio)
+          if (tr->get_input_signal_type () == structure::tracks::PortType::Audio)
             {
               if constexpr (
                 std::is_same_v<TrackT, structure::tracks::AudioTrack>)
@@ -400,7 +405,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                     track_processor->get_stereo_out_ports ());
                 }
             }
-          else if (tr->get_input_signal_type () == dsp::PortType::Event)
+          else if (
+            tr->get_input_signal_type () == structure::tracks::PortType::Event)
             {
               if constexpr (
                 std::derived_from<TrackT, structure::tracks::ProcessableTrack>)
@@ -699,7 +705,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                   if (node2)
                     node2->connect_to (*send_node);
 
-                  if (tr->get_output_signal_type () == dsp::PortType::Event)
+                  if (
+                    tr->get_output_signal_type ()
+                    == structure::tracks::PortType::Event)
                     {
                       node2 = graph.get_nodes ().find_node_for_processable (
                         send->get_midi_in_port ());
@@ -708,7 +716,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                         send->get_midi_out_port ());
                       send_node->connect_to (*node2);
                     }
-                  else if (tr->get_output_signal_type () == dsp::PortType::Audio)
+                  else if (
+                    tr->get_output_signal_type ()
+                    == structure::tracks::PortType::Audio)
                     {
                       iterate_tuple (
                         [&] (const auto &port) {
@@ -753,7 +763,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     {
       if (port->deleting_) [[unlikely]]
         continue;
-      if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+      if (
+        port->id_->owner_type_
+        == structure::tracks::PortIdentifier::OwnerType::Plugin)
         {
           auto pl_var =
             project.find_plugin_by_id (port->id_->plugin_id_.value ());

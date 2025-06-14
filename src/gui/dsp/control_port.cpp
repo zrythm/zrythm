@@ -44,23 +44,23 @@ ControlPort::set_unit_from_str (const utils::Utf8String &str)
 {
   if (str == u8"Hz")
     {
-      id_->unit_ = dsp::PortUnit::Hz;
+      id_->unit_ = structure::tracks::PortUnit::Hz;
     }
   else if (str == u8"ms")
     {
-      id_->unit_ = dsp::PortUnit::Ms;
+      id_->unit_ = structure::tracks::PortUnit::Ms;
     }
   else if (str == u8"dB")
     {
-      id_->unit_ = dsp::PortUnit::Db;
+      id_->unit_ = structure::tracks::PortUnit::Db;
     }
   else if (str == u8"s")
     {
-      id_->unit_ = dsp::PortUnit::Seconds;
+      id_->unit_ = structure::tracks::PortUnit::Seconds;
     }
   else if (str == u8"us")
     {
-      id_->unit_ = dsp::PortUnit::Us;
+      id_->unit_ = structure::tracks::PortUnit::Us;
     }
 }
 

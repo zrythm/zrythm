@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "dsp/port_connection.h"
-#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
+#include "structure/tracks/port_connection.h"
+#include "structure/tracks/port_identifier.h"
 #include "utils/icloneable.h"
 
 namespace zrythm::gui::actions
@@ -27,8 +27,8 @@ public:
     ChangeMultiplier,
   };
 
-  using PortType = dsp::PortType;
-  using PortUuid = dsp::PortIdentifier::PortUuid;
+  using PortType = structure::tracks::PortType;
+  using PortUuid = structure::tracks::PortIdentifier::PortUuid;
 
 public:
   PortConnectionAction (QObject * parent = nullptr);
@@ -58,7 +58,7 @@ private:
 public:
   Type type_ = Type ();
 
-  utils::QObjectUniquePtr<dsp::PortConnection> connection_;
+  utils::QObjectUniquePtr<structure::tracks::PortConnection> connection_;
 
   /**
    * Value before/after the change.

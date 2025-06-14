@@ -490,8 +490,8 @@ Exporter::prepare_tracks_for_export (
   TRACKLIST->get_track_span ().activate_all_plugins (false);
   TRACKLIST->get_track_span ().activate_all_plugins (true);
 
-  connections_ =
-    std::make_unique<dsp::PortConnectionsManager::ConnectionsVector> ();
+  connections_ = std::make_unique<
+    structure::tracks::PortConnectionsManager::ConnectionsVector> ();
   if (settings_.mode_ != Exporter::Mode::Full)
     {
       /* disconnect all track faders from their channel outputs so that sends
@@ -508,7 +508,8 @@ Exporter::prepare_tracks_for_export (
         {
           if (
             cur_tr->bounce_
-            || cur_tr->get_output_signal_type () != dsp::PortType::Audio)
+            || cur_tr->get_output_signal_type ()
+                 != structure::tracks::PortType::Audio)
             continue;
 
           const auto &l_src_id =

@@ -5,7 +5,6 @@
 
 #include <filesystem>
 
-#include "dsp/port_connections_manager.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/router.h"
 #include "engine/session/transport.h"
@@ -14,6 +13,7 @@
 #include "gui/backend/project_manager.h"
 #include "gui/backend/ui.h"
 #include "structure/arrangement/audio_region.h"
+#include "structure/tracks/port_connections_manager.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
 #include "utils/exceptions.h"
@@ -40,7 +40,8 @@ Project::Project (
       track_registry_ (new structure::tracks::TrackRegistry (this)),
       version_ (Zrythm::get_version (false)),
       tool_ (new gui::backend::Tool (this)),
-      port_connections_manager_ (new dsp::PortConnectionsManager (this)),
+      port_connections_manager_ (
+        new structure::tracks::PortConnectionsManager (this)),
       audio_engine_ (
         std::make_unique<engine::device_io::AudioEngine> (this, device_manager)),
       transport_ (new engine::session::Transport (this)),

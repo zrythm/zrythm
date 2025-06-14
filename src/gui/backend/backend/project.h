@@ -380,8 +380,8 @@ public:
    * a plugin.
    */
   void on_port_identifier_changed (
-    const dsp::PortIdentifier &old_id,
-    Port                      &updated_port);
+    const structure::tracks::PortIdentifier &old_id,
+    Port                                    &updated_port);
 
 private:
   /**
@@ -555,7 +555,8 @@ public:
    *
    * Must be free'd after engine.
    */
-  utils::QObjectUniquePtr<dsp::PortConnectionsManager> port_connections_manager_;
+  utils::QObjectUniquePtr<structure::tracks::PortConnectionsManager>
+    port_connections_manager_;
 
   /**
    * The audio backend.
