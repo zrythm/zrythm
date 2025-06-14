@@ -6,13 +6,26 @@
 
 #include <QObject>
 
+/**
+ * @brief Interface for real-time property updates.
+ */
 class IRealtimeProperty
 {
 public:
   virtual ~IRealtimeProperty () = default;
+
+  /**
+   * @brief Process pending updates from real-time thread.
+   * @return true if updates were processed
+   */
   virtual bool processUpdates () = 0;
 };
 
+/**
+ * @brief Template class for real-time safe property updates between threads.
+ *
+ * Provides atomic updates with separate main thread and real-time thread values.
+ */
 template <typename T> class RealtimeProperty : public IRealtimeProperty
 {
 public:

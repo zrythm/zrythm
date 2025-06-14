@@ -28,6 +28,12 @@ Q_DECLARE_OPAQUE_POINTER (const zrythm::engine::session::Transport *)
 Q_DECLARE_OPAQUE_POINTER (zrythm::structure::tracks::TempoTrack *)
 Q_DECLARE_OPAQUE_POINTER (const zrythm::structure::tracks::TempoTrack *)
 
+/**
+ * @brief QML-friendly position representation with real-time safety.
+ *
+ * Exposes Position functionality as Q_PROPERTYs with change notifications.
+ * Supports atomic updates from real-time threads when realtime_updateable=true.
+ */
 class PositionProxy
     : public QObject,
       public IRealtimeProperty,
