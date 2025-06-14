@@ -71,7 +71,8 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
 {
   auto collection = create_test_collection ();
 
-  EXPECT_CALL (*processable_, process_block (_)).Times (3); // Once for each node
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (3); // Once for each
+                                                               // node
 
   scheduler_->rechain_from_node_collection (std::move (collection));
   scheduler_->start_threads (2);
@@ -88,7 +89,7 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
   auto collection = create_test_collection ();
 
   std::atomic<int> process_count{ 0 };
-  ON_CALL (*processable_, process_block (_)).WillByDefault ([&] (auto) {
+  ON_CALL (*processable_, process_block (_, _)).WillByDefault ([&] (auto, auto) {
     process_count++;
     std::this_thread::sleep_for (10ms);
   });
@@ -110,7 +111,7 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
 
   std::vector<int> process_order;
   std::mutex       mutex;
-  ON_CALL (*processable_, process_block (_)).WillByDefault ([&] (auto) {
+  ON_CALL (*processable_, process_block (_, _)).WillByDefault ([&] (auto, auto) {
     std::lock_guard<std::mutex> lock (mutex);
     process_order.push_back (process_order.size ());
   });

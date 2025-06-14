@@ -111,7 +111,7 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
       time_nfo.nframes_ = num_processable_frames;
 
       // process current chunk
-      processable_.process_block (time_nfo);
+      processable_.process_block (time_nfo, std::span{ parent_processables_ });
 
       /* calculate the remaining frames */
       time_nfo.nframes_ = orig_nframes - num_processable_frames;
@@ -161,7 +161,7 @@ GraphNode::process (
 
   if (time_nfo.nframes_ > 0)
     {
-      processable_.process_block (time_nfo);
+      processable_.process_block (time_nfo, std::span{ parent_processables_ });
     }
 }
 
@@ -189,6 +189,7 @@ GraphNode::add_depends (GraphNode &src)
 
   /* add parent nodes */
   parentnodes_.emplace_back (src);
+  parent_processables_.push_back (&src.processable_);
 
   initial_ = false;
 }

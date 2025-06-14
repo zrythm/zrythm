@@ -42,7 +42,7 @@ protected:
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
 
     // Simulate actual processing work
-    ON_CALL (*processable_, process_block (_)).WillByDefault ([] (auto) {
+    ON_CALL (*processable_, process_block (_, _)).WillByDefault ([] (auto, auto) {
       // Simulate typical DSP operations on a small buffer
       constexpr size_t buffer_size = 64;
       float            buffer[buffer_size];
@@ -63,7 +63,7 @@ protected:
     EXPECT_CALL (*processable_, get_node_name ()).Times (AnyNumber ());
     EXPECT_CALL (*processable_, get_single_playback_latency ())
       .Times (AnyNumber ());
-    EXPECT_CALL (*processable_, process_block (_)).Times (AnyNumber ());
+    EXPECT_CALL (*processable_, process_block (_, _)).Times (AnyNumber ());
     EXPECT_CALL (*processable_, prepare_for_processing (_, _))
       .Times (AnyNumber ());
     EXPECT_CALL (*processable_, release_resources ()).Times (AnyNumber ());

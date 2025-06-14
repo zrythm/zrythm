@@ -63,7 +63,7 @@ TEST_F (GraphNodeTest, Construction)
 
 TEST_F (GraphNodeTest, ProcessingBasics)
 {
-  EXPECT_CALL (*processable_, process_block (_)).Times (Exactly (1));
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (Exactly (1));
 
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
@@ -99,7 +99,7 @@ TEST_F (GraphNodeTest, NodeConnections)
 
 TEST_F (GraphNodeTest, SkipProcessing)
 {
-  EXPECT_CALL (*processable_, process_block (_)).Times (0);
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (0);
 
   auto node = create_test_node ();
   node.set_skip_processing (true);
@@ -116,7 +116,7 @@ TEST_F (GraphNodeTest, ProcessingWithTransport)
   EXPECT_CALL (*transport_, get_playhead_position ())
     .WillOnce (Return (Position{}));
   EXPECT_CALL (*transport_, position_add_frames (_, _)).Times (1);
-  EXPECT_CALL (*processable_, process_block (_)).Times (1);
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
 
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
@@ -130,7 +130,7 @@ TEST_F (GraphNodeTest, LoopPointProcessing)
   EXPECT_CALL (*transport_, is_loop_point_met (_, _))
     .WillOnce (Return (128))
     .WillOnce (Return (0));
-  EXPECT_CALL (*processable_, process_block (_)).Times (2);
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
 
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
@@ -180,7 +180,7 @@ TEST_F (GraphNodeTest, ProcessingWithLoopAndLatency)
   EXPECT_CALL (*transport_, is_loop_point_met (_, _))
     .WillOnce (Return (64))
     .WillOnce (Return (0));
-  EXPECT_CALL (*processable_, process_block (_)).Times (2);
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
 
   auto node = create_test_node ();
   node.set_route_playback_latency (256);
@@ -272,4 +272,166 @@ TEST_F (GraphNodeTest, ProcessableSearch)
   EXPECT_EQ (not_found, nullptr);
 }
 
+TEST_F (GraphNodeTest, ProcessBlockReceivesInputs)
+{
+  // Create two separate mocks for processables
+  auto mock_processable1 = std::make_unique<MockProcessable> ();
+  auto mock_processable2 = std::make_unique<MockProcessable> ();
+
+  // Set up default expectations for the new mocks
+  ON_CALL (*mock_processable1, get_node_name ())
+    .WillByDefault (Return (u8"node1"));
+  ON_CALL (*mock_processable2, get_node_name ())
+    .WillByDefault (Return (u8"node2"));
+  ON_CALL (*mock_processable1, get_single_playback_latency ())
+    .WillByDefault (Return (0));
+  ON_CALL (*mock_processable2, get_single_playback_latency ())
+    .WillByDefault (Return (0));
+
+  // Use the same transport for both (from fixture)
+  GraphNode node1 (1, *transport_, *mock_processable1);
+  GraphNode node2 (2, *transport_, *mock_processable2);
+
+  node1.connect_to (node2);
+
+  // We don't expect node1 to be processed in this test
+  EXPECT_CALL (*mock_processable1, process_block (_, _)).Times (0);
+
+  // Verify node2 receives node1 as input
+  EXPECT_CALL (*mock_processable2, process_block (_, _))
+    .WillOnce ([&] (auto, auto inputs) {
+      ASSERT_EQ (inputs.size (), 1);
+      EXPECT_EQ (inputs[0], mock_processable1.get ());
+    });
+
+  EngineProcessTimeInfo time_info{};
+  time_info.nframes_ = 256;
+  node2.process (time_info, 0);
+}
+
+TEST_F (GraphNodeTest, ProcessBlockReceivesMultipleInputs)
+{
+  auto mock_processable1 = std::make_unique<MockProcessable> ();
+  auto mock_processable2 = std::make_unique<MockProcessable> ();
+  auto mock_processable3 = std::make_unique<MockProcessable> ();
+
+  ON_CALL (*mock_processable1, get_node_name ())
+    .WillByDefault (Return (u8"node1"));
+  ON_CALL (*mock_processable2, get_node_name ())
+    .WillByDefault (Return (u8"node2"));
+  ON_CALL (*mock_processable3, get_node_name ())
+    .WillByDefault (Return (u8"node3"));
+  ON_CALL (*mock_processable1, get_single_playback_latency ())
+    .WillByDefault (Return (0));
+  ON_CALL (*mock_processable2, get_single_playback_latency ())
+    .WillByDefault (Return (0));
+  ON_CALL (*mock_processable3, get_single_playback_latency ())
+    .WillByDefault (Return (0));
+
+  GraphNode node1 (1, *transport_, *mock_processable1);
+  GraphNode node2 (2, *transport_, *mock_processable2);
+  GraphNode node3 (3, *transport_, *mock_processable3);
+
+  node1.connect_to (node3);
+  node2.connect_to (node3);
+
+  // Only node3 is processed
+  EXPECT_CALL (*mock_processable1, process_block (_, _)).Times (0);
+  EXPECT_CALL (*mock_processable2, process_block (_, _)).Times (0);
+
+  EXPECT_CALL (*mock_processable3, process_block (_, _))
+    .WillOnce ([&] (auto, auto inputs) {
+      ASSERT_EQ (inputs.size (), 2);
+      // The inputs should be the two parents: node1 and node2
+      // We don't know the order, so check both
+      EXPECT_TRUE (
+        (inputs[0] == mock_processable1.get () && inputs[1] == mock_processable2.get ())
+        || (inputs[0] == mock_processable2.get () && inputs[1] == mock_processable1.get ()));
+    });
+
+  EngineProcessTimeInfo time_info{};
+  time_info.nframes_ = 256;
+  node3.process (time_info, 0);
+}
+
+TEST_F (GraphNodeTest, ProcessBlockReceivesNoInputs)
+{
+  auto mock_processable = std::make_unique<MockProcessable> ();
+
+  ON_CALL (*mock_processable, get_node_name ()).WillByDefault (Return (u8"node"));
+  ON_CALL (*mock_processable, get_single_playback_latency ())
+    .WillByDefault (Return (0));
+
+  GraphNode node (1, *transport_, *mock_processable);
+
+  EXPECT_CALL (*mock_processable, process_block (_, _))
+    .WillOnce ([&] (auto, auto inputs) { EXPECT_EQ (inputs.size (), 0); });
+
+  EngineProcessTimeInfo time_info{};
+  time_info.nframes_ = 256;
+  node.process (time_info, 0);
+}
+
+class GraphNodeProcessBlockInputsTest
+    : public GraphNodeTest,
+      public testing::WithParamInterface<int>
+{
+};
+
+TEST_P (GraphNodeProcessBlockInputsTest, VerifyInputs)
+{
+  const int input_count = GetParam ();
+
+  // Create mock processables for parent nodes
+  std::vector<std::unique_ptr<MockProcessable>> mock_parents;
+  for (int i = 0; i < input_count; i++)
+    {
+      auto mp = std::make_unique<MockProcessable> ();
+      ON_CALL (*mp, get_node_name ())
+        .WillByDefault (Return (
+          utils::Utf8String::from_utf8_encoded_string (
+            "parent_node_" + std::to_string (i))));
+      ON_CALL (*mp, get_single_playback_latency ()).WillByDefault (Return (0));
+      mock_parents.push_back (std::move (mp));
+    }
+
+  // Create target node
+  auto target_mock = std::make_unique<MockProcessable> ();
+  ON_CALL (*target_mock, get_node_name ())
+    .WillByDefault (Return (u8"target_node"));
+  ON_CALL (*target_mock, get_single_playback_latency ())
+    .WillByDefault (Return (0));
+  GraphNode target_node (input_count + 1, *transport_, *target_mock);
+
+  // Create parent nodes and connect to target
+  for (int i = 0; i < input_count; i++)
+    {
+      GraphNode parent_node (i + 1, *transport_, *mock_parents[i]);
+      parent_node.connect_to (target_node);
+    }
+
+  // Set expectation - verify inputs match parents
+  EXPECT_CALL (*target_mock, process_block (_, _))
+    .WillOnce ([&] (auto, auto inputs) {
+      EXPECT_EQ (inputs.size (), input_count);
+
+      // Create set of expected pointers
+      std::unordered_set<const IProcessable *> expected;
+      for (const auto &mp : mock_parents)
+        expected.insert (mp.get ());
+
+      // Verify all inputs are present
+      for (const auto * input : inputs)
+        EXPECT_TRUE (expected.contains (input));
+    });
+
+  EngineProcessTimeInfo time_info{};
+  time_info.nframes_ = 256;
+  target_node.process (time_info, 0);
+}
+
+INSTANTIATE_TEST_SUITE_P (
+  InputCases,
+  GraphNodeProcessBlockInputsTest,
+  testing::Values (0, 1, 2, 128));
 } // namespace zrythm::dsp::graph

@@ -29,26 +29,6 @@ init_from (
   obj.regenerate_hashtables ();
 }
 
-#if 0
-void
-PortConnectionsManager::disconnect_port_collection (
-  std::vector<Port *> &ports,
-  bool                 deleting)
-{
-  /* can only be called from the gtk thread */
-  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
-
-  /* go through each port */
-  for (auto * port : ports)
-    {
-      remove_all_connections (port->get_uuid ());
-      port->srcs_.clear ();
-      port->dests_.clear ();
-      port->deleting_ = deleting;
-    }
-}
-#endif
-
 void
 PortConnectionsManager::add_or_replace_connection (
   ConnectionHashTable  &ht,

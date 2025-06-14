@@ -76,7 +76,16 @@ public:
   {
   }
 
-  [[gnu::hot]] virtual void process_block (EngineProcessTimeInfo time_nfo) { };
+  /**
+   * @brief Called to perform processing.
+   *
+   * @param time_nfo Time block to perform processing for.
+   * @param inputs Incoming IProcessable signals. The processable may use these
+   * eg, to sum their content.
+   */
+  [[gnu::hot]] virtual void process_block (
+    EngineProcessTimeInfo                 time_nfo,
+    std::span<const IProcessable * const> inputs) { };
 
   /**
    * @brief Called to release resources allocated by @ref
@@ -135,10 +144,6 @@ public:
    *
    * @param remaining_preroll_frames The number of frames remaining for preroll
    * (as part of playback latency adjustment).
-   * @param processing_cycle_in_progress Whether the processing cycle is
-   * currently in progress (and this function is called as part of it), as
-   * opposed to being called before/after a processing cycle (e.g., for some
-   * special nodes that are processed before/after the actual processing).
    */
   [[gnu::hot]] void
   process (EngineProcessTimeInfo time_nfo, nframes_t remaining_preroll_frames)
@@ -237,6 +242,12 @@ private:
    * latencies.
    */
   std::vector<std::reference_wrapper<GraphNode>> parentnodes_;
+
+  /**
+   * @brief This is just a copy of the processables in @ref parentnodes_ to be
+   * passed in IProcessable::process_block().
+   */
+  std::vector<const IProcessable *> parent_processables_;
 
   const dsp::ITransport &transport_;
 
