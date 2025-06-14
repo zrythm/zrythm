@@ -109,7 +109,7 @@ constexpr auto THREAD_STACK_SIZE = 0x20000; // 128kB
 void
 GraphThread::on_reached_terminal_node ()
 {
-  z_return_if_fail (scheduler_.terminal_refcnt_.load () >= 0);
+  assert (scheduler_.terminal_refcnt_.load () >= 0);
   if (scheduler_.terminal_refcnt_.fetch_sub (1) == 1)
     {
       /* all terminal nodes have completed, we're done with this cycle. */
@@ -167,6 +167,8 @@ GraphThread::run_worker () noexcept [[clang::nonblocking]]
           return;
         }
 
+      /* Wake up idle threads, but at most as many as there's work in the
+       * trigger queue that can be processed by other threads */
       if (scheduler->trigger_queue_.pop_front (to_run))
         {
           assert (to_run != nullptr);
@@ -175,15 +177,9 @@ GraphThread::run_worker () noexcept [[clang::nonblocking]]
               z_debug (
                 "[{}]: dequeued node below\n{}", id_,
                 to_run->print_node_to_str ());
-            }
-          /* Wake up idle threads, but at most as many as there's work in the
-           * trigger queue that can be processed by other threads. This thread
-           * as not yet decreased _trigger_queue_size. */
-          int idle_cnt = scheduler->idle_thread_cnt_.load ();
-          if constexpr (DEBUG_THREADS)
-            {
               z_debug (
-                "[{}]: Waking up an idle thread (idle count {})", id_, idle_cnt);
+                "[{}]: Waking up an idle thread (idle count {})", id_,
+                scheduler->idle_thread_cnt_.load ());
             }
 
           scheduler->trigger_sem_.signal ();
@@ -192,21 +188,24 @@ GraphThread::run_worker () noexcept [[clang::nonblocking]]
       while (to_run == nullptr)
         {
           /* wait for work, fall asleep */
-          int idle_thread_cnt = scheduler->idle_thread_cnt_.fetch_add (1) + 1;
+          scheduler->idle_thread_cnt_.fetch_add (1);
+
           if constexpr (DEBUG_THREADS)
             {
+              int idle_thread_cnt = scheduler->idle_thread_cnt_;
               z_debug (
                 "[{}]: no node to run. just increased idle thread count and waiting for work "
                 "(current idle threads {})",
                 id_, idle_thread_cnt);
-            }
-          if (idle_thread_cnt > static_cast<int> (scheduler->threads_.size ()))
-            [[unlikely]]
-            {
-              z_error (
-                "[{}]: idle thread count {} is greater than the number of threads "
-                "{}. this should never occur",
-                id_, idle_thread_cnt, scheduler->threads_.size ());
+              if (
+                idle_thread_cnt
+                > static_cast<int> (scheduler->threads_.size ())) [[unlikely]]
+                {
+                  z_error (
+                    "[{}]: idle thread count {} is greater than the number of threads "
+                    "{}. this should never occur",
+                    id_, idle_thread_cnt, scheduler->threads_.size ());
+                }
             }
 
           scheduler->trigger_sem_.wait ();
@@ -260,7 +259,7 @@ void
 GraphThread::run ()
 {
   /* pre-create the unique identifier of this thread */
-  rt_thread_id_ = current_thread_id.get ();
+  rt_thread_id_.store (current_thread_id.get ());
 
   // join a workgroup if any
   juce::WorkgroupToken workgroup_token;
@@ -285,11 +284,6 @@ GraphThread::run ()
       graph->callback_start_sem_.wait ();
 
       /* first time setup */
-
-      /* Can't run without a graph */
-      // z_return_if_fail (!graph->graph_nodes_.graph_nodes_.empty ());
-      // z_return_if_fail (!graph->graph_nodes_.trigger_nodes_.empty ());
-      // z_return_if_fail (!graph->graph_nodes_.terminal_nodes_.empty ());
 
       /* bootstrap trigger-list.
        * (later this is done by Graph.reached_terminal_node())*/

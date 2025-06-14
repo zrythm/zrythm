@@ -66,7 +66,7 @@ public:
   /**
    * @brief Realtime thread ID.
    */
-  RTThreadId::IdType rt_thread_id_{};
+  std::atomic<RTThreadId::IdType> rt_thread_id_{ 0 };
 
   /** Pointer back to the owner scheduler. */
   GraphScheduler &scheduler_;

@@ -11,8 +11,8 @@
 
 #include "utils/types.h"
 
+#include <crill/spin_mutex.h>
 #include <midilib/src/midifile.h>
-#include <moodycamel/lightweightsemaphore.h>
 
 namespace zrythm::dsp
 {
@@ -86,101 +86,101 @@ public:
   // Iterator methods
   Iterator begin ()
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.begin ();
   }
 
   Iterator end ()
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.end ();
   }
 
   void erase (Iterator it, Iterator it_end)
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     events_.erase (it, it_end);
   }
 
   ConstIterator begin () const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.begin ();
   }
 
   ConstIterator end () const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.end ();
   }
 
   void push_back (const MidiEvent &ev)
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     events_.push_back (ev);
   }
 
   void push_back (const std::vector<MidiEvent> &events)
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     events_.insert (events_.end (), events.begin (), events.end ());
   }
 
   MidiEvent pop_front ()
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
-    MidiEvent                       ev = events_.front ();
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
+    MidiEvent                                ev = events_.front ();
     events_.erase (events_.begin ());
     return ev;
   }
 
   MidiEvent pop_back ()
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
-    MidiEvent                       ev = events_.back ();
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
+    MidiEvent                                ev = events_.back ();
     events_.pop_back ();
     return ev;
   }
 
   void clear ()
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     events_.clear ();
   }
 
   size_t size () const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.size ();
   }
 
   MidiEvent front () const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.front ();
   }
 
   MidiEvent back () const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.back ();
   }
 
   MidiEvent at (size_t index) const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.at (index);
   }
 
   void swap (MidiEventVector &other)
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     events_.swap (other.events_);
   }
 
   void remove_if (std::function<bool (const MidiEvent &)> predicate)
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     std::erase_if (events_, std::move (predicate));
   }
 
@@ -194,13 +194,13 @@ public:
 
   void foreach_event (std::function<void (const MidiEvent &)> func) const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     std::ranges::for_each (events_, func);
   }
 
   size_t capacity () const
   {
-    SemaphoreRAII<decltype (lock_)> lock (lock_);
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.capacity ();
   }
 
@@ -409,7 +409,7 @@ private:
   std::vector<MidiEvent> events_;
 
   /** Spinlock for exclusive read/write. */
-  mutable moodycamel::LightweightSemaphore lock_{ 1 };
+  mutable crill::spin_mutex lock_;
 };
 
 /**

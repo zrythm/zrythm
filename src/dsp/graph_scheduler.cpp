@@ -236,13 +236,13 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
 {
   for (const auto &thread : threads_)
     {
-      if (thread_id == thread->rt_thread_id_)
+      if (thread_id == thread->rt_thread_id_.load ())
         {
           return true;
         }
     }
 
-  return main_thread_ && thread_id == main_thread_->rt_thread_id_;
+  return main_thread_ && thread_id == main_thread_->rt_thread_id_.load ();
 }
 
 void
