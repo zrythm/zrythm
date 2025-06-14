@@ -143,14 +143,9 @@ public:
   AutomationTracklist * get_automation_tracklist () const;
 
   /**
-   * Returns whether the automation in the automation
-   * track should be read.
-   *
-   * @param cur_time Current time from
-   *   g_get_monotonic_time() passed here to ensure
-   *   the same timestamp is Pmused in sequential calls.
+   * Returns whether the automation in the automation track should be read.
    */
-  [[gnu::hot]] bool should_read_automation (RtTimePoint cur_time) const;
+  [[gnu::hot]] bool should_read_automation () const;
 
   /**
    * Returns if the automation track should currently be recording data.
@@ -159,8 +154,6 @@ public:
    *
    * This function assumes that the transport will be rolling.
    *
-   * @param cur_time Current time from g_get_monotonic_time() passed here to
-   *   ensure the same timestamp is used in sequential calls.
    * @param record_aps If set to true, this function will return whether we
    *   should be recording automation point data. If set to false, this
    *   function will return whether we should be recording a region (eg, if an
@@ -168,8 +161,7 @@ public:
    *   inside a region regardless of whether we should create/edit automation
    *   points or not.
    */
-  [[gnu::hot]] bool
-  should_be_recording (RtTimePoint cur_time, bool record_aps) const;
+  [[gnu::hot]] bool should_be_recording (bool record_aps) const;
 
   /**
    * Sets the index of the AutomationTrack in the AutomationTracklist.

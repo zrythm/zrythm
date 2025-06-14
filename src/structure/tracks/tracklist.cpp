@@ -414,8 +414,6 @@ Tracklist::move_plugin_automation (
               else
                 continue;
 
-              z_return_if_fail (port->at_ == at);
-
               /* delete from prev channel */
               auto   num_regions_before = at->get_children_vector ().size ();
               auto * removed_at = prev_atl.remove_at (*at, false, false);
@@ -678,17 +676,6 @@ Tracklist::insert_track (
         {
           /* make the track the only selected track */
           get_selection_manager ().select_unique (track->get_uuid ());
-
-          /* set automation track on ports */
-          if constexpr (std::derived_from<TrackT, AutomatableTrack>)
-            {
-              const auto &atl = track->get_automation_tracklist ();
-              for (auto * at : atl.get_automation_tracks ())
-                {
-                  auto &port = at->get_port ();
-                  port.at_ = at;
-                }
-            }
         }
 
       if constexpr (std::derived_from<TrackT, ChannelTrack>)
@@ -735,6 +722,34 @@ Tracklist::get_chord_track () const
   auto span = get_track_span ();
   return std::get<ChordTrack *> (
     *std::ranges::find_if (span, TrackSpan::type_projection<ChordTrack>));
+}
+
+AutomationTrack *
+Tracklist::get_automation_track_for_port (const Port::Uuid &port_id) const
+{
+  if (port_to_at_mappings_.contains (port_id))
+    {
+      auto * at = port_to_at_mappings_.value (port_id);
+      if (at->port_id_ == port_id) [[likely]]
+        {
+          return at;
+        }
+    }
+
+  for (
+    const auto * track :
+    get_track_span ().get_elements_derived_from<AutomatableTrack> ())
+    {
+      auto at =
+        track->get_automation_tracklist ().get_automation_track_by_port_id (
+          port_id);
+      if (at != nullptr)
+        {
+          port_to_at_mappings_.insertOrAssign (port_id, at);
+          return at;
+        }
+    }
+  z_return_val_if_reached (nullptr);
 }
 
 struct PluginMoveData

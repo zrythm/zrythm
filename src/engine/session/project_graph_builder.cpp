@@ -189,19 +189,53 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             }
 #endif
 
-        /* skip unnecessary control ports */
         if constexpr (std::is_same_v<PortT, ControlPort>)
           {
-            if (
-              drop_if_unnecessary
-              && ENUM_BITSET_TEST (
-                port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
+            if (ENUM_BITSET_TEST (
+                  port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
               {
-                auto found_at = port->at_;
-                z_return_val_if_fail (found_at, nullptr);
-                if (found_at->get_children_vector ().empty () && srcs.empty ())
+                const auto * at =
+                  project.getTracklist ()->get_automation_track_for_port (
+                    port->get_uuid ());
+                const auto * engine_ptr = engine.get ();
+                port->set_automation_value_reader (
+                  [at, engine_ptr, transport] (
+                    signed_frame_t global_frame) -> std::optional<float> {
+                    if (at->should_read_automation ())
+                      {
+                        const dsp::Position pos{
+                          global_frame, engine_ptr->ticks_per_frame_
+                        };
+
+                        /* if playhead pos changed manually recently or
+                         * transport is rolling, we will force the last
+                         * known automation point value regardless of
+                         * whether there is a region at current pos */
+                        const bool can_read_previous_automation =
+          transport->isRolling ()
+          || (transport->last_manual_playhead_change_ - engine_ptr->last_timestamp_start_ > 0);
+
+                        /* if there was an automation event at the playhead
+                         * position, set val and flag */
+                        const auto ap = at->get_ap_before_pos (
+                          pos, !can_read_previous_automation, true);
+                        if (ap)
+                          {
+                            const float val = at->get_val_at_pos (
+                              pos, true, !can_read_previous_automation, true);
+                            return val;
+                          }
+                      }
+                    return std::nullopt;
+                  });
+
+                /* skip unnecessary control ports */
+                if (drop_if_unnecessary)
                   {
-                    return nullptr;
+                    if (at->get_children_vector ().empty () && srcs.empty ())
+                      {
+                        return nullptr;
+                      }
                   }
               }
           }

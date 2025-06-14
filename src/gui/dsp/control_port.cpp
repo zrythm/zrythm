@@ -1,27 +1,13 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cmath>
-
-#include "engine/device_io/engine.h"
-#include "engine/session/router.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/plugin.h"
-#include "gui/dsp/port.h"
-#include "structure/tracks/channel_track.h"
-#include "structure/tracks/tempo_track.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/gtest_wrapper.h"
+#include "gui/dsp/cv_port.h"
 #include "utils/math.h"
-#include "utils/rt_thread_id.h"
-
-ControlPort::ControlPort () : ControlPort (utils::Utf8String{}) { }
 
 ControlPort::ControlPort (utils::Utf8String label)
-    : Port (std::move (label), PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
+    : Port (std::move (label), PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f),
+      time_provider_ (std::make_unique<utils::QElapsedTimeProvider> ())
 {
 }
 
@@ -88,10 +74,10 @@ ControlPort::set_control_value (
       control_ = base_value_;
 
       /* remember time */
-      last_change_time_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+      last_change_time_ = time_provider_->get_monotonic_time_usecs ();
       value_changed_from_reading_ = false;
 
-      if (owner_)
+      if (owner_ != nullptr)
         {
           owner_->on_control_change_event (get_uuid (), *id_, control_);
         }
@@ -99,7 +85,7 @@ ControlPort::set_control_value (
 
   if (forward_event_to_plugin)
     {
-      if (owner_)
+      if (owner_ != nullptr)
         {
           owner_->on_control_change_event (get_uuid (), *id_, control_);
         }
@@ -163,7 +149,7 @@ ControlPort::normalized_val_to_real (float normalized_val) const
     }
   else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Toggle))
     {
-      return normalized_val > 0.0001f;
+      return normalized_val > 0.0001f ? 1.f : 0.f;
     }
   else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::ChannelFader))
     {
@@ -296,41 +282,13 @@ ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
     }
 
   /* calculate value from automation track */
-  auto at = at_;
-  if (!at) [[unlikely]]
+  if (automation_reader_)
     {
-      z_error ("No automation track found for port {}", get_label ());
-    }
-  if (ZRYTHM_TESTING && at)
-    {
-      auto found_at = structure::tracks::AutomationTrack::find_from_port (
-        *this, nullptr, true);
-      z_return_if_fail (at == found_at);
-    }
-
-  if (at && at->should_read_automation (AUDIO_ENGINE->timestamp_start_))
-    {
-      const dsp::Position pos{
-        (signed_frame_t) time_nfo.g_start_frame_w_offset_,
-        AUDIO_ENGINE->ticks_per_frame_
-      };
-
-      /* if playhead pos changed manually recently or transport is
-       * rolling, we will force the last known automation point value
-       * regardless of whether there is a region at current pos */
-      const bool can_read_previous_automation =
-        TRANSPORT->isRolling ()
-        || (TRANSPORT->last_manual_playhead_change_ - AUDIO_ENGINE->last_timestamp_start_ > 0);
-
-      /* if there was an automation event at the playhead position, set
-       * val and flag */
-      const auto ap =
-        at->get_ap_before_pos (pos, !can_read_previous_automation, true);
-      if (ap)
+      const auto val = std::invoke (
+        automation_reader_.value (), time_nfo.g_start_frame_w_offset_);
+      if (val)
         {
-          const float val =
-            at->get_val_at_pos (pos, true, !can_read_previous_automation, true);
-          set_val_from_normalized (val, true);
+          set_val_from_normalized (val.value (), true);
           value_changed_from_reading_ = true;
         }
     }
@@ -342,30 +300,25 @@ ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
       if (!conn->enabled_) [[unlikely]]
         continue;
 
-      if (src_port->id_->type_ == PortType::CV)
+      const float depth_range = (range_.maxf_ - range_.minf_) / 2.f;
+
+      /* figure out whether to use base value or the current value */
+      const float val_to_use = [&] () {
+        if (first_cv)
+          {
+            first_cv = false;
+            return base_value_;
+          }
+
+        return control_;
+      }();
+
+      control_ = std::clamp<float> (
+        val_to_use + (depth_range * src_port->buf_[0] * conn->multiplier_),
+        range_.minf_, range_.maxf_);
+      if (owner_ != nullptr)
         {
-          const auto * cv_src_port = dynamic_cast<const CVPort *> (src_port);
-          const float  depth_range = (range_.maxf_ - range_.minf_) / 2.f;
-
-          /* figure out whether to use base value or the current value */
-          float val_to_use;
-          if (first_cv)
-            {
-              val_to_use = base_value_;
-              first_cv = false;
-            }
-          else
-            {
-              val_to_use = control_;
-            }
-
-          control_ = std::clamp<float> (
-            val_to_use + (depth_range * cv_src_port->buf_[0] * conn->multiplier_),
-            range_.minf_, range_.maxf_);
-          if (owner_)
-            {
-              owner_->on_control_change_event (get_uuid (), *id_, control_);
-            }
+          owner_->on_control_change_event (get_uuid (), *id_, control_);
         }
     }
 }

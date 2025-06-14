@@ -298,6 +298,14 @@ public:
   clear_selections_for_object_siblings (const ArrangerObject::Uuid &object_id);
 
   /**
+   * @brief Gets the automation track for a port.
+   *
+   * This is optimized via a lookup table.
+   */
+  AutomationTrack *
+  get_automation_track_for_port (const Port::Uuid &port_id) const;
+
+  /**
    * @brief Imports regions from a region array.
    *
    * @param region_arrays
@@ -620,6 +628,13 @@ private:
 
   /** Pointer to owner sample processor, if any. */
   engine::session::SampleProcessor * sample_processor_ = nullptr;
+
+  /**
+   * @brief Map of PortUuid to AutomationTrack's.
+   *
+   * This is an optimization to avoid lookups.
+   */
+  mutable QHash<Port::Uuid, AutomationTrack *> port_to_at_mappings_;
 
 public:
   /** Pointer to owner project, if any. */

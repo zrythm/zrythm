@@ -378,7 +378,7 @@ AutomationTracklist::get_visible_at_diff (
 AutomationTrack *
 AutomationTracklist::get_at_from_port (const ControlPort &port) const
 {
-  auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at) {
+  auto it = std::ranges::find_if (ats_, [&] (const auto &at) {
     const auto &at_port = get_port (at->port_id_);
     return std::addressof (at_port) == std::addressof (port);
   });
@@ -390,8 +390,8 @@ AutomationTrack *
 AutomationTracklist::get_automation_track_by_port_id (
   dsp::PortIdentifier::PortUuid id) const
 {
-  auto it = std::find_if (ats_.begin (), ats_.end (), [&id] (const auto &at) {
-    return at->port_id_ == id;
+  auto it = std::ranges::find (ats_, id, [] (const auto &at) {
+    return at->port_id_;
   });
   return it != ats_.end () ? *it : nullptr;
 }
@@ -400,14 +400,14 @@ AutomationTrack *
 AutomationTracklist::get_first_invisible_at () const
 {
   /* prioritize automation tracks with existing lanes */
-  auto it = std::find_if (ats_.begin (), ats_.end (), [] (const auto &at) {
+  auto it = std::ranges::find_if (ats_, [] (const auto &at) {
     return at->created_ && !at->visible_;
   });
 
   if (it != ats_.end ())
     return *it;
 
-  it = std::find_if (ats_.begin (), ats_.end (), [] (const auto &at) {
+  it = std::ranges::find_if (ats_, [] (const auto &at) {
     return !at->created_;
   });
 
@@ -419,7 +419,7 @@ AutomationTracklist::set_at_visible (AutomationTrack &at, bool visible)
 {
   z_return_if_fail (at.created_);
   at.visible_ = visible;
-  auto it = std::find (visible_ats_.begin (), visible_ats_.end (), &at);
+  auto it = std::ranges::find (visible_ats_, &at);
   if (visible)
     {
       if (it == visible_ats_.end ())

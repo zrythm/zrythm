@@ -25,11 +25,9 @@ AutomationTrack::AutomationTrack (
     : port_registry_ (port_registry), object_registry_ (obj_registry),
       track_getter_ (std::move (track_getter)), port_id_ (port_id)
 {
+#if 0
   auto * port =
     std::get<ControlPort *> (port_registry.find_by_id_or_throw (port_id));
-  port->at_ = this;
-
-#if 0
   if (ENUM_BITSET_TEST(PortIdentifier::Flags,port->id_.flags,PortIdentifier::Flags::MIDI_AUTOMATABLE))
     {
       self->automation_mode =
@@ -254,20 +252,20 @@ AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
 }
 
 bool
-AutomationTrack::should_read_automation (RtTimePoint cur_time) const
+AutomationTrack::should_read_automation () const
 {
   if (automation_mode_ == AutomationMode::Off)
     return false;
 
   /* TODO last argument should be true but doesnt work properly atm */
-  if (should_be_recording (cur_time, false))
+  if (should_be_recording (false))
     return false;
 
   return true;
 }
 
 bool
-AutomationTrack::should_be_recording (RtTimePoint cur_time, bool record_aps) const
+AutomationTrack::should_be_recording (bool record_aps) const
 {
   if (automation_mode_ != AutomationMode::Record) [[likely]]
     return false;
@@ -283,7 +281,7 @@ AutomationTrack::should_be_recording (RtTimePoint cur_time, bool record_aps) con
   if (record_mode_ == AutomationRecordMode::Touch)
     {
       const auto &port = get_port ();
-      const auto  diff = cur_time - port.last_change_time_;
+      const auto  diff = port.ms_since_last_change ();
       if (
         diff
         < static_cast<RtTimePoint> (AUTOMATION_RECORDING_TOUCH_REL_MS) * 1000)

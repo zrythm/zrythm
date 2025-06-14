@@ -9,17 +9,6 @@
 #include "utils/math.h"
 
 /**
- * @addtogroup dsp
- *
- * @{
- */
-
-namespace zrythm::structure::tracks
-{
-class AutomationTrack;
-}
-
-/**
  * @brief Control port specifics.
  */
 class ControlPort final
@@ -31,6 +20,19 @@ class ControlPort final
   QML_ELEMENT
 
 public:
+  /**
+   * @brief Gets the current automation value if available (eg, from an
+   * automation track).
+   *
+   * If available, the ControlPort will be overridden to this value during
+   * processing.
+   *
+   * @param global_frame Frame in global coordinates (timeline).
+   * @return Optional normalized automation value (0.0-1.0)
+   */
+  using AutomationValueGetter =
+    std::function<std::optional<float> (signed_frame_t global_frame)>;
+
   /**
    * Used for queueing changes to be applied during processing.
    *
@@ -86,8 +88,7 @@ public:
   };
 
 public:
-  ControlPort ();
-  ControlPort (utils::Utf8String label);
+  ControlPort (utils::Utf8String label = {});
 
   /**
    * Converts normalized value (0.0 to 1.0) to
@@ -216,18 +217,6 @@ public:
   [[gnu::hot]] void set_val_from_normalized (float val, bool automating);
 
   /**
-   * Function to get a port's value from its string symbol.
-   *
-   * Used when saving the LV2 state. This function MUST set size and type
-   * appropriately.
-   */
-  static const void * get_value_from_symbol (
-    const char * port_sym,
-    void *       user_data,
-    uint32_t *   size,
-    uint32_t *   type);
-
-  /**
    * Sets the given control value to the corresponding underlying structure in
    the Port.
    *
@@ -243,6 +232,22 @@ public:
    */
   void
   set_control_value (float val, bool is_normalized, bool forward_event_to_plugin);
+
+  /**
+   * @brief Sets the automation value reader.
+   *
+   * This should be called any time before processing (the automation value
+   * reaer is only used during process_block()).
+   */
+  void set_automation_value_reader (AutomationValueGetter reader)
+  {
+    automation_reader_ = reader;
+  }
+
+  RtTimePoint ms_since_last_change () const
+  {
+    return time_provider_->get_monotonic_time_usecs () - last_change_time_;
+  }
 
   /**
    * Gets the given control value from the corresponding underlying structure in
@@ -330,13 +335,6 @@ public:
 
   /* --- end MIDI CC info --- */
 
-  /**
-   * Last timestamp the control changed.
-   *
-   * This is used when recording automation in "touch" mode.
-   */
-  RtTimePoint last_change_time_{};
-
   /** Default value. */
   float deff_ = 0.f;
 
@@ -353,27 +351,21 @@ public:
   bool value_changed_from_reading_{};
 
   /**
-   * @brief Automation track this port is attached to.
-   *
-   * To be set at runtime only (not serialized).
-   */
-  structure::tracks::AutomationTrack * at_{};
-
-  /**
    * Whether the port received a UI event from the plugin UI in this cycle.
    *
    * This is used to avoid re-sending that event to the plugin.
    */
   bool received_ui_event_{};
 
+private:
   /**
-   * Control widget, if applicable.
+   * Last timestamp the control changed.
    *
-   * Only used for generic UIs.
+   * This is used when recording automation in "touch" mode.
    */
-  // zrythm::gui::old_dsp::plugins::PluginGtkController * widget_ = 0;
-};
+  RtTimePoint last_change_time_{};
 
-/**
- * @}
- */
+  std::optional<AutomationValueGetter> automation_reader_;
+
+  std::unique_ptr<utils::QElapsedTimeProvider> time_provider_;
+};

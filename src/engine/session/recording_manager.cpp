@@ -196,7 +196,6 @@ RecordingManager::handle_recording (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
       auto atl = &tr->get_automation_tracklist ();
-      auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
 
       if constexpr (std::derived_from<TrackT, RecordableTrack>)
         {
@@ -256,8 +255,7 @@ RecordingManager::handle_recording (
 
       for (auto at : atl->get_automation_tracks_in_record_mode ())
         {
-          bool at_should_be_recording =
-            at->should_be_recording (cur_time, false);
+          bool at_should_be_recording = at->should_be_recording (false);
 
           /* if should stop automation recording */
           if (
@@ -371,7 +369,7 @@ RecordingManager::handle_recording (
           if (!at->recording_start_sent_) [[likely]]
             continue;
 
-          if (!at->should_be_recording (cur_time, false))
+          if (!at->should_be_recording (false))
             continue;
 
           /* send recording event */
@@ -540,7 +538,6 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
   return std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
-      auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
 
       /* position to resume from */
       Position resume_pos (
@@ -726,7 +723,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                   /* get or start new region at resume pos */
                   auto new_region =
                     at->get_region_before_pos (resume_pos, true, false);
-                  if (!new_region && at->should_be_recording (cur_time, false))
+                  if (!new_region && at->should_be_recording (false))
                     {
                       /* create region */
                       try
@@ -747,7 +744,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                   z_return_val_if_fail (new_region, false);
                   recorded_ids_.push_back (new_region->get_uuid ());
 
-                  if (at->should_be_recording (cur_time, true))
+                  if (at->should_be_recording (true))
                     {
                       while (
                         new_region->get_children_vector ().size () > 0
@@ -1009,7 +1006,6 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
           bool automation_value_changed =
             !port->value_changed_from_reading_
             && !utils::math::floats_equal (value, at->last_recorded_value_);
-          auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
 
           /* get end position */
           unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
@@ -1081,8 +1077,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
           /* if we left touch mode, set last recorded ap to NULL */
           if (
             at->record_mode_ == AutomationTrack::AutomationRecordMode::Touch
-            && !at->should_be_recording (cur_time, true)
-            && at->recording_region_)
+            && !at->should_be_recording (true) && at->recording_region_)
             {
               at->recording_region_->last_recorded_ap_ = nullptr;
             }
@@ -1104,7 +1099,6 @@ RecordingManager::handle_start_recording (
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
-      auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
       AutomationTrack * at{};
       if (is_automation)
         {
@@ -1172,7 +1166,7 @@ RecordingManager::handle_start_recording (
           auto * port = std::get<ControlPort *> (port_var.value ());
           float  value = port->get_control_value (false);
 
-          if (at->should_be_recording (cur_time, true))
+          if (at->should_be_recording (true))
             {
               /* set recorded value to something else to force the recorder to
                * start writing */
