@@ -439,6 +439,12 @@ ZrythmApplication::onAboutToQuit ()
 
 ZrythmApplication::~ZrythmApplication ()
 {
+  device_manager_->closeAudioDevice ();
+
+  // make sure the project manager & its project are deleted first to avoid
+  // holding shared resources there while other members get deallocated
+  project_manager_.reset ();
+
   if (socket_ != nullptr)
     {
       if (socket_->state () == QLocalSocket::ConnectedState)
