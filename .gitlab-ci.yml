@@ -53,6 +53,7 @@ stages:
     BUILDDIR: "build_gnu_linux"
     QT_QPA_PLATFORM: "offscreen"
     GIT_SUBMODULE_STRATEGY: recursive
+    CPM_SOURCE_CACHE: $HOME/.cache/CPM
   before_script:
     - *unix-activate-venv
 
@@ -61,6 +62,7 @@ stages:
     - mac-arm
   variables:
     BUILDDIR: "build_mac_arm"
+    CPM_SOURCE_CACHE: $HOME/.cache/CPM
   before_script:
     - *unix-activate-venv
 
@@ -75,6 +77,7 @@ stages:
     CL: "/MP" # prepended to the cl command
     _CL_: "" # appended to the cl command
     _LINK_: ""
+    CPM_SOURCE_CACHE: "C:/CPM-cache"
   before_script:
     - *windows-enable-vs-env
     - *windows-activate-venv
