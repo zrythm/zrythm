@@ -70,7 +70,7 @@ AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
       // TODO
     }
 
-  for (const auto &[_src_port, conn] : std::views::zip (srcs_, src_connections_))
+  for (const auto &[_src_port, conn] : port_sources_)
     {
       if (!conn->enabled_)
         continue;

@@ -15,7 +15,11 @@
 /**
  * @brief MIDI port specifics.
  */
-class MidiPort final : public QObject, public Port
+class MidiPort final
+    : public QObject,
+      public Port,
+      public PortConnectionsCacheMixin<MidiPort>,
+      public RingBufferOwningPortMixin
 {
   Q_OBJECT
   QML_ELEMENT

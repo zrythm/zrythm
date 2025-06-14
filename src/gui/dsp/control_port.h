@@ -22,7 +22,10 @@ class AutomationTrack;
 /**
  * @brief Control port specifics.
  */
-class ControlPort final : public QObject, public Port
+class ControlPort final
+    : public QObject,
+      public Port,
+      public PortConnectionsCacheMixin<CVPort>
 {
   Q_OBJECT
   QML_ELEMENT

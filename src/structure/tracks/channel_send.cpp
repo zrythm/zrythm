@@ -707,11 +707,13 @@ ChannelSend::is_enabled () const
       ? static_cast<const Port &> (get_stereo_out_ports ().first)
       : get_midi_out_port ();
 
+// TODO: optimization
+#if 0
   if (ROUTER->is_processing_thread ()) [[likely]]
     {
-      if (search_port.dests_.size () == 1)
+      if (search_port.port_destinations_.size () == 1)
         {
-          auto * dest = search_port.dests_[0];
+          auto * dest = search_port.port_destinations_.first ().first;
           z_return_val_if_fail (dest, false);
 
           if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
@@ -732,6 +734,7 @@ ChannelSend::is_enabled () const
         }
       return false;
     }
+#endif
 
   /* get dest port */
   const auto conn = mgr->get_source_or_dest (search_port.get_uuid (), false);

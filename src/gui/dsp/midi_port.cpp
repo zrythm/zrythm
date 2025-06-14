@@ -208,7 +208,7 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
     }
 
   /* append data from each source */
-  for (const auto &[src_port, conn] : std::views::zip (srcs_, src_connections_))
+  for (const auto &[src_port, conn] : port_sources_)
     {
       if (!conn->enabled_)
         continue;
@@ -264,7 +264,7 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
     time_nfo.local_offset_ + time_nfo.nframes_
     == AUDIO_ENGINE->get_block_length ())
     {
-      if (write_ring_buffers_)
+      if (num_ring_buffer_readers_ > 0)
         {
           for (auto &ev : events | std::views::reverse)
             {

@@ -206,8 +206,22 @@ public:
   /** Incoming node count. */
   std::atomic<int> refcount_ = 0;
 
-  /** The playback latency of the node, in samples. */
+  /**
+   * @brief The playback latency of the node, in samples.
+   *
+   * @see Page 116 of "The Ardour DAW - Latency Compensation and
+   * Anywhere-to-Anywhere Signal Routing Systems".
+   */
   nframes_t playback_latency_ = 0;
+
+  // TODO
+  /**
+   * @brief The capture latency of the node, in samples.
+   *
+   * @see Page 116 of "The Ardour DAW - Latency Compensation and
+   * Anywhere-to-Anywhere Signal Routing Systems".
+   */
+  nframes_t capture_latency_ = 0;
 
   /**
    * @brief Outgoing nodes.

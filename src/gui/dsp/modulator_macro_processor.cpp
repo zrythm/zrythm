@@ -85,7 +85,7 @@ ModulatorMacroProcessor::process_block (const EngineProcessTimeInfo time_nfo)
   auto &cv_out = get_cv_out_port ();
 
   /* if there are inputs, multiply by the knob value */
-  if (!cv_in.srcs_.empty ())
+  if (!cv_in.port_sources_.empty ())
     {
       utils::float_ranges::copy (
         &cv_out.buf_[time_nfo.local_offset_],

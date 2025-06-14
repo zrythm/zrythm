@@ -130,91 +130,105 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         cur_tr);
     }
 
-  auto add_port =
-    [&] (
-      PortPtrVariant port_var, dsp::PortConnectionsManager &mgr,
-      const bool drop_if_unnecessary) {
-      return std::visit (
-        [&] (auto &&port) -> dsp::graph::GraphNode * {
-          using PortT = base_type<decltype (port)>;
-          auto owner = port->id_->owner_type_;
+  auto add_port = [&] (
+                    PortPtrVariant port_var, dsp::PortConnectionsManager &mgr,
+                    const bool drop_if_unnecessary) {
+    return std::visit (
+      [&] (auto &&port) -> dsp::graph::GraphNode * {
+        using PortT = base_type<decltype (port)>;
+        auto owner = port->id_->owner_type_;
 
-          /* reset port sources/dests */
-          dsp::PortConnectionsManager::ConnectionsVector srcs;
-          mgr.get_sources_or_dests (&srcs, port->get_uuid (), true);
-          port->srcs_.clear ();
-          port->src_connections_.clear ();
-          for (const auto &conn : srcs)
-            {
-              auto src_var = project.find_port_by_id (conn->src_id_);
-              if (!src_var.has_value ())
-                {
-                  z_return_val_if_fail (src_var.has_value (), nullptr);
-                }
-              std::visit (
-                [&] (auto &&src) { port->srcs_.push_back (src); },
-                src_var.value ());
-              z_return_val_if_fail (port->srcs_.back (), nullptr);
-              port->src_connections_.emplace_back (utils::clone_unique (*conn));
-            }
+        /* reset port sources/dests */
+        dsp::PortConnectionsManager::ConnectionsVector srcs;
+        mgr.get_sources (&srcs, port->get_uuid ());
+        port->port_sources_.clear ();
+        for (const auto &conn : srcs)
+          {
+            auto src_var = project.find_port_by_id (conn->src_id_);
+            assert (src_var.has_value ());
+            std::visit (
+              [&] (auto &&src) {
+                using SourcePortT = base_type<decltype (src)>;
+                if constexpr (
+                  (std::is_same_v<PortT, ControlPort>
+                   && std::is_same_v<SourcePortT, CVPort>)
+                  || (std::is_same_v<PortT, CVPort> && std::is_same_v<SourcePortT, CVPort>)
+                  || (std::is_same_v<PortT, MidiPort> && std::is_same_v<SourcePortT, MidiPort>)
+                  || (std::is_same_v<PortT, AudioPort> && std::is_same_v<SourcePortT, AudioPort>) )
+                  {
+                    port->port_sources_.push_back (
+                      std::make_pair (src, utils::clone_unique (*conn)));
+                  }
+              },
+              src_var.value ());
+          }
 
-          dsp::PortConnectionsManager::ConnectionsVector dests;
-          mgr.get_sources_or_dests (&dests, port->get_uuid (), false);
-          port->dests_.clear ();
-          port->dest_connections_.clear ();
+        dsp::PortConnectionsManager::ConnectionsVector dests;
+        mgr.get_dests (&dests, port->get_uuid ());
+#if 0
+          port->port_destinations_.clear ();
           for (const auto &conn : dests)
             {
               auto dest_var = project.find_port_by_id (conn->dest_id_);
               z_return_val_if_fail (dest_var.has_value (), nullptr);
               std::visit (
-                [&] (auto &&dest) { port->dests_.push_back (dest); },
-                dest_var.value ());
-              z_return_val_if_fail (port->dests_.back (), nullptr);
-              port->dest_connections_.emplace_back (utils::clone_unique (*conn));
-            }
-
-          /* skip unnecessary control ports */
-          if constexpr (std::is_same_v<PortT, ControlPort>)
-            {
-              if (
-                drop_if_unnecessary
-                && ENUM_BITSET_TEST (
-                  port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
-                {
-                  auto found_at = port->at_;
-                  z_return_val_if_fail (found_at, nullptr);
-                  if (
-                    found_at->get_children_vector ().empty ()
-                    && port->srcs_.empty ())
+                [&] (auto &&dest) {
+                  using DestPortT = base_type<decltype (dest)>;
+                  if constexpr (
+                    (std::is_same_v<DestPortT, ControlPort>
+                     && std::is_same_v<PortT, CVPort>)
+                    || (std::is_same_v<DestPortT, CVPort> && std::is_same_v<PortT, CVPort>)
+                    || (std::is_same_v<DestPortT, MidiPort> && std::is_same_v<PortT, MidiPort>)
+                    || (std::is_same_v<DestPortT, AudioPort> && std::is_same_v<PortT, AudioPort>) )
                     {
-                      return nullptr;
+                      port->port_destinations_.push_back (
+                        std::make_pair (dest, utils::clone_unique (*conn)));
                     }
-                }
+                },
+                dest_var.value ());
             }
+#endif
 
-          /* drop ports without sources and dests */
-          if (
-            drop_if_unnecessary && port->dests_.empty () && port->srcs_.empty ()
-            && owner != dsp::PortIdentifier::OwnerType::Plugin
-            && owner != dsp::PortIdentifier::OwnerType::Fader
-            && owner != dsp::PortIdentifier::OwnerType::TrackProcessor
-            && owner != dsp::PortIdentifier::OwnerType::Track
-            && owner != dsp::PortIdentifier::OwnerType::ModulatorMacroProcessor
-            && owner != dsp::PortIdentifier::OwnerType::Channel
-            && owner != dsp::PortIdentifier::OwnerType::ChannelSend
-            && owner != dsp::PortIdentifier::OwnerType::AudioEngine
-            && owner != dsp::PortIdentifier::OwnerType::HardwareProcessor
-            && owner != dsp::PortIdentifier::OwnerType::Transport
-            && !(ENUM_BITSET_TEST (
-              port->id_->flags_, dsp::PortIdentifier::Flags::ManualPress)))
-            {
-              return nullptr;
-            }
+        /* skip unnecessary control ports */
+        if constexpr (std::is_same_v<PortT, ControlPort>)
+          {
+            if (
+              drop_if_unnecessary
+              && ENUM_BITSET_TEST (
+                port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
+              {
+                auto found_at = port->at_;
+                z_return_val_if_fail (found_at, nullptr);
+                if (found_at->get_children_vector ().empty () && srcs.empty ())
+                  {
+                    return nullptr;
+                  }
+              }
+          }
 
-          return add_node_for_processable (*port);
-        },
-        port_var);
-    };
+        /* drop ports without sources and dests */
+        if (
+          drop_if_unnecessary && dests.empty () && srcs.empty ()
+          && owner != dsp::PortIdentifier::OwnerType::Plugin
+          && owner != dsp::PortIdentifier::OwnerType::Fader
+          && owner != dsp::PortIdentifier::OwnerType::TrackProcessor
+          && owner != dsp::PortIdentifier::OwnerType::Track
+          && owner != dsp::PortIdentifier::OwnerType::ModulatorMacroProcessor
+          && owner != dsp::PortIdentifier::OwnerType::Channel
+          && owner != dsp::PortIdentifier::OwnerType::ChannelSend
+          && owner != dsp::PortIdentifier::OwnerType::AudioEngine
+          && owner != dsp::PortIdentifier::OwnerType::HardwareProcessor
+          && owner != dsp::PortIdentifier::OwnerType::Transport
+          && !(ENUM_BITSET_TEST (
+            port->id_->flags_, dsp::PortIdentifier::Flags::ManualPress)))
+          {
+            return nullptr;
+          }
+
+        return add_node_for_processable (*port);
+      },
+      port_var);
+  };
 
   /* add ports */
   std::vector<Port *> ports;
@@ -222,8 +236,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   for (auto * port : ports)
     {
       z_return_if_fail (port);
-      if (port->deleting_)
-        continue;
+      // if (port->deleting_)
+      // continue;
 
       if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
         {
@@ -732,27 +746,45 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     }
 
   auto connect_port = [&]<FinalPortSubclass PortT> (PortT &p) {
+    const auto &mgr = *project.port_connections_manager_;
+    dsp::PortConnectionsManager::ConnectionsVector srcs;
+    mgr.get_sources (&srcs, p.get_uuid ());
+    dsp::PortConnectionsManager::ConnectionsVector dests;
+    mgr.get_dests (&dests, p.get_uuid ());
+
     auto * node = graph.get_nodes ().find_node_for_processable (p);
-    for (auto &src : p.srcs_)
+    for (const auto &conn : srcs)
       {
-        auto node2 = graph.get_nodes ().find_node_for_processable (*src);
-        z_warn_if_fail (node);
-        z_warn_if_fail (node2);
-        node2->connect_to (*node);
+        auto src_var = project.find_port_by_id (conn->src_id_);
+        assert (src_var.has_value ());
+        std::visit (
+          [&] (auto &&src) {
+            auto node2 = graph.get_nodes ().find_node_for_processable (*src);
+            assert (node);
+            assert (node2);
+            node2->connect_to (*node);
+          },
+          src_var.value ());
       }
-    for (auto &dest : p.dests_)
+    for (const auto &conn : dests)
       {
-        auto node2 = graph.get_nodes ().find_node_for_processable (*dest);
-        z_warn_if_fail (node);
-        z_warn_if_fail (node2);
-        node->connect_to (*node2);
+        auto dest_var = project.find_port_by_id (conn->dest_id_);
+        assert (dest_var.has_value ());
+        std::visit (
+          [&] (auto &&dest) {
+            auto node2 = graph.get_nodes ().find_node_for_processable (*dest);
+            assert (node);
+            assert (node2);
+            node->connect_to (*node2);
+          },
+          dest_var.value ());
       }
   };
 
   for (auto &port : ports)
     {
-      if (port->deleting_) [[unlikely]]
-        continue;
+      // if (port->deleting_) [[unlikely]]
+      // continue;
       if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
         {
           auto pl_var =

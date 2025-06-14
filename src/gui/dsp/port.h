@@ -201,6 +201,9 @@ public:
     return get_full_designation ();
   }
 
+  /**
+   * @brief Ports have no latency.
+   */
   nframes_t get_single_playback_latency () const override { return 0; }
 
   /**
@@ -287,53 +290,47 @@ public:
   std::unique_ptr<PortIdentifier> id_;
 
 public:
-  /** Caches filled when recalculating the graph. */
-  std::vector<Port *> srcs_;
-
-  /** Caches filled when recalculating the graph. */
-  std::vector<Port *> dests_;
-
-  /** Caches filled when recalculating the graph.
-   *
-   * The pointers are owned by this instance.
-   */
-  std::vector<std::unique_ptr<PortConnection>> src_connections_;
-  std::vector<std::unique_ptr<PortConnection>> dest_connections_;
-
-  PortRange range_;
-
-  /**
-   * Capture latency.
-   *
-   * See page 116 of "The Ardour DAW - Latency Compensation and
-   * Anywhere-to-Anywhere Signal Routing Systems".
-   */
-  long capture_latency_ = 0;
-
-  /**
-   * Playback latency.
-   *
-   * See page 116 of "The Ardour DAW - Latency Compensation and
-   * Anywhere-to-Anywhere Signal Routing Systems".
-   */
-  long playback_latency_ = 0;
-
-  /** Port undergoing deletion. */
-  bool deleting_ = false;
-
-  /**
-   * Flag to indicate if the ring buffers below should be filled or not.
-   *
-   * If a UI element that needs them becomes mapped
-   * (visible), this should be set to true, and when unmapped
-   * (invisible) it should be set to false.
-   */
-  bool write_ring_buffers_ = false;
-
   IPortOwner * owner_{};
+  PortRange    range_;
 };
 
-class AudioAndCVPortMixin : public virtual dsp::graph::IProcessable
+class RingBufferOwningPortMixin
+{
+public:
+  virtual ~RingBufferOwningPortMixin () = default;
+
+  /**
+   * @brief Number of entities that want ring buffers to be written.
+   *
+   * This is used to avoid writing ring buffers when they are not needed by any
+   * entity. If a UI element needs ring buffers filled, this should be
+   * incremented, and then decremented when no longer needed.
+   *
+   * @note Significant ports like master output will write to their ring buffers
+   * anyway.
+   */
+  std::atomic<int> num_ring_buffer_readers_{ 0 };
+};
+
+template <typename PortT> class PortConnectionsCacheMixin
+{
+  using ElementType =
+    std::pair<const PortT *, std::unique_ptr<dsp::PortConnection>>;
+
+public:
+  virtual ~PortConnectionsCacheMixin () = default;
+  /**
+   * @brief Caches filled when recalculating the graph.
+   *
+   * Used during processing.
+   */
+  std::vector<ElementType> port_sources_;
+  // std::vector<ElementType> port_destinations_;
+};
+
+class AudioAndCVPortMixin
+    : public virtual dsp::graph::IProcessable,
+      public RingBufferOwningPortMixin
 {
 public:
   ~AudioAndCVPortMixin () override = default;

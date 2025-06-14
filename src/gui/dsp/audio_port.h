@@ -17,7 +17,11 @@
 /**
  * @brief Audio port specifics.
  */
-class AudioPort final : public QObject, public Port, public AudioAndCVPortMixin
+class AudioPort final
+    : public QObject,
+      public Port,
+      public AudioAndCVPortMixin,
+      public PortConnectionsCacheMixin<AudioPort>
 {
   Q_OBJECT
   QML_ELEMENT

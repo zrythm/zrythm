@@ -337,13 +337,11 @@ ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
 
   /* whether this is the first CV processed on this control port */
   bool first_cv = true;
-  for (size_t k = 0; k < srcs_.size (); k++)
+  for (const auto &[src_port, conn] : port_sources_)
     {
-      const auto &conn = src_connections_[k];
       if (!conn->enabled_) [[unlikely]]
         continue;
 
-      Port * src_port = srcs_[k];
       if (src_port->id_->type_ == PortType::CV)
         {
           const auto * cv_src_port = dynamic_cast<const CVPort *> (src_port);

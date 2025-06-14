@@ -197,7 +197,7 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
       else if constexpr (std::derived_from<PortT, MidiPort>)
         {
           bool on = false;
-          if (port->write_ring_buffers_)
+          if (port->num_ring_buffer_readers_ > 0)
             {
               zrythm::dsp::MidiEvent event;
               while (port->midi_ring_->peek (event))
