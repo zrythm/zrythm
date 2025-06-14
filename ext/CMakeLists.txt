@@ -14,6 +14,10 @@ if(OS_GNU)
 endif()
 add_library(juce_lib STATIC)
 
+# some versions of cmake require at least 1 source file for static libs...
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp" "// Empty file\n")
+target_sources(juce_lib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp")
+
 CPMFindPackage(
   NAME juce
   GITHUB_REPOSITORY juce-framework/JUCE
@@ -43,6 +47,7 @@ if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
 
   juce_add_module(juce_clap_hosting)
   add_library(juce_clap_hosting_lib STATIC)
+  target_sources(juce_clap_hosting_lib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp")
   target_link_libraries(juce_clap_hosting_lib
     PRIVATE
       juce_clap_hosting
