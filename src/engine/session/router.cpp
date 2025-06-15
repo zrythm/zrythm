@@ -80,26 +80,6 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
   z_return_if_fail_cmp (
     time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
 
-  /* read control port change events */
-  ControlPort::ChangeEvent change{};
-  while (ctrl_port_change_queue_.read (change))
-    {
-      if (ENUM_BITSET_TEST (change.flag1, dsp::PortIdentifier::Flags::Bpm))
-        {
-          P_TEMPO_TRACK->set_bpm (change.real_val, 0.f, true, true);
-        }
-      else if (
-        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags::BeatsPerBar))
-        {
-          P_TEMPO_TRACK->set_beats_per_bar (change.ival);
-        }
-      else if (
-        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags::BeatUnit))
-        {
-          P_TEMPO_TRACK->set_beat_unit_from_enum (change.beat_unit);
-        }
-    }
-
   callback_in_progress_ = true;
   scheduler_->run_cycle (time_nfo_, AUDIO_ENGINE->remaining_latency_preroll_);
   callback_in_progress_ = false;

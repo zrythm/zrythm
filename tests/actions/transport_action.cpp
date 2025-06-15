@@ -36,7 +36,7 @@ TEST_F (ZrythmFixture, ChangeBPMAndTimeSignature)
   /* change time sig to 4/16 */
   {
     ControlPort::ChangeEvent change;
-    change.flag2 = PortIdentifier::Flags::BeatUnit;
+    change.flag = PortIdentifier::Flags::BeatUnit;
     change.beat_unit = BeatUnit::Sixteen;
     ROUTER->queue_control_port_change (change);
   }
@@ -76,7 +76,7 @@ TEST_F (ZrythmFixture, ChangeBPMAndTimeSignature)
   bpm_t bpm_before = P_TEMPO_TRACK->get_current_bpm ();
   {
     ControlPort::ChangeEvent change;
-    change.flag1 = PortIdentifier::Flags::Bpm;
+    change.flag = PortIdentifier::Flags::Bpm;
     change.real_val = 145.f;
     ROUTER->queue_control_port_change (change);
   }
@@ -107,7 +107,7 @@ TEST_F (ZrythmFixture, ChangeBPMAndTimeSignature)
   bpm_before = P_TEMPO_TRACK->get_current_bpm ();
   {
     ControlPort::ChangeEvent change;
-    change.flag1 = PortIdentifier::Flags::Bpm;
+    change.flag = PortIdentifier::Flags::Bpm;
     change.real_val = 130.f;
     ROUTER->queue_control_port_change (change);
   }
