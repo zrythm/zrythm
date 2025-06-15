@@ -189,12 +189,6 @@ public:
       }
   }
 
-  /// Convert integer ticks to seconds
-  double tickToSeconds (int64_t tick) const
-  {
-    return tickToSeconds (static_cast<double> (tick));
-  }
-
   /// Convert fractional ticks to seconds
   double tickToSeconds (double tick) const
   {
@@ -256,12 +250,6 @@ public:
       }
 
     return baseSeconds;
-  }
-
-  /// Convert integer ticks to samples
-  double tickToSamples (int64_t tick) const
-  {
-    return tickToSamples (static_cast<double> (tick));
   }
 
   /// Convert fractional ticks to samples
