@@ -21,6 +21,7 @@ add_executable(zrythm_dsp_unit_tests
   port_identifier_test.cpp
   position_test.cpp
   stretcher_test.cpp
+  tempo_map_test.cpp
   true_peak_dsp_test.cpp
 )
 

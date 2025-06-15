@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_COMMON_DSP_POSITION_H
-#define ZRYTHM_COMMON_DSP_POSITION_H
+#pragma once
 
-#include "utils/serialization.h"
 #include "utils/types.h"
 
 namespace zrythm::dsp
@@ -503,5 +501,3 @@ public:
 DEFINE_OBJECT_FORMATTER (zrythm::dsp::Position, Position, [] (const auto &obj) {
   return fmt::format ("{:.3f} ticks ({} frames)", obj.ticks_, obj.frames_);
 });
-
-#endif

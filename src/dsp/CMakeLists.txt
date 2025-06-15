@@ -45,6 +45,7 @@ target_sources(zrythm_dsp_lib
   position.cpp
   stretcher.h
   stretcher.cpp
+  tempo_map.h
   true_peak_dsp.h
   true_peak_dsp.cpp
 )
