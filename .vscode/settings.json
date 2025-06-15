@@ -7,6 +7,7 @@
         "-DCMAKE_CXX_COMPILER=clang++",
         "-DCMAKE_LINKER_TYPE=MOLD",
         "-DCPM_DOWNLOAD_ALL=ON",
+        "-DCPM_SOURCE_CACHE=${workspaceFolder}/.cache/CPM",
         "-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER",
         // "-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON",
         "-DZRYTHM_UNITY_BUILD=OFF",
