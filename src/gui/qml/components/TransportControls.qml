@@ -12,6 +12,7 @@ RowLayout {
 
     required property var transport
     required property var tempoTrack
+    required property var tempoMap
 
     LinkedButtons {
         Button {
@@ -59,18 +60,11 @@ RowLayout {
         spacing: 2
 
         EditableValueDisplay {
-            value: tempoTrack.bpm
+            value: root.tempoMap.tempoEvents[0].bpm
             label: "bpm"
         }
 
         EditableValueDisplay {
-            // FrameAnimation {
-            //     running: true
-            //     onTriggered: {
-            //         timeDisplay.value = transport.getPlayheadPositionString(tempoTrack);
-            //     }
-            // }
-
             id: timeDisplay
 
             value: {
@@ -91,7 +85,7 @@ RowLayout {
         }
 
         EditableValueDisplay {
-            value: tempoTrack.getBeatsPerBar() + "/" + tempoTrack.getBeatUnit()
+            value: root.tempoMap.timeSignatureEvents[0].numerator + "/" + root.tempoMap.timeSignatureEvents[0].denominator
             label: "sig"
         }
 

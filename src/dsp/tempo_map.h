@@ -42,7 +42,7 @@ enum class TimeFormat : std::uint_fast8_t
  * @note All tempo events are stored in musical time (ticks) and automatically
  *       adjust to time signature changes.
  *
- * @tparam PPQ Pulses per quarter note
+ * @tparam PPQ Pulses (ticks) per quarter note
  */
 template <int PPQ> class FixedPpqTempoMap
 {
@@ -89,7 +89,6 @@ public:
 
   /**
    * @brief Construct a new FixedPpqTempoMap object
-   * @param ppq Pulses per quarter note (ticks per quarter note)
    * @param sampleRate Sample rate in Hz
    */
   explicit FixedPpqTempoMap (double sampleRate) : sampleRate_ (sampleRate)

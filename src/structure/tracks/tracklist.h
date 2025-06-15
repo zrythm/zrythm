@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_span.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_span.h"
@@ -64,17 +65,18 @@ public:
   };
 
 public:
-  Tracklist (QObject * parent = nullptr);
   explicit Tracklist (
     Project                     &project,
     PortRegistry                &port_registry,
     TrackRegistry               &track_registry,
-    dsp::PortConnectionsManager &port_connections_manager);
+    dsp::PortConnectionsManager &port_connections_manager,
+    const dsp::TempoMap         &tempo_map);
   explicit Tracklist (
     engine::session::SampleProcessor &sample_processor,
     PortRegistry                     &port_registry,
     TrackRegistry                    &track_registry,
-    dsp::PortConnectionsManager      &port_connections_manager);
+    dsp::PortConnectionsManager      &port_connections_manager,
+    const dsp::TempoMap              &tempo_map);
   Z_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
@@ -568,6 +570,8 @@ private:
   auto &get_track_registry () { return *track_registry_; }
 
 private:
+  const dsp::TempoMap &tempo_map_;
+
   OptionalRef<TrackRegistry>  track_registry_;
   OptionalRef<PortRegistry>   port_registry_;
   OptionalRef<PluginRegistry> plugin_registry_;

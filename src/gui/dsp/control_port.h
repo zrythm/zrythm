@@ -52,8 +52,6 @@ public:
 
     /** Integer val. */
     int ival = 0;
-
-    BeatUnit beat_unit{};
   };
 
   /**

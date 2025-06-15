@@ -33,7 +33,11 @@ using namespace zrythm;
 Project::Project (
   std::shared_ptr<juce::AudioDeviceManager> device_manager,
   QObject *                                 parent)
-    : QObject (parent), port_registry_ (new PortRegistry (this)),
+    : QObject (parent),
+      tempo_map_ (
+        device_manager->getCurrentAudioDevice ()->getCurrentSampleRate ()),
+      tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
+      port_registry_ (new PortRegistry (this)),
       plugin_registry_ (new PluginRegistry (this)),
       arranger_object_registry_ (
         new structure::arrangement::ArrangerObjectRegistry (this)),
@@ -76,7 +80,8 @@ Project::Project (
         *this,
         *port_registry_,
         *track_registry_,
-        *port_connections_manager_)),
+        *port_connections_manager_,
+        get_tempo_map ())),
       undo_manager_ (new gui::actions::UndoManager (this)),
       arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
         *arranger_object_registry_,
@@ -1179,7 +1184,9 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
   obj.audio_engine_ = utils::clone_unique (
     *other.audio_engine_, clone_type, &obj, obj.device_manager_);
-  obj.tracklist_ = utils::clone_qobject (*other.tracklist_, &obj);
+  obj.tracklist_ = utils::clone_qobject (
+    *other.tracklist_, &obj, clone_type, obj, *obj.port_registry_,
+    *obj.track_registry_, *obj.port_connections_manager_, obj.get_tempo_map ());
   obj.clip_editor_ = utils::clone_qobject (
     *other.clip_editor_, &obj, clone_type, *obj.arranger_object_registry_,
     [&] (const Project::TrackUuid &id) {
@@ -1292,6 +1299,12 @@ Project::getTrackFactory () const
   return track_factory_;
 }
 
+dsp::TempoMapWrapper *
+Project::getTempoMap () const
+{
+  return tempo_map_wrapper_.get ();
+}
+
 Project *
 Project::get_active_instance ()
 {
@@ -1321,6 +1334,7 @@ to_json (nlohmann::json &j, const Project &project)
   j[utils::serialization::kDocumentTypeKey] = Project::DOCUMENT_TYPE;
   j[utils::serialization::kFormatMajorKey] = Project::FORMAT_MAJOR_VER;
   j[utils::serialization::kFormatMinorKey] = Project::FORMAT_MINOR_VER;
+  j[Project::kTempoMapKey] = project.tempo_map_;
   j[Project::kPortRegistryKey] = project.port_registry_;
   j[Project::kPluginRegistryKey] = project.plugin_registry_;
   j[Project::kArrangerObjectRegistryKey] = project.arranger_object_registry_;
@@ -1380,6 +1394,7 @@ from_json (const nlohmann::json &j, Project &project)
 {
   j.at (utils::serialization::kFormatMajorKey).get_to (project.format_major_);
   j.at (utils::serialization::kFormatMinorKey).get_to (project.format_minor_);
+  j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
   j.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
   j.at (Project::kPluginRegistryKey).get_to (*project.plugin_registry_);
   from_json_with_builder (

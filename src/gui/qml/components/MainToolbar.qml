@@ -64,6 +64,7 @@ ZrythmToolBar {
 
             transport: root.project.transport
             tempoTrack: root.project.tracklist.tempoTrack
+            tempoMap: root.project.tempoMap
         }
     ]
     rightItems: [

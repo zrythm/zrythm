@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/actions/undo_manager.h"
@@ -92,6 +94,7 @@ class Project final : public QObject
   Q_PROPERTY (
     structure::tracks::TrackFactory * trackFactory READ getTrackFactory CONSTANT
       FINAL)
+  Q_PROPERTY (dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
 
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
@@ -175,6 +178,7 @@ public:
                                     getArrangerObjectFactory () const;
   PluginFactory *                   getPluginFactory () const;
   structure::tracks::TrackFactory * getTrackFactory () const;
+  dsp::TempoMapWrapper *            getTempoMap () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -369,6 +373,8 @@ public:
     return get_arranger_object_registry ().find_by_id (id);
   }
 
+  const auto &get_tempo_map () const { return tempo_map_; }
+
   /**
    * To be called when the port's identifier changes to update corresponding
    * identifiers.
@@ -454,6 +460,7 @@ private:
   static bool idle_saved_callback (SaveContext * ctx);
 
 private:
+  static constexpr auto kTempoMapKey = "tempoMap"sv;
   static constexpr auto kPortRegistryKey = "portRegistry"sv;
   static constexpr auto kPluginRegistryKey = "pluginRegistry"sv;
   static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
@@ -482,6 +489,9 @@ private:
   friend void           from_json (const nlohmann::json &j, Project &project);
 
 private:
+  dsp::TempoMap                                 tempo_map_;
+  utils::QObjectUniquePtr<dsp::TempoMapWrapper> tempo_map_wrapper_;
+
   PortRegistry *                                   port_registry_{};
   PluginRegistry *                                 plugin_registry_{};
   structure::arrangement::ArrangerObjectRegistry * arranger_object_registry_{};

@@ -49,6 +49,7 @@ target_sources(zrythm_dsp_lib
     stretcher.h
     stretcher.cpp
     tempo_map.h
+    tempo_map_qml_adapter.h
     true_peak_dsp.h
     true_peak_dsp.cpp
 )

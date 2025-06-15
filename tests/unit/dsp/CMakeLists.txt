@@ -24,6 +24,7 @@ add_executable(zrythm_dsp_unit_tests
   position_test.cpp
   stretcher_test.cpp
   tempo_map_test.cpp
+  tempo_map_qml_adapter_test.cpp
   true_peak_dsp_test.cpp
 )
 
