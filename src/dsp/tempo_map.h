@@ -90,10 +90,9 @@ public:
   /**
    * @brief Construct a new FixedPpqTempoMap object
    * @param ppq Pulses per quarter note (ticks per quarter note)
-   * @param sampleRate Sample rate in Hz (default: 44100)
+   * @param sampleRate Sample rate in Hz
    */
-  explicit FixedPpqTempoMap (double sampleRate = 44100.0)
-      : sampleRate_ (sampleRate)
+  explicit FixedPpqTempoMap (double sampleRate) : sampleRate_ (sampleRate)
   {
     addEvent (0, 120.0, CurveType::Constant);
     addTimeSignatureEvent (0, 4, 4);

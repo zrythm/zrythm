@@ -10,7 +10,9 @@ namespace zrythm::dsp
 class TempoMapTest : public ::testing::Test
 {
 protected:
-  void SetUp () override { map = std::make_unique<TempoMap> (44100.0); }
+  static constexpr auto SAMPLE_RATE = 44100.0;
+
+  void SetUp () override { map = std::make_unique<TempoMap> (SAMPLE_RATE); }
 
   std::unique_ptr<TempoMap> map;
 };
@@ -388,7 +390,8 @@ TEST_F (TempoMapTest, Serialization)
   j = *map;
 
   // Deserialize to new object
-  auto deserialized_map = j.get<TempoMap> ();
+  TempoMap deserialized_map{ SAMPLE_RATE };
+  j.get_to (deserialized_map);
 
   // Verify events
   const auto &original_events = map->getEvents ();
@@ -435,7 +438,8 @@ TEST_F (TempoMapTest, EmptySerialization)
   // Serialize and deserialize
   nlohmann::json j;
   j = *map;
-  auto deserialized_map = j.get<TempoMap> ();
+  TempoMap deserialized_map{ SAMPLE_RATE };
+  j.get_to (deserialized_map);
 
   // Verify empty
   EXPECT_TRUE (deserialized_map.getEvents ().empty ());
