@@ -76,9 +76,9 @@ TEST_F (TempoMapTest, ConstantTempoConversions)
   // 1 beat = 960 ticks -> 1 tick = 0.5/960 seconds
 
   // Test tick to seconds
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (0z), 0.0);
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (960z), 0.5);
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (1920z), 1.0);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (0), 0.0);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (960), 0.5);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (1920), 1.0);
 
   // Test seconds to tick
   EXPECT_DOUBLE_EQ (map->secondsToTick (0.0), 0.0);
@@ -86,7 +86,7 @@ TEST_F (TempoMapTest, ConstantTempoConversions)
   EXPECT_DOUBLE_EQ (map->secondsToTick (1.0), 1920.0);
 
   // Test samples conversion
-  EXPECT_DOUBLE_EQ (map->tickToSamples (960z), 0.5 * 44100.0);
+  EXPECT_DOUBLE_EQ (map->tickToSamples (960), 0.5 * 44100.0);
   EXPECT_DOUBLE_EQ (map->samplesToTick (0.5 * 44100.0), 960.0);
 }
 
@@ -226,26 +226,26 @@ TEST_F (TempoMapTest, MultiSegmentLinearRamp)
   map->addEvent (1920, 180.0, TempoMap::CurveType::Constant);
 
   // Test before ramp
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (480z), 0.25);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (480), 0.25);
 
   // Test start of ramp
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (960z), 0.5);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (960), 0.5);
 
   // Test midpoint of ramp (150 BPM)
-  const double midTime = map->tickToSeconds (1440z);
+  const double midTime = map->tickToSeconds (1440);
   const double expectedMidTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (150.0 / 120.0);
   EXPECT_NEAR (midTime, expectedMidTime, 1e-8);
 
   // Test end of ramp
-  const double endTime = map->tickToSeconds (1920z);
+  const double endTime = map->tickToSeconds (1920);
   const double expectedEndTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (180.0 / 120.0);
   EXPECT_NEAR (endTime, expectedEndTime, 1e-8);
 
   // Test after ramp (480 ticks at 180 BPM)
   const double afterRampTime = endTime + (480.0 / 960.0) * (60.0 / 180.0);
-  EXPECT_NEAR (map->tickToSeconds (2400z), afterRampTime, 1e-8);
+  EXPECT_NEAR (map->tickToSeconds (2400), afterRampTime, 1e-8);
 }
 
 // Test linear ramp as last event
@@ -257,9 +257,9 @@ TEST_F (TempoMapTest, LinearRampLastEvent)
   map->addEvent (960, 120.0, TempoMap::CurveType::Linear);
 
   // Should be constant after 960 because no endpoint for ramp
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (960z), 0.5);
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (1440z), 0.5 + 0.25);
-  EXPECT_DOUBLE_EQ (map->tickToSeconds (1920z), 0.5 + 0.5);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (960), 0.5);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (1440), 0.5 + 0.25);
+  EXPECT_DOUBLE_EQ (map->tickToSeconds (1920), 0.5 + 0.5);
 }
 
 // Test edge cases
@@ -272,12 +272,12 @@ TEST_F (TempoMapTest, EdgeCases)
   // Empty tempo map
   TempoMap emptyMap (960);
   emptyMap.removeEvent (0);
-  EXPECT_DOUBLE_EQ (emptyMap.tickToSeconds (960z), 0.0);
+  EXPECT_DOUBLE_EQ (emptyMap.tickToSeconds (960), 0.0);
 
   // Near-constant ramp
   map->addEvent (960, 120.001, TempoMap::CurveType::Linear);
   map->addEvent (1920, 120.002, TempoMap::CurveType::Constant);
-  EXPECT_NEAR (map->tickToSeconds (1440z), 0.5 + 0.25, 1e-5);
+  EXPECT_NEAR (map->tickToSeconds (1440), 0.5 + 0.25, 1e-5);
 
   // Invalid positions
   EXPECT_THROW (
@@ -310,7 +310,7 @@ TEST_F (TempoMapTest, SampleRateChanges)
   const double newRate = 48000.0;
   map->setSampleRate (newRate);
 
-  EXPECT_DOUBLE_EQ (map->tickToSamples (960z), 0.5 * newRate);
+  EXPECT_DOUBLE_EQ (map->tickToSamples (960), 0.5 * newRate);
   EXPECT_DOUBLE_EQ (map->samplesToTick (0.5 * newRate), 960.0);
 }
 
