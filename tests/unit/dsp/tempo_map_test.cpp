@@ -373,4 +373,72 @@ TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
 
   EXPECT_NEAR (map->tickToSeconds (bar5Start), expectedTime, 1e-5);
 }
+
+// Test serialization/deserialization
+TEST_F (TempoMapTest, Serialization)
+{
+  // Add tempo and time signature events
+  map->addEvent (1920, 140.0, TempoMap::CurveType::Constant);
+  map->addEvent (3840, 160.0, TempoMap::CurveType::Linear);
+  map->addTimeSignatureEvent (1920, 3, 4);
+  map->addTimeSignatureEvent (3840, 5, 8);
+
+  // Serialize to JSON
+  nlohmann::json j;
+  j = *map;
+
+  // Deserialize to new object
+  auto deserialized_map = j.get<TempoMap> ();
+
+  // Verify events
+  const auto &original_events = map->getEvents ();
+  const auto &deserialized_events = deserialized_map.getEvents ();
+  EXPECT_GT (deserialized_events.size (), 0);
+  EXPECT_EQ (original_events.size (), deserialized_events.size ());
+
+  for (size_t i = 0; i < original_events.size (); ++i)
+    {
+      EXPECT_EQ (original_events[i].tick, deserialized_events[i].tick);
+      EXPECT_DOUBLE_EQ (original_events[i].bpm, deserialized_events[i].bpm);
+      EXPECT_EQ (original_events[i].curve, deserialized_events[i].curve);
+    }
+
+  // Verify time signatures
+  const auto &original_sigs = map->getTimeSignatureEvents ();
+  const auto &deserialized_sigs = deserialized_map.getTimeSignatureEvents ();
+  EXPECT_GT (deserialized_sigs.size (), 0);
+  EXPECT_EQ (original_sigs.size (), deserialized_sigs.size ());
+
+  for (size_t i = 0; i < original_sigs.size (); ++i)
+    {
+      EXPECT_EQ (original_sigs[i].tick, deserialized_sigs[i].tick);
+      EXPECT_EQ (original_sigs[i].numerator, deserialized_sigs[i].numerator);
+      EXPECT_EQ (original_sigs[i].denominator, deserialized_sigs[i].denominator);
+    }
+
+  // Verify conversions still work
+  const double test_ticks = 2880.0;
+  EXPECT_DOUBLE_EQ (
+    map->tickToSeconds (test_ticks),
+    deserialized_map.tickToSeconds (test_ticks));
+  EXPECT_DOUBLE_EQ (
+    map->secondsToTick (1.5), deserialized_map.secondsToTick (1.5));
+}
+
+// Test empty serialization
+TEST_F (TempoMapTest, EmptySerialization)
+{
+  // Remove default events
+  map->removeEvent (0);
+  map->removeTimeSignatureEvent (0);
+
+  // Serialize and deserialize
+  nlohmann::json j;
+  j = *map;
+  auto deserialized_map = j.get<TempoMap> ();
+
+  // Verify empty
+  EXPECT_TRUE (deserialized_map.getEvents ().empty ());
+  EXPECT_TRUE (deserialized_map.getTimeSignatureEvents ().empty ());
+}
 }

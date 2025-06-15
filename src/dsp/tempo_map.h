@@ -13,8 +13,22 @@
 #include <stdexcept>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
+
+enum class TimeFormat : std::uint_fast8_t
+{
+  /// Musical time (ticks)
+  Musical,
+  /**
+   * @brief Absolute time (seconds)
+   * @note Not samples so that sample rate changes don't require repositioning.
+   */
+  Absolute,
+};
+
 /**
  * @class FixedPpqTempoMap
  * @brief Manages tempo and time signature events for a DAW timeline.
@@ -34,7 +48,7 @@ template <int PPQ> class FixedPpqTempoMap
 {
 public:
   /// Tempo curve type (constant or linear ramp)
-  enum class CurveType
+  enum class CurveType : std::uint_fast8_t
   {
     Constant, ///< Constant tempo
     Linear    ///< Linear tempo ramp
@@ -46,6 +60,8 @@ public:
     int64_t   tick{};  ///< Position in ticks
     double    bpm{};   ///< Tempo in BPM
     CurveType curve{}; ///< Curve type
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE (TempoEvent, tick, bpm, curve)
   };
 
   /// Time signature event definition
@@ -54,6 +70,12 @@ public:
     int64_t tick{};        ///< Position in ticks
     int     numerator{};   ///< Beats per bar
     int     denominator{}; ///< Beat unit (2,4,8,16)
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE (
+      TimeSignatureEvent,
+      tick,
+      numerator,
+      denominator)
   };
 
   /// Musical position representation
@@ -528,6 +550,21 @@ private:
     return 0.0;
   }
 
+  static constexpr auto kEventsKey = "events"sv;
+  static constexpr auto kTimeSigEventsKey = "timeSigEvents"sv;
+  friend void to_json (nlohmann::json &j, const FixedPpqTempoMap &tempo_map)
+  {
+    j[kEventsKey] = tempo_map.events_;
+    j[kTimeSigEventsKey] = tempo_map.time_sig_events_;
+  }
+  friend void from_json (const nlohmann::json &j, FixedPpqTempoMap &tempo_map)
+  {
+    j.at (kEventsKey).get_to (tempo_map.events_);
+    j.at (kTimeSigEventsKey).get_to (tempo_map.time_sig_events_);
+    tempo_map.rebuildCumulativeTimes ();
+  }
+
+private:
   double               sampleRate_; ///< Current sample rate
   static constexpr int ticks_per_sixteenth_ =
     PPQ / 4; ///< Ticks per sixteenth note (PPQ/4)

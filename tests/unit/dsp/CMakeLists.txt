@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_dsp_unit_tests
+  atomic_position_test.cpp
   chord_descriptor_test.cpp
   curve_test.cpp
   ditherer_test.cpp
