@@ -6,6 +6,8 @@ qt_add_library(zrythm_dsp_lib STATIC)
 target_sources(zrythm_dsp_lib
   PRIVATE
     atomic_position.h
+    atomic_position_qml_adapter.h
+    atomic_position_qml_adapter.cpp
     chord_descriptor.h
     chord_descriptor.cpp
     curve.h

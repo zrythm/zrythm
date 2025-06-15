@@ -189,6 +189,8 @@ public:
     set_ticks (tempo_map_.samplesToTick (samples));
   }
 
+  const auto &get_tempo_map () const { return tempo_map_; }
+
 private:
   static constexpr bool format_to_bool (TimeFormat format) noexcept
   {

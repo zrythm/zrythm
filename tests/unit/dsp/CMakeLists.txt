@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_dsp_unit_tests
+  atomic_position_qml_adapter_test.cpp
   atomic_position_test.cpp
   chord_descriptor_test.cpp
   curve_test.cpp
@@ -34,6 +35,7 @@ set_target_properties(zrythm_dsp_unit_tests PROPERTIES
 target_link_libraries(zrythm_dsp_unit_tests PRIVATE
   zrythm::gtest_for_tests
   zrythm_dsp_lib
+  zrythm_test_helpers_lib
 )
 target_compile_definitions(zrythm_dsp_unit_tests PRIVATE
   TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
