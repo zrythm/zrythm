@@ -110,7 +110,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
               if (
                 ENUM_BITSET_TEST (
                   node->port->id_.flags2,
-                  PortIdentifier::Flags2::Z_PORT_FLAG) 2_MONITOR_FADER)
+                  PortIdentifier::Flags::Z_PORT_FLAG) 2_MONITOR_FADER)
                 {
                   parent_node =
                     graph_find_node_from_fader (node->graph, MONITOR_FADER);
@@ -118,7 +118,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
               else if (
                 ENUM_BITSET_TEST (
                   node->port->id_.flags2,
-                  PortIdentifier::Flags2::Z_PORT_FLAG) 2_SAMPLE_PROCESSOR_FADER)
+                  PortIdentifier::Flags::Z_PORT_FLAG) 2_SAMPLE_PROCESSOR_FADER)
                 {
                   parent_node = graph_find_node_from_fader (
                     node->graph, SAMPLE_PROCESSOR->fader);
@@ -129,7 +129,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
                   if (
                     ENUM_BITSET_TEST (
                       node->port->id_.flags2,
-                      PortIdentifier::Flags2::Z_PORT_FLAG) 2_PREFADER)
+                      PortIdentifier::Flags::Z_PORT_FLAG) 2_PREFADER)
                     parent_node = graph_find_node_from_prefader (
                       node->graph, tr->channel->prefader);
                   else

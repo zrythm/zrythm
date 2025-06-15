@@ -143,7 +143,7 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
 
   /* handle MIDI clock */
   if (
-    ENUM_BITSET_TEST (id_->flags2_, PortIdentifier::Flags2::MidiClock)
+    ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::MidiClock)
     && is_output ())
     {
       /* continue or start */

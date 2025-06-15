@@ -131,37 +131,37 @@ Transport::Transport (Project * parent)
   roll_->id_->sym_ = u8"roll";
   roll_->set_owner (*this);
   roll_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  roll_->id_->flags2_ |= PortIdentifier::Flags2::TransportRoll;
+  roll_->id_->flags_ |= PortIdentifier::Flags::TransportRoll;
 
   stop_ = std::make_unique<MidiPort> (u8"Stop", PortFlow::Input);
   stop_->id_->sym_ = u8"stop";
   stop_->set_owner (*this);
   stop_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  stop_->id_->flags2_ |= PortIdentifier::Flags2::TransportStop;
+  stop_->id_->flags_ |= PortIdentifier::Flags::TransportStop;
 
   backward_ = std::make_unique<MidiPort> (u8"Backward", PortFlow::Input);
   backward_->id_->sym_ = u8"backward";
   backward_->set_owner (*this);
   backward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  backward_->id_->flags2_ |= PortIdentifier::Flags2::TransportBackward;
+  backward_->id_->flags_ |= PortIdentifier::Flags::TransportBackward;
 
   forward_ = std::make_unique<MidiPort> (u8"Forward", PortFlow::Input);
   forward_->id_->sym_ = u8"forward";
   forward_->set_owner (*this);
   forward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  forward_->id_->flags2_ |= PortIdentifier::Flags2::TransportForward;
+  forward_->id_->flags_ |= PortIdentifier::Flags::TransportForward;
 
   loop_toggle_ = std::make_unique<MidiPort> (u8"Loop toggle", PortFlow::Input);
   loop_toggle_->id_->sym_ = u8"loop_toggle";
   loop_toggle_->set_owner (*this);
   loop_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  loop_toggle_->id_->flags2_ |= PortIdentifier::Flags2::TransportLoopToggle;
+  loop_toggle_->id_->flags_ |= PortIdentifier::Flags::TransportLoopToggle;
 
   rec_toggle_ = std::make_unique<MidiPort> (u8"Rec toggle", PortFlow::Input);
   rec_toggle_->id_->sym_ = u8"rec_toggle";
   rec_toggle_->set_owner (*this);
   rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  rec_toggle_->id_->flags2_ |= PortIdentifier::Flags2::TransportRecToggle;
+  rec_toggle_->id_->flags_ |= PortIdentifier::Flags::TransportRecToggle;
 
   init_common ();
 }

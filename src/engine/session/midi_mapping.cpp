@@ -117,38 +117,38 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
       /* FIXME these are called during processing they should be queued as UI
        * events instead */
       if (ENUM_BITSET_TEST (
-            dest_->id_->flags2_, PortIdentifier::Flags2::TransportRoll))
+            dest_->id_->flags_, PortIdentifier::Flags::TransportRoll))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          dest_->id_->flags2_, PortIdentifier::Flags2::TransportStop))
+          dest_->id_->flags_, PortIdentifier::Flags::TransportStop))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          dest_->id_->flags2_, PortIdentifier::Flags2::TransportBackward))
+          dest_->id_->flags_, PortIdentifier::Flags::TransportBackward))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED,
           // nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          dest_->id_->flags2_, PortIdentifier::Flags2::TransportForward))
+          dest_->id_->flags_, PortIdentifier::Flags::TransportForward))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          dest_->id_->flags2_, PortIdentifier::Flags2::TransportLoopToggle))
+          dest_->id_->flags_, PortIdentifier::Flags::TransportLoopToggle))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          dest_->id_->flags2_, PortIdentifier::Flags2::TransportRecToggle))
+          dest_->id_->flags_, PortIdentifier::Flags::TransportRecToggle))
         {
           /* EVENTS_PUSH (
             EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, nullptr); */

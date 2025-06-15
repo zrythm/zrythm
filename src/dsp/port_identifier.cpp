@@ -29,13 +29,12 @@ PortIdentifier::print_to_str () const
   return fmt::format (
     "[PortIdentifier {} | hash {}]\nlabel: {}\n"
     "sym: {}\nuri: {}\ncomment: {}\nowner type: {}\n"
-    "type: {}\nflow: {}\nflags: {} {}\nunit: {}\n"
+    "type: {}\nflow: {}\nflags: {}\nunit: {}\n"
     "port group: {}\next port id: {}\n"
     "track name hash: {}\nport idx: {}\nplugin: {}",
     fmt::ptr (this), get_hash (), label_, sym_, uri_, comment_,
     ENUM_NAME (owner_type_), ENUM_NAME (type_), ENUM_NAME (flow_),
-    ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags_),
-    ENUM_BITSET_TO_STRING (PortIdentifier::Flags2, flags2_), ENUM_NAME (unit_),
+    ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags_), ENUM_NAME (unit_),
     port_group_, ext_port_id_, track_id_, port_index_, plugin_id_);
 }
 
@@ -70,7 +69,6 @@ PortIdentifier::get_hash () const
   hash = hash ^ qHash (type_);
   hash = hash ^ qHash (flow_);
   hash = hash ^ qHash (flags_);
-  hash = hash ^ qHash (flags2_);
   hash = hash ^ qHash (unit_);
   if (plugin_id_.has_value ())
     hash = hash ^ qHash (type_safe::get (plugin_id_.value ()));
@@ -91,8 +89,7 @@ operator== (const PortIdentifier &lhs, const PortIdentifier &rhs)
   bool eq =
     lhs.owner_type_ == rhs.owner_type_ && lhs.unit_ == rhs.unit_
     && lhs.type_ == rhs.type_ && lhs.flow_ == rhs.flow_
-    && lhs.flags_ == rhs.flags_ && lhs.flags2_ == rhs.flags2_
-    && lhs.track_id_ == rhs.track_id_;
+    && lhs.flags_ == rhs.flags_ && lhs.track_id_ == rhs.track_id_;
   if (!eq)
     return false;
 

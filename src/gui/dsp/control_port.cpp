@@ -272,8 +272,8 @@ ControlPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
   if (
     !is_input ()
-    || ENUM_BITSET_TEST (id_->flags2_, PortIdentifier::Flags2::MonitorFader)
-    || ENUM_BITSET_TEST (id_->flags2_, PortIdentifier::Flags2::Prefader)
+    || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::MonitorFader)
+    || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Prefader)
     || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::TpMono)
     || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::TpInputGain)
     || !(ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Automatable)))

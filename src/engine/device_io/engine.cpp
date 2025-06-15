@@ -319,7 +319,7 @@ AudioEngine::init_common ()
   midi_clock_out_ =
     std::make_unique<MidiPort> (u8"MIDI Clock Out", dsp::PortFlow::Output);
   midi_clock_out_->set_owner (*this);
-  midi_clock_out_->id_->flags2_ |= dsp::PortIdentifier::Flags2::MidiClock;
+  midi_clock_out_->id_->flags_ |= dsp::PortIdentifier::Flags::MidiClock;
 }
 
 void
@@ -360,11 +360,11 @@ AudioEngine::init_loaded (Project * project)
       else if (id.owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
         {
           if (ENUM_BITSET_TEST (
-                id.flags2_, dsp::PortIdentifier::Flags2::SampleProcessorFader))
+                id.flags_, dsp::PortIdentifier::Flags::SampleProcessorFader))
             port->init_loaded (*sample_processor_->fader_);
           else if (
             ENUM_BITSET_TEST (
-              id.flags2_, dsp::PortIdentifier::Flags2::MonitorFader))
+              id.flags_, dsp::PortIdentifier::Flags::MonitorFader))
             port->init_loaded (*control_room_->monitor_fader_);
         }
     }

@@ -164,7 +164,7 @@ Fader::Fader (
     solo_port.set_owner (*this);
     solo_port.id_->sym_ = passthrough ? u8"prefader_solo" : u8"fader_solo";
     solo_port.set_toggled (false, false);
-    solo_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderSolo;
+    solo_port.id_->flags_ |= dsp::PortIdentifier::Flags::FaderSolo;
     solo_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
   }
 
@@ -178,7 +178,7 @@ Fader::Fader (
     listen_port.set_owner (*this);
     listen_port.id_->sym_ = passthrough ? u8"prefader_listen" : u8"fader_listen";
     listen_port.set_toggled (false, false);
-    listen_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderListen;
+    listen_port.id_->flags_ |= dsp::PortIdentifier::Flags::FaderListen;
     listen_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
   }
 
@@ -195,8 +195,8 @@ Fader::Fader (
         ? u8"prefader_mono_compat_enabled"
         : u8"fader_mono_compat_enabled";
     mono_compat_enabled_port.set_toggled (false, false);
-    mono_compat_enabled_port.id_->flags2_ |=
-      dsp::PortIdentifier::Flags2::FaderMonoCompat;
+    mono_compat_enabled_port.id_->flags_ |=
+      dsp::PortIdentifier::Flags::FaderMonoCompat;
     mono_compat_enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
   }
 
@@ -209,8 +209,7 @@ Fader::Fader (
       auto * swap_phase_ptr = std::get<ControlPort *> (swap_phase.get_object ());
       swap_phase_ptr->id_->sym_ =
         passthrough ? u8"prefader_swap_phase" : u8"fader_swap_phase";
-      swap_phase_ptr->id_->flags2_ |=
-        dsp::PortIdentifier::Flags2::FaderSwapPhase;
+      swap_phase_ptr->id_->flags_ |= dsp::PortIdentifier::Flags::FaderSwapPhase;
       swap_phase_ptr->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
       return swap_phase;
     };
@@ -376,20 +375,20 @@ Fader::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
       id.track_id_ = track->get_uuid ();
       if (passthrough_)
         {
-          id.flags2_ |= PortIdentifier::Flags2::Prefader;
+          id.flags_ |= PortIdentifier::Flags::Prefader;
         }
       else
         {
-          id.flags2_ |= PortIdentifier::Flags2::Postfader;
+          id.flags_ |= PortIdentifier::Flags::Postfader;
         }
     }
   else if (type_ == Fader::Type::SampleProcessor)
     {
-      id.flags2_ |= PortIdentifier::Flags2::SampleProcessorFader;
+      id.flags_ |= PortIdentifier::Flags::SampleProcessorFader;
     }
   else
     {
-      id.flags2_ |= PortIdentifier::Flags2::MonitorFader;
+      id.flags_ |= PortIdentifier::Flags::MonitorFader;
     }
 
   if (ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::Amplitude))
@@ -410,21 +409,21 @@ utils::Utf8String
 Fader::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
   if (
-    ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::Prefader)
-    || ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::Postfader))
+    ENUM_BITSET_TEST (id.flags_, dsp::PortIdentifier::Flags::Prefader)
+    || ENUM_BITSET_TEST (id.flags_, dsp::PortIdentifier::Flags::Postfader))
     {
       auto * tr = get_track ();
       z_return_val_if_fail (tr, {});
       return utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("{}/{}", tr->get_name (), id.get_label ()));
     }
-  if (ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::MonitorFader))
+  if (ENUM_BITSET_TEST (id.flags_, dsp::PortIdentifier::Flags::MonitorFader))
     {
       return utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("Engine/{}", id.get_label ()));
     }
   if (ENUM_BITSET_TEST (
-        id.flags2_, dsp::PortIdentifier::Flags2::SampleProcessorFader))
+        id.flags_, dsp::PortIdentifier::Flags::SampleProcessorFader))
     {
       return id.get_label ();
     }
@@ -440,9 +439,9 @@ Fader::on_control_change_event (
   using PortIdentifier = dsp::PortIdentifier;
   if (
     ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::FaderMute)
-    || ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::FaderSolo)
-    || ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::FaderListen)
-    || ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::FaderMonoCompat))
+    || ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::FaderSolo)
+    || ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::FaderListen)
+    || ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::FaderMonoCompat))
     {
       // EVENTS_PUSH (EventType::ET_TRACK_FADER_BUTTON_CHANGED, track);
     }

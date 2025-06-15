@@ -922,7 +922,7 @@ CarlaNativePlugin::create_ports (bool loading)
           auto port = std::make_unique<MidiPort> (
             fmt::format ("{} {}", QObject::tr ("MIDI in"), i), PortFlow::Input);
           port->id_.sym_ = fmt::format ("midi_in_{}", i);
-          port->id_.flags2_ |= PortIdentifier::Flags2::SupportsMidi;
+          port->id_.flags_ |= PortIdentifier::Flags::SupportsMidi;
           add_in_port (std::move (port));
         }
       for (int i = 0; i < descr->num_midi_outs_; i++)
@@ -930,7 +930,7 @@ CarlaNativePlugin::create_ports (bool loading)
           auto port = std::make_unique<MidiPort> (
             fmt::format ("{} {}", QObject::tr ("MIDI out"), i), PortFlow::Output);
           port->id_.sym_ = fmt::format ("midi_out_{}", i);
-          port->id_.flags2_ |= PortIdentifier::Flags2::SupportsMidi;
+          port->id_.flags_ |= PortIdentifier::Flags::SupportsMidi;
           add_out_port (std::move (port));
         }
       for (int i = 0; i < descr->num_cv_ins_; i++)
@@ -1033,7 +1033,7 @@ CarlaNativePlugin::create_ports (bool loading)
             }
           else if (native_param->hints & NATIVE_PARAMETER_USES_SCALEPOINTS)
             {
-              port->id_.flags2_ |= PortIdentifier::Flags2::Enumeration;
+              port->id_.flags_ |= PortIdentifier::Flags::Enumeration;
             }
           else if (native_param->hints & NATIVE_PARAMETER_IS_INTEGER)
             {
@@ -1827,7 +1827,7 @@ CarlaNativePlugin::get_midi_out_port ()
   auto ports = get_output_port_span ().get_elements_by_type<MidiPort> ();
   auto it = std::ranges::find_if (ports, [] (const MidiPort * port) {
     return ENUM_BITSET_TEST (
-      port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi);
+      port->id_->flags_, PortIdentifier::Flags::SupportsMidi);
   });
   return it != ports.end () ? *it : nullptr;
 }

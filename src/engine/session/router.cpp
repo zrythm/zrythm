@@ -89,12 +89,12 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
           P_TEMPO_TRACK->set_bpm (change.real_val, 0.f, true, true);
         }
       else if (
-        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags2::BeatsPerBar))
+        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags::BeatsPerBar))
         {
           P_TEMPO_TRACK->set_beats_per_bar (change.ival);
         }
       else if (
-        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags2::BeatUnit))
+        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags::BeatUnit))
         {
           P_TEMPO_TRACK->set_beat_unit_from_enum (change.beat_unit);
         }

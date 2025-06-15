@@ -654,8 +654,8 @@ Tracklist::insert_track (
           track->append_ports (ports, true);
           for (auto * port : ports)
             {
-              port->id_->flags2_ |=
-                dsp::PortIdentifier::Flags2::SampleProcessorTrack;
+              port->id_->flags_ |=
+                dsp::PortIdentifier::Flags::SampleProcessorTrack;
             }
         }
 

@@ -120,24 +120,24 @@ public:
   /**
    * Port flags.
    */
-  enum class Flags
+  enum class Flags : std::uint64_t
   {
-    StereoL = 1 << 0,
-    StereoR = 1 << 1,
-    PianoRoll = 1 << 2,
+    StereoL = UINT64_C (1) << 0,
+    StereoR = UINT64_C (1) << 1,
+    PianoRoll = UINT64_C (1) << 2,
     /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#sideChainOf. */
-    Sidechain = 1 << 3,
+    Sidechain = UINT64_C (1) << 3,
     /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
      * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
-    MainPort = 1 << 4,
+    MainPort = UINT64_C (1) << 4,
 
     /**
      * @brief Piano roll user (piano) key press.
      */
-    ManualPress = 1 << 5,
+    ManualPress = UINT64_C (1) << 5,
 
     /** Amplitude port. */
-    Amplitude = 1 << 6,
+    Amplitude = UINT64_C (1) << 6,
 
     /**
      * Port controls the stereo balance.
@@ -145,7 +145,7 @@ public:
      * This is used in channels for the balance
      * control.
      */
-    StereoBalance = 1 << 7,
+    StereoBalance = UINT64_C (1) << 7,
 
     /**
      * Whether the port wants to receive position
@@ -153,7 +153,7 @@ public:
      *
      * This is only applicable for LV2 Atom ports.
      */
-    WantPosition = 1 << 8,
+    WantPosition = UINT64_C (1) << 8,
 
     /**
      * Trigger ports will be set to 0 at the end of
@@ -162,35 +162,35 @@ public:
      * This mostly applies to LV2 Control Input
      * ports.
      */
-    Trigger = 1 << 9,
+    Trigger = UINT64_C (1) << 9,
 
     /** Whether the port is a toggle (on/off). */
-    Toggle = 1 << 10,
+    Toggle = UINT64_C (1) << 10,
 
     /** Whether the port is an integer. */
-    Integer = 1 << 11,
+    Integer = UINT64_C (1) << 11,
 
     /** Whether port is for letting the plugin know
      * that we are in freewheeling (export) mode. */
-    Freewheel = 1 << 12,
+    Freewheel = UINT64_C (1) << 12,
 
     /** Used for plugin ports. */
-    ReportsLatency = 1 << 13,
+    ReportsLatency = UINT64_C (1) << 13,
 
     /** Port should not be visible to users. */
-    NotOnGui = 1 << 14,
+    NotOnGui = UINT64_C (1) << 14,
 
     /** Port is a switch for plugin enabled. */
-    PluginEnabled = 1 << 15,
+    PluginEnabled = UINT64_C (1) << 15,
 
     /** Port is a plugin control. */
-    PluginControl = 1 << 16,
+    PluginControl = UINT64_C (1) << 16,
 
     /** Port is for fader mute. */
-    FaderMute = 1 << 17,
+    FaderMute = UINT64_C (1) << 17,
 
     /** Port is for channel fader. */
-    ChannelFader = 1 << 18,
+    ChannelFader = UINT64_C (1) << 18,
 
     /**
      * Port has an automation track.
@@ -198,18 +198,15 @@ public:
      * If this is set, it is assumed that the automation track at
      * @ref PortIdentifier.port_index is for this port.
      */
-    Automatable = 1 << 19,
+    Automatable = UINT64_C (1) << 19,
 
     /** MIDI automatable control, such as modwheel or pitch bend. */
-    MidiAutomatable = 1 << 20,
+    MidiAutomatable = UINT64_C (1) << 20,
 
     /** Channels can send to this port (ie, this port
      * is a track processor midi/stereo in or a plugin
      * sidechain in). */
-    SendReceivable = 1 << 21,
-
-    /** This is a BPM port. */
-    Bpm = 1 << 22,
+    SendReceivable = UINT64_C (1) << 21,
 
     /**
      * Generic plugin port not belonging to the
@@ -218,19 +215,19 @@ public:
      * This is for ports that are added by Zrythm
      * such as Enabled and Gain.
      */
-    GenericPluginPort = 1 << 23,
+    GenericPluginPort = UINT64_C (1) << 22,
 
     /** This is the plugin gain. */
-    PluginGain = 1 << 24,
+    PluginGain = UINT64_C (1) << 23,
 
     /** Track processor input mono switch. */
-    TpMono = 1 << 25,
+    TpMono = UINT64_C (1) << 24,
 
     /** Track processor input gain. */
-    TpInputGain = 1 << 26,
+    TpInputGain = UINT64_C (1) << 25,
 
     /** Port is a hardware port. */
-    Hw = 1 << 27,
+    Hw = UINT64_C (1) << 26,
 
     /**
      * Port is part of a modulator macro processor.
@@ -238,10 +235,10 @@ public:
      * Which of the ports it is can be determined
      * by checking flow/type.
      */
-    ModulatorMacro = 1 << 28,
+    ModulatorMacro = UINT64_C (1) << 27,
 
     /** Logarithmic. */
-    Logarithmic = 1 << 29,
+    Logarithmic = UINT64_C (1) << 28,
 
     /**
      * zrythm::gui::old_dsp::plugins::Plugin control is a property (changes are
@@ -253,95 +250,90 @@ public:
      * both).
      *
      * @see http://lv2plug.in/ns/lv2core#Parameter. */
-    IsProperty = 1 << 30,
-  };
+    IsProperty = UINT64_C (1) << 29,
 
-  enum class Flags2
-  {
     /** Transport ports. */
-    TransportRoll = 1 << 0,
-    TransportStop = 1 << 1,
-    TransportBackward = 1 << 2,
-    TransportForward = 1 << 3,
-    TransportLoopToggle = 1 << 4,
-    TransportRecToggle = 1 << 5,
+    TransportRoll = UINT64_C (1) << 30,
+    TransportStop = UINT64_C (1) << 31,
+    TransportBackward = UINT64_C (1) << 32,
+    TransportForward = UINT64_C (1) << 33,
+    TransportLoopToggle = UINT64_C (1) << 34,
+    TransportRecToggle = UINT64_C (1) << 35,
 
     /** LV2 control atom port supports patch messages. */
-    SupportsPatchMessage = 1 << 6,
+    SupportsPatchMessage = UINT64_C (1) << 36,
 
     /** Port's only reasonable values are its scale points. */
-    Enumeration = 1 << 7,
+    Enumeration = UINT64_C (1) << 37,
 
     /** Parameter port's value type is URI. */
-    UriParam = 1 << 8,
+    UriParam = UINT64_C (1) << 38,
 
     /** Atom port buffer type is sequence. */
-    Sequence = 1 << 9,
+    Sequence = UINT64_C (1) << 39,
 
     /** Atom or event port supports MIDI. */
-    SupportsMidi = 1 << 10,
+    SupportsMidi = UINT64_C (1) << 40,
 
     /** Track processor output gain. */
-    TpOutputGain = 1 << 11,
+    TpOutputGain = UINT64_C (1) << 41,
 
     /** MIDI pitch bend. */
-    MidiPitchBend = 1 << 12,
+    MidiPitchBend = UINT64_C (1) << 42,
 
     /** MIDI poly key pressure. */
-    MidiPolyKeyPressure = 1 << 13,
+    MidiPolyKeyPressure = UINT64_C (1) << 43,
 
     /** MIDI channel pressure. */
-    MidiChannelPressure = 1 << 14,
+    MidiChannelPressure = UINT64_C (1) << 44,
 
     /** Channel send enabled. */
-    ChannelSendEnabled = 1 << 15,
+    ChannelSendEnabled = UINT64_C (1) << 45,
 
     /** Channel send amount. */
-    ChannelSendAmount = 1 << 16,
-
-    /** Beats per bar. */
-    BeatsPerBar = 1 << 17,
-
-    /** Beat unit. */
-    BeatUnit = 1 << 18,
+    ChannelSendAmount = UINT64_C (1) << 46,
 
     /** Fader solo. */
-    FaderSolo = 1 << 19,
+    FaderSolo = UINT64_C (1) << 47,
 
     /** Fader listen. */
-    FaderListen = 1 << 20,
+    FaderListen = UINT64_C (1) << 48,
 
     /** Fader mono compat. */
-    FaderMonoCompat = 1 << 21,
+    FaderMonoCompat = UINT64_C (1) << 49,
 
     /** Track recording. */
-    TrackRecording = 1 << 22,
+    TrackRecording = UINT64_C (1) << 50,
 
     /** Track processor monitor audio. */
-    TpMonitorAudio = 1 << 23,
+    TpMonitorAudio = UINT64_C (1) << 51,
 
     /** Port is owned by prefader. */
-    Prefader = 1 << 24,
+    Prefader = UINT64_C (1) << 52,
 
     /** Port is owned by postfader. */
-    Postfader = 1 << 25,
+    Postfader = UINT64_C (1) << 53,
 
     /** Port is owned by monitor fader. */
-    MonitorFader = 1 << 26,
+    MonitorFader = UINT64_C (1) << 54,
 
     /** Port is owned by the sample processor fader. */
-    SampleProcessorFader = 1 << 27,
+    SampleProcessorFader = UINT64_C (1) << 55,
 
-    /** Port is owned by sample processor
-     * track/channel (including faders owned by those
-     * tracks/channels). */
-    SampleProcessorTrack = 1 << 28,
+    /** Port is owned by sample processor track/channel (including faders owned
+     * by those tracks/channels). */
+    SampleProcessorTrack = UINT64_C (1) << 56,
 
     /** Fader swap phase. */
-    FaderSwapPhase = 1 << 29,
+    FaderSwapPhase = UINT64_C (1) << 57,
 
     /** MIDI clock. */
-    MidiClock = 1 << 30,
+    MidiClock = UINT64_C (1) << 58,
+
+    // deprecated
+    Bpm = UINT64_C (1) << 59,
+    BeatsPerBar = UINT64_C (1) << 60,
+    BeatUnit = UINT64_C (1) << 61,
   };
 
   friend bool operator== (const PortIdentifier &lhs, const PortIdentifier &rhs);
@@ -361,7 +353,7 @@ public:
 
   bool is_monitor_fader_stereo_in_or_out_port () const
   {
-    return ENUM_BITSET_TEST (flags2_, Flags2::MonitorFader)
+    return ENUM_BITSET_TEST (flags_, Flags::MonitorFader)
            && (ENUM_BITSET_TEST (flags_, Flags::StereoL) || ENUM_BITSET_TEST (flags_, Flags::StereoR));
   }
 
@@ -404,8 +396,7 @@ public:
   PortUnit unit_{ PortUnit::None };
 
   /** Flags (e.g. is side chain). */
-  PortIdentifier::Flags  flags_{};
-  PortIdentifier::Flags2 flags2_{};
+  PortIdentifier::Flags flags_{};
 
   /** Identifier of plugin. */
   std::optional<PluginUuid> plugin_id_;
@@ -443,7 +434,6 @@ public:
       { "flow",           port.flow_         },
       { "unit",           port.unit_         },
       { "flags",          port.flags_        },
-      { "flags2",         port.flags2_       },
       { "trackId",        port.track_id_     },
       { "pluginId",       port.plugin_id_    },
       { "portGroup",      port.port_group_   },
@@ -463,7 +453,6 @@ public:
     j.at ("flow").get_to (port.flow_);
     j.at ("unit").get_to (port.unit_);
     j.at ("flags").get_to (port.flags_);
-    j.at ("flags2").get_to (port.flags2_);
     j.at ("trackId").get_to (port.track_id_);
     j.at ("pluginId").get_to (port.plugin_id_);
     j.at ("portGroup").get_to (port.port_group_);
@@ -476,7 +465,6 @@ public:
 }; // namespace zrythm::dsp
 
 ENUM_ENABLE_BITSET (zrythm::dsp::PortIdentifier::Flags);
-ENUM_ENABLE_BITSET (zrythm::dsp::PortIdentifier::Flags2);
 
 namespace std
 {

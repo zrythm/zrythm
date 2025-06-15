@@ -101,7 +101,7 @@ TrackProcessor::TrackProcessor (
       output_gain->id_->sym_ = u8"track_processor_output_gain";
       output_gain->range_ = { 0.f, 4.f, 0.f };
       output_gain->deff_ = 1.f;
-      output_gain->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpOutputGain;
+      output_gain->id_->flags_ |= dsp::PortIdentifier::Flags::TpOutputGain;
       output_gain->set_control_value (1.f, false, false);
 
       monitor_audio_id_ =
@@ -110,7 +110,7 @@ TrackProcessor::TrackProcessor (
       monitor_audio->set_owner (*this);
       monitor_audio->id_->sym_ = u8"track_processor_monitor_audio";
       monitor_audio->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
-      monitor_audio->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpMonitorAudio;
+      monitor_audio->id_->flags_ |= dsp::PortIdentifier::Flags::TpMonitorAudio;
       monitor_audio->set_control_value (0.f, false, false);
     }
 
@@ -255,7 +255,7 @@ TrackProcessor::init_midi_cc_ports ()
       init_midi_port (pitch_bend, i);
       pitch_bend->range_ = { -8192.f, 8191.f, 0.f };
       pitch_bend->deff_ = 0.f;
-      pitch_bend->id_->flags2_ |= PortIdentifier::Flags2::MidiPitchBend;
+      pitch_bend->id_->flags_ |= PortIdentifier::Flags::MidiPitchBend;
 
       (*poly_key_pressure_ids_)[i] = port_registry_.create_object<ControlPort> (
         utils::Utf8String::from_utf8_encoded_string (
@@ -266,8 +266,8 @@ TrackProcessor::init_midi_cc_ports ()
       poly_key_pressure->id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("ch{}_poly_key_pressure", i + 1));
       init_midi_port (poly_key_pressure, i);
-      poly_key_pressure->id_->flags2_ |=
-        PortIdentifier::Flags2::MidiPolyKeyPressure;
+      poly_key_pressure->id_->flags_ |=
+        PortIdentifier::Flags::MidiPolyKeyPressure;
 
       (*channel_pressure_ids_)[i] = port_registry_.create_object<ControlPort> (
         utils::Utf8String::from_utf8_encoded_string (
@@ -278,8 +278,8 @@ TrackProcessor::init_midi_cc_ports ()
       channel_pressure->id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("ch{}_channel_pressure", i + 1));
       init_midi_port (channel_pressure, i);
-      channel_pressure->id_->flags2_ |=
-        PortIdentifier::Flags2::MidiChannelPressure;
+      channel_pressure->id_->flags_ |=
+        PortIdentifier::Flags::MidiChannelPressure;
     }
 }
 
@@ -754,8 +754,8 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
   while (updated_midi_automatable_ports_->pop_front (cc))
     {
       /*port_identifier_print (&cc->id_);*/
-      if (ENUM_BITSET_TEST (
-            cc->id_->flags2_, PortIdentifier::Flags2::MidiPitchBend))
+      if (
+        ENUM_BITSET_TEST (cc->id_->flags_, PortIdentifier::Flags::MidiPitchBend))
         {
           midi_out.midi_events_.queued_events_.add_pitchbend (
             cc->midi_channel_,
@@ -764,7 +764,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
         }
       else if (
         ENUM_BITSET_TEST (
-          cc->id_->flags2_, PortIdentifier::Flags2::MidiPolyKeyPressure))
+          cc->id_->flags_, PortIdentifier::Flags::MidiPolyKeyPressure))
         {
 #if ZRYTHM_TARGET_VER_MAJ > 1
           /* TODO - unsupported in v1 */
@@ -772,7 +772,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
         }
       else if (
         ENUM_BITSET_TEST (
-          cc->id_->flags2_, PortIdentifier::Flags2::MidiChannelPressure))
+          cc->id_->flags_, PortIdentifier::Flags::MidiChannelPressure))
         {
           midi_out.midi_events_.queued_events_.add_channel_pressure (
             cc->midi_channel_,

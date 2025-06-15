@@ -99,8 +99,8 @@ Plugin::set_stereo_outs_and_midi_in ()
   /* set MIDI input */
   for (auto * port : get_input_port_span ().get_elements_by_type<MidiPort> ())
     {
-      if (ENUM_BITSET_TEST (
-            port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
+      if (
+        ENUM_BITSET_TEST (port->id_->flags_, PortIdentifier::Flags::SupportsMidi))
         {
           midi_in_port_ = port;
           break;
@@ -1187,8 +1187,8 @@ Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
                   if (
                     std::holds_alternative<MidiPort *> (out_port_var)
                     && ENUM_BITSET_TEST (
-                      std::get<MidiPort *> (out_port_var)->id_->flags2_,
-                      PortIdentifier::Flags2::SupportsMidi))
+                      std::get<MidiPort *> (out_port_var)->id_->flags_,
+                      PortIdentifier::Flags::SupportsMidi))
                     {
                       auto midi_out_port = std::get<MidiPort *> (out_port_var);
                       /* copy */
@@ -1337,15 +1337,14 @@ done1:
   for (auto out_port : get_output_port_span ().get_elements_by_type<MidiPort> ())
     {
       if (ENUM_BITSET_TEST (
-            out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
+            out_port->id_->flags_, PortIdentifier::Flags::SupportsMidi))
         {
           for (
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<MidiPort> ())
             {
-              if (
-                ENUM_BITSET_TEST (
-                  in_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
+              if (ENUM_BITSET_TEST (
+                    in_port->id_->flags_, PortIdentifier::Flags::SupportsMidi))
                 {
                   connections_mgr->add_default_connection (
                     out_port->get_uuid (), in_port->get_uuid (), true);
@@ -1455,15 +1454,14 @@ done2:
   for (auto out_port : get_output_port_span ().get_elements_by_type<MidiPort> ())
     {
       if (ENUM_BITSET_TEST (
-            out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
+            out_port->id_->flags_, PortIdentifier::Flags::SupportsMidi))
         {
           for (
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<MidiPort> ())
             {
-              if (
-                ENUM_BITSET_TEST (
-                  in_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
+              if (ENUM_BITSET_TEST (
+                    in_port->id_->flags_, PortIdentifier::Flags::SupportsMidi))
                 {
                   mgr->remove_connection (
                     out_port->get_uuid (), in_port->get_uuid ());

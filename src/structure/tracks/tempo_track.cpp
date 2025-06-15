@@ -83,7 +83,7 @@ TempoTrack::initialize ()
     beats_per_bar_port.deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
     beats_per_bar_port.set_control_value (
       TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-    beats_per_bar_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatsPerBar;
+    beats_per_bar_port.id_->flags_ |= dsp::PortIdentifier::Flags::BeatsPerBar;
     beats_per_bar_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
     beats_per_bar_port.id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
   }
@@ -101,7 +101,7 @@ TempoTrack::initialize ()
     beat_unit_port.deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
     beat_unit_port.set_control_value (
       static_cast<float> (TEMPO_TRACK_DEFAULT_BEAT_UNIT), false, false);
-    beat_unit_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatUnit;
+    beat_unit_port.id_->flags_ |= dsp::PortIdentifier::Flags::BeatUnit;
     beat_unit_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
     beat_unit_port.id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
   }
@@ -174,8 +174,8 @@ TempoTrack::on_control_change_event (
 
   /* if time sig value, update transport caches */
   else if (
-    ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::BeatsPerBar)
-    || ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::BeatUnit))
+    ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::BeatsPerBar)
+    || ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::BeatUnit))
     {
       /* this must only be called during processing kickoff or while the
        * engine is stopped */
@@ -187,7 +187,7 @@ TempoTrack::on_control_change_event (
       bpm_t bpm = get_current_bpm ();
       TRANSPORT->update_caches (beats_per_bar, beat_unit);
       bool update_from_ticks =
-        ENUM_BITSET_TEST (id.flags2_, PortIdentifier::Flags2::BeatsPerBar);
+        ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::BeatsPerBar);
       AUDIO_ENGINE->update_frames_per_tick (
         beats_per_bar, bpm, AUDIO_ENGINE->get_sample_rate (), false,
         update_from_ticks, false);

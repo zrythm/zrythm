@@ -134,7 +134,7 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
   enabled_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("channel_send_{}_enabled", slot + 1));
   enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
-  enabled_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendEnabled;
+  enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::ChannelSendEnabled;
   enabled_port.set_owner (*this);
   enabled_port.set_control_value (0.f, false, false);
 
@@ -147,7 +147,7 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
     fmt::format ("channel_send_{}_amount", slot + 1));
   amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
   amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-  amount_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendAmount;
+  amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::ChannelSendAmount;
   amount_port.set_owner (*this);
   amount_port.set_control_value (1.f, false, false);
 
@@ -782,15 +782,15 @@ ChannelSend::set_port_metadata_from_owner (
   id.port_index_ = slot_;
   id.owner_type_ = dsp::PortIdentifier::OwnerType::ChannelSend;
 
-  if (ENUM_BITSET_TEST (
-        id.flags2_, dsp::PortIdentifier::Flags2::ChannelSendEnabled))
+  if (
+    ENUM_BITSET_TEST (id.flags_, dsp::PortIdentifier::Flags::ChannelSendEnabled))
     {
       range.minf_ = 0.f;
       range.maxf_ = 1.f;
       range.zerof_ = 0.0f;
     }
   else if (
-    ENUM_BITSET_TEST (id.flags2_, dsp::PortIdentifier::Flags2::ChannelSendAmount))
+    ENUM_BITSET_TEST (id.flags_, dsp::PortIdentifier::Flags::ChannelSendAmount))
     {
       range.minf_ = 0.f;
       range.maxf_ = 2.f;

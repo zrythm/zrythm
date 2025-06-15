@@ -45,14 +45,7 @@ public:
      *
      * @see BPM.
      */
-    PortIdentifier::Flags flag1{};
-
-    /**
-     * Flag to identify the port the change is for.
-     *
-     * @see BEATS_PER_BAR and BEAT_UNIT.
-     */
-    PortIdentifier::Flags2 flag2{};
+    PortIdentifier::Flags flag{};
 
     /** Real (not normalized) value to set. */
     float real_val = 0.0f;

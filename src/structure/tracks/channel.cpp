@@ -394,7 +394,7 @@ Channel::connect_plugin_to_prefader (Plugin &pl)
         {
           if (
             ENUM_BITSET_TEST (
-              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi)
+              out_port->id_->flags_, PortIdentifier::Flags::SupportsMidi)
             && out_port->id_->flow_ == dsp::PortFlow::Output)
             {
               mgr->add_default_connection (
@@ -445,7 +445,7 @@ Channel::disconnect_plugin_from_prefader (Plugin &pl)
           else if (
             type == dsp::PortType::Event && std::is_same_v<PortT, MidiPort>
             && ENUM_BITSET_TEST (
-              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
+              out_port->id_->flags_, PortIdentifier::Flags::SupportsMidi))
             {
               if (port_connections_mgr->connection_exists (
                     out_port->get_uuid (), prefader_->get_midi_in_id ()))

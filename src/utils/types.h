@@ -215,7 +215,8 @@ enum class BeatUnit
 #define ENUM_BITSET(_enum, _val) (magic_enum::containers::bitset<_enum> (_val))
 #define ENUM_BITSET_TEST(_val, _other_val) \
   /* (ENUM_BITSET (_enum, _val).test (_other_val)) */ \
-  (static_cast<int> (_val) & static_cast<int> (_other_val))
+  (static_cast<std::underlying_type_t<decltype (_val)>> (_val) \
+   & static_cast<std::underlying_type_t<decltype (_val)>> (_other_val))
 
 /** @important ENUM_ENABLE_BITSET must be called on the enum that this is used
  * on. */

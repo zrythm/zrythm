@@ -72,11 +72,12 @@ TEST (PortIdentifier, MonitorFaderPorts)
 {
   PortIdentifier id;
 
-  id.flags2_ = PortIdentifier::Flags2::MonitorFader;
-  id.flags_ = PortIdentifier::Flags::StereoL;
+  id.flags_ =
+    PortIdentifier::Flags::MonitorFader | PortIdentifier::Flags::StereoL;
   EXPECT_TRUE (id.is_monitor_fader_stereo_in_or_out_port ());
 
-  id.flags_ = PortIdentifier::Flags::StereoR;
+  id.flags_ =
+    PortIdentifier::Flags::MonitorFader | PortIdentifier::Flags::StereoR;
   EXPECT_TRUE (id.is_monitor_fader_stereo_in_or_out_port ());
 
   id.flags_ = PortIdentifier::Flags{};
@@ -137,8 +138,8 @@ TEST (PortIdentifier, Serialization)
   id1.type_ = PortType::Audio;
   id1.flow_ = PortFlow::Input;
   id1.unit_ = PortUnit::Hz;
-  id1.flags_ = PortIdentifier::Flags::MainPort;
-  id1.flags2_ = PortIdentifier::Flags2::MidiPitchBend;
+  id1.flags_ =
+    PortIdentifier::Flags::MainPort | PortIdentifier::Flags::MidiPitchBend;
   id1.port_index_ = 42;
   id1.port_group_ = u8"group1";
   id1.ext_port_id_ = u8"ext1";
@@ -163,7 +164,6 @@ TEST (PortIdentifier, Serialization)
   EXPECT_EQ (id1.flow_, id2.flow_);
   EXPECT_EQ (id1.unit_, id2.unit_);
   EXPECT_EQ (id1.flags_, id2.flags_);
-  EXPECT_EQ (id1.flags2_, id2.flags2_);
   EXPECT_EQ (id1.port_index_, id2.port_index_);
   EXPECT_EQ (id1.port_group_, id2.port_group_);
   EXPECT_EQ (id1.ext_port_id_, id2.ext_port_id_);

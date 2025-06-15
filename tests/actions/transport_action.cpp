@@ -36,7 +36,7 @@ TEST_F (ZrythmFixture, ChangeBPMAndTimeSignature)
   /* change time sig to 4/16 */
   {
     ControlPort::ChangeEvent change;
-    change.flag2 = PortIdentifier::Flags2::BeatUnit;
+    change.flag2 = PortIdentifier::Flags::BeatUnit;
     change.beat_unit = BeatUnit::Sixteen;
     ROUTER->queue_control_port_change (change);
   }

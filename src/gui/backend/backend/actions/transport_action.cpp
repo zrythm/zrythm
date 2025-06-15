@@ -85,17 +85,18 @@ TransportAction::do_or_undo (bool do_it)
   switch (type_)
     {
     case Type::TempoChange:
-      change.flag1 = PortIdentifier::Flags::Bpm;
+      change.flag = PortIdentifier::Flags::Bpm;
       change.real_val = do_it ? bpm_after_ : bpm_before_;
       break;
     case Type::BeatsPerBarChange:
-      change.flag2 = PortIdentifier::Flags2::BeatsPerBar;
+      change.flag = PortIdentifier::Flags::BeatsPerBar;
       change.ival = do_it ? int_after_ : int_before_;
       break;
     case Type::BeatUnitChange:
-      change.flag2 = PortIdentifier::Flags2::BeatUnit;
-      change.beat_unit = structure::tracks::TempoTrack::beat_unit_to_enum (
-        do_it ? int_after_ : int_before_);
+      change.flag = PortIdentifier::Flags::BeatUnit;
+      // TODO ?
+      // change.beat_unit = structure::tracks::TempoTrack::beat_unit_to_enum (
+      // do_it ? int_after_ : int_before_);
       break;
     }
 
