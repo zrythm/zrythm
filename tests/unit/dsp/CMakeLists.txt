@@ -18,6 +18,8 @@ add_executable(zrythm_dsp_unit_tests
   panning_test.cpp
   peak_dsp_test.cpp
   peak_fall_smooth_test.cpp
+  playhead_test.cpp
+  playhead_qml_adapter_test.cpp
   port_connection_test.cpp
   port_connections_manager_test.cpp
   port_identifier_test.cpp

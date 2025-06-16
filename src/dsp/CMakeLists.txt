@@ -38,6 +38,9 @@ target_sources(zrythm_dsp_lib
     peak_dsp.cpp
     peak_fall_smooth.h
     peak_fall_smooth.cpp
+    playhead.h
+    playhead_qml_adapter.h
+    playhead_qml_adapter.cpp
     port_connection.h
     port_connection.cpp
     port_connections_manager.h
