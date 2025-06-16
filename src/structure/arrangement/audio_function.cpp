@@ -500,8 +500,7 @@ audio_function_apply (
       {
         AudioClip tmp_clip_before (
           src_frames, AudioClip::BitDepth::BIT_DEPTH_32,
-          AUDIO_ENGINE->get_sample_rate (), P_TEMPO_TRACK->get_current_bpm (),
-          u8"tmp-clip");
+          AUDIO_ENGINE->get_sample_rate (), 140.f, u8"tmp-clip");
         auto tmp_clip = tmp_clip_before.edit_in_ext_program ();
         for (int i = 0; i < channels; ++i)
           {

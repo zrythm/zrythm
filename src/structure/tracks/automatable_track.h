@@ -172,7 +172,6 @@ using AutomatableTrackVariant = std::variant<
   AudioBusTrack,
   AudioTrack,
   ChordTrack,
-  ModulatorTrack,
-  TempoTrack>;
+  ModulatorTrack>;
 using AutomatableTrackPtrVariant = to_pointer_variant<AutomatableTrackVariant>;
 }

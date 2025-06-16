@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
@@ -38,7 +38,6 @@
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region.h"
 #include "structure/tracks/piano_roll_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
 #include "utils/math.h"
@@ -219,8 +218,10 @@ MidiRegion::export_to_midi_file (
 
   if ((mf = midiFileCreate (full_path.c_str (), TRUE)))
     {
+      const auto &tempo_map = PROJECT->get_tempo_map ();
+
       /* Write tempo information out to track 1 */
-      midiSongAddTempo (mf, 1, (int) P_TEMPO_TRACK->get_current_bpm ());
+      midiSongAddTempo (mf, 1, (int) tempo_map.getEvents ().front ().bpm);
 
       /* All data is written out to _tracks_ not channels. We therefore set the
       current channel before writing data out. Channel assignments can change
@@ -233,7 +234,7 @@ MidiRegion::export_to_midi_file (
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
-      int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
+      int beats_per_bar = tempo_map.getTimeSignatureEvents ().front ().numerator;
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar, TRANSPORT->ticks_per_beat_);
 

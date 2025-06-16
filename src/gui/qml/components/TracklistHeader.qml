@@ -29,7 +29,7 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add _MIDI Track")
-                onTriggered: trackFactory.addEmptyTrackFromType(9)
+                onTriggered: trackFactory.addEmptyTrackFromType(8)
             }
 
             MenuItem {
@@ -49,12 +49,12 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add Audio FX Track")
-                onTriggered: trackFactory.addEmptyTrackFromType(7)
+                onTriggered: trackFactory.addEmptyTrackFromType(6)
             }
 
             MenuItem {
                 text: qsTr("Add MIDI FX Track")
-                onTriggered: trackFactory.addEmptyTrackFromType(10)
+                onTriggered: trackFactory.addEmptyTrackFromType(9)
             }
 
             MenuSeparator {
@@ -62,12 +62,12 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add Audio Group Track")
-                onTriggered: trackFactory.addEmptyTrackFromType(8)
+                onTriggered: trackFactory.addEmptyTrackFromType(7)
             }
 
             MenuItem {
                 text: qsTr("Add MIDI Group Track")
-                onTriggered: trackFactory.addEmptyTrackFromType(11)
+                onTriggered: trackFactory.addEmptyTrackFromType(10)
             }
 
             MenuSeparator {
@@ -75,7 +75,7 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add Folder Track")
-                onTriggered: trackFactory.addEmptyTrackFromType(12)
+                onTriggered: trackFactory.addEmptyTrackFromType(11)
             }
 
         }

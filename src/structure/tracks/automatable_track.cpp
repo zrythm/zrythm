@@ -7,7 +7,6 @@
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel_track.h"
 #include "structure/tracks/modulator_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
@@ -103,17 +102,7 @@ AutomatableTrack::generate_automation_tracks ()
             }
         }
 
-      if constexpr (std::is_same_v<TrackT, TempoTrack>)
-        {
-          /* create special BPM and time sig automation tracks for tempo track
-           */
-          auto &at = create_and_add_at (self->get_bpm_port ());
-          at.created_ = true;
-          atl->set_at_visible (at, true);
-          create_and_add_at (self->get_beats_per_bar_port ());
-          create_and_add_at (self->get_beat_unit_port ());
-        }
-      else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+      if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
         {
           const auto processors = self->get_modulator_macro_processors ();
           for (const auto &macro : processors)

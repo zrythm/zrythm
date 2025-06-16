@@ -57,8 +57,6 @@ target_sources(zrythm_gui_lib
     processable_track.cpp
     recordable_track.h
     recordable_track.cpp
-    tempo_track.h
-    tempo_track.cpp
     track.h
     track.cpp
     track_all.h

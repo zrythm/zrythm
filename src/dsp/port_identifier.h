@@ -329,11 +329,6 @@ public:
 
     /** MIDI clock. */
     MidiClock = UINT64_C (1) << 58,
-
-    // deprecated
-    Bpm = UINT64_C (1) << 59,
-    BeatsPerBar = UINT64_C (1) << 60,
-    BeatUnit = UINT64_C (1) << 61,
   };
 
   friend bool operator== (const PortIdentifier &lhs, const PortIdentifier &rhs);

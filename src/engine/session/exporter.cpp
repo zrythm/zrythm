@@ -18,7 +18,6 @@
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/master_track.h"
 #include "structure/tracks/piano_roll_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
@@ -333,7 +332,8 @@ Exporter::export_midi (Settings &info)
     != nullptr)
     {
       /* Write tempo information out to track 1 */
-      midiSongAddTempo (mf, 1, (int) P_TEMPO_TRACK->get_current_bpm ());
+      const auto &tempo_map = PROJECT->get_tempo_map ();
+      midiSongAddTempo (mf, 1, (int) tempo_map.getEvents ().front ().bpm);
 
       midiFileSetPPQN (mf, Position::TICKS_PER_QUARTER_NOTE);
 
@@ -342,7 +342,7 @@ Exporter::export_midi (Settings &info)
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
-      int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
+      int beats_per_bar = tempo_map.getTimeSignatureEvents ().front ().numerator;
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar, TRANSPORT->ticks_per_beat_);
 
@@ -585,15 +585,18 @@ Exporter::Settings::print () const
   utils::Utf8String time_range;
   if (time_range_ == Exporter::TimeRange::Custom)
     {
+      const auto &tempo_map = PROJECT->get_tempo_map ();
+      const auto  beats_per_bar =
+        tempo_map.getTimeSignatureEvents ().front ().numerator;
       time_range = utils::Utf8String::from_utf8_encoded_string (
         fmt::format (
           "Custom: {} ~ {}",
           custom_start_.to_string (
-            P_TEMPO_TRACK->get_beats_per_bar (),
-            TRANSPORT->sixteenths_per_beat_, AUDIO_ENGINE->frames_per_tick_),
+            beats_per_bar, TRANSPORT->sixteenths_per_beat_,
+            AUDIO_ENGINE->frames_per_tick_),
           custom_end_.to_string (
-            P_TEMPO_TRACK->get_beats_per_bar (),
-            TRANSPORT->sixteenths_per_beat_, AUDIO_ENGINE->frames_per_tick_)));
+            beats_per_bar, TRANSPORT->sixteenths_per_beat_,
+            AUDIO_ENGINE->frames_per_tick_)));
     }
   else
     {

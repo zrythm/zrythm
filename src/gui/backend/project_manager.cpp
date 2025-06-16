@@ -140,10 +140,12 @@ ProjectManager::create_default (
   /* setup engine */
   auto * engine = prj->audio_engine_.get ();
   assert (engine != nullptr);
-  const auto * tempo_track = prj->getTracklist ()->getTempoTrack ();
+  const auto * tempo_map = &prj->get_tempo_map ();
   engine->setup (
-    [tempo_track] () { return tempo_track->getBeatsPerBar (); },
-    [tempo_track] () { return tempo_track->getBpm (); });
+    [tempo_map] () {
+      return tempo_map->getTimeSignatureEvents ().front ().numerator;
+    },
+    [tempo_map] () { return tempo_map->getEvents ().front ().bpm; });
 
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;

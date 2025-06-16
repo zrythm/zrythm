@@ -77,7 +77,7 @@ RangeAction::init_loaded_impl ()
   get_before_objects ().init_loaded (false, frames_per_tick_);
   ArrangerObjectSpan{ PROJECT->get_arranger_object_registry (), objects_added_ }
     .init_loaded (false, frames_per_tick_);
-  transport_->init_loaded (nullptr, nullptr);
+  transport_->init_loaded (nullptr);
 }
 
 #define MOVE_TRANSPORT_MARKER(_action, x, _ticks, _do) \

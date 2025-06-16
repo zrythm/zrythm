@@ -36,7 +36,6 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/port.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"

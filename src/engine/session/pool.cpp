@@ -4,7 +4,6 @@
 #include "engine/session/clip.h"
 #include "engine/session/pool.h"
 #include "gui/backend/backend/project.h"
-#include "structure/tracks/tempo_track.h"
 #include "utils/io.h"
 #include "utils/string.h"
 
@@ -226,8 +225,8 @@ AudioPool::duplicate_clip (const AudioClip::Uuid &clip_id, bool write_file)
   auto * const clip = get_clip (clip_id);
 
   auto new_clip = std::make_shared<AudioClip> (
-    clip->get_samples (), clip->get_bit_depth (), sample_rate_getter_ (),
-    P_TEMPO_TRACK->get_current_bpm (), clip->get_name ());
+    clip->get_samples (), clip->get_bit_depth (), sample_rate_getter_ (), 140.f,
+    clip->get_name ());
   register_clip (new_clip);
 
   z_debug (

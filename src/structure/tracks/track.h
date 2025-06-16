@@ -274,9 +274,6 @@ class Track
       public IPortOwner,
       public utils::UuidIdentifiableObject<Track>
 {
-  Q_GADGET
-  QML_ELEMENT
-
 public:
   using PortType = dsp::PortType;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
@@ -329,11 +326,6 @@ public:
     Marker,
 
     /**
-     * Special track for BPM (tempo) and time signature events.
-     */
-    Tempo,
-
-    /**
      * Special track to contain global Modulator's.
      */
     Modulator,
@@ -367,7 +359,6 @@ public:
     /** Foldable track used for visual grouping. */
     Folder,
   };
-  Q_ENUM (Type)
 
   using Color = zrythm::utils::Color;
   using Position = zrythm::dsp::Position;
@@ -423,7 +414,7 @@ public:
 
   static constexpr bool type_is_copyable (Type type)
   {
-    return type != Type::Master && type != Type::Tempo && type != Type::Chord
+    return type != Type::Master && type != Type::Chord
            && type != Type::Modulator && type != Type::Marker;
   }
 
@@ -499,8 +490,6 @@ public:
       return Type::MidiBus;
     else if constexpr (std::is_same_v<T, MasterTrack>)
       return Type::Master;
-    else if constexpr (std::is_same_v<T, TempoTrack>)
-      return Type::Tempo;
     else if constexpr (std::is_same_v<T, ModulatorTrack>)
       return Type::Modulator;
     else if constexpr (std::is_same_v<T, MarkerTrack>)
@@ -558,7 +547,6 @@ public:
    */
   bool should_be_visible () const;
 
-  bool is_tempo () const { return type_ == Type::Tempo; }
   bool is_folder () const { return type_ == Type::Folder; }
   bool is_audio_group () const { return type_ == Type::AudioGroup; }
   bool is_midi_group () const { return type_ == Type::MidiGroup; }
@@ -1603,7 +1591,6 @@ DEFINE_ENUM_FORMATTER (
   QT_TR_NOOP_UTF8 ("Master"),
   QT_TR_NOOP_UTF8 ("Chord"),
   QT_TR_NOOP_UTF8 ("Marker"),
-  QT_TR_NOOP_UTF8 ("Tempo"),
   QT_TR_NOOP_UTF8 ("Modulator"),
   QT_TR_NOOP_UTF8 ("Audio FX"),
   QT_TR_NOOP_UTF8 ("Audio Group"),

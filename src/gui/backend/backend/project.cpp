@@ -99,7 +99,7 @@ Project::Project (
           audio_engine_->pool_->register_clip (clip);
         },
         [&] () { return audio_engine_->get_sample_rate (); },
-        [&] () { return tracklist_->getTempoTrack ()->get_current_bpm (); },
+        [&] () { return get_tempo_map ().getEvents ().front ().bpm; },
         structure::arrangement::ArrangerObjectSelectionManager{
           timeline_->get_selected_object_ids (), *arranger_object_registry_ },
         structure::arrangement::ArrangerObjectSelectionManager{
@@ -430,13 +430,13 @@ Project::add_default_tracks ()
   add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
 
   /* tempo */
-  add_track.operator()<TempoTrack> (QObject::tr ("Tempo"));
-  int   beats_per_bar = tracklist_->tempo_track_->get_beats_per_bar ();
-  int   beat_unit = tracklist_->tempo_track_->get_beat_unit ();
-  bpm_t bpm = tracklist_->tempo_track_->get_current_bpm ();
-  transport_->update_caches (beats_per_bar, beat_unit);
+  transport_->update_caches (
+    get_tempo_map ().getTimeSignatureEvents ().front ().numerator,
+    get_tempo_map ().getTimeSignatureEvents ().front ().denominator);
   audio_engine_->update_frames_per_tick (
-    beats_per_bar, bpm, audio_engine_->get_sample_rate (), true, true, false);
+    get_tempo_map ().getTimeSignatureEvents ().front ().numerator,
+    static_cast<bpm_t> (get_tempo_map ().getEvents ().front ().bpm),
+    audio_engine_->get_sample_rate (), true, true, false);
 
   /* add a scale */
   arranger_object_factory_->add_scale_object (

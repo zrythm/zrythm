@@ -213,7 +213,7 @@ Arranger {
             case 4:
                 console.log("creating marker");
                 break;
-            case 9:
+            case 8:
                 console.log("creating midi region", track.lanes.getFirstLane());
                 let region = objectFactory.addEmptyMidiRegion(trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
                 root.currentAction = Arranger.CreatingResizingR;

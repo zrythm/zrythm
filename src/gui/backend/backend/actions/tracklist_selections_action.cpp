@@ -274,8 +274,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       else if (track_type == Track::Type::Audio)
         {
           auto clip = std::make_shared<AudioClip> (
-            file_descr->abs_path_, AUDIO_ENGINE->get_sample_rate (),
-            P_TEMPO_TRACK->get_current_bpm ());
+            file_descr->abs_path_, AUDIO_ENGINE->get_sample_rate (), 140.f);
           AUDIO_POOL->register_clip (clip);
           pool_id_ = clip->get_uuid ();
         }

@@ -50,7 +50,6 @@
 #include "gui/dsp/port.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 
@@ -618,18 +617,19 @@ AudioEngine::update_position_info (
   PositionInfo   &pos_nfo,
   const nframes_t frames_to_add)
 {
-  auto transport_ = project_->transport_;
-  auto tempo_track = project_->tracklist_->tempo_track_;
-  auto playhead = transport_->playhead_pos_->get_position ();
+  auto  transport_ = project_->transport_;
+  auto &tempo_map = project_->get_tempo_map ();
+  auto  playhead = transport_->playhead_pos_->get_position ();
   playhead.add_frames (frames_to_add, ticks_per_frame_);
   pos_nfo.is_rolling_ = transport_->isRolling ();
-  pos_nfo.bpm_ = P_TEMPO_TRACK->get_current_bpm ();
+  pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map.getEvents ().front ().bpm);
   pos_nfo.bar_ = playhead.get_bars (true, transport_->ticks_per_bar_);
   pos_nfo.beat_ = playhead.get_beats (
-    true, tempo_track->get_beats_per_bar (), transport_->ticks_per_beat_);
+    true, tempo_map.getTimeSignatureEvents ().front ().numerator,
+    transport_->ticks_per_beat_);
   pos_nfo.sixteenth_ = playhead.get_sixteenths (
-    true, tempo_track->get_beats_per_bar (), transport_->sixteenths_per_beat_,
-    frames_per_tick_);
+    true, tempo_map.getTimeSignatureEvents ().front ().numerator,
+    transport_->sixteenths_per_beat_, frames_per_tick_);
   pos_nfo.sixteenth_within_bar_ =
     pos_nfo.sixteenth_ + (pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_;
   pos_nfo.sixteenth_within_song_ =

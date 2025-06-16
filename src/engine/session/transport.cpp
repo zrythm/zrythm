@@ -15,7 +15,6 @@
 #include "structure/tracks/audio_track.h"
 #include "structure/tracks/laned_track.h"
 #include "structure/tracks/marker_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/gtest_wrapper.h"
@@ -56,9 +55,7 @@ Transport::init_common ()
 }
 
 void
-Transport::init_loaded (
-  Project *                             project,
-  const structure::tracks::TempoTrack * tempo_track)
+Transport::init_loaded (Project * project)
 {
   project_ = project;
 
@@ -66,12 +63,11 @@ Transport::init_loaded (
 
   init_common ();
 
-  if (tempo_track)
-    {
-      int beats_per_bar = tempo_track->get_beats_per_bar ();
-      int beat_unit = tempo_track->get_beat_unit ();
-      update_caches (beats_per_bar, beat_unit);
-    }
+  int beats_per_bar =
+    project->get_tempo_map ().getTimeSignatureEvents ()[0].numerator;
+  int beat_unit =
+    project->get_tempo_map ().getTimeSignatureEvents ()[0].denominator;
+  update_caches (beats_per_bar, beat_unit);
 
   roll_->init_loaded (*this);
   stop_->init_loaded (*this);
@@ -645,9 +641,7 @@ Transport::set_metronome_enabled (bool enabled)
 double
 Transport::get_ppqn () const
 {
-  int    beat_unit = P_TEMPO_TRACK->get_beat_unit ();
-  double res = ticks_per_beat_ * ((double) beat_unit / 4.0);
-  return res;
+  return dsp::TempoMap::getPPQ ();
 }
 
 void
@@ -1061,12 +1055,5 @@ Transport::set_recording (bool record, bool with_wait)
   recording_ = record;
 
   Q_EMIT recordEnabledChanged (recording_);
-}
-
-QString
-Transport::getPlayheadPositionString (
-  const structure::tracks::TempoTrack * tempo_track) const
-{
-  return playhead_pos_->getStringDisplay (this, tempo_track);
 }
 }

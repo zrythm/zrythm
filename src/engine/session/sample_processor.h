@@ -120,10 +120,8 @@ public:
   /**
    * @brief Get the tempo track from the actual project, using @ref
    * audio_engine_.
-   *
-   * @return The tempo track, or nullptr if not found.
    */
-  structure::tracks::TempoTrack * get_tempo_track () const;
+  const dsp::TempoMap &get_tempo_map () const;
 
   /**
    * Finds all metronome events (beat and bar changes)

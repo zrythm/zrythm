@@ -13,7 +13,6 @@
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/master_track.h"
 #include "structure/tracks/modulator_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
@@ -78,10 +77,6 @@ Tracklist::init_loaded (
             {
               master_track_ = track;
             }
-          else if constexpr (std::is_same_v<T, TempoTrack>)
-            {
-              tempo_track_ = track;
-            }
           else if constexpr (std::is_same_v<T, ModulatorTrack>)
             {
               modulator_track_ = track;
@@ -133,12 +128,6 @@ Tracklist::data (const QModelIndex &index, int role) const
     default:
       return {};
     }
-}
-
-TempoTrack *
-Tracklist::getTempoTrack () const
-{
-  return tempo_track_;
 }
 
 void
@@ -644,8 +633,6 @@ Tracklist::insert_track (
         chord_track_ = track;
       else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
         marker_track_ = track;
-      else if constexpr (std::is_same_v<TrackT, TempoTrack>)
-        tempo_track_ = track;
       else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
         modulator_track_ = track;
 
@@ -1998,16 +1985,6 @@ Tracklist::~Tracklist ()
   z_debug ("freeing tracklist...");
 
   // Disconnect all signals to prevent access during destruction
-  disconnect ();
-
-  // Schedule tempo track for later deletion because it might be used when
-  // printing positions
-  std::ranges::for_each (children (), [] (QObject * child) {
-    if (dynamic_cast<TempoTrack *> (child) != nullptr)
-      {
-        child->setParent (nullptr);
-        child->deleteLater ();
-      }
-  });
+  QObject::disconnect ();
 }
 }

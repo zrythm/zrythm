@@ -111,7 +111,6 @@ using ProcessableTrackVariant = std::variant<
   AudioBusTrack,
   AudioTrack,
   ChordTrack,
-  ModulatorTrack,
-  TempoTrack>;
+  ModulatorTrack>;
 using ProcessableTrackPtrVariant = to_pointer_variant<ProcessableTrackVariant>;
 }

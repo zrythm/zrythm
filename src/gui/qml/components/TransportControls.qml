@@ -11,7 +11,6 @@ RowLayout {
     id: root
 
     required property var transport
-    required property var tempoTrack
     required property var tempoMap
 
     LinkedButtons {
@@ -69,7 +68,7 @@ RowLayout {
 
             value: {
                 transport.playheadPosition.ticks; // Force property dependency
-                return transport.playheadPosition.getStringDisplay(transport, tempoTrack);
+                return transport.playheadPosition.getStringDisplay(transport, root.tempoMap);
             }
             label: "time"
             minValueWidth: timeTextMetrics.width

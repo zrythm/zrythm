@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph.h"
@@ -515,32 +515,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       node2->connect_to (*track_node);
                     }
                 }
-            }
-
-          if constexpr (std::is_same_v<TrackT, structure::tracks::TempoTrack>)
-            {
-              auto node2 = graph.get_nodes ().find_node_for_processable (
-                tr->get_bpm_port ());
-              if (node2 || !drop_unnecessary_ports)
-                {
-                  graph.get_nodes ().add_special_node (*node2);
-                  node2->connect_to (*track_node);
-                }
-              node2 = graph.get_nodes ().find_node_for_processable (
-                tr->get_beats_per_bar_port ());
-              if (node2 || !drop_unnecessary_ports)
-                {
-                  graph.get_nodes ().add_special_node (*node2);
-                  node2->connect_to (*track_node);
-                }
-              node2 = graph.get_nodes ().find_node_for_processable (
-                tr->get_beat_unit_port ());
-              if (node2 || !drop_unnecessary_ports)
-                {
-                  graph.get_nodes ().add_special_node (*node2);
-                  node2->connect_to (*track_node);
-                }
-              track_node->connect_to (*initial_processor_node);
             }
 
           if constexpr (

@@ -15,7 +15,6 @@
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/plugin.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/directory_manager.h"

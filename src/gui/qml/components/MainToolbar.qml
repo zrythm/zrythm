@@ -63,7 +63,6 @@ ZrythmToolBar {
             id: transportControls
 
             transport: root.project.transport
-            tempoTrack: root.project.tracklist.tempoTrack
             tempoMap: root.project.tempoMap
         }
     ]

@@ -139,8 +139,6 @@ private:
         return create_empty_track<ChordTrack> ();
       case Track::Type::Marker:
         return create_empty_track<MarkerTrack> ();
-      case Track::Type::Tempo:
-        return create_empty_track<TempoTrack> ();
       case Track::Type::Modulator:
         return create_empty_track<ModulatorTrack> ();
       case Track::Type::AudioBus:

@@ -21,7 +21,6 @@ class AudioBusTrack;
 class AudioTrack;
 class ChordTrack;
 class ModulatorTrack;
-class TempoTrack;
 class LanedTrack;
 class RecordableTrack;
 
@@ -37,8 +36,7 @@ using TrackVariant = std::variant<
   AudioBusTrack,
   AudioTrack,
   ChordTrack,
-  ModulatorTrack,
-  TempoTrack>;
+  ModulatorTrack>;
 using TrackPtrVariant = to_pointer_variant<TrackVariant>;
 using TrackRefVariant = to_reference_variant<TrackVariant>;
 using TrackConstRefVariant = to_const_reference_variant<TrackVariant>;

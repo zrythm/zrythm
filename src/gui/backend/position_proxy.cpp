@@ -5,7 +5,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/position_proxy.h"
 #include "gui/backend/realtime_updater.h"
-#include "structure/tracks/tempo_track.h"
 #include "utils/math.h"
 
 PositionProxy::PositionProxy (
@@ -68,12 +67,13 @@ PositionProxy::setTicks (double ticks)
 
 QString
 PositionProxy::getStringDisplay (
-  const engine::session::Transport *    transport,
-  const structure::tracks::TempoTrack * tempo_track) const
+  const engine::session::Transport *   transport,
+  const zrythm::dsp::TempoMapWrapper * tempo_map) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
            to_string (
-             tempo_track->get_beats_per_bar (), transport->sixteenths_per_beat_,
+             tempo_map->get_tempo_map ().getTimeSignatureEvents ().front ().numerator,
+             transport->sixteenths_per_beat_,
              transport->project_->audio_engine_->frames_per_tick_, 0))
     .to_qstring ();
 }

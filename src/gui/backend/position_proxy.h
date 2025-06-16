@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/position.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "utils/icloneable.h"
 #include "utils/math.h"
 
@@ -16,17 +17,11 @@ namespace zrythm::engine::session
 {
 class Transport;
 }
-namespace zrythm::structure::tracks
-{
-class TempoTrack;
-}
 
 using namespace zrythm;
 
 Q_DECLARE_OPAQUE_POINTER (zrythm::engine::session::Transport *)
 Q_DECLARE_OPAQUE_POINTER (const zrythm::engine::session::Transport *)
-Q_DECLARE_OPAQUE_POINTER (zrythm::structure::tracks::TempoTrack *)
-Q_DECLARE_OPAQUE_POINTER (const zrythm::structure::tracks::TempoTrack *)
 
 /**
  * @brief QML-friendly position representation with real-time safety.
@@ -76,8 +71,8 @@ public:
   Q_INVOKABLE void addTicks (double ticks) { setTicks (getTicks () + ticks); }
 
   Q_INVOKABLE QString getStringDisplay (
-    const zrythm::engine::session::Transport *    transport,
-    const zrythm::structure::tracks::TempoTrack * tempo_track) const;
+    const zrythm::engine::session::Transport * transport,
+    const zrythm::dsp::TempoMapWrapper *       tempo_map) const;
 
 public:
   // RT-safe wrappers

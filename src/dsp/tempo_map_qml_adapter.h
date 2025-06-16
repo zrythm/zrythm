@@ -123,6 +123,9 @@ public:
     rebuildTimeSigWrappers ();
   }
 
+  /// Read-only access to tempo map
+  const TempoMap &get_tempo_map () const { return tempo_map_; }
+
 Q_SIGNALS:
   void tempoEventsChanged ();
   void timeSignatureEventsChanged ();

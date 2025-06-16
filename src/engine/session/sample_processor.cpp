@@ -18,7 +18,6 @@
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "structure/arrangement/audio_region.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
@@ -302,7 +301,8 @@ SampleProcessor::queue_metronome_countin ()
   auto bars = ENUM_INT_TO_VALUE (
     PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
   int num_bars = Transport::preroll_count_bars_enum_to_int (bars);
-  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
+  int beats_per_bar =
+    get_tempo_map ().getTimeSignatureEvents ().at (0).numerator;
   int num_beats = beats_per_bar * num_bars;
 
   double frames_per_bar =
@@ -443,7 +443,9 @@ SampleProcessor::queue_file_or_chord_preset (
           return;
         }
     }
-  else if (((file && file->is_midi ()) || chord_pset) && instrument_setting_)
+  else if (
+    (((file != nullptr) && file->is_midi ()) || (chord_pset != nullptr))
+    && instrument_setting_)
     {
       /* create an instrument track */
       z_debug ("creating instrument track...");
@@ -500,7 +502,7 @@ SampleProcessor::queue_file_or_chord_preset (
               instrument_track->add_child (
                 midi_track->get_uuid (), true, false, false);
 
-              if (file)
+              if (file != nullptr)
                 {
                   /* create a MIDI region from the MIDI file & add to track */
                   try
@@ -523,7 +525,7 @@ SampleProcessor::queue_file_or_chord_preset (
                           file->abs_path_));
                     }
                 }
-              else if (chord_pset)
+              else if (chord_pset != nullptr)
                 {
                   try
                     {
@@ -652,10 +654,10 @@ init_from (
   obj.fader_ = utils::clone_unique (*other.fader_);
 }
 
-TempoTrack *
-SampleProcessor::get_tempo_track () const
+const dsp::TempoMap &
+SampleProcessor::get_tempo_map () const
 {
-  return audio_engine_->project_->tracklist_->tempo_track_;
+  return audio_engine_->project_->get_tempo_map ();
 }
 
 void
@@ -668,11 +670,11 @@ SampleProcessor::find_and_queue_metronome (
   if (start_pos.frames_ == end_pos.frames_)
     return;
 
-  const auto  &audio_engine = *audio_engine_;
-  const auto  &transport = *audio_engine.project_->transport_;
-  const auto * tempo_track_ptr = get_tempo_track ();
-  z_return_if_fail (tempo_track_ptr);
-  const auto &tempo_track = *tempo_track_ptr;
+  const auto &audio_engine = *audio_engine_;
+  const auto &transport = *audio_engine.project_->transport_;
+  const auto &tempo_map = get_tempo_map ();
+  const auto  beats_per_bar =
+    tempo_map.getTimeSignatureEvents ().at (0).numerator;
 
   /* find each bar / beat change from start to finish */
   int num_bars_before = start_pos.get_total_bars (
@@ -726,10 +728,10 @@ SampleProcessor::find_and_queue_metronome (
     }
 
   int num_beats_before = start_pos.get_total_beats (
-    false, tempo_track.get_beats_per_bar (), transport.ticks_per_beat_,
+    false, beats_per_bar, transport.ticks_per_beat_,
     audio_engine_->frames_per_tick_);
   int num_beats_after = end_pos.get_total_beats (
-    false, tempo_track.get_beats_per_bar (), transport.ticks_per_beat_,
+    false, beats_per_bar, transport.ticks_per_beat_,
     audio_engine_->frames_per_tick_);
   int beats_diff = num_beats_after - num_beats_before;
 
@@ -743,9 +745,7 @@ SampleProcessor::find_and_queue_metronome (
 
       /* if not a bar (already handled above) */
       if (
-        beat_pos.get_beats (
-          true, tempo_track.get_beats_per_bar (), transport.ticks_per_beat_)
-        != 1)
+        beat_pos.get_beats (true, beats_per_bar, transport.ticks_per_beat_) != 1)
         {
           /* adjust position because even though the start and beat pos have the
            * same ticks, their frames differ (the beat position might be before

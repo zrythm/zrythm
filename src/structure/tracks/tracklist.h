@@ -24,7 +24,6 @@ class Project;
 namespace zrythm::structure::tracks
 {
 class ChordTrack;
-class TempoTrack;
 class ModulatorTrack;
 class MasterTrack;
 class MarkerTrack;
@@ -40,7 +39,6 @@ class Tracklist final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (TempoTrack * tempoTrack READ getTempoTrack CONSTANT FINAL)
 
 public:
   using TrackUuid = Track::Uuid;
@@ -88,8 +86,6 @@ public:
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-  TempoTrack * getTempoTrack () const;
-
   Q_INVOKABLE void setExclusivelySelectedTrack (QVariant track);
 
   // ========================================================================
@@ -98,8 +94,7 @@ public:
    * @brief A list of track types that must be unique in the tracklist.
    */
   static constexpr std::array<Track::Type, 4> unique_track_types_ = {
-    Track::Type::Chord, Track::Type::Marker, Track::Type::Tempo,
-    Track::Type::Modulator
+    Track::Type::Chord, Track::Type::Marker, Track::Type::Modulator
   };
 
   auto get_track_span () const { return TrackSpan{ tracks_ }; }
@@ -608,9 +603,6 @@ public:
 
   /** The marker track, for convenience. */
   MarkerTrack * marker_track_ = nullptr;
-
-  /** The tempo track, for convenience. */
-  TempoTrack * tempo_track_ = nullptr;
 
   /** The modulator track, for convenience. */
   ModulatorTrack * modulator_track_ = nullptr;

@@ -7,7 +7,6 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/tracks/audio_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/audio.h"
 #include "utils/debug.h"
@@ -91,13 +90,15 @@ AudioRegion::fill_stereo_ports (
 #endif
 
   /* restretch if necessary */
+  // TODO
+  double timestretch_ratio = 1.0;
+  bool   needs_rt_timestretch = false;
+#if 0
   Position g_start_pos;
   g_start_pos.from_frames (
     (signed_frame_t) time_nfo.g_start_frame_w_offset_,
     AUDIO_ENGINE->ticks_per_frame_);
   bpm_t  cur_bpm = P_TEMPO_TRACK->get_bpm_at_pos (g_start_pos);
-  double timestretch_ratio = 1.0;
-  bool   needs_rt_timestretch = false;
   if (
     get_musical_mode ()
     && !utils::math::floats_equal (clip->get_bpm (), cur_bpm))
@@ -108,6 +109,7 @@ AudioRegion::fill_stereo_ports (
         "timestretching: (cur bpm {} clip bpm {}) {}", (double) cur_bpm,
         (double) clip->get_bpm (), timestretch_ratio);
     }
+#endif
 
   /* buffers after timestretch */
   auto * lbuf_after_ts = tmp_buf_->getWritePointer (0);

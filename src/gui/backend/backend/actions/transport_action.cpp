@@ -9,7 +9,6 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 
@@ -81,6 +80,8 @@ init_from (
 void
 TransportAction::do_or_undo (bool do_it)
 {
+// TODO
+#if 0
   ControlPort::ChangeEvent change = {};
   switch (type_)
     {
@@ -141,11 +142,14 @@ TransportAction::do_or_undo (bool do_it)
           TRANSPORT->stretch_regions (std::nullopt, true, time_ratio, false);
         }
     }
+#endif
 }
 
 void
 TransportAction::perform_impl ()
 {
+// TODO
+#if 0
   if (already_done_)
     {
       already_done_ = false;
@@ -166,6 +170,7 @@ TransportAction::perform_impl ()
 
   /* EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr); */
   /* EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr); */
+#endif
 }
 
 void

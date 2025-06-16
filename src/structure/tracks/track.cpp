@@ -27,7 +27,6 @@
 #include "structure/tracks/midi_lane.h"
 #include "structure/tracks/midi_track.h"
 #include "structure/tracks/modulator_track.h"
-#include "structure/tracks/tempo_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
@@ -150,7 +149,6 @@ Track::create_track (Track::Type type, const utils::Utf8String &name, int pos)
       case Track::Type::Master:
       case Track::Type::Chord:
       case Track::Type::Marker:
-      case Track::Type::Tempo:
       case Track::Type::Modulator:
       default:
         throw std::runtime_error ("Track::create_unique: invalid track type");
@@ -668,13 +666,7 @@ Track::append_ports (
           add_port (track->recording_.get ());
         }
 
-      if constexpr (std::is_same_v<TrackT, TempoTrack>)
-        {
-          add_port (track->bpm_port_.get ());
-          add_port (track->beats_per_bar_port_.get ());
-          add_port (track->beat_unit_port_.get ());
-        }
-      else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+      if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
         {
           for (const auto &modulator : track->modulators_)
             modulator->append_ports (ports);

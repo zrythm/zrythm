@@ -18,10 +18,6 @@ namespace arrangement
 {
 class Marker;
 }
-namespace tracks
-{
-class TempoTrack;
-}
 }
 
 #define TRANSPORT (PROJECT->transport_)
@@ -214,9 +210,7 @@ public:
    * @param tempo_track Tempo track, used to initialize the caches. Only needed
    * on the active project transport.
    */
-  void init_loaded (
-    Project *                             project,
-    const structure::tracks::TempoTrack * tempo_track);
+  void init_loaded (Project * project);
 
   /**
    * Prepares audio regions for stretching (sets the
@@ -485,9 +479,6 @@ frames_add_frames (
     Transport             &obj,
     const Transport       &other,
     utils::ObjectCloneType clone_type);
-
-  Q_INVOKABLE QString getPlayheadPositionString (
-    const structure::tracks::TempoTrack * tempo_track) const;
 
 private:
   static constexpr auto kTotalBarsKey = "totalBars"sv;
