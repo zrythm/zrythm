@@ -333,7 +333,7 @@ Exporter::export_midi (Settings &info)
     {
       /* Write tempo information out to track 1 */
       const auto &tempo_map = PROJECT->get_tempo_map ();
-      midiSongAddTempo (mf, 1, (int) tempo_map.getEvents ().front ().bpm);
+      midiSongAddTempo (mf, 1, (int) tempo_map.get_tempo_events ().front ().bpm);
 
       midiFileSetPPQN (mf, Position::TICKS_PER_QUARTER_NOTE);
 
@@ -342,7 +342,8 @@ Exporter::export_midi (Settings &info)
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
-      int beats_per_bar = tempo_map.getTimeSignatureEvents ().front ().numerator;
+      int beats_per_bar =
+        tempo_map.get_time_signature_events ().front ().numerator;
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar, TRANSPORT->ticks_per_beat_);
 
@@ -587,7 +588,7 @@ Exporter::Settings::print () const
     {
       const auto &tempo_map = PROJECT->get_tempo_map ();
       const auto  beats_per_bar =
-        tempo_map.getTimeSignatureEvents ().front ().numerator;
+        tempo_map.get_time_signature_events ().front ().numerator;
       time_range = utils::Utf8String::from_utf8_encoded_string (
         fmt::format (
           "Custom: {} ~ {}",

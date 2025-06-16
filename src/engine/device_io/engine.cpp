@@ -622,13 +622,13 @@ AudioEngine::update_position_info (
   auto  playhead = transport_->playhead_pos_->get_position ();
   playhead.add_frames (frames_to_add, ticks_per_frame_);
   pos_nfo.is_rolling_ = transport_->isRolling ();
-  pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map.getEvents ().front ().bpm);
+  pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map.get_tempo_events ().front ().bpm);
   pos_nfo.bar_ = playhead.get_bars (true, transport_->ticks_per_bar_);
   pos_nfo.beat_ = playhead.get_beats (
-    true, tempo_map.getTimeSignatureEvents ().front ().numerator,
+    true, tempo_map.get_time_signature_events ().front ().numerator,
     transport_->ticks_per_beat_);
   pos_nfo.sixteenth_ = playhead.get_sixteenths (
-    true, tempo_map.getTimeSignatureEvents ().front ().numerator,
+    true, tempo_map.get_time_signature_events ().front ().numerator,
     transport_->sixteenths_per_beat_, frames_per_tick_);
   pos_nfo.sixteenth_within_bar_ =
     pos_nfo.sixteenth_ + (pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_;

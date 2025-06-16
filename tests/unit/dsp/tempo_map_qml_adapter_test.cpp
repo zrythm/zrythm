@@ -80,7 +80,7 @@ TEST_F (TempoMapWrapperTest, TempoEventManagement)
   EXPECT_EQ (new_event->curve (), TempoMap::CurveType::Constant);
 
   // Verify underlying map
-  EXPECT_EQ (tempo_map_->getEvents ().size (), 2);
+  EXPECT_EQ (tempo_map_->get_tempo_events ().size (), 2);
 }
 
 // Test time signature signals and wrappers
@@ -103,7 +103,7 @@ TEST_F (TempoMapWrapperTest, TimeSignatureManagement)
   EXPECT_EQ (new_sig->denominator (), 4);
 
   // Verify underlying map
-  EXPECT_EQ (tempo_map_->getTimeSignatureEvents ().size (), 2);
+  EXPECT_EQ (tempo_map_->get_time_signature_events ().size (), 2);
 }
 
 // Test sample rate changes
@@ -115,7 +115,7 @@ TEST_F (TempoMapWrapperTest, SampleRateChanges)
   wrapper_->setSampleRate (48000.0);
   EXPECT_EQ (spy.count (), 1);
   EXPECT_DOUBLE_EQ (wrapper_->sampleRate (), 48000.0);
-  EXPECT_DOUBLE_EQ (tempo_map_->getSampleRate (), 48000.0);
+  EXPECT_DOUBLE_EQ (tempo_map_->get_sample_rate (), 48000.0);
 
   // No signal on same value
   wrapper_->setSampleRate (48000.0);
@@ -154,8 +154,8 @@ TEST_F (TempoMapWrapperTest, ListPropertyAccess)
 TEST_F (TempoMapWrapperTest, UnderlyingChanges)
 {
   // Directly modify underlying map
-  tempo_map_->addEvent (1920, 140.0, TempoMap::CurveType::Constant);
-  tempo_map_->addTimeSignatureEvent (1920, 3, 4);
+  tempo_map_->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (1920, 3, 4);
 
   // Manually trigger rebuild (normally done via signals in real app)
   wrapper_->rebuildWrappers ();

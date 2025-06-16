@@ -67,7 +67,7 @@ AtomicPositionQmlAdapter::setMode (TimeFormat format)
 QString
 AtomicPositionQmlAdapter::getStringDisplay () const
 {
-  const auto musical_pos = atomic_pos_.get_tempo_map ().tickToMusicalPosition (
+  const auto musical_pos = atomic_pos_.get_tempo_map ().tick_to_musical_position (
     static_cast<int64_t> (atomic_pos_.get_ticks ()));
   return QString::fromStdString (
     fmt::format (

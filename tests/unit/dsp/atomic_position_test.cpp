@@ -121,7 +121,7 @@ TEST_F (AtomicPositionTest, FractionalPositions)
 TEST_F (AtomicPositionTest, WithTempoChanges)
 {
   // Add tempo change at 1920 ticks (140 BPM)
-  tempo_map->addEvent (1920, 140.0, TempoMap::CurveType::Constant);
+  tempo_map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
 
   // Set position after tempo change
   pos->set_ticks (2880.0); // 1920 + 960 ticks
@@ -141,7 +141,7 @@ TEST_F (AtomicPositionTest, WithTimeSignatureChanges)
 {
   // Add time signature change (3/4 time at bar 5)
   const int64_t bar5Start = 4 * 4 * 960;
-  tempo_map->addTimeSignatureEvent (bar5Start, 3, 4);
+  tempo_map->add_time_signature_event (bar5Start, 3, 4);
 
   // Set musical position in bar 5
   pos->set_ticks (bar5Start + 960.0); // Beat 2 of bar 5
@@ -213,7 +213,7 @@ TEST_F (AtomicPositionTest, GetSetSamplesFractional)
 TEST_F (AtomicPositionTest, GetSetSamplesWithTempoChanges)
 {
   // Add tempo change
-  tempo_map->addEvent (1920, 140.0, TempoMap::CurveType::Constant);
+  tempo_map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
 
   // Set position after tempo change
   pos->set_ticks (2880.0); // 1920 + 960 ticks

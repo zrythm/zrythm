@@ -302,7 +302,7 @@ SampleProcessor::queue_metronome_countin ()
     PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
   int num_bars = Transport::preroll_count_bars_enum_to_int (bars);
   int beats_per_bar =
-    get_tempo_map ().getTimeSignatureEvents ().at (0).numerator;
+    get_tempo_map ().get_time_signature_events ().at (0).numerator;
   int num_beats = beats_per_bar * num_bars;
 
   double frames_per_bar =
@@ -674,7 +674,7 @@ SampleProcessor::find_and_queue_metronome (
   const auto &transport = *audio_engine.project_->transport_;
   const auto &tempo_map = get_tempo_map ();
   const auto  beats_per_bar =
-    tempo_map.getTimeSignatureEvents ().at (0).numerator;
+    tempo_map.get_time_signature_events ().at (0).numerator;
 
   /* find each bar / beat change from start to finish */
   int num_bars_before = start_pos.get_total_bars (

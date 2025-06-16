@@ -99,7 +99,7 @@ Project::Project (
           audio_engine_->pool_->register_clip (clip);
         },
         [&] () { return audio_engine_->get_sample_rate (); },
-        [&] () { return get_tempo_map ().getEvents ().front ().bpm; },
+        [&] () { return get_tempo_map ().get_tempo_events ().front ().bpm; },
         structure::arrangement::ArrangerObjectSelectionManager{
           timeline_->get_selected_object_ids (), *arranger_object_registry_ },
         structure::arrangement::ArrangerObjectSelectionManager{
@@ -431,11 +431,11 @@ Project::add_default_tracks ()
 
   /* tempo */
   transport_->update_caches (
-    get_tempo_map ().getTimeSignatureEvents ().front ().numerator,
-    get_tempo_map ().getTimeSignatureEvents ().front ().denominator);
+    get_tempo_map ().get_time_signature_events ().front ().numerator,
+    get_tempo_map ().get_time_signature_events ().front ().denominator);
   audio_engine_->update_frames_per_tick (
-    get_tempo_map ().getTimeSignatureEvents ().front ().numerator,
-    static_cast<bpm_t> (get_tempo_map ().getEvents ().front ().bpm),
+    get_tempo_map ().get_time_signature_events ().front ().numerator,
+    static_cast<bpm_t> (get_tempo_map ().get_tempo_events ().front ().bpm),
     audio_engine_->get_sample_rate (), true, true, false);
 
   /* add a scale */

@@ -221,7 +221,7 @@ MidiRegion::export_to_midi_file (
       const auto &tempo_map = PROJECT->get_tempo_map ();
 
       /* Write tempo information out to track 1 */
-      midiSongAddTempo (mf, 1, (int) tempo_map.getEvents ().front ().bpm);
+      midiSongAddTempo (mf, 1, (int) tempo_map.get_tempo_events ().front ().bpm);
 
       /* All data is written out to _tracks_ not channels. We therefore set the
       current channel before writing data out. Channel assignments can change
@@ -234,7 +234,8 @@ MidiRegion::export_to_midi_file (
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
-      int beats_per_bar = tempo_map.getTimeSignatureEvents ().front ().numerator;
+      int beats_per_bar =
+        tempo_map.get_time_signature_events ().front ().numerator;
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar, TRANSPORT->ticks_per_beat_);
 

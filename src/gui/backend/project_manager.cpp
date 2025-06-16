@@ -143,9 +143,9 @@ ProjectManager::create_default (
   const auto * tempo_map = &prj->get_tempo_map ();
   engine->setup (
     [tempo_map] () {
-      return tempo_map->getTimeSignatureEvents ().front ().numerator;
+      return tempo_map->get_time_signature_events ().front ().numerator;
     },
-    [tempo_map] () { return tempo_map->getEvents ().front ().bpm; });
+    [tempo_map] () { return tempo_map->get_tempo_events ().front ().bpm; });
 
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;

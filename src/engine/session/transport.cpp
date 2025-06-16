@@ -64,9 +64,9 @@ Transport::init_loaded (Project * project)
   init_common ();
 
   int beats_per_bar =
-    project->get_tempo_map ().getTimeSignatureEvents ()[0].numerator;
+    project->get_tempo_map ().get_time_signature_events ()[0].numerator;
   int beat_unit =
-    project->get_tempo_map ().getTimeSignatureEvents ()[0].denominator;
+    project->get_tempo_map ().get_time_signature_events ()[0].denominator;
   update_caches (beats_per_bar, beat_unit);
 
   roll_->init_loaded (*this);
@@ -641,7 +641,7 @@ Transport::set_metronome_enabled (bool enabled)
 double
 Transport::get_ppqn () const
 {
-  return dsp::TempoMap::getPPQ ();
+  return dsp::TempoMap::get_ppq ();
 }
 
 void

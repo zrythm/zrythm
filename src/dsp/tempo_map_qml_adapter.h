@@ -89,18 +89,18 @@ public:
       this, &timeSigEventWrappers_);
   }
 
-  double sampleRate () const { return tempo_map_.getSampleRate (); }
+  double sampleRate () const { return tempo_map_.get_sample_rate (); }
   void   setSampleRate (double sampleRate)
   {
-    if (qFuzzyCompare (sampleRate, tempo_map_.getSampleRate ()))
+    if (qFuzzyCompare (sampleRate, tempo_map_.get_sample_rate ()))
       return;
-    tempo_map_.setSampleRate (sampleRate);
+    tempo_map_.set_sample_rate (sampleRate);
     Q_EMIT sampleRateChanged ();
   }
 
   Q_INVOKABLE void addTempoEvent (int tick, double bpm, int curveType)
   {
-    tempo_map_.addEvent (
+    tempo_map_.add_tempo_event (
       tick, bpm, static_cast<TempoMap::CurveType> (curveType));
     Q_EMIT tempoEventsChanged ();
     rebuildTempoWrappers ();
@@ -109,7 +109,7 @@ public:
   Q_INVOKABLE void
   addTimeSignatureEvent (int tick, int numerator, int denominator)
   {
-    tempo_map_.addTimeSignatureEvent (tick, numerator, denominator);
+    tempo_map_.add_time_signature_event (tick, numerator, denominator);
     Q_EMIT timeSignatureEventsChanged ();
     rebuildTimeSigWrappers ();
   }
@@ -136,7 +136,7 @@ private:
   {
     qDeleteAll (tempoEventWrappers_);
     tempoEventWrappers_.clear ();
-    for (const auto &event : tempo_map_.getEvents ())
+    for (const auto &event : tempo_map_.get_tempo_events ())
       {
         tempoEventWrappers_.append (new TempoEventWrapper (event, this));
       }
@@ -146,7 +146,7 @@ private:
   {
     qDeleteAll (timeSigEventWrappers_);
     timeSigEventWrappers_.clear ();
-    for (const auto &event : tempo_map_.getTimeSignatureEvents ())
+    for (const auto &event : tempo_map_.get_time_signature_events ())
       {
         timeSigEventWrappers_.append (
           new TimeSignatureEventWrapper (event, this));

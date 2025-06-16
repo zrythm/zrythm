@@ -91,14 +91,14 @@ public:
    * @brief Construct a new FixedPpqTempoMap object
    * @param sampleRate Sample rate in Hz
    */
-  explicit FixedPpqTempoMap (double sampleRate) : sampleRate_ (sampleRate)
+  explicit FixedPpqTempoMap (double sampleRate) : sample_rate_ (sampleRate)
   {
-    addEvent (0, 120.0, CurveType::Constant);
-    addTimeSignatureEvent (0, 4, 4);
+    add_tempo_event (0, 120.0, CurveType::Constant);
+    add_time_signature_event (0, 4, 4);
   }
 
   /// Set the sample rate
-  void setSampleRate (double sampleRate) { sampleRate_ = sampleRate; }
+  void set_sample_rate (double sampleRate) { sample_rate_ = sampleRate; }
 
   /**
    * @brief Add a tempo event
@@ -108,7 +108,7 @@ public:
    *
    * @throws std::invalid_argument for invalid BPM or tick values
    */
-  void addEvent (int64_t tick, double bpm, CurveType curve)
+  void add_tempo_event (int64_t tick, double bpm, CurveType curve)
   {
     if (bpm <= 0)
       throw std::invalid_argument ("BPM must be positive");
@@ -125,11 +125,11 @@ public:
       }
 
     events_.push_back ({ tick, bpm, curve });
-    rebuildCumulativeTimes ();
+    rebuild_cumulative_times ();
   }
 
   /// Remove a tempo event at the specified tick
-  void removeEvent (int64_t tick)
+  void remove_tempo_event (int64_t tick)
   {
     auto it = std::ranges::find (events_, tick, [] (const TempoEvent &e) {
       return e.tick;
@@ -137,7 +137,7 @@ public:
     if (it != events_.end ())
       {
         events_.erase (it);
-        rebuildCumulativeTimes ();
+        rebuild_cumulative_times ();
       }
   }
 
@@ -155,7 +155,7 @@ public:
    *
    * @throws std::invalid_argument for invalid parameters
    */
-  void addTimeSignatureEvent (int64_t tick, int numerator, int denominator)
+  void add_time_signature_event (int64_t tick, int numerator, int denominator)
   {
     if (tick < 0)
       throw std::invalid_argument ("Tick must be non-negative");
@@ -176,7 +176,7 @@ public:
   }
 
   /// Remove a time signature event at the specified tick
-  void removeTimeSignatureEvent (int64_t tick)
+  void remove_time_signature_event (int64_t tick)
   {
     auto it = std::ranges::find (
       time_sig_events_, tick,
@@ -188,7 +188,7 @@ public:
   }
 
   /// Convert fractional ticks to seconds
-  double tickToSeconds (double tick) const
+  double tick_to_seconds (double tick) const
   {
     if (events_.empty ())
       return 0.0;
@@ -205,13 +205,13 @@ public:
     const auto   &startEvent = events_[index];
     const int64_t segmentStart = startEvent.tick;
     const double  ticksFromStart = tick - static_cast<double> (segmentStart);
-    const double  baseSeconds = cumulativeSeconds_[index];
+    const double  baseSeconds = cumulative_seconds_[index];
 
     // Last event segment
     if (index == events_.size () - 1)
       {
         return baseSeconds
-               + (ticksFromStart / static_cast<double> (getPPQ ()))
+               + (ticksFromStart / static_cast<double> (get_ppq ()))
                    * (60.0 / startEvent.bpm);
       }
 
@@ -223,7 +223,7 @@ public:
     if (startEvent.curve == CurveType::Constant)
       {
         return baseSeconds
-               + (ticksFromStart / static_cast<double> (getPPQ ()))
+               + (ticksFromStart / static_cast<double> (get_ppq ()))
                    * (60.0 / startEvent.bpm);
       }
     // Linear tempo ramp
@@ -235,7 +235,7 @@ public:
         if (std::abs (bpm1 - bpm0) < 1e-5)
           {
             return baseSeconds
-                   + (ticksFromStart / static_cast<double> (getPPQ ()))
+                   + (ticksFromStart / static_cast<double> (get_ppq ()))
                        * (60.0 / bpm0);
           }
 
@@ -243,7 +243,7 @@ public:
         const double currentBpm = bpm0 + fraction * (bpm1 - bpm0);
 
         return baseSeconds
-               + (60.0 * dSegmentTicks) / (getPPQ () * (bpm1 - bpm0))
+               + (60.0 * dSegmentTicks) / (get_ppq () * (bpm1 - bpm0))
                    * std::log (currentBpm / bpm0);
       }
 
@@ -251,13 +251,13 @@ public:
   }
 
   /// Convert fractional ticks to samples
-  double tickToSamples (double tick) const
+  double tick_to_samples (double tick) const
   {
-    return tickToSeconds (tick) * sampleRate_;
+    return tick_to_seconds (tick) * sample_rate_;
   }
 
   /// Convert seconds to fractional ticks
-  double secondsToTick (double seconds) const
+  double seconds_to_tick (double seconds) const
   {
     if (seconds <= 0.0)
       return 0.0;
@@ -265,13 +265,13 @@ public:
       return 0.0;
 
     // Find the segment containing the time
-    auto         it = std::ranges::upper_bound (cumulativeSeconds_, seconds);
+    auto         it = std::ranges::upper_bound (cumulative_seconds_, seconds);
     const size_t index =
-      (it == cumulativeSeconds_.begin ())
+      (it == cumulative_seconds_.begin ())
         ? 0
-        : std::distance (cumulativeSeconds_.begin (), it) - 1;
+        : std::distance (cumulative_seconds_.begin (), it) - 1;
 
-    const double      baseSeconds = cumulativeSeconds_[index];
+    const double      baseSeconds = cumulative_seconds_[index];
     const double      timeInSegment = seconds - baseSeconds;
     const TempoEvent &startEvent = events_[index];
 
@@ -279,7 +279,7 @@ public:
     if (index == events_.size () - 1)
       {
         const double beats = timeInSegment * (startEvent.bpm / 60.0);
-        return static_cast<double> (startEvent.tick) + beats * getPPQ ();
+        return static_cast<double> (startEvent.tick) + beats * get_ppq ();
       }
 
     const TempoEvent &endEvent = events_[index + 1];
@@ -290,7 +290,7 @@ public:
     if (startEvent.curve == CurveType::Constant)
       {
         const double beats = timeInSegment * (startEvent.bpm / 60.0);
-        return static_cast<double> (startEvent.tick) + beats * getPPQ ();
+        return static_cast<double> (startEvent.tick) + beats * get_ppq ();
       }
     // Linear tempo ramp
     else if (startEvent.curve == CurveType::Linear)
@@ -301,10 +301,10 @@ public:
         if (std::abs (bpm1 - bpm0) < 1e-5)
           {
             const double beats = timeInSegment * (bpm0 / 60.0);
-            return static_cast<double> (startEvent.tick) + beats * getPPQ ();
+            return static_cast<double> (startEvent.tick) + beats * get_ppq ();
           }
 
-        const double A = (getPPQ () * (bpm1 - bpm0)) / (60.0 * dSegmentTicks);
+        const double A = (get_ppq () * (bpm1 - bpm0)) / (60.0 * dSegmentTicks);
         const double expVal = std::exp (A * timeInSegment);
         const double f = (expVal - 1.0) * (bpm0 / (bpm1 - bpm0));
 
@@ -315,10 +315,10 @@ public:
   }
 
   /// Convert samples to fractional ticks
-  double samplesToTick (double samples) const
+  double samples_to_tick (double samples) const
   {
-    const double seconds = samples / sampleRate_;
-    return secondsToTick (seconds);
+    const double seconds = samples / sample_rate_;
+    return seconds_to_tick (seconds);
   }
 
   /**
@@ -326,7 +326,7 @@ public:
    * @param tick Position in ticks
    * @return Musical position
    */
-  MusicalPosition tickToMusicalPosition (int64_t tick) const
+  MusicalPosition tick_to_musical_position (int64_t tick) const
   {
     if (time_sig_events_.empty ())
       return { 1, 1, 1, 0 };
@@ -355,7 +355,7 @@ public:
     // Calculate ticks per bar and beat
     const double  quarters_per_bar = numerator * (4.0 / denominator);
     const int64_t ticks_per_bar =
-      static_cast<int64_t> (quarters_per_bar * getPPQ ());
+      static_cast<int64_t> (quarters_per_bar * get_ppq ());
     const int64_t ticks_per_beat = ticks_per_bar / numerator;
 
     // Calculate absolute bar number
@@ -370,7 +370,7 @@ public:
         const double prev_quarters_per_bar =
           prev_numerator * (4.0 / prev_denominator);
         const int64_t prev_ticks_per_bar =
-          static_cast<int64_t> (prev_quarters_per_bar * getPPQ ());
+          static_cast<int64_t> (prev_quarters_per_bar * get_ppq ());
 
         // Ticks from this signature to next
         auto          next = std::next (prev);
@@ -408,7 +408,7 @@ public:
    *
    * @throws std::invalid_argument for invalid position
    */
-  int64_t musicalPositionToTick (const MusicalPosition &pos) const
+  int64_t musical_position_to_tick (const MusicalPosition &pos) const
   {
     if (time_sig_events_.empty ())
       return 0;
@@ -430,7 +430,7 @@ public:
         const int     denominator = event.denominator;
         const double  quarters_per_bar = numerator * (4.0 / denominator);
         const int64_t ticks_per_bar =
-          static_cast<int64_t> (quarters_per_bar * getPPQ ());
+          static_cast<int64_t> (quarters_per_bar * get_ppq ());
 
         // Determine bars covered by this time signature
         int bars_in_this_sig = 0;
@@ -469,23 +469,23 @@ public:
   }
 
   /// Get all tempo events
-  const std::vector<TempoEvent> &getEvents () const { return events_; }
+  const std::vector<TempoEvent> &get_tempo_events () const { return events_; }
 
   /// Get all time signature events
-  const std::vector<TimeSignatureEvent> &getTimeSignatureEvents () const
+  const std::vector<TimeSignatureEvent> &get_time_signature_events () const
   {
     return time_sig_events_;
   }
 
   /// Get pulses per quarter note
-  static consteval int getPPQ () { return PPQ; }
+  static consteval int get_ppq () { return PPQ; }
 
   /// Get current sample rate
-  double getSampleRate () const { return sampleRate_; }
+  double get_sample_rate () const { return sample_rate_; }
 
 private:
   /// Rebuild cumulative time cache
-  void rebuildCumulativeTimes ()
+  void rebuild_cumulative_times ()
   {
     if (events_.empty ())
       return;
@@ -493,21 +493,21 @@ private:
     // Sort events by tick
     std::ranges::sort (events_, {}, &TempoEvent::tick);
 
-    cumulativeSeconds_.resize (events_.size ());
-    cumulativeSeconds_[0] = 0.0;
+    cumulative_seconds_.resize (events_.size ());
+    cumulative_seconds_[0] = 0.0;
 
     // Compute cumulative time at each event point
     for (size_t i = 0; i < events_.size () - 1; ++i)
       {
         const int64_t segmentTicks = events_[i + 1].tick - events_[i].tick;
-        cumulativeSeconds_[i + 1] =
-          cumulativeSeconds_[i]
-          + computeSegmentTime (events_[i], events_[i + 1], segmentTicks);
+        cumulative_seconds_[i + 1] =
+          cumulative_seconds_[i]
+          + compute_segment_time (events_[i], events_[i + 1], segmentTicks);
       }
   }
 
   /// Compute time duration for a segment between two tempo events
-  double computeSegmentTime (
+  double compute_segment_time (
     const TempoEvent &start,
     const TempoEvent &end,
     int64_t           segmentTicks) const
@@ -515,7 +515,7 @@ private:
     if (start.curve == CurveType::Constant)
       {
         return (static_cast<double> (segmentTicks)
-                / static_cast<double> (getPPQ ()))
+                / static_cast<double> (get_ppq ()))
                * (60.0 / start.bpm);
       }
     if (start.curve == CurveType::Linear)
@@ -526,12 +526,12 @@ private:
         if (std::abs (bpm1 - bpm0) < 1e-5)
           {
             return (static_cast<double> (segmentTicks)
-                    / static_cast<double> (getPPQ ()))
+                    / static_cast<double> (get_ppq ()))
                    * (60.0 / bpm0);
           }
 
         return (60.0 * static_cast<double> (segmentTicks))
-               / (getPPQ () * (bpm1 - bpm0)) * std::log (bpm1 / bpm0);
+               / (get_ppq () * (bpm1 - bpm0)) * std::log (bpm1 / bpm0);
       }
     return 0.0;
   }
@@ -547,17 +547,18 @@ private:
   {
     j.at (kEventsKey).get_to (tempo_map.events_);
     j.at (kTimeSigEventsKey).get_to (tempo_map.time_sig_events_);
-    tempo_map.rebuildCumulativeTimes ();
+    tempo_map.rebuild_cumulative_times ();
   }
 
 private:
-  double               sampleRate_; ///< Current sample rate
+  double               sample_rate_; ///< Current sample rate
   static constexpr int ticks_per_sixteenth_ =
     PPQ / 4; ///< Ticks per sixteenth note (PPQ/4)
 
   std::vector<TempoEvent>         events_;          ///< Tempo events
   std::vector<TimeSignatureEvent> time_sig_events_; ///< Time signature events
-  std::vector<double> cumulativeSeconds_; ///< Cumulative seconds at tempo events
+  std::vector<double>
+    cumulative_seconds_; ///< Cumulative seconds at tempo events
 };
 
 /**

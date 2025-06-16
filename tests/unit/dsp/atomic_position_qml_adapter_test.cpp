@@ -96,7 +96,7 @@ TEST_F (AtomicPositionQmlAdapterTest, StringDisplay)
   EXPECT_EQ (qml_pos->getStringDisplay ().toStdString (), "1.1.2.001");
 
   // Test with time signature change
-  tempo_map->addTimeSignatureEvent (0, 3, 4);
+  tempo_map->add_time_signature_event (0, 3, 4);
   qml_pos->setTicks (960); // 1.2.1.0 in 3/4
   EXPECT_EQ (qml_pos->getStringDisplay ().toStdString (), "1.2.1.000");
 }
@@ -136,7 +136,7 @@ TEST_F (AtomicPositionQmlAdapterTest, TempoMapChanges)
   qml_pos->setTicks (960.0);
 
   // Change tempo (120 -> 140 BPM)
-  tempo_map->addEvent (0, 140.0, TempoMap::CurveType::Constant);
+  tempo_map->add_tempo_event (0, 140.0, TempoMap::CurveType::Constant);
 
   // Verify seconds updated
   EXPECT_DOUBLE_EQ (qml_pos->seconds (), 60.0 / 140.0);

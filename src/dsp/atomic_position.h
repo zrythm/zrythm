@@ -125,7 +125,7 @@ public:
       }
     else if (cur_mode == TimeFormat::Absolute)
       {
-        set_seconds (tempo_map_.tickToSeconds (ticks));
+        set_seconds (tempo_map_.tick_to_seconds (ticks));
       }
   }
 
@@ -146,7 +146,7 @@ public:
       }
     else if (cur_mode == TimeFormat::Musical)
       {
-        set_ticks (tempo_map_.secondsToTick (seconds));
+        set_ticks (tempo_map_.seconds_to_tick (seconds));
       }
   }
 
@@ -158,7 +158,7 @@ public:
       {
         return d;
       }
-    return tempo_map_.secondsToTick (d);
+    return tempo_map_.seconds_to_tick (d);
   }
 
   /// @brief Get position in absolute seconds (converts if necessary).
@@ -169,7 +169,7 @@ public:
       {
         return d;
       }
-    return tempo_map_.tickToSeconds (d);
+    return tempo_map_.tick_to_seconds (d);
   }
 
   /// @brief Helper method to get the position as samples
@@ -177,8 +177,10 @@ public:
   {
     const auto &[d, b] = value_.load ();
     auto tick =
-      bool_to_format (b) == TimeFormat::Musical ? d : tempo_map_.secondsToTick (d);
-    return static_cast<std::int64_t> (tempo_map_.tickToSamples (tick));
+      bool_to_format (b) == TimeFormat::Musical
+        ? d
+        : tempo_map_.seconds_to_tick (d);
+    return static_cast<std::int64_t> (tempo_map_.tick_to_samples (tick));
   }
 
   void set_samples (double samples)
@@ -186,7 +188,7 @@ public:
     // clamp
     samples = std::max (samples, 0.0);
 
-    set_ticks (tempo_map_.samplesToTick (samples));
+    set_ticks (tempo_map_.samples_to_tick (samples));
   }
 
   const auto &get_tempo_map () const { return tempo_map_; }
