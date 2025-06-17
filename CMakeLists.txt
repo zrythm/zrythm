@@ -427,6 +427,7 @@ if(compiler_gnulike)
       -Wno-missing-field-initializers
       -Wno-unused-parameter
       -Wno-cast-function-type
+      -Wno-attributes
   )
 endif()
 
@@ -567,7 +568,7 @@ if(ZRYTHM_STRICT)
       -Werror=misleading-indentation
       -Werror=int-in-bool-context
       -Werror=type-limits
-      -Werror=deprecated-declarations
+      # -Werror=deprecated-declarations
       -Werror=endif-labels
       -Werror=logical-not-parentheses
       -Werror=parentheses
