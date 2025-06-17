@@ -27,16 +27,14 @@ protected:
     uint32_t                               nframes,
     std::function<void (uint32_t, double)> sampleCallback = nullptr)
   {
-    playhead_->prepare_for_processing ();
+    dsp::PlayheadProcessingGuard guard{ *playhead_ };
 
     for (uint32_t i = 0; i < nframes; ++i)
       {
         if (sampleCallback)
-          sampleCallback (i, playhead_->position_during_processing ());
+          sampleCallback (i, playhead_->position_during_processing_precise ());
         playhead_->advance_processing (1);
       }
-
-    playhead_->finalize_processing ();
   }
 
   std::unique_ptr<TempoMap> tempo_map_;

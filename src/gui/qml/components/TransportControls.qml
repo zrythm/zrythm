@@ -59,17 +59,14 @@ RowLayout {
         spacing: 2
 
         EditableValueDisplay {
-            value: root.tempoMap.tempoEvents[0].bpm
+            value: root.tempoMap.tempoAtTick(transport.playhead.ticks).toFixed(2)
             label: "bpm"
         }
 
         EditableValueDisplay {
             id: timeDisplay
 
-            value: {
-                transport.playheadPosition.ticks; // Force property dependency
-                return transport.playheadPosition.getStringDisplay(transport, root.tempoMap);
-            }
+            value: root.tempoMap.getMusicalPositionString(transport.playhead.ticks)
             label: "time"
             minValueWidth: timeTextMetrics.width
             minValueHeight: timeTextMetrics.height
@@ -84,7 +81,10 @@ RowLayout {
         }
 
         EditableValueDisplay {
-            value: root.tempoMap.timeSignatureEvents[0].numerator + "/" + root.tempoMap.timeSignatureEvents[0].denominator
+            value: {
+              let timeSig = root.tempoMap.timeSignatureAtTick(transport.playhead.ticks);
+              return `${timeSig.numerator}/${timeSig.denominator}`;
+            }
             label: "sig"
         }
 

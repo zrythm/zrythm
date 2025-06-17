@@ -17,6 +17,7 @@ class TempoEventWrapper : public QObject
   Q_PROPERTY (qint64 tick READ tick CONSTANT)
   Q_PROPERTY (double bpm READ bpm CONSTANT)
   Q_PROPERTY (TempoMap::CurveType curve READ curve CONSTANT)
+  QML_ELEMENT
 
 public:
   explicit TempoEventWrapper (
@@ -40,6 +41,7 @@ class TimeSignatureEventWrapper : public QObject
   Q_PROPERTY (qint64 tick READ tick CONSTANT)
   Q_PROPERTY (int numerator READ numerator CONSTANT)
   Q_PROPERTY (int denominator READ denominator CONSTANT)
+  QML_ELEMENT
 
 public:
   explicit TimeSignatureEventWrapper (
@@ -55,6 +57,32 @@ public:
 
 private:
   TempoMap::TimeSignatureEvent event_;
+};
+
+class MusicalPositionWrapper : public QObject
+{
+  Q_OBJECT
+  Q_PROPERTY (int bar READ bar CONSTANT)
+  Q_PROPERTY (int beat READ beat CONSTANT)
+  Q_PROPERTY (int sixteenth READ sixteenth CONSTANT)
+  Q_PROPERTY (int tick READ tick CONSTANT)
+  QML_ELEMENT
+
+public:
+  explicit MusicalPositionWrapper (
+    const TempoMap::MusicalPosition &pos,
+    QObject *                        parent = nullptr)
+      : QObject (parent), pos_ (pos)
+  {
+  }
+
+  int bar () const { return pos_.bar; }
+  int beat () const { return pos_.beat; }
+  int sixteenth () const { return pos_.sixteenth; }
+  int tick () const { return pos_.tick; }
+
+private:
+  TempoMap::MusicalPosition pos_;
 };
 
 class TempoMapWrapper : public QObject
@@ -80,14 +108,24 @@ public:
 
   QQmlListProperty<TempoEventWrapper> tempoEvents ()
   {
-    return QQmlListProperty<TempoEventWrapper> (this, &tempoEventWrappers_);
+    return { this, &tempoEventWrappers_ };
   }
 
   QQmlListProperty<TimeSignatureEventWrapper> timeSignatureEvents ()
   {
-    return QQmlListProperty<TimeSignatureEventWrapper> (
-      this, &timeSigEventWrappers_);
+    return { this, &timeSigEventWrappers_ };
   }
+
+  /**
+   * @brief Returns the time signature at the given tick.
+   */
+  Q_INVOKABLE TimeSignatureEventWrapper *
+  timeSignatureAtTick (int64_t tick) const;
+
+  Q_INVOKABLE double tempoAtTick (int64_t tick) const;
+
+  // this should be static but i don't know how to use it from QML then
+  Q_INVOKABLE int getPpq () { return TempoMap::get_ppq (); }
 
   double sampleRate () const { return tempo_map_.get_sample_rate (); }
   void   setSampleRate (double sampleRate)
@@ -98,7 +136,7 @@ public:
     Q_EMIT sampleRateChanged ();
   }
 
-  Q_INVOKABLE void addTempoEvent (int tick, double bpm, int curveType)
+  Q_INVOKABLE void addTempoEvent (qint64 tick, double bpm, int curveType)
   {
     tempo_map_.add_tempo_event (
       tick, bpm, static_cast<TempoMap::CurveType> (curveType));
@@ -107,11 +145,46 @@ public:
   }
 
   Q_INVOKABLE void
-  addTimeSignatureEvent (int tick, int numerator, int denominator)
+  addTimeSignatureEvent (qint64 tick, int numerator, int denominator)
   {
     tempo_map_.add_time_signature_event (tick, numerator, denominator);
     Q_EMIT timeSignatureEventsChanged ();
     rebuildTimeSigWrappers ();
+  }
+
+  Q_INVOKABLE MusicalPositionWrapper * getMusicalPosition (int64_t tick) const
+  {
+    return new MusicalPositionWrapper (
+      tempo_map_.tick_to_musical_position (tick));
+  }
+
+  Q_INVOKABLE QString getMusicalPositionString (int64_t tick) const;
+
+  Q_INVOKABLE int64_t
+  getTickFromMusicalPosition (int bar, int beat, int sixteenth, int tick) const
+  {
+    return tempo_map_.musical_position_to_tick (
+      TempoMap::MusicalPosition{
+        .bar = bar, .beat = beat, .sixteenth = sixteenth, .tick = tick });
+  }
+
+  // additional API when we want to avoid allocations and we only need 1 part
+
+  Q_INVOKABLE int getMusicalPositionBar (int64_t tick) const
+  {
+    return tempo_map_.tick_to_musical_position (tick).bar;
+  }
+  Q_INVOKABLE int getMusicalPositionBeat (int64_t tick) const
+  {
+    return tempo_map_.tick_to_musical_position (tick).beat;
+  }
+  Q_INVOKABLE int getMusicalPositionSixteenth (int64_t tick) const
+  {
+    return tempo_map_.tick_to_musical_position (tick).sixteenth;
+  }
+  Q_INVOKABLE int getMusicalPositionTick (int64_t tick) const
+  {
+    return tempo_map_.tick_to_musical_position (tick).tick;
   }
 
   /**
@@ -157,6 +230,7 @@ private:
   TempoMap                          &tempo_map_;
   QList<TempoEventWrapper *>         tempoEventWrappers_;
   QList<TimeSignatureEventWrapper *> timeSigEventWrappers_;
+  mutable utils::QObjectUniquePtr<TimeSignatureEventWrapper> default_time_sig_;
 };
 
 } // namespace zrythm::dsp

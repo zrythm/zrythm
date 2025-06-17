@@ -236,7 +236,7 @@ Item {
                 width: 2
                 height: parent.height
                 color: Style.dangerColor
-                x: root.ruler.transport.playheadPosition.ticks * root.ruler.pxPerTick - width / 2
+                x: root.ruler.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
                 z: 1000
             }
 

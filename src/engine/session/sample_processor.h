@@ -132,9 +132,9 @@ public:
    * @param loffset Local offset (this is where @p start_pos starts at).
    */
   void find_and_queue_metronome (
-    Position  start_pos,
-    Position  end_pos,
-    nframes_t loffset);
+    signed_frame_t start_pos,
+    signed_frame_t end_pos,
+    nframes_t      loffset);
 
 private:
   static constexpr auto kFaderKey = "fader"sv;

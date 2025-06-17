@@ -102,7 +102,7 @@ RangeAction::init_loaded_impl ()
 
 constexpr auto MOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
   const auto range_size_ticks = action.get_range_size_in_ticks ();
-  MOVE_TRANSPORT_MARKER (action, playhead_pos_, range_size_ticks, do_it);
+  // MOVE_TRANSPORT_MARKER (action, playhead_pos_, range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, cue_pos_, range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_start_pos_, range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_end_pos_, range_size_ticks, do_it);
@@ -110,7 +110,7 @@ constexpr auto MOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
 
 constexpr auto UNMOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
   const auto range_size_ticks = action.get_range_size_in_ticks ();
-  MOVE_TRANSPORT_MARKER (action, playhead_pos_, -range_size_ticks, do_it);
+  // MOVE_TRANSPORT_MARKER (action, playhead_pos_, -range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, cue_pos_, -range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_start_pos_, -range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_end_pos_, -range_size_ticks, do_it);

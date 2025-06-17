@@ -177,116 +177,120 @@ Exporter::export_audio (Settings &info)
 
   auto [start_pos, end_pos] = info.get_export_time_range ();
 
-  Position prev_playhead_pos = TRANSPORT->playhead_pos_->get_position ();
-  TRANSPORT->set_playhead_pos_rt_safe (start_pos);
+  bool  clipped = false;
+  float clip_amp = 0.f;
 
-  AUDIO_ENGINE->bounce_mode_ =
-    info.mode_ == Mode::Full
-      ? engine::device_io::BounceMode::Off
-      : engine::device_io::BounceMode::On;
-  AUDIO_ENGINE->bounce_step_ = info.bounce_step_;
-  AUDIO_ENGINE->bounce_with_parents_ = info.bounce_with_parents_;
+  const auto prev_playhead_ticks = TRANSPORT->playhead_.position_ticks ();
+  TRANSPORT->playhead_.set_position_ticks (start_pos.ticks_);
+  {
+    dsp::PlayheadProcessingGuard guard (TRANSPORT->playhead_);
 
-  /* init ditherer */
-  zrythm::dsp::Ditherer ditherer;
-  if (info.dither_)
-    {
-      z_debug (
-        "dither {} bits", utils::audio::bit_depth_enum_to_int (info.depth_));
-      ditherer.reset (utils::audio::bit_depth_enum_to_int (info.depth_));
-    }
+    AUDIO_ENGINE->bounce_mode_ =
+      info.mode_ == Mode::Full
+        ? engine::device_io::BounceMode::Off
+        : engine::device_io::BounceMode::On;
+    AUDIO_ENGINE->bounce_step_ = info.bounce_step_;
+    AUDIO_ENGINE->bounce_with_parents_ = info.bounce_with_parents_;
 
-  z_return_if_fail (end_pos.frames_ >= 1 || start_pos.frames_ >= 0);
-  const double total_ticks = (end_pos.ticks_ - start_pos.ticks_);
-  /* frames written so far */
-  double covered_ticks = 0;
-  bool   clipped = false;
-  float  clip_amp = 0.f;
+    /* init ditherer */
+    zrythm::dsp::Ditherer ditherer;
+    if (info.dither_)
+      {
+        z_debug (
+          "dither {} bits", utils::audio::bit_depth_enum_to_int (info.depth_));
+        ditherer.reset (utils::audio::bit_depth_enum_to_int (info.depth_));
+      }
 
-  zrythm::utils::audio::AudioBuffer buffer (
-    EXPORT_CHANNELS, AUDIO_ENGINE->get_block_length ());
+    z_return_if_fail (end_pos.frames_ >= 1 || start_pos.frames_ >= 0);
+    const auto total_frames = (end_pos.frames_ - start_pos.frames_);
+    /* frames written so far */
+    signed_frame_t covered_frames = 0;
 
-  do
-    {
-      /* calculate number of frames to process this time */
-      const double nticks =
-        end_pos.ticks_ - TRANSPORT->playhead_pos_->getTicks ();
-      const nframes_t nframes = (nframes_t) std::min (
-        (long) ceil (type_safe::get (AUDIO_ENGINE->frames_per_tick_) * nticks),
-        (long) AUDIO_ENGINE->get_block_length ());
-      z_return_if_fail (nframes > 0);
+    zrythm::utils::audio::AudioBuffer buffer (
+      EXPORT_CHANNELS, AUDIO_ENGINE->get_block_length ());
 
-      /* run process code */
-      AUDIO_ENGINE->process_prepare (nframes);
-      EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ = (unsigned_frame_t) PLAYHEAD.frames_,
-        .g_start_frame_w_offset_ = (unsigned_frame_t) PLAYHEAD.frames_,
-        .local_offset_ = 0,
-        .nframes_ = nframes,
-      };
-      ROUTER->start_cycle (time_nfo);
-      AUDIO_ENGINE->post_process (nframes, nframes);
+    do
+      {
+        /* calculate number of frames to process this time */
+        const nframes_t nframes =
+          end_pos.frames_ - TRANSPORT->get_playhead_position_in_audio_thread ();
+        assert (nframes > 0);
 
-      /* by this time, the Master channel should have its Stereo Out ports
-       * filled - pass its buffers to the output */
-      for (int i = 0; i < EXPORT_CHANNELS; ++i)
-        {
-          auto &ch_data =
-            i == 0
-              ? P_MASTER_TRACK->channel_->get_stereo_out_ports ().first.buf_
-              : P_MASTER_TRACK->channel_->get_stereo_out_ports ().second.buf_;
-          buffer.copyFrom (i, 0, ch_data.data (), (int) nframes);
-        }
+        /* run process code */
+        AUDIO_ENGINE->process_prepare (nframes);
+        EngineProcessTimeInfo time_nfo = {
+          .g_start_frame_ =
+            (unsigned_frame_t) TRANSPORT->get_playhead_position_in_audio_thread (),
+          .g_start_frame_w_offset_ =
+            (unsigned_frame_t) TRANSPORT->get_playhead_position_in_audio_thread (),
+          .local_offset_ = 0,
+          .nframes_ = nframes,
+        };
+        ROUTER->start_cycle (time_nfo);
+        AUDIO_ENGINE->post_process (nframes, nframes);
 
-      /* clipping detection */
-      float max_amp = buffer.getMagnitude (0, (int) nframes);
-      if (max_amp > 1.f && max_amp > clip_amp)
-        {
-          clip_amp = max_amp;
-          clipped = true;
-        }
+        /* by this time, the Master channel should have its Stereo Out ports
+         * filled - pass its buffers to the output */
+        for (int i = 0; i < EXPORT_CHANNELS; ++i)
+          {
+            auto &ch_data =
+              i == 0
+                ? P_MASTER_TRACK->channel_->get_stereo_out_ports ().first.buf_
+                : P_MASTER_TRACK->channel_->get_stereo_out_ports ().second.buf_;
+            buffer.copyFrom (i, 0, ch_data.data (), (int) nframes);
+          }
 
-      /* apply dither */
-      if (info.dither_)
-        {
-          ditherer.process (
-            buffer.getWritePointer (0), static_cast<int> (nframes));
-          ditherer.process (
-            buffer.getWritePointer (1), static_cast<int> (nframes));
-        }
+        /* clipping detection */
+        float max_amp = buffer.getMagnitude (0, (int) nframes);
+        if (max_amp > 1.f && max_amp > clip_amp)
+          {
+            clip_amp = max_amp;
+            clipped = true;
+          }
 
-      /* write the frames for the current cycle */
-      if (!writer->writeFromAudioSampleBuffer (
-            buffer, 0, static_cast<int> (nframes)))
-        {
-          throw ZrythmException ("Failed to write audio data");
-        }
+        /* apply dither */
+        if (info.dither_)
+          {
+            ditherer.process (
+              buffer.getWritePointer (0), static_cast<int> (nframes));
+            ditherer.process (
+              buffer.getWritePointer (1), static_cast<int> (nframes));
+          }
 
-      covered_ticks += type_safe::get (AUDIO_ENGINE->ticks_per_frame_) * nframes;
+        /* write the frames for the current cycle */
+        if (!writer->writeFromAudioSampleBuffer (
+              buffer, 0, static_cast<int> (nframes)))
+          {
+            throw ZrythmException ("Failed to write audio data");
+          }
 
-      progress_info_->update_progress (
-        (TRANSPORT->playhead_pos_->getTicks () - start_pos.ticks_) / total_ticks,
-        {});
-    }
-  while (
-    TRANSPORT->playhead_pos_->getTicks () < end_pos.ticks_
-    && !progress_info_->pending_cancellation ());
+        covered_frames += nframes;
 
-  writer_ptr.reset ();
+        progress_info_->update_progress (
+          (TRANSPORT->get_playhead_position_in_audio_thread ()
+           - start_pos.frames_)
+            / total_frames,
+          {});
+      }
+    while (
+      TRANSPORT->get_playhead_position_in_audio_thread () < end_pos.frames_
+      && !progress_info_->pending_cancellation ());
 
-  if (!progress_info_->pending_cancellation ())
-    {
-      z_warn_if_fail (
-        utils::math::floats_near (covered_ticks, total_ticks, 1.0));
-    }
+    writer_ptr.reset ();
 
-  /* TODO silence output */
+    if (!progress_info_->pending_cancellation ())
+      {
+        z_warn_if_fail (covered_frames == total_frames);
+      }
 
-  progress_info_->update_progress (1.0, {});
+    /* TODO silence output */
 
-  AUDIO_ENGINE->bounce_mode_ = engine::device_io::BounceMode::Off;
-  AUDIO_ENGINE->bounce_with_parents_ = false;
-  TRANSPORT->move_playhead (prev_playhead_pos, true, false, false);
+    progress_info_->update_progress (1.0, {});
+
+    AUDIO_ENGINE->bounce_mode_ = engine::device_io::BounceMode::Off;
+    AUDIO_ENGINE->bounce_with_parents_ = false;
+  }
+  TRANSPORT->move_playhead (prev_playhead_ticks, true, false, false);
 
   /* if cancelled, delete */
   if (progress_info_->pending_cancellation ())
@@ -659,8 +663,8 @@ Exporter::create_audio_track_after_bounce (Position pos)
     }
   z_return_if_fail (last_track_var.has_value ());
 
-  Position tmp = TRANSPORT->playhead_pos_->get_position ();
-  TRANSPORT->set_playhead_pos_rt_safe (settings_.custom_start_);
+  Position tmp = TRANSPORT->get_playhead_position_in_gui_thread ();
+  TRANSPORT->getPlayhead ()->setTicks (settings_.custom_start_.ticks_);
   try
     {
       std::visit (
@@ -677,7 +681,7 @@ Exporter::create_audio_track_after_bounce (Position pos)
       ex.handle (QObject::tr ("Failed to create audio track"));
     }
 
-  TRANSPORT->set_playhead_pos_rt_safe (tmp);
+  TRANSPORT->getPlayhead ()->setTicks (tmp.ticks_);
 }
 
 void

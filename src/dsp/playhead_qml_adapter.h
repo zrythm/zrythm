@@ -19,16 +19,15 @@ public:
   double ticks () const;
   void   setTicks (double ticks);
 
-Q_SIGNALS:
-  void ticksChanged ();
+  Q_SIGNAL void ticksChanged ();
 
 private:
   Q_SLOT void updateTicks ();
 
 private:
-  Playhead &playhead_;
-  double    last_ticks_ = 0.0;
-  QTimer    timer_;
+  Playhead                       &playhead_;
+  double                          last_ticks_ = 0.0;
+  utils::QObjectUniquePtr<QTimer> timer_;
 };
 
 } // namespace zrythm::dsp

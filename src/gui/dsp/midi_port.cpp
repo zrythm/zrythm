@@ -146,13 +146,15 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
     ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::MidiClock)
     && is_output ())
     {
+      const auto playhead_frames =
+        TRANSPORT->playhead_.position_during_processing_rounded ();
       /* continue or start */
       bool start =
         TRANSPORT->isRolling () && !AUDIO_ENGINE->pos_nfo_before_.is_rolling_;
       if (start)
         {
           uint8_t start_msg = utils::midi::MIDI_CLOCK_CONTINUE;
-          if (PLAYHEAD.frames_ == 0)
+          if (playhead_frames == 0)
             {
               start_msg = utils::midi::MIDI_CLOCK_START;
             }
@@ -166,8 +168,12 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
         }
 
       /* song position */
-      int32_t sixteenth_within_song =
-        PLAYHEAD.get_total_sixteenths (false, AUDIO_ENGINE->frames_per_tick_);
+      dsp::Position playhead_pos{
+        static_cast<signed_frame_t> (playhead_frames),
+        AUDIO_ENGINE->ticks_per_frame_
+      };
+      int32_t sixteenth_within_song = playhead_pos.get_total_sixteenths (
+        false, AUDIO_ENGINE->frames_per_tick_);
       if (
         AUDIO_ENGINE->pos_nfo_at_end_.sixteenth_within_song_
           != AUDIO_ENGINE->pos_nfo_current_.sixteenth_within_song_

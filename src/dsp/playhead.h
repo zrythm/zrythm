@@ -59,6 +59,8 @@ namespace zrythm::dsp
  */
 class Playhead
 {
+  friend class PlayheadProcessingGuard;
+
 public:
   /**
    * @brief Construct a Playhead associated with a TempoMap
@@ -68,6 +70,7 @@ public:
 
   // Audio threads ONLY ----------------------------------------------------
 
+private:
   /**
    * @brief Prepare for audio processing block (audio thread safe)
    *
@@ -80,18 +83,26 @@ public:
     position_samples_processing_.store (
       position_samples_.load (std::memory_order_acquire),
       std::memory_order_release);
-    frames_processed_.store (0, std::memory_order_release);
   }
 
+public:
   /**
    * @brief Advance processing position (audio thread safe)
-   * @param nframes Number of frames advanced
+   * @param nframes Number of frames advanced (negative for backwards, eg when
+   * looping back)
    *
    * @warning Must only be called from the system audio callback thread.
    */
-  void advance_processing (uint32_t nframes) noexcept
+  void advance_processing (int64_t nframes) noexcept
   {
-    frames_processed_.fetch_add (nframes, std::memory_order_acq_rel);
+    if (nframes >= 0) [[likely]]
+      {
+        position_samples_processing_.fetch_add (static_cast<double> (nframes));
+      }
+    else
+      {
+        position_samples_processing_.fetch_sub (static_cast<double> (-nframes));
+      }
   }
 
   /**
@@ -100,13 +111,17 @@ public:
    *
    * @note Can be called concurrently from multiple audio threads
    */
-  auto position_during_processing () const noexcept
+  auto position_during_processing_precise () const noexcept
   {
-    return static_cast<uint32_t> (std::round (
-             position_samples_processing_.load (std::memory_order_acquire)))
-           + frames_processed_.load (std::memory_order_acquire);
+    return position_samples_processing_.load (std::memory_order_acquire);
+  }
+  auto position_during_processing_rounded () const noexcept
+  {
+    return static_cast<uint64_t> (std::round (
+      position_samples_processing_.load (std::memory_order_acquire)));
   }
 
+private:
   /**
    * @brief Finalize audio block processing (audio thread safe)
    *
@@ -117,11 +132,13 @@ public:
   {
     // Commit position only at end of block
     position_samples_.store (
-      position_during_processing (), std::memory_order_release);
+      position_samples_processing_.load (std::memory_order_acquire),
+      std::memory_order_release);
   }
 
   // GUI thread ONLY ------------------------------------------------------
 
+public:
   /**
    * @brief Set playhead position in musical ticks (GUI thread only)
    * @param ticks New position in ticks
@@ -189,13 +206,43 @@ private:
   const TempoMap &tempo_map_;
 
   // Audio thread state
-  std::atomic<double>   position_samples_processing_ = 0.0;
-  std::atomic<uint32_t> frames_processed_ = 0;
+  std::atomic<double> position_samples_processing_ = 0.0;
 
   // Shared state (protected)
   std::atomic<double> position_samples_{ 0.0 };
   double              position_ticks_ = 0.0;
   mutable std::mutex  position_mutex_;
+};
+
+/**
+ * @class PlayheadProcessingGuard
+ * @brief RAII helper for Playhead audio processing block.
+ *
+ * Automatically calls prepare_for_processing() on construction
+ * and finalize_processing() on destruction.
+ */
+class PlayheadProcessingGuard
+{
+public:
+  /**
+   * @brief Constructor - calls playhead.prepare_for_processing()
+   * @param playhead Playhead instance to manage
+   */
+  explicit PlayheadProcessingGuard (Playhead &playhead) noexcept
+      : playhead_ (playhead)
+  {
+    playhead_.prepare_for_processing ();
+  }
+
+  /// @brief Destructor - calls playhead.finalize_processing()
+  ~PlayheadProcessingGuard () noexcept { playhead_.finalize_processing (); }
+
+  // Prevent copying
+  PlayheadProcessingGuard (const PlayheadProcessingGuard &) = delete;
+  PlayheadProcessingGuard &operator= (const PlayheadProcessingGuard &) = delete;
+
+private:
+  Playhead &playhead_;
 };
 
 } // namespace zrythm::dsp

@@ -20,15 +20,11 @@ protected:
 // Test initial state
 TEST_F (TempoMapTest, InitialState)
 {
-  EXPECT_EQ (map->get_tempo_events ().size (), 1);
-  EXPECT_EQ (map->get_tempo_events ()[0].tick, 0);
-  EXPECT_DOUBLE_EQ (map->get_tempo_events ()[0].bpm, 120.0);
-  EXPECT_EQ (map->get_tempo_events ()[0].curve, TempoMap::CurveType::Constant);
-
-  EXPECT_EQ (map->get_time_signature_events ().size (), 1);
-  EXPECT_EQ (map->get_time_signature_events ()[0].tick, 0);
-  EXPECT_EQ (map->get_time_signature_events ()[0].numerator, 4);
-  EXPECT_EQ (map->get_time_signature_events ()[0].denominator, 4);
+  EXPECT_TRUE (map->get_tempo_events ().empty ());
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (0), 120.0);
+  EXPECT_TRUE (map->get_time_signature_events ().empty ());
+  EXPECT_EQ (map->time_signature_at_tick (0).numerator, 4);
+  EXPECT_EQ (map->time_signature_at_tick (0).denominator, 4);
 }
 
 // Test tempo event management
@@ -252,6 +248,38 @@ TEST_F (TempoMapTest, MultiSegmentLinearRamp)
   EXPECT_NEAR (map->tick_to_seconds (2400), afterRampTime, 1e-8);
 }
 
+// Test tempo lookups
+TEST_F (TempoMapTest, TempoLookup)
+{
+  // Setup linear ramp from 120 to 180 BPM over 4 beats (3840 ticks)
+  map->add_tempo_event (0, 120.0, TempoMap::CurveType::Linear);
+  map->add_tempo_event (3840, 180.0, TempoMap::CurveType::Constant);
+
+  // Test start of ramp
+  auto tempo = map->tempo_at_tick (0);
+  EXPECT_DOUBLE_EQ (tempo, 120.0);
+
+  // Test 1/4 through ramp
+  tempo = map->tempo_at_tick (960);
+  EXPECT_NEAR (tempo, 135.0, 1e-8);
+
+  // Test midpoint of ramp
+  tempo = map->tempo_at_tick (1920);
+  EXPECT_NEAR (tempo, 150.0, 1e-8);
+
+  // Test 3/4 through ramp
+  tempo = map->tempo_at_tick (2880);
+  EXPECT_NEAR (tempo, 165.0, 1e-8);
+
+  // Test end of ramp
+  tempo = map->tempo_at_tick (3840);
+  EXPECT_DOUBLE_EQ (tempo, 180.0);
+
+  // Test after ramp
+  tempo = map->tempo_at_tick (4800);
+  EXPECT_DOUBLE_EQ (tempo, 180.0);
+}
+
 // Test linear ramp as last event
 TEST_F (TempoMapTest, LinearRampLastEvent)
 {
@@ -273,10 +301,10 @@ TEST_F (TempoMapTest, EdgeCases)
   EXPECT_DOUBLE_EQ (map->seconds_to_tick (0.0), 0.0);
   EXPECT_DOUBLE_EQ (map->seconds_to_tick (-1.0), 0.0);
 
-  // Empty tempo map
+  // Empty tempo map - default value active
   TempoMap emptyMap (960);
   emptyMap.remove_tempo_event (0);
-  EXPECT_DOUBLE_EQ (emptyMap.tick_to_seconds (960), 0.0);
+  EXPECT_DOUBLE_EQ (emptyMap.tick_to_seconds (960), 0.5);
 
   // Near-constant ramp
   map->add_tempo_event (960, 120.001, TempoMap::CurveType::Linear);
@@ -352,6 +380,51 @@ TEST_F (TempoMapTest, ComplexTimeSignatures)
   EXPECT_EQ (pos.beat, 7);
 }
 
+// Test time signature lookup
+TEST_F (TempoMapTest, TimeSignatureLookup)
+{
+  // Default 4/4
+  auto ts = map->time_signature_at_tick (0);
+  EXPECT_EQ (ts.numerator, 4);
+  EXPECT_EQ (ts.denominator, 4);
+
+  // Add time signatures
+  map->add_time_signature_event (1920, 3, 4); // Bar 3 (assuming 4/4)
+  map->add_time_signature_event (3840, 5, 8); // Bar 5 (3/4)
+
+  // Test before first change
+  ts = map->time_signature_at_tick (0);
+  EXPECT_EQ (ts.numerator, 4);
+  EXPECT_EQ (ts.denominator, 4);
+
+  // Test at first change point
+  ts = map->time_signature_at_tick (1920);
+  EXPECT_EQ (ts.numerator, 3);
+  EXPECT_EQ (ts.denominator, 4);
+
+  // Test between changes
+  ts = map->time_signature_at_tick (2000);
+  EXPECT_EQ (ts.numerator, 3);
+  EXPECT_EQ (ts.denominator, 4);
+
+  // Test at second change point
+  ts = map->time_signature_at_tick (3840);
+  EXPECT_EQ (ts.numerator, 5);
+  EXPECT_EQ (ts.denominator, 8);
+
+  // Test after last change
+  ts = map->time_signature_at_tick (10000);
+  EXPECT_EQ (ts.numerator, 5);
+  EXPECT_EQ (ts.denominator, 8);
+
+  // Test with empty map
+  TempoMap emptyMap (SAMPLE_RATE);
+  emptyMap.remove_time_signature_event (0);
+  ts = emptyMap.time_signature_at_tick (0);
+  EXPECT_EQ (ts.numerator, 4); // Default
+  EXPECT_EQ (ts.denominator, 4);
+}
+
 // Test tempo and time signature interaction
 TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
 {
@@ -382,10 +455,10 @@ TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
 TEST_F (TempoMapTest, Serialization)
 {
   // Add tempo and time signature events
-  map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
-  map->add_tempo_event (3840, 160.0, TempoMap::CurveType::Linear);
   map->add_time_signature_event (1920, 3, 4);
   map->add_time_signature_event (3840, 5, 8);
+  map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
+  map->add_tempo_event (3840, 160.0, TempoMap::CurveType::Linear);
 
   // Serialize to JSON
   nlohmann::json j;

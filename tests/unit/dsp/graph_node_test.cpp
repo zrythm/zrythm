@@ -27,13 +27,11 @@ protected:
     // Default expectations
     ON_CALL (*transport_, get_play_state ())
       .WillByDefault (Return (ITransport::PlayState::Paused));
-    ON_CALL (*transport_, get_playhead_position ())
-      .WillByDefault (Return (Position{}));
+    ON_CALL (*transport_, get_playhead_position_in_audio_thread ())
+      .WillByDefault (Return (0));
     ON_CALL (*transport_, get_loop_enabled ()).WillByDefault (Return (false));
     ON_CALL (*transport_, get_loop_range_positions ())
-      .WillByDefault (Return (
-        std::make_pair (
-          Position{}, Position{ 1920.0, FramesPerTick{ 22.675736961451247 } })));
+      .WillByDefault (Return (std::make_pair (0, 1920.0 * 22.675736961451247)));
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return (u8"test_node"));
@@ -113,9 +111,9 @@ TEST_F (GraphNodeTest, ProcessingWithTransport)
 {
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (Return (ITransport::PlayState::Rolling));
-  EXPECT_CALL (*transport_, get_playhead_position ())
-    .WillOnce (Return (Position{}));
-  EXPECT_CALL (*transport_, position_add_frames (_, _)).Times (1);
+  EXPECT_CALL (
+    *transport_, get_playhead_position_after_adding_frames_in_audio_thread (_))
+    .Times (1);
   EXPECT_CALL (*processable_, process_block (_)).Times (1);
 
   auto                  node = create_test_node ();
@@ -127,7 +125,7 @@ TEST_F (GraphNodeTest, ProcessingWithTransport)
 TEST_F (GraphNodeTest, LoopPointProcessing)
 {
   EXPECT_CALL (*transport_, get_loop_enabled ()).WillRepeatedly (Return (true));
-  EXPECT_CALL (*transport_, is_loop_point_met (_, _))
+  EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
     .WillOnce (Return (128))
     .WillOnce (Return (0));
   EXPECT_CALL (*processable_, process_block (_)).Times (2);
@@ -177,7 +175,7 @@ TEST_F (GraphNodeTest, ProcessingWithLoopAndLatency)
   EXPECT_CALL (*transport_, get_loop_enabled ()).WillRepeatedly (Return (true));
   EXPECT_CALL (*processable_, get_single_playback_latency ())
     .WillRepeatedly (Return (128));
-  EXPECT_CALL (*transport_, is_loop_point_met (_, _))
+  EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
     .WillOnce (Return (64))
     .WillOnce (Return (0));
   EXPECT_CALL (*processable_, process_block (_)).Times (2);

@@ -134,14 +134,14 @@ public:
    * Returns the next or previous SnapGrid point.
    *
    * @param[out] ret_pos Output position, if found.
-   * @param pos Position to search for.
+   * @param ticks Position to search for.
    * @param return_prev 1 to return the previous element or 0 to return the
    * next.
    *
    * @return Whether successful.
    */
   bool
-  get_nearby_snap_point (Position &ret_pos, const Position &pos, bool return_prev);
+  get_nearby_snap_point (Position &ret_pos, double ticks, bool return_prev);
 
   /**
    * @brief Get closest snap point.

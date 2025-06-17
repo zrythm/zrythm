@@ -4,6 +4,8 @@
 #pragma once
 
 #include "dsp/itransport.h"
+#include "dsp/playhead.h"
+#include "dsp/playhead_qml_adapter.h"
 #include "dsp/position.h"
 #include "gui/backend/position_proxy.h"
 #include "gui/dsp/midi_port.h"
@@ -12,18 +14,14 @@
 #include "utils/types.h"
 
 class Project;
-namespace zrythm::structure
-{
-namespace arrangement
+
+namespace zrythm::structure::arrangement
 {
 class Marker;
-}
 }
 
 #define TRANSPORT (PROJECT->transport_)
 constexpr int TRANSPORT_DEFAULT_TOTAL_BARS = 128;
-
-#define PLAYHEAD (TRANSPORT->playhead_pos_->get_position ())
 
 namespace zrythm::engine::session
 {
@@ -60,7 +58,7 @@ class Transport final : public QObject, public dsp::ITransport, public IPortOwne
   Q_PROPERTY (
     PlayState playState READ getPlayState WRITE setPlayState NOTIFY
       playStateChanged)
-  Q_PROPERTY (PositionProxy * playheadPosition READ getPlayheadPosition CONSTANT)
+  Q_PROPERTY (dsp::PlayheadQmlWrapper * playhead READ getPlayhead CONSTANT)
   Q_PROPERTY (PositionProxy * cuePosition READ getCuePosition CONSTANT)
   Q_PROPERTY (
     PositionProxy * loopStartPosition READ getLoopStartPosition CONSTANT)
@@ -146,7 +144,7 @@ public:
   void          setPlayState (PlayState state);
   Q_SIGNAL void playStateChanged (PlayState state);
 
-  PositionProxy * getPlayheadPosition () const;
+  dsp::PlayheadQmlWrapper * getPlayhead () const;
 
   PositionProxy * getCuePosition () const;
 
@@ -256,11 +254,10 @@ public:
   void set_metronome_enabled (bool enabled);
 
   /**
-   * Moves the playhead by the time corresponding to
-   * given samples, taking into account the loop
-   * end point.
+   * Moves the playhead by the time corresponding to given samples, taking into
+   * account the loop end point.
    */
-  void add_to_playhead (signed_frame_t nframes);
+  void add_to_playhead_in_audio_thread (signed_frame_t nframes);
 
   /**
    * Request pause.
@@ -282,42 +279,30 @@ public:
    */
   Q_INVOKABLE void requestRoll (bool with_wait);
 
-  /**
-   * Setter for playhead Position.
-   */
-  void set_playhead_pos_rt_safe (Position pos);
-
-  void set_playhead_to_bar (int bar);
-
   void set_play_state_rt_safe (PlayState state);
 
-  /**
-   * Getter for playhead Position.
-   */
-  void get_playhead_pos (Position * pos);
-
-  static void get_playhead_pos_static (Transport * self, Position * pos)
+  signed_frame_t get_playhead_position_in_audio_thread () const override
   {
-    self->get_playhead_pos (pos);
+    return static_cast<signed_frame_t> (
+      playhead_.position_during_processing_rounded ());
   }
 
-  Position get_playhead_position () const override
-  {
-    return playhead_pos_->get_position ();
-  }
+  [[deprecated (
+    "Use the Playhead API to get ticks instead. Optionally convert via the TempoMap API")]]
+  Position get_playhead_position_in_gui_thread () const;
 
-  nframes_t is_loop_point_met (
+  nframes_t is_loop_point_met_in_audio_thread (
     const signed_frame_t g_start_frames,
     const nframes_t      nframes) const override
   {
     auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
     bool loop_end_between_start_and_end =
-      (loop_end_pos.frames_ > g_start_frames
-       && loop_end_pos.frames_ <= g_start_frames + (long) nframes);
+      (loop_end_pos > g_start_frames
+       && loop_end_pos <= g_start_frames + (long) nframes);
 
     if (loop_end_between_start_and_end && get_loop_enabled ()) [[unlikely]]
       {
-        return (nframes_t) (loop_end_pos.frames_ - g_start_frames);
+        return (nframes_t) (loop_end_pos - g_start_frames);
       }
     return 0;
   }
@@ -346,15 +331,15 @@ public:
    *
    * Should not be used during exporting.
    *
-   * @param target Position to set to.
+   * @param target_ticks Position to set to.
    * @param panic Send MIDI panic or not FIXME unused.
    * @param set_cue_point Also set the cue point at this position.
    */
   void move_playhead (
-    const Position &target,
-    bool            panic,
-    bool            set_cue_point,
-    bool            fire_events);
+    double target_ticks,
+    bool   panic,
+    bool   set_cue_point,
+    bool   fire_events);
 
   /**
    * Enables or disables loop.
@@ -403,8 +388,8 @@ frames_add_frames (
   const nframes_t   frames);
 #endif
 
-  void
-  position_add_frames (Position &pos, signed_frame_t frames) const override;
+  signed_frame_t get_playhead_position_after_adding_frames_in_audio_thread (
+    signed_frame_t frames) const override;
 
   /**
    * Returns the PPQN (Parts/Ticks Per Quarter Note).
@@ -416,7 +401,8 @@ frames_add_frames (
    */
   std::pair<Position, Position> get_range_positions () const;
 
-  std::pair<Position, Position> get_loop_range_positions () const override;
+  std::pair<signed_frame_t, signed_frame_t>
+  get_loop_range_positions () const override;
 
   PlayState get_play_state () const override { return play_state_; }
 
@@ -482,7 +468,7 @@ frames_add_frames (
 
 private:
   static constexpr auto kTotalBarsKey = "totalBars"sv;
-  static constexpr auto kPlayheadPosKey = "playheadPos"sv;
+  static constexpr auto kPlayheadKey = "playhead"sv;
   static constexpr auto kCuePosKey = "cuePos"sv;
   static constexpr auto kLoopStartPosKey = "loopStartPos"sv;
   static constexpr auto kLoopEndPosKey = "loopEndPos"sv;
@@ -502,7 +488,7 @@ private:
   {
     j = nlohmann::json{
       { kTotalBarsKey,    transport.total_bars_     },
-      { kPlayheadPosKey,  transport.playhead_pos_   },
+      { kPlayheadKey,     transport.playhead_       },
       { kCuePosKey,       transport.cue_pos_        },
       { kLoopStartPosKey, transport.loop_start_pos_ },
       { kLoopEndPosKey,   transport.loop_end_pos_   },
@@ -523,7 +509,7 @@ private:
   friend void from_json (const nlohmann::json &j, Transport &transport)
   {
     j.at (kTotalBarsKey).get_to (transport.total_bars_);
-    j.at (kPlayheadPosKey).get_to (*transport.playhead_pos_);
+    j.at (kPlayheadKey).get_to (transport.playhead_);
     j.at (kCuePosKey).get_to (*transport.cue_pos_);
     j.at (kLoopStartPosKey).get_to (*transport.loop_start_pos_);
     j.at (kLoopEndPosKey).get_to (*transport.loop_end_pos_);
@@ -558,7 +544,8 @@ public:
   int total_bars_ = 0;
 
   /** Playhead position. */
-  PositionProxy * playhead_pos_ = nullptr;
+  dsp::Playhead                                    playhead_;
+  utils::QObjectUniquePtr<dsp::PlayheadQmlWrapper> playhead_adapter_;
 
   /** Cue point position. */
   PositionProxy * cue_pos_ = nullptr;
@@ -628,11 +615,11 @@ public:
   RecordingMode recording_mode_ = (RecordingMode) 0;
 
   /**
-   * Position of the playhead before pausing.
+   * Position of the playhead before pausing, in ticks.
    *
    * Used by UndoableAction.
    */
-  Position playhead_before_pause_;
+  double playhead_before_pause_{};
 
   /**
    * Roll/play MIDI port.

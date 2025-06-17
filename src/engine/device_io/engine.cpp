@@ -75,6 +75,9 @@ AudioEngine::AudioEngine (
       audio_callback_ (
         std::make_unique<AudioCallback> (
           [this] (nframes_t frames_to_process) {
+            dsp::PlayheadProcessingGuard guard{
+              this->project_->transport_->playhead_
+            };
             this->process (frames_to_process);
           },
           [] (juce::AudioIODevice * _) {},
@@ -457,14 +460,17 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
   if ((project_ != nullptr) && project_->loaded_)
     {
       /* run 1 more time to flush panic messages */
-      SemaphoreRAII sem (port_operation_lock_, true);
+      SemaphoreRAII                sem (port_operation_lock_, true);
+      dsp::PlayheadProcessingGuard playhead_processing_guard{
+        project_->transport_->playhead_
+      };
       process_prepare (1, &sem);
 
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame_ = static_cast<unsigned_frame_t> (
-          project_->transport_->playhead_pos_->getFrames ()),
+          project_->transport_->get_playhead_position_in_audio_thread ()),
         .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
-          project_->transport_->playhead_pos_->getFrames ()),
+          project_->transport_->get_playhead_position_in_audio_thread ()),
         .local_offset_ = 0,
         .nframes_ = 1,
       };
@@ -487,8 +493,6 @@ AudioEngine::resume (State &state)
   project_->transport_->loop_ = state.looping_;
   if (state.playing_)
     {
-      project_->transport_->playhead_before_pause_.update_frames_from_ticks (
-        frames_per_tick_);
       project_->transport_->move_playhead (
         project_->transport_->playhead_before_pause_, false, false, false);
       project_->transport_->requestRoll (true);
@@ -617,9 +621,12 @@ AudioEngine::update_position_info (
   PositionInfo   &pos_nfo,
   const nframes_t frames_to_add)
 {
-  auto  transport_ = project_->transport_;
-  auto &tempo_map = project_->get_tempo_map ();
-  auto  playhead = transport_->playhead_pos_->get_position ();
+  auto       transport_ = project_->transport_;
+  auto      &tempo_map = project_->get_tempo_map ();
+  const auto playhead_frames_before =
+    transport_->get_playhead_position_in_audio_thread ();
+  auto playhead =
+    dsp::Position{ playhead_frames_before, AUDIO_ENGINE->ticks_per_frame_ };
   playhead.add_frames (frames_to_add, ticks_per_frame_);
   pos_nfo.is_rolling_ = transport_->isRolling ();
   pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map.get_tempo_events ().front ().bpm);
@@ -786,9 +793,10 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   auto *                transport_ = project_->transport_;
   EngineProcessTimeInfo split_time_nfo = {
-    .g_start_frame_ = (unsigned_frame_t) transport_->playhead_pos_->getFrames (),
+    .g_start_frame_ =
+      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread (),
     .g_start_frame_w_offset_ =
-      (unsigned_frame_t) transport_->playhead_pos_->getFrames (),
+      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread (),
     .local_offset_ = 0,
     .nframes_ = 0,
   };
@@ -964,7 +972,7 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   auto * transport_ = project_->transport_;
   if (transport_->isRolling () && remaining_latency_preroll_ == 0)
     {
-      transport_->add_to_playhead (roll_nframes);
+      transport_->add_to_playhead_in_audio_thread (roll_nframes);
     }
 
   /* update max time taken (for calculating DSP %) */

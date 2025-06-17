@@ -83,6 +83,7 @@ ColumnLayout {
 
                         editorSettings: project.timeline
                         transport: project.transport
+                        tempoMap: project.tempoMap
                     }
 
                     Binding {

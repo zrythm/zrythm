@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "dsp/midi_event.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/metronome.h"
@@ -662,12 +664,12 @@ SampleProcessor::get_tempo_map () const
 
 void
 SampleProcessor::find_and_queue_metronome (
-  const Position  start_pos,
-  const Position  end_pos,
-  const nframes_t loffset)
+  const signed_frame_t start_pos,
+  const signed_frame_t end_pos,
+  const nframes_t      loffset)
 {
   /* special case */
-  if (start_pos.frames_ == end_pos.frames_)
+  if (start_pos == end_pos)
     return;
 
   const auto &audio_engine = *audio_engine_;
@@ -677,45 +679,36 @@ SampleProcessor::find_and_queue_metronome (
     tempo_map.get_time_signature_events ().at (0).numerator;
 
   /* find each bar / beat change from start to finish */
-  int num_bars_before = start_pos.get_total_bars (
-    false, transport.ticks_per_bar_, audio_engine_->frames_per_tick_);
-  int num_bars_after = end_pos.get_total_bars (
-    false, transport.ticks_per_bar_, audio_engine_->frames_per_tick_);
-  int bars_diff = num_bars_after - num_bars_before;
-
-#if 0
-  char start_pos_str[60];
-  char end_pos_str[60];
-  position_to_string (start_pos, start_pos_str);
-  position_to_string (end_pos, end_pos_str);
-  z_info (
-    "%s: %s ~ %s <num bars before %d after %d>",
-    __func__, start_pos_str, end_pos_str,
-    num_bars_before, num_bars_after);
-#endif
+  const auto ticks_before = static_cast<int64_t> (
+    tempo_map.samples_to_tick (static_cast<double> (start_pos)));
+  // end pos in samples is excluded so -1
+  const auto ticks_after_excluding_last_sample = static_cast<int64_t> (
+    tempo_map.samples_to_tick (static_cast<double> (end_pos - 1)));
+  const auto musical_pos_before =
+    tempo_map.tick_to_musical_position (ticks_before);
+  const auto musical_pos_after =
+    tempo_map.tick_to_musical_position (ticks_after_excluding_last_sample);
 
   /* handle start (not caught below) */
-  if (start_pos.frames_ == 0)
+  if (start_pos == 0)
     {
       queue_metronome (Metronome::Type::Emphasis, loffset);
     }
 
-  for (int i = 0; i < bars_diff; i++)
+  for (int bar = musical_pos_before.bar + 1; bar <= musical_pos_after.bar; bar++)
     {
       /* get position of bar */
-      Position bar_pos;
-      bar_pos.add_bars (
-        num_bars_before + i + 1, transport.ticks_per_bar_,
-        audio_engine_->frames_per_tick_);
+      const auto bar_pos_in_ticks = get_tempo_map ().musical_position_to_tick (
+        { .bar = bar, .beat = 1, .sixteenth = 1, .tick = 0 });
+      assert (bar_pos_in_ticks >= ticks_before);
+      assert (bar_pos_in_ticks <= ticks_after_excluding_last_sample);
+      const auto bar_pos_in_samples = static_cast<signed_frame_t> (
+        get_tempo_map ().tick_to_samples (bar_pos_in_ticks));
+      assert (bar_pos_in_samples >= start_pos);
+      assert (bar_pos_in_samples < end_pos);
 
       /* offset of bar pos from start pos */
-      signed_frame_t bar_offset_long = bar_pos.frames_ - start_pos.frames_;
-      if (bar_offset_long < 0)
-        {
-          z_warning ("bar pos: {} | start pos {}", bar_pos, start_pos);
-          z_error ("bar offset long ({}) is < 0", bar_offset_long);
-          return;
-        }
+      signed_frame_t bar_offset_long = bar_pos_in_samples - start_pos;
 
       /* add local offset */
       signed_frame_t metronome_offset_long =
@@ -727,21 +720,25 @@ SampleProcessor::find_and_queue_metronome (
       queue_metronome (Metronome::Type::Emphasis, metronome_offset);
     }
 
-  int num_beats_before = start_pos.get_total_beats (
-    false, beats_per_bar, transport.ticks_per_beat_,
-    audio_engine_->frames_per_tick_);
-  int num_beats_after = end_pos.get_total_beats (
-    false, beats_per_bar, transport.ticks_per_beat_,
-    audio_engine_->frames_per_tick_);
-  int beats_diff = num_beats_after - num_beats_before;
+  const int num_beats_before = musical_pos_before.beat;
+  // this intentionally doesn't account for changes from e.g. 1.4.1.0 => 2.1.1.0
+  // since that is a bar change
+  const int beats_diff = musical_pos_after.beat - num_beats_before;
 
   for (int i = 0; i < beats_diff; i++)
     {
       /* get position of beat */
-      Position beat_pos;
+      const auto beat_pos_before_in_ticks =
+        get_tempo_map ().musical_position_to_tick (
+          { .bar = musical_pos_before.bar,
+            .beat = musical_pos_before.beat,
+            .sixteenth = 1,
+            .tick = 0 });
+      Position beat_pos{
+        beat_pos_before_in_ticks, audio_engine_->ticks_per_frame_
+      };
       beat_pos.add_beats (
-        num_beats_before + i + 1, transport.ticks_per_beat_,
-        audio_engine_->frames_per_tick_);
+        i + 1, transport.ticks_per_beat_, audio_engine_->frames_per_tick_);
 
       /* if not a bar (already handled above) */
       if (
@@ -750,13 +747,10 @@ SampleProcessor::find_and_queue_metronome (
           /* adjust position because even though the start and beat pos have the
            * same ticks, their frames differ (the beat position might be before
            * the start position in frames) */
-          if (beat_pos.frames_ < start_pos.frames_)
-            {
-              beat_pos.frames_ = start_pos.frames_;
-            }
+          beat_pos.frames_ = std::max (beat_pos.frames_, start_pos);
 
           /* offset of beat pos from start pos */
-          signed_frame_t beat_offset_long = beat_pos.frames_ - start_pos.frames_;
+          signed_frame_t beat_offset_long = beat_pos.frames_ - start_pos;
           z_return_if_fail_cmp (beat_offset_long, >=, 0);
 
           /* add local offset */

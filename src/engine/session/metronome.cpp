@@ -74,33 +74,33 @@ Metronome::queue_events (
   const nframes_t          loffset,
   const nframes_t          nframes)
 {
-  using Position = dsp::Position;
   auto *     transport_ = engine->project_->transport_;
-  const auto playhead = transport_->playhead_pos_;
-  Position   playhead_pos = playhead->get_position ();
-  Position   unlooped_playhead = playhead->get_position ();
-  transport_->position_add_frames (playhead_pos, nframes);
-  unlooped_playhead.add_frames ((long) nframes, engine->ticks_per_frame_);
-  bool loop_crossed = unlooped_playhead.frames_ != playhead_pos.frames_;
+  const auto playhead_before =
+    transport_->get_playhead_position_in_audio_thread ();
+  auto       playhead_after_ignoring_loops = playhead_before;
+  const auto playhead_after =
+    transport_->get_playhead_position_after_adding_frames_in_audio_thread (
+      nframes);
+  playhead_after_ignoring_loops += (long) nframes;
+  bool loop_crossed = playhead_after_ignoring_loops != playhead_after;
   if (loop_crossed)
     {
       /* find each bar / beat change until loop end */
       engine->sample_processor_->find_and_queue_metronome (
-        playhead->get_position (), transport_->loop_end_pos_->get_position (),
+        playhead_before, transport_->loop_end_pos_->get_position ().frames_,
         loffset);
 
       /* find each bar / beat change after loop start */
       engine->sample_processor_->find_and_queue_metronome (
-        transport_->loop_start_pos_->get_position (), playhead_pos,
+        transport_->loop_start_pos_->get_position ().frames_, playhead_after,
         loffset
-          + (nframes_t) (transport_->loop_end_pos_->getFrames ()
-                         - playhead->getFrames ()));
+          + (nframes_t) (transport_->loop_end_pos_->getFrames () - playhead_before));
     }
   else /* loop not crossed */
     {
       /* find each bar / beat change from start to finish */
       engine->sample_processor_->find_and_queue_metronome (
-        playhead->get_position (), playhead_pos, loffset);
+        playhead_before, playhead_after, loffset);
     }
 }
 

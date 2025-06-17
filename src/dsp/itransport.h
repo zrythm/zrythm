@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "dsp/position.h"
-
 namespace zrythm::dsp
 {
 /**
@@ -25,20 +23,29 @@ public:
   virtual ~ITransport () = default;
 
   /**
-   * Adds frames to the given position similar to @ref Position.add_frames,
-   * except that it adjusts the new Position if the loop end point was crossed.
+   * Returns the loop range positions in samples.
    */
-  virtual void
-  position_add_frames (Position &pos, signed_frame_t frames) const = 0;
-
-  /**
-   * Returns the loop range positions.
-   */
-  virtual std::pair<Position, Position> get_loop_range_positions () const = 0;
+  virtual std::pair<signed_frame_t, signed_frame_t>
+  get_loop_range_positions () const = 0;
 
   virtual PlayState get_play_state () const = 0;
 
-  virtual Position get_playhead_position () const = 0;
+  /**
+   * @brief Get the playhead position.
+   *
+   * @return The position in samples.
+   */
+  virtual signed_frame_t get_playhead_position_in_audio_thread () const = 0;
+
+  /**
+   * Gets the playhead position, similarly to @ref get_playhead_position(),
+   * except that it adjusts the new position if the loop end point was crossed.
+   *
+   * @return The position in samples.
+   */
+  virtual signed_frame_t
+  get_playhead_position_after_adding_frames_in_audio_thread (
+    signed_frame_t frames) const = 0;
 
   virtual bool get_loop_enabled () const = 0;
 
@@ -47,8 +54,9 @@ public:
    * point as a positive number (>= 1) if the loop point was met between
    * g_start_frames and (g_start_frames + nframes), otherwise returns 0;
    */
-  virtual nframes_t
-  is_loop_point_met (signed_frame_t g_start_frames, nframes_t nframes) const = 0;
+  virtual nframes_t is_loop_point_met_in_audio_thread (
+    signed_frame_t g_start_frames,
+    nframes_t      nframes) const = 0;
 };
 
 } // namespace zrythm::dsp

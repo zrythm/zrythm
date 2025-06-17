@@ -215,15 +215,15 @@ SnapGrid::stringize () const
 
 bool
 SnapGrid::get_nearby_snap_point (
-  Position       &ret_pos,
-  const Position &pos,
-  const bool      return_prev)
+  Position  &ret_pos,
+  double     ticks,
+  const bool return_prev)
 {
-  z_return_val_if_fail (pos.frames_ >= 0 && pos.ticks_ >= 0, false);
+  assert (ticks >= 0);
 
-  ret_pos = pos;
+  ret_pos.from_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
   double snap_ticks = get_snap_ticks ();
-  double ticks_from_prev = fmod (pos.ticks_, snap_ticks);
+  double ticks_from_prev = std::fmod (ticks, snap_ticks);
   if (return_prev)
     {
       ret_pos.add_ticks (-ticks_from_prev, AUDIO_ENGINE->frames_per_tick_);
@@ -281,7 +281,7 @@ SnapGrid::get_prev_or_next_snap_point (
       snapped = true;
     }
 
-  if (track)
+  if (track != nullptr)
     {
       std::visit (
         [&] (auto &&t) {
@@ -318,7 +318,7 @@ SnapGrid::get_prev_or_next_snap_point (
         },
         convert_to_variant<structure::tracks::TrackPtrVariant> (track));
     }
-  else if (region)
+  else if (region != nullptr)
     {
       /* TODO */
     }

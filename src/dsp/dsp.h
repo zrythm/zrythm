@@ -4,6 +4,8 @@
 #pragma once
 
 #include "../utils/utils.h"
+#include "./atomic_position.h"
+#include "./atomic_position_qml_adapter.h"
 #include "./chord_descriptor.h"
 #include "./curve.h"
 #include "./ditherer.h"
@@ -19,8 +21,12 @@
 #include "./panning.h"
 #include "./peak_dsp.h"
 #include "./peak_fall_smooth.h"
+#include "./playhead.h"
+#include "./playhead_qml_adapter.h"
 #include "./port_connection.h"
 #include "./port_identifier.h"
 #include "./position.h"
 #include "./stretcher.h"
+#include "./tempo_map.h"
+#include "./tempo_map_qml_adapter.h"
 #include "./true_peak_dsp.h"

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -78,7 +78,8 @@ Transport::init_loaded (Project * project)
 }
 
 Transport::Transport (Project * parent)
-    : QObject (parent), playhead_pos_ (new PositionProxy (this, nullptr, true)),
+    : QObject (parent), playhead_ (parent->get_tempo_map ()),
+      playhead_adapter_ (new dsp::PlayheadQmlWrapper (playhead_, this)),
       cue_pos_ (new PositionProxy (this, nullptr, true)),
       loop_start_pos_ (new PositionProxy (this, nullptr, true)),
       loop_end_pos_ (new PositionProxy (this, nullptr, true)),
@@ -202,10 +203,10 @@ Transport::setPlayState (PlayState state)
   Q_EMIT playStateChanged (play_state_);
 }
 
-PositionProxy *
-Transport::getPlayheadPosition () const
+dsp::PlayheadQmlWrapper *
+Transport::getPlayhead () const
 {
-  return playhead_pos_;
+  return playhead_adapter_.get ();
 }
 
 PositionProxy *
@@ -261,7 +262,7 @@ init_from (
   obj.position_ = other.position_;
 
   obj.loop_start_pos_->set_position_rtsafe (*other.loop_start_pos_);
-  obj.playhead_pos_->set_position_rtsafe (*other.playhead_pos_);
+  obj.playhead_.set_position_ticks (other.playhead_.position_ticks ());
   obj.loop_end_pos_->set_position_rtsafe (*other.loop_end_pos_);
   obj.cue_pos_->set_position_rtsafe (*other.cue_pos_);
   obj.punch_in_pos_->set_position_rtsafe (*other.punch_in_pos_);
@@ -453,13 +454,13 @@ Transport::requestPause (bool with_wait)
 
   set_play_state_rt_safe (PlayState::PauseRequested);
 
-  playhead_before_pause_ = playhead_pos_->get_position ();
+  playhead_before_pause_ = playhead_.position_ticks ();
   if (
     !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING
     && gui::SettingsManager::transportReturnToCue ())
     {
       auto tmp = cue_pos_->get_position ();
-      move_playhead (tmp, true, false, true);
+      move_playhead (tmp.ticks_, true, false, true);
     }
 
   if (with_wait)
@@ -504,13 +505,21 @@ Transport::requestRoll (bool with_wait)
           bars = ENUM_INT_TO_VALUE (
             PrerollCountBars, gui::SettingsManager::recordingPreroll ());
           num_bars = preroll_count_bars_enum_to_int (bars);
-          Position pos = playhead_pos_->get_position ();
-          pos.add_bars (
-            -num_bars, ticks_per_bar_, audio_engine_->frames_per_tick_);
-          if (!pos.is_positive ())
-            pos = Position ();
-          preroll_frames_remaining_ = playhead_pos_->frames_ - pos.frames_;
-          set_playhead_pos_rt_safe (pos);
+          auto       pos_tick = playhead_.position_ticks ();
+          const auto pos_musical =
+            playhead_.get_tempo_map ().tick_to_musical_position (
+              static_cast<int64_t> (pos_tick));
+          auto new_pos_musical = pos_musical;
+          new_pos_musical.bar = std::max (new_pos_musical.bar - num_bars, 1);
+          pos_tick = static_cast<double> (
+            playhead_.get_tempo_map ().musical_position_to_tick (
+              new_pos_musical));
+          auto pos_frame = playhead_.get_tempo_map ().tick_to_samples (pos_tick);
+          preroll_frames_remaining_ = static_cast<signed_frame_t> (std::round (
+            playhead_.get_tempo_map ().tick_to_samples (
+              playhead_.position_ticks ())
+            - pos_frame));
+          playhead_adapter_->setTicks (pos_tick);
 #if 0
           z_debug (
             "preroll %ld frames",
@@ -523,33 +532,15 @@ Transport::requestRoll (bool with_wait)
 }
 
 void
-Transport::add_to_playhead (const signed_frame_t nframes)
+Transport::add_to_playhead_in_audio_thread (const signed_frame_t nframes)
 {
-  playhead_pos_->add_frames_rtsafe (nframes, AUDIO_ENGINE->ticks_per_frame_);
+  const auto cur_pos = get_playhead_position_in_audio_thread ();
+  auto       new_pos =
+    get_playhead_position_after_adding_frames_in_audio_thread (nframes);
+  auto diff = new_pos - cur_pos;
+  playhead_.advance_processing (diff);
 }
 
-void
-Transport::set_playhead_pos_rt_safe (const Position pos)
-{
-  playhead_pos_->set_position_rtsafe (pos);
-}
-
-void
-Transport::set_playhead_to_bar (int bar)
-{
-  Position pos;
-  pos.set_to_bar (
-    bar, ticks_per_bar_, project_->audio_engine_->frames_per_tick_);
-  set_playhead_pos_rt_safe (pos);
-}
-
-void
-Transport::get_playhead_pos (Position * pos)
-{
-  z_return_if_fail (pos);
-
-  *pos = playhead_pos_->get_position ();
-}
 bool
 Transport::can_user_move_playhead () const
 {
@@ -561,12 +552,18 @@ Transport::can_user_move_playhead () const
     return true;
 }
 
+dsp::Position
+Transport::get_playhead_position_in_gui_thread () const
+{
+  return { playhead_.position_ticks (), AUDIO_ENGINE->frames_per_tick_ };
+}
+
 void
 Transport::move_playhead (
-  const Position &target,
-  bool            panic,
-  bool            set_cue_point,
-  bool            fire_events)
+  double target_ticks,
+  bool   panic,
+  bool   set_cue_point,
+  bool   fire_events)
 {
   /* if currently recording, do nothing */
   if (!can_user_move_playhead ())
@@ -590,7 +587,9 @@ Transport::move_playhead (
               auto lane = std::get<TrackLaneT *> (lane_var);
               for (auto * region : lane->get_children_view ())
                 {
-                  if (!region->is_hit (playhead_pos_->frames_, true))
+                  const auto playhead_pos =
+                    get_playhead_position_in_gui_thread ();
+                  if (!region->is_hit (playhead_pos.frames_, true))
                     continue;
 
                   if constexpr (
@@ -600,7 +599,7 @@ Transport::move_playhead (
                     {
                       for (auto * midi_note : region->get_children_view ())
                         {
-                          if (midi_note->is_hit (playhead_pos_->frames_))
+                          if (midi_note->is_hit (playhead_pos.frames_))
                             {
                               t->processor_->get_piano_roll_port ()
                                 .midi_events_.queued_events_
@@ -615,11 +614,12 @@ Transport::move_playhead (
     }
 
   /* move to new pos */
-  playhead_pos_->set_position_rtsafe (target);
+  playhead_adapter_->setTicks (target_ticks);
 
   if (set_cue_point)
     {
       /* move cue point */
+      Position target{ target_ticks, AUDIO_ENGINE->frames_per_tick_ };
       cue_pos_->set_position_rtsafe (target);
     }
 
@@ -651,7 +651,6 @@ Transport::update_positions (bool update_from_ticks)
 
   auto * audio_engine_ = project_->audio_engine_.get ();
 
-  playhead_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
   cue_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
   loop_start_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
   loop_end_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
@@ -673,7 +672,9 @@ Transport::move_to_marker_or_pos_and_fire_events (
   const structure::arrangement::Marker * marker,
   const Position *                       pos)
 {
-  move_playhead (marker ? marker->get_position () : *pos, true, true, true);
+  move_playhead (
+    (marker != nullptr) ? marker->get_position ().ticks_ : pos->ticks_, true,
+    true, true);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -723,12 +724,14 @@ Transport::goto_prev_marker ()
 
   for (int i = (int) markers.size () - 1; i >= 0; i--)
     {
-      if (markers[i] >= *playhead_pos_)
+      if (markers[i].ticks_ >= playhead_.position_ticks ())
         continue;
 
       if (
         isRolling () && i > 0
-        && (playhead_pos_->to_ms (AUDIO_ENGINE->get_sample_rate ())
+        && (static_cast<signed_ms_t> (playhead_.get_tempo_map ().tick_to_seconds (
+              playhead_.position_ticks ()))
+              / 1000
             - markers[i].to_ms (AUDIO_ENGINE->get_sample_rate ()))
              < REPEATED_BACKWARD_MS)
         {
@@ -760,7 +763,7 @@ Transport::goto_next_marker ()
 
   for (auto &marker : markers)
     {
-      if (marker > *playhead_pos_)
+      if (marker.ticks_ > playhead_.position_ticks ())
         {
           move_to_marker_or_pos_and_fire_events (nullptr, &marker);
           break;
@@ -796,25 +799,26 @@ Transport::set_loop (bool enabled, bool with_wait)
   Q_EMIT (loopEnabledChanged (loop_));
 }
 
-void
-Transport::position_add_frames (Position &pos, const signed_frame_t frames) const
+signed_frame_t
+Transport::get_playhead_position_after_adding_frames_in_audio_thread (
+  const signed_frame_t frames) const
 {
-  Position pos_before_adding = pos;
-  pos.add_frames (frames, AUDIO_ENGINE->ticks_per_frame_);
+  const auto pos_before_adding =
+    static_cast<int64_t> (playhead_.position_during_processing_rounded ());
+  auto new_pos = pos_before_adding + frames;
 
   /* if start frames were before the loop-end point and the new frames are after
    * (loop crossed) */
   if (
-    loop_ && pos_before_adding.frames_ < loop_end_pos_->frames_
-    && pos.frames_ >= loop_end_pos_->frames_)
+    loop_ && pos_before_adding < loop_end_pos_->frames_
+    && new_pos >= loop_end_pos_->frames_)
     {
       /* adjust the new frames */
-      pos.add_ticks (
-        loop_start_pos_->ticks_ - loop_end_pos_->ticks_,
-        AUDIO_ENGINE->frames_per_tick_);
-
-      z_warn_if_fail (pos.frames_ < loop_end_pos_->frames_);
+      new_pos += loop_start_pos_->frames_ - loop_end_pos_->frames_;
+      assert (new_pos < loop_end_pos_->frames_);
     }
+
+  return new_pos;
 }
 
 void
@@ -833,11 +837,10 @@ Transport::get_range_positions () const
            : std::make_pair (range_2_, range_1_);
 }
 
-std::pair<dsp::Position, dsp::Position>
+std::pair<signed_frame_t, signed_frame_t>
 Transport::get_loop_range_positions () const
 {
-  return std::make_pair (
-    loop_start_pos_->get_position (), loop_end_pos_->get_position ());
+  return std::make_pair (loop_start_pos_->frames_, loop_end_pos_->frames_);
 }
 
 void
@@ -995,21 +998,24 @@ Transport::move_backward (bool with_wait)
     }
 
   Position pos;
-  bool     ret =
-    SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, *playhead_pos_, true);
-  z_return_if_fail (ret);
+  bool     ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (
+    pos, playhead_.position_ticks (), true);
+  assert (ret);
   /* if prev snap point is exactly at the playhead or very close it, go back
    * more */
+  Position playhead_pos{
+    playhead_.position_ticks (), audio_engine_->frames_per_tick_
+  };
   if (
     pos.frames_ > 0
-    && (pos == *playhead_pos_ || (isRolling () && (playhead_pos_->to_ms (audio_engine_->get_sample_rate()) - pos.to_ms (audio_engine_->get_sample_rate())) < REPEATED_BACKWARD_MS)))
+    && (pos.frames_ == playhead_pos.frames_ || (isRolling () && (playhead_pos.to_ms (audio_engine_->get_sample_rate()) - pos.to_ms (audio_engine_->get_sample_rate())) < REPEATED_BACKWARD_MS)))
     {
       Position tmp = pos;
       tmp.add_ticks (-1, audio_engine_->frames_per_tick_);
-      ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, tmp, true);
+      ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, tmp.ticks_, true);
       z_return_if_fail (ret);
     }
-  move_playhead (pos, true, true, true);
+  move_playhead (pos.ticks_, true, true, true);
 }
 
 void
@@ -1028,10 +1034,10 @@ Transport::move_forward (bool with_wait)
     }
 
   Position pos;
-  bool     ret =
-    SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, *playhead_pos_, false);
-  z_return_if_fail (ret);
-  move_playhead (pos, true, true, true);
+  bool     ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (
+    pos, playhead_.position_ticks (), false);
+  assert (ret);
+  move_playhead (pos.ticks_, true, true, true);
 }
 
 /**

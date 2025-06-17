@@ -63,6 +63,7 @@ GridLayout {
         Layout.fillWidth: true
         editorSettings: project.clipEditor.pianoRoll
         transport: project.transport
+        tempoMap: project.tempoMap
     }
 
     ColumnLayout {

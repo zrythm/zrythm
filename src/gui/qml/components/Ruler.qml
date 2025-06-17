@@ -14,6 +14,7 @@ Item {
 
     required property var editorSettings
     required property var transport
+    required property var tempoMap
     // Constants from GTK version
     readonly property int rulerHeight: 24
     readonly property int markerSize: 8
@@ -23,12 +24,14 @@ Item {
     readonly property real maxZoomLevel: 1800
     readonly property real defaultPxPerTick: 0.03
     readonly property real pxPerTick: defaultPxPerTick * editorSettings.horizontalZoomLevel
-    readonly property real ticksPerSixteenth: transport.playheadPosition.ticksPerSixteenthNote
+
+    // FIXME: below properties should be removed
+    readonly property int maxBars: 1024
+    readonly property real ticksPerSixteenth: tempoMap.getPpq() / 4
     readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
-    readonly property real ticksPerBar: ticksPerSixteenth * 16
     readonly property real pxPerBar: pxPerSixteenth * 16
-    readonly property real ticksPerBeat: ticksPerSixteenth * 4
     readonly property real pxPerBeat: pxPerSixteenth * 4
+
     readonly property real detailMeasurePxThreshold: 32 // threshold to show/hide more detailed measures
     readonly property real detailMeasureLabelPxThreshold: 64 // threshold to show/hide labels for more detailed measures
     readonly property real barLineOpacity: 0.8
@@ -36,7 +39,7 @@ Item {
     readonly property real sixteenthLineOpacity: 0.4
 
     height: rulerHeight
-    width: 1000 * pxPerBar
+    width: maxBars * pxPerBar
 
     // Grid lines and time markers
     Item {
@@ -46,18 +49,20 @@ Item {
 
         // Generate bars based on zoom level
         Repeater {
-            model: 1000 // Will be clipped by parent ScrollView
+            model: maxBars // Will be clipped by parent ScrollView
 
-            Rectangle {
+            delegate: Rectangle {
                 required property int index
+                readonly property int bar: index + 1
+                readonly property int tick: tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)
                 width: 2
                 height: 14 // parent.height / 3
                 color: control.palette.text
                 opacity: control.barLineOpacity
-                x: index * control.pxPerBar
+                x: tick * control.pxPerTick
 
                 Text {
-                    text: index + 1
+                    text: bar
                     color: control.palette.text
                     anchors.left: parent.right
                     anchors.bottom: parent.bottom
@@ -73,34 +78,46 @@ Item {
 
         // Generate beats based on zoom level
         Loader {
+            id: beatsLoader
             active: control.pxPerBeat > control.detailMeasurePxThreshold
             visible: active
 
             sourceComponent: Repeater {
-                model: 1000 * 4
+                model: control.maxBars
 
-                Rectangle {
-                    required property int index
-                    width: 1
-                    height: 10
-                    color: control.palette.text
-                    opacity: control.beatLineOpacity
-                    x: index * control.pxPerBeat
-                    visible: index % 4 !== 0
+                delegate: Repeater {
+                  id: beatsRepeater
+                  required property int index
+                  readonly property int bar: index + 1
+                  model: tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)).numerator
 
-                    Text {
-                        readonly property int bar: Math.trunc(index / 4) + 1
-                        readonly property int beatIndex: index % 4 + 1
+                  Component.onCompleted: {
+                    console.log("beatsRepeater.bar: " + bar, "beatsRepeater.model: " + model, tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)).numerator, tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)), tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0))
+                  }
 
-                        text: `${bar}.${beatIndex}`
-                        color: control.palette.text
-                        anchors.left: parent.right
-                        anchors.top: parent.top
-                        anchors.leftMargin: 2
-                        font: Style.xSmallTextFont
-                        visible: control.pxPerBeat > control.detailMeasureLabelPxThreshold
-                    }
+                  delegate: Rectangle {
+                      id: beatRectangle
+                      required property int index
+                      readonly property int beat: index + 1
+                      readonly property int tick: tempoMap.getTickFromMusicalPosition(beatsRepeater.bar, beat, 1, 0)
+                      width: 1
+                      height: 10
+                      color: control.palette.text
+                      opacity: control.beatLineOpacity
+                      x: tick * control.pxPerTick
+                      visible: beat !== 1
 
+                      Text {
+                          text: `${beatsRepeater.bar}.${beatRectangle.beat}`
+                          color: control.palette.text
+                          anchors.left: parent.right
+                          anchors.top: parent.top
+                          anchors.leftMargin: 2
+                          font: Style.xSmallTextFont
+                          visible: control.pxPerBeat > control.detailMeasureLabelPxThreshold
+                      }
+
+                  }
                 }
 
             }
@@ -157,7 +174,7 @@ Item {
 
             width: control.playheadTriangleWidth
             height: control.playheadTriangleHeight
-            x: transport.playheadPosition.ticks * control.pxPerTick - width / 2
+            x: transport.playhead.ticks * control.pxPerTick - width / 2
             y: control.height - height
             layer.enabled: true
             layer.samples: 4
@@ -285,7 +302,7 @@ Item {
         onPressed: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
                 dragging = true;
-                transport.playheadPosition.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
+                transport.playhead.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
             }
         }
         onReleased: {
@@ -293,7 +310,7 @@ Item {
         }
         onPositionChanged: (mouse) => {
             if (dragging)
-                transport.playheadPosition.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
+                transport.playhead.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
 
         }
         onWheel: (wheel) => {

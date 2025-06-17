@@ -68,9 +68,13 @@ protected:
       .Times (AnyNumber ());
     EXPECT_CALL (*processable_, release_resources ()).Times (AnyNumber ());
     EXPECT_CALL (*transport_, get_play_state ()).Times (AnyNumber ());
-    EXPECT_CALL (*transport_, get_playhead_position ()).Times (AnyNumber ());
-    EXPECT_CALL (*transport_, position_add_frames (_, _)).Times (AnyNumber ());
-    EXPECT_CALL (*transport_, is_loop_point_met (_, _)).Times (AnyNumber ());
+    EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
+      .Times (AnyNumber ());
+    EXPECT_CALL (
+      *transport_, get_playhead_position_after_adding_frames_in_audio_thread (_))
+      .Times (AnyNumber ());
+    EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
+      .Times (AnyNumber ());
   }
 
   void TearDown (benchmark::State &state) override

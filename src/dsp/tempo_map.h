@@ -7,9 +7,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
-#include <iostream>
-#include <limits>
-#include <optional>
 #include <stdexcept>
 #include <vector>
 
@@ -39,8 +36,12 @@ enum class TimeFormat : std::uint_fast8_t
  * - Conversion between musical time (ticks) and absolute time (seconds/samples)
  * - Conversion between ticks and musical position (bar:beat:sixteenth:tick)
  *
- * @note All tempo events are stored in musical time (ticks) and automatically
- *       adjust to time signature changes.
+ * All tempo events are stored in musical time (ticks) and automatically
+ * adjust to time signature changes. A precondition for this is that tempo
+ * events are only added after all time signature events are added.
+ *
+ * @note If no events are added, the tempo map will use defaults which can be
+ * modified.
  *
  * @tparam PPQ Pulses (ticks) per quarter note
  */
@@ -59,7 +60,7 @@ public:
   {
     int64_t   tick{};  ///< Position in ticks
     double    bpm{};   ///< Tempo in BPM
-    CurveType curve{}; ///< Curve type
+    CurveType curve{}; ///< Curve type from this event to the next
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE (TempoEvent, tick, bpm, curve)
   };
@@ -91,11 +92,7 @@ public:
    * @brief Construct a new FixedPpqTempoMap object
    * @param sampleRate Sample rate in Hz
    */
-  explicit FixedPpqTempoMap (double sampleRate) : sample_rate_ (sampleRate)
-  {
-    add_tempo_event (0, 120.0, CurveType::Constant);
-    add_time_signature_event (0, 4, 4);
-  }
+  explicit FixedPpqTempoMap (double sampleRate) : sample_rate_ (sampleRate) { }
 
   /// Set the sample rate
   void set_sample_rate (double sampleRate) { sample_rate_ = sampleRate; }
@@ -106,6 +103,9 @@ public:
    * @param bpm Tempo in BPM
    * @param curve Curve type
    *
+   * @warning Tempo events must only be added after all time signature events
+   * have been added.
+   *
    * @throws std::invalid_argument for invalid BPM or tick values
    */
   void add_tempo_event (int64_t tick, double bpm, CurveType curve)
@@ -114,6 +114,12 @@ public:
       throw std::invalid_argument ("BPM must be positive");
     if (tick < 0)
       throw std::invalid_argument ("Tick must be non-negative");
+
+    // Automatically add a default tempo event at tick 0
+    if (events_.empty () && tick != 0)
+      {
+        events_.push_back (default_tempo_);
+      }
 
     // Find and remove existing event at same tick
     auto it = std::ranges::find (events_, tick, [] (const TempoEvent &e) {
@@ -131,6 +137,10 @@ public:
   /// Remove a tempo event at the specified tick
   void remove_tempo_event (int64_t tick)
   {
+    if (events_.size () > 1 && tick == 0)
+      throw std::invalid_argument (
+        "Cannot remove first tempo event - remove other tempo event first");
+
     auto it = std::ranges::find (events_, tick, [] (const TempoEvent &e) {
       return e.tick;
     });
@@ -161,6 +171,15 @@ public:
       throw std::invalid_argument ("Tick must be non-negative");
     if (numerator <= 0 || denominator <= 0)
       throw std::invalid_argument ("Invalid time signature");
+    if (!events_.empty ())
+      throw std::logic_error (
+        "Time signature events must be added before tempo events");
+
+    // Automatically add a default time signature event at tick 0
+    if (time_sig_events_.empty () && tick != 0)
+      {
+        time_sig_events_.push_back (default_time_sig_);
+      }
 
     // Remove existing event at same tick
     auto it = std::ranges::find (
@@ -178,6 +197,10 @@ public:
   /// Remove a time signature event at the specified tick
   void remove_time_signature_event (int64_t tick)
   {
+    if (time_sig_events_.size () > 1 && tick == 0)
+      throw std::invalid_argument (
+        "Cannot remove time signature event at tick 0 - remove other events first");
+
     auto it = std::ranges::find (
       time_sig_events_, tick,
       [] (const TimeSignatureEvent &e) { return e.tick; });
@@ -190,32 +213,31 @@ public:
   /// Convert fractional ticks to seconds
   double tick_to_seconds (double tick) const
   {
-    if (events_.empty ())
-      return 0.0;
+    const auto &[events, cumulative_seconds] = get_events_or_default ();
 
     // Find the last event <= target tick
-    auto it = std::ranges::upper_bound (events_, tick, {}, &TempoEvent::tick);
+    auto it = std::ranges::upper_bound (events, tick, {}, &TempoEvent::tick);
 
-    if (it == events_.begin ())
+    if (it == events.begin ())
       {
         return 0.0;
       }
 
-    size_t        index = std::distance (events_.begin (), it) - 1;
-    const auto   &startEvent = events_[index];
+    size_t        index = std::distance (events.begin (), it) - 1;
+    const auto   &startEvent = events[index];
     const int64_t segmentStart = startEvent.tick;
     const double  ticksFromStart = tick - static_cast<double> (segmentStart);
-    const double  baseSeconds = cumulative_seconds_[index];
+    const double  baseSeconds = cumulative_seconds[index];
 
     // Last event segment
-    if (index == events_.size () - 1)
+    if (index == events.size () - 1)
       {
         return baseSeconds
                + (ticksFromStart / static_cast<double> (get_ppq ()))
                    * (60.0 / startEvent.bpm);
       }
 
-    const auto   &endEvent = events_[index + 1];
+    const auto   &endEvent = events[index + 1];
     const int64_t segmentTicks = endEvent.tick - segmentStart;
     const double  dSegmentTicks = static_cast<double> (segmentTicks);
 
@@ -261,28 +283,28 @@ public:
   {
     if (seconds <= 0.0)
       return 0.0;
-    if (events_.empty ())
-      return 0.0;
+
+    const auto &[events, cumulative_seconds] = get_events_or_default ();
 
     // Find the segment containing the time
-    auto         it = std::ranges::upper_bound (cumulative_seconds_, seconds);
+    auto         it = std::ranges::upper_bound (cumulative_seconds, seconds);
     const size_t index =
-      (it == cumulative_seconds_.begin ())
+      (it == cumulative_seconds.begin ())
         ? 0
-        : std::distance (cumulative_seconds_.begin (), it) - 1;
+        : std::distance (cumulative_seconds.begin (), it) - 1;
 
-    const double      baseSeconds = cumulative_seconds_[index];
+    const double      baseSeconds = cumulative_seconds[index];
     const double      timeInSegment = seconds - baseSeconds;
-    const TempoEvent &startEvent = events_[index];
+    const TempoEvent &startEvent = events[index];
 
     // Last segment
-    if (index == events_.size () - 1)
+    if (index == events.size () - 1)
       {
         const double beats = timeInSegment * (startEvent.bpm / 60.0);
         return static_cast<double> (startEvent.tick) + beats * get_ppq ();
       }
 
-    const TempoEvent &endEvent = events_[index + 1];
+    const TempoEvent &endEvent = events[index + 1];
     const int64_t     segmentTicks = endEvent.tick - startEvent.tick;
     const double      dSegmentTicks = static_cast<double> (segmentTicks);
 
@@ -322,28 +344,90 @@ public:
   }
 
   /**
-   * @brief Convert ticks to musical position (bar:beat:sixteenth:tick)
+   * @brief Get the time signature event active at the given tick.
    * @param tick Position in ticks
-   * @return Musical position
+   * @return Time signature event (or default 4/4 if none found)
    */
-  MusicalPosition tick_to_musical_position (int64_t tick) const
+  TimeSignatureEvent time_signature_at_tick (int64_t tick) const
   {
     if (time_sig_events_.empty ())
-      return { 1, 1, 1, 0 };
+      return default_time_sig_;
 
     // Find the last time signature change <= tick
     auto it = std::ranges::upper_bound (
       time_sig_events_, tick, {}, &TimeSignatureEvent::tick);
     if (it == time_sig_events_.begin ())
       {
-        it = time_sig_events_.end (); // No valid event
+        // No event before tick - return default
+        return default_time_sig_;
+      }
+    --it;
+
+    return *it;
+  }
+
+  /**
+   * @brief Get the tempo event active at the given tick.
+   * @param tick Position in ticks
+   * @return Tempo (or default 120 BPM if none found)
+   */
+  double tempo_at_tick (int64_t tick) const
+  {
+    if (events_.empty ())
+      return default_tempo_.bpm;
+
+    // Find the last tempo change <= tick
+    auto it = std::ranges::upper_bound (events_, tick, {}, &TempoEvent::tick);
+    if (it == events_.begin ())
+      {
+        // No event before tick - return default
+        return default_tempo_.bpm;
+      }
+    --it;
+
+    // If this is the last event or constant, return as-is
+    if (it == events_.end () - 1 || (it)->curve == CurveType::Constant)
+      {
+        return it->bpm;
+      }
+
+    // Handle linear ramp segment
+    const auto   &startEvent = *it;
+    const auto   &endEvent = *(it + 1);
+    const int64_t segmentTicks = endEvent.tick - startEvent.tick;
+    const double  fraction =
+      static_cast<double> (tick - startEvent.tick) / segmentTicks;
+    const double currentBpm =
+      startEvent.bpm + fraction * (endEvent.bpm - startEvent.bpm);
+
+    return currentBpm;
+  }
+
+  /**
+   * @brief Convert ticks to musical position (bar:beat:sixteenth:tick)
+   * @param tick Position in ticks
+   * @return Musical position
+   */
+  MusicalPosition tick_to_musical_position (int64_t tick) const
+  {
+    const auto &time_sig_events = get_time_signature_events_or_default ();
+
+    if (time_sig_events.empty ())
+      return { 1, 1, 1, 0 };
+
+    // Find the last time signature change <= tick
+    auto it = std::ranges::upper_bound (
+      time_sig_events, tick, {}, &TimeSignatureEvent::tick);
+    if (it == time_sig_events.begin ())
+      {
+        it = time_sig_events.end (); // No valid event
       }
     else
       {
         --it;
       }
 
-    if (it == time_sig_events_.end ())
+    if (it == time_sig_events.end ())
       {
         return { 1, 1, 1, 0 };
       }
@@ -363,7 +447,7 @@ public:
     // int64_t cumulative_ticks = 0;
 
     // Calculate total bars from previous time signatures
-    for (auto prev = time_sig_events_.begin (); prev != it; ++prev)
+    for (auto prev = time_sig_events.begin (); prev != it; ++prev)
       {
         const int    prev_numerator = prev->numerator;
         const int    prev_denominator = prev->denominator;
@@ -375,7 +459,7 @@ public:
         // Ticks from this signature to next
         auto          next = std::next (prev);
         const int64_t end_tick =
-          (next != time_sig_events_.end ()) ? next->tick : sigEvent.tick;
+          (next != time_sig_events.end ()) ? next->tick : sigEvent.tick;
         const int64_t segment_ticks = end_tick - prev->tick;
 
         cumulative_bars += segment_ticks / prev_ticks_per_bar;
@@ -410,8 +494,7 @@ public:
    */
   int64_t musical_position_to_tick (const MusicalPosition &pos) const
   {
-    if (time_sig_events_.empty ())
-      return 0;
+    const auto &time_sig_events = get_time_signature_events_or_default ();
 
     // Validate position
     if (pos.bar < 1 || pos.beat < 1 || pos.sixteenth < 1 || pos.tick < 0)
@@ -423,9 +506,9 @@ public:
     int     current_bar = 1;
 
     // Iterate through time signature changes
-    for (size_t i = 0; i < time_sig_events_.size (); ++i)
+    for (size_t i = 0; i < time_sig_events.size (); ++i)
       {
-        const auto   &event = time_sig_events_[i];
+        const auto   &event = time_sig_events[i];
         const int     numerator = event.numerator;
         const int     denominator = event.denominator;
         const double  quarters_per_bar = numerator * (4.0 / denominator);
@@ -434,9 +517,9 @@ public:
 
         // Determine bars covered by this time signature
         int bars_in_this_sig = 0;
-        if (i < time_sig_events_.size () - 1)
+        if (i < time_sig_events.size () - 1)
           {
-            const int64_t next_tick = time_sig_events_[i + 1].tick;
+            const int64_t next_tick = time_sig_events[i + 1].tick;
             bars_in_this_sig =
               static_cast<int> ((next_tick - event.tick) / ticks_per_bar);
           }
@@ -482,6 +565,13 @@ public:
 
   /// Get current sample rate
   double get_sample_rate () const { return sample_rate_; }
+
+  void set_default_bpm (double bpm) { default_tempo_.bpm = bpm; }
+  void set_default_time_signature (int numerator, int denominator)
+  {
+    default_tempo_.numerator = numerator;
+    default_tempo_.denominator = denominator;
+  }
 
 private:
   /// Rebuild cumulative time cache
@@ -536,17 +626,40 @@ private:
     return 0.0;
   }
 
+  auto get_events_or_default () const
+  {
+    if (events_.empty ())
+      {
+        return std::make_pair (
+          std::span{ &default_tempo_, 1 },
+          std::span{ &DEFAULT_CUMULATIVE_SECONDS, 1 });
+      }
+
+    return std::make_pair (
+      std::span{ events_.data (), events_.size () },
+      std::span{ cumulative_seconds_.data (), cumulative_seconds_.size () });
+  }
+  auto get_time_signature_events_or_default () const
+  {
+    if (time_sig_events_.empty ())
+      {
+        return std::span{ &default_time_sig_, 1 };
+      }
+
+    return std::span{ time_sig_events_.data (), time_sig_events_.size () };
+  }
+
   static constexpr auto kEventsKey = "events"sv;
   static constexpr auto kTimeSigEventsKey = "timeSigEvents"sv;
   friend void to_json (nlohmann::json &j, const FixedPpqTempoMap &tempo_map)
   {
-    j[kEventsKey] = tempo_map.events_;
     j[kTimeSigEventsKey] = tempo_map.time_sig_events_;
+    j[kEventsKey] = tempo_map.events_;
   }
   friend void from_json (const nlohmann::json &j, FixedPpqTempoMap &tempo_map)
   {
-    j.at (kEventsKey).get_to (tempo_map.events_);
     j.at (kTimeSigEventsKey).get_to (tempo_map.time_sig_events_);
+    j.at (kEventsKey).get_to (tempo_map.events_);
     tempo_map.rebuild_cumulative_times ();
   }
 
@@ -554,6 +667,16 @@ private:
   double               sample_rate_; ///< Current sample rate
   static constexpr int ticks_per_sixteenth_ =
     PPQ / 4; ///< Ticks per sixteenth note (PPQ/4)
+
+  static constexpr auto DEFAULT_BPM_EVENT =
+    TempoEvent{ 0, 120.0, CurveType::Constant }; ///< Default tempo in BPM
+  static constexpr auto DEFAULT_TIME_SIG_EVENT =
+    TimeSignatureEvent{ 0, 4, 4 }; ///< Default time signature
+  static constexpr auto DEFAULT_CUMULATIVE_SECONDS = 0.0;
+
+  // Default tempo and time signature to be used when no events are present
+  TempoEvent         default_tempo_{ DEFAULT_BPM_EVENT };
+  TimeSignatureEvent default_time_sig_{ DEFAULT_TIME_SIG_EVENT };
 
   std::vector<TempoEvent>         events_;          ///< Tempo events
   std::vector<TimeSignatureEvent> time_sig_events_; ///< Time signature events
