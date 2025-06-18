@@ -7,6 +7,7 @@
 #include "gui/dsp/port.h"
 #include "utils/icloneable.h"
 #include "utils/math.h"
+#include "utils/monotonic_time_provider.h"
 
 /**
  * @brief Control port specifics.

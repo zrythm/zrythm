@@ -40,6 +40,7 @@
 #pragma once
 
 #include "plugins/plugin_protocol.h"
+#include "utils/file_path_list.h"
 
 #include <QList>
 #include <QObject>

@@ -12,6 +12,8 @@
 
 #include <nlohmann/json.hpp>
 
+using namespace std::literals;
+
 namespace zrythm::dsp
 {
 

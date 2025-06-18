@@ -4,9 +4,11 @@
 #pragma once
 
 #include "dsp/tempo_map.h"
+#include "utils/qt.h"
 
 #include <QObject>
 #include <QtQml/QQmlListProperty>
+#include <QtQmlIntegration>
 
 namespace zrythm::dsp
 {

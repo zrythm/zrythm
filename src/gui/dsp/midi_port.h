@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/midi_event.h"
 #include "gui/dsp/port.h"
 #include "utils/icloneable.h"
 

@@ -6,6 +6,7 @@
 #include "utils/format.h"
 #include "utils/icloneable.h"
 #include "utils/initializable_object.h"
+#include "utils/logger.h"
 #include "utils/serialization.h"
 #include "utils/string.h"
 
