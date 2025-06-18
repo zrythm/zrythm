@@ -1033,8 +1033,8 @@ Transport::move_forward (bool with_wait)
       sem.emplace (audio_engine_->port_operation_lock_);
     }
 
-  Position pos;
-  bool     ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (
+  Position                    pos;
+  [[maybe_unused]] const bool ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (
     pos, playhead_.position_ticks (), false);
   assert (ret);
   move_playhead (pos.ticks_, true, true, true);
