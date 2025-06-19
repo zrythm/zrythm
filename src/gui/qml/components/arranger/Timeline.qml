@@ -470,7 +470,7 @@ Arranger {
                                     active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
                                     visible: status === Loader.Ready
                                     asynchronous: true
-                                    sourceComponent: region.regionType === 0 ? midiRegionComponent : audioRegionComponent
+                                    sourceComponent: region.type === 0 ? midiRegionComponent : audioRegionComponent
                                 }
 
                             }
@@ -561,7 +561,7 @@ Arranger {
                                     active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
                                     visible: status === Loader.Ready
                                     asynchronous: true
-                                    sourceComponent: region.regionType === 0 ? laneMidiRegionComponent : laneAudioRegionComponent
+                                    sourceComponent: region.type === 0 ? laneMidiRegionComponent : laneAudioRegionComponent
                                 }
 
                             }

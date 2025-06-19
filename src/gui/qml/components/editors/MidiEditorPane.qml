@@ -120,6 +120,8 @@ GridLayout {
         pianoRoll: root.pianoRoll
         objectFactory: root.project.arrangerObjectFactory
         ruler: ruler
+        transport: project.transport
+        tempoMap: project.tempoMap
         tool: project.tool
     }
 
@@ -139,6 +141,8 @@ GridLayout {
         pianoRoll: root.pianoRoll
         objectFactory: root.project.arrangerObjectFactory
         ruler: ruler
+        transport: project.transport
+        tempoMap: project.tempoMap
         tool: project.tool
     }
 

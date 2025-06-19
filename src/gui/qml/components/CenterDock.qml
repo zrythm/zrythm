@@ -111,6 +111,8 @@ ColumnLayout {
                     clipEditor: project.clipEditor
                     objectFactory: project.arrangerObjectFactory
                     ruler: ruler
+                    transport: project.transport
+                    tempoMap: project.tempoMap
                     tool: project.tool
                     Layout.fillWidth: true
                     Layout.minimumHeight: pinnedTracklist.height
@@ -126,6 +128,8 @@ ColumnLayout {
                     clipEditor: project.clipEditor
                     objectFactory: project.arrangerObjectFactory
                     ruler: ruler
+                    transport: project.transport
+                    tempoMap: project.tempoMap
                     tool: project.tool
                     Layout.fillWidth: true
                     Layout.fillHeight: true

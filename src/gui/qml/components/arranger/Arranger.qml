@@ -52,6 +52,8 @@ Item {
     }
 
     required property var editorSettings
+    required property var transport
+    required property var tempoMap
     required property Ruler ruler
     required property var clipEditor
     required property var tool
@@ -158,64 +160,76 @@ Item {
             }
 
             // Vertical grid lines
+            // FIXME: logic is copy-pasted from Ruler. find a way to have a common base
             Item {
                 id: timeGrid
 
                 // Bar lines
                 Repeater {
-                    model: Math.ceil(arrangerContent.width / root.ruler.pxPerBar)
+                    model: root.ruler.visibleBarCount
 
-                    Rectangle {
-                        required property int index
-                        width: 1
-                        height: arrangerContent.height
-                        x: index * root.ruler.pxPerBar
-                        color: root.palette.button
-                        opacity: root.ruler.barLineOpacity
-                    }
+                    delegate: Item {
+                      id: barItem
+                      required property int index
+                      readonly property int bar: root.ruler.startBar + index
+                      Rectangle {
+                          readonly property int barTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
+                          width: 1
+                          height: arrangerContent.height
+                          x: barTick * root.ruler.pxPerTick
+                          color: root.palette.button
+                          opacity: root.ruler.barLineOpacity
+                      }
 
-                }
+                      Loader {
+                          active: root.ruler.pxPerBeat > root.ruler.detailMeasurePxThreshold
+                          visible: active
 
-                // Beat lines
-                Loader {
-                    active: root.ruler.pxPerBeat > root.ruler.detailMeasurePxThreshold
-                    visible: active
+                          sourceComponent: Repeater {
+                              model: root.tempoMap.timeSignatureAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)).numerator
 
-                    sourceComponent: Repeater {
-                        model: Math.ceil(arrangerContent.width / root.ruler.pxPerBeat)
+                              delegate: Item {
+                                  id: beatItem
+                                  required property int index
+                                  readonly property int beat: index + 1
+                                  readonly property int beatTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
 
-                        Rectangle {
-                            required property int index
-                            width: 1
-                            height: arrangerContent.height
-                            x: index * root.ruler.pxPerBeat
-                            color: root.palette.button
-                            opacity: root.ruler.beatLineOpacity
-                            visible: index % 4 !== 0
-                        }
+                                  Rectangle {
+                                    width: 1
+                                    height: arrangerContent.height
+                                    x: beatItem.beatTick * root.ruler.pxPerTick
+                                    color: root.palette.button
+                                    opacity: root.ruler.beatLineOpacity
+                                    visible: beatItem.beat !== 1
+                                }
 
-                    }
+                                  Loader {
+                                    active: root.ruler.pxPerSixteenth > root.ruler.detailMeasurePxThreshold
+                                    visible: active
 
-                }
+                                    sourceComponent: Repeater {
+                                        model: 16 / root.tempoMap.timeSignatureAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0)).denominator
 
-                // Sixteenth lines
-                Loader {
-                    active: root.ruler.pxPerSixteenth > root.ruler.detailMeasurePxThreshold
-                    visible: active
+                                        Rectangle {
+                                            required property int index
+                                            readonly property int sixteenth: index + 1
+                                            readonly property int sixteenthTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
+                                            width: 1
+                                            height: arrangerContent.height
+                                            x: sixteenthTick * root.ruler.pxPerTick
+                                            color: root.palette.button
+                                            opacity: root.ruler.sixteenthLineOpacity
+                                            visible: sixteenth !== 1
+                                        }
 
-                    sourceComponent: Repeater {
-                        model: Math.ceil(arrangerContent.width / root.ruler.pxPerSixteenth)
+                                    }
 
-                        Rectangle {
-                            required property int index
-                            width: 1
-                            height: arrangerContent.height
-                            x: index * root.ruler.pxPerSixteenth
-                            color: root.palette.button
-                            opacity: root.ruler.sixteenthLineOpacity
-                            visible: index % 4 !== 0
-                        }
+                                }
+                              }
 
+                          }
+
+                      }
                     }
 
                 }
@@ -236,7 +250,7 @@ Item {
                 width: 2
                 height: parent.height
                 color: Style.dangerColor
-                x: root.ruler.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
+                x: root.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
                 z: 1000
             }
 
@@ -286,12 +300,10 @@ Item {
                 preventStealing: true
                 propagateComposedEvents: true
                 onEntered: () => {
-                    console.log("Cursor entered arranger");
                     hovered = true;
                     updateCursor();
                 }
                 onExited: () => {
-                    console.log("Cursor exited arranger");
                     hovered = false;
                 }
                 // This must push a cursor via the CursorManager
