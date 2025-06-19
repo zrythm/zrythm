@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -17,8 +16,6 @@ Item {
     required property var tempoMap
     readonly property int rulerHeight: 24
     readonly property int markerSize: 8
-    readonly property int playheadTriangleWidth: 12
-    readonly property int playheadTriangleHeight: 8
     readonly property real minZoomLevel: 0.04
     readonly property real maxZoomLevel: 1800
     readonly property real defaultPxPerTick: 0.03
@@ -56,10 +53,10 @@ Item {
                 id: barItem
 
                 required property int index
-                readonly property int bar: startBar + index
+                readonly property int bar: control.startBar + index
 
                 Rectangle {
-                    readonly property int barTick: tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
+                    readonly property int barTick: control.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
 
                     width: 2
                     height: 14 // parent.height / 3
@@ -168,37 +165,13 @@ Item {
 
         height: parent.height
 
-        Shape {
+        PlayheadTriangle {
             id: playheadShape
 
-            width: control.playheadTriangleWidth
-            height: control.playheadTriangleHeight
+            width: 12
+            height: 8
             x: transport.playhead.ticks * control.pxPerTick - width / 2
             y: control.height - height
-            layer.enabled: true
-            layer.samples: 4
-
-            ShapePath {
-                fillColor: control.palette.text
-                strokeColor: control.palette.text
-
-                PathLine {
-                    x: 0
-                    y: 0
-                }
-
-                PathLine {
-                    x: playheadShape.width
-                    y: 0
-                }
-
-                PathLine {
-                    x: playheadShape.width / 2
-                    y: playheadShape.height
-                }
-
-            }
-
         }
 
         Item {

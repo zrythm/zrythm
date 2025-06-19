@@ -166,6 +166,7 @@ set(rel_qml_file_paths
   components/LeftDock.qml
   components/MainMenuBar.qml
   components/Meter.qml
+  components/PlayheadTriangle.qml
   components/PluginBrowserPage.qml
   components/RightDock.qml
   components/Ruler.qml
