@@ -287,10 +287,11 @@ template <typename RegionT>
 std::unique_ptr<typename TrackLaneImpl<RegionT>::TrackLaneT>
 TrackLaneImpl<RegionT>::gen_snapshot () const
 {
-  return {};
-// TODO
+  auto ret = utils::clone_unique (
+    get_derived_lane (), utils::ObjectCloneType::Snapshot, track_);
+  return ret;
+  // TODO
 #if 0
-  auto ret = get_derived_lane().clone_unique ();
   ret->track_ = track_;
 
   /* clone_unique above creates the regions in `regions_` but we want them in

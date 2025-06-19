@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -15,7 +15,6 @@ Item {
     required property var editorSettings
     required property var transport
     required property var tempoMap
-    // Constants from GTK version
     readonly property int rulerHeight: 24
     readonly property int markerSize: 8
     readonly property int playheadTriangleWidth: 12
@@ -24,19 +23,21 @@ Item {
     readonly property real maxZoomLevel: 1800
     readonly property real defaultPxPerTick: 0.03
     readonly property real pxPerTick: defaultPxPerTick * editorSettings.horizontalZoomLevel
-
-    // FIXME: below properties should be removed
-    readonly property int maxBars: 1024
+    readonly property int maxBars: 256
     readonly property real ticksPerSixteenth: tempoMap.getPpq() / 4
     readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
     readonly property real pxPerBar: pxPerSixteenth * 16
     readonly property real pxPerBeat: pxPerSixteenth * 4
-
     readonly property real detailMeasurePxThreshold: 32 // threshold to show/hide more detailed measures
     readonly property real detailMeasureLabelPxThreshold: 64 // threshold to show/hide labels for more detailed measures
     readonly property real barLineOpacity: 0.8
     readonly property real beatLineOpacity: 0.6
     readonly property real sixteenthLineOpacity: 0.4
+    readonly property real visibleStartTick: editorSettings.x / pxPerTick
+    readonly property real visibleEndTick: visibleStartTick + (parent.width / pxPerTick)
+    readonly property int startBar: tempoMap.getMusicalPosition(visibleStartTick).bar
+    readonly property int endBar: tempoMap.getMusicalPosition(visibleEndTick).bar + 1 // +1 for padding
+    readonly property int visibleBarCount: endBar - startBar + 1
 
     height: rulerHeight
     width: maxBars * pxPerBar
@@ -47,112 +48,111 @@ Item {
 
         height: parent.height
 
-        // Generate bars based on zoom level
+        // Generate bars, beats, sixteenths based on zoom level
         Repeater {
-            model: maxBars // Will be clipped by parent ScrollView
+            model: control.visibleBarCount
 
-            delegate: Rectangle {
+            delegate: Item {
+                id: barItem
+
                 required property int index
-                readonly property int bar: index + 1
-                readonly property int tick: tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)
-                width: 2
-                height: 14 // parent.height / 3
-                color: control.palette.text
-                opacity: control.barLineOpacity
-                x: tick * control.pxPerTick
-
-                Text {
-                    text: bar
-                    color: control.palette.text
-                    anchors.left: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.leftMargin: 2
-                    font.family: Style.smallTextFont.family
-                    font.pixelSize: Style.smallTextFont.pixelSize
-                    font.weight: Font.Medium
-                }
-
-            }
-
-        }
-
-        // Generate beats based on zoom level
-        Loader {
-            id: beatsLoader
-            active: control.pxPerBeat > control.detailMeasurePxThreshold
-            visible: active
-
-            sourceComponent: Repeater {
-                model: control.maxBars
-
-                delegate: Repeater {
-                  id: beatsRepeater
-                  required property int index
-                  readonly property int bar: index + 1
-                  model: tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)).numerator
-
-                  Component.onCompleted: {
-                    console.log("beatsRepeater.bar: " + bar, "beatsRepeater.model: " + model, tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)).numerator, tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0)), tempoMap.getTickFromMusicalPosition(bar, 1, 1, 0))
-                  }
-
-                  delegate: Rectangle {
-                      id: beatRectangle
-                      required property int index
-                      readonly property int beat: index + 1
-                      readonly property int tick: tempoMap.getTickFromMusicalPosition(beatsRepeater.bar, beat, 1, 0)
-                      width: 1
-                      height: 10
-                      color: control.palette.text
-                      opacity: control.beatLineOpacity
-                      x: tick * control.pxPerTick
-                      visible: beat !== 1
-
-                      Text {
-                          text: `${beatsRepeater.bar}.${beatRectangle.beat}`
-                          color: control.palette.text
-                          anchors.left: parent.right
-                          anchors.top: parent.top
-                          anchors.leftMargin: 2
-                          font: Style.xSmallTextFont
-                          visible: control.pxPerBeat > control.detailMeasureLabelPxThreshold
-                      }
-
-                  }
-                }
-
-            }
-
-        }
-
-        // Generate sixteenths based on zoom level
-        Loader {
-            active: control.pxPerSixteenth > control.detailMeasurePxThreshold
-            visible: active
-
-            sourceComponent: Repeater {
-                model: 1000 * 4
+                readonly property int bar: startBar + index
 
                 Rectangle {
-                    required property int index
-                    width: 1
-                    height: 8
+                    readonly property int barTick: tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
+
+                    width: 2
+                    height: 14 // parent.height / 3
                     color: control.palette.text
-                    opacity: control.sixteenthLineOpacity
-                    x: index * control.pxPerSixteenth
-                    visible: index % 4 !== 0
+                    opacity: control.barLineOpacity
+                    x: barTick * control.pxPerTick
 
                     Text {
-                        readonly property int bar: Math.trunc(index / 16) + 1
-                        readonly property int beatIndex: Math.trunc(index / 4) + 1
-                        readonly property int sixteenthIndex: index % 4 + 1
-
-                        text: `${bar}.${beatIndex}.${sixteenthIndex}`
+                        text: barItem.bar
                         color: control.palette.text
                         anchors.left: parent.right
-                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
                         anchors.leftMargin: 2
-                        font: Style.xxSmallTextFont
-                        visible: control.pxPerSixteenth > control.detailMeasureLabelPxThreshold
+                        font.family: Style.smallTextFont.family
+                        font.pixelSize: Style.smallTextFont.pixelSize
+                        font.weight: Font.Medium
+                    }
+
+                }
+
+                Loader {
+                    active: control.pxPerBeat > control.detailMeasurePxThreshold
+                    visible: active
+
+                    sourceComponent: Repeater {
+                        model: tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)).numerator
+
+                        delegate: Item {
+                            id: beatItem
+
+                            required property int index
+                            readonly property int beat: index + 1
+                            readonly property int beatTick: tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
+
+                            Rectangle {
+                                width: 1
+                                height: 10
+                                color: control.palette.text
+                                opacity: control.beatLineOpacity
+                                x: beatItem.beatTick * control.pxPerTick
+                                visible: beatItem.beat !== 1
+
+                                Text {
+                                    text: `${barItem.bar}.${beatItem.beat}`
+                                    color: control.palette.text
+                                    anchors.left: parent.right
+                                    anchors.top: parent.top
+                                    anchors.leftMargin: 2
+                                    font: Style.xSmallTextFont
+                                    visible: control.pxPerBeat > control.detailMeasureLabelPxThreshold
+                                }
+
+                            }
+
+                            Loader {
+                                active: control.pxPerSixteenth > control.detailMeasurePxThreshold
+                                visible: active
+
+                                sourceComponent: Repeater {
+                                    model: 16 / tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0)).denominator
+
+                                    Rectangle {
+                                        id: sixteenthRect
+
+                                        required property int index
+                                        readonly property int sixteenth: index + 1
+                                        readonly property int sixteenthTick: tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
+
+                                        width: 1
+                                        height: 8
+                                        color: control.palette.text
+                                        opacity: control.sixteenthLineOpacity
+                                        x: sixteenthTick * control.pxPerTick
+                                        visible: sixteenth !== 1
+
+                                        Text {
+                                            text: `${barItem.bar}.${beatItem.beat}.${sixteenthRect.sixteenth}`
+                                            color: control.palette.text
+                                            anchors.left: parent.right
+                                            anchors.top: parent.top
+                                            anchors.leftMargin: 2
+                                            font: Style.xxSmallTextFont
+                                            visible: control.pxPerSixteenth > control.detailMeasureLabelPxThreshold
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
                     }
 
                 }
@@ -166,7 +166,6 @@ Item {
     Item {
         id: markers
 
-        // x: -editorSettings.x
         height: parent.height
 
         Shape {

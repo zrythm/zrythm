@@ -269,10 +269,8 @@ PianoRoll::init ()
 
   {
     PianoRoll tmp;
-    init_from (
-      static_cast<EditorSettings &> (*this),
-      static_cast<const EditorSettings &> (tmp),
-      utils::ObjectCloneType::Snapshot);
+    editor_settings_ =
+      utils::clone_unique_qobject (*tmp.getEditorSettings (), this);
   }
 
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)

@@ -21,13 +21,27 @@
  *
  * The actual widgets should reflect the* information here.
  */
-class AudioClipEditor final : public QObject, public EditorSettings
+class AudioClipEditor final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+  Q_PROPERTY (
+    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+      CONSTANT FINAL)
+
 public:
   AudioClipEditor (QObject * parent = nullptr) : QObject (parent) { }
+
+  // =========================================================
+  // QML interface
+  // =========================================================
+
+  gui::backend::EditorSettings * getEditorSettings () const
+  {
+    return editor_settings_.get ();
+  }
+
+  // =========================================================
 
 public:
   friend void init_from (
@@ -35,19 +49,25 @@ public:
     const AudioClipEditor &other,
     utils::ObjectCloneType clone_type)
   {
-    static_cast<EditorSettings &> (obj) =
-      static_cast<const EditorSettings &> (other);
+    obj.editor_settings_ =
+      utils::clone_unique_qobject (*other.editor_settings_, &obj);
   }
 
 private:
+  static constexpr auto kEditorSettingsKey = "editorSettings"sv;
   friend void to_json (nlohmann::json &j, const AudioClipEditor &editor)
   {
-    to_json (j, static_cast<const EditorSettings &> (editor));
+    j[kEditorSettingsKey] = editor.editor_settings_;
   }
   friend void from_json (const nlohmann::json &j, AudioClipEditor &editor)
   {
-    from_json (j, static_cast<EditorSettings &> (editor));
+    j.at (kEditorSettingsKey).get_to (editor.editor_settings_);
   }
+
+private:
+  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_{
+    new gui::backend::EditorSettings{ this }
+  };
 };
 
 /**

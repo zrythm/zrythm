@@ -19,14 +19,27 @@
 /**
  * @brief Timeline settings.
  */
-class Timeline final : public QObject, public EditorSettings
+class Timeline final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+  Q_PROPERTY (
+    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+      CONSTANT FINAL)
 
 public:
   Timeline (QObject * parent = nullptr);
+
+  // =========================================================
+  // QML interface
+  // =========================================================
+
+  gui::backend::EditorSettings * getEditorSettings () const
+  {
+    return editor_settings_.get ();
+  }
+
+  // =========================================================
 
 public:
   auto &get_selected_object_ids () { return selected_objects_; }
@@ -37,19 +50,25 @@ public:
     utils::ObjectCloneType clone_type);
 
 private:
+  static constexpr auto kEditorSettingsKey = "editorSettings"sv;
+
   static constexpr auto kTracksWidthKey = "tracksWidth";
   friend void           to_json (nlohmann::json &j, const Timeline &p)
   {
-    to_json (j, static_cast<const EditorSettings &> (p));
+    j[kEditorSettingsKey] = p.editor_settings_;
     j[kTracksWidthKey] = p.tracks_width_;
   }
   friend void from_json (const nlohmann::json &j, Timeline &p)
   {
-    from_json (j, static_cast<EditorSettings &> (p));
+    j.at (kEditorSettingsKey).get_to (p.editor_settings_);
     j.at (kTracksWidthKey).get_to (p.tracks_width_);
   }
 
 private:
+  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_{
+    new gui::backend::EditorSettings{ this }
+  };
+
   /** Width of the left side of the timeline panel. */
   int tracks_width_ = 0;
 

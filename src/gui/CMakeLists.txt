@@ -201,6 +201,7 @@ target_include_directories(zrythm
     # C++ headers in SOURCES below must be available as toplevel includes
     # https://bugreports.qt.io/browse/QTBUG-87221
     ${CMAKE_CURRENT_SOURCE_DIR}/backend
+    ${CMAKE_CURRENT_SOURCE_DIR}/qquick
 )
 
 qt_add_qml_module(zrythm

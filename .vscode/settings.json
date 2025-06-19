@@ -2,7 +2,7 @@
     "cmake.buildDirectory": "${workspaceFolder}/builddir_cmake",
     "cmake.installPrefix": "${workspaceFolder}/_installed_cmake",
     "cmake.configureArgs": [
-        "-DCMAKE_PREFIX_PATH=/home/alex/opt/Qt6.9-Debug",
+        "-DCMAKE_PREFIX_PATH=/home/alex/opt/Qt6.9-Release",
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
         "-DCMAKE_LINKER_TYPE=MOLD",
@@ -26,7 +26,7 @@
     "cmake.environment": {
         "VIRTUAL_ENV": "${workspaceFolder}/venv",
         "LANG": "C.UTF-8",
-        "PATH": "/home/alex/opt/Qt6.9-Debug/bin:${workspaceFolder}/venv/bin:${env:PATH}"
+        "PATH": "/home/alex/opt/Qt6.9-Release/bin:${workspaceFolder}/venv/bin:${env:PATH}"
     },
     "cmake.clearOutputBeforeBuild": false,
     "clang-tidy.buildPath": "builddir_cmake",

@@ -32,11 +32,14 @@ constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 /**
  * Backend for the chord editor.
  */
-class ChordEditor final : public QObject, public EditorSettings
+class ChordEditor final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+  Q_PROPERTY (
+    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+      CONSTANT FINAL)
+
 public:
   using ChordDescriptor = dsp::ChordDescriptor;
   using ChordAccent = dsp::ChordAccent;
@@ -45,6 +48,17 @@ public:
   using MusicalNote = dsp::MusicalNote;
 
   ChordEditor (QObject * parent = nullptr) : QObject (parent) { }
+
+  // =========================================================
+  // QML interface
+  // =========================================================
+
+  gui::backend::EditorSettings * getEditorSettings () const
+  {
+    return editor_settings_.get ();
+  }
+
+  // =========================================================
 
   /**
    * Initializes the ChordEditor.
@@ -82,8 +96,8 @@ public:
     utils::ObjectCloneType clone_type)
 
   {
-    static_cast<EditorSettings &> (obj) =
-      static_cast<const EditorSettings &> (other);
+    obj.editor_settings_ =
+      utils::clone_unique_qobject (*other.editor_settings_, &obj);
     obj.selected_objects_ = other.selected_objects_;
   }
 
@@ -104,15 +118,16 @@ public:
   auto &get_selected_object_ids () { return selected_objects_; }
 
 private:
+  static constexpr auto kEditorSettingsKey = "editorSettings"sv;
   static constexpr auto kChordsKey = "chords"sv;
   friend void           to_json (nlohmann::json &j, const ChordEditor &editor)
   {
-    to_json (j, static_cast<const EditorSettings &> (editor));
+    j[kEditorSettingsKey] = editor.editor_settings_;
     j[kChordsKey] = editor.chords_;
   }
   friend void from_json (const nlohmann::json &j, ChordEditor &editor)
   {
-    from_json (j, static_cast<EditorSettings &> (editor));
+    j.at (kEditorSettingsKey).get_to (editor.editor_settings_);
     j.at (kChordsKey).get_to (editor.chords_);
   }
 
@@ -126,6 +141,8 @@ public:
   std::vector<ChordDescriptor> chords_;
 
 private:
+  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_;
+
   structure::arrangement::ArrangerObjectSelectionManager::UuidSet
     selected_objects_;
 };

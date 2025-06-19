@@ -227,7 +227,7 @@ Arranger {
         return null;
     }
 
-    editorSettings: timeline
+    editorSettings: timeline.editorSettings
     enableYScroll: !pinned
     scrollView.ScrollBar.horizontal.policy: pinned ? ScrollBar.AlwaysOff : ScrollBar.AsNeeded
 

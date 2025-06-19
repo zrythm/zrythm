@@ -18,13 +18,27 @@
 /**
  * Backend for the automation editor.
  */
-class AutomationEditor final : public QObject, public EditorSettings
+class AutomationEditor final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+  Q_PROPERTY (
+    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+      CONSTANT FINAL)
+
 public:
   AutomationEditor (QObject * parent = nullptr) : QObject (parent) { }
+
+  // =========================================================
+  // QML interface
+  // =========================================================
+
+  gui::backend::EditorSettings * getEditorSettings () const
+  {
+    return editor_settings_.get ();
+  }
+
+  // =========================================================
 
 public:
   friend void init_from (
@@ -33,24 +47,29 @@ public:
     utils::ObjectCloneType  clone_type)
 
   {
-    static_cast<EditorSettings &> (obj) =
-      static_cast<const EditorSettings &> (other);
+    obj.editor_settings_ =
+      utils::clone_unique_qobject (*other.editor_settings_, &obj);
     obj.selected_objects_ = other.selected_objects_;
   }
 
   auto &get_selected_object_ids () { return selected_objects_; }
 
 private:
+  static constexpr auto kEditorSettingsKey = "editorSettings"sv;
   friend void to_json (nlohmann::json &j, const AutomationEditor &editor)
   {
-    to_json (j, static_cast<const EditorSettings &> (editor));
+    j[kEditorSettingsKey] = editor.editor_settings_;
   }
   friend void from_json (const nlohmann::json &j, AutomationEditor &editor)
   {
-    from_json (j, static_cast<EditorSettings &> (editor));
+    j.at (kEditorSettingsKey).get_to (editor.editor_settings_);
   }
 
 private:
+  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_{
+    new gui::backend::EditorSettings{ this }
+  };
+
   structure::arrangement::ArrangerObjectSelectionManager::UuidSet
     selected_objects_;
 };

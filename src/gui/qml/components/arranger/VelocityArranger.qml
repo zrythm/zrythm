@@ -140,7 +140,7 @@ Arranger {
       return null
     }
 
-    editorSettings: pianoRoll
+    editorSettings: pianoRoll.editorSettings
     enableYScroll: false
     scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 

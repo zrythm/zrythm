@@ -81,7 +81,7 @@ ColumnLayout {
                     Ruler {
                         id: ruler
 
-                        editorSettings: project.timeline
+                        editorSettings: project.timeline.editorSettings
                         transport: project.transport
                         tempoMap: project.tempoMap
                     }
@@ -89,12 +89,12 @@ ColumnLayout {
                     Binding {
                         target: rulerScrollView.contentItem
                         property: "contentX"
-                        value: root.project.timeline.x
+                        value: root.project.timeline.editorSettings.x
                     }
 
                     Connections {
                         function onContentXChanged() {
-                            root.project.timeline.x = rulerScrollView.contentItem.contentX;
+                            root.project.timeline.editorSettings.x = rulerScrollView.contentItem.contentX;
                         }
 
                         target: rulerScrollView.contentItem

@@ -61,7 +61,7 @@ GridLayout {
         id: ruler
 
         Layout.fillWidth: true
-        editorSettings: project.clipEditor.pianoRoll
+        editorSettings: project.clipEditor.pianoRoll.editorSettings
         transport: project.transport
         tempoMap: project.tempoMap
     }

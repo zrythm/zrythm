@@ -83,11 +83,13 @@ public:
  *
  * The actual widgets should reflect the information here.
  */
-class PianoRoll final : public QObject, public EditorSettings
+class PianoRoll final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+  Q_PROPERTY (
+    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+      CONSTANT FINAL)
   Q_PROPERTY (int keyHeight READ getKeyHeight NOTIFY keyHeightChanged)
 public:
   /**
@@ -113,6 +115,11 @@ public:
   // ============================================================================
   // QML Interface
   // ============================================================================
+
+  gui::backend::EditorSettings * getEditorSettings () const
+  {
+    return editor_settings_.get ();
+  }
 
   int getKeyHeight () const { return note_height_; }
 
@@ -228,23 +235,24 @@ public:
     const PianoRoll       &other,
     utils::ObjectCloneType clone_type)
   {
-    static_cast<EditorSettings &> (obj) =
-      static_cast<const EditorSettings &> (other);
+    obj.editor_settings_ =
+      utils::clone_unique_qobject (*other.editor_settings_, &obj);
     obj.selected_objects_ = other.selected_objects_;
   }
 
 private:
+  static constexpr auto kEditorSettingsKey = "editorSettings"sv;
   static constexpr auto kNotesZoomKey = "notesZoom"sv;
   static constexpr auto kMidiModifierKey = "midiModifier"sv;
   friend void           to_json (nlohmann::json &j, const PianoRoll &piano_roll)
   {
-    to_json (j, static_cast<const EditorSettings &> (piano_roll));
+    j[kEditorSettingsKey] = piano_roll.editor_settings_;
     j[kNotesZoomKey] = piano_roll.notes_zoom_;
     j[kMidiModifierKey] = piano_roll.midi_modifier_;
   }
   friend void from_json (const nlohmann::json &j, PianoRoll &piano_roll)
   {
-    from_json (j, static_cast<EditorSettings &> (piano_roll));
+    j.at (kEditorSettingsKey).get_to (piano_roll.editor_settings_);
     j.at (kNotesZoomKey).get_to (piano_roll.notes_zoom_);
     j.at (kMidiModifierKey).get_to (piano_roll.midi_modifier_);
   }
@@ -258,6 +266,10 @@ private:
   void init_descriptors ();
 
 public:
+  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_{
+    new gui::backend::EditorSettings{ this }
+  };
+
   /** Notes zoom level. */
   float notes_zoom_ = 1.0f;
 

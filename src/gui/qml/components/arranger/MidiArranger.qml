@@ -154,7 +154,7 @@ Arranger {
         return midiNote;
     }
 
-    editorSettings: pianoRoll
+    editorSettings: pianoRoll.editorSettings
     enableYScroll: true
     scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 
