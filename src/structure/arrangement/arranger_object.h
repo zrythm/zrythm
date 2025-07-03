@@ -60,7 +60,7 @@ public:
   /**
    * @brief @see @ref is_start_hit_by_range().
    */
-  constexpr bool is_start_hit_by_range (
+  bool is_start_hit_by_range (
     const signed_frame_t frames_start,
     const signed_frame_t frames_end,
     bool                 range_start_inclusive = true,

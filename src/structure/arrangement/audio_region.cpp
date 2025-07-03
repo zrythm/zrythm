@@ -235,9 +235,8 @@ AudioRegion::fill_stereo_ports (
 
       /* skip to fade out (or builtin fade out) if not in any fade area */
       if (
-        current_local_frame >= std::max (
-          fade_in_pos_in_frames,
-          static_cast<decltype (fade_in_pos_in_frames)> (BUILTIN_FADE_FRAMES))
+        current_local_frame >= std::max<signed_frame_t> (
+          fade_in_pos_in_frames, BUILTIN_FADE_FRAMES)
         && current_local_frame < std::min (
              fade_out_pos_in_frames,
              static_cast<qint64> (local_builtin_fade_out_start_frames)))

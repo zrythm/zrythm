@@ -66,24 +66,24 @@ MidiRegion::add_midi_region_events (
        * Returns whether the given note is not muted and starts within any
        * playable part of the region.
        */
-      const auto is_note_playable = [this] (const MidiNote &midi_note) {
+      const auto is_note_playable = [&] (const MidiNote &midi_note) {
         if (midi_note.mute ()->muted ())
           {
             return false;
           }
 
-        const auto note_start_pos = midi_note.position ()->samples ();
-        const auto loop_start_pos =
-          region_mixin_->loopRange ()->loopStartPosition ()->samples ();
-        const auto loop_end_pos =
-          region_mixin_->loopRange ()->loopEndPosition ()->samples ();
-        const auto clip_start_pos =
-          region_mixin_->loopRange ()->clipStartPosition ()->samples ();
+        const auto note_start_pos_samples = midi_note.position ()->samples ();
+        const auto loop_start_pos_samples = loop_start_pos->samples ();
+        const auto loop_end_pos_samples = loop_end_pos->samples ();
+        const auto clip_start_pos_samples = clip_start_pos->samples ();
         if (
           // note not in loop range
-          (note_start_pos < loop_start_pos || note_start_pos >= loop_end_pos) &&
+          (note_start_pos_samples < loop_start_pos_samples
+           || note_start_pos_samples >= loop_end_pos_samples)
+          &&
           // note not between clip start and loop start
-          (note_start_pos < clip_start_pos || note_start_pos >= loop_start_pos))
+          (note_start_pos_samples < clip_start_pos_samples
+           || note_start_pos_samples >= loop_start_pos_samples))
           {
             return false;
           }
@@ -123,12 +123,11 @@ MidiRegion::add_midi_region_events (
                * @param repeat_index repetition counter for loop offset
                */
               const auto get_note_positions_in_export =
-                [this] (double &start_pos, double &end_pos, int repeat_index) {
-                  const auto loop_range = regionMixin ()->loopRange ();
-                  const auto loop_length_in_ticks =
-                    loop_range->get_loop_length_in_ticks ();
-                  double export_start_pos{};
-                  double export_end_pos{
+                [this, loop_length_in_ticks] (
+                  double &start_pos, double &end_pos, int repeat_index) {
+                  const auto * loop_range = regionMixin ()->loopRange ();
+                  double       export_start_pos{};
+                  double       export_end_pos{
                     regionMixin ()->bounds ()->length ()->ticks ()
                   };
 

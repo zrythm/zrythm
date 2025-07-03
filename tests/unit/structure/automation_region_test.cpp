@@ -27,7 +27,8 @@ protected:
     // Create AutomationPoint using registry
     auto point_ref =
       registry.create_object<AutomationPoint> (*tempo_map, region.get ());
-    point_ref.get_object_as<AutomationPoint> ()->setValue (value);
+    point_ref.get_object_as<AutomationPoint> ()->setValue (
+      static_cast<float> (value));
     return point_ref;
   }
 
@@ -85,7 +86,7 @@ TEST_F (AutomationRegionTest, ValueChange)
   add_automation_point (0.3, 150);
 
   // Change value
-  region->get_children_view ()[0]->setValue (0.7);
+  region->get_children_view ()[0]->setValue (0.7f);
 
   // Verify change
   EXPECT_FLOAT_EQ (region->get_children_view ()[0]->value (), 0.7f);
@@ -140,7 +141,7 @@ TEST_F (AutomationRegionTest, CurveCalculation)
   double value = region->get_normalized_value_in_curve (*point1, 0.5);
 
   // Default curve is linear, so midpoint should be 0.5
-  EXPECT_FLOAT_EQ (value, 0.5f);
+  EXPECT_DOUBLE_EQ (value, 0.5);
 }
 
 TEST_F (AutomationRegionTest, CurvesUp)

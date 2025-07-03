@@ -134,7 +134,7 @@ public:
                   obj.file_audio_source_registry_.create_object<
                     dsp::FileAudioSource> (
                     utils::audio::AudioBuffer (2, 16),
-                    utils::audio::BitDepth::BIT_DEPTH_32, 44100.0, 120.0,
+                    utils::audio::BitDepth::BIT_DEPTH_32, 44100, 120.0,
                     u8"Unused dummy Audio Source");
                 clone_ref = obj.registry_.clone_object (
                   *child, child->get_tempo_map (),

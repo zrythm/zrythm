@@ -516,7 +516,9 @@ TracklistSelectionsAction::create_track (int idx)
           auto track_id_ref =
             PROJECT->getTrackFactory ()->create_empty_track (track_type_);
           std::visit (
-            [&] (auto &&track) { track->setName (descr->getName ()); },
+            [&descr] (auto &&track_ptr) {
+              track_ptr->setName (descr->getName ());
+            },
             track_id_ref.get_object ());
           // TODO
           // track = track_id_ref.get_object ();

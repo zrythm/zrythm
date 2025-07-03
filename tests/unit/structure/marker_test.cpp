@@ -21,7 +21,7 @@ protected:
     tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
     parent = std::make_unique<MockQObject> ();
     marker = std::make_unique<Marker> (
-      Marker::MarkerType::Custom, *tempo_map, parent.get ());
+      *tempo_map, Marker::MarkerType::Custom, parent.get ());
   }
 
   std::unique_ptr<dsp::TempoMap> tempo_map;
@@ -48,13 +48,13 @@ TEST_F (MarkerTest, MarkerTypes)
 
   // Test start marker
   auto start_marker = std::make_unique<Marker> (
-    Marker::MarkerType::Start, *tempo_map, parent.get ());
+    *tempo_map, Marker::MarkerType::Start, parent.get ());
   EXPECT_TRUE (start_marker->isStartMarker ());
   EXPECT_FALSE (start_marker->isEndMarker ());
 
   // Test end marker
   auto end_marker = std::make_unique<Marker> (
-    Marker::MarkerType::End, *tempo_map, parent.get ());
+    *tempo_map, Marker::MarkerType::End, parent.get ());
   EXPECT_FALSE (end_marker->isStartMarker ());
   EXPECT_TRUE (end_marker->isEndMarker ());
 }
@@ -72,7 +72,7 @@ TEST_F (MarkerTest, Serialization)
 
   // Create new marker
   auto new_marker = std::make_unique<Marker> (
-    Marker::MarkerType::Custom, *tempo_map, parent.get ());
+    *tempo_map, Marker::MarkerType::Custom, parent.get ());
   from_json (j, *new_marker);
 
   // Verify state
@@ -89,7 +89,7 @@ TEST_F (MarkerTest, Copying)
 
   // Create target
   auto target = std::make_unique<Marker> (
-    Marker::MarkerType::Custom, *tempo_map, parent.get ());
+    *tempo_map, Marker::MarkerType::Custom, parent.get ());
 
   // Copy
   init_from (*target, *marker, utils::ObjectCloneType::Snapshot);

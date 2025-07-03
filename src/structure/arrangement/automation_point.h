@@ -16,7 +16,7 @@ class AutomationPoint final : public QObject, public ArrangerObject
 {
   Q_OBJECT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AutomationPoint)
-  Q_PROPERTY (double value READ value WRITE setValue NOTIFY valueChanged)
+  Q_PROPERTY (float value READ value WRITE setValue NOTIFY valueChanged)
   Q_PROPERTY (dsp::CurveOptionsQmlAdapter * curveOpts READ curveOpts CONSTANT)
   QML_ELEMENT
 
@@ -29,17 +29,17 @@ public:
   // QML Interface
   // ========================================================================
 
-  double value () const { return normalized_value_; }
-  void   setValue (double dval)
+  float value () const { return normalized_value_; }
+  void  setValue (float dval)
   {
-    const auto val = static_cast<float> (dval);
+    const auto val = dval;
     if (qFuzzyCompare (normalized_value_, val))
       return;
 
     normalized_value_ = val;
     Q_EMIT valueChanged (dval);
   }
-  Q_SIGNAL void valueChanged (double);
+  Q_SIGNAL void valueChanged (float);
 
   dsp::CurveOptionsQmlAdapter * curveOpts () const
   {

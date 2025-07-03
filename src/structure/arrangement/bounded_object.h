@@ -61,7 +61,7 @@ public:
    * @param object_end_pos_inclusive Whether @ref end_pos_ is considered as part
    * of the object. This is probably always false.
    */
-  [[nodicard]] constexpr bool
+  [[nodicard]] bool
   is_hit (const signed_frame_t frames, bool object_end_pos_inclusive = false) const
   {
     const signed_frame_t obj_start = position ()->samples ();
@@ -82,7 +82,7 @@ public:
    * @param object_end_pos_inclusive  Whether the end position of the object is
    * considered as part of the object (this is probably always false).
    */
-  constexpr bool is_hit_by_range (
+  bool is_hit_by_range (
     std::pair<signed_frame_t, signed_frame_t> global_frames,
     bool                                      range_start_inclusive = true,
     bool                                      range_end_inclusive = true,
