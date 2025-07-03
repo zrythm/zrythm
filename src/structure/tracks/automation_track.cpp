@@ -382,16 +382,6 @@ AutomationTrack::set_index (int index)
 #endif
 }
 
-#if 0
-AutomationTrack::Location
-AutomationTrack::get_location (const AutomationRegion &) const
-{
-  return {
-    .track_id_ = TrackSpan::uuid_projection (track_getter_ ()), .owner_ = port_id_
-  };
-}
-#endif
-
 float
 AutomationTrack::get_normalized_val_at_pos (
   signed_frame_t pos,

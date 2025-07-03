@@ -251,11 +251,6 @@ public:
    */
   std::unique_ptr<TrackLaneT> gen_snapshot () const;
 
-#if 0
-  arrangement::ArrangerObjectOwner<RegionT>::Location
-  get_location (const RegionT &) const override;
-#endif
-
   std::string get_field_name_for_serialization (const RegionT *) const override
   {
     return "regions";

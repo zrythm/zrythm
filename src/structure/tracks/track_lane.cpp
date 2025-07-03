@@ -149,15 +149,6 @@ TrackLaneImpl<RegionT>::after_remove_region ()
 #endif
 }
 
-#if 0
-template <arrangement::RegionObject RegionT>
-arrangement::ArrangerObjectOwner<RegionT>::Location
-TrackLaneImpl<RegionT>::get_location (const RegionT &) const
-{
-  return { .track_id_ = track_->get_uuid (), .owner_ = get_index_in_track () };
-}
-#endif
-
 template <arrangement::RegionObject RegionT>
 bool
 TrackLaneImpl<RegionT>::is_effectively_muted () const

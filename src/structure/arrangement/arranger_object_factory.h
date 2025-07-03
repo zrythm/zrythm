@@ -257,7 +257,7 @@ public:
               obj->set_source (source_object);
               obj->regionMixin ()->bounds ()->length ()->setSamples (
                 clip_id_.value ()
-                  .get_object_as<dsp::FileAudioSource> ()
+                  .template get_object_as<dsp::FileAudioSource> ()
                   ->get_num_frames ());
             }
         }

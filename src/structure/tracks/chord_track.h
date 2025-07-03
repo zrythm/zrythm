@@ -105,19 +105,6 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-#if 0
-  ArrangerObjectOwner<ChordRegion>::Location
-  get_location (const ChordRegion &) const override
-  {
-    return { .track_id_ = get_uuid () };
-  }
-  ArrangerObjectOwner<ScaleObject>::Location
-  get_location (const ScaleObject &) const override
-  {
-    return { .track_id_ = get_uuid () };
-  }
-#endif
-
   std::string
   get_field_name_for_serialization (const ChordRegion *) const override
   {
