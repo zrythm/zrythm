@@ -81,7 +81,7 @@ public:
     auto       obj_ref = *it_to_remove;
     const auto remove_idx =
       std::distance (self.children_.begin (), it_to_remove);
-    assert (self.list_model_->removeRows (remove_idx, 1));
+    self.list_model_->removeRows (remove_idx, 1);
     return obj_ref;
   }
 
@@ -91,8 +91,7 @@ public:
     const ArrangerObjectUuidReference &obj_ref,
     int                                idx)
   {
-    assert (self.ArrangerObjectOwner<ChildT>::list_model_->insertObject (
-      obj_ref, idx));
+    self.ArrangerObjectOwner<ChildT>::list_model_->insertObject (obj_ref, idx);
   }
 
   template <typename SelfT>
