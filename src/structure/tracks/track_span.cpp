@@ -70,7 +70,9 @@ TrackSpan::fix_audio_regions (dsp::FramesPerTick frames_per_tick)
 {
   z_debug ("fixing audio region positions...");
 
+  // TODO or delete
   int num_fixed{};
+#if 0
   std::ranges::for_each (*this, [&] (auto &&track_var) {
     if (std::holds_alternative<AudioTrack *> (track_var))
       {
@@ -86,6 +88,7 @@ TrackSpan::fix_audio_regions (dsp::FramesPerTick frames_per_tick)
           }
       }
   });
+#endif
 
   z_debug ("done fixing {} audio region positions", num_fixed);
 

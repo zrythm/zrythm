@@ -36,7 +36,6 @@ namespace zrythm::engine::session
 class RecordingManager : public QObject
 {
 public:
-  using Position = zrythm::dsp::Position;
   using AutomationTrack = structure::tracks::AutomationTrack;
   using AutomationRegion = structure::arrangement::AutomationRegion;
   using AutomationPoint = structure::arrangement::AutomationPoint;
@@ -66,6 +65,41 @@ public:
     const EngineProcessTimeInfo *             time_nfo);
 
   Q_SLOT void process_events ();
+
+  /**
+   * Starts an unended note with the given pitch and velocity and adds it to
+   * @ref midi_notes_.
+   *
+   * @param start_pos Position in ticks.
+   * @param end_pos If this is nullopt, it will be set to 1 tick after the
+   * start_pos.
+   */
+  void start_unended_note (
+    structure::arrangement::MidiRegion &mr,
+    double                              start_pos,
+    std::optional<double>               end_pos,
+    int                                 pitch,
+    int                                 vel);
+
+  /**
+   * Returns the midi note with the given pitch from the unended notes.
+   *
+   * Used when recording.
+   *
+   * @param pitch The pitch. If -1, it returns any unended note. This is useful
+   * when the loop point is met and we want to end them all.
+   */
+  structure::arrangement::MidiNote *
+  pop_unended_note (structure::arrangement::MidiRegion &mr, int pitch);
+
+  /**
+   * Returns the automation points since the last recorded automation point
+   * (if the last recorded automation point was before the current pos).
+   */
+  void get_aps_since_last_recorded (
+    const structure::arrangement::AutomationRegion &ar,
+    signed_frame_t                                  pos,
+    std::vector<AutomationPoint *>                 &aps) const;
 
 private:
   void handle_start_recording (const RecordingEvent &ev, bool is_automation);
@@ -108,7 +142,7 @@ private:
     AutomationRegion &region,
     float             val,
     float             normalized_val,
-    Position          pos);
+    signed_frame_t    pos_frames);
 
   void handle_stop_recording (bool is_automation);
 
@@ -122,7 +156,7 @@ private:
   void delete_automation_points (
     AutomationTrack * at,
     AutomationRegion &region,
-    Position          pos);
+    signed_frame_t    pos_frames);
 
   /**
    * @note Runs in GTK thread only.
@@ -168,7 +202,22 @@ public:
   /**
    * Recorded region identifiers, to be used for creating the undoable actions.
    */
-  std::vector<structure::arrangement::Region::Uuid> recorded_ids_;
+  std::vector<structure::arrangement::ArrangerObject::Uuid> recorded_ids_;
+
+  /**
+   * Unended notes started in recording with MIDI NOTE ON signal but haven't
+   * received a NOTE OFF yet.
+   */
+  std::unordered_map<
+    structure::arrangement::ArrangerObjectUuid,
+    std::vector<QPointer<structure::arrangement::MidiNote>>>
+    unended_notes_per_region_;
+
+  /** Last recorded automation points. */
+  std::unordered_map<
+    structure::arrangement::ArrangerObjectUuid,
+    QPointer<AutomationPoint>>
+    last_recorded_aps_per_region_;
 
   /** Pending recorded automation points. */
   std::vector<structure::arrangement::AutomationPoint *> pending_aps_;

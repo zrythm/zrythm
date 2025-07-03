@@ -7,8 +7,6 @@
 #include "utils/icloneable.h"
 #include "utils/serialization.h"
 
-class AudioClip;
-
 namespace zrythm::gui::actions
 {
 
@@ -93,8 +91,6 @@ public:
   void clear () { actions_.clear (); };
 
   /* --- end wrappers --- */
-
-  [[nodiscard]] bool contains_clip (const AudioClip &clip) const;
 
   /**
    * Checks if the undo stack contains the given action pointer.

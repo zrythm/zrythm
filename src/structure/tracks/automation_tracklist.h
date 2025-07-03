@@ -26,10 +26,11 @@ class AutomationTracklist final : public QAbstractListModel
 
 public:
   AutomationTracklist (
-    PortRegistry           &port_registry,
-    ArrangerObjectRegistry &object_registry,
-    AutomatableTrack       &track,
-    QObject *               parent = nullptr);
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    PortRegistry                 &port_registry,
+    ArrangerObjectRegistry       &object_registry,
+    AutomatableTrack             &track,
+    QObject *                     parent = nullptr);
 
 public:
   enum Roles
@@ -77,15 +78,6 @@ public:
    * Used for debugging.
    */
   void print_ats () const;
-
-  /**
-   * Updates the frames of each position in each child of the automation
-   * tracklist recursively.
-   *
-   * @param from_ticks Whether to update the positions based on ticks (true)
-   * or frames (false).
-   */
-  void update_positions (bool from_ticks, bool bpm_change);
 
   AutomationTrack * get_prev_visible_at (const AutomationTrack &at) const;
 
@@ -226,8 +218,9 @@ private:
   auto &get_port_registry () const { return port_registry_; }
 
 private:
-  ArrangerObjectRegistry &object_registry_;
-  PortRegistry           &port_registry_;
+  dsp::FileAudioSourceRegistry &file_audio_source_registry_;
+  ArrangerObjectRegistry       &object_registry_;
+  PortRegistry                 &port_registry_;
 
   /**
    * @brief Automation tracks in this automation tracklist.

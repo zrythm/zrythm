@@ -9,6 +9,521 @@
 
 namespace zrythm::structure::arrangement
 {
+
+/**
+ * Returns the number of frames until the next loop end point or the
+ * end of the region.
+ *
+ * @param timeline_frames Global frames at start.
+ * @return Number of frames and whether the return frames are for a loop (if
+ * false, the return frames are for the region's end).
+ */
+template <RegionObject ObjectT>
+[[gnu::nonnull]] std::pair<signed_frame_t, bool>
+get_frames_till_next_loop_or_end (
+  const ObjectT &obj,
+  signed_frame_t timeline_frames)
+{
+  const auto * loop_range = obj.regionMixin ()->loopRange ();
+  const auto   loop_size = loop_range->get_loop_length_in_frames ();
+  assert (loop_size > 0);
+  const auto           object_position_frames = obj.position ()->samples ();
+  const signed_frame_t loop_end_frames =
+    loop_range->loopEndPosition ()->samples ();
+  const signed_frame_t clip_start_frames =
+    loop_range->clipStartPosition ()->samples ();
+
+  signed_frame_t local_frames = timeline_frames - object_position_frames;
+  local_frames += clip_start_frames;
+  while (local_frames >= loop_end_frames)
+    {
+      local_frames -= loop_size;
+    }
+
+  const signed_frame_t frames_till_next_loop = loop_end_frames - local_frames;
+  const signed_frame_t frames_till_end =
+    obj.regionMixin ()->bounds ()->get_end_position_samples (true)
+    - timeline_frames;
+
+  return std::make_pair (
+    std::min (frames_till_end, frames_till_next_loop),
+    frames_till_next_loop < frames_till_end);
+}
+
+/**
+ * Flag used in some functions.
+ */
+enum class ResizeType : basic_enum_base_type_t
+{
+  Normal,
+  Loop,
+  Fade,
+  Stretch,
+  /**
+   * Used when we want to resize to contents when BPM changes.
+   *
+   * @note Only applies to audio.
+   */
+  StretchTempoChange,
+};
+
+/**
+ * Resizes the object on the left side or right side by given amount of ticks,
+ * for objects that do not have loops (currently none? keep it as reference).
+ *
+ * @param left 1 to resize left side, 0 to resize right side.
+ * @param ticks Number of ticks to resize.
+ *
+ * @throw ZrythmException on failure.
+ */
+template <BoundedObject ObjectT>
+void
+resize_bounded_object (ObjectT &obj, bool left, ResizeType type, double ticks)
+{
+  z_trace ("resizing object( left: {}, type: {}, ticks: {})", left, type, ticks);
+
+  // fade resizes are handled directly (not via this function)
+
+  if (left)
+    {
+      if (type != ResizeType::Fade)
+        {
+          obj.getPosition ()->setTicks (obj.getPosition ()->ticks () + ticks);
+
+          if constexpr (FadeableObject<ObjectT>)
+            {
+              obj.get_fade_range ().startOffset->setTicks (
+                obj.get_fade_range ().startOffset->ticks () - ticks);
+            }
+
+          if (type == ResizeType::Loop)
+            {
+              if constexpr (RegionObject<ObjectT>)
+                {
+                  double loop_len =
+                    obj.get_loop_range ().get_loop_length_in_ticks ();
+
+                  // if clip start is not before loop start, adjust clip start pos
+                  const auto loop_start_pos =
+                    obj.get_loop_range ().loopStartPosition ()->ticks ();
+                  auto clip_start_pos =
+                    obj.get_loop_range ().clipStartPosition ()->ticks ();
+                  if (clip_start_pos >= loop_start_pos)
+                    {
+                      clip_start_pos += ticks;
+
+                      while (clip_start_pos < loop_start_pos)
+                        {
+                          clip_start_pos += loop_len;
+                        }
+                      obj.get_loop_range ().clipStartPosition ()->setTicks (
+                        clip_start_pos);
+                    }
+
+                  /* make sure clip start goes back to loop start if it exceeds
+                   * loop end */
+                  const auto loop_end_pos =
+                    obj.get_loop_range ().loopEndPosition ()->ticks ();
+                  while (clip_start_pos > loop_end_pos)
+                    {
+                      clip_start_pos += -loop_len;
+                    }
+                  obj.get_loop_range ().clipStartPosition ()->setTicks (
+                    clip_start_pos);
+                }
+            }
+          else if constexpr (RegionObject<ObjectT>)
+            {
+              obj.get_loop_range ().loopEndPosition ()->setTicks (
+                obj.get_loop_range ().loopEndPosition ()->ticks () - ticks);
+
+              /* move containing items */
+              if constexpr (
+                is_derived_from_template_v<ArrangerObjectOwner, ObjectT>)
+                {
+                  obj.add_ticks_to_children (-ticks);
+                }
+            }
+        }
+    }
+  /* else if resizing right side */
+  else
+    {
+      if (type != ResizeType::Fade)
+        {
+          obj.length ()->setTicks (obj.length ()->ticks () + ticks);
+
+          const auto change_ratio =
+            (obj.length ()->ticks ()) / (obj.length ()->ticks () - ticks);
+
+          if (type != ResizeType::Loop)
+            {
+              if constexpr (RegionObject<ObjectT>)
+                {
+                  if (
+                    type == ResizeType::StretchTempoChange
+                    || type == ResizeType::Stretch)
+                    {
+                      obj.get_loop_range ().loopEndPosition ()->setTicks (
+                        obj.get_loop_range ().loopEndPosition ()->ticks ()
+                        * change_ratio);
+                    }
+                  else
+                    {
+                      obj.get_loop_range ().loopEndPosition ()->setTicks (
+                        obj.get_loop_range ().loopEndPosition ()->ticks ()
+                        + ticks);
+                    }
+
+                  /* if stretching, also stretch loop start */
+                  if (
+                    type == ResizeType::StretchTempoChange
+                    || type == ResizeType::Stretch)
+                    {
+                      obj.get_loop_range ().loopStartPosition ()->setTicks (
+                        obj.get_loop_range ().loopStartPosition ()->ticks ()
+                        * change_ratio);
+                    }
+                }
+            }
+          if constexpr (FadeableObject<ObjectT>)
+            {
+              // we only need changes when stretching
+              if (
+                type == ResizeType::StretchTempoChange
+                || type == ResizeType::Stretch)
+                {
+                  obj.get_fade_range ().endOffset ()->setTicks (
+                    obj.get_fade_range ().endOffset ()->ticks () * change_ratio);
+                  obj.get_fade_range ().startOffset ()->setTicks (
+                    obj.get_fade_range ().startOffset ()->ticks ()
+                    * change_ratio);
+                }
+            }
+
+// TODO
+#if 0
+                if (type == ResizeType::Stretch)
+                  {
+                    if constexpr (std::derived_from<ObjT, Region>)
+                      {
+                        double new_length = get_length_in_ticks ();
+
+                        if (type != ResizeType::StretchTempoChange)
+                          {
+                            /* FIXME this flag is not good,
+                             * remove from this function and
+                             * do it in the arranger */
+                            if (during_ui_action)
+                              {
+                                self->stretch_ratio_ =
+                                  new_length / self->before_length_;
+                              }
+                            /* else if as part of an action */
+                            else
+                              {
+                                /* stretch contents */
+                                double stretch_ratio = new_length / before_length;
+                                try
+                                  {
+                                    self->stretch (stretch_ratio);
+                                  }
+                                catch (const ZrythmException &ex)
+                                  {
+                                    throw ZrythmException (
+                                      "Failed to stretch region");
+                                  }
+                              }
+                          }
+                      }
+                  }
+#endif
+        }
+    }
+}
+
+/**
+ * @brief Fills MIDI event queue from this MIDI or Chord region.
+ *
+ * The events are dequeued right after the call to this function.
+ *
+ * @note The caller already splits calls to this function at each
+ * sub-loop inside the region, so region loop related logic is not
+ * needed.
+ *
+ * @param note_off_at_end Whether a note off should be added at the
+ * end frame (eg, when the caller knows there is a region loop or the
+ * region ends).
+ * @param is_note_off_for_loop_or_region_end Whether @p
+ * note_off_at_end is for a region loop end or the region's end (in
+ * this case normal note offs will be sent, otherwise a single ALL
+ * NOTES OFF event will be sent).
+ * @param midi_events MidiEvents (queued) to fill (from Piano Roll
+ * Port for example).
+ */
+template <typename RegionT>
+void
+fill_midi_events (
+  const RegionT               &r,
+  const EngineProcessTimeInfo &time_nfo,
+  bool                         note_off_at_end,
+  bool                         is_note_off_for_loop_or_region_end,
+  dsp::MidiEventVector        &midi_events)
+  requires std::is_same_v<RegionT, MidiRegion>
+           || std::is_same_v<RegionT, ChordRegion>
+{
+  /**
+   * @brief Sends MIDI note off events or an "all notes off" event at
+   * the current time.
+   *
+   * This is called on MIDI or Chord regions.
+   *
+   * @param is_note_off_for_loop_or_region_end Whether this is called
+   * to send note off events for notes at the loop end/region end
+   * boundary (as opposed to a transport loop boundary). If true,
+   * separate MIDI note off events will be sent for notes at the
+   * border. Otherwise, a single all notes off event will be sent.
+   */
+  const auto send_note_offs =
+    [&] (
+      dsp::MidiEventVector &midi_events, const EngineProcessTimeInfo time_nfo,
+      bool is_note_off_for_loop_or_region_end) {
+      midi_byte_t channel = 1;
+      if constexpr (std::is_same_v<RegionT, MidiRegion>)
+        {
+          // TODO: set channel
+          // channel = r.get_midi_ch ();
+        }
+      else if constexpr (std::is_same_v<RegionT, ChordRegion>)
+        {
+          /* FIXME set channel */
+          // auto cr = dynamic_cast<ChordRegion *> (this);
+        }
+
+      /* -1 to send event 1 sample before the end point */
+      const auto midi_time_for_note_off =
+        (midi_time_t) ((time_nfo.local_offset_ + time_nfo.nframes_) - 1);
+      const signed_frame_t frame_for_note_off =
+        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_)
+        - 1;
+      if (
+        is_note_off_for_loop_or_region_end
+        && std::is_same_v<RegionT, MidiRegion>)
+        {
+          if constexpr (std::is_same_v<RegionT, MidiRegion>)
+            {
+              for (const auto &mn : r.get_children_view ())
+                {
+                  if (mn->bounds ()->is_hit (frame_for_note_off))
+                    {
+                      midi_events.add_note_off (
+                        channel, mn->pitch (), midi_time_for_note_off);
+                    }
+                }
+            }
+        }
+      else
+        {
+          midi_events.add_all_notes_off (channel, midi_time_for_note_off, true);
+        }
+    };
+
+  /* send note offs if needed */
+  if (note_off_at_end)
+    {
+      send_note_offs (midi_events, time_nfo, is_note_off_for_loop_or_region_end);
+    }
+
+  const auto r_local_pos = timeline_frames_to_local (
+    r, (signed_frame_t) time_nfo.g_start_frame_w_offset_, true);
+
+  auto process_object = [&]<typename ObjectType> (const ObjectType &obj) {
+    if (obj.mute ()->muted ())
+      return;
+
+    dsp::ChordDescriptor * descr = nullptr;
+    if constexpr (std::is_same_v<ObjectType, ChordObject>)
+      {
+        // TODO: get actual chord descriptor from this index
+        [[maybe_unused]] const auto chord_descr_index =
+          obj.chordDescriptorIndex ();
+      }
+
+    /* if object starts inside the current range */
+    const auto obj_start_pos_frames = obj.position ()->samples ();
+    if (
+      obj_start_pos_frames >= 0 && obj_start_pos_frames >= r_local_pos
+      && obj_start_pos_frames < r_local_pos + (signed_frame_t) time_nfo.nframes_)
+      {
+        auto _time =
+          (midi_time_t) (time_nfo.local_offset_
+                         + (obj_start_pos_frames - r_local_pos));
+
+        if constexpr (std::is_same_v<RegionT, MidiRegion>)
+          {
+            midi_events.add_note_on (
+              // TODO
+              1,
+#if 0
+              r->get_midi_ch (),
+#endif
+              obj.pitch (), obj.velocity (), _time);
+          }
+        else if constexpr (std::is_same_v<ObjectType, ChordObject>)
+          {
+            midi_events.add_note_ons_from_chord_descr (
+              *descr, 1, MidiNote::DEFAULT_VELOCITY, _time);
+          }
+      }
+
+    signed_frame_t obj_end_frames = 0;
+    if constexpr (std::is_same_v<ObjectType, MidiNote>)
+      {
+        obj_end_frames = obj.bounds ()->get_end_position_samples (true);
+      }
+    else if constexpr (std::is_same_v<ObjectType, ChordObject>)
+      {
+        // TODO: add 1 beat
+        // obj_end_frames = obj_start_pos_frames + 1 beat;
+        assert (false);
+      }
+
+    /* if note ends within the cycle */
+    if (
+      obj_end_frames >= r_local_pos
+      && (obj_end_frames <= (r_local_pos + time_nfo.nframes_)))
+      {
+        auto _time =
+          (midi_time_t) (time_nfo.local_offset_ + (obj_end_frames - r_local_pos));
+
+        /* note actually ends 1 frame before the end point, not at
+         * the end point */
+        if (_time > 0)
+          {
+            _time--;
+          }
+
+        if constexpr (std::is_same_v<RegionT, MidiRegion>)
+          {
+            midi_events.add_note_off (
+              // TODO
+              1,
+#if 0
+              r->get_midi_ch (),
+#endif
+              obj.pitch (), _time);
+          }
+        else if constexpr (std::is_same_v<ObjectType, ChordObject>)
+          {
+            for (size_t l = 0; l < dsp::ChordDescriptor::MAX_NOTES; l++)
+              {
+                if (descr->notes_[l])
+                  {
+                    midi_events.add_note_off (1, l + 36, _time);
+                  }
+              }
+          }
+      }
+  };
+
+  /* process each object */
+  if constexpr (
+    std::is_same_v<RegionT, MidiRegion> || std::is_same_v<RegionT, ChordRegion>)
+    {
+      for (const auto &obj : r.get_children_view ())
+        {
+          process_object (*obj);
+        }
+    }
+}
+
+/**
+ * Stretch the region's contents.
+ *
+ * This should be called right after changing the region's size.
+ *
+ * @param ratio The ratio to stretch by.
+ *
+ * @throw ZrythmException on error.
+ */
+template <RegionObject RegionT>
+void
+stretch_region_contents (RegionT &r, double ratio)
+{
+  z_debug ("stretching region {} (ratio {:f})", r, ratio);
+
+// TODO
+#if 0
+  if constexpr (std::is_same_v<RegionT, AudioRegion>)
+    {
+      auto * clip = r.get_clip ();
+      auto new_clip_id = AUDIO_POOL->duplicate_clip (clip->get_uuid (), false);
+      auto * new_clip = AUDIO_POOL->get_clip (new_clip_id);
+      r.set_clip_id (new_clip->get_uuid ());
+
+      auto stretcher = dsp::Stretcher::create_rubberband (
+        AUDIO_ENGINE->get_sample_rate (), new_clip->get_num_channels (), ratio,
+        1.0, false);
+
+      auto buf = new_clip->get_samples ();
+      buf.interleave_samples ();
+      auto stretched_buf = stretcher->stretch_interleaved (buf);
+      stretched_buf.deinterleave_samples (new_clip->get_num_channels ());
+      new_clip->clear_frames ();
+      new_clip->expand_with_frames (stretched_buf);
+      auto num_frames_per_channel = new_clip->get_num_frames ();
+      z_return_if_fail (num_frames_per_channel > 0);
+
+      AUDIO_POOL->write_clip (*new_clip, false, false);
+
+      /* readjust end position to match the number of frames exactly */
+      dsp::Position new_end_pos (
+        static_cast<signed_frame_t> (num_frames_per_channel),
+        AUDIO_ENGINE->ticks_per_frame_);
+
+      r.loopEndPosition ()->setSamples (num_frames_per_channel);
+      r.length ()->setSamples (num_frames_per_channel);
+    }
+  else
+    {
+      auto objs = r.get_children_view ();
+      for (auto * obj : objs)
+        {
+          using ObjT = base_type<decltype (obj)>;
+          /* set start pos */
+          double        before_ticks = obj->get_position ().ticks_;
+          double        new_ticks = before_ticks * ratio;
+          dsp::Position tmp (new_ticks, AUDIO_ENGINE->frames_per_tick_);
+          obj->position_setter_validated (tmp, AUDIO_ENGINE->ticks_per_frame_);
+
+          if constexpr (std::derived_from<ObjT, BoundedObject>)
+            {
+              /* set end pos */
+              before_ticks = obj->end_pos_->ticks_;
+              new_ticks = before_ticks * ratio;
+              tmp = dsp::Position (new_ticks, AUDIO_ENGINE->frames_per_tick_);
+              obj->end_position_setter_validated (
+                tmp, AUDIO_ENGINE->ticks_per_frame_);
+            }
+        }
+    }
+#endif
+}
+
+template <FinalArrangerObjectSubclass ObjT>
+bool
+is_arranger_object_deletable (const ObjT &obj)
+{
+  if constexpr (std::is_same_v<ObjT, Marker>)
+    {
+      return obj.markerType () == Marker::MarkerType::Custom;
+    }
+  else
+    {
+      return true;
+    }
+}
+
 /**
  * @brief Track span that offers helper methods on a range of tracks.
  */
@@ -22,16 +537,22 @@ public:
   using Base::Base; // Inherit constructors
 
   using Position = dsp::Position;
-  using TrackPtrVariant = ArrangerObject::TrackPtrVariant;
 
   static auto name_projection (const VariantType &obj_var)
   {
     return std::visit (
       [] (const auto &obj) -> utils::Utf8String {
         using ObjT = base_type<decltype (obj)>;
-        if constexpr (std::derived_from<ObjT, NamedObject>)
+        if constexpr (NamedObject<ObjT>)
           {
-            return obj->get_name ();
+            if constexpr (RegionObject<ObjT>)
+              {
+                return obj->regionMixin ()->name ()->get_name ();
+              }
+            else if constexpr (std::is_same_v<ObjT, Marker>)
+              {
+                return obj->name ()->get_name ();
+              }
           }
         else
           {
@@ -41,40 +562,48 @@ public:
       },
       obj_var);
   }
-  static Position position_projection (const VariantType &obj_var)
+  static auto position_ticks_projection (const VariantType &obj_var)
   {
     return std::visit (
-      [&] (auto &&obj) -> Position { return obj->get_position (); }, obj_var);
+      [&] (auto &&obj) { return obj->position ()->ticks (); }, obj_var);
   }
-  static Position end_position_with_start_position_fallback_projection (
+  static auto end_position_ticks_with_start_position_fallback_projection (
     const VariantType &obj_var)
   {
     return std::visit (
-      [&] (auto &&obj) -> Position {
+      [&] (auto &&obj) {
         using ObjT = base_type<decltype (obj)>;
-        if constexpr (std::derived_from<ObjT, BoundedObject>)
+        auto ticks = obj->position ()->ticks ();
+        if constexpr (BoundedObject<ObjT>)
           {
-            return obj->get_end_position ();
+            if constexpr (RegionObject<ObjT>)
+              {
+                return ticks + obj->regionMixin ()->bounds ()->length ()->ticks ();
+              }
+            else
+              {
+                return ticks + obj->bounds ()->length ()->ticks ();
+              }
           }
         else
           {
-            return obj->get_position ();
+            return ticks;
           }
       },
       obj_var);
   }
   static auto midi_note_pitch_projection (const VariantType &obj_var)
   {
-    return std::get<MidiNote *> (obj_var)->pitch_;
+    return std::get<MidiNote *> (obj_var)->pitch ();
   }
   static auto looped_projection (const VariantType &obj_var)
   {
     return std::visit (
       [] (const auto &obj) {
         using ObjT = base_type<decltype (obj)>;
-        if constexpr (std::derived_from<ObjT, LoopableObject>)
+        if constexpr (RegionObject<ObjT>)
           {
-            return obj->is_looped ();
+            return obj->regionMixin ()->loopRange ()->is_looped ();
           }
         else
           return false;
@@ -83,15 +612,13 @@ public:
   }
   static auto is_timeline_object_projection (const VariantType &obj_var)
   {
-    return Base::template derived_from_type_projection<TimelineObject> (obj_var);
+    return std::visit (
+      [] (const auto &ptr) { return TimelineObject<base_type<decltype (ptr)>>; },
+      obj_var);
   }
   static auto is_editor_object_projection (const VariantType &obj_var)
   {
     return !is_timeline_object_projection (obj_var);
-  }
-  static auto track_projection (const VariantType &obj_var)
-  {
-    return std::visit ([&] (auto &&obj) { return obj->get_track (); }, obj_var);
   }
   static auto selected_projection (const VariantType &obj_var)
   {
@@ -101,7 +628,7 @@ public:
   static auto deletable_projection (const VariantType &obj_var)
   {
     return std::visit (
-      [&] (auto &&obj) { return obj->is_deletable (); }, obj_var);
+      [&] (auto &&obj) { return is_arranger_object_deletable (*obj); }, obj_var);
   }
   static auto cloneable_projection (const VariantType &obj_var)
   {
@@ -109,19 +636,51 @@ public:
   }
   static auto renameable_projection (const VariantType &obj_var)
   {
-    return Base::template derived_from_type_projection<NamedObject> (obj_var)
+    return std::visit (
+             [] (const auto &ptr) {
+               return NamedObject<base_type<decltype (ptr)>>;
+             },
+             obj_var)
            && deletable_projection (obj_var);
   }
+  static auto bounded_projection (const VariantType &obj_var)
+  {
+    return std::visit (
+      [] (const auto &ptr) { return BoundedObject<base_type<decltype (ptr)>>; },
+      obj_var);
+  }
+  static auto is_region_projection (const VariantType &obj_var)
+  {
+    return std::visit (
+      [] (const auto &ptr) { return RegionObject<base_type<decltype (ptr)>>; },
+      obj_var);
+  }
+  static auto bounds_projection (const VariantType &obj_var)
+  {
+    return std::visit (
+      [] (const auto &ptr) -> ArrangerObjectBounds * {
+        using ObjT = base_type<decltype (ptr)>;
+        if constexpr (BoundedObject<ObjT>)
+          {
+            if constexpr (RegionObject<ObjT>)
+              {
+                return ptr->regionMixin ()->bounds ();
+              }
+            else
+              {
+                return ptr->bounds ();
+              }
+          }
+        else
+          {
+            throw std::runtime_error ("Not a bounded object");
+          }
+      },
+      obj_var);
+  }
 
-  /**
-   * Inits the selections after loading a project.
-   *
-   * @param project Whether these are project selections (as opposed to
-   * clones).
-   * @param frames_per_tick Frames per tick to use in position conversions.
-   */
-  void init_loaded (bool project, dsp::FramesPerTick frames_per_tick);
-
+// deprecated - no snapshots - use to/from json
+#if 0
   std::vector<VariantType>
   create_snapshots (const auto &object_factory, QObject &owner) const
   {
@@ -134,6 +693,7 @@ public:
           obj_var);
       }));
   }
+#endif
 
   auto create_new_identities (const auto &object_factory) const
     -> std::vector<ArrangerObjectUuidReference>
@@ -163,12 +723,8 @@ public:
   /**
    * Gets first object of the given type (if any, otherwise matches all types)
    * and its start position.
-   *
-   * @param global For non-timeline selections, whether to return the global
-   * position (local + region start).
    */
-  auto get_first_object_and_pos (bool global) const
-    -> std::pair<VariantType, Position>;
+  auto get_first_object_and_pos () const -> std::pair<VariantType, double>;
 
   /**
    * Gets last object of the given type (if any, otherwise matches all types)
@@ -176,16 +732,9 @@ public:
    *
    * @param ends_last Whether to get the object that ends last, otherwise the
    * object that starts last.
-   * @param global For non-timeline selections, whether to return the global
-   * position (local + region start).
    */
-  auto get_last_object_and_pos (bool global, bool ends_last) const
-    -> std::pair<VariantType, Position>;
-
-  /**
-   * Gets the highest track in the selections.
-   */
-  std::pair<TrackPtrVariant, TrackPtrVariant> get_first_and_last_track () const;
+  auto get_last_object_and_pos (bool ends_last) const
+    -> std::pair<VariantType, double>;
 
   std::pair<MidiNote *, MidiNote *> get_first_and_last_note () const
   {
@@ -193,7 +742,7 @@ public:
       *this
       | std::views::transform (Base::template type_transformation<MidiNote>);
     auto [min_it, max_it] =
-      std::ranges::minmax_element (midi_notes, {}, &MidiNote::pitch_);
+      std::ranges::minmax_element (midi_notes, {}, &MidiNote::pitch);
     return { *min_it, *max_it };
   }
 
@@ -201,35 +750,6 @@ public:
    * Pastes the given selections to the given Position.
    */
   void paste_to_pos (const Position &pos, bool undoable);
-
-  /**
-   * Code to run after deserializing a span of objects.
-   */
-  void post_deserialize (dsp::FramesPerTick frames_per_tick)
-  {
-    const auto post_deserialize_obj = [frames_per_tick] (auto * obj) {
-      /* TODO: this acts as if a BPM change happened (and is only effective if
-       * so), so if no BPM change happened this is unnecessary, so this should
-       * be refactored in the future. this was added to fix copy-pasting audio
-       * regions after changing the BPM (see #4993) */
-      obj->update_positions (true, true, frames_per_tick);
-    };
-    for (const auto &var : *this)
-      {
-        std::visit (
-          [&] (auto &&obj) {
-            using ObjT = base_type<decltype (obj)>;
-
-            post_deserialize_obj (obj);
-            if constexpr (DerivedFromCRTPBase<ObjT, ArrangerObjectOwner>)
-              {
-                std::ranges::for_each (
-                  obj->get_children_view (), post_deserialize_obj);
-              }
-          },
-          var);
-      }
-  }
 
   /**
    * Returns if the selections contain an undeletable object (such as the
@@ -296,21 +816,10 @@ public:
 
   double get_length_in_ticks () const
   {
-    auto [_1, p1] = get_first_object_and_pos (false);
-    auto [_2, p2] = get_last_object_and_pos (false, true);
-    return p2.ticks_ - p1.ticks_;
+    auto [_1, p1] = get_first_object_and_pos ();
+    auto [_2, p2] = get_last_object_and_pos (true);
+    return p2 - p1;
   }
-
-  /** Whether the selections contain the given clip.*/
-  bool contains_clip (const AudioClip &clip) const
-  {
-    return std::ranges::any_of (
-      *this | std::views::filter (Base::template type_projection<AudioRegion>)
-        | std::views::transform (Base::template type_transformation<AudioRegion>),
-      [&clip] (auto &&region) {
-        return region->get_clip_id () == clip.get_uuid ();
-      });
-  };
 
   bool can_split_at_pos (Position pos) const;
 
@@ -320,23 +829,20 @@ public:
    * @param include_region_end Whether to include the region's end in the
    * calculation.
    */
-  std::optional<VariantType>
-  get_bounded_object_at_pos (dsp::Position pos, bool include_region_end = false)
-    const
+  std::optional<VariantType> get_bounded_object_at_position (
+    signed_frame_t pos_samples,
+    bool           include_region_end = false) const
   {
-    auto view =
-      *this
-      | std::views::filter (
-        Base::template derived_from_type_projection<BoundedObject>);
+    auto view = *this | std::views::filter (bounded_projection);
     auto it = std::ranges::find_if (view, [&] (const auto &r_var) {
-      auto r =
-        Base::template derived_from_type_transformation<BoundedObject> (r_var);
-      return r->get_position () <= pos
-             && r->end_pos_->frames_ + (include_region_end ? 1 : 0) > pos.frames_;
+      auto bounds = bounds_projection (r_var);
+      return bounds->is_hit (pos_samples, include_region_end);
     });
     return it != view.end () ? std::make_optional (*it) : std::nullopt;
   }
 
+// TODO: implement elsewhere
+#if 0
   /**
    * Sets the listen status of notes on and off based on changes in the previous
    * selections and the current selections.
@@ -356,6 +862,7 @@ public:
           }
       }
   }
+#endif
 
   // void sort_by_pitch (bool desc);
 
@@ -369,16 +876,14 @@ public:
    * @note This doesn't modify anything inside the project. The caller is
    * responsible removing/adding objects to/from the project.
    */
-  template <FinalBoundedObjectSubclass BoundedObjectT>
+  template <BoundedObject BoundedObjectT>
   static auto split_bounded_object (
     const BoundedObjectT &self,
     const auto           &factory,
-    const Position       &global_pos,
-    dsp::FramesPerTick    frames_per_tick)
+    signed_frame_t        global_pos)
     -> std::pair<ArrangerObjectUuidReference, ArrangerObjectUuidReference>
   {
-    const auto ticks_per_frame = dsp::to_ticks_per_frame (frames_per_tick);
-
+    const auto &tempo_map = self.get_tempo_map ();
     /* create the new objects as new identities */
     auto       new_object1_ref = factory.clone_new_object_identity (self);
     auto       new_object2_ref = factory.clone_new_object_identity (self);
@@ -391,38 +896,34 @@ public:
     /* get global/local positions (the local pos is after traversing the
      * loops) */
     auto local_pos = [&] () {
-      Position local = global_pos;
-      if constexpr (RegionSubclass<BoundedObjectT>)
+      auto local_frames = global_pos;
+      if constexpr (TimelineObject<BoundedObjectT>)
         {
-          auto local_frames =
-            self.timeline_frames_to_local (global_pos.frames_, true);
-          local.from_frames (local_frames, ticks_per_frame);
+          local_frames = timeline_frames_to_local (self, global_pos, true);
         }
-      return local;
+      return local_frames;
     }();
 
     /*
      * for first object set:
-     * - end pos
-     * - fade out pos
+     * - end pos (fade out position follows it)
      */
-    get_derived_object (new_object1_ref)
-      ->end_position_setter_validated (global_pos, ticks_per_frame);
-    get_derived_object (new_object1_ref)
-      ->set_position (
-        local_pos, ArrangerObject::PositionType::FadeOut, false, ticks_per_frame);
+    ArrangerObjectSpan::bounds_projection (get_derived_object (new_object1_ref))
+      ->length ()
+      ->setSamples (
+        global_pos
+        - get_derived_object (new_object1_ref)->position ()->samples ());
 
-    if constexpr (std::derived_from<BoundedObjectT, LoopableObject>)
+    if constexpr (RegionObject<BoundedObjectT>)
       {
         /* if original object was not looped, make the new object unlooped
          * also */
-        if (!self.is_looped ())
+        if (!self.regionMixin ()->loopRange ()->is_looped ())
           {
-            get_derived_object (new_object1_ref)
-              ->loop_end_position_setter_validated (local_pos, ticks_per_frame);
-
             if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)
               {
+// TODO
+#if 0
                 /* create new audio region */
                 auto prev_r1_ref = new_object1_ref;
                 auto prev_r1_clip =
@@ -449,19 +950,19 @@ public:
                 assert (
                   get_derived_object (new_object1_ref)->get_clip_id ()
                   != get_derived_object (prev_r1_ref)->get_clip_id ());
+#endif
               }
-            else if constexpr (RegionWithChildren<BoundedObjectT>)
+            else
               {
                 /* remove objects starting after the end */
-                auto children =
-                  get_derived_object (new_object1_ref)->get_children_vector ();
-                for (const auto &child_id : children)
+                for (
+                  const auto * child :
+                  get_derived_object (new_object1_ref)->get_children_view ())
                   {
-                    const auto &child = child_id.get_object ();
-                    if (position_projection (child) > local_pos)
+                    if (child->position ()->samples () > local_pos)
                       {
                         get_derived_object (new_object1_ref)
-                          ->remove_object (child_id.id ());
+                          ->remove_object (child->get_uuid ());
                       }
                   }
               }
@@ -473,100 +974,90 @@ public:
      * - start pos
      * - clip start pos
      */
-    if constexpr (std::derived_from<BoundedObjectT, LoopableObject>)
+    if constexpr (RegionObject<BoundedObjectT>)
       {
         get_derived_object (new_object2_ref)
-          ->clip_start_position_setter_validated (local_pos, ticks_per_frame);
+          ->regionMixin ()
+          ->loopRange ()
+          ->clipStartPosition ()
+          ->setSamples (local_pos);
       }
-    get_derived_object (new_object2_ref)
-      ->position_setter_validated (global_pos, ticks_per_frame);
-    Position r2_local_end = *get_derived_object (new_object2_ref)->end_pos_;
-    r2_local_end.add_ticks (
-      -get_derived_object (new_object2_ref)->get_position ().ticks_,
-      frames_per_tick);
-    if constexpr (std::derived_from<BoundedObjectT, FadeableObject>)
-      {
-        get_derived_object (new_object2_ref)
-          ->set_position (
-            r2_local_end, ArrangerObject::PositionType::FadeOut, false,
-            ticks_per_frame);
-      }
+    get_derived_object (new_object2_ref)->position ()->setSamples (global_pos);
+    signed_frame_t r2_local_end =
+      ArrangerObjectSpan::bounds_projection (get_derived_object (new_object2_ref))
+        ->get_end_position_samples (true);
+    r2_local_end -=
+      get_derived_object (new_object2_ref)->position ()->samples ();
 
     /* if original object was not looped, make the new object unlooped also */
-    if constexpr (std::derived_from<BoundedObjectT, LoopableObject>)
+    if constexpr (RegionObject<BoundedObjectT>)
       {
-        if (!self.is_looped ())
+        if (!self.regionMixin ()->loopRange ()->is_looped ())
           {
-            Position init_pos;
             get_derived_object (new_object2_ref)
-              ->clip_start_position_setter_validated (init_pos, ticks_per_frame);
-            get_derived_object (new_object2_ref)
-              ->loop_start_position_setter_validated (init_pos, ticks_per_frame);
-            get_derived_object (new_object2_ref)
-              ->loop_end_position_setter_validated (
-                r2_local_end, ticks_per_frame);
+              ->regionMixin ()
+              ->loopRange ()
+              ->setTrackLength (true);
 
-            if constexpr (RegionSubclass<BoundedObjectT>)
+            /* if audio region, create a new region */
+            if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)
               {
-                if constexpr (RegionWithChildren<BoundedObjectT>)
+// TODO
+#if 0
+                auto prev_r2_ref = new_object2_ref;
+                auto prev_r2_clip =
+                  get_derived_object (prev_r2_ref)->get_clip ();
+                assert (prev_r2_clip);
+                assert (r2_local_end > 0);
+                utils::audio::AudioBuffer tmp{
+                  prev_r2_clip->get_num_channels (), (int) r2_local_end
+                };
+                for (int i = 0; i < prev_r2_clip->get_num_channels (); ++i)
                   {
-                    /* move all objects backwards */
-                    get_derived_object (new_object2_ref)
-                      ->add_ticks_to_children (
-                        -local_pos.ticks_, frames_per_tick);
+                    tmp.copyFrom (
+                      i, 0, prev_r2_clip->get_samples (), i, local_pos,
+                      r2_local_end);
                   }
+                assert (!get_derived_object (prev_r2_ref)->get_name ().empty ());
+                assert (r2_local_end >= 0);
+                new_object2_ref =
+                  factory.create_audio_region_from_audio_buffer_FIXME (
+                    get_derived_object (prev_r2_ref)->get_lane (), tmp,
+                    prev_r2_clip->get_bit_depth (),
+                    get_derived_object (prev_r2_ref)->get_name (), local_pos);
+                assert (
+                  get_derived_object (new_object2_ref)->get_clip_id ()
+                  != get_derived_object (prev_r2_ref)->get_clip_id ());
+#endif
+              }
+            else
+              {
+                /* move all objects backwards */
+                const double ticks_to_subtract =
+                  tempo_map.samples_to_tick (local_pos);
+                get_derived_object (new_object2_ref)
+                  ->add_ticks_to_children (-ticks_to_subtract);
 
-                /* if audio region, create a new region */
-                if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)
+/* remove objects starting before the start */
+// TODO
+#if 0
+                for (
+                  auto * child :
+                  get_derived_object (new_object2_ref)->get_children_view ())
                   {
-                    auto prev_r2_ref = new_object2_ref;
-                    auto prev_r2_clip =
-                      get_derived_object (prev_r2_ref)->get_clip ();
-                    assert (prev_r2_clip);
-                    assert ((size_t) r2_local_end.frames_ > 0);
-                    utils::audio::AudioBuffer tmp{
-                      prev_r2_clip->get_num_channels (),
-                      (int) r2_local_end.frames_
-                    };
-                    for (int i = 0; i < prev_r2_clip->get_num_channels (); ++i)
-                      {
-                        tmp.copyFrom (
-                          i, 0, prev_r2_clip->get_samples (), i,
-                          local_pos.frames_, r2_local_end.frames_);
-                      }
-                    assert (
-                      !get_derived_object (prev_r2_ref)->get_name ().empty ());
-                    assert (r2_local_end.frames_ >= 0);
-                    new_object2_ref =
-                      factory.create_audio_region_from_audio_buffer_FIXME (
-                        get_derived_object (prev_r2_ref)->get_lane (), tmp,
-                        prev_r2_clip->get_bit_depth (),
-                        get_derived_object (prev_r2_ref)->get_name (),
-                        local_pos.ticks_);
-                    assert (
-                      get_derived_object (new_object2_ref)->get_clip_id ()
-                      != get_derived_object (prev_r2_ref)->get_clip_id ());
+                    if (child->position ().frames_ < 0)
+                      get_derived_object (new_object2_ref)
+                        ->remove_object (child->get_uuid ());
                   }
-                else if constexpr (RegionSubclass<BoundedObjectT>)
-                  {
-                    // using ChildType = RegionChildType_t<BoundedObjectT>;
-                    /* remove objects starting before the start */
-                    std::vector<RegionOwnedObject *> children;
-                    get_derived_object (new_object2_ref)
-                      ->append_children (children);
-                    for (auto * child : children)
-                      {
-                        if (child->get_position ().frames_ < 0)
-                          get_derived_object (new_object2_ref)
-                            ->remove_object (child->get_uuid ());
-                      }
-                  }
+#endif
               }
           }
       }
 
-    /* make sure regions have names */
-    if constexpr (RegionSubclass<BoundedObjectT>)
+      /* make sure regions have names */
+// TODO
+#if 0
+    if constexpr (RegionObject<BoundedObjectT>)
       {
         auto track_var = self.get_track ();
         std::visit (
@@ -583,6 +1074,7 @@ public:
           },
           track_var);
       }
+#endif
 
     return std::make_pair (new_object1_ref, new_object2_ref);
   }
@@ -595,9 +1087,12 @@ public:
    *
    * Need to rethink this as it's not easily maintainable.
    */
+// deprecated - use from/to json
+#if 0
   static void copy_arranger_object_identifier (
     const VariantType &dest,
     const VariantType &src);
+#endif
 };
 
 static_assert (std::ranges::random_access_range<ArrangerObjectSpan>);

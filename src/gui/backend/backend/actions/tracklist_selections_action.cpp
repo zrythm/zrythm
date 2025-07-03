@@ -52,6 +52,7 @@ init_from (
   obj.file_basename_ = other.file_basename_;
   obj.base64_midi_ = other.base64_midi_;
   obj.pool_id_ = other.pool_id_;
+#if 0
   if (other.tls_before_)
     obj.tls_before_ = TrackSpan{ *other.tls_before_ }.create_snapshots (
       obj, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
@@ -65,6 +66,7 @@ init_from (
       TrackSpan{ *obj.foldable_tls_before_ }.create_snapshots (
         obj, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
         PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
+#endif
   obj.out_track_uuids_ = other.out_track_uuids_;
   utils::clone_unique_ptr_container (obj.src_sends_, other.src_sends_);
   obj.edit_type_ = other.edit_type_;
@@ -104,12 +106,6 @@ TracklistSelectionsAction::reset_foldable_track_sizes ()
         },
         own_tr_var);
     }
-}
-
-bool
-TracklistSelectionsAction::contains_clip (const AudioClip &clip) const
-{
-  return pool_id_.has_value () && clip.get_uuid () == *pool_id_;
 }
 
 bool
@@ -218,13 +214,13 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     }
 #endif
 
-  if (pl_setting)
+  if (pl_setting != nullptr)
     {
       pl_setting_->validate ();
     }
-  else if (!file_descr)
+  else if (file_descr == nullptr)
     {
-      is_empty_ = 1;
+      is_empty_ = true;
     }
   if (type == Type::Pin)
     {
@@ -235,14 +231,14 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       track_pos_ = TRACKLIST->track_count () - 1;
     }
 
-  if (pos)
+  if (pos != nullptr)
     {
       pos_ = *pos;
       have_pos_ = true;
     }
 
   /* calculate number of tracks */
-  if (file_descr && track_type == Track::Type::Midi)
+  if ((file_descr != nullptr) && track_type == Track::Type::Midi)
     {
       MidiFile mf (file_descr->abs_path_);
       num_tracks_ = mf.get_num_tracks (true);
@@ -253,7 +249,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     }
 
   /* create the file in the pool or save base64 if MIDI */
-  if (file_descr)
+  if (file_descr != nullptr)
     {
       /* TODO: use async API */
       if (track_type == Track::Type::Midi)
@@ -273,10 +269,10 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         }
       else if (track_type == Track::Type::Audio)
         {
-          auto clip = std::make_shared<AudioClip> (
-            file_descr->abs_path_, AUDIO_ENGINE->get_sample_rate (), 140.f);
-          AUDIO_POOL->register_clip (clip);
-          pool_id_ = clip->get_uuid ();
+          pool_id_ =
+            PROJECT->get_file_audio_source_registry ()
+              .create_object<dsp::FileAudioSource> (
+                file_descr->abs_path_, AUDIO_ENGINE->get_sample_rate (), 140.f);
         }
       else
         {
@@ -309,11 +305,14 @@ TracklistSelectionsAction::TracklistSelectionsAction (
             }
           else
             {
+// TODO
+#if 0
               // FIXME: this QObject is not initialized yet
               tls_before_ = tls_before.create_snapshots (
                 *this, PROJECT->get_track_registry (),
                 PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
                 PROJECT->get_arranger_object_registry ());
+#endif
             }
           TrackCollections::sort_by_position (*tls_before_);
 
@@ -321,10 +320,12 @@ TracklistSelectionsAction::TracklistSelectionsAction (
           const auto foldable_tracks = std::ranges::to<std::vector> (
             TRACKLIST->get_track_span ()
             | std::views::filter (TrackSpan::foldable_projection));
+#if 0
           foldable_tls_before_ = TrackSpan{ foldable_tracks }.create_snapshots (
             *this, PROJECT->get_track_registry (),
             PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
             PROJECT->get_arranger_object_registry ());
+#endif
         }
       else
         {
@@ -352,10 +353,12 @@ TracklistSelectionsAction::TracklistSelectionsAction (
           else
             {
               // FIXME: this QObject is not initialized yet
+#if 0
               tls_after_ = tls_after.create_snapshots (
                 *this, PROJECT->get_track_registry (),
                 PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
                 PROJECT->get_arranger_object_registry ());
+#endif
             }
 
           TrackCollections::sort_by_position (*tls_after_);
@@ -436,11 +439,11 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         track_var.value ());
     }
 
-  if (color_new)
+  if (color_new != nullptr)
     {
       new_color_ = *color_new;
     }
-  if (new_txt)
+  if (new_txt != nullptr)
     {
       new_txt_ = *new_txt;
     }
@@ -448,7 +451,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
   ival_before_.resize (num_tracks_, 0);
   colors_before_.resize (num_tracks_);
 
-  if (port_connections_mgr)
+  if (port_connections_mgr != nullptr)
     {
       port_connections_before_ = utils::clone_unique (*port_connections_mgr);
     }
@@ -468,18 +471,15 @@ TracklistSelectionsAction::create_track (int idx)
     {
       auto track_type_str = Track_Type_to_string (track_type_, true);
       auto label = format_qstr (QObject::tr ("{} Track"), track_type_str);
-      auto unique_track_var = Track::create_track (
-        track_type_, utils::Utf8String::from_qstring (label), pos);
+      auto track_id_ref =
+        PROJECT->getTrackFactory ()->create_empty_track (track_type_);
       std::visit (
-        [&] (auto &&unique_track) {
-          auto track = unique_track.release ();
-          PROJECT->get_track_registry ().register_object (track);
+        [&] (auto &&track) {
+          track->setName (label);
           TRACKLIST->insert_track (
-            TrackUuidReference{
-              track->get_uuid (), PROJECT->get_track_registry () },
-            pos, *AUDIO_ENGINE, false, false);
+            track_id_ref, pos, *AUDIO_ENGINE, false, false);
         },
-        unique_track_var);
+        track_id_ref.get_object ());
     }
   else /* else if track is not empty */
     {
@@ -491,6 +491,7 @@ TracklistSelectionsAction::create_track (int idx)
       if (track_type_ == Track::Type::Audio && pool_id_.has_value ())
         {
           track = AudioTrack::create_unique (
+            PROJECT->get_file_audio_source_registry (),
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
             PROJECT->get_port_registry (),
             PROJECT->get_arranger_object_registry (), true);
@@ -501,6 +502,7 @@ TracklistSelectionsAction::create_track (int idx)
       else if (track_type_ == Track::Type::Midi && !base64_midi_.empty ())
         {
           track = MidiTrack::create_unique (
+            PROJECT->get_file_audio_source_registry (),
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
             PROJECT->get_port_registry (),
             PROJECT->get_arranger_object_registry (), true);
@@ -511,7 +513,13 @@ TracklistSelectionsAction::create_track (int idx)
         {
           const auto &descr = pl_setting_->descr_;
 
-          track = Track::create_track (track_type_, descr->name_, pos);
+          auto track_id_ref =
+            PROJECT->getTrackFactory ()->create_empty_track (track_type_);
+          std::visit (
+            [&] (auto &&track) { track->setName (descr->getName ()); },
+            track_id_ref.get_object ());
+          // TODO
+          // track = track_id_ref.get_object ();
           has_plugin = true;
           name = descr->name_;
         }
@@ -657,7 +665,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
                   /* clone our own track */
                   auto track_ref = PROJECT->get_track_registry ().clone_object (
-                    *own_track, PROJECT->get_track_registry (),
+                    *own_track, PROJECT->get_file_audio_source_registry (),
+                    PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry (), true);
@@ -901,7 +910,7 @@ TracklistSelectionsAction::
   bool unpin = tracklist_selections_action_type_ == Type::Unpin;
 
   /* if moving, this will be set back */
-  auto prev_clip_editor_region_opt = CLIP_EDITOR->get_region ();
+  auto prev_clip_editor_region_opt = CLIP_EDITOR->get_region_and_track ();
 
   if (_do)
     {
@@ -1083,7 +1092,8 @@ TracklistSelectionsAction::
 
                   /* create a new clone to use in the project */
                   auto track_ref = PROJECT->get_track_registry ().clone_object (
-                    *own_track_ptr, PROJECT->get_track_registry (),
+                    *own_track_ptr, PROJECT->get_file_audio_source_registry (),
+                    PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry (), true);
@@ -1284,9 +1294,12 @@ TracklistSelectionsAction::
 
   if (move && prev_clip_editor_region_opt.has_value ())
     {
+// TODO
+#if 0
       std::visit (
         [&] (auto &&r) { CLIP_EDITOR->set_region (r->get_uuid ()); },
         *prev_clip_editor_region_opt);
+#endif
     }
 
   /* restore connections */

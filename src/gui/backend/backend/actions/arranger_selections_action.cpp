@@ -132,9 +132,10 @@ ArrangerSelectionsAction::get_arranger_object_registry () const
 void
 ArrangerSelectionsAction::init_loaded_impl ()
 {
+// TODO/delete
+#if 0
   const auto object_init_loaded_visitor = [&] (auto &&o) {
     using ObjectT = base_type<decltype (o)>;
-    o->update_positions (true, false, frames_per_tick_);
     if constexpr (std::derived_from<ObjectT, Region>)
       {
         if constexpr (
@@ -162,7 +163,7 @@ ArrangerSelectionsAction::init_loaded_impl ()
         }
     }
 
-#if 0
+#  if 0
   for (const auto&[r1_var, r2_var] : std::views::zip(r1_, r2_))
     {
       std::visit (
@@ -172,21 +173,26 @@ ArrangerSelectionsAction::init_loaded_impl ()
         },
         r1_var, r2_var);
     }
+#  endif
 #endif
 }
 
 void
 ArrangerSelectionsAction::set_before_selections (ArrangerObjectSpan src_var)
 {
+#if 0
   sel_ = src_var.create_snapshots (
     *structure::arrangement::ArrangerObjectFactory::get_instance (), *this);
+#endif
 }
 
 void
 ArrangerSelectionsAction::set_after_selections (ArrangerObjectSpan src_var)
 {
+#if 0
   sel_after_ = src_var.create_snapshots (
     *structure::arrangement::ArrangerObjectFactory::get_instance (), *this);
+#endif
 }
 
 bool
@@ -352,7 +358,7 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
 }
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
-  Region::Uuid                              region_id,
+  ArrangerObject::Uuid                      region_id,
   const dsp::Position                      &sel_start,
   const dsp::Position                      &sel_end,
   structure::arrangement::AudioFunctionType audio_func_type,
@@ -403,9 +409,7 @@ ArrangerSelectionsAction::ResizeAction::ResizeAction (
   /* validate */
   auto sel_before_span = ArrangerObjectSpan{ *sel_ };
   bool have_unresizable = !std::ranges::all_of (
-    sel_before_span,
-    ArrangerObjectSpan::derived_from_type_projection<
-      structure::arrangement::BoundedObject>);
+    sel_before_span, ArrangerObjectSpan::bounded_projection);
   if (have_unresizable)
     {
       throw ZrythmException (
@@ -425,8 +429,7 @@ ArrangerSelectionsAction::ResizeAction::ResizeAction (
     }
 
   bool have_unloopable = !std::ranges::all_of (
-    sel_before_span,
-    ArrangerObjectSpan::derived_from_type_projection<LoopableObject>);
+    sel_before_span, ArrangerObjectSpan::is_region_projection);
   if (
     have_unloopable && (type == ResizeType::LLoop || type == ResizeType::RLoop))
     {
@@ -442,7 +445,7 @@ ArrangerSelectionsAction::ResizeAction::ResizeAction (
     }
 }
 
-template <FinalRegionSubclass RegionT>
+template <RegionObject RegionT>
 ArrangerSelectionsAction::AutomationFillAction::AutomationFillAction (
   const RegionT &region_before,
   const RegionT &region_after,
@@ -467,6 +470,10 @@ ArrangerSelectionsAction::AutomationFillAction::AutomationFillAction (
 void
 ArrangerSelectionsAction::update_region_link_groups (const auto &objects)
 {
+// TODO (also maybe not needed depending on how linking is done - check
+// ArrangerObjectOwner for ideas - like sharing an ArrangerObjectOwner between
+// many regions)
+#if 0
   /* handle children of linked regions */
   for (auto &_obj_var : objects)
     {
@@ -489,6 +496,7 @@ ArrangerSelectionsAction::update_region_link_groups (const auto &objects)
         },
         _obj_var);
     }
+#endif
 }
 
 void
@@ -517,7 +525,6 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
           std::visit (
             [&] (auto &&own_obj_ptr) {
               using ObjT = base_type<decltype (own_obj_ptr)>;
-              own_obj_ptr->flags_ |= ArrangerObject::Flags::NonProject;
 
               /* get the actual object from the project */
               auto prj_obj = std::get<ObjT *> (
@@ -532,10 +539,10 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
               if (!utils::math::floats_equal (ticks, 0.0))
                 {
                   /* shift the actual object */
-                  prj_obj->move (ticks, AUDIO_ENGINE->frames_per_tick_);
+                  prj_obj->position ()->addTicks (ticks);
 
                   /* also shift the copy */
-                  own_obj_ptr->move (ticks, AUDIO_ENGINE->frames_per_tick_);
+                  own_obj_ptr->position ()->addTicks (ticks);
                 }
 
               if (delta_tracks != 0 || delta_lanes != 0)
@@ -545,8 +552,8 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                     prj_obj, delta_tracks, delta_lanes, false, -1);
 
                   /* remember new info in own copy */
-                  ArrangerObjectSpan::copy_arranger_object_identifier (
-                    own_obj_ptr, prj_obj);
+                  // ArrangerObjectSpan::copy_arranger_object_identifier (
+                  // own_obj_ptr, prj_obj);
                 }
 
               if (delta_pitch != 0)
@@ -570,10 +577,12 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                   if constexpr (std::is_same_v<ObjT, ChordObject>)
                     {
                       /* shift the actual object */
-                      prj_obj->chord_index_ += delta_chords;
+                      prj_obj->setChordDescriptorIndex (
+                        prj_obj->chordDescriptorIndex () + delta_chords);
 
                       /* also shift the copy so they can match */
-                      own_obj_ptr->chord_index_ += delta_chords;
+                      own_obj_ptr->setChordDescriptorIndex (
+                        own_obj_ptr->chordDescriptorIndex () + delta_chords);
                     }
                   else
                     {
@@ -586,6 +595,8 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                 {
                   if constexpr (std::is_same_v<ObjT, AutomationRegion>)
                     {
+// TODO
+#if 0
                       auto cur_at = prj_obj->get_automation_track ();
                       z_return_if_fail (cur_at);
                       auto port_var = PROJECT->find_port_by_id (*target_port_);
@@ -618,6 +629,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                             }
                         },
                         track_var.value ());
+#endif
                     }
                   else
                     {
@@ -630,16 +642,14 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                   if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                     {
                       /* shift the actual object */
-                      prj_obj->set_fvalue (
-                        prj_obj->normalized_val_
-                          + static_cast<float> (delta_normalized_amt),
-                        true);
+                      prj_obj->setValue (
+                        prj_obj->value ()
+                        + static_cast<float> (delta_normalized_amt));
 
                       /* also shift the copy so they can match */
-                      own_obj_ptr->set_fvalue (
-                        own_obj_ptr->normalized_val_
-                          + static_cast<float> (delta_normalized_amt),
-                        true);
+                      own_obj_ptr->setValue (
+                        own_obj_ptr->value ()
+                        + static_cast<float> (delta_normalized_amt));
                     }
                   else
                     {
@@ -650,6 +660,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
             own_obj_var);
         }
 
+#if 0
       /* if moving automation points, re-sort the region and remember the
        * new indices */
       auto first_own_obj_var = sel_->front ();
@@ -679,12 +690,13 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
             }
         },
         first_own_obj_var);
+#endif
     }
 
   update_region_link_groups (*sel_);
 
   /* validate */
-  CLIP_EDITOR->get_region ();
+  CLIP_EDITOR->get_region_and_track ();
 
   // ArrangerSelections * sel = get_actual_arranger_selections ();
   /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
@@ -701,6 +713,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
   bool                     use_index_in_prev_lane,
   int                      index_in_prev_lane)
 {
+#if 0
   std::visit (
     [&] (auto &&obj) {
       using ObjT = base_type<decltype (obj)>;
@@ -729,6 +742,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
                     track_to_move_to->get_uuid ());
 
                   /* shift the actual object by tracks */
+#  if 0
                   if (ENUM_BITSET_TEST (
                         obj->flags_, ArrangerObject::Flags::NonProject))
                     {
@@ -737,17 +751,22 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
                     }
                   else
                     {
-                      TRACKLIST->move_region_to_track (
-                        obj, track_to_move_to->get_uuid (), -1,
-                        use_index_in_prev_lane ? index_in_prev_lane : -1);
-                      z_trace ("Moved project object to track");
+#  endif
+                  TRACKLIST->move_region_to_track (
+                    obj, track_to_move_to->get_uuid (), -1,
+                    use_index_in_prev_lane ? index_in_prev_lane : -1);
+                  z_trace ("Moved project object to track");
+#  if 0
                     }
+#  endif
                 },
                 track_before_var);
             }
         }
       if (lanes_diff)
         {
+// TODO
+#  if 0
           if constexpr (std::derived_from<ObjT, LaneOwnedObject>)
             {
               const auto obj_lane_pos = obj->get_lane ().get_index_in_track ();
@@ -785,15 +804,18 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
                     }
                 }
             }
+#  endif
         }
       z_debug ("Object move completed");
     },
     obj_var);
+#endif
 }
 
 void
 ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
 {
+#if 0
   // TODO:
   // sel->sort_by_indices (!do_it);
   // sel_after->sort_by_indices (!do_it);
@@ -819,7 +841,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
   std::map<AutomationPoint *, AutomationPoint *> ap_map;
 
 // TODO
-#if 0
+#  if 0
   // this essentially sets the NonProject flag if not performing on first run
   for (
     const auto &[index, own_obj_var] :
@@ -867,7 +889,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                         *own_obj->index_in_prev_lane_);
 
 // TODO
-#  if 0
+#    if 0
                       /* since the object moved outside of its lane,
                        * decrement
                        * the index inside the lane for all of our cached objects
@@ -884,7 +906,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                               own_obj->idx_--;
                             }
                         }
-#  endif
+#    endif
                     }
                 }
 
@@ -936,7 +958,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
         },
         own_obj_var);
     }
-#endif
+#  endif
 
   for (
     const auto &[own_obj_var, own_orig_obj_var] :
@@ -951,7 +973,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
             {
 
 // TODO
-#if 0
+#  if 0
               auto add_adjusted_clone_to_project = [] (const auto &obj_to_clone) {
                 /* create a temporary clone */
                 auto obj =
@@ -960,7 +982,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
 
                 /* if region, clear the remembered index so that the
                  * region gets appended instead of inserted */
-                if constexpr (RegionSubclass<ObjT>)
+                if constexpr (RegionObject<ObjT>)
                   {
                     obj->id_.idx_ = -1;
                   }
@@ -1060,7 +1082,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                     }
                 }
 
-              if constexpr (RegionSubclass<ObjT>)
+              if constexpr (RegionObject<ObjT>)
                 {
                   /* if we are linking, create the necessary links */
                   if (link)
@@ -1115,19 +1137,21 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
               /* remember the identifier */
               ArrangerObjectSpan::copy_arranger_object_identifier (
                 own_obj, added_obj_ref);
-#endif
+#  endif
             } /* endif do */
           else /* if undo */
             {
               /* find the actual object */
-              auto obj = std::get<ObjT *> (
-                *PROJECT->find_arranger_object_by_id (own_obj->get_uuid ()));
+              // auto obj = std::get<ObjT *> (
+              //   *PROJECT->find_arranger_object_by_id (own_obj->get_uuid ()));
 
               /* if the object was created with linking, delete the links */
-              if constexpr (RegionSubclass<ObjT>)
+              if constexpr (RegionObject<ObjT>)
                 {
                   if (link)
                     {
+// TODO?
+#  if 0
                       /* remove link from created object (this will also
                        * automatically remove the link from the parent region
                        * if it is the only region in the link group) */
@@ -1137,16 +1161,18 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                       /* unlink remembered link groups */
                       own_orig_obj->unlink ();
                       own_obj->unlink ();
+#  endif
                     }
                 }
 
               /* remove it */
-              obj->remove_from_project (true);
+              // TODO
+              // obj->remove_from_project (true);
 
               /* set the copies back to original state */
               if (!utils::math::floats_equal (ticks, 0.0))
                 {
-                  own_obj->move (ticks, AUDIO_ENGINE->frames_per_tick_);
+                  own_obj->position ()->addTicks (ticks);
                 }
               if (delta_tracks != 0)
                 {
@@ -1169,7 +1195,8 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                 {
                   if constexpr (std::is_same_v<ObjT, ChordObject>)
                     {
-                      own_obj->chord_index_ += delta_chords;
+                      own_obj->setChordDescriptorIndex (
+                        own_obj->chordDescriptorIndex () + delta_chords);
                     }
                 }
               if (target_port_)
@@ -1180,10 +1207,9 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                 {
                   if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                     {
-                      own_obj->set_fvalue (
-                        own_obj->normalized_val_
-                          + static_cast<float> (delta_normalized_amount),
-                        true);
+                      own_obj->setValue (
+                        own_obj->value ()
+                        + static_cast<float> (delta_normalized_amount));
                     }
                 }
 
@@ -1192,6 +1218,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
         own_obj_var);
     }
 
+#  if 0
   /* if copy-moving automation points, re-sort the region and remember the
    * new indices */
   if (std::holds_alternative<AutomationPoint *> (sel_after_->front ()))
@@ -1212,6 +1239,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
             }
         }
     }
+#  endif
 
   if (do_it)
     {
@@ -1225,6 +1253,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
     }
 
   first_run_ = false;
+#endif
 }
 
 void
@@ -1240,6 +1269,8 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
       TRACKLIST->clear_selections_for_object_siblings (
         ArrangerObjectSpan::uuid_projection (sel_->front ()));
 
+// TODO
+#if 0
       for (auto &own_obj_var : *sel_)
         {
           std::visit (
@@ -1296,7 +1327,8 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                 }
             },
             own_obj_var);
-        }
+          }
+#endif
     }
 
   /* if first time creating the object, save the length for use by SnapGrid */
@@ -1306,15 +1338,18 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
       std::visit (
         [&] (auto &&obj) {
           using ObjT = base_type<decltype (obj)>;
-          if constexpr (std::derived_from<ObjT, BoundedObject>)
+          if constexpr (BoundedObject<ObjT>)
             {
-              double ticks = obj->get_length_in_ticks ();
-              if constexpr (std::derived_from<ObjT, TimelineObject>)
+              double ticks =
+                ArrangerObjectSpan::bounds_projection (obj_in_project)
+                  ->length ()
+                  ->ticks ();
+              if constexpr (TimelineObject<ObjT>)
                 {
                   gui::SettingsManager::get_instance ()
                     ->set_timelineLastCreatedObjectLengthInTicks (ticks);
                 }
-              else if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
+              else
                 {
                   gui::SettingsManager::get_instance ()
                     ->set_editorLastCreatedObjectLengthInTicks (ticks);
@@ -1372,7 +1407,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
               std::visit (
                 [&] (auto &&own_after_obj) {
                   using ObjT = base_type<decltype (own_after_obj)>;
-                  own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
+                  // own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
                   // TODO: add the corresponding object to the project
                   auto prj_obj = std::get<ObjT *> (
@@ -1390,7 +1425,9 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                 own_after_obj_var);
             }
 
-          /* delete the previous objects */
+            /* delete the previous objects */
+// TODO
+#if 0
           for (auto &own_before_obj_var : *sel_)
             {
               std::visit (
@@ -1407,7 +1444,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                   obj->remove_from_project (true);
                 },
                 own_before_obj_var);
-            }
+              }
+#endif
         }
 
       /* if undoing */
@@ -1419,20 +1457,23 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
               std::visit (
                 [&] (auto &&own_after_obj) {
                   using ObjT = base_type<decltype (own_after_obj)>;
-                  own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
+                  // own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
                   /* get the actual object from the project */
                   auto obj_opt = PROJECT->find_arranger_object_by_id (
                     own_after_obj->get_uuid ());
                   z_return_if_fail (obj_opt);
-                  auto * obj = std::get<ObjT *> (*obj_opt);
+                  [[maybe_unused]] auto * obj = std::get<ObjT *> (*obj_opt);
 
                   /* remove it */
-                  obj->remove_from_project (true);
+                  // TODO
+                  // obj->remove_from_project (true);
                 },
                 own_after_obj_var);
             }
 
+// TODO
+#if 0
           /* add the objects before the recording */
           for (auto &own_before_obj_var : *sel_)
             {
@@ -1455,7 +1496,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                     own_before_obj, prj_obj);
                 },
                 own_before_obj_var);
-            }
+              }
+#endif
         }
     }
 
@@ -1474,6 +1516,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
 void
 ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 {
+// TODO
+#if 0
   const auto &src_sel = do_it ? sel_ : sel_after_;
   const auto &dest_sel = do_it ? sel_after_ : sel_;
 
@@ -1675,11 +1719,14 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
    */
 
   first_run_ = false;
+#endif
 }
 
 void
 ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
 {
+// TODO
+#if 0
   if (!first_run_)
     {
       /* clear current selections in the project */
@@ -1725,18 +1772,20 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
     }
 
   first_run_ = false;
+#endif
 }
 
 void
 ArrangerSelectionsAction::do_or_undo_split (bool do_it)
 {
+#if 0
   for (const auto &[index, own_obj_var] : utils::views::enumerate (*sel_))
     {
       std::visit (
         [&] (auto &&own_obj) {
           using ObjT = base_type<decltype (own_obj)>;
-          own_obj->flags_ |= ArrangerObject::Flags::NonProject;
-          if constexpr (std::derived_from<ObjT, BoundedObject>)
+          // own_obj->flags_ |= ArrangerObject::Flags::NonProject;
+          if constexpr (BoundedObject<ObjT>)
             {
               if (do_it)
                 {
@@ -1744,14 +1793,15 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
                   auto obj = std::get<ObjT *> (
                     *PROJECT->find_arranger_object_by_id (own_obj->get_uuid ()));
                   z_return_if_fail (obj);
-                  obj->remove_from_project (true);
+
+                  // TODO
+                  // obj->remove_from_project (true);
 
                   if (first_run_)
                     {
                       /* split */
                       auto [r1, r2] = ArrangerObjectSpan::split_bounded_object (
-                        *obj, *ArrangerObjectFactory::get_instance (), pos_,
-                        frames_per_tick_);
+                        *obj, *ArrangerObjectFactory::get_instance (), pos_);
 
                       // TODO: re-add the additional logic that was removed from
                       // BoundedObject::split()
@@ -1780,7 +1830,9 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
               /* else if undoing split */
               else
                 {
-                  /* find the actual objects and remove from project */
+// TODO
+/* find the actual objects and remove from project */
+#  if 0
                   auto * r1 = std::get<ObjT *> (
                     get_arranger_object_registry ().find_by_id_or_throw (
                       r1_.at (index)));
@@ -1789,6 +1841,7 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
                       r2_.at (index)));
                   r1->remove_from_project (true);
                   r2->remove_from_project (true);
+#  endif
 
                   /* re-insert original object at its original position */
                   auto prj_obj = std::get<ObjT *> (
@@ -1806,19 +1859,21 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
   /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
 
   first_run_ = false;
+#endif
 }
 
 void
 ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
 {
+#if 0
   /* if first run, merge */
   if (first_run_)
     {
       sel_after_.emplace (std::vector<ArrangerObjectPtrVariant> ());
 // TODO
-#if 0
+#  if 0
       sel_after_->push_back(get_arranger_object_registry().find_by_id_or_throw(ArrangerObjectSpan{*sel_}.merge(get_frames_per_tick())));
-#endif
+#  endif
     }
 
   // sel->sort_by_indices (!do_it);
@@ -1867,11 +1922,13 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
   /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
 
   first_run_ = false;
+#endif
 }
 
 void
 ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
 {
+#if 0
   bool sel_after_existed = sel_after_.has_value ();
   if (!sel_after_.has_value ())
     {
@@ -1988,11 +2045,13 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
   /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, sel); */
 
   first_run_ = false;
+#endif
 }
 
 void
 ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
 {
+#if 0
   auto &objs = *sel_;
   auto &quantized_objs = *sel_after_;
 
@@ -2076,6 +2135,7 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
   /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_QUANTIZED, sel); */
 
   first_run_ = false;
+#endif
 }
 
 void
@@ -2159,30 +2219,6 @@ void
 ArrangerSelectionsAction::undo_impl ()
 {
   do_or_undo (false);
-}
-
-bool
-ArrangerSelectionsAction::contains_clip (const AudioClip &clip) const
-{
-  if (sel_ && ArrangerObjectSpan{ *sel_ }.contains_clip (clip))
-    {
-      return true;
-    }
-  if (sel_after_ && ArrangerObjectSpan{ *sel_after_ }.contains_clip (clip))
-    {
-      return true;
-    }
-
-  if (
-    ArrangerObjectSpan{ get_arranger_object_registry (), r1_ }.contains_clip (
-      clip)
-    || ArrangerObjectSpan{ get_arranger_object_registry (), r2_ }.contains_clip (
-      clip))
-    {
-      return true;
-    }
-
-  return false;
 }
 
 QString

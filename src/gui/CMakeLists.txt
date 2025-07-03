@@ -178,6 +178,7 @@ set(rel_qml_file_paths
   components/UndoSplitButton.qml
   Greeter.qml
   DemoView.qml
+  utils/ArrangerObjectHelpers.qml
   views/ProjectWindow.qml
 )
 set(qml_file_paths)
@@ -189,6 +190,13 @@ foreach(qml_file_path ${rel_qml_file_paths})
     )
   list(APPEND qml_file_paths ${qml_abs_file_path})
 endforeach()
+
+# Singleton types defined in QML need to have this
+# see https://doc.qt.io/qt-6/cmake-source-file-property-qt-qml-singleton-type.html
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/ArrangerObjectHelpers.qml
+  PROPERTIES QT_QML_SINGLETON_TYPE TRUE
+)
 
 add_subdirectory(qml)
 

@@ -445,8 +445,8 @@ TEST_F (ZrythmFixture, BounceRegionWithFirstNote)
       exporter.post_export ();
 
       /* assert non silent */
-      AudioClip clip (exporter.settings_.file_uri_);
-      bool      has_audio = false;
+      FileAudioSource clip (exporter.settings_.file_uri_);
+      bool            has_audio = false;
       for (unsigned_frame_t i = 0; i < clip.num_frames_; i++)
         {
           for (channels_t j = 0; j < clip.channels_; j++)

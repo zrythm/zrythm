@@ -1762,8 +1762,9 @@ Channel::get_plugins (std::vector<Channel::Plugin *> &pls)
 void
 from_json (const nlohmann::json &j, Channel &c)
 {
-  j.at (Channel::kMidiFxKey).get_to (c.midi_fx_);
-  j.at (Channel::kInsertsKey).get_to (c.inserts_);
+  // TODO
+  // j.at (Channel::kMidiFxKey).get_to (c.midi_fx_);
+  // j.at (Channel::kInsertsKey).get_to (c.inserts_);
   for (
     const auto &[index, send_json] :
     utils::views::enumerate (j.at (Channel::kSendsKey)))
@@ -1775,14 +1776,30 @@ from_json (const nlohmann::json &j, Channel &c)
       from_json (send_json, *send);
       c.sends_.at (index) = std::move (send);
     }
-  j.at (Channel::kInstrumentKey).get_to (c.instrument_);
-  c.prefader_ = new Fader (&c);
+  if (j.contains (Channel::kInstrumentKey))
+    {
+      c.instrument_ = { c.plugin_registry_ };
+      j.at (Channel::kInstrumentKey).get_to (*c.instrument_);
+    }
+  c.prefader_ = utils::make_qobject_unique<Fader> (&c);
   j.at (Channel::kPrefaderKey).get_to (*c.prefader_);
-  c.fader_ = new Fader (&c);
+  c.fader_ = utils::make_qobject_unique<Fader> (&c);
   j.at (Channel::kFaderKey).get_to (*c.fader_);
-  j.at (Channel::kMidiOutKey).get_to (c.midi_out_id_);
-  j.at (Channel::kStereoOutLKey).get_to (c.stereo_out_left_id_);
-  j.at (Channel::kStereoOutRKey).get_to (c.stereo_out_right_id_);
+  if (j.contains (Channel::kMidiOutKey))
+    {
+      c.midi_out_id_ = { c.port_registry_ };
+      j.at (Channel::kMidiOutKey).get_to (*c.midi_out_id_);
+    }
+  if (j.contains (Channel::kStereoOutLKey))
+    {
+      c.stereo_out_left_id_ = { c.port_registry_ };
+      j.at (Channel::kStereoOutLKey).get_to (*c.stereo_out_left_id_);
+    }
+  if (j.contains (Channel::kStereoOutRKey))
+    {
+      c.stereo_out_right_id_ = { c.port_registry_ };
+      j.at (Channel::kStereoOutRKey).get_to (*c.stereo_out_right_id_);
+    }
   j.at (Channel::kOutputIdKey).get_to (c.output_track_uuid_);
   j.at (Channel::kTrackIdKey).get_to (c.track_uuid_);
   if (j.contains (Channel::kExtMidiInputsKey))

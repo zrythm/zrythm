@@ -3,9 +3,9 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/file_audio_source.h"
 #include "dsp/midi_event.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/clip.h"
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "engine/session/recording_manager.h"
@@ -207,6 +207,23 @@ TrackProcessor::init_midi_port (bool in)
     }
 }
 
+template <size_t... Is>
+std::array<PortUuidReference, sizeof...(Is)>
+make_port_uuid_reference_array (
+  PortRegistry &port_registry,
+  std::index_sequence<Is...>)
+{
+  return { ((void) Is, PortUuidReference (port_registry))... };
+}
+
+template <size_t N>
+std::array<PortUuidReference, N>
+make_port_uuid_reference_array (PortRegistry &port_registry)
+{
+  return make_port_uuid_reference_array (
+    port_registry, std::make_index_sequence<N> ());
+}
+
 void
 TrackProcessor::init_midi_cc_ports ()
 {
@@ -217,13 +234,16 @@ TrackProcessor::init_midi_cc_ports ()
     port->id_->port_index_ = index;
   };
 
-  midi_cc_ids_ = std::make_unique<decltype (midi_cc_ids_)::element_type> ();
-  pitch_bend_ids_ =
-    std::make_unique<decltype (pitch_bend_ids_)::element_type> ();
+  midi_cc_ids_ = std::make_unique<decltype (midi_cc_ids_)::element_type> (
+    make_port_uuid_reference_array<2048> (port_registry_));
+  pitch_bend_ids_ = std::make_unique<decltype (pitch_bend_ids_)::element_type> (
+    make_port_uuid_reference_array<16> (port_registry_));
   poly_key_pressure_ids_ =
-    std::make_unique<decltype (poly_key_pressure_ids_)::element_type> ();
+    std::make_unique<decltype (poly_key_pressure_ids_)::element_type> (
+      make_port_uuid_reference_array<16> (port_registry_));
   channel_pressure_ids_ =
-    std::make_unique<decltype (channel_pressure_ids_)::element_type> ();
+    std::make_unique<decltype (channel_pressure_ids_)::element_type> (
+      make_port_uuid_reference_array<16> (port_registry_));
 
   for (const auto i : std::views::iota (0, 16))
     {
@@ -428,14 +448,17 @@ init_from (
   if (other.cc_mappings_)
     obj.cc_mappings_ = utils::clone_unique (*other.cc_mappings_);
 
-  obj.midi_cc_ids_ =
-    std::make_unique<decltype (obj.midi_cc_ids_)::element_type> ();
+  obj.midi_cc_ids_ = std::make_unique<decltype (obj.midi_cc_ids_)::element_type> (
+    make_port_uuid_reference_array<2048> (obj.port_registry_));
   obj.pitch_bend_ids_ =
-    std::make_unique<decltype (obj.pitch_bend_ids_)::element_type> ();
+    std::make_unique<decltype (obj.pitch_bend_ids_)::element_type> (
+      make_port_uuid_reference_array<16> (obj.port_registry_));
   obj.poly_key_pressure_ids_ =
-    std::make_unique<decltype (obj.poly_key_pressure_ids_)::element_type> ();
+    std::make_unique<decltype (obj.poly_key_pressure_ids_)::element_type> (
+      make_port_uuid_reference_array<16> (obj.port_registry_));
   obj.channel_pressure_ids_ =
-    std::make_unique<decltype (obj.channel_pressure_ids_)::element_type> ();
+    std::make_unique<decltype (obj.channel_pressure_ids_)::element_type> (
+      make_port_uuid_reference_array<16> (obj.port_registry_));
 
   *obj.midi_cc_ids_ = *other.midi_cc_ids_;
   *obj.pitch_bend_ids_ = *other.pitch_bend_ids_;
@@ -807,7 +830,12 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
       /* set the audio clip contents to stereo out */
       if constexpr (std::is_same_v<TrackT, AudioTrack>)
         {
-          tr->fill_events (time_nfo, get_stereo_out_ports ());
+          const auto stereo_ports = get_stereo_out_ports ();
+          tr->fill_events (
+            time_nfo,
+            std::make_pair (
+              std::span (stereo_ports.first.buf_),
+              std::span (stereo_ports.second.buf_)));
         }
 
       /* set the piano roll contents to midi out */
@@ -886,6 +914,8 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
         {
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
+// TODO
+#if 0
               auto clip_editor_track_var = CLIP_EDITOR->get_track ();
               if (
                 clip_editor_track_var.has_value ()
@@ -911,6 +941,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
                         time_nfo.local_offset_, time_nfo.nframes_);
                     }
                 }
+#endif
             }
         }
 
@@ -980,8 +1011,8 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
                     return CHORD_EDITOR->get_chord_from_note_number (
                       note_number);
                   },
-                  arrangement::Velocity::DEFAULT_VALUE, time_nfo.local_offset_,
-                  time_nfo.nframes_);
+                  arrangement::MidiNote::DEFAULT_VELOCITY,
+                  time_nfo.local_offset_, time_nfo.nframes_);
             }
           /* else if not chord track, simply pass the input MIDI data to the
            * output port */
@@ -1244,5 +1275,33 @@ TrackProcessor::get_port_connections_manager () const
   auto * track = get_track ();
   z_return_val_if_fail (track, nullptr);
   return track->get_port_connections_manager ();
+}
+
+void
+from_json (const nlohmann::json &j, TrackProcessor &tp)
+{
+// TODO
+#if 0
+  j.at (TrackProcessor::kMonoKey).get_to (tp.mono_id_);
+  j.at (TrackProcessor::kInputGainKey).get_to (tp.input_gain_id_);
+  j.at (TrackProcessor::kOutputGainKey).get_to (tp.output_gain_id_);
+  j.at (TrackProcessor::kMidiInKey).get_to (tp.midi_in_id_);
+  j.at (TrackProcessor::kMidiOutKey).get_to (tp.midi_out_id_);
+  j.at (TrackProcessor::kPianoRollKey).get_to (tp.piano_roll_id_);
+  j.at (TrackProcessor::kMonitorAudioKey).get_to (tp.monitor_audio_id_);
+  j.at (TrackProcessor::kStereoInLKey).get_to (tp.stereo_in_left_id_);
+  j.at (TrackProcessor::kStereoInRKey).get_to (tp.stereo_in_right_id_);
+  j.at (TrackProcessor::kStereoOutLKey).get_to (tp.stereo_out_left_id_);
+  j.at (TrackProcessor::kStereoOutRKey).get_to (tp.stereo_out_right_id_);
+  if (j.contains (TrackProcessor::kMidiCcKey))
+    {
+      j.at (TrackProcessor::kMidiCcKey).get_to (tp.midi_cc_ids_);
+      j.at (TrackProcessor::kPitchBendKey).get_to (tp.pitch_bend_ids_);
+      j.at (TrackProcessor::kPolyKeyPressureKey)
+        .get_to (tp.poly_key_pressure_ids_);
+      j.at (TrackProcessor::kChannelPressureKey)
+        .get_to (tp.channel_pressure_ids_);
+    }
+#endif
 }
 }

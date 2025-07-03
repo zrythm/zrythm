@@ -37,6 +37,7 @@ Project::Project (
       tempo_map_ (
         device_manager->getCurrentAudioDevice ()->getCurrentSampleRate ()),
       tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
+      file_audio_source_registry_ (new dsp::FileAudioSourceRegistry (this)),
       port_registry_ (new PortRegistry (this)),
       plugin_registry_ (new PluginRegistry (this)),
       arranger_object_registry_ (
@@ -48,6 +49,11 @@ Project::Project (
       audio_engine_ (
         std::make_unique<engine::device_io::AudioEngine> (this, device_manager)),
       transport_ (new engine::session::Transport (this)),
+      pool_ (
+        std::make_unique<dsp::AudioPool> (
+          *file_audio_source_registry_,
+          [this] (bool backup) { return get_path (ProjectPath::POOL, backup); },
+          [this] () { return audio_engine_->get_sample_rate (); })),
       quantize_opts_editor_ (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
       quantize_opts_timeline_ (
@@ -84,22 +90,17 @@ Project::Project (
         get_tempo_map ())),
       undo_manager_ (new gui::actions::UndoManager (this)),
       arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
+        get_tempo_map (),
         *arranger_object_registry_,
-        [&] (const auto &id) {
-          return get_track_registry ().find_by_id_or_throw (id);
-        },
+        *file_audio_source_registry_,
         *gui::SettingsManager::get_instance (),
-        [&] () { return audio_engine_->frames_per_tick_; },
         *snap_grid_timeline_,
         *snap_grid_editor_,
-        [&] (const AudioClip::Uuid &clip_id) {
-          return audio_engine_->pool_->get_clip (clip_id);
-        },
-        [&] (std::shared_ptr<AudioClip> clip) {
-          audio_engine_->pool_->register_clip (clip);
-        },
         [&] () { return audio_engine_->get_sample_rate (); },
         [&] () { return get_tempo_map ().get_tempo_events ().front ().bpm; },
+        structure::arrangement::ArrangerObjectSelectionManager{
+          clip_editor_->getAudioClipEditor ()->get_selected_object_ids (),
+          *arranger_object_registry_ },
         structure::arrangement::ArrangerObjectSelectionManager{
           timeline_->get_selected_object_ids (), *arranger_object_registry_ },
         structure::arrangement::ArrangerObjectSelectionManager{
@@ -111,6 +112,7 @@ Project::Project (
         structure::arrangement::ArrangerObjectSelectionManager{
           clip_editor_->getAutomationEditor ()->get_selected_object_ids (),
           *arranger_object_registry_ },
+        *clip_editor_,
         this)),
       plugin_factory_ (new PluginFactory (
         *plugin_registry_,
@@ -118,6 +120,7 @@ Project::Project (
         *gui::SettingsManager::get_instance (),
         this)),
       track_factory_ (new structure::tracks::TrackFactory (
+        *file_audio_source_registry_,
         *track_registry_,
         *plugin_registry_,
         *port_registry_,
@@ -132,45 +135,6 @@ Project::Project (
 Project::~Project ()
 {
   loaded_ = false;
-}
-
-bool
-Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const
-{
-  {
-    bool found_in_tracklist = std::ranges::any_of (
-      get_track_registry ().get_hash_map (), [&clip] (const auto &track_var) {
-        return std::visit (
-          [&] (auto &&track) {
-            using TrackT = base_type<decltype (track)>;
-            if constexpr (std::is_same_v<TrackT, structure::tracks::AudioTrack>)
-              {
-                for (auto &lane_var : track->lanes_)
-                  {
-                    auto * lane =
-                      std::get<structure::tracks::AudioLane *> (lane_var);
-                    for (auto * region : lane->get_children_view ())
-                      {
-                        if (region->get_clip_id () == clip.get_uuid ())
-                          return true;
-                      }
-                  }
-              }
-            return false;
-          },
-          track_var);
-      });
-
-    if (found_in_tracklist)
-      return true;
-  }
-
-  if (check_undo_stack)
-    {
-      return UNDO_MANAGER->contains_clip (clip);
-    }
-
-  return false;
 }
 
 std::optional<fs::path>
@@ -409,12 +373,14 @@ Project::add_default_tracks ()
 
   auto add_track = [&]<typename TrackT> (const auto &name) {
     static_assert (
-      std::derived_from<TrackT, Track>, "T must be derived from Track");
+      std::derived_from<TrackT, structure::tracks::Track>,
+      "T must be derived from Track");
 
     z_debug ("adding {} track...", typeid (TrackT).name ());
     TrackT * track =
       TrackT::create_unique (
-        get_track_registry (), get_plugin_registry (), get_port_registry (),
+        get_file_audio_source_registry (), get_track_registry (),
+        get_plugin_registry (), get_port_registry (),
         get_arranger_object_registry (), true)
         .release ();
     get_track_registry ().register_object (track);
@@ -441,7 +407,8 @@ Project::add_default_tracks ()
   /* add a scale */
   arranger_object_factory_->add_scale_object (
     *tracklist_->chord_track_,
-    dsp::MusicalScale (dsp::MusicalScale::Type::Aeolian, dsp::MusicalNote::A),
+    utils::make_qobject_unique<dsp::MusicalScale> (
+      dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A),
     0);
 
   /* modulator */
@@ -458,22 +425,20 @@ Project::add_default_tracks ()
         auto          marker_name = fmt::format ("[{}]", QObject::tr ("start"));
         dsp::Position pos;
         pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
-        auto * marker = factory->addMarker (
-          marker_track_inner,
+        factory->addMarker (
+          structure::arrangement::Marker::MarkerType::Start, marker_track_inner,
           utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
           pos.ticks_);
-        marker->marker_type_ = structure::arrangement::Marker::Type::Start;
       }
 
       {
         auto          marker_name = fmt::format ("[{}]", QObject::tr ("end"));
         dsp::Position pos;
         pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
-        auto * marker = factory->addMarker (
-          marker_track_inner,
+        factory->addMarker (
+          structure::arrangement::Marker::MarkerType::End, marker_track_inner,
           utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
           pos.ticks_);
-        marker->marker_type_ = structure::arrangement::Marker::Type::End;
       }
     };
   add_default_markers (
@@ -1027,12 +992,12 @@ Project::save (
   if (this == get_active_instance ())
     {
       /* write the pool */
-      audio_engine_->pool_->remove_unused (is_backup);
+      pool_->remove_unused (is_backup);
     }
 
   try
     {
-      audio_engine_->pool_->write_to_disk (is_backup);
+      pool_->write_to_disk (is_backup);
     }
   catch (const ZrythmException &e)
     {
@@ -1184,6 +1149,10 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
   obj.audio_engine_ = utils::clone_unique (
     *other.audio_engine_, clone_type, &obj, obj.device_manager_);
+  obj.pool_ = utils::clone_unique (
+    *other.pool_, clone_type, *obj.file_audio_source_registry_,
+    [&obj] (bool backup) { return obj.get_path (ProjectPath::POOL, backup); },
+    [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
     *other.tracklist_, &obj, clone_type, obj, *obj.port_registry_,
     *obj.track_registry_, *obj.port_connections_manager_, obj.get_tempo_map ());
@@ -1201,7 +1170,7 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     std::make_unique<Project::QuantizeOptions> (*other.quantize_opts_timeline_);
   obj.quantize_opts_editor_ =
     std::make_unique<Project::QuantizeOptions> (*other.quantize_opts_editor_);
-  obj.region_link_group_manager_ = other.region_link_group_manager_;
+  // obj.region_link_group_manager_ = other.region_link_group_manager_;
   obj.port_connections_manager_ =
     utils::clone_qobject (*other.port_connections_manager_, &obj);
   obj.midi_mappings_ = utils::clone_unique (*other.midi_mappings_);
@@ -1319,7 +1288,7 @@ Project::clone (bool for_backup) const
   if (for_backup)
     {
       /* no undo history in backups */
-      if (ret->undo_manager_)
+      if (ret->undo_manager_ != nullptr)
         {
           delete ret->undo_manager_;
           ret->undo_manager_ = nullptr;
@@ -1335,6 +1304,7 @@ to_json (nlohmann::json &j, const Project &project)
   j[utils::serialization::kFormatMajorKey] = Project::FORMAT_MAJOR_VER;
   j[utils::serialization::kFormatMinorKey] = Project::FORMAT_MINOR_VER;
   j[Project::kTempoMapKey] = project.tempo_map_;
+  j[Project::kFileAudioSourceRegistryKey] = project.file_audio_source_registry_;
   j[Project::kPortRegistryKey] = project.port_registry_;
   j[Project::kPluginRegistryKey] = project.plugin_registry_;
   j[Project::kArrangerObjectRegistryKey] = project.arranger_object_registry_;
@@ -1350,8 +1320,10 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kQuantizeOptsEditorKey] = project.quantize_opts_editor_;
   j[Project::kTransportKey] = project.transport_;
   j[Project::kAudioEngineKey] = project.audio_engine_;
+  j[Project::kAudioPoolKey] = project.pool_;
   j[Project::kTracklistKey] = project.tracklist_;
-  j[Project::kRegionLinkGroupManagerKey] = project.region_link_group_manager_;
+  // j[Project::kRegionLinkGroupManagerKey] =
+  // project.region_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
   j[Project::kMidiMappingsKey] = project.midi_mappings_;
   j[Project::kUndoManagerKey] = project.undo_manager_;
@@ -1416,9 +1388,16 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kQuantizeOptsEditorKey).get_to (project.quantize_opts_editor_);
   j.at (Project::kTransportKey).get_to (*project.transport_);
   j.at (Project::kAudioEngineKey).get_to (project.audio_engine_);
+  project.pool_ = std::make_unique<dsp::AudioPool> (
+    *project.file_audio_source_registry_,
+    [&project] (bool backup) {
+      return project.get_path (ProjectPath::POOL, backup);
+    },
+    [&project] () { return project.audio_engine_->get_sample_rate (); });
+  j.at (Project::kAudioPoolKey).get_to (*project.pool_);
   j.at (Project::kTracklistKey).get_to (*project.tracklist_);
-  j.at (Project::kRegionLinkGroupManagerKey)
-    .get_to (project.region_link_group_manager_);
+  // j.at (Project::kRegionLinkGroupManagerKey)
+  //   .get_to (project.region_link_group_manager_);
   j.at (Project::kPortConnectionsManagerKey)
     .get_to (*project.port_connections_manager_);
   j.at (Project::kMidiMappingsKey).get_to (project.midi_mappings_);

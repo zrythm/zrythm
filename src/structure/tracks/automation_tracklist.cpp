@@ -20,12 +20,15 @@
 namespace zrythm::structure::tracks
 {
 AutomationTracklist::AutomationTracklist (
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry,
-  AutomatableTrack       &track,
-  QObject *               parent)
-    : QAbstractListModel (parent), object_registry_ (obj_registry),
-      port_registry_ (port_registry), track_ (track)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  AutomatableTrack             &track,
+  QObject *                     parent)
+    : QAbstractListModel (parent),
+      file_audio_source_registry_ (file_audio_source_registry),
+      object_registry_ (obj_registry), port_registry_ (port_registry),
+      track_ (track)
 {
 }
 
@@ -156,10 +159,12 @@ AutomationTracklist::add_automation_track (AutomationTrack &at)
   port.id_->set_track_id (track_.get_uuid ());
 
   /* move automation track regions */
+#if 0
   for (auto * region : at_ref->get_children_view ())
     {
       region->set_automation_track (*at_ref);
     }
+#endif
 
   return at_ref;
 }
@@ -214,7 +219,7 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
   if (at.index_ == index)
     return;
 
-  auto clip_editor_region_opt = CLIP_EDITOR->get_region ();
+  auto clip_editor_region_opt = CLIP_EDITOR->get_region_and_track ();
   // int  clip_editor_region_idx = -2;
   if (clip_editor_region_opt)
     {
@@ -318,7 +323,7 @@ AutomationTracklist::get_visible_at_after_delta (
         {
           vis_at = get_next_visible_at (*vis_at);
 
-          if (!vis_at)
+          if (vis_at == nullptr)
             return nullptr;
 
           delta--;
@@ -332,7 +337,7 @@ AutomationTracklist::get_visible_at_after_delta (
         {
           vis_at = get_prev_visible_at (*vis_at);
 
-          if (!vis_at)
+          if (vis_at == nullptr)
             return nullptr;
 
           delta++;
@@ -478,10 +483,12 @@ AutomationTracklist::
     {
       auto &cur_at = *cur_it;
       cur_at->index_ = std::distance (ats_.begin (), cur_it);
+#if 0
       for (auto * region : cur_at->get_children_view ())
         {
           region->set_automation_track (*cur_at);
         }
+#endif
     }
 
   /* if the deleted at was the last visible/created at, make the next one
@@ -625,7 +632,8 @@ from_json (const nlohmann::json &j, AutomationTracklist &ats)
     {
       auto   port_id = at_json.at ("portId").get<ControlPort::Uuid> ();
       auto * at = new AutomationTrack (
-        ats.port_registry_, ats.object_registry_,
+        ats.file_audio_source_registry_, ats.port_registry_,
+        ats.object_registry_,
         [&ats] () { return convert_to_variant<TrackPtrVariant> (&ats.track_); },
         port_id);
       ats.ats_.push_back (at);

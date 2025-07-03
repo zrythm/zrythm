@@ -25,14 +25,17 @@ class TrackFactory : public QObject
 public:
   TrackFactory () = delete;
   TrackFactory (
-    TrackRegistry          &track_registry,
-    PluginRegistry         &plugin_registry,
-    PortRegistry           &port_registry,
-    ArrangerObjectRegistry &arranger_object_registry,
-    gui::SettingsManager   &settings_mgr,
-    QObject *               parent = nullptr)
-      : QObject (parent), track_registry_ (track_registry),
-        plugin_registry_ (plugin_registry), port_registry_ (port_registry),
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    TrackRegistry                &track_registry,
+    PluginRegistry               &plugin_registry,
+    PortRegistry                 &port_registry,
+    ArrangerObjectRegistry       &arranger_object_registry,
+    gui::SettingsManager         &settings_mgr,
+    QObject *                     parent = nullptr)
+      : QObject (parent),
+        file_audio_source_registry_ (file_audio_source_registry),
+        track_registry_ (track_registry), plugin_registry_ (plugin_registry),
+        port_registry_ (port_registry),
         arranger_object_registry_ (arranger_object_registry),
         settings_manager_ (settings_mgr)
   {
@@ -46,11 +49,13 @@ public:
 
   private:
     explicit Builder (
-      TrackRegistry          &track_registry,
-      PluginRegistry         &plugin_registry,
-      PortRegistry           &port_registry,
-      ArrangerObjectRegistry &arranger_object_registry)
-        : track_registry_ (track_registry), plugin_registry_ (plugin_registry),
+      dsp::FileAudioSourceRegistry &file_audio_source_registry,
+      TrackRegistry                &track_registry,
+      PluginRegistry               &plugin_registry,
+      PortRegistry                 &port_registry,
+      ArrangerObjectRegistry       &arranger_object_registry)
+        : file_audio_source_registry_ (file_audio_source_registry),
+          track_registry_ (track_registry), plugin_registry_ (plugin_registry),
           port_registry_ (port_registry),
           arranger_object_registry_ (arranger_object_registry)
     {
@@ -69,14 +74,14 @@ public:
       if constexpr (utils::Initializable<TrackT>)
         {
           return TrackT::create_unique (
-            track_registry_, plugin_registry_, port_registry_,
-            arranger_object_registry_, false);
+            file_audio_source_registry_, track_registry_, plugin_registry_,
+            port_registry_, arranger_object_registry_, false);
         }
       else
         {
           return std::make_unique<TrackT> (
-            track_registry_, plugin_registry_, port_registry_,
-            arranger_object_registry_, false);
+            file_audio_source_registry_, track_registry_, plugin_registry_,
+            port_registry_, arranger_object_registry_, false);
         }
     }
 
@@ -84,8 +89,8 @@ public:
     {
       auto obj_ref = [&] () {
         return track_registry_.create_object<TrackT> (
-          track_registry_, plugin_registry_, port_registry_,
-          arranger_object_registry_, true);
+          file_audio_source_registry_, track_registry_, plugin_registry_,
+          port_registry_, arranger_object_registry_, true);
       }();
 
       // auto * obj = std::get<PluginT *> (obj_ref.get_object ());
@@ -94,6 +99,7 @@ public:
     }
 
   private:
+    dsp::FileAudioSourceRegistry     &file_audio_source_registry_;
     TrackRegistry                    &track_registry_;
     PluginRegistry                   &plugin_registry_;
     PortRegistry                     &port_registry_;
@@ -105,8 +111,8 @@ public:
   {
     auto builder =
       Builder<TrackT> (
-        track_registry_, plugin_registry_, port_registry_,
-        arranger_object_registry_)
+        file_audio_source_registry_, track_registry_, plugin_registry_,
+        port_registry_, arranger_object_registry_)
         .with_settings_manager (settings_manager_);
     return builder;
   }
@@ -118,6 +124,9 @@ private:
     auto obj_ref = get_builder<TrackT> ().build ();
     return obj_ref;
   }
+
+  // temporary hack to access create_empty_track()
+  friend class gui::actions::TracklistSelectionsAction;
 
   auto create_empty_track (Track::Type type) const
   {
@@ -209,6 +218,7 @@ public:
   }
 
 private:
+  dsp::FileAudioSourceRegistry        &file_audio_source_registry_;
   TrackRegistry                       &track_registry_;
   PluginRegistry                      &plugin_registry_;
   PortRegistry                        &port_registry_;

@@ -53,15 +53,7 @@ Item {
             bottom: parent.bottom
         }
 
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.RightButton
-            onClicked: contextMenu.popup()
-        }
-
-        Menu {
-            id: contextMenu
-
+        ContextMenu.menu: Menu {
             MenuItem {
                 text: qsTr("Test")
                 onTriggered: console.log("Clicked")

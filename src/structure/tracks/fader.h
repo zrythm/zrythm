@@ -398,47 +398,27 @@ private:
   friend void           to_json (nlohmann::json &j, const Fader &fader)
   {
     j = nlohmann::json{
-      { "type",              fader.type_                   },
-      { "volume",            fader.volume_                 },
-      { "amp",               fader.amp_id_                 },
-      { "phase",             fader.phase_                  },
-      { "balance",           fader.balance_id_             },
-      { "mute",              fader.mute_id_                },
-      { "solo",              fader.solo_id_                },
-      { "listen",            fader.listen_id_              },
-      { "monoCompatEnabled", fader.mono_compat_enabled_id_ },
-      { "swapPhase",         fader.swap_phase_id_          },
-      { "midiIn",            fader.midi_in_id_             },
-      { "midiOut",           fader.midi_out_id_            },
-      { "stereoInL",         fader.stereo_in_left_id_      },
-      { "stereoInR",         fader.stereo_in_right_id_     },
-      { "stereoOutL",        fader.stereo_out_left_id_     },
-      { "stereoOutR",        fader.stereo_out_right_id_    },
-      { "midiMode",          fader.midi_mode_              },
-      { "passthrough",       fader.passthrough_            }
+      { kTypeKey,              fader.type_                   },
+      { kVolumeKey,            fader.volume_                 },
+      { kAmpKey,               fader.amp_id_                 },
+      { kPhaseKey,             fader.phase_                  },
+      { kBalanceKey,           fader.balance_id_             },
+      { kMuteKey,              fader.mute_id_                },
+      { kSoloKey,              fader.solo_id_                },
+      { kListenKey,            fader.listen_id_              },
+      { kMonoCompatEnabledKey, fader.mono_compat_enabled_id_ },
+      { kSwapPhaseKey,         fader.swap_phase_id_          },
+      { kMidiInKey,            fader.midi_in_id_             },
+      { kMidiOutKey,           fader.midi_out_id_            },
+      { kStereoInLKey,         fader.stereo_in_left_id_      },
+      { kStereoInRKey,         fader.stereo_in_right_id_     },
+      { kStereoOutLKey,        fader.stereo_out_left_id_     },
+      { kStereoOutRKey,        fader.stereo_out_right_id_    },
+      { kMidiModeKey,          fader.midi_mode_              },
+      { kPassthroughKey,       fader.passthrough_            }
     };
   }
-  friend void from_json (const nlohmann::json &j, Fader &fader)
-  {
-    j.at ("type").get_to (fader.type_);
-    j.at ("volume").get_to (fader.volume_);
-    j.at ("amp").get_to (fader.amp_id_);
-    j.at ("phase").get_to (fader.phase_);
-    j.at ("balance").get_to (fader.balance_id_);
-    j.at ("mute").get_to (fader.mute_id_);
-    j.at ("solo").get_to (fader.solo_id_);
-    j.at ("listen").get_to (fader.listen_id_);
-    j.at ("monoCompatEnabled").get_to (fader.mono_compat_enabled_id_);
-    j.at ("swapPhase").get_to (fader.swap_phase_id_);
-    j.at ("midiIn").get_to (fader.midi_in_id_);
-    j.at ("midiOut").get_to (fader.midi_out_id_);
-    j.at ("stereoInL").get_to (fader.stereo_in_left_id_);
-    j.at ("stereoInR").get_to (fader.stereo_in_right_id_);
-    j.at ("stereoOutL").get_to (fader.stereo_out_left_id_);
-    j.at ("stereoOutR").get_to (fader.stereo_out_right_id_);
-    j.at ("midiMode").get_to (fader.midi_mode_);
-    j.at ("passthrough").get_to (fader.passthrough_);
-  }
+  friend void from_json (const nlohmann::json &j, Fader &fader);
 
 public:
   /**

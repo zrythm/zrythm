@@ -86,7 +86,7 @@ Exporter::format_get_ext (Format format)
   return format_exts[static_cast<int> (format)];
 }
 
-std::pair<Exporter::Position, Exporter::Position>
+std::pair<double, double>
 Exporter::Settings::get_export_time_range () const
 {
   switch (time_range_)
@@ -95,17 +95,17 @@ Exporter::Settings::get_export_time_range () const
       {
         auto start = P_MARKER_TRACK->get_start_marker ();
         auto end = P_MARKER_TRACK->get_end_marker ();
-        return { start->get_position (), end->get_position () };
+        return { start->position ()->ticks (), end->position ()->ticks () };
       }
     case Exporter::TimeRange::Loop:
       return {
-        TRANSPORT->loop_start_pos_->get_position (),
-        TRANSPORT->loop_end_pos_->get_position ()
+        TRANSPORT->loop_start_pos_->get_position ().ticks_,
+        TRANSPORT->loop_end_pos_->get_position ().ticks_
       };
     case Exporter::TimeRange::Custom:
       return { custom_start_, custom_end_ };
     default:
-      z_return_val_if_reached (std::make_pair (Position (), Position ()));
+      z_return_val_if_reached (std::make_pair (0.0, 0.0));
     }
 }
 
@@ -175,13 +175,16 @@ Exporter::export_audio (Settings &info)
 
   std::unique_ptr<juce::AudioFormatWriter> writer_ptr (writer);
 
-  auto [start_pos, end_pos] = info.get_export_time_range ();
+  auto [start_pos_ticks, end_pos_ticks] = info.get_export_time_range ();
+  const auto &tempo_map = PROJECT->get_tempo_map ();
+  auto start_pos_frames = tempo_map.tick_to_samples_rounded (start_pos_ticks);
+  auto end_pos_frames = tempo_map.tick_to_samples_rounded (end_pos_ticks);
 
   bool  clipped = false;
   float clip_amp = 0.f;
 
   const auto prev_playhead_ticks = TRANSPORT->playhead_.position_ticks ();
-  TRANSPORT->playhead_.set_position_ticks (start_pos.ticks_);
+  TRANSPORT->playhead_.set_position_ticks (start_pos_ticks);
   {
     dsp::PlayheadProcessingGuard guard (TRANSPORT->playhead_);
 
@@ -201,8 +204,7 @@ Exporter::export_audio (Settings &info)
         ditherer.reset (utils::audio::bit_depth_enum_to_int (info.depth_));
       }
 
-    z_return_if_fail (end_pos.frames_ >= 1 || start_pos.frames_ >= 0);
-    const auto total_frames = (end_pos.frames_ - start_pos.frames_);
+    const auto total_frames = end_pos_frames - start_pos_frames;
     /* frames written so far */
     signed_frame_t covered_frames = 0;
 
@@ -213,7 +215,7 @@ Exporter::export_audio (Settings &info)
       {
         /* calculate number of frames to process this time */
         const nframes_t nframes =
-          end_pos.frames_ - TRANSPORT->get_playhead_position_in_audio_thread ();
+          end_pos_frames - TRANSPORT->get_playhead_position_in_audio_thread ();
         assert (nframes > 0);
 
         /* run process code */
@@ -267,13 +269,12 @@ Exporter::export_audio (Settings &info)
         covered_frames += nframes;
 
         progress_info_->update_progress (
-          (TRANSPORT->get_playhead_position_in_audio_thread ()
-           - start_pos.frames_)
+          (TRANSPORT->get_playhead_position_in_audio_thread () - start_pos_frames)
             / total_frames,
           {});
       }
     while (
-      TRANSPORT->get_playhead_position_in_audio_thread () < end_pos.frames_
+      TRANSPORT->get_playhead_position_in_audio_thread () < end_pos_frames
       && !progress_info_->pending_cancellation ());
 
     writer_ptr.reset ();
@@ -326,6 +327,8 @@ Exporter::export_audio (Settings &info)
 void
 Exporter::export_midi (Settings &info)
 {
+// TODO
+#if 0
   MIDI_FILE * mf;
 
   auto [start_pos, end_pos] = info.get_export_time_range ();
@@ -339,7 +342,7 @@ Exporter::export_midi (Settings &info)
       const auto &tempo_map = PROJECT->get_tempo_map ();
       midiSongAddTempo (mf, 1, (int) tempo_map.get_tempo_events ().front ().bpm);
 
-      midiFileSetPPQN (mf, Position::TICKS_PER_QUARTER_NOTE);
+      midiFileSetPPQN (mf, dsp::TempoMap::get_ppq());
 
       int midi_version = info.format_ == Exporter::Format::Midi0 ? 0 : 1;
       z_debug ("setting MIDI version to {}", midi_version);
@@ -394,6 +397,7 @@ Exporter::export_midi (Settings &info)
     }
 
   progress_info_->mark_completed (ProgressInfo::CompletionType::SUCCESS, {});
+#endif
 }
 
 void
@@ -415,10 +419,10 @@ Exporter::Settings::set_bounce_defaults (
         auto tl_sel = TRACKLIST->get_timeline_objects_in_range ();
         auto [start_obj, start_pos] =
           structure::arrangement::ArrangerObjectSpan{ tl_sel }
-            .get_first_object_and_pos (true);
+            .get_first_object_and_pos ();
         auto [end_obj, end_pos] =
           structure::arrangement::ArrangerObjectSpan{ tl_sel }
-            .get_last_object_and_pos (true, true);
+            .get_last_object_and_pos (true);
         custom_start_ = start_pos;
         custom_end_ = end_pos;
       }
@@ -433,16 +437,16 @@ Exporter::Settings::set_bounce_defaults (
       {
         auto start = P_MARKER_TRACK->get_start_marker ();
         auto end = P_MARKER_TRACK->get_end_marker ();
-        custom_start_ = start->get_position ();
-        custom_end_ = end->get_position ();
+        custom_start_ = start->position ()->ticks ();
+        custom_end_ = end->position ()->ticks ();
       }
       break;
     }
-  custom_end_.add_ms (
-    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-      ? 100
-      : gui::SettingsManager::bounceTailLength (),
-    AUDIO_ENGINE->get_sample_rate (), AUDIO_ENGINE->ticks_per_frame_);
+  const auto &tempo_map = PROJECT->get_tempo_map ();
+  const auto  custom_end_sec = tempo_map.tick_to_seconds (custom_end_);
+  custom_end_ = tempo_map.seconds_to_tick (
+    custom_end_sec
+    + ((ZRYTHM_TESTING || ZRYTHM_BENCHMARKING) ? 0.1 : static_cast<double> (gui::SettingsManager::bounceTailLength ()) / 1000.0));
 
   bounce_step_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -591,17 +595,16 @@ Exporter::Settings::print () const
   if (time_range_ == Exporter::TimeRange::Custom)
     {
       const auto &tempo_map = PROJECT->get_tempo_map ();
-      const auto  beats_per_bar =
-        tempo_map.get_time_signature_events ().front ().numerator;
+      const auto  start_musical = tempo_map.tick_to_musical_position (
+        static_cast<int64_t> (std::round (custom_start_)));
+      const auto end_musical = tempo_map.tick_to_musical_position (
+        static_cast<int64_t> (std::round (custom_end_)));
       time_range = utils::Utf8String::from_utf8_encoded_string (
         fmt::format (
-          "Custom: {} ~ {}",
-          custom_start_.to_string (
-            beats_per_bar, TRANSPORT->sixteenths_per_beat_,
-            AUDIO_ENGINE->frames_per_tick_),
-          custom_end_.to_string (
-            beats_per_bar, TRANSPORT->sixteenths_per_beat_,
-            AUDIO_ENGINE->frames_per_tick_)));
+          "Custom: {}.{}.{}.{} ~ {}.{}.{}.{}", start_musical.bar,
+          start_musical.beat, start_musical.sixteenth, start_musical.tick,
+          end_musical.bar, end_musical.beat, end_musical.sixteenth,
+          end_musical.tick));
     }
   else
     {
@@ -630,8 +633,10 @@ Exporter::Settings::print () const
 }
 
 void
-Exporter::create_audio_track_after_bounce (Position pos)
+Exporter::create_audio_track_after_bounce (double pos_ticks)
 {
+// TODO
+#if 0
   /* assert exporting is finished */
   z_return_if_fail (!AUDIO_ENGINE->exporting_);
 
@@ -682,6 +687,7 @@ Exporter::create_audio_track_after_bounce (Position pos)
     }
 
   TRANSPORT->getPlayhead ()->setTicks (tmp.ticks_);
+#endif
 }
 
 void
@@ -696,12 +702,9 @@ Exporter::export_to_file ()
   /* validate */
   if (settings_.time_range_ == Exporter::TimeRange::Custom)
     {
-      Position init_pos;
-      init_pos.set_to_bar (
-        1, TRANSPORT->ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
       if (
         settings_.custom_start_ >= settings_.custom_end_
-        || settings_.custom_start_ < init_pos)
+        || settings_.custom_start_ < 0.0)
         {
           progress_info_->mark_completed (
             ProgressInfo::CompletionType::HAS_ERROR,

@@ -179,24 +179,64 @@ TEST_F (UuidIdentifiableObjectRegistryTest, ViewAccessors)
     "Object3");
 }
 
-TEST_F (UuidIdentifiableObjectRegistryTest, ReferenceCountingLifecycle)
+TEST_F (UuidIdentifiableObjectRegistryTest, ReferenceCountingWithCopies)
 {
   auto ref = std::make_optional (registry_.create_object<DerivedTestObject> (
     TestUuid{ QUuid::createUuid () }, "ReferenceTest"));
-  auto id = ref->id ();
+  const auto id = ref->id ();
 
   EXPECT_TRUE (registry_.contains (id));
   EXPECT_EQ (registry_.size (), 4);
+  EXPECT_EQ (registry_.reference_count (id), 1);
 
   {
     auto ref2 = *ref; // Copy increases ref count
     EXPECT_TRUE (registry_.contains (id));
+    EXPECT_EQ (registry_.reference_count (id), 2);
   } // ref2 destroyed - decrease ref count
 
   // Should still exist after partial release
   EXPECT_TRUE (registry_.contains (id));
+  EXPECT_EQ (registry_.reference_count (id), 1);
 
   ref.reset (); // Release final reference
+  EXPECT_FALSE (registry_.contains (id));
+  EXPECT_EQ (registry_.size (), 3);
+}
+
+TEST_F (UuidIdentifiableObjectRegistryTest, ReferenceCountingWithMoves)
+{
+  // Create initial reference
+  auto ref = registry_.create_object<DerivedTestObject> (
+    TestUuid{ QUuid::createUuid () }, "MoveTest");
+  auto id = ref.id ();
+
+  EXPECT_EQ (registry_.reference_count (id), 1);
+
+  // Test move construction
+  {
+    auto moved_ref (std::move (ref));
+    EXPECT_TRUE (registry_.contains (id));
+    EXPECT_EQ (registry_.size (), 4);
+    EXPECT_EQ (registry_.reference_count (id), 1); // Count shouldn't change
+  } // moved_ref destroyed - should release reference
+
+  EXPECT_FALSE (registry_.contains (id));
+  EXPECT_EQ (registry_.size (), 3);
+
+  // Test move assignment
+  ref = registry_.create_object<DerivedTestObject> (
+    TestUuid{ QUuid::createUuid () }, "MoveTest2");
+  id = ref.id ();
+  EXPECT_EQ (registry_.reference_count (id), 1);
+
+  {
+    auto moved_ref = std::move (ref);
+    EXPECT_TRUE (registry_.contains (id));
+    EXPECT_EQ (registry_.size (), 4);
+    EXPECT_EQ (registry_.reference_count (id), 1); // Count shouldn't change
+  } // moved_ref destroyed - should release reference
+
   EXPECT_FALSE (registry_.contains (id));
   EXPECT_EQ (registry_.size (), 3);
 }

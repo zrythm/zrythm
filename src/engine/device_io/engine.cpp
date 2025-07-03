@@ -28,6 +28,7 @@
 
 #include "zrythm-config.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -36,7 +37,6 @@
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/metronome.h"
-#include "engine/session/pool.h"
 #include "engine/session/recording_manager.h"
 #include "engine/session/router.h"
 #include "engine/session/sample_processor.h"
@@ -64,12 +64,6 @@ AudioEngine::AudioEngine (
       control_room_ (
         std::make_unique<
           session::ControlRoom> (project->get_port_registry (), this)),
-      pool_ (
-        std::make_unique<AudioPool> (
-          [project] (bool backup) {
-            return project->get_path (ProjectPath::POOL, backup);
-          },
-          [this] () { return get_sample_rate (); })),
       port_connections_manager_ (project->port_connections_manager_),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
       audio_callback_ (
@@ -120,12 +114,6 @@ init_from (
   obj.midi_editor_manual_press_ =
     utils::clone_unique (*other.midi_editor_manual_press_);
   obj.midi_in_ = utils::clone_unique (*other.midi_in_);
-  obj.pool_ = utils::clone_unique (
-    *other.pool_, clone_type,
-    [&obj] (bool backup) {
-      return obj.project_->get_path (ProjectPath::POOL, backup);
-    },
-    [&obj] () { return obj.get_sample_rate (); });
   obj.control_room_ = utils::clone_unique (*other.control_room_);
   obj.sample_processor_ = utils::clone_unique (*other.sample_processor_);
   obj.sample_processor_->audio_engine_ = &obj;
@@ -207,15 +195,6 @@ AudioEngine::update_frames_per_tick (
 
   /* update positions */
   project_->transport_->update_positions (update_from_ticks);
-
-  for (const auto &track : project_->tracklist_->get_track_span ())
-    {
-      std::visit (
-        [&] (auto &&tr) {
-          tr->update_positions (update_from_ticks, bpm_change, frames_per_tick_);
-        },
-        track);
-    }
 
   updating_frames_per_tick_ = false;
 }
@@ -332,7 +311,8 @@ AudioEngine::init_loaded (Project * project)
   project_ = project;
   port_registry_ = project->get_port_registry ();
 
-  pool_->init_loaded ();
+  // FIXME this shouldn't be here
+  project->pool_->init_loaded ();
 
   control_room_->init_loaded (*port_registry_, this);
   sample_processor_->init_loaded (this);
@@ -978,10 +958,8 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   /* update max time taken (for calculating DSP %) */
   auto last_time_taken =
     Zrythm::getInstance ()->get_monotonic_time_usecs () - timestamp_start_;
-  if (max_time_taken_ < last_time_taken)
-    {
-      max_time_taken_ = last_time_taken;
-    }
+  max_time_taken_ =
+    std::max<utils::MonotonicTime> (max_time_taken_, last_time_taken);
 }
 
 void
@@ -1074,20 +1052,17 @@ AudioEngine::get_active_instance ()
 void
 from_json (const nlohmann::json &j, AudioEngine &engine)
 {
+// TODO
+#if 0
   j.at (AudioEngine::kFramesPerTickKey).get_to (engine.frames_per_tick_);
   j.at (AudioEngine::kMonitorOutLKey).get_to (engine.monitor_out_left_);
   j.at (AudioEngine::kMonitorOutRKey).get_to (engine.monitor_out_right_);
   j.at (AudioEngine::kMidiEditorManualPressKey)
     .get_to (engine.midi_editor_manual_press_);
   j.at (AudioEngine::kMidiInKey).get_to (engine.midi_in_);
-  engine.pool_ = std::make_unique<AudioPool> (
-    [&engine] (bool backup) {
-      return engine.project_->get_path (ProjectPath::POOL, backup);
-    },
-    [&engine] () { return engine.get_sample_rate (); });
-  j.at (AudioEngine::kPoolKey).get_to (*engine.pool_);
   j.at (AudioEngine::kControlRoomKey).get_to (engine.control_room_);
   j.at (AudioEngine::kSampleProcessorKey).get_to (engine.sample_processor_);
+#endif
 }
 }
 

@@ -3,159 +3,84 @@
 
 #pragma once
 
-#include "structure/arrangement/arranger_object.h"
-
-#define DEFINE_NAMEABLE_OBJECT_QML_PROPERTIES(ClassType) \
-public: \
-  /* ================================================================ */ \
-  /* name */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
-  QString getName () const \
-  { \
-    return name_.to_qstring (); \
-  } \
-  void setName (const QString &name) \
-  { \
-    const auto name_str = utils::Utf8String::from_qstring (name); \
-    if (name_ == name_str) \
-      return; \
-    set_name_with_action (name_str); \
-    Q_EMIT nameChanged (name); \
-  } \
-  Q_SIGNAL void nameChanged (const QString &name);
+#include "utils/string.h"
 
 namespace zrythm::structure::arrangement
 {
 
 /**
- * @class NamedObject
- * @brief Base class for objects that have a name.
- *
- * This class provides a common interface for objects that have a name. It
- * includes methods for getting, setting, and validating the name, as well as
- * generating an escaped version of the name for drawing purposes.
- *
- * Derived classes that require name validation must pass a validator callable
- * to the constructor.
+ * @brief Name functionality for arranger objects.
  */
-class NamedObject : virtual public ArrangerObject
+class ArrangerObjectName : public QObject
 {
+  Q_OBJECT
+  Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)
+  QML_ELEMENT
+
 public:
-  using NameValidator = std::function<bool (const utils::Utf8String &)>;
+  ArrangerObjectName (QObject * parent = nullptr) : QObject (parent) { }
+  Z_DISABLE_COPY_MOVE (ArrangerObjectName)
+  ~ArrangerObjectName () override = default;
 
-  NamedObject (
-    NameValidator validator = [] (const utils::Utf8String &) { return true; })
-      : name_validator_ (std::move (validator))
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  QString name () const { return name_.to_qstring (); }
+  void    setName (const QString &name)
   {
+    const auto name_str = utils::Utf8String::from_qstring (name);
+    if (name_ == name_str)
+      return;
+    name_ = name_str;
+    gen_escaped_name ();
+    Q_EMIT nameChanged (name_str.to_qstring ());
   }
+  Q_SIGNAL void nameChanged (const QString &name);
 
-  Q_DISABLE_COPY_MOVE (NamedObject)
-  ~NamedObject () override = default;
+  // ========================================================================
 
   /**
    * Returns the name of the object.
    */
   utils::Utf8String get_name () const { return name_; }
 
-  /**
-   * Generates the escaped name for the object.
-   */
-  void gen_escaped_name ();
-
-  /**
-   * @brief Sets the name of the object.
-   *
-   * @param name The new name for the object.
-   * @param fire_events Whether to fire events when the name is changed.
-   */
-  void set_name (this auto &&self, const utils::Utf8String &name)
-  {
-    self.name_ = name;
-    self.gen_escaped_name ();
-    Q_EMIT self.nameChanged (name.to_qstring ());
-  }
-
-  void generate_name_from_automation_track (
-    this auto  &self,
-    const auto &track,
-    const auto &at)
-  {
-    self.set_name (
-      utils::Utf8String::from_utf8_encoded_string (
-        fmt::format ("{} - {}", track.get_name (), at.getLabel ())));
-  }
-  void generate_name_from_track (this auto &self, const auto &track)
-  {
-    self.set_name (track.get_name ());
-  }
-
-  void generate_name (
-    this auto                       &self,
-    std::optional<utils::Utf8String> base_name,
-    const auto *                     at,
-    const auto *                     track)
-  {
-    if (base_name)
-      {
-        self.set_name (*base_name);
-      }
-    else if (at)
-      {
-        self.generate_name_from_automation_track (*track, *at);
-        return;
-      }
-    else
-      {
-        self.generate_name_from_track (*track);
-      }
-  }
-
-  /**
-   * Changes the name and adds an action to the undo stack.
-   *
-   * Calls @ref set_name() internally.
-   */
-  void set_name_with_action (const utils::Utf8String &name);
-
-  utils::Utf8String gen_human_friendly_name () const final { return name_; }
-
-protected:
+private:
   friend void init_from (
-    NamedObject           &obj,
-    const NamedObject     &other,
-    utils::ObjectCloneType clone_type)
+    ArrangerObjectName       &obj,
+    const ArrangerObjectName &other,
+    utils::ObjectCloneType    clone_type)
   {
     obj.name_ = other.name_;
     obj.escaped_name_ = other.escaped_name_;
   }
 
-private:
   static constexpr std::string_view kNameKey = "name";
-  friend void to_json (nlohmann::json &j, const NamedObject &named_object)
+  friend void
+  to_json (nlohmann::json &j, const ArrangerObjectName &named_object)
   {
     j[kNameKey] = named_object.name_;
   }
-  friend void from_json (const nlohmann::json &j, NamedObject &named_object)
+  friend void
+  from_json (const nlohmann::json &j, ArrangerObjectName &named_object)
   {
     j.at (kNameKey).get_to (named_object.name_);
     named_object.gen_escaped_name ();
   }
 
-protected:
+  /**
+   * Generates the escaped name for the object.
+   */
+  void gen_escaped_name ();
+
+private:
   /** Name to be shown on the widget. */
   utils::Utf8String name_;
 
   /** Escaped name for drawing. */
   utils::Utf8String escaped_name_;
 
-  NameValidator name_validator_;
-
-  BOOST_DESCRIBE_CLASS (NamedObject, (ArrangerObject), (), (name_), ())
+  BOOST_DESCRIBE_CLASS (ArrangerObjectName, (), (), (), (name_))
 };
-
-using NamedObjectVariant =
-  std::variant<MidiRegion, AudioRegion, ChordRegion, AutomationRegion, Marker>;
-using NamedObjectPtrVariant = to_pointer_variant<NamedObjectVariant>;
 
 } // namespace zrythm::structure::arrangement

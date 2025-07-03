@@ -8,14 +8,18 @@
 
 namespace zrythm::gui::actions
 {
+using namespace structure::arrangement;
 
 RangeAction::RangeAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::Range)
 {
 }
 
-RangeAction::
-  RangeAction (Type type, Position start_pos, Position end_pos, QObject * parent)
+RangeAction::RangeAction (
+  Type           type,
+  signed_frame_t start_pos,
+  signed_frame_t end_pos,
+  QObject *      parent)
     : RangeAction (parent)
 {
   start_pos_ = start_pos;
@@ -24,6 +28,8 @@ RangeAction::
   first_run_ = true;
 
   /* create selections for overlapping objects */
+// TODO
+#if 0
   Position inf;
   inf.set_to_bar (
     Position::POSITION_MAX_BAR, TRANSPORT->ticks_per_bar_,
@@ -31,6 +37,7 @@ RangeAction::
   affected_objects_before_ = std::ranges::to<std::vector> (
     TRACKLIST->get_timeline_objects_in_range (std::make_pair (start_pos, inf))
     | std::views::transform (ArrangerObjectSpan::uuid_projection));
+#endif
 
   transport_ = utils::clone_unique (*TRANSPORT);
 }
@@ -63,21 +70,16 @@ RangeAction::get_before_objects () const -> ArrangerObjectSpan
   };
 }
 
-bool
-RangeAction::contains_clip (const AudioClip &clip) const
-{
-  return get_before_objects ().contains_clip (clip)
-         || ArrangerObjectSpan{ PROJECT->get_arranger_object_registry (), objects_added_ }
-              .contains_clip (clip);
-}
-
 void
 RangeAction::init_loaded_impl ()
 {
+// TODO
+#if 0
   get_before_objects ().init_loaded (false, frames_per_tick_);
   ArrangerObjectSpan{ PROJECT->get_arranger_object_registry (), objects_added_ }
     .init_loaded (false, frames_per_tick_);
   transport_->init_loaded (nullptr);
+#endif
 }
 
 #define MOVE_TRANSPORT_MARKER(_action, x, _ticks, _do) \
@@ -101,19 +103,25 @@ RangeAction::init_loaded_impl ()
     }
 
 constexpr auto MOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
+// TODO
+#if 0
   const auto range_size_ticks = action.get_range_size_in_ticks ();
   // MOVE_TRANSPORT_MARKER (action, playhead_pos_, range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, cue_pos_, range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_start_pos_, range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_end_pos_, range_size_ticks, do_it);
+#endif
 };
 
 constexpr auto UNMOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
+// TODO
+#if 0
   const auto range_size_ticks = action.get_range_size_in_ticks ();
   // MOVE_TRANSPORT_MARKER (action, playhead_pos_, -range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, cue_pos_, -range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_start_pos_, -range_size_ticks, do_it);
   MOVE_TRANSPORT_MARKER (action, loop_end_pos_, -range_size_ticks, do_it);
+#endif
 };
 
 void
@@ -129,13 +137,12 @@ RangeAction::perform_impl ()
    * the given position (and thus we need to split the object at the range start
    * position) */
   const auto need_to_split_object_at_pos =
-    [] (auto &prj_obj, const auto &start_pos) {
+    [] (auto &prj_obj, const signed_frame_t start_pos) {
       using ObjT = base_type<decltype (prj_obj)>;
-      if constexpr (
-        std::derived_from<ObjT, structure::arrangement::BoundedObject>
-        && std::derived_from<ObjT, structure::arrangement::TimelineObject>)
+      if constexpr (BoundedObject<ObjT> && TimelineObject<ObjT>)
         {
-          return prj_obj.is_hit (start_pos);
+          return ArrangerObjectSpan::bounds_projection (&prj_obj)->is_hit (
+            start_pos);
         }
       return false;
     };
@@ -172,9 +179,7 @@ RangeAction::perform_impl ()
                   /* if need split, split at range start */
                   if (need_to_split_object_at_pos (*obj, start_pos_))
                     {
-                      if constexpr (
-                        std::derived_from<
-                          ObjT, structure::arrangement::BoundedObject>)
+                      if constexpr (BoundedObject<ObjT>)
                         {
                           /* split at range start */
                           auto [part1, part2] =
@@ -182,15 +187,16 @@ RangeAction::perform_impl ()
                               *obj,
                               *structure::arrangement::ArrangerObjectFactory::
                                 get_instance (),
-                              start_pos_, AUDIO_ENGINE->frames_per_tick_);
+                              start_pos_);
 
                           /* move part2 by the range amount */
                           std::get<ObjT *> (part2.get_object ())
-                            ->move (
-                              range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
+                            ->position ()
+                            ->addTicks (range_size_ticks);
 
                           /* remove previous object */
-                          obj->remove_from_project (true);
+                          // TODO
+                          // obj->remove_from_project (true);
                           objects_removed_.push_back (obj->get_uuid ());
 
                           // TODO: add to project
@@ -207,8 +213,7 @@ RangeAction::perform_impl ()
                   /* object starts at or after range start - only needs a move */
                   else
                     {
-                      obj->move (
-                        range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
+                      obj->position ()->addTicks (range_size_ticks);
                       objects_moved_.push_back (obj->get_uuid ());
                       z_debug ("moved to object: {}", *obj);
                     }
@@ -229,28 +234,25 @@ RangeAction::perform_impl ()
                       z_debug ("looping backwards. current object {}", *obj);
 
                       bool ends_inside_range = false;
-                      if constexpr (
-                        std::derived_from<
-                          ObjT, structure::arrangement::BoundedObject>)
+                      if constexpr (BoundedObject<ObjT>)
                         {
                           ends_inside_range =
-                            obj->get_position () >= start_pos_
-                            && *obj->end_pos_ < end_pos_;
+                            obj->position ()->samples () >= start_pos_
+                            && ArrangerObjectSpan::bounds_projection (obj)
+                                   ->get_end_position_samples (true)
+                                 < end_pos_;
                         }
                       else
                         {
                           ends_inside_range =
-                            obj->get_position () >= start_pos_
-                            && obj->get_position () < end_pos_;
+                            obj->is_start_hit_by_range (start_pos_, end_pos_);
                         }
 
                       /* object starts before the range and ends after the range
                        * start - split at range start */
                       if (need_to_split_object_at_pos (*obj, start_pos_))
                         {
-                          if constexpr (
-                            std::derived_from<
-                              ObjT, structure::arrangement::BoundedObject>)
+                          if constexpr (BoundedObject<ObjT>)
                             {
                               /* split at range start */
                               auto [part1_ref, part2_ref] =
@@ -258,7 +260,7 @@ RangeAction::perform_impl ()
                                   *obj,
                                   *structure::arrangement::
                                     ArrangerObjectFactory::get_instance (),
-                                  start_pos_, AUDIO_ENGINE->frames_per_tick_);
+                                  start_pos_);
 
                               auto part2_opt = std::make_optional (part2_ref);
 
@@ -275,7 +277,7 @@ RangeAction::perform_impl ()
                                       *std::get<ObjT *> (part2_ref.get_object ()),
                                       *structure::arrangement::
                                         ArrangerObjectFactory::get_instance (),
-                                      end_pos_, AUDIO_ENGINE->frames_per_tick_);
+                                      end_pos_);
 // TODO...
 #if 0
                                       PROJECT->get_arranger_object_registry ()
@@ -300,9 +302,8 @@ RangeAction::perform_impl ()
                               if (part2_opt)
                                 {
                                   std::get<ObjT *> (part2_ref.get_object ())
-                                    ->move (
-                                      -range_size_ticks,
-                                      AUDIO_ENGINE->frames_per_tick_);
+                                    ->position ()
+                                    ->addTicks (-range_size_ticks);
                                 }
 
                               /* remove previous object */
@@ -325,9 +326,7 @@ RangeAction::perform_impl ()
                        * - split at range end */
                       else if (need_to_split_object_at_pos (*obj, end_pos_))
                         {
-                          if constexpr (
-                            std::derived_from<
-                              ObjT, structure::arrangement::BoundedObject>)
+                          if constexpr (BoundedObject<ObjT>)
                             {
                               /* split at range end */
                               // part1 will be discarded
@@ -336,7 +335,7 @@ RangeAction::perform_impl ()
                                   *obj,
                                   *structure::arrangement::
                                     ArrangerObjectFactory::get_instance (),
-                                  end_pos_, AUDIO_ENGINE->frames_per_tick_);
+                                  end_pos_);
 // TODO
 #if 0
                                   PROJECT->get_arranger_object_registry ()
@@ -347,9 +346,8 @@ RangeAction::perform_impl ()
                               // project
                               // TODO: actually add
                               std::get<ObjT *> (part2.get_object ())
-                                ->move (
-                                  -range_size_ticks,
-                                  AUDIO_ENGINE->frames_per_tick_);
+                                ->position ()
+                                ->addTicks (-range_size_ticks);
                               objects_added_.push_back (part2.id ());
 
                               // TODO: actually remove object
@@ -358,7 +356,9 @@ RangeAction::perform_impl ()
                         }
                       /* if object starts and ends inside the range and is
                        * deletable, delete */
-                      else if (ends_inside_range && obj->is_deletable ())
+                      else if (
+                        ends_inside_range
+                        && ArrangerObjectSpan::deletable_projection (obj))
                         {
                           // TODO: actually remove
                           objects_removed_.push_back (obj->get_uuid ());
@@ -367,19 +367,9 @@ RangeAction::perform_impl ()
                        * move */
                       else
                         {
-                          obj->move (
-                            -range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
+                          // this is already clamped to 0 if negative
+                          obj->position ()->addTicks (-range_size_ticks);
                           objects_moved_.push_back (obj->get_uuid ());
-
-                          /* move objects to bar 1 if negative pos */
-                          const Position init_pos;
-                          if (obj->get_position () < init_pos)
-                            {
-                              z_debug ("moving object back");
-                              obj->move (
-                                -obj->get_position ().ticks_,
-                                AUDIO_ENGINE->frames_per_tick_);
-                            }
 
                           structure::arrangement::ArrangerObjectFactory::
                             get_instance ()
@@ -421,14 +411,17 @@ RangeAction::undo_impl ()
   const auto range_size_ticks = get_range_size_in_ticks ();
 
   /* remove all objects added during perform() */
+// TODO
+#if 0
   for (
     const auto &obj_var : std::ranges::reverse_view (
       ArrangerObjectSpan{
         PROJECT->get_arranger_object_registry (), objects_added_ }))
     {
       std::visit (
-        [&] (auto &&obj) { obj->remove_from_project (true); }, obj_var);
+      [&] (auto &&obj) { obj->remove_from_project (true); }, obj_var);
     }
+#endif
 
   // move all moved objects backwards
   for (
@@ -437,9 +430,7 @@ RangeAction::undo_impl ()
         PROJECT->get_arranger_object_registry (), objects_moved_ }))
     {
       std::visit (
-        [&] (auto &&obj) {
-          obj->move (-range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
-        },
+        [&] (auto &&obj) { obj->position ()->addTicks (-range_size_ticks); },
         obj_var);
     }
   // add back objects taht were removed

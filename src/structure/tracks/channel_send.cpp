@@ -490,7 +490,7 @@ ChannelSend::disconnect_midi ()
   z_return_if_fail (mgr);
 
   auto * const conn = mgr->get_source_or_dest (midi_out_id_->id (), false);
-  if (!conn)
+  if (conn == nullptr)
     return;
 
   auto dest_port_var = get_port_registry ().find_by_id (conn->dest_id_);
@@ -512,7 +512,7 @@ ChannelSend::disconnect_audio ()
       auto src_port_id =
         i == 0 ? stereo_out_left_id_->id () : stereo_out_right_id_->id ();
       auto * const conn = mgr->get_source_or_dest (src_port_id, false);
-      if (!conn)
+      if (conn == nullptr)
         continue;
 
       auto dest_port_var = get_port_registry ().find_by_id (conn->dest_id_);
@@ -877,5 +877,35 @@ ChannelSend::is_connected_to (
     }
 
   return false;
+}
+
+void
+from_json (const nlohmann::json &j, ChannelSend &p)
+{
+  j.at (ChannelSend::kSlotKey).get_to (p.slot_);
+  p.amount_id_ = { p.get_port_registry () };
+  j.at (ChannelSend::kAmountKey).get_to (*p.amount_id_);
+  p.enabled_id_ = { p.get_port_registry () };
+  j.at (ChannelSend::kEnabledKey).get_to (*p.enabled_id_);
+  j.at (ChannelSend::kIsSidechainKey).get_to (p.is_sidechain_);
+  if (j.contains (ChannelSend::kMidiInKey))
+    {
+      p.midi_in_id_ = { p.get_port_registry () };
+      p.midi_out_id_ = { p.get_port_registry () };
+      j.at (ChannelSend::kMidiInKey).get_to (*p.midi_in_id_);
+      j.at (ChannelSend::kMidiOutKey).get_to (*p.midi_out_id_);
+    }
+  else
+    {
+      p.stereo_in_left_id_ = { p.get_port_registry () };
+      p.stereo_in_right_id_ = { p.get_port_registry () };
+      p.stereo_out_left_id_ = { p.get_port_registry () };
+      p.stereo_out_right_id_ = { p.get_port_registry () };
+      j.at (ChannelSend::kStereoInLKey).get_to (*p.stereo_in_left_id_);
+      j.at (ChannelSend::kStereoInRKey).get_to (*p.stereo_in_right_id_);
+      j.at (ChannelSend::kStereoOutLKey).get_to (*p.stereo_out_left_id_);
+      j.at (ChannelSend::kStereoOutRKey).get_to (*p.stereo_out_right_id_);
+    }
+  j.at (ChannelSend::kTrackIdKey).get_to (p.track_id_);
 }
 }

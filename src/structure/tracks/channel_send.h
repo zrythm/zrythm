@@ -312,20 +312,7 @@ private:
       { kTrackIdKey,     p.track_id_            },
     };
   }
-  friend void from_json (const nlohmann::json &j, ChannelSend &p)
-  {
-    j.at (kSlotKey).get_to (p.slot_);
-    j.at (kAmountKey).get_to (p.amount_id_);
-    j.at (kEnabledKey).get_to (p.enabled_id_);
-    j.at (kIsSidechainKey).get_to (p.is_sidechain_);
-    j.at (kMidiInKey).get_to (p.midi_in_id_);
-    j.at (kStereoInLKey).get_to (p.stereo_in_left_id_);
-    j.at (kStereoInRKey).get_to (p.stereo_in_right_id_);
-    j.at (kMidiOutKey).get_to (p.midi_out_id_);
-    j.at (kStereoOutLKey).get_to (p.stereo_out_left_id_);
-    j.at (kStereoOutRKey).get_to (p.stereo_out_right_id_);
-    j.at (kTrackIdKey).get_to (p.track_id_);
-  }
+  friend void from_json (const nlohmann::json &j, ChannelSend &p);
 
   PortType get_signal_type () const;
 

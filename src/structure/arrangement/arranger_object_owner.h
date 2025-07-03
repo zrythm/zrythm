@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "dsp/port_identifier.h"
+#include "dsp/file_audio_source.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 
@@ -15,40 +15,33 @@ public: \
   /* ================================================================ */ \
   Q_PROPERTY ( \
     structure::arrangement::ArrangerObjectListModel * QPropertyName READ \
-      get##QPropertyName CONSTANT) \
-  structure::arrangement::ArrangerObjectListModel * get##QPropertyName () const \
+      QPropertyName CONSTANT) \
+  structure::arrangement::ArrangerObjectListModel * QPropertyName () const \
   { \
     return ArrangerObjectOwner<ChildType>::get_model (); \
   }
 
 namespace zrythm::structure::arrangement
 {
-class LaneOwnedObject;
-class Region;
-
 template <FinalArrangerObjectSubclass ChildT> class ArrangerObjectOwner
 {
 public:
-  using PortUuid = dsp::PortIdentifier::PortUuid;
   using ArrangerObjectChildType = ChildT;
-  using TrackUuid = structure::tracks::TrackUuid;
   using ArrangerObjectListModel =
     structure::arrangement::ArrangerObjectListModel;
 
-  ArrangerObjectOwner () = default;
-  virtual ~ArrangerObjectOwner () { delete list_model_; }
-  Z_DISABLE_COPY_MOVE (ArrangerObjectOwner)
-
-  /**
-   * @brief Location info of this class.
-   */
-  struct Location
+  ArrangerObjectOwner (
+    ArrangerObjectRegistry       &registry,
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    QObject                      &derived)
+      : registry_ (registry),
+        file_audio_source_registry_ (file_audio_source_registry),
+        list_model_ (
+          utils::make_qobject_unique<ArrangerObjectListModel> (children_, &derived))
   {
-    std::optional<TrackUuid> track_id_;
-
-    // Either lane index, region ID or control port ID (for automation regions)
-    std::optional<std::variant<ArrangerObjectUuid, int, PortUuid>> owner_;
-  };
+  }
+  virtual ~ArrangerObjectOwner () = default;
+  Z_DISABLE_COPY_MOVE (ArrangerObjectOwner)
 
   auto &get_children_vector () { return children_; }
 
@@ -62,26 +55,15 @@ public:
            });
   }
 
-  auto &get_children_snapshots_vector () { return snapshots_; }
-  auto &get_children_snapshots_vector () const { return snapshots_; }
-
-  auto get_children_snapshots_view () const
-  {
-    const auto &vec_ref = get_children_snapshots_vector ();
-    return vec_ref | std::views::transform ([&] (const auto &id) {
-             return std::get<ChildT *> (id.get_object ());
-           });
-  }
-
-  void add_ticks_to_children (double ticks, dsp::FramesPerTick frames_per_tick)
+  void add_ticks_to_children (double ticks)
   {
     for (auto * child : get_children_view ())
       {
-        child->move (ticks, frames_per_tick);
+        child->position ()->setTicks (child->position ()->ticks () + ticks);
       }
   }
 
-  ArrangerObjectListModel * get_model () const { return list_model_; }
+  ArrangerObjectListModel * get_model () const { return list_model_.get (); }
 
   template <typename SelfT>
   ArrangerObjectUuidReference
@@ -96,21 +78,10 @@ public:
       }
     z_trace ("removing object: {}", id);
 
-    auto obj_ref = *it_to_remove;
-    auto obj = std::get<ChildT *> (obj_ref.get_object ());
-    if constexpr (std::is_same_v<ChildT, AutomationPoint>)
-      {
-        if (self.last_recorded_ap_ == obj)
-          {
-            self.last_recorded_ap_ = nullptr;
-          }
-      }
-
+    auto       obj_ref = *it_to_remove;
     const auto remove_idx =
       std::distance (self.children_.begin (), it_to_remove);
-    self.list_model_->begin_remove_rows (remove_idx, remove_idx);
-    self.children_.erase (it_to_remove);
-    self.list_model_->end_remove_rows ();
+    assert (self.list_model_->removeRows (remove_idx, 1));
     return obj_ref;
   }
 
@@ -120,29 +91,8 @@ public:
     const ArrangerObjectUuidReference &obj_ref,
     int                                idx)
   {
-    assert (
-      idx >= 0
-      && static_cast<size_t> (idx)
-           <= self.ArrangerObjectOwner<ChildT>::children_.size ());
-
-    auto * obj = std::get<ChildT *> (obj_ref.get_object ());
-
-    self.ArrangerObjectOwner<ChildT>::list_model_->begin_insert_rows (idx, idx);
-    self.ArrangerObjectOwner<ChildT>::children_.insert (
-      self.ArrangerObjectOwner<ChildT>::children_.begin () + idx, obj_ref);
-
-    if constexpr (std::is_same_v<ChildT, AutomationRegion>)
-      {
-        obj->set_automation_track (self);
-      }
-    else if constexpr (std::derived_from<ChildT, LaneOwnedObject>)
-      {
-        obj->set_lane (&self);
-      }
-
-    obj->set_track_id (self.get_location (*obj).track_id_);
-
-    self.ArrangerObjectOwner<ChildT>::list_model_->end_insert_rows ();
+    assert (self.ArrangerObjectOwner<ChildT>::list_model_->insertObject (
+      obj_ref, idx));
   }
 
   template <typename SelfT>
@@ -152,28 +102,7 @@ public:
       obj_ref, self.ArrangerObjectOwner<ChildT>::children_.size ());
   }
 
-  void clear_objects ()
-  {
-    list_model_->begin_reset_model ();
-    {
-      clearing_ = true;
-      children_.clear ();
-      snapshots_.clear ();
-      clearing_ = false;
-    }
-    list_model_->end_reset_model ();
-  }
-
-  /**
-   * @brief Returns the current location of this owner.
-   *
-   * To be used by e.g. undoable actions where we need to know where to put
-   * back the object.
-   *
-   * @note The parameter is just used to disambiguate when this base class is
-   * used twice or more in the same derived class.
-   */
-  virtual Location get_location (const ChildT &) const = 0;
+  void clear_objects () { list_model_->clear (); }
 
   /**
    * @brief Get the children field name to be used during
@@ -192,21 +121,44 @@ public:
     const ArrangerObjectOwner &other,
     utils::ObjectCloneType     clone_type)
   {
-    obj.children_.reserve (other.children_.size ());
-    // TODO
-#if 0
-  for (const auto &ap : other.get_children_view ())
-    {
-      const auto * clone =
-        ap->clone_and_register (get_arranger_object_registry ());
-      aps_.push_back (clone->get_uuid ());
-    }
-#endif
-  }
-
-  void copy_children (const ArrangerObjectOwner &other)
-  {
-    // TODO
+    if (clone_type == utils::ObjectCloneType::NewIdentity)
+      {
+        obj.children_.reserve (other.children_.size ());
+        for (const auto &child : other.get_children_view ())
+          {
+            // FIXME: not ideal to have child-specific logic here...
+            std::optional<ArrangerObjectUuidReference> clone_ref;
+            if constexpr (std::is_same_v<ChildT, AudioSourceObject>)
+              {
+                auto dummy_file_source_ref =
+                  obj.file_audio_source_registry_.create_object<
+                    dsp::FileAudioSource> (
+                    utils::audio::AudioBuffer (2, 16),
+                    utils::audio::BitDepth::BIT_DEPTH_32, 44100.0, 120.0,
+                    u8"Unused dummy Audio Source");
+                clone_ref = obj.registry_.clone_object (
+                  *child, child->get_tempo_map (),
+                  obj.file_audio_source_registry_, dummy_file_source_ref);
+                obj.children_.emplace_back (std::move (*clone_ref));
+              }
+            else if constexpr (RegionObject<ChildT>)
+              {
+                // TODO
+              }
+            else if constexpr (std::is_same_v<ChildT, Marker>)
+              {
+                clone_ref = obj.registry_.clone_object (
+                  *child, child->get_tempo_map (), child->markerType ());
+                obj.children_.emplace_back (std::move (*clone_ref));
+              }
+            else
+              {
+                clone_ref =
+                  obj.registry_.clone_object (*child, child->get_tempo_map ());
+                obj.children_.emplace_back (std::move (*clone_ref));
+              }
+          }
+      }
   }
 
 private:
@@ -220,18 +172,21 @@ private:
   {
     const auto children_field_name =
       obj.get_field_name_for_serialization (static_cast<ChildT *> (nullptr));
-    j.at (children_field_name).get_to (obj.children_);
+    for (const auto &child_json : j.at (children_field_name))
+      {
+        const auto uuid =
+          child_json.at (ArrangerObjectUuidReference::kIdKey)
+            .template get<ArrangerObjectUuid> ();
+        ArrangerObjectUuidReference obj_ref{ uuid, obj.registry_ };
+        obj.children_.emplace_back (std::move (obj_ref));
+      }
   }
 
 private:
-  std::vector<ArrangerObjectUuidReference> children_;
-  std::vector<ArrangerObjectUuidReference> snapshots_;
-  ArrangerObjectListModel *                list_model_ =
-    new ArrangerObjectListModel{ children_ };
-
-protected:
-  // TODO: remove if not needed - currently used by TrackLane
-  bool clearing_{};
+  ArrangerObjectRegistry                          &registry_;
+  dsp::FileAudioSourceRegistry                    &file_audio_source_registry_;
+  std::vector<ArrangerObjectUuidReference>         children_;
+  utils::QObjectUniquePtr<ArrangerObjectListModel> list_model_;
 
   BOOST_DESCRIBE_CLASS (ArrangerObjectOwner<ChildT>, (), (), (), (children_))
 };

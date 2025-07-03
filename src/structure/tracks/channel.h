@@ -38,8 +38,8 @@ class Channel final : public QObject, public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (Fader * fader READ getFader CONSTANT)
-  Q_PROPERTY (Fader * preFader READ getPreFader CONSTANT)
+  Q_PROPERTY (Fader * fader READ fader CONSTANT)
+  Q_PROPERTY (Fader * preFader READ preFader CONSTANT)
   Q_PROPERTY (AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
   Q_PROPERTY (AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
   Q_PROPERTY (MidiPort * midiOut READ getMidiOut CONSTANT)
@@ -103,8 +103,8 @@ public:
   // QML Interface
   // ============================================================================
 
-  Fader *     getFader () const { return fader_; }
-  Fader *     getPreFader () const { return prefader_; }
+  Fader *     fader () const { return fader_.get (); }
+  Fader *     preFader () const { return prefader_.get (); }
   AudioPort * getLeftAudioOut () const
   {
     return stereo_out_left_id_.has_value ()
@@ -535,14 +535,14 @@ public:
   std::optional<std::array<bool, 16>> midi_channels_;
 
   /** The channel fader. */
-  gsl::owner<Fader *> fader_{};
+  utils::QObjectUniquePtr<Fader> fader_;
 
   /**
    * Prefader.
    *
    * The last plugin should connect to this.
    */
-  gsl::owner<Fader *> prefader_{};
+  utils::QObjectUniquePtr<Fader> prefader_;
 
   /**
    * MIDI output for sending MIDI signals to other destinations, such as

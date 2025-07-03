@@ -34,7 +34,7 @@ public: \
     AutomationTracklist * automationTracks READ getAutomationTracks CONSTANT) \
   AutomationTracklist * getAutomationTracks () const \
   { \
-    return automation_tracklist_; \
+    return automation_tracklist_.get (); \
   }
 
 namespace zrythm::structure::tracks
@@ -47,7 +47,10 @@ namespace zrythm::structure::tracks
 class AutomatableTrack : virtual public Track
 {
 public:
-  AutomatableTrack (PortRegistry &port_registry, bool new_identity);
+  AutomatableTrack (
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    PortRegistry                 &port_registry,
+    bool                          new_identity);
 
   ~AutomatableTrack () override = default;
 
@@ -78,14 +81,14 @@ public:
   void clear_objects () override { automation_tracklist_->clear_objects (); }
 
   void get_regions_in_range (
-    std::vector<Region *> &regions,
-    const Position *       p1,
-    const Position *       p2) override
+    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+    std::optional<signed_frame_t>                          p1,
+    std::optional<signed_frame_t>                          p2) override
   {
     auto &atl = get_automation_tracklist ();
     for (auto &at : atl.get_automation_tracks ())
       {
-        for (auto * r : at->get_children_view ())
+        for (const auto &r : at->get_children_vector ())
           {
             add_region_if_in_range (p1, p2, regions, r);
           }
@@ -149,14 +152,19 @@ private:
   }
   friend void from_json (const nlohmann::json &j, AutomatableTrack &track)
   {
-    track.automation_tracklist_ = new AutomationTracklist (
-      track.port_registry_, track.object_registry_, track);
+    track
+      .automation_tracklist_ = utils::make_qobject_unique<AutomationTracklist> (
+      track.file_audio_source_registry_, track.port_registry_,
+      track.object_registry_, track);
     from_json (j, *track.automation_tracklist_);
     j.at (kAutomationVisibleKey).get_to (track.automation_visible_);
   }
 
+private:
+  dsp::FileAudioSourceRegistry &file_audio_source_registry_;
+
 public:
-  AutomationTracklist * automation_tracklist_ = nullptr;
+  utils::QObjectUniquePtr<AutomationTracklist> automation_tracklist_;
 
   /** Flag to set automations visible or not. */
   bool automation_visible_ = false;

@@ -365,6 +365,8 @@ SampleProcessor::queue_file_or_chord_preset (
   const FileDescriptor * file,
   const ChordPreset *    chord_pset)
 {
+// TODO
+#if 0
   SemaphoreRAII<decltype (rebuilding_sem_)> sem_raii (rebuilding_sem_);
 
   /* clear tracks */
@@ -431,6 +433,8 @@ SampleProcessor::queue_file_or_chord_preset (
       /* create an audio region & add to track */
       try
         {
+// TODO
+#  if 0
           auto * ar =
             structure::arrangement::ArrangerObjectFactory::get_instance ()
               ->addAudioRegionFromFile (
@@ -438,6 +442,7 @@ SampleProcessor::queue_file_or_chord_preset (
                 utils::Utf8String::from_path (file->abs_path_).to_qstring (),
                 start_pos.ticks_);
           file_end_pos_ = *ar->end_pos_;
+#  endif
         }
       catch (const ZrythmException &e)
         {
@@ -618,6 +623,7 @@ SampleProcessor::queue_file_or_chord_preset (
   ProjectGraphBuilder builder (*PROJECT, true);
   builder.build_graph (graph);
   tracklist_->get_track_span ().set_caches (ALL_CACHE_TYPES);
+#endif
 }
 
 void
@@ -702,8 +708,9 @@ SampleProcessor::find_and_queue_metronome (
         { .bar = bar, .beat = 1, .sixteenth = 1, .tick = 0 });
       assert (bar_pos_in_ticks >= ticks_before);
       assert (bar_pos_in_ticks <= ticks_after_excluding_last_sample);
-      const auto bar_pos_in_samples = static_cast<signed_frame_t> (
-        get_tempo_map ().tick_to_samples (bar_pos_in_ticks));
+      const auto bar_pos_in_samples =
+        static_cast<signed_frame_t> (get_tempo_map ().tick_to_samples_rounded (
+          static_cast<double> (bar_pos_in_ticks)));
       assert (bar_pos_in_samples >= start_pos);
       assert (bar_pos_in_samples < end_pos);
 

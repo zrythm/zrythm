@@ -95,11 +95,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               auto &channel = tr->channel_;
 
               /* add the fader */
-              auto * fader = channel->fader_;
+              auto * fader = channel->fader ();
               add_node_for_processable (*fader);
 
               /* add the prefader */
-              auto * prefader = channel->prefader_;
+              auto * prefader = channel->preFader ();
               add_node_for_processable (*prefader);
 
               /* add plugins */
@@ -203,10 +203,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                     signed_frame_t global_frame) -> std::optional<float> {
                     if (at->should_read_automation ())
                       {
-                        const dsp::Position pos{
-                          global_frame, engine_ptr->ticks_per_frame_
-                        };
-
                         /* if playhead pos changed manually recently or
                          * transport is rolling, we will force the last
                          * known automation point value regardless of
@@ -218,11 +214,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                         /* if there was an automation event at the playhead
                          * position, set val and flag */
                         const auto ap = at->get_ap_before_pos (
-                          pos, !can_read_previous_automation, true);
+                          global_frame, !can_read_previous_automation, true);
                         if (ap)
                           {
-                            const float val = at->get_val_at_pos (
-                              pos, true, !can_read_previous_automation, true);
+                            const float val = at->get_normalized_val_at_pos (
+                              global_frame, !can_read_previous_automation, true);
                             return val;
                           }
                       }

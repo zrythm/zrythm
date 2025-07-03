@@ -28,6 +28,7 @@ function(zrythm_discover_tests TARGET_NAME)
 endfunction()
 
 add_library(zrythm_test_helpers_lib STATIC
+  helpers/mock_qobject.h
   helpers/scoped_qcoreapplication.h
   helpers/scoped_juce_message_thread.h
 )

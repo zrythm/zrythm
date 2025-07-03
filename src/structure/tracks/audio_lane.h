@@ -26,7 +26,10 @@ public:
   /**
    * @see TrackLaneImpl::TrackLaneImpl
    */
-  AudioLane (LanedTrackImpl<AudioLane> * track);
+  AudioLane (
+    structure::arrangement::ArrangerObjectRegistry &registry,
+    dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
+    LanedTrackImpl<AudioLane> *                     track);
 
   friend void init_from (
     AudioLane             &obj,

@@ -5,30 +5,31 @@
 
 #include "utils/audio.h"
 #include "utils/audio_file.h"
-#include "utils/hash.h"
 #include "utils/icloneable.h"
 #include "utils/monotonic_time_provider.h"
-#include "utils/serialization.h"
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
 
-using namespace zrythm;
+namespace zrythm::dsp
+{
 
 /**
  * Audio clips for the pool.
  *
  * These should be loaded in the project's sample rate.
  */
-class AudioClip final
-    : public utils::UuidIdentifiableObject<AudioClip>,
-      private utils::QElapsedTimeProvider
+class FileAudioSource final
+    : public QObject,
+      public utils::UuidIdentifiableObject<FileAudioSource>
 {
+  Q_OBJECT
+
 public:
   using BitDepth = zrythm::utils::audio::BitDepth;
   using AudioFile = zrythm::utils::audio::AudioFile;
 
 public:
-  AudioClip () = default;
+  FileAudioSource (QObject * parent = nullptr) : QObject (parent) { }
 
   /**
    * Creates an audio clip from a file.
@@ -40,10 +41,11 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  AudioClip (
+  FileAudioSource (
     const fs::path &full_path,
     sample_rate_t   project_sample_rate,
-    bpm_t           current_bpm);
+    bpm_t           current_bpm,
+    QObject *       parent = nullptr);
 
   /**
    * Creates an audio clip by copying the given buffer.
@@ -51,12 +53,13 @@ public:
    * @param buf Buffer to copy.
    * @param name A name for this clip.
    */
-  AudioClip (
+  FileAudioSource (
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
     sample_rate_t                    project_sample_rate,
     bpm_t                            current_bpm,
-    const utils::Utf8String         &name);
+    const utils::Utf8String         &name,
+    QObject *                        parent = nullptr);
 
   /**
    * Creates an audio clip by copying the given interleaved float array.
@@ -66,20 +69,22 @@ public:
    * @param channels Number of channels.
    * @param name A name for this clip.
    */
-  AudioClip (
+  FileAudioSource (
     const float *                  arr,
     unsigned_frame_t               nframes,
     channels_t                     channels,
     zrythm::utils::audio::BitDepth bit_depth,
     sample_rate_t                  project_sample_rate,
     bpm_t                          current_bpm,
-    const utils::Utf8String       &name)
-      : AudioClip (
+    const utils::Utf8String       &name,
+    QObject *                      parent = nullptr)
+      : FileAudioSource (
           *utils::audio::AudioBuffer::from_interleaved (arr, nframes, channels),
           bit_depth,
           project_sample_rate,
           current_bpm,
-          name)
+          name,
+          parent)
   {
   }
 
@@ -92,71 +97,32 @@ public:
    * @param nframes Number of frames to allocate. This should be the
    * current cycle's frames when called during recording.
    */
-  AudioClip (
+  FileAudioSource (
     channels_t               channels,
     unsigned_frame_t         nframes,
     sample_rate_t            project_sample_rate,
     bpm_t                    current_bpm,
-    const utils::Utf8String &name);
+    const utils::Utf8String &name,
+    QObject *                parent = nullptr);
 
-public:
-  static bool should_use_flac (zrythm::utils::audio::BitDepth bd)
-  {
-    return false;
-    /* FLAC seems to fail writing sometimes so disable for now */
-#if 0
-  return bd < BIT_DEPTH_32;
-#endif
-  }
-
-  friend void init_from (
-    AudioClip             &obj,
-    const AudioClip       &other,
-    utils::ObjectCloneType clone_type);
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
   /**
-   * Inits after loading a Project.
-   *
-   * @param full_path Full path to the corresponding audio file in the pool.
-   * @throw ZrythmException on error.
+   * @brief Emitted when the source samples change.
    */
-  void init_loaded (const fs::path &full_path);
+  Q_SIGNAL void samplesChanged ();
 
-  /**
-   * Shows a dialog with info on how to edit a file, with an option to open an
-   * app launcher.
-   *
-   * When the user closes the dialog, the clip is assumed to have been edited.
-   *
-   * The given audio clip will be free'd.
-   *
-   * @note This must not be used on pool clips.
-   *
-   * @return A new instance of AudioClip if successful, nullptr, if not.
-   *
-   * @throw ZrythmException on error.
-   */
-  std::unique_ptr<AudioClip> edit_in_ext_program ();
-
-  /**
-   * Writes the given audio clip data to a file.
-   *
-   * @param parts If true, only write new data. @see AudioClip.frames_written.
-   *
-   * @throw ZrythmException on error.
-   */
-  void write_to_file (const fs::path &filepath, bool parts);
+  // ========================================================================
 
   auto        get_bit_depth () const { return bit_depth_; }
   auto        get_name () const { return name_; }
-  auto        get_file_hash () const { return file_hash_; }
   auto        get_bpm () const { return bpm_; }
   const auto &get_samples () const { return ch_frames_; }
-  auto        get_last_write_to_file () const { return last_write_; }
-  auto        get_use_flac () const { return use_flac_; }
+  auto        get_samplerate () const { return samplerate_; }
 
   void set_name (const utils::Utf8String &name) { name_ = name; }
-  void set_file_hash (utils::hash::HashT hash) { file_hash_ = hash; }
 
   /**
    * @brief Expands (appends to the end) the frames in the clip by the given
@@ -200,68 +166,18 @@ public:
   void clear_frames ()
   {
     ch_frames_.setSize (ch_frames_.getNumChannels (), 0, false, true);
+    Q_EMIT samplesChanged ();
   }
 
   auto get_num_channels () const { return ch_frames_.getNumChannels (); };
   auto get_num_frames () const { return ch_frames_.getNumSamples (); };
 
   /**
-   * @brief Finalizes buffered write to a file (when `parts` is true in @ref
-   * write_to_file()).
-   */
-  void finalize_buffered_write ();
-
-  /**
-   * @brief Used during tests to verify that the recorded file is valid.
-   *
-   * @param current_bpm Current BPM from TempoTrack, used when creating a
-   * temporary clip from the filepath.
-   */
-  bool verify_recorded_file (
-    const fs::path &filepath,
-    sample_rate_t   project_sample_rate,
-    bpm_t           current_bpm) const;
-
-  /**
-   * @brief Returns whether enough time has elapsed since the last write to
-   * file. This is used so that writing to file is done in chunks.
-   */
-  bool enough_time_elapsed_since_last_write () const;
-
-private:
-  static constexpr auto kNameKey = "name"sv;
-  static constexpr auto kFileHashKey = "fileHash"sv;
-  static constexpr auto kBpmKey = "bpm"sv;
-  static constexpr auto kBitDepthKey = "bitDepth"sv;
-  static constexpr auto kUseFlacKey = "useFlac"sv;
-  static constexpr auto kSamplerateKey = "samplerate"sv;
-  friend void           to_json (nlohmann::json &j, const AudioClip &clip)
-  {
-    to_json (j, static_cast<const UuidIdentifiableObject &> (clip));
-    j[kNameKey] = clip.name_;
-    j[kFileHashKey] = clip.file_hash_;
-    j[kBpmKey] = clip.bpm_;
-    j[kBitDepthKey] = clip.bit_depth_;
-    j[kUseFlacKey] = clip.use_flac_;
-    j[kSamplerateKey] = clip.samplerate_;
-  }
-  friend void from_json (const nlohmann::json &j, AudioClip &clip)
-  {
-    from_json (j, static_cast<UuidIdentifiableObject &> (clip));
-    j.at (kNameKey).get_to (clip.name_);
-    j.at (kFileHashKey).get_to (clip.file_hash_);
-    j.at (kBpmKey).get_to (clip.bpm_);
-    j.at (kBitDepthKey).get_to (clip.bit_depth_);
-    j.at (kUseFlacKey).get_to (clip.use_flac_);
-    j.at (kSamplerateKey).get_to (clip.samplerate_);
-  }
-
-  /**
    * @brief Initializes members from an audio file.
    *
    * @param full_path Path to the file.
-   * @param bpm_to_set BPM of the clip to set (optional - obtained from current
-   * BPM in TempoTrack).
+   * @param bpm_to_set BPM of the clip to set (File BPM or 0 will be used if
+   * nullopt).
    *
    * @throw ZrythmException on I/O error.
    */
@@ -269,6 +185,33 @@ private:
     const fs::path      &full_path,
     sample_rate_t        project_sample_rate,
     std::optional<bpm_t> bpm_to_set);
+
+private:
+  friend void init_from (
+    FileAudioSource       &obj,
+    const FileAudioSource &other,
+    utils::ObjectCloneType clone_type);
+
+  static constexpr auto kNameKey = "name"sv;
+  static constexpr auto kBpmKey = "bpm"sv;
+  static constexpr auto kBitDepthKey = "bitDepth"sv;
+  static constexpr auto kSamplerateKey = "samplerate"sv;
+  friend void           to_json (nlohmann::json &j, const FileAudioSource &clip)
+  {
+    to_json (j, static_cast<const UuidIdentifiableObject &> (clip));
+    j[kNameKey] = clip.name_;
+    j[kBpmKey] = clip.bpm_;
+    j[kBitDepthKey] = clip.bit_depth_;
+    j[kSamplerateKey] = clip.samplerate_;
+  }
+  friend void from_json (const nlohmann::json &j, FileAudioSource &clip)
+  {
+    from_json (j, static_cast<UuidIdentifiableObject &> (clip));
+    j.at (kNameKey).get_to (clip.name_);
+    j.at (kBpmKey).get_to (clip.bpm_);
+    j.at (kBitDepthKey).get_to (clip.bit_depth_);
+    j.at (kSamplerateKey).get_to (clip.samplerate_);
+  }
 
 private:
   /** Name of the clip. */
@@ -294,12 +237,59 @@ private:
    * Bit depth of the clip when the clip was imported into the project.
    */
   utils::audio::BitDepth bit_depth_{};
+};
 
-  /** Whether the clip should use FLAC when being serialized. */
-  bool use_flac_{ false };
+// ========================================================================
 
-  /** File hash, used for checking if a clip is already written to the pool. */
-  utils::hash::HashT file_hash_{};
+/**
+ * Handles all file I/O operations for FileAudioSource
+ */
+class FileAudioSourceWriter : private utils::QElapsedTimeProvider
+{
+public:
+  /**
+   * Writes the given audio clip data to a file.
+   *
+   * @param parts If true, only write new data. @see
+   * FileAudioSource.frames_written.
+   *
+   * @throw ZrythmException on error.
+   */
+  explicit FileAudioSourceWriter (
+    const FileAudioSource &source,
+    fs::path               path,
+    bool                   parts);
+
+  /**
+   * @brief Write the file either in parts or whole (depending on constructor
+   * param).
+   *
+   * If parts, this should be called periodically while the source is expanding
+   * in memory to write any unwritten data to the file.
+   */
+  void write_to_file ();
+
+  /**
+   * @brief To be called after the file has been written via
+   * write_file_buffered().
+   */
+  void finalize_buffered_write ();
+
+  /**
+   * @brief Returns whether enough time has elapsed since the last write to
+   * file. This is used so that writing to file is done in chunks.
+   */
+  bool enough_time_elapsed_since_last_write () const;
+
+private:
+  /**
+   * @brief Whether we are writing in parts.
+   */
+  bool parts_;
+
+  const FileAudioSource                   &source_;
+  std::unique_ptr<juce::AudioFormatWriter> writer_;
+  fs::path                                 writer_path_;
 
   /**
    * Frames already written to the file, per channel.
@@ -313,25 +303,22 @@ private:
    *
    * This is used so that we can write every x ms instead of all the time.
    *
-   * @see AudioClip.frames_written.
+   * @see FileAudioSource.frames_written.
    */
   utils::MonotonicTime last_write_{};
-
-  /**
-   * @brief Audio writer mainly to be used during recording to write data
-   * continuously.
-   */
-  std::unique_ptr<juce::AudioFormatWriter> writer_;
-  std::optional<fs::path>                  writer_path_;
 };
 
-using AudioClipResolverFunc =
-  std::function<AudioClip *(const AudioClip::Uuid &clip_id)>;
-using RegisterNewAudioClipFunc =
-  std::function<void (std::shared_ptr<AudioClip>)>;
+using FileAudioSourcePtrVariant = std::variant<FileAudioSource *>;
+using FileAudioSourceRegistry =
+  utils::OwningObjectRegistry<FileAudioSourcePtrVariant, FileAudioSource>;
+using FileAudioSourceUuidReference =
+  utils::UuidReference<FileAudioSourceRegistry>;
 
-DEFINE_UUID_HASH_SPECIALIZATION (AudioClip::Uuid)
+using FileAudioSourceResolverFunc =
+  std::function<FileAudioSource *(const FileAudioSource::Uuid &clip_id)>;
+using RegisterNewFileAudioSourceFunc =
+  std::function<void (std::shared_ptr<FileAudioSource>)>;
 
-/**
- * @}
- */
+} // namespace zrythm::dsp
+
+DEFINE_UUID_HASH_SPECIALIZATION (zrythm::dsp::FileAudioSource::Uuid)

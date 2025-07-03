@@ -121,7 +121,7 @@ public:
  * Only Tracks that have Regions can have TrackLanes, such as InstrumentTrack
  * and AudioTrack.
  */
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 class TrackLaneImpl
     : public TrackLane,
       public arrangement::ArrangerObjectOwner<RegionT>
@@ -150,7 +150,16 @@ public:
    *
    * @param track The Track to create the TrackLane for.
    */
-  TrackLaneImpl (LanedTrackT * track) : track_ (track) { }
+  TrackLaneImpl (
+    structure::arrangement::ArrangerObjectRegistry &registry,
+    dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
+    LanedTrackT *                                   track,
+    QObject                                        &derived)
+      : arrangement::ArrangerObjectOwner<
+          RegionT> (registry, file_audio_source_registry, derived),
+        track_ (track)
+  {
+  }
 
   bool is_auditioner () const;
 
@@ -242,8 +251,10 @@ public:
    */
   std::unique_ptr<TrackLaneT> gen_snapshot () const;
 
+#if 0
   arrangement::ArrangerObjectOwner<RegionT>::Location
   get_location (const RegionT &) const override;
+#endif
 
   std::string get_field_name_for_serialization (const RegionT *) const override
   {
@@ -264,7 +275,7 @@ protected:
     for (auto * region : obj.get_children_view ())
       {
         // region->is_auditioner_ = is_auditioner ();
-        region->set_lane (dynamic_cast<TrackLaneT *> (&obj));
+        // region->set_lane (dynamic_cast<TrackLaneT *> (&obj));
       }
   }
 
@@ -302,8 +313,6 @@ private:
 public:
   /** Owner track. */
   LanedTrackT * track_ = nullptr;
-
-  static_assert (arrangement::FinalRegionSubclass<RegionT>);
 };
 
 using TrackLaneVariant = std::variant<MidiLane, AudioLane>;

@@ -133,10 +133,10 @@ public:
   using UuidType = typename RegistryT::UuidType;
   using VariantType = typename RegistryT::VariantType;
 
-  // FIXME: temporary workaround so that Tracklist::swap_tracks() works with
-  // temporary resizing of tracks_. This should be removed after the swap logic
-  // is refactored.
-  UuidReference () = default;
+  static constexpr auto kIdKey = "id"sv;
+
+  // unengaged - need to call set_id to acquire a reference
+  UuidReference (RegistryT &registry) : registry_ (registry) { }
 
   UuidReference (const UuidType &id, RegistryT &registry)
       : id_ (id), registry_ (registry)
@@ -159,21 +159,25 @@ public:
   }
 
   UuidReference (UuidReference &&other)
+      : id_ (std::exchange (other.id_, std::nullopt)),
+        registry_ (std::exchange (other.registry_, std::nullopt))
   {
-    if (this != &other)
-      {
-        id_ = std::move (other.id_);
-        registry_ = std::move (other.registry_);
-        acquire_ref ();
-      }
+    // No need to acquire_ref() here because we're taking over the reference
+    // from 'other' which already holds it
   }
+
   UuidReference &operator= (UuidReference &&other)
   {
     if (this != &other)
       {
-        id_ = std::move (other.id_);
-        registry_ = std::move (other.registry_);
-        acquire_ref ();
+        // Release our current reference (if any)
+        release_ref ();
+
+        // Take ownership from other
+        id_ = std::exchange (other.id_, std::nullopt);
+        registry_ = std::exchange (other.registry_, std::nullopt);
+
+        // No need to acquire_ref() - we're taking over the reference
       }
     return *this;
   }
@@ -182,9 +186,33 @@ public:
 
   const UuidType &id () const { return *id_; }
 
+  /**
+   * @brief To be used when using the Registry-only constructor.
+   *
+   * This is useful when deserializing UuidReference types: First construct with
+   * just the registry, then from_json() should call this to set the ID and
+   * acquire a reference.
+   */
+  void set_id (const UuidType &id)
+  {
+    if (id_.has_value ())
+      {
+        throw std::runtime_error (
+          "Cannot set id of UuidReference that already has an id");
+      }
+    id_ = id;
+    acquire_ref ();
+  }
+
   VariantType get_object () const
   {
     return get_registry ().find_by_id_or_throw (id ());
+  }
+
+  // Convenience getter
+  template <typename ObjectT> ObjectT * get_object_as () const
+  {
+    return std::get<ObjectT *> (get_object ());
   }
 
   template <typename... Args>
@@ -197,16 +225,6 @@ public:
       get_object ());
   }
 
-  friend void to_json (nlohmann::json &j, const UuidReference &ref)
-  {
-    j[kIdKey] = ref.id_;
-  }
-  friend void from_json (const nlohmann::json &j, UuidReference &ref)
-  {
-    j.at (kIdKey).get_to (ref.id_);
-    ref.acquire_ref ();
-  }
-
   auto get_iterator_in_registry () const
   {
     return get_registry ().get_iterator_for_id (id ());
@@ -215,11 +233,6 @@ public:
   auto get_iterator_in_registry ()
   {
     return get_registry ().get_iterator_for_id (id ());
-  }
-
-  friend bool operator== (const UuidReference &lhs, const UuidReference &rhs)
-  {
-    return lhs.id () == rhs.id ();
   }
 
 private:
@@ -243,9 +256,23 @@ private:
   }
   RegistryT &get_registry () { return *registry_; }
 
-private:
-  static constexpr std::string_view kIdKey = "id";
+  friend void to_json (nlohmann::json &j, const UuidReference &ref)
+  {
+    assert (ref.id_.has_value ());
+    j[kIdKey] = *ref.id_;
+  }
+  friend void from_json (const nlohmann::json &j, UuidReference &ref)
+  {
+    j.at (kIdKey).get_to (ref.id_);
+    ref.acquire_ref ();
+  }
 
+  friend bool operator== (const UuidReference &lhs, const UuidReference &rhs)
+  {
+    return lhs.id () == rhs.id ();
+  }
+
+private:
   std::optional<UuidType> id_;
   OptionalRef<RegistryT>  registry_;
 
@@ -281,6 +308,14 @@ public:
   using BaseType = BaseT;
 
   OwningObjectRegistry (QObject * parent = nullptr) : QObject (parent) { }
+
+  // ========================================================================
+  // QML/QObject Interface
+  // ========================================================================
+
+  // TODO signals...
+
+  // ========================================================================
 
   // Factory method that forwards constructor arguments
   template <typename CreateType, typename... Args>
@@ -388,6 +423,16 @@ public:
     requires std::derived_from<ObjectT, BaseT>
   {
     register_object (&obj);
+  }
+
+  /**
+   * @brief Returns the reference count of an object.
+   *
+   * Mainly intended for debugging.
+   */
+  auto reference_count (const UuidType &id) const
+  {
+    return ref_counts_[type_safe::get (id)];
   }
 
   void acquire_reference (const UuidType &id)

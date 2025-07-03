@@ -14,11 +14,12 @@
 namespace zrythm::structure::tracks
 {
 ChordTrack::ChordTrack (
-  TrackRegistry          &track_registry,
-  PluginRegistry         &plugin_registry,
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry,
-  bool                    new_identity)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  TrackRegistry                &track_registry,
+  PluginRegistry               &plugin_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  bool                          new_identity)
     : Track (
         Track::Type::Chord,
         PortType::Event,
@@ -26,10 +27,14 @@ ChordTrack::ChordTrack (
         plugin_registry,
         port_registry,
         obj_registry),
-      AutomatableTrack (port_registry, new_identity),
+      AutomatableTrack (file_audio_source_registry, port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity),
       RecordableTrack (port_registry, new_identity),
-      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity),
+      arrangement::ArrangerObjectOwner<
+        ChordRegion> (obj_registry, file_audio_source_registry, *this),
+      arrangement::ArrangerObjectOwner<
+        ScaleObject> (obj_registry, file_audio_source_registry, *this)
 {
   if (new_identity)
     {
@@ -141,38 +146,41 @@ ChordTrack::get_scale_at (size_t index) const -> ScaleObject *
 }
 
 auto
-ChordTrack::get_scale_at_pos (const Position pos) const -> ScaleObject *
+ChordTrack::get_scale_at_ticks (double timeline_ticks) const -> ScaleObject *
 {
   auto view = std::ranges::reverse_view (
     ArrangerObjectOwner<ScaleObject>::get_children_view ());
-  auto it = std::ranges::find_if (view, [&pos] (const auto &scale) {
-    return scale->get_position () <= pos;
+  auto it = std::ranges::find_if (view, [timeline_ticks] (const auto &scale) {
+    return scale->position ()->ticks () <= timeline_ticks;
   });
 
   return it != view.end () ? (*it) : nullptr;
 }
 
 auto
-ChordTrack::get_chord_at_pos (const Position pos) const -> ChordObject *
+ChordTrack::get_chord_at_ticks (double timeline_ticks) const -> ChordObject *
 {
+  const auto timeline_frames = static_cast<signed_frame_t> (
+    std::round (PROJECT->get_tempo_map ().tick_to_samples (timeline_ticks)));
   auto region_var =
     arrangement::ArrangerObjectSpan{
       arrangement::ArrangerObjectOwner<
         arrangement::ChordRegion>::get_children_vector ()
     }
-      .get_bounded_object_at_pos (pos, false);
+      .get_bounded_object_at_position (timeline_frames, false);
   if (!region_var)
     {
       return nullptr;
     }
   const auto * region = std::get<ChordRegion *> (*region_var);
 
-  const auto local_frames = region->timeline_frames_to_local (pos.frames_, true);
+  const auto local_frames =
+    timeline_frames_to_local (*region, timeline_frames, true);
 
   auto chord_objects_view = region->get_children_view () | std::views::reverse;
   auto it =
     std::ranges::find_if (chord_objects_view, [local_frames] (const auto &co) {
-      return co->get_position ().frames_ <= local_frames;
+      return co->position ()->samples () <= local_frames;
     });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;

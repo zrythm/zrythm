@@ -54,7 +54,7 @@ public:
     /* valid if no other marker with the same name exists*/
     return !std::ranges::contains (
       get_children_view (), name,
-      [] (const auto &marker) { return marker->get_name (); });
+      [] (const auto &marker) { return marker->name ()->get_name (); });
   }
 
   /**
@@ -75,10 +75,12 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
+#if 0
   Location get_location (const Marker &) const override
   {
     return { .track_id_ = get_uuid () };
   }
+#endif
 
   std::string get_field_name_for_serialization (const Marker *) const override
   {

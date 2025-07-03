@@ -8,6 +8,12 @@
 namespace zrythm::structure::arrangement
 {
 
+/**
+ * @brief A QML wrapper over a list of arranger objects.
+ *
+ * All operations on the list should be performed via this class so we can take
+ * advantage of signal emissions.
+ */
 class ArrangerObjectListModel final : public QAbstractListModel
 {
   Q_OBJECT
@@ -55,19 +61,38 @@ public:
     return {};
   }
 
-  // expose some list model methods for easy access
-  void begin_insert_rows (int first, int last)
+  void clear ()
   {
-    beginInsertRows ({}, first, last);
+    beginResetModel ();
+    objects_.clear ();
+    endResetModel ();
   }
-  void end_insert_rows () { endInsertRows (); }
-  void begin_remove_rows (int first, int last)
+
+  bool insertObject (const ArrangerObjectUuidReference &object, int index)
   {
-    beginRemoveRows ({}, first, last);
+    if (index < 0 || index > static_cast<int> (objects_.size ()))
+      return false;
+
+    beginInsertRows (QModelIndex (), index, index);
+    objects_.insert (objects_.begin () + index, object);
+    endInsertRows ();
+    return true;
   }
-  void end_remove_rows () { endRemoveRows (); }
-  void begin_reset_model () { beginResetModel (); }
-  void end_reset_model () { endResetModel (); }
+
+  bool
+  removeRows (int row, int count, const QModelIndex &parent = QModelIndex ())
+    override
+  {
+    if (parent.isValid ())
+      return false;
+    if (row < 0 || row + count > static_cast<int> (objects_.size ()))
+      return false;
+
+    beginRemoveRows (parent, row, row + count - 1);
+    objects_.erase (objects_.begin () + row, objects_.begin () + row + count);
+    endRemoveRows ();
+    return true;
+  }
 
 private:
   std::vector<ArrangerObjectUuidReference> &objects_;

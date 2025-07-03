@@ -280,6 +280,11 @@ public:
     return tick_to_seconds (tick) * sample_rate_;
   }
 
+  int64_t tick_to_samples_rounded (double tick) const
+  {
+    return static_cast<int64_t> (std::round (tick_to_samples (tick)));
+  }
+
   /// Convert seconds to fractional ticks
   double seconds_to_tick (double seconds) const
   {

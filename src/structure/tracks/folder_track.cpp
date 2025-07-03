@@ -8,11 +8,12 @@
 namespace zrythm::structure::tracks
 {
 FolderTrack::FolderTrack (
-  TrackRegistry          &track_registry,
-  PluginRegistry         &plugin_registry,
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry,
-  bool                    new_identity)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  TrackRegistry                &track_registry,
+  PluginRegistry               &plugin_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  bool                          new_identity)
     : Track (
         Track::Type::Folder,
         PortType::Unknown,

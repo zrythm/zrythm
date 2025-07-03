@@ -5,8 +5,11 @@
 
 namespace zrythm::structure::tracks
 {
-AudioLane::AudioLane (LanedTrackImpl<AudioLane> * track)
-    : TrackLaneImpl<AudioRegion> (track)
+AudioLane::AudioLane (
+  structure::arrangement::ArrangerObjectRegistry &registry,
+  dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
+  LanedTrackImpl<AudioLane> *                     track)
+    : TrackLaneImpl<AudioRegion> (registry, file_audio_source_registry, track, *this)
 {
 }
 

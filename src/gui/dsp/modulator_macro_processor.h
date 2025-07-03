@@ -96,12 +96,17 @@ private:
   friend void from_json (const nlohmann::json &j, ModulatorMacroProcessor &p)
   {
     j.at (kNameKey).get_to (p.name_);
-    j.at (kCVInKey).get_to (p.cv_in_id_);
-    j.at (kCVOutKey).get_to (p.cv_out_id_);
-    j.at (kMacroKey).get_to (p.macro_id_);
+    p.cv_in_id_.emplace (p.port_registry_);
+    j.at (kCVInKey).get_to (*p.cv_in_id_);
+    p.cv_out_id_.emplace (p.port_registry_);
+    j.at (kCVOutKey).get_to (*p.cv_out_id_);
+    p.macro_id_.emplace (p.port_registry_);
+    j.at (kMacroKey).get_to (*p.macro_id_);
   }
 
 private:
+  PortRegistry &port_registry_;
+
   /**
    * Name to be shown in the modulators tab.
    *

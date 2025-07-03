@@ -25,7 +25,7 @@ TEST_F (ZrythmFixture, QueueFile)
 
   /* queue for a few frames */
   AUDIO_ENGINE->process (256);
-  AudioClip c (file.abs_path_);
+  FileAudioSource c (file.abs_path_);
   ASSERT_TRUE (audio_frames_equal (
     &SAMPLE_PROCESSOR->fader_->stereo_out_->get_l ()
        .buf_[AUDIO_REGION_BUILTIN_FADE_FRAMES],

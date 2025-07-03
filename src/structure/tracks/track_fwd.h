@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/uuid_identifiable_object.h"
+#include "utils/variant_helpers.h"
 
 namespace zrythm::structure::tracks
 {

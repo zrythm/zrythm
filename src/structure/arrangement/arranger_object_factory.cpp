@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/io/midi_file.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -22,10 +21,8 @@ ArrangerObjectFactory::addMidiRegionFromChordDescriptor (
 {
   auto *     mr = addEmptyMidiRegion (lane, startTicks);
   const auto r_len_ticks = snap_grid_timeline_.get_default_ticks ();
-  const auto frames_per_tick = frames_per_tick_getter_ ();
-  mr->set_end_pos_full_size (
-    dsp::Position (static_cast<double> (r_len_ticks), frames_per_tick),
-    frames_per_tick);
+  mr->regionMixin ()->bounds ()->length ()->setTicks (
+    static_cast<double> (r_len_ticks));
   const auto mn_len_ticks = snap_grid_editor_.get_default_ticks ();
 
   /* create midi notes */
@@ -36,7 +33,7 @@ ArrangerObjectFactory::addMidiRegionFromChordDescriptor (
           auto mn =
             get_builder<MidiNote> ()
               .with_pitch (i + 36)
-              .with_velocity (Velocity::DEFAULT_VALUE)
+              .with_velocity (MidiNote::DEFAULT_VELOCITY)
               .with_start_ticks (0)
               .with_end_ticks (mn_len_ticks)
               .build_in_registry ();
@@ -59,14 +56,7 @@ ArrangerObjectFactory::addMidiRegionFromMidiFile (
   try
     {
       MidiFile mf{ utils::Utf8String::from_qstring (abs_path) };
-      // FIXME use dependency injection instead of global TRANSPORT
-      mf.into_region (*mr, *TRANSPORT, midi_track_idx);
-      if (*mr->pos_ >= *mr->end_pos_)
-        {
-          throw ZrythmException (
-            fmt::format (
-              "Invalid positions: start {} end {}", *mr->pos_, *mr->end_pos_));
-        }
+      mf.into_region (*mr, midi_track_idx);
     }
   catch (const ZrythmException &e)
     {

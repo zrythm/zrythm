@@ -73,9 +73,9 @@ public:
   void apply_preset (const ChordPreset &pset, bool undoable);
 
   void apply_preset_from_scale (
-    MusicalScale::Type scale,
-    MusicalNote        root_note,
-    bool               undoable);
+    MusicalScale::ScaleType scale,
+    MusicalNote             root_note,
+    bool                    undoable);
 
   void transpose_chords (bool up, bool undoable);
 

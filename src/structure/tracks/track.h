@@ -13,6 +13,7 @@
 
 #include <QColor>
 #include <QHash>
+#include <QtQmlIntegration>
 
 struct FileImportInfo;
 class FileDescriptor;
@@ -21,6 +22,7 @@ class FileDescriptor;
   /* FIXME: make private */ \
 public: \
   ClassType ( \
+    dsp::FileAudioSourceRegistry &file_audio_source_registry, \
     TrackRegistry &track_registry, PluginRegistry &plugin_registry, \
     PortRegistry &port_registry, ArrangerObjectRegistry &obj_registry, \
     bool new_identity);
@@ -246,56 +248,22 @@ public: \
   } \
   Q_SIGNAL void iconChanged (const QString &icon);
 
-namespace zrythm::structure::tracks
+namespace zrythm::engine::session
 {
-class FoldableTrack;
-class ChannelTrack;
-class GroupTargetTrack;
-class TrackFactory;
+class Transport;
+}
 
-/**
- * Called when track(s) are actually imported into the project.
- */
-using TracksReadyCallback = void (*) (const FileImportInfo *);
-
-/**
- * @brief Represents a track in the project.
- *
- * The `Track` class is the base class for all types of tracks in the
- * project. It provides common functionality and properties shared by
- * all track types, such as the track's position in the tracklist, its label,
- * and whether it is muted.
- *
- * Subclasses of `Track` represent specific types of tracks, such as
- * MIDI tracks, instrument tracks, and audio tracks.
- */
-class Track
-    : public dsp::graph::IProcessable,
-      public IPortOwner,
-      public utils::UuidIdentifiableObject<Track>
+// hack to make QML registration happy because it doesn't support Q_GADGET with
+// pure virtual methods
+class TrackTypeWrapper
 {
+  Q_GADGET
+
 public:
-  using PortType = dsp::PortType;
-  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
-  using PluginPtrVariant = PluginRegistry::VariantType;
-  using PluginSlot = plugins::PluginSlot;
-  using ArrangerObject = structure::arrangement::ArrangerObject;
-  using ArrangerObjectPtrVariant =
-    structure::arrangement::ArrangerObjectPtrVariant;
-  using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
-  using Region = structure::arrangement::Region;
-
-  using TrackSelectionStatusGetter = std::function<bool (const TrackUuid &)>;
-
-  static constexpr int MIN_HEIGHT = 26;
-  static constexpr int DEF_HEIGHT = 52;
-
-  friend class Tracklist;
-
   /**
    * The Track's type.
    */
-  enum class Type
+  enum class TrackType : basic_enum_base_type_t
   {
     /**
      * Instrument tracks must have an Instrument plugin at the first slot and
@@ -359,6 +327,53 @@ public:
     /** Foldable track used for visual grouping. */
     Folder,
   };
+  Q_ENUM (TrackType)
+};
+
+namespace zrythm::structure::tracks
+{
+class FoldableTrack;
+class ChannelTrack;
+class GroupTargetTrack;
+class TrackFactory;
+
+/**
+ * Called when track(s) are actually imported into the project.
+ */
+using TracksReadyCallback = void (*) (const FileImportInfo *);
+
+/**
+ * @brief Represents a track in the project.
+ *
+ * The `Track` class is the base class for all types of tracks in the
+ * project. It provides common functionality and properties shared by
+ * all track types, such as the track's position in the tracklist, its label,
+ * and whether it is muted.
+ *
+ * Subclasses of `Track` represent specific types of tracks, such as
+ * MIDI tracks, instrument tracks, and audio tracks.
+ */
+class Track
+    : public dsp::graph::IProcessable,
+      public IPortOwner,
+      public utils::UuidIdentifiableObject<Track>
+{
+public:
+  using PortType = dsp::PortType;
+  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
+  using PluginPtrVariant = PluginRegistry::VariantType;
+  using PluginSlot = plugins::PluginSlot;
+  using ArrangerObject = structure::arrangement::ArrangerObject;
+  using ArrangerObjectPtrVariant =
+    structure::arrangement::ArrangerObjectPtrVariant;
+  using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
+  using Type = ::TrackTypeWrapper::TrackType;
+  using TrackSelectionStatusGetter = std::function<bool (const TrackUuid &)>;
+
+  static constexpr int MIN_HEIGHT = 26;
+  static constexpr int DEF_HEIGHT = 52;
+
+  friend class Tracklist;
 
   using Color = zrythm::utils::Color;
   using Position = zrythm::dsp::Position;
@@ -677,14 +692,14 @@ public:
    *
    * @param at The AutomationTrack of this Region, if automation region.
    * @param lane_pos The position of the lane to add to, if applicable.
-   * @param idx The index to insert the region at inside its parent, or nullopt
-   * to append.
+   * @param idx The index to insert the region at inside its parent, or
+   * nullopt to append.
    * @param gen_name Generate a unique region name or not. This will be 0 if
    * the caller already generated a unique name.
    *
    * @throw ZrythmException if the insertion fails.
    */
-  template <arrangement::FinalRegionSubclass RegionT, FinalClass SelfT>
+  template <arrangement::RegionObject RegionT, FinalClass SelfT>
   void insert_region (
     this SelfT                              &self,
     arrangement::ArrangerObjectUuidReference region_ref,
@@ -695,29 +710,32 @@ public:
   {
     auto * region = std::get<RegionT *> (region_ref.get_object ());
     // assert (region->validate (false, 0));
-    assert (type_can_have_region_type (self.type_, region->get_type ()));
+    assert (type_can_have_region_type (self.type_, region->type ()));
 
     if (gen_name)
       {
         if (at)
           {
-            region->generate_name_from_automation_track (self, *at);
+            region->regionMixin ()->name ()->setName (
+              utils::Utf8String::from_utf8_encoded_string (
+                fmt::format ("{} - {}", self.get_name (), at->getLabel ()))
+                .to_qstring ());
           }
         else
           {
-            region->generate_name_from_track (self);
+            region->regionMixin ()->name ()->setName (self.getName ());
           }
       }
 
-    assert (!region->get_name ().empty ());
+    assert (!region->regionMixin ()->name ()->get_name ().empty ());
     z_debug (
       "inserting region '{}' to track '{}' at lane {} (idx {})",
-      region->get_name (), self.name_, lane_pos, idx);
+      region->regionMixin ()->name ()->get_name (), self.name_, lane_pos, idx);
 
-    region->set_track_id (self.get_uuid ());
+    // region->set_track_id (self.get_uuid ());
 
     if constexpr (
-      std::derived_from<RegionT, arrangement::LaneOwnedObject>
+      arrangement::LaneOwnedObject<RegionT>
       && std::derived_from<SelfT, LanedTrack>)
       {
         /* enable extra lane if necessary */
@@ -767,17 +785,17 @@ public:
       {
         if (!self.is_auditioner ())
           {
+            // TODO in pool, just listen to when a new clip is added in the clip
+            // registry and auto-write then
+#if 0
             auto * clip = region->get_clip ();
             self.write_audio_clip_to_pool_after_adding_audio_region (*clip);
+#endif
           }
       }
 
     z_debug ("inserted: {}", *region);
   }
-
-  // FIXME: break this dependency on AudioPool
-  void
-  write_audio_clip_to_pool_after_adding_audio_region (AudioClip &clip) const;
 
   /**
    * Appends a Region to the given lane or AutomationTrack of the track.
@@ -786,7 +804,7 @@ public:
    *
    * @throw ZrythmException if the insertion fails.
    */
-  template <arrangement::FinalRegionSubclass RegionT>
+  template <arrangement::RegionObject RegionT>
   void add_region (
     this auto         &self,
     auto               region_ref,
@@ -895,30 +913,15 @@ public:
   get_unique_name (const Tracklist &tracklist, const utils::Utf8String &name);
 
   /**
-   * Updates the frames/ticks of each position in each child of the track
-   * recursively.
-   *
-   * @param from_ticks Whether to update the positions based on ticks (true)
-   * or frames (false).
-   * @param frames_per_tick This will be used when doing position conversions
-   via
-   * dependency injection instead of relying on the current project's transport.
-   */
-  void update_positions (
-    bool               from_ticks,
-    bool               bpm_change,
-    dsp::FramesPerTick frames_per_tick);
-
-  /**
    * Returns all the regions inside the given range, or all the regions if both
    * @ref p1 and @ref p2 are NULL.
    *
    * @return The number of regions returned.
    */
   virtual void get_regions_in_range (
-    std::vector<Region *> &regions,
-    const dsp::Position *  p1,
-    const dsp::Position *  p2)
+    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+    std::optional<signed_frame_t>                          p1,
+    std::optional<signed_frame_t>                          p2)
   {
   }
 
@@ -1328,6 +1331,7 @@ public:
       create_empty_with_action (get_type_for_class<T> ()));
   }
 
+#if 0
   /**
    * @brief Create a track of the given type with the given name and position.
    *
@@ -1337,6 +1341,7 @@ public:
    */
   [[nodiscard]] static TrackUniquePtrVariant
   create_track (Type type, const utils::Utf8String &name, int pos);
+#endif
 
   // GMenu * generate_edit_context_menu (int num_selected);
 
@@ -1394,10 +1399,10 @@ protected:
   virtual void set_playback_caches () { }
 
   void add_region_if_in_range (
-    const dsp::Position *  p1,
-    const dsp::Position *  p2,
-    std::vector<Region *> &regions,
-    Region *               region);
+    std::optional<signed_frame_t>                          p1,
+    std::optional<signed_frame_t>                          p2,
+    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+    arrangement::ArrangerObjectUuidReference               region);
 
 private:
   static constexpr std::string_view kTypeKey = "type";
@@ -1428,22 +1433,7 @@ private:
     j[kCommentKey] = track.comment_;
     j[kFrozenClipIdKey] = track.frozen_clip_id_;
   }
-  friend void from_json (const nlohmann::json &j, Track &track)
-  {
-    from_json (j, static_cast<UuidIdentifiableObject &> (track));
-    j.at (kTypeKey).get_to (track.type_);
-    j.at (kNameKey).get_to (track.name_);
-    j.at (kIconNameKey).get_to (track.icon_name_);
-    j.at (kIndexKey).get_to (track.pos_);
-    j.at (kVisibleKey).get_to (track.visible_);
-    j.at (kMainHeightKey).get_to (track.main_height_);
-    j.at (kEnabledKey).get_to (track.enabled_);
-    j.at (kColorKey).get_to (track.color_);
-    j.at (kInputSignalTypeKey).get_to (track.in_signal_type_);
-    j.at (kOutputSignalTypeKey).get_to (track.out_signal_type_);
-    j.at (kCommentKey).get_to (track.comment_);
-    j.at (kFrozenClipIdKey).get_to (track.frozen_clip_id_);
-  }
+  friend void from_json (const nlohmann::json &j, Track &track);
 
   /**
    * @brief Create a new track.
@@ -1551,7 +1541,7 @@ public:
   bool trigger_midi_activity_ = false;
 
   /** Pool ID of the clip if track is frozen (unset if not frozen). */
-  std::optional<AudioClip::Uuid> frozen_clip_id_;
+  std::optional<dsp::FileAudioSourceUuidReference> frozen_clip_id_;
 
   /** Pointer to owner tracklist, if any. */
   Tracklist * tracklist_ = nullptr;

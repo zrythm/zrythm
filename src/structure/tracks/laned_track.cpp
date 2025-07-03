@@ -101,7 +101,9 @@ template <typename TrackLaneT>
 void
 LanedTrackImpl<TrackLaneT>::add_lane ()
 {
-  auto new_lane = new TrackLaneT (this);
+  auto new_lane = new TrackLaneT (
+    PROJECT->get_arranger_object_registry (),
+    PROJECT->get_file_audio_source_registry (), this);
   lanes_.push_back (new_lane);
 }
 
@@ -109,6 +111,8 @@ template <typename TrackLaneT>
 void
 LanedTrackImpl<TrackLaneT>::set_playback_caches ()
 {
+// TODO
+#if 0
   lane_snapshots_.clear ();
   lane_snapshots_.reserve (lanes_.size ());
   for (const auto &lane_var : lanes_)
@@ -117,6 +121,7 @@ LanedTrackImpl<TrackLaneT>::set_playback_caches ()
 
       lane_snapshots_.push_back (lane->gen_snapshot ());
     }
+#endif
 }
 
 template <typename TrackLaneT>
@@ -138,15 +143,15 @@ LanedTrackImpl<TrackLaneT>::create_missing_lanes (const int pos)
 template <typename TrackLaneT>
 void
 LanedTrackImpl<TrackLaneT>::get_regions_in_range (
-  std::vector<Region *> &regions,
-  const Position *       p1,
-  const Position *       p2)
+  std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+  std::optional<signed_frame_t>                          p1,
+  std::optional<signed_frame_t>                          p2)
 {
   for (auto &lane : lanes_)
     {
       std::visit (
         [&] (auto &&l) {
-          for (auto * region : l->get_children_view ())
+          for (const auto &region : l->get_children_vector ())
             {
               add_region_if_in_range (p1, p2, regions, region);
             }

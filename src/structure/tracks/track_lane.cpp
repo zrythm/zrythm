@@ -5,6 +5,7 @@
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/arrangement/midi_region.h"
 #include "structure/tracks/laned_track.h"
 #include "structure/tracks/track_lane.h"
 #include "structure/tracks/tracklist.h"
@@ -24,14 +25,14 @@ TrackLane::generate_name (int pos)
     format_qstr (QObject::tr ("Lane {}"), pos + 1));
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 void
 TrackLaneImpl<RegionT>::rename_with_action (const utils::Utf8String &new_name)
 {
   rename (new_name, true);
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 void
 TrackLaneImpl<RegionT>::unselect_all ()
 {
@@ -44,7 +45,7 @@ TrackLaneImpl<RegionT>::unselect_all ()
     }
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 void
 TrackLaneImpl<RegionT>::rename (
   const utils::Utf8String &new_name,
@@ -70,7 +71,7 @@ TrackLaneImpl<RegionT>::rename (
     }
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 void
 TrackLaneImpl<
   RegionT>::set_soloed (bool solo, bool trigger_undo, bool fire_events)
@@ -101,7 +102,7 @@ TrackLaneImpl<
     }
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 void
 TrackLaneImpl<RegionT>::set_muted (bool mute, bool trigger_undo, bool fire_events)
 {
@@ -131,10 +132,12 @@ TrackLaneImpl<RegionT>::set_muted (bool mute, bool trigger_undo, bool fire_event
     }
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 void
 TrackLaneImpl<RegionT>::after_remove_region ()
 {
+// TODO
+#if 0
   auto track = get_track ();
   z_return_if_fail (track);
   if (
@@ -143,16 +146,19 @@ TrackLaneImpl<RegionT>::after_remove_region ()
     {
       track->remove_empty_last_lanes ();
     }
+#endif
 }
 
-template <typename RegionT>
+#if 0
+template <arrangement::RegionObject RegionT>
 arrangement::ArrangerObjectOwner<RegionT>::Location
 TrackLaneImpl<RegionT>::get_location (const RegionT &) const
 {
   return { .track_id_ = track_->get_uuid (), .owner_ = get_index_in_track () };
 }
+#endif
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 bool
 TrackLaneImpl<RegionT>::is_effectively_muted () const
 {
@@ -169,14 +175,14 @@ TrackLaneImpl<RegionT>::is_effectively_muted () const
   return false;
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 bool
 TrackLaneImpl<RegionT>::is_auditioner () const
 {
   return track_ && track_->is_auditioner ();
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 Tracklist *
 TrackLaneImpl<RegionT>::get_tracklist () const
 {
@@ -188,7 +194,7 @@ TrackLaneImpl<RegionT>::get_tracklist () const
 /**
  * Calculates a unique index for this lane.
  */
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 int
 TrackLaneImpl<RegionT>::calculate_lane_idx_for_midi_serialization () const
 {
@@ -212,7 +218,7 @@ TrackLaneImpl<RegionT>::calculate_lane_idx_for_midi_serialization () const
   return pos;
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 void
 TrackLaneImpl<RegionT>::write_to_midi_file (
   MIDI_FILE *            mf,
@@ -223,6 +229,8 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
   bool                   use_track_or_lane_pos)
   requires std::derived_from<MidiRegion, RegionT>
 {
+// TODO
+#if 0
   auto track = get_track ();
   z_return_if_fail (track);
   auto                                  midi_track_pos = track->get_index ();
@@ -281,17 +289,21 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
     {
       own_events->write_to_midi_file (mf, midi_track_pos);
     }
+#endif
 }
 
-template <typename RegionT>
+template <arrangement::RegionObject RegionT>
 std::unique_ptr<typename TrackLaneImpl<RegionT>::TrackLaneT>
 TrackLaneImpl<RegionT>::gen_snapshot () const
 {
-  auto ret = utils::clone_unique (
-    get_derived_lane (), utils::ObjectCloneType::Snapshot, track_);
-  return ret;
   // TODO
+  throw std::runtime_error ("not implemented");
 #if 0
+  auto ret = utils::clone_unique (
+    get_derived_lane (), utils::ObjectCloneType::Snapshot,
+    track_);
+  return ret;
+
   ret->track_ = track_;
 
   /* clone_unique above creates the regions in `regions_` but we want them in

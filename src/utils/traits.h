@@ -13,6 +13,47 @@
 
 #include <type_safe/strong_typedef.hpp>
 
+// Helper to detect if DerivedT inherits from any specialization of BaseTemplateT
+template <template <typename...> class BaseTemplateT, typename DerivedT>
+struct is_derived_from_template
+{
+private:
+  template <typename... Args>
+  static constexpr std::true_type test (const BaseTemplateT<Args...> *);
+
+  static constexpr std::false_type test (...);
+
+public:
+  static constexpr bool value =
+    decltype (test (std::declval<DerivedT *> ()))::value;
+};
+
+// Convenience variable template (C++17+)
+template <template <typename...> class BaseTemplateT, typename DerivedT>
+inline constexpr bool is_derived_from_template_v =
+  is_derived_from_template<BaseTemplateT, DerivedT>::value;
+
+namespace internal_test
+{
+template <typename T> class MyTemplateBase
+{
+};
+template <typename T> class OtherTemplateBase
+{
+};
+class OtherBase
+{
+};
+class Derived : public MyTemplateBase<int>
+{
+};
+
+static_assert (is_derived_from_template_v<MyTemplateBase, Derived>);
+static_assert (!is_derived_from_template_v<MyTemplateBase, int>);
+static_assert (!is_derived_from_template_v<MyTemplateBase, OtherBase>);
+static_assert (!is_derived_from_template_v<OtherTemplateBase, Derived>);
+}
+
 // Helper concept to check if a type is a container
 template <typename T>
 concept ContainerType = requires (T t) {

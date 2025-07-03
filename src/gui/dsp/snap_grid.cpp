@@ -247,11 +247,11 @@ SnapGrid::get_snapped_end_position (const Position &start_pos) const
 
 bool
 SnapGrid::get_prev_or_next_snap_point (
-  const Position &pivot_pos,
-  Track *         track,
-  Region *        region,
-  Position       &out_pos,
-  bool            get_prev_point) const
+  const Position                     &pivot_pos,
+  Track *                             track,
+  std::optional<ArrangerObject::Uuid> region,
+  Position                           &out_pos,
+  bool                                get_prev_point) const
 {
   out_pos = pivot_pos;
   if (!pivot_pos.is_positive ())
@@ -283,6 +283,8 @@ SnapGrid::get_prev_or_next_snap_point (
 
   if (track != nullptr)
     {
+// TODO
+#if 0
       std::visit (
         [&] (auto &&t) {
           using TrackT = base_type<decltype (t)>;
@@ -317,8 +319,9 @@ SnapGrid::get_prev_or_next_snap_point (
             }
         },
         convert_to_variant<structure::tracks::TrackPtrVariant> (track));
+#endif
     }
-  else if (region != nullptr)
+  else if (region.has_value ())
     {
       /* TODO */
     }
@@ -334,30 +337,30 @@ SnapGrid::get_prev_or_next_snap_point (
 
 bool
 SnapGrid::get_prev_snap_point (
-  const Position &pivot_pos,
-  Track *         track,
-  Region *        region,
-  Position       &prev_sp) const
+  const Position                     &pivot_pos,
+  Track *                             track,
+  std::optional<ArrangerObject::Uuid> region,
+  Position                           &prev_sp) const
 {
   return get_prev_or_next_snap_point (pivot_pos, track, region, prev_sp, true);
 }
 
 bool
 SnapGrid::get_next_snap_point (
-  const Position &pivot_pos,
-  Track *         track,
-  Region *        region,
-  Position       &next_sp) const
+  const Position                     &pivot_pos,
+  Track *                             track,
+  std::optional<ArrangerObject::Uuid> region,
+  Position                           &next_sp) const
 {
   return get_prev_or_next_snap_point (pivot_pos, track, region, next_sp, false);
 }
 
 bool
 SnapGrid::get_closest_snap_point (
-  const Position &pivot_pos,
-  Track *         track,
-  Region *        region,
-  Position       &closest_sp) const
+  const Position                     &pivot_pos,
+  Track *                             track,
+  std::optional<ArrangerObject::Uuid> region,
+  Position                           &closest_sp) const
 {
   /* get closest snap point */
   Position prev_sp;
@@ -386,10 +389,10 @@ SnapGrid::get_closest_snap_point (
 
 SnapGrid::Position
 SnapGrid::snap (
-  const Position  &pivot_pos,
-  const Position * start_pos,
-  Track *          track,
-  Region *         region) const
+  const Position                     &pivot_pos,
+  const Position *                    start_pos,
+  Track *                             track,
+  std::optional<ArrangerObject::Uuid> region) const
 {
   /* this should only be called if snap is on. the check should be done before
    * calling */
@@ -400,7 +403,7 @@ SnapGrid::snap (
 
   if (!snap_to_events_)
     {
-      region = nullptr;
+      region.reset ();
       track = nullptr;
     }
 

@@ -11,32 +11,32 @@ namespace zrythm::structure::arrangement
 {
 class ChordRegion final
     : public QObject,
-      public RegionImpl<ChordRegion>,
+      public ArrangerObject,
       public ArrangerObjectOwner<ChordObject>
 {
   Q_OBJECT
-  QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ChordRegion)
-  DEFINE_REGION_QML_PROPERTIES (ChordRegion)
+  Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     ChordRegion,
     chordObjects,
     ChordObject)
-
-  friend class RegionImpl<ChordRegion>;
+  QML_ELEMENT
 
 public:
-  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (ChordRegion)
+  ChordRegion (
+    const dsp::TempoMap          &tempo_map,
+    ArrangerObjectRegistry       &object_registry,
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    QObject *                     parent = nullptr);
 
-  using RegionT = RegionImpl<ChordRegion>;
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  bool
-  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
+  RegionMixin * regionMixin () const { return region_mixin_.get (); }
 
-  Location get_location (const ChordObject &) const override
-  {
-    return { .track_id_ = track_id_, .owner_ = get_uuid () };
-  }
+  // ========================================================================
 
   std::string
   get_field_name_for_serialization (const ChordObject *) const override
@@ -44,41 +44,35 @@ public:
     return "chordObjects";
   }
 
+private:
   friend void init_from (
     ChordRegion           &obj,
     const ChordRegion     &other,
     utils::ObjectCloneType clone_type);
 
+  static constexpr auto kRegionMixinKey = "regionMixin"sv;
+  friend void           to_json (nlohmann::json &j, const ChordRegion &region)
+  {
+    to_json (j, static_cast<const ArrangerObject &> (region));
+    j[kRegionMixinKey] = region.region_mixin_;
+    to_json (j, static_cast<const ArrangerObjectOwner &> (region));
+  }
+  friend void from_json (const nlohmann::json &j, ChordRegion &region)
+  {
+    from_json (j, static_cast<ArrangerObject &> (region));
+    j.at (kRegionMixinKey).get_to (*region.region_mixin_);
+    from_json (j, static_cast<ArrangerObjectOwner &> (region));
+  }
+
 private:
-  friend void to_json (nlohmann::json &j, const ChordRegion &cr)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (cr));
-    to_json (j, static_cast<const BoundedObject &> (cr));
-    to_json (j, static_cast<const LoopableObject &> (cr));
-    to_json (j, static_cast<const MuteableObject &> (cr));
-    to_json (j, static_cast<const NamedObject &> (cr));
-    to_json (j, static_cast<const ColoredObject &> (cr));
-    to_json (j, static_cast<const Region &> (cr));
-    to_json (j, static_cast<const ArrangerObjectOwner &> (cr));
-  }
-  friend void from_json (const nlohmann::json &j, ChordRegion &cr)
-  {
-    from_json (j, static_cast<ArrangerObject &> (cr));
-    from_json (j, static_cast<BoundedObject &> (cr));
-    from_json (j, static_cast<LoopableObject &> (cr));
-    from_json (j, static_cast<MuteableObject &> (cr));
-    from_json (j, static_cast<NamedObject &> (cr));
-    from_json (j, static_cast<ColoredObject &> (cr));
-    from_json (j, static_cast<Region &> (cr));
-    from_json (j, static_cast<ArrangerObjectOwner &> (cr));
-  }
+  utils::QObjectUniquePtr<RegionMixin> region_mixin_;
 
   BOOST_DESCRIBE_CLASS (
     ChordRegion,
-    (RegionImpl<ChordRegion>, ArrangerObjectOwner<ChordObject>),
+    (ArrangerObject, ArrangerObjectOwner<ChordObject>),
     (),
     (),
-    ())
+    (region_mixin_))
 };
 
 }

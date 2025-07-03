@@ -7,8 +7,6 @@
 
 #include "gui/backend/backend/actions/undo_stack.h"
 
-class AudioClip;
-
 #define UNDO_MANAGER (PROJECT->undo_manager_)
 
 namespace zrythm::gui::actions
@@ -59,11 +57,6 @@ public:
    * @throw ZrythmException If the action couldn't be performed.
    */
   Q_INVOKABLE void perform (QObject * action_qobject);
-
-  /**
-   * Returns whether the given clip is used by any stack.
-   */
-  bool contains_clip (const AudioClip &clip) const;
 
   /**
    * Returns all plugins in the undo stacks.

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "dsp/midi_event.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
@@ -85,6 +87,7 @@ Track::from_variant (const TrackPtrVariant &variant)
   return std::visit ([&] (auto &&t) -> Track * { return t; }, variant);
 }
 
+#if 0
 TrackUniquePtrVariant
 Track::create_track (Track::Type type, const utils::Utf8String &name, int pos)
 {
@@ -158,6 +161,7 @@ Track::create_track (Track::Type type, const utils::Utf8String &name, int pos)
   std::visit ([&] (auto &track) { track->name_ = name; }, track_var);
   return track_var;
 }
+#endif
 
 void
 init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
@@ -202,7 +206,7 @@ Track::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 bool
 Track::is_auditioner () const
 {
-  return tracklist_ && tracklist_->is_auditioner ();
+  return (tracklist_ != nullptr) && tracklist_->is_auditioner ();
 }
 
 Track::Type
@@ -295,7 +299,7 @@ freeze_progress_close_cb (ExportData * data)
     {
       /* move the temporary file to the pool */
       GError *    err = NULL;
-      AudioClip * clip = audio_clip_new_from_file (data->info->file_uri, &err);
+      FileAudioSource * clip = audio_clip_new_from_file (data->info->file_uri, &err);
       if (!clip)
         {
           HANDLE_ERROR (
@@ -444,31 +448,6 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
     convert_to_variant<TrackPtrVariant> (const_cast<Track *> (this)));
 }
 
-void
-Track::update_positions (
-  bool               from_ticks,
-  bool               bpm_change,
-  dsp::FramesPerTick frames_per_tick)
-{
-  /* not ready yet */
-  if (!PROJECT)
-    {
-      z_warning ("not ready to update positions for {} yet", name_);
-      return;
-    }
-
-  std::vector<ArrangerObjectPtrVariant> objects;
-  append_objects (objects);
-  for (auto obj_var : objects)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          obj->update_positions (from_ticks, bpm_change, frames_per_tick);
-        },
-        obj_var);
-    }
-}
-
 bool
 Track::set_name_with_action_full (const utils::Utf8String &name)
 {
@@ -494,25 +473,28 @@ Track::set_name_with_action (const utils::Utf8String &name)
 
 void
 Track::add_region_if_in_range (
-  const Position *       p1,
-  const Position *       p2,
-  std::vector<Region *> &regions,
-  Region *               region)
+  std::optional<signed_frame_t>                          p1,
+  std::optional<signed_frame_t>                          p2,
+  std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+  arrangement::ArrangerObjectUuidReference               region)
 {
   if (!p1 && !p2)
     {
       regions.push_back (region);
       return;
     }
-  else
-    {
-      z_return_if_fail (p1 && p2);
-    }
 
-  if (region->is_hit_by_range (*p1, *p2))
-    {
-      regions.push_back (region);
-    }
+  std::visit (
+    [&] (auto &&r) {
+      if constexpr (arrangement::RegionObject<base_type<decltype (r)>>)
+        {
+          if (r->regionMixin ()->bounds ()->is_hit_by_range ({ *p1, *p2 }))
+            {
+              regions.push_back (region);
+            }
+        }
+    },
+    region.get_object ());
 }
 
 utils::Utf8String
@@ -731,37 +713,22 @@ Track::get_total_bars (
   const engine::session::Transport &transport,
   int                               total_bars) const
 {
-  Position pos;
-  pos.from_bars (
-    total_bars, transport.ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
+  const auto &tempo_map = PROJECT->get_tempo_map ();
+  double      pos_ticks = static_cast<double> (
+    tempo_map.musical_position_to_tick ({ .bar = total_bars }));
 
   std::vector<ArrangerObjectPtrVariant> objs;
   append_objects (objs);
 
   for (auto obj_var : objs)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjT = base_type<decltype (obj)>;
-          Position end_pos;
-          if constexpr (std::derived_from<ObjT, arrangement::BoundedObject>)
-            {
-              end_pos = obj->get_end_position ();
-            }
-          else
-            {
-              end_pos = obj->get_position ();
-            }
-          if (end_pos > pos)
-            {
-              pos = end_pos;
-            }
-        },
-        obj_var);
+      auto end_pos_ticks = arrangement::ArrangerObjectSpan::
+        end_position_ticks_with_start_position_fallback_projection (obj_var);
+      pos_ticks = std::max (end_pos_ticks, pos_ticks);
     }
 
-  int new_total_bars = pos.get_total_bars (
-    true, transport.ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
+  int new_total_bars =
+    tempo_map.tick_to_musical_position (static_cast<int64_t> (pos_ticks)).bar;
   return std::max (new_total_bars, total_bars);
 }
 
@@ -781,7 +748,7 @@ Track::create_with_action (
   /* only support 1 track when using files */
   z_return_if_fail (file_descr == nullptr || num_tracks == 1);
 
-  if (file_descr)
+  if (file_descr != nullptr)
     {
       TRACKLIST->import_files (
         std::nullopt, file_descr, nullptr, nullptr, index, pos, ready_cb);
@@ -861,12 +828,6 @@ Track::set_caches (CacheType types)
     }
 }
 
-void
-Track::write_audio_clip_to_pool_after_adding_audio_region (AudioClip &clip) const
-{
-  AUDIO_POOL->write_clip (clip, false, false);
-}
-
 #if 0
 GMenu *
 Track::generate_edit_context_menu (int num_selected)
@@ -942,4 +903,23 @@ Track::generate_edit_context_menu (int num_selected)
   return edit_submenu;
 }
 #endif
+
+void
+from_json (const nlohmann::json &j, Track &track)
+{
+  from_json (j, static_cast<Track::UuidIdentifiableObject &> (track));
+  j.at (Track::kTypeKey).get_to (track.type_);
+  j.at (Track::kNameKey).get_to (track.name_);
+  j.at (Track::kIconNameKey).get_to (track.icon_name_);
+  j.at (Track::kIndexKey).get_to (track.pos_);
+  j.at (Track::kVisibleKey).get_to (track.visible_);
+  j.at (Track::kMainHeightKey).get_to (track.main_height_);
+  j.at (Track::kEnabledKey).get_to (track.enabled_);
+  j.at (Track::kColorKey).get_to (track.color_);
+  j.at (Track::kInputSignalTypeKey).get_to (track.in_signal_type_);
+  j.at (Track::kOutputSignalTypeKey).get_to (track.out_signal_type_);
+  j.at (Track::kCommentKey).get_to (track.comment_);
+  // TODO
+  // j.at (Track::kFrozenClipIdKey).get_to (track.frozen_clip_id_);
+}
 }

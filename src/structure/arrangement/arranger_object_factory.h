@@ -24,7 +24,6 @@ class ArrangerObjectFactory : public QObject
   QML_ELEMENT
 
   using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
-  using TrackResolver = structure::tracks::TrackResolver;
   using ArrangerObjectSelectionManager =
     structure::arrangement::ArrangerObjectSelectionManager;
   using MidiNote = structure::arrangement::MidiNote;
@@ -43,35 +42,34 @@ class ArrangerObjectFactory : public QObject
 public:
   ArrangerObjectFactory () = delete;
   ArrangerObjectFactory (
-    ArrangerObjectRegistry              &registry,
-    TrackResolver                        track_resolver,
-    gui::SettingsManager                &settings_mgr,
-    std::function<dsp::FramesPerTick ()> frames_per_tick_getter,
-    gui::SnapGrid                       &snap_grid_timeline,
-    gui::SnapGrid                       &snap_grid_editor,
-    AudioClipResolverFunc                clip_resolver,
-    RegisterNewAudioClipFunc             clip_registration_func,
-    std::function<sample_rate_t ()>      sample_rate_provider,
-    std::function<bpm_t ()>              bpm_provider,
-    ArrangerObjectSelectionManager       timeline_selections_manager,
-    ArrangerObjectSelectionManager       midi_selections_manager,
-    ArrangerObjectSelectionManager       chord_selections_manager,
-    ArrangerObjectSelectionManager       automation_selections_manager,
-    QObject *                            parent = nullptr)
-      : QObject (parent), object_registry_ (registry),
-        track_resolver_ (std::move (track_resolver)),
+    const dsp::TempoMap            &tempo_map,
+    ArrangerObjectRegistry         &registry,
+    dsp::FileAudioSourceRegistry   &file_audio_source_registry,
+    gui::SettingsManager           &settings_mgr,
+    gui::SnapGrid                  &snap_grid_timeline,
+    gui::SnapGrid                  &snap_grid_editor,
+    std::function<sample_rate_t ()> sample_rate_provider,
+    std::function<bpm_t ()>         bpm_provider,
+    ArrangerObjectSelectionManager  audio_selections_manager,
+    ArrangerObjectSelectionManager  timeline_selections_manager,
+    ArrangerObjectSelectionManager  midi_selections_manager,
+    ArrangerObjectSelectionManager  chord_selections_manager,
+    ArrangerObjectSelectionManager  automation_selections_manager,
+    ClipEditor                     &clip_editor,
+    QObject *                       parent = nullptr)
+      : QObject (parent), tempo_map_ (tempo_map), object_registry_ (registry),
+        file_audio_source_registry_ (file_audio_source_registry),
         settings_manager_ (settings_mgr),
-        frames_per_tick_getter_ (std::move (frames_per_tick_getter)),
         snap_grid_timeline_ (snap_grid_timeline),
         snap_grid_editor_ (snap_grid_editor),
-        clip_resolver_func_ (std::move (clip_resolver)),
-        new_clip_registration_func_ (std::move (clip_registration_func)),
         sample_rate_provider_ (std::move (sample_rate_provider)),
         bpm_provider_ (std::move (bpm_provider)),
+        audio_selections_manager_ (audio_selections_manager),
         timeline_selections_manager_ (timeline_selections_manager),
         midi_selections_manager_ (midi_selections_manager),
         chord_selections_manager_ (chord_selections_manager),
-        automation_selections_manager_ (automation_selections_manager)
+        automation_selections_manager_ (automation_selections_manager),
+        clip_editor_ (clip_editor)
   {
   }
 
@@ -84,9 +82,11 @@ public:
 
   private:
     explicit Builder (
-      ArrangerObjectRegistry &registry,
-      TrackResolver           track_resolver)
-        : registry_ (registry), track_resolver_ (std::move (track_resolver))
+      const dsp::TempoMap          &tempo_map,
+      ArrangerObjectRegistry       &registry,
+      dsp::FileAudioSourceRegistry &file_audio_source_registry)
+        : tempo_map_ (tempo_map), registry_ (registry),
+          file_audio_source_registry_ (file_audio_source_registry)
     {
     }
 
@@ -96,22 +96,10 @@ public:
       return *this;
     }
 
-    Builder &with_frames_per_tick (dsp::FramesPerTick framesPerTick)
-    {
-      frames_per_tick_ = framesPerTick;
-      return *this;
-    }
-
-    Builder &with_clip_resolver (const AudioClipResolverFunc &clip_resolver)
-    {
-      clip_resolver_ = clip_resolver;
-      return *this;
-    }
-
-    Builder &with_clip (const AudioClip::Uuid clip_id)
+    Builder &with_clip (dsp::FileAudioSourceUuidReference clip_id)
       requires (std::is_same_v<ObjT, AudioRegion>)
     {
-      clip_id_.emplace (clip_id);
+      clip_id_.emplace (std::move (clip_id));
       return *this;
     }
 
@@ -119,28 +107,22 @@ public:
     Builder &with_start_ticks (double start_ticks)
     {
       assert (settings_manager_.has_value ());
-      assert (frames_per_tick_.has_value ());
       start_ticks_ = start_ticks;
 
       return *this;
     }
 
     Builder &with_end_ticks (double end_ticks)
-      requires (std::derived_from<ObjT, structure::arrangement::BoundedObject>)
+      requires (BoundedObject<ObjT>)
     {
-      assert (frames_per_tick_.has_value ());
       end_ticks_ = end_ticks;
       return *this;
     }
 
-    Builder &with_name (
-      const QString                                     &name,
-      structure::arrangement::NamedObject::NameValidator validator =
-        [] (const utils::Utf8String &) { return true; })
-      requires (std::derived_from<ObjT, structure::arrangement::NamedObject>)
+    Builder &with_name (const QString &name)
+      requires (NamedObject<ObjT>)
     {
       name_ = name;
-      name_validator_ = validator;
       return *this;
     }
 
@@ -172,10 +154,17 @@ public:
       return *this;
     }
 
-    Builder &with_scale (const dsp::MusicalScale scale)
+    Builder &with_scale (utils::QObjectUniquePtr<dsp::MusicalScale> scale)
       requires (std::is_same_v<ObjT, ScaleObject>)
     {
-      scale_ = scale;
+      scale_ = std::move (scale);
+      return *this;
+    }
+
+    Builder &with_marker_type (Marker::MarkerType marker_type)
+      requires (std::is_same_v<ObjT, Marker>)
+    {
+      marker_type_ = marker_type;
       return *this;
     }
 
@@ -188,16 +177,27 @@ public:
       if constexpr (std::is_same_v<ObjT, AudioRegion>)
         {
           ret = std::make_unique<ObjT> (
-            registry_, track_resolver_, *clip_resolver_);
+            tempo_map_, registry_, file_audio_source_registry_,
+            [this] () { return settings_manager_->get_musicalMode (); });
+        }
+      else if constexpr (RegionObject<ObjT>)
+        {
+          ret = std::make_unique<ObjT> (
+            tempo_map_, registry_, file_audio_source_registry_);
         }
       else if constexpr (std::is_same_v<ObjT, Marker>)
         {
+          ret = std::make_unique<ObjT> (tempo_map_, Marker::MarkerType::Custom);
+        }
+      else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
+        {
           ret = std::make_unique<ObjT> (
-            registry_, track_resolver_, *name_validator_);
+            tempo_map_, file_audio_source_registry_,
+            dsp::FileAudioSourceUuidReference{ file_audio_source_registry_ });
         }
       else
         {
-          ret = std::make_unique<ObjT> (registry_, track_resolver_);
+          ret = std::make_unique<ObjT> (tempo_map_);
         }
       return ret;
     }
@@ -215,44 +215,20 @@ public:
       }();
 
       auto * obj = std::get<ObjT *> (obj_ref.get_object ());
-      if (clip_id_)
+
+      if constexpr (RegionObject<ObjT>)
         {
-          if constexpr (std::is_same_v<ObjT, AudioRegion>)
-            {
-              obj->set_clip_id (*clip_id_);
-              obj->set_end_pos_full_size (
-                dsp::Position{
-                  obj->get_position ().frames_
-                    + clip_resolver_.value () (*clip_id_)->get_num_frames (),
-                  to_ticks_per_frame (*frames_per_tick_) },
-                *frames_per_tick_);
-            }
+          obj->regionMixin ()->loopRange ()->setTrackLength (true);
         }
 
-      if (end_ticks_)
-        {
-          if constexpr (
-            std::derived_from<ObjT, structure::arrangement::BoundedObject>)
-            {
-              obj->set_end_pos_full_size (
-                dsp::Position (*end_ticks_, *frames_per_tick_),
-                *frames_per_tick_);
-            }
-        }
-
-      // set start ticks after end ticks to avoid position validation failing
-      // due to pos <= end_pos
       if (start_ticks_)
         {
           if (!end_ticks_ && !clip_id_)
             {
-              if constexpr (
-                std::derived_from<ObjT, structure::arrangement::BoundedObject>)
+              if constexpr (BoundedObject<ObjT>)
                 {
                   double len_ticks{};
-                  if constexpr (
-                    std::derived_from<
-                      ObjT, structure::arrangement::TimelineObject>)
+                  if constexpr (TimelineObject<ObjT>)
                     {
                       len_ticks =
                         settings_manager_
@@ -264,22 +240,49 @@ public:
                         settings_manager_
                           ->get_editorLastCreatedObjectLengthInTicks ();
                     }
-                  obj->set_end_pos_full_size (
-                    dsp::Position (*start_ticks_ + len_ticks, *frames_per_tick_),
-                    *frames_per_tick_);
+                  ArrangerObjectSpan::bounds_projection (obj)
+                    ->length ()
+                    ->setTicks (len_ticks);
                 }
             }
-          obj->position_setter_validated (
-            dsp::Position (*start_ticks_, *frames_per_tick_),
-            to_ticks_per_frame (*frames_per_tick_));
+          obj->position ()->setTicks (*start_ticks_);
+        }
+
+      if (clip_id_)
+        {
+          if constexpr (std::is_same_v<ObjT, AudioRegion>)
+            {
+              auto source_object = registry_.create_object<AudioSourceObject> (
+                tempo_map_, file_audio_source_registry_, clip_id_.value ());
+              obj->set_source (source_object);
+              obj->regionMixin ()->bounds ()->length ()->setSamples (
+                clip_id_.value ()
+                  .get_object_as<dsp::FileAudioSource> ()
+                  ->get_num_frames ());
+            }
+        }
+
+      if (end_ticks_)
+        {
+          if constexpr (BoundedObject<ObjT>)
+            {
+              ArrangerObjectSpan::bounds_projection (obj)->length ()->setTicks (
+                *end_ticks_ - obj->position ()->ticks ());
+            }
         }
 
       if (name_)
         {
-          if constexpr (
-            std::derived_from<ObjT, structure::arrangement::NamedObject>)
+          if constexpr (NamedObject<ObjT>)
             {
-              obj->set_name (utils::Utf8String::from_qstring (*name_));
+              if constexpr (RegionObject<ObjT>)
+                {
+                  obj->regionMixin ()->name ()->setName (*name_);
+                }
+              else
+                {
+                  obj->name ()->setName (*name_);
+                }
             }
         }
 
@@ -295,7 +298,7 @@ public:
         {
           if constexpr (std::is_same_v<ObjT, MidiNote>)
             {
-              obj->set_velocity (*velocity_);
+              obj->setVelocity (*velocity_);
             }
         }
 
@@ -311,14 +314,13 @@ public:
         {
           if constexpr (std::is_same_v<ObjT, ScaleObject>)
             {
-              obj->set_scale (*scale_);
+              obj->setScale (scale_.release ());
             }
         }
 
       if constexpr (std::is_same_v<ObjT, AutomationPoint>)
         {
-          // TODO: add getter/setters on AutomationPoint
-          obj->curve_opts_.algo_ = static_cast<dsp::CurveOptions::Algorithm> (
+          obj->curveOpts ()->setAlgorithm (
             gui::SettingsManager::automationCurveAlgorithm ());
         }
 
@@ -326,7 +328,7 @@ public:
         {
           if constexpr (std::is_same_v<ObjT, ChordObject>)
             {
-              obj->set_chord_descriptor (*chord_descriptor_index_);
+              obj->setChordDescriptorIndex (*chord_descriptor_index_);
             }
         }
 
@@ -334,32 +336,27 @@ public:
     }
 
   private:
-    ArrangerObjectRegistry              &registry_;
-    TrackResolver                        track_resolver_;
-    OptionalRef<gui::SettingsManager>    settings_manager_;
-    std::optional<dsp::FramesPerTick>    frames_per_tick_;
-    std::optional<AudioClipResolverFunc> clip_resolver_;
-    std::optional<AudioClip::Uuid>       clip_id_;
-    std::optional<double>                start_ticks_;
-    std::optional<double>                end_ticks_;
-    std::optional<QString>               name_;
-    std::optional<structure::arrangement::NamedObject::NameValidator>
-                                     name_validator_;
-    std::optional<int>               pitch_;
-    std::optional<double>            automatable_value_;
-    std::optional<int>               chord_descriptor_index_;
-    std::optional<dsp::MusicalScale> scale_;
-    std::optional<int>               velocity_;
+    const dsp::TempoMap              &tempo_map_;
+    ArrangerObjectRegistry           &registry_;
+    dsp::FileAudioSourceRegistry     &file_audio_source_registry_;
+    OptionalRef<gui::SettingsManager> settings_manager_;
+    std::optional<dsp::FileAudioSourceUuidReference> clip_id_;
+    std::optional<double>                            start_ticks_;
+    std::optional<double>                            end_ticks_;
+    std::optional<QString>                           name_;
+    std::optional<int>                               pitch_;
+    std::optional<double>                            automatable_value_;
+    std::optional<int>                               chord_descriptor_index_;
+    utils::QObjectUniquePtr<dsp::MusicalScale>       scale_;
+    std::optional<int>                               velocity_;
+    std::optional<Marker::MarkerType>                marker_type_;
   };
 
   template <typename ObjT> auto get_builder () const
   {
-    auto builder =
-      Builder<ObjT> (object_registry_, track_resolver_)
-        .with_frames_per_tick (frames_per_tick_getter_ ())
-        .with_clip_resolver (clip_resolver_func_)
-        .with_settings_manager (settings_manager_);
-    return builder;
+    return std::move (
+      Builder<ObjT> (tempo_map_, object_registry_, file_audio_source_registry_)
+        .with_settings_manager (settings_manager_));
   }
 
 private:
@@ -370,6 +367,7 @@ private:
   void add_laned_object (TrackLaneT &lane, auto obj_ref)
   {
     using RegionT = typename TrackLaneT::RegionT;
+    tracks::TrackUuid track_id;
     std::visit (
       [&] (auto &&track) {
         if constexpr (
@@ -378,27 +376,29 @@ private:
           {
             track->template add_region<RegionT> (
               obj_ref, nullptr, lane.get_index_in_track (), true);
+            track_id = track->get_uuid ();
           }
       },
       convert_to_variant<structure::tracks::LanedTrackPtrVariant> (
         lane.get_track ()));
     auto * obj = std::get<RegionT *> (obj_ref.get_object ());
-    timeline_selections_manager_.append_to_selection (obj->get_uuid ());
     set_selection_handler_to_object (*obj);
+    timeline_selections_manager_.append_to_selection (obj->get_uuid ());
+    clip_editor_.set_region (obj->get_uuid (), track_id);
   }
 
   /**
    * @brief To be used by the backend.
    */
   auto create_audio_region_with_clip (
-    AudioLane             &lane,
-    const AudioClip::Uuid &clip_id,
-    double                 startTicks) const
+    AudioLane                        &lane,
+    dsp::FileAudioSourceUuidReference clip_id,
+    double                            startTicks) const
   {
     auto obj =
       get_builder<AudioRegion> ()
         .with_start_ticks (startTicks)
-        .with_clip (clip_id)
+        .with_clip (std::move (clip_id))
         .build_in_registry ();
     return obj;
   }
@@ -416,11 +416,10 @@ private:
     const utils::Utf8String         &clip_name,
     double                           start_ticks) const
   {
-    auto clip = std::make_shared<AudioClip> (
+    auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
       buf, bit_depth, sample_rate_provider_ (), bpm_provider_ (), clip_name);
-    new_clip_registration_func_ (clip);
     auto region =
-      create_audio_region_with_clip (lane, clip->get_uuid (), start_ticks);
+      create_audio_region_with_clip (lane, std::move (clip), start_ticks);
     return region;
   }
 
@@ -432,14 +431,16 @@ private:
    * @param value Either pitch (int), automation point value (double) or chord
    * ID.
    */
-  template <structure::arrangement::RegionWithChildren RegionT>
-  auto add_editor_object (
-    RegionT                  &region,
-    double                    startTicks,
-    std::variant<int, double> value) -> RegionT::ChildT *
-  {
-    using ChildT = typename RegionT::ChildT;
-    auto builder = get_builder<ChildT> ().with_start_ticks (startTicks);
+template <RegionObject RegionT>
+auto add_editor_object (
+  RegionT                  &region,
+  double                    startTicks,
+  std::variant<int, double> value)
+  -> RegionT::ArrangerObjectChildType * requires (
+    !std::is_same_v<RegionT, AudioRegion>) {
+    using ChildT = typename RegionT::ArrangerObjectChildType;
+    auto builder =
+      std::move (get_builder<ChildT> ().with_start_ticks (startTicks));
     if constexpr (std::is_same_v<ChildT, MidiNote>)
       {
         const auto ival = std::get<int> (value);
@@ -459,48 +460,48 @@ private:
     auto obj = std::get<ChildT *> (obj_ref.get_object ());
     {
       auto sel_mgr = get_selection_manager_for_object (*obj);
-      sel_mgr.append_to_selection (obj->get_uuid ());
       set_selection_handler_to_object (*obj);
+      sel_mgr.append_to_selection (obj->get_uuid ());
     }
     return obj;
   }
 
-public:
-  /**
-   * @brief
-   *
-   * @param lane
-   * @param clip_id
-   * @param start_ticks
-   * @return AudioRegion*
-   */
-  AudioRegion * add_audio_region_with_clip (
-    structure::tracks::AudioLane &lane,
-    const AudioClip::Uuid        &clip_id,
-    double                        start_ticks)
+public :
+    /**
+     * @brief
+     *
+     * @param lane
+     * @param clip_id
+     * @param start_ticks
+     * @return AudioRegion*
+     */
+    AudioRegion * add_audio_region_with_clip (
+      structure::tracks::AudioLane     &lane,
+      dsp::FileAudioSourceUuidReference clip_id,
+      double                            start_ticks)
   {
-    // clip must already be registered before calling this method
-    assert (clip_resolver_func_ (clip_id) != nullptr);
-    auto obj_ref = create_audio_region_with_clip (lane, clip_id, start_ticks);
+    auto obj_ref =
+      create_audio_region_with_clip (lane, std::move (clip_id), start_ticks);
     add_laned_object (lane, obj_ref);
     return std::get<AudioRegion *> (obj_ref.get_object ());
   }
 
   ScaleObject * add_scale_object (
-    structure::tracks::ChordTrack &chord_track,
-    const dsp::MusicalScale       &scale,
-    double                         start_ticks)
+    structure::tracks::ChordTrack             &chord_track,
+    utils::QObjectUniquePtr<dsp::MusicalScale> scale,
+    double                                     start_ticks)
   {
     auto obj_ref =
       get_builder<ScaleObject> ()
         .with_start_ticks (start_ticks)
-        .with_scale (scale)
+        .with_scale (std::move (scale))
         .build_in_registry ();
     chord_track.ArrangerObjectOwner<ScaleObject>::add_object (obj_ref);
     return std::get<ScaleObject *> (obj_ref.get_object ());
   }
 
   Q_INVOKABLE Marker * addMarker (
+    Marker::MarkerType               markerType,
     structure::tracks::MarkerTrack * markerTrack,
     const QString                   &name,
     double                           startTicks)
@@ -509,11 +510,7 @@ public:
     auto marker_ref =
       get_builder<Marker> ()
         .with_start_ticks (startTicks)
-        .with_name (
-          name,
-          [markerTrack] (const utils::Utf8String &inner_name) {
-            return markerTrack->validate_marker_name (inner_name);
-          })
+        .with_name (name)
         .build_in_registry ();
     markerTrack->add_object (marker_ref);
     return std::get<Marker *> (marker_ref.get_object ());
@@ -566,11 +563,10 @@ public:
     const utils::Utf8String &clip_name,
     double                   start_ticks)
   {
-    auto clip = std::make_shared<AudioClip> (
+    auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
       num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
-    new_clip_registration_func_ (clip);
     auto region_ref =
-      create_audio_region_with_clip (lane, clip->get_uuid (), start_ticks);
+      create_audio_region_with_clip (lane, std::move (clip), start_ticks);
     add_laned_object (lane, region_ref);
     return std::get<AudioRegion *> (region_ref.get_object ());
   }
@@ -580,12 +576,11 @@ public:
     const QString &absPath,
     double         startTicks)
   {
-    auto clip = std::make_shared<AudioClip> (
+    auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
       utils::Utf8String::from_qstring (absPath), sample_rate_provider_ (),
       bpm_provider_ ());
-    new_clip_registration_func_ (clip);
     auto ar_ref =
-      create_audio_region_with_clip (*lane, clip->get_uuid (), startTicks);
+      create_audio_region_with_clip (*lane, std::move (clip), startTicks);
     add_laned_object (*lane, ar_ref);
     return std::get<AudioRegion *> (ar_ref.get_object ());
   }
@@ -656,15 +651,27 @@ public:
     if constexpr (std::is_same_v<ObjT, AudioRegion>)
       {
         return object_registry_.clone_object (
-          other, object_registry_, track_resolver_, clip_resolver_func_);
+          other, tempo_map_, object_registry_, file_audio_source_registry_,
+          [this] () { return settings_manager_.get_musicalMode (); });
+      }
+    else if constexpr (RegionObject<ObjT>)
+      {
+        return object_registry_.clone_object (
+          other, tempo_map_, object_registry_, file_audio_source_registry_);
+      }
+    else if constexpr (std::is_same_v<ObjT, Marker>)
+      {
+        return object_registry_.clone_object (
+          other, tempo_map_, other.markerType ());
       }
     else
       {
-        return object_registry_.clone_object (
-          other, object_registry_, track_resolver_);
+        return object_registry_.clone_object (other, tempo_map_);
       }
   }
 
+// deprecated - no use case for snapshots, just serialize straight to/from json
+#if 0
   template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
   auto clone_object_snapshot (const ObjT &other, QObject &owner) const
   {
@@ -674,28 +681,27 @@ public:
         // TODO
         new_obj = utils::clone_qobject (
           other, &owner, utils::ObjectCloneType::Snapshot, object_registry_,
-          track_resolver_, clip_resolver_func_);
+          file_audio_source_registry_);
       }
     else if constexpr (std::is_same_v<ObjT, Marker>)
       {
         new_obj = utils::clone_qobject (
           other, &owner, utils::ObjectCloneType::Snapshot, object_registry_,
-          track_resolver_, [] (const auto &name) { return true; });
+          [] (const auto &name) { return true; });
       }
     else
       {
         new_obj = utils::clone_qobject (
-          other, &owner, utils::ObjectCloneType::Snapshot, object_registry_,
-          track_resolver_);
+          other, &owner, utils::ObjectCloneType::Snapshot, object_registry_);
       }
     return new_obj;
   }
+#endif
 
   template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
   auto get_selection_manager_for_object (const ObjT &obj) const
   {
-    if constexpr (
-      std::derived_from<ObjT, structure::arrangement::TimelineObject>)
+    if constexpr (TimelineObject<ObjT>)
       {
         return timeline_selections_manager_;
       }
@@ -710,6 +716,10 @@ public:
     else if constexpr (std::is_same_v<ObjT, ChordObject>)
       {
         return chord_selections_manager_;
+      }
+    else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
+      {
+        return audio_selections_manager_;
       }
     else
       {
@@ -727,19 +737,19 @@ public:
   }
 
 private:
-  ArrangerObjectRegistry              &object_registry_;
-  TrackResolver                        track_resolver_;
-  gui::SettingsManager                &settings_manager_;
-  std::function<dsp::FramesPerTick ()> frames_per_tick_getter_;
-  gui::SnapGrid                       &snap_grid_timeline_;
-  gui::SnapGrid                       &snap_grid_editor_;
-  AudioClipResolverFunc                clip_resolver_func_;
-  RegisterNewAudioClipFunc             new_clip_registration_func_;
-  std::function<sample_rate_t ()>      sample_rate_provider_;
-  std::function<bpm_t ()>              bpm_provider_;
-  ArrangerObjectSelectionManager       timeline_selections_manager_;
-  ArrangerObjectSelectionManager       midi_selections_manager_;
-  ArrangerObjectSelectionManager       chord_selections_manager_;
-  ArrangerObjectSelectionManager       automation_selections_manager_;
+  const dsp::TempoMap            &tempo_map_;
+  ArrangerObjectRegistry         &object_registry_;
+  dsp::FileAudioSourceRegistry   &file_audio_source_registry_;
+  gui::SettingsManager           &settings_manager_;
+  gui::SnapGrid                  &snap_grid_timeline_;
+  gui::SnapGrid                  &snap_grid_editor_;
+  std::function<sample_rate_t ()> sample_rate_provider_;
+  std::function<bpm_t ()>         bpm_provider_;
+  ArrangerObjectSelectionManager  audio_selections_manager_;
+  ArrangerObjectSelectionManager  timeline_selections_manager_;
+  ArrangerObjectSelectionManager  midi_selections_manager_;
+  ArrangerObjectSelectionManager  chord_selections_manager_;
+  ArrangerObjectSelectionManager  automation_selections_manager_;
+  ClipEditor                     &clip_editor_;
 };
 }

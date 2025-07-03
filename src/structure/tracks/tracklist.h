@@ -43,7 +43,6 @@ class Tracklist final : public QAbstractListModel
 public:
   using TrackUuid = Track::Uuid;
   using ArrangerObjectPtrVariant = arrangement::ArrangerObjectPtrVariant;
-  using Region = arrangement::Region;
   using ArrangerObject = arrangement::ArrangerObject;
 
   /**
@@ -195,6 +194,22 @@ public:
     int       publish_events,
     int       recalc_graph);
 
+  /**
+   * @brief Returns the region at the given position, if any.
+   *
+   * Either @p at (for automation regions) or @p track (for other regions)
+   * must be passed.
+   *
+   * @param track
+   * @param at
+   * @param include_region_end
+   */
+  static std::optional<ArrangerObjectPtrVariant> get_region_at_pos (
+    signed_frame_t            pos_samples,
+    Track *                   track,
+    tracks::AutomationTrack * at,
+    bool                      include_region_end = false);
+
   ChordTrack * get_chord_track () const;
 
   /**
@@ -302,6 +317,8 @@ public:
   AutomationTrack *
   get_automation_track_for_port (const Port::Uuid &port_id) const;
 
+// TODO
+#if 0
   /**
    * @brief Imports regions from a region array.
    *
@@ -314,6 +331,7 @@ public:
     std::vector<std::vector<std::shared_ptr<Region>>> &region_arrays,
     const FileImportInfo *                             import_info,
     TracksReadyCallback                                ready_cb);
+#endif
 
   /**
    * Moves the Region to the given Track, maintaining the selection
@@ -518,12 +536,7 @@ private:
       { kSelectedTracksKey,     t.selected_tracks_      },
     };
   }
-  friend void from_json (const nlohmann::json &j, Tracklist &t)
-  {
-    j.at (kPinnedTracksCutoffKey).get_to (t.pinned_tracks_cutoff_);
-    j.at (kTracksKey).get_to (t.tracks_);
-    j.at (kSelectedTracksKey).get_to (t.selected_tracks_);
-  }
+  friend void from_json (const nlohmann::json &j, Tracklist &t);
 
   void swap_tracks (size_t index1, size_t index2);
 

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/audio_pool.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "engine/device_io/engine.h"
@@ -16,7 +17,6 @@
 #include "gui/dsp/port.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/arrangement/arranger_object_factory.h"
-#include "structure/arrangement/region_link_group_manager.h"
 #include "structure/tracks/track_factory.h"
 #include "utils/progress_info.h"
 
@@ -30,6 +30,7 @@ using namespace zrythm;
 
 #define PROJECT (Project::get_active_instance ())
 #define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_.get ())
+#define AUDIO_POOL (PROJECT->audio_pool_.get ())
 
 enum class ProjectPath
 {
@@ -325,15 +326,10 @@ public:
    */
   void add_default_tracks ();
 
-  /**
-   * Returns whether the clip is used inside the project.
-   *
-   * @param check_undo_stack If true, this checks both project regions and the
-   * undo stack. If false, this only checks actual project regions only.
-   */
-  bool
-  is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const;
-
+  auto &get_file_audio_source_registry () const
+  {
+    return *file_audio_source_registry_;
+  }
   auto &get_track_registry () const { return *track_registry_; }
   auto &get_plugin_registry () const { return *plugin_registry_; }
   auto &get_port_registry () const { return *port_registry_; }
@@ -461,6 +457,8 @@ private:
 
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
+  static constexpr auto kFileAudioSourceRegistryKey =
+    "fileAudioSourceRegistry"sv;
   static constexpr auto kPortRegistryKey = "portRegistry"sv;
   static constexpr auto kPluginRegistryKey = "pluginRegistry"sv;
   static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
@@ -476,6 +474,7 @@ private:
   static constexpr auto kQuantizeOptsEditorKey = "quantizeOptsEditor"sv;
   static constexpr auto kTransportKey = "transport"sv;
   static constexpr auto kAudioEngineKey = "audioEngine"sv;
+  static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
   static constexpr auto kRegionLinkGroupManagerKey = "regionLinkGroupManager"sv;
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
@@ -492,8 +491,9 @@ private:
   dsp::TempoMap                                 tempo_map_;
   utils::QObjectUniquePtr<dsp::TempoMapWrapper> tempo_map_wrapper_;
 
-  PortRegistry *                                   port_registry_{};
-  PluginRegistry *                                 plugin_registry_{};
+  dsp::FileAudioSourceRegistry * file_audio_source_registry_{};
+  PortRegistry *                 port_registry_{};
+  PluginRegistry *               plugin_registry_{};
   structure::arrangement::ArrangerObjectRegistry * arranger_object_registry_{};
   structure::tracks::TrackRegistry *               track_registry_{};
 
@@ -577,12 +577,15 @@ public:
    */
   engine::session::Transport * transport_;
 
+  /** Audio file pool. */
+  std::unique_ptr<dsp::AudioPool> pool_;
+
   /** Zoom levels. TODO & move to clip_editor */
   double piano_roll_zoom_ = 0;
   double timeline_zoom_ = 0;
 
   /** Manager for region link groups. */
-  structure::arrangement::RegionLinkGroupManager region_link_group_manager_;
+  // structure::arrangement::RegionLinkGroupManager region_link_group_manager_;
 
   /** Quantize info for the piano roll. */
   std::unique_ptr<QuantizeOptions> quantize_opts_editor_;

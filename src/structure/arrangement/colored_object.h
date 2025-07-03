@@ -3,122 +3,95 @@
 
 #pragma once
 
-#include "structure/arrangement/arranger_object.h"
 #include "utils/color.h"
-
-#define DEFINE_COLORED_OBJECT_QML_PROPERTIES(ClassType) \
-public: \
-  /* ================================================================ */ \
-  /* useColor */ \
-  /* ================================================================ */ \
-  Q_PROPERTY ( \
-    bool useColor READ getUseColor WRITE setUseColor NOTIFY useColorChanged) \
-  bool getUseColor () const \
-  { \
-    return use_color_; \
-  } \
-  void setUseColor (bool use_color) \
-  { \
-    if (use_color_ == use_color) \
-      return; \
-    use_color_ = use_color; \
-    Q_EMIT useColorChanged (use_color_); \
-  } \
-  Q_SIGNAL void useColorChanged (bool use_color); \
-  /* ================================================================ */ \
-  /* color */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (QColor color READ getColor WRITE setColor NOTIFY colorChanged) \
-  QColor getColor () const \
-  { \
-    return color_.to_qcolor (); \
-  } \
-  void setColor (QColor color) \
-  { \
-    if (color_.to_qcolor () == color) \
-      return; \
-    color_ = color; \
-    Q_EMIT colorChanged (color); \
-  } \
-  Q_SIGNAL void colorChanged (QColor color); \
-  /* ================================================================ */ \
-  /* (utils) */ \
-  /* ================================================================ */ \
-  Q_PROPERTY ( \
-    QColor effectiveColor READ getEffectiveColor NOTIFY effectiveColorChanged) \
-  QColor getEffectiveColor () const \
-  { \
-    return get_effective_color (); \
-  } \
-  Q_SIGNAL void effectiveColorChanged (QColor color);
 
 namespace zrythm::structure::arrangement
 {
 
-class ColoredObject : virtual public ArrangerObject
+class ArrangerObjectColor : public QObject
 {
+  Q_OBJECT
+  Q_PROPERTY (bool useColor READ useColor NOTIFY useColorChanged)
+  Q_PROPERTY (QColor color READ color WRITE setColor NOTIFY colorChanged)
+  QML_ELEMENT
+
 public:
-  // = default deletes it for some reason on gcc
-  ColoredObject () noexcept { }
-  ~ColoredObject () noexcept override = default;
-  Z_DISABLE_COPY_MOVE (ColoredObject)
+  ArrangerObjectColor (QObject * parent = nullptr) noexcept : QObject (parent)
+  {
+  }
+  ~ArrangerObjectColor () noexcept override = default;
+  Z_DISABLE_COPY_MOVE (ArrangerObjectColor)
 
   using Color = zrythm::utils::Color;
 
-  /**
-   * @brief Returns the color of the object if set, otherwise the owner track's
-   * color.
-   */
-  QColor get_effective_color () const;
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-protected:
-  friend void init_from (
-    ColoredObject         &obj,
-    const ColoredObject   &other,
-    utils::ObjectCloneType clone_type);
+  bool useColor () const { return color_.has_value (); }
 
-  template <typename Derived> void init_colored_object (this Derived &self)
+  QColor color () const
   {
-    const auto update_eff_color = [&self] () {
-      Q_EMIT self.effectiveColorChanged (self.get_effective_color ());
-    };
-    QObject::connect (&self, &Derived::colorChanged, &self, update_eff_color);
-    QObject::connect (&self, &Derived::useColorChanged, &self, update_eff_color);
+    if (useColor ())
+      {
+        return color_->to_qcolor ();
+      }
+    return {};
+  }
+  void setColor (QColor color)
+  {
+    if (useColor () && color_.value ().to_qcolor () == color)
+      return;
+
+    if (!color.isValid ())
+      return;
+
+    const bool emit_use_color_changed = !useColor ();
+    color_ = color;
+    Q_EMIT colorChanged (color);
+    if (emit_use_color_changed)
+      Q_EMIT useColorChanged (true);
+  }
+
+  Q_INVOKABLE void unsetColor ()
+  {
+    color_.reset ();
+    Q_EMIT useColorChanged (false);
+  }
+
+  Q_SIGNAL void colorChanged (QColor color);
+  Q_SIGNAL void useColorChanged (bool use_color);
+
+  // ========================================================================
+
+private:
+  friend void init_from (
+    ArrangerObjectColor       &obj,
+    const ArrangerObjectColor &other,
+    utils::ObjectCloneType     clone_type)
+  {
+    obj.color_ = other.color_;
+  }
+
+  static constexpr std::string_view kColorKey = "color";
+  friend void to_json (nlohmann::json &j, const ArrangerObjectColor &obj)
+  {
+    j[kColorKey] = obj.color_;
+  }
+  friend void from_json (const nlohmann::json &j, ArrangerObjectColor &obj)
+  {
+    j.at (kColorKey).get_to (obj.color_);
   }
 
 private:
-  static constexpr std::string_view kColorKey = "color";
-  static constexpr std::string_view kUseColorKey = "useColor";
-  friend void to_json (nlohmann::json &j, const ColoredObject &obj)
-  {
-    j[kColorKey] = obj.color_;
-    j[kUseColorKey] = obj.use_color_;
-  }
-  friend void from_json (const nlohmann::json &j, ColoredObject &obj)
-  {
-    j.at (kColorKey).get_to (obj.color_);
-    j.at (kUseColorKey).get_to (obj.use_color_);
-  }
-
-public:
   /**
    * Color independent of owner (Track/Region etc.).
-   */
-  Color color_;
-
-  /**
-   * Whether to use the custom color.
    *
-   * If false, the owner color will be used.
+   * If nullopt, the owner color will be used.
    */
-  bool use_color_ = false;
+  std::optional<Color> color_;
 
-  BOOST_DESCRIBE_CLASS (
-    ColoredObject,
-    (ArrangerObject),
-    (color_, use_color_),
-    (),
-    ())
+  BOOST_DESCRIBE_CLASS (ArrangerObjectColor, (), (), (), (color_))
 };
 
 } // namespace zrythm::structure::arrangement

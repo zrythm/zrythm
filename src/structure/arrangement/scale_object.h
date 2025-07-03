@@ -4,79 +4,75 @@
 #pragma once
 
 #include "dsp/musical_scale.h"
-#include "structure/arrangement/bounded_object.h"
+#include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/muteable_object.h"
-#include "structure/arrangement/timeline_object.h"
 #include "utils/icloneable.h"
-#include "utils/serialization.h"
 
 namespace zrythm::structure::arrangement
 {
 
-class ScaleObject final : public QObject, public TimelineObject, public MuteableObject
+class ScaleObject final : public QObject, public ArrangerObject
 {
   Q_OBJECT
-  QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ScaleObject)
-  Q_PROPERTY (QString name READ getName NOTIFY nameChanged)
+  Q_PROPERTY (MusicalScale * scale READ scale WRITE setScale NOTIFY scaleChanged)
+  Q_PROPERTY (ArrangerObjectMuteFunctionality * mute READ mute CONSTANT)
+  QML_ELEMENT
 
 public:
   using MusicalScale = dsp::MusicalScale;
 
 public:
-  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (ScaleObject)
+  ScaleObject (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
 
   // =========================================================
   // QML Interface
   // =========================================================
 
-  QString getName () const { return gen_human_friendly_name ().to_qstring (); }
-  Q_SIGNAL void nameChanged (const QString &name);
+  MusicalScale * scale () const { return scale_.get (); }
+  void           setScale (MusicalScale * scale)
+  {
+    if (scale == nullptr || scale == scale_.get ())
+      return;
+
+    scale->setParent (this);
+    scale_ = scale;
+    Q_EMIT scaleChanged (scale);
+  }
+  Q_SIGNAL void scaleChanged (MusicalScale * scale);
+
+  ArrangerObjectMuteFunctionality * mute () const { return mute_.get (); }
 
   // =========================================================
 
+private:
   friend void init_from (
     ScaleObject           &obj,
     const ScaleObject     &other,
     utils::ObjectCloneType clone_type);
 
-  void set_scale (const MusicalScale &scale) { scale_ = scale; }
-
-  utils::Utf8String gen_human_friendly_name () const override;
-
-  ArrangerObjectPtrVariant
-  add_clone_to_project (bool fire_events) const override;
-
-  ArrangerObjectPtrVariant insert_clone_to_project () const override;
-
-  bool
-  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
-
-private:
-  static constexpr std::string_view kScaleKey = "scale";
-  friend void to_json (nlohmann::json &j, const ScaleObject &so)
+  static constexpr auto kScaleKey = "scale"sv;
+  static constexpr auto kMuteKey = "mute"sv;
+  friend void           to_json (nlohmann::json &j, const ScaleObject &so)
   {
     to_json (j, static_cast<const ArrangerObject &> (so));
-    to_json (j, static_cast<const MuteableObject &> (so));
     j[kScaleKey] = so.scale_;
+    j[kMuteKey] = so.mute_;
   }
   friend void from_json (const nlohmann::json &j, ScaleObject &so)
   {
     from_json (j, static_cast<ArrangerObject &> (so));
-    from_json (j, static_cast<MuteableObject &> (so));
-    j.at (kScaleKey).get_to (so.scale_);
+    j.at (kScaleKey).get_to (*so.scale_);
+    j.at (kMuteKey).get_to (*so.mute_);
   }
 
-public:
+private:
   /** The scale descriptor. */
-  MusicalScale scale_;
+  utils::QObjectUniquePtr<MusicalScale> scale_;
 
-  BOOST_DESCRIBE_CLASS (
-    ScaleObject,
-    (TimelineObject, MuteableObject),
-    (scale_),
-    (),
-    ())
+  utils::QObjectUniquePtr<ArrangerObjectMuteFunctionality> mute_;
+
+  BOOST_DESCRIBE_CLASS (ScaleObject, (ArrangerObject), (), (), (scale_, mute_))
 };
 
 } // namespace zrythm::structure::arrangement

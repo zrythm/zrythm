@@ -260,6 +260,18 @@ struct fmt::formatter<std::optional<T>> : fmt::formatter<std::string_view>
   }
 };
 
+// Formatter for std::atomic
+template <typename T>
+struct fmt::formatter<std::atomic<T>> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const std::atomic<T> &opt, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (
+      fmt::format ("{}", opt.load ()), ctx);
+  }
+};
+
 // Formatter for QPointer
 template <typename T>
 struct fmt::formatter<QPointer<T>> : fmt::formatter<std::string_view>

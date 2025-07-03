@@ -13,12 +13,14 @@
 namespace zrythm::structure::tracks
 {
 AutomatableTrack::AutomatableTrack (
-  PortRegistry &port_registry,
-  bool          new_identity)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  PortRegistry                 &port_registry,
+  bool                          new_identity)
+    : file_audio_source_registry_ (file_audio_source_registry)
 {
   // initialized here because we use base class members
-  automation_tracklist_ =
-    new AutomationTracklist (port_registry_, object_registry_, *this);
+  automation_tracklist_ = utils::make_qobject_unique<AutomationTracklist> (
+    file_audio_source_registry_, port_registry_, object_registry_, *this);
 }
 
 void
@@ -29,8 +31,8 @@ init_from (
 {
   obj.automation_tracklist_ = utils::clone_qobject (
     *other.automation_tracklist_, dynamic_cast<QObject *> (&obj),
-    utils::ObjectCloneType::Snapshot, obj.port_registry_,
-    PROJECT->get_arranger_object_registry (), obj);
+    utils::ObjectCloneType::Snapshot, obj.file_audio_source_registry_,
+    obj.port_registry_, PROJECT->get_arranger_object_registry (), obj);
   obj.automation_visible_ = other.automation_visible_;
 }
 
@@ -51,8 +53,8 @@ AutomatableTrack::generate_automation_tracks ()
       auto &atl = automation_tracklist_;
       auto  create_and_add_at = [&] (ControlPort &port) -> AutomationTrack  &{
         auto * at = atl->add_automation_track (*new AutomationTrack (
-          port_registry_, object_registry_, [self] () { return self; },
-          port.get_uuid ()));
+          file_audio_source_registry_, port_registry_, object_registry_,
+          [self] () { return self; }, port.get_uuid ()));
         return *at;
       };
 
@@ -147,7 +149,8 @@ AutomatableTrack::generate_automation_tracks_for_plugin (
             continue;
 
           auto * at = new AutomationTrack (
-            get_port_registry (), get_object_registry (),
+            file_audio_source_registry_, get_port_registry (),
+            get_object_registry (),
             [&] () { return convert_to_variant<TrackPtrVariant> (this); },
             port->get_uuid ());
           atl.add_automation_track (*at);

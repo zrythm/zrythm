@@ -13,7 +13,6 @@ Control {
     required property var arrangerObject
     required property var track
     required property var ruler
-    property var contextMenu
     readonly property alias down: dragArea.pressed
     readonly property color objectColor: {
         let c = arrangerObject.hasColor ? arrangerObject.color : track.color;
@@ -22,6 +21,7 @@ Control {
 
         return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
     }
+    signal arrangerObjectClicked()
 
     font: arrangerObject.selected ? Style.arrangerObjectBoldTextFont : Style.arrangerObjectTextFont
     focusPolicy: Qt.StrongFocus
@@ -29,6 +29,13 @@ Control {
     x: arrangerObject.position.ticks * ruler.pxPerTick
     width: 100
     height: track.height
+
+    ContextMenu.menu: Menu {
+        MenuItem {
+          text: qsTr("Test")
+          onTriggered: console.log("Clicked")
+      }
+    }
 
     MouseArea {
         id: dragArea
@@ -44,9 +51,7 @@ Control {
         onPressed: (mouse) => {
             startX = root.x;
             root.forceActiveFocus();
-            if (mouse.button === Qt.RightButton)
-                contextMenu.popup();
-
+            root.arrangerObjectClicked();
         }
         onPositionChanged: (mouse) => {
             if (drag.active) {

@@ -83,9 +83,9 @@ ChordEditor::apply_preset (const ChordPreset &pset, bool undoable)
 
 void
 ChordEditor::apply_preset_from_scale (
-  MusicalScale::Type scale,
-  MusicalNote        root_note,
-  bool               undoable)
+  MusicalScale::ScaleType scale,
+  MusicalNote             root_note,
+  bool                    undoable)
 {
   z_debug (
     "applying preset from scale %s, root note %s",

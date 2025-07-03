@@ -878,7 +878,7 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
             {
 #if 0
               /* get audio from clip */
-              AudioClip * clip =
+              FileAudioSource * clip =
                 audio_pool_get_clip (
                   AUDIO_POOL, track->pool_id_);
               /* FIXME this is wrong - need to
@@ -1256,5 +1256,47 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
             }
         }
     }
+}
+
+void
+from_json (const nlohmann::json &j, Fader &fader)
+{
+  j.at (Fader::kTypeKey).get_to (fader.type_);
+  j.at (Fader::kVolumeKey).get_to (fader.volume_);
+  fader.amp_id_ = { *fader.port_registry_ };
+  j.at (Fader::kAmpKey).get_to (*fader.amp_id_);
+  j.at (Fader::kPhaseKey).get_to (fader.phase_);
+  fader.balance_id_ = { *fader.port_registry_ };
+  j.at (Fader::kBalanceKey).get_to (*fader.balance_id_);
+  fader.mute_id_ = { *fader.port_registry_ };
+  j.at (Fader::kMuteKey).get_to (*fader.mute_id_);
+  fader.solo_id_ = { *fader.port_registry_ };
+  j.at (Fader::kSoloKey).get_to (*fader.solo_id_);
+  fader.listen_id_ = { *fader.port_registry_ };
+  j.at (Fader::kListenKey).get_to (*fader.listen_id_);
+  fader.mono_compat_enabled_id_ = { *fader.port_registry_ };
+  j.at (Fader::kMonoCompatEnabledKey).get_to (*fader.mono_compat_enabled_id_);
+  fader.swap_phase_id_ = { *fader.port_registry_ };
+  j.at (Fader::kSwapPhaseKey).get_to (*fader.swap_phase_id_);
+  if (j.contains (Fader::kMidiInKey))
+    {
+      fader.midi_in_id_ = { *fader.port_registry_ };
+      fader.midi_out_id_ = { *fader.port_registry_ };
+      j.at (Fader::kMidiInKey).get_to (*fader.midi_in_id_);
+      j.at (Fader::kMidiOutKey).get_to (*fader.midi_out_id_);
+    }
+  else
+    {
+      fader.stereo_in_left_id_ = { *fader.port_registry_ };
+      fader.stereo_in_right_id_ = { *fader.port_registry_ };
+      fader.stereo_out_left_id_ = { *fader.port_registry_ };
+      fader.stereo_out_right_id_ = { *fader.port_registry_ };
+      j.at (Fader::kStereoInLKey).get_to (*fader.stereo_in_left_id_);
+      j.at (Fader::kStereoInRKey).get_to (*fader.stereo_in_right_id_);
+      j.at (Fader::kStereoOutLKey).get_to (*fader.stereo_out_left_id_);
+      j.at (Fader::kStereoOutRKey).get_to (*fader.stereo_out_right_id_);
+    }
+  j.at (Fader::kMidiModeKey).get_to (fader.midi_mode_);
+  j.at (Fader::kPassthroughKey).get_to (fader.passthrough_);
 }
 }

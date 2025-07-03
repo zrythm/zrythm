@@ -21,7 +21,12 @@ ArrangerObjectBase {
     Text {
         id: nameText
 
-        text: arrangerObject.name
+        text: {
+          // bindings
+          arrangerObject.scale.scaleType;
+          arrangerObject.scale.rootKey;
+          return arrangerObject.scale.toString();
+        }
         font: root.font
         color: root.palette.text
         padding: Style.buttonPadding

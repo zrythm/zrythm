@@ -197,10 +197,6 @@ public:
       }
   }
 
-  bool can_contain_clip () const override { return pool_id_.has_value (); }
-
-  bool contains_clip (const AudioClip &clip) const override;
-
   friend void init_from (
     TracklistSelectionsAction       &obj,
     const TracklistSelectionsAction &other,
@@ -309,7 +305,7 @@ public:
    *
    * If this is not -1, this means that an audio file exists in the pool.
    */
-  std::optional<AudioClip::Uuid> pool_id_;
+  std::optional<dsp::FileAudioSourceUuidReference> pool_id_;
 
   /** Source sends that need to be deleted/ recreated on do/undo. */
   std::vector<std::unique_ptr<ChannelSend>> src_sends_;
@@ -622,7 +618,7 @@ public:
 class TrackLaneIntAction : public TracklistSelectionsAction
 {
 protected:
-  template <structure::arrangement::RegionSubclass T>
+  template <structure::arrangement::RegionObject T>
   TrackLaneIntAction (
     EditType                                   edit_type,
     const structure::tracks::TrackLaneImpl<T> &track_lane,
@@ -654,7 +650,7 @@ protected:
 class MuteTrackLaneAction : public TrackLaneIntAction
 {
 public:
-  template <structure::arrangement::RegionSubclass T>
+  template <structure::arrangement::RegionObject T>
   MuteTrackLaneAction (
     const structure::tracks::TrackLaneImpl<T> &track_lane,
     bool                                       mute_new)
@@ -684,7 +680,7 @@ public:
 class SoloTrackLaneAction : public TrackLaneIntAction
 {
 public:
-  template <structure::arrangement::RegionSubclass T>
+  template <structure::arrangement::RegionObject T>
   SoloTrackLaneAction (
     const structure::tracks::TrackLaneImpl<T> &track_lane,
     bool                                       solo_new)
@@ -932,7 +928,7 @@ public:
 class RenameTrackLaneAction : public TracklistSelectionsAction
 {
 public:
-  template <structure::arrangement::RegionSubclass T>
+  template <structure::arrangement::RegionObject T>
   RenameTrackLaneAction (
     const structure::tracks::TrackLaneImpl<T> &track_lane,
     const utils::Utf8String                   &name)

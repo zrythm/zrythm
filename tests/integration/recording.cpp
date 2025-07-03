@@ -129,7 +129,7 @@ do_takes_no_loop_no_punch (
   ASSERT_POSITION_EQ (pos, audio_r->loop_end_pos_);
 
   /* assert that audio is silent */
-  AudioClip * clip = audio_r->get_clip ();
+  FileAudioSource * clip = audio_r->get_clip ();
   ASSERT_EQ (clip->num_frames_, CYCLE_SIZE);
   for (int i = 0; i < 2; i++)
     {
@@ -355,7 +355,7 @@ do_takes_loop_no_punch (
   pos.from_frames (FRAMES_BEFORE_LOOP);
   ASSERT_POSITION_EQ (pos, audio_r->loop_end_pos_);
   /* assert that audio is silent */
-  AudioClip * clip = audio_r->get_clip ();
+  FileAudioSource * clip = audio_r->get_clip ();
   ASSERT_EQ (clip->num_frames_, FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0; i < (nframes_t) FRAMES_BEFORE_LOOP; i++)
     {
@@ -796,7 +796,7 @@ TEST_F (ZrythmFixture, LongAudioRecording)
   /* enable recording for audio track */
   audio_track->set_recording (true, false);
 
-  AudioClip        clip (TEST_WAV2);
+  FileAudioSource  clip (TEST_WAV2);
   unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
@@ -834,7 +834,7 @@ TEST_F (ZrythmFixture, LongAudioRecording)
       ASSERT_POSITION_EQ (init_pos, audio_r->pos_);
 
       /* assert that audio is correct */
-      AudioClip * r_clip = audio_r->get_clip ();
+      FileAudioSource * r_clip = audio_r->get_clip ();
       ASSERT_EQ (r_clip->num_frames_, processed_ch_frames);
       for (nframes_t i = 0; i < processed_ch_frames; i++)
         {
@@ -847,7 +847,7 @@ TEST_F (ZrythmFixture, LongAudioRecording)
         }
 
       /* load the region file and check that frames are correct */
-      AudioClip new_clip (r_clip->get_path_in_pool (false));
+      FileAudioSource new_clip (r_clip->get_path_in_pool (false));
       if (r_clip->num_frames_ < new_clip.num_frames_)
         {
           z_error ("{} < {}", r_clip->num_frames_, new_clip.num_frames_);
@@ -878,8 +878,8 @@ TEST_F (ZrythmFixture, LongAudioRecording)
   audio_track = TRACKLIST->get_last_track<AudioTrack> ();
   ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
   audio_r = audio_track->lanes_[0]->regions_[0].get ();
-  AudioClip * r_clip = audio_r->get_clip ();
-  AudioClip   new_clip (r_clip->get_path_in_pool (false));
+  FileAudioSource * r_clip = audio_r->get_clip ();
+  FileAudioSource   new_clip (r_clip->get_path_in_pool (false));
   z_warn_if_fail (audio_frames_equal (
     r_clip->frames_.getReadPointer (0), new_clip.frames_.getReadPointer (0),
     (size_t) std::min (new_clip.num_frames_, r_clip->num_frames_), 0.0001f));
@@ -924,7 +924,7 @@ TEST_F (ZrythmFixture, SecondAudioRecording)
   /* enable recording for audio track */
   audio_track->set_recording (true, false);
 
-  AudioClip        clip (TEST_WAV2);
+  FileAudioSource  clip (TEST_WAV2);
   unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
@@ -959,7 +959,7 @@ TEST_F (ZrythmFixture, SecondAudioRecording)
       ASSERT_POSITION_EQ (init_pos, audio_r->pos_);
 
       /* assert that audio is silent */
-      AudioClip * r_clip = audio_r->get_clip ();
+      FileAudioSource * r_clip = audio_r->get_clip ();
       ASSERT_EQ (r_clip->num_frames_, processed_ch_frames);
       for (nframes_t i = 0; i < processed_ch_frames; i++)
         {

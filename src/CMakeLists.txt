@@ -46,6 +46,7 @@ target_link_libraries(zrythm_gui_lib
     ${zrythm_link_libs}
     zrythm_dsp_lib
     zrythm_plugins_lib
+    zrythm_arrangement_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )

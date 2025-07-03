@@ -97,7 +97,8 @@ Router::recalc_graph (bool soft)
     ProjectGraphBuilder builder (*PROJECT, true);
     dsp::graph::Graph   graph;
     builder.build_graph (graph);
-    PROJECT->clip_editor_->set_caches ();
+    // TODO
+    // PROJECT->clip_editor_->set_caches ();
     TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
     scheduler_->rechain_from_node_collection (graph.steal_nodes ());
     graph_setup_in_progress_.store (false);

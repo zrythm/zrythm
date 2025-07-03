@@ -406,6 +406,8 @@ public:
    *
    * @return A vector of track variants.
    */
+// depreacted: use from/to json
+#if 0
   std::vector<VariantType> create_snapshots (
     QObject                &owner,
     TrackRegistry          &track_registry,
@@ -424,20 +426,22 @@ public:
           track_var);
       }));
   }
+#endif
 
   std::vector<TrackUuidReference> create_new_identities (
-    TrackRegistry          &track_registry,
-    PluginRegistry         &plugin_registry,
-    PortRegistry           &port_registry,
-    ArrangerObjectRegistry &obj_registry) const
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    TrackRegistry                &track_registry,
+    PluginRegistry               &plugin_registry,
+    PortRegistry                 &port_registry,
+    ArrangerObjectRegistry       &obj_registry) const
   {
     return std::ranges::to<std::vector> (
       *this | std::views::transform ([&] (const auto &track_var) {
         return std::visit (
           [&] (auto &&track) -> TrackUuidReference {
             return track_registry.clone_object (
-              *track, track_registry, plugin_registry, port_registry,
-              obj_registry, true);
+              *track, file_audio_source_registry, track_registry,
+              plugin_registry, port_registry, obj_registry, true);
           },
           track_var);
       }));

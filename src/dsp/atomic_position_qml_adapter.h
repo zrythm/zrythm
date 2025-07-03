@@ -5,7 +5,7 @@
 
 #include "dsp/atomic_position.h"
 
-#include <QObject>
+#include <QtQmlIntegration>
 
 namespace zrythm::dsp
 {
@@ -25,11 +25,19 @@ public:
     AtomicPosition &atomicPos,
     QObject *       parent = nullptr);
 
-  double ticks () const;
-  void   setTicks (double ticks);
+  double           ticks () const;
+  void             setTicks (double ticks);
+  Q_INVOKABLE void addTicks (double ticks_to_add)
+  {
+    setTicks (ticks () + ticks_to_add);
+  }
 
-  double seconds () const;
-  void   setSeconds (double seconds);
+  double           seconds () const;
+  void             setSeconds (double seconds);
+  Q_INVOKABLE void addSeconds (double seconds_to_add)
+  {
+    setSeconds (seconds () + seconds_to_add);
+  }
 
   qint64 samples () const;
   void   setSamples (double samples);

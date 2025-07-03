@@ -3,8 +3,12 @@
 
 #pragma once
 
+#include <atomic>
+#include <limits>
+
 #include "dsp/tempo_map.h"
 
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
@@ -180,7 +184,8 @@ public:
       bool_to_format (b) == TimeFormat::Musical
         ? d
         : tempo_map_.seconds_to_tick (d);
-    return static_cast<std::int64_t> (tempo_map_.tick_to_samples (tick));
+    return static_cast<std::int64_t> (
+      std::round (tempo_map_.tick_to_samples (tick)));
   }
 
   void set_samples (double samples)
@@ -226,3 +231,20 @@ private:
 };
 
 } // namespace zrythm::dsp
+
+// Formatter for AtomicPosition
+template <>
+struct fmt::formatter<zrythm::dsp::AtomicPosition>
+    : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const zrythm::dsp::AtomicPosition &pos, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>{}.format (
+      fmt::format (
+        "Ticks: {:.2f} | Seconds: {:.3f} | Samples: {} | [Mode: {}]",
+        pos.get_ticks (), pos.get_seconds (), pos.get_samples (),
+        pos.get_current_mode ()),
+      ctx);
+  }
+};

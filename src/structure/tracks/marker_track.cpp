@@ -7,18 +7,21 @@
 namespace zrythm::structure::tracks
 {
 MarkerTrack::MarkerTrack (
-  TrackRegistry          &track_registry,
-  PluginRegistry         &plugin_registry,
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry,
-  bool                    new_identity)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  TrackRegistry                &track_registry,
+  PluginRegistry               &plugin_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  bool                          new_identity)
     : Track (
         Track::Type::Marker,
         PortType::Unknown,
         PortType::Unknown,
         plugin_registry,
         port_registry,
-        obj_registry)
+        obj_registry),
+      arrangement::ArrangerObjectOwner<
+        Marker> (obj_registry, file_audio_source_registry, *this)
 {
   if (new_identity)
     {
@@ -45,9 +48,8 @@ auto
 MarkerTrack::get_start_marker () const -> Marker *
 {
   auto markers = get_children_view ();
-  auto it = std::ranges::find_if (markers, [] (const auto &marker) {
-    return marker->marker_type_ == Marker::Type::Start;
-  });
+  auto it =
+    std::ranges::find (markers, Marker::MarkerType::Start, &Marker::markerType);
   z_return_val_if_fail (it != markers.end (), nullptr);
   return *it;
 }
@@ -56,9 +58,8 @@ auto
 MarkerTrack::get_end_marker () const -> Marker *
 {
   auto markers = get_children_view ();
-  auto it = std::ranges::find_if (markers, [] (const auto &marker) {
-    return marker->marker_type_ == Marker::Type::End;
-  });
+  auto it =
+    std::ranges::find (markers, Marker::MarkerType::End, &Marker::markerType);
   z_return_val_if_fail (it != markers.end (), nullptr);
   return *it;
 }
@@ -68,7 +69,7 @@ MarkerTrack::clear_objects ()
   std::vector<Marker::Uuid> markers_to_delete;
   for (auto * marker : get_children_view () | std::views::reverse)
     {
-      if (marker->is_start () || marker->is_end ())
+      if (marker->isStartMarker () || marker->isEndMarker ())
         continue;
       markers_to_delete.push_back (marker->get_uuid ());
     }

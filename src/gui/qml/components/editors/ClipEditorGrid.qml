@@ -14,6 +14,7 @@ GridLayout {
     required property var project
     required property var clipEditor
     readonly property var region: clipEditor.region
+    readonly property var track: clipEditor.track
 
     rows: 2
     columns: 3
@@ -25,7 +26,7 @@ GridLayout {
         Layout.rowSpan: 2
 
         Rectangle {
-            color: region.effectiveColor
+            color: region.regionMixin.color.useColor ? region.regionMixin.color.color : track.color
             Layout.fillHeight: true
             width: 5
         }
@@ -35,7 +36,7 @@ GridLayout {
 
             font: Style.normalTextFont
             Layout.fillHeight: true
-            text: root.region.name
+            text: root.region.regionMixin.name.name
         }
 
     }
@@ -67,13 +68,13 @@ GridLayout {
 
         currentIndex: {
           switch (root.region.type) {
-            case 0:
+            case ArrangerObject.MidiRegion:
               return 0
-            case 1:
+            case ArrangerObject.AudioRegion:
               return 1
-            case 2:
+            case ArrangerObject.ChordRegion:
               return 3
-            case 3:
+            case ArrangerObject.AutomationRegion:
               return 2
             default:
               return 0

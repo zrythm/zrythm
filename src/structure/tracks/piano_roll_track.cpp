@@ -1,15 +1,11 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/device_io/engine.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/midi_region.h"
-#include "structure/tracks/instrument_track.h"
-#include "structure/tracks/midi_track.h"
 #include "structure/tracks/piano_roll_track.h"
-#include "utils/types.h"
+
+#include <midilib/src/midifile.h>
+#include <midilib/src/midiinfo.h>
 
 namespace zrythm::structure::tracks
 {
@@ -22,7 +18,7 @@ PianoRollTrack::write_to_midi_file (
   bool                   lanes_as_tracks,
   bool                   use_track_pos)
 {
-  int                                   midi_track_pos = pos_;
+  [[maybe_unused]] int                  midi_track_pos = pos_;
   std::unique_ptr<dsp::MidiEventVector> own_events;
   if (!lanes_as_tracks && use_track_pos)
     {
@@ -41,25 +37,8 @@ PianoRollTrack::write_to_midi_file (
 
   if (own_events)
     {
-      own_events->write_to_midi_file (mf, midi_track_pos);
-    }
-}
-
-void
-PianoRollTrack::get_velocities_in_range (
-  const Position *                      start_pos,
-  const Position *                      end_pos,
-  std::vector<arrangement::Velocity *> &velocities,
-  bool                                  inside) const
-{
-  for (const auto &lane_var : lanes_)
-    {
-      auto * lane = std::get<MidiLane *> (lane_var);
-      for (auto * region : lane->get_children_view ())
-        {
-          region->get_velocities_in_range (
-            start_pos, end_pos, velocities, inside);
-        }
+      // TODO
+      // own_events->write_to_midi_file (mf, midi_track_pos);
     }
 }
 
@@ -70,11 +49,35 @@ PianoRollTrack::clear_objects ()
   AutomatableTrack::clear_objects ();
 }
 
+uint8_t
+PianoRollTrack::get_midi_ch (const arrangement::MidiRegion &midi_region) const
+{
+  return 1;
+// TODO
+#if 0
+  uint8_t ret;
+  auto   &lane = get_lane_for_mr (midi_region);
+  if (lane.midi_ch_ > 0)
+    ret = lane.midi_ch_;
+  else
+    {
+      auto * track = lane.get_track ();
+      z_return_val_if_fail (track, 1);
+      auto piano_roll_track = dynamic_cast<tracks::PianoRollTrack *> (track);
+      ret = piano_roll_track->midi_ch_;
+    }
+
+  z_return_val_if_fail (ret > 0, 1);
+
+  return ret;
+#endif
+}
+
 void
 PianoRollTrack::get_regions_in_range (
-  std::vector<Region *> &regions,
-  const Position *       p1,
-  const Position *       p2)
+  std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+  std::optional<signed_frame_t>                          p1,
+  std::optional<signed_frame_t>                          p2)
 {
   LanedTrackImpl::get_regions_in_range (regions, p1, p2);
   AutomatableTrack::get_regions_in_range (regions, p1, p2);

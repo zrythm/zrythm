@@ -3,56 +3,90 @@
 
 #pragma once
 
-#include "structure/arrangement/arranger_object.h"
+#include "utils/types.h"
+
+#include <boost/describe.hpp>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {
 
-class MuteableObject : virtual public ArrangerObject
+class ArrangerObjectMuteFunctionality : public QObject
 {
+  Q_OBJECT
+  Q_PROPERTY (bool muted READ muted WRITE setMuted NOTIFY mutedChanged)
+  QML_ELEMENT
+
 public:
-  // = default deletes it for some reason on gcc
-  MuteableObject () noexcept { };
-  ~MuteableObject () noexcept override = default;
-  Z_DISABLE_COPY_MOVE (MuteableObject)
+  ArrangerObjectMuteFunctionality (QObject * parent = nullptr) noexcept
+      : QObject (parent)
+  {
+  }
+  ~ArrangerObjectMuteFunctionality () override = default;
+  Z_DISABLE_COPY_MOVE (ArrangerObjectMuteFunctionality)
 
-  /**
-   * Gets the mute status of the object.
-   *
-   * @param check_parent Whether to check parent (parent region or parent track
-   * lane if region), otherwise only whether this object itself is muted is
-   * returned. This will take the solo status of other lanes if true and if this
-   * is a region that can have lanes.
-   */
-  virtual bool get_muted (bool check_parent) const { return muted_; };
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+  bool muted () const { return muted_; }
+  void setMuted (bool muted)
+  {
+    if (muted_ != muted)
+      {
+        muted_ = muted;
+        Q_EMIT mutedChanged (muted);
+      }
+  }
+  Q_SIGNAL void mutedChanged (bool muted);
 
-  /**
-   * Sets the mute status of the object.
-   */
-  void set_muted (bool muted, bool fire_events);
+  // ========================================================================
 
-protected:
-  friend void init_from (
-    MuteableObject        &obj,
-    const MuteableObject  &other,
-    utils::ObjectCloneType clone_type);
+// TODO
+#if 0
+template <typename RegionT>
+bool
+RegionImpl<RegionT>::get_muted (bool check_parent) const
+{
+  if (check_parent)
+    {
+      if constexpr (is_laned ())
+        {
+          auto &lane = get_derived ().get_lane ();
+          if (lane.is_effectively_muted ())
+            return true;
+        }
+    }
+  return muted ();
+}
+#endif
 
 private:
+  friend void init_from (
+    ArrangerObjectMuteFunctionality       &obj,
+    const ArrangerObjectMuteFunctionality &other,
+    utils::ObjectCloneType                 clone_type)
+  {
+    obj.muted_ = other.muted_;
+  }
+
   static constexpr std::string_view kMutedKey = "muted";
-  friend void to_json (nlohmann::json &j, const MuteableObject &object)
+  friend void
+  to_json (nlohmann::json &j, const ArrangerObjectMuteFunctionality &object)
   {
     j[kMutedKey] = object.muted_;
   }
-  friend void from_json (const nlohmann::json &j, MuteableObject &object)
+  friend void
+  from_json (const nlohmann::json &j, ArrangerObjectMuteFunctionality &object)
   {
     j.at (kMutedKey).get_to (object.muted_);
+    Q_EMIT object.mutedChanged (object.muted_);
   }
 
-public:
+private:
   /** Whether muted or not. */
-  bool muted_ = false;
+  bool muted_{ false };
 
-  BOOST_DESCRIBE_CLASS (MuteableObject, (ArrangerObject), (muted_), (), ())
+  BOOST_DESCRIBE_CLASS (ArrangerObjectMuteFunctionality, (), (), (), (muted_))
 };
 
 } // namespace zrythm::structure::arrangement

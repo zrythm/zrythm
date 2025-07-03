@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 // pragma ComponentBehavior: Bound
@@ -207,13 +207,19 @@ Arranger {
         console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
 
         switch (track.type) {
-            case 3:
+            case Track.Chord:
                 console.log("creating chord");
                 break;
-            case 4:
-                console.log("creating marker");
-                break;
-            case 8:
+            case Track.Marker:
+                console.log("creating marker", Track.Marker, ArrangerObject.Marker);
+                let marker = objectFactory.addMarker(Marker.Custom, track, qsTr("Custom Marker"), x / root.ruler.pxPerTick);
+                root.currentAction = Arranger.CreatingMoving;
+                root.setObjectSnapshotsAtStart();
+                CursorManager.setClosedHandCursor();
+                root.actionObject = marker;
+                return marker;
+            case Track.Midi:
+            case Track.Instrument:
                 console.log("creating midi region", track.lanes.getFirstLane());
                 let region = objectFactory.addEmptyMidiRegion(trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
                 root.currentAction = Arranger.CreatingResizingR;
@@ -279,7 +285,7 @@ Arranger {
                         width: parent.width
                         y: trackDelegate.track.height - height
                         height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
-                        active: trackDelegate.track.type === 3
+                        active: trackDelegate.track.type === Track.Chord
                         visible: active
 
                         sourceComponent: Repeater {
@@ -322,7 +328,7 @@ Arranger {
                         width: parent.width
                         y: trackDelegate.track.height - height
                         height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
-                        active: trackDelegate.track.type === 4
+                        active: trackDelegate.track.type === Track.Marker
                         visible: active
 
                         sourceComponent: Repeater {
@@ -362,7 +368,7 @@ Arranger {
                     Loader {
                         id: chordRegionsLoader
 
-                        active: track.type === 3
+                        active: track.type === Track.Chord
                         visible: active
                         y: 0
                         width: parent.width
@@ -462,15 +468,15 @@ Arranger {
                                     required property var arrangerObject
                                     property var region: arrangerObject
                                     readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
-                                    readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
-                                    readonly property real regionWidth: regionEndX - regionX
+                                    readonly property real regionWidth: region.regionMixin.bounds.length.ticks * root.ruler.pxPerTick
+                                    readonly property real regionEndX: regionX + regionWidth
                                     readonly property real regionHeight: mainTrackLanedRegionsLoader.height
 
                                     height: regionHeight
                                     active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
                                     visible: status === Loader.Ready
                                     asynchronous: true
-                                    sourceComponent: region.type === 0 ? midiRegionComponent : audioRegionComponent
+                                    sourceComponent: region.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
                                 }
 
                             }
@@ -561,7 +567,7 @@ Arranger {
                                     active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
                                     visible: status === Loader.Ready
                                     asynchronous: true
-                                    sourceComponent: region.type === 0 ? laneMidiRegionComponent : laneAudioRegionComponent
+                                    sourceComponent: region.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
                                 }
 
                             }

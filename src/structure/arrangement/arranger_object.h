@@ -3,66 +3,22 @@
 
 #pragma once
 
-#include "gui/backend/position_proxy.h"
+#include "dsp/atomic_position_qml_adapter.h"
 #include "structure/arrangement/arranger_object_fwd.h"
-#include "structure/tracks/track_fwd.h"
 
-#include <QtGlobal>
+#include <QtQmlIntegration>
 
 #define DEFINE_ARRANGER_OBJECT_QML_PROPERTIES(ClassType) \
 public: \
-  /* ================================================================ */ \
-  /* type */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (int type READ getType CONSTANT) \
-  int getType () const \
-  { \
-    return ENUM_VALUE_TO_INT (get_type ()); \
-  } \
-  /* ================================================================ */ \
-  /* hasLength */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (bool hasLength READ getHasLength CONSTANT) \
-  bool getHasLength () const \
-  { \
-    return std::derived_from<ClassType, BoundedObject>; \
-  } \
-  /* ================================================================ */ \
-  /* selected */ \
-  /* ================================================================ */ \
+  Q_PROPERTY (ArrangerObject::Type type READ type CONSTANT) \
   Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
-  bool getSelected () const \
-  { \
-    if (selection_status_getter_) \
-      { \
-        return (*selection_status_getter_) (get_uuid ()); \
-      } \
-    return false; \
-  } \
   Q_SIGNAL void selectedChanged (bool selected); \
-  /* ================================================================ */ \
-  /* position */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (PositionProxy * position READ getPosition CONSTANT) \
-  PositionProxy * getPosition () const \
-  { \
-    return pos_.get (); \
-  } \
-  /* ================================================================ */ \
-  /* misc. signals */ \
-  /* ================================================================ */ \
+  Q_PROPERTY (dsp::AtomicPositionQmlAdapter * position READ position CONSTANT) \
   Q_SIGNAL void addedToProject (); \
   Q_SIGNAL void removedFromProject ();
 
-#define DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS(ClassType) \
-public: \
-  ClassType ( \
-    ArrangerObjectRegistry &obj_registry, TrackResolver track_resolver, \
-    QObject * parent = nullptr);
-
 namespace zrythm::structure::arrangement
 {
-
 /**
  * @brief Base class for all objects in the arranger.
  *
@@ -73,34 +29,12 @@ namespace zrythm::structure::arrangement
  */
 class ArrangerObject : public utils::UuidIdentifiableObject<ArrangerObject>
 {
+  Q_GADGET
+
   Z_DISABLE_COPY_MOVE (ArrangerObject)
 
 public:
   using SelectionStatusGetter = std::function<bool (const Uuid &)>;
-  using TrackUuid = structure::tracks::TrackUuid;
-  using Track = structure::tracks::Track;
-  using TrackResolver = structure::tracks::TrackResolver;
-  using TrackPtrVariant = structure::tracks::TrackPtrVariant;
-
-  static constexpr double DEFAULT_NUDGE_TICKS = 0.1;
-
-  /**
-   * Flag used in some functions.
-   */
-  enum class ResizeType : basic_enum_base_type_t
-  {
-    Normal,
-    Loop,
-    Fade,
-    Stretch,
-
-    /**
-     * Used when we want to resize to contents when BPM changes.
-     *
-     * @note Only applies to audio.
-     */
-    StretchTempoChange,
-  };
 
   /**
    * The type of the object.
@@ -116,231 +50,28 @@ public:
     ScaleObject,
     Marker,
     AutomationPoint,
+    AudioSourceObject,
   };
-
-  /**
-   * Flags.
-   */
-  enum class Flags : basic_enum_base_type_t
-  {
-    /** This object is not a project object, but an object used temporarily eg.
-     * when undoing/ redoing. */
-    NonProject = 1 << 0,
-
-    /** The object is a snapshot (cache used during DSP). TODO */
-    // FLAG_SNAPSHOT = 1 << 1,
-  };
-
-  enum class PositionType : basic_enum_base_type_t
-  {
-    Start,
-    End,
-    ClipStart,
-    LoopStart,
-    LoopEnd,
-    FadeIn,
-    FadeOut,
-  };
-
-  using Position = zrythm::dsp::Position;
+  Q_ENUM (Type)
 
 public:
   ~ArrangerObject () noexcept override = default;
 
-  using ArrangerObjectPtr = ArrangerObject *;
-
-  auto get_type () const { return type_; }
-
-  /**
-   * Generates a human readable name for the object.
-   *
-   * If the object has a name, this returns a copy of the name, otherwise
-   * generates something appropriate.
-   */
-  virtual utils::Utf8String gen_human_friendly_name () const
-  {
-    /* this will be called if unimplemented - it's not needed for things like
-     * Velocity, which don't have reasonable names. */
-    z_return_val_if_reached ({});
-  };
-
-  /**
-   * Returns whether the given object is hit by the given  range.
-   *
-   * @param start Start position.
-   * @param end End position.
-   * @param range_start_inclusive Whether @ref pos_ == @p start is allowed. Can't
-   * imagine a case where this would be false, but kept an option just in case.
-   * @param range_end_inclusive Whether @ref pos_ == @p end is allowed.
-   */
-  bool is_start_hit_by_range (
-    const dsp::Position &start,
-    const dsp::Position &end,
-    bool                 range_start_inclusive = true,
-    bool                 range_end_inclusive = false) const
-  {
-    return is_start_hit_by_range (
-      start.frames_, end.frames_, range_start_inclusive, range_end_inclusive);
-  }
-
   /**
    * @brief @see @ref is_start_hit_by_range().
    */
-  bool is_start_hit_by_range (
-    const signed_frame_t global_frames_start,
-    const signed_frame_t global_frames_end,
+  constexpr bool is_start_hit_by_range (
+    const signed_frame_t frames_start,
+    const signed_frame_t frames_end,
     bool                 range_start_inclusive = true,
     bool                 range_end_inclusive = false) const
   {
+    const auto pos_samples = position_.get_samples ();
     return (range_start_inclusive
-              ? (pos_->frames_ >= global_frames_start)
-              : (pos_->frames_ > global_frames_start))
-           && (range_end_inclusive ? (pos_->frames_ <= global_frames_end) : (pos_->frames_ < global_frames_end));
+              ? (pos_samples >= frames_start)
+              : (pos_samples > frames_start))
+           && (range_end_inclusive ? (pos_samples <= frames_end) : (pos_samples < frames_end));
   }
-
-  /**
-   * @brief Set the parent on QObject's that are children of this class.
-   *
-   * This is needed because we can only inherit from QObject on final classes,
-   * and this is not a final class, so final classes deriving from this are
-   * expected to call this method to establish the parent-child relationship.
-   *
-   * @param derived The derived class instance.
-   */
-  void set_parent_on_base_qproperties (QObject &derived);
-
-  /**
-   * Getter.
-   */
-  auto get_position () const
-  {
-    return *static_cast<dsp::Position *> (pos_.get ());
-  };
-
-  /**
-   * The setter is for use in e.g. the digital meters whereas the set_pos func
-   * is used during arranger actions.
-   *
-   * @note This validates the position.
-   */
-  void position_setter_validated (
-    const dsp::Position &pos,
-    dsp::TicksPerFrame   ticks_per_frame);
-
-  void set_position_unvalidated (const dsp::Position &pos)
-  {
-    // FIXME qobject updates...
-    *static_cast<dsp::Position *> (pos_.get ()) = pos;
-  }
-
-  /**
-   * Returns if the given Position is valid.
-   *
-   * @param pos The position to set to.
-   * @param pos_type The type of Position to set in the ArrangerObject.
-   */
-  bool is_position_valid (
-    const dsp::Position &pos,
-    PositionType         pos_type,
-    dsp::TicksPerFrame   ticks_per_frame) const;
-
-  /**
-   * Sets the given position on the object, optionally attempting to validate
-   * before.
-   *
-   * @param pos The position to set to.
-   * @param pos_type The type of Position to set in the ArrangerObject.
-   * @param validate Validate the Position before setting it.
-   *
-   * @return Whether the position was set (false if invalid).
-   */
-  bool set_position (
-    const dsp::Position &pos,
-    PositionType         pos_type,
-    bool                 validate,
-    dsp::TicksPerFrame   ticks_per_frame);
-
-  /**
-   * Moves the object by the given amount of ticks.
-   */
-  void move (double ticks, dsp::FramesPerTick frames_per_tick);
-
-  void set_track_id (const TrackUuid &track_id) { track_id_ = track_id; }
-  void set_track_id (std::optional<TrackUuid> track_id)
-  {
-    track_id_ = track_id;
-  }
-  void unset_track_id () { track_id_ = std::nullopt; }
-
-  /**
-   * Updates the positions in each child recursively.
-   *
-   * @param from_ticks Whether to update the positions based on ticks (true) or
-   * frames (false).
-   * @param frames_per_tick This will be used when doing position conversions via
-   * dependency injection instead of relying on the current project's transport.
-   */
-  void update_positions (
-    bool               from_ticks,
-    bool               bpm_change,
-    dsp::FramesPerTick frames_per_tick);
-
-  /**
-   * Returns the Track this ArrangerObject is in.
-   */
-  [[gnu::hot]] auto get_track () const
-  {
-    assert (track_id_);
-    return track_resolver_ (*track_id_);
-  }
-
-  std::optional<TrackUuid> get_track_id () const { return track_id_; }
-
-  /**
-   * Validates the arranger object.
-   *
-   * @param frames_per_tick Frames per tick used when validating audio
-   * regions. Passing 0 will use the value from the current engine.
-   * @return Whether valid.
-   *
-   * Must only be implemented by final objects.
-   */
-  virtual bool
-  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const = 0;
-
-  /**
-   * Appends the ArrangerObject to where it belongs in the project (eg, a
-   * Track), without taking into account its previous index (eg, before deletion
-   * if undoing).
-   *
-   * @throw ZrythmError on failure.
-   * @return A reference to the newly added clone.
-   */
-  virtual ArrangerObjectPtrVariant
-  add_clone_to_project (bool fire_events) const = 0;
-
-  /**
-   * Inserts the object where it belongs in the project (eg, a Track).
-   *
-   * This function assumes that the object already knows the index where it
-   * should be inserted in its parent.
-   *
-   * This is mostly used when undoing.
-   *
-   * @throw ZrythmException on failure.
-   * @return A reference to the newly inserted clone.
-   */
-  virtual ArrangerObjectPtrVariant insert_clone_to_project () const = 0;
-
-  /**
-   * Removes the object (which can be obtained from @ref find_in_project()) from
-   * its parent in the project.
-   *
-   * @return A pointer to the removed object (whose lifetime is now the
-   * responsibility of the caller).
-   */
-  std::optional<ArrangerObjectPtrVariant>
-  remove_from_project (bool free_obj, bool fire_events = false);
 
   void set_selection_status_getter (SelectionStatusGetter getter)
   {
@@ -348,73 +79,66 @@ public:
   }
   void unset_selection_status_getter () { selection_status_getter_.reset (); }
 
-  /**
-   * Returns whether the given object is deletable or not (eg, start marker).
-   */
-  virtual bool is_deletable () const { return true; };
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  friend bool operator== (const ArrangerObject &lhs, const ArrangerObject &rhs)
+  auto type () const { return type_; }
+
+  bool getSelected () const
   {
-    return lhs.type_ == rhs.type_ && *lhs.pos_ == *rhs.pos_
-           && lhs.track_id_ == rhs.track_id_;
+    if (selection_status_getter_)
+      {
+        return (*selection_status_getter_) (get_uuid ());
+      }
+    return false;
+  }
+  dsp::AtomicPositionQmlAdapter * position () const
+  {
+    return position_adapter_.get ();
+  }
+
+  // ========================================================================
+
+  // Convenience getter
+  auto &get_tempo_map () const
+  {
+    return position ()->position ().get_tempo_map ();
   }
 
 protected:
-  ArrangerObject (Type type, TrackResolver track_resolver) noexcept;
+  /**
+   * @brief Construct a new ArrangerObject.
+   *
+   * @param tempo_map
+   * @param derived The derived class instance, to be used for parenting any
+   * QObjects created by this class.
+   */
+  ArrangerObject (
+    Type                 type,
+    const dsp::TempoMap &tempo_map,
+    QObject             &derived) noexcept;
 
   friend void init_from (
     ArrangerObject        &obj,
     const ArrangerObject  &other,
     utils::ObjectCloneType clone_type);
 
-  /**
-   * @brief To be called by @ref validate() implementations.
-   */
-  bool
-  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
-
 private:
-  dsp::Position * get_position_ptr (PositionType type);
-
-  friend void to_json (nlohmann::json &j, const ArrangerObject &arranger_object)
-  {
-    to_json (j, static_cast<const UuidIdentifiableObject &> (arranger_object));
-    j["type"] = arranger_object.type_;
-    j["flags"] = arranger_object.flags_;
-    j["trackId"] = arranger_object.track_id_;
-    j["pos"] = arranger_object.pos_;
-  }
+  static constexpr auto kPositionKey = "position"sv;
   friend void
-  from_json (const nlohmann::json &j, ArrangerObject &arranger_object)
-  {
-    j.at ("type").get_to (arranger_object.type_);
-    j.at ("flags").get_to (arranger_object.flags_);
-    j.at ("trackId").get_to (arranger_object.track_id_);
-    j.at ("pos").get_to (*arranger_object.pos_);
-  }
-
-protected:
-  TrackResolver track_resolver_;
-
-  /**
-   * Position (or start Position if the object has length).
-   */
-  utils::QObjectUniquePtr<PositionProxy> pos_;
+  to_json (nlohmann::json &j, const ArrangerObject &arranger_object);
+  friend void
+  from_json (const nlohmann::json &j, ArrangerObject &arranger_object);
 
 private:
-  Type type_{};
+  Type type_;
 
-protected:
-  /**
-   * @brief ID of the track this object belongs to.
-   *
-   * If this is null, then this object is not part of a track.
-   */
-  std::optional<TrackUuid> track_id_;
-
-public:
-  /** Flags. */
-  Flags flags_{};
+  /// Start position (always in Musical mode (ticks)).
+  dsp::AtomicPosition                                    position_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> position_adapter_{
+    new dsp::AtomicPositionQmlAdapter{ position_ }
+  };
 
 protected:
   std::optional<SelectionStatusGetter> selection_status_getter_;
@@ -423,8 +147,8 @@ protected:
     ArrangerObject,
     (UuidIdentifiableObject<ArrangerObject>),
     (),
-    (track_id_, pos_),
-    (type_))
+    (type_, position_),
+    ())
 };
 
 using ArrangerObjectRegistry =
@@ -434,22 +158,7 @@ using ArrangerObjectSelectionManager =
   utils::UuidIdentifiableObjectSelectionManager<ArrangerObjectRegistry>;
 
 template <typename T>
-concept ArrangerObjectSubclass = std::derived_from<T, ArrangerObject>;
-
-template <typename T>
 concept FinalArrangerObjectSubclass =
   std::derived_from<T, ArrangerObject> && FinalClass<T> && CompleteType<T>;
 
 }
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::structure::arrangement::ArrangerObject::Type,
-  ArrangerObject_Type,
-  QT_TR_NOOP ("None"),
-  QT_TR_NOOP ("All"),
-  QT_TR_NOOP ("Region"),
-  QT_TR_NOOP ("Midi Note"),
-  QT_TR_NOOP ("Chord Object"),
-  QT_TR_NOOP ("Scale Object"),
-  QT_TR_NOOP ("Marker"),
-  QT_TR_NOOP ("Automation Point"));

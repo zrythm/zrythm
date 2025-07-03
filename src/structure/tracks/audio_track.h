@@ -39,11 +39,12 @@ public:
 
 private:
   AudioTrack (
-    TrackRegistry          &track_registry,
-    PluginRegistry         &plugin_registry,
-    PortRegistry           &port_registry,
-    ArrangerObjectRegistry &obj_registry,
-    bool                    new_identity);
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    TrackRegistry                &track_registry,
+    PluginRegistry               &plugin_registry,
+    PortRegistry                 &port_registry,
+    ArrangerObjectRegistry       &obj_registry,
+    bool                          new_identity);
 
 public:
   void
@@ -64,28 +65,28 @@ public:
    * @param stereo_ports StereoPorts to fill.
    */
   void fill_events (
-    const EngineProcessTimeInfo        &time_nfo,
-    std::pair<AudioPort &, AudioPort &> stereo_ports);
+    const EngineProcessTimeInfo                  &time_nfo,
+    std::pair<std::span<float>, std::span<float>> stereo_ports);
 
   void clear_objects () override;
 
   void get_regions_in_range (
-    std::vector<Region *> &regions,
-    const Position *       p1,
-    const Position *       p2) override;
+    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+    std::optional<signed_frame_t>                          p1,
+    std::optional<signed_frame_t>                          p2) override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
   void timestretch_buf (
-    const AudioRegion * r,
-    AudioClip *         clip,
-    unsigned_frame_t    in_frame_offset,
-    double              timestretch_ratio,
-    float *             lbuf_after_ts,
-    float *             rbuf_after_ts,
-    unsigned_frame_t    out_frame_offset,
-    unsigned_frame_t    frames_to_process);
+    const AudioRegion *    r,
+    dsp::FileAudioSource * clip,
+    unsigned_frame_t       in_frame_offset,
+    double                 timestretch_ratio,
+    float *                lbuf_after_ts,
+    float *                rbuf_after_ts,
+    unsigned_frame_t       out_frame_offset,
+    unsigned_frame_t       frames_to_process);
 
 private:
   friend void to_json (nlohmann::json &j, const AudioTrack &track)

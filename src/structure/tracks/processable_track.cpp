@@ -80,9 +80,9 @@ ProcessableTrack::fill_midi_events (
 
 void
 ProcessableTrack::fill_events_common (
-  const EngineProcessTimeInfo                       &time_nfo,
-  dsp::MidiEventVector *                             midi_events,
-  std::optional<std::pair<AudioPort &, AudioPort &>> stereo_ports) const
+  const EngineProcessTimeInfo &time_nfo,
+  dsp::MidiEventVector *       midi_events,
+  std::optional<std::pair<std::span<float>, std::span<float>>> stereo_ports) const
 {
   if (!is_auditioner () && !TRANSPORT->isRolling ())
     {
@@ -111,32 +111,36 @@ ProcessableTrack::fill_events_common (
       auto process_single_region = [&] (const auto * r) {
         using RegionT = base_type<decltype (r)>;
 
-        /* skip region if muted */
-        if (r->get_muted (true))
+        // skip region if muted (TODO: check parents)
+        if (r->regionMixin ()->mute ()->muted ())
           {
             return;
           }
 
         /* skip if in bounce mode and the region should not be bounced */
+// TODO
+#if 0
         if (
           AUDIO_ENGINE->bounce_mode_ != engine::device_io::BounceMode::Off
           && (!r->bounce_ || !bounce_))
           {
             return;
           }
+#endif
 
         /* skip if region is not hit (inclusive of its last point) */
         if (
-          !r->is_hit_by_range (
-            (signed_frame_t) time_nfo.g_start_frame_w_offset_,
-            (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1)),
+          !r->regionMixin ()->bounds ()->is_hit_by_range (
+            std::make_pair (
+              (signed_frame_t) time_nfo.g_start_frame_w_offset_,
+              (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1))),
             true))
           {
             return;
           }
 
         signed_frame_t num_frames_to_process = std::min (
-          r->end_pos_->frames_
+          r->regionMixin ()->bounds ()->get_end_position_samples (true)
             - (signed_frame_t) time_nfo.g_start_frame_w_offset_,
           (signed_frame_t) time_nfo.nframes_);
         nframes_t frames_processed = 0;
@@ -150,11 +154,9 @@ ProcessableTrack::fill_events_common (
             nframes_t cur_local_start_frame =
               time_nfo.local_offset_ + frames_processed;
 
-            bool           is_loop_end;
-            signed_frame_t cur_num_frames_till_next_r_loop_or_end;
-            r->get_frames_till_next_loop_or_end (
-              (signed_frame_t) cur_g_start_frame_w_offset,
-              &cur_num_frames_till_next_r_loop_or_end, &is_loop_end);
+            auto [cur_num_frames_till_next_r_loop_or_end, is_loop_end] =
+              get_frames_till_next_loop_or_end (
+                *r, (signed_frame_t) cur_g_start_frame_w_offset);
 
 #if 0
               z_info (
@@ -170,7 +172,7 @@ ProcessableTrack::fill_events_common (
             const bool is_region_end =
               (signed_frame_t) time_nfo.g_start_frame_w_offset_
                 + num_frames_to_process
-              == r->end_pos_->frames_;
+              == r->regionMixin ()->bounds ()->get_end_position_samples (true);
 
             const bool is_transport_end =
               TRANSPORT->is_looping ()
@@ -200,11 +202,12 @@ ProcessableTrack::fill_events_common (
             };
 
             if constexpr (
-              structure::arrangement::RegionTypeWithMidiEvents<RegionT>)
+              std::is_same_v<RegionT, arrangement::MidiRegion>
+              || std::is_same_v<RegionT, arrangement::ChordRegion>)
               {
                 z_return_if_fail (midi_events);
-                r->fill_midi_events (
-                  track, nfo, need_note_off,
+                arrangement::fill_midi_events (
+                  *r, nfo, need_note_off,
                   !is_transport_end && (is_loop_end || is_region_end),
                   *midi_events);
               }
@@ -230,10 +233,10 @@ ProcessableTrack::fill_events_common (
         {
           if (use_caches)
             {
+              // TODO: actually use caches
               std::ranges::for_each (
                 track->structure::arrangement::template ArrangerObjectOwner<
-                  structure::arrangement::ChordRegion>::
-                  get_children_snapshots_view (),
+                  structure::arrangement::ChordRegion>::get_children_view (),
                 process_single_region);
             }
           else
@@ -250,8 +253,9 @@ ProcessableTrack::fill_events_common (
             {
               for (auto &lane : track->lane_snapshots_)
                 {
+                  // TODO: use snapshots/caches
                   std::ranges::for_each (
-                    lane->get_children_snapshots_view (), process_single_region);
+                    lane->get_children_view (), process_single_region);
                 }
             }
           else

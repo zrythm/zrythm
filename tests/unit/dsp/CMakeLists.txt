@@ -4,9 +4,11 @@
 add_executable(zrythm_dsp_unit_tests
   atomic_position_qml_adapter_test.cpp
   atomic_position_test.cpp
+  audio_pool_test.cpp
   chord_descriptor_test.cpp
   curve_test.cpp
   ditherer_test.cpp
+  file_audio_source_test.cpp
   kmeter_dsp_test.cpp
   graph_builder_test.cpp
   graph_helpers.h

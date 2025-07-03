@@ -1,14 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/session/clip.h"
-#include "engine/session/pool.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "structure/arrangement/audio_region.h"
-#include "structure/tracks/audio_track.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/audio.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/logger.h"
@@ -20,58 +13,32 @@ namespace zrythm::structure::arrangement
 {
 
 AudioRegion::AudioRegion (
-  ArrangerObjectRegistry &obj_registry,
-  TrackResolver           track_resolver,
-  AudioClipResolverFunc   clip_resolver,
-  QObject *               parent) noexcept
-    : ArrangerObject (Type::AudioRegion, track_resolver), Region (obj_registry),
-      QObject (parent), clip_resolver_ (std::move (clip_resolver))
+  const dsp::TempoMap          &tempo_map,
+  ArrangerObjectRegistry       &object_registry,
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  GlobalMusicalModeGetter       musical_mode_getter,
+  QObject *                     parent) noexcept
+    : QObject (parent), ArrangerObject (Type::AudioRegion, tempo_map, *this),
+      ArrangerObjectOwner (object_registry, file_audio_source_registry, *this),
+      file_audio_source_registry_ (file_audio_source_registry),
+      region_mixin_ (utils::make_qobject_unique<RegionMixin> (*position ())),
+      fade_range_ (
+        utils::make_qobject_unique<ArrangerObjectFadeRange> (tempo_map, this)),
+      global_musical_mode_getter_ (std::move (musical_mode_getter))
 {
-  ArrangerObject::set_parent_on_base_qproperties (*this);
-  BoundedObject::parent_base_qproperties (*this);
-  init_colored_object ();
-}
-
-AudioClip *
-AudioRegion::get_clip () const
-{
-  return clip_resolver_ (clip_id_);
-}
-
-bool
-AudioRegion::get_muted (bool check_parent) const
-{
-  if (check_parent)
-    {
-      auto &lane = get_lane ();
-      if (lane.is_effectively_muted ())
-        return true;
-    }
-  return muted_;
 }
 
 void
-AudioRegion::replace_frames (
-  const utils::audio::AudioBuffer &src_frames,
-  unsigned_frame_t                 start_frame)
+AudioRegion::set_source (const ArrangerObjectUuidReference &source)
 {
-  AudioClip * clip = get_clip ();
-  z_return_if_fail (clip);
-
-  clip->replace_frames (src_frames, start_frame);
-
-  AUDIO_POOL->write_clip (*clip, false, false);
+  add_object (source);
 }
 
 void
 AudioRegion::fill_stereo_ports (
-  const EngineProcessTimeInfo        &time_nfo,
-  std::pair<AudioPort &, AudioPort &> stereo_ports) const
+  const EngineProcessTimeInfo                  &time_nfo,
+  std::pair<std::span<float>, std::span<float>> stereo_output) const
 {
-  AudioClip * clip = get_clip ();
-  z_return_if_fail (clip);
-  auto * track = std::get<tracks::AudioTrack *> (get_track ());
-
   /* if timestretching in the timeline, skip processing */
 #if 0
   if (
@@ -88,6 +55,8 @@ AudioRegion::fill_stereo_ports (
       return;
     }
 #endif
+
+  auto &audio_source = get_audio_source ();
 
   /* restretch if necessary */
   // TODO
@@ -128,32 +97,11 @@ AudioRegion::fill_stereo_ports (
 #endif
 
   signed_frame_t r_local_frames_at_start = timeline_frames_to_local (
-    (signed_frame_t) time_nfo.g_start_frame_w_offset_, true);
+    *this, (signed_frame_t) time_nfo.g_start_frame_w_offset_, true);
 
-#if 0
-  Position r_local_pos_at_start;
-  position_from_frames (
-    &r_local_pos_at_start, r_local_frames_at_start);
-  Position r_local_pos_at_end;
-  position_from_frames (
-    &r_local_pos_at_end,
-    r_local_frames_at_start + time_nfo->nframes);
-
-  z_info ("region");
-  position_print_range (
-    &self->base.pos, &self->base.end_pos_);
-  z_info ("g start pos");
-  position_print (&g_start_pos);
-  z_info ("region local pos start/end");
-  position_print_range (
-    &r_local_pos_at_start, &r_local_pos_at_end);
-#endif
-
-  const auto &clip_frames = clip->get_samples ();
-
-  size_t    buff_index_start = (size_t) clip->get_num_frames () + 16;
-  size_t    buff_size = 0;
-  nframes_t prev_offset = time_nfo.local_offset_;
+  size_t buff_index_start = audio_source.getTotalLength () + 16;
+  size_t buff_size = 0;
+  [[maybe_unused]] nframes_t prev_offset = time_nfo.local_offset_;
   for (
     auto j =
       (unsigned_frame_t) ((r_local_frames_at_start < 0) ? -r_local_frames_at_start : 0);
@@ -161,24 +109,19 @@ AudioRegion::fill_stereo_ports (
     {
       unsigned_frame_t current_local_frame = time_nfo.local_offset_ + j;
       signed_frame_t   r_local_pos = timeline_frames_to_local (
-        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j), true);
-      if (r_local_pos < 0 || j > AUDIO_ENGINE->get_block_length ())
-        {
-          z_error (
-            "invalid r_local_pos {}, j {}, "
-            "g_start_frames (with offset) {}, cycle offset {}, nframes {}",
-            r_local_pos, j, time_nfo.g_start_frame_w_offset_,
-            time_nfo.local_offset_, time_nfo.nframes_);
-          return;
-        }
+        *this, (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j), true);
 
       auto buff_index = r_local_pos;
 
       auto stretch = [&] () {
+// TODO
+#if 0
+        auto * track = std::get<tracks::AudioTrack *> (get_track ());
         track->timestretch_buf (
           this, clip, buff_index_start, timestretch_ratio, lbuf_after_ts,
           rbuf_after_ts, prev_offset,
           (unsigned_frame_t) ((current_local_frame - prev_offset) + 1));
+#endif
       };
 
       /* if we are starting at a new
@@ -224,65 +167,86 @@ AudioRegion::fill_stereo_ports (
       else
         {
           z_return_if_fail_cmp (buff_index, >=, 0);
-          if (buff_index >= (decltype (buff_index)) clip->get_num_frames ())
+          if (
+            buff_index >= (decltype (buff_index)) audio_source.getTotalLength ())
             [[unlikely]]
             {
               z_error (
                 "Buffer index {} exceeds {} "
-                "frames in clip '{}'",
-                buff_index, clip->get_num_frames (), clip->get_name ());
+                "frames in clip",
+                buff_index, audio_source.getTotalLength ());
               return;
             }
-          lbuf_after_ts[j] =
-            clip_frames.getSample (0, static_cast<int> (buff_index));
-          rbuf_after_ts[j] =
-            clip->get_num_channels () == 1
-              ? clip_frames.getSample (0, static_cast<int> (buff_index))
-              : clip_frames.getSample (1, static_cast<int> (buff_index));
+
+          // get samples from source
+          // FIXME: this is extremely inefficient - we are reading 1 sample each
+          // time
+          {
+            audio_source.setNextReadPosition (buff_index);
+            juce::AudioSourceChannelInfo source_ch_nfo{
+              audio_source_buffer_.get (), 0, 1
+            };
+            audio_source.getNextAudioBlock (source_ch_nfo);
+          }
+
+          lbuf_after_ts[j] = audio_source_buffer_->getSample (0, 0);
+          rbuf_after_ts[j] = audio_source_buffer_->getSample (1, 0);
         }
     }
 
   /* apply gain */
-  if (!utils::math::floats_equal (gain_, 1.f))
+  const auto current_gain = gain ();
+  if (!utils::math::floats_equal (current_gain, 1.f))
     {
-      utils::float_ranges::mul_k2 (&lbuf_after_ts[0], gain_, time_nfo.nframes_);
-      utils::float_ranges::mul_k2 (&rbuf_after_ts[0], gain_, time_nfo.nframes_);
+      utils::float_ranges::mul_k2 (
+        &lbuf_after_ts[0], current_gain, time_nfo.nframes_);
+      utils::float_ranges::mul_k2 (
+        &rbuf_after_ts[0], current_gain, time_nfo.nframes_);
     }
 
   /* copy frames */
   utils::float_ranges::copy (
-    &stereo_ports.first.buf_[time_nfo.local_offset_], &lbuf_after_ts[0],
+    &stereo_output.first[time_nfo.local_offset_], &lbuf_after_ts[0],
     time_nfo.nframes_);
   utils::float_ranges::copy (
-    &stereo_ports.second.buf_[time_nfo.local_offset_], &rbuf_after_ts[0],
+    &stereo_output.second[time_nfo.local_offset_], &rbuf_after_ts[0],
     time_nfo.nframes_);
 
   /* apply fades */
-  const signed_frame_t num_frames_in_fade_in_area = fade_in_pos_.frames_;
+  const auto region_position_in_frames = position ()->samples ();
+  const auto region_length_in_frames =
+    region_mixin_->bounds ()->length ()->samples ();
+  const auto fade_in_pos_in_frames = fade_range_->startOffset ()->samples ();
+  const auto fade_out_pos_in_frames =
+    region_length_in_frames - fade_range_->endOffset ()->samples ();
+  const signed_frame_t num_frames_in_fade_in_area = fade_in_pos_in_frames;
   const signed_frame_t num_frames_in_fade_out_area =
-    end_pos_->frames_ - (fade_out_pos_.frames_ + pos_->frames_);
+    fade_range_->endOffset ()->samples ();
   const signed_frame_t local_builtin_fade_out_start_frames =
-    end_pos_->frames_ - (AUDIO_REGION_BUILTIN_FADE_FRAMES + pos_->frames_);
+    region_length_in_frames - BUILTIN_FADE_FRAMES;
   for (nframes_t j = 0; j < time_nfo.nframes_; j++)
     {
       const unsigned_frame_t current_cycle_frame = time_nfo.local_offset_ + j;
 
       /* current frame local to region start */
       const signed_frame_t current_local_frame =
-        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j) - pos_->frames_;
+        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j)
+        - region_position_in_frames;
 
       /* skip to fade out (or builtin fade out) if not in any fade area */
       if (
         current_local_frame >= std::max (
-          fade_in_pos_.frames_,
-          static_cast<decltype (fade_in_pos_.frames_)> (
-            AUDIO_REGION_BUILTIN_FADE_FRAMES))
+          fade_in_pos_in_frames,
+          static_cast<decltype (fade_in_pos_in_frames)> (BUILTIN_FADE_FRAMES))
         && current_local_frame < std::min (
-             fade_out_pos_.frames_, local_builtin_fade_out_start_frames))
+             fade_out_pos_in_frames,
+             static_cast<qint64> (local_builtin_fade_out_start_frames)))
         [[likely]]
         {
           j +=
-            std::min (fade_out_pos_.frames_, local_builtin_fade_out_start_frames)
+            std::min (
+              fade_out_pos_in_frames,
+              static_cast<qint64> (local_builtin_fade_out_start_frames))
             - current_local_frame;
           j--;
           continue;
@@ -293,83 +257,62 @@ AudioRegion::fill_stereo_ports (
         current_local_frame >= 0
         && current_local_frame < num_frames_in_fade_in_area)
         {
-          auto fade_in = (float) fade_in_opts_.get_normalized_y_for_fade (
+          auto fade_in = (float) fade_range_->get_normalized_y_for_fade (
             (double) current_local_frame / (double) num_frames_in_fade_in_area,
             true);
 
-          stereo_ports.first.buf_[current_cycle_frame] *= fade_in;
-          stereo_ports.second.buf_[current_cycle_frame] *= fade_in;
+          stereo_output.first[current_cycle_frame] *= fade_in;
+          stereo_output.second[current_cycle_frame] *= fade_in;
         }
       /* if inside object fade out */
-      if (current_local_frame >= fade_out_pos_.frames_)
+      if (current_local_frame >= fade_out_pos_in_frames)
         {
           z_return_if_fail_cmp (num_frames_in_fade_out_area, >, 0);
           signed_frame_t num_frames_from_fade_out_start =
-            current_local_frame - fade_out_pos_.frames_;
+            current_local_frame - fade_out_pos_in_frames;
           z_return_if_fail_cmp (
             num_frames_from_fade_out_start, <=, num_frames_in_fade_out_area);
-          auto fade_out = (float) fade_out_opts_.get_normalized_y_for_fade (
+          auto fade_out = (float) fade_range_->get_normalized_y_for_fade (
             (double) num_frames_from_fade_out_start
               / (double) num_frames_in_fade_out_area,
             false);
 
-          stereo_ports.first.buf_[current_cycle_frame] *= fade_out;
-          stereo_ports.second.buf_[current_cycle_frame] *= fade_out;
+          stereo_output.first[current_cycle_frame] *= fade_out;
+          stereo_output.second[current_cycle_frame] *= fade_out;
         }
       /* if inside builtin fade in, apply builtin fade in */
-      if (
-        current_local_frame >= 0
-        && current_local_frame < AUDIO_REGION_BUILTIN_FADE_FRAMES)
+      if (current_local_frame >= 0 && current_local_frame < BUILTIN_FADE_FRAMES)
         {
           float fade_in =
-            (float) current_local_frame
-            / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES;
+            (float) current_local_frame / (float) BUILTIN_FADE_FRAMES;
 
-          stereo_ports.first.buf_[current_cycle_frame] *= fade_in;
-          stereo_ports.second.buf_[current_cycle_frame] *= fade_in;
+          stereo_output.first[current_cycle_frame] *= fade_in;
+          stereo_output.second[current_cycle_frame] *= fade_in;
         }
-      /* if inside builtin fade out, apply builtin
-       * fade out */
+      /* if inside builtin fade out, apply builtin fade out */
       if (current_local_frame >= local_builtin_fade_out_start_frames)
         {
           signed_frame_t num_frames_from_fade_out_start =
             current_local_frame - local_builtin_fade_out_start_frames;
           z_return_if_fail_cmp (
-            num_frames_from_fade_out_start, <=,
-            AUDIO_REGION_BUILTIN_FADE_FRAMES);
+            num_frames_from_fade_out_start, <=, BUILTIN_FADE_FRAMES);
           float fade_out =
             1.f
-            - ((float) num_frames_from_fade_out_start / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES);
+            - ((float) num_frames_from_fade_out_start / (float) BUILTIN_FADE_FRAMES);
 
-          stereo_ports.first.buf_[current_cycle_frame] *= fade_out;
-          stereo_ports.second.buf_[current_cycle_frame] *= fade_out;
+          stereo_output.first[current_cycle_frame] *= fade_out;
+          stereo_output.second[current_cycle_frame] *= fade_out;
         }
     }
 }
 
-float
-AudioRegion::detect_bpm (std::vector<float> &candidates)
-{
-  AudioClip * clip = get_clip ();
-  z_return_val_if_fail (clip, 0.f);
-
-  return utils::audio::detect_bpm (
-    clip->get_samples ().getReadPointer (0), (size_t) clip->get_num_frames (),
-    (unsigned int) AUDIO_ENGINE->get_sample_rate (), candidates);
-}
-
 bool
-AudioRegion::get_musical_mode () const
+AudioRegion::effectivelyInMusicalMode () const
 {
-#if ZRYTHM_TARGET_VER_MAJ == 1
-  /* off for v1 */
-  return false;
-#endif
-
   switch (musical_mode_)
     {
     case MusicalMode::Inherit:
-      return gui::SettingsManager::musicalMode ();
+      return global_musical_mode_getter_ ();
     case MusicalMode::Off:
       return false;
     case MusicalMode::On:
@@ -378,140 +321,48 @@ AudioRegion::get_musical_mode () const
   z_return_val_if_reached (false);
 }
 
-bool
-AudioRegion::fix_positions (dsp::FramesPerTick frames_per_tick)
-{
-  AudioClip * clip = get_clip ();
-  z_return_val_if_fail (clip, false);
-
-  /* verify that the loop does not contain more frames than available in the
-   * clip */
-  /* use global positions because sometimes the loop appears to have 1 more
-   * frame due to rounding to nearest frame*/
-  signed_frame_t loop_start_global = Position::get_frames_from_ticks (
-    pos_->ticks_ + loop_start_pos_.ticks_, frames_per_tick);
-  signed_frame_t loop_end_global = Position::get_frames_from_ticks (
-    pos_->ticks_ + loop_end_pos_.ticks_, frames_per_tick);
-  signed_frame_t loop_len = loop_end_global - loop_start_global;
-  /*z_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
-  signed_frame_t region_len = end_pos_->frames_ - pos_->frames_;
-
-  signed_frame_t extra_loop_frames =
-    loop_len - (signed_frame_t) clip->get_num_frames ();
-  if (extra_loop_frames > 0)
-    {
-      /* only fix if the difference is 1 frame, which happens
-       * due to rounding - if more than 1 then some other big
-       * problem exists */
-      if (extra_loop_frames == 1)
-        {
-          z_debug ("fixing position for audio region. before: {}", *this);
-          if (loop_len == region_len)
-            {
-              end_pos_->add_frames (-1, AUDIO_ENGINE->ticks_per_frame_);
-              if (fade_out_pos_.frames_ == loop_end_pos_.frames_)
-                {
-                  fade_out_pos_.add_frames (-1, AUDIO_ENGINE->ticks_per_frame_);
-                }
-            }
-          loop_end_pos_.add_frames (-1, AUDIO_ENGINE->ticks_per_frame_);
-          z_debug ("fixed position for audio region. after: {}", *this);
-          return true;
-        }
-      else
-        {
-          z_error (
-            fmt::format (
-              "Audio region loop length in frames ({}) is greater than the number of frames in the clip ({}). ",
-              loop_len, clip->get_num_frames ()));
-          return false;
-        }
-    }
-
-  return false;
-}
-
-bool
-AudioRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
-{
-  if (PROJECT->loaded_ && !AUDIO_ENGINE->updating_frames_per_tick_)
-    {
-      auto clip = get_clip ();
-      z_return_val_if_fail (clip, false);
-
-      /* verify that the loop does not contain more frames than available in
-      the clip. use global positions because sometimes the loop appears to have
-      1 more frame due to rounding to nearest frame*/
-      signed_frame_t loop_start_global = Position::get_frames_from_ticks (
-        pos_->ticks_ + loop_start_pos_.ticks_, frames_per_tick);
-      signed_frame_t loop_end_global = Position::get_frames_from_ticks (
-        pos_->ticks_ + loop_end_pos_.ticks_, frames_per_tick);
-      signed_frame_t loop_len = loop_end_global - loop_start_global;
-
-      if (loop_len > (signed_frame_t) clip->get_num_frames ())
-
-        {
-          z_error (
-            "Audio region loop length in frames ({}) is greater than the "
-            "number of frames in the clip ({})",
-            loop_len, clip->get_num_frames ());
-          return false;
-        }
-    }
-
-  return true;
-}
-
 void
 init_from (
   AudioRegion           &obj,
   const AudioRegion     &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.clip_id_ = other.clip_id_;
-  obj.gain_ = other.gain_;
+  obj.gain_.store (other.gain_.load ());
   obj.musical_mode_ = other.musical_mode_;
-  init_from (
-    static_cast<LaneOwnedObject &> (obj),
-    static_cast<const LaneOwnedObject &> (other), clone_type);
-  init_from (
-    static_cast<AudioRegion::RegionImpl &> (obj),
-    static_cast<const AudioRegion::RegionImpl &> (other), clone_type);
-  init_from (
-    static_cast<FadeableObject &> (obj),
-    static_cast<const FadeableObject &> (other), clone_type);
-  init_from (
-    static_cast<TimelineObject &> (obj),
-    static_cast<const TimelineObject &> (other), clone_type);
-  init_from (
-    static_cast<NamedObject &> (obj), static_cast<const NamedObject &> (other),
-    clone_type);
-  init_from (
-    static_cast<LoopableObject &> (obj),
-    static_cast<const LoopableObject &> (other), clone_type);
-  init_from (
-    static_cast<MuteableObject &> (obj),
-    static_cast<const MuteableObject &> (other), clone_type);
-  init_from (
-    static_cast<BoundedObject &> (obj),
-    static_cast<const BoundedObject &> (other), clone_type);
-  init_from (
-    static_cast<ColoredObject &> (obj),
-    static_cast<const ColoredObject &> (other), clone_type);
   init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObjectOwner<AudioSourceObject> &> (obj),
+    static_cast<const ArrangerObjectOwner<AudioSourceObject> &> (other),
+    clone_type);
+  init_from (*obj.region_mixin_, *other.region_mixin_, clone_type);
+  init_from (*obj.fade_range_, *other.fade_range_, clone_type);
+}
+
+juce::PositionableAudioSource &
+AudioRegion::get_audio_source () const
+{
+  assert (get_children_vector ().size () == 1);
+  auto * audio_source_obj = get_children_view ()[0];
+  return audio_source_obj->get_audio_source ();
 }
 
 void
-AudioRegion::prepare_to_play (size_t max_expected_samples)
+AudioRegion::prepare_to_play (size_t max_expected_samples, double sample_rate)
 {
   tmp_buf_ = std::make_unique<juce::AudioSampleBuffer> (2, max_expected_samples);
+  audio_source_buffer_ =
+    std::make_unique<juce::AudioSampleBuffer> (2, max_expected_samples);
+  get_audio_source ().prepareToPlay (
+    static_cast<int> (max_expected_samples), sample_rate);
 }
 
 void
 AudioRegion::release_resources ()
 {
-  tmp_buf_.release ();
+  tmp_buf_.reset ();
+  audio_source_buffer_.reset ();
+  get_audio_source ().releaseResources ();
 }
 }

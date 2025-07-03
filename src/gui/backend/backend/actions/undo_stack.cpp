@@ -168,15 +168,6 @@ UndoStack::peek () const
                actions_.front ());
 }
 
-bool
-UndoStack::contains_clip (const AudioClip &clip) const
-{
-  return std::ranges::any_of (actions_, [&clip] (const auto &action) {
-    return std::visit (
-      [&clip] (auto * ptr) { return ptr->contains_clip (clip); }, action);
-  });
-}
-
 template <UndoableActionSubclass T>
 bool
 UndoStack::contains_action (const T &ua) const

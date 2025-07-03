@@ -15,11 +15,12 @@
 namespace zrythm::structure::tracks
 {
 ModulatorTrack::ModulatorTrack (
-  TrackRegistry          &track_registry,
-  PluginRegistry         &plugin_registry,
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry,
-  bool                    new_identity)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  TrackRegistry                &track_registry,
+  PluginRegistry               &plugin_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  bool                          new_identity)
     : Track (
         Track::Type::Modulator,
         PortType::Unknown,
@@ -27,7 +28,7 @@ ModulatorTrack::ModulatorTrack (
         plugin_registry,
         port_registry,
         obj_registry),
-      AutomatableTrack (port_registry, new_identity),
+      AutomatableTrack (file_audio_source_registry, port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity)
 {
   if (new_identity)
@@ -300,7 +301,12 @@ from_json (const nlohmann::json &j, ModulatorTrack &track)
   from_json (j, static_cast<Track &> (track));
   from_json (j, static_cast<ProcessableTrack &> (track));
   from_json (j, static_cast<AutomatableTrack &> (track));
-  j.at (ModulatorTrack::kModulatorsKey).get_to (track.modulators_);
+  for (const auto &modulator_json : j.at (ModulatorTrack::kModulatorsKey))
+    {
+      PluginUuidReference modulator_id_ref{ track.plugin_registry_ };
+      from_json (modulator_json, modulator_id_ref);
+      track.modulators_.push_back (std::move (modulator_id_ref));
+    }
   for (
     const auto &macro_proc_json :
     j.at (ModulatorTrack::kModulatorMacroProcessorsKey))

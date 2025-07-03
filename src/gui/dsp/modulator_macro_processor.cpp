@@ -18,7 +18,7 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   ModulatorTrack *   track,
   std::optional<int> idx,
   bool               new_identity)
-    : track_ (track)
+    : port_registry_ (port_registry), track_ (track)
 {
   if (new_identity)
     {

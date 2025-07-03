@@ -6,7 +6,6 @@
 #include "zrythm-config.h"
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "gui/dsp/port.h"
@@ -561,19 +560,7 @@ private:
     j[kVisibleKey] = p.visible_;
     j[kStateDirectoryKey] = p.state_dir_;
   }
-  friend void from_json (const nlohmann::json &j, Plugin &p)
-  {
-    from_json (j, static_cast<UuidIdentifiableObject &> (p));
-    j.at (kTrackIdKey).get_to (p.track_id_);
-    j.at (kSettingKey).get_to (p.setting_);
-    j.at (kInPortsKey).get_to (p.in_ports_);
-    j.at (kOutPortsKey).get_to (p.out_ports_);
-    j.at (kBanksKey).get_to (p.banks_);
-    j.at (kSelectedBankKey).get_to (p.selected_bank_);
-    j.at (kSelectedPresetKey).get_to (p.selected_preset_);
-    j.at (kVisibleKey).get_to (p.visible_);
-    j.at (kStateDirectoryKey).get_to (p.state_dir_);
-  }
+  friend void from_json (const nlohmann::json &j, Plugin &p);
 
 public:
   OptionalRef<PortRegistry>    port_registry_;

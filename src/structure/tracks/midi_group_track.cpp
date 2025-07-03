@@ -6,11 +6,12 @@
 namespace zrythm::structure::tracks
 {
 MidiGroupTrack::MidiGroupTrack (
-  TrackRegistry          &track_registry,
-  PluginRegistry         &plugin_registry,
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry,
-  bool                    new_identity)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  TrackRegistry                &track_registry,
+  PluginRegistry               &plugin_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  bool                          new_identity)
     : Track (
         Track::Type::MidiGroup,
         PortType::Event,
@@ -18,7 +19,7 @@ MidiGroupTrack::MidiGroupTrack (
         plugin_registry,
         port_registry,
         obj_registry),
-      AutomatableTrack (port_registry, new_identity),
+      AutomatableTrack (file_audio_source_registry, port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity),
       ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {

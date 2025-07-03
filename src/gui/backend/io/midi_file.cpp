@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/session/transport.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
+#include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "utils/exceptions.h"
 #include "utils/logger.h"
@@ -41,9 +41,10 @@ MidiFile::track_has_midi_note_events (const TrackIndex track_idx) const
   const auto * track = midi_file_.getTrack (itrack_idx);
 
   // Check if the track has any MIDI note on/off events
-  return std::any_of (track->begin (), track->end (), [] (const auto &event) {
-    return event->message.isNoteOn () || event->message.isNoteOff ();
-  });
+  return std::ranges::any_of (
+    track->begin (), track->end (), [] (const auto &event) {
+      return event->message.isNoteOn () || event->message.isNoteOff ();
+    });
 }
 
 int
@@ -88,13 +89,13 @@ MidiFile::get_ppqn () const
 void
 MidiFile::into_region (
   structure::arrangement::MidiRegion &region,
-  engine::session::Transport         &transport,
   const int                           midi_track_idx) const
 {
-  using Position = structure::arrangement::MidiRegion::Position;
-  const int    num_tracks = midi_file_.getNumTracks ();
-  const auto   ppqn = static_cast<double> (get_ppqn ());
-  const double transport_ppqn = transport.get_ppqn ();
+// TODO
+#if 0
+  const int   num_tracks = midi_file_.getNumTracks ();
+  const auto  ppqn = static_cast<double> (get_ppqn ());
+  const auto &tempo_map = region.get_tempo_map ();
 
   int actual_iter = 0;
 
@@ -118,59 +119,52 @@ MidiFile::into_region (
         }
 
       // set a temp name
-      region.set_name (
-        utils::Utf8String::from_qstring (
-          format_qstr (QObject::tr ("Untitled Track {}"), i)));
+      region.regionMixin ()->name ()->setName (
+        format_qstr (QObject::tr ("Untitled Track {}"), i));
 
       const auto * track = midi_file_.getTrack (i);
-      for (const auto * event : *track)
+      track->getTimeOfMatchingKeyUp (0);
+      for (const auto &[event_index, event] : utils::views::enumerate (*track))
         {
           const auto &msg = event->message;
 
-          /* convert time to zrythm time */
-          double   ticks = (msg.getTimeStamp () * transport_ppqn) / ppqn;
-          Position pos{ ticks, AUDIO_ENGINE->frames_per_tick_ };
-          auto     global_pos = region.get_position ();
-          global_pos.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-          z_trace (
-            "event at {}: {} ", msg.getTimeStamp (), msg.getDescription ());
+          const auto get_msg_time_in_ticks = [ppqn] (const double msg_timestamp) {
+            /* convert time to zrythm time */
+            return (msg_timestamp * dsp::TempoMap::get_ppq ()) / ppqn;
+          };
 
-          int bars = pos.get_bars (true, transport.ticks_per_bar_);
-          if (ZRYTHM_HAVE_UI && bars > transport.total_bars_ - 8)
-            {
-              TRANSPORT->update_total_bars (bars + 8, true);
-            }
+          double ticks = get_msg_time_in_ticks (msg.getTimeStamp ());
+          auto   global_pos = region.position ()->ticks ();
+          global_pos += ticks;
+          z_trace ("event at {}: {} ", ticks, msg.getDescription ());
 
           if (msg.isNoteOff (true))
             {
-              auto * mn = region.pop_unended_note (msg.getNoteNumber ());
-              if (mn != nullptr)
-                {
-                  mn->end_position_setter_validated (
-                    pos, AUDIO_ENGINE->ticks_per_frame_);
-                  if (global_pos > *region.end_pos_)
-                    {
-                      region.end_position_setter_validated (
-                        global_pos, AUDIO_ENGINE->ticks_per_frame_);
-                    }
-                }
-              else
-                {
-                  z_info (
-                    "Found a Note off event without a corresponding Note on. Skipping...");
-                }
+              // handled below via getTimeOfMatchingKeyUp()
             }
           else if (msg.isNoteOn (false))
             {
-              region.start_unended_note (
-                &pos, nullptr, msg.getNoteNumber (), msg.getVelocity (), false);
+              const auto note_on_time = ticks;
+              const auto note_off_time = get_msg_time_in_ticks (
+                track->getTimeOfMatchingKeyUp (static_cast<int> (event_index)));
+              auto mn_builder = std::move (
+                structure::arrangement::ArrangerObjectFactory::get_instance ()
+                  ->get_builder<structure::arrangement::MidiNote> ());
+              auto mn =
+                mn_builder.with_start_ticks (note_on_time)
+                  .with_end_ticks (note_off_time)
+                  .with_pitch (msg.getNoteNumber ())
+                  .with_velocity (msg.getVelocity ())
+                  .build_in_registry ();
+              region.add_object (mn);
             }
           else if (msg.isTrackNameEvent ())
             {
               auto name = msg.getTextFromTextMetaEvent ();
               if (!name.isEmpty ())
                 {
-                  region.set_name (utils::Utf8String::from_juce_string (name));
+                  region.regionMixin ()->name ()->setName (
+                    utils::Utf8String::from_juce_string (name).to_qstring ());
                 }
             }
         }
@@ -181,7 +175,14 @@ MidiFile::into_region (
         }
     }
 
-  if (region.get_end_position () == region.get_position ())
+// rest TODO
+#  if 0
+  // set end position to last event
+  region.regionMixin ()->bounds ()->length ()->setTicks (
+    structure::arrangement::get_last_midi_note (region.get_children_view ())
+      ->get_end_position_ticks ());
+
+  if (region.get_children_view ().empty ())
     {
       throw ZrythmException ("No events in MIDI region");
     }
@@ -190,4 +191,46 @@ MidiFile::into_region (
     AUDIO_ENGINE->frames_per_tick_);
   region.loop_end_position_setter_validated (
     loop_end_pos_to_set, AUDIO_ENGINE->ticks_per_frame_);
+#  endif
+#endif
+}
+
+void
+MidiFile::export_midi_region_to_midi_file (
+  const structure::arrangement::MidiRegion &region,
+  const fs::path                           &full_path,
+  int                                       midi_version,
+  const bool                                export_full)
+{
+  juce::MidiMessageSequence sequence;
+
+  const auto &tempo_map = region.get_tempo_map ();
+
+  // Write tempo/time signature information
+  // FIXME: doesn't take into account tempo/time signature changes
+  sequence.addEvent (
+    juce::MidiMessage::timeSignatureMetaEvent (
+      tempo_map.get_time_signature_events ().front ().numerator,
+      tempo_map.get_time_signature_events ().front ().denominator));
+  sequence.addEvent (
+    juce::MidiMessage::tempoMetaEvent (
+      60'000'000
+      / static_cast<int> (tempo_map.get_tempo_events ().front ().bpm)));
+
+  dsp::MidiEventVector events;
+  region.add_midi_region_events (
+    events, std::nullopt, std::nullopt, false, export_full);
+  events.write_to_midi_sequence (sequence, true);
+
+  juce::MidiFile mf;
+  mf.setTicksPerQuarterNote (dsp::TempoMap::get_ppq ());
+  mf.addTrack (sequence);
+  const auto juce_file =
+    utils::Utf8String::from_path (full_path).to_juce_file ();
+  auto output_stream = juce_file.createOutputStream ();
+  if (!output_stream)
+    {
+      throw std::runtime_error ("Failed to create output stream");
+    }
+  mf.writeTo (*output_stream, midi_version);
 }

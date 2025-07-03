@@ -6,16 +6,9 @@
 #include "dsp/position.h"
 #include "utils/note_type.h"
 
-namespace zrythm::structure
-{
-namespace tracks
+namespace zrythm::structure::tracks
 {
 class Track;
-}
-namespace arrangement
-{
-class Region;
-}
 }
 
 namespace zrythm::gui
@@ -40,6 +33,8 @@ enum class NoteLengthType
 
 /**
  * @brief Snap/grid information.
+ *
+ * TODO: move this to structure::arrangement and refactor
  */
 class SnapGrid final
 {
@@ -57,7 +52,7 @@ public:
   using TicksPerBeatProvider = std::function<int (void)>;
   using Position = zrythm::dsp::Position;
   using Track = structure::tracks::Track;
-  using Region = structure::arrangement::Region;
+  using ArrangerObject = structure::arrangement::ArrangerObject;
 
 public:
   SnapGrid () = default;
@@ -158,10 +153,10 @@ public:
    * @return Whether a snap point was found or not.
    */
   bool get_closest_snap_point (
-    const Position &pivot_pos,
-    Track *         track,
-    Region *        region,
-    Position       &closest_sp) const;
+    const Position                     &pivot_pos,
+    Track *                             track,
+    std::optional<ArrangerObject::Uuid> region,
+    Position                           &closest_sp) const;
 
   /**
    * @brief Get next snap point.
@@ -180,10 +175,10 @@ public:
    * @return Whether a snap point was found or not.
    */
   [[gnu::hot]] bool get_next_snap_point (
-    const Position &pivot_pos,
-    Track *         track,
-    Region *        region,
-    Position       &next_sp) const;
+    const Position                     &pivot_pos,
+    Track *                             track,
+    std::optional<ArrangerObject::Uuid> region,
+    Position                           &next_sp) const;
 
   /**
    * Gets the previous snap point.
@@ -204,20 +199,20 @@ public:
    * @return Whether a snap point was found or not.
    */
   [[gnu::hot]] bool get_prev_snap_point (
-    const Position &pivot_pos,
-    Track *         track,
-    Region *        region,
-    Position       &prev_sp) const;
+    const Position                     &pivot_pos,
+    Track *                             track,
+    std::optional<ArrangerObject::Uuid> region,
+    Position                           &prev_sp) const;
 
   /**
    * @brief Common logic for get_prev_snap_point and get_next_snap_point.
    */
   bool get_prev_or_next_snap_point (
-    const Position &pivot_pos,
-    Track *         track,
-    Region *        region,
-    Position       &out_pos,
-    bool            get_prev_point) const;
+    const Position                     &pivot_pos,
+    Track *                             track,
+    std::optional<ArrangerObject::Uuid> region,
+    Position                           &out_pos,
+    bool                                get_prev_point) const;
 
   /**
    * Snaps @p pivot_pos using given options.
@@ -232,10 +227,10 @@ public:
    * as @p track.
    */
   Position snap (
-    const Position  &pivot_pos,
-    const Position * start_pos,
-    Track *          track,
-    Region *         region) const;
+    const Position                     &pivot_pos,
+    const Position *                    start_pos,
+    Track *                             track,
+    std::optional<ArrangerObject::Uuid> region) const;
 
   /**
    * @brief Snaps @p pivot_pos using given options.
@@ -244,7 +239,7 @@ public:
    */
   Position snap_simple (const Position &pivot_pos) const
   {
-    return snap (pivot_pos, nullptr, nullptr, nullptr);
+    return snap (pivot_pos, nullptr, nullptr, std::nullopt);
   }
 
   /**

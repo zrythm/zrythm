@@ -20,7 +20,7 @@ PluginConfigurationManager::create_configuration_for_descriptor (
   const plugins::PluginDescriptor &descr) -> std::unique_ptr<PluginConfiguration>
 {
   auto * existing = find (descr);
-  if (existing)
+  if (existing != nullptr)
     {
       auto ret = std::make_unique<PluginConfiguration> ();
       ret->copy_fields_from (*existing);
@@ -172,7 +172,7 @@ PluginConfigurationManager::activate_plugin_configuration (
 
           /* create group */
           auto * group = structure::tracks::Track::create_empty_with_action (
-            Track::Type::AudioGroup);
+            structure::tracks::Track::Type::AudioGroup);
           num_actions++;
 
           /* create the plugin track */
@@ -223,7 +223,7 @@ PluginConfigurationManager::activate_plugin_configuration (
             {
               /* create the audio fx track */
               auto * fx_track = dynamic_cast<structure::tracks::AudioBusTrack *> (
-                Track::create_empty_with_action (
+                structure::tracks::Track::create_empty_with_action (
                   structure::tracks::Track::Type::AudioBus));
               num_actions++;
 
@@ -291,7 +291,7 @@ PluginConfigurationManager::activate_plugin_configuration (
         }
       else /* else if not autoroute multiout */
         {
-          Track::create_for_plugin_at_idx_w_action (
+          structure::tracks::Track::create_for_plugin_at_idx_w_action (
             type, &config, TRACKLIST->track_count ());
         }
     }
@@ -360,11 +360,12 @@ void
 PluginConfigurationManager::activate_plugin_configuration_async (
   const PluginConfiguration &config)
 {
-  using namespace structure::tracks;
-  Track::Type type =
-    Track::type_get_from_plugin_descriptor (*config.get_descriptor ());
+  structure::tracks::Track::Type type = structure::tracks::Track::
+    type_get_from_plugin_descriptor (*config.get_descriptor ());
 
-  if (config.descr_->num_audio_outs_ > 2 && type == Track::Type::Instrument)
+  if (
+    config.descr_->num_audio_outs_ > 2
+    && type == structure::tracks::Track::Type::Instrument)
     {
 #if 0
       AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (

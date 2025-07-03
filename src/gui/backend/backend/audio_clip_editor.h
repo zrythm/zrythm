@@ -43,6 +43,8 @@ public:
 
   // =========================================================
 
+  auto &get_selected_object_ids () { return selected_objects_; }
+
 public:
   friend void init_from (
     AudioClipEditor       &obj,
@@ -68,6 +70,10 @@ private:
   utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_{
     new gui::backend::EditorSettings{ this }
   };
+
+  // unused? only added to satisfy ArrangerObjectFactory
+  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
+    selected_objects_;
 };
 
 /**

@@ -1,17 +1,14 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_CHORD_DESCRIPTOR_H
-#define ZRYTHM_DSP_CHORD_DESCRIPTOR_H
+#pragma once
 
-#include <string>
-
-#include "utils/uuid_identifiable_object.h"
+#include "utils/string.h"
 
 namespace zrythm::dsp
 {
 
-enum class MusicalNote
+enum class MusicalNote : std::uint_fast8_t
 {
   C = 0,
   CSharp,
@@ -30,7 +27,7 @@ enum class MusicalNote
 /**
  * Chord type.
  */
-enum class ChordType
+enum class ChordType : std::uint_fast8_t
 {
   None,
   Major,
@@ -45,7 +42,7 @@ enum class ChordType
 /**
  * Chord accents.
  */
-enum class ChordAccent
+enum class ChordAccent : std::uint_fast8_t
 {
   None,
   /** b7 is 10 semitones from chord root, or 9
@@ -170,6 +167,14 @@ public:
    */
   void update_notes ();
 
+  friend bool
+  operator== (const ChordDescriptor &lhs, const ChordDescriptor &rhs)
+  {
+    return lhs.has_bass_ == rhs.has_bass_ && lhs.root_note_ == rhs.root_note_
+           && lhs.bass_note_ == rhs.bass_note_ && lhs.type_ == rhs.type_
+           && lhs.notes_ == rhs.notes_ && lhs.inversion_ == rhs.inversion_;
+  }
+
   NLOHMANN_DEFINE_TYPE_INTRUSIVE (
     ChordDescriptor,
     has_bass_,
@@ -218,14 +223,4 @@ public:
   int inversion_ = 0;
 };
 
-inline bool
-operator== (const ChordDescriptor &lhs, const ChordDescriptor &rhs)
-{
-  return lhs.has_bass_ == rhs.has_bass_ && lhs.root_note_ == rhs.root_note_
-         && lhs.bass_note_ == rhs.bass_note_ && lhs.type_ == rhs.type_
-         && lhs.notes_ == rhs.notes_ && lhs.inversion_ == rhs.inversion_;
-}
-
 } // namespace zrythm::dsp
-
-#endif

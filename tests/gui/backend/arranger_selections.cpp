@@ -53,8 +53,7 @@ TEST_F (ZrythmFixture, GetLastObject)
 
   mn->select (true, false, false);
 
-  auto [last_obj, last_pos] =
-    MIDI_SELECTIONS->get_last_object_and_pos (false, true);
+  auto [last_obj, last_pos] = MIDI_SELECTIONS->get_last_object_and_pos (true);
   ASSERT_NONNULL (last_obj);
   ASSERT_TRUE (last_obj == mn.get ());
 }

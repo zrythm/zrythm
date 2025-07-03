@@ -21,7 +21,6 @@ class Exporter final : public QObject
   Q_OBJECT
 
 public:
-  using Position = dsp::Position;
   using BitDepth = utils::audio::BitDepth;
   using BounceStep = utils::audio::BounceStep;
 
@@ -107,9 +106,9 @@ public:
       const utils::Utf8String &bounce_name);
 
     /**
-     * @brief Calculate and return the export time range positions.
+     * @brief Calculate and return the export time range positions in ticks.
      */
-    std::pair<Position, Position> get_export_time_range () const;
+    std::pair<double, double> get_export_time_range () const;
 
     void print () const;
 
@@ -140,9 +139,9 @@ public:
      */
     BounceStep bounce_step_ = BounceStep::PostFader;
 
-    /** Positions in case of custom time range. */
-    Position custom_start_;
-    Position custom_end_;
+    /** Positions in ticks in case of custom time range. */
+    double custom_start_;
+    double custom_end_;
 
     /** Export track lanes as separate MIDI tracks. */
     bool lanes_as_tracks_ = false;
@@ -221,7 +220,7 @@ public:
    * @param pos Position to place the audio region at.
    */
 
-  void create_audio_track_after_bounce (Position pos);
+  void create_audio_track_after_bounce (double pos_ticks);
 
   /**
    * Exports an audio file based on the given settings.

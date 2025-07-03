@@ -336,4 +336,25 @@ TEST_F (AtomicPositionTest, SerializationAfterModeConversion)
   EXPECT_DOUBLE_EQ (new_pos.get_seconds (), 1.0);
   EXPECT_DOUBLE_EQ (new_pos.get_ticks (), 1920.0);
 }
+
+TEST_F (AtomicPositionTest, Formatter)
+{
+  pos->set_ticks (960.0);
+  pos->set_mode (TimeFormat::Musical);
+
+  const std::string formatted = fmt::format ("{}", *pos);
+  EXPECT_TRUE (formatted.find ("Ticks: 960.00") != std::string::npos);
+  EXPECT_TRUE (formatted.find ("Seconds: 0.500") != std::string::npos);
+  EXPECT_TRUE (formatted.find ("Samples: 22050") != std::string::npos);
+  EXPECT_TRUE (formatted.find ("Mode: Musical") != std::string::npos);
+
+  // Test in Absolute mode
+  pos->set_mode (TimeFormat::Absolute);
+  pos->set_seconds (1.5);
+
+  const std::string formatted2 = fmt::format ("{}", *pos);
+  EXPECT_TRUE (formatted2.find ("Ticks: 2880.00") != std::string::npos);
+  EXPECT_TRUE (formatted2.find ("Seconds: 1.500") != std::string::npos);
+  EXPECT_TRUE (formatted2.find ("Mode: Absolute") != std::string::npos);
+}
 }

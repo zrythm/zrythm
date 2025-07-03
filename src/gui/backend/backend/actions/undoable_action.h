@@ -7,8 +7,6 @@
 #include "gui/dsp/plugin.h"
 #include "utils/types.h"
 
-class AudioClip;
-
 namespace zrythm::gui::actions
 {
 
@@ -103,26 +101,6 @@ public:
    * something that causes position conversions.
    */
   virtual bool affects_audio_region_internal_positions () const { return true; }
-
-  /**
-   * Checks whether the action can contain an audio clip.
-   *
-   * No attempt is made to remove unused files from the pool for actions that
-   * can't contain audio clips.
-   *
-   * @deprecated Will be removed in the future in favor of UuidReference's to
-   * AudioClip's.
-   */
-  virtual bool can_contain_clip () const { return false; };
-
-  /**
-   * Checks whether the action actually contains or refers to the given audio
-   * clip.
-   *
-   * @deprecated Will be removed in the future in favor of UuidReference's to
-   * AudioClip's.
-   */
-  virtual bool contains_clip (const AudioClip &clip) const { return false; };
 
   /**
    * @brief Get the plugins referenced in this action.

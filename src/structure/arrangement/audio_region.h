@@ -3,89 +3,108 @@
 
 #pragma once
 
-#include "engine/session/clip.h"
+#include "structure/arrangement/arranger_object.h"
+#include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/fadeable_object.h"
-#include "structure/arrangement/lane_owned_object.h"
 #include "structure/arrangement/region.h"
-#include "utils/audio.h"
+
+#include <juce_wrapper.h>
 
 namespace zrythm::structure::arrangement
 {
 
 /**
- * Number of frames for built-in fade (additional to object fades).
- */
-constexpr int AUDIO_REGION_BUILTIN_FADE_FRAMES = 10;
-
-/**
- * An AudioRegion represents a region of audio within a Track. It is responsible
- * for managing the audio data, handling playback, and providing various
- * operations on the audio region.
- *
- * The AudioRegion class inherits from Region, LaneOwnedObject, and
- * FadeableObject, allowing it to be positioned within a Track, owned by a
- * specific Lane, and have fades applied to it.
- *
- * The class provides methods for getting the associated AudioClip, setting the
- * clip ID, replacing the audio frames, and filling the audio data into
- * StereoPorts for playback. It also includes various properties related to
- * audio stretching, gain, and musical mode.
+ * A region for playing back audio samples.
  */
 class AudioRegion final
     : public QObject,
-      public RegionImpl<AudioRegion>,
-      public LaneOwnedObject,
-      public FadeableObject
+      public ArrangerObject,
+      public ArrangerObjectOwner<AudioSourceObject>
 {
   Q_OBJECT
-  QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AudioRegion)
-  DEFINE_REGION_QML_PROPERTIES (AudioRegion)
+  Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
+  Q_PROPERTY (ArrangerObjectFadeRange * fadeRange READ fadeRange CONSTANT)
+  Q_PROPERTY (
+    AudioRegion::MusicalMode musicalMode READ musicalMode WRITE setMusicalMode
+      NOTIFY musicalModeChanged)
+  Q_PROPERTY (float gain READ gain WRITE setGain NOTIFY gainChanged)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    AudioRegion,
+    audioSources,
+    AudioSourceObject)
+  QML_ELEMENT
 
 public:
-  using BitDepth = AudioClip::BitDepth;
+  using BitDepth = dsp::FileAudioSource::BitDepth;
+
+  /**
+   * Musical mode setting for audio regions.
+   */
+  enum class MusicalMode : std::uint_fast8_t
+  {
+    /** Inherit from global musical mode setting. */
+    Inherit,
+    /** Musical mode off - don't auto-stretch when BPM changes. */
+    Off,
+    /** Musical mode on - auto-stretch when BPM changes. */
+    On,
+  };
+
+  using GlobalMusicalModeGetter = std::function<bool ()>;
+
+  /**
+   * Number of frames for built-in fade (additional to object fades).
+   */
+  static constexpr int BUILTIN_FADE_FRAMES = 10;
 
 public:
   AudioRegion (
-    ArrangerObjectRegistry &obj_registry,
-    TrackResolver           track_resolver,
-    AudioClipResolverFunc   clip_resolver,
-    QObject *               parent = nullptr) noexcept;
+    const dsp::TempoMap          &tempo_map,
+    ArrangerObjectRegistry       &object_registry,
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    GlobalMusicalModeGetter       musical_mode_getter,
+    QObject *                     parent = nullptr) noexcept;
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  RegionMixin * regionMixin () const { return region_mixin_.get (); }
+  ArrangerObjectFadeRange * fadeRange () const { return fade_range_.get (); }
+
+  MusicalMode      musicalMode () const { return musical_mode_; }
+  Q_INVOKABLE bool effectivelyInMusicalMode () const;
+  void             setMusicalMode (MusicalMode musical_mode)
+  {
+    if (musical_mode_ != musical_mode)
+      {
+        musical_mode_ = musical_mode;
+        Q_EMIT musicalModeChanged (musical_mode);
+      }
+  }
+  Q_SIGNAL void musicalModeChanged (MusicalMode musical_mode);
+
+  float gain () const { return gain_.load (); }
+  void  setGain (float gain)
+  {
+    gain = std::clamp (gain, 0.f, 2.f);
+    if (qFuzzyCompare (gain_, gain))
+      return;
+    gain_.store (gain);
+    Q_EMIT gainChanged (gain);
+  }
+  Q_SIGNAL void gainChanged (float gain);
+
+  // ========================================================================
 
   /**
-   * Returns the audio clip associated with the Region.
-   */
-  AudioClip * get_clip () const;
-
-  auto get_clip_id () const { return clip_id_; }
-
-  /**
-   * Sets the clip ID on the region and updates any
-   * references.
-   */
-  void set_clip_id (const AudioClip::Uuid &clip_id) { clip_id_ = clip_id; }
-
-  bool get_muted (bool check_parent) const override;
-
-  /**
-   * Returns whether the region is effectively in musical mode.
-   */
-  bool get_musical_mode () const;
-
-  /**
-   * Replaces the region's frames starting from @p start_frame with @p frames.
+   * @brief Set the AudioSourceObject to the region.
    *
-   * @warning Not realtime safe.
-   *
-   * @param frames Source frames.
-   * @param start_frame Frame to start copying to (@p src_frames are always
-   * copied from the start).
-   *
-   * @throw ZrythmException if the frames couldn't be replaced.
+   * This must be called before the AudioRegion is used.
    */
-  void replace_frames (
-    const utils::audio::AudioBuffer &src_frames,
-    unsigned_frame_t                 start_frame);
+  void set_source (const ArrangerObjectUuidReference &source);
 
   /**
    * Fills audio data from the region.
@@ -93,104 +112,98 @@ public:
    * @note The caller already splits calls to this function at each sub-loop
    * inside the region, so region loop related logic is not needed.
    *
-   * @param stereo_ports StereoPorts to fill.
+   * @param stereo_output Buffers to fill.
    */
   [[gnu::hot]] void fill_stereo_ports (
-    const EngineProcessTimeInfo        &time_nfo,
-    std::pair<AudioPort &, AudioPort &> stereo_ports) const;
+    const EngineProcessTimeInfo                  &time_nfo,
+    std::pair<std::span<float>, std::span<float>> stereo_output) const;
 
-  float detect_bpm (std::vector<float> &candidates);
+  // ==========================================================================
+  // Playback caches
+  // ==========================================================================
+  void prepare_to_play (size_t max_expected_samples, double sample_rate);
+  void release_resources ();
+  // ==========================================================================
 
-  /**
-   * Fixes off-by-one rounding errors when changing BPM or sample rate which
-   * result in the looped part being longer than there are actual frames in
-   * the clip.
-   *
-   * @param frames_per_tick Frames per tick used when validating audio
-   * regions. Passing 0 will use the value from the current engine.
-   *
-   * @return Whether positions were adjusted.
-   */
-  bool fix_positions (dsp::FramesPerTick frames_per_tick);
+  std::string
+  get_field_name_for_serialization (const AudioSourceObject *) const override
+  {
+    return "audioSources";
+  }
 
-  bool
-  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
-
+private:
   friend void init_from (
     AudioRegion           &obj,
     const AudioRegion     &other,
     utils::ObjectCloneType clone_type);
 
-  // ==========================================================================
-  // Playback caches
-  // ==========================================================================
-  void prepare_to_play (size_t max_expected_samples);
-  void release_resources ();
-  // ==========================================================================
-
-private:
-  static constexpr std::string_view kClipIdKey = "clipId";
-  static constexpr std::string_view kGainKey = "gain";
-  friend void to_json (nlohmann::json &j, const AudioRegion &region)
+  static constexpr auto kGainKey = "gain"sv;
+  static constexpr auto kRegionMixinKey = "regionMixin"sv;
+  static constexpr auto kFadeRangeKey = "fadeRange"sv;
+  static constexpr auto kMusicalModeKey = "musicalMode"sv;
+  friend void           to_json (nlohmann::json &j, const AudioRegion &region)
   {
     to_json (j, static_cast<const ArrangerObject &> (region));
-    to_json (j, static_cast<const BoundedObject &> (region));
-    to_json (j, static_cast<const LoopableObject &> (region));
-    to_json (j, static_cast<const FadeableObject &> (region));
-    to_json (j, static_cast<const MuteableObject &> (region));
-    to_json (j, static_cast<const NamedObject &> (region));
-    to_json (j, static_cast<const ColoredObject &> (region));
-    to_json (j, static_cast<const Region &> (region));
-    j[kClipIdKey] = region.clip_id_;
-    j[kGainKey] = region.gain_;
+    to_json (j, static_cast<const ArrangerObjectOwner &> (region));
+    j[kRegionMixinKey] = region.region_mixin_;
+    j[kFadeRangeKey] = region.fade_range_;
+    j[kGainKey] = region.gain_.load ();
+    j[kMusicalModeKey] = region.musical_mode_;
   }
   friend void from_json (const nlohmann::json &j, AudioRegion &region)
   {
     from_json (j, static_cast<ArrangerObject &> (region));
-    from_json (j, static_cast<BoundedObject &> (region));
-    from_json (j, static_cast<LoopableObject &> (region));
-    from_json (j, static_cast<FadeableObject &> (region));
-    from_json (j, static_cast<MuteableObject &> (region));
-    from_json (j, static_cast<NamedObject &> (region));
-    from_json (j, static_cast<ColoredObject &> (region));
-    from_json (j, static_cast<Region &> (region));
-    j.at (kClipIdKey).get_to (region.clip_id_);
-    j.at (kGainKey).get_to (region.gain_);
+    from_json (j, static_cast<ArrangerObjectOwner &> (region));
+    j.at (kRegionMixinKey).get_to (*region.region_mixin_);
+    j.at (kFadeRangeKey).get_to (*region.fade_range_);
+    float gain{};
+    j.at (kGainKey).get_to (gain);
+    region.gain_.store (gain);
+    j.at (kMusicalModeKey).get_to (region.musical_mode_);
   }
 
-public:
-  AudioClipResolverFunc clip_resolver_;
+  juce::PositionableAudioSource &get_audio_source () const;
 
-  /** ID of the associated AudioClip to be resolved with @ref clip_resolver_. */
-  AudioClip::Uuid clip_id_;
+private:
+  dsp::FileAudioSourceRegistry &file_audio_source_registry_;
 
-  /**
-   * Whether to read the clip from the pool (used in most cases).
-   */
-  // bool read_from_pool_ = false;
+  utils::QObjectUniquePtr<RegionMixin>             region_mixin_;
+  utils::QObjectUniquePtr<ArrangerObjectFadeRange> fade_range_;
 
   /** Gain to apply to the audio (amplitude 0.0-2.0). */
-  float gain_ = 1.0f;
-
-  /**
-   * Clip to read frames from, if not from the pool.
-   */
-  // std::unique_ptr<AudioClip> clip_;
+  std::atomic<float> gain_ = 1.0f;
 
   /** Musical mode setting. */
   MusicalMode musical_mode_{};
 
+  GlobalMusicalModeGetter global_musical_mode_getter_;
+
+  // ==========================================================================
+  // Temporary buffers
+  // ==========================================================================
+
   /**
-   * @brief Temporary buffer used during audio processing.
+   * @brief Buffer for obtaining samples from the audio source.
+   */
+  std::unique_ptr<juce::AudioSampleBuffer> audio_source_buffer_;
+
+  /**
+   * @brief Buffer used for stretching-related logic.
    */
   std::unique_ptr<juce::AudioSampleBuffer> tmp_buf_;
 
   BOOST_DESCRIBE_CLASS (
     AudioRegion,
-    (Region, LaneOwnedObject, FadeableObject),
+    (ArrangerObject),
     (),
     (),
-    ())
+    (region_mixin_, fade_range_, gain_, musical_mode_))
 };
-
 }
+
+DEFINE_ENUM_FORMATTER (
+  zrythm::structure::arrangement::AudioRegion::MusicalMode,
+  MusicalMode,
+  QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "Inherit"),
+  QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "Off"),
+  QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "On"));

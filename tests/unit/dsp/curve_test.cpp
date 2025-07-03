@@ -2,9 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/curve.h"
-#include "utils/gtest_wrapper.h"
 
-using namespace zrythm::dsp;
+#include "helpers/mock_qobject.h"
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+namespace zrythm::dsp
+{
 
 TEST (CurveTest, BasicConstruction)
 {
@@ -97,20 +102,6 @@ TEST (CurveTest, LogarithmicCurve)
   EXPECT_NEAR (opts.get_normalized_y (1.0, false), 1.0, epsilon);
 }
 
-TEST (CurveTest, FadeOperations)
-{
-  CurveOptions opts (0.5, CurveOptions::Algorithm::Exponent);
-  const double epsilon = 0.0001;
-
-  // Test fade in
-  EXPECT_NEAR (opts.get_normalized_y_for_fade (0.0, true), 0.0, epsilon);
-  EXPECT_NEAR (opts.get_normalized_y_for_fade (1.0, true), 1.0, epsilon);
-
-  // Test fade out
-  EXPECT_NEAR (opts.get_normalized_y_for_fade (0.0, false), 1.0, epsilon);
-  EXPECT_NEAR (opts.get_normalized_y_for_fade (1.0, false), 0.0, epsilon);
-}
-
 TEST (CurveTest, Serialization)
 {
   // Create curve options with specific values
@@ -126,4 +117,86 @@ TEST (CurveTest, Serialization)
   // Verify all fields match
   EXPECT_DOUBLE_EQ (opts1.curviness_, opts2.curviness_);
   EXPECT_EQ (opts1.algo_, opts2.algo_);
+}
+
+TEST (CurveTest, CurveOptionsQmlAdapter)
+{
+  CurveOptions           options (0.5, CurveOptions::Algorithm::Exponent);
+  CurveOptionsQmlAdapter adapter (options);
+
+  // Test initial state
+  EXPECT_DOUBLE_EQ (adapter.curviness (), 0.5);
+  EXPECT_EQ (
+    adapter.algorithm (), ENUM_VALUE_TO_INT (CurveOptions::Algorithm::Exponent));
+
+  // Test setting curviness
+  adapter.setCurviness (0.7);
+  EXPECT_DOUBLE_EQ (options.curviness_, 0.7);
+  EXPECT_DOUBLE_EQ (adapter.curviness (), 0.7);
+
+  // Test setting algorithm
+  adapter.setAlgorithm (
+    ENUM_VALUE_TO_INT (CurveOptions::Algorithm::SuperEllipse));
+  EXPECT_EQ (options.algo_, CurveOptions::Algorithm::SuperEllipse);
+  EXPECT_EQ (
+    adapter.algorithm (),
+    ENUM_VALUE_TO_INT (CurveOptions::Algorithm::SuperEllipse));
+}
+
+TEST (CurveTest, CurveOptionsQmlAdapterSignals)
+{
+  MockQObject            mockQObject;
+  CurveOptions           options (0.5, CurveOptions::Algorithm::Exponent);
+  CurveOptionsQmlAdapter adapter (options, &mockQObject);
+
+  // Setup signal watchers
+  testing::MockFunction<void (double)> mockCurvinessChanged;
+  testing::MockFunction<void (int)>    mockAlgorithmChanged;
+
+  QObject::connect (
+    &adapter, &CurveOptionsQmlAdapter::curvinessChanged, &mockQObject,
+    [&] (double curviness) { mockCurvinessChanged.Call (curviness); });
+
+  QObject::connect (
+    &adapter, &CurveOptionsQmlAdapter::algorithmChanged, &mockQObject,
+    [&] (int algo) { mockAlgorithmChanged.Call (algo); });
+
+  // Test curvinessChanged signal
+  EXPECT_CALL (mockCurvinessChanged, Call (0.75)).Times (1);
+  adapter.setCurviness (0.75);
+
+  // Test no signal when same value
+  EXPECT_CALL (mockCurvinessChanged, Call (0.75)).Times (0);
+  adapter.setCurviness (0.75);
+
+  // Test algorithmChanged signal
+  int newAlgo = ENUM_VALUE_TO_INT (CurveOptions::Algorithm::Vital);
+  EXPECT_CALL (mockAlgorithmChanged, Call (newAlgo)).Times (1);
+  adapter.setAlgorithm (newAlgo);
+
+  // Test no signal when same value
+  EXPECT_CALL (mockAlgorithmChanged, Call (newAlgo)).Times (0);
+  adapter.setAlgorithm (newAlgo);
+}
+
+TEST (CurveTest, CurveOptionsQmlAdapterEdgeCases)
+{
+  CurveOptions           options (0.0, CurveOptions::Algorithm::Exponent);
+  CurveOptionsQmlAdapter adapter (options);
+
+  // Test invalid curviness values
+  adapter.setCurviness (1.5);
+  EXPECT_DOUBLE_EQ (adapter.curviness (), 1.0);
+
+  adapter.setCurviness (-1.5);
+  EXPECT_DOUBLE_EQ (adapter.curviness (), -1.0);
+
+  // Test invalid algorithm values
+  adapter.setAlgorithm (100);
+  EXPECT_EQ (adapter.algorithm (), ENUM_COUNT (CurveOptions::Algorithm) - 1);
+
+  adapter.setAlgorithm (-1);
+  EXPECT_EQ (
+    adapter.algorithm (), ENUM_VALUE_TO_INT (CurveOptions::Algorithm::Exponent));
+}
 }

@@ -28,25 +28,20 @@ public:
     Remove,
   };
 
-  using Position = zrythm::dsp::Position;
-
 public:
   RangeAction (QObject * parent = nullptr);
   RangeAction (
-    Type      type,
-    Position  start_pos,
-    Position  end_pos,
-    QObject * parent = nullptr);
+    Type           type,
+    signed_frame_t start_pos,
+    signed_frame_t end_pos,
+    QObject *      parent = nullptr);
 
   QString to_string () const override;
 
-  bool can_contain_clip () const override { return true; }
-
-  bool contains_clip (const AudioClip &clip) const override;
-
-  auto get_range_size_in_ticks () const
+  double get_range_size_in_ticks () const
   {
-    return end_pos_.ticks_ - start_pos_.ticks_;
+    throw std::runtime_error ("Not implemented");
+    // return end_pos_.ticks_ - start_pos_.ticks_;
   }
 
   friend void init_from (
@@ -63,9 +58,9 @@ private:
   ArrangerObjectSpan get_before_objects () const;
 
 public:
-  /** Range positions. */
-  Position start_pos_;
-  Position end_pos_;
+  /** Range positions in frames. */
+  signed_frame_t start_pos_{};
+  signed_frame_t end_pos_{};
 
   /** Action type. */
   Type type_ = Type::InsertSilence;
@@ -112,7 +107,7 @@ public:
 class RangeInsertSilenceAction : public RangeAction
 {
 public:
-  RangeInsertSilenceAction (Position start_pos, Position end_pos)
+  RangeInsertSilenceAction (signed_frame_t start_pos, signed_frame_t end_pos)
       : RangeAction (Type::InsertSilence, start_pos, end_pos)
   {
   }
@@ -121,7 +116,7 @@ public:
 class RangeRemoveAction : public RangeAction
 {
 public:
-  RangeRemoveAction (Position start_pos, Position end_pos)
+  RangeRemoveAction (signed_frame_t start_pos, signed_frame_t end_pos)
       : RangeAction (Type::Remove, start_pos, end_pos)
   {
   }

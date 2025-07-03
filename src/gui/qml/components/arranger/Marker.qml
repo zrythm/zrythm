@@ -22,7 +22,7 @@ ArrangerObjectBase {
     Text {
         id: nameText
 
-        text: arrangerObject.name
+        text: arrangerObject.name.name
         color: root.palette.text
         font: root.font
         padding: Style.buttonPadding

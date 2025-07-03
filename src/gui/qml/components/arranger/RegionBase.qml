@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -11,18 +11,17 @@ ArrangerObjectBase {
     id: root
 
     required property var clipEditor
+    property var regionName: arrangerObject.regionMixin.name.name
 
-    Binding {
-      target: clipEditor
-      property: "region"
-      value: arrangerObject
-      when: arrangerObject.selected
+    onArrangerObjectClicked: {
+      console.log("region clicked, setting clip editor region to ", regionName)
+      clipEditor.setRegion(arrangerObject, root.track);
     }
 
     implicitWidth: 10
     implicitHeight: 10
     Component.onCompleted: {
-        console.log(arrangerObject.name);
+        console.log("component completed: ", root.regionName);
     }
 
     Rectangle {
@@ -50,7 +49,7 @@ ArrangerObjectBase {
         Text {
             id: nameText
 
-            text: arrangerObject.name
+            text: arrangerObject.regionMixin.name.name
             color: root.palette.buttonText
             font: root.font
             anchors.fill: parent
@@ -141,9 +140,7 @@ ArrangerObjectBase {
             onPositionChanged: (mouse) => {
                 if (drag.active) {
                     let ticksDiff = (mouse.x - startX) / ruler.pxPerTick;
-                    if (arrangerObject.hasLength)
-                        arrangerObject.endPosition.ticks += ticksDiff;
-
+                    root.arrangerObject.regionMixin.bounds.length.ticks += ticksDiff;
                 }
             }
         }

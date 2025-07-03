@@ -347,7 +347,10 @@ Item {
                                 root.editorSettings.y -= dy;
                             }
                         } else if (action === Arranger.CreatingResizingR) {
-                           root.actionObject.endPosition.ticks = ticks;
+                            let bounds = ArrangerObjectHelpers.getObjectBounds(root.actionObject);
+                            if (bounds) {
+                                bounds.setEndPositionTicks(ticks);
+                            }
                         }
                     }
 

@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 
 #include <cmath>
 #include <cstdlib>
 
 #include "dsp/stretcher.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/pool.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -20,11 +19,12 @@ namespace zrythm::structure::tracks
 {
 
 AudioTrack::AudioTrack (
-  TrackRegistry          &track_registry,
-  PluginRegistry         &plugin_registry,
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry,
-  bool                    new_identity)
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  TrackRegistry                &track_registry,
+  PluginRegistry               &plugin_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  bool                          new_identity)
     : Track (
         Track::Type::Audio,
         PortType::Audio,
@@ -32,7 +32,7 @@ AudioTrack::AudioTrack (
         plugin_registry,
         port_registry,
         obj_registry),
-      AutomatableTrack (port_registry, new_identity),
+      AutomatableTrack (file_audio_source_registry, port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity),
       ChannelTrack (track_registry, plugin_registry, port_registry, new_identity),
       RecordableTrack (port_registry, new_identity)
@@ -95,15 +95,17 @@ AudioTrack::clear_objects ()
 
 void
 AudioTrack::timestretch_buf (
-  const AudioRegion * r,
-  AudioClip *         clip,
-  unsigned_frame_t    in_frame_offset,
-  double              timestretch_ratio,
-  float *             lbuf_after_ts,
-  float *             rbuf_after_ts,
-  unsigned_frame_t    out_frame_offset,
-  unsigned_frame_t    frames_to_process)
+  const AudioRegion *    r,
+  dsp::FileAudioSource * clip,
+  unsigned_frame_t       in_frame_offset,
+  double                 timestretch_ratio,
+  float *                lbuf_after_ts,
+  float *                rbuf_after_ts,
+  unsigned_frame_t       out_frame_offset,
+  unsigned_frame_t       frames_to_process)
 {
+// TODO
+#if 0
   z_return_if_fail (r && rt_stretcher_);
   rt_stretcher_->set_time_ratio (1.0 / timestretch_ratio);
   auto in_frames_to_process =
@@ -123,13 +125,14 @@ AudioTrack::timestretch_buf (
     in_frames_to_process, &lbuf_after_ts[out_frame_offset],
     &rbuf_after_ts[out_frame_offset], (size_t) frames_to_process);
   z_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);
+#endif
 }
 
 void
 AudioTrack::get_regions_in_range (
-  std::vector<Region *> &regions,
-  const Position *       p1,
-  const Position *       p2)
+  std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+  std::optional<signed_frame_t>                          p1,
+  std::optional<signed_frame_t>                          p2)
 {
   LanedTrackImpl::get_regions_in_range (regions, p1, p2);
   AutomatableTrack::get_regions_in_range (regions, p1, p2);
@@ -144,8 +147,8 @@ AudioTrack::set_playback_caches ()
 
 void
 AudioTrack::fill_events (
-  const EngineProcessTimeInfo        &time_nfo,
-  std::pair<AudioPort &, AudioPort &> stereo_ports)
+  const EngineProcessTimeInfo                  &time_nfo,
+  std::pair<std::span<float>, std::span<float>> stereo_ports)
 {
   fill_events_common (time_nfo, nullptr, stereo_ports);
 }

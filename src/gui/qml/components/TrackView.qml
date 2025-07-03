@@ -160,7 +160,7 @@ Control {
                         text: qsTr("Scales")
                         font: Style.smallTextFont
                         Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-                        visible: track.type === 3 // chord track
+                        visible: track.type === Track.Chord
                     }
 
                     Item {

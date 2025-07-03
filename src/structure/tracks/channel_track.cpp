@@ -163,11 +163,11 @@ ChannelTrack::get_fader (bool post_fader)
     {
       if (post_fader)
         {
-          return ch->fader_;
+          return ch->fader ();
         }
       else
         {
-          return ch->prefader_;
+          return ch->preFader ();
         }
     }
 

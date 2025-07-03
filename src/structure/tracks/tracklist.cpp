@@ -451,6 +451,8 @@ Tracklist::mark_track_for_bounce (
   bool            mark_children,
   bool            mark_parents)
 {
+// TODO
+#if 0
   std::visit (
     [&] (auto &&track) {
       using TrackT = base_type<decltype (track)>;
@@ -525,6 +527,7 @@ Tracklist::mark_track_for_bounce (
         }
     },
     track_var);
+#endif
 }
 
 int
@@ -582,6 +585,86 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
   }
 
   z_debug ("tracks swapped");
+}
+
+std::optional<arrangement::ArrangerObjectPtrVariant>
+Tracklist::get_region_at_pos (
+  signed_frame_t            pos_samples,
+  Track *                   track,
+  tracks::AutomationTrack * at,
+  bool                      include_region_end)
+{
+  auto is_at_pos = [&] (const auto &region_var) -> bool {
+    return std::visit (
+      [&] (auto &&region) -> bool {
+        using RegionT = base_type<decltype (region)>;
+        if constexpr (arrangement::RegionObject<RegionT>)
+          {
+            const auto region_pos = region->position ()->samples ();
+            const auto region_end_pos =
+              region->regionMixin ()->bounds ()->get_end_position_samples (true);
+            return region_pos <= pos_samples
+                   && (include_region_end ? region_end_pos >= pos_samples : region_end_pos > pos_samples);
+          }
+        else
+          {
+            throw std::runtime_error ("expected region");
+          }
+      },
+      region_var.get_object ());
+  };
+
+  if (track)
+    {
+      return std::visit (
+        [&] (auto &&track_derived) -> std::optional<ArrangerObjectPtrVariant> {
+          using TrackT = base_type<decltype (track_derived)>;
+          if constexpr (std::derived_from<TrackT, tracks::LanedTrack>)
+            {
+              for (auto &lane_var : track_derived->lanes_)
+                {
+                  using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+                  auto lane = std::get<TrackLaneT *> (lane_var);
+                  auto ret_var =
+                    arrangement::ArrangerObjectSpan{ lane->get_children_vector () }
+                      .get_bounded_object_at_position (
+                        pos_samples, include_region_end);
+                  if (ret_var)
+                    return std::get<typename TrackLaneT::RegionT *> (*ret_var);
+
+                  auto region_vars = lane->get_children_vector ();
+                  auto it = std::ranges::find_if (region_vars, is_at_pos);
+                  if (it != region_vars.end ())
+                    {
+                      return (*it).get_object ();
+                    }
+                }
+            }
+          if constexpr (std::is_same_v<TrackT, tracks::ChordTrack>)
+            {
+              auto region_vars = track_derived->template ArrangerObjectOwner<
+                arrangement::ChordRegion>::get_children_vector ();
+              auto it = std::ranges::find_if (region_vars, is_at_pos);
+              if (it != region_vars.end ())
+                {
+                  return (*it).get_object ();
+                }
+            }
+          return std::nullopt;
+        },
+        convert_to_variant<TrackPtrVariant> (track));
+    }
+  if (at)
+    {
+      auto region_vars = at->get_children_vector ();
+      auto it = std::ranges::find_if (region_vars, is_at_pos);
+      if (it != region_vars.end ())
+        {
+          return (*it).get_object ();
+        }
+      return std::nullopt;
+    }
+  z_return_val_if_reached (std::nullopt);
 }
 
 TrackPtrVariant
@@ -1041,6 +1124,8 @@ void
 Tracklist::clear_selections_for_object_siblings (
   const ArrangerObject::Uuid &object_id)
 {
+// TODO
+#if 0
   auto obj_var = PROJECT->find_arranger_object_by_id (object_id);
   std::visit (
     [&] (auto &&obj) {
@@ -1073,6 +1158,7 @@ Tracklist::clear_selections_for_object_siblings (
         }
     },
     *obj_var);
+#endif
 }
 
 std::vector<arrangement::ArrangerObjectPtrVariant>
@@ -1089,6 +1175,8 @@ Tracklist::get_timeline_objects_in_range (
       range.emplace (dsp::Position{}, pos);
     }
   std::vector<ArrangerObjectPtrVariant> ret;
+// TODO
+#if 0
   for (const auto &track : get_track_span ())
     {
       std::vector<ArrangerObjectPtrVariant> objs;
@@ -1101,10 +1189,10 @@ Tracklist::get_timeline_objects_in_range (
               std::visit (
                 [&] (auto &&o) {
                   using ObjT = base_type<decltype (o)>;
-                  if constexpr (
-                    std::derived_from<ObjT, arrangement::BoundedObject>)
+                  if constexpr (arrangement::BoundedObject<ObjT>)
                     {
-                      if (o->is_hit_by_range (range->first, range->second))
+                      if (arrangement::ArrangerObjectSpan::bounds_projection (o)
+                            ->is_hit_by_range (range->first, range->second))
                         {
                           ret.push_back (o);
                         }
@@ -1122,6 +1210,7 @@ Tracklist::get_timeline_objects_in_range (
         },
         track);
     }
+#endif
   return ret;
 }
 
@@ -1154,7 +1243,7 @@ Tracklist::move_track (
       if (!is_auditioner ())
         {
           /* clear the editor region if it exists and belongs to this track */
-          CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
+          // CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
 
           /* deselect all objects */
           track->Track::unselect_all ();
@@ -1177,7 +1266,8 @@ Tracklist::move_track (
       bool expanded = false;
       if (pos >= static_cast<int> (tracks_.size ()))
         {
-          tracks_.resize (pos + 1);
+          tracks_.emplace_back (*track_registry_);
+          // tracks_.resize (pos + 1);
           expanded = true;
         }
 
@@ -1207,7 +1297,7 @@ Tracklist::move_track (
       if (expanded)
         {
           /* resize back */
-          tracks_.resize (tracks_.size () - 1);
+          tracks_.erase (tracks_.end () - 1);
         }
 
       /* make the track the only selected track */
@@ -1235,14 +1325,14 @@ Tracklist::track_name_is_unique (
   return !TrackSpan{ track_ids_to_check }.contains_track_name (name);
 }
 
+// TODO
+#if 0
 void
 Tracklist::import_regions (
   std::vector<std::vector<std::shared_ptr<Region>>> &region_arrays,
   const FileImportInfo *                             import_info,
   TracksReadyCallback                                ready_cb)
 {
-// TODO
-#if 0
   z_debug ("Adding regions into the project...");
 
   AudioEngine::State state{};
@@ -1325,8 +1415,8 @@ Tracklist::import_regions (
     {
       ready_cb (import_info);
     }
+  }
 #endif
-}
 
 void
 Tracklist::move_region_to_track (
@@ -1335,6 +1425,8 @@ Tracklist::move_region_to_track (
   int                      lane_or_at_index,
   int                      index)
 {
+#if 0
+  // TODO
   auto to_track_var = get_track (to_track_id);
   assert (to_track_var);
 
@@ -1356,7 +1448,7 @@ Tracklist::move_region_to_track (
           // TODO remove region from owner
 
 // TODO
-#if 0
+#  if 0
       int lane_pos = lane_or_at_index >= 0 ? lane_or_at_index : id_.lane_pos_;
       int at_pos = lane_or_at_index >= 0 ? lane_or_at_index : id_.at_idx_;
 
@@ -1464,7 +1556,7 @@ Tracklist::move_region_to_track (
               link_group->add_region (*this);
             }
         }
-#endif
+#  endif
 
               /* reset the clip editor region because track_remove_region clears
                * it */
@@ -1497,6 +1589,7 @@ Tracklist::move_region_to_track (
         }
     },
     *to_track_var, region_var);
+#endif
 }
 
 void
@@ -1888,7 +1981,8 @@ init_from (
           std::visit (
             [&] (auto &tr) {
               auto id_ref = obj.track_registry_->clone_object (
-                *tr, *obj.track_registry_, PROJECT->get_plugin_registry (),
+                *tr, PROJECT->get_file_audio_source_registry (),
+                *obj.track_registry_, PROJECT->get_plugin_registry (),
                 PROJECT->get_port_registry (),
                 PROJECT->get_arranger_object_registry (), true);
               obj.tracks_.push_back (id_ref);
@@ -1986,5 +2080,14 @@ Tracklist::~Tracklist ()
 
   // Disconnect all signals to prevent access during destruction
   QObject::disconnect ();
+}
+
+void
+from_json (const nlohmann::json &j, Tracklist &t)
+{
+  j.at (Tracklist::kPinnedTracksCutoffKey).get_to (t.pinned_tracks_cutoff_);
+  // TODO
+  // j.at (Tracklist::kTracksKey).get_to (t.tracks_);
+  j.at (Tracklist::kSelectedTracksKey).get_to (t.selected_tracks_);
 }
 }

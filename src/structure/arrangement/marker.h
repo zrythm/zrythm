@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include "structure/arrangement/bounded_object.h"
+#include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/named_object.h"
-#include "structure/arrangement/timeline_object.h"
 #include "utils/icloneable.h"
 
 namespace zrythm::structure::arrangement
@@ -14,18 +13,19 @@ namespace zrythm::structure::arrangement
 /**
  * Marker for the MarkerTrack.
  */
-class Marker final : public QObject, public TimelineObject, public NamedObject
+class Marker final : public QObject, public ArrangerObject
 {
   Q_OBJECT
-  QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (Marker)
-  DEFINE_NAMEABLE_OBJECT_QML_PROPERTIES (Marker)
+  Q_PROPERTY (Marker::MarkerType markerType READ markerType CONSTANT)
+  Q_PROPERTY (ArrangerObjectName * name READ name CONSTANT)
+  QML_ELEMENT
 
 public:
   /**
    * Marker type.
    */
-  enum class Type
+  enum class MarkerType : std::uint_fast8_t
   {
     /** Song start Marker that cannot be deleted. */
     Start,
@@ -34,57 +34,57 @@ public:
     /** Custom Marker. */
     Custom,
   };
+  Q_ENUM (MarkerType)
 
   Marker (
-    ArrangerObjectRegistry &obj_registry,
-    TrackResolver           track_resolver,
-    NameValidator           name_validator,
-    QObject *               parent = nullptr);
+    const dsp::TempoMap &tempo_map,
+    MarkerType           type,
+    QObject *            parent = nullptr);
 
-  bool is_start () const { return marker_type_ == Type::Start; }
-  bool is_end () const { return marker_type_ == Type::End; }
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  bool is_deletable () const override
+  ArrangerObjectName * name () const { return name_.get (); }
+  auto                 markerType () const { return marker_type_; }
+
+  Q_INVOKABLE bool isStartMarker () const
   {
-    return marker_type_ != Type::Start && marker_type_ != Type::End;
+    return marker_type_ == MarkerType::Start;
+  }
+  Q_INVOKABLE bool isEndMarker () const
+  {
+    return marker_type_ == MarkerType::End;
   }
 
+  // ========================================================================
+
+private:
   friend void
   init_from (Marker &obj, const Marker &other, utils::ObjectCloneType clone_type);
 
-  ArrangerObjectPtrVariant
-  add_clone_to_project (bool fire_events) const override;
-
-  ArrangerObjectPtrVariant insert_clone_to_project () const override;
-
-  bool
-  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
-
-private:
-  static constexpr std::string_view kMarkerTypeKey = "markerType";
-  friend void                       to_json (nlohmann::json &j, const Marker &m)
+  static constexpr auto kMarkerTypeKey = "markerType"sv;
+  static constexpr auto kMarkerNameKey = "markerName"sv;
+  friend void           to_json (nlohmann::json &j, const Marker &m)
   {
     to_json (j, static_cast<const ArrangerObject &> (m));
-    to_json (j, static_cast<const NamedObject &> (m));
+    j[kMarkerNameKey] = m.name_;
     j[kMarkerTypeKey] = m.marker_type_;
   }
   friend void from_json (const nlohmann::json &j, Marker &m)
   {
     from_json (j, static_cast<ArrangerObject &> (m));
-    from_json (j, static_cast<NamedObject &> (m));
+    j.at (kMarkerNameKey).get_to (*m.name_);
     j.at (kMarkerTypeKey).get_to (m.marker_type_);
   }
 
-public:
+private:
   /** Marker type. */
-  Type marker_type_ = Type::Custom;
+  MarkerType marker_type_ = MarkerType::Custom;
 
-  BOOST_DESCRIBE_CLASS (
-    Marker,
-    (NamedObject, TimelineObject),
-    (marker_type_),
-    (),
-    ())
+  utils::QObjectUniquePtr<ArrangerObjectName> name_;
+
+  BOOST_DESCRIBE_CLASS (Marker, (ArrangerObject), (), (), (marker_type_, name_))
 };
 
 } // namespace zrythm::structure::arrangement

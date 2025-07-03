@@ -283,6 +283,8 @@ audio_function_apply (
   AudioFunctionOpts                opts,
   std::optional<utils::Utf8String> uri)
 {
+// TODO
+#if 0
   using Position = AudioRegion::Position;
   z_debug ("applying {}...", AudioFunctionType_to_string (type));
 
@@ -388,10 +390,10 @@ audio_function_apply (
         RubberBandOptions rubberband_opts =
           RubberBandOptionProcessOffline
         /* use finer engine if rubberband v3 */
-#if RUBBERBAND_API_MAJOR_VERSION > 2 \
-  || (RUBBERBAND_API_MAJOR_VERSION == 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+#  if RUBBERBAND_API_MAJOR_VERSION > 2 \
+    || (RUBBERBAND_API_MAJOR_VERSION == 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
           | RubberBandOptionEngineFiner
-#endif
+#  endif
           | RubberBandOptionPitchHighQuality | RubberBandOptionFormantPreserved
           | RubberBandOptionThreadingAlways | RubberBandOptionChannelsApart;
         rubberband_state = rubberband_new (
@@ -446,13 +448,13 @@ audio_function_apply (
                      * be fixed eventually */
                     frames_read = num_frames;
                     break;
-#if 0
+#  if 0
                     g_set_error_literal (
                       error, Z_AUDIOAUDIO_FUNCTION_ERROR,
                       Z_AUDIOAUDIO_FUNCTION_ERROR_FAILED,
                       "rubberband: finished prematurely");
                     return false;
-#endif
+#  endif
                   }
                 std::array<float *, 2> tmp_out_arrays = {
                   &dest_frames.getWritePointer (0)[frames_read],
@@ -498,8 +500,8 @@ audio_function_apply (
       break;
     case AudioFunctionType::ExternalProgram:
       {
-        AudioClip tmp_clip_before (
-          src_frames, AudioClip::BitDepth::BIT_DEPTH_32,
+        FileAudioSource tmp_clip_before (
+          src_frames, FileAudioSource::BitDepth::BIT_DEPTH_32,
           AUDIO_ENGINE->get_sample_rate (), 140.f, u8"tmp-clip");
         auto tmp_clip = tmp_clip_before.edit_in_ext_program ();
         for (int i = 0; i < channels; ++i)
@@ -525,7 +527,7 @@ audio_function_apply (
       break;
     case AudioFunctionType::CustomPlugin:
       {
-#if 0
+#  if 0
         z_return_val_if_fail (uri, false);
         GError * err = NULL;
         int ret = apply_plugin (uri, dest_frames, num_frames, channels, &err);
@@ -535,7 +537,7 @@ audio_function_apply (
               error, err, "%s", QObject::tr ("Failed to apply plugin"));
             return false;
           }
-#endif
+#  endif
       }
       break;
     case AudioFunctionType::Invalid:
@@ -546,7 +548,7 @@ audio_function_apply (
       break;
     }
 
-#if 0
+#  if 0
   char * tmp =
     g_strdup_printf (
       "%s - %s - %s",
@@ -556,18 +558,18 @@ audio_function_apply (
   /* remove dots from name */
   char * name = string_replace (tmp, ".", "_");
   g_free (tmp);
-#endif
+#  endif
 
 // FIXME: where is the clip used??
-#if 0
-  int  id = AUDIO_POOL->add_clip (std::make_shared<AudioClip> (
-    dest_frames, AudioClip::BitDepth::BIT_DEPTH_32, AUDIO_ENGINE->sample_rate_,
+#  if 0
+  int  id = AUDIO_POOL->add_clip (std::make_shared<FileAudioSource> (
+    dest_frames, FileAudioSource::BitDepth::BIT_DEPTH_32, AUDIO_ENGINE->sample_rate_,
     P_TEMPO_TRACK->get_current_bpm (), orig_clip->get_name ()));
   auto clip = AUDIO_POOL->get_clip (id);
   z_debug (
     "writing {} to pool (id {})", clip->get_name (), clip->get_pool_id ());
   AUDIO_POOL->write_clip (*clip, false, false);
-#endif
+#  endif
 
   // FIXME: needed?
   // audio_sel.pool_id_ = clip->get_pool_id ();
@@ -593,5 +595,6 @@ audio_function_apply (
     }
 
   // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
+#endif
 }
 }

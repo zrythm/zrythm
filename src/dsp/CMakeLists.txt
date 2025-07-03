@@ -8,6 +8,8 @@ target_sources(zrythm_dsp_lib
     atomic_position.h
     atomic_position_qml_adapter.h
     atomic_position_qml_adapter.cpp
+    audio_pool.h
+    audio_pool.cpp
     chord_descriptor.h
     chord_descriptor.cpp
     curve.h
@@ -15,6 +17,8 @@ target_sources(zrythm_dsp_lib
     ditherer.h
     ditherer.cpp
     dsp.h
+    file_audio_source.h
+    file_audio_source.cpp
     graph.h
     graph.cpp
     graph_builder.h

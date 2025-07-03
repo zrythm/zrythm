@@ -534,7 +534,7 @@ private:
    */
   void move_to_marker_or_pos_and_fire_events (
     const structure::arrangement::Marker * marker,
-    const Position *                       pos);
+    std::optional<double>                  pos_ticks);
 
   // static void
   // foreach_arranger_handle_playhead_auto_scroll (ArrangerWidget * arranger);

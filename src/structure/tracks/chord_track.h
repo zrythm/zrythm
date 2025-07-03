@@ -77,20 +77,20 @@ public:
    * Returns the ChordObject at the given Position
    * in the TimelineArranger.
    */
-  ChordObject * get_chord_at_pos (Position pos) const;
+  ChordObject * get_chord_at_ticks (double timeline_ticks) const;
 
   /**
    * Returns the ScaleObject at the given Position
    * in the TimelineArranger.
    */
-  ScaleObject * get_scale_at_pos (Position pos) const;
+  ScaleObject * get_scale_at_ticks (double timeline_ticks) const;
 
   void clear_objects () override;
 
   void get_regions_in_range (
-    std::vector<Region *> &regions,
-    const Position *       p1,
-    const Position *       p2) override
+    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+    std::optional<signed_frame_t>                          p1,
+    std::optional<signed_frame_t>                          p2) override
   {
     std::ranges::for_each (regions, [&] (auto &region) {
       add_region_if_in_range (p1, p2, regions, region);
@@ -105,6 +105,7 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
+#if 0
   ArrangerObjectOwner<ChordRegion>::Location
   get_location (const ChordRegion &) const override
   {
@@ -115,6 +116,7 @@ public:
   {
     return { .track_id_ = get_uuid () };
   }
+#endif
 
   std::string
   get_field_name_for_serialization (const ChordRegion *) const override

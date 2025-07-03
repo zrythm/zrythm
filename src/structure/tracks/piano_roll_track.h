@@ -45,6 +45,11 @@ public:
    *   the MIDI data. The track will be set to 1 if false.
    * @param events Track events, if not using lanes as tracks or
    *   using track position.
+   * @param lanes_as_tracks Export lanes as separate tracks (only possible with
+   * MIDI type 1). This will calculate a unique MIDI track number for the
+   * region's lane.
+   * @param use_track_or_lane_pos Whether to use the track/lane position in the
+   * MIDI data. The MIDI track will be set to 1 if false.
    * @param start Events before this position will be skipped.
    * @param end Events after this position will be skipped.
    */
@@ -57,23 +62,17 @@ public:
     bool                   use_track_pos);
 
   /**
-   * Fills in the array with all the velocities in the project that are within
-   * or outside the range given.
-   *
-   * @param inside Whether to find velocities inside the range or outside.
+   * Returns the MIDI channel that this region should be played on, starting
+   * from 1.
    */
-  void get_velocities_in_range (
-    const Position *                      start_pos,
-    const Position *                      end_pos,
-    std::vector<arrangement::Velocity *> &velocities,
-    bool                                  inside) const;
+  uint8_t get_midi_ch (const arrangement::MidiRegion &midi_region) const;
 
   void clear_objects () override;
 
   void get_regions_in_range (
-    std::vector<Region *> &regions,
-    const Position *       p1,
-    const Position *       p2) override;
+    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+    std::optional<signed_frame_t>                          p1,
+    std::optional<signed_frame_t>                          p2) override;
 
 protected:
   friend void init_from (

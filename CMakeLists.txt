@@ -1057,8 +1057,8 @@ target_link_libraries(qt_libs
   Qt6::Quick
   Qt6::QuickControls2
   # for qmltc
-  Qt6::QmlPrivate
-  Qt6::QuickPrivate
+  # Qt6::QmlPrivate
+  # Qt6::QuickPrivate
   Qt6::Concurrent
 )
 add_library(zrythm::qt_libs ALIAS qt_libs)

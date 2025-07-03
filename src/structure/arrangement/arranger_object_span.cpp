@@ -14,8 +14,7 @@ auto
 ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
   -> ArrangerObjectUuidReference
 {
-  bool is_timeline = std::ranges::all_of (
-    *this, Base::template derived_from_type_projection<Region>);
+  bool is_timeline = std::ranges::all_of (*this, is_region_projection);
   [[maybe_unused]] bool is_midi =
     std::ranges::all_of (*this, Base::template type_projection<MidiNote>);
   assert (is_timeline || is_midi);
@@ -26,16 +25,16 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
           throw ZrythmException ("selections not on same lane");
         }
 
-      auto ticks_length = get_length_in_ticks ();
-      auto num_frames = static_cast<unsigned_frame_t> (
+      auto                  ticks_length = get_length_in_ticks ();
+      [[maybe_unused]] auto num_frames = static_cast<unsigned_frame_t> (
         ceil (type_safe::get (frames_per_tick) * ticks_length));
-      auto [first_obj_var, pos] = get_first_object_and_pos (true);
-      Position end_pos{ pos.ticks_ + ticks_length, frames_per_tick };
+      auto [first_obj_var, pos] = get_first_object_and_pos ();
+      Position end_pos{ pos + ticks_length, frames_per_tick };
 
       return std::visit (
         [&] (auto &&first_r) -> ArrangerObjectUuidReference {
           using RegionT = base_type<decltype (first_r)>;
-          if constexpr (std::derived_from<RegionT, Region>)
+          if constexpr (RegionObject<RegionT>)
             {
               const auto get_new_r = [] (auto &new_r_ref) {
                 return std::get<RegionT *> (new_r_ref->get_object ());
@@ -46,15 +45,15 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
                   new_r =
                     ArrangerObjectFactory::get_instance ()
                       ->get_builder<MidiRegion> ()
-                      .with_start_ticks (pos.ticks_)
+                      .with_start_ticks (pos)
                       .with_end_ticks (end_pos.ticks_)
                       .build_in_registry ();
                   for (const auto &obj : *this)
                     {
                       auto * r = std::get<MidiRegion *> (obj);
                       double ticks_diff =
-                        r->get_position ().ticks_
-                        - first_r->get_position ().ticks_;
+                        r->position ()->ticks ()
+                        - first_r->position ()->ticks ();
 
                       for (auto * mn : r->get_children_view ())
                         {
@@ -63,7 +62,7 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
                               ->clone_new_object_identity (*mn);
                           std::visit (
                             [&] (auto &&m) {
-                              m->move (ticks_diff, frames_per_tick);
+                              m->position ()->addTicks (ticks_diff);
                             },
                             new_mn.get_object ());
                           get_new_r (new_r)->add_object (new_mn);
@@ -72,6 +71,8 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
                 }
               else if constexpr (std::is_same_v<RegionT, AudioRegion>)
                 {
+// TODO
+#if 0
                   auto                      first_r_clip = first_r->get_clip ();
                   utils::audio::AudioBuffer frames{
                     first_r_clip->get_num_channels (),
@@ -99,8 +100,6 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
                       max_depth = std::max (max_depth, clip->get_bit_depth ());
                     }
 
-// TODO
-#if 0
                   new_r = new AudioRegion (
                     frames, true, first_r_clip->get_name (), max_depth, pos,
                     first_r->get_track_id(), first_r->id_.lane_pos_,
@@ -152,7 +151,8 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
 #endif
                 }
 
-              get_new_r (new_r)->set_name (first_r->get_name ());
+              get_new_r (new_r)->regionMixin ()->name ()->setName (
+                first_r->regionMixin ()->name ()->name ());
               return *new_r;
             }
           else
@@ -171,6 +171,10 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
 bool
 ArrangerObjectSpan::all_on_same_lane () const
 {
+  return true;
+
+// TODO
+#if 0
   if (this->empty ())
     return true;
 
@@ -204,144 +208,36 @@ ArrangerObjectSpan::all_on_same_lane () const
         }
     },
     first_obj_var);
+#endif
 }
 
 auto
-ArrangerObjectSpan::get_first_and_last_track () const -> std::
-  pair<structure::tracks::TrackPtrVariant, structure::tracks::TrackPtrVariant>
+ArrangerObjectSpan::get_first_object_and_pos () const
+  -> std::pair<VariantType, double>
 {
-  auto tracks = *this | std::views::transform (track_projection);
-  auto [min_it, max_it] = std::ranges::minmax_element (
-    tracks, {}, tracks::TrackSpan::position_projection);
-  return std::make_pair (*min_it, *max_it);
-}
-
-void
-ArrangerObjectSpan::init_loaded (bool project, dsp::FramesPerTick frames_per_tick)
-{
-  for (const auto &obj_variant : *this)
-    {
-      std::visit (
-        [&] (auto &&o) {
-          using ObjectT = base_type<decltype (o)>;
-          if (project)
-            { /* throws an error otherwise */
-              if constexpr (std::is_same_v<AudioRegion, ObjectT>)
-                {
-                  // o->read_from_pool_ = true;
-                  auto clip = o->get_clip ();
-                  z_return_if_fail (clip);
-                }
-              o->update_positions (true, false, frames_per_tick);
-            }
-          else /* else if not project */
-            {
-              o->update_positions (true, false, frames_per_tick);
-              if constexpr (std::derived_from<ObjectT, Region>)
-                {
-                  if constexpr (std::is_same_v<AudioRegion, ObjectT>)
-                    {
-                      o->fix_positions (frames_per_tick);
-                      o->validate (project, frames_per_tick);
-                    }
-                  o->validate (project, frames_per_tick);
-                }
-            }
-        },
-        obj_variant);
-    }
-}
-
-auto
-ArrangerObjectSpan::get_first_object_and_pos (bool global) const
-  -> std::pair<VariantType, Position>
-{
-  auto ret_obj = *std::ranges::min_element (*this, {}, position_projection);
-  auto ret_pos = position_projection (ret_obj);
-  if (global)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjT = base_type<decltype (obj)>;
-          if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
-            {
-              auto region = obj->get_region ();
-              ret_pos.add_ticks (
-                region->get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
-            }
-        },
-        ret_obj);
-    }
-
+  auto ret_obj =
+    *std::ranges::min_element (*this, {}, position_ticks_projection);
+  auto ret_pos = position_ticks_projection (ret_obj);
   return { ret_obj, ret_pos };
 }
 
 auto
-ArrangerObjectSpan::get_last_object_and_pos (bool global, bool ends_last) const
-  -> std::pair<VariantType, Position>
+ArrangerObjectSpan::get_last_object_and_pos (bool ends_last) const
+  -> std::pair<VariantType, double>
 {
   const auto proj =
     ends_last
-      ? end_position_with_start_position_fallback_projection
-      : position_projection;
+      ? end_position_ticks_with_start_position_fallback_projection
+      : position_ticks_projection;
   auto ret_obj = *std::ranges::min_element (*this, {}, proj);
   auto ret_pos = proj (ret_obj);
-  if (global)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjT = base_type<decltype (obj)>;
-          if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
-            {
-              auto region = obj->get_region ();
-              ret_pos.add_ticks (
-                region->get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
-            }
-        },
-        ret_obj);
-    }
-
   return { ret_obj, ret_pos };
 }
 
 bool
 ArrangerObjectSpan::can_be_merged () const
 {
-  return this->size () > 1
-         && std::ranges::all_of (
-           *this, Base::template derived_from_type_projection<BoundedObject>)
+  return this->size () > 1 && std::ranges::all_of (*this, bounded_projection)
          && all_on_same_lane () && std::ranges::none_of (*this, looped_projection);
-}
-
-void
-ArrangerObjectSpan::copy_arranger_object_identifier (
-  const VariantType &dest_var,
-  const VariantType &src_var)
-{
-  std::visit (
-    [&] (auto &&dest) {
-      using ObjT = base_type<decltype (dest)>;
-      auto src = std::get<ObjT *> (src_var);
-      dest->set_track_id (src->get_track_id ());
-      // TODO?
-      // dest->uuid_ = src->get_uuid();
-
-      if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
-        {
-          dest->region_id_ = src->region_id_;
-          // dest->index_ = src->index_;
-        }
-
-      if constexpr (std::derived_from<ObjT, NamedObject>)
-        {
-          dest->set_name (src->get_name ());
-        }
-
-      if constexpr (std::is_same_v<ObjT, ChordObject>)
-        {
-          dest->chord_index_ = src->chord_index_;
-        }
-    },
-    dest_var);
 }
 }

@@ -42,8 +42,6 @@ MidiFunction::string_id_to_type (const char * id) -> Type
 void
 MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
 {
-  using Position = dsp::Position;
-  /* TODO */
   z_debug ("applying {}...", MidiFunctionType_to_string (type));
 
   const auto &sel = sel_var;
@@ -55,29 +53,27 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
         curve_opts.algo_ = opts.curve_algo_;
         curve_opts.curviness_ = opts.curviness_;
         int vel_interval = std::abs (opts.end_vel_ - opts.start_vel_);
-        auto [first_note_var, first_pos] = sel.get_first_object_and_pos (false);
-        auto [last_note_var, last_pos] =
-          sel.get_last_object_and_pos (false, false);
+        auto [first_note_var, first_pos] = sel.get_first_object_and_pos ();
+        auto [last_note_var, last_pos] = sel.get_last_object_and_pos (false);
         auto first_note = std::get<MidiNote *> (first_note_var);
         auto last_note = std::get<MidiNote *> (last_note_var);
 
         if (first_note == last_note)
           {
-            first_note->vel_->vel_ = opts.start_vel_;
+            first_note->setVelocity (opts.start_vel_);
             break;
           }
 
-        double total_ticks = last_pos.ticks_ - first_pos.ticks_;
+        double total_ticks = last_pos - first_pos;
         for (auto * mn : sel.template get_elements_by_type<MidiNote> ())
           {
-            double mn_ticks_from_start =
-              mn->get_position ().ticks_ - first_pos.ticks_;
+            double mn_ticks_from_start = mn->position ()->ticks () - first_pos;
             double vel_multiplier = curve_opts.get_normalized_y (
               mn_ticks_from_start / total_ticks,
               opts.start_vel_ > opts.end_vel_);
-            mn->vel_->vel_ =
-              (midi_byte_t) ((double) std::min (opts.start_vel_, opts.end_vel_)
-                             + (vel_interval * vel_multiplier));
+            mn->setVelocity ((
+              midi_byte_t) ((double) std::min (opts.start_vel_, opts.end_vel_)
+                            + (vel_interval * vel_multiplier)));
           }
       }
       break;
@@ -132,37 +128,37 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
       {
         auto [lowest_note, highest_note] = sel.get_first_and_last_note ();
         z_return_if_fail (highest_note && lowest_note);
-        int highest_pitch = highest_note->pitch_;
-        int lowest_pitch = lowest_note->pitch_;
+        int highest_pitch = highest_note->pitch ();
+        int lowest_pitch = lowest_note->pitch ();
         int diff = highest_pitch - lowest_pitch;
         for (auto * mn : sel.template get_elements_by_type<MidiNote> ())
           {
-            uint8_t new_val = diff - (mn->pitch_ - lowest_pitch);
+            uint8_t new_val = diff - (mn->pitch () - lowest_pitch);
             new_val += lowest_pitch;
-            mn->pitch_ = new_val;
+            mn->setPitch (new_val);
           }
       }
       break;
     case Type::FlipHorizontal:
       {
         auto copies = sel | std::ranges::to<std::vector> ();
-        std::ranges::sort (copies, {}, ArrangerObjectSpan::position_projection);
-        std::vector<Position> poses;
+        std::ranges::sort (
+          copies, {}, ArrangerObjectSpan::position_ticks_projection);
+        std::vector<double> poses;
         for (
           auto * mn :
           ArrangerObjectSpan{ copies }.template get_elements_by_type<MidiNote> ())
           {
-            poses.push_back (mn->get_position ());
+            poses.push_back (mn->position ()->ticks ());
           }
         int i = 0;
         for (
           auto * mn :
           ArrangerObjectSpan{ copies }.template get_elements_by_type<MidiNote> ())
           {
-            double ticks = mn->get_length_in_ticks ();
-            mn->set_position_unvalidated (poses[(copies.size () - i) - 1]);
-            mn->set_end_position_unvalidated (mn->get_position ());
-            mn->end_pos_->add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
+            double ticks = mn->bounds ()->length ()->ticks ();
+            mn->position ()->setTicks (poses[(copies.size () - i) - 1]);
+            mn->bounds ()->length ()->setTicks (ticks);
             ++i;
           }
       }
@@ -170,20 +166,17 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
     case Type::Legato:
       {
         auto copies = sel | std::ranges::to<std::vector> ();
-        std::ranges::sort (copies, {}, ArrangerObjectSpan::position_projection);
+        std::ranges::sort (
+          copies, {}, ArrangerObjectSpan::position_ticks_projection);
         for (auto it = copies.begin (); it < (copies.end () - 1); ++it)
           {
             auto mn = std::get<MidiNote *> (*it);
             auto next_mn = std::get<MidiNote *> (*(it + 1));
-            mn->set_end_position_unvalidated (next_mn->get_position ());
-            /* make sure the note has a length */
-            if (
-              mn->get_end_position ().ticks_ - mn->get_position ().ticks_ < 1.0)
-              {
-                mn->end_pos_->add_ms (
-                  40.0, AUDIO_ENGINE->get_sample_rate (),
-                  AUDIO_ENGINE->ticks_per_frame_);
-              }
+            /* 48 to make sure the note has a length */
+            mn->bounds ()->length ()->setTicks (
+              std::max (
+                48.0,
+                next_mn->position ()->ticks () - mn->position ()->ticks ()));
           }
       }
       break;
@@ -191,25 +184,18 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
       {
         /* do the same as legato but leave some space between the notes */
         auto copies = sel | std::ranges::to<std::vector> ();
-        std::ranges::sort (copies, {}, ArrangerObjectSpan::position_projection);
+        std::ranges::sort (
+          copies, {}, ArrangerObjectSpan::position_ticks_projection);
 
         for (auto it = copies.begin (); it < (copies.end () - 1); ++it)
           {
             auto mn = std::get<MidiNote *> (*it);
             auto next_mn = std::get<MidiNote *> (*(it + 1));
-            mn->set_end_position_unvalidated (next_mn->get_position ());
-            mn->end_pos_->add_ms (
-              -80.0, AUDIO_ENGINE->get_sample_rate (),
-              AUDIO_ENGINE->ticks_per_frame_);
-            /* make sure the note has a length */
-            if (
-              mn->get_end_position ().ticks_ - mn->get_position ().ticks_ < 1.0)
-              {
-                mn->set_end_position_unvalidated (next_mn->get_position ());
-                mn->end_pos_->add_ms (
-                  40.0, AUDIO_ENGINE->get_sample_rate (),
-                  AUDIO_ENGINE->ticks_per_frame_);
-              }
+            mn->bounds ()->length ()->setTicks (
+              std::max (
+                48.0,
+                (next_mn->position ()->ticks () - mn->position ()->ticks ())
+                  - 48.0));
           }
       }
       break;
@@ -218,10 +204,7 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
         for (auto it = sel.begin (); it < (sel.end () - 1); ++it)
           {
             auto mn = std::get<MidiNote *> (*it);
-            mn->set_end_position_unvalidated (mn->get_position ());
-            mn->end_pos_->add_ms (
-              140.0, AUDIO_ENGINE->get_sample_rate (),
-              AUDIO_ENGINE->ticks_per_frame_);
+            mn->bounds ()->length ()->setTicks (48.0);
           }
       }
       break;
@@ -253,8 +236,11 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
               !opts.ascending_);
             double ms_to_add = ms_multiplier * opts.time_;
             z_trace ("multi {:f}, ms {:f}", ms_multiplier, ms_to_add);
-            double len_ticks = mn->get_length_in_ticks ();
-            mn->set_position_unvalidated (first_mn->get_position ());
+            [[maybe_unused]] double len_ticks =
+              mn->bounds ()->length ()->ticks ();
+            mn->position ()->setTicks (first_mn->position ()->ticks ());
+// TODO
+#if 0
             auto tmp_pos = mn->get_position ();
             tmp_pos.add_ms (
               ms_to_add, AUDIO_ENGINE->get_sample_rate (),
@@ -262,6 +248,7 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
             mn->set_position_unvalidated (tmp_pos);
             mn->set_end_position_unvalidated (mn->get_position ());
             mn->end_pos_->add_ticks (len_ticks, AUDIO_ENGINE->frames_per_tick_);
+#endif
           }
       }
       break;

@@ -65,9 +65,10 @@ protected:
    * @param midi_events MidiEvents to fill (from Piano Roll Port for example).
    */
   void fill_events_common (
-    const EngineProcessTimeInfo                       &time_nfo,
-    dsp::MidiEventVector *                             midi_events,
-    std::optional<std::pair<AudioPort &, AudioPort &>> stereo_ports) const;
+    const EngineProcessTimeInfo                                 &time_nfo,
+    dsp::MidiEventVector *                                       midi_events,
+    std::optional<std::pair<std::span<float>, std::span<float>>> stereo_ports)
+    const;
 
   friend void init_from (
     ProcessableTrack       &obj,

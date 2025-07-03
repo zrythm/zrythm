@@ -40,7 +40,6 @@ class AutomationTrack final
     arrangement::AutomationRegion)
 
 public:
-  using Position = dsp::Position;
   using PortUuid = Port::Uuid;
   using TrackGetter = std::function<TrackPtrVariant ()>;
   using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;
@@ -68,10 +67,11 @@ public:
 public:
   /** Creates an automation track for the given Port. */
   AutomationTrack (
-    PortRegistry            &port_registry,
-    ArrangerObjectRegistry  &obj_registry,
-    TrackGetter              track_getter,
-    const ControlPort::Uuid &port_id);
+    dsp::FileAudioSourceRegistry &file_audio_source_registry,
+    PortRegistry                 &port_registry,
+    ArrangerObjectRegistry       &obj_registry,
+    TrackGetter                   track_getter,
+    const ControlPort::Uuid      &port_id);
 
 public:
   // ========================================================================
@@ -179,6 +179,19 @@ public:
   TrackPtrVariant get_track () const;
 
   /**
+   * Returns an automation point found within +/-
+   * delta_ticks from the position, or NULL.
+   *
+   * @param before_only Only check previous automation
+   *   points.
+   */
+  AutomationPoint * get_ap_around (
+    double position_ticks,
+    double delta_ticks,
+    bool   before_only,
+    bool   use_snapshots);
+
+  /**
    * Returns the automation point before the Position on the timeline.
    *
    * @param ends_after Whether to only check in regions that also end after
@@ -186,7 +199,7 @@ public:
    * region that ends last.
    */
   AutomationPoint *
-  get_ap_before_pos (const Position &pos, bool ends_after, bool use_snapshots)
+  get_ap_before_pos (signed_frame_t pos, bool ends_after, bool use_snapshots)
     const;
 
   /**
@@ -197,18 +210,17 @@ public:
    * that ends last.
    */
   AutomationRegion *
-  get_region_before_pos (const Position &pos, bool ends_after, bool use_snapshots)
+  get_region_before_pos (signed_frame_t pos, bool ends_after, bool use_snapshots)
     const;
 
   ControlPort &get_port () const;
 
   /**
-   * Returns the actual parameter value at the given position.
+   * Returns the normalized parameter value at the given position.
    *
    * If there is no automation point/curve during the position, it returns the
    * current value of the parameter it is automating.
    *
-   * @param normalized Whether to return the value normalized.
    * @param ends_after Whether to only check in regions that also end after
    * \ref pos (ie, the region surrounds @ref pos), otherwise check in the
    * region that ends last.
@@ -216,11 +228,10 @@ public:
    * (cached) regions. This should be set to true when called during dsp
    * playback. TODO unimplemented
    */
-  float get_val_at_pos (
-    const Position &pos,
-    bool            normalized,
-    bool            ends_after,
-    bool            use_snapshots) const;
+  float get_normalized_val_at_pos (
+    signed_frame_t pos,
+    bool           ends_after,
+    bool           use_snapshots) const;
 
   static int get_y_px_from_height_and_normalized_val (
     const float height,
@@ -242,10 +253,6 @@ public:
   void set_caches (CacheType types);
 
   bool contains_automation () const { return !get_children_vector ().empty (); }
-
-  bool verify () const;
-
-  Location get_location (const AutomationRegion &) const override;
 
   std::string
   get_field_name_for_serialization (const AutomationRegion *) const override

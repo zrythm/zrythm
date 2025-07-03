@@ -1,79 +1,71 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/loopable_object.h"
-#include "utils/debug.h"
-#include "utils/gtest_wrapper.h"
 
 namespace zrythm::structure::arrangement
 {
-void
-init_from (
-  LoopableObject        &obj,
-  const LoopableObject  &other,
-  utils::ObjectCloneType clone_type)
+ArrangerObjectLoopRange::ArrangerObjectLoopRange (
+  const ArrangerObjectBounds &bounds,
+  QObject *                   parent)
+    : QObject (parent), bounds_ (bounds),
+      clip_start_pos_ (bounds.length ()->position ().get_tempo_map ()),
+      clip_start_pos_adapter_ (
+        utils::make_qobject_unique<
+          dsp::AtomicPositionQmlAdapter> (clip_start_pos_, this)),
+      loop_start_pos_ (bounds.length ()->position ().get_tempo_map ()),
+      loop_start_pos_adapter_ (
+        utils::make_qobject_unique<
+          dsp::AtomicPositionQmlAdapter> (loop_start_pos_, this)),
+      loop_end_pos_ (bounds.length ()->position ().get_tempo_map ()),
+      loop_end_pos_adapter_ (
+        utils::make_qobject_unique<
+          dsp::AtomicPositionQmlAdapter> (loop_end_pos_, this))
 {
-  obj.clip_start_pos_ = other.clip_start_pos_;
-  obj.loop_start_pos_ = other.loop_start_pos_;
-  obj.loop_end_pos_ = other.loop_end_pos_;
+  QObject::connect (
+    this, &ArrangerObjectLoopRange::trackLengthChanged, this,
+    [this] (bool track) {
+      if (track && !track_length_connection_.has_value ())
+        {
+          track_length_connection_ = QObject::connect (
+            bounds_.length (), &dsp::AtomicPositionQmlAdapter::positionChanged,
+            this,
+            [this] () { loopEndPosition ()->setTicks (length ()->ticks ()); });
+
+          // also emit the signal to update the loop end position since we are
+          // now tracking the bounds
+          Q_EMIT bounds_.length ()->positionChanged ();
+        }
+      else if (!track && track_length_connection_.has_value ())
+        {
+          QObject::disconnect (track_length_connection_.value ());
+          track_length_connection_.reset ();
+        }
+    });
+
+  Q_EMIT trackLengthChanged (track_length_);
 }
 
 int
-LoopableObject::get_num_loops (bool count_incomplete) const
+ArrangerObjectLoopRange::get_num_loops (bool count_incomplete) const
 {
-  int  i = 0;
-  long loop_size = get_loop_length_in_frames ();
-  z_return_val_if_fail_cmp (loop_size, >, 0, 0);
-  long full_size = get_length_in_frames ();
-  long loop_start = loop_start_pos_.frames_ - clip_start_pos_.frames_;
-  long curr_frames = loop_start;
+  const auto full_size = length ()->samples ();
+  const auto loop_start =
+    loopStartPosition ()->samples () - clipStartPosition ()->samples ();
+  const auto loop_size = get_loop_length_in_frames ();
 
-  while (curr_frames < full_size)
+  // Special case
+  if (loop_size == 0) [[unlikely]]
     {
-      i++;
-      curr_frames += loop_size;
+      return 0;
     }
 
-  if (!count_incomplete)
-    i--;
+  // Calculate the number of full loops using integer division
+  const auto full_loops = (full_size - loop_start) / loop_size;
 
-  return i;
-}
-
-bool
-LoopableObject::are_members_valid (
-  bool               is_project,
-  dsp::FramesPerTick frames_per_tick) const
-{
-  const auto ticks_per_frame = zrythm::dsp::to_ticks_per_frame (frames_per_tick);
-  if (!is_position_valid (
-        loop_start_pos_, PositionType::LoopStart, ticks_per_frame))
-    {
-      if (ZRYTHM_TESTING)
-        {
-          z_info ("invalid loop start pos {}", loop_start_pos_);
-        }
-      return false;
-    }
-  if (!is_position_valid (loop_end_pos_, PositionType::LoopEnd, ticks_per_frame))
-    {
-      if (ZRYTHM_TESTING)
-        {
-          z_info ("invalid loop end pos {}", loop_end_pos_);
-        }
-      return false;
-    }
-  if (!is_position_valid (
-        clip_start_pos_, PositionType::ClipStart, ticks_per_frame))
-    {
-      if (ZRYTHM_TESTING)
-        {
-          z_info ("invalid clip start pos {}", clip_start_pos_);
-        }
-      return false;
-    }
-
-  return true;
+  // Add 1 if we want to count incomplete loops
+  const auto add_one =
+    (count_incomplete && (full_size - loop_start) % loop_size != 0);
+  return static_cast<int> (full_loops) + (add_one ? 1 : 0);
 }
 }

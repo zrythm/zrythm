@@ -38,7 +38,6 @@ class ArrangerSelectionsAction : public QObject, public UndoableAction
     structure::arrangement::ArrangerObjectPtrVariant;
   using ArrangerObjectSpan = structure::arrangement::ArrangerObjectSpan;
   using ArrangerObject = structure::arrangement::ArrangerObject;
-  using Region = structure::arrangement::Region;
   using MidiFunction = structure::arrangement::MidiFunction;
   using AutomationFunction = structure::arrangement::AutomationFunction;
 
@@ -139,8 +138,6 @@ public:
 
   ArrangerObjectRegistry &get_arranger_object_registry () const;
 
-  bool contains_clip (const AudioClip &clip) const override;
-
   friend void init_from (
     ArrangerSelectionsAction       &obj,
     const ArrangerSelectionsAction &other,
@@ -153,8 +150,6 @@ public:
     /* always needs a pause to update the track playback snapshots */
     return true;
   }
-
-  bool can_contain_clip () const override { return true; }
 
   [[nodiscard]] QString to_string () const final;
 
@@ -268,7 +263,7 @@ public:
     selected_positions_in_audio_editor_;
 
   /** Clip editor region ID (for non-timeline actions). */
-  std::optional<Region::Uuid> clip_editor_region_id_;
+  std::optional<ArrangerObject::Uuid> clip_editor_region_id_;
 
   /** Target port (used to find corresponding automation track when
    * moving/copying automation regions to another automation track/another
@@ -579,7 +574,7 @@ public:
    * @brief Wrapper for audio functions.
    */
   EditArrangerSelectionsAction (
-    Region::Uuid                              region_id,
+    ArrangerObject::Uuid                      region_id,
     const dsp::Position                      &sel_start,
     const dsp::Position                      &sel_end,
     structure::arrangement::AudioFunctionType audio_func_type,
@@ -598,7 +593,7 @@ public:
    * @param region_after The region after the change.
    * @param already_changed Whether the change was already made.
    */
-  template <structure::arrangement::FinalRegionSubclass RegionT>
+  template <structure::arrangement::RegionObject RegionT>
   AutomationFillAction (
     const RegionT &region_before,
     const RegionT &region_after,

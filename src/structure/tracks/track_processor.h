@@ -250,24 +250,7 @@ private:
       { kChannelPressureKey, tp.channel_pressure_ids_  },
     };
   }
-  friend void from_json (const nlohmann::json &j, TrackProcessor &tp)
-  {
-    j.at (kMonoKey).get_to (tp.mono_id_);
-    j.at (kInputGainKey).get_to (tp.input_gain_id_);
-    j.at (kOutputGainKey).get_to (tp.output_gain_id_);
-    j.at (kMidiInKey).get_to (tp.midi_in_id_);
-    j.at (kMidiOutKey).get_to (tp.midi_out_id_);
-    j.at (kPianoRollKey).get_to (tp.piano_roll_id_);
-    j.at (kMonitorAudioKey).get_to (tp.monitor_audio_id_);
-    j.at (kStereoInLKey).get_to (tp.stereo_in_left_id_);
-    j.at (kStereoInRKey).get_to (tp.stereo_in_right_id_);
-    j.at (kStereoOutLKey).get_to (tp.stereo_out_left_id_);
-    j.at (kStereoOutRKey).get_to (tp.stereo_out_right_id_);
-    j.at (kMidiCcKey).get_to (tp.midi_cc_ids_);
-    j.at (kPitchBendKey).get_to (tp.pitch_bend_ids_);
-    j.at (kPolyKeyPressureKey).get_to (tp.poly_key_pressure_ids_);
-    j.at (kChannelPressureKey).get_to (tp.channel_pressure_ids_);
-  }
+  friend void from_json (const nlohmann::json &j, TrackProcessor &tp);
 
   void init_common ();
 

@@ -81,7 +81,7 @@ MidiEventVector::transform_chord_and_append (
         /* only use middle octave */
         midi_byte_t  note_number = utils::midi::midi_get_note_number (buf);
         const auto * descr = note_number_to_chord_descriptor (note_number);
-        if (!descr)
+        if (descr == nullptr)
           continue;
 
         if (utils::midi::midi_is_note_on (buf))
@@ -309,21 +309,27 @@ MidiEventVector::panic ()
 }
 
 void
-MidiEventVector::write_to_midi_file (MIDI_FILE * mf, int midi_track) const
+MidiEventVector::write_to_midi_sequence (
+  juce::MidiMessageSequence &sequence,
+  bool                       update_matched_pairs) const
 {
-  const std::lock_guard<crill::spin_mutex> lock (lock_);
-  z_return_if_fail (midi_track > 0);
+  {
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
 
-  int last_time = 0;
-  for (const MidiEvent &ev : events_)
+    int last_time = 0;
+    for (const MidiEvent &ev : events_)
+      {
+        const int delta_time = (int) ev.time_ - last_time;
+        sequence.addEvent (
+          { ev.raw_buffer_.data (), static_cast<int> (ev.raw_buffer_.size ()),
+            static_cast<double> (delta_time) });
+        last_time += delta_time;
+      }
+  }
+
+  if (update_matched_pairs)
     {
-      BYTE buf[] = { ev.raw_buffer_[0], ev.raw_buffer_[1], ev.raw_buffer_[2] };
-      int  delta_time = (int) ev.time_ - last_time;
-      midiTrackAddRaw (
-        mf, midi_track, 3, buf,
-        /* move ptr */
-        true, delta_time);
-      last_time += delta_time;
+      sequence.updateMatchedPairs ();
     }
 }
 

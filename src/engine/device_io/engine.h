@@ -8,7 +8,6 @@
 #include "dsp/panning.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/session/control_room.h"
-#include "engine/session/pool.h"
 #include "engine/session/sample_processor.h"
 #include "engine/session/transport.h"
 #include "gui/dsp/audio_port.h"
@@ -24,7 +23,6 @@ class Plugin;
 
 #define AUDIO_ENGINE \
   (zrythm::engine::device_io::AudioEngine::get_active_instance ())
-#define AUDIO_POOL (AUDIO_ENGINE->pool_)
 
 #define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val_)
 
@@ -309,7 +307,6 @@ private:
   static constexpr auto kMonitorOutRKey = "monitorOutR"sv;
   static constexpr auto kMidiEditorManualPressKey = "midiEditorManualPress"sv;
   static constexpr auto kMidiInKey = "midiIn"sv;
-  static constexpr auto kPoolKey = "pool"sv;
   static constexpr auto kControlRoomKey = "controlRoom"sv;
   static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
   static constexpr auto kHwInProcessorKey = "hwInProcessor"sv;
@@ -322,7 +319,6 @@ private:
       { kMonitorOutRKey,           engine.monitor_out_right_        },
       { kMidiEditorManualPressKey, engine.midi_editor_manual_press_ },
       { kMidiInKey,                engine.midi_in_                  },
-      { kPoolKey,                  engine.pool_                     },
       { kControlRoomKey,           engine.control_room_             },
       { kSampleProcessorKey,       engine.sample_processor_         },
     };
@@ -381,9 +377,6 @@ public:
 
   /** The ControlRoom. */
   std::unique_ptr<session::ControlRoom> control_room_;
-
-  /** Audio file pool. */
-  std::unique_ptr<AudioPool> pool_;
 
   /**
    * Used during tests to pass input data for recording.

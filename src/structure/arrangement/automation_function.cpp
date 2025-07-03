@@ -23,8 +23,8 @@ AutomationFunction::apply (ArrangerObjectSpan sel_var, Type type)
       {
         if (vertical)
           {
-            ap->set_fvalue (1.f - ap->normalized_val_, true);
-            ap->curve_opts_.curviness_ = -ap->curve_opts_.curviness_;
+            ap->setValue (1.f - ap->value ());
+            ap->curveOpts ()->setCurviness (-ap->curveOpts ()->curviness ());
           }
         else
           {
@@ -37,8 +37,9 @@ AutomationFunction::apply (ArrangerObjectSpan sel_var, Type type)
     for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
       {
 
-        ap->curve_opts_.curviness_ = 1.0;
-        ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
+        ap->curveOpts ()->setCurviness (1.0);
+        ap->curveOpts ()->setAlgorithm (
+          std::to_underlying (dsp::CurveOptions::Algorithm::Pulse));
       }
   };
 

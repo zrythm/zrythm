@@ -721,6 +721,8 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 void
 MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
 {
+// TODO
+#if 0
   auto       own_ms = PluginSpan{ *ms_before_ };
   const auto to_slot_value = to_slot_.value ();
   auto       from_tr_var =
@@ -898,14 +900,14 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                       if (prev_at && new_at)
                                         {
                                     // TODO
-#if 0
+#  if 0
                                           prev_at->foreach_region (
                                             [&] (auto &prev_region) {
                                               to_tr->Track::add_region (
                                                 prev_region.clone_raw_ptr (),
                                                 new_at, std::nullopt, false);
                                               });
-#endif
+#  endif
                                         }
                                     }
                                 },
@@ -960,12 +962,12 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                   using ToTrackT = base_type<decltype (to_tr)>;
                   if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
                     {
-#if 0
+#  if 0
                       [[maybe_unused]] auto * to_ch =
                         to_tr->has_channel ()
                           ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
                           : nullptr;
-#endif
+#  endif
 
                       /* clear selections to readd each original plugin */
                       TRACKLIST->get_track_span ().deselect_all_plugins ();
@@ -1085,6 +1087,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
         }
     },
     from_tr_var.value ());
+#endif
 }
 
 void

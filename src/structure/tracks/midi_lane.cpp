@@ -7,8 +7,11 @@
 
 namespace zrythm::structure::tracks
 {
-MidiLane::MidiLane (LanedTrackImpl<MidiLane> * track)
-    : TrackLaneImpl<MidiRegion> (track)
+MidiLane::MidiLane (
+  structure::arrangement::ArrangerObjectRegistry &registry,
+  dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
+  LanedTrackImpl<MidiLane> *                      track)
+    : TrackLaneImpl<MidiRegion> (registry, file_audio_source_registry, track, *this)
 {
 }
 

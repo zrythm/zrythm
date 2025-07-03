@@ -172,8 +172,8 @@ Arranger {
           property var midiNote: arrangerObject
           readonly property real midiNoteX: midiNote.position.ticks * root.ruler.pxPerTick
           readonly property real midiNoteY: (127 - midiNote.pitch) * root.pianoRoll.keyHeight
-          readonly property real midiNoteEndX: midiNote.endPosition.ticks * root.ruler.pxPerTick
-          readonly property real midiNoteWidth: midiNoteEndX - midiNoteX
+          readonly property real midiNoteWidth: midiNote.bounds.length.ticks * root.ruler.pxPerTick
+          readonly property real midiNoteEndX: midiNoteX + midiNoteWidth
           readonly property real midiNoteHeight: root.pianoRoll.keyHeight
 
           height: midiNoteHeight

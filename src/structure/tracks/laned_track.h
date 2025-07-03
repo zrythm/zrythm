@@ -138,9 +138,9 @@ public:
   void clear_objects () override;
 
   void get_regions_in_range (
-    std::vector<Region *> &regions,
-    const dsp::Position *  p1,
-    const dsp::Position *  p2) override;
+    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
+    std::optional<signed_frame_t>                          p1,
+    std::optional<signed_frame_t>                          p2) override;
 
   int get_lane_index (const TrackLaneT &lane) const
   {

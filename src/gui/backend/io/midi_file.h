@@ -16,10 +16,6 @@ namespace zrythm::structure::arrangement
 {
 class MidiRegion;
 }
-namespace zrythm::engine::session
-{
-class Transport;
-}
 
 /**
  * @addtogroup io
@@ -84,10 +80,25 @@ public:
    * 5 and 7, it will use track 7.
    * @throw ZrythmException On error.
    */
-  void into_region (
-    structure::arrangement::MidiRegion &region,
-    engine::session::Transport         &transport,
-    int                                 midi_track_idx) const;
+  void
+  into_region (structure::arrangement::MidiRegion &region, int midi_track_idx)
+    const;
+
+  /**
+   * Exports the Region to a specified MIDI file.
+   *
+   * FIXME: this needs refactoring. taken out of MidiRegion class.
+   *
+   * @param full_path Absolute path to the MIDI file.
+   * @param export_full Traverse loops and export the MIDI file as it would be
+   * played inside Zrythm. If this is false, only the original region (from true
+   * start to true end) is exported.
+   */
+  static void export_midi_region_to_midi_file (
+    const structure::arrangement::MidiRegion &region,
+    const fs::path                           &full_path,
+    int                                       midi_version,
+    bool                                      export_full);
 
 private:
   juce::MidiFile midi_file_;

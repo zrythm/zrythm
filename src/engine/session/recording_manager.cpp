@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/file_audio_source.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/clip.h"
 #include "engine/session/recording_event.h"
 #include "engine/session/recording_manager.h"
 #include "engine/session/transport.h"
@@ -36,6 +36,77 @@ using namespace zrythm::structure::tracks;
 
 namespace zrythm::engine::session
 {
+
+MidiNote *
+RecordingManager::pop_unended_note (MidiRegion &mr, int pitch)
+{
+  auto it = std::ranges::find_if (
+    unended_notes_per_region_.at (mr.get_uuid ()),
+    [pitch] (const auto mn) { return pitch == -1 || mn->pitch () == pitch; });
+
+  if (it != unended_notes_per_region_.at (mr.get_uuid ()).end ())
+    {
+      MidiNote * mn = *it;
+      unended_notes_per_region_.at (mr.get_uuid ()).erase (it);
+      return mn;
+    }
+
+  return nullptr;
+}
+
+void
+RecordingManager::start_unended_note (
+  MidiRegion           &mr,
+  double                start_pos,
+  std::optional<double> end_pos,
+  int                   pitch,
+  int                   vel)
+{
+  /* set end pos */
+  const auto real_end_pos = end_pos ? *end_pos : start_pos + 1;
+
+  auto mn_builder =
+    ArrangerObjectFactory::get_instance ()->get_builder<MidiNote> ();
+  auto mn =
+    mn_builder.with_start_ticks (start_pos)
+      .with_end_ticks (real_end_pos)
+      .with_pitch (pitch)
+      .with_velocity (vel)
+      .build_in_registry ();
+  mr.add_object (mn);
+
+  /* add to unended notes */
+  unended_notes_per_region_.at (mr.get_uuid ())
+    .push_back (std::get<MidiNote *> (mn.get_object ()));
+}
+
+void
+RecordingManager::get_aps_since_last_recorded (
+  const structure::arrangement::AutomationRegion &ar,
+  signed_frame_t                                  pos,
+  std::vector<AutomationPoint *>                 &aps) const
+{
+  aps.clear ();
+
+  if (!last_recorded_aps_per_region_.contains (ar.get_uuid ()))
+    return;
+
+  const auto &last_recorded_ap =
+    last_recorded_aps_per_region_.at (ar.get_uuid ());
+  if (pos <= last_recorded_ap->position ()->samples ())
+    return;
+
+  for (auto * ap : ar.get_children_view ())
+    {
+      if (
+        ap->position ()->samples () > last_recorded_ap->position ()->samples ()
+        && ap->position ()->samples () <= pos)
+        {
+          aps.push_back (ap);
+        }
+    }
+}
+
 void
 RecordingManager::handle_stop_recording (bool is_automation)
 {
@@ -65,7 +136,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
       std::visit (
         [&] (auto &&region) {
           using ObjT = base_type<decltype (region)>;
-          if constexpr (std::derived_from<ObjT, structure::arrangement::Region>)
+          if constexpr (RegionObject<ObjT>)
             {
               if (is_automation != std::is_same_v<ObjT, AutomationRegion>)
                 return;
@@ -77,7 +148,9 @@ RecordingManager::handle_stop_recording (bool is_automation)
               if (is_automation)
                 {
                   if constexpr (std::is_same_v<ObjT, AutomationRegion>)
-                    region->last_recorded_ap_ = nullptr;
+                    {
+                      last_recorded_aps_per_region_.erase (region->get_uuid ());
+                    }
                 }
             }
         },
@@ -110,7 +183,9 @@ RecordingManager::handle_stop_recording (bool is_automation)
           using ObjT = base_type<decltype (r)>;
           if constexpr (std::is_same_v<ObjT, AudioRegion>)
             {
-              AudioClip * clip = r->get_clip ();
+// TODO
+#if 0
+              FileAudioSource * clip = r->get_clip ();
               try
                 {
                   AUDIO_POOL->write_clip (*clip, true, false);
@@ -120,6 +195,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
                 {
                   ex.handle ("Failed to write audio region clip to pool");
                 }
+#endif
             }
         },
         region_var);
@@ -179,7 +255,7 @@ RecordingManager::handle_recording (
 
   if (TRANSPORT->punch_mode_)
     {
-      Position tmp (
+      dsp::Position tmp (
         (signed_frame_t) time_nfo->g_start_frame_w_offset_,
         AUDIO_ENGINE->ticks_per_frame_);
       inside_punch_range = TRANSPORT->position_is_inside_punch_range (tmp);
@@ -309,8 +385,8 @@ RecordingManager::handle_recording (
         {
           /* add recorded track material to event queue */
           if constexpr (
-            std::derived_from<Track, PianoRollTrack>
-            || std::is_same_v<Track, ChordTrack>)
+            std::derived_from<TrackT, PianoRollTrack>
+            || std::is_same_v<TrackT, ChordTrack>)
             {
 
               auto &midi_events =
@@ -333,7 +409,7 @@ RecordingManager::handle_recording (
                   event_queue_.push_back (re);
                 }
             }
-          else if (tr->get_type () == Track::Type::Audio)
+          else if (tr->get_type () == structure::tracks::Track::Type::Audio)
             {
               auto re = event_obj_pool_.acquire ();
               re->init (RecordingEvent::Type::Audio, *tr, *time_nfo);
@@ -386,8 +462,10 @@ void
 RecordingManager::delete_automation_points (
   AutomationTrack * at,
   AutomationRegion &region,
-  Position          pos)
+  signed_frame_t    pos)
 {
+// TODO
+#if 0
   region.get_aps_since_last_recorded (pos, pending_aps_);
   for (AutomationPoint * ap : pending_aps_)
     {
@@ -416,6 +494,7 @@ RecordingManager::delete_automation_points (
         &region, adj_pos.ticks_, prev_fvalue);
       region.last_recorded_ap_ = ap;
     }
+#endif
 }
 
 AutomationPoint *
@@ -424,22 +503,23 @@ RecordingManager::create_automation_point (
   AutomationRegion &region,
   float             val,
   float             normalized_val,
-  Position          pos)
+  signed_frame_t    pos_frames)
 {
-  region.get_aps_since_last_recorded (pos, pending_aps_);
+  get_aps_since_last_recorded (region, pos_frames, pending_aps_);
   for (AutomationPoint * ap : pending_aps_)
     {
       region.remove_object (ap->get_uuid ());
     }
 
-  Position adj_pos = pos;
-  adj_pos.add_ticks (
-    -region.get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
+  auto adj_pos = pos_frames - region.position ()->samples ();
   if (
-    region.last_recorded_ap_
+    last_recorded_aps_per_region_.contains (region.get_uuid ())
     && utils::math::floats_equal (
-      region.last_recorded_ap_->normalized_val_, normalized_val)
-    && region.last_recorded_ap_->get_position () == adj_pos)
+      static_cast<float> (
+        last_recorded_aps_per_region_[region.get_uuid ()]->value ()),
+      normalized_val)
+    && last_recorded_aps_per_region_[region.get_uuid ()]->position ()->samples ()
+         == adj_pos)
     {
       /* this block is used to avoid duplicate automation points */
       /* TODO this shouldn't happen and needs investigation */
@@ -448,10 +528,13 @@ RecordingManager::create_automation_point (
   else
     {
       auto * ap = ArrangerObjectFactory::get_instance ()->addAutomationPoint (
-        &region, adj_pos.ticks_, normalized_val);
-      ap->curve_opts_.curviness_ = 1.0;
-      ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
-      region.last_recorded_ap_ = ap;
+        &region,
+        region.get_tempo_map ().samples_to_tick (static_cast<double> (adj_pos)),
+        normalized_val);
+      ap->curveOpts ()->setCurviness (1.0);
+      ap->curveOpts ()->setAlgorithm (
+        std::to_underlying (dsp::CurveOptions::Algorithm::Pulse));
+      last_recorded_aps_per_region_.insert_or_assign (region.get_uuid (), ap);
       return ap;
     }
 
@@ -469,10 +552,8 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
         {
 
           /* position to pause at */
-          Position pause_pos;
-          pause_pos.from_frames (
-            (signed_frame_t) ev.g_start_frame_w_offset_,
-            AUDIO_ENGINE->ticks_per_frame_);
+          [[maybe_unused]] auto pause_pos =
+            (signed_frame_t) ev.g_start_frame_w_offset_;
 
 #if 0
   z_debug ("track {} pause start frames {}, nframes {}", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
@@ -485,8 +566,11 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
                   tr->recording_paused_ = true;
 
                   /* get the recording region */
-                  auto region_var = tr->get_recording_region ().value ();
+                  [[maybe_unused]] auto region_var =
+                    tr->get_recording_region ().value ();
 
+// TODO
+#if 0
                   std::visit (
                     [&] (auto &&r) {
                       using RegionT = base_type<decltype (r)>;
@@ -501,7 +585,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
                               {
                                 /* add midi note offs at the end */
                                 MidiNote * mn;
-                                while ((mn = r->pop_unended_note (-1)))
+                                while ((mn = pop_unended_note (r, -1)))
                                   {
                                     mn->end_position_setter_validated (
                                       pause_pos, AUDIO_ENGINE->ticks_per_frame_);
@@ -510,6 +594,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
                           }
                     },
                     region_var);
+#endif
                 }
               else
                 {
@@ -534,6 +619,9 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
 bool
 RecordingManager::handle_resume_event (const RecordingEvent &ev)
 {
+  return true;
+  // TODO
+#if 0
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   return std::visit (
     [&] (auto &&tr) {
@@ -577,11 +665,9 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                     {
                       std::visit (
                         [&] (auto &&r) {
-                          if constexpr (
-                            std::derived_from<
-                              base_type<decltype (r)>, MuteableObject>)
+                          if constexpr (RegionObject<base_type<decltype (r)>>)
                             {
-                              r->set_muted (true, true);
+                              r->regionMixin ()->mute ()->setMuted (true);
                             }
                         },
                         *recording_region_optvar);
@@ -770,10 +856,14 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
       return true;
     },
     tr_var);
+#endif
 }
+
 void
 RecordingManager::handle_audio_event (const RecordingEvent &ev)
 {
+// TODO
+#if 0
   bool handled_resume = handle_resume_event (ev);
   (void) handled_resume;
   /*z_debug ("handled resume {}", handled_resume);*/
@@ -829,11 +919,14 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
           ex.handle ("Failed to write audio clip to pool");
         }
     }
+#endif
 }
 
 void
 RecordingManager::handle_midi_event (const RecordingEvent &ev)
 {
+// TODO
+#if 0
   handle_resume_event (ev);
 
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
@@ -946,15 +1039,15 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                     {
                       if (utils::midi::midi_is_note_on (buf))
                         {
-                          region->start_unended_note (
-                            &local_pos, &local_end_pos,
+                          start_unended_note (
+                            region, &local_pos, &local_end_pos,
                             utils::midi::midi_get_note_number (buf),
                             utils::midi::midi_get_velocity (buf), true);
                         }
                       else if (utils::midi::midi_is_note_off (buf))
                         {
-                          mn = region->pop_unended_note (
-                            utils::midi::midi_get_note_number (buf));
+                          mn = pop_unended_note (
+                            region, utils::midi::midi_get_note_number (buf));
                           if (mn)
                             {
                               mn->end_position_setter_validated (
@@ -976,11 +1069,14 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
         }
     },
     tr_var);
+#endif
 }
 
 void
 RecordingManager::handle_automation_event (const RecordingEvent &ev)
 {
+// TODO
+#if 0
   handle_resume_event (ev);
 
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
@@ -1088,6 +1184,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
         }
     },
     tr_var);
+#endif
 }
 
 void
@@ -1095,6 +1192,8 @@ RecordingManager::handle_start_recording (
   const RecordingEvent &ev,
   bool                  is_automation)
 {
+// TODO
+#if 0
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
@@ -1116,14 +1215,14 @@ RecordingManager::handle_start_recording (
       if (num_active_recordings_ == 0)
         {
 // TODO
-#if 0
+#  if 0
           auto objs = TRACKLIST->get_timeline_objects_in_range ();
           auto obj_span = ArrangerObjectSpan{
             objs
           } | std::views::filter (ArrangerObjectSpan::selected_projection);
           objects_before_start_ =
             ArrangerObjectSpan{ obj_span }.create_snapshots (*ArrangerObjectFactory::get_instance(), this);
-#endif
+#  endif
         }
 
       /* this could be called multiple times, ignore if already processed */
@@ -1239,6 +1338,7 @@ RecordingManager::handle_start_recording (
       ++num_active_recordings_;
     },
     tr_var);
+#endif
 }
 
 void

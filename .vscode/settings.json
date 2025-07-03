@@ -5,6 +5,7 @@
         "-DCMAKE_PREFIX_PATH=/home/alex/opt/Qt6.9-Release",
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
+        // "-DCMAKE_CXX_FLAGS=-ftime-trace",
         "-DCMAKE_LINKER_TYPE=MOLD",
         "-DCPM_DOWNLOAD_ALL=ON",
         "-DCPM_SOURCE_CACHE=${workspaceFolder}/.cache/CPM",

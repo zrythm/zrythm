@@ -27,9 +27,8 @@ class ClipEditor final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (
-    QVariant region READ getRegion WRITE setRegion NOTIFY regionChanged)
-  Q_PROPERTY (QVariant track READ getTrack NOTIFY trackChanged)
+  Q_PROPERTY (QVariant region READ region NOTIFY regionChanged)
+  Q_PROPERTY (QVariant track READ track NOTIFY regionChanged)
   Q_PROPERTY (PianoRoll * pianoRoll READ getPianoRoll CONSTANT FINAL)
   Q_PROPERTY (ChordEditor * chordEditor READ getChordEditor CONSTANT FINAL)
   Q_PROPERTY (
@@ -39,11 +38,11 @@ class ClipEditor final : public QObject
 
   using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
   using TrackResolver = structure::tracks::TrackResolver;
-  using Region = structure::arrangement::Region;
-  using RegionPtrVariant = structure::arrangement::RegionPtrVariant;
   using TrackPtrVariant = structure::tracks::TrackPtrVariant;
   using TrackUuid = structure::tracks::TrackUuid;
   using ArrangerObject = structure::arrangement::ArrangerObject;
+  using ArrangerObjectPtrVariant =
+    structure::arrangement::ArrangerObjectPtrVariant;
 
 public:
   ClipEditor (
@@ -55,26 +54,38 @@ public:
   // QML Interface
   // ============================================================================
 
-  PianoRoll *        getPianoRoll () const { return piano_roll_; }
-  ChordEditor *      getChordEditor () const { return chord_editor_; }
-  AudioClipEditor *  getAudioClipEditor () const { return audio_clip_editor_; }
-  AutomationEditor * getAutomationEditor () const { return automation_editor_; }
+  PianoRoll *       getPianoRoll () const { return piano_roll_.get (); }
+  ChordEditor *     getChordEditor () const { return chord_editor_.get (); }
+  AudioClipEditor * getAudioClipEditor () const
+  {
+    return audio_clip_editor_.get ();
+  }
+  AutomationEditor * getAutomationEditor () const
+  {
+    return automation_editor_.get ();
+  }
 
-  QVariant getRegion () const
+  QVariant region () const
   {
     if (has_region ())
       {
-        return QVariant::fromStdVariant (get_region ().value ());
+        return QVariant::fromStdVariant (get_region_and_track ()->first);
       }
 
     return {};
   }
-  void             setRegion (QVariant region);
+  QVariant track () const
+  {
+    if (has_region ())
+      {
+        return QVariant::fromStdVariant (get_region_and_track ()->second);
+      }
+
+    return {};
+  }
+  Q_INVOKABLE void setRegion (QVariant region, QVariant track);
   Q_INVOKABLE void unsetRegion ();
   Q_SIGNAL void    regionChanged (QVariant region);
-
-  QVariant      getTrack () const;
-  Q_SIGNAL void trackChanged (QVariant track);
 
   // ============================================================================
 
@@ -91,34 +102,20 @@ public:
   /**
    * Sets the track and refreshes the piano roll widgets.
    */
-  void set_region (Region::Uuid region_id)
+  void set_region (ArrangerObject::Uuid region_id, TrackUuid track_id)
   {
-    if (region_id_.has_value () && region_id_.value () == region_id)
+    if (region_id_.has_value () && region_id_.value ().first == region_id)
       return;
 
-    region_id_ = region_id;
-    Q_EMIT regionChanged (QVariant::fromStdVariant (get_region ().value ()));
+    region_id_ = { region_id, track_id };
+    Q_EMIT regionChanged (
+      QVariant::fromStdVariant (get_region_and_track ().value ().first));
   };
 
   bool has_region () const { return region_id_.has_value (); }
 
-  std::optional<RegionPtrVariant> get_region () const;
-  std::optional<Region::Uuid>     get_region_id () const { return region_id_; }
-
-  // ArrangerObjectSpan get_arranger_selections ();
-
-  std::optional<TrackPtrVariant> get_track () const;
-
-  std::optional<TrackUuid> get_track_id () const;
-  /**
-   * @brief Unsets the region if it belongs to the given track.
-   */
-  void unset_region_if_belongs_to_track (const TrackUuid &track_id);
-
-  /**
-   * To be called when recalculating the graph.
-   */
-  void set_caches ();
+  std::optional<std::pair<ArrangerObjectPtrVariant, TrackPtrVariant>>
+  get_region_and_track () const;
 
   friend void init_from (
     ClipEditor            &obj,
@@ -127,10 +124,10 @@ public:
 
   {
     obj.region_id_ = other.region_id_;
-    obj.audio_clip_editor_ = other.audio_clip_editor_;
-    obj.automation_editor_ = other.automation_editor_;
-    obj.chord_editor_ = other.chord_editor_;
-    obj.track_ = other.track_;
+    init_from (*obj.audio_clip_editor_, *other.audio_clip_editor_, clone_type);
+    init_from (*obj.automation_editor_, *other.automation_editor_, clone_type);
+    init_from (*obj.chord_editor_, *other.chord_editor_, clone_type);
+    init_from (*obj.piano_roll_, *other.piano_roll_, clone_type);
   }
 
 private:
@@ -150,10 +147,6 @@ private:
   friend void from_json (const nlohmann::json &j, ClipEditor &editor)
   {
     j.at (kRegionIdKey).get_to (editor.region_id_);
-    editor.piano_roll_ = new PianoRoll (&editor);
-    editor.automation_editor_ = new AutomationEditor (&editor);
-    editor.chord_editor_ = new ChordEditor (&editor);
-    editor.audio_clip_editor_ = new AudioClipEditor (&editor);
     j.at (kPianoRollKey).get_to (*editor.piano_roll_);
     j.at (kAutomationEditorKey).get_to (*editor.automation_editor_);
     j.at (kChordEditorKey).get_to (*editor.chord_editor_);
@@ -165,17 +158,12 @@ public:
   TrackResolver           track_resolver_;
 
   /** Region currently attached to the clip editor. */
-  std::optional<ArrangerObject::Uuid> region_id_;
+  std::optional<std::pair<ArrangerObject::Uuid, TrackUuid>> region_id_;
 
-  PianoRoll *        piano_roll_{};
-  AudioClipEditor *  audio_clip_editor_{};
-  AutomationEditor * automation_editor_{};
-  ChordEditor *      chord_editor_{};
-
-  /* --- caches --- */
-  // std::optional<RegionPtrVariant> region_;
-
-  std::optional<TrackPtrVariant> track_;
+  utils::QObjectUniquePtr<PianoRoll>        piano_roll_;
+  utils::QObjectUniquePtr<AudioClipEditor>  audio_clip_editor_;
+  utils::QObjectUniquePtr<AutomationEditor> automation_editor_;
+  utils::QObjectUniquePtr<ChordEditor>      chord_editor_;
 };
 
 /**

@@ -152,12 +152,6 @@ UndoManager::perform (QObject * action_qobject)
     action_var);
 }
 
-bool
-UndoManager::contains_clip (const AudioClip &clip) const
-{
-  return undo_stack_->contains_clip (clip) || redo_stack_->contains_clip (clip);
-}
-
 void
 UndoManager::get_plugins (
   std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &plugins) const

@@ -3,8 +3,6 @@
 
 target_sources(zrythm_gui_lib
   PRIVATE
-    clip.h
-    clip.cpp
     control_room.h
     control_room.cpp
     exporter.h
@@ -15,8 +13,6 @@ target_sources(zrythm_gui_lib
     metronome.cpp
     midi_mapping.h
     midi_mapping.cpp
-    pool.h
-    pool.cpp
     project_graph_builder.h
     project_graph_builder.cpp
     recording_event.h

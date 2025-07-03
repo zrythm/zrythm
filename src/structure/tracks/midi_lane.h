@@ -21,7 +21,10 @@ public:
   using RegionT = MidiRegion;
 
 public:
-  MidiLane (LanedTrackImpl<MidiLane> * track);
+  MidiLane (
+    structure::arrangement::ArrangerObjectRegistry &registry,
+    dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
+    LanedTrackImpl<MidiLane> *                      track);
 
   friend void init_from (
     MidiLane              &obj,

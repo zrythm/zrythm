@@ -25,7 +25,7 @@ namespace zrythm::engine::session
 /**
  * A buffer of n bars after the end of the last object.
  */
-constexpr int BARS_END_BUFFER = 4;
+// constexpr int BARS_END_BUFFER = 4;
 
 /** Millisec to allow moving further backward when very close to the calculated
  * backward position. */
@@ -299,6 +299,8 @@ void
 Transport::prepare_audio_regions_for_stretch (
   std::optional<structure::arrangement::ArrangerObjectSpan> sel_var)
 {
+// TODO
+#if 0
   if (sel_var)
     {
       for (
@@ -326,6 +328,7 @@ Transport::prepare_audio_regions_for_stretch (
             }
         }
     }
+#endif
 }
 
 void
@@ -335,6 +338,8 @@ Transport::stretch_regions (
   double                                                    time_ratio,
   bool                                                      force)
 {
+// TODO
+#if 0
   if (sel_var)
     {
       const auto &sel = *sel_var;
@@ -389,6 +394,7 @@ Transport::stretch_regions (
             }
         }
     }
+#endif
 }
 
 void
@@ -589,7 +595,8 @@ Transport::move_playhead (
                 {
                   const auto playhead_pos =
                     get_playhead_position_in_gui_thread ();
-                  if (!region->is_hit (playhead_pos.frames_, true))
+                  if (!region->regionMixin ()->bounds ()->is_hit (
+                        playhead_pos.frames_, true))
                     continue;
 
                   if constexpr (
@@ -599,11 +606,12 @@ Transport::move_playhead (
                     {
                       for (auto * midi_note : region->get_children_view ())
                         {
-                          if (midi_note->is_hit (playhead_pos.frames_))
+                          if (
+                            midi_note->bounds ()->is_hit (playhead_pos.frames_))
                             {
                               t->processor_->get_piano_roll_port ()
                                 .midi_events_.queued_events_
-                                .add_note_off (1, midi_note->pitch_, 0);
+                                .add_note_off (1, midi_note->pitch (), 0);
                             }
                         }
                     }
@@ -670,10 +678,10 @@ Transport::foreach_arranger_handle_playhead_auto_scroll (
 void
 Transport::move_to_marker_or_pos_and_fire_events (
   const structure::arrangement::Marker * marker,
-  const Position *                       pos)
+  std::optional<double>                  pos_ticks)
 {
   move_playhead (
-    (marker != nullptr) ? marker->get_position ().ticks_ : pos->ticks_, true,
+    (marker != nullptr) ? marker->position ()->ticks () : *pos_ticks, true,
     true, true);
 
   if (ZRYTHM_HAVE_UI)
@@ -690,7 +698,7 @@ Transport::goto_start_marker ()
 {
   auto start_marker = P_MARKER_TRACK->get_start_marker ();
   z_return_if_fail (start_marker);
-  move_to_marker_or_pos_and_fire_events (start_marker, nullptr);
+  move_to_marker_or_pos_and_fire_events (start_marker, std::nullopt);
 }
 
 /**
@@ -701,7 +709,7 @@ Transport::goto_end_marker ()
 {
   auto end_marker = P_MARKER_TRACK->get_end_marker ();
   z_return_if_fail (end_marker);
-  move_to_marker_or_pos_and_fire_events (end_marker, nullptr);
+  move_to_marker_or_pos_and_fire_events (end_marker, std::nullopt);
 }
 
 /**
@@ -711,34 +719,34 @@ void
 Transport::goto_prev_marker ()
 {
   /* gather all markers */
-  std::vector<Position> markers;
+  std::vector<double> marker_ticks;
   for (auto * marker : P_MARKER_TRACK->get_children_view ())
     {
-      markers.push_back (marker->get_position ());
+      marker_ticks.push_back (marker->position ()->ticks ());
     }
-  markers.emplace_back (cue_pos_->get_position ());
-  markers.emplace_back (loop_start_pos_->get_position ());
-  markers.emplace_back (loop_end_pos_->get_position ());
-  markers.emplace_back ();
-  std::ranges::sort (markers);
+  marker_ticks.emplace_back (cue_pos_->get_position ().ticks_);
+  marker_ticks.emplace_back (loop_start_pos_->get_position ().ticks_);
+  marker_ticks.emplace_back (loop_end_pos_->get_position ().ticks_);
+  marker_ticks.emplace_back ();
+  std::ranges::sort (marker_ticks);
 
-  for (int i = (int) markers.size () - 1; i >= 0; i--)
+  for (int i = (int) marker_ticks.size () - 1; i >= 0; i--)
     {
-      if (markers[i].ticks_ >= playhead_.position_ticks ())
+      if (marker_ticks[i] >= playhead_.position_ticks ())
         continue;
 
       if (
         isRolling () && i > 0
-        && (static_cast<signed_ms_t> (playhead_.get_tempo_map ().tick_to_seconds (
-              playhead_.position_ticks ()))
-              / 1000
-            - markers[i].to_ms (AUDIO_ENGINE->get_sample_rate ()))
-             < REPEATED_BACKWARD_MS)
+        && (playhead_.get_tempo_map ().tick_to_seconds (
+              playhead_.position_ticks ())
+              / 1000.0
+            - PROJECT->get_tempo_map ().tick_to_seconds (marker_ticks[i]) / 1000.0)
+             < static_cast<double> (REPEATED_BACKWARD_MS))
         {
           continue;
         }
 
-      move_to_marker_or_pos_and_fire_events (nullptr, &markers[i]);
+      move_to_marker_or_pos_and_fire_events (nullptr, marker_ticks[i]);
       break;
     }
 }
@@ -750,22 +758,22 @@ void
 Transport::goto_next_marker ()
 {
   /* gather all markers */
-  std::vector<Position> markers;
+  std::vector<double> marker_ticks;
   for (auto * marker : P_MARKER_TRACK->get_children_view ())
     {
-      markers.push_back (marker->get_position ());
+      marker_ticks.push_back (marker->position ()->ticks ());
     }
-  markers.push_back (cue_pos_->get_position ());
-  markers.push_back (loop_start_pos_->get_position ());
-  markers.push_back (loop_end_pos_->get_position ());
-  markers.emplace_back ();
-  std::ranges::sort (markers);
+  marker_ticks.push_back (cue_pos_->get_position ().ticks_);
+  marker_ticks.push_back (loop_start_pos_->get_position ().ticks_);
+  marker_ticks.push_back (loop_end_pos_->get_position ().ticks_);
+  marker_ticks.emplace_back ();
+  std::ranges::sort (marker_ticks);
 
-  for (auto &marker : markers)
+  for (auto &marker : marker_ticks)
     {
-      if (marker.ticks_ > playhead_.position_ticks ())
+      if (marker > playhead_.position_ticks ())
         {
-          move_to_marker_or_pos_and_fire_events (nullptr, &marker);
+          move_to_marker_or_pos_and_fire_events (nullptr, marker);
           break;
         }
     }
@@ -864,8 +872,8 @@ Transport::set_range (
 
   if (snap)
     {
-      *pos_to_set =
-        SNAP_GRID_TIMELINE->snap (*pos_to_set, start_pos, nullptr, nullptr);
+      *pos_to_set = SNAP_GRID_TIMELINE->snap (
+        *pos_to_set, start_pos, nullptr, std::nullopt);
     }
 }
 
@@ -890,8 +898,8 @@ Transport::set_loop_range (
 
   if (snap)
     {
-      *static_cast<Position *> (pos_to_set) =
-        SNAP_GRID_TIMELINE->snap (*pos_to_set, start_pos, nullptr, nullptr);
+      *static_cast<Position *> (pos_to_set) = SNAP_GRID_TIMELINE->snap (
+        *pos_to_set, start_pos, nullptr, std::nullopt);
     }
 }
 
@@ -906,6 +914,8 @@ void
 Transport::recalculate_total_bars (
   std::optional<structure::arrangement::ArrangerObjectSpan> sel_var)
 {
+// TODO
+#if 0
   if (!ZRYTHM_HAVE_UI)
     return;
 
@@ -919,10 +929,12 @@ Transport::recalculate_total_bars (
             [&] (auto &&obj) {
               using ObjT = base_type<decltype (obj)>;
               Position pos;
-              if constexpr (
-                std::derived_from<ObjT, structure::arrangement::BoundedObject>)
+              if constexpr (structure::arrangement::BoundedObject<ObjT>)
                 {
-                  pos = obj->get_end_position ();
+                  pos =
+                    structure::arrangement::ArrangerObjectSpan::bounds_projection (
+                      obj)
+                      ->get_end_position ();
                 }
               else
                 {
@@ -949,6 +961,7 @@ Transport::recalculate_total_bars (
     }
 
   update_total_bars (total_bars, true);
+#endif
 }
 
 void

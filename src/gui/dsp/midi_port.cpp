@@ -4,11 +4,9 @@
 #include "zrythm-config.h"
 
 #include "engine/device_io/engine.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/midi_port.h"
 #include "utils/midi.h"
-#include "utils/rt_thread_id.h"
 
 MidiPort::MidiPort () = default;
 
@@ -65,6 +63,8 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
 
   /* if piano roll keys, add the notes to the piano roll "current notes" (to
    * show pressed keys in the UI) */
+// TODO
+#if 0
   if (
     owner_type == PortIdentifier::OwnerType::TrackProcessor && is_output ()
     && events.has_any () && CLIP_EDITOR->has_region ()
@@ -98,6 +98,7 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
           // EVENTS_PUSH (EventType::ET_PIANO_ROLL_KEY_ON_OFF, nullptr);
         }
     }
+#endif
 
   if (is_input () && owner_->should_sum_data_from_backend ())
     {

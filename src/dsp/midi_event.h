@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
@@ -12,7 +10,11 @@
 #include "utils/types.h"
 
 #include <crill/spin_mutex.h>
-#include <midilib/src/midifile.h>
+
+namespace juce
+{
+class MidiMessageSequence;
+}
 
 namespace zrythm::dsp
 {
@@ -372,7 +374,18 @@ public:
    */
   void panic ();
 
-  void write_to_midi_file (MIDI_FILE * mf, int midi_track) const;
+  /**
+   * @brief Writes the events to a MIDI sequence.
+   *
+   * This assumes that the event timestamps are in ticks.
+   *
+   * @param sequence
+   * @param update_matched_pairs If true, ensures there are note off events for
+   * every note on event.
+   */
+  void write_to_midi_sequence (
+    juce::MidiMessageSequence &sequence,
+    bool                       update_matched_pairs) const;
 
   /**
    * Clears duplicates.

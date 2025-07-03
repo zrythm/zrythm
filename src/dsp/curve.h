@@ -1,15 +1,11 @@
 // SPDX-FileCopyrightText: © 2020, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_CURVE_H
-#define ZRYTHM_DSP_CURVE_H
-
-#include <string>
-#include <utility>
-#include <vector>
+#pragma once
 
 #include "utils/format.h"
-#include "utils/serialization.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {
@@ -101,17 +97,6 @@ public:
    */
   [[gnu::hot]] double get_normalized_y (double x, bool start_higher) const;
 
-  /**
-   * Gets the normalized Y for a normalized X, for a fade.
-   *
-   * @param x Normalized x.
-   * @param fade_in 1 for in, 0 for out.
-   */
-  double get_normalized_y_for_fade (double x, bool fade_in) const
-  {
-    return get_normalized_y (x, !fade_in);
-  }
-
   friend bool operator== (const CurveOptions &a, const CurveOptions &b);
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE (CurveOptions, algo_, curviness_)
@@ -127,6 +112,64 @@ public:
   BOOST_DESCRIBE_CLASS (CurveOptions, (), (curviness_, algo_), (), ())
 };
 
+/**
+ * @brief QML adapter for CurveOptions.
+ */
+class CurveOptionsQmlAdapter : public QObject
+{
+  Q_OBJECT
+  Q_PROPERTY (
+    double curviness READ curviness WRITE setCurviness NOTIFY curvinessChanged)
+  Q_PROPERTY (
+    int algorithm READ algorithm WRITE setAlgorithm NOTIFY algorithmChanged)
+  QML_ELEMENT
+
+public:
+  CurveOptionsQmlAdapter (CurveOptions &options, QObject * parent = nullptr)
+      : QObject (parent), options_ (options)
+  {
+  }
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  double curviness () const { return options_.curviness_; }
+  void   setCurviness (double curviness)
+  {
+    if (qFuzzyCompare (options_.curviness_, curviness))
+      return;
+
+    curviness = std::clamp (curviness, -1.0, 1.0);
+    options_.curviness_ = curviness;
+    Q_EMIT curvinessChanged (curviness);
+  }
+  Q_SIGNAL void curvinessChanged (double curviness);
+
+  int  algorithm () const { return ENUM_VALUE_TO_INT (options_.algo_); }
+  void setAlgorithm (int algorithm)
+  {
+    if (ENUM_VALUE_TO_INT (options_.algo_) == algorithm)
+      return;
+
+    algorithm = std::clamp (
+      algorithm, 0, static_cast<int> (ENUM_COUNT (CurveOptions::Algorithm) - 1));
+    options_.algo_ = ENUM_INT_TO_VALUE (CurveOptions::Algorithm, algorithm);
+    Q_EMIT algorithmChanged (algorithm);
+  }
+  Q_SIGNAL void algorithmChanged (int algorithm);
+
+  Q_INVOKABLE double normalizedY (double x, bool startHigher) const
+  {
+    return options_.get_normalized_y (x, startHigher);
+  }
+
+  // ========================================================================
+
+private:
+  CurveOptions &options_;
+};
+
 } // namespace zrythm::dsp
 
 DEFINE_ENUM_FORMATTER (
@@ -137,5 +180,3 @@ DEFINE_ENUM_FORMATTER (
   "Vital",
   QT_TR_NOOP_UTF8 ("Pulse"),
   QT_TR_NOOP_UTF8 ("Logarithmic"));
-
-#endif

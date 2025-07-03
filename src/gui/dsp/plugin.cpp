@@ -36,8 +36,8 @@
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
 
-using namespace zrythm;
-using namespace zrythm::gui::old_dsp::plugins;
+namespace zrythm::gui::old_dsp::plugins
+{
 
 Plugin::Plugin (PortRegistry &port_registry, const PluginConfiguration &setting)
     : port_registry_ (port_registry), setting_ (utils::clone_unique (setting))
@@ -1515,6 +1515,31 @@ Plugin::get_port_by_symbol (const utils::Utf8String &sym)
   return std::nullopt;
 }
 
+void
+from_json (const nlohmann::json &j, Plugin &p)
+{
+  from_json (j, static_cast<Plugin::UuidIdentifiableObject &> (p));
+  j.at (Plugin::kTrackIdKey).get_to (p.track_id_);
+  j.at (Plugin::kSettingKey).get_to (p.setting_);
+  for (const auto &port_json : j.at (Plugin::kInPortsKey))
+    {
+      PortUuidReference port_id_ref{ *p.port_registry_ };
+      from_json (port_json, port_id_ref);
+      p.in_ports_.push_back (std::move (port_id_ref));
+    }
+  for (const auto &port_json : j.at (Plugin::kOutPortsKey))
+    {
+      PortUuidReference port_id_ref{ *p.port_registry_ };
+      from_json (port_json, port_id_ref);
+      p.out_ports_.push_back (std::move (port_id_ref));
+    }
+  j.at (Plugin::kBanksKey).get_to (p.banks_);
+  j.at (Plugin::kSelectedBankKey).get_to (p.selected_bank_);
+  j.at (Plugin::kSelectedPresetKey).get_to (p.selected_preset_);
+  j.at (Plugin::kVisibleKey).get_to (p.visible_);
+  j.at (Plugin::kStateDirectoryKey).get_to (p.state_dir_);
+}
+
 struct PluginRegistryBuilder
 {
   template <typename T> std::unique_ptr<T> build () const
@@ -1522,6 +1547,8 @@ struct PluginRegistryBuilder
     return std::make_unique<T> ();
   }
 };
+
+} // namespace zrythm::gui::old_dsp::plugins
 
 void
 from_json (const nlohmann::json &j, PluginRegistry &registry)

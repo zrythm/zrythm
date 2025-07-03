@@ -129,7 +129,8 @@ private:
   }
   friend void from_json (const nlohmann::json &j, RecordableTrack &track)
   {
-    j.at (kRecordingIdKey).get_to (track.recording_id_);
+    track.recording_id_ = { track.port_registry_ };
+    j.at (kRecordingIdKey).get_to (*track.recording_id_);
     j.at (kRecordSetAutomaticallyKey).get_to (track.record_set_automatically_);
   }
 
@@ -151,7 +152,7 @@ public:
    * This must only be set by the RecordingManager when processing an event
    * and should not be touched by anything else.
    */
-  std::optional<Region::Uuid> recording_region_;
+  std::optional<arrangement::ArrangerObject::Uuid> recording_region_;
 
   /**
    * This is a flag to let the recording manager know that a START signal was

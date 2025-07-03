@@ -18,11 +18,16 @@
 namespace zrythm::structure::tracks
 {
 AutomationTrack::AutomationTrack (
-  PortRegistry            &port_registry,
-  ArrangerObjectRegistry  &obj_registry,
-  TrackGetter              track_getter,
-  const ControlPort::Uuid &port_id)
-    : port_registry_ (port_registry), object_registry_ (obj_registry),
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  PortRegistry                 &port_registry,
+  ArrangerObjectRegistry       &obj_registry,
+  TrackGetter                   track_getter,
+  const ControlPort::Uuid      &port_id)
+    : arrangement::ArrangerObjectOwner<arrangement::AutomationRegion> (
+        obj_registry,
+        file_audio_source_registry,
+        *this),
+      port_registry_ (port_registry), object_registry_ (obj_registry),
       track_getter_ (std::move (track_getter)), port_id_ (port_id)
 {
 #if 0
@@ -114,20 +119,48 @@ AutomationTrack::get_automation_tracklist () const
     track_getter_ ());
 }
 
+structure::arrangement::AutomationPoint *
+AutomationTrack::get_ap_around (
+  const double position_ticks,
+  double       delta_ticks,
+  bool         before_only,
+  bool         use_snapshots)
+{
+  const auto &tempo_map = PROJECT->get_tempo_map ();
+  auto        pos_frames = tempo_map.tick_to_samples_rounded (position_ticks);
+  AutomationPoint * ap = get_ap_before_pos (pos_frames, true, use_snapshots);
+  if (
+    (ap != nullptr) && position_ticks - ap->position ()->ticks () <= delta_ticks)
+    {
+      return ap;
+    }
+  else if (!before_only)
+    {
+      pos_frames = tempo_map.tick_to_samples_rounded (pos_frames + delta_ticks);
+      ap = get_ap_before_pos (pos_frames, true, use_snapshots);
+      if (ap != nullptr)
+        {
+          double diff = ap->position ()->ticks () - position_ticks;
+          if (diff >= 0.0)
+            return ap;
+        }
+    }
+
+  return nullptr;
+}
+
 auto
 AutomationTrack::get_region_before_pos (
-  const Position &pos,
-  bool            ends_after,
-  bool            use_snapshots) const -> AutomationRegion *
+  signed_frame_t pos,
+  bool           ends_after,
+  bool           use_snapshots) const -> AutomationRegion *
 {
   auto process_regions = [=] (const auto &regions) {
     if (ends_after)
       {
         for (const auto &region : std::views::reverse (regions))
           {
-            if (
-              region->get_position () <= pos
-              && region->get_end_position () >= pos)
+            if (region->regionMixin ()->bounds ()->is_hit (pos))
               return region;
           }
       }
@@ -139,9 +172,10 @@ AutomationTrack::get_region_before_pos (
         for (const auto &region : std::views::reverse (regions))
           {
             signed_frame_t distance_from_r_end =
-              region->end_pos_->frames_ - pos.frames_;
+              region->regionMixin ()->bounds ()->get_end_position_samples (true)
+              - pos;
             if (
-              region->get_position () <= pos
+              region->position ()->samples () <= pos
               && distance_from_r_end > latest_distance)
               {
                 latest_distance = distance_from_r_end;
@@ -153,34 +187,39 @@ AutomationTrack::get_region_before_pos (
     return static_cast<AutomationRegion *> (nullptr);
   };
 
+  // TODO
+  return process_regions (get_children_view ());
+#if 0
   return use_snapshots
            ? process_regions (get_children_snapshots_view ())
            : process_regions (get_children_view ());
+#endif
 }
 
 auto
 AutomationTrack::get_ap_before_pos (
-  const Position &pos,
-  bool            ends_after,
-  bool            use_snapshots) const -> AutomationPoint *
+  signed_frame_t pos,
+  bool           ends_after,
+  bool           use_snapshots) const -> AutomationPoint *
 {
   auto * r = get_region_before_pos (pos, ends_after, use_snapshots);
 
-  if (!r || r->get_muted (true))
+  if (!r || r->regionMixin ()->mute ()->muted ())
     {
       return nullptr;
     }
 
+  const auto region_end_frames =
+    r->regionMixin ()->bounds ()->get_end_position_samples (true);
+
   /* if region ends before pos, assume pos is the region's end pos */
-  signed_frame_t local_pos = r->timeline_frames_to_local (
-    !ends_after && (r->end_pos_->frames_ < pos.frames_)
-      ? r->end_pos_->frames_ - 1
-      : pos.frames_,
+  signed_frame_t local_pos = timeline_frames_to_local (
+    *r, !ends_after && (region_end_frames < pos) ? region_end_frames - 1 : pos,
     true);
 
   for (auto * ap : std::ranges::reverse_view (r->get_children_view ()))
     {
-      if (ap->get_position ().frames_ <= local_pos)
+      if (ap->position ()->samples () <= local_pos)
         {
           return ap;
         }
@@ -334,13 +373,16 @@ AutomationTrack::set_index (int index)
 {
   index_ = index;
 
+#if 0
   for (auto * region : get_children_view ())
     {
       // region->id_.at_idx_ = index;
       region->update_identifier ();
     }
+#endif
 }
 
+#if 0
 AutomationTrack::Location
 AutomationTrack::get_location (const AutomationRegion &) const
 {
@@ -348,13 +390,13 @@ AutomationTrack::get_location (const AutomationRegion &) const
     .track_id_ = TrackSpan::uuid_projection (track_getter_ ()), .owner_ = port_id_
   };
 }
+#endif
 
 float
-AutomationTrack::get_val_at_pos (
-  const Position &pos,
-  bool            normalized,
-  bool            ends_after,
-  bool            use_snapshots) const
+AutomationTrack::get_normalized_val_at_pos (
+  signed_frame_t pos,
+  bool           ends_after,
+  bool           use_snapshots) const
 {
   auto ap = get_ap_before_pos (pos, ends_after, use_snapshots);
 
@@ -367,17 +409,18 @@ AutomationTrack::get_val_at_pos (
   /* no automation points yet, return negative (no change) */
   if (!ap)
     {
-      return port->get_control_value (normalized);
+      return port->get_control_value (true);
     }
 
   auto region = get_region_before_pos (pos, ends_after, use_snapshots);
   z_return_val_if_fail (region, 0.f);
 
   /* if region ends before pos, assume pos is the region's end pos */
-  signed_frame_t localp = region->timeline_frames_to_local (
-    !ends_after && (region->end_pos_->frames_ < pos.frames_)
-      ? region->end_pos_->frames_ - 1
-      : pos.frames_,
+  const auto region_end_position =
+    region->regionMixin ()->bounds ()->get_end_position_samples (true);
+  signed_frame_t localp = timeline_frames_to_local (
+    *region,
+    !ends_after && (region_end_position < pos) ? region_end_position - 1 : pos,
     true);
 
   auto next_ap = region->get_next_ap (*ap, false);
@@ -385,16 +428,15 @@ AutomationTrack::get_val_at_pos (
   /* return value at last ap */
   if (!next_ap)
     {
-      return normalized ? ap->normalized_val_ : ap->fvalue_;
+      return ap->value ();
     }
 
-  bool  prev_ap_lower = ap->normalized_val_ <= next_ap->normalized_val_;
-  float cur_next_diff =
-    std::abs (ap->normalized_val_ - next_ap->normalized_val_);
+  bool  prev_ap_lower = ap->value () <= next_ap->value ();
+  float cur_next_diff = std::abs (ap->value () - next_ap->value ());
 
   /* ratio of how far in we are in the curve */
-  signed_frame_t ap_frames = ap->get_position ().frames_;
-  signed_frame_t next_ap_frames = next_ap->get_position ().frames_;
+  signed_frame_t ap_frames = ap->position ()->samples ();
+  signed_frame_t next_ap_frames = next_ap->position ()->samples ();
   double         ratio = 1.0;
   signed_frame_t numerator = localp - ap_frames;
   signed_frame_t denominator = next_ap_frames - ap_frames;
@@ -414,42 +456,14 @@ AutomationTrack::get_val_at_pos (
   z_return_val_if_fail (ratio >= 0, 0.f);
 
   auto result =
-    static_cast<float> (ap->get_normalized_value_in_curve (region, ratio));
+    static_cast<float> (region->get_normalized_value_in_curve (*ap, ratio));
   result = result * cur_next_diff;
   if (prev_ap_lower)
-    result += ap->normalized_val_;
+    result += ap->value ();
   else
-    result += next_ap->normalized_val_;
+    result += next_ap->value ();
 
-  if (normalized)
-    {
-      return result;
-    }
-  else
-    {
-      return port->normalized_val_to_real (result);
-    }
-}
-
-bool
-AutomationTrack::verify () const
-{
-  for (const auto * region : get_children_view ())
-    {
-      for (const auto * ap : region->get_children_view ())
-        {
-          if (ZRYTHM_TESTING)
-            {
-              if (
-                !utils::math::assert_nonnann (ap->fvalue_)
-                || !utils::math::assert_nonnann (ap->normalized_val_))
-                {
-                  return false;
-                }
-            }
-        }
-    }
-  return true;
+  return result;
 }
 
 void
@@ -457,9 +471,9 @@ AutomationTrack::set_caches (CacheType types)
 {
   if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
     {
-      get_children_snapshots_vector ().clear ();
 // TODO
 #if 0
+      get_children_snapshots_vector ().clear ();
       for (const auto &r_var : region_list_->regions_)
         {
           region_snapshots_.emplace_back (

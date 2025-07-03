@@ -5,17 +5,36 @@
 
 #include "structure/arrangement/bounded_object.h"
 
-#define DEFINE_LOOPABLE_OBJECT_QML_PROPERTIES(ClassType) \
-  DEFINE_BOUNDED_OBJECT_QML_PROPERTIES (ClassType)
-
 namespace zrythm::structure::arrangement
 {
 
-class LoopableObject : virtual public BoundedObject
+class ArrangerObjectLoopRange : public QObject
 {
+  Q_OBJECT
+  Q_PROPERTY (
+    dsp::AtomicPositionQmlAdapter * clipStartPosition READ clipStartPosition
+      CONSTANT)
+  Q_PROPERTY (
+    dsp::AtomicPositionQmlAdapter * loopStartPosition READ loopStartPosition
+      CONSTANT)
+  Q_PROPERTY (
+    dsp::AtomicPositionQmlAdapter * loopEndPosition READ loopEndPosition CONSTANT)
+  Q_PROPERTY (
+    bool trackLength READ trackLength WRITE setTrackLength NOTIFY
+      trackLengthChanged)
+  QML_ELEMENT
+
 public:
-  LoopableObject () noexcept { };
-  ~LoopableObject () noexcept override = default;
+  ArrangerObjectLoopRange (
+    const ArrangerObjectBounds &bounds,
+    QObject *                   parent = nullptr);
+
+  bool is_looped () const
+  {
+    return loopStartPosition ()->samples () > 0
+           || clipStartPosition ()->samples () > 0
+           || length ()->samples () != loopEndPosition ()->samples ();
+  }
 
   /**
    * Returns the number of loops in the ArrangerObject, optionally including
@@ -23,76 +42,42 @@ public:
    */
   int get_num_loops (bool count_incomplete) const;
 
-  /**
-   * Getter.
-   */
-  const auto &get_clip_start_pos () const { return clip_start_pos_; }
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  /**
-   * Getter.
-   */
-  const auto &get_loop_start_pos () const { return loop_start_pos_; }
+  dsp::AtomicPositionQmlAdapter * clipStartPosition () const
+  {
+    return clip_start_pos_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * loopStartPosition () const
+  {
+    return loop_start_pos_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * loopEndPosition () const
+  {
+    return loop_end_pos_adapter_.get ();
+  }
+  bool trackLength () const { return track_length_; }
+  void setTrackLength (bool track)
+  {
+    if (track_length_ != track)
+      {
+        track_length_ = track;
+        Q_EMIT trackLengthChanged (track);
+      }
+  }
+  Q_SIGNAL void trackLengthChanged (bool track);
 
-  /**
-   * Getter.
-   */
-  const auto &get_loop_end_pos () const { return loop_end_pos_; }
-
-  /**
-   * The setter is for use in e.g. the digital meters whereas the set_pos func
-   * is used during arranger actions.
-   */
-  void clip_start_position_setter_validated (
-    const dsp::Position &pos,
-    dsp::TicksPerFrame   ticks_per_frame)
-  {
-    set_position (
-      pos, ArrangerObject::PositionType::ClipStart, true, ticks_per_frame);
-  }
-
-  /**
-   * The setter is for use in e.g. the digital meters whereas the set_pos func
-   * is used during arranger actions.
-   */
-  void loop_start_position_setter_validated (
-    const dsp::Position &pos,
-    dsp::TicksPerFrame   ticks_per_frame)
-  {
-    set_position (
-      pos, ArrangerObject::PositionType::LoopStart, true, ticks_per_frame);
-  }
-
-  /**
-   * The setter is for use in e.g. the digital meters whereas the set_pos func
-   * is used during arranger actions.
-   */
-  void loop_end_position_setter_validated (
-    const dsp::Position &pos,
-    dsp::TicksPerFrame   ticks_per_frame)
-  {
-    set_position (
-      pos, ArrangerObject::PositionType::LoopEnd, true, ticks_per_frame);
-  }
-
-  void set_loop_start_position_unvalidated (const dsp::Position &pos)
-  {
-    loop_start_pos_ = pos;
-  }
-  void set_loop_end_position_unvalidated (const dsp::Position &pos)
-  {
-    loop_end_pos_ = pos;
-  }
-  void set_clip_start_position_unvalidated (const dsp::Position &pos)
-  {
-    clip_start_pos_ = pos;
-  }
+  // ========================================================================
 
   /**
    * Returns the length of the loop in ticks.
    */
   double get_loop_length_in_ticks () const
   {
-    return loop_end_pos_.ticks_ - loop_start_pos_.ticks_;
+    return std::max (
+      0.0, loop_end_pos_.get_ticks () - loop_start_pos_.get_ticks ());
   }
 
   /**
@@ -100,77 +85,86 @@ public:
    */
   [[gnu::hot]] auto get_loop_length_in_frames () const
   {
-    return loop_end_pos_.frames_ - loop_start_pos_.frames_;
+    return std::max (
+      static_cast<int64_t> (0),
+      loop_end_pos_.get_samples () - loop_start_pos_.get_samples ());
   }
-
-  bool is_looped () const
-  {
-    return
-    loop_start_pos_.ticks_ > 0
-    || clip_start_pos_.ticks_ > 0
-    ||
-    (end_pos_->ticks_ - pos_->ticks_) >
-       (loop_end_pos_.ticks_ +
-         /* add some buffer because these are not accurate */
-          0.1)
-    ||
-    (end_pos_->ticks_ - pos_->ticks_) <
-       (loop_end_pos_.ticks_ -
-         /* add some buffer because these are not accurate */
-          0.1);
-  }
-
-protected:
-  friend void init_from (
-    LoopableObject        &obj,
-    const LoopableObject  &other,
-    utils::ObjectCloneType clone_type);
-
-  bool
-  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
 private:
-  static constexpr std::string_view kClipStartPosKey = "clipStartPos";
-  static constexpr std::string_view kLoopStartPosKey = "loopStartPos";
-  static constexpr std::string_view kLoopEndPosKey = "loopEndPos";
-  friend auto to_json (nlohmann::json &j, const LoopableObject &object)
+  auto length () const -> const dsp::AtomicPositionQmlAdapter *
+  {
+    return bounds_.length ();
+  }
+
+  static constexpr auto kClipStartPosKey = "clipStartPos"sv;
+  static constexpr auto kLoopStartPosKey = "loopStartPos"sv;
+  static constexpr auto kLoopEndPosKey = "loopEndPos"sv;
+  static constexpr auto kTrackLengthKey = "trackLength"sv;
+  friend auto to_json (nlohmann::json &j, const ArrangerObjectLoopRange &object)
   {
     j[kClipStartPosKey] = object.clip_start_pos_;
     j[kLoopStartPosKey] = object.loop_start_pos_;
     j[kLoopEndPosKey] = object.loop_end_pos_;
+    j[kTrackLengthKey] = object.track_length_;
   }
-  friend auto from_json (const nlohmann::json &j, LoopableObject &object)
+  friend auto
+  from_json (const nlohmann::json &j, ArrangerObjectLoopRange &object)
   {
-    j.at (kClipStartPosKey).get_to (*object.end_pos_);
+    j.at (kClipStartPosKey).get_to (object.clip_start_pos_);
     j.at (kLoopStartPosKey).get_to (object.loop_start_pos_);
     j.at (kLoopEndPosKey).get_to (object.loop_end_pos_);
+    j.at (kTrackLengthKey).get_to (object.track_length_);
+    Q_EMIT object.trackLengthChanged (object.track_length_);
   }
 
-public:
+  friend void init_from (
+    ArrangerObjectLoopRange       &obj,
+    const ArrangerObjectLoopRange &other,
+    utils::ObjectCloneType         clone_type)
+  {
+    obj.clip_start_pos_.set_ticks (other.clip_start_pos_.get_ticks ());
+    obj.loop_start_pos_.set_ticks (other.loop_start_pos_.get_ticks ());
+    obj.loop_end_pos_.set_ticks (other.loop_end_pos_.get_ticks ());
+  }
+
+  BOOST_DESCRIBE_CLASS (
+    ArrangerObjectLoopRange,
+    (),
+    (),
+    (),
+    (clip_start_pos_, loop_start_pos_, loop_end_pos_))
+
+private:
+  /**
+   * @brief Whether to track ArrangerObjectBounds::length().
+   *
+   * If true, loop end position will track (be set to) the object's length.
+   */
+  bool                                   track_length_{ true };
+  std::optional<QMetaObject::Connection> track_length_connection_;
+
+  const ArrangerObjectBounds &bounds_;
+
   /**
    * Start position of the clip loop, relative to the object's start.
    *
    * The first time the object plays it will start playing from the
    * this position and then loop to @ref loop_start_pos_.
    */
-  dsp::Position clip_start_pos_;
+  dsp::AtomicPosition clip_start_pos_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> clip_start_pos_adapter_;
 
   /** Loop start Position relative to the object's start. */
-  dsp::Position loop_start_pos_;
+  dsp::AtomicPosition loop_start_pos_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> loop_start_pos_adapter_;
 
   /**
    * End position of the clip loop, relative to the object's start.
    *
    * Once this is reached, the clip will go back to @ref loop_start_pos_.
    */
-  dsp::Position loop_end_pos_;
-
-  BOOST_DESCRIBE_CLASS (
-    LoopableObject,
-    (BoundedObject),
-    (clip_start_pos_, loop_start_pos_, loop_end_pos_),
-    (),
-    ())
+  dsp::AtomicPosition                                    loop_end_pos_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> loop_end_pos_adapter_;
 };
 
 } // namespace zrythm::structure::arrangement

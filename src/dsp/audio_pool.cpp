@@ -1,0 +1,275 @@
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "dsp/audio_pool.h"
+#include "utils/io.h"
+#include "utils/string.h"
+
+namespace zrythm::dsp
+{
+
+AudioPool::AudioPool (
+  dsp::FileAudioSourceRegistry &file_audio_source_registry,
+  ProjectPoolPathGetter         path_getter,
+  SampleRateGetter              sr_getter)
+    : sample_rate_getter_ (std::move (sr_getter)),
+      project_pool_path_getter_ (std::move (path_getter)),
+      clip_registry_ (file_audio_source_registry)
+{
+}
+
+void
+AudioPool::init_loaded ()
+{
+  for (auto * clip : get_clip_ptrs ())
+    {
+      clip->init_from_file (
+        get_clip_path (clip->get_uuid (), false), clip->get_samplerate (),
+        clip->get_bpm ());
+    }
+}
+
+void
+init_from (
+  AudioPool             &obj,
+  const AudioPool       &other,
+  utils::ObjectCloneType clone_type)
+{
+  // nothing needed
+}
+
+fs::path
+AudioPool::get_clip_path (const dsp::FileAudioSource::Uuid &id, bool is_backup)
+  const
+{
+  auto prj_pool_dir = project_pool_path_getter_ (is_backup);
+  if (!utils::io::path_exists (prj_pool_dir))
+    {
+      z_error ("{} does not exist", prj_pool_dir);
+      return {};
+    }
+  const auto basename =
+    utils::Utf8String::from_qstring (id.value_.toString (QUuid::WithoutBraces))
+    + u8".wav";
+  return prj_pool_dir / basename;
+}
+
+void
+AudioPool::
+  write_clip (const FileAudioSource::Uuid &clip_id, bool parts, bool backup)
+{
+  auto * clip = std::get<dsp::FileAudioSource *> (
+    clip_registry_.find_by_id_or_throw (clip_id));
+
+  z_debug (
+    "attempting to write clip {} ({}) to pool...", clip->get_name (),
+    clip->get_uuid ());
+
+  /* generate a copy of the given filename in the project dir */
+  auto path_in_main_project = get_clip_path (clip_id, false);
+  auto new_path = get_clip_path (clip_id, backup);
+  z_return_if_fail (!path_in_main_project.empty ());
+  z_return_if_fail (!new_path.empty ());
+
+  /* whether a new write is needed */
+  bool need_new_write = true;
+
+  /* skip if file with same hash already exists */
+  if (utils::io::path_exists (new_path) && !parts)
+    {
+      bool same_hash =
+        last_known_file_hashes_.contains (clip_id)
+        && last_known_file_hashes_[clip_id]
+             == utils::hash::get_file_hash (new_path);
+
+      if (same_hash)
+        {
+          z_debug ("skipping writing to existing clip {} in pool", new_path);
+          need_new_write = false;
+        }
+    }
+
+  /* if writing to backup and same file exists in main project dir, copy (first
+   * try reflink) */
+  if (need_new_write && last_known_file_hashes_.contains (clip_id) && backup)
+    {
+      bool exists_in_main_project = false;
+      if (utils::io::path_exists (path_in_main_project))
+        {
+          exists_in_main_project =
+            last_known_file_hashes_[clip_id]
+            == utils::hash::get_file_hash (path_in_main_project);
+        }
+
+      if (exists_in_main_project)
+        {
+          /* try reflink and fall back to normal copying */
+          z_debug (
+            "reflinking clip from main project ('{}' to '{}')",
+            path_in_main_project, new_path);
+
+          if (!utils::io::reflink_file (path_in_main_project, new_path))
+            {
+              z_debug ("failed to reflink, copying instead");
+              z_debug (
+                "copying clip from main project ('{}' to '{}')",
+                path_in_main_project, new_path);
+              utils::io::copy_file (new_path, path_in_main_project);
+            }
+        }
+    }
+
+  if (need_new_write)
+    {
+      z_debug (
+        "writing clip {} to pool (parts {}, is backup  {}): '{}'",
+        clip->get_name (), parts, backup, new_path);
+      dsp::FileAudioSourceWriter writer{ *clip, new_path, parts };
+      writer.write_to_file ();
+      if (!parts)
+        {
+          /* store file hash */
+          last_known_file_hashes_.insert_or_assign (
+            clip_id, utils::hash::get_file_hash (new_path));
+        }
+    }
+
+  z_info ("{}", *this);
+}
+
+auto
+AudioPool::duplicate_clip (const FileAudioSource::Uuid &clip_id, bool write_file)
+  -> FileAudioSourceUuidReference
+{
+  auto * const clip = std::get<dsp::FileAudioSource *> (
+    clip_registry_.find_by_id_or_throw (clip_id));
+
+  auto new_clip_ref = clip_registry_.create_object<FileAudioSource> (
+    clip->get_samples (), clip->get_bit_depth (), sample_rate_getter_ (), 140.f,
+    clip->get_name ());
+
+  z_debug (
+    "duplicating clip {} to {}...", clip->get_name (), new_clip_ref.id ());
+
+  if (write_file)
+    {
+      write_clip (new_clip_ref.id (), false, false);
+    }
+
+  return new_clip_ref;
+}
+
+void
+AudioPool::remove_unused (bool backup)
+{
+  z_debug ("--- removing unused files from pool ---");
+
+  // remove untracked files from pool directory
+  // TODO: check the registry
+  auto prj_pool_dir = project_pool_path_getter_ (backup);
+  auto files =
+    utils::io::get_files_in_dir_ending_in (prj_pool_dir, true, std::nullopt);
+  auto removed_clips = 0;
+  for (const auto &path : files)
+    {
+      bool found = false;
+      for (const auto &clip_id : clip_registry_.get_uuids ())
+        {
+          if (get_clip_path (clip_id, backup) == path)
+            {
+              found = true;
+              break;
+            }
+        }
+
+      /* if file not found in pool clips, delete */
+      if (!found)
+        {
+          utils::io::remove (path);
+          ++removed_clips;
+        }
+    }
+
+  z_info ("removed {} clips", removed_clips);
+}
+
+void
+AudioPool::reload_clip_frame_bufs ()
+{
+  for (auto * clip : get_clip_ptrs ())
+    {
+      if (clip->get_num_frames () == 0)
+        {
+          /* load from the file */
+          clip->init_from_file (
+            get_clip_path (clip->get_uuid (), false), sample_rate_getter_ (),
+            std::nullopt);
+        }
+    }
+}
+
+struct WriteClipData
+{
+  FileAudioSource * clip;
+  bool              is_backup;
+
+  /** To be set after writing the file. */
+  bool        successful = false;
+  std::string error;
+};
+
+void
+AudioPool::write_to_disk (bool is_backup)
+{
+  /* ensure pool dir exists */
+  auto prj_pool_dir = project_pool_path_getter_ (is_backup);
+  if (!utils::io::path_exists (prj_pool_dir))
+    {
+      try
+        {
+          utils::io::mkdir (prj_pool_dir);
+        }
+      catch (const ZrythmException &e)
+        {
+          std::throw_with_nested (
+            ZrythmException ("Failed to create pool directory"));
+        }
+    }
+
+  const int        num_threads = juce::SystemStats::getNumCpus ();
+  juce::ThreadPool pool (num_threads);
+
+  std::string           error_message;
+  juce::CriticalSection error_mutex;
+
+  for (auto * clip : get_clip_ptrs ())
+    {
+      pool.addJob ([this, clip, is_backup, &error_message, &error_mutex] () {
+        try
+          {
+            write_clip (clip->get_uuid (), false, is_backup);
+          }
+        catch (const ZrythmException &e)
+          {
+            const juce::ScopedLock lock (error_mutex);
+            if (error_message.empty ())
+              {
+                error_message = fmt::format (
+                  "Failed to write clip {} to disk: {}", clip->get_name (),
+                  e.what ());
+              }
+          }
+      });
+    }
+
+  z_debug ("waiting for tasks to finish...");
+  pool.removeAllJobs (false, -1);
+  z_debug ("done");
+
+  if (!error_message.empty ())
+    {
+      throw ZrythmException (error_message);
+    }
+}
+
+} // namespace zrythm::dsp

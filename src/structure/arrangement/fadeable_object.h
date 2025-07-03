@@ -3,98 +3,137 @@
 
 #pragma once
 
+#include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/curve.h"
-#include "dsp/position.h"
-#include "structure/arrangement/bounded_object.h"
-
-#define DEFINE_FADEABLE_OBJECT_QML_PROPERTIES(ClassType)
 
 namespace zrythm::structure::arrangement
 {
-class FadeableObject : virtual public BoundedObject
+class ArrangerObjectFadeRange : public QObject
 {
+  Q_OBJECT
+  Q_PROPERTY (
+    dsp::AtomicPositionQmlAdapter * startOffset READ startOffset CONSTANT)
+  Q_PROPERTY (dsp::AtomicPositionQmlAdapter * endOffset READ endOffset CONSTANT)
+  Q_PROPERTY (
+    dsp::CurveOptionsQmlAdapter * fadeInCurveOpts READ fadeInCurveOpts CONSTANT)
+  QML_ELEMENT
 public:
-  // = default deletes it for some reason on gcc
-  FadeableObject () noexcept { };
-  ~FadeableObject () noexcept override = default;
-  Q_DISABLE_COPY_MOVE (FadeableObject)
-
-  /**
-   * Getter.
-   */
-  void get_fade_in_pos (Position * pos) const { *pos = fade_in_pos_; }
-
-  /**
-   * Getter.
-   */
-  void get_fade_out_pos (Position * pos) const { *pos = fade_out_pos_; }
-
-  void set_fade_in_position_unvalidated (const dsp::Position &pos)
+  ArrangerObjectFadeRange (
+    const dsp::TempoMap &tempo_map,
+    QObject *            parent = nullptr)
+      : QObject (parent), start_offset_ (tempo_map),
+        start_offset_adapter_ (
+          utils::make_qobject_unique<
+            dsp::AtomicPositionQmlAdapter> (start_offset_, this)),
+        end_offset_ (tempo_map),
+        end_offset_adapter_ (
+          utils::make_qobject_unique<
+            dsp::AtomicPositionQmlAdapter> (end_offset_, this)),
+        fade_in_opts_adapter_ (
+          utils::make_qobject_unique<
+            dsp::CurveOptionsQmlAdapter> (fade_in_opts_, this)),
+        fade_out_opts_adapter_ (
+          utils::make_qobject_unique<
+            dsp::CurveOptionsQmlAdapter> (fade_out_opts_, this))
   {
-    // FIXME qobject updates...
-    *static_cast<dsp::Position *> (&fade_in_pos_) = pos;
   }
-  void set_fade_out_position_unvalidated (const dsp::Position &pos)
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  dsp::AtomicPositionQmlAdapter * startOffset () const
   {
-    // FIXME qobject updates...
-    *static_cast<dsp::Position *> (&fade_out_pos_) = pos;
+    return start_offset_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * endOffset () const
+  {
+    return end_offset_adapter_.get ();
+  }
+  dsp::CurveOptionsQmlAdapter * fadeInCurveOpts () const
+  {
+    return fade_in_opts_adapter_.get ();
+  }
+  dsp::CurveOptionsQmlAdapter * fadeOutCurveOpts () const
+  {
+    return fade_out_opts_adapter_.get ();
+  }
+
+  // ========================================================================
+
+  /**
+   * Gets the normalized Y (ie, gain from 0-1) for a normalized X, for a fade.
+   *
+   * @param x Normalized x.
+   * @param fade_in True for in, false for out.
+   */
+  double get_normalized_y_for_fade (double x, bool fade_in) const
+  {
+    if (fade_in)
+      {
+        return fadeInCurveOpts ()->normalizedY (x, false);
+      }
+
+    return fadeOutCurveOpts ()->normalizedY (x, true);
   }
 
 protected:
   friend void init_from (
-    FadeableObject        &obj,
-    const FadeableObject  &other,
-    utils::ObjectCloneType clone_type);
-
-  bool
-  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
+    ArrangerObjectFadeRange       &obj,
+    const ArrangerObjectFadeRange &other,
+    utils::ObjectCloneType         clone_type)
+  {
+    obj.start_offset_adapter_->setTicks (other.start_offset_adapter_->ticks ());
+    obj.end_offset_adapter_->setTicks (other.end_offset_adapter_->ticks ());
+    obj.fade_in_opts_ = other.fade_in_opts_;
+    obj.fade_out_opts_ = other.fade_out_opts_;
+  }
 
 private:
-  static constexpr auto kFadeInPosKey = "fadeInPos"sv;
-  static constexpr auto kFadeOutPosKey = "fadeOutPos"sv;
+  static constexpr auto kFadeInOffsetKey = "fadeInOffset"sv;
+  static constexpr auto kFadeOutOffsetKey = "fadeOutOffset"sv;
   static constexpr auto kFadeInOptsKey = "fadeInOpts"sv;
   static constexpr auto kFadeOutOptsKey = "fadeOutOpts"sv;
-  friend auto to_json (nlohmann::json &j, const FadeableObject &object)
+  friend auto to_json (nlohmann::json &j, const ArrangerObjectFadeRange &object)
   {
-    j[kFadeInPosKey] = object.fade_in_pos_;
-    j[kFadeOutPosKey] = object.fade_out_pos_;
+    j[kFadeInOffsetKey] = object.start_offset_;
+    j[kFadeOutOffsetKey] = object.end_offset_;
     j[kFadeInOptsKey] = object.fade_in_opts_;
     j[kFadeOutOptsKey] = object.fade_out_opts_;
   }
-  friend auto from_json (const nlohmann::json &j, FadeableObject &object)
+  friend auto
+  from_json (const nlohmann::json &j, ArrangerObjectFadeRange &object)
   {
-    j.at (kFadeInPosKey).get_to (object.fade_in_pos_);
-    j.at (kFadeOutPosKey).get_to (object.fade_out_pos_);
+    j.at (kFadeInOffsetKey).get_to (object.start_offset_);
+    j.at (kFadeOutOffsetKey).get_to (object.end_offset_);
     j.at (kFadeInOptsKey).get_to (object.fade_in_opts_);
     j.at (kFadeOutOptsKey).get_to (object.fade_out_opts_);
   }
 
-public:
-  /**
-   * Fade in position, relative to the object's start.
-   *
-   * Must always be before Arranger_object.fade_out_pos_.
-   */
-  Position fade_in_pos_;
+  BOOST_DESCRIBE_CLASS (
+    ArrangerObjectFadeRange,
+    (),
+    (),
+    (),
+    (start_offset_, end_offset_, fade_in_opts_, fade_out_opts_))
+
+private:
+  /** Fade start position (offset from object's start). */
+  dsp::AtomicPosition                                    start_offset_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> start_offset_adapter_;
 
   /**
-   * Fade out position, relative to the object's start.
-   *
-   * Must always be after ArrangerObject.fade_in_pos_.
+   * Fade end position (offset from the object's end).
    */
-  Position fade_out_pos_;
+  dsp::AtomicPosition                                    end_offset_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> end_offset_adapter_;
 
   /** Fade in curve options. */
-  dsp::CurveOptions fade_in_opts_;
+  dsp::CurveOptions                                    fade_in_opts_;
+  utils::QObjectUniquePtr<dsp::CurveOptionsQmlAdapter> fade_in_opts_adapter_;
 
   /** Fade out curve options. */
-  dsp::CurveOptions fade_out_opts_;
-
-  BOOST_DESCRIBE_CLASS (
-    FadeableObject,
-    (BoundedObject),
-    (fade_in_pos_, fade_out_pos_, fade_in_opts_, fade_out_opts_),
-    (),
-    ())
+  dsp::CurveOptions                                    fade_out_opts_;
+  utils::QObjectUniquePtr<dsp::CurveOptionsQmlAdapter> fade_out_opts_adapter_;
 };
 } // namespace zrythm::structure::arrangement
