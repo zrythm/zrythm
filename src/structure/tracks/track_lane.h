@@ -267,11 +267,6 @@ protected:
     obj.height_ = other.height_;
     obj.mute_ = other.mute_;
     obj.solo_ = other.solo_;
-    for (auto * region : obj.get_children_view ())
-      {
-        // region->is_auditioner_ = is_auditioner ();
-        // region->set_lane (dynamic_cast<TrackLaneT *> (&obj));
-      }
   }
 
 private:
