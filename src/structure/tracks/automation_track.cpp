@@ -426,7 +426,7 @@ AutomationTrack::get_normalized_val_at_pos (
   auto next_ap = region->get_next_ap (*ap, false);
 
   /* return value at last ap */
-  if (!next_ap)
+  if (next_ap == nullptr)
     {
       return ap->value ();
     }
