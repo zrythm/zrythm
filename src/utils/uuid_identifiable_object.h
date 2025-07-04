@@ -153,6 +153,7 @@ public:
     if (this != &other)
       {
         id_ = other.id_;
+        registry_ = other.registry_;
         acquire_ref ();
       }
     return *this;
