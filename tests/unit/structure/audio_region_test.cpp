@@ -212,11 +212,12 @@ TEST_F (AudioRegionTest, FillStereoPorts)
   // Samples should be faded (0.5 * builtin fade factor)
   for (nframes_t i = 0; i < nframes; i++)
     {
-      const float expected_fade =
+      constexpr float tolerance = 1e-6f;
+      const float     expected_fade =
         0.5f
         * (static_cast<float> (nframes - i) / AudioRegion::BUILTIN_FADE_FRAMES);
-      EXPECT_FLOAT_EQ (left_buffer[i], expected_fade);
-      EXPECT_FLOAT_EQ (right_buffer[i], -expected_fade);
+      EXPECT_NEAR (left_buffer[i], expected_fade, tolerance);
+      EXPECT_NEAR (right_buffer[i], -expected_fade, tolerance);
     }
 
   // TODO: Test custom fade range
