@@ -222,9 +222,9 @@ GraphScheduler::terminate_threads ()
   /* join threads */
   for (auto &thread : threads_)
     {
-      thread->waitForThreadToExit (5);
+      thread->waitForThreadToExit (50);
     }
-  main_thread_->waitForThreadToExit (5);
+  main_thread_->waitForThreadToExit (50);
   threads_.clear ();
   main_thread_.reset ();
 
