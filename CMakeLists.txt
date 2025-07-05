@@ -35,8 +35,8 @@ set(VERSION_UPDATE_FROM_GIT ${GIT_FOUND})
 set(PROJECT_NAME ZRYTHM) # set this temporarily to get the version
 include(GetVersionFromGitTag)
 
-option(ZRYTHM_DISABLE_CCACHE "Disable ccache" OFF)
-if(NOT ZRYTHM_DISABLE_CCACHE)
+option(ZRYTHM_CCACHE "Enable ccache" ON)
+if(NOT ZRYTHM_CCACHE)
   include(CCache)
 endif()
 

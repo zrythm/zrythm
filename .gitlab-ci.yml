@@ -163,6 +163,7 @@ configure-for-tools:gnu/linux:
       -DZRYTHM_USER_MANUAL=ON
       -DZRYTHM_STRICT_SPHINX_OPTS=ON
       -DZRYTHM_UNITY_BUILD=OFF
+      -DZRYTHM_CCACHE=OFF
       -DCMAKE_LINKER_TYPE=MOLD
   artifacts:
     paths:
@@ -251,7 +252,7 @@ clazy-check:
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
       -DZRYTHM_UNITY_BUILD=OFF
-      -DZRYTHM_DISABLE_CCACHE=ON
+      -DZRYTHM_CCACHE=OFF
     - cmake --build build_clazy --parallel || true # TODO
 
 check:clang-format:
@@ -305,7 +306,7 @@ check:clang-tidy:
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
       -DZRYTHM_UNITY_BUILD=OFF
-      -DZRYTHM_DISABLE_CCACHE=ON
+      -DZRYTHM_CCACHE=OFF
     - >-
       git diff -U0 HEAD^
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
