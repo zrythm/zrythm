@@ -57,6 +57,31 @@ stages:
   before_script:
     - *unix-activate-venv
 
+.sanitizer-template:
+  extends: .gnu-linux-template
+  tags:
+    - archlinux
+  stage: check
+  needs: []
+  variables:
+    BUILDDIR: "build_sanitizer"
+    SANITIZER_TYPE: "address"  # Default sanitizer
+  before_script:
+    - *unix-activate-venv
+  script:
+    - >-
+      cmake -B ${BUILDDIR}-${SANITIZER_TYPE} ${COMMON_CMAKE_OPTIONS}
+      -G "Ninja"
+      -DCMAKE_C_COMPILER=clang
+      -DCMAKE_CXX_COMPILER=clang++
+      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_BUILD_TYPE=Debug
+      -DZRYTHM_ENABLE_SANITIZER_${SANITIZER_TYPE}=ON
+      -DZRYTHM_TESTS=ON
+      -DZRYTHM_UNITY_BUILD=OFF
+    - cmake --build ${BUILDDIR}-${SANITIZER_TYPE} --parallel
+    - ctest --test-dir ${BUILDDIR}-${SANITIZER_TYPE} -V --output-on-failure
+
 .mac-arm-template:
   tags:
     - mac-arm
@@ -286,6 +311,24 @@ clang-tidy-check:
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
       -path ${BUILDDIR} -config-file .clang-tidy
       -use-color
+
+test:sanitizer-undefined:
+  extends: .sanitizer-template
+  variables:
+    SANITIZER_TYPE: "UNDEFINED_BEHAVIOR"
+
+test:sanitizer-thread:
+  extends: .sanitizer-template
+  variables:
+    SANITIZER_TYPE: "THREAD"
+
+test:sanitizer-realtime:
+  extends: .sanitizer-template
+  variables:
+    SANITIZER_TYPE: "REALTIME"
+
+# AddressSanitizer/LeakSanitizer/MemorySanitizer are not needed since we are
+# running valgrind anyway
 
 build:gnu/linux:
   extends: .gnu-linux-template
