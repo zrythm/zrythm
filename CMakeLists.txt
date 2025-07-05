@@ -36,7 +36,7 @@ set(PROJECT_NAME ZRYTHM) # set this temporarily to get the version
 include(GetVersionFromGitTag)
 
 option(ZRYTHM_CCACHE "Enable ccache" OFF)
-if(NOT ZRYTHM_CCACHE)
+if(ZRYTHM_CCACHE)
   include(CCache)
 endif()
 
