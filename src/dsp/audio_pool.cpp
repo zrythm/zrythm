@@ -243,7 +243,10 @@ AudioPool::write_to_disk (bool is_backup)
   std::vector<std::exception_ptr> exceptions;
   std::mutex                      error_mutex;
   std::for_each (
-    std::execution::par, clips.begin (), clips.end (), [&] (const auto &clip) {
+#ifdef __cpp_lib_parallel_algorithm
+    std::execution::par,
+#endif
+    clips.begin (), clips.end (), [&] (const auto &clip) {
       try
         {
           write_clip (clip->get_uuid (), false, is_backup);

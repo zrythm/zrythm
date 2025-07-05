@@ -386,6 +386,11 @@ if(WIN32)
   )
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  # enable in case we need parallel execution
+  # add_compile_definitions(-fexperimental-library)
+endif()
+
 if(OS_GNU AND compiler_gnulike)
   # drop unused library dependencies
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
@@ -1005,9 +1010,9 @@ CPMFindPackage(
 
 CPMFindPackage(
   NAME tbb
-  GITHUB_REPOSITORY "uxlfoundation/oneTBB"
+  GITHUB_REPOSITORY "zrythm/oneTBB"
   VERSION 2022.2.0
-  GIT_TAG 06ce6212da6710f4bb2d20a1904b018aa44069bf
+  GIT_TAG fe153f04aebb223d500f27bc3f93374a012273ec
   EXCLUDE_FROM_ALL YES
   SYSTEM YES
   OPTIONS
