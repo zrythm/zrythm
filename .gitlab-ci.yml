@@ -254,7 +254,7 @@ clazy-check:
       -DZRYTHM_DISABLE_CCACHE=ON
     - cmake --build build_clazy --parallel || true # TODO
 
-clang-format-check:
+check:clang-format:
   extends: .gnu-linux-template
   tags:
     - archlinux
@@ -263,14 +263,14 @@ clang-format-check:
   script:
     - python3 scripts/run_clang_format.py --dry-run
 
-reuse-check:
+check:reuse:
   extends: .gnu-linux-template
   stage: check
   needs: []
   script:
    - reuse lint
 
-exif-check:
+check:exif:
   extends: .gnu-linux-template
   tags:
     - archlinux
@@ -285,7 +285,7 @@ exif-check:
       cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --target run_all_benchmarks ;
     fi
 
-clang-tidy-check:
+check:clang-tidy:
   rules:
     - when: never # temporarily disable due to compilation issues
   extends: .gnu-linux-template
@@ -312,17 +312,17 @@ clang-tidy-check:
       -path ${BUILDDIR} -config-file .clang-tidy
       -use-color
 
-test:sanitizer-undefined:
+check:sanitizer-undefined:
   extends: .sanitizer-template
   variables:
     SANITIZER_TYPE: "UNDEFINED_BEHAVIOR"
 
-test:sanitizer-thread:
+check:sanitizer-thread:
   extends: .sanitizer-template
   variables:
     SANITIZER_TYPE: "THREAD"
 
-test:sanitizer-realtime:
+check:sanitizer-realtime:
   extends: .sanitizer-template
   variables:
     SANITIZER_TYPE: "REALTIME"
@@ -336,9 +336,9 @@ build:gnu/linux:
   needs:
     - job: configure:gnu/linux
       artifacts: true
-    - job: exif-check
-    - job: reuse-check
-    - job: clang-format-check
+    - job: check:exif
+    - job: check:reuse
+    - job: check:clang-format
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
     - *unix_test_cmd
