@@ -7,6 +7,8 @@
 #include "utils/hash.h"
 #include "utils/types.h"
 
+#include <tbb/concurrent_hash_map.h>
+
 namespace zrythm::dsp
 {
 
@@ -157,7 +159,7 @@ private:
 
   /** File hashes, used for checking if a clip is already written to the pool so
    * we can save time by skipping overwriting it. */
-  std::unordered_map<FileAudioSource::Uuid, utils::hash::HashT>
+  tbb::concurrent_hash_map<FileAudioSource::Uuid, utils::hash::HashT>
     last_known_file_hashes_;
 };
 } // namespace zrythm::dsp

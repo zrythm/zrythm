@@ -14,6 +14,7 @@
 #include <QUuid>
 
 #include <nlohmann/json.hpp>
+#include <tbb/concurrent_hash_map.h>
 
 using zrythm::utils::exceptions::ZrythmException;
 
@@ -214,4 +215,32 @@ template <StrongTypedef T> struct adl_serializer<T>
     json_value.get_to (type_safe::get (strong_type));
   }
 };
-}
+
+template <typename Key, typename T>
+struct adl_serializer<tbb::concurrent_hash_map<Key, T>>
+{
+  using ConcurrentHashMap = tbb::concurrent_hash_map<Key, T>;
+  // convert to std::map since nlohmann::json knows how to serialize it
+  static void to_json (json &j, const ConcurrentHashMap &map)
+  {
+    std::map<Key, T> temp;
+    for (const auto &kv : map)
+      {
+        temp.insert ({ kv.first, kv.second });
+      }
+    j = temp;
+  }
+
+  static void from_json (const json &j, ConcurrentHashMap &map)
+  {
+    auto temp = j.get<std::map<Key, T>> (); // Deserialize to std::map first
+    map.clear ();
+    for (const auto &kv : temp)
+      {
+        typename ConcurrentHashMap::accessor insert_accessor;
+        map.insert (insert_accessor, kv.first);
+        insert_accessor->second = kv.second;
+      }
+  }
+};
+} // namespace nlohmann

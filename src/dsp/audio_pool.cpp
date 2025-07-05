@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <execution>
+
 #include "dsp/audio_pool.h"
 #include "utils/io.h"
 #include "utils/string.h"
@@ -71,33 +73,37 @@ AudioPool::
   z_return_if_fail (!path_in_main_project.empty ());
   z_return_if_fail (!new_path.empty ());
 
-  /* whether a new write is needed */
-  bool need_new_write = true;
+  // get last known hash
+  std::optional<utils::hash::HashT> last_known_hash_for_clip;
+  {
+    decltype (last_known_file_hashes_)::const_accessor last_known_hash_accessor;
+    const auto                                         last_known_hash_found =
+      last_known_file_hashes_.find (last_known_hash_accessor, clip_id);
+    if (last_known_hash_found)
+      {
+        last_known_hash_for_clip = last_known_hash_accessor->second;
+      }
+  }
 
   /* skip if file with same hash already exists */
-  if (utils::io::path_exists (new_path) && !parts)
+  if (
+    last_known_hash_for_clip.has_value () && !parts
+    && utils::io::path_exists (new_path)
+    && last_known_hash_for_clip.value () == utils::hash::get_file_hash (new_path))
     {
-      bool same_hash =
-        last_known_file_hashes_.contains (clip_id)
-        && last_known_file_hashes_[clip_id]
-             == utils::hash::get_file_hash (new_path);
-
-      if (same_hash)
-        {
-          z_debug ("skipping writing to existing clip {} in pool", new_path);
-          need_new_write = false;
-        }
+      z_debug ("skipping writing to existing clip {} in pool", new_path);
+      return;
     }
 
   /* if writing to backup and same file exists in main project dir, copy (first
    * try reflink) */
-  if (need_new_write && last_known_file_hashes_.contains (clip_id) && backup)
+  if (last_known_hash_for_clip.has_value () && backup)
     {
       bool exists_in_main_project = false;
       if (utils::io::path_exists (path_in_main_project))
         {
           exists_in_main_project =
-            last_known_file_hashes_[clip_id]
+            last_known_hash_for_clip.value ()
             == utils::hash::get_file_hash (path_in_main_project);
         }
 
@@ -119,22 +125,18 @@ AudioPool::
         }
     }
 
-  if (need_new_write)
+  z_debug (
+    "writing clip {} to pool (parts {}, is backup  {}): '{}'",
+    clip->get_name (), parts, backup, new_path);
+  dsp::FileAudioSourceWriter writer{ *clip, new_path, parts };
+  writer.write_to_file ();
+  if (!parts)
     {
-      z_debug (
-        "writing clip {} to pool (parts {}, is backup  {}): '{}'",
-        clip->get_name (), parts, backup, new_path);
-      dsp::FileAudioSourceWriter writer{ *clip, new_path, parts };
-      writer.write_to_file ();
-      if (!parts)
-        {
-          /* store file hash */
-          last_known_file_hashes_.insert_or_assign (
-            clip_id, utils::hash::get_file_hash (new_path));
-        }
+      /* store file hash */
+      decltype (last_known_file_hashes_)::accessor last_known_hash_accessor;
+      last_known_file_hashes_.insert (last_known_hash_accessor, clip_id);
+      last_known_hash_accessor->second = utils::hash::get_file_hash (new_path);
     }
-
-  z_info ("{}", *this);
 }
 
 auto
@@ -236,40 +238,41 @@ AudioPool::write_to_disk (bool is_backup)
         }
     }
 
-  const int        num_threads = juce::SystemStats::getNumCpus ();
-  juce::ThreadPool pool (num_threads);
+  // write clips in parallel
+  const auto clips = get_clip_ptrs () | std::ranges::to<std::vector> ();
+  std::vector<std::exception_ptr> exceptions;
+  std::mutex                      error_mutex;
+  std::for_each (
+    std::execution::par, clips.begin (), clips.end (), [&] (const auto &clip) {
+      try
+        {
+          write_clip (clip->get_uuid (), false, is_backup);
+        }
+      catch (const ZrythmException &e)
+        {
+          std::lock_guard lock (error_mutex);
+          exceptions.push_back (std::current_exception ());
+        }
+    });
 
-  std::string           error_message;
-  juce::CriticalSection error_mutex;
-
-  for (auto * clip : get_clip_ptrs ())
+  // Check for errors
+  for (const auto &eptr : exceptions)
     {
-      pool.addJob ([this, clip, is_backup, &error_message, &error_mutex] () {
-        try
-          {
-            write_clip (clip->get_uuid (), false, is_backup);
-          }
-        catch (const ZrythmException &e)
-          {
-            const juce::ScopedLock lock (error_mutex);
-            if (error_message.empty ())
-              {
-                error_message = fmt::format (
-                  "Failed to write clip {} to disk: {}", clip->get_name (),
-                  e.what ());
-              }
-          }
-      });
+      if (eptr)
+        {
+          try
+            {
+              std::rethrow_exception (eptr);
+            }
+          catch (const std::exception &e)
+            {
+              throw ZrythmException (
+                fmt::format ("Failed to write clips: {}", e.what ()));
+            }
+        }
     }
 
-  z_debug ("waiting for tasks to finish...");
-  pool.removeAllJobs (false, -1);
-  z_debug ("done");
-
-  if (!error_message.empty ())
-    {
-      throw ZrythmException (error_message);
-    }
+  z_debug ("done writing clips, {}", *this);
 }
 
 } // namespace zrythm::dsp

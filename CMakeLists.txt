@@ -1003,6 +1003,15 @@ CPMFindPackage(
   SYSTEM YES
 )
 
+CPMFindPackage(
+  NAME tbb
+  GITHUB_REPOSITORY "uxlfoundation/oneTBB"
+  VERSION 2022.2.0
+  GIT_TAG 06ce6212da6710f4bb2d20a1904b018aa44069bf
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+)
+
 if(ZRYTHM_TESTS)
   CPMFindPackage(
     NAME cpp_httplib
@@ -1088,6 +1097,7 @@ list(APPEND zrythm_link_libs
   Boost::describe
   Boost::stl_interfaces
   gsl-lite::gsl-lite
+  TBB::tbb
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers
