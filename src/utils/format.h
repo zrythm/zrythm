@@ -134,8 +134,8 @@ using namespace zrythm;
     return enum_strings.data (); \
   } \
 \
-  inline utils::Utf8String enum_name##_to_string ( \
-    enum_type val, bool translate = false) \
+  inline utils::Utf8String \
+  enum_name##_to_string (enum_type val, bool translate = false) \
   { \
     if (translate) \
       { \
