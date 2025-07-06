@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <execution>
+#include <condition_variable>
+#include <mutex>
+#include <queue>
+#include <thread>
 
 #include "dsp/audio_pool.h"
 #include "utils/io.h"
@@ -242,21 +245,53 @@ AudioPool::write_to_disk (bool is_backup)
   const auto clips = get_clip_ptrs () | std::ranges::to<std::vector> ();
   std::vector<std::exception_ptr> exceptions;
   std::mutex                      error_mutex;
-  std::for_each (
-#ifdef __cpp_lib_parallel_algorithm
-    std::execution::par,
-#endif
-    clips.begin (), clips.end (), [&] (const auto &clip) {
-      try
-        {
-          write_clip (clip->get_uuid (), false, is_backup);
-        }
-      catch (const ZrythmException &e)
-        {
-          std::lock_guard lock (error_mutex);
-          exceptions.push_back (std::current_exception ());
-        }
-    });
+  const unsigned                  num_workers =
+    std::max (1u, std::thread::hardware_concurrency ());
+  std::queue<FileAudioSource *> clip_queue;
+  for (auto * clip : clips)
+    {
+      clip_queue.push (clip);
+    }
+
+  std::mutex                queue_mutex;
+  std::condition_variable   cv;
+  std::vector<std::jthread> workers;
+
+  workers.reserve (num_workers);
+  for (unsigned i = 0; i < num_workers; ++i)
+    {
+      workers.emplace_back ([&] {
+        while (true)
+          {
+            FileAudioSource * clip = nullptr;
+            {
+              std::unique_lock lock (queue_mutex);
+              if (clip_queue.empty ())
+                {
+                  return;
+                }
+              clip = clip_queue.front ();
+              clip_queue.pop ();
+            }
+
+            try
+              {
+                write_clip (clip->get_uuid (), false, is_backup);
+              }
+            catch (const ZrythmException &e)
+              {
+                std::lock_guard lock (error_mutex);
+                exceptions.push_back (std::current_exception ());
+              }
+          }
+      });
+    }
+
+  // Wait for all workers to finish
+  for (auto &worker : workers)
+    {
+      worker.join ();
+    }
 
   // Check for errors
   for (const auto &eptr : exceptions)
