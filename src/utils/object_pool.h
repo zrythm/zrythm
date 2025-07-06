@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_UTILS_OBJECT_POOL_H
-#define ZRYTHM_UTILS_OBJECT_POOL_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -14,14 +13,19 @@
  *
  * @tparam T The type of objects to be pooled. Must be default-constructible.
  */
-template <typename T, bool EnableDebug = false> class ObjectPool
+
+template <typename T, bool EnableDebug = false>
+class [[deprecated ("Use a pre-filled MPMCQueue instead")]] ObjectPool
 {
 public:
   static_assert (
     std::is_default_constructible_v<T>,
     "T must be default-constructible");
 
-  ObjectPool (size_t initial_capacity = 64) { reserve (initial_capacity); }
+  ObjectPool (size_t initial_capacity = 64)
+  {
+    reserve (initial_capacity);
+  }
 
   T * acquire ()
   {
@@ -62,8 +66,8 @@ public:
   }
 
   auto get_num_in_use () const { return num_in_use.load (); }
-  auto get_capacity () const { return capacity_; }
-  auto get_size () const { return size_; }
+  auto get_capacity () const { return capacity_.load (); }
+  auto get_size () const { return size_.load (); }
 
 private:
   void expand ()
@@ -78,7 +82,7 @@ private:
           {
             capacity_ = 1;
           }
-        capacity_ *= 2;
+        capacity_.store (capacity_ * 2);
 
         buffer_.reserve (capacity_);
 
@@ -88,18 +92,16 @@ private:
             available_.push_back (buffer_.back ().get ());
           }
 
-        size_ = capacity_;
+        size_.store (capacity_.load ());
       }
   }
 
   std::vector<std::unique_ptr<T>> buffer_;
   MPMCQueue<T *>                  available_;
-  size_t                          capacity_ = 0;
-  size_t                          size_ = 0;
+  std::atomic<size_t>             capacity_{ 0 };
+  std::atomic<size_t>             size_{ 0 };
   std::mutex                      expand_mutex_;
 
   // Debug counter
   std::atomic<size_t> num_in_use;
 };
-
-#endif

@@ -25,8 +25,7 @@
  * ---
  */
 
-#ifndef __UTILS_MPMC_QUEUE_H__
-#define __UTILS_MPMC_QUEUE_H__
+#pragma once
 
 #include <cassert>
 #include <cstddef>
@@ -191,5 +190,3 @@ private:
 /**
  * @}
  */
-
-#endif

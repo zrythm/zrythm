@@ -110,9 +110,11 @@ PluginScanManager::beginScan ()
   worker->moveToThread (scan_thread);
   QObject::connect (scan_thread, &QThread::started, worker, &Worker::process);
   QObject::connect (worker, &Worker::finished, scan_thread, &QThread::quit);
-  QObject::connect (worker, &Worker::finished, worker, &Worker::deleteLater);
-  QObject::connect (
-    scan_thread, &QThread::finished, scan_thread, &QThread::deleteLater);
+  QObject::connect (scan_thread, &QThread::finished, this, [worker, scan_thread] {
+    // Delete worker in main thread after thread finishes
+    worker->deleteLater ();
+    scan_thread->deleteLater ();
+  });
   QObject::connect (
     worker, &Worker::finished, this, &PluginScanManager::scan_finished);
   scan_thread->start ();

@@ -192,6 +192,9 @@ public:
 
   /**
    * Memory pool of event structs to avoid real time allocation.
+   *
+   * FIXME: just use another filled MPMCQueue and delete this hacky ObjectPool
+   * implementation.
    */
   ObjectPool<RecordingEvent> event_obj_pool_;
 

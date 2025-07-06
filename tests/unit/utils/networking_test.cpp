@@ -18,11 +18,14 @@ class NetworkingTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    server_thread_ = std::thread ([this] () {
-      port_ = svr_.bind_to_any_port ("0.0.0.0");
+    std::promise<int> port_promise;
+    auto              port_future = port_promise.get_future ();
+    server_thread_ = std::thread ([this, &port_promise] () mutable {
+      int port = svr_.bind_to_any_port ("0.0.0.0");
+      port_promise.set_value (port);
       svr_.listen_after_bind ();
     });
-    std::this_thread::sleep_for (10ms);
+    port_ = port_future.get ();
   }
 
   void TearDown () override
@@ -32,13 +35,13 @@ protected:
       server_thread_.join ();
   }
 
-  httplib::Server svr_;
-  int             port_;
-  std::thread     server_thread_;
+  httplib::Server  svr_;
+  std::atomic<int> port_;
+  std::thread      server_thread_;
 
   std::string get_base_url () const
   {
-    return fmt::format ("http://127.0.0.1:{}", port_);
+    return fmt::format ("http://127.0.0.1:{}", port_.load ());
   }
 };
 
