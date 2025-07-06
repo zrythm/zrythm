@@ -1008,6 +1008,19 @@ CPMFindPackage(
   SYSTEM YES
 )
 
+set(tbb_opts "")
+list(APPEND tbb_opts "TBB_STRICT OFF")
+list(APPEND tbb_opts "TBB_TEST OFF")
+list(APPEND tbb_opts "TBB_INSTALL OFF")
+list(APPEND tbb_opts "TBBMALLOC_BUILD OFF")
+list(APPEND tbb_opts "TBBMALLOC_PROXY_BUILD OFF")
+if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
+  list(APPEND tbb_opts "TBB_SANITIZE address")
+elseif(ZRYTHM_ENABLE_SANITIZER_THREAD)
+  list(APPEND tbb_opts "TBB_SANITIZE thread")
+elseif(ZRYTHM_ENABLE_SANITIZER_MEMORY)
+  list(APPEND tbb_opts "TBB_SANITIZE memory")
+endif()
 CPMFindPackage(
   NAME tbb
   GITHUB_REPOSITORY "zrythm/oneTBB"
@@ -1015,10 +1028,7 @@ CPMFindPackage(
   GIT_TAG fe153f04aebb223d500f27bc3f93374a012273ec
   EXCLUDE_FROM_ALL YES
   SYSTEM YES
-  OPTIONS
-    "TBB_STRICT OFF"
-    "TBB_TEST OFF"
-    "TBB_INSTALL OFF"
+  OPTIONS ${tbb_opts}
 )
 
 if(ZRYTHM_TESTS)
