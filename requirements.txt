@@ -17,9 +17,8 @@ gprof2dot==2022.7.29
 identify==2.6.12
 idna==3.8
 imagesize==1.4.1
-Jinja2==3.1.4
+Jinja2==3.1.6
 MarkupSafe==2.1.3
-meson==1.5.1
 ninja==1.11.1.1
 nodeenv==1.9.1
 packaging==23.1
@@ -27,8 +26,8 @@ platformdirs==4.3.8
 pre_commit==4.2.0
 Pygments==2.16.1
 PyYAML==6.0.2
-requests==2.32.3
-setuptools==70.0.0
+requests==2.32.4
+setuptools==78.1.1
 six==1.16.0
 snowballstemmer==2.2.0
 soupsieve==2.4.1
@@ -44,5 +43,5 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.5
 sphinxcontrib-serializinghtml==1.1.9
 sphinxcontrib-svg2pdfconverter==1.2.2
-urllib3==2.2.2
+urllib3==2.5.0
 virtualenv==20.31.2
