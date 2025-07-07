@@ -109,7 +109,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-30-$CI_RUNNER_DESCRIPTION
+  - key: cache-31-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - '${BUILDDIR}*/_deps/*-src'
@@ -171,6 +171,13 @@ configure-for-tools:gnu/linux:
       - ${BUILDDIR}/**/.git/**/*
     expire_in: 1 day
 
+# Memo - Qt configured with (unity build fails):
+# configure -skip qtgrpc -release -prefix /opt/Qt6.10-beta1-Release
+# -pch -no-gtk -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre
+# -qt-harfbuzz -opensource -confirm-license -skip qtdoc -skip qtwebengine
+# -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport
+# -skip qtlocation -skip qtpositioning -skip qtmqtt -skip qtremoteobjects
+# -skip qtopcua -- -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 configure:mac-arm:
   extends: .mac-arm-template
   stage: setup
@@ -183,7 +190,7 @@ configure:mac-arm:
       cmake -B ${BUILDDIR}-${BUILD_TYPE} ${COMMON_CMAKE_OPTIONS}
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -G "Xcode"
-      "-DCMAKE_PREFIX_PATH=/opt/Qt6.9"
+      "-DCMAKE_PREFIX_PATH=/opt/Qt6.10-beta1-Release"
       -DZRYTHM_UNITY_BUILD=ON
       -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
