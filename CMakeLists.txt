@@ -515,6 +515,11 @@ if(WIN32)
       -Wl,-Bdynamic
       -Wl,-as-needed)
   endif()
+elseif(APPLE)
+  target_compile_options(_zrythm_compile_options INTERFACE
+    # std::jthread
+    -fexperimental-library
+  )
 endif()
 
 add_library(_zrythm_strict_warning_flags INTERFACE)
