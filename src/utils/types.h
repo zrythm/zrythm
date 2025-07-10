@@ -208,7 +208,7 @@ enum class BeatUnit
 #define ENUM_VALUE_TO_INT(_val) (magic_enum::enum_integer (_val))
 
 #define ENUM_ENABLE_BITSET(_enum) \
-  template <> struct ::magic_enum::customize::enum_range<_enum> \
+  template <> struct magic_enum::customize::enum_range<_enum> \
   { \
     static constexpr bool is_flags = true; \
   }
