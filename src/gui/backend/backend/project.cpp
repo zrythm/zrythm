@@ -38,7 +38,9 @@ Project::Project (
         device_manager->getCurrentAudioDevice ()->getCurrentSampleRate ()),
       tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
       file_audio_source_registry_ (new dsp::FileAudioSourceRegistry (this)),
-      port_registry_ (new PortRegistry (this)),
+      port_registry_ (new dsp::PortRegistry (this)),
+      param_registry_ (
+        new dsp::ProcessorParameterRegistry (*port_registry_, this)),
       plugin_registry_ (new PluginRegistry (this)),
       arranger_object_registry_ (
         new structure::arrangement::ArrangerObjectRegistry (this)),
@@ -81,10 +83,12 @@ Project::Project (
           return get_track_registry ().find_by_id_or_throw (id);
         },
         this)),
-      midi_mappings_ (std::make_unique<engine::session::MidiMappings> ()),
+      midi_mappings_ (
+        std::make_unique<engine::session::MidiMappings> (*param_registry_)),
       tracklist_ (new structure::tracks::Tracklist (
         *this,
         *port_registry_,
+        *param_registry_,
         *track_registry_,
         *port_connections_manager_,
         get_tempo_map ())),
@@ -117,6 +121,7 @@ Project::Project (
       plugin_factory_ (new PluginFactory (
         *plugin_registry_,
         *port_registry_,
+        *param_registry_,
         *gui::SettingsManager::get_instance (),
         this)),
       track_factory_ (new structure::tracks::TrackFactory (
@@ -124,6 +129,7 @@ Project::Project (
         *track_registry_,
         *plugin_registry_,
         *port_registry_,
+        *param_registry_,
         *arranger_object_registry_,
         *gui::SettingsManager::get_instance (),
         this)),
@@ -380,13 +386,14 @@ Project::add_default_tracks ()
     TrackT * track =
       TrackT::create_unique (
         get_file_audio_source_registry (), get_track_registry (),
-        get_plugin_registry (), get_port_registry (),
+        get_plugin_registry (), get_port_registry (), get_param_registry (),
         get_arranger_object_registry (), true)
         .release ();
     get_track_registry ().register_object (track);
     track->setName (name);
     tracklist_->append_track (
-      TrackUuidReference{ track->get_uuid (), get_track_registry () },
+      structure::tracks::TrackUuidReference{
+        track->get_uuid (), get_track_registry () },
       *audio_engine_, false, false);
 
     return track;
@@ -397,11 +404,11 @@ Project::add_default_tracks ()
 
   /* tempo */
   transport_->update_caches (
-    get_tempo_map ().get_time_signature_events ().front ().numerator,
-    get_tempo_map ().get_time_signature_events ().front ().denominator);
+    get_tempo_map ().time_signature_at_tick (0).numerator,
+    get_tempo_map ().time_signature_at_tick (0).denominator);
   audio_engine_->update_frames_per_tick (
-    get_tempo_map ().get_time_signature_events ().front ().numerator,
-    static_cast<bpm_t> (get_tempo_map ().get_tempo_events ().front ().bpm),
+    get_tempo_map ().time_signature_at_tick (0).numerator,
+    static_cast<bpm_t> (get_tempo_map ().tempo_at_tick (0)),
     audio_engine_->get_sample_rate (), true, true, false);
 
   /* add a scale */
@@ -537,7 +544,7 @@ Project::get_arranger_selections_for_last_selection ()
 #endif
 
 void
-Project::get_all_ports (std::vector<Port *> &ports) const
+Project::get_all_ports (std::vector<dsp::Port *> &ports) const
 {
   audio_engine_->append_ports (ports);
 
@@ -1155,7 +1162,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
     *other.tracklist_, &obj, clone_type, obj, *obj.port_registry_,
-    *obj.track_registry_, *obj.port_connections_manager_, obj.get_tempo_map ());
+    *obj.param_registry_, *obj.track_registry_, *obj.port_connections_manager_,
+    obj.get_tempo_map ());
   obj.clip_editor_ = utils::clone_qobject (
     *other.clip_editor_, &obj, clone_type, *obj.arranger_object_registry_,
     [&] (const Project::TrackUuid &id) {
@@ -1173,7 +1181,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   // obj.region_link_group_manager_ = other.region_link_group_manager_;
   obj.port_connections_manager_ =
     utils::clone_qobject (*other.port_connections_manager_, &obj);
-  obj.midi_mappings_ = utils::clone_unique (*other.midi_mappings_);
+  obj.midi_mappings_ = utils::clone_unique (
+    *other.midi_mappings_, clone_type, *obj.param_registry_);
   obj.undo_manager_ = utils::clone_qobject (*other.undo_manager_, &obj);
   obj.tool_ = utils::clone_qobject (*other.tool_, &obj);
 
@@ -1306,6 +1315,7 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kTempoMapKey] = project.tempo_map_;
   j[Project::kFileAudioSourceRegistryKey] = project.file_audio_source_registry_;
   j[Project::kPortRegistryKey] = project.port_registry_;
+  j[Project::kParameterRegistryKey] = project.param_registry_;
   j[Project::kPluginRegistryKey] = project.plugin_registry_;
   j[Project::kArrangerObjectRegistryKey] = project.arranger_object_registry_;
   j[Project::kTrackRegistryKey] = project.track_registry_;
@@ -1361,6 +1371,20 @@ struct TrackBuilderForDeserialization
   const Project &project_;
 };
 
+struct PluginBuilderForDeserialization
+{
+  PluginBuilderForDeserialization (const Project &project) : project_ (project)
+  {
+  }
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    return std::make_unique<T> (
+      project_.get_port_registry (), project_.get_param_registry ());
+  }
+
+  const Project &project_;
+};
+
 void
 from_json (const nlohmann::json &j, Project &project)
 {
@@ -1368,7 +1392,10 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (utils::serialization::kFormatMinorKey).get_to (project.format_minor_);
   j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
   j.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
-  j.at (Project::kPluginRegistryKey).get_to (*project.plugin_registry_);
+  j.at (Project::kParameterRegistryKey).get_to (*project.param_registry_);
+  from_json_with_builder (
+    j.at (Project::kPluginRegistryKey), *project.plugin_registry_,
+    PluginBuilderForDeserialization{ project });
   from_json_with_builder (
     j.at (Project::kArrangerObjectRegistryKey),
     *project.arranger_object_registry_,
@@ -1400,7 +1427,7 @@ from_json (const nlohmann::json &j, Project &project)
   //   .get_to (project.region_link_group_manager_);
   j.at (Project::kPortConnectionsManagerKey)
     .get_to (*project.port_connections_manager_);
-  j.at (Project::kMidiMappingsKey).get_to (project.midi_mappings_);
+  j.at (Project::kMidiMappingsKey).get_to (*project.midi_mappings_);
   j.at (Project::kUndoManagerKey).get_to (*project.undo_manager_);
   j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
 }

@@ -9,33 +9,12 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/modulator_macro_processor.h"
-#include "structure/arrangement/audio_region.h"
-#include "structure/arrangement/automation_point.h"
-#include "structure/tracks/audio_bus_track.h"
-#include "structure/tracks/audio_group_track.h"
-#include "structure/tracks/audio_lane.h"
-#include "structure/tracks/audio_track.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/channel.h"
-#include "structure/tracks/chord_track.h"
-#include "structure/tracks/foldable_track.h"
-#include "structure/tracks/folder_track.h"
-#include "structure/tracks/group_target_track.h"
-#include "structure/tracks/instrument_track.h"
-#include "structure/tracks/marker_track.h"
-#include "structure/tracks/midi_bus_track.h"
-#include "structure/tracks/midi_group_track.h"
-#include "structure/tracks/midi_lane.h"
-#include "structure/tracks/midi_track.h"
-#include "structure/tracks/modulator_track.h"
-#include "structure/tracks/track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
-#include "utils/debug.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
-#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 
 namespace zrythm::structure::tracks
@@ -43,15 +22,17 @@ namespace zrythm::structure::tracks
 Track::~Track () = default;
 
 Track::Track (
-  Type                    type,
-  PortType                in_signal_type,
-  PortType                out_signal_type,
-  PluginRegistry         &plugin_registry,
-  PortRegistry           &port_registry,
-  ArrangerObjectRegistry &obj_registry)
+  Type                             type,
+  PortType                         in_signal_type,
+  PortType                         out_signal_type,
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  ArrangerObjectRegistry          &obj_registry)
     : plugin_registry_ (plugin_registry), port_registry_ (port_registry),
-      object_registry_ (obj_registry), type_ (type),
-      in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
+      param_registry_ (param_registry), object_registry_ (obj_registry),
+      type_ (type), in_signal_type_ (in_signal_type),
+      out_signal_type_ (out_signal_type)
 {
   z_debug ("creating {} track", type);
 }
@@ -178,7 +159,6 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   obj.main_height_ = other.main_height_;
   obj.enabled_ = other.enabled_;
   obj.color_ = other.color_;
-  obj.trigger_midi_activity_ = other.trigger_midi_activity_;
   obj.in_signal_type_ = other.in_signal_type_;
   obj.out_signal_type_ = other.out_signal_type_;
   obj.comment_ = other.comment_;
@@ -188,19 +168,11 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   obj.disconnecting_ = other.disconnecting_;
 }
 
-void
-Track::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-  const
-{
-  id.set_track_id (get_uuid ());
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::Track;
-}
-
 utils::Utf8String
-Track::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Track::get_full_designation_for_port (const dsp::Port &port) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("{}/{}", get_name (), id.label_));
+    fmt::format ("{}/{}", get_name (), port.get_label ()));
 }
 
 bool
@@ -437,7 +409,7 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
           for (
-            auto * at :
+            auto &at :
             self->get_automation_tracklist ().get_automation_tracks ())
             {
               std::ranges::copy (
@@ -620,7 +592,7 @@ template <typename T>
 void
 Track::append_ports (
   const T*      track_var,
-  std::vector<Port *> &ports,
+  std::vector<dsp::Port *> &ports,
   bool                 include_plugins)
 {
   std::visit (

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "gui/dsp/port.h"
+#include "dsp/port.h"
 #include "utils/icloneable.h"
 
 #define MIDI_MAPPINGS (PROJECT->midi_mappings_)
@@ -19,9 +19,10 @@ class MidiMapping final : public QObject
   QML_ELEMENT
 
 public:
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
-
-  MidiMapping (QObject * parent = nullptr);
+  MidiMapping (
+    dsp::ProcessorParameterRegistry &param_registry,
+    QObject *                        parent = nullptr);
+  Z_DISABLE_COPY_MOVE (MidiMapping)
 
 public:
   friend void init_from (
@@ -40,22 +41,29 @@ private:
   static constexpr auto kEnabledKey = "enabled"sv;
   friend void           to_json (nlohmann::json &j, const MidiMapping &mapping)
   {
-    j = nlohmann::json{
-      { kKeyKey,      mapping.key_             },
-      { kDeviceIdKey, mapping.device_id_       },
-      { kDestIdKey,   mapping.dest_id_         },
-      { kEnabledKey,  mapping.enabled_.load () },
-    };
+    j[kKeyKey] = mapping.key_;
+    j[kDeviceIdKey] = mapping.device_id_;
+    if (mapping.dest_id_)
+      {
+        j[kDestIdKey] = *mapping.dest_id_;
+      }
+    j[kEnabledKey] = mapping.enabled_.load ();
   }
   friend void from_json (const nlohmann::json &j, MidiMapping &mapping)
   {
     j.at (kKeyKey).get_to (mapping.key_);
     j.at (kDeviceIdKey).get_to (mapping.device_id_);
-    j.at (kDestIdKey).get_to (mapping.dest_id_);
+    if (j.contains (kDestIdKey))
+      {
+        mapping.dest_id_.emplace (mapping.param_registry_);
+        j.at (kDestIdKey).get_to (*mapping.dest_id_);
+      }
     mapping.enabled_.store (j.at (kEnabledKey).get<bool> ());
   }
 
 public:
+  dsp::ProcessorParameterRegistry &param_registry_;
+
   /** Raw MIDI signal. */
   std::array<midi_byte_t, 3> key_ = {};
 
@@ -67,14 +75,7 @@ public:
   std::optional<utils::Utf8String> device_id_;
 
   /** Destination. */
-  std::optional<PortIdentifier::PortUuid> dest_id_;
-
-  /**
-   * Destination pointer, for convenience.
-   *
-   * @note This pointer is not owned by this instance.
-   */
-  Port * dest_ = nullptr;
+  std::optional<dsp::ProcessorParameterUuidReference> dest_id_;
 
   /** Whether this binding is enabled. */
   /* TODO: check if really should be atomic */
@@ -87,7 +88,7 @@ public:
 class MidiMappings final
 {
 public:
-  void init_loaded ();
+  MidiMappings (dsp::ProcessorParameterRegistry &param_registry);
 
   /**
    * Binds the CC represented by the given raw buffer (must be size 3) to the
@@ -98,11 +99,11 @@ public:
    * @param device_id Device ID, if custom mapping.
    */
   void bind_at (
-    std::array<midi_byte_t, 3>       buf,
-    std::optional<utils::Utf8String> device_id,
-    Port                            &dest_port,
-    int                              idx,
-    bool                             fire_events);
+    std::array<midi_byte_t, 3>           buf,
+    std::optional<utils::Utf8String>     device_id,
+    dsp::ProcessorParameterUuidReference dest_port,
+    int                                  idx,
+    bool                                 fire_events);
 
   /**
    * Unbinds the given binding.
@@ -113,18 +114,20 @@ public:
   void unbind (int idx, bool fire_events);
 
   void bind_device (
-    std::array<midi_byte_t, 3>       buf,
-    std::optional<utils::Utf8String> device_id,
-    Port                            &dest_port,
-    bool                             fire_events)
+    std::array<midi_byte_t, 3>           buf,
+    std::optional<utils::Utf8String>     device_id,
+    dsp::ProcessorParameterUuidReference dest_port,
+    bool                                 fire_events)
   {
     bind_at (
       buf, device_id, dest_port, static_cast<int> (mappings_.size ()),
       fire_events);
   }
 
-  void
-  bind_track (std::array<midi_byte_t, 3> buf, Port &dest_port, bool fire_events)
+  void bind_track (
+    std::array<midi_byte_t, 3>           buf,
+    dsp::ProcessorParameterUuidReference dest_port,
+    bool                                 fire_events)
   {
     bind_at (
       buf, std::nullopt, dest_port, static_cast<int> (mappings_.size ()),
@@ -154,16 +157,17 @@ public:
    *
    * @return The number of results.
    */
-  int
-  get_for_port (const Port &dest_port, std::vector<MidiMapping *> * arr) const;
+  int get_for_port (
+    const dsp::ProcessorParameter &dest_port,
+    std::vector<MidiMapping *> *   arr) const;
 
   friend void init_from (
     MidiMappings          &obj,
     const MidiMappings    &other,
     utils::ObjectCloneType clone_type)
-
   {
-    utils::clone_unique_ptr_container (obj.mappings_, other.mappings_);
+    // TODO
+    // utils::clone_unique_ptr_container (obj.mappings_, other.mappings_);
   }
 
 private:
@@ -176,6 +180,9 @@ private:
 
 public:
   std::vector<std::unique_ptr<MidiMapping>> mappings_;
+
+private:
+  dsp::ProcessorParameterRegistry &param_registry_;
 };
 
 }

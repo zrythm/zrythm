@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
@@ -18,11 +17,11 @@ ChannelSendAction::ChannelSendAction (QObject * parent)
 }
 
 ChannelSendAction::ChannelSendAction (
-  Type                                                           type,
-  const ChannelSend                                             &send,
-  const Port *                                                   port,
-  std::optional<std::pair<const AudioPort &, const AudioPort &>> stereo,
-  float                                                          amount,
+  Type               type,
+  const ChannelSend &send,
+  const dsp::Port *  port,
+  std::optional<std::pair<const dsp::AudioPort &, const dsp::AudioPort &>> stereo,
+  float                          amount,
   const PortConnectionsManager * port_connections_mgr)
     : UndoableAction (UndoableAction::Type::ChannelSend),
       send_before_ (
@@ -30,7 +29,8 @@ ChannelSendAction::ChannelSendAction (
           send,
           utils::ObjectCloneType::Snapshot,
           PROJECT->get_track_registry (),
-          PROJECT->get_port_registry ())),
+          PROJECT->get_port_registry (),
+          PROJECT->get_param_registry ())),
       amount_ (amount), send_action_type_ (type)
 {
   if (port != nullptr)
@@ -61,7 +61,7 @@ init_from (
     static_cast<const UndoableAction &> (other), clone_type);
   obj.send_before_ = utils::clone_unique (
     *other.send_before_, clone_type, other.send_before_->track_registry_,
-    other.send_before_->port_registry_);
+    other.send_before_->port_registry_, other.send_before_->param_registry_);
   obj.amount_ = other.amount_;
   obj.l_id_ = other.l_id_;
   obj.r_id_ = other.r_id_;
@@ -89,9 +89,10 @@ ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
                 const auto port_var = PROJECT->find_port_by_id (*midi_id_);
                 z_return_val_if_fail (
                   port_var.has_value ()
-                    && std::holds_alternative<MidiPort *> (port_var.value ()),
+                    && std::holds_alternative<dsp::MidiPort *> (
+                      port_var.value ()),
                   false);
-                auto * port = std::get<MidiPort *> (port_var.value ());
+                auto * port = std::get<dsp::MidiPort *> (port_var.value ());
                 send->connect_midi (*port, false, true);
               }
               break;
@@ -100,15 +101,15 @@ ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
                 const auto l_var = PROJECT->find_port_by_id (*l_id_);
                 z_return_val_if_fail (
                   l_var.has_value ()
-                    && std::holds_alternative<AudioPort *> (l_var.value ()),
+                    && std::holds_alternative<dsp::AudioPort *> (l_var.value ()),
                   false);
-                auto *     l = std::get<AudioPort *> (l_var.value ());
+                auto *     l = std::get<dsp::AudioPort *> (l_var.value ());
                 const auto r_var = PROJECT->find_port_by_id (*r_id_);
                 z_return_val_if_fail (
                   r_var.has_value ()
-                    && std::holds_alternative<AudioPort *> (r_var.value ()),
+                    && std::holds_alternative<dsp::AudioPort *> (r_var.value ()),
                   false);
-                auto * r = std::get<AudioPort *> (r_var.value ());
+                auto * r = std::get<dsp::AudioPort *> (r_var.value ());
                 send->connect_stereo (
                   *l, *r, send_action_type_ == Type::ConnectSidechain, false,
                   true);
@@ -154,7 +155,7 @@ ChannelSendAction::perform_impl ()
       break;
     case Type::ChangeAmount:
       successful = true;
-      send->set_amount (amount_);
+      send->set_amount_in_amplitude (amount_);
       break;
     default:
       break;
@@ -198,7 +199,7 @@ ChannelSendAction::undo_impl ()
       need_restore_and_recalc = true;
       break;
     case Type::ChangeAmount:
-      send->set_amount (send_before_->get_amount_value ());
+      send->set_amount_in_amplitude (send_before_->get_current_amount_value ());
       successful = true;
       break;
     default:

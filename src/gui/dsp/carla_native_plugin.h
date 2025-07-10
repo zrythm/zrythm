@@ -16,7 +16,6 @@
 #  include "carla_wrapper.h"
 #endif
 
-class Port;
 namespace zrythm::gui::old_dsp::plugins
 {
 
@@ -64,15 +63,14 @@ struct CarlaPatchbayPortInfo
 class CarlaNativePlugin final : public QObject, public Plugin
 {
 public:
-  CarlaNativePlugin () = default;
   /**
    * Creates/initializes a plugin using the given setting.
    *
    * @throw ZrythmException If the plugin could not be created.
    */
   CarlaNativePlugin (
-    PortRegistry              &port_registry,
-    const PluginConfiguration &setting);
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry);
 
   /**
    * Deactivates, cleanups and frees the instance.
@@ -107,12 +105,12 @@ public:
   /**
    * Returns the plugin Port corresponding to the given parameter.
    */
-  ControlPort * get_port_from_param_id (uint32_t id);
+  dsp::ProcessorParameter * get_param_from_param_id (uint32_t id);
 
   /**
    * Returns the MIDI out port.
    */
-  MidiPort * get_midi_out_port ();
+  dsp::MidiPort * get_midi_out_port ();
 
   float get_param_value (uint32_t id);
 

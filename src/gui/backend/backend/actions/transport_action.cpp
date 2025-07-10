@@ -8,7 +8,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 

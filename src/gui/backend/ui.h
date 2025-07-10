@@ -18,8 +18,6 @@
 #include "utils/logger.h"
 #include "utils/types.h"
 
-class Port;
-
 /**
  * @addtogroup utils
  *

@@ -35,7 +35,8 @@ TEST_F (ZrythmFixture, SetAutomationTrackIndex)
   CLIP_EDITOR->set_region (region.get (), false);
 
   auto first_invisible_at = atl.get_first_invisible_at ();
-  atl.set_at_index (*first_invisible_at, first_vis_at->index_, false);
+  atl.set_automation_track_index (
+    *first_invisible_at, first_vis_at->index_, false);
 
   /* check that clip editor region can be found */
   CLIP_EDITOR->get_region ();
@@ -62,7 +63,7 @@ TEST_F (ZrythmFixture, GetMutedOnRegionIn2ndAutomationTrack)
   atl.set_at_visible (*new_at, true);
 
   /* move it after the clicked automation track */
-  atl.set_at_index (*new_at, first_vis_at->index_ + 1, true);
+  atl.set_automation_track_index (*new_at, first_vis_at->index_ + 1, true);
 
   /* create a region and set it as clip editor
    * region */

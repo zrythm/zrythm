@@ -1,17 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "zrythm-config.h"
-
-#include "engine/device_io/engine.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/midi_port.h"
+#include "dsp/midi_port.h"
 #include "utils/midi.h"
 
-MidiPort::MidiPort () = default;
-
+namespace zrythm::dsp
+{
 MidiPort::MidiPort (utils::Utf8String label, PortFlow flow)
-    : Port (std::move (label), PortType::Event, flow, 0.f, 1.f, 0.f)
+    : Port (std::move (label), PortType::Event, flow)
 {
 }
 
@@ -49,17 +45,9 @@ MidiPort::clear_buffer (std::size_t block_length)
 void
 MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
 {
-  if (ENUM_BITSET_TEST (id_->flags_, dsp::PortIdentifier::Flags::ManualPress))
-    {
-      midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
-      return;
-    }
-
   midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
 
-  const auto &id = id_;
-  const auto  owner_type = id->owner_type_;
-  auto       &events = midi_events_.active_events_;
+  auto &events = midi_events_.active_events_;
 
   /* if piano roll keys, add the notes to the piano roll "current notes" (to
    * show pressed keys in the UI) */
@@ -100,6 +88,7 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
     }
 #endif
 
+#if 0
   if (is_input () && owner_->should_sum_data_from_backend ())
     {
       // TODO
@@ -111,14 +100,14 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
       // utils::midi::midi_get_channel_0_to_15 (ev.raw_buffer_));
       // });
     }
+#endif
 
-  /* set midi capture if hardware - TODO */
+/* set midi capture if hardware - FIXME move elsewhere */
+#if 0
   if (owner_type == PortIdentifier::OwnerType::HardwareProcessor)
     {
       if (events.has_any ())
         {
-          AUDIO_ENGINE->trigger_midi_activity_.store (true);
-
           /* queue playback if recording and we should record on MIDI input */
           if (
             TRANSPORT->is_recording () && TRANSPORT->isPaused ()
@@ -141,8 +130,10 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
             }
         }
     }
+#endif
 
-  /* handle MIDI clock */
+// TODO: handle MIDI clock (this should be a separate processor)
+#if 0
   if (
     ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::MidiClock)
     && is_output ())
@@ -204,15 +195,16 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
                 {
                   uint8_t beat_msg = utils::midi::MIDI_CLOCK_BEAT;
                   events.add_raw (&beat_msg, 1, midi_time);
-#if 0
+#  if 0
                   z_debug ("(i = {}) time {} / {}", i, midi_time, time_nfo.local_offset + time_nfo.nframes_);
-#endif
+#  endif
                 }
             }
         }
 
       events.sort ();
     }
+#endif
 
   /* append data from each source */
   for (const auto &[src_port, conn] : port_sources_)
@@ -220,82 +212,25 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
       if (!conn->enabled_)
         continue;
 
-      assert (src_port->id_->type_ == PortType::Event);
-      const auto * src_midi_port = dynamic_cast<const MidiPort *> (src_port);
-
-      /* if hardware device connected to track processor input, only allow
-       * signal to pass if armed and MIDI channel is valid */
-      if (
-        src_port->id_->owner_type_ == PortIdentifier::OwnerType::HardwareProcessor
-        && owner_type == PortIdentifier::OwnerType::TrackProcessor)
-        {
-          /* skip if not armed */
-          if (!owner_->should_sum_data_from_backend ())
-            continue;
-
-          for (const auto &src_ev : src_midi_port->midi_events_.active_events_)
-            {
-              /* only copy events inside the current time range */
-              if (
-                src_ev.time_ < time_nfo.local_offset_
-                || src_ev.time_ >= time_nfo.local_offset_ + time_nfo.nframes_)
-                {
-                  continue;
-                }
-
-              /* only copy events on approved MIDI channels */
-              midi_byte_t channel = src_ev.raw_buffer_[0] & 0xf;
-              if (owner_->are_events_on_midi_channel_approved (channel))
-                {
-                  events.push_back (src_ev);
-                }
-            }
-        }
-      else
-        {
-          events.append (
-            src_midi_port->midi_events_.active_events_, time_nfo.local_offset_,
-            time_nfo.nframes_);
-        }
+      events.append (
+        src_port->midi_events_.active_events_, time_nfo.local_offset_,
+        time_nfo.nframes_);
     } /* foreach source */
 
-  /* send UI notification */
-  if (events.has_any ())
+  if (num_ring_buffer_readers_ > 0)
     {
-      owner_->on_midi_activity (*id_);
-    }
-
-  // FIXME: this is an ugly predicate to check if this is the last block to be
-  // procesed in this cycle
-  if (
-    time_nfo.local_offset_ + time_nfo.nframes_
-    == AUDIO_ENGINE->get_block_length ())
-    {
-      if (num_ring_buffer_readers_ > 0)
+      for (auto &ev : events | std::views::reverse)
         {
-          for (auto &ev : events | std::views::reverse)
+          if (midi_ring_->write_space () < 1)
             {
-              if (midi_ring_->write_space () < 1)
-                {
-                  midi_ring_->skip (1);
-                }
+              midi_ring_->skip (1);
+            }
 
-              ev.systime_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-              midi_ring_->write (ev);
-              // z_warning ("writing to ring for {}", get_label ());
-            }
-        }
-      else
-        {
-          if (events.has_any ())
-            {
-              last_midi_event_time_ =
-                Zrythm::getInstance ()->get_monotonic_time_usecs ();
-              // z_warning (
-              //   "wrote last event time {} for '{}'", last_midi_event_time_,
-              //   get_label ());
-              has_midi_events_.store (true);
-            }
+          // TODO
+          // ev.systime_ = Zrythm::getInstance ()->get_monotonic_time_usecs
+          // ();
+          midi_ring_->write (ev);
         }
     }
 }
+} // namespace zrythm::dsp

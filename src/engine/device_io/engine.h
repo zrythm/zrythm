@@ -5,13 +5,13 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/audio_port.h"
+#include "dsp/midi_port.h"
 #include "dsp/panning.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/session/control_room.h"
 #include "engine/session/sample_processor.h"
 #include "engine/session/transport.h"
-#include "gui/dsp/audio_port.h"
-#include "gui/dsp/midi_port.h"
 #include "utils/audio.h"
 #include "utils/concurrency.h"
 #include "utils/types.h"
@@ -53,7 +53,7 @@ enum class BounceMode : basic_enum_base_type_t
 /**
  * The audio engine.
  */
-class AudioEngine final : public IPortOwner
+class AudioEngine final
 {
 public:
   /**
@@ -150,18 +150,14 @@ public:
   /**
    * Closes any connections and free's data.
    */
-  ~AudioEngine () override;
+  ~AudioEngine ();
 
   auto &get_port_registry () { return *port_registry_; }
   auto &get_port_registry () const { return *port_registry_; }
+  auto &get_param_registry () { return *param_registry_; }
+  auto &get_param_registry () const { return *param_registry_; }
   structure::tracks::TrackRegistry &get_track_registry ();
   structure::tracks::TrackRegistry &get_track_registry () const;
-
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
-
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   /**
    * @param force_pause Whether to force transport
@@ -189,7 +185,7 @@ public:
    */
   void wait_n_cycles (int n);
 
-  void append_ports (std::vector<Port *> &ports);
+  void append_ports (std::vector<dsp::Port *> &ports);
 
   using BeatsPerBarGetter = std::function<int ()>;
   using BpmGetter = std::function<bpm_t ()>;
@@ -268,8 +264,8 @@ public:
     const AudioEngine     &other,
     utils::ObjectCloneType clone_type);
 
-  std::pair<AudioPort &, AudioPort &> get_monitor_out_ports ();
-  std::pair<AudioPort &, AudioPort &> get_dummy_input_ports ();
+  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_monitor_out_ports ();
+  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_dummy_input_ports ();
 
   /**
    * Queues MIDI note off to event queues.
@@ -332,7 +328,8 @@ private:
   void receive_midi_events (uint32_t nframes);
 
 private:
-  OptionalRef<PortRegistry> port_registry_;
+  OptionalRef<dsp::PortRegistry>               port_registry_;
+  OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
 
 public:
   /** Pointer to owner project, if any. */
@@ -361,6 +358,8 @@ public:
   /** The processing graph router. */
   std::unique_ptr<session::Router> router_;
 
+// TODO: these should be separate processors
+#if 0
   /**
    * MIDI Clock input TODO.
    *
@@ -374,6 +373,7 @@ public:
    * This port is exposed to the backend.
    */
   std::unique_ptr<MidiPort> midi_clock_out_;
+#endif
 
   /** The ControlRoom. */
   std::unique_ptr<session::ControlRoom> control_room_;
@@ -383,8 +383,8 @@ public:
    *
    * Will be ignored if NULL.
    */
-  std::optional<PortUuidReference> dummy_left_input_;
-  std::optional<PortUuidReference> dummy_right_input_;
+  std::optional<dsp::PortUuidReference> dummy_left_input_;
+  std::optional<dsp::PortUuidReference> dummy_right_input_;
 
   /**
    * Monitor - these should be the last ports in the signal
@@ -392,16 +392,8 @@ public:
    *
    * The L/R ports are exposed to the backend.
    */
-  std::optional<PortUuidReference> monitor_out_left_;
-  std::optional<PortUuidReference> monitor_out_right_;
-
-  /**
-   * Flag to tell the UI that this channel had MIDI activity.
-   *
-   * When processing this and setting it to 0, the UI should
-   * create a separate event using EVENTS_PUSH.
-   */
-  std::atomic_bool trigger_midi_activity_{ false };
+  std::optional<dsp::PortUuidReference> monitor_out_left_;
+  std::optional<dsp::PortUuidReference> monitor_out_right_;
 
   /**
    * Manual note press events from the piano roll.
@@ -413,7 +405,7 @@ public:
    * routing graph and fetch the events manually when processing the
    * corresponding track processor.
    */
-  std::unique_ptr<MidiPort> midi_editor_manual_press_;
+  std::unique_ptr<dsp::MidiPort> midi_editor_manual_press_;
 
   /**
    * Port used for receiving MIDI in messages for binding CC and other
@@ -421,7 +413,7 @@ public:
    *
    * This port is exposed to the backend.
    */
-  std::unique_ptr<MidiPort> midi_in_;
+  std::unique_ptr<dsp::MidiPort> midi_in_;
 
   /**
    * Number of frames/samples in the current cycle, per channel.

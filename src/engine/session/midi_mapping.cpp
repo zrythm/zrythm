@@ -7,23 +7,16 @@
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 
 namespace zrythm::engine::session
 {
-MidiMapping::MidiMapping (QObject * parent) : QObject (parent) { }
-
-void
-MidiMappings::init_loaded ()
+MidiMapping::MidiMapping (
+  dsp::ProcessorParameterRegistry &param_registry,
+  QObject *                        parent)
+    : QObject (parent), param_registry_ (param_registry)
 {
-  for (auto &mapping : mappings_)
-    {
-      auto dest_var = PROJECT->find_port_by_id (*mapping->dest_id_);
-      z_return_if_fail (dest_var);
-      std::visit ([&] (auto &&dest) { mapping->dest_ = dest; }, *dest_var);
-    }
 }
 
 void
@@ -38,31 +31,31 @@ init_from (
   obj.enabled_.store (other.enabled_.load ());
 }
 
+MidiMappings::MidiMappings (dsp::ProcessorParameterRegistry &param_registry)
+    : param_registry_ (param_registry)
+{
+}
+
 void
 MidiMappings::bind_at (
-  std::array<midi_byte_t, 3>       buf,
-  std::optional<utils::Utf8String> device_id,
-  Port                            &dest_port,
-  int                              idx,
-  bool                             fire_events)
+  std::array<midi_byte_t, 3>           buf,
+  std::optional<utils::Utf8String>     device_id,
+  dsp::ProcessorParameterUuidReference dest_port,
+  int                                  idx,
+  bool                                 fire_events)
 {
-  auto mapping = std::make_unique<MidiMapping> ();
+  auto mapping = std::make_unique<MidiMapping> (param_registry_);
   mapping->key_ = buf;
   mapping->device_id_ = device_id;
-  mapping->dest_id_ = dest_port.get_uuid ();
-  mapping->dest_ = &dest_port;
+  mapping->dest_id_ = dest_port;
   mapping->enabled_.store (true);
 
   mappings_.insert (mappings_.begin () + idx, std::move (mapping));
 
   auto str = utils::midi::midi_ctrl_change_get_description (buf);
-  if (
-    (ENUM_BITSET_TEST (
-      dest_port.id_->flags_, dsp::PortIdentifier::Flags::MidiAutomatable))
-    == 0)
-    {
-      z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get_label ());
-    }
+  z_info (
+    "bounded MIDI mapping from {} to {}", str,
+    dest_port.get_object_as<dsp::ProcessorParameter> ()->label ());
 
   if (fire_events && ZRYTHM_HAVE_UI)
     {
@@ -95,23 +88,21 @@ MidiMappings::get_mapping_index (const MidiMapping &mapping) const
 void
 MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 {
-  z_return_if_fail (dest_);
-
-  if (dest_->id_->type_ == dsp::PortType::Control)
+  auto * dest = dest_id_->get_object_as<dsp::ProcessorParameter> ();
+  /* if toggle, reverse value */
+  if (dest->range ().type_ == dsp::ParameterRange::Type::Toggle)
     {
-      auto * dest = dynamic_cast<ControlPort *> (dest_);
-      /* if toggle, reverse value */
-      if (ENUM_BITSET_TEST (dest->id_->flags_, PortIdentifier::Flags::Toggle))
-        {
-          dest->set_toggled (!dest->is_toggled (), true);
-        }
-      /* else if not toggle set the control value received */
-      else
-        {
-          float normalized_val = static_cast<float> (buf[2]) / 127.f;
-          dest->set_control_value (normalized_val, true, true);
-        }
+      dest->setBaseValue (
+        dest->range ().is_toggled (dest->baseValue ()) ? 0.f : 1.f);
     }
+  /* else if not toggle set the control value received */
+  else
+    {
+      float normalized_val = static_cast<float> (buf[2]) / 127.f;
+      dest->setBaseValue (normalized_val);
+    }
+    // TODO port these from MidiPort's to parameters
+#if 0
   else if (dest_->id_->type_ == dsp::PortType::Event)
     {
       /* FIXME these are called during processing they should be queued as UI
@@ -154,6 +145,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
             EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, nullptr); */
         }
     }
+#endif
 }
 
 void
@@ -189,13 +181,13 @@ MidiMappings::apply (const midi_byte_t * buf)
 
 int
 MidiMappings::get_for_port (
-  const Port                  &dest_port,
-  std::vector<MidiMapping *> * arr) const
+  const dsp::ProcessorParameter &dest_port,
+  std::vector<MidiMapping *> *   arr) const
 {
   int count = 0;
   for (const auto &mapping : mappings_)
     {
-      if (mapping->dest_ == &dest_port)
+      if (mapping->dest_id_->id () == dest_port.get_uuid ())
         {
           if (arr != nullptr)
             {
@@ -210,6 +202,11 @@ MidiMappings::get_for_port (
 void
 from_json (const nlohmann::json &j, MidiMappings &mappings)
 {
-  j.at (MidiMappings::kMappingsKey).get_to (mappings.mappings_);
+  for (const auto &mapping_json : j.at (MidiMappings::kMappingsKey))
+    {
+      auto mapping = std::make_unique<MidiMapping> (mappings.param_registry_);
+      from_json (mapping_json, *mapping);
+      mappings.mappings_.push_back (std::move (mapping));
+    }
 }
 }

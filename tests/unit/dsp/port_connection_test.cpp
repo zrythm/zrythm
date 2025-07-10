@@ -10,8 +10,8 @@ namespace zrythm::dsp
 class PortConnectionTest : public ::testing::Test
 {
 protected:
-  const PortIdentifier::PortUuid kTestSrcId{ QUuid::createUuid () };
-  const PortIdentifier::PortUuid kTestDestId{ QUuid::createUuid () };
+  const PortUuid kTestSrcId{ QUuid::createUuid () };
+  const PortUuid kTestDestId{ QUuid::createUuid () };
 
   void SetUp () override
   {
@@ -31,20 +31,21 @@ TEST_F (PortConnectionTest, DefaultConstruction)
   EXPECT_FLOAT_EQ (conn.multiplier_, 1.0f);
   EXPECT_FALSE (conn.locked_);
   EXPECT_TRUE (conn.enabled_);
-  EXPECT_FLOAT_EQ (conn.base_value_, 0.0f);
+  EXPECT_FALSE (conn.bipolar_);
 }
 
 TEST_F (PortConnectionTest, ParameterizedConstruction)
 {
-  const PortIdentifier::PortUuid src{ QUuid::createUuid () };
-  const PortIdentifier::PortUuid dest{ QUuid::createUuid () };
-  PortConnection                 conn (src, dest, 0.5f, true, false);
+  const PortUuid src{ QUuid::createUuid () };
+  const PortUuid dest{ QUuid::createUuid () };
+  PortConnection conn (src, dest, 0.5f, true, false);
 
   EXPECT_EQ (conn.src_id_, src);
   EXPECT_EQ (conn.dest_id_, dest);
   EXPECT_FLOAT_EQ (conn.multiplier_, 0.5f);
   EXPECT_TRUE (conn.locked_);
   EXPECT_FALSE (conn.enabled_);
+  EXPECT_FALSE (conn.bipolar_);
 }
 
 TEST_F (PortConnectionTest, UpdateMethod)
@@ -61,8 +62,7 @@ TEST_F (PortConnectionTest, EqualityOperator)
   PortConnection same1 (kTestSrcId, kTestDestId, 1.0f, false, true);
   PortConnection same2 (kTestSrcId, kTestDestId, 1.0f, false, true);
   PortConnection different (
-    kTestSrcId, PortIdentifier::PortUuid{ QUuid::createUuid () }, 0.5f, true,
-    false);
+    kTestSrcId, PortUuid{ QUuid::createUuid () }, 0.5f, true, false);
 
   EXPECT_TRUE (same1 == same2);
   EXPECT_FALSE (same1 == different);
@@ -71,6 +71,8 @@ TEST_F (PortConnectionTest, EqualityOperator)
 
 TEST_F (PortConnectionTest, JsonSerialization)
 {
+  default_connection_->set_bipolar (true);
+
   // Serialize
   nlohmann::json j;
   to_json (j, *default_connection_);
@@ -85,14 +87,13 @@ TEST_F (PortConnectionTest, JsonSerialization)
   EXPECT_FLOAT_EQ (deserialized.multiplier_, 1.0f);
   EXPECT_FALSE (deserialized.locked_);
   EXPECT_TRUE (deserialized.enabled_);
-  EXPECT_FLOAT_EQ (deserialized.base_value_, 0.0f);
+  EXPECT_TRUE (deserialized.bipolar_);
 }
 
 TEST_F (PortConnectionTest, CloneBehavior)
 {
   // Create a modified connection to clone
   PortConnection original (kTestSrcId, kTestDestId, 0.8f, true, false);
-  original.base_value_ = 0.5f;
 
   // Clone it
   auto clone = utils::clone_unique (original);
@@ -103,7 +104,7 @@ TEST_F (PortConnectionTest, CloneBehavior)
   EXPECT_FLOAT_EQ (clone->multiplier_, original.multiplier_);
   EXPECT_EQ (clone->locked_, original.locked_);
   EXPECT_EQ (clone->enabled_, original.enabled_);
-  EXPECT_FLOAT_EQ (clone->base_value_, original.base_value_);
+  EXPECT_EQ (clone->bipolar_, original.bipolar_);
 }
 
 } // namespace zrythm::dsp

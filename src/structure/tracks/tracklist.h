@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "dsp/parameter.h"
+#include "dsp/port.h"
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_span.h"
 #include "structure/tracks/track.h"
@@ -63,14 +65,16 @@ public:
 
 public:
   explicit Tracklist (
-    Project                     &project,
-    PortRegistry                &port_registry,
-    TrackRegistry               &track_registry,
-    dsp::PortConnectionsManager &port_connections_manager,
-    const dsp::TempoMap         &tempo_map);
+    Project                         &project,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    TrackRegistry                   &track_registry,
+    dsp::PortConnectionsManager     &port_connections_manager,
+    const dsp::TempoMap             &tempo_map);
   explicit Tracklist (
     engine::session::SampleProcessor &sample_processor,
-    PortRegistry                     &port_registry,
+    dsp::PortRegistry                &port_registry,
+    dsp::ProcessorParameterRegistry  &param_registry,
     TrackRegistry                    &track_registry,
     dsp::PortConnectionsManager      &port_connections_manager,
     const dsp::TempoMap              &tempo_map);
@@ -109,19 +113,24 @@ public:
    * Initializes the tracklist when loading a project.
    */
   void init_loaded (
-    PortRegistry                      &port_registry,
+    dsp::PortRegistry                 &port_registry,
+    dsp::ProcessorParameterRegistry   &param_registry,
     Project *                          project,
     engine::session::SampleProcessor * sample_processor);
 
-  void init_loaded (PortRegistry &port_registry, Project &project)
+  void init_loaded (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    Project                         &project)
   {
-    init_loaded (port_registry, &project, nullptr);
+    init_loaded (port_registry, param_registry, &project, nullptr);
   }
   void init_loaded (
-    PortRegistry                     &port_registry,
+    dsp::PortRegistry                &port_registry,
+    dsp::ProcessorParameterRegistry  &param_registry,
     engine::session::SampleProcessor &sample_processor)
   {
-    init_loaded (port_registry, nullptr, &sample_processor);
+    init_loaded (port_registry, param_registry, nullptr, &sample_processor);
   }
 
   /**
@@ -225,14 +234,14 @@ public:
    * Tracklist as the given one (ie, pinned or not).
    */
   std::optional<TrackPtrVariant>
-  get_prev_visible_track (Track::TrackUuid track_id) const;
+  get_prev_visible_track (Track::Uuid track_id) const;
 
   /**
    * Returns the next visible Track in the same
    * Tracklist as the given one (ie, pinned or not).
    */
   std::optional<TrackPtrVariant>
-  get_next_visible_track (Track::TrackUuid track_id) const;
+  get_next_visible_track (Track::Uuid track_id) const;
 
   /**
    * Returns the index of the last Track.
@@ -268,7 +277,7 @@ public:
    * (ie, pinned or not).
    */
   std::optional<TrackPtrVariant>
-  get_visible_track_after_delta (Track::TrackUuid track_id, int delta) const;
+  get_visible_track_after_delta (Track::Uuid track_id, int delta) const;
 
   /**
    * Returns the number of visible Tracks between src and dest (negative if
@@ -277,9 +286,8 @@ public:
    * The caller is responsible for checking that both tracks are in the same
    * tracklist (ie, pinned or not).
    */
-  int get_visible_track_diff (
-    Track::TrackUuid src_track,
-    Track::TrackUuid dest_track) const;
+  int
+  get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track) const;
 
   /**
    * Multiplies all tracks' heights and returns if the operation was valid.
@@ -308,14 +316,6 @@ public:
    */
   void
   clear_selections_for_object_siblings (const ArrangerObject::Uuid &object_id);
-
-  /**
-   * @brief Gets the automation track for a port.
-   *
-   * This is optimized via a lookup table.
-   */
-  AutomationTrack *
-  get_automation_track_for_port (const Port::Uuid &port_id) const;
 
 // TODO
 #if 0
@@ -434,7 +434,7 @@ public:
     return index < pinned_tracks_cutoff_;
   }
 
-  auto get_track_index (const Track::TrackUuid &track_id) const
+  auto get_track_index (const Track::Uuid &track_id) const
   {
     return std::distance (
       tracks_.begin (),
@@ -455,7 +455,7 @@ public:
     return tracks_.at (index);
   }
 
-  bool is_track_pinned (Track::TrackUuid track_id) const
+  bool is_track_pinned (Track::Uuid track_id) const
   {
     return is_track_pinned (get_track_index (track_id));
   }
@@ -546,7 +546,7 @@ private:
    *
    * @param port_id
    */
-  void disconnect_port (const Port::Uuid &port_id);
+  void disconnect_port (const dsp::Port::Uuid &port_id);
 
   /**
    * Disconnects the channel from the processing chain and removes any plugins
@@ -580,9 +580,10 @@ private:
 private:
   const dsp::TempoMap &tempo_map_;
 
-  OptionalRef<TrackRegistry>  track_registry_;
-  OptionalRef<PortRegistry>   port_registry_;
-  OptionalRef<PluginRegistry> plugin_registry_;
+  OptionalRef<TrackRegistry>                   track_registry_;
+  OptionalRef<dsp::PortRegistry>               port_registry_;
+  OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
+  OptionalRef<PluginRegistry>                  plugin_registry_;
 
   /**
    * All tracks that exist.
@@ -637,13 +638,6 @@ private:
 
   /** Pointer to owner sample processor, if any. */
   engine::session::SampleProcessor * sample_processor_ = nullptr;
-
-  /**
-   * @brief Map of PortUuid to AutomationTrack's.
-   *
-   * This is an optimization to avoid lookups.
-   */
-  mutable QHash<Port::Uuid, AutomationTrack *> port_to_at_mappings_;
 
 public:
   /** Pointer to owner project, if any. */

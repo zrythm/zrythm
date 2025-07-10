@@ -44,11 +44,11 @@ test_modulator_connection (
       zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK, 0,
       setting));
 
-  const auto         &macro = P_MODULATOR_TRACK->modulator_macro_processors_[0];
-  const auto         &pl = P_MODULATOR_TRACK->modulators_[0];
-  CVPort *            pl_cv_port = nullptr;
-  ControlPort *       pl_control_port = nullptr;
-  std::vector<Port *> ports;
+  const auto   &macro = P_MODULATOR_TRACK->modulator_macro_processors_[0];
+  const auto   &pl = P_MODULATOR_TRACK->modulators_[0];
+  CVPort *      pl_cv_port = nullptr;
+  ControlPort * pl_control_port = nullptr;
+  std::vector<dsp::Port *> ports;
   pl->append_ports (ports);
   for (const auto &port : ports)
     {
@@ -125,9 +125,9 @@ _test_port_connection (
     TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 1);
 
   /* connect a plugin CV out to the track's balance */
-  CVPort *            src_port1 = nullptr;
-  CVPort *            src_port2 = nullptr;
-  std::vector<Port *> ports;
+  CVPort *                 src_port1 = nullptr;
+  CVPort *                 src_port2 = nullptr;
+  std::vector<dsp::Port *> ports;
   src_track->append_ports (ports, F_INCLUDE_PLUGINS);
   for (const auto &port : ports)
     {
@@ -154,7 +154,7 @@ _test_port_connection (
   ports.clear ();
 
   auto get_fader_stereo_balance_port = [&target_track] () -> ControlPort * {
-    std::vector<Port *> pts;
+    std::vector<dsp::Port *> pts;
     target_track->append_ports (pts, F_INCLUDE_PLUGINS);
     for (auto * port : pts)
       {

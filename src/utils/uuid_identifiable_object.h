@@ -145,8 +145,12 @@ public:
   }
 
   UuidReference (const UuidReference &other)
-      : UuidReference (other.id (), other.get_registry ())
+      : UuidReference (other.get_registry ())
   {
+    if (other.id_.has_value ())
+      {
+        set_id (other.id_.value ());
+      }
   }
   UuidReference &operator= (const UuidReference &other)
   {
@@ -211,7 +215,9 @@ public:
   }
 
   // Convenience getter
-  template <typename ObjectT> ObjectT * get_object_as () const
+  template <typename ObjectT>
+  ObjectT * get_object_as () const
+    requires IsInVariant<ObjectT *, VariantType>
   {
     return std::get<ObjectT *> (get_object ());
   }
@@ -264,8 +270,10 @@ private:
   }
   friend void from_json (const nlohmann::json &j, UuidReference &ref)
   {
+    auto tmp = ref;
     j.at (kIdKey).get_to (ref.id_);
     ref.acquire_ref ();
+    tmp.release_ref ();
   }
 
   friend bool operator== (const UuidReference &lhs, const UuidReference &rhs)

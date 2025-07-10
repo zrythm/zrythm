@@ -313,7 +313,7 @@ public:
   /**
    * Direct out tracks of the original tracks.
    */
-  std::vector<std::optional<dsp::PortIdentifier::TrackUuid>> out_track_uuids_;
+  std::vector<std::optional<Track::Uuid>> out_track_uuids_;
 
   /**
    * Number of tracks under folder affected.

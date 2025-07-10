@@ -28,8 +28,6 @@ public:
     BeatUnitChange,
   };
 
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
-
   TransportAction (QObject * parent = nullptr);
 
   /**

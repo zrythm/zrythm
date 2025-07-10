@@ -34,19 +34,18 @@ struct PluginImportData;
  *
  * @see Track
  */
-class Channel final : public QObject, public IPortOwner
+class Channel final : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (Fader * fader READ fader CONSTANT)
   Q_PROPERTY (Fader * preFader READ preFader CONSTANT)
-  Q_PROPERTY (AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
-  Q_PROPERTY (AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
-  Q_PROPERTY (MidiPort * midiOut READ getMidiOut CONSTANT)
+  Q_PROPERTY (dsp::AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
+  Q_PROPERTY (dsp::AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
+  Q_PROPERTY (dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
 
 public:
   using PortType = zrythm::dsp::PortType;
-  using PortIdentifier = dsp::PortIdentifier;
   using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
   using Plugin = gui::old_dsp::plugins::Plugin;
   using PluginDescriptor = zrythm::plugins::PluginDescriptor;
@@ -74,19 +73,21 @@ public:
    * instance.
    */
   explicit Channel (
-    TrackRegistry            &track_registry,
-    PluginRegistry           &plugin_registry,
-    PortRegistry             &port_registry,
-    OptionalRef<ChannelTrack> track);
+    TrackRegistry                   &track_registry,
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    OptionalRef<ChannelTrack>        track);
 
   /**
    * To be used when deserializing or cloning an existing identity.
    */
   explicit Channel (
-    TrackRegistry  &track_registry,
-    PluginRegistry &plugin_registry,
-    PortRegistry   &port_registry)
-      : Channel (track_registry, plugin_registry, port_registry, {})
+    TrackRegistry                   &track_registry,
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry)
+      : Channel (track_registry, plugin_registry, port_registry, param_registry, {})
   {
   }
 
@@ -103,21 +104,21 @@ public:
   // QML Interface
   // ============================================================================
 
-  Fader *     fader () const { return fader_.get (); }
-  Fader *     preFader () const { return prefader_.get (); }
-  AudioPort * getLeftAudioOut () const
+  Fader *          fader () const { return fader_.get (); }
+  Fader *          preFader () const { return prefader_.get (); }
+  dsp::AudioPort * getLeftAudioOut () const
   {
     return stereo_out_left_id_.has_value ()
              ? std::addressof (get_stereo_out_ports ().first)
              : nullptr;
   }
-  AudioPort * getRightAudioOut () const
+  dsp::AudioPort * getRightAudioOut () const
   {
     return stereo_out_left_id_.has_value ()
              ? std::addressof (get_stereo_out_ports ().second)
              : nullptr;
   }
-  MidiPort * getMidiOut () const
+  dsp::MidiPort * getMidiOut () const
   {
     return midi_out_id_.has_value () ? std::addressof (get_midi_out_port ()) : nullptr;
   }
@@ -130,22 +131,16 @@ public:
    */
   void init ();
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
-
-  bool should_bounce_to_master (utils::audio::BounceStep step) const override;
-
-  MidiPort &get_midi_out_port () const
+  dsp::MidiPort &get_midi_out_port () const
   {
-    return *std::get<MidiPort *> (midi_out_id_->get_object ());
+    return *std::get<dsp::MidiPort *> (midi_out_id_->get_object ());
   }
-  std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
+  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
   {
-    auto * l = std::get<AudioPort *> (stereo_out_left_id_->get_object ());
-    auto * r = std::get<AudioPort *> (stereo_out_right_id_->get_object ());
+    auto * l = std::get<dsp::AudioPort *> (stereo_out_left_id_->get_object ());
+    auto * r = std::get<dsp::AudioPort *> (stereo_out_right_id_->get_object ());
     return { *l, *r };
   }
 
@@ -223,13 +218,6 @@ public:
   // void reconnect_ext_input_ports (engine::device_io::AudioEngine &engine);
 
   /**
-   * Convenience function to get the automation track of the given type for
-   * the channel.
-   */
-  AutomationTrack *
-  get_automation_track (PortIdentifier::Flags port_flags) const;
-
-  /**
    * @brief Returns all existing plugins in the channel.
    *
    * @param pls Vector to add plugins to.
@@ -243,26 +231,6 @@ public:
    * with cloned plugins (calling init_loaded() on each), which are then pasted.
    */
   void paste_plugins_to_slot (PluginSpan plugins, PluginSlot slot);
-
-  /**
-   * Gets whether mono compatibility is enabled.
-   */
-  bool get_mono_compat_enabled ();
-
-  /**
-   * Sets whether mono compatibility is enabled.
-   */
-  void set_mono_compat_enabled (bool enabled, bool fire_events);
-
-  /**
-   * Gets whether mono compatibility is enabled.
-   */
-  bool get_swap_phase ();
-
-  /**
-   * Sets whether mono compatibility is enabled.
-   */
-  void set_swap_phase (bool enabled, bool fire_events);
 
   std::optional<PluginPtrVariant> get_plugin_at_slot (PluginSlot slot) const;
 
@@ -314,20 +282,7 @@ public:
   /**
    * Appends all channel ports and optionally plugin ports to the array.
    */
-  void append_ports (std::vector<Port *> &ports, bool include_plugins);
-
-  void set_phase (float phase);
-
-  float get_phase () const;
-
-  void set_balance_control (float val);
-
-  /**
-   * Adds to (or subtracts from) the pan.
-   */
-  void add_balance_control (float pan);
-
-  float get_balance_control () const;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins);
 
   /**
    * @brief Set the track ptr to the channel and all its internals that
@@ -457,14 +412,15 @@ private:
   /**
    * Disconnects all hardware inputs from the port.
    */
-  void disconnect_port_hardware_inputs (Port &port);
+  void disconnect_port_hardware_inputs (dsp::Port &port);
 
   // void disconnect_port_hardware_inputs (StereoPorts &ports);
 
 public:
-  TrackRegistry  &track_registry_;
-  PortRegistry   &port_registry_;
-  PluginRegistry &plugin_registry_;
+  TrackRegistry                   &track_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
+  PluginRegistry                  &plugin_registry_;
 
   /**
    * The MIDI effect strip on instrument/MIDI tracks.
@@ -548,14 +504,14 @@ public:
    * MIDI output for sending MIDI signals to other destinations, such as
    * other channels when directly routed (eg MIDI track to ins track).
    */
-  std::optional<PortUuidReference> midi_out_id_;
+  std::optional<dsp::PortUuidReference> midi_out_id_;
 
   /*
    * Ports for direct (track-to-track) routing with the exception of
    * master, which will route the output to monitor in.
    */
-  std::optional<PortUuidReference> stereo_out_left_id_;
-  std::optional<PortUuidReference> stereo_out_right_id_;
+  std::optional<dsp::PortUuidReference> stereo_out_left_id_;
+  std::optional<dsp::PortUuidReference> stereo_out_right_id_;
 
   /**
    * Whether or not output_pos corresponds to a Track or not.

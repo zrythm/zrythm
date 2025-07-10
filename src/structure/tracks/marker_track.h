@@ -33,9 +33,10 @@ public:
   using Marker = arrangement::Marker;
 
 public:
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   /**
    * Removes all objects from the marker track.
@@ -72,8 +73,8 @@ public:
     const MarkerTrack     &other,
     utils::ObjectCloneType clone_type);
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
   std::string get_field_name_for_serialization (const Marker *) const override
   {

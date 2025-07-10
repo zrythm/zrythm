@@ -16,7 +16,7 @@ def colorize(text, color):
     return f"{colors[color]}{text}{colors['reset']}"
 
 def get_git_tracked_files():
-    result = subprocess.run(['git', 'ls-files', '*.cpp', '*.hpp', '*.c', '*.h'], 
+    result = subprocess.run(['git', 'ls-files', '*.cpp', '*.hpp', '*.c', '*.h'],
                             capture_output=True, text=True, check=True)
     return result.stdout.splitlines()
 
@@ -35,18 +35,18 @@ def should_ignore(file_path, ignore_patterns):
 def run_clang_format(dry_run):
     ignore_patterns = read_ignore_patterns('.clang-format-ignore')
     files = get_git_tracked_files()
-    
+
     formatting_issues_found = False
-    
+
     for file in files:
         if not should_ignore(file, ignore_patterns):
-            
+
             with open(file, 'r', encoding='utf-8') as f:
                 original = f.read()
-            
-            formatted = subprocess.run(['clang-format', file], 
+
+            formatted = subprocess.run(['clang-format', file],
                                        capture_output=True, text=True).stdout
-            
+
             if original != formatted:
                 formatting_issues_found = True
                 print(f"Formatting issues in {file}:")
@@ -63,12 +63,12 @@ def run_clang_format(dry_run):
                         sys.stdout.write(colorize(line, 'red'))
                     else:
                         sys.stdout.write(line)
-                
-            
+
+
                 if not dry_run:
                     with open(file, 'w', encoding='utf-8') as f:
                         f.write(formatted)
-    
+
     if dry_run and formatting_issues_found:
         sys.exit(1)
 

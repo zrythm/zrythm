@@ -14,23 +14,34 @@
 namespace zrythm::structure::tracks
 {
 ChordTrack::ChordTrack (
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  TrackRegistry                &track_registry,
-  PluginRegistry               &plugin_registry,
-  PortRegistry                 &port_registry,
-  ArrangerObjectRegistry       &obj_registry,
-  bool                          new_identity)
+  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+  TrackRegistry                   &track_registry,
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  ArrangerObjectRegistry          &obj_registry,
+  bool                             new_identity)
     : Track (
         Track::Type::Chord,
         PortType::Event,
         PortType::Event,
         plugin_registry,
         port_registry,
+        param_registry,
         obj_registry),
-      AutomatableTrack (file_audio_source_registry, port_registry, new_identity),
-      ProcessableTrack (port_registry, new_identity),
-      RecordableTrack (port_registry, new_identity),
-      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity),
+      AutomatableTrack (
+        file_audio_source_registry,
+        port_registry,
+        param_registry,
+        new_identity),
+      ProcessableTrack (port_registry, param_registry, new_identity),
+      RecordableTrack (port_registry, param_registry, new_identity),
+      ChannelTrack (
+        track_registry,
+        plugin_registry,
+        port_registry,
+        param_registry,
+        new_identity),
       arrangement::ArrangerObjectOwner<
         ChordRegion> (obj_registry, file_audio_source_registry, *this),
       arrangement::ArrangerObjectOwner<
@@ -79,7 +90,8 @@ init_from (
 }
 
 void
-ChordTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
+ChordTrack::append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+  const
 {
   ChannelTrack::append_member_ports (ports, include_plugins);
   ProcessableTrack::append_member_ports (ports, include_plugins);
@@ -129,14 +141,15 @@ ChordTrack::set_playback_caches ()
 
 void
 ChordTrack::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded (plugin_registry, port_registry);
-  AutomatableTrack::init_loaded (plugin_registry, port_registry);
-  ProcessableTrack::init_loaded (plugin_registry, port_registry);
-  RecordableTrack::init_loaded (plugin_registry, port_registry);
+  ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry, param_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
+  RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
 }
 
 auto

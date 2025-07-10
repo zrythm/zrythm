@@ -314,11 +314,6 @@ using FileAudioSourceRegistry =
 using FileAudioSourceUuidReference =
   utils::UuidReference<FileAudioSourceRegistry>;
 
-using FileAudioSourceResolverFunc =
-  std::function<FileAudioSource *(const FileAudioSource::Uuid &clip_id)>;
-using RegisterNewFileAudioSourceFunc =
-  std::function<void (std::shared_ptr<FileAudioSource>)>;
-
 } // namespace zrythm::dsp
 
 DEFINE_UUID_HASH_SPECIALIZATION (zrythm::dsp::FileAudioSource::Uuid)

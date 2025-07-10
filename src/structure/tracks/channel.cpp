@@ -6,6 +6,7 @@
 #include <ranges>
 
 #include "dsp/midi_event.h"
+#include "dsp/port.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
 #include "engine/session/router.h"
@@ -14,7 +15,6 @@
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/port.h"
 #include "plugins/plugin_slot.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/automation_tracklist.h"
@@ -33,12 +33,13 @@ namespace zrythm::structure::tracks
 {
 
 Channel::Channel (
-  TrackRegistry            &track_registry,
-  PluginRegistry           &plugin_registry,
-  PortRegistry             &port_registry,
-  OptionalRef<ChannelTrack> track)
+  TrackRegistry                   &track_registry,
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  OptionalRef<ChannelTrack>        track)
     : track_registry_ (track_registry), port_registry_ (port_registry),
-      plugin_registry_ (plugin_registry)
+      param_registry_ (param_registry), plugin_registry_ (plugin_registry)
 {
   if (track.has_value ())
     {
@@ -50,20 +51,25 @@ Channel::Channel (
         {
         case PortType::Audio:
           {
-            stereo_out_left_id_ = get_port_registry ().create_object<AudioPort> (
-              u8"Stereo out L", dsp::PortFlow::Output);
-            stereo_out_right_id_ = get_port_registry ().create_object<AudioPort> (
-              u8"Stereo out R", dsp::PortFlow::Output);
-            get_stereo_out_ports ().first.id_->sym_ = u8"stereo_out_l";
-            get_stereo_out_ports ().second.id_->sym_ = u8"stereo_out_r";
+            stereo_out_left_id_ =
+              get_port_registry ().create_object<dsp::AudioPort> (
+                u8"Stereo out L", dsp::PortFlow::Output);
+            stereo_out_right_id_ =
+              get_port_registry ().create_object<dsp::AudioPort> (
+                u8"Stereo out R", dsp::PortFlow::Output);
+            get_stereo_out_ports ().first.set_symbol (u8"stereo_out_l");
+            get_stereo_out_ports ().second.set_symbol (u8"stereo_out_r");
+            get_stereo_out_ports ().first.set_full_designation_provider (this);
+            get_stereo_out_ports ().second.set_full_designation_provider (this);
           }
           break;
         case PortType::Event:
           {
-            midi_out_id_ = get_port_registry ().create_object<MidiPort> (
+            midi_out_id_ = get_port_registry ().create_object<dsp::MidiPort> (
               utils::Utf8String::from_qstring (QObject::tr ("MIDI out")),
               dsp::PortFlow::Output);
-            get_midi_out_port ().id_->sym_ = u8"midi_out";
+            get_midi_out_port ().set_symbol (u8"midi_out");
+            get_midi_out_port ().set_full_designation_provider (this);
           }
           break;
         default:
@@ -98,6 +104,8 @@ init_from (Channel &obj, const Channel &other, utils::ObjectCloneType clone_type
     }
   else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
+// TODO
+#if 0
       const auto clone_from_registry = [] (auto &vec, const auto &other_vec) {
         for (const auto &[index, other_el] : utils::views::enumerate (other_vec))
           {
@@ -106,17 +114,18 @@ init_from (Channel &obj, const Channel &other, utils::ObjectCloneType clone_type
                 vec[index] = (other_el->clone_new_identity ());
               }
           }
-      };
+        };
 
-      clone_from_registry (obj.midi_fx_, other.midi_fx_);
-      clone_from_registry (obj.inserts_, other.inserts_);
-      if (other.instrument_.has_value ())
+        clone_from_registry (obj.midi_fx_, other.midi_fx_);
+        clone_from_registry (obj.inserts_, other.inserts_);
+        if (other.instrument_.has_value ())
         {
           obj.instrument_ = other.instrument_->clone_new_identity ();
         }
 
-      // Rest TODO
-      throw std::runtime_error ("not implemented");
+        // Rest TODO
+        throw std::runtime_error ("not implemented");
+#endif
     }
 }
 
@@ -142,22 +151,15 @@ Channel::set_track_ptr (ChannelTrack &track)
     }
 }
 
-void
-Channel::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-  const
-{
-  id.track_id_ = get_track ().get_uuid ();
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::Channel;
-}
-
 utils::Utf8String
-Channel::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Channel::get_full_designation_for_port (const dsp::Port &port) const
 {
   const auto &tr = get_track ();
   return utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("{}/{}", tr.get_name (), id.label_));
+    fmt::format ("{}/{}", tr.get_name (), port.get_label ()));
 }
 
+#if 0
 bool
 Channel::should_bounce_to_master (utils::audio::BounceStep step) const
 {
@@ -168,6 +170,7 @@ Channel::should_bounce_to_master (utils::audio::BounceStep step) const
   const auto &track = get_track ();
   return !track.is_master () && track.bounce_to_master_;
 }
+#endif
 
 void
 Channel::connect_no_prev_no_next (Channel::Plugin &pl)
@@ -390,12 +393,9 @@ Channel::connect_plugin_to_prefader (Plugin &pl)
     {
       for (
         auto * out_port :
-        pl.get_output_port_span ().get_elements_by_type<MidiPort> ())
+        pl.get_output_port_span ().get_elements_by_type<dsp::MidiPort> ())
         {
-          if (
-            ENUM_BITSET_TEST (
-              out_port->id_->flags_, PortIdentifier::Flags::SupportsMidi)
-            && out_port->id_->flow_ == dsp::PortFlow::Output)
+          if (out_port->is_output ())
             {
               mgr->add_default_connection (
                 out_port->get_uuid (), midi_out_id_->id (), true);
@@ -426,7 +426,9 @@ Channel::disconnect_plugin_from_prefader (Plugin &pl)
       std::visit (
         [&] (auto &&out_port) {
           using PortT = base_type<decltype (out_port)>;
-          if (type == dsp::PortType::Audio && std::is_same_v<PortT, AudioPort>)
+          if (
+            type == dsp::PortType::Audio
+            && std::is_same_v<PortT, dsp::AudioPort>)
             {
               if (port_connections_mgr->connection_exists (
                     out_port->get_uuid (), prefader_->get_stereo_in_left_id ()))
@@ -443,9 +445,7 @@ Channel::disconnect_plugin_from_prefader (Plugin &pl)
                 }
             }
           else if (
-            type == dsp::PortType::Event && std::is_same_v<PortT, MidiPort>
-            && ENUM_BITSET_TEST (
-              out_port->id_->flags_, PortIdentifier::Flags::SupportsMidi))
+            type == dsp::PortType::Event && std::is_same_v<PortT, dsp::MidiPort>)
             {
               if (port_connections_mgr->connection_exists (
                     out_port->get_uuid (), prefader_->get_midi_in_id ()))
@@ -521,8 +521,10 @@ Channel::init_loaded ()
   prefader_->track_ = track_;
   fader_->track_ = track_;
 
-  prefader_->init_loaded (port_registry_, track_, nullptr, nullptr);
-  fader_->init_loaded (port_registry_, track_, nullptr, nullptr);
+  prefader_->init_loaded (
+    port_registry_, param_registry_, track_, nullptr, nullptr);
+  fader_->init_loaded (
+    port_registry_, param_registry_, track_, nullptr, nullptr);
 
   auto init_plugin = [&] (auto &plugin_id, PluginSlot slot) {
     if (plugin_id.has_value ())
@@ -705,46 +707,17 @@ Channel::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
 #endif
 
 void
-Channel::add_balance_control (float pan)
-{
-  fader_->get_balance_port ().set_control_value (
-    std::clamp<float> (fader_->get_balance_port ().control_ + pan, 0.f, 1.f),
-    false, false);
-}
-
-void
 Channel::reset_fader (bool fire_events)
 {
+// TODO
+#if 0
   fader_->set_amp_with_action (fader_->get_amp_port ().control_, 1.0f, true);
 
   if (fire_events)
     {
       // EVENTS_PUSH (EventType::ET_CHANNEL_FADER_VAL_CHANGED, this);
     }
-}
-
-bool
-Channel::get_mono_compat_enabled ()
-{
-  return fader_->get_mono_compat_enabled ();
-}
-
-void
-Channel::set_mono_compat_enabled (bool enabled, bool fire_events)
-{
-  fader_->set_mono_compat_enabled (enabled, fire_events);
-}
-
-bool
-Channel::get_swap_phase ()
-{
-  return fader_->get_swap_phase ();
-}
-
-void
-Channel::set_swap_phase (bool enabled, bool fire_events)
-{
-  fader_->set_swap_phase (enabled, fire_events);
+#endif
 }
 
 void
@@ -1041,11 +1014,11 @@ Channel::get_output_track () const
 }
 
 void
-Channel::append_ports (std::vector<Port *> &ports, bool include_plugins)
+Channel::append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
 {
   z_return_if_fail (track_);
 
-  auto add_port = [&ports] (Port * port) { ports.push_back (port); };
+  auto add_port = [&ports] (dsp::Port * port) { ports.push_back (port); };
 
   /* add channel ports */
   if (track_->get_output_signal_type () == PortType::Audio)
@@ -1078,6 +1051,7 @@ Channel::append_ports (std::vector<Port *> &ports, bool include_plugins)
       add_port (&prefader_->get_midi_out_port ());
     }
 
+#if 0
   /* add fader amp and balance control */
   add_port (&prefader_->get_amp_port ());
   add_port (&prefader_->get_balance_port ());
@@ -1093,6 +1067,7 @@ Channel::append_ports (std::vector<Port *> &ports, bool include_plugins)
   add_port (&fader_->get_listen_port ());
   add_port (&fader_->get_mono_compat_enabled_port ());
   add_port (&fader_->get_swap_phase_port ());
+#endif
 
   if (include_plugins)
     {
@@ -1129,13 +1104,14 @@ Channel::init ()
       {
         auto stereo_outs = get_stereo_out_ports ();
         iterate_tuple (
-          [&] (auto &&port) { port.set_owner (*this); }, stereo_outs);
+          [&] (auto &&port) { port.set_full_designation_provider (this); },
+          stereo_outs);
       }
       break;
     case PortType::Event:
       {
         auto &midi_out = get_midi_out_port ();
-        midi_out.set_owner (*this);
+        midi_out.set_full_designation_provider (this);
       }
       break;
     default:
@@ -1144,10 +1120,12 @@ Channel::init ()
 
   auto fader_type = track_->get_fader_type ();
   auto prefader_type = Track::type_get_prefader_type (track_->get_type ());
-  fader_ =
-    new Fader (port_registry_, fader_type, false, track_, nullptr, nullptr);
-  prefader_ =
-    new Fader (port_registry_, prefader_type, true, track_, nullptr, nullptr);
+  fader_ = utils::make_qobject_unique<Fader> (
+    port_registry_, param_registry_, fader_type, false, track_, nullptr,
+    nullptr);
+  prefader_ = utils::make_qobject_unique<Fader> (
+    port_registry_, param_registry_, prefader_type, true, track_, nullptr,
+    nullptr);
   fader_->setParent (this);
   prefader_->setParent (this);
 
@@ -1155,13 +1133,16 @@ Channel::init ()
   for (const auto &[i, send] : utils::views::enumerate (sends_))
     {
       send = std::make_unique<ChannelSend> (
-        *track_, get_track_registry (), get_port_registry (), i);
+        *track_, get_track_registry (), get_port_registry (), param_registry_,
+        i);
     }
 }
 
 void
-Channel::disconnect_port_hardware_inputs (Port &port)
+Channel::disconnect_port_hardware_inputs (dsp::Port &port)
 {
+// TODO
+#if 0
   dsp::PortConnectionsManager::ConnectionsVector srcs;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, port.get_uuid (), true);
   for (const auto &conn : srcs)
@@ -1178,35 +1159,7 @@ Channel::disconnect_port_hardware_inputs (Port &port)
         },
         src_port_var.value ());
     }
-}
-
-void
-Channel::set_phase (float phase)
-{
-  fader_->phase_ = phase;
-
-  /* FIXME use an event */
-  /*if (channel->widget)*/
-  /*gtk_label_set_text (channel->widget->phase_reading,*/
-  /*g_strdup_printf ("%.1f", phase));*/
-}
-
-float
-Channel::get_phase () const
-{
-  return fader_->phase_;
-}
-
-void
-Channel::set_balance_control (float val)
-{
-  fader_->get_balance_port ().set_control_value (val, false, false);
-}
-
-float
-Channel::get_balance_control () const
-{
-  return fader_->get_balance_port ().get_control_value (false);
+#endif
 }
 
 void
@@ -1326,7 +1279,7 @@ Channel::add_plugin (
   bool                recalc_graph,
   bool                pub_events)
 {
-  bool prev_enabled = track_->get_enabled ();
+  bool prev_enabled = track_->enabled ();
   track_->set_enabled (false);
 
   auto slot_type =
@@ -1392,18 +1345,6 @@ Channel::add_plugin (
     },
     plugin_var);
   return plugin_var;
-}
-
-AutomationTrack *
-Channel::get_automation_track (PortIdentifier::Flags port_flags) const
-{
-  auto &atl = track_->get_automation_tracklist ();
-  auto it = std::ranges::find_if (atl.get_automation_tracks (), [&] (auto &at) {
-    const auto &port = at->get_port ();
-    return (ENUM_BITSET_TEST (port.id_->flags_, port_flags));
-  });
-  z_return_val_if_fail (it != atl.get_automation_tracks ().end (), nullptr);
-  return (*it);
 }
 
 std::optional<gui::old_dsp::plugins::PluginPtrVariant>
@@ -1772,7 +1713,7 @@ from_json (const nlohmann::json &j, Channel &c)
       if (send_json.is_null ())
         continue;
       auto send = std::make_unique<ChannelSend> (
-        *c.track_, c.track_registry_, c.port_registry_);
+        *c.track_, c.track_registry_, c.port_registry_, c.param_registry_);
       from_json (send_json, *send);
       c.sends_.at (index) = std::move (send);
     }

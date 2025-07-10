@@ -80,7 +80,7 @@ public:
   bool has_midi_event_ = false;
 
   /** The identifier of the track this event is for. */
-  dsp::PortIdentifier::TrackUuid track_uuid_;
+  structure::tracks::TrackUuid track_uuid_;
 
   /** Global start frames of the event (including offset). */
   unsigned_frame_t g_start_frame_w_offset_ = 0;

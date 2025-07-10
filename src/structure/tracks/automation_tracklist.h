@@ -26,11 +26,12 @@ class AutomationTracklist final : public QAbstractListModel
 
 public:
   AutomationTracklist (
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    PortRegistry                 &port_registry,
-    ArrangerObjectRegistry       &object_registry,
-    AutomatableTrack             &track,
-    QObject *                     parent = nullptr);
+    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    ArrangerObjectRegistry          &object_registry,
+    AutomatableTrack                &track,
+    QObject *                        parent = nullptr);
 
 public:
   enum Roles
@@ -87,7 +88,7 @@ public:
 
   AutomationTrack * get_automation_track_at (size_t index)
   {
-    return ats_.at (index);
+    return ats_.at (index).get ();
   }
 
   auto &get_automation_tracks_in_record_mode () { return ats_in_record_mode_; }
@@ -118,7 +119,7 @@ public:
    * @return The removed automation track (in case we want to move it). Can be
    * ignored to let it get free'd when it goes out of scope.
    */
-  AutomationTrack *
+  utils::QObjectUniquePtr<AutomationTrack>
   remove_at (AutomationTrack &at, bool free, bool fire_events);
 
   /**
@@ -126,17 +127,6 @@ public:
    * AutomationTracklist in the corresponding Track.
    */
   void remove_channel_ats (Channel * ch);
-
-  /**
-   * Returns the AutomationTrack corresponding to the given Port.
-   */
-  AutomationTrack * get_at_from_port (const ControlPort &port) const;
-
-  /**
-   * Returns the AutomationTrack corresponding to the given Port.
-   */
-  AutomationTrack *
-  get_automation_track_by_port_id (dsp::PortIdentifier::PortUuid id) const;
 
   /**
    * Unselects all arranger objects.
@@ -159,17 +149,8 @@ public:
    * @param push_down False to swap positions with the current
    * AutomationTrack, or true to push down all the tracks below.
    */
-  void set_at_index (AutomationTrack &at, int index, bool push_down);
-
-  /**
-   * Gets the automation track matching the given arguments.
-   *
-   * Currently only used in mixer selections action.
-   */
-  AutomationTrack * get_plugin_at (
-    plugins::PluginSlot      slot,
-    int                      port_index,
-    const utils::Utf8String &symbol);
+  void
+  set_automation_track_index (AutomationTrack &at, int index, bool push_down);
 
   /**
    * Used when the add button is added and a new automation track is requested
@@ -202,7 +183,7 @@ public:
   auto &get_automation_tracks () { return ats_; }
   auto &get_automation_tracks () const { return ats_; }
 
-  ControlPort &get_port (dsp::PortIdentifier::PortUuid id) const;
+  dsp::ProcessorParameter &get_port (dsp::ProcessorParameter::Uuid id) const;
 
   void set_caches (CacheType types);
 
@@ -218,9 +199,10 @@ private:
   auto &get_port_registry () const { return port_registry_; }
 
 private:
-  dsp::FileAudioSourceRegistry &file_audio_source_registry_;
-  ArrangerObjectRegistry       &object_registry_;
-  PortRegistry                 &port_registry_;
+  dsp::FileAudioSourceRegistry    &file_audio_source_registry_;
+  ArrangerObjectRegistry          &object_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
 
   /**
    * @brief Automation tracks in this automation tracklist.
@@ -235,18 +217,18 @@ private:
    * Automation tracks become active automation lanes when they have
    * automation or are selected.
    */
-  std::vector<AutomationTrack *> ats_;
+  std::vector<utils::QObjectUniquePtr<AutomationTrack>> ats_;
 
   /**
    * Cache of automation tracks in record mode, used in recording manager to
    * avoid looping over all automation tracks.
    */
-  std::vector<AutomationTrack *> ats_in_record_mode_;
+  std::vector<QPointer<AutomationTrack>> ats_in_record_mode_;
 
   /**
    * Cache of visible automation tracks.
    */
-  std::vector<AutomationTrack *> visible_ats_;
+  std::vector<QPointer<AutomationTrack>> visible_ats_;
 
   /**
    * Owner track.

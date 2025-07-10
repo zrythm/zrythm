@@ -45,7 +45,7 @@ public:
 
   using PluginSlotType = zrythm::plugins::PluginSlotType;
   using Plugin = old_dsp::plugins::Plugin;
-  using PluginUuid = Plugin::PluginUuid;
+  using PluginUuid = Plugin::Uuid;
   using PluginPtrVariant = old_dsp::plugins::PluginPtrVariant;
   using CarlaNativePlugin = old_dsp::plugins::CarlaNativePlugin;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
@@ -66,7 +66,7 @@ public:
     std::optional<PluginSpan>           ms,
     const dsp::PortConnectionsManager * connections_mgr,
     Type                                type,
-    std::optional<Track::TrackUuid>     to_track_id,
+    std::optional<Track::Uuid>          to_track_id,
     std::optional<plugins::PluginSlot>  to_slot,
     const PluginConfiguration *         setting,
     int                                 num_plugins,
@@ -146,7 +146,7 @@ public:
   std::optional<plugins::PluginSlot> to_slot_;
 
   /** To track position. */
-  std::optional<Track::TrackUuid> to_track_uuid_;
+  std::optional<Track::Uuid> to_track_uuid_;
 
   /** Whether the plugins will be copied/moved into
    * a new channel, if applicable. */

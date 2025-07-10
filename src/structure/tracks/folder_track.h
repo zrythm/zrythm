@@ -27,30 +27,37 @@ class FolderTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (FolderTrack)
 
 public:
-  bool get_listened () const override
+  bool currently_listened () const override
   {
     return is_status (MixerStatus::Listened);
   }
 
-  bool get_muted () const override { return is_status (MixerStatus::Muted); }
+  bool currently_muted () const override
+  {
+    return is_status (MixerStatus::Muted);
+  }
 
   bool get_implied_soloed () const override
   {
     return is_status (MixerStatus::ImpliedSoloed);
   }
 
-  bool get_soloed () const override { return is_status (MixerStatus::Soloed); }
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  bool currently_soloed () const override
+  {
+    return is_status (MixerStatus::Soloed);
+  }
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   friend void init_from (
     FolderTrack           &obj,
     const FolderTrack     &other,
     utils::ObjectCloneType clone_type);
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
 private:
   friend void to_json (nlohmann::json &j, const FolderTrack &track)

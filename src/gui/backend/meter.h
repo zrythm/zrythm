@@ -6,15 +6,12 @@
 
 #include "dsp/kmeter_dsp.h"
 #include "dsp/peak_dsp.h"
+#include "dsp/port.h"
 #include "dsp/true_peak_dsp.h"
 #include "utils/types.h"
 #include "utils/variant_helpers.h"
 
 #include <QtQmlIntegration>
-
-class Port;
-class MidiPort;
-class AudioPort;
 
 /**
  * @addtogroup dsp
@@ -61,7 +58,7 @@ class MeterProcessor : public QObject
     float peakAmplitude READ getPeakAmplitude NOTIFY peakAmplitudeChanged)
 
 public:
-  using MeterPortVariant = std::variant<MidiPort, AudioPort>;
+  using MeterPortVariant = std::variant<dsp::MidiPort, dsp::AudioPort>;
   using MeterPortPtrVariant = to_pointer_variant<MeterPortVariant>;
 
   MeterProcessor (QObject * parent = nullptr);
@@ -101,6 +98,10 @@ private:
 public:
   /** Port associated with this meter. */
   QPointer<QObject> port_obj_;
+
+  // RAII request for port ring buffers to be filled
+  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader>
+    ring_buffer_reader_;
 
   /** True peak processor. */
   std::unique_ptr<zrythm::dsp::TruePeakDsp> true_peak_processor_;

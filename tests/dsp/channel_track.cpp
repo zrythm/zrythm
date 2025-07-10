@@ -17,8 +17,8 @@ TEST_F (ZrythmFixture, CloneChannelTrack)
 
   auto expect_ports_have_orig_track_name_hash =
     [&ch_track] (const auto &cur_track) {
-      constexpr size_t    expected_num_ports = 2191;
-      std::vector<Port *> ports;
+      constexpr size_t         expected_num_ports = 2191;
+      std::vector<dsp::Port *> ports;
       cur_track->append_ports (ports, false);
       ASSERT_SIZE_EQ (ports, expected_num_ports);
       for (auto &port : ports)

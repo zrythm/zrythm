@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "dsp/audio_port.h"
+#include "dsp/midi_port.h"
+#include "dsp/parameter.h"
 #include "dsp/port_connection.h"
-#include "gui/dsp/audio_port.h"
-#include "gui/dsp/control_port.h"
-#include "gui/dsp/midi_port.h"
 #include "plugins/plugin_slot.h"
 #include "structure/tracks/track.h"
 #include "utils/icloneable.h"
@@ -63,7 +63,7 @@ struct ChannelSendTarget
  *
  * The actual connection is tracked separately by PortConnectionsManager.
  */
-class ChannelSend final : public dsp::graph::IProcessable, public IPortOwner
+class ChannelSend final : public dsp::graph::IProcessable
 {
 public:
   using PortType = dsp::PortType;
@@ -81,11 +81,12 @@ public:
    * To be used when creating a new (identity) ChannelSend.
    */
   ChannelSend (
-    ChannelTrack  &track,
-    TrackRegistry &track_registry,
-    PortRegistry  &port_registry,
-    int            slot)
-      : ChannelSend (track_registry, port_registry, track, slot, true)
+    ChannelTrack                    &track,
+    TrackRegistry                   &track_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    int                              slot)
+      : ChannelSend (track_registry, port_registry, param_registry, track, slot, true)
   {
   }
 
@@ -93,18 +94,34 @@ public:
    * To be used when deserializing.
    */
   ChannelSend (
-    ChannelTrack  &track,
-    TrackRegistry &track_registry,
-    PortRegistry  &port_registry)
-      : ChannelSend (track_registry, port_registry, track, std::nullopt, false)
+    ChannelTrack                    &track,
+    TrackRegistry                   &track_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry)
+      : ChannelSend (
+          track_registry,
+          port_registry,
+          param_registry,
+          track,
+          std::nullopt,
+          false)
   {
   }
 
   /**
    * @brief To be used when instantiating or cloning an existing identity.
    */
-  ChannelSend (TrackRegistry &track_registry, PortRegistry &port_registry)
-      : ChannelSend (track_registry, port_registry, std::nullopt, std::nullopt, false)
+  ChannelSend (
+    TrackRegistry                   &track_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry)
+      : ChannelSend (
+          track_registry,
+          port_registry,
+          param_registry,
+          std::nullopt,
+          std::nullopt,
+          false)
   {
   }
 
@@ -113,11 +130,12 @@ private:
    * @brief Internal implementation detail.
    */
   ChannelSend (
-    TrackRegistry            &track_registry,
-    PortRegistry             &port_registry,
-    OptionalRef<ChannelTrack> track,
-    std::optional<int>        slot,
-    bool                      new_identity);
+    TrackRegistry                   &track_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    OptionalRef<ChannelTrack>        track,
+    std::optional<int>               slot,
+    bool                             new_identity);
 
 private:
   auto &get_port_registry () { return port_registry_; }
@@ -126,11 +144,7 @@ private:
 public:
   void init_loaded (ChannelTrack * track);
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
-
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
   bool is_prefader () const
   {
@@ -169,69 +183,79 @@ public:
    */
   void set_amount_from_widget (float val);
 
-  float get_amount_value () const { return get_amount_port ().control_; }
-
   /**
    * Connects a send to stereo ports.
    *
    * @throw ZrythmException if the connection fails.
    */
   bool connect_stereo (
-    AudioPort &l,
-    AudioPort &r,
-    bool       sidechain,
-    bool       recalc_graph,
-    bool       validate);
+    dsp::AudioPort &l,
+    dsp::AudioPort &r,
+    bool            sidechain,
+    bool            recalc_graph,
+    bool            validate);
 
   /**
    * Connects a send to a midi port.
    *
    * @throw ZrythmException if the connection fails.
    */
-  bool connect_midi (MidiPort &port, bool recalc_graph, bool validate);
+  bool connect_midi (dsp::MidiPort &port, bool recalc_graph, bool validate);
 
   /**
    * Removes the connection at the given send.
    */
   void disconnect (bool recalc_graph);
 
-  void set_amount (float amount);
+  /**
+   * @brief Set the amount in amplitude (0-2).
+   *
+   * @param amount
+   */
+  void set_amount_in_amplitude (float amount);
 
-  std::pair<AudioPort &, AudioPort &> get_stereo_in_ports () const
+  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
   {
     if (!stereo_in_left_id_.has_value ())
       {
         throw ZrythmException ("stereo_in_left_id_ not set");
       }
-    auto * l = std::get<AudioPort *> (stereo_in_left_id_->get_object ());
-    auto * r = std::get<AudioPort *> (stereo_in_right_id_->get_object ());
+    auto * l = std::get<dsp::AudioPort *> (stereo_in_left_id_->get_object ());
+    auto * r = std::get<dsp::AudioPort *> (stereo_in_right_id_->get_object ());
     return { *l, *r };
   }
-  MidiPort &get_midi_in_port () const
+  dsp::MidiPort &get_midi_in_port () const
   {
-    return *std::get<MidiPort *> (midi_in_id_->get_object ());
+    return *std::get<dsp::MidiPort *> (midi_in_id_->get_object ());
   }
-  std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
+  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
   {
     if (!stereo_out_left_id_.has_value ())
       {
         throw ZrythmException ("stereo_out_left_id_ not set");
       }
-    auto * l = std::get<AudioPort *> (stereo_out_left_id_->get_object ());
-    auto * r = std::get<AudioPort *> (stereo_out_right_id_->get_object ());
+    auto * l = std::get<dsp::AudioPort *> (stereo_out_left_id_->get_object ());
+    auto * r = std::get<dsp::AudioPort *> (stereo_out_right_id_->get_object ());
     return { *l, *r };
   }
-  MidiPort &get_midi_out_port () const
+  dsp::MidiPort &get_midi_out_port () const
   {
-    return *std::get<MidiPort *> (midi_out_id_->get_object ());
+    return *std::get<dsp::MidiPort *> (midi_out_id_->get_object ());
   }
-  ControlPort &get_amount_port () const
+  auto &get_amount_param () const
   {
-    return *std::get<ControlPort *> (amount_id_->get_object ());
+    return *amount_id_.get_object_as<dsp::ProcessorParameter> ();
   }
-  ControlPort &get_enabled_port () const
+  auto &get_enabled_param () const
   {
-    return *std::get<ControlPort *> (enabled_id_->get_object ());
+    return *enabled_id_.get_object_as<dsp::ProcessorParameter> ();
+  }
+
+  float get_current_amount_value () const
+  {
+    const auto &amount_param = get_amount_param ();
+    return amount_param.range ().convert_from_0_to_1 (
+      amount_param.currentValue ());
   }
 
   /**
@@ -253,7 +277,7 @@ public:
    */
   void connect_to_owner ();
 
-  void append_ports (std::vector<Port *> &ports);
+  void append_ports (std::vector<dsp::Port *> &ports);
 
   /**
    * Appends the connection(s), if non-empty, to the given array (if not
@@ -267,11 +291,12 @@ public:
 
   void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  bool is_connected_to (std::pair<PortUuid, PortUuid> stereo) const
+  bool
+  is_connected_to (std::pair<dsp::Port::Uuid, dsp::Port::Uuid> stereo) const
   {
     return is_connected_to (stereo, std::nullopt);
   }
-  bool is_connected_to (const PortUuid &midi) const
+  bool is_connected_to (const dsp::Port::Uuid &midi) const
   {
     return is_connected_to (std::nullopt, midi);
   }
@@ -327,12 +352,13 @@ private:
    * Returns whether the send is connected to the given ports.
    */
   bool is_connected_to (
-    std::optional<std::pair<PortUuid, PortUuid>> stereo,
-    std::optional<PortUuid>                      midi) const;
+    std::optional<std::pair<dsp::Port::Uuid, dsp::Port::Uuid>> stereo,
+    std::optional<dsp::Port::Uuid>                             midi) const;
 
 public:
-  PortRegistry  &port_registry_;
-  TrackRegistry &track_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
+  TrackRegistry                   &track_registry_;
 
   /** Slot index in the channel sends. */
   int slot_ = 0;
@@ -342,34 +368,34 @@ public:
    *
    * Prefader or fader stereo out should connect here.
    */
-  std::optional<PortUuidReference> stereo_in_left_id_;
-  std::optional<PortUuidReference> stereo_in_right_id_;
+  std::optional<dsp::PortUuidReference> stereo_in_left_id_;
+  std::optional<dsp::PortUuidReference> stereo_in_right_id_;
 
   /**
    * MIDI input if MIDI send.
    *
    * Prefader or fader MIDI out should connect here.
    */
-  std::optional<PortUuidReference> midi_in_id_;
+  std::optional<dsp::PortUuidReference> midi_in_id_;
 
   /**
    * Stereo output if audio send.
    *
    * This should connect to the send destination, if any.
    */
-  std::optional<PortUuidReference> stereo_out_left_id_;
-  std::optional<PortUuidReference> stereo_out_right_id_;
+  std::optional<dsp::PortUuidReference> stereo_out_left_id_;
+  std::optional<dsp::PortUuidReference> stereo_out_right_id_;
 
   /**
    * MIDI output if MIDI send.
    *
    * This should connect to the send destination, if any.
    */
-  std::optional<PortUuidReference> midi_out_id_;
+  std::optional<dsp::PortUuidReference> midi_out_id_;
 
   /** Send amount (amplitude), 0 to 2 for audio, velocity multiplier for
    * MIDI. */
-  std::optional<PortUuidReference> amount_id_;
+  dsp::ProcessorParameterUuidReference amount_id_;
 
   /**
    * Whether the send is currently enabled.
@@ -377,7 +403,7 @@ public:
    * If enabled, corresponding connection(s) will exist in
    * PortConnectionsManager.
    */
-  std::optional<PortUuidReference> enabled_id_;
+  dsp::ProcessorParameterUuidReference enabled_id_;
 
   /** If the send is a sidechain. */
   bool is_sidechain_ = false;

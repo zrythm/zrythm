@@ -7,18 +7,20 @@
 namespace zrythm::structure::tracks
 {
 MarkerTrack::MarkerTrack (
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  TrackRegistry                &track_registry,
-  PluginRegistry               &plugin_registry,
-  PortRegistry                 &port_registry,
-  ArrangerObjectRegistry       &obj_registry,
-  bool                          new_identity)
+  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+  TrackRegistry                   &track_registry,
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  ArrangerObjectRegistry          &obj_registry,
+  bool                             new_identity)
     : Track (
         Track::Type::Marker,
         PortType::Unknown,
         PortType::Unknown,
         plugin_registry,
         port_registry,
+        param_registry,
         obj_registry),
       arrangement::ArrangerObjectOwner<
         Marker> (obj_registry, file_audio_source_registry, *this)
@@ -39,8 +41,9 @@ MarkerTrack::initialize ()
 
 void
 MarkerTrack::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
 }
 
@@ -110,7 +113,8 @@ init_from (
 }
 
 void
-MarkerTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
+MarkerTrack::append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+  const
 {
 }
 }

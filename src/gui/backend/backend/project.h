@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/audio_pool.h"
+#include "dsp/port.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "engine/device_io/engine.h"
@@ -14,7 +15,6 @@
 #include "gui/backend/tool.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_factory.h"
-#include "gui/dsp/port.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/track_factory.h"
@@ -317,7 +317,7 @@ public:
    *
    * @param ports Array to append to.
    */
-  void get_all_ports (std::vector<Port *> &ports) const;
+  void get_all_ports (std::vector<dsp::Port *> &ports) const;
 
   /**
    * @brief Adds the default undeletable tracks to the project.
@@ -333,6 +333,7 @@ public:
   auto &get_track_registry () const { return *track_registry_; }
   auto &get_plugin_registry () const { return *plugin_registry_; }
   auto &get_port_registry () const { return *port_registry_; }
+  auto &get_param_registry () const { return *param_registry_; }
   auto &get_arranger_object_registry () const
   {
     return *arranger_object_registry_;
@@ -345,9 +346,21 @@ public:
    *
    * @note Ported from Port::find_from_identifier() in older code.
    */
-  std::optional<PortPtrVariant> find_port_by_id (Port::Uuid id) const
+  std::optional<dsp::PortPtrVariant>
+  find_port_by_id (const dsp::Port::Uuid &id) const
   {
     return get_port_registry ().find_by_id (id);
+  }
+
+  dsp::ProcessorParameter *
+  find_param_by_id (const dsp::ProcessorParameter::Uuid &id) const
+  {
+    const auto opt_var = get_param_registry ().find_by_id (id);
+    if (opt_var.has_value ())
+      {
+        return std::get<dsp::ProcessorParameter *> (opt_var.value ().get ());
+      }
+    return nullptr;
   }
 
   std::optional<gui::old_dsp::plugins::PluginPtrVariant>
@@ -370,20 +383,6 @@ public:
   }
 
   const auto &get_tempo_map () const { return tempo_map_; }
-
-  /**
-   * To be called when the port's identifier changes to update corresponding
-   * identifiers.
-   *
-   * @param prev_id Previous identifier to be used for searching.
-   * @param track The track that owns this port.
-   * @param update_automation_track Whether to update the identifier in the
-   * corresponding automation track as well. This should be false when moving
-   * a plugin.
-   */
-  void on_port_identifier_changed (
-    const dsp::PortIdentifier &old_id,
-    Port                      &updated_port);
 
 private:
   /**
@@ -460,6 +459,7 @@ private:
   static constexpr auto kFileAudioSourceRegistryKey =
     "fileAudioSourceRegistry"sv;
   static constexpr auto kPortRegistryKey = "portRegistry"sv;
+  static constexpr auto kParameterRegistryKey = "paramRegistry"sv;
   static constexpr auto kPluginRegistryKey = "pluginRegistry"sv;
   static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
   static constexpr auto kTrackRegistryKey = "trackRegistry"sv;
@@ -491,9 +491,10 @@ private:
   dsp::TempoMap                                 tempo_map_;
   utils::QObjectUniquePtr<dsp::TempoMapWrapper> tempo_map_wrapper_;
 
-  dsp::FileAudioSourceRegistry * file_audio_source_registry_{};
-  PortRegistry *                 port_registry_{};
-  PluginRegistry *               plugin_registry_{};
+  dsp::FileAudioSourceRegistry *    file_audio_source_registry_{};
+  dsp::PortRegistry *               port_registry_{};
+  dsp::ProcessorParameterRegistry * param_registry_{};
+  PluginRegistry *                  plugin_registry_{};
   structure::arrangement::ArrangerObjectRegistry * arranger_object_registry_{};
   structure::tracks::TrackRegistry *               track_registry_{};
 

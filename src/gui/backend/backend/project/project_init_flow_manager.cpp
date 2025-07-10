@@ -521,7 +521,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   engine->setup ();
 
   /* init ports */
-  std::vector<Port *> ports;
+  std::vector<dsp::Port *> ports;
   prj->get_all_ports (ports);
   z_debug ("Initializing loaded Ports...");
   for (auto port : ports)

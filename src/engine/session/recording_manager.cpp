@@ -9,7 +9,6 @@
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/automation_region.h"
@@ -411,6 +410,9 @@ RecordingManager::handle_recording (
             }
           else if (tr->get_type () == structure::tracks::Track::Type::Audio)
             {
+              const auto &mono_param = track_processor->get_mono_param ();
+              const auto  mono =
+                mono_param.range ().is_toggled (mono_param.currentValue ());
               auto re = event_obj_pool_.acquire ();
               re->init (RecordingEvent::Type::Audio, *tr, *time_nfo);
               auto tp_stereo_ins = track_processor->get_stereo_in_ports ();
@@ -419,8 +421,7 @@ RecordingManager::handle_recording (
                 &tp_stereo_ins.first.buf_[time_nfo->local_offset_],
                 time_nfo->nframes_);
               auto &r =
-                track_processor->mono_id_
-                    && track_processor->get_mono_port ().is_toggled ()
+                track_processor->mono_id_ && mono
                   ? tp_stereo_ins.first
                   : tp_stereo_ins.second;
               utils::float_ranges::copy (
@@ -515,9 +516,7 @@ RecordingManager::create_automation_point (
   if (
     last_recorded_aps_per_region_.contains (region.get_uuid ())
     && utils::math::floats_equal (
-      static_cast<float> (
-        last_recorded_aps_per_region_[region.get_uuid ()]->value ()),
-      normalized_val)
+      last_recorded_aps_per_region_[region.get_uuid ()]->value (), normalized_val)
     && last_recorded_aps_per_region_[region.get_uuid ()]->position ()->samples ()
          == adj_pos)
     {

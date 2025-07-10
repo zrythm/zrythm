@@ -68,13 +68,6 @@ Transport::init_loaded (Project * project)
   int beat_unit =
     project->get_tempo_map ().get_time_signature_events ()[0].denominator;
   update_caches (beats_per_bar, beat_unit);
-
-  roll_->init_loaded (*this);
-  stop_->init_loaded (*this);
-  backward_->init_loaded (*this);
-  forward_->init_loaded (*this);
-  loop_toggle_->init_loaded (*this);
-  rec_toggle_->init_loaded (*this);
 }
 
 Transport::Transport (Project * parent)
@@ -124,41 +117,37 @@ Transport::Transport (Project * parent)
   /*}*/
 
   /* create ports */
-  roll_ = std::make_unique<MidiPort> (u8"Roll", PortFlow::Input);
-  roll_->id_->sym_ = u8"roll";
-  roll_->set_owner (*this);
-  roll_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  roll_->id_->flags_ |= PortIdentifier::Flags::TransportRoll;
+  roll_ = std::make_unique<dsp::MidiPort> (u8"Roll", PortFlow::Input);
+  roll_->set_symbol (u8"roll");
+  roll_->set_full_designation_provider (this);
+  // roll_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
-  stop_ = std::make_unique<MidiPort> (u8"Stop", PortFlow::Input);
-  stop_->id_->sym_ = u8"stop";
-  stop_->set_owner (*this);
-  stop_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  stop_->id_->flags_ |= PortIdentifier::Flags::TransportStop;
+  stop_ = std::make_unique<dsp::MidiPort> (u8"Stop", PortFlow::Input);
+  stop_->set_symbol (u8"stop");
+  stop_->set_full_designation_provider (this);
+  // stop_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
-  backward_ = std::make_unique<MidiPort> (u8"Backward", PortFlow::Input);
-  backward_->id_->sym_ = u8"backward";
-  backward_->set_owner (*this);
-  backward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  backward_->id_->flags_ |= PortIdentifier::Flags::TransportBackward;
+  backward_ = std::make_unique<dsp::MidiPort> (u8"Backward", PortFlow::Input);
+  backward_->set_symbol (u8"backward");
+  backward_->set_full_designation_provider (this);
+  // backward_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
-  forward_ = std::make_unique<MidiPort> (u8"Forward", PortFlow::Input);
-  forward_->id_->sym_ = u8"forward";
-  forward_->set_owner (*this);
-  forward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  forward_->id_->flags_ |= PortIdentifier::Flags::TransportForward;
+  forward_ = std::make_unique<dsp::MidiPort> (u8"Forward", PortFlow::Input);
+  forward_->set_symbol (u8"forward");
+  forward_->set_full_designation_provider (this);
+  // forward_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
-  loop_toggle_ = std::make_unique<MidiPort> (u8"Loop toggle", PortFlow::Input);
-  loop_toggle_->id_->sym_ = u8"loop_toggle";
-  loop_toggle_->set_owner (*this);
-  loop_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  loop_toggle_->id_->flags_ |= PortIdentifier::Flags::TransportLoopToggle;
+  loop_toggle_ =
+    std::make_unique<dsp::MidiPort> (u8"Loop toggle", PortFlow::Input);
+  loop_toggle_->set_symbol (u8"loop_toggle");
+  loop_toggle_->set_full_designation_provider (this);
+  // loop_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
 
-  rec_toggle_ = std::make_unique<MidiPort> (u8"Rec toggle", PortFlow::Input);
-  rec_toggle_->id_->sym_ = u8"rec_toggle";
-  rec_toggle_->set_owner (*this);
-  rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  rec_toggle_->id_->flags_ |= PortIdentifier::Flags::TransportRecToggle;
+  rec_toggle_ =
+    std::make_unique<dsp::MidiPort> (u8"Rec toggle", PortFlow::Input);
+  rec_toggle_->set_symbol (u8"rec_toggle");
+  rec_toggle_->set_full_designation_provider (this);
+  // rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
 
   init_common ();
 }
@@ -270,6 +259,8 @@ init_from (
   obj.range_1_ = other.range_1_;
   obj.range_2_ = other.range_2_;
 
+  // TODO
+#if 0
   // Clone ports if they exit using a lambda
   auto clone_port = [] (const auto &port) {
     return port ? utils::clone_unique (*port) : nullptr;
@@ -281,6 +272,7 @@ init_from (
   obj.forward_ = clone_port (other.forward_);
   obj.loop_toggle_ = clone_port (other.loop_toggle_);
   obj.rec_toggle_ = clone_port (other.rec_toggle_);
+#endif
 }
 
 void
@@ -964,19 +956,11 @@ Transport::recalculate_total_bars (
 #endif
 }
 
-void
-Transport::set_port_metadata_from_owner (
-  dsp::PortIdentifier &id,
-  PortRange           &range) const
-{
-  id.owner_type_ = PortIdentifier::OwnerType::Transport;
-}
-
 utils::Utf8String
-Transport::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+Transport::get_full_designation_for_port (const dsp::Port &port) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("Transport/{}", id.label_));
+    fmt::format ("Transport/{}", port.get_label ()));
 }
 
 void

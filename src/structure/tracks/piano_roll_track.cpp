@@ -103,10 +103,11 @@ PianoRollTrack::set_playback_caches ()
 
 void
 PianoRollTrack::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
-  RecordableTrack::init_loaded (plugin_registry, port_registry);
-  LanedTrackImpl::init_loaded (plugin_registry, port_registry);
+  RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
+  LanedTrackImpl::init_loaded (plugin_registry, port_registry, param_registry);
 }
 }

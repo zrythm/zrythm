@@ -30,7 +30,6 @@
 
 #include "dsp/graph_scheduler.h"
 #include "engine/device_io/engine.h"
-#include "gui/dsp/control_port.h"
 #include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
@@ -112,13 +111,6 @@ public:
     return false;
   }
 
-  /**
-   * Queues a control port change to be applied when processing starts.
-   *
-   * Currently only applies to BPM/time signature changes.
-   */
-  void queue_control_port_change (const ControlPort::ChangeEvent &change);
-
 public:
   std::unique_ptr<dsp::graph::GraphScheduler> scheduler_;
 
@@ -144,10 +136,6 @@ public:
 
   /** ID of the thread that calls kicks off the cycle. */
   unsigned int process_kickoff_thread_ = 0;
-
-  /** Message queue for control port changes, used for BPM/time signature
-   * changes. */
-  RingBuffer<ControlPort::ChangeEvent> ctrl_port_change_queue_{ 32 };
 
   device_io::AudioEngine * audio_engine_{};
 };

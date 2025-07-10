@@ -1,12 +1,9 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __ACTION_PORT_ACTION_H__
-#define __ACTION_PORT_ACTION_H__
+#pragma once
 
-#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/control_port.h"
 #include "utils/icloneable.h"
 
 namespace zrythm::gui::actions
@@ -24,7 +21,6 @@ public:
     /** Set control port value. */
     SetControlValue,
   };
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
 
 public:
   PortAction (QObject * parent = nullptr);
@@ -32,17 +28,11 @@ public:
 
   /**
    * @brief Construct a new action for setting a control.
-   *
-   * @param type
-   * @param port_id
-   * @param val
-   * @param is_normalized
    */
   PortAction (
-    Type                     type,
-    PortIdentifier::PortUuid port_id,
-    float                    val,
-    bool                     is_normalized);
+    Type                          type,
+    dsp::ProcessorParameter::Uuid port_id,
+    float                         normalized_val);
 
   QString to_string () const override;
 
@@ -60,14 +50,14 @@ private:
 public:
   Type type_ = Type::SetControlValue;
 
-  std::optional<dsp::PortIdentifier::PortUuid> port_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> port_id_;
 
   /**
-   * Real (not normalized) value before/after the change.
+   * Normalized value before/after the change.
    *
    * To be swapped on undo/redo.
    */
-  float val_ = 0.0f;
+  float normalized_val_ = 0.0f;
 };
 
 /**
@@ -76,12 +66,13 @@ public:
 class PortActionResetControl : public PortAction
 {
 public:
-  PortActionResetControl (const ControlPort &port)
-      : PortAction (PortAction::Type::SetControlValue, port.get_uuid (), port.deff_, false)
+  PortActionResetControl (const dsp::ProcessorParameter &port)
+      : PortAction (
+          PortAction::Type::SetControlValue,
+          port.get_uuid (),
+          port.range ().convert_to_0_to_1 (port.range ().deff_))
   {
   }
 };
 
 }; // namespace zrythm::gui::actions
-
-#endif

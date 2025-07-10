@@ -29,12 +29,13 @@ class MidiTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiTrack)
 
 public:
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
   friend void init_from (
     MidiTrack             &obj,

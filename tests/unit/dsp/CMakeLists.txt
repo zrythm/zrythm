@@ -5,8 +5,10 @@ add_executable(zrythm_dsp_unit_tests
   atomic_position_qml_adapter_test.cpp
   atomic_position_test.cpp
   audio_pool_test.cpp
+  audio_port_test.cpp
   chord_descriptor_test.cpp
   curve_test.cpp
+  cv_port_test.cpp
   ditherer_test.cpp
   file_audio_source_test.cpp
   kmeter_dsp_test.cpp
@@ -16,7 +18,10 @@ add_executable(zrythm_dsp_unit_tests
   graph_scheduler_test.cpp
   graph_test.cpp
   midi_event_test.cpp
+  midi_port_test.cpp
+  modulator_macro_processor_test.cpp
   musical_scale_test.cpp
+  parameter_test.cpp
   panning_test.cpp
   peak_dsp_test.cpp
   peak_fall_smooth_test.cpp
@@ -24,7 +29,7 @@ add_executable(zrythm_dsp_unit_tests
   playhead_qml_adapter_test.cpp
   port_connection_test.cpp
   port_connections_manager_test.cpp
-  port_identifier_test.cpp
+  port_test.cpp
   position_test.cpp
   stretcher_test.cpp
   tempo_map_test.cpp

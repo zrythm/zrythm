@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/port_all.h"
 #include "engine/session/project_graph_builder.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/port.h"
 
 namespace zrythm::gui::actions
 {
@@ -70,9 +70,6 @@ PortConnectionAction::do_or_undo (bool _do)
   z_return_if_fail (src_var && dest_var);
   std::visit (
     [&] (auto &&src, auto &&dest) {
-      using SourcePortT = base_type<decltype (src)>;
-      using DestPortT = base_type<decltype (dest)>;
-      z_return_if_fail (src && dest);
       auto prj_connection = PORT_CONNECTIONS_MGR->get_connection (
         connection_->src_id_, connection_->dest_id_);
 
@@ -94,14 +91,6 @@ PortConnectionAction::do_or_undo (bool _do)
                 }
               PORT_CONNECTIONS_MGR->add_connection (
                 src->get_uuid (), dest->get_uuid (), 1.f, false, true);
-
-              /* set base value if cv -> control */
-              if constexpr (
-                std::is_same_v<SourcePortT, CVPort>
-                && std::is_same_v<DestPortT, ControlPort>)
-                {
-                  dest->base_value_ = dest->control_;
-                }
             }
           else
             {

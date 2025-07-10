@@ -215,7 +215,7 @@ PluginConfigurationManager::activate_plugin_configuration (
             [&] (auto &&pl) {
               return std::ranges::to<std::vector> (
                 pl->get_output_port_span ()
-                  .template get_elements_by_type<AudioPort> ());
+                  .template get_elements_by_type<dsp::AudioPort> ());
             },
             pl_var.value ());
 
@@ -400,7 +400,7 @@ PluginConfigurationManager::set (
 
   PluginConfiguration * own_setting = find (*setting.descr_);
 
-  if (own_setting)
+  if (own_setting != nullptr)
     {
       own_setting->force_generic_ui_ = setting.force_generic_ui_;
       own_setting->bridge_mode_ = setting.bridge_mode_;

@@ -30,7 +30,8 @@ class InstrumentTrack final
 public:
   void init_loaded (
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    PortRegistry                          &port_registry) override;
+    dsp::PortRegistry                     &port_registry,
+    dsp::ProcessorParameterRegistry       &param_registry) override;
 
   friend void init_from (
     InstrumentTrack       &obj,
@@ -51,8 +52,8 @@ public:
    */
   void toggle_plugin_visible ();
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
 private:
   friend void

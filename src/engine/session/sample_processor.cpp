@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "dsp/midi_event.h"
+#include "dsp/port.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/metronome.h"
 #include "engine/session/project_graph_builder.h"
@@ -18,7 +19,6 @@
 #include "gui/backend/io/midi_file.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/port.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
@@ -84,7 +84,7 @@ SampleProcessor::init_common ()
 {
   tracklist_ = std::make_unique<Tracklist> (
     *this, audio_engine_->get_port_registry (),
-    audio_engine_->get_track_registry (),
+    audio_engine_->get_param_registry (), audio_engine_->get_track_registry (),
     *audio_engine_->port_connections_manager_,
     audio_engine_->project_->get_tempo_map ());
   midi_events_ = std::make_unique<dsp::MidiEvents> ();
@@ -95,7 +95,9 @@ void
 SampleProcessor::init_loaded (device_io::AudioEngine * engine)
 {
   audio_engine_ = engine;
-  fader_->init_loaded (engine->get_port_registry (), nullptr, nullptr, this);
+  fader_->init_loaded (
+    engine->get_port_registry (), engine->get_param_registry (), nullptr,
+    nullptr, this);
 
   init_common ();
 }
@@ -104,8 +106,8 @@ SampleProcessor::SampleProcessor (device_io::AudioEngine * engine)
     : audio_engine_ (engine)
 {
   fader_ = std::make_unique<Fader> (
-    engine->get_port_registry (), Fader::Type::SampleProcessor, false, nullptr,
-    nullptr, this);
+    engine->get_port_registry (), engine->get_param_registry (),
+    Fader::Type::SampleProcessor, false, nullptr, nullptr, this);
 
   init_common ();
 }
@@ -279,10 +281,10 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                     {
                       utils::float_ranges::mix_product (
                         &l[cycle_offset], &audio_data_l[cycle_offset],
-                        fader_->get_amp (), nframes);
+                        fader_->get_current_amp (), nframes);
                       utils::float_ranges::mix_product (
                         &r[cycle_offset], &audio_data_r[cycle_offset],
-                        fader_->get_amp (), nframes);
+                        fader_->get_current_amp (), nframes);
                     }
                 }
             },

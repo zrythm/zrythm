@@ -33,7 +33,6 @@ public:
   };
 
   using PortType = zrythm::dsp::PortType;
-  using PortIdentifier = dsp::PortIdentifier;
 
 public:
   ChannelSendAction (QObject * parent = nullptr);
@@ -47,11 +46,12 @@ public:
    *   manager at the start of the action, if needed.
    */
   ChannelSendAction (
-    Type                                                           type,
-    const ChannelSend                                             &send,
-    const Port *                                                   port,
-    std::optional<std::pair<const AudioPort &, const AudioPort &>> stereo,
-    float                                                          amount,
+    Type               type,
+    const ChannelSend &send,
+    const dsp::Port *  port,
+    std::optional<std::pair<const dsp::AudioPort &, const dsp::AudioPort &>>
+                                        stereo,
+    float                               amount,
     const dsp::PortConnectionsManager * port_connections_mgr);
 
   QString to_string () const override;
@@ -74,9 +74,9 @@ public:
   float amount_ = 0.f;
 
   /** Target port identifiers. */
-  std::optional<PortIdentifier::PortUuid> l_id_;
-  std::optional<PortIdentifier::PortUuid> r_id_;
-  std::optional<PortIdentifier::PortUuid> midi_id_;
+  std::optional<dsp::PortUuid> l_id_;
+  std::optional<dsp::PortUuid> r_id_;
+  std::optional<dsp::PortUuid> midi_id_;
 
   /** Action type. */
   Type send_action_type_ = Type ();
@@ -98,7 +98,7 @@ class ChannelSendConnectMidiAction final : public ChannelSendAction
 public:
   ChannelSendConnectMidiAction (
     const ChannelSend                 &send,
-    const Port                        &midi,
+    const dsp::Port                   &midi,
     const dsp::PortConnectionsManager &port_connections_mgr)
       : ChannelSendAction (Type::ConnectMidi, send, &midi, std::nullopt, 0.f, &port_connections_mgr)
   {
@@ -109,9 +109,9 @@ class ChannelSendConnectStereoAction final : public ChannelSendAction
 {
 public:
   ChannelSendConnectStereoAction (
-    const ChannelSend                              &send,
-    std::pair<const AudioPort &, const AudioPort &> stereo,
-    const dsp::PortConnectionsManager              &port_connections_mgr)
+    const ChannelSend                                        &send,
+    std::pair<const dsp::AudioPort &, const dsp::AudioPort &> stereo,
+    const dsp::PortConnectionsManager &port_connections_mgr)
       : ChannelSendAction (Type::ConnectStereo, send, nullptr, stereo, 0.f, &port_connections_mgr)
   {
   }
@@ -121,9 +121,9 @@ class ChannelSendConnectSidechainAction final : public ChannelSendAction
 {
 public:
   ChannelSendConnectSidechainAction (
-    const ChannelSend                              &send,
-    std::pair<const AudioPort &, const AudioPort &> sidechain,
-    const dsp::PortConnectionsManager              &port_connections_mgr)
+    const ChannelSend                                        &send,
+    std::pair<const dsp::AudioPort &, const dsp::AudioPort &> sidechain,
+    const dsp::PortConnectionsManager &port_connections_mgr)
       : ChannelSendAction (
           Type::ConnectSidechain,
           send,

@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "dsp/cv_port.h"
 #include "dsp/midi_event.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/transport.h"
@@ -13,7 +14,6 @@
 #include "gui/backend/carla_discovery.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/cv_port.h"
 #include "gui/dsp/plugin.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
@@ -833,9 +833,9 @@ CarlaNativePlugin::get_descriptor_from_cached (
 #endif // HAVE_CARLA
 
 CarlaNativePlugin::CarlaNativePlugin (
-  PortRegistry              &port_registry,
-  const PluginConfiguration &setting)
-    : Plugin (port_registry, setting)
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
+    : Plugin (port_registry, param_registry, *this)
 {
 }
 
@@ -1820,20 +1820,22 @@ CarlaNativePlugin::set_param_value (const uint32_t id, float val)
 #endif
 }
 
-MidiPort *
+dsp::MidiPort *
 CarlaNativePlugin::get_midi_out_port ()
 {
-  auto ports = get_output_port_span ().get_elements_by_type<MidiPort> ();
-  auto it = std::ranges::find_if (ports, [] (const MidiPort * port) {
-    return ENUM_BITSET_TEST (
-      port->id_->flags_, PortIdentifier::Flags::SupportsMidi);
+  auto ports = get_output_port_span ().get_elements_by_type<dsp::MidiPort> ();
+  auto it = std::ranges::find_if (ports, [] (const dsp::MidiPort * port) {
+    return true;
   });
   return it != ports.end () ? *it : nullptr;
 }
 
-ControlPort *
-CarlaNativePlugin::get_port_from_param_id (const uint32_t id)
+dsp::ProcessorParameter *
+CarlaNativePlugin::get_param_from_param_id (const uint32_t id)
 {
+  // TODO
+  return nullptr;
+#if 0
   // Iterate through all input control ports
   auto ports = get_input_port_span ().get_elements_by_type<ControlPort> ();
   auto it = std::ranges::find_if (ports, [id] (const ControlPort * port) {
@@ -1854,6 +1856,7 @@ CarlaNativePlugin::get_port_from_param_id (const uint32_t id)
     }
 
   return nullptr;
+#endif
 }
 
 nframes_t

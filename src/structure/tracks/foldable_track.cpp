@@ -32,11 +32,11 @@ FoldableTrack::is_status (MixerStatus status) const
       switch (status)
         {
         case MixerStatus::Muted:
-          if (!ch_child->get_muted ())
+          if (!ch_child->currently_muted ())
             return false;
           break;
         case MixerStatus::Soloed:
-          if (!ch_child->get_soloed ())
+          if (!ch_child->currently_soloed ())
             return false;
           break;
         case MixerStatus::ImpliedSoloed:
@@ -44,7 +44,7 @@ FoldableTrack::is_status (MixerStatus status) const
             return false;
           break;
         case MixerStatus::Listened:
-          if (!ch_child->get_listened ())
+          if (!ch_child->currently_listened ())
             return false;
           break;
         }

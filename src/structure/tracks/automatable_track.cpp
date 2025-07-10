@@ -13,14 +13,16 @@
 namespace zrythm::structure::tracks
 {
 AutomatableTrack::AutomatableTrack (
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  PortRegistry                 &port_registry,
-  bool                          new_identity)
+  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  bool                             new_identity)
     : file_audio_source_registry_ (file_audio_source_registry)
 {
   // initialized here because we use base class members
   automation_tracklist_ = utils::make_qobject_unique<AutomationTracklist> (
-    file_audio_source_registry_, port_registry_, object_registry_, *this);
+    file_audio_source_registry_, port_registry_, param_registry,
+    object_registry_, *this);
 }
 
 void
@@ -32,14 +34,16 @@ init_from (
   obj.automation_tracklist_ = utils::clone_qobject (
     *other.automation_tracklist_, dynamic_cast<QObject *> (&obj),
     utils::ObjectCloneType::Snapshot, obj.file_audio_source_registry_,
-    obj.port_registry_, PROJECT->get_arranger_object_registry (), obj);
+    obj.port_registry_, obj.param_registry_,
+    PROJECT->get_arranger_object_registry (), obj);
   obj.automation_visible_ = other.automation_visible_;
 }
 
 void
 AutomatableTrack::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
   automation_tracklist_->init_loaded ();
 }
@@ -51,10 +55,13 @@ AutomatableTrack::generate_automation_tracks ()
     [&] (auto &&self) {
       using TrackT = base_type<decltype (self)>;
       auto &atl = automation_tracklist_;
-      auto  create_and_add_at = [&] (ControlPort &port) -> AutomationTrack  &{
+      auto  create_and_add_at =
+        [&] (dsp::ProcessorParameter &port) -> AutomationTrack & {
         auto * at = atl->add_automation_track (*new AutomationTrack (
-          file_audio_source_registry_, port_registry_, object_registry_,
-          [self] () { return self; }, port.get_uuid ()));
+          file_audio_source_registry_, object_registry_,
+          [self] () { return self; },
+          dsp::ProcessorParameterUuidReference (
+            port.get_uuid (), param_registry_)));
         return *at;
       };
 
@@ -65,22 +72,22 @@ AutomatableTrack::generate_automation_tracks ()
           /* -- fader -- */
 
           /* volume */
-          AutomationTrack &at = create_and_add_at (ch->fader_->get_amp_port ());
+          AutomationTrack &at = create_and_add_at (ch->fader_->get_amp_param ());
           at.created_ = true;
           atl->set_at_visible (at, true);
 
           /* balance */
-          create_and_add_at (ch->fader_->get_balance_port ());
+          create_and_add_at (ch->fader_->get_balance_param ());
 
           /* mute */
-          create_and_add_at (ch->fader_->get_mute_port ());
+          create_and_add_at (ch->fader_->get_mute_param ());
 
           /* --- end fader --- */
 
           /* sends */
           for (auto &send : ch->sends_)
             {
-              create_and_add_at (send->get_amount_port ());
+              create_and_add_at (send->get_amount_param ());
             }
         }
 
@@ -93,14 +100,15 @@ AutomatableTrack::generate_automation_tracks ()
               for (const auto cc_index : std::views::iota (0, 128))
                 {
                   create_and_add_at (
-                    processor->get_midi_cc_port (channel_index, cc_index));
+                    processor->get_midi_cc_param (channel_index, cc_index));
                 }
 
-              create_and_add_at (processor->get_pitch_bend_port (channel_index));
               create_and_add_at (
-                processor->get_poly_key_pressure_port (channel_index));
+                processor->get_pitch_bend_param (channel_index));
               create_and_add_at (
-                processor->get_channel_pressure_port (channel_index));
+                processor->get_poly_key_pressure_param (channel_index));
+              create_and_add_at (
+                processor->get_channel_pressure_param (channel_index));
             }
         }
 
@@ -109,7 +117,7 @@ AutomatableTrack::generate_automation_tracks ()
           const auto processors = self->get_modulator_macro_processors ();
           for (const auto &macro : processors)
             {
-              auto &at = create_and_add_at (macro->get_macro_port ());
+              auto &at = create_and_add_at (macro->get_macro_param ());
               if (macro.get () == processors.front ().get ())
                 {
                   at.created_ = true;
@@ -119,7 +127,7 @@ AutomatableTrack::generate_automation_tracks ()
         }
       else if constexpr (std::is_same_v<TrackT, AudioTrack>)
         {
-          create_and_add_at (self->processor_->get_output_gain_port ());
+          create_and_add_at (self->processor_->get_output_gain_param ());
         }
 
       z_debug ("generated automation tracks for '{}'", name_);
@@ -137,22 +145,17 @@ AutomatableTrack::generate_automation_tracks_for_plugin (
       z_debug ("generating automation tracks for {}...", plugin->get_name ());
 
       auto &atl = get_automation_tracklist ();
-      for (
-        auto port :
-        plugin->get_input_port_span ()
-          .template get_elements_by_type<ControlPort> ())
+      for (auto port_var : plugin->params_)
         {
-          if (
-            port->id_->type_ != dsp::PortType::Control
-            || !(ENUM_BITSET_TEST (
-              port->id_->flags_, dsp::PortIdentifier::Flags::Automatable)))
+          const auto port =
+            port_var.template get_object_as<dsp::ProcessorParameter> ();
+          if (!port->automatable ())
             continue;
 
           auto * at = new AutomationTrack (
-            file_audio_source_registry_, get_port_registry (),
-            get_object_registry (),
+            file_audio_source_registry_, get_object_registry (),
             [&] () { return convert_to_variant<TrackPtrVariant> (this); },
-            port->get_uuid ());
+            { port->get_uuid (), param_registry_ });
           atl.add_automation_track (*at);
         }
     },

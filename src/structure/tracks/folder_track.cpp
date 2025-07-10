@@ -8,18 +8,20 @@
 namespace zrythm::structure::tracks
 {
 FolderTrack::FolderTrack (
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  TrackRegistry                &track_registry,
-  PluginRegistry               &plugin_registry,
-  PortRegistry                 &port_registry,
-  ArrangerObjectRegistry       &obj_registry,
-  bool                          new_identity)
+  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+  TrackRegistry                   &track_registry,
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  ArrangerObjectRegistry          &obj_registry,
+  bool                             new_identity)
     : Track (
         Track::Type::Folder,
         PortType::Unknown,
         PortType::Unknown,
         plugin_registry,
         port_registry,
+        param_registry,
         obj_registry)
 {
   if (new_identity)
@@ -39,7 +41,8 @@ FolderTrack::initialize ()
 }
 
 void
-FolderTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
+FolderTrack::append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+  const
 {
   // ChannelTrack::append_member_ports (ports, include_plugins);
   // ProcessableTrack::append_member_ports (ports, include_plugins);
@@ -60,8 +63,9 @@ init_from (
 
 void
 FolderTrack::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
 }
 }

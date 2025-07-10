@@ -26,36 +26,42 @@ namespace zrythm::structure::tracks
 // Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
 
 Tracklist::Tracklist (
-  Project                     &project,
-  PortRegistry                &port_registry,
-  TrackRegistry               &track_registry,
-  dsp::PortConnectionsManager &port_connections_manager,
-  const dsp::TempoMap         &tempo_map)
+  Project                         &project,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  TrackRegistry                   &track_registry,
+  dsp::PortConnectionsManager     &port_connections_manager,
+  const dsp::TempoMap             &tempo_map)
     : QAbstractListModel (&project), tempo_map_ (tempo_map),
       track_registry_ (track_registry), port_registry_ (port_registry),
-      project_ (&project), port_connections_manager_ (&port_connections_manager)
+      param_registry_ (param_registry), project_ (&project),
+      port_connections_manager_ (&port_connections_manager)
 {
 }
 
 Tracklist::Tracklist (
   engine::session::SampleProcessor &sample_processor,
-  PortRegistry                     &port_registry,
+  dsp::PortRegistry                &port_registry,
+  dsp::ProcessorParameterRegistry  &param_registry,
   TrackRegistry                    &track_registry,
   dsp::PortConnectionsManager      &port_connections_manager,
   const dsp::TempoMap              &tempo_map)
     : tempo_map_ (tempo_map), track_registry_ (track_registry),
-      port_registry_ (port_registry), sample_processor_ (&sample_processor),
+      port_registry_ (port_registry), param_registry_ (param_registry),
+      sample_processor_ (&sample_processor),
       port_connections_manager_ (&port_connections_manager)
 {
 }
 
 void
 Tracklist::init_loaded (
-  PortRegistry                      &port_registry,
+  dsp::PortRegistry                 &port_registry,
+  dsp::ProcessorParameterRegistry   &param_registry,
   Project *                          project,
   engine::session::SampleProcessor * sample_processor)
 {
   port_registry_ = port_registry;
+  param_registry_ = param_registry;
   project_ = project;
   sample_processor_ = sample_processor;
 
@@ -82,7 +88,8 @@ Tracklist::init_loaded (
               modulator_track_ = track;
             }
           track->tracklist_ = this;
-          track->init_loaded (*plugin_registry_, *port_registry_);
+          track->init_loaded (
+            *plugin_registry_, *port_registry_, *param_registry_);
         },
         track_var);
     }
@@ -141,7 +148,7 @@ Tracklist::setExclusivelySelectedTrack (QVariant track)
 // ========================================================================
 
 void
-Tracklist::disconnect_port (const Port::Uuid &port_id)
+Tracklist::disconnect_port (const dsp::Port::Uuid &port_id)
 {
   port_connections_manager_->remove_all_connections (port_id);
 }
@@ -206,7 +213,7 @@ Tracklist::disconnect_channel (Channel &channel)
   disconnect_fader (*channel.fader_);
 
   /* disconnect all ports */
-  std::vector<Port *> ports;
+  std::vector<dsp::Port *> ports;
   channel.append_ports (ports, true);
   for (auto * port : ports)
     {
@@ -238,13 +245,13 @@ Tracklist::disconnect_fader (Fader &fader)
       disconnect (midi_out);
     }
 
-  disconnect (fader.get_amp_port ());
-  disconnect (fader.get_balance_port ());
-  disconnect (fader.get_mute_port ());
-  disconnect (fader.get_solo_port ());
-  disconnect (fader.get_listen_port ());
-  disconnect (fader.get_mono_compat_enabled_port ());
-  disconnect (fader.get_swap_phase_port ());
+  // disconnect (fader.get_amp_port ());
+  // disconnect (fader.get_balance_port ());
+  // disconnect (fader.get_mute_port ());
+  // disconnect (fader.get_solo_port ());
+  // disconnect (fader.get_listen_port ());
+  // disconnect (fader.get_mono_compat_enabled_port ());
+  // disconnect (fader.get_swap_phase_port ());
 }
 
 void
@@ -260,10 +267,10 @@ Tracklist::disconnect_track_processor (TrackProcessor &track_processor)
   switch (track->get_input_signal_type ())
     {
     case dsp::PortType::Audio:
-      disconnect_port (track_processor.get_mono_port ());
-      disconnect_port (track_processor.get_input_gain_port ());
-      disconnect_port (track_processor.get_output_gain_port ());
-      disconnect_port (track_processor.get_monitor_audio_port ());
+      // disconnect_port (track_processor.get_mono_port ());
+      // disconnect_port (track_processor.get_input_gain_port ());
+      // disconnect_port (track_processor.get_output_gain_port ());
+      // disconnect_port (track_processor.get_monitor_audio_port ());
       iterate_tuple (disconnect_port, track_processor.get_stereo_in_ports ());
       iterate_tuple (disconnect_port, track_processor.get_stereo_out_ports ());
 
@@ -297,7 +304,7 @@ Tracklist::disconnect_track (Track &track)
     }
 
   /* disconnect all ports and free buffers */
-  std::vector<Port *> ports;
+  std::vector<dsp::Port *> ports;
   track.append_ports (ports, true);
   for (auto * port : ports)
     {
@@ -323,12 +330,13 @@ Tracklist::disconnect_track (Track &track)
 std::string
 Tracklist::print_port_connection (const dsp::PortConnection &conn) const
 {
+// TODO
+#if 0
   auto src_var = port_registry_->find_by_id_or_throw (conn.src_id_);
   auto dest_var = port_registry_->find_by_id_or_throw (conn.dest_id_);
   return std::visit (
     [&] (auto &&src, auto &&dest) {
-      auto is_send =
-        src->id_->owner_type_ == dsp::PortIdentifier::OwnerType::ChannelSend;
+      auto is_send = src->id_->owner_type_ == dsp::PortIdentifier::OwnerType::ChannelSend;
       const char * send_str = is_send ? " (send)" : "";
       if (port_connections_manager_->contains_connection (conn))
         {
@@ -353,6 +361,8 @@ Tracklist::print_port_connection (const dsp::PortConnection &conn) const
         src->get_label (), dest->id_->track_id_, dest->get_label (), send_str);
     },
     src_var, dest_var);
+#endif
+  return {};
 }
 
 void
@@ -377,18 +387,14 @@ Tracklist::move_plugin_automation (
         std::derived_from<PrevTrackT, AutomatableTrack>
         && std::derived_from<TrackT, AutomatableTrack>)
         {
+// TODO
+#if 0
           auto &prev_atl = prev_track->get_automation_tracklist ();
           auto &atl = track->get_automation_tracklist ();
 
-          for (auto * at : prev_atl.get_automation_tracks ())
+          for (auto &at : prev_atl.get_automation_tracks ())
             {
-              auto port_var = port_registry_->find_by_id (at->port_id_);
-              if (!port_var)
-                continue;
-
-              z_return_if_fail (
-                std::holds_alternative<ControlPort *> (port_var->get ()));
-              auto * port = std::get<ControlPort *> (port_var->get ());
+              auto * port = at->parameter();
               if (
                 port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
                 {
@@ -414,7 +420,8 @@ Tracklist::move_plugin_automation (
               z_return_if_fail (
                 added_at == atl.get_automation_track_at (added_at->index_)
                 && added_at->get_children_vector ().size () == num_regions_before);
-            }
+              }
+#endif
         }
     },
     pl_var, prev_track_var, track_var);
@@ -531,9 +538,8 @@ Tracklist::mark_track_for_bounce (
 }
 
 int
-Tracklist::get_visible_track_diff (
-  Track::TrackUuid src_track,
-  Track::TrackUuid dest_track) const
+Tracklist::get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track)
+  const
 {
   const auto src_track_index = std::distance (
     tracks_.begin (),
@@ -719,18 +725,6 @@ Tracklist::insert_track (
       else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
         modulator_track_ = track;
 
-      /* add flags for auditioner track ports */
-      if (is_auditioner ())
-        {
-          std::vector<Port *> ports;
-          track->append_ports (ports, true);
-          for (auto * port : ports)
-            {
-              port->id_->flags_ |=
-                dsp::PortIdentifier::Flags::SampleProcessorTrack;
-            }
-        }
-
       /* if inserting it, swap until it reaches its position */
       if (static_cast<size_t> (pos) != tracks_.size () - 1)
         {
@@ -794,34 +788,6 @@ Tracklist::get_chord_track () const
   auto span = get_track_span ();
   return std::get<ChordTrack *> (
     *std::ranges::find_if (span, TrackSpan::type_projection<ChordTrack>));
-}
-
-AutomationTrack *
-Tracklist::get_automation_track_for_port (const Port::Uuid &port_id) const
-{
-  if (port_to_at_mappings_.contains (port_id))
-    {
-      auto * at = port_to_at_mappings_.value (port_id);
-      if (at->port_id_ == port_id) [[likely]]
-        {
-          return at;
-        }
-    }
-
-  for (
-    const auto * track :
-    get_track_span ().get_elements_derived_from<AutomatableTrack> ())
-    {
-      auto at =
-        track->get_automation_tracklist ().get_automation_track_by_port_id (
-          port_id);
-      if (at != nullptr)
-        {
-          port_to_at_mappings_.insertOrAssign (port_id, at);
-          return at;
-        }
-    }
-  z_return_val_if_reached (nullptr);
 }
 
 struct PluginMoveData
@@ -1015,8 +981,7 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 }
 
 std::optional<TrackPtrVariant>
-Tracklist::get_visible_track_after_delta (Track::TrackUuid track_id, int delta)
-  const
+Tracklist::get_visible_track_after_delta (Track::Uuid track_id, int delta) const
 {
   auto span =
     get_track_span () | std::views::filter (TrackSpan::visible_projection);
@@ -1983,7 +1948,7 @@ init_from (
               auto id_ref = obj.track_registry_->clone_object (
                 *tr, PROJECT->get_file_audio_source_registry (),
                 *obj.track_registry_, PROJECT->get_plugin_registry (),
-                PROJECT->get_port_registry (),
+                PROJECT->get_port_registry (), PROJECT->get_param_registry (),
                 PROJECT->get_arranger_object_registry (), true);
               obj.tracks_.push_back (id_ref);
             },

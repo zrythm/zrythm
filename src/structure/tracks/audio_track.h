@@ -39,17 +39,19 @@ public:
 
 private:
   AudioTrack (
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    TrackRegistry                &track_registry,
-    PluginRegistry               &plugin_registry,
-    PortRegistry                 &port_registry,
-    ArrangerObjectRegistry       &obj_registry,
-    bool                          new_identity);
+    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+    TrackRegistry                   &track_registry,
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    ArrangerObjectRegistry          &obj_registry,
+    bool                             new_identity);
 
 public:
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   friend void init_from (
     AudioTrack            &obj,
@@ -75,8 +77,8 @@ public:
     std::optional<signed_frame_t>                          p1,
     std::optional<signed_frame_t>                          p2) override;
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
   void timestretch_buf (
     const AudioRegion *    r,

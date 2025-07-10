@@ -7,6 +7,35 @@
 
 #include <QVariant>
 
+// Primary template (false for non-variant types)
+template <typename T, typename Variant, typename = void>
+struct is_in_variant : std::false_type
+{
+};
+
+// Specialization for std::variant types
+template <typename T, typename... Ts>
+struct is_in_variant<
+  T,
+  std::variant<Ts...>,
+  std::void_t<decltype (std::variant<Ts...> ())>>
+    : std::bool_constant<(std::is_same_v<T, Ts> || ...)>
+{
+};
+
+// Concept that checks that T is one of the types in Variant
+template <typename T, typename Variant>
+concept IsInVariant = is_in_variant<T, Variant>::value;
+
+namespace detail_test
+{
+using MyVariant = std::variant<int, double, std::string>;
+static_assert (IsInVariant<int, MyVariant>);    // Passes
+static_assert (IsInVariant<double, MyVariant>); // Passes
+static_assert (!IsInVariant<float, MyVariant>); // Fails (not in variant)
+static_assert (!IsInVariant<int, int>);         // Fails (not a variant)
+}
+
 // Helper struct to merge multiple std::variant types
 template <typename... Variants> struct merge_variants;
 

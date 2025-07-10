@@ -62,9 +62,10 @@ public:
   using ChordObject = arrangement::ChordObject;
   using ScaleObjectPtr = ScaleObject *;
 
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   ScaleObject * get_scale_at (size_t index) const;
 
@@ -102,8 +103,8 @@ public:
     const ChordTrack      &other,
     utils::ObjectCloneType clone_type);
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
   std::string
   get_field_name_for_serialization (const ChordRegion *) const override

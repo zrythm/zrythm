@@ -31,7 +31,7 @@ MixerSelectionsAction::MixerSelectionsAction (
   std::optional<PluginSpan>          plugins,
   const PortConnectionsManager *     connections_mgr,
   Type                               type,
-  std::optional<Track::TrackUuid>    to_track_id,
+  std::optional<Track::Uuid>         to_track_id,
   std::optional<plugins::PluginSlot> to_slot,
   const PluginConfiguration *        setting,
   int                                num_plugins,
@@ -120,6 +120,8 @@ init_from (
 void
 MixerSelectionsAction::clone_ats (PluginSpan plugins, bool deleted, int start_slot)
 {
+// TODO
+#if 0
   const auto &plugin_span = plugins;
   auto        first_pl_var = plugin_span.front ();
   auto        track_var = std::visit (
@@ -159,7 +161,7 @@ MixerSelectionsAction::clone_ats (PluginSpan plugins, bool deleted, int start_sl
                         continue;
 
 // TODO
-#if 0
+#  if 0
                   if (deleted)
                     {
                       deleted_ats_.emplace_back (at->clone_unique ());
@@ -168,7 +170,7 @@ MixerSelectionsAction::clone_ats (PluginSpan plugins, bool deleted, int start_sl
                     {
                       ats_.emplace_back (at->clone_unique ());
                     }
-#endif
+#  endif
                       count++;
                       regions_count += at->get_children_vector ().size ();
                     }
@@ -181,6 +183,7 @@ MixerSelectionsAction::clone_ats (PluginSpan plugins, bool deleted, int start_sl
         }
     },
     *track_var);
+#endif
 }
 
 void
@@ -215,6 +218,8 @@ MixerSelectionsAction::revert_automation (
   plugins::PluginSlot slot,
   bool                deleted)
 {
+// TODO
+#if 0
   z_debug ("reverting automation for {}#{}", track.get_name (), slot);
 
   auto &atl = track.automation_tracklist_;
@@ -250,6 +255,7 @@ MixerSelectionsAction::revert_automation (
   z_debug (
     "reverted %d automation tracks and %d regions", num_reverted_ats,
     num_reverted_regions);
+#endif
 }
 
 void
@@ -260,6 +266,8 @@ MixerSelectionsAction::save_existing_plugin (
   Track *                       to_tr,
   plugins::PluginSlot           to_slot)
 {
+// TODO
+#if 0
   auto to_track_var = convert_to_variant<TrackPtrVariant> (to_tr);
   std::visit (
     [&] (auto &&to_track) {
@@ -289,6 +297,7 @@ MixerSelectionsAction::save_existing_plugin (
         }
     },
     to_track_var);
+#endif
 }
 
 void
@@ -362,6 +371,8 @@ MixerSelectionsAction::revert_deleted_plugin (
 void
 MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 {
+// TODO
+#if 0
   auto track_var = *TRACKLIST->get_track (
     create
       ? to_track_uuid_.value ()
@@ -372,12 +383,12 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
       using TrackT = base_type<decltype (track)>;
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
-#if 0
+#  if 0
           auto * ch =
             track->has_channel ()
               ? dynamic_cast<ChannelTrack *> (track)->channel_
               : nullptr;
-#endif
+#  endif
           auto own_ms = PluginSpan{ *ms_before_ };
           auto slot_type =
             create
@@ -522,11 +533,11 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                         [&] (auto &&pl) {
                     /* restore port connections */
 // TODO
-#if 0
+#  if 0
                           z_debug (
                             "restoring custom connections for plugin '{}'",
                             pl->get_name ());
-                          std::vector<Port *> ports;
+                          std::vector<dsp::Port *> ports;
                           pl->append_ports (ports);
                           for (auto * port : ports)
                             {
@@ -539,7 +550,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                                 },
                                 *prj_port_var);
                             }
-#endif
+#  endif
                           /* copy automation from before deletion */
                           if constexpr (
                             std::derived_from<TrackT, AutomatableTrack>)
@@ -565,7 +576,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                   if (do_it)
                     {
                     // TODO
-#if 0
+#  if 0
                       auto own_pl_var = own_ms[i];
                       auto prj_pl_var = track->get_plugin_at_slot (slot);
 
@@ -576,7 +587,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                           z_debug (
                             "remembering custom connections for plugin '{}'",
                             own_pl->get_name ());
-                          std::vector<Port *> ports, own_ports;
+                          std::vector<dsp::Port *> ports, own_ports;
                           prj_pl->append_ports (ports);
                           own_pl->append_ports (own_ports);
                           for (auto * prj_port : ports)
@@ -592,7 +603,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                             }
                         },
                         own_pl_var, *prj_pl_var);
-#endif
+#  endif
                     }
 
                   /* remove the plugin at given slot */
@@ -615,6 +626,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
         }
     },
     track_var);
+#endif
 }
 
 void

@@ -95,9 +95,10 @@ public:
 
   ~LanedTrackImpl () override = default;
 
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override
   {
   }
 

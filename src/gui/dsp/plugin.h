@@ -8,7 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "gui/dsp/port.h"
+#include "dsp/parameter.h"
+#include "dsp/port_all.h"
 #include "gui/dsp/port_span.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
@@ -40,12 +41,10 @@ namespace zrythm::gui::old_dsp::plugins
  */
 class Plugin
     : public dsp::graph::IProcessable,
-      public IPortOwner,
       public utils::UuidIdentifiableObject<Plugin>
 {
   Z_DISABLE_COPY_MOVE (Plugin)
 public:
-  using PortIdentifier = dsp::PortIdentifier;
   using PluginSlot = zrythm::plugins::PluginSlot;
   using PluginSlotType = zrythm::plugins::PluginSlotType;
   using PluginSlotNo = PluginSlot::SlotNo;
@@ -53,6 +52,7 @@ public:
   using Protocol = zrythm::plugins::Protocol;
   using PluginCategory = zrythm::plugins::PluginCategory;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
+  using TrackUuid = zrythm::structure::tracks::TrackUuid;
   using TrackPtrVariant = zrythm::structure::tracks::TrackPtrVariant;
   using TrackResolver = zrythm::structure::tracks::TrackResolver;
 
@@ -70,7 +70,7 @@ public:
     int bank_idx_ = 0;
 
     /** Plugin identifier. */
-    PluginUuid plugin_id_;
+    Plugin::Uuid plugin_id_;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE (PresetIdentifier, idx_, bank_idx_, plugin_id_)
   };
@@ -159,6 +159,11 @@ public:
   auto get_output_port_span () const { return PortSpan{ out_ports_ }; }
 
   /**
+   * @brief Sets the plugin setting to use.
+   */
+  void set_setting (const PluginConfiguration &setting);
+
+  /**
    * @brief Initializes a plugin after deserialization.
    *
    * This may attempt to instantiate the plugin, which can throw an exception.
@@ -167,18 +172,7 @@ public:
    */
   void init_loaded ();
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
-
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
-
-  void on_control_change_event (
-    const dsp::PortIdentifier::PortUuid &port_uuid,
-    const dsp::PortIdentifier           &id,
-    float                                val) override;
-
-  bool should_bounce_to_master (utils::audio::BounceStep step) const override;
+  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
   /** Whether the plugin is used for MIDI auditioning in SampleProcessor. */
   bool is_auditioner () const;
@@ -191,7 +185,7 @@ public:
   /**
    * Gets the enable/disable port for this plugin.
    */
-  ControlPort * get_enabled_port ();
+  dsp::ProcessorParameter * get_enabled_param () const;
 
   /**
    * Removes the automation tracks associated with this plugin from the
@@ -206,14 +200,11 @@ public:
   utils::Utf8String
   get_full_port_group_designation (const utils::Utf8String &port_group) const;
 
-  Port *
-  get_port_in_group (const utils::Utf8String &port_group, bool left) const;
-
   /**
    * @brief Finds the corresponding port in the same port group (eg, if this
    * is left, find right and vice versa).
    */
-  Port * get_port_in_same_group (const Port &port);
+  dsp::Port * get_port_in_same_group (const dsp::Port &port);
 
   /**
    * Activates or deactivates the plugin.
@@ -238,14 +229,14 @@ public:
   /**
    * @brief Appends this plugin's ports to the given vector.
    */
-  void append_ports (std::vector<Port *> &ports);
+  void append_ports (std::vector<dsp::Port *> &ports);
 
   /**
    * Gets a port by its symbol.
    *
    * @note Only works on LV2 plugins.
    */
-  std::optional<PortPtrVariant>
+  std::optional<dsp::PortPtrVariant>
   get_port_by_symbol (const utils::Utf8String &sym);
 
   /**
@@ -300,11 +291,7 @@ public:
 
   std::optional<TrackPtrVariant> get_track () const;
 
-  void set_track (const TrackUuid &track_id)
-  {
-    track_id_ = track_id;
-    update_identifier ();
-  }
+  void set_track (const TrackUuid &track_id) { track_id_ = track_id; }
 
   TrackUuid get_track_id () const
   {
@@ -313,12 +300,6 @@ public:
   }
 
   bool has_track () const { return track_id_.has_value (); }
-
-  /**
-   * To be called when changes to the plugin identifier were made, so we can
-   * update all children recursively.
-   */
-  void update_identifier ();
 
   /**
    * Updates the plugin's latency.
@@ -455,29 +436,13 @@ public:
   void cleanup ();
 
 protected:
-  /**
-   * Adds an in port to the plugin's list and returns a reference to it.
-   */
-  void add_in_port (const PortUuidReference &port_id);
-
-  /**
-   * Adds an out port to the plugin's list and returns a reference to it.
-   */
-  void add_out_port (const PortUuidReference &port_id);
-
   /** Adds a bank to the plugin's list and returns a reference to it. */
   Bank * add_bank_if_not_exists (
     std::optional<utils::Utf8String> uri,
     const utils::Utf8String         &name);
 
-protected:
-  Plugin () = default;
-
 private:
   void set_stereo_outs_and_midi_in ();
-  void set_enabled_and_gain ();
-  void init ();
-  void set_port_index (PortUuidReference port_id);
 
   virtual void populate_banks () = 0;
 
@@ -535,7 +500,10 @@ protected:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  Plugin (PortRegistry &port_registry, const PluginConfiguration &setting);
+  Plugin (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    QObject                         &derived);
 
 private:
   static constexpr auto kTrackIdKey = "trackId"sv;
@@ -563,8 +531,9 @@ private:
   friend void from_json (const nlohmann::json &j, Plugin &p);
 
 public:
-  OptionalRef<PortRegistry>    port_registry_;
-  std::optional<TrackResolver> track_resolver_;
+  OptionalRef<dsp::PortRegistry>                  port_registry_;
+  OptionalRef<dsp::ProcessorParameterRegistry>    param_registry_;
+  std::optional<structure::tracks::TrackResolver> track_resolver_;
 
   std::optional<TrackUuid> track_id_;
 
@@ -572,48 +541,39 @@ public:
   std::unique_ptr<PluginConfiguration> setting_;
 
   /** Ports coming in as input. */
-  std::vector<PortUuidReference> in_ports_;
+  std::vector<dsp::PortUuidReference> in_ports_;
+
+  // Parameters excluding ones added by Zrythm.
+  std::vector<dsp::ProcessorParameterUuidReference> params_;
+
+  /**
+   * Zrythm-provided param for plugin enabled,
+   */
+  dsp::ProcessorParameterUuidReference enabled_;
+
+  /**
+   * Zrythm-provided param for plugin gain.
+   */
+  dsp::ProcessorParameterUuidReference gain_;
 
   /* Caches - avoid shared_ptr due to performance cost */
-  std::vector<ControlPort *> ctrl_in_ports_;
-  std::vector<AudioPort *>   audio_in_ports_;
-  std::vector<CVPort *>      cv_in_ports_;
-  std::vector<MidiPort *>    midi_in_ports_;
+  std::vector<dsp::AudioPort *> audio_in_ports_;
+  std::vector<dsp::CVPort *>    cv_in_ports_;
+  std::vector<dsp::MidiPort *>  midi_in_ports_;
 
   /** Cache. */
-  MidiPort * midi_in_port_ = nullptr;
+  dsp::MidiPort * midi_in_port_ = nullptr;
 
   /** Outgoing ports. */
-  std::vector<PortUuidReference> out_ports_;
-
-  /**
-   * Control for plugin enabled, for convenience.
-   *
-   * This port is already in @ref Plugin.in_ports.
-   */
-  ControlPort * enabled_ = nullptr;
-
-  /**
-   * Whether the plugin has a custom "enabled" port (LV2).
-   *
-   * If true, bypass logic will be delegated to the plugin.
-   */
-  ControlPort * own_enabled_port_ = nullptr;
-
-  /**
-   * Control for plugin gain, for convenience.
-   *
-   * This port is already in @ref Plugin.in_ports.
-   */
-  ControlPort * gain_ = nullptr;
+  std::vector<dsp::PortUuidReference> out_ports_;
 
   /**
    * Instrument left stereo output, for convenience.
    *
    * This port is already in @ref Plugin.out_ports if instrument.
    */
-  AudioPort * l_out_ = nullptr;
-  AudioPort * r_out_ = nullptr;
+  dsp::AudioPort * l_out_ = nullptr;
+  dsp::AudioPort * r_out_ = nullptr;
 
   std::vector<Bank> banks_;
 
@@ -683,21 +643,9 @@ public:
    * deactivation. */
   bool deactivating_ = false;
 
-  /**
-   * Set to true to avoid sending multiple ET_PLUGIN_STATE_CHANGED for the
-   * same plugin.
-   */
-  std::atomic<bool> state_changed_event_sent_ = false;
-
   /** Whether the plugin is used for functions. */
   bool is_function_ = false;
 };
-
-inline bool
-operator< (const Plugin &lhs, const Plugin &rhs)
-{
-  return lhs.get_slot () < rhs.get_slot ();
-}
 
 class CarlaNativePlugin;
 

@@ -419,7 +419,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                             utils::clone_unique (
                               *send, utils::ObjectCloneType::Snapshot,
                               PROJECT->get_track_registry (),
-                              PROJECT->get_port_registry ()));
+                              PROJECT->get_port_registry (),
+                              PROJECT->get_param_registry ()));
                         }
                     }
                 }
@@ -493,7 +494,7 @@ TracklistSelectionsAction::create_track (int idx)
           track = AudioTrack::create_unique (
             PROJECT->get_file_audio_source_registry (),
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-            PROJECT->get_port_registry (),
+            PROJECT->get_port_registry (), PROJECT->get_param_registry (),
             PROJECT->get_arranger_object_registry (), true);
           // TODO set samplerate on AudioTrack
           name = utils::Utf8String::from_path (file_basename_);
@@ -504,7 +505,7 @@ TracklistSelectionsAction::create_track (int idx)
           track = MidiTrack::create_unique (
             PROJECT->get_file_audio_source_registry (),
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-            PROJECT->get_port_registry (),
+            PROJECT->get_port_registry (), PROJECT->get_param_registry (),
             PROJECT->get_arranger_object_registry (), true);
           name = utils::Utf8String::from_path (file_basename_);
         }
@@ -671,6 +672,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
+                    PROJECT->get_param_registry (),
                     PROJECT->get_arranger_object_registry (), true);
                   // TODO...
                   auto track = std::get<TrackT *> (track_ref.get_object ());
@@ -683,7 +685,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       /* remove the sends (will be added later) */
                       for (auto &send : track->get_channel ()->sends_)
                         {
-                          send->get_enabled_port ().control_ = 0.f;
+                          send->get_enabled_param ().setBaseValue (0.f);
                         }
                     }
 
@@ -771,7 +773,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       /* reconnect any custom connections */
 // TODO
 #if 0
-                      std::vector<Port *> ports;
+                      std::vector<dsp::Port *> ports;
                       own_track->append_ports (ports, true);
                       for (auto * port : ports)
                         {
@@ -856,16 +858,17 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                   auto prj_track = std::get<TrackT *> (
                     TRACKLIST->get_track_at_index (own_track->get_index ()));
                   /* remember any custom connections */
-                  std::vector<Port *> prj_ports;
+                  std::vector<dsp::Port *> prj_ports;
                   prj_track->append_ports (prj_ports, true);
-                  std::vector<Port *> clone_ports;
+                  std::vector<dsp::Port *> clone_ports;
                   own_track->append_ports (clone_ports, true);
                   for (auto * prj_port : prj_ports)
                     {
-                      Port * clone_port = nullptr;
+                      dsp::Port * clone_port = nullptr;
                       for (auto * cur_clone_port : clone_ports)
                         {
-                          if (cur_clone_port->id_ == prj_port->id_)
+                          if (
+                            cur_clone_port->get_uuid () == prj_port->get_uuid ())
                             {
                               clone_port = cur_clone_port;
                               break;
@@ -1065,7 +1068,8 @@ TracklistSelectionsAction::
                           sends.at (i).at (j) = utils::clone_unique (
                             *send, utils::ObjectCloneType::Snapshot,
                             PROJECT->get_track_registry (),
-                            PROJECT->get_port_registry ());
+                            PROJECT->get_port_registry (),
+                            PROJECT->get_param_registry ());
 
                           send->append_connection (
                             port_connections_before_.get (),
@@ -1098,6 +1102,7 @@ TracklistSelectionsAction::
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
+                    PROJECT->get_param_registry (),
                     PROJECT->get_arranger_object_registry (), true);
                   // FIXME
                   auto * track = std::get<TrackT *> (track_ref.get_object ());
@@ -1111,7 +1116,7 @@ TracklistSelectionsAction::
                       /* remove sends */
                       for (auto &send : track->get_channel ()->sends_)
                         {
-                          send->get_enabled_port ().control_ = 0.f;
+                          send->get_enabled_param ().setBaseValue (0.f);
                         }
                     }
 
@@ -1315,6 +1320,8 @@ TracklistSelectionsAction::
 void
 TracklistSelectionsAction::do_or_undo_edit (bool _do)
 {
+// TODO
+#if 0
   if (_do && already_edited_)
     {
       already_edited_ = false;
@@ -1338,7 +1345,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
             case EditType::Solo:
               if constexpr (std::derived_from<TrackT, ChannelTrack>)
                 {
-                  bool soloed = track->get_soloed ();
+                  bool soloed = track->currently_soloed ();
                   track->set_soloed (
                     _do ? ival_after_ : ival_before_[i], false, false, false);
 
@@ -1364,7 +1371,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
             case EditType::Mute:
               if constexpr (std::derived_from<TrackT, ChannelTrack>)
                 {
-                  bool muted = track->get_muted ();
+                  bool muted = track->currently_muted ();
                   track->set_muted (
                     _do ? ival_after_ : ival_before_[i], false, false, false);
 
@@ -1391,7 +1398,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
             case EditType::Listen:
               if constexpr (std::derived_from<TrackT, ChannelTrack>)
                 {
-                  bool listened = track->get_listened ();
+                  bool listened = track->currently_listened ();
                   track->set_listened (
                     _do ? ival_after_ : ival_before_[i], false, false, false);
 
@@ -1590,6 +1597,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
     {
       ROUTER->recalc_graph (false);
     }
+#endif
 }
 
 void
@@ -1639,6 +1647,8 @@ TracklistSelectionsAction::undo_impl ()
 void
 TracklistSelectionsAction::init_loaded_impl ()
 {
+// TODO
+#if 0
   if (tls_before_)
     {
       TrackSpan{ *tls_before_ }.init_loaded (
@@ -1658,6 +1668,7 @@ TracklistSelectionsAction::init_loaded_impl ()
     {
       send->init_loaded (nullptr);
     }
+#endif
 }
 
 QString

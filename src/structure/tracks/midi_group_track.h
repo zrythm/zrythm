@@ -30,12 +30,13 @@ public:
     const MidiGroupTrack  &other,
     utils::ObjectCloneType clone_type);
 
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
 private:
   friend void to_json (nlohmann::json &j, const MidiGroupTrack &track)

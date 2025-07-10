@@ -3,17 +3,13 @@
 
 #pragma once
 
+#include "dsp/port.h"
 #include "dsp/port_connections_manager.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/port.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
-
-class ControlPort;
-class MidiPort;
-struct EngineProcessTimeInfo;
 
 namespace zrythm::structure::tracks
 {
@@ -23,43 +19,26 @@ class ProcessableTrack;
  * A TrackProcessor is a processor that is used as the first entry point when
  * processing a track.
  */
-class TrackProcessor final : public IPortOwner
+class TrackProcessor final
 {
-  using PortType = zrythm::dsp::PortType;
-  using PortFlow = zrythm::dsp::PortFlow;
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortType = dsp::PortType;
+  using PortFlow = dsp::PortFlow;
 
 public:
   /**
    * Creates a new track processor for the given track.
    */
   TrackProcessor (
-    ProcessableTrack &track,
-    PortRegistry     &port_registry,
-    bool              new_identity);
+    ProcessableTrack                &track,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    bool                             new_identity);
 
   bool is_audio () const;
 
   bool is_midi () const;
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
-
-  void on_control_change_event (
-    const dsp::PortIdentifier::PortUuid &port_uuid,
-    const dsp::PortIdentifier           &id,
-    float                                value) override;
-
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
-
-  bool should_sum_data_from_backend () const override;
-
-  bool should_bounce_to_master (utils::audio::BounceStep step) const override;
-
-  bool are_events_on_midi_channel_approved (midi_byte_t channel) const override;
-
-  void on_midi_activity (const dsp::PortIdentifier &id) override;
+  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
   dsp::PortConnectionsManager * get_port_connections_manager () const;
 
@@ -72,7 +51,10 @@ public:
   /**
    * Inits a TrackProcessor after a project is loaded.
    */
-  void init_loaded (ProcessableTrack * track, PortRegistry &port_registry);
+  void init_loaded (
+    ProcessableTrack *               track,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry);
 
 #if 0
   /**
@@ -131,87 +113,86 @@ public:
    */
   void connect_to_plugin (gui::old_dsp::plugins::Plugin &pl);
 
-  void append_ports (std::vector<Port *> &ports);
+  void append_ports (std::vector<dsp::Port *> &ports);
 
   friend void init_from (
     TrackProcessor        &obj,
     const TrackProcessor  &other,
     utils::ObjectCloneType clone_type);
 
-  std::pair<AudioPort &, AudioPort &> get_stereo_in_ports () const
+  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
   {
     if (!is_audio ())
       {
         throw std::runtime_error ("Not an audio track processor");
       }
-    auto * l = std::get<AudioPort *> (stereo_in_left_id_->get_object ());
-    auto * r = std::get<AudioPort *> (stereo_in_right_id_->get_object ());
+    auto * l = stereo_in_left_id_->get_object_as<dsp::AudioPort> ();
+    auto * r = stereo_in_right_id_->get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
-  std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
+  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
   {
     if (!is_audio ())
       {
         throw std::runtime_error ("Not an audio track processor");
       }
-    auto * l = std::get<AudioPort *> (stereo_out_left_id_->get_object ());
-    auto * r = std::get<AudioPort *> (stereo_out_right_id_->get_object ());
+    auto * l = stereo_out_left_id_->get_object_as<dsp::AudioPort> ();
+    auto * r = stereo_out_right_id_->get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
 
-  ControlPort &get_mono_port () const
+  dsp::ProcessorParameter &get_mono_param () const
   {
-    return *std::get<ControlPort *> (mono_id_->get_object ());
+    return *mono_id_->get_object_as<dsp::ProcessorParameter> ();
   }
-  ControlPort &get_input_gain_port () const
+  dsp::ProcessorParameter &get_input_gain_param () const
   {
-    return *std::get<ControlPort *> (input_gain_id_->get_object ());
+    return *input_gain_id_->get_object_as<dsp::ProcessorParameter> ();
   }
-  ControlPort &get_output_gain_port () const
+  dsp::ProcessorParameter &get_output_gain_param () const
   {
-    return *std::get<ControlPort *> (output_gain_id_->get_object ());
+    return *output_gain_id_->get_object_as<dsp::ProcessorParameter> ();
   }
-  ControlPort &get_monitor_audio_port () const
+  dsp::ProcessorParameter &get_monitor_audio_param () const
   {
-    return *std::get<ControlPort *> (monitor_audio_id_->get_object ());
+    return *monitor_audio_id_->get_object_as<dsp::ProcessorParameter> ();
   }
-  MidiPort &get_midi_in_port () const
+  dsp::MidiPort &get_midi_in_port () const
   {
-    return *std::get<MidiPort *> (midi_in_id_->get_object ());
+    return *midi_in_id_->get_object_as<dsp::MidiPort> ();
   }
-  MidiPort &get_midi_out_port () const
+  dsp::MidiPort &get_midi_out_port () const
   {
-    return *std::get<MidiPort *> (midi_out_id_->get_object ());
+    return *midi_out_id_->get_object_as<dsp::MidiPort> ();
   }
-  MidiPort &get_piano_roll_port () const
+  dsp::MidiPort &get_piano_roll_port () const
   {
-    return *std::get<MidiPort *> (piano_roll_id_->get_object ());
+    return *piano_roll_id_->get_object_as<dsp::MidiPort> ();
   }
-  ControlPort &get_midi_cc_port (int channel_index, int cc_index) const
+  dsp::ProcessorParameter &
+  get_midi_cc_param (int channel_index, int cc_index) const
   {
-    return *std::get<ControlPort *> (
-      (*midi_cc_ids_)
-        .at (static_cast<size_t> ((channel_index * 128) + cc_index))
-        .get_object ());
+    return *(*midi_cc_ids_)
+              .at (static_cast<size_t> ((channel_index * 128) + cc_index))
+              .get_object_as<dsp::ProcessorParameter> ();
   }
-  ControlPort &get_pitch_bend_port (int channel_index) const
+  dsp::ProcessorParameter &get_pitch_bend_param (int channel_index) const
   {
-    return *std::get<ControlPort *> (
-      (*pitch_bend_ids_).at (static_cast<size_t> (channel_index)).get_object ());
+    return *(*pitch_bend_ids_)
+              .at (static_cast<size_t> (channel_index))
+              .get_object_as<dsp::ProcessorParameter> ();
   }
-  ControlPort &get_poly_key_pressure_port (int channel_index) const
+  dsp::ProcessorParameter &get_poly_key_pressure_param (int channel_index) const
   {
-    return *std::get<ControlPort *> (
-      (*poly_key_pressure_ids_)
-        .at (static_cast<size_t> (channel_index))
-        .get_object ());
+    return *(*poly_key_pressure_ids_)
+              .at (static_cast<size_t> (channel_index))
+              .get_object_as<dsp::ProcessorParameter> ();
   }
-  ControlPort &get_channel_pressure_port (int channel_index) const
+  dsp::ProcessorParameter &get_channel_pressure_param (int channel_index) const
   {
-    return *std::get<ControlPort *> (
-      (*channel_pressure_ids_)
-        .at (static_cast<size_t> (channel_index))
-        .get_object ());
+    return *(*channel_pressure_ids_)
+              .at (static_cast<size_t> (channel_index))
+              .get_object_as<dsp::ProcessorParameter> ();
   }
 
 private:
@@ -287,36 +268,37 @@ private:
   [[gnu::hot]] void
   add_events_from_midi_cc_control_ports (nframes_t local_offset);
 
-  void connect_ports (const PortUuid &src, const PortUuid &dst);
-  void disconnect_ports (const PortUuid &src, const PortUuid &dst);
+  void connect_ports (const dsp::PortUuid &src, const dsp::PortUuid &dst);
+  void disconnect_ports (const dsp::PortUuid &src, const dsp::PortUuid &dst);
 
 public:
-  PortRegistry &port_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
 
   /**
    * L & R audio input ports, if audio.
    */
-  std::optional<PortUuidReference> stereo_in_left_id_;
-  std::optional<PortUuidReference> stereo_in_right_id_;
+  std::optional<dsp::PortUuidReference> stereo_in_left_id_;
+  std::optional<dsp::PortUuidReference> stereo_in_right_id_;
 
   /** Mono toggle, if audio. */
-  std::optional<PortUuidReference> mono_id_;
+  std::optional<dsp::ProcessorParameterUuidReference> mono_id_;
 
   /** Input gain, if audio. */
-  std::optional<PortUuidReference> input_gain_id_;
+  std::optional<dsp::ProcessorParameterUuidReference> input_gain_id_;
 
   /**
    * Output gain, if audio.
    *
    * This is applied after regions are processed to @ref stereo_out_.
    */
-  std::optional<PortUuidReference> output_gain_id_;
+  std::optional<dsp::ProcessorParameterUuidReference> output_gain_id_;
 
   /**
    * L & R audio output ports, if audio.
    */
-  std::optional<PortUuidReference> stereo_out_left_id_;
-  std::optional<PortUuidReference> stereo_out_right_id_;
+  std::optional<dsp::PortUuidReference> stereo_out_left_id_;
+  std::optional<dsp::PortUuidReference> stereo_out_right_id_;
 
   /**
    * MIDI in Port.
@@ -326,12 +308,12 @@ public:
    * This is also where piano roll, midi in and midi manual press will be
    * routed to and this will be the port used to pass midi to the plugins.
    */
-  std::optional<PortUuidReference> midi_in_id_;
+  std::optional<dsp::PortUuidReference> midi_in_id_;
 
   /**
    * MIDI out port, if MIDI.
    */
-  std::optional<PortUuidReference> midi_out_id_;
+  std::optional<dsp::PortUuidReference> midi_out_id_;
 
   /**
    * MIDI input for receiving MIDI signals from the piano roll (i.e., MIDI
@@ -340,7 +322,7 @@ public:
    * This will not be a separately exposed port during processing. It will
    * be processed by the TrackProcessor internally.
    */
-  std::optional<PortUuidReference> piano_roll_id_;
+  std::optional<dsp::PortUuidReference> piano_roll_id_;
 
   /**
    * Whether to monitor the audio output.
@@ -351,7 +333,7 @@ public:
    *
    * When not recording, this will only take effect when paused.
    */
-  std::optional<PortUuidReference> monitor_audio_id_;
+  std::optional<dsp::ProcessorParameterUuidReference> monitor_audio_id_;
 
   /* --- MIDI controls --- */
 
@@ -359,9 +341,11 @@ public:
   std::unique_ptr<engine::session::MidiMappings> cc_mappings_;
 
   /** MIDI CC control ports, 16 channels x 128 controls. */
-  std::unique_ptr<std::array<PortUuidReference, 16_zu * 128>> midi_cc_ids_;
+  std::unique_ptr<std::array<dsp::ProcessorParameterUuidReference, 16_zu * 128>>
+    midi_cc_ids_;
 
-  using SixteenPortUuidArray = std::array<PortUuidReference, 16>;
+  using SixteenPortUuidArray =
+    std::array<dsp::ProcessorParameterUuidReference, 16>;
 
   /** Pitch bend x 16 channels. */
   std::unique_ptr<SixteenPortUuidArray> pitch_bend_ids_;
@@ -411,7 +395,8 @@ public:
    * This is used during processing to avoid checking every single MIDI CC
    * port for changes.
    */
-  std::unique_ptr<MPMCQueue<ControlPort *>> updated_midi_automatable_ports_;
+  std::unique_ptr<MPMCQueue<dsp::ProcessorParameter *>>
+    updated_midi_automatable_ports_;
 };
 
 }

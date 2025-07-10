@@ -33,7 +33,6 @@ init_from (
   obj.multiplier_ = other.multiplier_;
   obj.locked_ = other.locked_;
   obj.enabled_ = other.enabled_;
-  obj.base_value_ = other.base_value_;
 }
 
 }

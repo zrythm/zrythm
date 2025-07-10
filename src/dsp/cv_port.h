@@ -1,20 +1,21 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CV_PORT_H__
-#define __AUDIO_CV_PORT_H__
+#pragma once
 
-#include "gui/dsp/port.h"
+#include "dsp/port.h"
 #include "utils/icloneable.h"
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
+namespace zrythm::dsp
+{
 
 /**
- * @brief CV port specifics.
+ * @brief Control Voltage port.
+ *
+ * This port provides sample-accurante signals (similar to audio) and can be
+ * used to modulate parameters.
+ *
+ * The range is assumed to be 0 to 1.
  */
 class CVPort final
     : public QObject,
@@ -25,10 +26,7 @@ class CVPort final
   Q_OBJECT
   QML_ELEMENT
 public:
-  CVPort ();
   CVPort (utils::Utf8String label, PortFlow flow);
-
-  bool has_sound () const override;
 
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
@@ -42,17 +40,11 @@ private:
   friend void                       to_json (nlohmann::json &j, const CVPort &p)
   {
     to_json (j, static_cast<const Port &> (p));
-    j[kRangeKey] = p.range_;
   }
   friend void from_json (const nlohmann::json &j, CVPort &p)
   {
     from_json (j, static_cast<Port &> (p));
-    j.at (kRangeKey).get_to (p.range_);
   }
 };
 
-/**
- * @}
- */
-
-#endif
+} // namespace zrythm::dsp

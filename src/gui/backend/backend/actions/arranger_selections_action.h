@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/arrangement/arranger_object_span.h"
@@ -114,7 +113,6 @@ public:
   };
 
   using Position = zrythm::dsp::Position;
-  using PortIdentifier = dsp::PortIdentifier;
 
 public:
   ArrangerSelectionsAction ();
@@ -268,7 +266,7 @@ public:
   /** Target port (used to find corresponding automation track when
    * moving/copying automation regions to another automation track/another
    * track). */
-  std::optional<PortIdentifier::PortUuid> target_port_;
+  std::optional<dsp::PortUuid> target_port_;
 
   /** String, when changing a string. */
   utils::Utf8String str_;
@@ -364,16 +362,16 @@ public:
    * automation point normalized value.
    */
   MoveOrDuplicateAction (
-    ArrangerObjectSpan                      sel_var,
-    bool                                    move,
-    double                                  ticks,
-    int                                     delta_chords,
-    int                                     delta_pitch,
-    int                                     delta_tracks,
-    int                                     delta_lanes,
-    double                                  delta_normalized_amount,
-    std::optional<PortIdentifier::PortUuid> tgt_port_id,
-    bool                                    already_moved);
+    ArrangerObjectSpan           sel_var,
+    bool                         move,
+    double                       ticks,
+    int                          delta_chords,
+    int                          delta_pitch,
+    int                          delta_tracks,
+    int                          delta_lanes,
+    double                       delta_normalized_amount,
+    std::optional<dsp::PortUuid> tgt_port_id,
+    bool                         already_moved);
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateTimelineAction
@@ -381,13 +379,13 @@ class ArrangerSelectionsAction::MoveOrDuplicateTimelineAction
 {
 public:
   MoveOrDuplicateTimelineAction (
-    ArrangerObjectSpan                      sel,
-    bool                                    move,
-    double                                  ticks,
-    int                                     delta_tracks,
-    int                                     delta_lanes,
-    std::optional<PortIdentifier::PortUuid> tgt_port_id,
-    bool                                    already_moved)
+    ArrangerObjectSpan           sel,
+    bool                         move,
+    double                       ticks,
+    int                          delta_tracks,
+    int                          delta_lanes,
+    std::optional<dsp::PortUuid> tgt_port_id,
+    bool                         already_moved)
       : MoveOrDuplicateAction (
           sel,
           move,

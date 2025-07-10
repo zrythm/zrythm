@@ -11,29 +11,28 @@ namespace zrythm::structure::tracks
 {
 
 ChannelTrack::ChannelTrack (
-  TrackRegistry  &track_registry,
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry,
-  bool            new_identity)
-    : ProcessableTrack (port_registry, new_identity),
+  TrackRegistry                   &track_registry,
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  bool                             new_identity)
+    : ProcessableTrack (port_registry, param_registry, new_identity),
       track_registry_ (track_registry)
 {
   if (new_identity)
     {
-      channel_.reset (
-        new Channel (track_registry, plugin_registry, port_registry, *this));
+      channel_.reset (new Channel (
+        track_registry, plugin_registry, port_registry, param_registry, *this));
     }
 }
 
-ChannelTrack::~ChannelTrack ()
-{
-  // remove_ats_from_automation_tracklist (false);
-}
+ChannelTrack::~ChannelTrack () { }
 
 void
 ChannelTrack::init_loaded (
   gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-  PortRegistry                          &port_registry)
+  dsp::PortRegistry                     &port_registry,
+  dsp::ProcessorParameterRegistry       &param_registry)
 {
   channel_->init_loaded ();
 }
@@ -47,7 +46,7 @@ init_from (
   obj.channel_.reset (clone_qobject (
     *other.channel_, dynamic_cast<QObject *> (&obj),
     utils::ObjectCloneType::Snapshot, obj.track_registry_, obj.plugin_registry_,
-    obj.port_registry_, OptionalRef<ChannelTrack>{}));
+    obj.port_registry_, obj.param_registry_, OptionalRef<ChannelTrack>{}));
   obj.channel_->set_track_ptr (obj);
 }
 
@@ -81,7 +80,8 @@ ChannelTrack::
     }
   else
     {
-      channel_->fader_->set_muted (mute, fire_events);
+      // TODO
+      // channel_->fader_->set_muted (mute, fire_events);
     }
 }
 
@@ -105,7 +105,8 @@ ChannelTrack::
     }
   else
     {
-      channel_->fader_->set_soloed (solo, fire_events);
+      // TODO
+      // channel_->fader_->set_soloed (solo, fire_events);
     }
 }
 
@@ -132,26 +133,8 @@ ChannelTrack::set_listened (
     }
   else
     {
-      channel_->fader_->set_listened (listen, fire_events);
-    }
-}
-
-void
-ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
-{
-  auto &atl = get_automation_tracklist ();
-
-  for (auto &at : atl.get_automation_tracks () | std::views::reverse)
-    {
-      const auto &port_id = *at->get_port ().id_;
-      const auto  flags = port_id.flags_;
-      if (
-        ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::ChannelFader)
-        || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::FaderMute)
-        || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::StereoBalance))
-        {
-          atl.remove_at (*at, false, fire_events);
-        }
+      // TODO
+      // channel_->fader_->set_listened (listen, fire_events);
     }
 }
 
@@ -229,8 +212,8 @@ ChannelTrack::generate_channel_context_menu ()
 
 void
 ChannelTrack::append_member_ports (
-  std::vector<Port *> &ports,
-  bool                 include_plugins) const
+  std::vector<dsp::Port *> &ports,
+  bool                      include_plugins) const
 {
   channel_->append_ports (ports, include_plugins);
 }

@@ -676,6 +676,7 @@ if(ZRYTHM_STRICT)
       -Werror=return-stack-address
       -Werror=abstract-final-class
       -Werror=null-dereference
+      -Werror=defaulted-function-deleted
       -fsafe-buffer-usage-suggestions
     )
   endif()

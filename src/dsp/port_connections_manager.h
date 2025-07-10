@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include "dsp/port_connection.h"
 #include "utils/icloneable.h"
 
@@ -21,7 +19,6 @@ class PortConnectionsManager final : public QObject
 
 public:
   using PortConnection = dsp::PortConnection;
-  using PortUuid = PortConnection::PortUuid;
   using ConnectionsVector = std::vector<PortConnection *>;
 
   explicit PortConnectionsManager (QObject * parent = nullptr);
@@ -188,16 +185,6 @@ public:
    * @note To be called from the main thread only.
    */
   void remove_all_connections (const PortUuid &pi);
-
-#if 0
-  /**
-   * @brief Disconnects all the given ports
-   *
-   * @param ports Ports to delete all connections for.
-   * @param deleting Whether to set the `deleting` flag on the ports.
-   */
-  void disconnect_port_collection (std::vector<Port *> &ports, bool deleting);
-#endif
 
   /**
    * Removes all connections from this.

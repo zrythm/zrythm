@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "gui/dsp/control_port.h"
+#include "dsp/parameter.h"
 #include "structure/tracks/processable_track.h"
 
 #define DEFINE_RECORDABLE_TRACK_QML_PROPERTIES(ClassType) \
@@ -32,20 +32,25 @@ namespace zrythm::structure::tracks
 class RecordableTrack : virtual public ProcessableTrack
 {
 protected:
-  RecordableTrack (PortRegistry &port_registry, bool new_identity);
+  RecordableTrack (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    bool                             new_identity);
 
 public:
-  Q_DISABLE_COPY_MOVE (RecordableTrack)
+  Z_DISABLE_COPY_MOVE (RecordableTrack)
 
   ~RecordableTrack () override = default;
 
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   [[gnu::hot]] bool get_recording () const
   {
-    return get_recording_port ().is_toggled ();
+    const auto &recording_param = get_recording_param ();
+    return recording_param.range ().is_toggled (recording_param.currentValue ());
   }
 
   /**
@@ -57,7 +62,7 @@ public:
       return;
 
     z_debug ("{}: setting recording {}", self.name_, recording);
-    self.get_recording_port ().set_toggled (recording, false);
+    self.get_recording_param ().setBaseValue (recording ? 1.f : 0.f);
 
     if (recording)
       {
@@ -89,7 +94,7 @@ public:
     this DerivedT    &self,
     GenericBoolGetter autoarm_enabled_checker)
   {
-    self.get_recording_port ().set_owner (self);
+    // self.get_recording_param ().set_full_designation_provider (&self);
     self.connect (
       &self, &DerivedT::selectedChanged, &self, [&self, autoarm_enabled_checker] {
         if (autoarm_enabled_checker ())
@@ -112,11 +117,12 @@ protected:
   }
 
   void
-  append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
+  append_member_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const;
 
-  ControlPort &get_recording_port () const
+  dsp::ProcessorParameter &get_recording_param () const
   {
-    return *std::get<ControlPort *> (recording_id_->get_object ());
+    return *recording_id_.get_object_as<dsp::ProcessorParameter> ();
   }
 
 private:
@@ -129,14 +135,14 @@ private:
   }
   friend void from_json (const nlohmann::json &j, RecordableTrack &track)
   {
-    track.recording_id_ = { track.port_registry_ };
-    j.at (kRecordingIdKey).get_to (*track.recording_id_);
+    track.recording_id_ = { track.param_registry_ };
+    j.at (kRecordingIdKey).get_to (track.recording_id_);
     j.at (kRecordSetAutomaticallyKey).get_to (track.record_set_automatically_);
   }
 
 public:
   /** Recording or not. */
-  std::optional<PortUuidReference> recording_id_;
+  dsp::ProcessorParameterUuidReference recording_id_;
 
   /**
    * Whether record was set automatically when the channel was selected.

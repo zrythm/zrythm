@@ -4,12 +4,12 @@
 #pragma once
 
 #include "dsp/itransport.h"
+#include "dsp/midi_port.h"
 #include "dsp/playhead.h"
 #include "dsp/playhead_qml_adapter.h"
+#include "dsp/port.h"
 #include "dsp/position.h"
 #include "gui/backend/position_proxy.h"
-#include "gui/dsp/midi_port.h"
-#include "gui/dsp/port.h"
 #include "structure/arrangement/arranger_object_span.h"
 #include "utils/types.h"
 
@@ -45,7 +45,7 @@ static const char * preroll_count_bars_str[] = {
  * engine. It manages playback, recording, and other transport-related
  * functionality.
  */
-class Transport final : public QObject, public dsp::ITransport, public IPortOwner
+class Transport final : public QObject, public dsp::ITransport
 {
   Q_OBJECT
   QML_ELEMENT
@@ -123,9 +123,8 @@ public:
   };
   Q_ENUM (RecordingMode)
 
-  using Position = zrythm::dsp::Position;
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
-  using PortFlow = zrythm::dsp::PortFlow;
+  using Position = dsp::Position;
+  using PortFlow = dsp::PortFlow;
 
 public:
   Transport (Project * parent = nullptr);
@@ -182,11 +181,7 @@ public:
     return -1;
   }
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
-
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
   Q_INVOKABLE bool isRolling () const
   {
@@ -519,12 +514,12 @@ private:
     j.at (kRange2Key).get_to (transport.range_2_);
     j.at (kHasRangeKey).get_to (transport.has_range_);
     j.at (kPositionKey).get_to (transport.position_);
-    j.at (kRollKey).get_to (transport.roll_);
-    j.at (kStopKey).get_to (transport.stop_);
-    j.at (kBackwardKey).get_to (transport.backward_);
-    j.at (kForwardKey).get_to (transport.forward_);
-    j.at (kLoopToggleKey).get_to (transport.loop_toggle_);
-    j.at (kRecToggleKey).get_to (transport.rec_toggle_);
+    j.at (kRollKey).get_to (*transport.roll_);
+    j.at (kStopKey).get_to (*transport.stop_);
+    j.at (kBackwardKey).get_to (*transport.backward_);
+    j.at (kForwardKey).get_to (*transport.forward_);
+    j.at (kLoopToggleKey).get_to (*transport.loop_toggle_);
+    j.at (kRecToggleKey).get_to (*transport.rec_toggle_);
   }
 
   void init_common ();
@@ -626,26 +621,26 @@ public:
    *
    * Any event received on this port will request a roll.
    */
-  std::unique_ptr<MidiPort> roll_;
+  std::unique_ptr<dsp::MidiPort> roll_;
 
   /**
    * Stop MIDI port.
    *
    * Any event received on this port will request a stop/pause.
    */
-  std::unique_ptr<MidiPort> stop_;
+  std::unique_ptr<dsp::MidiPort> stop_;
 
   /** Backward MIDI port. */
-  std::unique_ptr<MidiPort> backward_;
+  std::unique_ptr<dsp::MidiPort> backward_;
 
   /** Forward MIDI port. */
-  std::unique_ptr<MidiPort> forward_;
+  std::unique_ptr<dsp::MidiPort> forward_;
 
   /** Loop toggle MIDI port. */
-  std::unique_ptr<MidiPort> loop_toggle_;
+  std::unique_ptr<dsp::MidiPort> loop_toggle_;
 
   /** Rec toggle MIDI port. */
-  std::unique_ptr<MidiPort> rec_toggle_;
+  std::unique_ptr<dsp::MidiPort> rec_toggle_;
 
   /** Play state. */
   PlayState play_state_ = {};

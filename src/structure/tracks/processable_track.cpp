@@ -15,23 +15,26 @@
 namespace zrythm::structure::tracks
 {
 ProcessableTrack::ProcessableTrack (
-  PortRegistry &port_registry,
-  bool          new_identity)
-    : port_registry_ (port_registry)
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  bool                             new_identity)
+    : port_registry_ (port_registry), param_registry_ (param_registry)
 {
   if (new_identity)
     {
-      processor_ = std::make_unique<TrackProcessor> (*this, port_registry, true);
+      processor_ = std::make_unique<TrackProcessor> (
+        *this, port_registry, param_registry, true);
     }
 }
 
 void
 ProcessableTrack::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
   processor_->track_ = this;
-  processor_->init_loaded (this, port_registry);
+  processor_->init_loaded (this, port_registry, param_registry);
 }
 
 void
@@ -42,7 +45,7 @@ init_from (
 {
   obj.processor_ = utils::clone_unique (
     *other.processor_, utils::ObjectCloneType::Snapshot, obj,
-    obj.port_registry_, false);
+    obj.port_registry_, obj.param_registry_, false);
   obj.processor_->track_ = &obj;
 }
 
@@ -50,24 +53,6 @@ void
 ProcessableTrack::process_block (EngineProcessTimeInfo time_nfo)
 {
   processor_->process (time_nfo);
-}
-
-bool
-ProcessableTrack::get_monitor_audio () const
-{
-  return processor_->get_monitor_audio_port ().is_toggled ();
-}
-
-void
-ProcessableTrack::
-  set_monitor_audio (bool monitor, bool auto_select, bool fire_events)
-{
-  if (auto_select)
-    {
-      TRACKLIST->get_selection_manager ().select_unique (get_uuid ());
-    }
-
-  processor_->get_monitor_audio_port ().set_toggled (monitor, fire_events);
 }
 
 void
@@ -296,9 +281,17 @@ ProcessableTrack::fill_events_common (
 
 void
 ProcessableTrack::append_member_ports (
-  std::vector<Port *> &ports,
-  bool                 include_plugins) const
+  std::vector<dsp::Port *> &ports,
+  bool                      include_plugins) const
 {
   processor_->append_ports (ports);
+}
+
+void
+from_json (const nlohmann::json &j, ProcessableTrack &p)
+{
+  p.processor_ = std::make_unique<TrackProcessor> (
+    p, p.port_registry_, p.param_registry_, false);
+  j[ProcessableTrack::kProcessorKey].get_to (*p.processor_);
 }
 }

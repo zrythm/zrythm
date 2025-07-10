@@ -5,12 +5,12 @@
 #include "zrythm-config.h"
 
 #include "dsp/panning.h"
+#include "dsp/port.h"
 #include "engine/device_io/engine.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
-#include "gui/dsp/port.h"
 #include "utils/color.h"
 #include "utils/objects.h"
 #include "utils/string.h"

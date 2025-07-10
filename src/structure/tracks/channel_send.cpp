@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/midi_event.h"
+#include "dsp/port.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/project_graph_builder.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
-#include "gui/dsp/control_port.h"
-#include "gui/dsp/port.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/channel_track.h"
 #include "structure/tracks/track.h"
@@ -21,12 +20,15 @@ namespace zrythm::structure::tracks
 {
 
 ChannelSend::ChannelSend (
-  TrackRegistry            &track_registry,
-  PortRegistry             &port_registry,
-  OptionalRef<ChannelTrack> track,
-  std::optional<int>        slot,
-  bool                      create_ports)
-    : port_registry_ (port_registry), track_registry_ (track_registry)
+  TrackRegistry                   &track_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  OptionalRef<ChannelTrack>        track,
+  std::optional<int>               slot,
+  bool                             create_ports)
+    : port_registry_ (port_registry), param_registry_ (param_registry),
+      track_registry_ (track_registry), amount_id_ (param_registry),
+      enabled_id_ (param_registry)
 {
   if (slot)
     {
@@ -106,19 +108,19 @@ ChannelSendTarget::get_icon () const
 void
 ChannelSend::init_loaded (ChannelTrack * track)
 {
-  get_enabled_port ().init_loaded (*this);
-  get_amount_port ().init_loaded (*this);
+  // get_enabled_param ().init_loaded (*this);
+  // get_amount_param ().init_loaded (*this);
   if (is_midi ())
     {
-      get_midi_in_port ().init_loaded (*this);
-      get_midi_out_port ().init_loaded (*this);
+      get_midi_in_port ().set_full_designation_provider (this);
+      get_midi_out_port ().set_full_designation_provider (this);
     }
   else if (is_audio ())
     {
-      get_stereo_in_ports ().first.init_loaded (*this);
-      get_stereo_in_ports ().second.init_loaded (*this);
-      get_stereo_out_ports ().first.init_loaded (*this);
-      get_stereo_out_ports ().second.init_loaded (*this);
+      get_stereo_in_ports ().first.set_full_designation_provider (this);
+      get_stereo_in_ports ().second.set_full_designation_provider (this);
+      get_stereo_out_ports ().first.set_full_designation_provider (this);
+      get_stereo_out_ports ().second.set_full_designation_provider (this);
     }
 }
 
@@ -127,34 +129,29 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
 {
   slot_ = slot;
 
-  enabled_id_ = get_port_registry ().create_object<ControlPort> (
+  enabled_id_ = param_registry_.create_object<dsp::ProcessorParameter> (
+    port_registry_,
+    dsp::ProcessorParameter::UniqueId (
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("channel_send_{}_enabled", slot + 1))),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
     utils::Utf8String::from_qstring (
       format_qstr (QObject::tr ("Channel Send {} enabled"), slot + 1)));
-  auto &enabled_port = get_enabled_port ();
-  enabled_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("channel_send_{}_enabled", slot + 1));
-  enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
-  enabled_port.id_->flags_ |= dsp::PortIdentifier::Flags::ChannelSendEnabled;
-  enabled_port.set_owner (*this);
-  enabled_port.set_control_value (0.f, false, false);
 
-  amount_id_ = get_port_registry ().create_object<ControlPort> (
+  amount_id_ = param_registry_.create_object<dsp::ProcessorParameter> (
+    port_registry_,
+    dsp::ProcessorParameter::UniqueId (
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("channel_send_{}_amount", slot + 1))),
+    dsp::ParameterRange (
+      dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
     utils::Utf8String::from_qstring (
       format_qstr (QObject::tr ("Channel Send {} amount"), slot + 1)));
-  auto &amount_port = get_amount_port ();
-
-  amount_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("channel_send_{}_amount", slot + 1));
-  amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
-  amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-  amount_port.id_->flags_ |= dsp::PortIdentifier::Flags::ChannelSendAmount;
-  amount_port.set_owner (*this);
-  amount_port.set_control_value (1.f, false, false);
 
   if (is_audio ())
     {
       {
-        auto stereo_in_ports = StereoPorts::create_stereo_ports (
+        auto stereo_in_ports = dsp::StereoPorts::create_stereo_ports (
           port_registry_, true,
           utils::Utf8String::from_qstring (format_qstr (
 
@@ -165,12 +162,12 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
         stereo_in_right_id_ = stereo_in_ports.second;
         auto &left_port = get_stereo_in_ports ().first;
         auto &right_port = get_stereo_in_ports ().second;
-        left_port.set_owner (*this);
-        right_port.set_owner (*this);
+        left_port.set_full_designation_provider (this);
+        right_port.set_full_designation_provider (this);
       }
 
       {
-        auto stereo_out_ports = StereoPorts::create_stereo_ports (
+        auto stereo_out_ports = dsp::StereoPorts::create_stereo_ports (
           port_registry_, false,
           utils::Utf8String::from_qstring (
             format_qstr (QObject::tr ("Channel Send {} audio out"), slot + 1)),
@@ -180,29 +177,31 @@ ChannelSend::construct_for_slot (ChannelTrack &track, int slot)
         stereo_out_right_id_ = stereo_out_ports.second;
         auto &left_port = get_stereo_out_ports ().first;
         auto &right_port = get_stereo_out_ports ().second;
-        left_port.set_owner (*this);
-        right_port.set_owner (*this);
+        left_port.set_full_designation_provider (this);
+        right_port.set_full_designation_provider (this);
       }
     }
   else if (is_midi ())
     {
-      midi_in_id_ = get_port_registry ().create_object<MidiPort> (
+      midi_in_id_ = get_port_registry ().create_object<dsp::MidiPort> (
         utils::Utf8String::from_qstring (
           format_qstr (QObject::tr ("Channel Send {} MIDI in"), slot + 1)),
         dsp::PortFlow::Input);
       auto &midi_in_port = get_midi_in_port ();
-      midi_in_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
-        fmt::format ("channel_send_{}_midi_in", slot + 1));
-      midi_in_port.set_owner (*this);
+      midi_in_port.set_symbol (
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("channel_send_{}_midi_in", slot + 1)));
+      midi_in_port.set_full_designation_provider (this);
 
-      midi_out_id_ = get_port_registry ().create_object<MidiPort> (
+      midi_out_id_ = get_port_registry ().create_object<dsp::MidiPort> (
         utils::Utf8String::from_qstring (
           format_qstr (QObject::tr ("Channel Send {} MIDI out"), slot + 1)),
         dsp::PortFlow::Output);
       auto &midi_out_port = get_midi_out_port ();
-      midi_out_port.id_->sym_ = utils::Utf8String::from_utf8_encoded_string (
-        fmt::format ("channel_send_{}_midi_out", slot + 1));
-      midi_out_port.set_owner (*this);
+      midi_out_port.set_symbol (
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("channel_send_{}_midi_out", slot + 1)));
+      midi_out_port.set_full_designation_provider (this);
     }
 }
 
@@ -268,7 +267,7 @@ ChannelSend::process_block (const EngineProcessTimeInfo time_nfo)
   z_return_if_fail (track);
   if (track->get_output_signal_type () == PortType::Audio)
     {
-      const auto amount_val = get_amount_value ();
+      const auto amount_val = get_current_amount_value ();
       if (utils::math::floats_near (amount_val, 1.f, 0.00001f))
         {
           utils::float_ranges::copy (
@@ -301,10 +300,8 @@ void
 ChannelSend::copy_values_from (const ChannelSend &other)
 {
   slot_ = other.slot_;
-  get_enabled_port ().set_control_value (
-    other.get_enabled_port ().control_, false, false);
-  get_amount_port ().set_control_value (
-    other.get_amount_port ().control_, false, false);
+  get_enabled_param ().setBaseValue (other.get_enabled_param ().baseValue ());
+  get_amount_param ().setBaseValue (other.get_amount_param ().baseValue ());
   is_sidechain_ = other.is_sidechain_;
 }
 
@@ -317,8 +314,8 @@ ChannelSend::get_target_track ()
   auto * mgr = get_port_connections_manager ();
   z_return_val_if_fail (mgr, nullptr);
 
-  PortType         type = get_signal_type ();
-  PortConnection * conn = nullptr;
+  PortType                          type = get_signal_type ();
+  [[maybe_unused]] PortConnection * conn = nullptr;
   switch (type)
     {
     case PortType::Audio:
@@ -332,6 +329,9 @@ ChannelSend::get_target_track ()
       break;
     }
 
+  // TODO
+  return nullptr;
+#if 0
   z_return_val_if_fail (conn, nullptr);
   auto port_var = get_port_registry ().find_by_id (conn->dest_id_);
   z_return_val_if_fail (port_var, nullptr);
@@ -342,6 +342,7 @@ ChannelSend::get_target_track ()
     },
     port_var->get ());
   return std::visit ([&] (auto &&track) -> Track * { return track; }, ret);
+#endif
 }
 
 void
@@ -357,7 +358,7 @@ ChannelSend::connect_to_owner ()
         {
           auto self_port_id =
             i == 0 ? stereo_in_left_id_->id () : stereo_in_right_id_->id ();
-          std::optional<PortUuid> src_port_id;
+          std::optional<dsp::PortUuid> src_port_id;
           if (is_prefader ())
             {
               src_port_id =
@@ -380,8 +381,8 @@ ChannelSend::connect_to_owner ()
     }
   else if (is_midi ())
     {
-      auto                    self_port_id = midi_in_id_->id ();
-      std::optional<PortUuid> src_port_id;
+      auto                         self_port_id = midi_in_id_->id ();
+      std::optional<dsp::PortUuid> src_port_id;
       if (is_prefader ())
         {
           src_port_id = channel->prefader_->get_midi_out_id ();
@@ -401,7 +402,7 @@ ChannelSend::get_amount_for_widgets () const
 {
   z_return_val_if_fail (is_enabled (), 0.f);
 
-  return utils::math::get_fader_val_from_amp (get_amount_value ());
+  return utils::math::get_fader_val_from_amp (get_current_amount_value ());
 }
 
 void
@@ -409,16 +410,16 @@ ChannelSend::set_amount_from_widget (float val)
 {
   z_return_if_fail (is_enabled ());
 
-  set_amount (utils::math::get_amp_val_from_fader (val));
+  set_amount_in_amplitude (utils::math::get_amp_val_from_fader (val));
 }
 
 bool
 ChannelSend::connect_stereo (
-  AudioPort &l,
-  AudioPort &r,
-  bool       sidechain,
-  bool       recalc_graph,
-  bool       validate)
+  dsp::AudioPort &l,
+  dsp::AudioPort &r,
+  bool            sidechain,
+  bool            recalc_graph,
+  bool            validate)
 {
   auto * mgr = get_port_connections_manager ();
   z_return_val_if_fail (mgr, false);
@@ -441,7 +442,7 @@ ChannelSend::connect_stereo (
   mgr->add_connection (
     stereo_out_right_id_->id (), r.get_uuid (), 1.f, true, true);
 
-  get_enabled_port ().set_control_value (1.f, false, true);
+  get_enabled_param ().setBaseValue (1.f);
   is_sidechain_ = sidechain;
 
 #if 0
@@ -456,7 +457,7 @@ ChannelSend::connect_stereo (
 }
 
 bool
-ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
+ChannelSend::connect_midi (dsp::MidiPort &port, bool recalc_graph, bool validate)
 {
   auto * mgr = get_port_connections_manager ();
   z_return_val_if_fail (mgr, false);
@@ -475,7 +476,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
 
   mgr->add_connection (midi_out_id_->id (), port.get_uuid (), 1.f, true, true);
 
-  get_enabled_port ().set_control_value (1.f, false, true);
+  get_enabled_param ().setBaseValue (1.f);
 
   if (recalc_graph)
     ROUTER->recalc_graph (false);
@@ -495,8 +496,9 @@ ChannelSend::disconnect_midi ()
 
   auto dest_port_var = get_port_registry ().find_by_id (conn->dest_id_);
   z_return_if_fail (
-    dest_port_var && std::holds_alternative<MidiPort *> (dest_port_var->get ()));
-  auto * dest_port = std::get<MidiPort *> (dest_port_var->get ());
+    dest_port_var
+    && std::holds_alternative<dsp::MidiPort *> (dest_port_var->get ()));
+  auto * dest_port = std::get<dsp::MidiPort *> (dest_port_var->get ());
 
   mgr->remove_connection (midi_out_id_->id (), dest_port->get_uuid ());
 }
@@ -518,8 +520,8 @@ ChannelSend::disconnect_audio ()
       auto dest_port_var = get_port_registry ().find_by_id (conn->dest_id_);
       z_return_if_fail (
         dest_port_var
-        && std::holds_alternative<AudioPort *> (dest_port_var->get ()));
-      auto * dest_port = std::get<AudioPort *> (dest_port_var->get ());
+        && std::holds_alternative<dsp::AudioPort *> (dest_port_var->get ()));
+      auto * dest_port = std::get<dsp::AudioPort *> (dest_port_var->get ());
       mgr->remove_connection (src_port_id, dest_port->get_uuid ());
     }
 }
@@ -547,7 +549,7 @@ ChannelSend::disconnect (bool recalc_graph)
       break;
     }
 
-  get_enabled_port ().set_control_value (0.f, false, true);
+  get_enabled_param ().setBaseValue (0.f);
   is_sidechain_ = false;
 
   if (recalc_graph)
@@ -565,9 +567,10 @@ ChannelSend::get_port_connections_manager () const
 }
 
 void
-ChannelSend::set_amount (float amount)
+ChannelSend::set_amount_in_amplitude (float amount)
 {
-  get_amount_port ().set_control_value (amount, false, true);
+  get_amount_param ().setBaseValue (
+    get_amount_param ().range ().convert_to_0_to_1 (amount));
 }
 
 utils::Utf8String
@@ -591,7 +594,9 @@ ChannelSend::get_dest_name () const
   auto dest_var = get_port_registry ().find_by_id_or_throw (conn->dest_id_);
   return std::visit (
     [&] (auto &&dest) -> utils::Utf8String {
-      z_return_val_if_fail (dest, {});
+      return dest->get_full_designation ();
+// TODO
+#if 0
       if (is_sidechain_)
         {
           auto pl_var =
@@ -624,17 +629,18 @@ ChannelSend::get_dest_name () const
         }
 
       z_return_val_if_reached ({});
+#endif
     },
     dest_var);
 }
 
 utils::Utf8String
-ChannelSend::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+ChannelSend::get_full_designation_for_port (const dsp::Port &port) const
 {
   auto * tr = get_track ();
   z_return_val_if_fail (tr, {});
   return utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("{}/{}", tr->get_name (), id.get_label ()));
+    fmt::format ("{}/{}", tr->get_name (), port.get_label ()));
 }
 
 void
@@ -655,13 +661,15 @@ init_from (
         auto other_amp_port = other_port_id->get_object ();
         std::visit (
           [&] (auto &&other_port) {
-            own_port_id = obj.port_registry_.clone_object (*other_port);
+            // TODO
+            // own_port_id = obj.port_registry_.clone_object (*other_port);
           },
           other_amp_port);
       };
 
-      deep_clone_port (obj.enabled_id_, other.enabled_id_);
-      deep_clone_port (obj.amount_id_, other.amount_id_);
+      // TODO
+      // deep_clone_port (obj.enabled_id_, other.enabled_id_);
+      // deep_clone_port (obj.amount_id_, other.amount_id_);
       deep_clone_port (obj.stereo_in_left_id_, other.stereo_in_left_id_);
       deep_clone_port (obj.stereo_in_right_id_, other.stereo_in_right_id_);
       deep_clone_port (obj.midi_in_id_, other.midi_in_id_);
@@ -670,11 +678,11 @@ init_from (
       deep_clone_port (obj.midi_out_id_, other.midi_out_id_);
 
       // set owner
-      std::vector<Port *> ports;
+      std::vector<dsp::Port *> ports;
       obj.append_ports (ports);
       for (auto * port : ports)
         {
-          port->set_owner (obj);
+          port->set_full_designation_provider (&obj);
         }
     }
   else if (clone_type == utils::ObjectCloneType::Snapshot)
@@ -693,8 +701,8 @@ init_from (
 bool
 ChannelSend::is_enabled () const
 {
-  assert (enabled_id_.has_value ());
-  bool enabled = get_enabled_port ().is_toggled ();
+  bool enabled = get_enabled_param ().range ().is_toggled (
+    get_enabled_param ().currentValue ());
 
   if (!enabled)
     return false;
@@ -702,9 +710,9 @@ ChannelSend::is_enabled () const
   auto * mgr = get_port_connections_manager ();
   z_return_val_if_fail (mgr, false);
 
-  const Port &search_port =
+  const dsp::Port &search_port =
     is_audio ()
-      ? static_cast<const Port &> (get_stereo_out_ports ().first)
+      ? static_cast<const dsp::Port &> (get_stereo_out_ports ().first)
       : get_midi_out_port ();
 
 // TODO: optimization
@@ -742,8 +750,10 @@ ChannelSend::is_enabled () const
   auto dest_var = get_port_registry ().find_by_id_or_throw (conn->dest_id_);
   return std::visit (
     [&] (auto &&dest) {
-      /* if dest port is a plugin port and plugin instantiation failed, assume
-       * that the send is disabled */
+  // TODO
+  /* if dest port is a plugin port and plugin instantiation failed, assume
+   * that the send is disabled */
+#if 0
       if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
         {
           auto pl_var =
@@ -755,7 +765,7 @@ ChannelSend::is_enabled () const
             },
             pl_var.value ());
         }
-
+#endif
       return enabled;
     },
     dest_var);
@@ -773,6 +783,7 @@ ChannelSend::find_widget ()
 }
 #endif
 
+#if 0
 void
 ChannelSend::set_port_metadata_from_owner (
   dsp::PortIdentifier &id,
@@ -797,6 +808,7 @@ ChannelSend::set_port_metadata_from_owner (
       range.zerof_ = 0.f;
     }
 }
+#endif
 
 ChannelSend *
 ChannelSend::find_in_project () const
@@ -805,7 +817,7 @@ ChannelSend::find_in_project () const
 }
 
 void
-ChannelSend::append_ports (std::vector<Port *> &ports)
+ChannelSend::append_ports (std::vector<dsp::Port *> &ports)
 {
   auto add_port = [&] (auto &port_id) {
     if (port_id.has_value ())
@@ -815,8 +827,8 @@ ChannelSend::append_ports (std::vector<Port *> &ports)
       }
   };
 
-  add_port (enabled_id_);
-  add_port (amount_id_);
+  // add_port (enabled_id_);
+  // add_port (amount_id_);
   add_port (midi_in_id_);
   add_port (midi_out_id_);
   add_port (stereo_in_left_id_);
@@ -856,8 +868,8 @@ ChannelSend::append_connection (
 
 bool
 ChannelSend::is_connected_to (
-  std::optional<std::pair<PortUuid, PortUuid>> stereo,
-  std::optional<PortUuid>                      midi) const
+  std::optional<std::pair<dsp::PortUuid, dsp::PortUuid>> stereo,
+  std::optional<dsp::PortUuid>                           midi) const
 {
   auto * mgr = get_port_connections_manager ();
   z_return_val_if_fail (mgr, false);
@@ -883,10 +895,8 @@ void
 from_json (const nlohmann::json &j, ChannelSend &p)
 {
   j.at (ChannelSend::kSlotKey).get_to (p.slot_);
-  p.amount_id_ = { p.get_port_registry () };
-  j.at (ChannelSend::kAmountKey).get_to (*p.amount_id_);
-  p.enabled_id_ = { p.get_port_registry () };
-  j.at (ChannelSend::kEnabledKey).get_to (*p.enabled_id_);
+  j.at (ChannelSend::kAmountKey).get_to (p.amount_id_);
+  j.at (ChannelSend::kEnabledKey).get_to (p.enabled_id_);
   j.at (ChannelSend::kIsSidechainKey).get_to (p.is_sidechain_);
   if (j.contains (ChannelSend::kMidiInKey))
     {

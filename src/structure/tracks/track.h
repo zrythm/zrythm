@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/port_connections_manager.h"
+#include "dsp/position.h"
 #include "gui/dsp/plugin.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/automation_tracklist.h"
@@ -24,8 +25,9 @@ public: \
   ClassType ( \
     dsp::FileAudioSourceRegistry &file_audio_source_registry, \
     TrackRegistry &track_registry, PluginRegistry &plugin_registry, \
-    PortRegistry &port_registry, ArrangerObjectRegistry &obj_registry, \
-    bool new_identity);
+    dsp::PortRegistry               &port_registry, \
+    dsp::ProcessorParameterRegistry &param_registry, \
+    ArrangerObjectRegistry &obj_registry, bool new_identity);
 
 #define DEFINE_TRACK_QML_PROPERTIES(ClassType) \
 public: \
@@ -355,10 +357,10 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  */
 class Track
     : public dsp::graph::IProcessable,
-      public IPortOwner,
       public utils::UuidIdentifiableObject<Track>
 {
 public:
+  using PluginUuid = gui::old_dsp::plugins::Plugin::Uuid;
   using PortType = dsp::PortType;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
   using PluginPtrVariant = PluginRegistry::VariantType;
@@ -368,15 +370,15 @@ public:
     structure::arrangement::ArrangerObjectPtrVariant;
   using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
   using Type = ::TrackTypeWrapper::TrackType;
-  using TrackSelectionStatusGetter = std::function<bool (const TrackUuid &)>;
+  using TrackSelectionStatusGetter = std::function<bool (const Track::Uuid &)>;
 
   static constexpr int MIN_HEIGHT = 26;
   static constexpr int DEF_HEIGHT = 52;
 
   friend class Tracklist;
 
-  using Color = zrythm::utils::Color;
-  using Position = zrythm::dsp::Position;
+  using Color = utils::Color;
+  using Position = dsp::Position;
 
   /**
    * Returns the prefader type.
@@ -532,12 +534,13 @@ protected:
    * @param pos Position in the Tracklist.
    */
   Track (
-    Type                    type,
-    PortType                in_signal_type,
-    PortType                out_signal_type,
-    PluginRegistry         &plugin_registry,
-    PortRegistry           &port_registry,
-    ArrangerObjectRegistry &obj_registry);
+    Type                             type,
+    PortType                         in_signal_type,
+    PortType                         out_signal_type,
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    ArrangerObjectRegistry          &obj_registry);
 
 public:
   /**
@@ -545,8 +548,10 @@ public:
    *
    * @note Each implementor must chain up to its direct superclass.
    */
-  virtual void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry) = 0;
+  virtual void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) = 0;
 
   Tracklist * get_tracklist () const;
 
@@ -718,7 +723,8 @@ public:
           {
             region->regionMixin ()->name ()->setName (
               utils::Utf8String::from_utf8_encoded_string (
-                fmt::format ("{} - {}", self.get_name (), at->getLabel ()))
+                fmt::format (
+                  "{} - {}", self.get_name (), at->parameter ()->label ()))
                 .to_qstring ());
           }
         else
@@ -1021,7 +1027,7 @@ public:
    * Appends all channel ports and optionally plugin ports to the array.
    */
   virtual void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const = 0;
+  append_ports (std::vector<dsp::Port *> &ports, bool include_plugins) const = 0;
 
   /**
    * Freezes or unfreezes the track.
@@ -1242,8 +1248,8 @@ public:
   }
 
   bool is_enabled () const { return enabled_; }
-  bool get_enabled () const { return enabled_; }
-  bool get_disabled () const { return !enabled_; }
+  bool enabled () const { return enabled_; }
+  bool disabled () const { return !enabled_; }
   void set_enabled (bool enabled) { enabled_ = enabled; }
 
   void set_enabled (
@@ -1345,15 +1351,11 @@ public:
 
   // GMenu * generate_edit_context_menu (int num_selected);
 
-  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
-    const override;
+  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
-  utils::Utf8String
-  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+  virtual bool currently_muted () const { return false; }
 
-  virtual bool get_muted () const { return false; }
-
-  virtual bool get_listened () const { return false; }
+  virtual bool currently_listened () const { return false; }
 
   /**
    * Returns whether the track is not soloed on its own but its direct out (or
@@ -1361,7 +1363,7 @@ public:
    */
   virtual bool get_implied_soloed () const { return false; }
 
-  virtual bool get_soloed () const { return false; }
+  virtual bool currently_soloed () const { return false; }
 
   void set_selection_status_getter (TrackSelectionStatusGetter getter)
   {
@@ -1376,6 +1378,8 @@ public:
   auto &get_plugin_registry () { return plugin_registry_; }
   auto &get_port_registry () const { return port_registry_; }
   auto &get_port_registry () { return port_registry_; }
+  auto &get_param_registry () const { return param_registry_; }
+  auto &get_param_registry () { return param_registry_; }
   auto &get_object_registry () const { return object_registry_; }
   auto &get_object_registry () { return object_registry_; }
 
@@ -1451,7 +1455,8 @@ private:
 
 protected:
   PluginRegistry                      &plugin_registry_;
-  PortRegistry                        &port_registry_;
+  dsp::PortRegistry                   &port_registry_;
+  dsp::ProcessorParameterRegistry     &param_registry_;
   arrangement::ArrangerObjectRegistry &object_registry_;
 
   /**
@@ -1531,14 +1536,6 @@ public:
 
   /** Whether currently disconnecting. */
   bool disconnecting_ = false;
-
-  /**
-   * Flag to tell the UI that this channel had MIDI activity.
-   *
-   * When processing this and setting it to 0, the UI should create a separate
-   * event using EVENTS_PUSH.
-   */
-  bool trigger_midi_activity_ = false;
 
   /** Pool ID of the clip if track is frozen (unset if not frozen). */
   std::optional<dsp::FileAudioSourceUuidReference> frozen_clip_id_;

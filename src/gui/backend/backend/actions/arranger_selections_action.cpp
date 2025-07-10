@@ -1,13 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/tracks/automation_track.h"
@@ -221,16 +219,16 @@ ArrangerSelectionsAction::get_project_arranger_objects () const
 }
 
 ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
-  ArrangerObjectSpan                      sel_var,
-  bool                                    move,
-  double                                  ticks,
-  int                                     delta_chords,
-  int                                     delta_pitch,
-  int                                     delta_tracks,
-  int                                     delta_lanes,
-  double                                  delta_normalized_amount,
-  std::optional<PortIdentifier::PortUuid> tgt_port_id,
-  bool                                    already_moved)
+  ArrangerObjectSpan           sel_var,
+  bool                         move,
+  double                       ticks,
+  int                          delta_chords,
+  int                          delta_pitch,
+  int                          delta_tracks,
+  int                          delta_lanes,
+  double                       delta_normalized_amount,
+  std::optional<dsp::PortUuid> tgt_port_id,
+  bool                         already_moved)
     : ArrangerSelectionsAction (sel_var, move ? Type::Move : Type::Duplicate)
 {
   first_run_ = already_moved;

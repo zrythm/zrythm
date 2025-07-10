@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include "dsp/modulator_macro_processor.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/modulator_macro_processor.h"
 #include "gui/dsp/plugin_span.h"
 #include "structure/tracks/automatable_track.h"
 #include "structure/tracks/processable_track.h"
@@ -57,17 +57,18 @@ public:
 
   plugins::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
 
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   friend void init_from (
     ModulatorTrack        &obj,
     const ModulatorTrack  &other,
     utils::ObjectCloneType clone_type);
 
-  void
-  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const final;
 
   auto get_modulator_macro_processors () const
   {
@@ -96,7 +97,7 @@ public:
   std::vector<PluginUuidReference> modulators_;
 
   /** Modulator macros. */
-  std::vector<std::unique_ptr<ModulatorMacroProcessor>>
+  std::vector<utils::QObjectUniquePtr<dsp::ModulatorMacroProcessor>>
     modulator_macro_processors_;
 };
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/midi_event.h"
+#include "dsp/position.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
 

@@ -26,17 +26,19 @@ class ChannelTrack : virtual public ProcessableTrack
 {
 protected:
   ChannelTrack (
-    TrackRegistry  &track_registry,
-    PluginRegistry &plugin_registry,
-    PortRegistry   &port_registry,
-    bool            new_identity);
+    TrackRegistry                   &track_registry,
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    bool                             new_identity);
 
 public:
   ~ChannelTrack () override;
 
   void init_loaded (
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    PortRegistry                          &port_registry) override;
+    dsp::PortRegistry                     &port_registry,
+    dsp::ProcessorParameterRegistry       &param_registry) override;
 
   Channel * get_channel () { return channel_.get (); }
 
@@ -52,17 +54,17 @@ public:
   /**
    * Returns if the track is muted.
    */
-  bool get_muted () const override
+  bool currently_muted () const override
   {
-    return channel_->get_post_fader ().get_muted ();
+    return channel_->get_post_fader ().currently_muted ();
   }
 
   /**
    * Returns if the track is listened.
    */
-  bool get_listened () const override
+  bool currently_listened () const override
   {
-    return channel_->get_post_fader ().get_listened ();
+    return channel_->get_post_fader ().currently_listened ();
   }
 
   bool get_implied_soloed () const override
@@ -70,9 +72,9 @@ public:
     return channel_->get_post_fader ().get_implied_soloed ();
   }
 
-  bool get_soloed () const override
+  bool currently_soloed () const override
   {
-    return channel_->get_post_fader ().get_soloed ();
+    return channel_->get_post_fader ().currently_soloed ();
   }
 
   /**
@@ -123,7 +125,8 @@ public:
 
 protected:
   void
-  append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
+  append_member_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const;
 
   friend void init_from (
     ChannelTrack          &obj,
@@ -145,15 +148,9 @@ private:
   {
     channel_track.channel_.reset (new Channel (
       channel_track.track_registry_, channel_track.plugin_registry_,
-      channel_track.port_registry_));
+      channel_track.port_registry_, channel_track.param_registry_));
     j.at (kChannelKey).get_to (*channel_track.channel_);
   }
-
-  /**
-   * Removes the AutomationTrack's associated with this channel from the
-   * AutomationTracklist in the corresponding Track.
-   */
-  void remove_ats_from_automation_tracklist (bool fire_events);
 
 public:
   /**

@@ -144,6 +144,8 @@ private:
   bool              realtime_updateable_;
 };
 
-DEFINE_OBJECT_FORMATTER (PositionProxy, PositionProxy, [] (const auto &obj) {
-  return Position_to_string (obj);
-});
+inline auto
+format_as (const PositionProxy &p)
+{
+  return p.get_position ();
+}

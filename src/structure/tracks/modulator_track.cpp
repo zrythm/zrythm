@@ -5,8 +5,6 @@
 
 #include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
-#include "gui/dsp/modulator_macro_processor.h"
-#include "gui/dsp/port.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/modulator_track.h"
 #include "structure/tracks/track.h"
@@ -15,21 +13,27 @@
 namespace zrythm::structure::tracks
 {
 ModulatorTrack::ModulatorTrack (
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  TrackRegistry                &track_registry,
-  PluginRegistry               &plugin_registry,
-  PortRegistry                 &port_registry,
-  ArrangerObjectRegistry       &obj_registry,
-  bool                          new_identity)
+  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+  TrackRegistry                   &track_registry,
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry,
+  ArrangerObjectRegistry          &obj_registry,
+  bool                             new_identity)
     : Track (
         Track::Type::Modulator,
         PortType::Unknown,
         PortType::Unknown,
         plugin_registry,
         port_registry,
+        param_registry,
         obj_registry),
-      AutomatableTrack (file_audio_source_registry, port_registry, new_identity),
-      ProcessableTrack (port_registry, new_identity)
+      AutomatableTrack (
+        file_audio_source_registry,
+        port_registry,
+        param_registry,
+        new_identity),
+      ProcessableTrack (port_registry, param_registry, new_identity)
 {
   if (new_identity)
     {
@@ -53,8 +57,8 @@ ModulatorTrack::initialize ()
   for (int i = 0; i < max_macros; i++)
     {
       modulator_macro_processors_.emplace_back (
-        std::make_unique<ModulatorMacroProcessor> (
-          port_registry_, this, i, true));
+        utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
+          port_registry_, param_registry_, i, this));
     }
 
   generate_automation_tracks ();
@@ -64,20 +68,17 @@ ModulatorTrack::initialize ()
 
 void
 ModulatorTrack::init_loaded (
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry)
+  PluginRegistry                  &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  AutomatableTrack::init_loaded (plugin_registry, port_registry);
-  ProcessableTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry, param_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   for (auto &modulator_id : modulators_)
     {
       auto modulator = modulator_id.get_object ();
       std::visit ([&] (auto &&pl) { pl->init_loaded (); }, modulator);
-    }
-  for (auto &macro : modulator_macro_processors_)
-    {
-      macro->init_loaded (*this);
     }
 }
 
@@ -230,7 +231,9 @@ init_from (
     static_cast<const AutomatableTrack &> (other), clone_type);
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
-  if (clone_type == utils::ObjectCloneType::NewIdentity)
+// TODO
+#if 0
+    if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
       const auto clone_from_registry = [] (auto &vec, const auto &other_vec) {
         for (const auto &other_el : other_vec)
@@ -245,6 +248,8 @@ init_from (
     {
       obj.modulators_ = other.modulators_;
     }
+#endif
+  obj.modulators_ = other.modulators_;
   utils::clone_unique_ptr_container (
     obj.modulator_macro_processors_, other.modulator_macro_processors_);
 }
@@ -269,11 +274,12 @@ ModulatorTrack::get_plugin_slot (const PluginUuid &plugin_id) const
 }
 
 void
-ModulatorTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
-  const
+ModulatorTrack::append_ports (
+  std::vector<dsp::Port *> &ports,
+  bool                      include_plugins) const
 {
   ProcessableTrack::append_member_ports (ports, include_plugins);
-  auto add_port = [&ports] (Port * port) {
+  auto add_port = [&ports] (dsp::Port * port) {
     if (port != nullptr)
       ports.push_back (port);
     else
@@ -289,7 +295,7 @@ ModulatorTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
     }
   for (const auto &macro : modulator_macro_processors_)
     {
-      add_port (&macro->get_macro_port ());
+      // add_port (&macro->get_macro_port ());
       add_port (&macro->get_cv_in_port ());
       add_port (&macro->get_cv_out_port ());
     }
@@ -308,11 +314,11 @@ from_json (const nlohmann::json &j, ModulatorTrack &track)
       track.modulators_.push_back (std::move (modulator_id_ref));
     }
   for (
-    const auto &macro_proc_json :
-    j.at (ModulatorTrack::kModulatorMacroProcessorsKey))
+    const auto &[index, macro_proc_json] : utils::views::enumerate (
+      j.at (ModulatorTrack::kModulatorMacroProcessorsKey)))
     {
-      auto macro_proc = std::make_unique<ModulatorMacroProcessor> (
-        track.port_registry_, &track, std::nullopt, false);
+      auto macro_proc = utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
+        track.port_registry_, track.param_registry_, index, &track);
       from_json (macro_proc_json, *macro_proc);
       track.modulator_macro_processors_.push_back (std::move (macro_proc));
     }

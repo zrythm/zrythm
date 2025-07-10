@@ -34,6 +34,7 @@
 
 #include "dsp/graph_scheduler.h"
 #include "dsp/midi_event.h"
+#include "dsp/port.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/metronome.h"
@@ -47,7 +48,6 @@
 #include "gui/backend/ui.h"
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/port.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_track.h"
 #include "structure/tracks/tracklist.h"
@@ -59,11 +59,14 @@ namespace zrythm::engine::device_io
 AudioEngine::AudioEngine (
   Project *                                 project,
   std::shared_ptr<juce::AudioDeviceManager> device_mgr)
-    : port_registry_ (project->get_port_registry ()), project_ (project),
+    : port_registry_ (project->get_port_registry ()),
+      param_registry_ (project->get_param_registry ()), project_ (project),
       device_manager_ (std::move (device_mgr)),
       control_room_ (
-        std::make_unique<
-          session::ControlRoom> (project->get_port_registry (), this)),
+        std::make_unique<session::ControlRoom> (
+          project->get_port_registry (),
+          project->get_param_registry (),
+          this)),
       port_connections_manager_ (project->port_connections_manager_),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
       audio_callback_ (
@@ -79,19 +82,15 @@ AudioEngine::AudioEngine (
 {
   z_debug ("Creating audio engine...");
 
-  midi_editor_manual_press_ = std::make_unique<MidiPort> (
+  midi_editor_manual_press_ = std::make_unique<dsp::MidiPort> (
     u8"MIDI Editor Manual Press", dsp::PortFlow::Input);
-  midi_editor_manual_press_->set_owner (*this);
-  midi_editor_manual_press_->id_->sym_ = u8"midi_editor_manual_press";
-  midi_editor_manual_press_->id_->flags_ |=
-    dsp::PortIdentifier::Flags::ManualPress;
+  midi_editor_manual_press_->set_symbol (u8"midi_editor_manual_press");
 
-  midi_in_ = std::make_unique<MidiPort> (u8"MIDI in", dsp::PortFlow::Input);
-  midi_in_->set_owner (*this);
-  midi_in_->id_->sym_ = u8"midi_in";
+  midi_in_ = std::make_unique<dsp::MidiPort> (u8"MIDI in", dsp::PortFlow::Input);
+  midi_in_->set_symbol (u8"midi_in");
 
   {
-    auto monitor_out = StereoPorts::create_stereo_ports (
+    auto monitor_out = dsp::StereoPorts::create_stereo_ports (
       project_->get_port_registry (), false, u8"Monitor Out", u8"monitor_out");
     monitor_out_left_ = monitor_out.first;
     monitor_out_right_ = monitor_out.second;
@@ -111,36 +110,39 @@ init_from (
   obj.frames_per_tick_ = other.frames_per_tick_;
   obj.monitor_out_left_ = other.monitor_out_left_;
   obj.monitor_out_right_ = other.monitor_out_right_;
+// TODO
+#if 0
   obj.midi_editor_manual_press_ =
     utils::clone_unique (*other.midi_editor_manual_press_);
   obj.midi_in_ = utils::clone_unique (*other.midi_in_);
   obj.control_room_ = utils::clone_unique (*other.control_room_);
   obj.sample_processor_ = utils::clone_unique (*other.sample_processor_);
   obj.sample_processor_->audio_engine_ = &obj;
-  obj.midi_clock_out_ = utils::clone_unique (*other.midi_clock_out_);
+  // obj.midi_clock_out_ = utils::clone_unique (*other.midi_clock_out_);
+#endif
 }
 
-std::pair<AudioPort &, AudioPort &>
+std::pair<dsp::AudioPort &, dsp::AudioPort &>
 AudioEngine::get_monitor_out_ports ()
 {
   if (!monitor_out_left_)
     {
       throw std::runtime_error ("No monitor outputs");
     }
-  auto * l = std::get<AudioPort *> (monitor_out_left_->get_object ());
-  auto * r = std::get<AudioPort *> (monitor_out_right_->get_object ());
+  auto * l = std::get<dsp::AudioPort *> (monitor_out_left_->get_object ());
+  auto * r = std::get<dsp::AudioPort *> (monitor_out_right_->get_object ());
   return { *l, *r };
 }
 
-std::pair<AudioPort &, AudioPort &>
+std::pair<dsp::AudioPort &, dsp::AudioPort &>
 AudioEngine::get_dummy_input_ports ()
 {
   if (!dummy_left_input_)
     {
       throw std::runtime_error ("No dummy inputs");
     }
-  auto * l = std::get<AudioPort *> (dummy_left_input_->get_object ());
-  auto * r = std::get<AudioPort *> (dummy_right_input_->get_object ());
+  auto * l = dummy_left_input_->get_object_as<dsp::AudioPort> ();
+  auto * r = dummy_right_input_->get_object_as<dsp::AudioPort> ();
   return { *l, *r };
 }
 
@@ -200,19 +202,19 @@ AudioEngine::update_frames_per_tick (
 }
 
 void
-AudioEngine::append_ports (std::vector<Port *> &ports)
+AudioEngine::append_ports (std::vector<dsp::Port *> &ports)
 {
-  auto add_port = [&ports] (Port * port) {
+  auto add_port = [&ports] (dsp::Port * port) {
     z_return_if_fail (port);
     ports.push_back (port);
   };
 
-  add_port (&control_room_->monitor_fader_->get_amp_port ());
-  add_port (&control_room_->monitor_fader_->get_balance_port ());
-  add_port (&control_room_->monitor_fader_->get_mute_port ());
-  add_port (&control_room_->monitor_fader_->get_solo_port ());
-  add_port (&control_room_->monitor_fader_->get_listen_port ());
-  add_port (&control_room_->monitor_fader_->get_mono_compat_enabled_port ());
+  // add_port (&control_room_->monitor_fader_->get_amp_port ());
+  // add_port (&control_room_->monitor_fader_->get_balance_port ());
+  // add_port (&control_room_->monitor_fader_->get_mute_port ());
+  // add_port (&control_room_->monitor_fader_->get_solo_port ());
+  // add_port (&control_room_->monitor_fader_->get_listen_port ());
+  // add_port (&control_room_->monitor_fader_->get_mono_compat_enabled_port ());
   add_port (&control_room_->monitor_fader_->get_stereo_in_ports ().first);
   add_port (&control_room_->monitor_fader_->get_stereo_in_ports ().second);
   add_port (&control_room_->monitor_fader_->get_stereo_out_ports ().first);
@@ -245,7 +247,7 @@ AudioEngine::append_ports (std::vector<Port *> &ports)
   add_port (project_->transport_->loop_toggle_.get ());
   add_port (project_->transport_->rec_toggle_.get ());
 
-  add_port (midi_clock_out_.get ());
+  // add_port (midi_clock_out_.get ());
 }
 
 void
@@ -297,10 +299,13 @@ AudioEngine::init_common ()
       : static_cast<zrythm::dsp::PanAlgorithm> (
           zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ());
 
+// TODO: this should be a separate processor
+#if 0
   midi_clock_out_ =
     std::make_unique<MidiPort> (u8"MIDI Clock Out", dsp::PortFlow::Output);
   midi_clock_out_->set_owner (*this);
   midi_clock_out_->id_->flags_ |= dsp::PortIdentifier::Flags::MidiClock;
+#endif
 }
 
 void
@@ -314,15 +319,18 @@ AudioEngine::init_loaded (Project * project)
   // FIXME this shouldn't be here
   project->pool_->init_loaded ();
 
-  control_room_->init_loaded (*port_registry_, this);
+  control_room_->init_loaded (*port_registry_, *param_registry_, this);
   sample_processor_->init_loaded (this);
 
   init_common ();
 
-  std::vector<Port *> ports;
+  // TODO
+#if 0
+  std::vector<dsp::Port *> ports;
   append_ports (ports);
   for (auto * port : ports)
     {
+
       auto &id = *port->id_;
       if (id.owner_type_ == dsp::PortIdentifier::OwnerType::AudioEngine)
         {
@@ -332,24 +340,21 @@ AudioEngine::init_loaded (Project * project)
         id.owner_type_ == dsp::PortIdentifier::OwnerType::HardwareProcessor)
         {
 // FIXME? this has been either broken or unused for a while
-#if 0
+#  if 0
           if (id.is_output ())
             port->init_loaded (*hw_in_processor_);
           else if (id.is_input ())
             port->init_loaded (*hw_out_processor_);
-#endif
+#  endif
         }
       else if (id.owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
         {
           if (ENUM_BITSET_TEST (
-                id.flags_, dsp::PortIdentifier::Flags::SampleProcessorFader))
-            port->init_loaded (*sample_processor_->fader_);
-          else if (
-            ENUM_BITSET_TEST (
-              id.flags_, dsp::PortIdentifier::Flags::MonitorFader))
+                id.flags_, dsp::PortIdentifier::Flags::MonitorFader))
             port->init_loaded (*control_room_->monitor_fader_);
         }
-    }
+      }
+#endif
 
   z_debug ("done initializing loaded engine");
 }
@@ -589,7 +594,7 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
   iterate_tuple (
     [&] (auto &port) { port.clear_buffer (get_block_length ()); },
     get_monitor_out_ports ());
-  midi_clock_out_->clear_buffer (get_block_length ());
+  // midi_clock_out_->clear_buffer (get_block_length ());
 
   /* if not running, do not attempt to access any possibly deleted ports */
   if (!run_.load ()) [[unlikely]]
@@ -992,20 +997,6 @@ AudioEngine::reset_bounce_mode ()
   bounce_mode_ = BounceMode::Off;
 
   TRACKLIST->mark_all_tracks_for_bounce (false);
-}
-
-void
-AudioEngine::set_port_metadata_from_owner (
-  dsp::PortIdentifier &id,
-  PortRange           &range) const
-{
-  id.owner_type_ = dsp::PortIdentifier::OwnerType::AudioEngine;
-}
-
-utils::Utf8String
-AudioEngine::get_full_designation_for_port (const dsp::PortIdentifier &id) const
-{
-  return id.get_label ();
 }
 
 AudioEngine::~AudioEngine ()

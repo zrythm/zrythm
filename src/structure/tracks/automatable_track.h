@@ -48,18 +48,20 @@ class AutomatableTrack : virtual public Track
 {
 public:
   AutomatableTrack (
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    PortRegistry                 &port_registry,
-    bool                          new_identity);
+    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    bool                             new_identity);
 
   ~AutomatableTrack () override = default;
 
   using Plugin = gui::old_dsp::plugins::Plugin;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
 
-  void
-  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
-    override;
+  void init_loaded (
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   AutomationTracklist &get_automation_tracklist () const
   {
@@ -155,7 +157,7 @@ private:
     track
       .automation_tracklist_ = utils::make_qobject_unique<AutomationTracklist> (
       track.file_audio_source_registry_, track.port_registry_,
-      track.object_registry_, track);
+      track.param_registry_, track.object_registry_, track);
     from_json (j, *track.automation_tracklist_);
     j.at (kAutomationVisibleKey).get_to (track.automation_visible_);
   }

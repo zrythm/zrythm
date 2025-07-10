@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
-#define ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
+#pragma once
 
 #include "utils/format.h"
 #include "utils/serialization.h"
@@ -108,18 +107,15 @@ private:
   std::optional<SlotNo> slot_;
 };
 
+inline auto
+format_as (const zrythm::plugins::PluginSlot &slot)
+{
+  if (slot.has_slot_index ())
+    {
+      auto ret = slot.get_slot_with_index ();
+      return fmt::format ("{}::{}", ENUM_NAME (ret.first), ret.second);
+    }
+  return fmt::format ("{}", ENUM_NAME (slot.get_slot_type_only ()));
+}
+
 }; // namespace zrythm::dsp
-
-DEFINE_OBJECT_FORMATTER (
-  zrythm::plugins::PluginSlot,
-  PluginSlot,
-  [] (const zrythm::plugins::PluginSlot &slot) {
-    if (slot.has_slot_index ())
-      {
-        auto ret = slot.get_slot_with_index ();
-        return fmt::format ("{}::{}", ENUM_NAME (ret.first), ret.second);
-      }
-    return fmt::format ("{}", ENUM_NAME (slot.get_slot_type_only ()));
-  });
-
-#endif

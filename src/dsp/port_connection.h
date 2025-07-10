@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
-#include "dsp/port_identifier.h"
+#include "dsp/port_fwd.h"
 
 #include <QtQmlIntegration>
 
@@ -21,8 +19,6 @@ class PortConnection final : public QObject
   QML_ELEMENT
 
 public:
-  using PortUuid = dsp::PortIdentifier::PortUuid;
-
   PortConnection (QObject * parent = nullptr);
 
   PortConnection (
@@ -40,14 +36,15 @@ public:
     enabled_ = enabled;
   }
 
+  void set_bipolar (bool bipolar) { bipolar_ = bipolar; }
+
 private:
   static constexpr std::string_view kSourceIdKey = "srcId";
   static constexpr std::string_view kDestIdKey = "destId";
   static constexpr std::string_view kMultiplierKey = "multiplier";
   static constexpr std::string_view kLockedKey = "locked";
   static constexpr std::string_view kEnabledKey = "enabled";
-  // note: this is only needed for CV ports
-  static constexpr std::string_view kBaseValueKey = "baseValue";
+  static constexpr std::string_view kBipolarKey = "bipolar";
   friend void to_json (nlohmann::json &j, const PortConnection &port_connection)
   {
     j[kSourceIdKey] = port_connection.src_id_;
@@ -55,7 +52,7 @@ private:
     j[kMultiplierKey] = port_connection.multiplier_;
     j[kLockedKey] = port_connection.locked_;
     j[kEnabledKey] = port_connection.enabled_;
-    j[kBaseValueKey] = port_connection.base_value_;
+    j[kBipolarKey] = port_connection.bipolar_;
   }
   friend void
   from_json (const nlohmann::json &j, PortConnection &port_connection)
@@ -65,7 +62,7 @@ private:
     j.at (kMultiplierKey).get_to (port_connection.multiplier_);
     j.at (kLockedKey).get_to (port_connection.locked_);
     j.at (kEnabledKey).get_to (port_connection.enabled_);
-    j.at (kBaseValueKey).get_to (port_connection.base_value_);
+    j.at (kBipolarKey).get_to (port_connection.bipolar_);
   }
 
   friend void init_from (
@@ -76,9 +73,6 @@ private:
   friend bool operator== (const PortConnection &lhs, const PortConnection &rhs)
   {
     return lhs.src_id_ == rhs.src_id_ && lhs.dest_id_ == rhs.dest_id_;
-    //  && utils::math::floats_equal (lhs.multiplier_, rhs.multiplier_)
-    //  && lhs.locked_ == rhs.locked_ && lhs.enabled_ == rhs.enabled_
-    //  && utils::math::floats_equal (lhs.base_value_, rhs.base_value_);
   }
 
 public:
@@ -108,13 +102,22 @@ public:
    */
   bool enabled_ = true;
 
-  /** Used for CV -> control port connections. */
-  float base_value_ = 0.0f;
+  /**
+   * @brief Range type for CV->CV connections, where the destination port is
+   * used for modulating parameters.
+   *
+   * If true, modulation will be applied in bipolar fashion, where the midpoint
+   * is the base parameter value. Otherwise (and by default), modulation will be
+   * added to the base parameter value.
+   *
+   * @note only used for connections matching the above description.
+   */
+  bool bipolar_{};
 
   BOOST_DESCRIBE_CLASS (
     PortConnection,
     (),
-    (src_id_, dest_id_, multiplier_, locked_, enabled_),
+    (src_id_, dest_id_, multiplier_, locked_, enabled_, bipolar_),
     (),
     ())
 };

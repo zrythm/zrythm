@@ -10,10 +10,10 @@ namespace zrythm::dsp
 class PortConnectionsManagerTest : public ::testing::Test
 {
 protected:
-  const PortIdentifier::PortUuid kTestSrc1{ QUuid::createUuid () };
-  const PortIdentifier::PortUuid kTestSrc2{ QUuid::createUuid () };
-  const PortIdentifier::PortUuid kTestDest1{ QUuid::createUuid () };
-  const PortIdentifier::PortUuid kTestDest2{ QUuid::createUuid () };
+  const PortUuid kTestSrc1{ QUuid::createUuid () };
+  const PortUuid kTestSrc2{ QUuid::createUuid () };
+  const PortUuid kTestDest1{ QUuid::createUuid () };
+  const PortUuid kTestDest2{ QUuid::createUuid () };
 
   void SetUp () override
   {
@@ -87,8 +87,8 @@ TEST_F (PortConnectionsManagerTest, UpdateConnection)
   EXPECT_FALSE (conn->enabled_);
 
   // Try updating non-existent connection
-  EXPECT_FALSE (manager_->update_connection (
-    PortIdentifier::PortUuid{}, PortIdentifier::PortUuid{}, 1.0f, false, true));
+  EXPECT_FALSE (
+    manager_->update_connection (PortUuid{}, PortUuid{}, 1.0f, false, true));
 }
 
 TEST_F (PortConnectionsManagerTest, GetSourceOrDest)
@@ -152,8 +152,8 @@ TEST_F (PortConnectionsManagerTest, ContainsConnection)
   EXPECT_TRUE (manager_->contains_connection (conn));
 
   PortConnection non_existent (
-    PortIdentifier::PortUuid{ QUuid::createUuid () },
-    PortIdentifier::PortUuid{ QUuid::createUuid () }, 1.0f, false, true);
+    PortUuid{ QUuid::createUuid () }, PortUuid{ QUuid::createUuid () }, 1.0f,
+    false, true);
   EXPECT_FALSE (manager_->contains_connection (non_existent));
 }
 

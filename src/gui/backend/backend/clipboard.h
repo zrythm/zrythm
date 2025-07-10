@@ -16,7 +16,7 @@
 class Clipboard final
 {
 public:
-  using PluginUuid = Plugin::PluginUuid;
+  using PluginUuid = Plugin::Uuid;
 
   /**
    * Clipboard type.

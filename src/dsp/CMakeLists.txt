@@ -10,10 +10,14 @@ target_sources(zrythm_dsp_lib
     atomic_position_qml_adapter.cpp
     audio_pool.h
     audio_pool.cpp
+    audio_port.h
+    audio_port.cpp
     chord_descriptor.h
     chord_descriptor.cpp
     curve.h
     curve.cpp
+    cv_port.h
+    cv_port.cpp
     ditherer.h
     ditherer.cpp
     dsp.h
@@ -34,8 +38,14 @@ target_sources(zrythm_dsp_lib
     kmeter_dsp.cpp
     midi_event.h
     midi_event.cpp
+    midi_port.h
+    midi_port.cpp
+    modulator_macro_processor.h
+    modulator_macro_processor.cpp
     musical_scale.h
     musical_scale.cpp
+    parameter.h
+    parameter.cpp
     panning.h
     panning.cpp
     peak_dsp.h
@@ -45,12 +55,13 @@ target_sources(zrythm_dsp_lib
     playhead.h
     playhead_qml_adapter.h
     playhead_qml_adapter.cpp
+    port.h
+    port.cpp
+    port_all.h
     port_connection.h
     port_connection.cpp
     port_connections_manager.h
     port_connections_manager.cpp
-    port_identifier.h
-    port_identifier.cpp
     position.h
     position.cpp
     stretcher.h

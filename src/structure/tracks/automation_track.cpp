@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
+#include <utility>
+
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
 #include "structure/arrangement/automation_point.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/tracks/automatable_track.h"
@@ -18,18 +18,26 @@
 namespace zrythm::structure::tracks
 {
 AutomationTrack::AutomationTrack (
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  PortRegistry                 &port_registry,
-  ArrangerObjectRegistry       &obj_registry,
-  TrackGetter                   track_getter,
-  const ControlPort::Uuid      &port_id)
+  dsp::FileAudioSourceRegistry        &file_audio_source_registry,
+  ArrangerObjectRegistry              &obj_registry,
+  TrackGetter                          track_getter,
+  dsp::ProcessorParameterUuidReference param_id)
     : arrangement::ArrangerObjectOwner<arrangement::AutomationRegion> (
         obj_registry,
         file_audio_source_registry,
         *this),
-      port_registry_ (port_registry), object_registry_ (obj_registry),
-      track_getter_ (std::move (track_getter)), port_id_ (port_id)
+      object_registry_ (obj_registry), track_getter_ (std::move (track_getter)),
+      port_id_ (std::move (param_id))
 {
+  parameter ()->set_automation_provider (
+    [this] (unsigned_frame_t sample_position) -> std::optional<float> {
+      if (get_children_vector ().empty ())
+        {
+          return std::nullopt;
+        }
+      return get_normalized_val_at_pos (
+        static_cast<signed_frame_t> (sample_position), false, false);
+    });
 #if 0
   auto * port =
     std::get<ControlPort *> (port_registry.find_by_id_or_throw (port_id));
@@ -51,15 +59,6 @@ AutomationTrack::init_loaded ()
 // ========================================================================
 // QML Interface
 // ========================================================================
-
-QString
-AutomationTrack::getLabel () const
-{
-  auto port = PROJECT->find_port_by_id (port_id_);
-  z_return_val_if_fail (port.has_value (), QString ());
-  return std::visit (
-    [&] (auto &&p) { return p->get_label ().to_qstring (); }, port.value ());
-}
 
 void
 AutomationTrack::setHeight (double height)
@@ -93,13 +92,6 @@ AutomationTrack::setRecordMode (int record_mode)
 }
 
 // ========================================================================
-
-void
-AutomationTrack::set_port_id (const PortUuid &id)
-{
-  port_id_ = id;
-  Q_EMIT labelChanged (getLabel ());
-}
 
 AutomationTracklist *
 AutomationTrack::get_automation_tracklist () const
@@ -204,7 +196,7 @@ AutomationTrack::get_ap_before_pos (
 {
   auto * r = get_region_before_pos (pos, ends_after, use_snapshots);
 
-  if (!r || r->regionMixin ()->mute ()->muted ())
+  if ((r == nullptr) || r->regionMixin ()->mute ()->muted ())
     {
       return nullptr;
     }
@@ -228,45 +220,6 @@ AutomationTrack::get_ap_before_pos (
   return nullptr;
 }
 
-AutomationTrack *
-AutomationTrack::find_from_port (
-  const ControlPort       &port,
-  const AutomatableTrack * track,
-  bool                     basic_search)
-{
-  if (!track)
-    {
-      auto track_id_opt = port.id_->get_track_id ();
-      z_return_val_if_fail (track_id_opt.has_value (), nullptr);
-      auto track_var = PROJECT->find_track_by_id (track_id_opt.value ());
-      z_return_val_if_fail (track_var.has_value (), nullptr);
-      track = std::visit (
-        [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
-        track_var.value ());
-    }
-  z_return_val_if_fail (track, nullptr);
-
-  auto &atl = track->get_automation_tracklist ();
-  auto &ats = atl.get_automation_tracks ();
-  auto  it = std::ranges::find_if (ats, [&] (const auto &at) {
-    return at->port_id_ == port.get_uuid ();
-  });
-  z_return_val_if_fail (it != ats.end (), nullptr);
-  return *it;
-}
-
-AutomationTrack *
-AutomationTrack::find_from_port_id (const PortUuid &id, bool basic_search)
-{
-  auto port_var = PROJECT->find_port_by_id (id);
-  z_return_val_if_fail (
-    port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
-  auto * port = std::get<ControlPort *> (*port_var);
-  z_return_val_if_fail (id == port->get_uuid (), nullptr);
-
-  return find_from_port (*port, nullptr, basic_search);
-}
-
 void
 AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
 {
@@ -280,10 +233,11 @@ AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
     {
       auto ats_in_record_mode = atl->get_automation_tracks_in_record_mode ();
       if (
-        std::ranges::find (ats_in_record_mode, this)
+        std::ranges::find (
+          ats_in_record_mode, this, &QPointer<AutomationTrack>::get)
         == ats_in_record_mode.end ())
         {
-          ats_in_record_mode.push_back (this);
+          ats_in_record_mode.emplace_back (this);
         }
     }
 
@@ -319,6 +273,8 @@ AutomationTrack::should_be_recording (bool record_aps) const
 
   if (record_mode_ == AutomationRecordMode::Touch)
     {
+// TODO
+#if 0
       const auto &port = get_port ();
       const auto  diff = port.ms_since_last_change ();
       if (
@@ -328,6 +284,7 @@ AutomationTrack::should_be_recording (bool record_aps) const
           /* still recording */
           return true;
         }
+#endif
 
       if (!record_aps)
         return recording_started_;
@@ -361,13 +318,6 @@ AutomationTrack::get_track () const
 #endif
 }
 
-ControlPort &
-AutomationTrack::get_port () const
-{
-  return *std::get<ControlPort *> (
-    port_registry_.find_by_id_or_throw (port_id_));
-}
-
 void
 AutomationTrack::set_index (int index)
 {
@@ -382,7 +332,7 @@ AutomationTrack::set_index (int index)
 #endif
 }
 
-float
+std::optional<float>
 AutomationTrack::get_normalized_val_at_pos (
   signed_frame_t pos,
   bool           ends_after,
@@ -390,16 +340,10 @@ AutomationTrack::get_normalized_val_at_pos (
 {
   auto ap = get_ap_before_pos (pos, ends_after, use_snapshots);
 
-  auto port_var = PROJECT->find_port_by_id (port_id_);
-  z_return_val_if_fail (
-    port_var && std::holds_alternative<ControlPort *> (*port_var), 0.f);
-  auto * port = std::get<ControlPort *> (*port_var);
-  z_return_val_if_fail (port, 0.f);
-
   /* no automation points yet, return negative (no change) */
-  if (!ap)
+  if (ap == nullptr)
     {
-      return port->get_control_value (true);
+      return std::nullopt;
     }
 
   auto region = get_region_before_pos (pos, ends_after, use_snapshots);

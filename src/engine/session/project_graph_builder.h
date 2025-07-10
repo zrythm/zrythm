@@ -8,7 +8,11 @@
 using namespace zrythm;
 
 class Project;
+
+namespace zrythm::dsp
+{
 class Port;
+};
 
 class ProjectGraphBuilder final : public dsp::graph::IGraphBuilder
 {
@@ -25,8 +29,10 @@ public:
    * @return Whether the ports can be connected (if the connection will
    * be valid and won't break the acyclicity of the graph).
    */
-  static bool
-  can_ports_be_connected (Project &project, const Port &src, const Port &dest);
+  static bool can_ports_be_connected (
+    Project         &project,
+    const dsp::Port &src,
+    const dsp::Port &dest);
 
 private:
   void build_graph_impl (dsp::graph::Graph &graph) override;

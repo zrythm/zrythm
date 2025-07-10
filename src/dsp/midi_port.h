@@ -4,14 +4,11 @@
 #pragma once
 
 #include "dsp/midi_event.h"
-#include "gui/dsp/port.h"
+#include "dsp/port.h"
 #include "utils/icloneable.h"
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
+namespace zrythm::dsp
+{
 
 /**
  * @brief MIDI port specifics.
@@ -26,7 +23,6 @@ class MidiPort final
   QML_ELEMENT
 
 public:
-  MidiPort ();
   MidiPort (utils::Utf8String label, PortFlow flow);
   ~MidiPort () override;
 
@@ -72,26 +68,6 @@ public:
    * for now, but we should have one ring for each reader.
    */
   std::unique_ptr<RingBuffer<dsp::MidiEvent>> midi_ring_;
-
-  /**
-   * @brief Whether the port has midi events not yet processed by the UI.
-   */
-  std::atomic<bool> has_midi_events_ = false;
-
-  /** Used by the UI to detect when unprocessed MIDI events exist. */
-  qint64 last_midi_event_time_ = 0;
-
-  /**
-   * Last known MIDI status byte received.
-   *
-   * Used for running status (see
-   * http://midi.teragonaudio.com/tech/midispec/run.htm).
-   *
-   * Not needed for JACK.
-   */
-  midi_byte_t last_midi_status_ = 0;
 };
 
-/**
- * @}
- */
+} // namespace zrythm::dsp

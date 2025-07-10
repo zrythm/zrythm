@@ -67,7 +67,7 @@ public:
         using TrackT = base_type<decltype (track_ref)>; \
         if constexpr (std::derived_from<TrackT, base_class>) \
           { \
-            return track_ref.get_##func_name (); \
+            return track_ref.func_name (); \
           } \
         else \
           { \
@@ -76,9 +76,9 @@ public:
       }, \
       track_var); \
   }
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (listened, ChannelTrack)
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (muted, ChannelTrack)
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (soloed, ChannelTrack)
+  DEFINE_PROJECTION_FOR_TRACK_TYPE (currently_listened, ChannelTrack)
+  DEFINE_PROJECTION_FOR_TRACK_TYPE (currently_muted, ChannelTrack)
+  DEFINE_PROJECTION_FOR_TRACK_TYPE (currently_soloed, ChannelTrack)
   DEFINE_PROJECTION_FOR_TRACK_TYPE (enabled, ChannelTrack)
   DEFINE_PROJECTION_FOR_TRACK_TYPE (disabled, ChannelTrack)
 
@@ -304,27 +304,27 @@ public:
 
   auto has_soloed () const
   {
-    return std::ranges::any_of (*this, soloed_projection);
+    return std::ranges::any_of (*this, currently_soloed_projection);
   }
 
   auto has_listened () const
   {
-    return std::ranges::any_of (*this, listened_projection);
+    return std::ranges::any_of (*this, currently_listened_projection);
   }
 
   auto get_num_muted_tracks () const
   {
-    return std::ranges::count_if (*this, muted_projection);
+    return std::ranges::count_if (*this, currently_muted_projection);
   }
 
   auto get_num_soloed_tracks () const
   {
-    return std::ranges::count_if (*this, soloed_projection);
+    return std::ranges::count_if (*this, currently_soloed_projection);
   }
 
   auto get_num_listened_tracks () const
   {
-    return std::ranges::count_if (*this, listened_projection);
+    return std::ranges::count_if (*this, currently_listened_projection);
   }
 
   /**
@@ -385,12 +385,13 @@ public:
 
   void init_loaded (
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    PortRegistry                          &port_registry)
+    dsp::PortRegistry                     &port_registry,
+    dsp::ProcessorParameterRegistry       &param_registry)
   {
     std::ranges::for_each (*this, [&] (const auto &track_var) {
       std::visit (
         [&] (auto &&track) {
-          track->init_loaded (plugin_registry, port_registry);
+          track->init_loaded (plugin_registry, port_registry, param_registry);
         },
         track_var);
     });
@@ -429,22 +430,23 @@ public:
 #endif
 
   std::vector<TrackUuidReference> create_new_identities (
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    TrackRegistry                &track_registry,
-    PluginRegistry               &plugin_registry,
-    PortRegistry                 &port_registry,
-    ArrangerObjectRegistry       &obj_registry) const
+    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+    TrackRegistry                   &track_registry,
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    ArrangerObjectRegistry          &obj_registry) const
   {
-    return std::ranges::to<std::vector> (
-      *this | std::views::transform ([&] (const auto &track_var) {
-        return std::visit (
-          [&] (auto &&track) -> TrackUuidReference {
-            return track_registry.clone_object (
-              *track, file_audio_source_registry, track_registry,
-              plugin_registry, port_registry, obj_registry, true);
-          },
-          track_var);
-      }));
+    return std::ranges::to<
+      std::vector> (*this | std::views::transform ([&] (const auto &track_var) {
+      return std::visit (
+        [&] (auto &&track) -> TrackUuidReference {
+          return track_registry.clone_object (
+            *track, file_audio_source_registry, track_registry, plugin_registry,
+            port_registry, param_registry, obj_registry, true);
+        },
+        track_var);
+    }));
   }
 };
 

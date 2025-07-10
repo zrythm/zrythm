@@ -26,10 +26,18 @@ namespace zrythm::dsp
 void
 Ditherer::reset (int numBits) noexcept
 {
-  auto wordLen = std::pow (2.0f, (float) (numBits - 1));
-  auto invWordLen = 1.0f / wordLen;
-  amp_ = invWordLen / static_cast<float> (RAND_MAX);
-  offset_ = invWordLen * 0.5f;
+  // Calculate the quantization step size for the given bit depth
+  auto stepSize = 1.0f / std::pow (2.0f, (float) numBits);
+
+  // Set dither amplitude proportional to step size
+  amp_ = stepSize / static_cast<float> (RAND_MAX);
+
+  // Set offset to half step size (for triangular dither)
+  offset_ = stepSize * 0.5f;
+
+  // Reset filter state
+  s1_ = 0.0f;
+  s2_ = 0.0f;
 }
 
 void

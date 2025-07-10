@@ -25,17 +25,18 @@ class TrackFactory : public QObject
 public:
   TrackFactory () = delete;
   TrackFactory (
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    TrackRegistry                &track_registry,
-    PluginRegistry               &plugin_registry,
-    PortRegistry                 &port_registry,
-    ArrangerObjectRegistry       &arranger_object_registry,
-    gui::SettingsManager         &settings_mgr,
-    QObject *                     parent = nullptr)
+    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+    TrackRegistry                   &track_registry,
+    PluginRegistry                  &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    ArrangerObjectRegistry          &arranger_object_registry,
+    gui::SettingsManager            &settings_mgr,
+    QObject *                        parent = nullptr)
       : QObject (parent),
         file_audio_source_registry_ (file_audio_source_registry),
         track_registry_ (track_registry), plugin_registry_ (plugin_registry),
-        port_registry_ (port_registry),
+        port_registry_ (port_registry), param_registry_ (param_registry),
         arranger_object_registry_ (arranger_object_registry),
         settings_manager_ (settings_mgr)
   {
@@ -49,14 +50,15 @@ public:
 
   private:
     explicit Builder (
-      dsp::FileAudioSourceRegistry &file_audio_source_registry,
-      TrackRegistry                &track_registry,
-      PluginRegistry               &plugin_registry,
-      PortRegistry                 &port_registry,
-      ArrangerObjectRegistry       &arranger_object_registry)
+      dsp::FileAudioSourceRegistry    &file_audio_source_registry,
+      TrackRegistry                   &track_registry,
+      PluginRegistry                  &plugin_registry,
+      dsp::PortRegistry               &port_registry,
+      dsp::ProcessorParameterRegistry &param_registry,
+      ArrangerObjectRegistry          &arranger_object_registry)
         : file_audio_source_registry_ (file_audio_source_registry),
           track_registry_ (track_registry), plugin_registry_ (plugin_registry),
-          port_registry_ (port_registry),
+          port_registry_ (port_registry), param_registry_ (param_registry),
           arranger_object_registry_ (arranger_object_registry)
     {
     }
@@ -75,13 +77,13 @@ public:
         {
           return TrackT::create_unique (
             file_audio_source_registry_, track_registry_, plugin_registry_,
-            port_registry_, arranger_object_registry_, false);
+            port_registry_, param_registry_, arranger_object_registry_, false);
         }
       else
         {
           return std::make_unique<TrackT> (
             file_audio_source_registry_, track_registry_, plugin_registry_,
-            port_registry_, arranger_object_registry_, false);
+            port_registry_, param_registry_, arranger_object_registry_, false);
         }
     }
 
@@ -90,7 +92,7 @@ public:
       auto obj_ref = [&] () {
         return track_registry_.create_object<TrackT> (
           file_audio_source_registry_, track_registry_, plugin_registry_,
-          port_registry_, arranger_object_registry_, true);
+          port_registry_, param_registry_, arranger_object_registry_, true);
       }();
 
       // auto * obj = std::get<PluginT *> (obj_ref.get_object ());
@@ -102,7 +104,8 @@ public:
     dsp::FileAudioSourceRegistry     &file_audio_source_registry_;
     TrackRegistry                    &track_registry_;
     PluginRegistry                   &plugin_registry_;
-    PortRegistry                     &port_registry_;
+    dsp::PortRegistry                &port_registry_;
+    dsp::ProcessorParameterRegistry  &param_registry_;
     ArrangerObjectRegistry           &arranger_object_registry_;
     OptionalRef<gui::SettingsManager> settings_manager_;
   };
@@ -112,7 +115,7 @@ public:
     auto builder =
       Builder<TrackT> (
         file_audio_source_registry_, track_registry_, plugin_registry_,
-        port_registry_, arranger_object_registry_)
+        port_registry_, param_registry_, arranger_object_registry_)
         .with_settings_manager (settings_manager_);
     return builder;
   }
@@ -221,7 +224,8 @@ private:
   dsp::FileAudioSourceRegistry        &file_audio_source_registry_;
   TrackRegistry                       &track_registry_;
   PluginRegistry                      &plugin_registry_;
-  PortRegistry                        &port_registry_;
+  dsp::PortRegistry                   &port_registry_;
+  dsp::ProcessorParameterRegistry     &param_registry_;
   arrangement::ArrangerObjectRegistry &arranger_object_registry_;
   gui::SettingsManager                &settings_manager_;
 };

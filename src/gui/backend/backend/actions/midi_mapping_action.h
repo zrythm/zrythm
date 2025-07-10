@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "dsp/port_identifier.h"
+#include "dsp/parameter.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
@@ -54,7 +54,7 @@ public:
   MidiMappingAction (
     std::array<midi_byte_t, 3>       buf,
     std::optional<utils::Utf8String> device_id,
-    const Port                      &dest_port);
+    const dsp::ProcessorParameter   &dest_port);
 
   QString to_string () const override;
 
@@ -75,9 +75,9 @@ public:
   int idx_ = -1;
 
   /** Action type. */
-  Type type_ = (Type) 0;
+  Type type_{};
 
-  std::optional<dsp::PortIdentifier::PortUuid> dest_port_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> dest_port_id_;
 
   std::optional<utils::Utf8String> dev_id_;
 

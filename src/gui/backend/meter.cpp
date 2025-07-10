@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
+#include "dsp/audio_port.h"
 #include "dsp/kmeter_dsp.h"
 #include "dsp/midi_event.h"
+#include "dsp/midi_port.h"
 #include "engine/device_io/engine.h"
 #include "gui/backend/meter.h"
-#include "gui/dsp/audio_port.h"
-#include "gui/dsp/midi_port.h"
 #include "structure/tracks/track.h"
 #include "utils/math.h"
 #include "utils/ring_buffer.h"
@@ -20,12 +22,14 @@ MeterProcessor::setPort (QVariant port_var)
 {
   if (port_obj_)
     {
+      ring_buffer_reader_.reset ();
       port_obj_.clear ();
     }
   port_obj_ = port_var.value<QObject *> ();
   if (port_obj_)
     {
       QObject::connect (port_obj_, &QObject::destroyed, this, [this] () {
+        ring_buffer_reader_.reset ();
         port_obj_.clear ();
       });
 
@@ -36,23 +40,11 @@ MeterProcessor::setPort (QVariant port_var)
           /* master */
           if (port_->is_audio () || port_->is_cv ())
             {
-              bool is_master_fader = false;
-              if (
-                port_->id_->owner_type_
-                == zrythm::dsp::PortIdentifier::OwnerType::Track)
-                {
-                  auto track_var = PROJECT->find_track_by_id (
-                    port_->id_->get_track_id ().value ());
-                  z_return_if_fail (track_var.has_value ());
-                  std::visit (
-                    [&] (auto &&track) {
-                      if (track->is_master ())
-                        {
-                          is_master_fader = true;
-                        }
-                    },
-                    track_var.value ());
-                }
+              bool is_master_fader =
+                port_->get_uuid ()
+                  == P_MASTER_TRACK->getChannel ()->stereo_out_left_id_->id ()
+                || port_->get_uuid ()
+                     == P_MASTER_TRACK->getChannel ()->stereo_out_right_id_->id ();
 
               if (is_master_fader)
                 {
@@ -68,10 +60,13 @@ MeterProcessor::setPort (QVariant port_var)
                   peak_processor_->init (AUDIO_ENGINE->get_sample_rate ());
                 }
 
-              tmp_buf_.reserve (AudioPort::AUDIO_RING_SIZE);
+              tmp_buf_.reserve (dsp::AudioPort::AUDIO_RING_SIZE);
+
+              ring_buffer_reader_.emplace (*port_);
             }
-          else if (port_->is_event ())
+          else if (port_->is_midi ())
             {
+              ring_buffer_reader_.emplace (*port_);
             }
         },
         convert_to_variant<MeterPortPtrVariant> (port_obj_.get ()));
@@ -140,7 +135,8 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
       float amp = -1.f;
       float max_amp = -1.f;
       if constexpr (
-        std::derived_from<PortT, AudioPort> || std::derived_from<PortT, CVPort>)
+        std::derived_from<PortT, dsp::AudioPort>
+        || std::derived_from<PortT, dsp::CVPort>)
         {
           size_t       read_space_avail = port->audio_ring_->read_space ();
           const size_t block_length = AUDIO_ENGINE->get_block_length ();
@@ -194,30 +190,17 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
               break;
             }
         }
-      else if constexpr (std::derived_from<PortT, MidiPort>)
+      else if constexpr (std::derived_from<PortT, dsp::MidiPort>)
         {
-          bool on = false;
-          if (port->num_ring_buffer_readers_ > 0)
+          bool                   on = false;
+          zrythm::dsp::MidiEvent event;
+          while (port->midi_ring_->peek (event))
             {
-              zrythm::dsp::MidiEvent event;
-              while (port->midi_ring_->peek (event))
+              if (event.systime_ > last_midi_trigger_time_)
                 {
-                  if (event.systime_ > last_midi_trigger_time_)
-                    {
-                      on = true;
-                      last_midi_trigger_time_ = event.systime_;
-                      break;
-                    }
-                }
-            }
-          else
-            {
-              on = port->last_midi_event_time_ > last_midi_trigger_time_;
-              /*g_atomic_int_compare_and_exchange
-               * (&port->has_midi_events, 1, 0);*/
-              if (on)
-                {
-                  last_midi_trigger_time_ = port->last_midi_event_time_;
+                  on = true;
+                  last_midi_trigger_time_ = event.systime_;
+                  break;
                 }
             }
 
@@ -247,17 +230,11 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
           /* use prev val plus falloff if higher than current val */
           float prev_val_after_falloff = utils::math::dbfs_to_amp (
             utils::math::amp_to_dbfs (last_amp_) - falloff);
-          if (prev_val_after_falloff > amp)
-            {
-              amp = prev_val_after_falloff;
-            }
+          amp = std::max (prev_val_after_falloff, amp);
         }
 
       /* if this is a peak value, set to current falloff if peak is lower */
-      if (max_amp < amp)
-        {
-          max_amp = amp;
-        }
+      max_amp = std::max (max_amp, amp);
 
       /* remember vals */
       last_draw_time_ = now;

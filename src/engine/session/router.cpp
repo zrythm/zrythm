@@ -29,13 +29,12 @@
 #include "zrythm-config.h"
 
 #include "dsp/graph.h"
+#include "dsp/port.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/project_graph_builder.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
-#include "gui/dsp/port.h"
 #include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
@@ -134,11 +133,5 @@ Router::recalc_graph (bool soft)
     }
 
   z_info ("done");
-}
-
-void
-Router::queue_control_port_change (const ControlPort::ChangeEvent &change)
-{
-  ctrl_port_change_queue_.force_write (change);
 }
 }

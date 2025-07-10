@@ -19,24 +19,18 @@ class TrackProcessor;
 class ProcessableTrack : virtual public AutomatableTrack
 {
 public:
-  ProcessableTrack (PortRegistry &port_registry, bool new_identity);
+  ProcessableTrack (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    bool                             new_identity);
 
   ~ProcessableTrack () override = default;
   Z_DISABLE_COPY_MOVE (ProcessableTrack)
 
   void init_loaded (
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    PortRegistry                          &port_registry) override;
-
-  /**
-   * Returns whether monitor audio is on.
-   */
-  bool get_monitor_audio () const;
-
-  /**
-   * Sets whether monitor audio is on.
-   */
-  void set_monitor_audio (bool monitor, bool auto_select, bool fire_events);
+    dsp::PortRegistry                     &port_registry,
+    dsp::ProcessorParameterRegistry       &param_registry) override;
 
   /**
    * Wrapper for MIDI/instrument/chord tracks to fill in MidiEvents from the
@@ -76,7 +70,8 @@ protected:
     utils::ObjectCloneType  clone_type);
 
   void
-  append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
+  append_member_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
+    const;
 
 private:
   static constexpr auto kProcessorKey = "processor"sv;
@@ -84,11 +79,7 @@ private:
   {
     j[kProcessorKey] = p.processor_;
   }
-  friend void from_json (const nlohmann::json &j, ProcessableTrack &p)
-  {
-    p.processor_ = std::make_unique<TrackProcessor> (p, p.port_registry_, false);
-    j[kProcessorKey].get_to (*p.processor_);
-  }
+  friend void from_json (const nlohmann::json &j, ProcessableTrack &p);
 
 public:
   /**
@@ -99,7 +90,8 @@ public:
   std::unique_ptr<TrackProcessor> processor_;
 
 protected:
-  PortRegistry &port_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
 };
 
 using ProcessableTrackVariant = std::variant<

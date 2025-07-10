@@ -95,6 +95,29 @@ TEST (UuidIdentifiableObjectTest, UuidTypeFormatter)
     type_safe::get (uuid).toString (QUuid::WithoutBraces).toStdString ());
 }
 
+TEST (UuidIdentifiableObjectTest, UuidReferenceSerialization)
+{
+  using TestRegistry = UuidIdentifiableObjectRegistryTest::TestRegistry;
+
+  auto * obj =
+    new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "RefTest");
+  TestRegistry registry;
+  registry.register_object (obj);
+
+  // Serialize UUID reference
+  utils::UuidReference<TestRegistry> ref (obj->get_uuid (), registry);
+  nlohmann::json                     j;
+  to_json (j, ref);
+
+  // Create new reference from JSON
+  utils::UuidReference<TestRegistry> new_ref (registry);
+  from_json (j, new_ref);
+
+  // Verify same object
+  EXPECT_EQ (new_ref.id (), ref.id ());
+  EXPECT_EQ (new_ref.get_object_as<DerivedTestObject> ()->name (), "RefTest");
+}
+
 TEST (UuidIdentifiableObjectTest, UuidReferenceFormatter)
 {
   using TestRegistry = UuidIdentifiableObjectRegistryTest::TestRegistry;
@@ -239,6 +262,44 @@ TEST_F (UuidIdentifiableObjectRegistryTest, ReferenceCountingWithMoves)
 
   EXPECT_FALSE (registry_.contains (id));
   EXPECT_EQ (registry_.size (), 3);
+}
+
+TEST_F (UuidIdentifiableObjectRegistryTest, ReferenceCountingWithSerialization)
+{
+  // Create initial reference
+  auto ref = registry_.create_object<DerivedTestObject> (
+    TestUuid{ QUuid::createUuid () }, "SerializationTest");
+  auto id = ref.id ();
+
+  EXPECT_EQ (registry_.reference_count (id), 1);
+  EXPECT_EQ (registry_.size (), 4);
+
+  // Serialize to json
+  nlohmann::json j;
+  to_json (j, ref);
+
+  {
+    // Create new instance
+    auto new_ref = registry_.create_object<DerivedTestObject> (
+      TestUuid{ QUuid::createUuid () }, "SerializationTest2");
+    auto new_id = new_ref.id ();
+    EXPECT_TRUE (registry_.contains (new_id));
+    EXPECT_EQ (registry_.reference_count (id), 1);
+    EXPECT_EQ (registry_.reference_count (new_id), 1);
+    EXPECT_EQ (registry_.size (), 5);
+
+    // Deserialize into new instance and verify temporary ID is gone
+    from_json (j, new_ref);
+    EXPECT_NE (new_ref.id (), new_id);
+    EXPECT_EQ (new_ref.id (), id);
+    EXPECT_EQ (registry_.reference_count (id), 2);
+    EXPECT_FALSE (registry_.contains (new_id));
+    EXPECT_EQ (registry_.size (), 4);
+  }
+
+  // Verify temporary ref is gone
+  EXPECT_EQ (registry_.reference_count (id), 1);
+  EXPECT_EQ (registry_.size (), 4);
 }
 
 TEST_F (UuidIdentifiableObjectRegistryTest, ObjectParentManagement)

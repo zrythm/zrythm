@@ -3,12 +3,9 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include <utility>
 
-#include "dsp/position.h"
-#include "gui/dsp/port.h"
+#include "dsp/port.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/automation_point.h"
@@ -27,7 +24,7 @@ class AutomationTrack final
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (double height READ getHeight WRITE setHeight NOTIFY heightChanged)
-  Q_PROPERTY (QString label READ getLabel NOTIFY labelChanged)
+  Q_PROPERTY (dsp::ProcessorParameter * parameter READ parameter CONSTANT)
   Q_PROPERTY (
     int automationMode READ getAutomationMode WRITE setAutomationMode NOTIFY
       automationModeChanged)
@@ -40,7 +37,7 @@ class AutomationTrack final
     arrangement::AutomationRegion)
 
 public:
-  using PortUuid = Port::Uuid;
+  using PortUuid = dsp::Port::Uuid;
   using TrackGetter = std::function<TrackPtrVariant ()>;
   using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;
   using AutomationRegion = arrangement::AutomationRegion;
@@ -65,21 +62,22 @@ public:
   };
 
 public:
-  /** Creates an automation track for the given Port. */
+  /** Creates an automation track for the given parameter. */
   AutomationTrack (
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    PortRegistry                 &port_registry,
-    ArrangerObjectRegistry       &obj_registry,
-    TrackGetter                   track_getter,
-    const ControlPort::Uuid      &port_id);
+    dsp::FileAudioSourceRegistry        &file_audio_source_registry,
+    ArrangerObjectRegistry              &obj_registry,
+    TrackGetter                          track_getter,
+    dsp::ProcessorParameterUuidReference param_id);
 
 public:
   // ========================================================================
   // QML Interface
   // ========================================================================
 
-  QString       getLabel () const;
-  Q_SIGNAL void labelChanged (QString label);
+  dsp::ProcessorParameter * parameter () const
+  {
+    return port_id_.get_object_as<dsp::ProcessorParameter> ();
+  }
 
   double        getHeight () const { return height_; }
   void          setHeight (double height);
@@ -99,37 +97,6 @@ public:
   // ========================================================================
 
   void init_loaded ();
-
-  /**
-   * @note This is expensive and should only be used
-   *   if @ref PortIdentifier.at_idx is not set. Use
-   *   port_get_automation_track() instead.
-   *
-   * FIXME: delete this. use a map somewhere if really needed.
-   *
-   * @param basic_search If true, only basic port
-   *   identifier members are checked.
-   */
-  static AutomationTrack *
-  find_from_port_id (const PortUuid &id, bool basic_search);
-
-  /**
-   * @brief Clone the given port identifier and take ownership of the clone.
-   * @param port_id
-   */
-  void set_port_id (const PortUuid &port_id);
-
-  /**
-   * Finds the AutomationTrack associated with `port`.
-   *
-   * @param track The track that owns the port, if known.
-   *
-   * FIXME use a hashtable
-   */
-  [[gnu::hot]] static AutomationTrack * find_from_port (
-    const ControlPort       &port,
-    const AutomatableTrack * track,
-    bool                     basic_search);
 
   void set_automation_mode (AutomationMode mode, bool fire_events);
 
@@ -213,8 +180,6 @@ public:
   get_region_before_pos (signed_frame_t pos, bool ends_after, bool use_snapshots)
     const;
 
-  ControlPort &get_port () const;
-
   /**
    * Returns the normalized parameter value at the given position.
    *
@@ -227,8 +192,11 @@ public:
    * @param use_snapshots Whether to get the value from the snapshotted
    * (cached) regions. This should be set to true when called during dsp
    * playback. TODO unimplemented
+   *
+   * @return The normalized value, or std::nullopt if there is no automation
+   * point/curve at the position.
    */
-  float get_normalized_val_at_pos (
+  std::optional<float> get_normalized_val_at_pos (
     signed_frame_t pos,
     bool           ends_after,
     bool           use_snapshots) const;
@@ -292,7 +260,6 @@ private:
   }
 
 public:
-  PortRegistry           &port_registry_;
   ArrangerObjectRegistry &object_registry_;
   TrackGetter             track_getter_;
 
@@ -300,7 +267,7 @@ public:
   int index_ = 0;
 
   /** Identifier of the Port this AutomationTrack is for (owned pointer). */
-  PortUuid port_id_;
+  dsp::ProcessorParameterUuidReference port_id_;
 
   /** Whether it has been created by the user yet or not. */
   bool created_ = false;

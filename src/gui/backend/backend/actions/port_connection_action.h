@@ -4,7 +4,6 @@
 #pragma once
 
 #include "dsp/port_connection.h"
-#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "utils/icloneable.h"
 
@@ -28,7 +27,7 @@ public:
   };
 
   using PortType = dsp::PortType;
-  using PortUuid = dsp::PortIdentifier::PortUuid;
+  using PortUuid = dsp::PortUuid;
 
 public:
   PortConnectionAction (QObject * parent = nullptr);

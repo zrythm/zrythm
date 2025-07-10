@@ -34,13 +34,18 @@ public:
   using Fader = structure::tracks::Fader;
   using AudioEngine = engine::device_io::AudioEngine;
 
-  ControlRoom () = default;
-  ControlRoom (PortRegistry &port_registry, AudioEngine * engine);
+  ControlRoom (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    AudioEngine *                    engine);
 
   /**
    * Inits the control room from a project.
    */
-  void init_loaded (PortRegistry &port_registry, AudioEngine * engine);
+  void init_loaded (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    AudioEngine *                    engine);
 
   /**
    * Sets dim_output to on/off and notifies interested parties.
@@ -100,7 +105,8 @@ public:
   /** Pointer to owner audio engine, if any. */
   AudioEngine * audio_engine_ = nullptr;
 
-  OptionalRef<PortRegistry> port_registry_;
+  OptionalRef<dsp::PortRegistry>               port_registry_;
+  OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
 };
 
 }

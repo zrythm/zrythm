@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_identifier.h"
 #include "engine/session/midi_mapping.h"
 #include "engine/session/router.h"
 #include "gui/backend/backend/actions/midi_mapping_action.h"
@@ -43,7 +42,7 @@ MidiMappingAction::MidiMappingAction (int idx_to_enable_or_disable, bool enable)
 MidiMappingAction::MidiMappingAction (
   const std::array<midi_byte_t, 3> buf,
   std::optional<utils::Utf8String> device_id,
-  const Port                      &dest_port)
+  const dsp::ProcessorParameter   &dest_port)
     : UndoableAction (UndoableAction::Type::MidiMapping), type_ (Type::Bind),
       dest_port_id_ (dest_port.get_uuid ()), dev_id_ (device_id), buf_ (buf)
 {
@@ -60,21 +59,18 @@ MidiMappingAction::bind_or_unbind (bool bind)
 {
   if (bind)
     {
-      auto port_var = PROJECT->find_port_by_id (*dest_port_id_);
-      z_return_if_fail (port_var);
-      std::visit (
-        [&] (auto &&port) {
-          idx_ = MIDI_MAPPINGS->mappings_.size ();
-          MIDI_MAPPINGS->bind_device (buf_, dev_id_, *port, false);
-        },
-        *port_var);
+      auto * port = PROJECT->find_param_by_id (*dest_port_id_);
+      idx_ = MIDI_MAPPINGS->mappings_.size ();
+      MIDI_MAPPINGS->bind_device (
+        buf_, dev_id_, { port->get_uuid (), PROJECT->get_param_registry () },
+        false);
     }
   else
     {
       auto &mapping = MIDI_MAPPINGS->mappings_[idx_];
       buf_ = mapping->key_;
       dev_id_ = mapping->device_id_;
-      dest_port_id_ = mapping->dest_id_;
+      dest_port_id_ = mapping->dest_id_->id ();
       MIDI_MAPPINGS->unbind (idx_, false);
     }
 }

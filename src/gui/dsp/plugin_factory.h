@@ -26,12 +26,14 @@ public:
 
   PluginFactory () = delete;
   PluginFactory (
-    PluginRegistry       &registry,
-    PortRegistry         &port_registry,
-    gui::SettingsManager &settings_mgr,
-    QObject *             parent = nullptr)
+    PluginRegistry                  &registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    gui::SettingsManager            &settings_mgr,
+    QObject *                        parent = nullptr)
       : QObject (parent), plugin_registry_ (registry),
-        port_registry_ (port_registry), settings_manager_ (settings_mgr)
+        port_registry_ (port_registry), param_registry_ (param_registry),
+        settings_manager_ (settings_mgr)
   {
   }
 
@@ -42,8 +44,12 @@ public:
     friend class PluginFactory;
 
   private:
-    explicit Builder (PluginRegistry &registry, PortRegistry &port_registry)
-        : registry_ (registry), port_registry_ (port_registry)
+    explicit Builder (
+      PluginRegistry                  &registry,
+      dsp::PortRegistry               &port_registry,
+      dsp::ProcessorParameterRegistry &param_registry)
+        : registry_ (registry), port_registry_ (port_registry),
+          param_registry_ (param_registry)
     {
     }
 
@@ -63,7 +69,10 @@ public:
     auto build ()
     {
       auto obj_ref = [&] () {
-        return registry_.create_object<PluginT> (port_registry_, *setting_);
+        auto ref =
+          registry_.create_object<PluginT> (port_registry_, param_registry_);
+        ref.template get_object_as<PluginT> ()->set_setting (*setting_);
+        return std::move (ref);
       }();
 
       // auto * obj = std::get<PluginT *> (obj_ref.get_object ());
@@ -73,7 +82,8 @@ public:
 
   private:
     PluginRegistry                        &registry_;
-    PortRegistry                          &port_registry_;
+    dsp::PortRegistry                     &port_registry_;
+    dsp::ProcessorParameterRegistry       &param_registry_;
     OptionalRef<gui::SettingsManager>      settings_manager_;
     OptionalRef<const PluginConfiguration> setting_;
   };
@@ -81,7 +91,7 @@ public:
   template <typename PluginT> auto get_builder () const
   {
     auto builder =
-      Builder<PluginT> (plugin_registry_, port_registry_)
+      Builder<PluginT> (plugin_registry_, port_registry_, param_registry_)
         .with_settings_manager (settings_manager_);
     return builder;
   }
@@ -112,7 +122,8 @@ public:
   }
 
 private:
-  PluginRegistry       &plugin_registry_;
-  PortRegistry         &port_registry_;
-  gui::SettingsManager &settings_manager_;
+  PluginRegistry                  &plugin_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
+  gui::SettingsManager            &settings_manager_;
 };
