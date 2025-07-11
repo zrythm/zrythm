@@ -665,30 +665,8 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
         &stereo_out.second.buf_[time_nfo.local_offset_],
         &stereo_in.second.buf_[time_nfo.local_offset_], time_nfo.nframes_);
 
-      /* if prefader */
-      if (passthrough_)
-        {
-
-          /* if track frozen and transport is rolling */
-          if (track && track->is_frozen () && TRANSPORT->isRolling ())
-            {
-#if 0
-              /* get audio from clip */
-              FileAudioSource * clip =
-                audio_pool_get_clip (
-                  AUDIO_POOL, track->pool_id_);
-              /* FIXME this is wrong - need to
-               * also calculate the offset in the
-               * clip */
-              stereo_ports_fill_from_clip (
-                self->stereo_out, clip,
-                time_nfo->g_start_frame_w_offset,
-                time_nfo->local_offset,
-                time_nfo->nframes);
-#endif
-            }
-        }
-      else /* not prefader */
+      /* if not prefader */
+      if (!passthrough_)
         {
           /* if monitor */
           float mute_amp;
@@ -981,13 +959,6 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
     }
 
   was_effectively_muted_ = effectively_muted;
-
-  if (ZRYTHM_TESTING)
-    {
-#if 0
-      z_debug ("{}: done", __func__);
-#endif
-    }
 }
 
 void

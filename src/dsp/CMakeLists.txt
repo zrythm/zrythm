@@ -50,6 +50,8 @@ target_sources(zrythm_dsp_lib
     parameter.cpp
     panning.h
     panning.cpp
+    passthrough_processor.h
+    passthrough_processor.cpp
     peak_dsp.h
     peak_dsp.cpp
     peak_fall_smooth.h

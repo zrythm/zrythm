@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_AUDIO_H__
-#define __UTILS_AUDIO_H__
+#pragma once
 
 #include "utils/format.h"
 #include "utils/logger.h"
@@ -172,5 +171,3 @@ DEFINE_ENUM_FORMATTER (
   QT_TR_NOOP_UTF8 ("Before inserts"),
   QT_TR_NOOP_UTF8 ("Pre-fader"),
   QT_TR_NOOP_UTF8 ("Post fader"));
-
-#endif

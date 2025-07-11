@@ -24,6 +24,7 @@ add_executable(zrythm_dsp_unit_tests
   musical_scale_test.cpp
   parameter_test.cpp
   panning_test.cpp
+  passthrough_processor_test.cpp
   peak_dsp_test.cpp
   peak_fall_smooth_test.cpp
   playhead_test.cpp

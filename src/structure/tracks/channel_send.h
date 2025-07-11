@@ -7,7 +7,6 @@
 #include "dsp/midi_port.h"
 #include "dsp/parameter.h"
 #include "dsp/port_connection.h"
-#include "plugins/plugin_slot.h"
 #include "structure/tracks/track.h"
 #include "utils/icloneable.h"
 
