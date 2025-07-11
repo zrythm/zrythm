@@ -316,12 +316,12 @@ TrackProcessor::init_stereo_out_ports (bool in)
   if (in)
     {
       stereo_in_left_id_ = stereo_ports.first;
-      stereo_in_right_id_ = stereo_ports.first;
+      stereo_in_right_id_ = stereo_ports.second;
     }
   else
     {
       stereo_out_left_id_ = stereo_ports.first;
-      stereo_out_right_id_ = stereo_ports.first;
+      stereo_out_right_id_ = stereo_ports.second;
     }
 }
 

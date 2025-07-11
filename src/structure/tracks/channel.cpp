@@ -94,7 +94,8 @@ init_from (Channel &obj, const Channel &other, utils::ObjectCloneType clone_type
       obj.midi_fx_ = other.midi_fx_;
       obj.inserts_ = other.inserts_;
       obj.instrument_ = other.instrument_;
-      utils::clone_unique_ptr_container (obj.sends_, other.sends_);
+      // TODO
+      // utils::clone_unique_ptr_container (obj.sends_, other.sends_);
       obj.fader_ = utils::clone_qobject (*other.fader_, &obj, clone_type);
       obj.prefader_ = utils::clone_qobject (*other.prefader_, &obj, clone_type);
       obj.midi_out_id_ = other.midi_out_id_;

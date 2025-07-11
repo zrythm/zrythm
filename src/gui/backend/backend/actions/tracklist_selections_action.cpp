@@ -68,7 +68,8 @@ init_from (
         PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
 #endif
   obj.out_track_uuids_ = other.out_track_uuids_;
-  utils::clone_unique_ptr_container (obj.src_sends_, other.src_sends_);
+  // TODO
+  // utils::clone_unique_ptr_container (obj.src_sends_, other.src_sends_);
   obj.edit_type_ = other.edit_type_;
   obj.new_txt_ = other.new_txt_;
   obj.val_before_ = other.val_before_;

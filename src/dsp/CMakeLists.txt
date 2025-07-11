@@ -27,6 +27,8 @@ target_sources(zrythm_dsp_lib
     graph.cpp
     graph_builder.h
     graph_builder.cpp
+    graph_export.h
+    graph_export.cpp
     graph_node.h
     graph_node.cpp
     graph_scheduler.h

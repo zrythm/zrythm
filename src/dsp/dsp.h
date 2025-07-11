@@ -13,6 +13,7 @@
 #include "./file_audio_source.h"
 #include "./graph.h"
 #include "./graph_builder.h"
+#include "./graph_export.h"
 #include "./graph_node.h"
 #include "./graph_scheduler.h"
 #include "./graph_thread.h"

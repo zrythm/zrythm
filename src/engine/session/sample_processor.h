@@ -32,8 +32,9 @@ namespace zrythm::engine::session
  *
  * Also used for auditioning files.
  */
-class SampleProcessor final : public dsp::graph::IProcessable
+class SampleProcessor final : public QObject, public dsp::graph::IProcessable
 {
+  Q_OBJECT
 public:
   using Position = zrythm::dsp::Position;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;

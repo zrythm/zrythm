@@ -63,8 +63,9 @@ struct ChannelSendTarget
  *
  * The actual connection is tracked separately by PortConnectionsManager.
  */
-class ChannelSend final : public dsp::graph::IProcessable
+class ChannelSend final : public QObject, public dsp::graph::IProcessable
 {
+  Q_OBJECT
 public:
   using PortType = dsp::PortType;
   using PortConnection = dsp::PortConnection;
@@ -75,6 +76,8 @@ public:
   };
 
 public:
+  Z_DISABLE_COPY_MOVE (ChannelSend)
+
   // FIXME confusing constructors - maybe use a builder
 
   /**

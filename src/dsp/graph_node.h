@@ -87,8 +87,10 @@ public:
   virtual void release_resources () { }
 };
 
-class InitialProcessor final : public IProcessable
+class InitialProcessor final : public QObject, public IProcessable
 {
+  Q_OBJECT
+
 public:
   utils::Utf8String get_node_name () const override
   {
@@ -123,12 +125,15 @@ public:
     NodeId                 id,
     const dsp::ITransport &transport,
     IProcessable          &processable);
-  Q_DISABLE_COPY_MOVE (GraphNode)
+  Z_DISABLE_COPY_MOVE (GraphNode)
 
   /** For general debugging. */
   std::string print_node_to_str () const;
 
   void print_node () const;
+
+  // For debugging purposes.
+  NodeId get_id () const { return node_id_; }
 
   /**
    * Processes the GraphNode.

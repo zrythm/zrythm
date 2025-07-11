@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph.h"
+#include "dsp/graph_export.h"
 #include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/project.h"
 
@@ -617,7 +618,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         convert_to_variant<dsp::PortPtrVariant> (port));
     }
 
-  z_debug ("done building graph");
+  z_debug (
+    "done building graph: {}",
+    dsp::graph::GraphExport::export_to_dot (graph, true));
 }
 
 bool
