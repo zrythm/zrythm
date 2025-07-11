@@ -16,8 +16,10 @@ namespace zrythm::structure::tracks
 class ProcessableTrack;
 
 /**
- * A TrackProcessor is a processor that is used as the first entry point when
- * processing a track.
+ * A TrackProcessor is a standalone processor that is used as the first step
+ * when processing a track in the DSP graph.
+ *
+ * @see Channel and ChannelTrack.
  */
 class TrackProcessor final : public QObject, public dsp::graph::IProcessable
 {

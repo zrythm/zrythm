@@ -26,13 +26,14 @@ struct PluginImportData;
  * @brief Represents a channel strip on the mixer.
  *
  * The Channel class encapsulates the functionality of a channel strip,
- * including its plugins, fader, sends, and other properties. It provides
- * methods for managing the channel's state and processing the audio signal.
+ * including its plugins, fader, sends, and other properties.
  *
- * Channels are owned by Tracks and handle the output part of the signal
- * chain, while TrackProcessor handles the input part.
+ * Channels are owned by Track's and handle the second part of the signal
+ * chain when processing a track, where the signal is fed to each Channel
+ * subcomponent. (TrackProcessor handles the first part where any track inputs
+ * and arranger events are processed).
  *
- * @see Track
+ * @see ChannelTrack, ProcessableTrack and TrackProcessor.
  */
 class Channel final : public QObject
 {

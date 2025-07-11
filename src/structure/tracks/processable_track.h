@@ -11,10 +11,13 @@ namespace zrythm::structure::tracks
 class TrackProcessor;
 
 /**
- * The ProcessableTrack class is the base class for all processable
- * tracks.
+ * The ProcessableTrack class is the base class for all tracks that contain a
+ * TrackProcessor.
  *
- * @ref processor_ is the starting point when processing a Track.
+ * Tracks that want to be part of the DSP graph must at a bare minimum inherit
+ * from this class.
+ *
+ * @see Channel and ChannelTrack for additional DSP graph functionality.
  */
 class ProcessableTrack : virtual public AutomatableTrack
 {

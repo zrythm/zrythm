@@ -168,32 +168,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
         dsp::PortConnectionsManager::ConnectionsVector dests;
         mgr.get_dests (&dests, port->get_uuid ());
-#if 0
-          port->port_destinations_.clear ();
-          for (const auto &conn : dests)
-            {
-              auto dest_var = project.find_port_by_id (conn->dest_id_);
-              z_return_val_if_fail (dest_var.has_value (), nullptr);
-              std::visit (
-                [&] (auto &&dest) {
-                  using DestPortT = base_type<decltype (dest)>;
-                  if constexpr (
-                    (std::is_same_v<DestPortT, ControlPort>
-                     && std::is_same_v<PortT, CVPort>)
-                    || (std::is_same_v<DestPortT, CVPort> && std::is_same_v<PortT, CVPort>)
-                    || (std::is_same_v<DestPortT, MidiPort> && std::is_same_v<PortT, MidiPort>)
-                    || (std::is_same_v<DestPortT, AudioPort> && std::is_same_v<PortT, AudioPort>) )
-                    {
-                      port->port_destinations_.push_back (
-                        std::make_pair (dest, utils::clone_unique (*conn)));
-                    }
-                },
-                dest_var.value ());
-            }
-#endif
 
       // TODO
-
 #if 0
         /* drop ports without sources and dests */
         if (drop_if_unnecessary && dests.empty () && srcs.empty ())
@@ -374,7 +350,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       std::derived_from<TrackT, structure::tracks::PianoRollTrack>
                       || std::is_same_v<TrackT, structure::tracks::ChordTrack>)
                       {
-                        /* connect piano roll */
+                        // connect piano roll
                         auto node2 =
                           graph.get_nodes ().find_node_for_processable (
                             track_processor->get_piano_roll_port ());
