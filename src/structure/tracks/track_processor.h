@@ -19,8 +19,10 @@ class ProcessableTrack;
  * A TrackProcessor is a processor that is used as the first entry point when
  * processing a track.
  */
-class TrackProcessor final
+class TrackProcessor final : public QObject, public dsp::graph::IProcessable
 {
+  Q_OBJECT
+
   using PortType = dsp::PortType;
   using PortFlow = dsp::PortFlow;
 
@@ -68,6 +70,10 @@ public:
    */
   void clear_buffers (std::size_t block_length);
 
+  // ============================================================================
+  // IProcessable Interface
+  // ============================================================================
+
   /**
    * Process the TrackProcessor.
    *
@@ -80,12 +86,12 @@ public:
    *   --- at this point the output is ready ---
    * - handle recording (create events in regions and automation, including
    *   MIDI CC automation, based on the MIDI CC control ports)
-   *
-   * @param g_start_frames The global start frames.
-   * @param local_offset The local start frames.
-   * @param nframes The number of frames to process.
    */
-  void process (const EngineProcessTimeInfo &time_nfo);
+  void process_block (EngineProcessTimeInfo time_nfo) override;
+
+  utils::Utf8String get_node_name () const override;
+
+  // ============================================================================
 
   /**
    * Disconnect the TrackProcessor's stereo out ports

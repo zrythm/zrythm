@@ -355,9 +355,7 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  * Subclasses of `Track` represent specific types of tracks, such as
  * MIDI tracks, instrument tracks, and audio tracks.
  */
-class Track
-    : public dsp::graph::IProcessable,
-      public utils::UuidIdentifiableObject<Track>
+class Track : public utils::UuidIdentifiableObject<Track>
 {
 public:
   using PluginUuid = gui::old_dsp::plugins::Plugin::Uuid;
@@ -848,8 +846,6 @@ public:
       return pl->instantiation_failed_;
     });
   }
-
-  utils::Utf8String get_node_name () const override { return get_name (); }
 
   /**
    * Removes all objects recursively from the track.

@@ -804,8 +804,19 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 #endif
 }
 
+// ============================================================================
+// IProcessable Interface
+// ============================================================================
+
+utils::Utf8String
+TrackProcessor::get_node_name () const
+{
+  return utils::Utf8String::from_utf8_encoded_string (
+    fmt::format ("{} Processor", get_track ()->get_name ()));
+}
+
 void
-TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
+TrackProcessor::process_block (EngineProcessTimeInfo time_nfo)
 {
   z_return_if_fail (track_);
 
@@ -1066,6 +1077,8 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
     },
     convert_to_variant<ProcessableTrackPtrVariant> (track_));
 }
+
+// ============================================================================
 
 #if 0
 /**

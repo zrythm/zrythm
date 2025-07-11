@@ -63,8 +63,12 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           z_return_if_fail (tr);
           using TrackT = base_type<decltype (tr)>;
 
-          /* add the track */
-          add_node_for_processable (*tr);
+          if constexpr (
+            std::derived_from<TrackT, structure::tracks::ProcessableTrack>)
+            {
+              /* add the track processor */
+              add_node_for_processable (*tr->processor_);
+            }
 
           /* handle modulator track */
           if constexpr (
@@ -332,240 +336,252 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         [&] (auto &tr) {
           using TrackT = base_type<decltype (tr)>;
 
-          /* connect the track */
-          auto * const track_node =
-            graph.get_nodes ().find_node_for_processable (*tr);
-          z_return_if_fail (track_node);
-          if (tr->get_input_signal_type () == dsp::PortType::Audio)
-            {
-              if constexpr (
-                std::derived_from<TrackT, structure::tracks::ProcessableTrack>)
-                {
-                  auto track_processor = tr->processor_.get ();
-                  iterate_tuple (
-                    [&] (const auto &port) {
-                      auto node2 =
-                        graph.get_nodes ().find_node_for_processable (port);
-                      node2->connect_to (*track_node);
-                      initial_processor_node->connect_to (*node2);
-                    },
-                    track_processor->get_stereo_in_ports ());
-                  iterate_tuple (
-                    [&] (const auto &port) {
-                      auto node2 =
-                        graph.get_nodes ().find_node_for_processable (port);
-                      track_node->connect_to (*node2);
-                    },
-                    track_processor->get_stereo_out_ports ());
-                }
-            }
-          else if (tr->get_input_signal_type () == dsp::PortType::Event)
-            {
-              if constexpr (
-                std::derived_from<TrackT, structure::tracks::ProcessableTrack>)
-                {
-                  auto track_processor = tr->processor_.get ();
-
-                  if constexpr (
-                    std::derived_from<TrackT, structure::tracks::PianoRollTrack>
-                    || std::is_same_v<TrackT, structure::tracks::ChordTrack>)
-                    {
-                      /* connect piano roll */
-                      auto node2 = graph.get_nodes ().find_node_for_processable (
-                        track_processor->get_piano_roll_port ());
-                      z_return_if_fail (node2);
-                      node2->connect_to (*track_node);
-                    }
-
-                  auto node2 = graph.get_nodes ().find_node_for_processable (
-                    track_processor->get_midi_in_port ());
-                  node2->connect_to (*track_node);
-                  initial_processor_node->connect_to (*node2);
-                  node2 = graph.get_nodes ().find_node_for_processable (
-                    track_processor->get_midi_out_port ());
-                  track_node->connect_to (*node2);
-                }
-            }
-
+          // only processable tracks are part of the graph (essentially every
+          // track besides MarkerTrack)
           if constexpr (
-            std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
+            std::derived_from<TrackT, structure::tracks::ProcessableTrack>)
             {
-              initial_processor_node->connect_to (*track_node);
-
-              for (const auto &pl_var : tr->get_modulator_span ())
-                {
-                  std::visit (
-                    [&] (auto &&pl) {
-                      if (pl && !pl->deleting_)
-                        {
-                          connect_plugin (*pl);
-                          for (
-                            const auto &pl_port_var : pl->get_input_port_span ())
-                            {
-                              std::visit (
-                                [&] (auto &&pl_port) {
-                                  // z_return_if_fail (pl_port->get_plugin (true)
-                                  // != nullptr);
-                                  auto port_node =
-                                    graph.get_nodes ()
-                                      .find_node_for_processable (*pl_port);
-                                  if (!port_node)
-                                    {
-                                      z_error (
-                                        "failed to find node for port {}",
-                                        pl_port->get_label ());
-                                      return;
-                                    }
-                                  track_node->connect_to (*port_node);
-                                },
-                                pl_port_var);
-                            }
-                        }
-                    },
-                    pl_var);
-                }
-
-              /* connect the modulator macro processors */
-              for (const auto &mmp : tr->get_modulator_macro_processors ())
-                {
-                  auto mmp_node =
-                    graph.get_nodes ().find_node_for_processable (*mmp);
-                  z_return_if_fail (mmp_node);
-
+              {
+                /* connect the track processor */
+                auto * const track_processor_node =
+                  graph.get_nodes ().find_node_for_processable (*tr->processor_);
+                assert (track_processor_node);
+                if (tr->get_input_signal_type () == dsp::PortType::Audio)
                   {
-                    auto * const node2 =
-                      graph.get_nodes ().find_node_for_processable (
-                        mmp->get_cv_in_port ());
-                    node2->connect_to (*mmp_node);
+
+                    auto track_processor = tr->processor_.get ();
+                    iterate_tuple (
+                      [&] (const auto &port) {
+                        auto node2 =
+                          graph.get_nodes ().find_node_for_processable (port);
+                        node2->connect_to (*track_processor_node);
+                        initial_processor_node->connect_to (*node2);
+                      },
+                      track_processor->get_stereo_in_ports ());
+                    iterate_tuple (
+                      [&] (const auto &port) {
+                        auto node2 =
+                          graph.get_nodes ().find_node_for_processable (port);
+                        track_processor_node->connect_to (*node2);
+                      },
+                      track_processor->get_stereo_out_ports ());
+                  }
+                else if (tr->get_input_signal_type () == dsp::PortType::Event)
+                  {
+                    auto track_processor = tr->processor_.get ();
+
+                    if constexpr (
+                      std::derived_from<TrackT, structure::tracks::PianoRollTrack>
+                      || std::is_same_v<TrackT, structure::tracks::ChordTrack>)
+                      {
+                        /* connect piano roll */
+                        auto node2 =
+                          graph.get_nodes ().find_node_for_processable (
+                            track_processor->get_piano_roll_port ());
+                        z_return_if_fail (node2);
+                        node2->connect_to (*track_processor_node);
+                      }
+
+                    auto node2 = graph.get_nodes ().find_node_for_processable (
+                      track_processor->get_midi_in_port ());
+                    node2->connect_to (*track_processor_node);
+                    initial_processor_node->connect_to (*node2);
+                    node2 = graph.get_nodes ().find_node_for_processable (
+                      track_processor->get_midi_out_port ());
+                    track_processor_node->connect_to (*node2);
                   }
 
-                  auto * const node2 =
-                    graph.get_nodes ().find_node_for_processable (
-                      mmp->get_cv_out_port ());
-                  mmp_node->connect_to (*node2);
-                }
-            }
+                if constexpr (
+                  std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
+                  {
+                    initial_processor_node->connect_to (*track_processor_node);
 
-          if constexpr (
-            std::derived_from<TrackT, structure::tracks::ChannelTrack>)
-            {
+                    for (const auto &pl_var : tr->get_modulator_span ())
+                      {
+                        std::visit (
+                          [&] (auto &&pl) {
+                            if (pl && !pl->deleting_)
+                              {
+                                connect_plugin (*pl);
+                                for (
+                                  const auto &pl_port_var :
+                                  pl->get_input_port_span ())
+                                  {
+                                    std::visit (
+                                      [&] (auto &&pl_port) {
+                                        // z_return_if_fail (pl_port->get_plugin
+                                        // (true)
+                                        // != nullptr);
+                                        auto port_node =
+                                          graph.get_nodes ()
+                                            .find_node_for_processable (*pl_port);
+                                        if (!port_node)
+                                          {
+                                            z_error (
+                                              "failed to find node for port {}",
+                                              pl_port->get_label ());
+                                            return;
+                                          }
+                                        track_processor_node->connect_to (
+                                          *port_node);
+                                      },
+                                      pl_port_var);
+                                  }
+                              }
+                          },
+                          pl_var);
+                      }
 
-              auto &ch = tr->channel_;
-              auto &prefader = ch->prefader_;
-              auto &fader = ch->fader_;
+                    /* connect the modulator macro processors */
+                    for (const auto &mmp : tr->get_modulator_macro_processors ())
+                      {
+                        auto mmp_node =
+                          graph.get_nodes ().find_node_for_processable (*mmp);
+                        z_return_if_fail (mmp_node);
 
-              /* connect the fader */
-              auto * const fader_node =
-                graph.get_nodes ().find_node_for_processable (*fader);
-              z_warn_if_fail (fader_node);
-              if (fader->type_ == structure::tracks::Fader::Type::AudioChannel)
+                        {
+                          auto * const node2 =
+                            graph.get_nodes ().find_node_for_processable (
+                              mmp->get_cv_in_port ());
+                          node2->connect_to (*mmp_node);
+                        }
+
+                        auto * const node2 =
+                          graph.get_nodes ().find_node_for_processable (
+                            mmp->get_cv_out_port ());
+                        mmp_node->connect_to (*node2);
+                      }
+                  }
+              }
+
+              // connect the channel
+              if constexpr (
+                std::derived_from<TrackT, structure::tracks::ChannelTrack>)
                 {
-                  /* connect ins */
-                  iterate_tuple (
-                    [&] (const auto &port) {
-                      auto node2 =
-                        graph.get_nodes ().find_node_for_processable (port);
-                      node2->connect_to (*fader_node);
-                    },
-                    fader->get_stereo_in_ports ());
+                  auto &ch = tr->channel_;
+                  auto &prefader = ch->prefader_;
+                  auto &fader = ch->fader_;
 
-                  /* connect outs */
-                  iterate_tuple (
-                    [&] (const auto &port) {
-                      auto node2 =
-                        graph.get_nodes ().find_node_for_processable (port);
-                      fader_node->connect_to (*node2);
-                    },
-                    fader->get_stereo_out_ports ());
-                }
-              else if (
-                fader->type_ == structure::tracks::Fader::Type::MidiChannel)
-                {
-                  auto node2 = graph.get_nodes ().find_node_for_processable (
-                    fader->get_midi_in_port ());
-                  node2->connect_to (*fader_node);
-                  node2 = graph.get_nodes ().find_node_for_processable (
-                    fader->get_midi_out_port ());
-                  fader_node->connect_to (*node2);
-                }
-
-              /* connect the prefader */
-              auto * const prefader_node =
-                graph.get_nodes ().find_node_for_processable (*prefader);
-              z_warn_if_fail (prefader_node);
-              if (
-                prefader->type_ == structure::tracks::Fader::Type::AudioChannel)
-                {
-                  iterate_tuple (
-                    [&] (const auto &port) {
-                      auto * node2 =
-                        graph.get_nodes ().find_node_for_processable (port);
-                      node2->connect_to (*prefader_node);
-                    },
-                    prefader->get_stereo_in_ports ());
-                  iterate_tuple (
-                    [&] (const auto &port) {
-                      auto node2 =
-                        graph.get_nodes ().find_node_for_processable (port);
-                      prefader_node->connect_to (*node2);
-                    },
-                    prefader->get_stereo_out_ports ());
-                }
-              else if (
-                prefader->type_ == structure::tracks::Fader::Type::MidiChannel)
-                {
-                  auto * node2 = graph.get_nodes ().find_node_for_processable (
-                    prefader->get_midi_in_port ());
-                  node2->connect_to (*prefader_node);
-                  node2 = graph.get_nodes ().find_node_for_processable (
-                    prefader->get_midi_out_port ());
-                  prefader_node->connect_to (*node2);
-                }
-
-              std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
-              ch->get_plugins (plugins);
-              for (auto * const pl : plugins)
-                {
-                  if (pl && !pl->deleting_)
+                  /* connect the fader */
+                  auto * const fader_node =
+                    graph.get_nodes ().find_node_for_processable (*fader);
+                  z_warn_if_fail (fader_node);
+                  if (
+                    fader->type_ == structure::tracks::Fader::Type::AudioChannel)
                     {
-                      connect_plugin (*pl);
+                      /* connect ins */
+                      iterate_tuple (
+                        [&] (const auto &port) {
+                          auto node2 =
+                            graph.get_nodes ().find_node_for_processable (port);
+                          node2->connect_to (*fader_node);
+                        },
+                        fader->get_stereo_in_ports ());
+
+                      /* connect outs */
+                      iterate_tuple (
+                        [&] (const auto &port) {
+                          auto node2 =
+                            graph.get_nodes ().find_node_for_processable (port);
+                          fader_node->connect_to (*node2);
+                        },
+                        fader->get_stereo_out_ports ());
                     }
-                }
+                  else if (
+                    fader->type_ == structure::tracks::Fader::Type::MidiChannel)
+                    {
+                      auto node2 = graph.get_nodes ().find_node_for_processable (
+                        fader->get_midi_in_port ());
+                      node2->connect_to (*fader_node);
+                      node2 = graph.get_nodes ().find_node_for_processable (
+                        fader->get_midi_out_port ());
+                      fader_node->connect_to (*node2);
+                    }
 
-              for (auto &send : ch->sends_)
-                {
-                  /* note that we do not skip empty sends because then port
-                   * connection validation will not detect invalid connections
-                   * properly */
-                  auto * const send_node =
-                    graph.get_nodes ().find_node_for_processable (*send);
-
-                  if (tr->get_output_signal_type () == dsp::PortType::Event)
+                  /* connect the prefader */
+                  auto * const prefader_node =
+                    graph.get_nodes ().find_node_for_processable (*prefader);
+                  z_warn_if_fail (prefader_node);
+                  if (
+                    prefader->type_
+                    == structure::tracks::Fader::Type::AudioChannel)
+                    {
+                      iterate_tuple (
+                        [&] (const auto &port) {
+                          auto * node2 =
+                            graph.get_nodes ().find_node_for_processable (port);
+                          node2->connect_to (*prefader_node);
+                        },
+                        prefader->get_stereo_in_ports ());
+                      iterate_tuple (
+                        [&] (const auto &port) {
+                          auto node2 =
+                            graph.get_nodes ().find_node_for_processable (port);
+                          prefader_node->connect_to (*node2);
+                        },
+                        prefader->get_stereo_out_ports ());
+                    }
+                  else if (
+                    prefader->type_
+                    == structure::tracks::Fader::Type::MidiChannel)
                     {
                       auto * node2 =
                         graph.get_nodes ().find_node_for_processable (
-                          send->get_midi_in_port ());
-                      node2->connect_to (*send_node);
+                          prefader->get_midi_in_port ());
+                      node2->connect_to (*prefader_node);
                       node2 = graph.get_nodes ().find_node_for_processable (
-                        send->get_midi_out_port ());
-                      send_node->connect_to (*node2);
+                        prefader->get_midi_out_port ());
+                      prefader_node->connect_to (*node2);
                     }
-                  else if (tr->get_output_signal_type () == dsp::PortType::Audio)
+
+                  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
+                  ch->get_plugins (plugins);
+                  for (auto * const pl : plugins)
                     {
-                      iterate_tuple (
-                        [&] (const auto &port) {
+                      if (pl && !pl->deleting_)
+                        {
+                          connect_plugin (*pl);
+                        }
+                    }
+
+                  for (auto &send : ch->sends_)
+                    {
+                      /* note that we do not skip empty sends because then port
+                       * connection validation will not detect invalid
+                       * connections properly */
+                      auto * const send_node =
+                        graph.get_nodes ().find_node_for_processable (*send);
+
+                      if (tr->get_output_signal_type () == dsp::PortType::Event)
+                        {
                           auto * node2 =
-                            graph.get_nodes ().find_node_for_processable (port);
+                            graph.get_nodes ().find_node_for_processable (
+                              send->get_midi_in_port ());
                           node2->connect_to (*send_node);
-                        },
-                        send->get_stereo_in_ports ());
-                      iterate_tuple (
-                        [&] (const auto &port) {
-                          auto * node2 =
-                            graph.get_nodes ().find_node_for_processable (port);
+                          node2 = graph.get_nodes ().find_node_for_processable (
+                            send->get_midi_out_port ());
                           send_node->connect_to (*node2);
-                        },
-                        send->get_stereo_out_ports ());
+                        }
+                      else if (
+                        tr->get_output_signal_type () == dsp::PortType::Audio)
+                        {
+                          iterate_tuple (
+                            [&] (const auto &port) {
+                              auto * node2 =
+                                graph.get_nodes ().find_node_for_processable (
+                                  port);
+                              node2->connect_to (*send_node);
+                            },
+                            send->get_stereo_in_ports ());
+                          iterate_tuple (
+                            [&] (const auto &port) {
+                              auto * node2 =
+                                graph.get_nodes ().find_node_for_processable (
+                                  port);
+                              send_node->connect_to (*node2);
+                            },
+                            send->get_stereo_out_ports ());
+                        }
                     }
                 }
             }

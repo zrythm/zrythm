@@ -245,7 +245,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                   const float * audio_data_r = nullptr;
                   if constexpr (std::is_same_v<TrackT, AudioTrack>)
                     {
-                      track->processor_->process (inner_time_nfo);
+                      track->processor_->process_block (inner_time_nfo);
                       auto processor_stereo_outs =
                         track->processor_->get_stereo_out_ports ();
                       audio_data_l = processor_stereo_outs.first.buf_.data ();
@@ -253,7 +253,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                     }
                   else if constexpr (std::is_same_v<TrackT, MidiTrack>)
                     {
-                      track->processor_->process (inner_time_nfo);
+                      track->processor_->process_block (inner_time_nfo);
                       midi_events_->active_events_.append (
                         track->processor_->get_midi_out_port ()
                           .midi_events_.active_events_,

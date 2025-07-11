@@ -50,12 +50,6 @@ init_from (
 }
 
 void
-ProcessableTrack::process_block (EngineProcessTimeInfo time_nfo)
-{
-  processor_->process (time_nfo);
-}
-
-void
 ProcessableTrack::fill_midi_events (
   const EngineProcessTimeInfo &time_nfo,
   dsp::MidiEventVector        &midi_events)
