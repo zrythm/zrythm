@@ -79,11 +79,13 @@ private:
   static constexpr auto kProcessorNameKey = "processorName"sv;
   static constexpr auto kInputPortsKey = "inputPorts"sv;
   static constexpr auto kOutputPortsKey = "outputPorts"sv;
+  static constexpr auto kParametersKey = "parameters"sv;
   friend void           to_json (nlohmann::json &j, const ProcessorBase &p)
   {
     j[kProcessorNameKey] = p.name_;
     j[kInputPortsKey] = p.input_ports_;
     j[kOutputPortsKey] = p.output_ports_;
+    j[kParametersKey] = p.params_;
   }
   friend void from_json (const nlohmann::json &j, ProcessorBase &p)
   {
@@ -101,6 +103,14 @@ private:
         auto port_ref = dsp::PortUuidReference{ p.port_registry_ };
         from_json (output_port, port_ref);
         p.output_ports_.emplace_back (std::move (port_ref));
+      }
+    p.params_.clear ();
+    for (const auto &param : j.at (kParametersKey))
+      {
+        auto param_ref =
+          dsp::ProcessorParameterUuidReference{ p.param_registry_ };
+        from_json (param, param_ref);
+        p.params_.emplace_back (std::move (param_ref));
       }
   }
 

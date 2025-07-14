@@ -240,8 +240,6 @@ Fader::init_loaded (
   sample_processor_ = sample_processor;
 
 #if 0
-  std::vector<dsp::Port *> ports;
-  append_ports (ports);
   for (auto * port : ports)
     {
       port->set_full_designation_provider (this);
@@ -883,8 +881,6 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
       deep_clone_port (obj.swap_phase_id_, other.swap_phase_id_);
 
       /* set owner */
-      std::vector<dsp::Port *> ports;
-      obj.append_ports (ports);
       for (auto &port : ports)
         {
           port->set_full_designation_provider (&obj);

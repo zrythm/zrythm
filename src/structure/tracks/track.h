@@ -852,6 +852,10 @@ public:
    */
   virtual void clear_objects () { };
 
+  // temporary hack to avoid having to pass constructor arguments through
+  // intermediate classes. the whole hierarchy needs to be refactored
+  virtual void temporary_virtual_method_hack () const = 0;
+
   /**
    * Adds the track's folder parents to the given vector.
    *
@@ -1018,12 +1022,6 @@ public:
    */
   void
   set_icon (const utils::Utf8String &icon_name, bool undoable, bool fire_events);
-
-  /**
-   * Appends all channel ports and optionally plugin ports to the array.
-   */
-  virtual void
-  append_ports (std::vector<dsp::Port *> &ports, bool include_plugins) const = 0;
 
   /**
    * Freezes or unfreezes the track.

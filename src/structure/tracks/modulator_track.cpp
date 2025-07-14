@@ -274,34 +274,6 @@ ModulatorTrack::get_plugin_slot (const PluginUuid &plugin_id) const
 }
 
 void
-ModulatorTrack::append_ports (
-  std::vector<dsp::Port *> &ports,
-  bool                      include_plugins) const
-{
-  ProcessableTrack::append_member_ports (ports, include_plugins);
-  auto add_port = [&ports] (dsp::Port * port) {
-    if (port != nullptr)
-      ports.push_back (port);
-    else
-      z_warning ("Port is null");
-  };
-
-  for (const auto &modulator_id : modulators_)
-    {
-      auto modulator_var = modulator_id.get_object ();
-      std::visit (
-        [&] (auto &&modulator) { modulator->append_ports (ports); },
-        modulator_var);
-    }
-  for (const auto &macro : modulator_macro_processors_)
-    {
-      // add_port (&macro->get_macro_port ());
-      add_port (&macro->get_cv_in_port ());
-      add_port (&macro->get_cv_out_port ());
-    }
-}
-
-void
 from_json (const nlohmann::json &j, ModulatorTrack &track)
 {
   from_json (j, static_cast<Track &> (track));

@@ -87,13 +87,6 @@ init_from (
     static_cast<const LanedTrackImpl<MidiLane> &> (other), clone_type);
 }
 
-void
-MidiTrack::append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-  const
-{
-  ProcessableTrack::append_member_ports (ports, include_plugins);
-}
-
 bool
 MidiTrack::initialize ()
 {

@@ -185,8 +185,6 @@ public:
    */
   void wait_n_cycles (int n);
 
-  void append_ports (std::vector<dsp::Port *> &ports);
-
   using BeatsPerBarGetter = std::function<int ()>;
   using BpmGetter = std::function<bpm_t ()>;
 

@@ -274,14 +274,6 @@ ProcessableTrack::fill_events_common (
 }
 
 void
-ProcessableTrack::append_member_ports (
-  std::vector<dsp::Port *> &ports,
-  bool                      include_plugins) const
-{
-  processor_->append_ports (ports);
-}
-
-void
 from_json (const nlohmann::json &j, ProcessableTrack &p)
 {
   p.processor_ = std::make_unique<TrackProcessor> (

@@ -58,6 +58,8 @@ public:
     const AudioTrack      &other,
     utils::ObjectCloneType clone_type);
 
+  void temporary_virtual_method_hack () const override { }
+
   /**
    * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
    *
@@ -76,9 +78,6 @@ public:
     std::vector<arrangement::ArrangerObjectUuidReference> &regions,
     std::optional<signed_frame_t>                          p1,
     std::optional<signed_frame_t>                          p2) override;
-
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const final;
 
   void timestretch_buf (
     const AudioRegion *    r,

@@ -313,13 +313,6 @@ public:
   Q_INVOKABLE void activate ();
 
   /**
-   * @brief Gets all the ports in the project.
-   *
-   * @param ports Array to append to.
-   */
-  void get_all_ports (std::vector<dsp::Port *> &ports) const;
-
-  /**
    * @brief Adds the default undeletable tracks to the project.
    *
    * To be called when creating new projects.

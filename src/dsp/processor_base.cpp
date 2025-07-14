@@ -126,9 +126,11 @@ ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo)
     const auto &[in_port, out_port] :
     std::views::zip (midi_in_ports, midi_out_ports))
     {
-      out_port->midi_events_.active_events_.append (
+      out_port->midi_events_.active_events_.clear ();
+      out_port->midi_events_.queued_events_.append (
         in_port->midi_events_.active_events_, time_nfo.local_offset_,
         time_nfo.nframes_);
+      in_port->midi_events_.active_events_.clear ();
     }
   for (
     const auto &[in_port, out_port] :

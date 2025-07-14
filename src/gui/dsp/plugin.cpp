@@ -196,14 +196,6 @@ Plugin::is_auditioner () const
 void
 Plugin::init_loaded ()
 {
-  std::vector<dsp::Port *> ports;
-  append_ports (ports);
-  z_return_if_fail (!ports.empty ());
-  for (auto &port : ports)
-    {
-      port->set_full_designation_provider (this);
-    }
-
   bool was_enabled = this->is_enabled (false);
   try
     {
@@ -302,19 +294,6 @@ Plugin::set_selected_preset_by_name (const utils::Utf8String &name)
     }
 
   z_return_if_reached ();
-}
-
-void
-Plugin::append_ports (std::vector<dsp::Port *> &ports)
-{
-  for (auto port : get_input_port_span ().as_base_type ())
-    {
-      ports.push_back (port);
-    }
-  for (auto port : get_output_port_span ().as_base_type ())
-    {
-      ports.push_back (port);
-    }
 }
 
 void

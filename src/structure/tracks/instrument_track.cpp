@@ -96,14 +96,6 @@ InstrumentTrack::toggle_plugin_visible ()
 }
 
 void
-InstrumentTrack::append_ports (
-  std::vector<dsp::Port *> &ports,
-  bool                      include_plugins) const
-{
-  ProcessableTrack::append_member_ports (ports, include_plugins);
-}
-
-void
 init_from (
   InstrumentTrack       &obj,
   const InstrumentTrack &other,

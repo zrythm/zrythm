@@ -30,9 +30,9 @@ public:
    * channel's input (or the first plugin).
    */
   static void add_connections (
-    dsp::graph::Graph                &graph,
-    Channel                          &ch,
-    std::span<dsp::PortUuidReference> track_processor_outputs,
-    bool                              skip_unnecessary);
+    dsp::graph::Graph                      &graph,
+    Channel                                &ch,
+    std::span<const dsp::PortUuidReference> track_processor_outputs,
+    bool                                    skip_unnecessary);
 };
 } // namespace zrythm::structure::tracks

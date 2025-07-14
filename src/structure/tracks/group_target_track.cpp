@@ -1,17 +1,14 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
+#include <ranges>
 
 #include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/group_target_track.h"
 #include "structure/tracks/track.h"
-#include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::structure::tracks
 {
@@ -24,57 +21,8 @@ GroupTargetTrack::update_child_output (
 {
   z_return_if_fail (ch);
 
-  if (ch->has_output ())
-    {
-      auto track = ch->get_output_track ();
-      /* disconnect Channel's output from the current output channel */
-      switch (track->in_signal_type_)
-        {
-        case PortType::Audio:
-          PORT_CONNECTIONS_MGR->remove_connection (
-            ch->get_stereo_out_ports ().first.get_uuid (),
-            track->processor_->stereo_in_left_id_->id ());
-          PORT_CONNECTIONS_MGR->remove_connection (
-            ch->get_stereo_out_ports ().second.get_uuid (),
-            track->processor_->stereo_in_right_id_->id ());
-          break;
-        case PortType::Event:
-          PORT_CONNECTIONS_MGR->remove_connection (
-            ch->get_midi_out_port ().get_uuid (),
-            track->processor_->get_midi_in_port ().get_uuid ());
-          break;
-        default:
-          break;
-        }
-    }
-
-  if (output)
-    {
-      /* connect Channel's output to the given output */
-      switch (output->in_signal_type_)
-        {
-        case PortType::Audio:
-          PORT_CONNECTIONS_MGR->add_default_connection (
-            ch->get_stereo_out_ports ().first.get_uuid (),
-            output->processor_->stereo_in_left_id_->id (), true);
-          PORT_CONNECTIONS_MGR->add_default_connection (
-            ch->get_stereo_out_ports ().second.get_uuid (),
-            output->processor_->stereo_in_right_id_->id (), true);
-          break;
-        case PortType::Event:
-          PORT_CONNECTIONS_MGR->add_default_connection (
-            ch->get_midi_out_port ().get_uuid (),
-            output->processor_->get_midi_in_port ().get_uuid (), true);
-          break;
-        default:
-          break;
-        }
-      ch->output_track_uuid_ = output->get_uuid ();
-    }
-  else
-    {
-      ch->output_track_uuid_ = std::nullopt;
-    }
+  ch->output_track_uuid_ =
+    (output != nullptr) ? std::make_optional (output->get_uuid ()) : std::nullopt;
 
   if (recalc_graph)
     {
@@ -137,9 +85,9 @@ void
 GroupTargetTrack::
   remove_all_children (bool disconnect, bool recalc_graph, bool pub_events)
 {
-  for (auto it = children_.rbegin (); it != children_.rend (); ++it)
+  for (auto &it : std::views::reverse (children_))
     {
-      remove_child (*it, disconnect, recalc_graph, pub_events);
+      remove_child (it, disconnect, recalc_graph, pub_events);
     }
 }
 

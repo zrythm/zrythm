@@ -39,6 +39,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         { dest_id, project.get_port_registry () });
     };
 
+  // add engine monitor output
+  {
+    const auto &monitor_outs = engine->get_monitor_out_ports ();
+    add_node_for_processable (monitor_outs.first);
+    add_node_for_processable (monitor_outs.second);
+  }
+
   /* add the sample processor */
 // TODO
 #if 0
@@ -58,7 +65,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   /* add the hardware input processor */
   // add_node_for_processable (*hw_in_processor);
 
-  /* add plugins */
+  /* add each track */
   for (const auto &cur_tr : tracklist->get_track_span ())
     {
       std::visit (
@@ -70,7 +77,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             std::derived_from<TrackT, structure::tracks::ProcessableTrack>)
             {
               /* add the track processor */
-              add_node_for_processable (*tr->processor_);
+              dsp::ProcessorGraphBuilder::add_nodes (
+                graph, *transport, *tr->processor_);
             }
 
           /* handle modulator track */
@@ -94,7 +102,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               /* add macro processors */
               for (const auto &mp : tr->get_modulator_macro_processors ())
                 {
-                  add_node_for_processable (*mp);
+                  dsp::ProcessorGraphBuilder::add_nodes (graph, *transport, *mp);
                 }
             }
 
@@ -109,63 +117,24 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         cur_tr);
     }
 
-  auto add_port = [&] (
-                    dsp::PortPtrVariant port_var, dsp::PortConnectionsManager &mgr,
-                    const bool drop_if_unnecessary) {
-    return std::visit (
-      [&] (auto &&port) -> dsp::graph::GraphNode * {
-        using PortT = base_type<decltype (port)>;
-
-        /* reset port sources/dests */
-        dsp::PortConnectionsManager::ConnectionsVector srcs;
-        mgr.get_sources (&srcs, port->get_uuid ());
-        port->port_sources_.clear ();
-        for (const auto &conn : srcs)
-          {
-            auto src_var = project.find_port_by_id (conn->src_id_);
-            assert (src_var.has_value ());
-            std::visit (
-              [&] (auto &&src) {
-                using SourcePortT = base_type<decltype (src)>;
-                if constexpr (
-                  (std::is_same_v<PortT, dsp::CVPort>
-                   && std::is_same_v<SourcePortT, dsp::CVPort>)
-                  || (std::is_same_v<PortT, dsp::MidiPort> && std::is_same_v<SourcePortT, dsp::MidiPort>)
-                  || (std::is_same_v<PortT, dsp::AudioPort> && std::is_same_v<SourcePortT, dsp::AudioPort>) )
-                  {
-                    port->port_sources_.push_back (
-                      std::make_pair (src, utils::clone_unique (*conn)));
-                  }
-              },
-              src_var.value ());
-          }
-
-        dsp::PortConnectionsManager::ConnectionsVector dests;
-        mgr.get_dests (&dests, port->get_uuid ());
-
-      // TODO
-#if 0
-        /* drop ports without sources and dests */
-        if (drop_if_unnecessary && dests.empty () && srcs.empty ())
-          {
-            return nullptr;
-          }
-#endif
-
-        return add_node_for_processable (*port);
-      },
-      port_var);
-  };
-
-  /* add ports */
-  std::vector<dsp::Port *> ports;
-  project.get_all_ports (ports);
-  for (auto * port : ports)
+  // go through all ports and reset their source/dest caches
+  std::vector<dsp::PortUuidReference> all_ports;
+  all_ports.reserve (graph.get_nodes ().graph_nodes_.size ());
+  for (auto &node : graph.get_nodes ().graph_nodes_)
     {
-      assert (port);
-      add_port (
-        convert_to_variant<dsp::PortPtrVariant> (port),
-        *project.port_connections_manager_, drop_unnecessary_ports);
+      if (
+        auto * port_base = dynamic_cast<dsp::Port *> (&node->get_processable ());
+        port_base != nullptr)
+        {
+          all_ports.emplace_back (
+            port_base->get_uuid (), project.get_port_registry ());
+        }
+    }
+  for (const auto &port_ref : all_ports)
+    {
+      std::visit (
+        [&] (auto &&port) { port->port_sources_.clear (); },
+        port_ref.get_object ());
     }
 
     /* ========================
@@ -289,59 +258,38 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             {
               {
                 /* connect the track processor */
+                auto         track_processor = tr->processor_.get ();
                 auto * const track_processor_node =
-                  graph.get_nodes ().find_node_for_processable (*tr->processor_);
+                  graph.get_nodes ().find_node_for_processable (*track_processor);
                 assert (track_processor_node);
-                if (tr->get_input_signal_type () == dsp::PortType::Audio)
-                  {
+                dsp::ProcessorGraphBuilder::add_connections (
+                  graph, *track_processor);
 
-                    auto track_processor = tr->processor_.get ();
-                    iterate_tuple (
-                      [&] (const auto &port) {
-                        auto node2 =
-                          graph.get_nodes ().find_node_for_processable (port);
-                        node2->connect_to (*track_processor_node);
-                        initial_processor_node->connect_to (*node2);
-                      },
-                      track_processor->get_stereo_in_ports ());
-                    iterate_tuple (
-                      [&] (const auto &port) {
-                        auto node2 =
-                          graph.get_nodes ().find_node_for_processable (port);
-                        track_processor_node->connect_to (*node2);
-                      },
-                      track_processor->get_stereo_out_ports ());
+                // connect initial processor to track processor inputs (or track
+                // processor itself if no inputs)
+                if (track_processor->get_input_ports ().empty ())
+                  {
+                    initial_processor_node->connect_to (*track_processor_node);
                   }
-                else if (tr->get_input_signal_type () == dsp::PortType::Event)
+                else
                   {
-                    auto track_processor = tr->processor_.get ();
-
-                    if constexpr (
-                      std::derived_from<TrackT, structure::tracks::PianoRollTrack>
-                      || std::is_same_v<TrackT, structure::tracks::ChordTrack>)
+                    for (
+                      const auto &tp_in_port_ref :
+                      track_processor->get_input_ports ())
                       {
-                        // connect piano roll
-                        auto node2 =
-                          graph.get_nodes ().find_node_for_processable (
-                            track_processor->get_piano_roll_port ());
-                        z_return_if_fail (node2);
-                        node2->connect_to (*track_processor_node);
+                        std::visit (
+                          [&] (auto &&tp_in_port) {
+                            initial_processor_node->connect_to (
+                              *graph.get_nodes ().find_node_for_processable (
+                                *tp_in_port));
+                          },
+                          tp_in_port_ref.get_object ());
                       }
-
-                    auto node2 = graph.get_nodes ().find_node_for_processable (
-                      track_processor->get_midi_in_port ());
-                    node2->connect_to (*track_processor_node);
-                    initial_processor_node->connect_to (*node2);
-                    node2 = graph.get_nodes ().find_node_for_processable (
-                      track_processor->get_midi_out_port ());
-                    track_processor_node->connect_to (*node2);
                   }
 
                 if constexpr (
                   std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
                   {
-                    initial_processor_node->connect_to (*track_processor_node);
-
                     for (const auto &pl_var : tr->get_modulator_span ())
                       {
                         std::visit (
@@ -382,45 +330,55 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                     /* connect the modulator macro processors */
                     for (const auto &mmp : tr->get_modulator_macro_processors ())
                       {
-                        auto mmp_node =
-                          graph.get_nodes ().find_node_for_processable (*mmp);
-                        z_return_if_fail (mmp_node);
+                        dsp::ProcessorGraphBuilder::add_connections (
+                          graph, *mmp);
 
-                        {
-                          auto * const node2 =
-                            graph.get_nodes ().find_node_for_processable (
-                              mmp->get_cv_in_port ());
-                          node2->connect_to (*mmp_node);
-                        }
-
-                        auto * const node2 =
+                        // special case - track processor connected directly to
+                        // the mmp input(s)
+                        auto * const cv_in_node =
                           graph.get_nodes ().find_node_for_processable (
-                            mmp->get_cv_out_port ());
-                        mmp_node->connect_to (*node2);
+                            mmp->get_cv_in_port ());
+                        track_processor_node->connect_to (*cv_in_node);
                       }
-                  }
+                  } // if modulator track
               }
 
               // connect the channel
               if constexpr (
                 std::derived_from<TrackT, structure::tracks::ChannelTrack>)
                 {
-                  std::vector<dsp::PortUuidReference> track_processor_outs;
-                  if (tr->get_input_signal_type () == dsp::PortType::Event)
-                    {
-                      track_processor_outs.push_back (
-                        *tr->processor_->midi_out_id_);
-                    }
-                  else if (tr->get_input_signal_type () == dsp::PortType::Audio)
-                    {
-                      track_processor_outs.push_back (
-                        *tr->processor_->stereo_out_left_id_);
-                      track_processor_outs.push_back (
-                        *tr->processor_->stereo_out_right_id_);
-                    }
                   auto &ch = tr->channel_;
                   structure::tracks::ChannelSubgraphBuilder::add_connections (
-                    graph, *ch, track_processor_outs, drop_unnecessary_ports);
+                    graph, *ch, std::span (tr->processor_->get_output_ports ()),
+                    drop_unnecessary_ports);
+
+                  // connect to target track
+                  if (ch->has_output ())
+                    {
+                      auto * output_track = ch->get_output_track ();
+                      if (
+                        output_track->get_input_signal_type ()
+                        == dsp::PortType::Audio)
+                        {
+                          connect_ports (
+                            ch->get_stereo_out_ports ().first.get_uuid (),
+                            output_track->processor_->get_stereo_in_ports ()
+                              .first.get_uuid ());
+                          connect_ports (
+                            ch->get_stereo_out_ports ().second.get_uuid (),
+                            output_track->processor_->get_stereo_in_ports ()
+                              .second.get_uuid ());
+                        }
+                      else if (
+                        output_track->get_input_signal_type ()
+                        == dsp::PortType::Event)
+                        {
+                          connect_ports (
+                            ch->get_midi_out_port ().get_uuid (),
+                            output_track->processor_->get_midi_in_port ()
+                              .get_uuid ());
+                        }
+                    }
 
                   // Connect master track output to monitor fader input
                   if constexpr (
@@ -442,50 +400,58 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         cur_tr);
     }
 
-  auto connect_port = [&]<typename PortT> (PortT &p)
-    requires std::derived_from<PortT, dsp::Port>
-  {
-    const auto &mgr = *project.port_connections_manager_;
-    dsp::PortConnectionsManager::ConnectionsVector srcs;
-    mgr.get_sources (&srcs, p.get_uuid ());
-    dsp::PortConnectionsManager::ConnectionsVector dests;
-    mgr.get_dests (&dests, p.get_uuid ());
-
-    auto * node = graph.get_nodes ().find_node_for_processable (p);
-    for (const auto &conn : srcs)
-      {
-        auto src_var = project.find_port_by_id (conn->src_id_);
-        assert (src_var.has_value ());
-        std::visit (
-          [&] (auto &&src) {
-            auto node2 = graph.get_nodes ().find_node_for_processable (*src);
-            assert (node);
-            assert (node2);
-            node2->connect_to (*node);
-          },
-          src_var.value ());
-      }
-    for (const auto &conn : dests)
-      {
-        auto dest_var = project.find_port_by_id (conn->dest_id_);
-        assert (dest_var.has_value ());
-        std::visit (
-          [&] (auto &&dest) {
-            auto node2 = graph.get_nodes ().find_node_for_processable (*dest);
-            assert (node);
-            assert (node2);
-            node->connect_to (*node2);
-          },
-          dest_var.value ());
-      }
-  };
-
-  for (auto &port : ports)
+  // add standard connections made above
+  for (const auto &port_ref : all_ports)
     {
       std::visit (
-        [&] (auto &&p) { connect_port (*p); },
-        convert_to_variant<dsp::PortPtrVariant> (port));
+        [&] (auto &&src_port) {
+          using PortT = base_type<decltype (src_port)>;
+          auto * src_node =
+            graph.get_nodes ().find_node_for_processable (*src_port);
+          for (const auto &child_node : src_node->childnodes_)
+            {
+              auto * dest_port =
+                dynamic_cast<PortT *> (&child_node.get ().get_processable ());
+              if (dest_port != nullptr)
+                {
+                  dest_port->port_sources_.push_back (
+                    std::make_pair (
+                      src_port,
+                      std::make_unique<dsp::PortConnection> (
+                        src_port->get_uuid (), dest_port->get_uuid (), 1.f,
+                        true, true)));
+                }
+            }
+        },
+        port_ref.get_object ());
     }
+
+  // add additional custom connections from the PortConnectionsManager
+  {
+    const auto &mgr = *project.port_connections_manager_;
+    for (const auto &conn : mgr.get_connections ())
+      {
+        const auto src_port_var = *project.find_port_by_id (conn->src_id_);
+        const auto dest_port_var = *project.find_port_by_id (conn->dest_id_);
+        std::visit (
+          [&] (auto &&src_port, auto &&dest_port) {
+            using SourcePortT = base_type<decltype (src_port)>;
+            using DestPortT = base_type<decltype (dest_port)>;
+            if constexpr (std::is_same_v<SourcePortT, DestPortT>)
+              {
+                auto * src_node =
+                  graph.get_nodes ().find_node_for_processable (*src_port);
+                auto * dest_node =
+                  graph.get_nodes ().find_node_for_processable (*dest_port);
+                src_node->connect_to (*dest_node);
+
+                dest_port->port_sources_.push_back (
+                  std::make_pair (src_port, utils::clone_unique (*conn)));
+              }
+          },
+          src_port_var, dest_port_var);
+      }
+  }
 
   z_debug (
     "done building graph: {}",

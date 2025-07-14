@@ -858,7 +858,10 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                   /* get track from pos */
                   auto prj_track = std::get<TrackT *> (
                     TRACKLIST->get_track_at_index (own_track->get_index ()));
-                  /* remember any custom connections */
+
+// TODO
+#if 0
+                    /* remember any custom connections */
                   std::vector<dsp::Port *> prj_ports;
                   prj_track->append_ports (prj_ports, true);
                   std::vector<dsp::Port *> clone_ports;
@@ -880,6 +883,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       // TODO
                       // clone_port->copy_metadata_from_project (*prj_port);
                     }
+#endif
 
                   /* if group track, remove all children */
                   if (prj_track->can_be_group_target ())

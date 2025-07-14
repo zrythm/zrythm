@@ -299,14 +299,6 @@ Tracklist::disconnect_track (Track &track)
         }
     }
 
-  /* disconnect all ports and free buffers */
-  std::vector<dsp::Port *> ports;
-  track.append_ports (ports, true);
-  for (auto * port : ports)
-    {
-      port_connections_manager_->remove_all_connections (port->get_uuid ());
-    }
-
   if (!track.is_auditioner ())
     {
       /* disconnect from folders */

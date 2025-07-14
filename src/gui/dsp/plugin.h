@@ -226,11 +226,6 @@ public:
   }
 
   /**
-   * @brief Appends this plugin's ports to the given vector.
-   */
-  void append_ports (std::vector<dsp::Port *> &ports);
-
-  /**
    * Gets a port by its symbol.
    *
    * @note Only works on LV2 plugins.

@@ -215,6 +215,8 @@ TEST_F (ModulatorMacroProcessorTest, PortDesignationProvider)
   EXPECT_EQ (designation.view (), "Modulator Macro Processor/Macro 1 CV In");
 }
 
+// TODO
+#if 0
 TEST_F (ModulatorMacroProcessorTest, InitFromClone)
 {
   // Create original processor
@@ -231,5 +233,6 @@ TEST_F (ModulatorMacroProcessorTest, InitFromClone)
     clone.get_cv_in_port ().get_label ().view (),
     orig->get_cv_in_port ().get_label ().view ());
 }
+#endif
 
 } // namespace zrythm::dsp

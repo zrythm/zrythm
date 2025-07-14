@@ -17,7 +17,7 @@ namespace zrythm::structure::tracks
 class GroupTargetTrack : virtual public ChannelTrack
 {
 protected:
-  GroupTargetTrack () noexcept { };
+  GroupTargetTrack () noexcept = default;
 
 public:
   ~GroupTargetTrack () override = default;

@@ -80,6 +80,7 @@ public:
    */
   ChordObject * get_chord_at_ticks (double timeline_ticks) const;
 
+  void temporary_virtual_method_hack () const override { }
   /**
    * Returns the ScaleObject at the given Position
    * in the TimelineArranger.
@@ -102,9 +103,6 @@ public:
     ChordTrack            &obj,
     const ChordTrack      &other,
     utils::ObjectCloneType clone_type);
-
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const final;
 
   std::string
   get_field_name_for_serialization (const ChordRegion *) const override

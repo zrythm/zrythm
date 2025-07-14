@@ -70,10 +70,6 @@ protected:
     const ProcessableTrack &other,
     utils::ObjectCloneType  clone_type);
 
-  void
-  append_member_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const;
-
 private:
   static constexpr auto kProcessorKey = "processor"sv;
   friend void           to_json (nlohmann::json &j, const ProcessableTrack &p)

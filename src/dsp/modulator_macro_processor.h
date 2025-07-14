@@ -6,6 +6,7 @@
 #include "dsp/graph_node.h"
 #include "dsp/parameter.h"
 #include "dsp/port_fwd.h"
+#include "dsp/processor_base.h"
 #include "utils/types.h"
 
 namespace zrythm::dsp
@@ -20,7 +21,7 @@ namespace zrythm::dsp
  *
  * Intended to be used in ModulatorTrack.
  */
-class ModulatorMacroProcessor final : public QObject, public dsp::graph::IProcessable
+class ModulatorMacroProcessor final : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (QString name READ name CONSTANT)
@@ -47,49 +48,46 @@ public:
 
   // void set_name (const utils::Utf8String &name) { name_ = name; }
 
-  utils::Utf8String get_node_name () const override
-  {
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("{} Modulator Macro Processor", name_));
-    ;
-  }
-
-  void process_block (EngineProcessTimeInfo time_nfo) override;
+  void custom_process_block (EngineProcessTimeInfo time_nfo) override;
 
   friend void init_from (
     ModulatorMacroProcessor       &obj,
     const ModulatorMacroProcessor &other,
     utils::ObjectCloneType         clone_type);
 
-  auto &get_cv_in_port () { return *cv_in_id_.get_object_as<dsp::CVPort> (); }
+  /** CV input port for connecting CV signals to. */
+  auto &get_cv_in_port ()
+  {
+    return *get_input_ports ().front ().get_object_as<dsp::CVPort> ();
+  }
 
-  auto &get_cv_out_port () { return *cv_out_id_.get_object_as<dsp::CVPort> (); }
+  /**
+   * CV output after macro is applied.
+   *
+   * This can be routed to other parameters to apply the macro.
+   */
+  auto &get_cv_out_port ()
+  {
+    return *get_output_ports ().front ().get_object_as<dsp::CVPort> ();
+  }
 
+  /** Control port controlling the amount. */
   auto &get_macro_param ()
   {
-    return *macro_id_.get_object_as<dsp::ProcessorParameter> ();
+    return *get_parameters ().front ().get_object_as<dsp::ProcessorParameter> ();
   }
 
 private:
   static constexpr auto kNameKey = "name"sv;
-  static constexpr auto kCVInKey = "cvIn"sv;
-  static constexpr auto kCVOutKey = "cvOut"sv;
-  static constexpr auto kMacroKey = "macro"sv;
   friend void to_json (nlohmann::json &j, const ModulatorMacroProcessor &p)
   {
-    j = nlohmann::json{
-      { kNameKey,  p.name_      },
-      { kCVInKey,  p.cv_in_id_  },
-      { kCVOutKey, p.cv_out_id_ },
-      { kMacroKey, p.macro_id_  },
-    };
+    to_json (j, static_cast<const dsp::ProcessorBase &> (p));
+    j[kNameKey] = p.name_;
   }
   friend void from_json (const nlohmann::json &j, ModulatorMacroProcessor &p)
   {
+    from_json (j, static_cast<dsp::ProcessorBase &> (p));
     j.at (kNameKey).get_to (p.name_);
-    j.at (kCVInKey).get_to (p.cv_in_id_);
-    j.at (kCVOutKey).get_to (p.cv_out_id_);
-    j.at (kMacroKey).get_to (p.macro_id_);
   }
 
 private:
@@ -104,25 +102,7 @@ private:
    */
   utils::Utf8String name_;
 
-  /** CV input port for connecting CV signals to. */
-  dsp::PortUuidReference cv_in_id_;
-
-  /**
-   * CV output after macro is applied.
-   *
-   * This can be routed to other parameters to apply the macro.
-   */
-  dsp::PortUuidReference cv_out_id_;
-
-  /** Control port controlling the amount. */
-  dsp::ProcessorParameterUuidReference macro_id_;
-
-  BOOST_DESCRIBE_CLASS (
-    ModulatorMacroProcessor,
-    (),
-    (),
-    (),
-    (name_, cv_in_id_, cv_out_id_, macro_id_))
+  BOOST_DESCRIBE_CLASS (ModulatorMacroProcessor, (), (), (), (name_))
 };
 
 } // namespace zrythm::dsp

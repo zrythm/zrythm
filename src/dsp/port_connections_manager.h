@@ -210,6 +210,8 @@ public:
     regenerate_hashtables ();
   }
 
+  auto &get_connections () const { return connections_; }
+
 private:
   static constexpr auto kConnectionsKey = "connections"sv;
   friend void to_json (nlohmann::json &j, const PortConnectionsManager &pcm)

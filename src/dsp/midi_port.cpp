@@ -48,6 +48,15 @@ MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
   midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
 
   auto &events = midi_events_.active_events_;
+#if 0
+  const auto num_events = midi_events_.active_events_.size ();
+  if (num_events > 0)
+    {
+      z_debug (
+        "{} has {} active events after dequeueing", get_node_name (),
+        num_events);
+    }
+#endif
 
   /* if piano roll keys, add the notes to the piano roll "current notes" (to
    * show pressed keys in the UI) */

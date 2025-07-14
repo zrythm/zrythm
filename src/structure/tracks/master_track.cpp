@@ -85,11 +85,4 @@ init_from (
     static_cast<GroupTargetTrack &> (obj),
     static_cast<const GroupTargetTrack &> (other), clone_type);
 }
-
-void
-MasterTrack::append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-  const
-{
-  ProcessableTrack::append_member_ports (ports, include_plugins);
-}
 }

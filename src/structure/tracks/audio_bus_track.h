@@ -36,8 +36,7 @@ public:
     dsp::PortRegistry                     &port_registry,
     dsp::ProcessorParameterRegistry       &param_registry) override;
 
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const final;
+  void temporary_virtual_method_hack () const override { }
 
 private:
   friend void to_json (nlohmann::json &j, const AudioBusTrack &track)

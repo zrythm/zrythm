@@ -14,29 +14,33 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   dsp::ProcessorParameterRegistry &param_registry,
   int                              idx,
   QObject *                        parent)
-    : QObject (parent), port_registry_ (port_registry),
-      param_registry_ (param_registry),
+    : QObject (parent),
+      ProcessorBase (
+        port_registry,
+        param_registry,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "{} Modulator Macro Processor",
+            format_qstr (QObject::tr ("Macro {}"), idx + 1)))),
+      port_registry_ (port_registry), param_registry_ (param_registry),
       name_ (
         utils::Utf8String::from_qstring (
-          format_qstr (QObject::tr ("Macro {}"), idx + 1))),
-      cv_in_id_ (port_registry.create_object<dsp::CVPort> (
-        utils::Utf8String::from_qstring (
-          format_qstr (QObject::tr ("Macro {} CV In"), idx + 1)),
-        dsp::PortFlow::Input)),
-      cv_out_id_ (port_registry.create_object<dsp::CVPort> (
-        utils::Utf8String::from_qstring (
-          format_qstr (QObject::tr ("Macro {} CV Out"), idx + 1)),
-        dsp::PortFlow::Output)),
-      macro_id_ (param_registry.create_object<dsp::ProcessorParameter> (
-        port_registry,
-        dsp::ProcessorParameter::UniqueId (
-          utils::Utf8String::from_utf8_encoded_string (
-            fmt::format ("macro_{}", idx + 1))),
-        dsp::ParameterRange{
-          dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.75f },
-        name_))
+          format_qstr (QObject::tr ("Macro {}"), idx + 1)))
 {
+  add_parameter (param_registry.create_object<dsp::ProcessorParameter> (
+    port_registry,
+    dsp::ProcessorParameter::UniqueId (
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("macro_{}", idx + 1))),
+    dsp::ParameterRange{
+      dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.75f },
+    name_));
+
   {
+    add_input_port (port_registry.create_object<dsp::CVPort> (
+      utils::Utf8String::from_qstring (
+        format_qstr (QObject::tr ("Macro {} CV In"), idx + 1)),
+      dsp::PortFlow::Input));
     auto &cv_in = get_cv_in_port ();
     cv_in.set_full_designation_provider (this);
     cv_in.set_symbol (
@@ -45,6 +49,10 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   }
 
   {
+    add_output_port (port_registry.create_object<dsp::CVPort> (
+      utils::Utf8String::from_qstring (
+        format_qstr (QObject::tr ("Macro {} CV Out"), idx + 1)),
+      dsp::PortFlow::Output));
     auto &cv_out = get_cv_out_port ();
     cv_out.set_full_designation_provider (this);
     cv_out.set_symbol (
@@ -54,14 +62,12 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 }
 
 void
-ModulatorMacroProcessor::process_block (const EngineProcessTimeInfo time_nfo)
+ModulatorMacroProcessor::custom_process_block (
+  const EngineProcessTimeInfo time_nfo)
 {
   auto &macro = get_macro_param ();
   auto &cv_in = get_cv_in_port ();
   auto &cv_out = get_cv_out_port ();
-
-  // process param
-  macro.process_block (time_nfo);
 
   /* if there are inputs, multiply by the knob value */
   if (!cv_in.port_sources_.empty ())
@@ -96,9 +102,7 @@ init_from (
   const ModulatorMacroProcessor &other,
   utils::ObjectCloneType         clone_type)
 {
+  // TODO ProcessorBase
   obj.name_ = other.name_;
-  obj.cv_in_id_ = other.cv_in_id_;
-  obj.cv_out_id_ = other.cv_out_id_;
-  obj.macro_id_ = other.macro_id_;
 }
 } // namespace zrythm::dsp

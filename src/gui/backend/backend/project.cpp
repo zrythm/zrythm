@@ -543,19 +543,6 @@ Project::get_arranger_selections_for_last_selection ()
 }
 #endif
 
-void
-Project::get_all_ports (std::vector<dsp::Port *> &ports) const
-{
-  audio_engine_->append_ports (ports);
-
-  std::ranges::for_each (
-    tracklist_->get_track_span (), [&] (const auto &track_var) {
-      std::visit (
-        [&] (const auto &track) { track->append_ports (ports, false); },
-        track_var);
-    });
-}
-
 std::string
 Project::get_existing_uncompressed_text (bool backup)
 {

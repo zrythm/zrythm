@@ -73,13 +73,12 @@ public:
     const MarkerTrack     &other,
     utils::ObjectCloneType clone_type);
 
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const final;
-
   std::string get_field_name_for_serialization (const Marker *) const override
   {
     return "markers";
   }
+
+  void temporary_virtual_method_hack () const override { }
 
 private:
   friend void to_json (nlohmann::json &j, const MarkerTrack &track)

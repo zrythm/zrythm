@@ -36,7 +36,12 @@ TrackProcessor::TrackProcessor (
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry,
   bool                             create_ports)
-    : port_registry_ (port_registry), param_registry_ (param_registry),
+    : dsp::ProcessorBase (
+        port_registry,
+        param_registry,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("{} Processor", tr.get_name ()))),
+      port_registry_ (port_registry), param_registry_ (param_registry),
       track_ (&tr)
 {
   if (!create_ports)
@@ -54,8 +59,8 @@ TrackProcessor::TrackProcessor (
       /* set up piano roll port */
       if (tr.has_piano_roll () || tr.is_chord ())
         {
-          piano_roll_id_ = port_registry_.create_object<dsp::MidiPort> (
-            u8"TP Piano Roll", PortFlow::Input);
+          add_input_port (port_registry_.create_object<dsp::MidiPort> (
+            u8"TP Piano Roll", PortFlow::Input));
           auto * piano_roll = &get_piano_roll_port ();
           piano_roll->set_full_designation_provider (this);
           piano_roll->set_symbol (u8"track_processor_piano_roll");
@@ -125,11 +130,14 @@ TrackProcessor::init_loaded (
   track_ = track;
 
   std::vector<dsp::Port *> ports;
-  append_ports (ports);
+
+// TODO
+#if 0
   for (auto port : ports)
     {
       port->set_full_designation_provider (this);
     }
+#endif
 
   init_common ();
 }
@@ -196,16 +204,16 @@ TrackProcessor::init_midi_port (bool in)
 {
   if (in)
     {
-      midi_in_id_ = port_registry_.create_object<dsp::MidiPort> (
-        u8"TP MIDI in", dsp::PortFlow::Input);
+      add_input_port (port_registry_.create_object<dsp::MidiPort> (
+        u8"TP MIDI in", dsp::PortFlow::Input));
       auto * midi_in = &get_midi_in_port ();
       midi_in->set_full_designation_provider (this);
       midi_in->set_symbol (u8"track_processor_midi_in");
     }
   else
     {
-      midi_out_id_ = port_registry_.create_object<dsp::MidiPort> (
-        u8"TP MIDI out", dsp::PortFlow::Output);
+      add_output_port (port_registry_.create_object<dsp::MidiPort> (
+        u8"TP MIDI out", dsp::PortFlow::Output));
       auto * midi_out = &get_midi_out_port ();
       midi_out->set_full_designation_provider (this);
       midi_out->set_symbol (u8"track_processor_midi_out");
@@ -315,13 +323,13 @@ TrackProcessor::init_stereo_out_ports (bool in)
 
   if (in)
     {
-      stereo_in_left_id_ = stereo_ports.first;
-      stereo_in_right_id_ = stereo_ports.second;
+      add_input_port (stereo_ports.first);
+      add_input_port (stereo_ports.second);
     }
   else
     {
-      stereo_out_left_id_ = stereo_ports.first;
-      stereo_out_right_id_ = stereo_ports.second;
+      add_output_port (stereo_ports.first);
+      add_output_port (stereo_ports.second);
     }
 }
 
@@ -418,16 +426,15 @@ init_from (
   const TrackProcessor  &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.stereo_in_left_id_ = other.stereo_in_left_id_;
-  obj.stereo_in_right_id_ = other.stereo_in_right_id_;
+// TODO
+#if 0
+  init_from (
+    static_cast<dsp::ProcessorBase &> (obj),
+    static_cast<const dsp::ProcessorBase &> (other), clone_type);
+#endif
   obj.mono_id_ = other.mono_id_;
   obj.input_gain_id_ = other.input_gain_id_;
   obj.output_gain_id_ = other.output_gain_id_;
-  obj.stereo_out_left_id_ = other.stereo_out_left_id_;
-  obj.stereo_out_right_id_ = other.stereo_out_right_id_;
-  obj.midi_in_id_ = other.midi_in_id_;
-  obj.midi_out_id_ = other.midi_out_id_;
-  obj.piano_roll_id_ = other.piano_roll_id_;
   obj.monitor_audio_id_ = other.monitor_audio_id_;
   if (other.cc_mappings_)
     obj.cc_mappings_ = utils::clone_unique (
@@ -453,94 +460,27 @@ init_from (
   obj.init_common ();
 }
 
-void
-TrackProcessor::append_ports (std::vector<dsp::Port *> &ports)
-{
-  if (stereo_in_left_id_ && stereo_in_right_id_)
-    {
-      iterate_tuple (
-        [&] (auto &port) { ports.push_back (&port); }, get_stereo_in_ports ());
-    }
-#if 0
-  if (mono_id_)
-    {
-      ports.push_back (std::addressof (get_mono_port ()));
-    }
-  if (input_gain_id_)
-    {
-      ports.push_back (std::addressof (get_input_gain_port ()));
-    }
-  if (output_gain_id_)
-    {
-      ports.push_back (std::addressof (get_output_gain_port ()));
-    }
-  if (monitor_audio_id_)
-    {
-      ports.push_back (std::addressof (get_monitor_audio_port ()));
-    }
-#endif
-  if (stereo_out_left_id_ && stereo_out_right_id_)
-    {
-      iterate_tuple (
-        [&] (auto &port) { ports.push_back (&port); }, get_stereo_out_ports ());
-    }
-  if (midi_in_id_)
-    {
-      ports.push_back (std::addressof (get_midi_in_port ()));
-    }
-  if (midi_out_id_)
-    {
-      ports.push_back (std::addressof (get_midi_out_port ()));
-    }
-  if (piano_roll_id_)
-    {
-      ports.push_back (std::addressof (get_piano_roll_port ()));
-    }
-#if 0
-  if (midi_cc_ids_)
-    {
-      for (const auto ch_idx : std::views::iota (0, 16))
-        {
-          for (const auto cc_idx : std::views::iota (0, 128))
-            {
-              ports.push_back (
-                std::addressof (get_midi_cc_port (ch_idx, cc_idx)));
-            }
-          ports.push_back (std::addressof (get_pitch_bend_port (ch_idx)));
-          ports.push_back (std::addressof (get_poly_key_pressure_port (ch_idx)));
-          ports.push_back (std::addressof (get_channel_pressure_port (ch_idx)));
-        }
-    }
-#endif
-}
-
 /**
  * Clears all buffers.
  */
 void
 TrackProcessor::clear_buffers (std::size_t block_length)
 {
-  if (stereo_in_left_id_.has_value ())
+  if (is_audio ())
     {
       iterate_tuple (
         [&] (auto &port) { port.clear_buffer (block_length); },
         get_stereo_in_ports ());
-    }
-  if (stereo_out_left_id_.has_value ())
-    {
       iterate_tuple (
         [&] (auto &port) { port.clear_buffer (block_length); },
         get_stereo_out_ports ());
     }
-  if (midi_in_id_)
+  else if (is_midi ())
     {
       get_midi_in_port ().clear_buffer (block_length);
-    }
-  if (midi_out_id_)
-    {
       get_midi_out_port ().clear_buffer (block_length);
     }
-  if (piano_roll_id_)
+  if (track_->has_piano_roll () || track_->is_chord ())
     {
       get_piano_roll_port ().clear_buffer (block_length);
     }
@@ -808,15 +748,8 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 // IProcessable Interface
 // ============================================================================
 
-utils::Utf8String
-TrackProcessor::get_node_name () const
-{
-  return utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("{} Processor", get_track ()->get_name ()));
-}
-
 void
-TrackProcessor::process_block (EngineProcessTimeInfo time_nfo)
+TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
 {
   z_return_if_fail (track_);
 

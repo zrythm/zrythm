@@ -111,10 +111,4 @@ init_from (
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 }
-
-void
-MarkerTrack::append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-  const
-{
-}
 }

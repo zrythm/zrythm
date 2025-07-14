@@ -202,39 +202,6 @@ AudioEngine::update_frames_per_tick (
 }
 
 void
-AudioEngine::append_ports (std::vector<dsp::Port *> &ports)
-{
-  auto add_port = [&ports] (dsp::Port * port) {
-    z_return_if_fail (port);
-    ports.push_back (port);
-  };
-
-  iterate_tuple (
-    [&] (auto &port) { add_port (&port); }, get_monitor_out_ports ());
-  add_port (midi_editor_manual_press_.get ());
-  add_port (midi_in_.get ());
-
-  for (const auto &tr : sample_processor_->tracklist_->get_track_span ())
-    {
-      std::visit (
-        [&] (auto &&track) {
-          z_warn_if_fail (track->is_auditioner ());
-          track->append_ports (ports, true);
-        },
-        tr);
-    }
-
-  add_port (project_->transport_->roll_.get ());
-  add_port (project_->transport_->stop_.get ());
-  add_port (project_->transport_->backward_.get ());
-  add_port (project_->transport_->forward_.get ());
-  add_port (project_->transport_->loop_toggle_.get ());
-  add_port (project_->transport_->rec_toggle_.get ());
-
-  // add_port (midi_clock_out_.get ());
-}
-
-void
 AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter)
 {
   z_debug ("Setting up...");
@@ -293,8 +260,6 @@ AudioEngine::init_loaded (Project * project)
 
   // TODO
 #if 0
-  std::vector<dsp::Port *> ports;
-  append_ports (ports);
   for (auto * port : ports)
     {
 

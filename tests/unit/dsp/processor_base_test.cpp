@@ -125,6 +125,10 @@ TEST_F (ProcessorBaseTest, Processing)
 
 TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
 {
+  processor_->add_parameter (
+    param_registry_->create_object<dsp::ProcessorParameter> (
+      *port_registry_, dsp::ProcessorParameter::UniqueId (u8"unique-id"),
+      dsp::ParameterRange::make_toggle (true), u8"my-toggle"));
   processor_->prepare_for_processing (sample_rate_, max_block_length_);
 
   // Serialize
@@ -137,7 +141,10 @@ TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
   // Reinitialize after deserialization
   deserialized.prepare_for_processing (sample_rate_, max_block_length_);
 
-  // Verify ports
+  // Verify ports && params
+  EXPECT_EQ (
+    processor_->get_parameters ().front ().id (),
+    deserialized.get_parameters ().front ().id ());
   EXPECT_EQ (
     processor_->get_input_ports ()[0].id (),
     deserialized.get_input_ports ()[0].id ());

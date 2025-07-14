@@ -53,14 +53,6 @@ AudioGroupTrack::initialize ()
 }
 
 void
-AudioGroupTrack::append_ports (
-  std::vector<dsp::Port *> &ports,
-  bool                      include_plugins) const
-{
-  ProcessableTrack::append_member_ports (ports, include_plugins);
-}
-
-void
 AudioGroupTrack::init_loaded (
   gui::old_dsp::plugins::PluginRegistry &plugin_registry,
   dsp::PortRegistry                     &port_registry,

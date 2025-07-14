@@ -59,9 +59,9 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
   midi_proc_->process_block (time_nfo);
 
   // Verify
-  ASSERT_EQ (midi_out.midi_events_.active_events_.size (), 1);
+  ASSERT_EQ (midi_out.midi_events_.queued_events_.size (), 1);
   EXPECT_EQ (
-    midi_out.midi_events_.active_events_.at (0).raw_buffer_, event.raw_buffer_);
+    midi_out.midi_events_.queued_events_.at (0).raw_buffer_, event.raw_buffer_);
 }
 
 TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)

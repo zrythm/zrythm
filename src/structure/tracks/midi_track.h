@@ -34,13 +34,12 @@ public:
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry) override;
 
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const final;
-
   friend void init_from (
     MidiTrack             &obj,
     const MidiTrack       &other,
     utils::ObjectCloneType clone_type);
+
+  void temporary_virtual_method_hack () const override { }
 
 private:
   friend void to_json (nlohmann::json &j, const MidiTrack &track)

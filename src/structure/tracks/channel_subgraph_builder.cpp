@@ -68,10 +68,10 @@ ChannelSubgraphBuilder::add_nodes (
 
 void
 ChannelSubgraphBuilder::add_connections (
-  dsp::graph::Graph                &graph,
-  Channel                          &ch,
-  std::span<dsp::PortUuidReference> track_processor_outputs,
-  bool                              skip_unnecessary)
+  dsp::graph::Graph                      &graph,
+  Channel                                &ch,
+  std::span<const dsp::PortUuidReference> track_processor_outputs,
+  bool                                    skip_unnecessary)
 {
   const auto connect_ports =
     [&] (const dsp::Port::Uuid src_id, const dsp::Port::Uuid &dest_id) {

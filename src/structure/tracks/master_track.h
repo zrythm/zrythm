@@ -35,8 +35,7 @@ public:
     const MasterTrack     &other,
     utils::ObjectCloneType clone_type);
 
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const final;
+  void temporary_virtual_method_hack () const override { }
 
 private:
   friend void to_json (nlohmann::json &j, const MasterTrack &project)

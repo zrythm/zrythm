@@ -21,9 +21,10 @@ class ProcessableTrack;
  *
  * @see Channel and ChannelTrack.
  */
-class TrackProcessor final : public QObject, public dsp::graph::IProcessable
+class TrackProcessor final : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
+  QML_ELEMENT
 
   using PortType = dsp::PortType;
   using PortFlow = dsp::PortFlow;
@@ -87,13 +88,9 @@ public:
    * - handle recording (create events in regions and automation, including
    *   MIDI CC automation, based on the MIDI CC control ports)
    */
-  void process_block (EngineProcessTimeInfo time_nfo) override;
-
-  utils::Utf8String get_node_name () const override;
+  void custom_process_block (EngineProcessTimeInfo time_nfo) override;
 
   // ============================================================================
-
-  void append_ports (std::vector<dsp::Port *> &ports);
 
   friend void init_from (
     TrackProcessor        &obj,
@@ -106,8 +103,8 @@ public:
       {
         throw std::runtime_error ("Not an audio track processor");
       }
-    auto * l = stereo_in_left_id_->get_object_as<dsp::AudioPort> ();
-    auto * r = stereo_in_right_id_->get_object_as<dsp::AudioPort> ();
+    auto * l = get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    auto * r = get_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
@@ -116,8 +113,8 @@ public:
       {
         throw std::runtime_error ("Not an audio track processor");
       }
-    auto * l = stereo_out_left_id_->get_object_as<dsp::AudioPort> ();
-    auto * r = stereo_out_right_id_->get_object_as<dsp::AudioPort> ();
+    auto * l = get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    auto * r = get_output_ports ().at (1).get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
 
@@ -137,17 +134,35 @@ public:
   {
     return *monitor_audio_id_->get_object_as<dsp::ProcessorParameter> ();
   }
+
+  /**
+   * MIDI in Port.
+   *
+   * This port is for receiving MIDI signals from an external MIDI source.
+   *
+   * This is also where piano roll, midi in and midi manual press will be
+   * routed to and this will be the port used to pass midi to the plugins.
+   */
   dsp::MidiPort &get_midi_in_port () const
   {
-    return *midi_in_id_->get_object_as<dsp::MidiPort> ();
+    return *get_input_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
+
+  /**
+   * MIDI out port, if MIDI.
+   */
   dsp::MidiPort &get_midi_out_port () const
   {
-    return *midi_out_id_->get_object_as<dsp::MidiPort> ();
+    return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
+
+  /**
+   * MIDI input for receiving MIDI signals from the piano roll (i.e.,
+   * MIDI notes inside regions) or other sources.
+   */
   dsp::MidiPort &get_piano_roll_port () const
   {
-    return *piano_roll_id_->get_object_as<dsp::MidiPort> ();
+    return *get_input_ports ().at (1).get_object_as<dsp::MidiPort> ();
   }
   dsp::ProcessorParameter &
   get_midi_cc_param (int channel_index, int cc_index) const
@@ -193,23 +208,15 @@ private:
   static constexpr auto kChannelPressureKey = "channelPressure"sv;
   friend void           to_json (nlohmann::json &j, const TrackProcessor &tp)
   {
-    j = nlohmann::json{
-      { kMonoKey,            tp.mono_id_               },
-      { kInputGainKey,       tp.input_gain_id_         },
-      { kOutputGainKey,      tp.output_gain_id_        },
-      { kMidiInKey,          tp.midi_in_id_            },
-      { kMidiOutKey,         tp.midi_out_id_           },
-      { kPianoRollKey,       tp.piano_roll_id_         },
-      { kMonitorAudioKey,    tp.monitor_audio_id_      },
-      { kStereoInLKey,       tp.stereo_in_left_id_     },
-      { kStereoInRKey,       tp.stereo_in_right_id_    },
-      { kStereoOutLKey,      tp.stereo_out_left_id_    },
-      { kStereoOutRKey,      tp.stereo_out_right_id_   },
-      { kMidiCcKey,          tp.midi_cc_ids_           },
-      { kPitchBendKey,       tp.pitch_bend_ids_        },
-      { kPolyKeyPressureKey, tp.poly_key_pressure_ids_ },
-      { kChannelPressureKey, tp.channel_pressure_ids_  },
-    };
+    to_json (j, static_cast<const dsp::ProcessorBase &> (tp));
+    j[kMonoKey] = tp.mono_id_;
+    j[kInputGainKey] = tp.input_gain_id_;
+    j[kOutputGainKey] = tp.output_gain_id_;
+    j[kMonitorAudioKey] = tp.monitor_audio_id_;
+    j[kMidiCcKey] = tp.midi_cc_ids_;
+    j[kPitchBendKey] = tp.pitch_bend_ids_;
+    j[kPolyKeyPressureKey] = tp.poly_key_pressure_ids_;
+    j[kChannelPressureKey] = tp.channel_pressure_ids_;
   }
   friend void from_json (const nlohmann::json &j, TrackProcessor &tp);
 
@@ -255,12 +262,6 @@ public:
   dsp::PortRegistry               &port_registry_;
   dsp::ProcessorParameterRegistry &param_registry_;
 
-  /**
-   * L & R audio input ports, if audio.
-   */
-  std::optional<dsp::PortUuidReference> stereo_in_left_id_;
-  std::optional<dsp::PortUuidReference> stereo_in_right_id_;
-
   /** Mono toggle, if audio. */
   std::optional<dsp::ProcessorParameterUuidReference> mono_id_;
 
@@ -273,36 +274,6 @@ public:
    * This is applied after regions are processed to @ref stereo_out_.
    */
   std::optional<dsp::ProcessorParameterUuidReference> output_gain_id_;
-
-  /**
-   * L & R audio output ports, if audio.
-   */
-  std::optional<dsp::PortUuidReference> stereo_out_left_id_;
-  std::optional<dsp::PortUuidReference> stereo_out_right_id_;
-
-  /**
-   * MIDI in Port.
-   *
-   * This port is for receiving MIDI signals from an external MIDI source.
-   *
-   * This is also where piano roll, midi in and midi manual press will be
-   * routed to and this will be the port used to pass midi to the plugins.
-   */
-  std::optional<dsp::PortUuidReference> midi_in_id_;
-
-  /**
-   * MIDI out port, if MIDI.
-   */
-  std::optional<dsp::PortUuidReference> midi_out_id_;
-
-  /**
-   * MIDI input for receiving MIDI signals from the piano roll (i.e., MIDI
-   * notes inside regions) or other sources.
-   *
-   * This will not be a separately exposed port during processing. It will
-   * be processed by the TrackProcessor internally.
-   */
-  std::optional<dsp::PortUuidReference> piano_roll_id_;
 
   /**
    * Whether to monitor the audio output.

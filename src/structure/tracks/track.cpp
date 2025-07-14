@@ -587,55 +587,6 @@ Track::
     }
 }
 
-#if 0
-template <typename T>
-void
-Track::append_ports (
-  const T*      track_var,
-  std::vector<dsp::Port *> &ports,
-  bool                 include_plugins)
-{
-  std::visit (
-    [&] (auto &&track) {
-      using TrackT = base_type<decltype (track)>;
-      if constexpr (std::derived_from<TrackT, ChannelTrack>)
-        {
-          track->get_channel ()->append_ports (ports, include_plugins);
-        }
-
-      if constexpr (std::derived_from<TrackT, ProcessableTrack>)
-        {
-          track->processor_->append_ports (ports);
-        }
-
-      auto add_port = [&ports] (Port * port) {
-        if (port)
-          ports.push_back (port);
-        else
-          z_warning ("Port is null");
-      };
-
-      if constexpr (std::derived_from<TrackT, RecordableTrack>)
-        {
-          add_port (track->recording_.get ());
-        }
-
-      if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
-        {
-          for (const auto &modulator : track->modulators_)
-            modulator->append_ports (ports);
-          for (const auto &macro : track->modulator_macro_processors_)
-            {
-              add_port (macro->macro_.get ());
-              add_port (macro->cv_in_.get ());
-              add_port (macro->cv_out_.get ());
-            }
-        }
-    },
-    track_var);
-}
-#endif
-
 void
 Track::set_enabled (
   bool enabled,

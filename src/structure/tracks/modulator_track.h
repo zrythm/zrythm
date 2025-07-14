@@ -15,6 +15,8 @@ namespace zrythm::structure::tracks
 {
 /**
  * @brief A track that can host modulator plugins.
+ *
+ * FIXME: why is this a ProcessableTrack? It doesn't use the processor...
  */
 class ModulatorTrack final
     : public QObject,
@@ -67,15 +69,14 @@ public:
     const ModulatorTrack  &other,
     utils::ObjectCloneType clone_type);
 
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const final;
-
   auto get_modulator_macro_processors () const
   {
     return std::span (modulator_macro_processors_);
   }
 
   auto get_modulator_span () const { return PluginSpan{ modulators_ }; }
+
+  void temporary_virtual_method_hack () const override { }
 
 private:
   static constexpr auto kModulatorsKey = "modulators"sv;
