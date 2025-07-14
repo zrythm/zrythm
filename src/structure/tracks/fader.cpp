@@ -213,7 +213,6 @@ Fader::Fader (
   set_name ([&] () -> utils::Utf8String {
     if (type_ == Type::AudioChannel || type_ == Type::MidiChannel)
       {
-        auto * track = get_track ();
         return utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("{} {}", track->get_name (), "Fader"));
       }
