@@ -241,7 +241,7 @@ configure:windows:
       - ${BUILDDIR}-${BUILD_TYPE}/**/.git/**/*
     expire_in: 1 day
 
-clazy-check:
+check:clazy:
   extends: .gnu-linux-template
   tags:
     - archlinux
