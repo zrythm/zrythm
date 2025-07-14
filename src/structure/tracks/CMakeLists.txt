@@ -21,6 +21,8 @@ target_sources(zrythm_gui_lib
     channel.cpp
     channel_send.h
     channel_send.cpp
+    channel_subgraph_builder.h
+    channel_subgraph_builder.cpp
     channel_track.h
     channel_track.cpp
     chord_track.h

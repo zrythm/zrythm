@@ -7,6 +7,7 @@
 #include "dsp/midi_port.h"
 #include "dsp/parameter.h"
 #include "dsp/port_connection.h"
+#include "dsp/processor_base.h"
 #include "structure/tracks/track.h"
 #include "utils/icloneable.h"
 
@@ -62,7 +63,7 @@ struct ChannelSendTarget
  *
  * The actual connection is tracked separately by PortConnectionsManager.
  */
-class ChannelSend final : public QObject, public dsp::graph::IProcessable
+class ChannelSend final : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
 public:
@@ -158,8 +159,6 @@ public:
    */
   ChannelTrack * get_track () const;
 
-  utils::Utf8String get_node_name () const override;
-
   bool is_enabled () const;
 
   bool is_empty () const { return !is_enabled (); }
@@ -218,31 +217,23 @@ public:
 
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
   {
-    if (!stereo_in_left_id_.has_value ())
-      {
-        throw ZrythmException ("stereo_in_left_id_ not set");
-      }
-    auto * l = std::get<dsp::AudioPort *> (stereo_in_left_id_->get_object ());
-    auto * r = std::get<dsp::AudioPort *> (stereo_in_right_id_->get_object ());
+    auto * l = get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    auto * r = get_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
   dsp::MidiPort &get_midi_in_port () const
   {
-    return *std::get<dsp::MidiPort *> (midi_in_id_->get_object ());
+    return *get_input_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
   {
-    if (!stereo_out_left_id_.has_value ())
-      {
-        throw ZrythmException ("stereo_out_left_id_ not set");
-      }
-    auto * l = std::get<dsp::AudioPort *> (stereo_out_left_id_->get_object ());
-    auto * r = std::get<dsp::AudioPort *> (stereo_out_right_id_->get_object ());
+    auto * l = get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    auto * r = get_output_ports ().at (1).get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
   dsp::MidiPort &get_midi_out_port () const
   {
-    return *std::get<dsp::MidiPort *> (midi_out_id_->get_object ());
+    return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
   auto &get_amount_param () const
   {
@@ -273,15 +264,6 @@ public:
     utils::ObjectCloneType clone_type);
 
   /**
-   * Connects the ports to the owner track if not connected.
-   *
-   * Only to be called on project sends.
-   */
-  void connect_to_owner ();
-
-  void append_ports (std::vector<dsp::Port *> &ports);
-
-  /**
    * Appends the connection(s), if non-empty, to the given array (if not
    * nullptr) and returns the number of connections added.
    */
@@ -291,7 +273,7 @@ public:
 
   void prepare_process (std::size_t block_length);
 
-  void process_block (EngineProcessTimeInfo time_nfo) override;
+  void custom_process_block (EngineProcessTimeInfo time_nfo) override;
 
   bool
   is_connected_to (std::pair<dsp::Port::Uuid, dsp::Port::Uuid> stereo) const
@@ -325,19 +307,12 @@ private:
   static constexpr auto kTrackIdKey = "trackId"sv;
   friend void           to_json (nlohmann::json &j, const ChannelSend &p)
   {
-    j = nlohmann::json{
-      { kSlotKey,        p.slot_                },
-      { kAmountKey,      p.amount_id_           },
-      { kEnabledKey,     p.enabled_id_          },
-      { kIsSidechainKey, p.is_sidechain_        },
-      { kMidiInKey,      p.midi_in_id_          },
-      { kStereoInLKey,   p.stereo_in_left_id_   },
-      { kStereoInRKey,   p.stereo_in_right_id_  },
-      { kMidiOutKey,     p.midi_out_id_         },
-      { kStereoOutLKey,  p.stereo_out_left_id_  },
-      { kStereoOutRKey,  p.stereo_out_right_id_ },
-      { kTrackIdKey,     p.track_id_            },
-    };
+    to_json (j, static_cast<const dsp::ProcessorBase &> (p));
+    j[kSlotKey] = p.slot_;
+    j[kAmountKey] = p.amount_id_;
+    j[kEnabledKey] = p.enabled_id_;
+    j[kIsSidechainKey] = p.is_sidechain_;
+    j[kTrackIdKey] = p.track_id_;
   }
   friend void from_json (const nlohmann::json &j, ChannelSend &p);
 
@@ -364,36 +339,6 @@ public:
 
   /** Slot index in the channel sends. */
   int slot_ = 0;
-
-  /**
-   * Stereo input if audio send.
-   *
-   * Prefader or fader stereo out should connect here.
-   */
-  std::optional<dsp::PortUuidReference> stereo_in_left_id_;
-  std::optional<dsp::PortUuidReference> stereo_in_right_id_;
-
-  /**
-   * MIDI input if MIDI send.
-   *
-   * Prefader or fader MIDI out should connect here.
-   */
-  std::optional<dsp::PortUuidReference> midi_in_id_;
-
-  /**
-   * Stereo output if audio send.
-   *
-   * This should connect to the send destination, if any.
-   */
-  std::optional<dsp::PortUuidReference> stereo_out_left_id_;
-  std::optional<dsp::PortUuidReference> stereo_out_right_id_;
-
-  /**
-   * MIDI output if MIDI send.
-   *
-   * This should connect to the send destination, if any.
-   */
-  std::optional<dsp::PortUuidReference> midi_out_id_;
 
   /** Send amount (amplitude), 0 to 2 for audio, velocity multiplier for
    * MIDI. */

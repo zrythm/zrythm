@@ -18,8 +18,8 @@ ControlRoom::ControlRoom (
       param_registry_ (param_registry)
 {
   monitor_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Monitor, false, nullptr,
-    this, nullptr);
+    *port_registry_, *param_registry_, Fader::Type::Monitor, nullptr, this,
+    nullptr);
   init_common ();
 }
 
@@ -37,8 +37,8 @@ ControlRoom::init_common ()
 
   /* init listen/mute/dim faders */
   mute_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Generic, false, nullptr,
-    this, nullptr);
+    *port_registry_, *param_registry_, Fader::Type::Generic, nullptr, this,
+    nullptr);
 #if 0
   amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -57,8 +57,8 @@ ControlRoom::init_common ()
 #endif
 
   listen_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Generic, false, nullptr,
-    this, nullptr);
+    *port_registry_, *param_registry_, Fader::Type::Generic, nullptr, this,
+    nullptr);
 #if 0
   amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -77,8 +77,8 @@ ControlRoom::init_common ()
 #endif
 
   dim_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Generic, false, nullptr,
-    this, nullptr);
+    *port_registry_, *param_registry_, Fader::Type::Generic, nullptr, this,
+    nullptr);
 #if 0
     amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -122,7 +122,8 @@ init_from (
   const ControlRoom     &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.monitor_fader_ = utils::clone_unique (*other.monitor_fader_);
+  // TODO
+  // obj.monitor_fader_ = utils::clone_unique (*other.monitor_fader_);
 }
 
 void

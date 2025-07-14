@@ -56,7 +56,6 @@ MidiBusTrack::append_ports (
   std::vector<dsp::Port *> &ports,
   bool                      include_plugins) const
 {
-  ChannelTrack::append_member_ports (ports, include_plugins);
   ProcessableTrack::append_member_ports (ports, include_plugins);
 }
 

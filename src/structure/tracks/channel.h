@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
+#include "dsp/passthrough_processors.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_span.h"
 #include "structure/tracks/channel_send.h"
@@ -14,13 +13,34 @@
 
 namespace zrythm::structure::tracks
 {
-class AutomationTrack;
 class ChannelTrack;
 class GroupTargetTrack;
 
 static constexpr float MAX_FADER_AMP = 1.42f;
 
 struct PluginImportData;
+
+class MidiPreFader final : public QObject, public dsp::MidiPassthroughProcessor
+{
+  Q_OBJECT
+  QML_ELEMENT
+public:
+  MidiPreFader (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    QObject *                        parent = nullptr);
+};
+
+class AudioPreFader final : public QObject, public dsp::StereoPassthroughProcessor
+{
+  Q_OBJECT
+  QML_ELEMENT
+public:
+  AudioPreFader (
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry,
+    QObject *                        parent = nullptr);
+};
 
 /**
  * @brief Represents a channel strip on the mixer.
@@ -40,7 +60,7 @@ class Channel final : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (Fader * fader READ fader CONSTANT)
-  Q_PROPERTY (Fader * preFader READ preFader CONSTANT)
+  Q_PROPERTY (QVariant preFader READ preFader CONSTANT)
   Q_PROPERTY (dsp::AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
   Q_PROPERTY (dsp::AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
   Q_PROPERTY (dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
@@ -57,6 +77,8 @@ public:
 
   // FIXME: leftover from C port, fix/refactor how import works in channel.cpp
   friend struct PluginImportData;
+
+  friend class ChannelSubgraphBuilder;
 
   /**
    * Number of plugin slots per channel.
@@ -105,8 +127,13 @@ public:
   // QML Interface
   // ============================================================================
 
-  Fader *          fader () const { return fader_.get (); }
-  Fader *          preFader () const { return prefader_.get (); }
+  Fader *  fader () const { return fader_.get (); }
+  QVariant preFader () const
+  {
+    return midi_out_id_.has_value ()
+             ? QVariant::fromValue (midi_prefader_.get ())
+             : QVariant::fromValue (audio_prefader_.get ());
+  }
   dsp::AudioPort * getLeftAudioOut () const
   {
     return stereo_out_left_id_.has_value ()
@@ -259,15 +286,6 @@ public:
     const Channel         &other,
     utils::ObjectCloneType clone_type);
 
-  /**
-   * Connects the channel's ports.
-   *
-   * This should only be called on project tracks.
-   */
-  void connect_channel (
-    dsp::PortConnectionsManager    &mgr,
-    engine::device_io::AudioEngine &engine);
-
   void init_loaded ();
 
   /**
@@ -279,11 +297,6 @@ public:
    * @param nframes Number of frames to process.
    */
   void handle_recording (long g_frames_start, nframes_t nframes);
-
-  /**
-   * Appends all channel ports and optionally plugin ports to the array.
-   */
-  void append_ports (std::vector<dsp::Port *> &ports, bool include_plugins);
 
   /**
    * @brief Set the track ptr to the channel and all its internals that
@@ -299,18 +312,18 @@ public:
   bool has_output () const { return output_track_uuid_.has_value (); }
 
   Fader &get_post_fader () const { return *fader_; }
-  Fader &get_pre_fader () const { return *prefader_; }
+  auto  &get_midi_pre_fader () const { return *midi_prefader_; }
+  auto  &get_audio_pre_fader () const { return *audio_prefader_; }
 
   auto &get_sends () const { return sends_; }
-
-  void disconnect_plugin_from_strip (PluginSlot slot, Plugin &pl);
 
 private:
   static constexpr auto kMidiFxKey = "midiFx"sv;
   static constexpr auto kInsertsKey = "inserts"sv;
   static constexpr auto kSendsKey = "sends"sv;
   static constexpr auto kInstrumentKey = "instrument"sv;
-  static constexpr auto kPrefaderKey = "prefader"sv;
+  static constexpr auto kMidiPrefaderKey = "midiPrefader"sv;
+  static constexpr auto kAudioPrefaderKey = "audioPrefader"sv;
   static constexpr auto kFaderKey = "fader"sv;
   static constexpr auto kMidiOutKey = "midiOut"sv;
   static constexpr auto kStereoOutLKey = "stereoOutL"sv;
@@ -329,7 +342,8 @@ private:
     j[kInsertsKey] = c.inserts_;
     j[kSendsKey] = c.sends_;
     j[kInstrumentKey] = c.instrument_;
-    j[kPrefaderKey] = c.prefader_;
+    j[kMidiPrefaderKey] = c.midi_prefader_;
+    j[kAudioPrefaderKey] = c.audio_prefader_;
     j[kFaderKey] = c.fader_;
     j[kMidiOutKey] = c.midi_out_id_;
     j[kStereoOutLKey] = c.stereo_out_left_id_;
@@ -343,62 +357,6 @@ private:
     j[kWidthKey] = c.width_;
   }
   friend void from_json (const nlohmann::json &j, Channel &c);
-
-  /**
-   * Connect ports in the case of !prev && !next.
-   */
-  void connect_no_prev_no_next (Plugin &pl);
-
-  /**
-   * Connect ports in the case of !prev && next.
-   */
-  void connect_no_prev_next (Plugin &pl, Plugin &next_pl);
-
-  /**
-   * Connect ports in the case of prev && !next.
-   */
-  void connect_prev_no_next (Plugin &prev_pl, Plugin &pl);
-
-  /**
-   * Connect ports in the case of prev && next.
-   */
-  void connect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
-
-  /**
-   * Disconnect ports in the case of !prev && !next.
-   */
-  void disconnect_no_prev_no_next (Plugin &pl);
-
-  /**
-   * Disconnect ports in the case of !prev && next.
-   */
-  void disconnect_no_prev_next (Plugin &pl, Plugin &next_pl);
-
-  /**
-   * Connect ports in the case of prev && !next.
-   */
-  void disconnect_prev_no_next (Plugin &prev_pl, Plugin &pl);
-
-  /**
-   * Connect ports in the case of prev && next.
-   */
-  void disconnect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
-
-  /**
-   * Connects the Plugin's output Port's to the input Port's of the given
-   * Channel's prefader.
-   *
-   * Used when doing automatic connections.
-   */
-  void connect_plugin_to_prefader (Plugin &pl);
-
-  /**
-   * Disconnect the automatic connections from the Plugin to the Channel's
-   * prefader (if last Plugin).
-   */
-  void disconnect_plugin_from_prefader (Plugin &pl);
-
-  void connect_plugins ();
 
   /**
    * Inits the stereo ports of the Channel while exposing them to the backend.
@@ -499,7 +457,8 @@ public:
    *
    * The last plugin should connect to this.
    */
-  utils::QObjectUniquePtr<Fader> prefader_;
+  utils::QObjectUniquePtr<MidiPreFader>  midi_prefader_;
+  utils::QObjectUniquePtr<AudioPreFader> audio_prefader_;
 
   /**
    * MIDI output for sending MIDI signals to other destinations, such as

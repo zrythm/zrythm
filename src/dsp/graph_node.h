@@ -294,7 +294,9 @@ public:
   void set_initial_and_terminal_nodes ();
 
   /**
-   * @brief To be called when all nodes have been added.
+   * @brief Sets the initial/terminal nodes and updates latencies.
+   *
+   * To be called when all nodes have been added.
    */
   void finalize_nodes ()
   {
@@ -303,8 +305,6 @@ public:
   }
 
   GraphNode * find_node_for_processable (const IProcessable &processable) const;
-
-  void add_special_node (GraphNode &node);
 
 public:
   /**
@@ -328,21 +328,6 @@ public:
   std::vector<std::reference_wrapper<GraphNode>> terminal_nodes_;
 
   std::unique_ptr<InitialProcessor> initial_processor_;
-
-  /**
-   * @brief Special nodes that are processed separately at the start of
-   * each cycle.
-   *
-   * This is currently used for tempo track ports.
-   *
-   * Ideally, this hack should be removed and the BPM node should be
-   * processed like the other nodes, but I haven't figured how that would
-   * work yet due to changes in BPM requiring position conversions. Maybe
-   * schedule the BPM node to be processed first in the graph? What about
-   * splitting at n samples or at loop points (how does that affect position
-   * conversions)? Should there even be a BPM node?
-   */
-  std::vector<std::reference_wrapper<GraphNode>> special_nodes_;
 };
 
 } // namespace zrythm::dsp::graph

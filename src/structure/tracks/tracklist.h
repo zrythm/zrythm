@@ -556,13 +556,6 @@ private:
    */
   void disconnect_channel (Channel &channel);
 
-  // FIXME: public access
-public:
-  /**
-   * Disconnects all ports connected to the fader.
-   */
-  void disconnect_fader (Fader &fader);
-
 private:
   /**
    * Disconnects all ports connected to the TrackProcessor.

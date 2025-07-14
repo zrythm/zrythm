@@ -381,7 +381,7 @@ public:
   /**
    * Returns the prefader type.
    */
-  static Fader::Type type_get_prefader_type (const Type type)
+  static Fader::Type type_get_fader_type (const Type type)
   {
     switch (type)
       {
@@ -1176,8 +1176,6 @@ public:
                 plugin->remove_ats_from_automation_tracklist (
                   deleting_plugin, !deleting_plugin);
               }
-
-            channel->disconnect_plugin_from_strip (slot, *plugin);
 
             /* if deleting plugin disconnect the plugin entirely */
             if (deleting_plugin)

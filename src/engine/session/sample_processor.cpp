@@ -30,6 +30,17 @@ using namespace zrythm::structure::tracks;
 
 namespace zrythm::engine::session
 {
+
+SampleProcessor::SampleProcessor (device_io::AudioEngine * engine)
+    : audio_engine_ (engine)
+{
+  fader_ = std::make_unique<Fader> (
+    engine->get_port_registry (), engine->get_param_registry (),
+    Fader::Type::SampleProcessor, nullptr, nullptr, this);
+
+  init_common ();
+}
+
 void
 SampleProcessor::load_instrument_if_empty ()
 {
@@ -101,17 +112,6 @@ SampleProcessor::init_loaded (device_io::AudioEngine * engine)
 
   init_common ();
 }
-
-SampleProcessor::SampleProcessor (device_io::AudioEngine * engine)
-    : audio_engine_ (engine)
-{
-  fader_ = std::make_unique<Fader> (
-    engine->get_port_registry (), engine->get_param_registry (),
-    Fader::Type::SampleProcessor, false, nullptr, nullptr, this);
-
-  init_common ();
-}
-
 void
 SampleProcessor::prepare_process (const nframes_t nframes)
 {
@@ -650,18 +650,13 @@ SampleProcessor::stop_file_playback ()
 }
 
 void
-SampleProcessor::disconnect ()
-{
-  TRACKLIST->disconnect_fader (*fader_);
-}
-
-void
 init_from (
   SampleProcessor       &obj,
   const SampleProcessor &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.fader_ = utils::clone_unique (*other.fader_);
+  // TODO
+  // obj.fader_ = utils::clone_unique (*other.fader_);
 }
 
 const dsp::TempoMap &

@@ -44,8 +44,6 @@ public:
 
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
-  dsp::PortConnectionsManager * get_port_connections_manager () const;
-
   ProcessableTrack * get_track () const
   {
     z_return_val_if_fail (track_, nullptr);
@@ -94,32 +92,6 @@ public:
   utils::Utf8String get_node_name () const override;
 
   // ============================================================================
-
-  /**
-   * Disconnect the TrackProcessor's stereo out ports
-   * from the prefader.
-   *
-   * Used when there is no plugin in the channel.
-   */
-  void disconnect_from_prefader ();
-
-  /**
-   * Connects the TrackProcessor's stereo out ports to the Channel's prefader in
-   * ports.
-   *
-   * Used when deleting the only plugin left.
-   */
-  void connect_to_prefader ();
-
-  /**
-   * Disconnect the TrackProcessor's out ports from the Plugin's input ports.
-   */
-  void disconnect_from_plugin (gui::old_dsp::plugins::Plugin &pl);
-
-  /**
-   * Connect the TrackProcessor's out ports to the Plugin's input ports.
-   */
-  void connect_to_plugin (gui::old_dsp::plugins::Plugin &pl);
 
   void append_ports (std::vector<dsp::Port *> &ports);
 

@@ -28,12 +28,4 @@ RecordableTrack::init_loaded (
 {
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
 }
-
-void
-RecordableTrack::append_member_ports (
-  std::vector<dsp::Port *> &ports,
-  bool                      include_plugins) const
-{
-  // ports.push_back (std::addressof (get_recording_port ()));
-}
 }

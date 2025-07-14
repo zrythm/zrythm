@@ -8,6 +8,7 @@
 #include "dsp/audio_port.h"
 #include "dsp/midi_port.h"
 #include "dsp/parameter.h"
+#include "dsp/processor_base.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
@@ -35,7 +36,7 @@ class Track;
 /**
  * A Fader is a processor that is used for volume controls and pan.
  */
-class Fader final : public QObject, public dsp::graph::IProcessable
+class Fader final : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
   QML_ELEMENT
@@ -74,8 +75,6 @@ public:
   };
 
 public:
-  Fader (QObject * parent = nullptr);
-
   /**
    * Creates a new fader.
    *
@@ -88,10 +87,10 @@ public:
     dsp::PortRegistry                 &port_registry,
     dsp::ProcessorParameterRegistry   &param_registry,
     Type                               type,
-    bool                               passthrough,
     Track *                            track,
     engine::session::ControlRoom *     control_room,
-    engine::session::SampleProcessor * sample_processor);
+    engine::session::SampleProcessor * sample_processor,
+    QObject *                          parent = nullptr);
 
   /**
    * Inits fader after a project is loaded.
@@ -102,13 +101,6 @@ public:
     Track *                            track,
     engine::session::ControlRoom *     control_room,
     engine::session::SampleProcessor * sample_processor);
-
-  /**
-   * Appends the ports owned by fader to the given array.
-   */
-  void append_ports (std::vector<dsp::Port *> &ports) const;
-
-  utils::Utf8String get_node_name () const override;
 
   /**
    * Sets the amp value with an undoable action.
@@ -185,7 +177,8 @@ public:
   /**
    * Process the Fader.
    */
-  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
+  [[gnu::hot]] void
+  custom_process_block (EngineProcessTimeInfo time_nfo) override;
 
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
@@ -237,8 +230,8 @@ public:
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    auto * l = std::get<dsp::AudioPort *> (stereo_in_left_id_->get_object ());
-    auto * r = std::get<dsp::AudioPort *> (stereo_in_right_id_->get_object ());
+    auto * l = get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    auto * r = get_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
@@ -247,71 +240,17 @@ public:
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    auto * l = std::get<dsp::AudioPort *> (stereo_out_left_id_->get_object ());
-    auto * r = std::get<dsp::AudioPort *> (stereo_out_right_id_->get_object ());
+    auto * l = get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    auto * r = get_output_ports ().at (1).get_object_as<dsp::AudioPort> ();
     return { *l, *r };
   }
   dsp::MidiPort &get_midi_in_port () const
   {
-    return *std::get<dsp::MidiPort *> (midi_in_id_->get_object ());
+    return *get_input_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
   dsp::MidiPort &get_midi_out_port () const
   {
-    return *std::get<dsp::MidiPort *> (midi_out_id_->get_object ());
-  }
-
-  auto get_stereo_in_left_id () const
-  {
-    if (!has_audio_ports ())
-      {
-        throw std::logic_error ("Not an audio fader");
-      }
-    return stereo_in_left_id_.value ().id ();
-  }
-
-  auto get_stereo_in_right_id () const
-  {
-    if (!has_audio_ports ())
-      {
-        throw std::logic_error ("Not an audio fader");
-      }
-    return stereo_in_right_id_.value ().id ();
-  }
-
-  auto get_stereo_out_left_id () const
-  {
-    if (!has_audio_ports ())
-      {
-        throw std::logic_error ("Not an audio fader");
-      }
-    return stereo_out_left_id_.value ().id ();
-  }
-
-  auto get_stereo_out_right_id () const
-  {
-    if (!has_audio_ports ())
-      {
-        throw std::logic_error ("Not an audio fader");
-      }
-    return stereo_out_right_id_.value ().id ();
-  }
-
-  auto get_midi_in_id () const
-  {
-    if (!has_midi_ports ())
-      {
-        throw std::logic_error ("Not a MIDI fader");
-      }
-    return midi_in_id_.value ().id ();
-  }
-
-  auto get_midi_out_id () const
-  {
-    if (!has_midi_ports ())
-      {
-        throw std::logic_error ("Not a MIDI fader");
-      }
-    return midi_out_id_.value ().id ();
+    return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
 private:
@@ -332,28 +271,19 @@ private:
   static constexpr auto kStereoOutLKey = "stereoOutL"sv;
   static constexpr auto kStereoOutRKey = "stereoOutR"sv;
   static constexpr auto kMidiModeKey = "midiMode"sv;
-  static constexpr auto kPassthroughKey = "passthrough"sv;
   friend void           to_json (nlohmann::json &j, const Fader &fader)
   {
-    j = nlohmann::json{
-      { kTypeKey,              fader.type_                   },
-      { kAmpKey,               fader.amp_id_                 },
-      { kPhaseKey,             fader.phase_                  },
-      { kBalanceKey,           fader.balance_id_             },
-      { kMuteKey,              fader.mute_id_                },
-      { kSoloKey,              fader.solo_id_                },
-      { kListenKey,            fader.listen_id_              },
-      { kMonoCompatEnabledKey, fader.mono_compat_enabled_id_ },
-      { kSwapPhaseKey,         fader.swap_phase_id_          },
-      { kMidiInKey,            fader.midi_in_id_             },
-      { kMidiOutKey,           fader.midi_out_id_            },
-      { kStereoInLKey,         fader.stereo_in_left_id_      },
-      { kStereoInRKey,         fader.stereo_in_right_id_     },
-      { kStereoOutLKey,        fader.stereo_out_left_id_     },
-      { kStereoOutRKey,        fader.stereo_out_right_id_    },
-      { kMidiModeKey,          fader.midi_mode_              },
-      { kPassthroughKey,       fader.passthrough_            }
-    };
+    to_json (j, static_cast<const dsp::ProcessorBase &> (fader));
+    j[kTypeKey] = fader.type_;
+    j[kAmpKey] = fader.amp_id_;
+    j[kPhaseKey] = fader.phase_;
+    j[kBalanceKey] = fader.balance_id_;
+    j[kMuteKey] = fader.mute_id_;
+    j[kSoloKey] = fader.solo_id_;
+    j[kListenKey] = fader.listen_id_;
+    j[kMonoCompatEnabledKey] = fader.mono_compat_enabled_id_;
+    j[kSwapPhaseKey] = fader.swap_phase_id_;
+    j[kMidiModeKey] = fader.midi_mode_;
   }
   friend void from_json (const nlohmann::json &j, Fader &fader);
 
@@ -407,28 +337,6 @@ private:
   /** Swap phase toggle. */
   std::optional<dsp::ProcessorParameterUuidReference> swap_phase_id_;
 
-  /**
-   * Audio input ports, if audio.
-   */
-  std::optional<dsp::PortUuidReference> stereo_in_left_id_;
-  std::optional<dsp::PortUuidReference> stereo_in_right_id_;
-
-  /**
-   * Audio output ports, if audio.
-   */
-  std::optional<dsp::PortUuidReference> stereo_out_left_id_;
-  std::optional<dsp::PortUuidReference> stereo_out_right_id_;
-
-  /**
-   * MIDI in port, if MIDI.
-   */
-  std::optional<dsp::PortUuidReference> midi_in_id_;
-
-  /**
-   * MIDI out port, if MIDI.
-   */
-  std::optional<dsp::PortUuidReference> midi_out_id_;
-
 public:
   /**
    * Current dBFS after processing each output port.
@@ -442,9 +350,6 @@ public:
 
   /** MIDI fader mode. */
   MidiFaderMode midi_mode_ = (MidiFaderMode) 0;
-
-  /** Whether this is a passthrough fader (like a prefader). */
-  bool passthrough_ = false;
 
   /** Pointer to owner track, if any. */
   Track * track_ = nullptr;

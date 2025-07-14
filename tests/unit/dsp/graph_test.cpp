@@ -54,7 +54,8 @@ TEST_F (GraphTest, ValidGraphCheck)
   Graph graph;
 
   auto * node1 = graph.add_node_for_processable (*processable_, *transport_);
-  auto * node2 = graph.add_node_for_processable (*processable_, *transport_);
+  auto   new_procesable = std::make_unique<MockProcessable> ();
+  auto * node2 = graph.add_node_for_processable (*new_procesable, *transport_);
 
   node1->connect_to (*node2);
 
@@ -78,8 +79,10 @@ TEST_F (GraphTest, CompleteGraphSetup)
   Graph graph;
 
   auto * node1 = graph.add_node_for_processable (*processable_, *transport_);
-  auto * node2 = graph.add_node_for_processable (*processable_, *transport_);
-  auto * node3 = graph.add_node_for_processable (*processable_, *transport_);
+  auto   processable2 = std::make_unique<MockProcessable> ();
+  auto * node2 = graph.add_node_for_processable (*processable2, *transport_);
+  auto   processable3 = std::make_unique<MockProcessable> ();
+  auto * node3 = graph.add_node_for_processable (*processable3, *transport_);
 
   node1->connect_to (*node2);
   node2->connect_to (*node3);
@@ -104,4 +107,19 @@ TEST_F (GraphTest, CyclicGraphDetection)
   graph.finalize_nodes ();
 
   EXPECT_FALSE (graph.is_valid ());
+}
+
+TEST_F (GraphTest, AddNodeForProcessableDisallowsDuplicates)
+{
+  Graph graph;
+
+  // Add the same processable twice
+  auto * node1 = graph.add_node_for_processable (*processable_, *transport_);
+  auto * node2 = graph.add_node_for_processable (*processable_, *transport_);
+
+  // Should return the same node both times
+  EXPECT_EQ (node1, node2);
+
+  // Should only create one node
+  EXPECT_EQ (graph.get_nodes ().graph_nodes_.size (), 1);
 }

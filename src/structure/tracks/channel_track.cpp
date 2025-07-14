@@ -138,25 +138,6 @@ ChannelTrack::set_listened (
     }
 }
 
-Fader *
-ChannelTrack::get_fader (bool post_fader)
-{
-  auto ch = get_channel ();
-  if (ch != nullptr)
-    {
-      if (post_fader)
-        {
-          return ch->fader ();
-        }
-      else
-        {
-          return ch->preFader ();
-        }
-    }
-
-  return nullptr;
-}
-
 #if 0
 GMenu *
 ChannelTrack::generate_channel_context_menu ()
@@ -209,12 +190,4 @@ ChannelTrack::generate_channel_context_menu ()
   return channel_submenu;
 }
 #endif
-
-void
-ChannelTrack::append_member_ports (
-  std::vector<dsp::Port *> &ports,
-  bool                      include_plugins) const
-{
-  channel_->append_ports (ports, include_plugins);
-}
 }

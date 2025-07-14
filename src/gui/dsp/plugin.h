@@ -3,13 +3,12 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include <memory>
 #include <vector>
 
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
+#include "dsp/processor_base.h"
 #include "gui/dsp/port_span.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
@@ -40,7 +39,7 @@ namespace zrythm::gui::old_dsp::plugins
  * class provides a common interface for working with them.
  */
 class Plugin
-    : public dsp::graph::IProcessable,
+    : public dsp::ProcessorBase,
       public utils::UuidIdentifiableObject<Plugin>
 {
   Z_DISABLE_COPY_MOVE (Plugin)
@@ -340,9 +339,8 @@ public:
   /**
    * Process plugin.
    */
-  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
-
-  utils::Utf8String get_node_name () const override;
+  [[gnu::hot]] void
+  custom_process_block (EngineProcessTimeInfo time_nfo) override;
 
   utils::Utf8String generate_window_title () const;
 
@@ -403,21 +401,6 @@ public:
    * Sets caches for processing.
    */
   void set_caches ();
-
-  /**
-   * Connect the output Ports of the given source Plugin to the input Ports of
-   * the given destination Plugin.
-   *
-   * Used when automatically connecting a Plugin in the Channel strip to the
-   * next Plugin.
-   */
-  void connect_to_plugin (Plugin &dest);
-
-  /**
-   * Disconnect the automatic connections from the given source Plugin to the
-   * given destination Plugin.
-   */
-  void disconnect_from_plugin (Plugin &dest);
 
   /**
    * Deletes any state files associated with this plugin.

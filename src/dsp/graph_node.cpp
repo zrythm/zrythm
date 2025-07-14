@@ -26,6 +26,7 @@
  * ---
  */
 
+#include <algorithm>
 #include <utility>
 
 #include "dsp/graph_node.h"
@@ -255,8 +256,7 @@ GraphNodeCollection::get_max_route_playback_latency () const
   const auto &nodes = trigger_nodes_;
   for (const auto node : nodes)
     {
-      if (node.get ().route_playback_latency_ > max)
-        max = node.get ().route_playback_latency_;
+      max = std::max (node.get ().route_playback_latency_, max);
     }
 
   return max;
@@ -286,8 +286,8 @@ GraphNodeCollection::update_latencies ()
         {
           node->set_route_playback_latency (node->playback_latency_);
 
-          if (node->playback_latency_ > max_playback_latency)
-            max_playback_latency = node->playback_latency_;
+          max_playback_latency =
+            std::max (node->playback_latency_, max_playback_latency);
         }
     }
   z_debug ("iterating done...");
@@ -334,12 +334,6 @@ GraphNodeCollection::find_node_for_processable (
       return it->get ();
     }
   return nullptr;
-}
-
-void
-GraphNodeCollection::add_special_node (GraphNode &node)
-{
-  special_nodes_.emplace_back (node);
 }
 
 } // namespace zrythm::dsp::graph

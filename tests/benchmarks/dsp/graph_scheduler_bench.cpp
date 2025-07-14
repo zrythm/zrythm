@@ -28,21 +28,47 @@ protected:
     // here before assigning processable_ to a new processable
     scheduler_.reset ();
     transport_ = std::make_unique<MockTransport> ();
-    processable_ = std::make_unique<MockProcessable> ();
     scheduler_ = std::make_unique<GraphScheduler> (48000, 1024);
 
-    ON_CALL (*processable_, get_node_name ())
-      .WillByDefault (Return (utils::Utf8String (u8"bench_node")));
-    ON_CALL (*processable_, get_single_playback_latency ())
-      .WillByDefault (Return (0));
     ON_CALL (*transport_, get_play_state ())
       .WillByDefault (Return (dsp::ITransport::PlayState::Rolling));
-    ON_CALL (*processable_, prepare_for_processing (_, _))
-      .WillByDefault (Return ());
-    ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
+
+    // Set default expectations to suppress warnings
+    EXPECT_CALL (*transport_, get_play_state ())
+      .Times (::testing::AnyNumber ())
+      .WillRepeatedly (Return (dsp::ITransport::PlayState::Rolling));
+    EXPECT_CALL (
+      *transport_, get_playhead_position_after_adding_frames_in_audio_thread (_))
+      .Times (::testing::AnyNumber ())
+      .WillRepeatedly (Return (0));
+    EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
+      .Times (::testing::AnyNumber ())
+      .WillRepeatedly (Return (0));
+  }
+
+  void TearDown (benchmark::State &state) override
+  {
+    // needed to reset these explicitly here otherwise the mock expectations
+    // won't be checked. see:
+    // https://stackoverflow.com/questions/10286514/why-is-googlemock-leaking-my-shared-ptr
+    scheduler_.reset ();
+    transport_.reset ();
+    processables_.clear ();
+  }
+
+  // Helper to create a configured processable
+  std::unique_ptr<MockProcessable> create_processable ()
+  {
+    auto proc = std::make_unique<MockProcessable> ();
+
+    ON_CALL (*proc, get_node_name ())
+      .WillByDefault (Return (utils::Utf8String (u8"bench_node")));
+    ON_CALL (*proc, get_single_playback_latency ()).WillByDefault (Return (0));
+    ON_CALL (*proc, prepare_for_processing (_, _)).WillByDefault (Return ());
+    ON_CALL (*proc, release_resources ()).WillByDefault (Return ());
 
     // Simulate actual processing work
-    ON_CALL (*processable_, process_block (_)).WillByDefault ([] (auto) {
+    ON_CALL (*proc, process_block (_)).WillByDefault ([] (auto) {
       // Simulate typical DSP operations on a small buffer
       constexpr size_t buffer_size = 64;
       float            buffer[buffer_size];
@@ -60,31 +86,13 @@ protected:
     });
 
     // silence GMock warnings
-    EXPECT_CALL (*processable_, get_node_name ()).Times (AnyNumber ());
-    EXPECT_CALL (*processable_, get_single_playback_latency ())
-      .Times (AnyNumber ());
-    EXPECT_CALL (*processable_, process_block (_)).Times (AnyNumber ());
-    EXPECT_CALL (*processable_, prepare_for_processing (_, _))
-      .Times (AnyNumber ());
-    EXPECT_CALL (*processable_, release_resources ()).Times (AnyNumber ());
-    EXPECT_CALL (*transport_, get_play_state ()).Times (AnyNumber ());
-    EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
-      .Times (AnyNumber ());
-    EXPECT_CALL (
-      *transport_, get_playhead_position_after_adding_frames_in_audio_thread (_))
-      .Times (AnyNumber ());
-    EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
-      .Times (AnyNumber ());
-  }
+    EXPECT_CALL (*proc, get_node_name ()).Times (AnyNumber ());
+    EXPECT_CALL (*proc, get_single_playback_latency ()).Times (AnyNumber ());
+    EXPECT_CALL (*proc, process_block (_)).Times (AnyNumber ());
+    EXPECT_CALL (*proc, prepare_for_processing (_, _)).Times (AnyNumber ());
+    EXPECT_CALL (*proc, release_resources ()).Times (AnyNumber ());
 
-  void TearDown (benchmark::State &state) override
-  {
-    // needed to reset these explicitly here otherwise the mock expectations
-    // won't be checked. see:
-    // https://stackoverflow.com/questions/10286514/why-is-googlemock-leaking-my-shared-ptr
-    scheduler_.reset ();
-    transport_.reset ();
-    processable_.reset ();
+    return proc;
   }
 
   GraphNodeCollection create_linear_chain (size_t num_nodes)
@@ -94,12 +102,14 @@ protected:
 
     for (size_t i = 0; i < num_nodes; i++)
       {
-        nodes.push_back (
-          std::make_unique<GraphNode> (i, *transport_, *processable_));
+        auto proc = create_processable ();
+        nodes.push_back (std::make_unique<GraphNode> (i, *transport_, *proc));
         if (i > 0)
           {
             nodes[i - 1]->connect_to (*nodes[i]);
           }
+        // Keep processable alive
+        processables_.push_back (std::move (proc));
       }
 
     for (auto &node : nodes)
@@ -115,20 +125,24 @@ protected:
   {
     GraphNodeCollection collection;
 
-    auto   root = std::make_unique<GraphNode> (0, *transport_, *processable_);
+    auto   root_proc = create_processable ();
+    auto   root = std::make_unique<GraphNode> (0, *transport_, *root_proc);
     auto * root_ptr = root.get ();
     collection.graph_nodes_.push_back (std::move (root));
+    processables_.push_back (std::move (root_proc));
 
     for (size_t b = 0; b < branches; b++)
       {
         GraphNode * prev = root_ptr;
         for (size_t n = 0; n < nodes_per_branch; n++)
           {
+            auto proc = create_processable ();
             auto node = std::make_unique<GraphNode> (
-              collection.graph_nodes_.size (), *transport_, *processable_);
+              collection.graph_nodes_.size (), *transport_, *proc);
             prev->connect_to (*node);
             prev = node.get ();
             collection.graph_nodes_.push_back (std::move (node));
+            processables_.push_back (std::move (proc));
           }
       }
 
@@ -144,8 +158,10 @@ protected:
     // Create nodes
     for (size_t i = 0; i < num_nodes; i++)
       {
+        auto proc = create_processable ();
         collection.graph_nodes_.push_back (
-          std::make_unique<GraphNode> (i, *transport_, *processable_));
+          std::make_unique<GraphNode> (i, *transport_, *proc));
+        processables_.push_back (std::move (proc));
       }
 
     // Create layered connections to ensure DAG
@@ -178,8 +194,8 @@ protected:
   }
 
   std::unique_ptr<MockTransport>                    transport_;
-  std::unique_ptr<MockProcessable>                  processable_;
   std::unique_ptr<GraphScheduler>                   scheduler_;
+  std::vector<std::unique_ptr<MockProcessable>>     processables_;
   static std::shared_ptr<zrythm::utils::TestLogger> logger_;
 };
 

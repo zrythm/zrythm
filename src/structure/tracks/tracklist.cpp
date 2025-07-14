@@ -208,50 +208,46 @@ Tracklist::disconnect_channel (Channel &channel)
       out_track->remove_child (channel.track_->get_uuid (), true, false, false);
     }
 
-  /* disconnect fader/prefader */
-  disconnect_fader (*channel.prefader_);
-  disconnect_fader (*channel.fader_);
+  /* disconnect fader/prefaders */
 
-  /* disconnect all ports */
-  std::vector<dsp::Port *> ports;
-  channel.append_ports (ports, true);
-  for (auto * port : ports)
-    {
-      disconnect_port (port->get_uuid ());
-    }
-}
-
-void
-Tracklist::disconnect_fader (Fader &fader)
-{
-  const auto disconnect = [&] (auto &port) {
+  const auto disconnect = [&] (const dsp::Port &port) {
     disconnect_port (port.get_uuid ());
   };
 
-  if (fader.has_audio_ports ())
+  const auto disconnect_fader = [&] (const Fader &fader) {
+    if (fader.has_audio_ports ())
+      {
+        auto stereo_in = fader.get_stereo_in_ports ();
+        disconnect (stereo_in.first);
+        disconnect (stereo_in.second);
+        auto stereo_out = fader.get_stereo_out_ports ();
+        disconnect (stereo_out.first);
+        disconnect (stereo_out.second);
+      }
+    else if (fader.has_midi_ports ())
+      {
+        auto &midi_in = fader.get_midi_in_port ();
+        disconnect (midi_in);
+        auto &midi_out = fader.get_midi_out_port ();
+        disconnect (midi_out);
+      }
+  };
+  disconnect_fader (*channel.fader_);
+
+  if (channel.midi_prefader_)
     {
-      auto stereo_in = fader.get_stereo_in_ports ();
-      disconnect (stereo_in.first);
-      disconnect (stereo_in.second);
-      auto stereo_out = fader.get_stereo_out_ports ();
-      disconnect (stereo_out.first);
-      disconnect (stereo_out.second);
+      disconnect (channel.get_midi_pre_fader ().get_midi_in_port (0));
+      disconnect (channel.get_midi_pre_fader ().get_midi_out_port (0));
     }
-  else if (fader.has_midi_ports ())
+  if (channel.audio_prefader_)
     {
-      auto &midi_in = fader.get_midi_in_port ();
-      disconnect (midi_in);
-      auto &midi_out = fader.get_midi_out_port ();
-      disconnect (midi_out);
+      disconnect (channel.audio_prefader_->get_audio_in_port (0));
+      disconnect (channel.audio_prefader_->get_audio_in_port (1));
+      disconnect (channel.audio_prefader_->get_audio_out_port (0));
+      disconnect (channel.audio_prefader_->get_audio_out_port (1));
     }
 
-  // disconnect (fader.get_amp_port ());
-  // disconnect (fader.get_balance_port ());
-  // disconnect (fader.get_mute_port ());
-  // disconnect (fader.get_solo_port ());
-  // disconnect (fader.get_listen_port ());
-  // disconnect (fader.get_mono_compat_enabled_port ());
-  // disconnect (fader.get_swap_phase_port ());
+  // TODO: disconnect all ports for channel
 }
 
 void
@@ -742,12 +738,6 @@ Tracklist::insert_track (
         {
           /* make the track the only selected track */
           get_selection_manager ().select_unique (track->get_uuid ());
-        }
-
-      if constexpr (std::derived_from<TrackT, ChannelTrack>)
-        {
-          z_return_if_fail (port_connections_manager_);
-          track->channel_->connect_channel (*port_connections_manager_, engine);
         }
 
       /* if audio output route to master */

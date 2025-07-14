@@ -40,7 +40,8 @@ Plugin::Plugin (
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry,
   QObject                         &derived)
-    : port_registry_ (port_registry), param_registry_ (param_registry),
+    : zrythm::dsp::ProcessorBase (port_registry, param_registry, u8"Plugin"),
+      port_registry_ (port_registry), param_registry_ (param_registry),
       enabled_ (param_registry), gain_ (param_registry)
 {
   const auto uuid_str = utils::Utf8String::from_qstring (
@@ -107,6 +108,10 @@ Plugin::set_setting (const PluginConfiguration &setting)
       /* save the new setting (may have changed during instantiation) */
       S_PLUGIN_SETTINGS->set (*setting_, true);
     }
+
+  set_name (
+    utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("{} (Plugin)", get_name ())));
 }
 
 void
@@ -310,18 +315,6 @@ Plugin::append_ports (std::vector<dsp::Port *> &ports)
     {
       ports.push_back (port);
     }
-}
-
-utils::Utf8String
-Plugin::get_node_name () const
-{
-  auto track = get_track ();
-  return utils::Utf8String::from_utf8_encoded_string (
-    fmt::format (
-      "{}/{} (Plugin)",
-      track ? structure::tracks::TrackSpan::name_projection (*track)
-            : u8"(No track)",
-      get_name ()));
 }
 
 void
@@ -678,7 +671,7 @@ Plugin::prepare_process (std::size_t block_length)
 }
 
 void
-Plugin::process_block (const EngineProcessTimeInfo time_nfo)
+Plugin::custom_process_block (const EngineProcessTimeInfo time_nfo)
 {
   if (!is_enabled (true))
     {
@@ -1061,228 +1054,6 @@ Plugin::close_ui ()
   // EVENT_MANAGER->process_now ();
 
   visible_ = false;
-}
-
-void
-Plugin::connect_to_plugin (Plugin &dest)
-{
-  auto * connections_mgr = PORT_CONNECTIONS_MGR;
-
-  const auto num_src_audio_outs = std::ranges::distance (
-    get_output_port_span ().get_elements_by_type<dsp::AudioPort> ());
-  const auto num_dest_audio_ins = std::ranges::distance (
-    dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ());
-
-  if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
-    {
-      for (
-        auto out_port :
-        get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (
-            auto in_port :
-            dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ())
-            {
-              connections_mgr->add_default_connection (
-                out_port->get_uuid (), in_port->get_uuid (), true);
-              goto done1;
-            }
-        }
-    }
-  else if (num_src_audio_outs == 1 && num_dest_audio_ins > 1)
-    {
-      /* plugin is mono and next plugin is not mono, so connect the mono out to
-       * each input */
-      for (
-        auto out_port :
-        get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (
-            auto in_port :
-            dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ())
-            {
-              connections_mgr->add_default_connection (
-                out_port->get_uuid (), in_port->get_uuid (), true);
-            }
-          break;
-        }
-    }
-  else if (num_src_audio_outs > 1 && num_dest_audio_ins == 1)
-    {
-      /* connect multi-output channel into mono by only connecting to the first
-       * input channel found */
-      for (
-        auto in_port :
-        dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (
-            auto out_port :
-            get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-            {
-              connections_mgr->add_default_connection (
-                out_port->get_uuid (), in_port->get_uuid (), true);
-              goto done1;
-            }
-          break;
-        }
-    }
-  else if (num_src_audio_outs > 1 && num_dest_audio_ins > 1)
-    {
-      /* connect to as many audio outs this plugin has, or until we can't
-       * connect anymore */
-      auto num_ports_to_connect =
-        std::min (num_src_audio_outs, num_dest_audio_ins);
-      size_t                          last_index = 0;
-      decltype (num_ports_to_connect) ports_connected{};
-      for (
-        auto out_port :
-        get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (; last_index < dest.in_ports_.size (); last_index++)
-            {
-              auto in_port_var = dest.get_input_port_span ()[last_index];
-              if (std::holds_alternative<dsp::AudioPort *> (in_port_var))
-                {
-                  connections_mgr->add_default_connection (
-                    out_port->get_uuid (),
-                    std::get<dsp::AudioPort *> (in_port_var)->get_uuid (), true);
-                  last_index++;
-                  ports_connected++;
-                  break;
-                }
-            }
-          if (ports_connected == num_ports_to_connect)
-            break;
-        }
-    }
-
-done1:
-
-  /* connect prev midi outs to next midi ins */
-  /* this connects only one midi out to all of the midi ins of the next plugin */
-  for (
-    auto out_port :
-    get_output_port_span ().get_elements_by_type<dsp::MidiPort> ())
-    {
-
-      for (
-        auto in_port :
-        dest.get_input_port_span ().get_elements_by_type<dsp::MidiPort> ())
-        {
-          connections_mgr->add_default_connection (
-            out_port->get_uuid (), in_port->get_uuid (), true);
-        }
-      break;
-    }
-}
-
-void
-Plugin::disconnect_from_plugin (Plugin &dest)
-{
-  auto * mgr = PORT_CONNECTIONS_MGR;
-
-  auto num_src_audio_outs = std::ranges::distance (
-    get_output_port_span ().get_elements_by_type<dsp::AudioPort> ());
-  auto num_dest_audio_ins = std::ranges::distance (
-    dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ());
-
-  if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
-    {
-      for (
-        auto out_port :
-        get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (
-            auto in_port :
-            dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ())
-            {
-              mgr->remove_connection (
-                out_port->get_uuid (), in_port->get_uuid ());
-              goto done2;
-            }
-        }
-    }
-  else if (num_src_audio_outs == 1 && num_dest_audio_ins > 1)
-    {
-      /* plugin is mono and next plugin is not mono, so disconnect the mono out
-       * from each input */
-      for (
-        auto out_port :
-        get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (
-            auto in_port :
-            dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ())
-            {
-              mgr->remove_connection (
-                out_port->get_uuid (), in_port->get_uuid ());
-            }
-          break;
-        }
-    }
-  else if (num_src_audio_outs > 1 && num_dest_audio_ins == 1)
-    {
-      /* disconnect multi-output channel from mono by disconnecting to the first
-       * input channel found */
-      for (
-        auto in_port :
-        dest.get_input_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (
-            auto out_port :
-            get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-            {
-              mgr->remove_connection (
-                out_port->get_uuid (), in_port->get_uuid ());
-              goto done2;
-            }
-          break;
-        }
-    }
-  else if (num_src_audio_outs > 1 && num_dest_audio_ins > 1)
-    {
-      /* connect to as many audio outs this plugin has, or until we can't
-       * connect anymore */
-      auto num_ports_to_connect =
-        std::min (num_src_audio_outs, num_dest_audio_ins);
-      size_t                          last_index = 0;
-      decltype (num_ports_to_connect) ports_disconnected{};
-      for (
-        auto out_port :
-        get_output_port_span ().get_elements_by_type<dsp::AudioPort> ())
-        {
-          for (; last_index < dest.in_ports_.size (); ++last_index)
-            {
-              auto in_port_var = dest.get_input_port_span ()[last_index];
-              if (std::holds_alternative<dsp::AudioPort *> (in_port_var))
-                {
-                  mgr->remove_connection (
-                    out_port->get_uuid (),
-                    std::get<dsp::AudioPort *> (in_port_var)->get_uuid ());
-                  last_index++;
-                  ports_disconnected++;
-                  break;
-                }
-            }
-          if ((int) ports_disconnected == num_ports_to_connect)
-            break;
-        }
-    }
-
-done2:
-
-  /* disconnect MIDI connections */
-  for (
-    auto out_port :
-    get_output_port_span ().get_elements_by_type<dsp::MidiPort> ())
-    {
-      for (
-        auto in_port :
-        dest.get_input_port_span ().get_elements_by_type<dsp::MidiPort> ())
-        {
-          mgr->remove_connection (out_port->get_uuid (), in_port->get_uuid ());
-        }
-    }
 }
 
 void

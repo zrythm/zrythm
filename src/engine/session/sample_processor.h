@@ -116,8 +116,6 @@ public:
    */
   void stop_file_playback ();
 
-  void disconnect ();
-
   /**
    * @brief Get the tempo track from the actual project, using @ref
    * audio_engine_.
@@ -145,7 +143,8 @@ private:
   }
   friend void from_json (const nlohmann::json &j, SampleProcessor &sp)
   {
-    j.at (kFaderKey).get_to (sp.fader_);
+    // TODO
+    // j.at (kFaderKey).get_to (sp.fader_);
   }
 
   void init_common ();

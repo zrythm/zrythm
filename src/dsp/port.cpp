@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/graph.h"
 #include "dsp/port_all.h"
 
 #include <fmt/format.h>

@@ -209,26 +209,10 @@ AudioEngine::append_ports (std::vector<dsp::Port *> &ports)
     ports.push_back (port);
   };
 
-  // add_port (&control_room_->monitor_fader_->get_amp_port ());
-  // add_port (&control_room_->monitor_fader_->get_balance_port ());
-  // add_port (&control_room_->monitor_fader_->get_mute_port ());
-  // add_port (&control_room_->monitor_fader_->get_solo_port ());
-  // add_port (&control_room_->monitor_fader_->get_listen_port ());
-  // add_port (&control_room_->monitor_fader_->get_mono_compat_enabled_port ());
-  add_port (&control_room_->monitor_fader_->get_stereo_in_ports ().first);
-  add_port (&control_room_->monitor_fader_->get_stereo_in_ports ().second);
-  add_port (&control_room_->monitor_fader_->get_stereo_out_ports ().first);
-  add_port (&control_room_->monitor_fader_->get_stereo_out_ports ().second);
-
   iterate_tuple (
     [&] (auto &port) { add_port (&port); }, get_monitor_out_ports ());
   add_port (midi_editor_manual_press_.get ());
   add_port (midi_in_.get ());
-
-  add_port (&sample_processor_->fader_->get_stereo_in_ports ().first);
-  add_port (&sample_processor_->fader_->get_stereo_in_ports ().second);
-  add_port (&sample_processor_->fader_->get_stereo_out_ports ().first);
-  add_port (&sample_processor_->fader_->get_stereo_out_ports ().second);
 
   for (const auto &tr : sample_processor_->tracklist_->get_track_span ())
     {
@@ -255,23 +239,6 @@ AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter
 {
   z_debug ("Setting up...");
   buf_size_set_ = false;
-
-  {
-    port_connections_manager_->add_default_connection (
-      sample_processor_->fader_->get_stereo_out_left_id (),
-      control_room_->monitor_fader_->get_stereo_out_left_id (), true);
-    port_connections_manager_->add_default_connection (
-      sample_processor_->fader_->get_stereo_out_right_id (),
-      control_room_->monitor_fader_->get_stereo_out_right_id (), true);
-  }
-  {
-    port_connections_manager_->add_default_connection (
-      control_room_->monitor_fader_->get_stereo_out_left_id (),
-      monitor_out_left_->id (), true);
-    port_connections_manager_->add_default_connection (
-      control_room_->monitor_fader_->get_stereo_out_right_id (),
-      monitor_out_right_->id (), true);
-  }
 
   update_frames_per_tick (
     beats_per_bar_getter (), bpm_getter (), get_sample_rate (), true, true,
@@ -701,7 +668,8 @@ AudioEngine::process_prepare (
   midi_in_->clear_buffer (block_length);
   midi_editor_manual_press_->clear_buffer (block_length);
 
-  sample_processor_->prepare_process (nframes);
+  // TODO
+  // sample_processor_->prepare_process (nframes);
 
   /* prepare channels for this cycle */
   for (

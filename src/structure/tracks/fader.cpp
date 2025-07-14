@@ -26,128 +26,66 @@
 
 namespace zrythm::structure::tracks
 {
-Fader::Fader (QObject * parent) : QObject (parent) { }
-
-void
-Fader::init_loaded (
-  dsp::PortRegistry                 &port_registry,
-  dsp::ProcessorParameterRegistry   &param_registry,
-  Track *                            track,
-  engine::session::ControlRoom *     control_room,
-  engine::session::SampleProcessor * sample_processor)
-{
-  port_registry_ = port_registry;
-  param_registry_ = param_registry;
-  track_ = track;
-  control_room_ = control_room;
-  sample_processor_ = sample_processor;
-
-  std::vector<dsp::Port *> ports;
-  append_ports (ports);
-  for (auto * port : ports)
-    {
-      port->set_full_designation_provider (this);
-    }
-}
-
-void
-Fader::append_ports (std::vector<dsp::Port *> &ports) const
-{
-  auto add_port = [&ports] (dsp::Port &port) {
-    ports.push_back (std::addressof (port));
-  };
-
-  if (has_audio_ports ())
-    {
-      add_port (get_stereo_in_ports ().first);
-      add_port (get_stereo_in_ports ().second);
-      add_port (get_stereo_out_ports ().first);
-      add_port (get_stereo_out_ports ().second);
-    }
-  if (has_midi_ports ())
-    {
-      add_port (get_midi_in_port ());
-      add_port (get_midi_out_port ());
-    }
-}
 
 Fader::Fader (
   dsp::PortRegistry                 &port_registry,
   dsp::ProcessorParameterRegistry   &param_registry,
   Type                               type,
-  bool                               passthrough,
   Track *                            track,
   engine::session::ControlRoom *     control_room,
-  engine::session::SampleProcessor * sample_processor)
-    : port_registry_ (port_registry), param_registry_ (param_registry),
+  engine::session::SampleProcessor * sample_processor,
+  QObject *                          parent)
+    : QObject (parent),
+      dsp::ProcessorBase (port_registry, param_registry, u8"Fader"),
+      port_registry_ (port_registry), param_registry_ (param_registry),
       type_ (type), midi_mode_ (MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER),
-      passthrough_ (passthrough), track_ (track), control_room_ (control_room),
+      track_ (track), control_room_ (control_room),
       sample_processor_ (sample_processor)
 {
   const auto should_be_automatable =
-    (type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough;
+    (type == Type::AudioChannel || type == Type::MidiChannel);
   {
     /* set volume */
     amp_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry,
-      dsp::ProcessorParameter::UniqueId (
-        passthrough ? u8"prefader_volume" : u8"fader_volume"),
+      port_registry, dsp::ProcessorParameter::UniqueId (u8"fader_volume"),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
-      passthrough
-        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Volume"))
-        : utils::Utf8String::from_qstring (QObject::tr ("Fader Volume")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Volume")));
     get_amp_param ().set_automatable (should_be_automatable);
 
     /* set pan */
     balance_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry,
-      dsp::ProcessorParameter::UniqueId (
-        passthrough ? u8"prefader_balance" : u8"fader_balance"),
+      port_registry, dsp::ProcessorParameter::UniqueId (u8"fader_balance"),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.5f, 0.5f),
-      passthrough
-        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Balance"))
-        : utils::Utf8String::from_qstring (QObject::tr ("Fader Balance")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Balance")));
     get_balance_param ().set_automatable (should_be_automatable);
   }
 
   {
     /* set mute */
     mute_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry,
-      dsp::ProcessorParameter::UniqueId (
-        passthrough ? u8"prefader_mute" : u8"fader_mute"),
+      port_registry, dsp::ProcessorParameter::UniqueId (u8"fader_mute"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
-      passthrough
-        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Mute"))
-        : utils::Utf8String::from_qstring (QObject::tr ("Fader Mute")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Mute")));
     get_mute_param ().set_automatable (should_be_automatable);
   }
 
   {
     /* set solo */
     solo_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry,
-      dsp::ProcessorParameter::UniqueId (
-        passthrough ? u8"prefader_solo" : u8"fader_solo"),
+      port_registry, dsp::ProcessorParameter::UniqueId (u8"fader_solo"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
-      passthrough
-        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Solo"))
-        : utils::Utf8String::from_qstring (QObject::tr ("Fader Solo")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Solo")));
     get_solo_param ().set_automatable (false);
   }
 
   {
     /* set listen */
     listen_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry,
-      dsp::ProcessorParameter::UniqueId (
-        passthrough ? u8"prefader_listen" : u8"fader_listen"),
+      port_registry, dsp::ProcessorParameter::UniqueId (u8"fader_listen"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
-      passthrough
-        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Listen"))
-        : utils::Utf8String::from_qstring (QObject::tr ("Fader Listen")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Listen")));
     get_listen_param ().set_automatable (false);
   }
 
@@ -156,27 +94,18 @@ Fader::Fader (
     mono_compat_enabled_id_ = param_registry.create_object<
       dsp::ProcessorParameter> (
       port_registry,
-      dsp::ProcessorParameter::UniqueId (
-        passthrough
-          ? u8"prefader_mono_compat_enabled"
-          : u8"fader_mono_compat_enabled"),
+      dsp::ProcessorParameter::UniqueId (u8"fader_mono_compat_enabled"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
-      passthrough
-        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Mono Compat"))
-        : utils::Utf8String::from_qstring (QObject::tr ("Fader Mono Compat")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Mono Compat")));
     get_mono_compat_enabled_param ().set_automatable (false);
   }
 
   {
     /* set swap phase */
     swap_phase_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry,
-      dsp::ProcessorParameter::UniqueId (
-        passthrough ? u8"prefader_swap_phase" : u8"fader_swap_phase"),
+      port_registry, dsp::ProcessorParameter::UniqueId (u8"fader_swap_phase"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
-      passthrough
-        ? utils::Utf8String::from_qstring (QObject::tr ("Prefader Swap Phase"))
-        : utils::Utf8String::from_qstring (QObject::tr ("Fader Swap Phase")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Swap Phase")));
     get_swap_phase_param ().set_automatable (false);
   }
 
@@ -187,18 +116,8 @@ Fader::Fader (
         utils::Utf8String sym;
         if (type == Type::AudioChannel)
           {
-            if (passthrough)
-              {
-                name = utils::Utf8String::from_qstring (
-                  QObject::tr ("Ch Pre-Fader in"));
-                sym = u8"ch_prefader_in";
-              }
-            else
-              {
-                name =
-                  utils::Utf8String::from_qstring (QObject::tr ("Ch Fader in"));
-                sym = u8"ch_fader_in";
-              }
+            name = utils::Utf8String::from_qstring (QObject::tr ("Ch Fader in"));
+            sym = u8"ch_fader_in";
           }
         else if (type == Type::SampleProcessor)
           {
@@ -216,8 +135,8 @@ Fader::Fader (
         /* stereo in */
         auto stereo_in_ports = dsp::StereoPorts::create_stereo_ports (
           port_registry_.value (), true, name, sym);
-        stereo_in_left_id_ = stereo_in_ports.first;
-        stereo_in_right_id_ = stereo_in_ports.second;
+        add_input_port (stereo_in_ports.first);
+        add_input_port (stereo_in_ports.second);
         auto &left_port = get_stereo_in_ports ().first;
         auto &right_port = get_stereo_in_ports ().second;
         left_port.set_full_designation_provider (this);
@@ -229,18 +148,9 @@ Fader::Fader (
         utils::Utf8String sym;
         if (type == Type::AudioChannel)
           {
-            if (passthrough)
-              {
-                name = utils::Utf8String::from_qstring (
-                  QObject::tr ("Ch Pre-Fader out"));
-                sym = u8"ch_prefader_out";
-              }
-            else
-              {
-                name = utils::Utf8String::from_qstring (
-                  QObject::tr ("Ch Fader out"));
-                sym = u8"ch_fader_out";
-              }
+            name =
+              utils::Utf8String::from_qstring (QObject::tr ("Ch Fader out"));
+            sym = u8"ch_fader_out";
           }
         else if (type == Type::SampleProcessor)
           {
@@ -259,8 +169,8 @@ Fader::Fader (
           /* stereo out */
           auto stereo_out_ports = dsp::StereoPorts::create_stereo_ports (
             port_registry_.value (), false, name, sym);
-          stereo_out_left_id_ = stereo_out_ports.first;
-          stereo_out_right_id_ = stereo_out_ports.second;
+          add_output_port (stereo_out_ports.first);
+          add_output_port (stereo_out_ports.second);
           auto &left_port = get_stereo_out_ports ().first;
           auto &right_port = get_stereo_out_ports ().second;
           left_port.set_full_designation_provider (this);
@@ -275,20 +185,11 @@ Fader::Fader (
         /* MIDI in */
         utils::Utf8String name;
         utils::Utf8String sym;
-        if (passthrough)
-          {
-            name = utils::Utf8String::from_qstring (
-              QObject::tr ("Ch MIDI Pre-Fader in"));
-            sym = u8"ch_midi_prefader_in";
-          }
-        else
-          {
-            name = utils::Utf8String::from_qstring (
-              QObject::tr ("Ch MIDI Fader in"));
-            sym = u8"ch_midi_fader_in";
-          }
-        midi_in_id_ = port_registry_->create_object<dsp::MidiPort> (
-          name, dsp::PortFlow::Input);
+        name =
+          utils::Utf8String::from_qstring (QObject::tr ("Ch MIDI Fader in"));
+        sym = u8"ch_midi_fader_in";
+        add_input_port (port_registry_->create_object<dsp::MidiPort> (
+          name, dsp::PortFlow::Input));
         auto &midi_in_port = get_midi_in_port ();
         midi_in_port.set_full_designation_provider (this);
         midi_in_port.set_symbol (sym);
@@ -298,32 +199,62 @@ Fader::Fader (
         utils::Utf8String name;
         utils::Utf8String sym;
         /* MIDI out */
-        if (passthrough)
-          {
-            name = utils::Utf8String::from_qstring (
-              QObject::tr ("Ch MIDI Pre-Fader out"));
-            sym = u8"ch_midi_prefader_out";
-          }
-        else
-          {
-            name = utils::Utf8String::from_qstring (
-              QObject::tr ("Ch MIDI Fader out"));
-            sym = u8"ch_midi_fader_out";
-          }
-        midi_out_id_ = port_registry_->create_object<dsp::MidiPort> (
-          name, dsp::PortFlow::Output);
+        name =
+          utils::Utf8String::from_qstring (QObject::tr ("Ch MIDI Fader out"));
+        sym = u8"ch_midi_fader_out";
+        add_output_port (port_registry_->create_object<dsp::MidiPort> (
+          name, dsp::PortFlow::Output));
         auto &midi_out_port = get_midi_out_port ();
         midi_out_port.set_full_designation_provider (this);
         midi_out_port.set_symbol (sym);
       }
     }
+
+  set_name ([&] () -> utils::Utf8String {
+    if (type_ == Type::AudioChannel || type_ == Type::MidiChannel)
+      {
+        auto * track = get_track ();
+        return utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("{} {}", track->get_name (), "Fader"));
+      }
+    if (type_ == Type::Monitor)
+      {
+        return u8"Monitor Fader";
+      }
+
+    return u8"Fader";
+  }());
+}
+
+void
+Fader::init_loaded (
+  dsp::PortRegistry                 &port_registry,
+  dsp::ProcessorParameterRegistry   &param_registry,
+  Track *                            track,
+  engine::session::ControlRoom *     control_room,
+  engine::session::SampleProcessor * sample_processor)
+{
+  port_registry_ = port_registry;
+  param_registry_ = param_registry;
+  track_ = track;
+  control_room_ = control_room;
+  sample_processor_ = sample_processor;
+
+#if 0
+  std::vector<dsp::Port *> ports;
+  append_ports (ports);
+  for (auto * port : ports)
+    {
+      port->set_full_designation_provider (this);
+    }
+#endif
 }
 
 utils::Utf8String
 Fader::get_full_designation_for_port (const dsp::Port &port) const
 {
   const auto port_label = port.get_label ();
-  if (track_)
+  if (track_ != nullptr)
     {
       auto * tr = get_track ();
       return utils::Utf8String::from_utf8_encoded_string (
@@ -333,28 +264,12 @@ Fader::get_full_designation_for_port (const dsp::Port &port) const
     fmt::format ("Engine/{}", port_label));
 }
 
-#if 0
-bool
-Fader::should_bounce_to_master (utils::audio::BounceStep step) const
-{
-  // only pre-fader bounces make sense for faders (post-fader bounces are
-  // handled by Channel)
-  if (!passthrough_ || step != utils::audio::BounceStep::PreFader)
-    {
-      return false;
-    }
-
-  auto * track = get_track ();
-  return !track->is_master () && track->bounce_to_master_;
-}
-#endif
-
 bool
 Fader::get_implied_soloed () const
 {
   /* only check channel faders */
   if (
-    (type_ != Type::AudioChannel && type_ != Type::MidiChannel) || passthrough_
+    (type_ != Type::AudioChannel && type_ != Type::MidiChannel)
     || get_solo_param ().range ().is_toggled (get_solo_param ().currentValue ()))
     {
       return false;
@@ -581,29 +496,11 @@ Fader::fade_frames_for_type (Type type)
            : FADER_DEFAULT_FADE_FRAMES_SHORT;
 }
 
-utils::Utf8String
-Fader::get_node_name () const
-{
-  if (type_ == Type::AudioChannel || type_ == Type::MidiChannel)
-    {
-      auto * track = get_track ();
-      return utils::Utf8String::from_utf8_encoded_string (
-        fmt::format (
-          "{} {}", track->get_name (), passthrough_ ? "Pre-Fader" : "Fader"));
-    }
-  if (type_ == Type::Monitor)
-    {
-      return u8"Monitor Fader";
-    }
-
-  return u8"Fader";
-}
-
 /**
  * Process the Fader.
  */
 void
-Fader::process_block (const EngineProcessTimeInfo time_nfo)
+Fader::custom_process_block (const EngineProcessTimeInfo time_nfo)
 {
   Track * track = nullptr;
   if (type_ == Type::AudioChannel)
@@ -614,14 +511,11 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
 
   const int default_fade_frames = fade_frames_for_type (type_);
 
-  bool effectively_muted = false;
-  if (!passthrough_)
-    {
+  bool effectively_muted =
       /* muted if any of the following is true:
        * 1. muted
        * 2. other track(s) is soloed and this isn't
        * 3. bounce mode and the track is set to BOUNCE_OFF */
-      effectively_muted =
         currently_muted()
         ||
         ((type_ == Type::AudioChannel || type_ == Type::MidiChannel)
@@ -632,7 +526,7 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
          &&
          (type_ == Type::AudioChannel
           || type_ == Type::MidiChannel)
-         && track
+         && (track != nullptr)
          && !track->is_master()
          && !track->bounce_);
 
@@ -647,7 +541,6 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
             effectively_muted);
         }
 #endif
-    }
 
   const auto &amp_param = get_amp_param ();
   const float amp =
@@ -665,260 +558,250 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
         &stereo_out.second.buf_[time_nfo.local_offset_],
         &stereo_in.second.buf_[time_nfo.local_offset_], time_nfo.nframes_);
 
-      /* if not prefader */
-      if (!passthrough_)
+      /* if monitor */
+      float mute_amp;
+      if (type_ == Fader::Type::Monitor)
         {
-          /* if monitor */
-          float mute_amp;
-          if (type_ == Fader::Type::Monitor)
+          mute_amp = AUDIO_ENGINE->denormal_prevention_val_;
+          float dim_amp = CONTROL_ROOM->dim_fader_->get_current_amp ();
+
+          /* if have listened tracks */
+          if (TRACKLIST->get_track_span ().has_listened ())
             {
-              mute_amp = AUDIO_ENGINE->denormal_prevention_val_;
-              float dim_amp = CONTROL_ROOM->dim_fader_->get_current_amp ();
+              /* dim signal */
+              utils::float_ranges::mul_k2 (
+                &stereo_out.first.buf_[time_nfo.local_offset_], dim_amp,
+                time_nfo.nframes_);
+              utils::float_ranges::mul_k2 (
+                &stereo_out.second.buf_[time_nfo.local_offset_], dim_amp,
+                time_nfo.nframes_);
 
-              /* if have listened tracks */
-              if (TRACKLIST->get_track_span ().has_listened ())
+              /* add listened signal */
+              /* TODO add "listen" buffer on fader struct and add listened
+               * tracks to it during processing instead of looping here */
+              float listen_amp = CONTROL_ROOM->listen_fader_->get_current_amp ();
+              for (const auto &cur_t : TRACKLIST->get_track_span ())
                 {
-                  /* dim signal */
-                  utils::float_ranges::mul_k2 (
-                    &stereo_out.first.buf_[time_nfo.local_offset_], dim_amp,
-                    time_nfo.nframes_);
-                  utils::float_ranges::mul_k2 (
-                    &stereo_out.second.buf_[time_nfo.local_offset_], dim_amp,
-                    time_nfo.nframes_);
-
-                  /* add listened signal */
-                  /* TODO add "listen" buffer on fader struct and add listened
-                   * tracks to it during processing instead of looping here */
-                  float listen_amp =
-                    CONTROL_ROOM->listen_fader_->get_current_amp ();
-                  for (const auto &cur_t : TRACKLIST->get_track_span ())
-                    {
-                      std::visit (
-                        [&] (auto &&t) {
-                          using TrackT = base_type<decltype (t)>;
-                          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                  std::visit (
+                    [&] (auto &&t) {
+                      using TrackT = base_type<decltype (t)>;
+                      if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                        {
+                          if (
+                            t->get_output_signal_type () == dsp::PortType::Audio
+                            && t->currently_listened ())
                             {
-                              if (
-                                t->get_output_signal_type ()
-                                  == dsp::PortType::Audio
-                                && t->currently_listened ())
-                                {
-                                  auto f = t->get_fader (true);
-                                  utils::float_ranges::mix_product (
-                                    &stereo_out.first
-                                       .buf_[time_nfo.local_offset_],
-                                    &f->get_stereo_out_ports ()
-                                       .first.buf_[time_nfo.local_offset_],
-                                    listen_amp, time_nfo.nframes_);
-                                  utils::float_ranges::mix_product (
-                                    &stereo_out.second
-                                       .buf_[time_nfo.local_offset_],
-                                    &f->get_stereo_out_ports ()
-                                       .second.buf_[time_nfo.local_offset_],
-                                    listen_amp, time_nfo.nframes_);
-                                }
+                              auto * f = t->get_channel ()->fader ();
+                              utils::float_ranges::mix_product (
+                                &stereo_out.first.buf_[time_nfo.local_offset_],
+                                &f->get_stereo_out_ports ()
+                                   .first.buf_[time_nfo.local_offset_],
+                                listen_amp, time_nfo.nframes_);
+                              utils::float_ranges::mix_product (
+                                &stereo_out.second.buf_[time_nfo.local_offset_],
+                                &f->get_stereo_out_ports ()
+                                   .second.buf_[time_nfo.local_offset_],
+                                listen_amp, time_nfo.nframes_);
                             }
-                        },
-                        cur_t);
-                    }
-                } /* endif have listened tracks */
-
-              /* apply dim if enabled */
-              if (CONTROL_ROOM->dim_output_)
-                {
-                  utils::float_ranges::mul_k2 (
-                    &stereo_out.first.buf_[time_nfo.local_offset_], dim_amp,
-                    time_nfo.nframes_);
-                  utils::float_ranges::mul_k2 (
-                    &stereo_out.second.buf_[time_nfo.local_offset_], dim_amp,
-                    time_nfo.nframes_);
+                        }
+                    },
+                    cur_t);
                 }
-            } /* endif monitor fader */
-          else
+            } /* endif have listened tracks */
+
+          /* apply dim if enabled */
+          if (CONTROL_ROOM->dim_output_)
             {
-              mute_amp = CONTROL_ROOM->mute_fader_->get_current_amp ();
-
-              /* add fade if changed from muted to non-muted or
-               * vice versa */
-              if (effectively_muted && !was_effectively_muted_)
-                {
-                  fade_out_samples_.store (default_fade_frames);
-                  fading_out_.store (true);
-                }
-              else if (!effectively_muted && was_effectively_muted_)
-                {
-
-                  fading_out_.store (false);
-                  fade_in_samples_.store (default_fade_frames);
-                }
+              utils::float_ranges::mul_k2 (
+                &stereo_out.first.buf_[time_nfo.local_offset_], dim_amp,
+                time_nfo.nframes_);
+              utils::float_ranges::mul_k2 (
+                &stereo_out.second.buf_[time_nfo.local_offset_], dim_amp,
+                time_nfo.nframes_);
             }
+        } /* endif monitor fader */
+      else
+        {
+          mute_amp = CONTROL_ROOM->mute_fader_->get_current_amp ();
 
-          /* handle fade in */
-          int fade_in_samples = fade_in_samples_.load ();
-          if (fade_in_samples > 0) [[unlikely]]
+          /* add fade if changed from muted to non-muted or
+           * vice versa */
+          if (effectively_muted && !was_effectively_muted_)
             {
-              z_return_if_fail_cmp (default_fade_frames, >=, fade_in_samples);
+              fade_out_samples_.store (default_fade_frames);
+              fading_out_.store (true);
+            }
+          else if (!effectively_muted && was_effectively_muted_)
+            {
+
+              fading_out_.store (false);
+              fade_in_samples_.store (default_fade_frames);
+            }
+        }
+
+      /* handle fade in */
+      int fade_in_samples = fade_in_samples_.load ();
+      if (fade_in_samples > 0) [[unlikely]]
+        {
+          z_return_if_fail_cmp (default_fade_frames, >=, fade_in_samples);
 #if 0
               z_debug (
                 "fading in %d samples", fade_in_samples);
 #endif
-              utils::float_ranges::linear_fade_in_from (
-                &stereo_out.first.buf_[time_nfo.local_offset_],
-                default_fade_frames - fade_in_samples, default_fade_frames,
-                time_nfo.nframes_, mute_amp);
-              utils::float_ranges::linear_fade_in_from (
-                &stereo_out.second.buf_[time_nfo.local_offset_],
-                default_fade_frames - fade_in_samples, default_fade_frames,
-                time_nfo.nframes_, mute_amp);
-              fade_in_samples -= (int) time_nfo.nframes_;
-              fade_in_samples = std::max (fade_in_samples, 0);
-              fade_in_samples_.store (fade_in_samples);
-            }
+          utils::float_ranges::linear_fade_in_from (
+            &stereo_out.first.buf_[time_nfo.local_offset_],
+            default_fade_frames - fade_in_samples, default_fade_frames,
+            time_nfo.nframes_, mute_amp);
+          utils::float_ranges::linear_fade_in_from (
+            &stereo_out.second.buf_[time_nfo.local_offset_],
+            default_fade_frames - fade_in_samples, default_fade_frames,
+            time_nfo.nframes_, mute_amp);
+          fade_in_samples -= (int) time_nfo.nframes_;
+          fade_in_samples = std::max (fade_in_samples, 0);
+          fade_in_samples_.store (fade_in_samples);
+        }
 
-          /* handle fade out */
-          size_t faded_out_frames = 0;
-          if (fading_out_.load ()) [[unlikely]]
+      /* handle fade out */
+      size_t faded_out_frames = 0;
+      if (fading_out_.load ()) [[unlikely]]
+        {
+          int fade_out_samples = fade_out_samples_.load ();
+          int samples_to_process =
+            std::max (0, std::min (fade_out_samples, (int) time_nfo.nframes_));
+          if (fade_out_samples > 0)
             {
-              int fade_out_samples = fade_out_samples_.load ();
-              int samples_to_process = std::max (
-                0, std::min (fade_out_samples, (int) time_nfo.nframes_));
-              if (fade_out_samples > 0)
-                {
-                  z_return_if_fail_cmp (
-                    default_fade_frames, >=, fade_out_samples);
+              z_return_if_fail_cmp (default_fade_frames, >=, fade_out_samples);
 
 #if 0
                   z_debug (
                     "fading out %d frames",
                     samples_to_process);
 #endif
-                  utils::float_ranges::linear_fade_out_to (
-                    &stereo_out.first.buf_[time_nfo.local_offset_],
-                    default_fade_frames - fade_out_samples, default_fade_frames,
-                    (size_t) samples_to_process, mute_amp);
-                  utils::float_ranges::linear_fade_out_to (
-                    &stereo_out.second.buf_[time_nfo.local_offset_],
-                    default_fade_frames - fade_out_samples, default_fade_frames,
-                    (size_t) samples_to_process, mute_amp);
-                  fade_out_samples -= samples_to_process;
-                  faded_out_frames += (size_t) samples_to_process;
-                  fade_out_samples_.store (fade_out_samples);
-                }
+              utils::float_ranges::linear_fade_out_to (
+                &stereo_out.first.buf_[time_nfo.local_offset_],
+                default_fade_frames - fade_out_samples, default_fade_frames,
+                (size_t) samples_to_process, mute_amp);
+              utils::float_ranges::linear_fade_out_to (
+                &stereo_out.second.buf_[time_nfo.local_offset_],
+                default_fade_frames - fade_out_samples, default_fade_frames,
+                (size_t) samples_to_process, mute_amp);
+              fade_out_samples -= samples_to_process;
+              faded_out_frames += (size_t) samples_to_process;
+              fade_out_samples_.store (fade_out_samples);
+            }
 
-              /* if still fading out and have no more fade out samples, silence */
-              if (fade_out_samples == 0)
-                {
-                  size_t remaining_frames =
-                    time_nfo.nframes_ - (size_t) samples_to_process;
+          /* if still fading out and have no more fade out samples, silence */
+          if (fade_out_samples == 0)
+            {
+              size_t remaining_frames =
+                time_nfo.nframes_ - (size_t) samples_to_process;
 #if 0
                   z_debug (
                     "silence for remaining %zu frames", remaining_frames);
 #endif
-                  if (remaining_frames > 0)
-                    {
-                      utils::float_ranges::mul_k2 (
-                        &stereo_out.first
-                           .buf_[time_nfo.local_offset_ + faded_out_frames],
-                        mute_amp, remaining_frames);
-                      utils::float_ranges::mul_k2 (
-                        &stereo_out.second
-                           .buf_[time_nfo.local_offset_ + faded_out_frames],
-                        mute_amp, remaining_frames);
-                      faded_out_frames += remaining_frames;
-                    }
+              if (remaining_frames > 0)
+                {
+                  utils::float_ranges::mul_k2 (
+                    &stereo_out.first
+                       .buf_[time_nfo.local_offset_ + faded_out_frames],
+                    mute_amp, remaining_frames);
+                  utils::float_ranges::mul_k2 (
+                    &stereo_out.second
+                       .buf_[time_nfo.local_offset_ + faded_out_frames],
+                    mute_amp, remaining_frames);
+                  faded_out_frames += remaining_frames;
                 }
             }
+        }
 
-          const auto &balance_param = get_balance_param ();
-          const auto &mono_compat_param = get_mono_compat_enabled_param ();
-          const auto &swap_phase_param = get_swap_phase_param ();
-          const float pan = balance_param.range ().convert_from_0_to_1 (
-            balance_param.currentValue ());
-          const bool mono_compat_enabled = mono_compat_param.range ().is_toggled (
-            mono_compat_param.currentValue ());
-          const bool swap_phase = swap_phase_param.range ().is_toggled (
-            swap_phase_param.currentValue ());
+      const auto &balance_param = get_balance_param ();
+      const auto &mono_compat_param = get_mono_compat_enabled_param ();
+      const auto &swap_phase_param = get_swap_phase_param ();
+      const float pan = balance_param.range ().convert_from_0_to_1 (
+        balance_param.currentValue ());
+      const bool mono_compat_enabled = mono_compat_param.range ().is_toggled (
+        mono_compat_param.currentValue ());
+      const bool swap_phase =
+        swap_phase_param.range ().is_toggled (swap_phase_param.currentValue ());
 
-          auto [calc_l, calc_r] = dsp::calculate_balance_control (
-            dsp::BalanceControlAlgorithm::Linear, pan);
+      auto [calc_l, calc_r] = dsp::calculate_balance_control (
+        dsp::BalanceControlAlgorithm::Linear, pan);
 
-          /* apply fader and pan */
+      /* apply fader and pan */
+      utils::float_ranges::mul_k2 (
+        &stereo_out.first.buf_[time_nfo.local_offset_], amp * calc_l,
+        time_nfo.nframes_);
+      utils::float_ranges::mul_k2 (
+        &stereo_out.second.buf_[time_nfo.local_offset_], amp * calc_r,
+        time_nfo.nframes_);
+
+      /* make mono if mono compat enabled */
+      if (mono_compat_enabled)
+        {
+          utils::float_ranges::make_mono (
+            &stereo_out.first.buf_[time_nfo.local_offset_],
+            &stereo_out.second.buf_[time_nfo.local_offset_], time_nfo.nframes_,
+            false);
+        }
+
+      /* swap phase if need */
+      if (swap_phase)
+        {
           utils::float_ranges::mul_k2 (
-            &stereo_out.first.buf_[time_nfo.local_offset_], amp * calc_l,
+            &stereo_out.first.buf_[time_nfo.local_offset_], -1.f,
             time_nfo.nframes_);
           utils::float_ranges::mul_k2 (
-            &stereo_out.second.buf_[time_nfo.local_offset_], amp * calc_r,
+            &stereo_out.second.buf_[time_nfo.local_offset_], -1.f,
             time_nfo.nframes_);
+        }
 
-          /* make mono if mono compat enabled */
-          if (mono_compat_enabled)
-            {
-              utils::float_ranges::make_mono (
-                &stereo_out.first.buf_[time_nfo.local_offset_],
-                &stereo_out.second.buf_[time_nfo.local_offset_],
-                time_nfo.nframes_, false);
-            }
-
-          /* swap phase if need */
-          if (swap_phase)
-            {
-              utils::float_ranges::mul_k2 (
-                &stereo_out.first.buf_[time_nfo.local_offset_], -1.f,
-                time_nfo.nframes_);
-              utils::float_ranges::mul_k2 (
-                &stereo_out.second.buf_[time_nfo.local_offset_], -1.f,
-                time_nfo.nframes_);
-            }
-
-          int fade_out_samples = fade_out_samples_.load ();
-          if (
-            effectively_muted && fade_out_samples == 0
-            && time_nfo.nframes_ - faded_out_frames > 0)
-            {
+      int fade_out_samples = fade_out_samples_.load ();
+      if (
+        effectively_muted && fade_out_samples == 0
+        && time_nfo.nframes_ - faded_out_frames > 0)
+        {
 #if 0
               z_debug (
                 "muting %zu frames",
                 time_nfo->nframes - faded_out_frames);
 #endif
-              /* apply mute level */
-              if (mute_amp < 0.00001f)
-                {
-                  utils::float_ranges::fill (
-                    &stereo_out.first
-                       .buf_[time_nfo.local_offset_ + faded_out_frames],
-                    AUDIO_ENGINE->denormal_prevention_val_,
-                    time_nfo.nframes_ - faded_out_frames);
-                  utils::float_ranges::fill (
-                    &stereo_out.second
-                       .buf_[time_nfo.local_offset_ + faded_out_frames],
-                    AUDIO_ENGINE->denormal_prevention_val_,
-                    time_nfo.nframes_ - faded_out_frames);
-                }
-              else
-                {
-                  utils::float_ranges::mul_k2 (
-                    &stereo_out.first.buf_[time_nfo.local_offset_], mute_amp,
-                    time_nfo.nframes_ - faded_out_frames);
-                  utils::float_ranges::mul_k2 (
-                    &stereo_out.second
-                       .buf_[time_nfo.local_offset_ + faded_out_frames],
-                    mute_amp, time_nfo.nframes_ - faded_out_frames);
-                }
-            }
-
-          /* if master or monitor or sample processor, hard limit the output */
-          if (
-            (type_ == Type::AudioChannel && track && track->is_master ())
-            || type_ == Type::Monitor || type_ == Type::SampleProcessor)
+          /* apply mute level */
+          if (mute_amp < 0.00001f)
             {
-              utils::float_ranges::clip (
-                &stereo_out.first.buf_[time_nfo.local_offset_], -2.f, 2.f,
-                time_nfo.nframes_);
-              utils::float_ranges::clip (
-                &stereo_out.second.buf_[time_nfo.local_offset_], -2.f, 2.f,
-                time_nfo.nframes_);
+              utils::float_ranges::fill (
+                &stereo_out.first.buf_[time_nfo.local_offset_ + faded_out_frames],
+                AUDIO_ENGINE->denormal_prevention_val_,
+                time_nfo.nframes_ - faded_out_frames);
+              utils::float_ranges::fill (
+                &stereo_out.second
+                   .buf_[time_nfo.local_offset_ + faded_out_frames],
+                AUDIO_ENGINE->denormal_prevention_val_,
+                time_nfo.nframes_ - faded_out_frames);
             }
-        } /* fi not prefader */
+          else
+            {
+              utils::float_ranges::mul_k2 (
+                &stereo_out.first.buf_[time_nfo.local_offset_], mute_amp,
+                time_nfo.nframes_ - faded_out_frames);
+              utils::float_ranges::mul_k2 (
+                &stereo_out.second
+                   .buf_[time_nfo.local_offset_ + faded_out_frames],
+                mute_amp, time_nfo.nframes_ - faded_out_frames);
+            }
+        }
+
+      /* if master or monitor or sample processor, hard limit the output */
+      if (
+        (type_ == Type::AudioChannel && (track != nullptr) && track->is_master ())
+        || type_ == Type::Monitor || type_ == Type::SampleProcessor)
+        {
+          utils::float_ranges::clip (
+            &stereo_out.first.buf_[time_nfo.local_offset_], -2.f, 2.f,
+            time_nfo.nframes_);
+          utils::float_ranges::clip (
+            &stereo_out.second.buf_[time_nfo.local_offset_], -2.f, 2.f,
+            time_nfo.nframes_);
+        }
     } /* fi monitor/audio fader */
   else if (type_ == Type::MidiChannel)
     {
@@ -930,30 +813,26 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
             midi_in.midi_events_.active_events_, time_nfo.local_offset_,
             time_nfo.nframes_);
 
-          /* if not prefader, also apply volume changes */
-          if (!passthrough_)
+          // also apply volume changes
+          for (auto &ev : midi_out.midi_events_.active_events_)
             {
-              for (auto &ev : midi_out.midi_events_.active_events_)
-                {
-                  if (
-                    midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER
-                    && utils::midi::midi_is_note_on (ev.raw_buffer_))
-                    {
-                      const midi_byte_t prev_vel =
-                        utils::midi::midi_get_velocity (ev.raw_buffer_);
-                      const auto new_vel =
-                        (midi_byte_t) ((float) prev_vel * amp);
-                      ev.set_velocity (
-                        std::min (new_vel, static_cast<midi_byte_t> (127)));
-                    }
-                }
-
               if (
-                midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME
-                && !utils::math::floats_equal (last_cc_volume_, amp))
+                midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER
+                && utils::midi::midi_is_note_on (ev.raw_buffer_))
                 {
-                  /* TODO add volume event on each channel */
+                  const midi_byte_t prev_vel =
+                    utils::midi::midi_get_velocity (ev.raw_buffer_);
+                  const auto new_vel = (midi_byte_t) ((float) prev_vel * amp);
+                  ev.set_velocity (
+                    std::min (new_vel, static_cast<midi_byte_t> (127)));
                 }
+            }
+
+          if (
+            midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME
+            && !utils::math::floats_equal (last_cc_volume_, amp))
+            {
+              /* TODO add volume event on each channel */
             }
         }
     }
@@ -969,7 +848,6 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
   obj.type_ = other.type_;
   obj.phase_ = other.phase_;
   obj.midi_mode_ = other.midi_mode_;
-  obj.passthrough_ = other.passthrough_;
 
   if (clone_type == utils::ObjectCloneType::Snapshot)
     {
@@ -980,18 +858,12 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
       obj.listen_id_ = other.listen_id_;
       obj.mono_compat_enabled_id_ = other.mono_compat_enabled_id_;
       obj.swap_phase_id_ = other.swap_phase_id_;
-      obj.midi_in_id_ = other.midi_in_id_;
-      obj.midi_out_id_ = other.midi_out_id_;
-      obj.stereo_in_left_id_ = other.stereo_in_left_id_;
-      obj.stereo_in_right_id_ = other.stereo_in_right_id_;
-      obj.stereo_out_left_id_ = other.stereo_out_left_id_;
-      obj.stereo_out_right_id_ = other.stereo_out_right_id_;
     }
   else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
-      auto deep_clone_port = [&] (auto &own_port_id, const auto &other_port_id) {
 // TODO
 #if 0
+      auto deep_clone_port = [&] (auto &own_port_id, const auto &other_port_id) {
         if (!other_port_id.has_value ())
           return;
 
@@ -1001,7 +873,6 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
             own_port_id = obj.port_registry_->clone_object (*other_port);
           },
           other_amp_port);
-#endif
       };
       deep_clone_port (obj.amp_id_, other.amp_id_);
       deep_clone_port (obj.balance_id_, other.balance_id_);
@@ -1011,12 +882,6 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
       deep_clone_port (
         obj.mono_compat_enabled_id_, other.mono_compat_enabled_id_);
       deep_clone_port (obj.swap_phase_id_, other.swap_phase_id_);
-      deep_clone_port (obj.midi_in_id_, other.midi_in_id_);
-      deep_clone_port (obj.midi_out_id_, other.midi_out_id_);
-      deep_clone_port (obj.stereo_in_left_id_, other.stereo_in_left_id_);
-      deep_clone_port (obj.stereo_in_right_id_, other.stereo_in_right_id_);
-      deep_clone_port (obj.stereo_out_left_id_, other.stereo_out_left_id_);
-      deep_clone_port (obj.stereo_out_right_id_, other.stereo_out_right_id_);
 
       /* set owner */
       std::vector<dsp::Port *> ports;
@@ -1025,12 +890,14 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
         {
           port->set_full_designation_provider (&obj);
         }
+#endif
     }
 }
 
 void
 from_json (const nlohmann::json &j, Fader &fader)
 {
+  from_json (j, static_cast<dsp::ProcessorBase &> (fader));
   j.at (Fader::kTypeKey).get_to (fader.type_);
   fader.amp_id_ = { *fader.param_registry_ };
   j.at (Fader::kAmpKey).get_to (*fader.amp_id_);
@@ -1047,25 +914,6 @@ from_json (const nlohmann::json &j, Fader &fader)
   j.at (Fader::kMonoCompatEnabledKey).get_to (*fader.mono_compat_enabled_id_);
   fader.swap_phase_id_ = { *fader.param_registry_ };
   j.at (Fader::kSwapPhaseKey).get_to (*fader.swap_phase_id_);
-  if (j.contains (Fader::kMidiInKey))
-    {
-      fader.midi_in_id_ = { *fader.port_registry_ };
-      fader.midi_out_id_ = { *fader.port_registry_ };
-      j.at (Fader::kMidiInKey).get_to (*fader.midi_in_id_);
-      j.at (Fader::kMidiOutKey).get_to (*fader.midi_out_id_);
-    }
-  else
-    {
-      fader.stereo_in_left_id_ = { *fader.port_registry_ };
-      fader.stereo_in_right_id_ = { *fader.port_registry_ };
-      fader.stereo_out_left_id_ = { *fader.port_registry_ };
-      fader.stereo_out_right_id_ = { *fader.port_registry_ };
-      j.at (Fader::kStereoInLKey).get_to (*fader.stereo_in_left_id_);
-      j.at (Fader::kStereoInRKey).get_to (*fader.stereo_in_right_id_);
-      j.at (Fader::kStereoOutLKey).get_to (*fader.stereo_out_left_id_);
-      j.at (Fader::kStereoOutRKey).get_to (*fader.stereo_out_right_id_);
-    }
   j.at (Fader::kMidiModeKey).get_to (fader.midi_mode_);
-  j.at (Fader::kPassthroughKey).get_to (fader.passthrough_);
 }
 }

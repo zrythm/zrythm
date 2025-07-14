@@ -1174,10 +1174,12 @@ TracklistSelectionsAction::
                             && track->get_output_signal_type () == PortType::Audio)
                             {
                               PORT_CONNECTIONS_MGR->add_connection (
-                                track_send->stereo_out_left_id_->id (),
+                                track_send->get_stereo_out_ports ()
+                                  .first.get_uuid (),
                                 own_conns.at (0)->dest_id_, 1.f, true, true);
                               PORT_CONNECTIONS_MGR->add_connection (
-                                track_send->stereo_out_right_id_->id (),
+                                track_send->get_stereo_out_ports ()
+                                  .second.get_uuid (),
                                 own_conns.at (1)->dest_id_, 1.f, true, true);
                             }
                           else if (
@@ -1185,7 +1187,7 @@ TracklistSelectionsAction::
                             && track->get_output_signal_type () == PortType::Event)
                             {
                               PORT_CONNECTIONS_MGR->add_connection (
-                                track_send->midi_out_id_->id (),
+                                track_send->get_midi_out_port ().get_uuid (),
                                 own_conns.front ()->dest_id_, 1.f, true, true);
                             }
                         }

@@ -5,6 +5,7 @@
 #include "dsp/graph_export.h"
 #include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/project.h"
+#include "structure/tracks/channel_subgraph_builder.h"
 
 using namespace zrythm;
 
@@ -21,39 +22,41 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   const auto &project = project_;
   const auto &engine = project_.audio_engine_;
-  auto *      sample_processor = engine->sample_processor_.get ();
-  auto *      tracklist = project_.tracklist_;
-  auto *      monitor_fader = engine->control_room_->monitor_fader_.get ();
+  // auto *      sample_processor = engine->sample_processor_.get ();
+  auto * tracklist = project_.tracklist_;
+  auto * monitor_fader = engine->control_room_->monitor_fader_.get ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project.transport_;
 
-  auto add_node_for_processable = [&] (auto &processable) {
+  const auto add_node_for_processable = [&] (auto &processable) {
     return graph.add_node_for_processable (processable, *transport);
   };
 
+  const auto connect_ports =
+    [&] (const dsp::Port::Uuid src_id, const dsp::Port::Uuid &dest_id) {
+      dsp::add_connection_for_ports (
+        graph, { src_id, project.get_port_registry () },
+        { dest_id, project.get_port_registry () });
+    };
+
   /* add the sample processor */
+// TODO
+#if 0
   add_node_for_processable (*sample_processor);
+  for (const auto &fader_out : sample_processor->fader_->get_output_ports ())
+    {
+      add_node_for_processable (*fader_out.get_object_as<dsp::AudioPort> ());
+    }
+#endif
 
   /* add the monitor fader */
-  add_node_for_processable (*monitor_fader);
+  dsp::ProcessorGraphBuilder::add_nodes (graph, *transport, *monitor_fader);
 
   /* add the initial processor */
   auto * initial_processor_node = graph.add_initial_processor (*transport);
 
   /* add the hardware input processor */
   // add_node_for_processable (*hw_in_processor);
-
-  auto add_plugin = [&] (auto &pl) {
-    z_return_if_fail (!pl.deleting_);
-    std::visit (
-      [&] (auto &&plugin) {
-        if (!plugin->in_ports_.empty () || !plugin->out_ports_.empty ())
-          {
-            add_node_for_processable (*plugin);
-          }
-      },
-      convert_to_variant<zrythm::gui::old_dsp::plugins::PluginPtrVariant> (&pl));
-  };
 
   /* add plugins */
   for (const auto &cur_tr : tracklist->get_track_span ())
@@ -82,7 +85,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       if (pl->deleting_)
                         return;
 
-                      add_plugin (*pl);
+                      dsp::ProcessorGraphBuilder::add_nodes (
+                        graph, *transport, *pl);
                     },
                     pl_var);
                 }
@@ -98,38 +102,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             std::derived_from<TrackT, structure::tracks::ChannelTrack>)
             {
               auto &channel = tr->channel_;
-
-              /* add the fader */
-              auto * fader = channel->fader ();
-              add_node_for_processable (*fader);
-
-              /* add the prefader */
-              auto * prefader = channel->preFader ();
-              add_node_for_processable (*prefader);
-
-              /* add plugins */
-              std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
-              channel->get_plugins (plugins);
-              for (auto * pl : plugins)
-                {
-                  if (!pl || pl->deleting_)
-                    continue;
-
-                  add_plugin (*pl);
-                }
-
-              /* add sends */
-              if (
-                tr->get_output_signal_type () == dsp::PortType::Audio
-                || tr->get_output_signal_type () == dsp::PortType::Event)
-                {
-                  for (auto &send : channel->sends_)
-                    {
-                      /* note that we add sends even if empty so that graph
-                       * renders properly */
-                      add_node_for_processable (*send);
-                    }
-                }
+              structure::tracks::ChannelSubgraphBuilder::add_nodes (
+                graph, *transport, *channel, drop_unnecessary_ports);
             }
         },
         cur_tr);
@@ -194,40 +168,12 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         *project.port_connections_manager_, drop_unnecessary_ports);
     }
 
-  /* ========================
-   * now connect them
-   * ======================== */
+    /* ========================
+     * now connect them
+     * ======================== */
 
-  auto connect_plugin = [&] (gui::old_dsp::plugins::Plugin &pl) {
-    z_return_if_fail (!pl.deleting_);
-    auto * pl_node = graph.get_nodes ().find_node_for_processable (pl);
-    z_return_if_fail (pl_node);
-    for (const auto port_var : pl.get_input_port_span ())
-      {
-        std::visit (
-          [&] (auto &&port) {
-            auto * port_node =
-              graph.get_nodes ().find_node_for_processable (*port);
-            assert (port_node);
-            port_node->connect_to (*pl_node);
-          },
-          port_var);
-      }
-    for (const auto port_var : pl.get_output_port_span ())
-      {
-        std::visit (
-          [&] (auto &&port) {
-            // z_return_if_fail (port->get_plugin (true) != nullptr);
-            auto * port_node =
-              graph.get_nodes ().find_node_for_processable (*port);
-            z_return_if_fail (port_node);
-            pl_node->connect_to (*port_node);
-          },
-          port_var);
-      }
-  };
-
-  /* connect the sample processor */
+// TODO: connect the sample processor
+#if 0
   {
     auto * node =
       graph.get_nodes ().find_node_for_processable (*sample_processor);
@@ -239,22 +185,46 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       },
       sample_processor->fader_->get_stereo_out_ports ());
   }
+#endif
 
   /* connect the monitor fader */
+  dsp::ProcessorGraphBuilder::add_connections (graph, *monitor_fader);
+
+// TODO: connect the sample processor output to the monitor fader output so we
+// hear the samples
+#if 0
   {
-    auto * node = graph.get_nodes ().find_node_for_processable (*monitor_fader);
-    iterate_tuple (
-      [&] (const auto &port) {
-        auto * node2 = graph.get_nodes ().find_node_for_processable (port);
-        node2->connect_to (*node);
-      },
-      monitor_fader->get_stereo_in_ports ());
-    iterate_tuple (
-      [&] (const auto &port) {
-        auto * node2 = graph.get_nodes ().find_node_for_processable (port);
-        node->connect_to (*node2);
-      },
-      monitor_fader->get_stereo_out_ports ());
+    const auto &sp_fader_outs = sample_processor->fader_->get_output_ports ();
+    const auto &monitor_fader_outs = monitor_fader->get_output_ports ();
+    for (
+      const auto &[sp_out, mf_out] :
+      std::views::zip (sp_fader_outs, monitor_fader_outs))
+      {
+        auto * sp_out_node = graph.get_nodes ().find_node_for_processable (
+          *sp_out.get_object_as<dsp::AudioPort> ());
+        auto * mf_out_node = graph.get_nodes ().find_node_for_processable (
+          *mf_out.get_object_as<dsp::AudioPort> ());
+        sp_out_node->connect_to (*mf_out_node);
+      }
+  }
+#endif
+
+  // connect monitor fader output to engine monitor output
+  {
+    const auto &mf_outs = monitor_fader->get_output_ports ();
+    const std::array<dsp::PortUuidReference, 2> monitor_outs = {
+      engine->monitor_out_left_.value (), engine->monitor_out_right_.value ()
+    };
+    for (
+      const auto &[mf_out, monitor_out] :
+      std::views::zip (mf_outs, monitor_outs))
+      {
+        auto * mf_out_node = graph.get_nodes ().find_node_for_processable (
+          *mf_out.get_object_as<dsp::AudioPort> ());
+        auto * monitor_out_node = graph.get_nodes ().find_node_for_processable (
+          *monitor_out.get_object_as<dsp::AudioPort> ());
+        mf_out_node->connect_to (*monitor_out_node);
+      }
   }
 
   /* connect the HW input processor */
@@ -378,7 +348,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                           [&] (auto &&pl) {
                             if (pl && !pl->deleting_)
                               {
-                                connect_plugin (*pl);
+                                dsp::ProcessorGraphBuilder::add_connections (
+                                  graph, *pl);
                                 for (
                                   const auto &pl_port_var :
                                   pl->get_input_port_span ())
@@ -434,130 +405,36 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               if constexpr (
                 std::derived_from<TrackT, structure::tracks::ChannelTrack>)
                 {
+                  std::vector<dsp::PortUuidReference> track_processor_outs;
+                  if (tr->get_input_signal_type () == dsp::PortType::Event)
+                    {
+                      track_processor_outs.push_back (
+                        *tr->processor_->midi_out_id_);
+                    }
+                  else if (tr->get_input_signal_type () == dsp::PortType::Audio)
+                    {
+                      track_processor_outs.push_back (
+                        *tr->processor_->stereo_out_left_id_);
+                      track_processor_outs.push_back (
+                        *tr->processor_->stereo_out_right_id_);
+                    }
                   auto &ch = tr->channel_;
-                  auto &prefader = ch->prefader_;
-                  auto &fader = ch->fader_;
+                  structure::tracks::ChannelSubgraphBuilder::add_connections (
+                    graph, *ch, track_processor_outs, drop_unnecessary_ports);
 
-                  /* connect the fader */
-                  auto * const fader_node =
-                    graph.get_nodes ().find_node_for_processable (*fader);
-                  z_warn_if_fail (fader_node);
-                  if (
-                    fader->type_ == structure::tracks::Fader::Type::AudioChannel)
+                  // Connect master track output to monitor fader input
+                  if constexpr (
+                    std::is_same_v<TrackT, structure::tracks::MasterTrack>)
                     {
-                      /* connect ins */
-                      iterate_tuple (
-                        [&] (const auto &port) {
-                          auto node2 =
-                            graph.get_nodes ().find_node_for_processable (port);
-                          node2->connect_to (*fader_node);
-                        },
-                        fader->get_stereo_in_ports ());
-
-                      /* connect outs */
-                      iterate_tuple (
-                        [&] (const auto &port) {
-                          auto node2 =
-                            graph.get_nodes ().find_node_for_processable (port);
-                          fader_node->connect_to (*node2);
-                        },
-                        fader->get_stereo_out_ports ());
-                    }
-                  else if (
-                    fader->type_ == structure::tracks::Fader::Type::MidiChannel)
-                    {
-                      auto node2 = graph.get_nodes ().find_node_for_processable (
-                        fader->get_midi_in_port ());
-                      node2->connect_to (*fader_node);
-                      node2 = graph.get_nodes ().find_node_for_processable (
-                        fader->get_midi_out_port ());
-                      fader_node->connect_to (*node2);
-                    }
-
-                  /* connect the prefader */
-                  auto * const prefader_node =
-                    graph.get_nodes ().find_node_for_processable (*prefader);
-                  z_warn_if_fail (prefader_node);
-                  if (
-                    prefader->type_
-                    == structure::tracks::Fader::Type::AudioChannel)
-                    {
-                      iterate_tuple (
-                        [&] (const auto &port) {
-                          auto * node2 =
-                            graph.get_nodes ().find_node_for_processable (port);
-                          node2->connect_to (*prefader_node);
-                        },
-                        prefader->get_stereo_in_ports ());
-                      iterate_tuple (
-                        [&] (const auto &port) {
-                          auto node2 =
-                            graph.get_nodes ().find_node_for_processable (port);
-                          prefader_node->connect_to (*node2);
-                        },
-                        prefader->get_stereo_out_ports ());
-                    }
-                  else if (
-                    prefader->type_
-                    == structure::tracks::Fader::Type::MidiChannel)
-                    {
-                      auto * node2 =
-                        graph.get_nodes ().find_node_for_processable (
-                          prefader->get_midi_in_port ());
-                      node2->connect_to (*prefader_node);
-                      node2 = graph.get_nodes ().find_node_for_processable (
-                        prefader->get_midi_out_port ());
-                      prefader_node->connect_to (*node2);
-                    }
-
-                  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
-                  ch->get_plugins (plugins);
-                  for (auto * const pl : plugins)
-                    {
-                      if (pl && !pl->deleting_)
-                        {
-                          connect_plugin (*pl);
-                        }
-                    }
-
-                  for (auto &send : ch->sends_)
-                    {
-                      /* note that we do not skip empty sends because then port
-                       * connection validation will not detect invalid
-                       * connections properly */
-                      auto * const send_node =
-                        graph.get_nodes ().find_node_for_processable (*send);
-
-                      if (tr->get_output_signal_type () == dsp::PortType::Event)
-                        {
-                          auto * node2 =
-                            graph.get_nodes ().find_node_for_processable (
-                              send->get_midi_in_port ());
-                          node2->connect_to (*send_node);
-                          node2 = graph.get_nodes ().find_node_for_processable (
-                            send->get_midi_out_port ());
-                          send_node->connect_to (*node2);
-                        }
-                      else if (
-                        tr->get_output_signal_type () == dsp::PortType::Audio)
-                        {
-                          iterate_tuple (
-                            [&] (const auto &port) {
-                              auto * node2 =
-                                graph.get_nodes ().find_node_for_processable (
-                                  port);
-                              node2->connect_to (*send_node);
-                            },
-                            send->get_stereo_in_ports ());
-                          iterate_tuple (
-                            [&] (const auto &port) {
-                              auto * node2 =
-                                graph.get_nodes ().find_node_for_processable (
-                                  port);
-                              send_node->connect_to (*node2);
-                            },
-                            send->get_stereo_out_ports ());
-                        }
+                      const auto &ch_stereo_outs = ch->get_stereo_out_ports ();
+                      const auto &monitor_fader_ins =
+                        monitor_fader->get_stereo_in_ports ();
+                      connect_ports (
+                        ch_stereo_outs.first.get_uuid (),
+                        monitor_fader_ins.first.get_uuid ());
+                      connect_ports (
+                        ch_stereo_outs.second.get_uuid (),
+                        monitor_fader_ins.second.get_uuid ());
                     }
                 }
             }

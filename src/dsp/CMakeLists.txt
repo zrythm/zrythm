@@ -50,8 +50,7 @@ target_sources(zrythm_dsp_lib
     parameter.cpp
     panning.h
     panning.cpp
-    passthrough_processor.h
-    passthrough_processor.cpp
+    passthrough_processors.h
     peak_dsp.h
     peak_dsp.cpp
     peak_fall_smooth.h
@@ -68,6 +67,8 @@ target_sources(zrythm_dsp_lib
     port_connections_manager.cpp
     position.h
     position.cpp
+    processor_base.h
+    processor_base.cpp
     stretcher.h
     stretcher.cpp
     tempo_map.h

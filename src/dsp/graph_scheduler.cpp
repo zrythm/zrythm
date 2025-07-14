@@ -253,21 +253,8 @@ GraphScheduler::run_cycle (
   time_nfo_ = time_nfo;
   remaining_preroll_frames_ = remaining_preroll_frames;
 
-  /* process special nodes first */
-  for (const auto node : graph_nodes_.special_nodes_)
-    {
-      node.get ().process (time_nfo_, remaining_preroll_frames);
-      node.get ().set_skip_processing (true);
-    }
-
   callback_start_sem_.signal ();
   callback_done_sem_.wait ();
-
-  /* reset bypass state of special nodes */
-  for (const auto node : graph_nodes_.special_nodes_)
-    {
-      node.get ().set_skip_processing (false);
-    }
 }
 
 void

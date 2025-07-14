@@ -45,13 +45,6 @@ public:
   const Channel * get_channel () const { return channel_.get (); }
 
   /**
-   * Returns the Fader (if applicable).
-   *
-   * @param post_fader True to get post fader, false to get pre fader.
-   */
-  Fader * get_fader (bool post_fader);
-
-  /**
    * Returns if the track is muted.
    */
   bool currently_muted () const override
@@ -119,15 +112,9 @@ public:
   /**
    * Returns the Fader::Type.
    */
-  Fader::Type get_fader_type () { return get_prefader_type (); }
-
-  Fader::Type get_prefader_type () { return type_get_prefader_type (type_); }
+  Fader::Type get_fader_type () { return type_get_fader_type (type_); }
 
 protected:
-  void
-  append_member_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const;
-
   friend void init_from (
     ChannelTrack          &obj,
     const ChannelTrack    &other,

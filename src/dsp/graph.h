@@ -25,6 +25,10 @@ public:
 
   /**
    * Creates a new node, adds it to the graph and returns it.
+   *
+   * @note This method does not allow duplicates. If a duplicate is attempted to
+   * be added, this method will return the existing node without adding a new
+   * node.
    */
   GraphNode *
   add_node_for_processable (IProcessable &node, const dsp::ITransport &transport);

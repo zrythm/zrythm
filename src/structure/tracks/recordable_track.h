@@ -116,10 +116,6 @@ protected:
     obj.record_set_automatically_ = other.record_set_automatically_;
   }
 
-  void
-  append_member_ports (std::vector<dsp::Port *> &ports, bool include_plugins)
-    const;
-
   dsp::ProcessorParameter &get_recording_param () const
   {
     return *recording_id_.get_object_as<dsp::ProcessorParameter> ();

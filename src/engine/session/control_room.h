@@ -65,7 +65,8 @@ private:
   }
   friend void from_json (const nlohmann::json &j, ControlRoom &control_room)
   {
-    j.at (kMonitorFaderKey).get_to (control_room.listen_fader_);
+    // TODO
+    // j.at (kMonitorFaderKey).get_to (control_room.listen_fader_);
   }
 
   void init_common ();

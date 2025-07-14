@@ -521,7 +521,7 @@ Exporter::prepare_tracks_for_export (
             continue;
 
           const auto &l_src_id =
-            cur_tr->channel_->fader_->get_stereo_out_left_id ();
+            cur_tr->channel_->fader_->get_output_ports ().at (0).id ();
           const auto &l_dest_id =
             cur_tr->channel_->get_stereo_out_ports ().first.get_uuid ();
           auto l_conn =
@@ -531,7 +531,7 @@ Exporter::prepare_tracks_for_export (
           PORT_CONNECTIONS_MGR->remove_connection (l_src_id, l_dest_id);
 
           const auto &r_src_id =
-            cur_tr->channel_->fader_->get_stereo_out_right_id ();
+            cur_tr->channel_->fader_->get_output_ports ().at (1).id ();
           const auto &r_dest_id =
             cur_tr->channel_->get_stereo_out_ports ().second.get_uuid ();
           auto r_conn =
