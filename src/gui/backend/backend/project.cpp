@@ -101,7 +101,7 @@ Project::Project (
         *snap_grid_timeline_,
         *snap_grid_editor_,
         [&] () { return audio_engine_->get_sample_rate (); },
-        [&] () { return get_tempo_map ().get_tempo_events ().front ().bpm; },
+        [&] () { return get_tempo_map ().tempo_at_tick (0); },
         structure::arrangement::ArrangerObjectSelectionManager{
           clip_editor_->getAudioClipEditor ()->get_selected_object_ids (),
           *arranger_object_registry_ },

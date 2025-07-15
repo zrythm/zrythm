@@ -49,6 +49,8 @@ enum class TimeFormat : std::uint_fast8_t
  */
 template <int PPQ> class FixedPpqTempoMap
 {
+  friend class TempoMapWrapper;
+
 public:
   /// Tempo curve type (constant or linear ramp)
   enum class CurveType : std::uint_fast8_t
@@ -558,15 +560,6 @@ public:
     return cumulative_ticks;
   }
 
-  /// Get all tempo events
-  const std::vector<TempoEvent> &get_tempo_events () const { return events_; }
-
-  /// Get all time signature events
-  const std::vector<TimeSignatureEvent> &get_time_signature_events () const
-  {
-    return time_sig_events_;
-  }
-
   /// Get pulses per quarter note
   static consteval int get_ppq () { return PPQ; }
 
@@ -581,6 +574,15 @@ public:
   }
 
 private:
+  /// Get all tempo events
+  const std::vector<TempoEvent> &get_tempo_events () const { return events_; }
+
+  /// Get all time signature events
+  const std::vector<TimeSignatureEvent> &get_time_signature_events () const
+  {
+    return time_sig_events_;
+  }
+
   /// Rebuild cumulative time cache
   void rebuild_cumulative_times ()
   {

@@ -340,7 +340,7 @@ Exporter::export_midi (Settings &info)
     {
       /* Write tempo information out to track 1 */
       const auto &tempo_map = PROJECT->get_tempo_map ();
-      midiSongAddTempo (mf, 1, (int) tempo_map.get_tempo_events ().front ().bpm);
+      midiSongAddTempo (mf, 1, (int) tempo_map.get_tempo_at_tick(0));
 
       midiFileSetPPQN (mf, dsp::TempoMap::get_ppq());
 

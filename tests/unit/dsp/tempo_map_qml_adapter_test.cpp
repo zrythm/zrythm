@@ -76,9 +76,6 @@ TEST_F (TempoMapWrapperTest, TempoEventManagement)
   EXPECT_EQ (new_event->tick (), 1920);
   EXPECT_DOUBLE_EQ (new_event->bpm (), 140.0);
   EXPECT_EQ (new_event->curve (), TempoMap::CurveType::Constant);
-
-  // Verify underlying map
-  EXPECT_EQ (tempo_map_->get_tempo_events ().size (), 2);
 }
 
 // Test time signature signals and wrappers
@@ -99,9 +96,6 @@ TEST_F (TempoMapWrapperTest, TimeSignatureManagement)
   EXPECT_EQ (new_sig->tick (), 1920);
   EXPECT_EQ (new_sig->numerator (), 3);
   EXPECT_EQ (new_sig->denominator (), 4);
-
-  // Verify underlying map
-  EXPECT_EQ (tempo_map_->get_time_signature_events ().size (), 2);
 }
 
 // Test sample rate changes

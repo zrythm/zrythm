@@ -546,13 +546,18 @@ AudioEngine::update_position_info (
     dsp::Position{ playhead_frames_before, AUDIO_ENGINE->ticks_per_frame_ };
   playhead.add_frames (frames_to_add, ticks_per_frame_);
   pos_nfo.is_rolling_ = transport_->isRolling ();
-  pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map.get_tempo_events ().front ().bpm);
+  pos_nfo.bpm_ = static_cast<bpm_t> (
+    tempo_map.tempo_at_tick (static_cast<int64_t> (playhead.ticks_)));
   pos_nfo.bar_ = playhead.get_bars (true, transport_->ticks_per_bar_);
   pos_nfo.beat_ = playhead.get_beats (
-    true, tempo_map.get_time_signature_events ().front ().numerator,
+    true,
+    tempo_map.time_signature_at_tick (static_cast<int64_t> (playhead.ticks_))
+      .numerator,
     transport_->ticks_per_beat_);
   pos_nfo.sixteenth_ = playhead.get_sixteenths (
-    true, tempo_map.get_time_signature_events ().front ().numerator,
+    true,
+    tempo_map.time_signature_at_tick (static_cast<int64_t> (playhead.ticks_))
+      .numerator,
     transport_->sixteenths_per_beat_, frames_per_tick_);
   pos_nfo.sixteenth_within_bar_ =
     pos_nfo.sixteenth_ + (pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_;

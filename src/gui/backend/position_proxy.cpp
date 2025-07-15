@@ -72,7 +72,7 @@ PositionProxy::getStringDisplay (
 {
   return utils::Utf8String::from_utf8_encoded_string (
            to_string (
-             tempo_map->get_tempo_map ().get_time_signature_events ().front ().numerator,
+             tempo_map->get_tempo_map ().time_signature_at_tick (0).numerator,
              transport->sixteenths_per_beat_,
              transport->project_->audio_engine_->frames_per_tick_, 0))
     .to_qstring ();

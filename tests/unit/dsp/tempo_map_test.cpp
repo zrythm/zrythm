@@ -20,9 +20,7 @@ protected:
 // Test initial state
 TEST_F (TempoMapTest, InitialState)
 {
-  EXPECT_TRUE (map->get_tempo_events ().empty ());
   EXPECT_DOUBLE_EQ (map->tempo_at_tick (0), 120.0);
-  EXPECT_TRUE (map->get_time_signature_events ().empty ());
   EXPECT_EQ (map->time_signature_at_tick (0).numerator, 4);
   EXPECT_EQ (map->time_signature_at_tick (0).denominator, 4);
 }
@@ -32,21 +30,28 @@ TEST_F (TempoMapTest, TempoEventManagement)
 {
   // Add constant tempo event
   map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
-  EXPECT_EQ (map->get_tempo_events ().size (), 2);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1920), 140.0);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1919), 120.0); // before the event
 
-  // Add linear tempo event
+  // Add linear tempo event at 3840
   map->add_tempo_event (3840, 160.0, TempoMap::CurveType::Linear);
-  EXPECT_EQ (map->get_tempo_events ().size (), 3);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (3840), 160.0);
 
-  // Update existing event
+  // Update existing event at 1920
   map->add_tempo_event (1920, 150.0, TempoMap::CurveType::Linear);
-  EXPECT_EQ (map->get_tempo_events ().size (), 3);
-  EXPECT_DOUBLE_EQ (map->get_tempo_events ()[1].bpm, 150.0);
-  EXPECT_EQ (map->get_tempo_events ()[1].curve, TempoMap::CurveType::Linear);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1920), 150.0);
+  // Check the linear ramp: at the midpoint between 1920 and 3840, tempo should
+  // be 155.0
+  EXPECT_NEAR (map->tempo_at_tick (2880), 155.0, 1e-8);
 
-  // Remove event
+  // Remove event at 3840
   map->remove_tempo_event (3840);
-  EXPECT_EQ (map->get_tempo_events ().size (), 2);
+  // Now the tempo at 3840 should be the same as the previous event (150.0)
+  // because the event was removed
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (3840), 150.0);
+  // Also, the segment from 1920 onward should be constant, so at 2880 it should
+  // be 150.0 (not ramping)
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (2880), 150.0);
 }
 
 // Test time signature management
@@ -54,17 +59,25 @@ TEST_F (TempoMapTest, TimeSignatureManagement)
 {
   // Add time signature
   map->add_time_signature_event (1920, 3, 4);
-  EXPECT_EQ (map->get_time_signature_events ().size (), 2);
+  auto ts = map->time_signature_at_tick (1920);
+  EXPECT_EQ (ts.numerator, 3);
+  EXPECT_EQ (ts.denominator, 4);
+  // Before the event, it should be 4/4
+  ts = map->time_signature_at_tick (1919);
+  EXPECT_EQ (ts.numerator, 4);
+  EXPECT_EQ (ts.denominator, 4);
 
   // Update existing
   map->add_time_signature_event (1920, 5, 8);
-  EXPECT_EQ (map->get_time_signature_events ().size (), 2);
-  EXPECT_EQ (map->get_time_signature_events ()[1].numerator, 5);
-  EXPECT_EQ (map->get_time_signature_events ()[1].denominator, 8);
+  ts = map->time_signature_at_tick (1920);
+  EXPECT_EQ (ts.numerator, 5);
+  EXPECT_EQ (ts.denominator, 8);
 
   // Remove
   map->remove_time_signature_event (1920);
-  EXPECT_EQ (map->get_time_signature_events ().size (), 1);
+  ts = map->time_signature_at_tick (1920);
+  EXPECT_EQ (ts.numerator, 4);
+  EXPECT_EQ (ts.denominator, 4);
 }
 
 // Test constant tempo conversions
@@ -468,37 +481,21 @@ TEST_F (TempoMapTest, Serialization)
   TempoMap deserialized_map{ SAMPLE_RATE };
   j.get_to (deserialized_map);
 
-  // Verify events
-  const auto &original_events = map->get_tempo_events ();
-  const auto &deserialized_events = deserialized_map.get_tempo_events ();
-  EXPECT_GT (deserialized_events.size (), 0);
-  EXPECT_EQ (original_events.size (), deserialized_events.size ());
-
-  for (size_t i = 0; i < original_events.size (); ++i)
+  // Verify by checking at various ticks
+  std::vector<int64_t> test_ticks = { 0, 960, 1920, 2880, 3840, 4800 };
+  for (auto tick : test_ticks)
     {
-      EXPECT_EQ (original_events[i].tick, deserialized_events[i].tick);
-      EXPECT_DOUBLE_EQ (original_events[i].bpm, deserialized_events[i].bpm);
-      EXPECT_EQ (original_events[i].curve, deserialized_events[i].curve);
+      EXPECT_DOUBLE_EQ (
+        map->tempo_at_tick (tick), deserialized_map.tempo_at_tick (tick));
+      auto ts1 = map->time_signature_at_tick (tick);
+      auto ts2 = deserialized_map.time_signature_at_tick (tick);
+      EXPECT_EQ (ts1.numerator, ts2.numerator);
+      EXPECT_EQ (ts1.denominator, ts2.denominator);
     }
 
-  // Verify time signatures
-  const auto &original_sigs = map->get_time_signature_events ();
-  const auto &deserialized_sigs = deserialized_map.get_time_signature_events ();
-  EXPECT_GT (deserialized_sigs.size (), 0);
-  EXPECT_EQ (original_sigs.size (), deserialized_sigs.size ());
-
-  for (size_t i = 0; i < original_sigs.size (); ++i)
-    {
-      EXPECT_EQ (original_sigs[i].tick, deserialized_sigs[i].tick);
-      EXPECT_EQ (original_sigs[i].numerator, deserialized_sigs[i].numerator);
-      EXPECT_EQ (original_sigs[i].denominator, deserialized_sigs[i].denominator);
-    }
-
-  // Verify conversions still work
-  const double test_ticks = 2880.0;
+  // Also test a conversion to be sure
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (test_ticks),
-    deserialized_map.tick_to_seconds (test_ticks));
+    map->tick_to_seconds (2880), deserialized_map.tick_to_seconds (2880));
   EXPECT_DOUBLE_EQ (
     map->seconds_to_tick (1.5), deserialized_map.seconds_to_tick (1.5));
 }
@@ -516,8 +513,10 @@ TEST_F (TempoMapTest, EmptySerialization)
   TempoMap deserialized_map{ SAMPLE_RATE };
   j.get_to (deserialized_map);
 
-  // Verify empty
-  EXPECT_TRUE (deserialized_map.get_tempo_events ().empty ());
-  EXPECT_TRUE (deserialized_map.get_time_signature_events ().empty ());
+  // Verify empty by checking default tempo and time signature
+  EXPECT_DOUBLE_EQ (deserialized_map.tempo_at_tick (0), 120.0);
+  auto ts = deserialized_map.time_signature_at_tick (0);
+  EXPECT_EQ (ts.numerator, 4);
+  EXPECT_EQ (ts.denominator, 4);
 }
 }
