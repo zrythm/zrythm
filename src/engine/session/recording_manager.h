@@ -216,6 +216,15 @@ public:
     std::vector<QPointer<structure::arrangement::MidiNote>>>
     unended_notes_per_region_;
 
+  /**
+   * Cache of automation tracks in record mode, used to avoid looping over all
+   * automation tracks.
+   */
+  std::unordered_map<
+    structure::tracks::Track::Uuid,
+    std::vector<QPointer<AutomationTrack>>>
+    ats_in_record_mode_;
+
   /** Last recorded automation points. */
   std::unordered_map<
     structure::arrangement::ArrangerObjectUuid,

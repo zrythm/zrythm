@@ -4,7 +4,14 @@
 #pragma once
 
 #include "structure/tracks/automatable_track.h"
+#include "structure/tracks/track.h"
 #include "structure/tracks/track_processor.h"
+
+#define DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES(ClassType) \
+public: \
+  Q_PROPERTY ( \
+    structure::tracks::AutomatableTrackMixin * automatableTrackMixin READ \
+      automatableTrackMixin CONSTANT)
 
 namespace zrythm::structure::tracks
 {
@@ -19,16 +26,19 @@ class TrackProcessor;
  *
  * @see Channel and ChannelTrack for additional DSP graph functionality.
  */
-class ProcessableTrack : virtual public AutomatableTrack
+class ProcessableTrack : virtual public Track
 {
 public:
-  ProcessableTrack (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    bool                             new_identity);
+  using Dependencies = AutomationTrackHolder::Dependencies;
+  ProcessableTrack (Dependencies dependencies);
 
   ~ProcessableTrack () override = default;
   Z_DISABLE_COPY_MOVE (ProcessableTrack)
+
+  AutomatableTrackMixin * automatableTrackMixin () const
+  {
+    return automatable_track_mixin_.get ();
+  }
 
   void init_loaded (
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,
@@ -72,11 +82,16 @@ protected:
 
 private:
   static constexpr auto kProcessorKey = "processor"sv;
+  static constexpr auto kAutomatableTrackMixinKey = "automatableTrackMixin"sv;
   friend void           to_json (nlohmann::json &j, const ProcessableTrack &p)
   {
     j[kProcessorKey] = p.processor_;
+    j[kAutomatableTrackMixinKey] = p.automatable_track_mixin_;
   }
   friend void from_json (const nlohmann::json &j, ProcessableTrack &p);
+
+private:
+  utils::QObjectUniquePtr<AutomatableTrackMixin> automatable_track_mixin_;
 
 public:
   /**
@@ -84,7 +99,7 @@ public:
    *
    * This is the starting point when processing a Track.
    */
-  std::unique_ptr<TrackProcessor> processor_;
+  utils::QObjectUniquePtr<TrackProcessor> processor_;
 
 protected:
   dsp::PortRegistry               &port_registry_;

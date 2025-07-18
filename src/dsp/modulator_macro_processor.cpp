@@ -10,25 +10,23 @@ namespace zrythm::dsp
 {
 
 ModulatorMacroProcessor::ModulatorMacroProcessor (
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  int                              idx,
-  QObject *                        parent)
+  ProcessorBaseDependencies dependencies,
+  int                       idx,
+  QObject *                 parent)
     : QObject (parent),
       ProcessorBase (
-        port_registry,
-        param_registry,
+        dependencies,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format (
             "{} Modulator Macro Processor",
             format_qstr (QObject::tr ("Macro {}"), idx + 1)))),
-      port_registry_ (port_registry), param_registry_ (param_registry),
+      dependencies_ (dependencies),
       name_ (
         utils::Utf8String::from_qstring (
           format_qstr (QObject::tr ("Macro {}"), idx + 1)))
 {
-  add_parameter (param_registry.create_object<dsp::ProcessorParameter> (
-    port_registry,
+  add_parameter (dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
+    dependencies.port_registry_,
     dsp::ProcessorParameter::UniqueId (
       utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("macro_{}", idx + 1))),
@@ -37,7 +35,7 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
     name_));
 
   {
-    add_input_port (port_registry.create_object<dsp::CVPort> (
+    add_input_port (dependencies.port_registry_.create_object<dsp::CVPort> (
       utils::Utf8String::from_qstring (
         format_qstr (QObject::tr ("Macro {} CV In"), idx + 1)),
       dsp::PortFlow::Input));
@@ -49,7 +47,7 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   }
 
   {
-    add_output_port (port_registry.create_object<dsp::CVPort> (
+    add_output_port (dependencies.port_registry_.create_object<dsp::CVPort> (
       utils::Utf8String::from_qstring (
         format_qstr (QObject::tr ("Macro {} CV Out"), idx + 1)),
       dsp::PortFlow::Output));

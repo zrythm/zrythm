@@ -68,9 +68,7 @@ public:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  CarlaNativePlugin (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry);
+  CarlaNativePlugin (ProcessorBaseDependencies dependencies);
 
   /**
    * Deactivates, cleanups and frees the instance.

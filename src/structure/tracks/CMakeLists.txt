@@ -1,6 +1,25 @@
 # SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+qt_add_library(zrythm_structure_tracks_lib STATIC)
+
+target_link_libraries(zrythm_structure_tracks_lib
+  PUBLIC
+    zrythm_arrangement_lib
+)
+target_sources(zrythm_structure_tracks_lib
+  PRIVATE
+    automatable_track.h
+    automatable_track.cpp
+    automation_track.h
+    automation_track.cpp
+    automation_tracklist.h
+    automation_tracklist.cpp
+)
+target_precompile_headers(zrythm_structure_tracks_lib PUBLIC
+  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/automation_track.h>
+)
+
 target_sources(zrythm_gui_lib
   PRIVATE
     audio_bus_track.h
@@ -11,12 +30,6 @@ target_sources(zrythm_gui_lib
     audio_lane.cpp
     audio_track.h
     audio_track.cpp
-    automatable_track.h
-    automatable_track.cpp
-    automation_track.h
-    automation_track.cpp
-    automation_tracklist.h
-    automation_tracklist.cpp
     channel.h
     channel.cpp
     channel_send.h

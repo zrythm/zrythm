@@ -108,7 +108,7 @@ public:
     return std::clamp (val, minf_, maxf_);
   }
 
-  float convert_from_0_to_1 (float normalized_val) const
+  Q_INVOKABLE float convertFrom0To1 (float normalized_val) const
   {
     if (type_ == Type::Logarithmic)
       {
@@ -134,7 +134,7 @@ public:
     return minf_ + (normalized_val * (maxf_ - minf_));
   }
 
-  float convert_to_0_to_1 (float real_val) const
+  Q_INVOKABLE float convertTo0To1 (float real_val) const
   {
 
     if (type_ == Type::Logarithmic)
@@ -164,7 +164,7 @@ public:
   bool is_toggled (float normalized_val) const
   {
     assert (type_ == ParameterRange::Type::Toggle);
-    return utils::math::floats_equal (convert_from_0_to_1 (normalized_val), 1.f);
+    return utils::math::floats_equal (convertFrom0To1 (normalized_val), 1.f);
   }
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE (
@@ -292,7 +292,7 @@ public:
   }
   Q_INVOKABLE void resetBaseValueToDefault ()
   {
-    setBaseValue (range_.convert_to_0_to_1 (range_.deff_));
+    setBaseValue (range_.convertTo0To1 (range_.deff_));
   }
   Q_SIGNAL void baseValueChanged (float value);
 
@@ -582,3 +582,5 @@ template <> struct hash<zrythm::dsp::ProcessorParameter::UniqueId>
   }
 };
 }
+
+DEFINE_UUID_HASH_SPECIALIZATION (zrythm::dsp::ProcessorParameter::Uuid)

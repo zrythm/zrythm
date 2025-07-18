@@ -110,7 +110,21 @@ timeline_frames_to_local (
 
   return timeline_frames - object_position_frames;
 }
+
+template <BoundedObject ObjectT>
+inline auto *
+get_object_bounds (const ObjectT &obj)
+{
+  if constexpr (RegionObject<ObjectT>)
+    {
+      return obj.regionMixin ()->bounds ();
+    }
+  else
+    {
+      return obj.bounds ();
+    }
 }
+} // namespace zrythm::structure::arrangement
 
 DEFINE_UUID_HASH_SPECIALIZATION (
   zrythm::structure::arrangement::ArrangerObjectUuid)

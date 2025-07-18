@@ -581,7 +581,7 @@ Arranger {
                 Loader {
                     id: automationLoader
 
-                    active: track.isAutomatable && track.automationVisible
+                    active: track.isAutomatable && track.automatableTrackMixin.automationVisible
                     Layout.preferredHeight: item ? item.contentHeight : 0
                     Layout.minimumHeight: Layout.preferredHeight
                     Layout.maximumHeight: Layout.preferredHeight
@@ -612,7 +612,7 @@ Arranger {
                         orientation: Qt.Vertical
 
                         model: AutomationTracklistProxyModel {
-                            sourceModel: track.automationTracks
+                            sourceModel: track.automatableTrackMixin.automationTracklist
                             showOnlyVisible: true
                             showOnlyCreated: true
                         }
@@ -620,10 +620,11 @@ Arranger {
                         delegate: Item {
                             id: automationTrackItem
 
-                            required property var automationTrack
+                            required property var automationTrackHolder
+                            readonly property var automationTrack: automationTrackHolder.automationTrack
 
                             width: ListView.view.width
-                            height: automationTrack.height
+                            height: automationTrackHolder.height
 
                             Repeater {
                                 id: automationRegionsRepeater
@@ -652,7 +653,7 @@ Arranger {
                                         clipEditor: root.clipEditor
                                         arrangerObject: region
                                         automationTrack: automationRegionLoader.automationTrack
-                                        height: automationTrack.height
+                                        height: automationTrackHolder.height
                                         x: regionX
                                         width: regionWidth
                                     }

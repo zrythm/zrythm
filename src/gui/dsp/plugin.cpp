@@ -37,19 +37,20 @@ namespace zrythm::gui::old_dsp::plugins
 {
 
 Plugin::Plugin (
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  QObject                         &derived)
-    : zrythm::dsp::ProcessorBase (port_registry, param_registry, u8"Plugin"),
-      port_registry_ (port_registry), param_registry_ (param_registry),
-      enabled_ (param_registry), gain_ (param_registry)
+  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+  QObject                                      &derived)
+    : zrythm::dsp::ProcessorBase (dependencies, u8"Plugin"),
+      dependencies_ (dependencies), enabled_ (dependencies.param_registry_),
+      gain_ (dependencies.param_registry_)
 {
   const auto uuid_str = utils::Utf8String::from_qstring (
     type_safe::get (get_uuid ()).toString (QUuid::WithoutBraces));
   {
     /* add enabled port */
-    enabled_ = param_registry_->create_object<dsp::ProcessorParameter> (
-      port_registry, dsp::ProcessorParameter::UniqueId (uuid_str + u8"/enabled"),
+    enabled_ = dependencies.param_registry_.create_object<
+      dsp::ProcessorParameter> (
+      dependencies.port_registry_,
+      dsp::ProcessorParameter::UniqueId (uuid_str + u8"/enabled"),
       dsp::ParameterRange{
         dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 1.f },
       utils::Utf8String::from_qstring (QObject::tr ("Enabled")), &derived);
@@ -60,8 +61,9 @@ Plugin::Plugin (
 
   {
     /* add gain port */
-    gain_ = param_registry_->create_object<dsp::ProcessorParameter> (
-      port_registry, dsp::ProcessorParameter::UniqueId (uuid_str + u8"/gain"),
+    gain_ = dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
+      dependencies.port_registry_,
+      dsp::ProcessorParameter::UniqueId (uuid_str + u8"/gain"),
       dsp::ParameterRange{
         dsp::ParameterRange::Type::GainAmplitude, 0.f, 8.f, 0.f, 1.f },
       utils::Utf8String::from_qstring (QObject::tr ("Gain")), &derived);
@@ -1087,13 +1089,13 @@ from_json (const nlohmann::json &j, Plugin &p)
   j.at (Plugin::kSettingKey).get_to (p.setting_);
   for (const auto &port_json : j.at (Plugin::kInPortsKey))
     {
-      dsp::PortUuidReference port_id_ref{ *p.port_registry_ };
+      dsp::PortUuidReference port_id_ref{ p.dependencies_.port_registry_ };
       from_json (port_json, port_id_ref);
       p.in_ports_.push_back (std::move (port_id_ref));
     }
   for (const auto &port_json : j.at (Plugin::kOutPortsKey))
     {
-      dsp::PortUuidReference port_id_ref{ *p.port_registry_ };
+      dsp::PortUuidReference port_id_ref{ p.dependencies_.port_registry_ };
       from_json (port_json, port_id_ref);
       p.out_ports_.push_back (std::move (port_id_ref));
     }

@@ -7,8 +7,9 @@
 #include "dsp/position.h"
 #include "gui/dsp/plugin.h"
 #include "structure/arrangement/arranger_object_all.h"
-#include "structure/tracks/automation_tracklist.h"
+#include "structure/tracks/automation_track.h"
 #include "structure/tracks/fader.h"
+#include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane.h"
 #include "utils/format.h"
 
@@ -22,12 +23,7 @@ class FileDescriptor;
 #define DECLARE_FINAL_TRACK_CONSTRUCTORS(ClassType) \
   /* FIXME: make private */ \
 public: \
-  ClassType ( \
-    dsp::FileAudioSourceRegistry &file_audio_source_registry, \
-    TrackRegistry &track_registry, PluginRegistry &plugin_registry, \
-    dsp::PortRegistry               &port_registry, \
-    dsp::ProcessorParameterRegistry &param_registry, \
-    ArrangerObjectRegistry &obj_registry, bool new_identity);
+  ClassType (FinalTrackDependencies dependencies);
 
 #define DEFINE_TRACK_QML_PROPERTIES(ClassType) \
 public: \
@@ -196,7 +192,7 @@ public: \
   Q_PROPERTY (bool isAutomatable READ getIsAutomatable CONSTANT) \
   bool getIsAutomatable () const \
   { \
-    if constexpr (std::derived_from<ClassType, AutomatableTrack>) \
+    if constexpr (AutomatableTrack<ClassType>) \
       { \
         return true; \
       } \
@@ -601,16 +597,16 @@ public:
       {
         height += self.get_visible_lane_heights ();
       }
-    if constexpr (std::derived_from<DerivedT, AutomatableTrack>)
+    if constexpr (AutomatableTrack<DerivedT>)
       {
-        if (self.automation_visible_)
+        const auto * automatable_track = self.automatableTrackMixin ();
+        if (automatable_track->automationVisible ())
           {
-            const AutomationTracklist &atl = self.get_automation_tracklist ();
-            for (const auto &at : atl.get_visible_automation_tracks ())
+            const auto * atl = automatable_track->automationTracklist ();
+            for (const auto &at_holder : atl->automation_track_holders ())
               {
-                z_warn_if_fail (at->height_ > 0);
-                if (at->visible_)
-                  height += at->height_;
+                if (at_holder->visible ())
+                  height += at_holder->height ();
               }
           }
       }
@@ -654,7 +650,7 @@ public:
               }
           }
       }
-    if constexpr (std::derived_from<DerivedT, AutomatableTrack>)
+    if constexpr (AutomatableTrack<DerivedT>)
       {
         if (!visible_only || self.automation_visible_)
           {
@@ -1559,6 +1555,17 @@ using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;
 using TrackUuidReference = utils::UuidReference<TrackRegistry>;
 using TrackSelectionManager =
   utils::UuidIdentifiableObjectSelectionManager<TrackRegistry>;
+
+struct FinalTrackDependencies
+{
+  const dsp::TempoMap                   &tempo_map_;
+  dsp::FileAudioSourceRegistry          &file_audio_source_registry_;
+  TrackRegistry                         &track_registry_;
+  gui::old_dsp::plugins::PluginRegistry &plugin_registry_;
+  dsp::PortRegistry                     &port_registry_;
+  dsp::ProcessorParameterRegistry       &param_registry_;
+  arrangement::ArrangerObjectRegistry   &obj_registry_;
+};
 
 } // namespace zrythm::structure::tracks
 

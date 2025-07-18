@@ -488,26 +488,27 @@ TracklistSelectionsAction::create_track (int idx)
       TrackUniquePtrVariant track;
 
       /* if creating audio track from file */
-      bool              has_plugin = false;
-      utils::Utf8String name{};
+      bool                   has_plugin = false;
+      utils::Utf8String      name{};
+      FinalTrackDependencies track_deps{
+        PROJECT->get_tempo_map (),
+        PROJECT->get_file_audio_source_registry (),
+        PROJECT->get_track_registry (),
+        PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (),
+        PROJECT->get_param_registry (),
+        PROJECT->get_arranger_object_registry ()
+      };
       if (track_type_ == Track::Type::Audio && pool_id_.has_value ())
         {
-          track = AudioTrack::create_unique (
-            PROJECT->get_file_audio_source_registry (),
-            PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-            PROJECT->get_port_registry (), PROJECT->get_param_registry (),
-            PROJECT->get_arranger_object_registry (), true);
+          track = AudioTrack::create_unique (track_deps);
           // TODO set samplerate on AudioTrack
           name = utils::Utf8String::from_path (file_basename_);
         }
       /* else if creating MIDI track from file */
       else if (track_type_ == Track::Type::Midi && !base64_midi_.empty ())
         {
-          track = MidiTrack::create_unique (
-            PROJECT->get_file_audio_source_registry (),
-            PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-            PROJECT->get_port_registry (), PROJECT->get_param_registry (),
-            PROJECT->get_arranger_object_registry (), true);
+          track = MidiTrack::create_unique (track_deps);
           name = utils::Utf8String::from_path (file_basename_);
         }
       /* at this point we can assume it has a plugin */
@@ -669,12 +670,15 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
                   /* clone our own track */
                   auto track_ref = PROJECT->get_track_registry ().clone_object (
-                    *own_track, PROJECT->get_file_audio_source_registry (),
-                    PROJECT->get_track_registry (),
-                    PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry (),
-                    PROJECT->get_param_registry (),
-                    PROJECT->get_arranger_object_registry (), true);
+                    *own_track,
+                    structure::tracks::FinalTrackDependencies{
+                      PROJECT->get_tempo_map (),
+                      PROJECT->get_file_audio_source_registry (),
+                      PROJECT->get_track_registry (),
+                      PROJECT->get_plugin_registry (),
+                      PROJECT->get_port_registry (),
+                      PROJECT->get_param_registry (),
+                      PROJECT->get_arranger_object_registry () });
                   // TODO...
                   auto track = std::get<TrackT *> (track_ref.get_object ());
 
@@ -793,7 +797,9 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                 own_track_var);
             }
 
-          /* re-connect any source sends */
+            /* re-connect any source sends */
+// TODO
+#if 0
           for (auto &clone_send : src_sends_)
             {
 
@@ -801,6 +807,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
               auto * prj_send = clone_send->find_in_project ();
               prj_send->copy_values_from (*clone_send);
             }
+#endif
 
           /* reset foldable track sizes */
           reset_foldable_track_sizes ();
@@ -841,12 +848,15 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
       else
         {
           /* remove any sends pointing to any track */
+// TODO
+#if 0
           for (auto &clone_send : src_sends_)
             {
               /* get the original send and disconnect it */
               ChannelSend * send = clone_send->find_in_project ();
               send->disconnect (false);
             }
+#endif
 
           for (
             const auto &own_track_var :
@@ -1103,12 +1113,15 @@ TracklistSelectionsAction::
 
                   /* create a new clone to use in the project */
                   auto track_ref = PROJECT->get_track_registry ().clone_object (
-                    *own_track_ptr, PROJECT->get_file_audio_source_registry (),
-                    PROJECT->get_track_registry (),
-                    PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry (),
-                    PROJECT->get_param_registry (),
-                    PROJECT->get_arranger_object_registry (), true);
+                    *own_track_ptr,
+                    FinalTrackDependencies{
+                      PROJECT->get_tempo_map (),
+                      PROJECT->get_file_audio_source_registry (),
+                      PROJECT->get_track_registry (),
+                      PROJECT->get_plugin_registry (),
+                      PROJECT->get_port_registry (),
+                      PROJECT->get_param_registry (),
+                      PROJECT->get_arranger_object_registry () });
                   // FIXME
                   auto * track = std::get<TrackT *> (track_ref.get_object ());
 

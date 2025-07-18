@@ -13,46 +13,37 @@
 
 namespace zrythm::structure::tracks
 {
-InstrumentTrack::InstrumentTrack (
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry,
-  bool                             new_identity)
+InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Instrument,
         PortType::Event,
         PortType::Audio,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        obj_registry),
-      AutomatableTrack (
-        file_audio_source_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      ProcessableTrack (port_registry, param_registry, new_identity),
-      ChannelTrack (
-        track_registry,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      RecordableTrack (port_registry, param_registry, new_identity)
+        dependencies.plugin_registry_,
+        dependencies.port_registry_,
+        dependencies.param_registry_,
+        dependencies.obj_registry_),
+      ProcessableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ }),
+      ChannelTrack (dependencies),
+      RecordableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ })
 {
   color_ = Color (QColor ("#FF9616"));
   icon_name_ = u8"instrument";
-  automation_tracklist_->setParent (this);
+  automatableTrackMixin ()->setParent (this);
 }
 
 bool
 InstrumentTrack::initialize ()
 {
   init_channel ();
-  generate_automation_tracks ();
+  generate_automation_tracks (*this);
   init_recordable_track ([] () {
     return ZRYTHM_HAVE_UI
            && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
@@ -61,7 +52,7 @@ InstrumentTrack::initialize ()
   return true;
 }
 
-InstrumentTrack::Plugin *
+Plugin *
 InstrumentTrack::get_instrument ()
 {
   auto plugin = channel_->get_instrument ();
@@ -69,7 +60,7 @@ InstrumentTrack::get_instrument ()
   return Plugin::from_variant (*plugin);
 }
 
-const InstrumentTrack::Plugin *
+const Plugin *
 InstrumentTrack::get_instrument () const
 {
   auto plugin = channel_->get_instrument ();
@@ -104,9 +95,6 @@ init_from (
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
   init_from (
-    static_cast<AutomatableTrack &> (obj),
-    static_cast<const AutomatableTrack &> (other), clone_type);
-  init_from (
     static_cast<ProcessableTrack &> (obj),
     static_cast<const ProcessableTrack &> (other), clone_type);
   init_from (
@@ -134,7 +122,6 @@ InstrumentTrack::init_loaded (
 {
   // ChannelTrack must be initialized before AutomatableTrack
   ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  AutomatableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   LanedTrackImpl<MidiLane>::init_loaded (

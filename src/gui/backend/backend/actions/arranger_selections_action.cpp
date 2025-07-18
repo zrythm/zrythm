@@ -609,7 +609,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                         [&] (auto &&track) {
                           using TrackT = base_type<decltype (track)>;
                           if constexpr (
-                            std::derived_from<TrackT, AutomatableTrack>)
+                            AutomatableTrack<TrackT>)
                             {
                               AutomationTrack * at = AutomationTrack::
                                 find_from_port (*port, track, true);
@@ -1047,7 +1047,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                         [&] (auto &&track) {
                           using TrackT = base_type<decltype (track)>;
                           if constexpr (
-                            std::derived_from<TrackT, AutomatableTrack>)
+                            AutomatableTrack<TrackT>)
                             {
                               const auto * at = AutomationTrack::find_from_port (
                                 *port, track, true);

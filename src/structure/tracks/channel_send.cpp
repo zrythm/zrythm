@@ -26,7 +26,10 @@ ChannelSend::ChannelSend (
   OptionalRef<ChannelTrack>        track,
   std::optional<int>               slot,
   bool                             create_ports)
-    : dsp::ProcessorBase (port_registry, param_registry),
+    : dsp::ProcessorBase (
+        ProcessorBaseDependencies{
+          .port_registry_ = port_registry,
+          .param_registry_ = param_registry }),
       port_registry_ (port_registry), param_registry_ (param_registry),
       track_registry_ (track_registry), amount_id_ (param_registry),
       enabled_id_ (param_registry)
@@ -723,12 +726,6 @@ ChannelSend::set_port_metadata_from_owner (
     }
 }
 #endif
-
-ChannelSend *
-ChannelSend::find_in_project () const
-{
-  return get_track ()->channel_->sends_[slot_].get ();
-}
 
 int
 ChannelSend::append_connection (

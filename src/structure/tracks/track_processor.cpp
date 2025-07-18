@@ -32,24 +32,15 @@ namespace zrythm::structure::tracks
 {
 
 TrackProcessor::TrackProcessor (
-  ProcessableTrack                &tr,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  bool                             create_ports)
+  ProcessableTrack         &tr,
+  ProcessorBaseDependencies dependencies)
     : dsp::ProcessorBase (
-        port_registry,
-        param_registry,
+        dependencies,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("{} Processor", tr.get_name ()))),
-      port_registry_ (port_registry), param_registry_ (param_registry),
-      track_ (&tr)
+      port_registry_ (dependencies.port_registry_),
+      param_registry_ (dependencies.param_registry_), track_ (&tr)
 {
-  if (!create_ports)
-    {
-      // ports will be created when deserializing
-      return;
-    }
-
   switch (tr.get_input_signal_type ())
     {
     case PortType::Event:
@@ -75,15 +66,15 @@ TrackProcessor::TrackProcessor (
       init_stereo_out_ports (true);
       if (tr.get_type () == Track::Type::Audio)
         {
-          mono_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-            port_registry,
+          mono_id_ = param_registry_.create_object<dsp::ProcessorParameter> (
+            port_registry_,
             dsp::ProcessorParameter::UniqueId (
               u8"track_processor_mono_toggle"
 
               ),
             dsp::ParameterRange::make_toggle (false), u8"TP Mono Toggle");
-          input_gain_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-            port_registry,
+          input_gain_id_ = param_registry_.create_object<dsp::ProcessorParameter> (
+            port_registry_,
             dsp::ProcessorParameter::UniqueId (
               u8"track_processor_input_gain"
 
@@ -99,8 +90,8 @@ TrackProcessor::TrackProcessor (
 
   if (tr.get_type () == Track::Type::Audio)
     {
-      output_gain_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-        port_registry,
+      output_gain_id_ = param_registry_.create_object<dsp::ProcessorParameter> (
+        port_registry_,
         dsp::ProcessorParameter::UniqueId (
           u8"track_processor_output_gain"
 
@@ -109,8 +100,8 @@ TrackProcessor::TrackProcessor (
           dsp::ParameterRange::Type::GainAmplitude, 0.f, 4.f, 0.f, 1.f),
         u8"TP Output Gain");
 
-      monitor_audio_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-        port_registry,
+      monitor_audio_id_ = param_registry_.create_object<dsp::ProcessorParameter> (
+        port_registry_,
         dsp::ProcessorParameter::UniqueId (
           u8"track_processor_monitor_audio"
 
@@ -982,7 +973,7 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
 
       if (
         !tr->is_auditioner () && TRANSPORT->preroll_frames_remaining_ == 0
-        && (std::derived_from<TrackT, RecordableTrack> || !tr->automation_tracklist_->get_automation_tracks().empty ()))
+        && (std::derived_from<TrackT, RecordableTrack> || !tr->automatableTrackMixin()->automationTracklist()->automation_tracks().empty ()))
         {
           /* handle recording. this will only create events in regions. it
            * will not copy the input content to the output ports. this will

@@ -33,21 +33,17 @@ namespace zrythm::structure::tracks
 {
 
 MidiPreFader::MidiPreFader (
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  QObject *                        parent)
-    : QObject (parent),
-      dsp::MidiPassthroughProcessor (port_registry, param_registry)
+  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+  QObject *                                     parent)
+    : QObject (parent), dsp::MidiPassthroughProcessor (dependencies)
 {
   set_name (u8"MIDI PreFader");
 }
 
 AudioPreFader::AudioPreFader (
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  QObject *                        parent)
-    : QObject (parent),
-      dsp::StereoPassthroughProcessor (port_registry, param_registry)
+  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+  QObject *                                     parent)
+    : QObject (parent), dsp::StereoPassthroughProcessor (dependencies)
 {
   set_name (u8"Audio PreFader");
 }
@@ -521,12 +517,16 @@ Channel::init ()
   if (track_->get_output_signal_type () == PortType::Audio)
     {
       audio_prefader_ = utils::make_qobject_unique<AudioPreFader> (
-        port_registry_, param_registry_, this);
+        dsp::ProcessorBase::ProcessorBaseDependencies{
+          .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+        this);
     }
   else if (track_->get_output_signal_type () == PortType::Event)
     {
       midi_prefader_ = utils::make_qobject_unique<MidiPreFader> (
-        port_registry_, param_registry_, this);
+        dsp::ProcessorBase::ProcessorBaseDependencies{
+          .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+        this);
     }
 
   /* init sends */
@@ -621,7 +621,9 @@ Channel::add_plugin (
 
       if (gen_automatables)
         {
-          track_->generate_automation_tracks_for_plugin (plugin->get_uuid ());
+          // TODO
+          // track_->generate_automation_tracks_for_processor (plugin->get_uuid
+          // ());
         }
 
       if (pub_events)

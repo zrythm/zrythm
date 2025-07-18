@@ -20,7 +20,7 @@ class MidiTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MidiTrack)
   DEFINE_LANED_TRACK_QML_PROPERTIES (MidiTrack)
-  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MidiTrack)
+  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (MidiTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MidiTrack)
   DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES (MidiTrack)
 
@@ -46,7 +46,6 @@ private:
   {
     to_json (j, static_cast<const Track &> (track));
     to_json (j, static_cast<const ProcessableTrack &> (track));
-    to_json (j, static_cast<const AutomatableTrack &> (track));
     to_json (j, static_cast<const RecordableTrack &> (track));
     to_json (j, static_cast<const PianoRollTrack &> (track));
     to_json (j, static_cast<const ChannelTrack &> (track));
@@ -56,7 +55,6 @@ private:
   {
     from_json (j, static_cast<Track &> (track));
     from_json (j, static_cast<ProcessableTrack &> (track));
-    from_json (j, static_cast<AutomatableTrack &> (track));
     from_json (j, static_cast<RecordableTrack &> (track));
     from_json (j, static_cast<PianoRollTrack &> (track));
     from_json (j, static_cast<ChannelTrack &> (track));

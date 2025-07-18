@@ -34,10 +34,8 @@ public:
    * Creates a new track processor for the given track.
    */
   TrackProcessor (
-    ProcessableTrack                &track,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    bool                             new_identity);
+    ProcessableTrack         &track,
+    ProcessorBaseDependencies dependencies);
 
   bool is_audio () const;
 

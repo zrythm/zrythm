@@ -478,10 +478,7 @@ protected:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  Plugin (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    QObject                         &derived);
+  Plugin (ProcessorBaseDependencies dependencies, QObject &derived);
 
 private:
   static constexpr auto kTrackIdKey = "trackId"sv;
@@ -509,8 +506,7 @@ private:
   friend void from_json (const nlohmann::json &j, Plugin &p);
 
 public:
-  OptionalRef<dsp::PortRegistry>                  port_registry_;
-  OptionalRef<dsp::ProcessorParameterRegistry>    param_registry_;
+  dsp::ProcessorBase::ProcessorBaseDependencies   dependencies_;
   std::optional<structure::tracks::TrackResolver> track_resolver_;
 
   std::optional<TrackUuid> track_id_;

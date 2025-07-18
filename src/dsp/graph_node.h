@@ -29,7 +29,9 @@
 #pragma once
 
 #include "dsp/itransport.h"
-#include "utils/types.h"
+#include "utils/string.h"
+
+#include <QObject>
 
 namespace zrythm::dsp::graph
 {
@@ -126,6 +128,7 @@ public:
     const dsp::ITransport &transport,
     IProcessable          &processable);
   Z_DISABLE_COPY_MOVE (GraphNode)
+  ~GraphNode () noexcept = default;
 
   /** For general debugging. */
   std::string print_node_to_str () const;

@@ -12,56 +12,46 @@
 
 namespace zrythm::structure::tracks
 {
-ModulatorTrack::ModulatorTrack (
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry,
-  bool                             new_identity)
+ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Modulator,
         PortType::Unknown,
         PortType::Unknown,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        obj_registry),
-      AutomatableTrack (
-        file_audio_source_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      ProcessableTrack (port_registry, param_registry, new_identity)
+        dependencies.plugin_registry_,
+        dependencies.port_registry_,
+        dependencies.param_registry_,
+        dependencies.obj_registry_),
+      ProcessableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ })
 {
-  if (new_identity)
-    {
-      main_height_ = DEF_HEIGHT / 2;
+  main_height_ = DEF_HEIGHT / 2;
 
-      color_ = Color (QColor ("#222222"));
-      icon_name_ = u8"gnome-icon-library-encoder-knob-symbolic";
+  color_ = Color (QColor ("#222222"));
+  icon_name_ = u8"gnome-icon-library-encoder-knob-symbolic";
 
-      /* set invisible */
-      visible_ = false;
-    }
+  /* set invisible */
+  visible_ = false;
 
-  automation_tracklist_->setParent (this);
+  automatableTrackMixin ()->setParent (this);
 }
 
 bool
 ModulatorTrack::initialize ()
 {
-
   constexpr int max_macros = 8;
   for (int i = 0; i < max_macros; i++)
     {
       modulator_macro_processors_.emplace_back (
         utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
-          port_registry_, param_registry_, i, this));
+          dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
+            .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+          i, this));
     }
 
-  generate_automation_tracks ();
+  generate_automation_tracks (*this);
 
   return true;
 }
@@ -73,7 +63,6 @@ ModulatorTrack::init_loaded (
   dsp::ProcessorParameterRegistry &param_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  AutomatableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   for (auto &modulator_id : modulators_)
     {
@@ -137,7 +126,8 @@ struct ModulatorImportData
 
         if (this->gen_automatables)
           {
-            self->generate_automation_tracks_for_plugin (mod->get_uuid ());
+            // TODO
+            // self->generate_automation_tracks_for_processor (mod->get_uuid ());
           }
 
         if (this->pub_events)
@@ -227,9 +217,6 @@ init_from (
     static_cast<ProcessableTrack &> (obj),
     static_cast<const ProcessableTrack &> (other), clone_type);
   init_from (
-    static_cast<AutomatableTrack &> (obj),
-    static_cast<const AutomatableTrack &> (other), clone_type);
-  init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 // TODO
 #if 0
@@ -278,7 +265,6 @@ from_json (const nlohmann::json &j, ModulatorTrack &track)
 {
   from_json (j, static_cast<Track &> (track));
   from_json (j, static_cast<ProcessableTrack &> (track));
-  from_json (j, static_cast<AutomatableTrack &> (track));
   for (const auto &modulator_json : j.at (ModulatorTrack::kModulatorsKey))
     {
       PluginUuidReference modulator_id_ref{ track.plugin_registry_ };
@@ -290,7 +276,10 @@ from_json (const nlohmann::json &j, ModulatorTrack &track)
       j.at (ModulatorTrack::kModulatorMacroProcessorsKey)))
     {
       auto macro_proc = utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
-        track.port_registry_, track.param_registry_, index, &track);
+        dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
+          .port_registry_ = track.port_registry_,
+          .param_registry_ = track.param_registry_ },
+        index, &track);
       from_json (macro_proc_json, *macro_proc);
       track.modulator_macro_processors_.push_back (std::move (macro_proc));
     }

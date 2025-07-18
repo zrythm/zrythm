@@ -104,6 +104,7 @@ private:
 
   void copy_at_regions (AutomationTrack &dest, const AutomationTrack &src);
 
+#if 0
   /**
    * Reverts automation events from before deletion.
    *
@@ -113,6 +114,7 @@ private:
     structure::tracks::AutomatableTrack &track,
     plugins::PluginSlot                  slot,
     bool                                 deleted);
+#endif
 
   /**
    * Save an existing plugin about to be replaced into @p tmp_ms.
@@ -233,7 +235,9 @@ public:
           plugins,
           &connections_mgr,
           type,
-          to_track ? std::make_optional (to_track->get_uuid ()) : std::nullopt,
+          (to_track != nullptr)
+            ? std::make_optional (to_track->get_uuid ())
+            : std::nullopt,
           to_slot,
           nullptr,
           0,

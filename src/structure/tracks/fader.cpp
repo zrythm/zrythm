@@ -36,7 +36,11 @@ Fader::Fader (
   engine::session::SampleProcessor * sample_processor,
   QObject *                          parent)
     : QObject (parent),
-      dsp::ProcessorBase (port_registry, param_registry, u8"Fader"),
+      dsp::ProcessorBase (
+        ProcessorBaseDependencies{
+          .port_registry_ = port_registry,
+          .param_registry_ = param_registry },
+        u8"Fader"),
       port_registry_ (port_registry), param_registry_ (param_registry),
       type_ (type), midi_mode_ (MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER),
       track_ (track), control_room_ (control_room),
@@ -52,6 +56,7 @@ Fader::Fader (
         dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
       utils::Utf8String::from_qstring (QObject::tr ("Fader Volume")));
     get_amp_param ().set_automatable (should_be_automatable);
+    add_parameter (*amp_id_);
 
     /* set pan */
     balance_id_ = param_registry.create_object<dsp::ProcessorParameter> (
@@ -60,6 +65,7 @@ Fader::Fader (
         dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.5f, 0.5f),
       utils::Utf8String::from_qstring (QObject::tr ("Fader Balance")));
     get_balance_param ().set_automatable (should_be_automatable);
+    add_parameter (*balance_id_);
   }
 
   {
@@ -336,7 +342,7 @@ Fader::db_string_getter () const
   return fmt::format (
     "{:.1f}",
     utils::math::amp_to_dbfs (
-      get_amp_param ().range ().convert_from_0_to_1 (
+      get_amp_param ().range ().convertFrom0To1 (
         get_amp_param ().currentValue ())));
 }
 
@@ -541,7 +547,7 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo)
 
   const auto &amp_param = get_amp_param ();
   const float amp =
-    amp_param.range ().convert_from_0_to_1 (amp_param.currentValue ());
+    amp_param.range ().convertFrom0To1 (amp_param.currentValue ());
 
   if (has_audio_ports ())
     {
@@ -714,8 +720,8 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo)
       const auto &balance_param = get_balance_param ();
       const auto &mono_compat_param = get_mono_compat_enabled_param ();
       const auto &swap_phase_param = get_swap_phase_param ();
-      const float pan = balance_param.range ().convert_from_0_to_1 (
-        balance_param.currentValue ());
+      const float pan =
+        balance_param.range ().convertFrom0To1 (balance_param.currentValue ());
       const bool mono_compat_enabled = mono_compat_param.range ().is_toggled (
         mono_compat_param.currentValue ());
       const bool swap_phase =

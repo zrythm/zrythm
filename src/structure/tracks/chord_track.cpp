@@ -13,46 +13,38 @@
 
 namespace zrythm::structure::tracks
 {
-ChordTrack::ChordTrack (
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry,
-  bool                             new_identity)
+ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Chord,
         PortType::Event,
         PortType::Event,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        obj_registry),
-      AutomatableTrack (
-        file_audio_source_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      ProcessableTrack (port_registry, param_registry, new_identity),
-      RecordableTrack (port_registry, param_registry, new_identity),
-      ChannelTrack (
-        track_registry,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      arrangement::ArrangerObjectOwner<
-        ChordRegion> (obj_registry, file_audio_source_registry, *this),
-      arrangement::ArrangerObjectOwner<
-        ScaleObject> (obj_registry, file_audio_source_registry, *this)
+        dependencies.plugin_registry_,
+        dependencies.port_registry_,
+        dependencies.param_registry_,
+        dependencies.obj_registry_),
+      ProcessableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ }),
+      RecordableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ }),
+      ChannelTrack (dependencies),
+      arrangement::ArrangerObjectOwner<ChordRegion> (
+        dependencies.obj_registry_,
+        dependencies.file_audio_source_registry_,
+        *this),
+      arrangement::ArrangerObjectOwner<ScaleObject> (
+        dependencies.obj_registry_,
+        dependencies.file_audio_source_registry_,
+        *this)
 {
-  if (new_identity)
-    {
-      color_ = Color (QColor ("#1C8FFB"));
-      icon_name_ = u8"gnome-icon-library-library-music-symbolic";
-    }
-  automation_tracklist_->setParent (this);
+  color_ = Color (QColor ("#1C8FFB"));
+  icon_name_ = u8"gnome-icon-library-library-music-symbolic";
+  automatableTrackMixin ()->setParent (this);
 }
 
 void
@@ -63,9 +55,6 @@ init_from (
 {
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
-  init_from (
-    static_cast<AutomatableTrack &> (obj),
-    static_cast<const AutomatableTrack &> (other), clone_type);
   init_from (
     static_cast<ProcessableTrack &> (obj),
     static_cast<const ProcessableTrack &> (other), clone_type);
@@ -93,7 +82,7 @@ bool
 ChordTrack::initialize ()
 {
   init_channel ();
-  generate_automation_tracks ();
+  generate_automation_tracks (*this);
   init_recordable_track ([] () {
     return ZRYTHM_HAVE_UI
            && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
@@ -138,7 +127,6 @@ ChordTrack::init_loaded (
 {
   // ChannelTrack must be initialized before AutomatableTrack
   ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  AutomatableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
 }

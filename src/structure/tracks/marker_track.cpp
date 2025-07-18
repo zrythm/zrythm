@@ -6,31 +6,23 @@
 
 namespace zrythm::structure::tracks
 {
-MarkerTrack::MarkerTrack (
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry,
-  bool                             new_identity)
+MarkerTrack::MarkerTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Marker,
         PortType::Unknown,
         PortType::Unknown,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        obj_registry),
-      arrangement::ArrangerObjectOwner<
-        Marker> (obj_registry, file_audio_source_registry, *this)
+        dependencies.plugin_registry_,
+        dependencies.port_registry_,
+        dependencies.param_registry_,
+        dependencies.obj_registry_),
+      arrangement::ArrangerObjectOwner<Marker> (
+        dependencies.obj_registry_,
+        dependencies.file_audio_source_registry_,
+        *this)
 {
-  if (new_identity)
-    {
-      main_height_ = DEF_HEIGHT / 2;
-      icon_name_ = u8"gnome-icon-library-flag-filled-symbolic";
-      color_ = Color (QColor ("#7C009B"));
-    }
+  main_height_ = DEF_HEIGHT / 2;
+  icon_name_ = u8"gnome-icon-library-flag-filled-symbolic";
+  color_ = Color (QColor ("#7C009B"));
 }
 
 bool

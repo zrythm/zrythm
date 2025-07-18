@@ -69,6 +69,8 @@ MixerSelectionsAction::MixerSelectionsAction (
 void
 MixerSelectionsAction::init_loaded_impl ()
 {
+// TODO
+#if 0
   if (ms_before_)
     {
       PluginSpan{ *ms_before_ }.init_loaded ();
@@ -86,6 +88,7 @@ MixerSelectionsAction::init_loaded_impl ()
     {
       at->init_loaded ();
     }
+#endif
 }
 
 void
@@ -130,7 +133,7 @@ MixerSelectionsAction::clone_ats (PluginSpan plugins, bool deleted, int start_sl
   std::visit (
     [&] (auto &&track) {
       using TrackT = base_type<decltype (track)>;
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<TrackT>)
         {
           z_debug ("cloning automation tracks for track {}", track->get_name ());
           auto &atl = track->automation_tracklist_;
@@ -212,14 +215,14 @@ MixerSelectionsAction::copy_at_regions (
 #endif
 }
 
+// TODO
+#if 0
 void
 MixerSelectionsAction::revert_automation (
   AutomatableTrack   &track,
   plugins::PluginSlot slot,
   bool                deleted)
 {
-// TODO
-#if 0
   z_debug ("reverting automation for {}#{}", track.get_name (), slot);
 
   auto &atl = track.automation_tracklist_;
@@ -255,8 +258,8 @@ MixerSelectionsAction::revert_automation (
   z_debug (
     "reverted %d automation tracks and %d regions", num_reverted_ats,
     num_reverted_regions);
+  }
 #endif
-}
 
 void
 MixerSelectionsAction::save_existing_plugin (
@@ -272,7 +275,7 @@ MixerSelectionsAction::save_existing_plugin (
   std::visit (
     [&] (auto &&to_track) {
       using ToTrackT = base_type<decltype (to_track)>;
-      if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<ToTrackT>)
         {
           auto existing_pl = to_track->get_plugin_at_slot (to_slot);
           z_debug (
@@ -381,7 +384,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
   std::visit (
     [&] (auto &&track) {
       using TrackT = base_type<decltype (track)>;
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<TrackT>)
         {
 #  if 0
           auto * ch =
@@ -553,7 +556,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 #  endif
                           /* copy automation from before deletion */
                           if constexpr (
-                            std::derived_from<TrackT, AutomatableTrack>)
+                            AutomatableTrack<TrackT>)
                             {
                               revert_automation (
                                 *track, *pl->get_slot (), false);
@@ -745,7 +748,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
   std::visit (
     [&] (auto &&from_tr) {
       using FromTrackT = base_type<decltype (from_tr)>;
-      if constexpr (std::derived_from<FromTrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<FromTrackT>)
         {
           if (do_it)
             {
@@ -793,7 +796,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
               std::visit (
                 [&] (auto &&to_tr) {
                   using ToTrackT = base_type<decltype (to_tr)>;
-                  if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
+                  if constexpr (AutomatableTrack<ToTrackT>)
                     {
                       TRACKLIST->get_track_span ().deselect_all_plugins ();
 
@@ -972,7 +975,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
               std::visit (
                 [&] (auto &&to_tr) {
                   using ToTrackT = base_type<decltype (to_tr)>;
-                  if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
+                  if constexpr (AutomatableTrack<ToTrackT>)
                     {
 #  if 0
                       [[maybe_unused]] auto * to_ch =

@@ -12,8 +12,7 @@ namespace zrythm::structure::tracks
  * @brief A track that processes MIDI data.
  *
  * The MidiBusTrack class is a concrete implementation of the ProcessableTrack,
- * ChannelTrack, and AutomatableTrack interfaces. It represents a track that
- * processes MIDI data.
+ * ChannelTrack interfaces. It represents a track that processes MIDI data.
  */
 class MidiBusTrack final
     : public QObject,
@@ -23,7 +22,7 @@ class MidiBusTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MidiBusTrack)
-  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MidiBusTrack)
+  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (MidiBusTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MidiBusTrack)
 
   friend class InitializableObject;
@@ -48,14 +47,12 @@ private:
   {
     to_json (j, static_cast<const Track &> (track));
     to_json (j, static_cast<const ProcessableTrack &> (track));
-    to_json (j, static_cast<const AutomatableTrack &> (track));
     to_json (j, static_cast<const ChannelTrack &> (track));
   }
   friend void from_json (const nlohmann::json &j, MidiBusTrack &track)
   {
     from_json (j, static_cast<Track &> (track));
     from_json (j, static_cast<ProcessableTrack &> (track));
-    from_json (j, static_cast<AutomatableTrack &> (track));
     from_json (j, static_cast<ChannelTrack &> (track));
   }
 

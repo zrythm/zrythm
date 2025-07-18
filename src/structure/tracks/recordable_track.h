@@ -32,10 +32,7 @@ namespace zrythm::structure::tracks
 class RecordableTrack : virtual public ProcessableTrack
 {
 protected:
-  RecordableTrack (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    bool                             new_identity);
+  RecordableTrack (ProcessableTrack::Dependencies dependencies);
 
 public:
   Z_DISABLE_COPY_MOVE (RecordableTrack)

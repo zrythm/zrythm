@@ -7,35 +7,25 @@
 
 namespace zrythm::structure::tracks
 {
-FolderTrack::FolderTrack (
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry,
-  bool                             new_identity)
+FolderTrack::FolderTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Folder,
         PortType::Unknown,
         PortType::Unknown,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        obj_registry)
+        dependencies.plugin_registry_,
+        dependencies.port_registry_,
+        dependencies.param_registry_,
+        dependencies.obj_registry_)
 {
-  if (new_identity)
-    {
-      color_ = Color (QColor ("#865E3C"));
-      icon_name_ = u8"fluentui-folder-regular";
-    }
+  color_ = Color (QColor ("#865E3C"));
+  icon_name_ = u8"fluentui-folder-regular";
 }
 
 bool
 FolderTrack::initialize ()
 {
   // init_channel ();
-  // generate_automation_tracks ();
+  // generate_automation_tracks (*this);
 
   return true;
 }

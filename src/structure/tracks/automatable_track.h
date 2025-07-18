@@ -2,186 +2,99 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
-#include "structure/tracks/track.h"
 
-#define DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES(ClassType) \
-public: \
-  /* ================================================================ */ \
-  /* automationVisible */ \
-  /* ================================================================ */ \
-  Q_PROPERTY ( \
-    bool automationVisible READ getAutomationVisible WRITE \
-      setAutomationVisible NOTIFY automationVisibleChanged) \
-  bool getAutomationVisible () const \
-  { \
-    return automation_visible_; \
-  } \
-  void setAutomationVisible (bool visible) \
-  { \
-    if (automation_visible_ == visible) \
-      return; \
-\
-    automation_visible_ = visible; \
-    Q_EMIT automationVisibleChanged (visible); \
-  } \
-\
-  Q_SIGNAL void automationVisibleChanged (bool visible); \
-\
-  /* ================================================================ */ \
-  /* automationTracks */ \
-  /* ================================================================ */ \
-  Q_PROPERTY ( \
-    AutomationTracklist * automationTracks READ getAutomationTracks CONSTANT) \
-  AutomationTracklist * getAutomationTracks () const \
-  { \
-    return automation_tracklist_.get (); \
-  }
+#include "dsp/processor_base.h"
+#include "structure/tracks/automation_tracklist.h"
 
 namespace zrythm::structure::tracks
 {
 /**
- * Interface for a track that has automatable parameters.
+ * @brief Mixin for a track that has automatable parameters, to be used via
+ * composition.
  *
- * Tracks that can have plugins must implement this interface.
+ * @note Tracks that can have plugins must use this.
  */
-class AutomatableTrack : virtual public Track
+class AutomatableTrackMixin : public QObject
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (
+    bool automationVisible READ automationVisible WRITE setAutomationVisible
+      NOTIFY automationVisibleChanged)
+  Q_PROPERTY (
+    AutomationTracklist * automationTracklist READ automationTracklist CONSTANT)
+
 public:
-  AutomatableTrack (
-    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    bool                             new_identity);
+  AutomatableTrackMixin (
+    AutomationTrackHolder::Dependencies dependencies,
+    QObject *                           parent = nullptr);
 
-  ~AutomatableTrack () override = default;
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  using Plugin = gui::old_dsp::plugins::Plugin;
-  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
+  bool          automationVisible () const { return automation_visible_; }
+  void          setAutomationVisible (bool visible);
+  Q_SIGNAL void automationVisibleChanged (bool visible);
 
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
-  AutomationTracklist &get_automation_tracklist () const
+  AutomationTracklist * automationTracklist () const
   {
-    return *automation_tracklist_;
+    return automation_tracklist_.get ();
   }
 
-  /**
-   * Set automation visible and fire events.
-   */
-  void set_automation_visible (bool visible);
+  // ========================================================================
 
   /**
-   * Generates automatables for the track.
-   *
-   * Should be called as soon as the track is created.
+   * @brief Generates automatables for the given processor.
    */
-  void generate_automation_tracks ();
-
-  void clear_objects () override { automation_tracklist_->clear_objects (); }
-
-  void get_regions_in_range (
-    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
-    std::optional<signed_frame_t>                          p1,
-    std::optional<signed_frame_t>                          p2) override
+  void generate_automation_tracks_for_processor (
+    std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ret,
+    const dsp::ProcessorBase                              &processor) const
   {
-    auto &atl = get_automation_tracklist ();
-    for (auto &at : atl.get_automation_tracks ())
+    z_debug (
+      "generating automation tracks for {}...", processor.get_node_name ());
+    for (const auto &param_ref : processor.get_parameters ())
       {
-        for (const auto &r : at->get_children_vector ())
-          {
-            add_region_if_in_range (p1, p2, regions, r);
-          }
+        auto * const param =
+          param_ref.template get_object_as<dsp::ProcessorParameter> ();
+        if (!param->automatable ())
+          continue;
+
+        ret.emplace_back (
+          utils::make_qobject_unique<AutomationTrack> (
+            dependencies_.tempo_map_, dependencies_.file_audio_source_registry_,
+            dependencies_.object_registry_, param_ref));
       }
   }
-
-  /**
-   * Returns the plugin at the given slot, if any.
-   */
-  template <typename DerivedT>
-  std::optional<PluginPtrVariant>
-  get_plugin_at_slot (this DerivedT &&self, PluginSlot slot)
-    requires std::derived_from<base_type<DerivedT>, AutomatableTrack>
-             && FinalClass<base_type<DerivedT>>
-  {
-    if constexpr (std::derived_from<DerivedT, ChannelTrack>)
-      {
-        return std::forward (self).get_channel ()->get_plugin_at_slot (slot);
-      }
-    else if constexpr (std::derived_from<DerivedT, ModulatorTrack>)
-      {
-        if (
-          slot.is_modulator ()
-          && slot.get_slot_with_index ().second
-               < (int) std::forward (self).modulators_.size ())
-          {
-            return std::forward (self)
-              .modulators_[slot.get_slot_with_index ().second]
-              .get ();
-          }
-      }
-
-    return std::nullopt;
-  }
-
-  /**
-   * Generates automatables for the plugin.
-   *
-   * @note The plugin must be instantiated already.
-   */
-  void generate_automation_tracks_for_plugin (const Plugin::Uuid &plugin_id);
 
 protected:
   friend void init_from (
-    AutomatableTrack       &obj,
-    const AutomatableTrack &other,
-    utils::ObjectCloneType  clone_type);
-
-  void set_playback_caches () override
-  {
-    get_automation_tracklist ().set_caches (CacheType::PlaybackSnapshots);
-  }
+    AutomatableTrackMixin       &obj,
+    const AutomatableTrackMixin &other,
+    utils::ObjectCloneType       clone_type);
 
 private:
   static constexpr auto kAutomationTracklistKey = "automationTracklist"sv;
   static constexpr auto kAutomationVisibleKey = "automationVisible"sv;
-  friend void to_json (nlohmann::json &j, const AutomatableTrack &track)
+  friend void to_json (nlohmann::json &j, const AutomatableTrackMixin &track)
   {
     j[kAutomationTracklistKey] = track.automation_tracklist_;
     j[kAutomationVisibleKey] = track.automation_visible_;
   }
-  friend void from_json (const nlohmann::json &j, AutomatableTrack &track)
+  friend void from_json (const nlohmann::json &j, AutomatableTrackMixin &track)
   {
-    track
-      .automation_tracklist_ = utils::make_qobject_unique<AutomationTracklist> (
-      track.file_audio_source_registry_, track.port_registry_,
-      track.param_registry_, track.object_registry_, track);
-    from_json (j, *track.automation_tracklist_);
+    track.automation_tracklist_ = utils::make_qobject_unique<
+      AutomationTracklist> (track.dependencies_, &track);
+    from_json (j.at (kAutomationTracklistKey), *track.automation_tracklist_);
     j.at (kAutomationVisibleKey).get_to (track.automation_visible_);
   }
 
 private:
-  dsp::FileAudioSourceRegistry &file_audio_source_registry_;
+  AutomationTrackHolder::Dependencies dependencies_;
 
-public:
   utils::QObjectUniquePtr<AutomationTracklist> automation_tracklist_;
 
   /** Flag to set automations visible or not. */
-  bool automation_visible_ = false;
+  bool automation_visible_{};
 };
-
-using AutomatableTrackVariant = std::variant<
-  InstrumentTrack,
-  MidiTrack,
-  MasterTrack,
-  MidiGroupTrack,
-  AudioGroupTrack,
-  MidiBusTrack,
-  AudioBusTrack,
-  AudioTrack,
-  ChordTrack,
-  ModulatorTrack>;
-using AutomatableTrackPtrVariant = to_pointer_variant<AutomatableTrackVariant>;
 }

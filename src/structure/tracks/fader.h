@@ -153,7 +153,7 @@ public:
   float get_current_amp () const
   {
     const auto &amp_param = get_amp_param ();
-    return amp_param.range ().convert_from_0_to_1 (amp_param.currentValue ());
+    return amp_param.range ().convertFrom0To1 (amp_param.currentValue ());
   }
 
   float get_default_fader_val () const

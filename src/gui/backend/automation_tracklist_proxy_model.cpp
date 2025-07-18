@@ -59,22 +59,22 @@ AutomationTracklistProxyModel::filterAcceptsRow (
 {
   auto source_model = qobject_cast<
     zrythm::structure::tracks::AutomationTracklist *> (sourceModel ());
-  if (!source_model)
+  if (source_model == nullptr)
     return false;
 
-  auto index = source_model->index (source_row, 0, source_parent);
-  auto at = qvariant_cast<
-    zrythm::structure::tracks::AutomationTrack *> (source_model->data (
+  auto   index = source_model->index (source_row, 0, source_parent);
+  auto * ath = qvariant_cast<
+    zrythm::structure::tracks::AutomationTrackHolder *> (source_model->data (
     index,
-    zrythm::structure::tracks::AutomationTracklist::AutomationTrackPtrRole));
+    zrythm::structure::tracks::AutomationTracklist::AutomationTrackHolderRole));
 
-  if (!at)
+  if (ath == nullptr)
     return false;
 
-  if (show_only_created_ && !at->created_)
+  if (show_only_created_ && !ath->created_by_user_)
     return false;
 
-  if (show_only_visible_ && !at->visible_)
+  if (show_only_visible_ && !ath->visible ())
     return false;
 
   return true;

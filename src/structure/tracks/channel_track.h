@@ -25,12 +25,7 @@ namespace zrythm::structure::tracks
 class ChannelTrack : virtual public ProcessableTrack
 {
 protected:
-  ChannelTrack (
-    TrackRegistry                   &track_registry,
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    bool                             new_identity);
+  ChannelTrack (FinalTrackDependencies dependencies);
 
 public:
   ~ChannelTrack () override;
@@ -113,6 +108,15 @@ public:
    * Returns the Fader::Type.
    */
   Fader::Type get_fader_type () { return type_get_fader_type (type_); }
+
+  /**
+   * Returns the plugin at the given slot, if any.
+   */
+  std::optional<PluginPtrVariant>
+  get_plugin_at_slot (plugins::PluginSlot slot) const
+  {
+    return get_channel ()->get_plugin_at_slot (slot);
+  }
 
 protected:
   friend void init_from (

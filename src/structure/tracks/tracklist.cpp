@@ -371,9 +371,7 @@ Tracklist::move_plugin_automation (
         "moving plugin '{}' automation from {} to {} -> {}", plugin->get_name (),
         prev_track->get_name (), track->get_name (), new_slot);
 
-      if constexpr (
-        std::derived_from<PrevTrackT, AutomatableTrack>
-        && std::derived_from<TrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<PrevTrackT> && AutomatableTrack<TrackT>)
         {
 // TODO
 #if 0
@@ -791,6 +789,8 @@ plugin_move_data_free (void * _data, GClosure * closure)
 static void
 do_move (PluginMoveData * data)
 {
+// TODO
+#if 0
   auto * pl = data->pl;
   auto   prev_slot = *pl->get_slot ();
   auto * prev_track = TrackSpan::derived_type_transformation<AutomatableTrack> (
@@ -825,7 +825,7 @@ do_move (PluginMoveData * data)
           data_track->channel_->add_plugin (
             plugin_ref, data->slot, false, true, false, true, true);
 
-#if 0
+#  if 0
           if (data->fire_events)
             {
       // EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, prev_ch);
@@ -833,10 +833,11 @@ do_move (PluginMoveData * data)
         EventType::ET_CHANNEL_SLOTS_CHANGED,
         data_channel_track->channel_.get ());
       }
-#endif
+#  endif
         }
     },
     *data->track_var);
+#endif
 }
 
 #if 0
@@ -873,7 +874,7 @@ Tracklist::move_plugin (
       data->track_var = track;
       data->slot = slot;
 
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<TrackT>)
         {
           auto existing_pl = track->get_plugin_at_slot (slot);
           if (existing_pl && confirm_overwrite && ZRYTHM_HAVE_UI)
@@ -1920,6 +1921,8 @@ init_from (
     }
   else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
+// TODO/delete
+#if 0
       obj.tracks_.clear ();
       obj.tracks_.reserve (other.tracks_.size ());
       auto span = other.get_track_span ();
@@ -1936,6 +1939,7 @@ init_from (
             },
             track_var);
         }
+#endif
     }
 }
 

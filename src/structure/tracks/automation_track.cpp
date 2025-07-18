@@ -1,33 +1,23 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <utility>
-
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/arrangement/automation_point.h"
-#include "structure/arrangement/automation_region.h"
-#include "structure/tracks/automatable_track.h"
 #include "structure/tracks/automation_track.h"
-#include "structure/tracks/track.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/math.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::structure::tracks
 {
 AutomationTrack::AutomationTrack (
+  const dsp::TempoMap                 &tempo_map,
   dsp::FileAudioSourceRegistry        &file_audio_source_registry,
   ArrangerObjectRegistry              &obj_registry,
-  TrackGetter                          track_getter,
-  dsp::ProcessorParameterUuidReference param_id)
-    : arrangement::ArrangerObjectOwner<arrangement::AutomationRegion> (
+  dsp::ProcessorParameterUuidReference param_id,
+  QObject *                            parent)
+    : QObject (parent),
+      arrangement::ArrangerObjectOwner<arrangement::AutomationRegion> (
         obj_registry,
         file_audio_source_registry,
         *this),
-      object_registry_ (obj_registry), track_getter_ (std::move (track_getter)),
-      port_id_ (std::move (param_id))
+      tempo_map_ (tempo_map), object_registry_ (obj_registry),
+      param_id_ (std::move (param_id))
 {
   parameter ()->set_automation_provider (
     [this] (unsigned_frame_t sample_position) -> std::optional<float> {
@@ -35,25 +25,9 @@ AutomationTrack::AutomationTrack (
         {
           return std::nullopt;
         }
-      return get_normalized_val_at_pos (
-        static_cast<signed_frame_t> (sample_position), false, false);
+      return get_normalized_value (
+        static_cast<signed_frame_t> (sample_position), false);
     });
-#if 0
-  auto * port =
-    std::get<ControlPort *> (port_registry.find_by_id_or_throw (port_id));
-  if (ENUM_BITSET_TEST(PortIdentifier::Flags,port->id_.flags,PortIdentifier::Flags::MIDI_AUTOMATABLE))
-    {
-      self->automation_mode =
-        AutomationMode::AUTOMATION_MODE_RECORD;
-      self->record_mode =
-        AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH;
-    }
-#endif
-}
-
-void
-AutomationTrack::init_loaded ()
-{
 }
 
 // ========================================================================
@@ -61,140 +35,65 @@ AutomationTrack::init_loaded ()
 // ========================================================================
 
 void
-AutomationTrack::setHeight (double height)
+AutomationTrack::setAutomationMode (AutomationMode automation_mode)
 {
-  if (utils::math::floats_equal (height, height_))
+  if (automation_mode == automation_mode_)
     return;
 
-  height_ = height;
-  Q_EMIT heightChanged (height);
-}
-
-void
-AutomationTrack::setAutomationMode (int automation_mode)
-{
-  if (automation_mode == ENUM_VALUE_TO_INT (automation_mode_))
-    return;
-
-  automation_mode_ =
-    ENUM_INT_TO_VALUE (decltype (automation_mode_), automation_mode);
+  automation_mode_ = automation_mode;
   Q_EMIT automationModeChanged (automation_mode);
 }
 
 void
-AutomationTrack::setRecordMode (int record_mode)
+AutomationTrack::setRecordMode (AutomationRecordMode record_mode)
 {
-  if (record_mode == ENUM_VALUE_TO_INT (record_mode_))
+  if (record_mode == record_mode_)
     return;
 
-  record_mode_ = ENUM_INT_TO_VALUE (decltype (record_mode_), record_mode);
+  record_mode_ = record_mode;
   Q_EMIT recordModeChanged (record_mode);
 }
 
 // ========================================================================
 
-AutomationTracklist *
-AutomationTrack::get_automation_tracklist () const
-{
-  return std::visit (
-    [&] (auto &&track) -> AutomationTracklist * {
-      if constexpr (
-        std::derived_from<base_type<decltype (track)>, AutomatableTrack>)
-        {
-          return &track->get_automation_tracklist ();
-        }
-      else
-        {
-          throw std::runtime_error ("not an automatable track");
-        }
-    },
-    track_getter_ ());
-}
-
 structure::arrangement::AutomationPoint *
-AutomationTrack::get_ap_around (
+AutomationTrack::get_automation_point_around (
   const double position_ticks,
   double       delta_ticks,
-  bool         before_only,
-  bool         use_snapshots)
+  bool         search_only_backwards)
 {
-  const auto &tempo_map = PROJECT->get_tempo_map ();
+  const auto &tempo_map = tempo_map_;
   auto        pos_frames = tempo_map.tick_to_samples_rounded (position_ticks);
-  AutomationPoint * ap = get_ap_before_pos (pos_frames, true, use_snapshots);
+  AutomationPoint * ap = get_automation_point_before (pos_frames, true);
   if (
     (ap != nullptr) && position_ticks - ap->position ()->ticks () <= delta_ticks)
     {
       return ap;
     }
-  else if (!before_only)
+
+  if (search_only_backwards)
     {
-      pos_frames = tempo_map.tick_to_samples_rounded (pos_frames + delta_ticks);
-      ap = get_ap_before_pos (pos_frames, true, use_snapshots);
-      if (ap != nullptr)
-        {
-          double diff = ap->position ()->ticks () - position_ticks;
-          if (diff >= 0.0)
-            return ap;
-        }
+      return nullptr;
+    }
+
+  pos_frames = tempo_map.tick_to_samples_rounded (position_ticks + delta_ticks);
+  ap = get_automation_point_before (pos_frames, true);
+  if (ap != nullptr)
+    {
+      double diff = ap->position ()->ticks () - position_ticks;
+      if (diff >= 0.0)
+        return ap;
     }
 
   return nullptr;
 }
 
 auto
-AutomationTrack::get_region_before_pos (
-  signed_frame_t pos,
-  bool           ends_after,
-  bool           use_snapshots) const -> AutomationRegion *
+AutomationTrack::get_automation_point_before (
+  signed_frame_t timeline_position,
+  bool           search_only_backwards) const -> AutomationPoint *
 {
-  auto process_regions = [=] (const auto &regions) {
-    if (ends_after)
-      {
-        for (const auto &region : std::views::reverse (regions))
-          {
-            if (region->regionMixin ()->bounds ()->is_hit (pos))
-              return region;
-          }
-      }
-    else
-      {
-        AutomationRegion * latest_r = nullptr;
-        signed_frame_t     latest_distance =
-          std::numeric_limits<signed_frame_t>::min ();
-        for (const auto &region : std::views::reverse (regions))
-          {
-            signed_frame_t distance_from_r_end =
-              region->regionMixin ()->bounds ()->get_end_position_samples (true)
-              - pos;
-            if (
-              region->position ()->samples () <= pos
-              && distance_from_r_end > latest_distance)
-              {
-                latest_distance = distance_from_r_end;
-                latest_r = region;
-              }
-          }
-        return latest_r;
-      }
-    return static_cast<AutomationRegion *> (nullptr);
-  };
-
-  // TODO
-  return process_regions (get_children_view ());
-#if 0
-  return use_snapshots
-           ? process_regions (get_children_snapshots_view ())
-           : process_regions (get_children_view ());
-#endif
-}
-
-auto
-AutomationTrack::get_ap_before_pos (
-  signed_frame_t pos,
-  bool           ends_after,
-  bool           use_snapshots) const -> AutomationPoint *
-{
-  auto * r = get_region_before_pos (pos, ends_after, use_snapshots);
+  auto * r = get_region_before (timeline_position, search_only_backwards);
 
   if ((r == nullptr) || r->regionMixin ()->mute ()->muted ())
     {
@@ -206,7 +105,10 @@ AutomationTrack::get_ap_before_pos (
 
   /* if region ends before pos, assume pos is the region's end pos */
   signed_frame_t local_pos = timeline_frames_to_local (
-    *r, !ends_after && (region_end_frames < pos) ? region_end_frames - 1 : pos,
+    *r,
+    !search_only_backwards && (region_end_frames < timeline_position)
+      ? region_end_frames - 1
+      : timeline_position,
     true);
 
   for (auto * ap : std::ranges::reverse_view (r->get_children_view ()))
@@ -220,8 +122,10 @@ AutomationTrack::get_ap_before_pos (
   return nullptr;
 }
 
+// TODO: add a listener of automationModeChanged to whoever needs to know this
+#if 0
 void
-AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
+AutomationTrack::set_automation_mode (AutomationMode mode)
 {
   z_return_if_fail (ZRYTHM_IS_QT_THREAD);
 
@@ -243,6 +147,7 @@ AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
 
   automation_mode_ = mode;
 }
+#endif
 
 bool
 AutomationTrack::should_read_automation () const
@@ -271,10 +176,11 @@ AutomationTrack::should_be_recording (bool record_aps) const
       return true;
     }
 
+    // TODO
+#if 0
   if (record_mode_ == AutomationRecordMode::Touch)
     {
-// TODO
-#if 0
+
       const auto &port = get_port ();
       const auto  diff = port.ms_since_last_change ();
       if (
@@ -284,61 +190,22 @@ AutomationTrack::should_be_recording (bool record_aps) const
           /* still recording */
           return true;
         }
-#endif
 
       if (!record_aps)
         return recording_started_;
     }
+#endif
 
   return false;
 }
 
-TrackPtrVariant
-AutomationTrack::get_track () const
-{
-  return track_getter_ ();
-#if 0
-  auto port_var = PROJECT->find_port_by_id (port_id_);
-  z_return_val_if_fail (
-    port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
-  auto * port = std::get<ControlPort *> (*port_var);
-  z_return_val_if_fail (port_id_ == port->get_uuid (), nullptr);
-  auto track_id_opt = port->id_->get_track_id ();
-  z_return_val_if_fail (track_id_opt.has_value (), nullptr);
-  auto track_var = PROJECT->find_track_by_id (track_id_opt.value ());
-  z_return_val_if_fail (track_var, nullptr);
-  return std::visit (
-    [&] (auto &track) -> AutomatableTrack * {
-      using TrackT = base_type<decltype (track)>;
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
-        return track;
-      z_return_val_if_reached (nullptr);
-    },
-    *track_var);
-#endif
-}
-
-void
-AutomationTrack::set_index (int index)
-{
-  index_ = index;
-
-#if 0
-  for (auto * region : get_children_view ())
-    {
-      // region->id_.at_idx_ = index;
-      region->update_identifier ();
-    }
-#endif
-}
-
 std::optional<float>
-AutomationTrack::get_normalized_val_at_pos (
-  signed_frame_t pos,
-  bool           ends_after,
-  bool           use_snapshots) const
+AutomationTrack::get_normalized_value (
+  signed_frame_t timeline_frames,
+  bool           search_only_regions_enclosing_position) const
 {
-  auto ap = get_ap_before_pos (pos, ends_after, use_snapshots);
+  auto ap = get_automation_point_before (
+    timeline_frames, search_only_regions_enclosing_position);
 
   /* no automation points yet, return negative (no change) */
   if (ap == nullptr)
@@ -346,7 +213,8 @@ AutomationTrack::get_normalized_val_at_pos (
       return std::nullopt;
     }
 
-  auto region = get_region_before_pos (pos, ends_after, use_snapshots);
+  auto region =
+    get_region_before (timeline_frames, search_only_regions_enclosing_position);
   z_return_val_if_fail (region, 0.f);
 
   /* if region ends before pos, assume pos is the region's end pos */
@@ -354,7 +222,10 @@ AutomationTrack::get_normalized_val_at_pos (
     region->regionMixin ()->bounds ()->get_end_position_samples (true);
   signed_frame_t localp = timeline_frames_to_local (
     *region,
-    !ends_after && (region_end_position < pos) ? region_end_position - 1 : pos,
+    !search_only_regions_enclosing_position
+        && (region_end_position < timeline_frames)
+      ? region_end_position - 1
+      : timeline_frames,
     true);
 
   auto next_ap = region->get_next_ap (*ap, false);
@@ -401,30 +272,6 @@ AutomationTrack::get_normalized_val_at_pos (
 }
 
 void
-AutomationTrack::set_caches (CacheType types)
-{
-  if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
-    {
-// TODO
-#if 0
-      get_children_snapshots_vector ().clear ();
-      for (const auto &r_var : region_list_->regions_)
-        {
-          region_snapshots_.emplace_back (
-            std::get<AutomationRegion *> (r_var)->clone_unique ());
-        }
-#endif
-    }
-
-#if 0
-  if (ENUM_BITSET_TEST ( types, CacheType::AutomationLanePorts))
-    {
-      port_ = get_port ();
-    }
-#endif
-}
-
-void
 init_from (
   AutomationTrack       &obj,
   const AutomationTrack &other,
@@ -434,14 +281,8 @@ init_from (
     static_cast<AutomationTrack::ArrangerObjectOwner &> (obj),
     static_cast<const AutomationTrack::ArrangerObjectOwner &> (other),
     clone_type);
-  obj.visible_ = other.visible_;
-  obj.created_ = other.created_;
-  obj.index_ = other.index_;
-  obj.y_ = other.y_;
   obj.automation_mode_ = other.automation_mode_;
   obj.record_mode_ = other.record_mode_;
-  obj.height_ = other.height_;
-  assert (obj.height_ >= Track::MIN_HEIGHT);
-  obj.port_id_ = other.port_id_;
+  obj.param_id_ = other.param_id_;
 }
 }

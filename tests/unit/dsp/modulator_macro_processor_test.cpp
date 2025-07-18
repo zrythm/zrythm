@@ -20,7 +20,9 @@ protected:
   {
     // Create macro processor
     macro_processor = std::make_unique<ModulatorMacroProcessor> (
-      port_registry, param_registry, 0, nullptr);
+      ModulatorMacroProcessor::ProcessorBaseDependencies{
+        .port_registry_ = port_registry, .param_registry_ = param_registry },
+      0, nullptr);
 
     // Get references to ports
     cv_in = &macro_processor->get_cv_in_port ();
@@ -192,7 +194,9 @@ TEST_F (ModulatorMacroProcessorTest, SerializationRoundTrip)
 
   // Create new processor from JSON
   ModulatorMacroProcessor new_processor (
-    port_registry, param_registry, 3, nullptr);
+    ModulatorMacroProcessor::ProcessorBaseDependencies{
+      .port_registry_ = port_registry, .param_registry_ = param_registry },
+    3, nullptr);
   from_json (j, new_processor);
 
   // Verify properties match original

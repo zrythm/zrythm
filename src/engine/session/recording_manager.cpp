@@ -270,7 +270,6 @@ RecordingManager::handle_recording (
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
-      auto atl = &tr->get_automation_tracklist ();
 
       if constexpr (std::derived_from<TrackT, RecordableTrack>)
         {
@@ -328,7 +327,10 @@ RecordingManager::handle_recording (
             }
         }
 
-      for (auto at : atl->get_automation_tracks_in_record_mode ())
+// TODO
+#if 0
+      const auto &ats_in_record_mode = ats_in_record_mode_.at (tr->get_uuid ());
+      for (auto at : ats_in_record_mode)
         {
           bool at_should_be_recording = at->should_be_recording (false);
 
@@ -377,6 +379,7 @@ RecordingManager::handle_recording (
                 }
             }
         }
+#endif
 
       /* ---- end handling start/stop/pause recording events ---- */
 
@@ -439,6 +442,8 @@ RecordingManager::handle_recording (
       if (!TRANSPORT->isRolling ())
         return;
 
+// TODO
+#if 0
       for (auto at : atl->get_automation_tracks_in_record_mode ())
         {
           /* only proceed if automation should be recording */
@@ -455,6 +460,7 @@ RecordingManager::handle_recording (
           re->automation_track_idx_ = at->index_;
           event_queue_.push_back (re);
         }
+#endif
     },
     tr_var);
 }
@@ -547,7 +553,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<TrackT>)
         {
 
           /* position to pause at */
@@ -602,9 +608,12 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
             }
           else if (ev.type_ == RecordingEvent::Type::PauseAutomationRecording)
             {
+// TODO
+#if 0
               auto at = tr->get_automation_tracklist ().get_automation_track_at (
                 ev.automation_track_idx_);
               at->recording_paused_ = true;
+#endif
             }
         }
       else
@@ -787,7 +796,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
             }
           else if (ev.type_ == RecordingEvent::Type::Automation)
             {
-              if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+              if constexpr (AutomatableTrack<TrackT>)
                 {
                   auto * at = tr->automation_tracklist_->get_automation_track_at (
                     ev.automation_track_idx_);
@@ -1082,7 +1091,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<TrackT>)
         {
           auto  &atl = tr->automation_tracklist_;
           auto * at = atl->get_automation_track_at (ev.automation_track_idx_);
@@ -1200,7 +1209,7 @@ RecordingManager::handle_start_recording (
       AutomationTrack * at{};
       if (is_automation)
         {
-          if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+          if constexpr (AutomatableTrack<TrackT>)
             {
               at = tr->automation_tracklist_->get_automation_track_at (
                 ev.automation_track_idx_);
@@ -1405,8 +1414,10 @@ RecordingManager::process_events ()
             std::visit (
               [&] (auto &tr) {
                 using TrackT = base_type<decltype (tr)>;
-                if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+                if constexpr (AutomatableTrack<TrackT>)
                   {
+// TODO
+#if 0
                     auto * at =
                       tr->automation_tracklist_->get_automation_track_at (
                         ev->automation_track_idx_);
@@ -1418,6 +1429,7 @@ RecordingManager::process_events ()
                     at->recording_started_ = false;
                     at->recording_start_sent_ = false;
                     at->recording_region_ = nullptr;
+#endif
                   }
                 else
                   {
@@ -1447,8 +1459,10 @@ RecordingManager::process_events ()
             std::visit (
               [&] (auto &tr) {
                 using TrackT = base_type<decltype (tr)>;
-                if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+                if constexpr (AutomatableTrack<TrackT>)
                   {
+// TODO
+#if 0
                     auto * at =
                       tr->automation_tracklist_->get_automation_track_at (
                         ev->automation_track_idx_);
@@ -1458,6 +1472,7 @@ RecordingManager::process_events ()
                         handle_start_recording (*ev, true);
                       }
                     at->recording_started_ = true;
+#endif
                   }
                 else
                   {

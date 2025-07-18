@@ -26,9 +26,8 @@ class MidiPreFader final : public QObject, public dsp::MidiPassthroughProcessor
   QML_ELEMENT
 public:
   MidiPreFader (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    QObject *                        parent = nullptr);
+    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+    QObject *                                     parent = nullptr);
 };
 
 class AudioPreFader final : public QObject, public dsp::StereoPassthroughProcessor
@@ -37,9 +36,8 @@ class AudioPreFader final : public QObject, public dsp::StereoPassthroughProcess
   QML_ELEMENT
 public:
   AudioPreFader (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    QObject *                        parent = nullptr);
+    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+    QObject *                                     parent = nullptr);
 };
 
 /**

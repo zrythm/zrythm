@@ -543,6 +543,9 @@ public :
     double                    startTicks)
 
   {
+    // TODO
+    return nullptr;
+#if 0
     auto ar_ref =
       get_builder<AutomationRegion> ()
         .with_start_ticks (startTicks)
@@ -555,6 +558,7 @@ public :
       },
       track_var);
     return std::get<AutomationRegion *> (ar_ref.get_object ());
+#endif
   }
 
   AudioRegion * add_empty_audio_region_for_recording (

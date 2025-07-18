@@ -406,11 +406,13 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
           std::ranges::copy (
             self->get_children_view (), std::back_inserter (objs));
         }
-      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+      if constexpr (AutomatableTrack<TrackT>)
         {
           for (
-            auto &at :
-            self->get_automation_tracklist ().get_automation_tracks ())
+            auto * at :
+            self->automatableTrackMixin ()
+              ->automationTracklist ()
+              ->automation_tracks ())
             {
               std::ranges::copy (
                 at->get_children_view (), std::back_inserter (objs));
@@ -742,12 +744,15 @@ Track::set_caches (CacheType types)
     ENUM_BITSET_TEST (types, CacheType::AutomationLaneRecordModes)
     || ENUM_BITSET_TEST (types, CacheType::AutomationLanePorts))
     {
+// TODO
+#if 0
       if (auto automatable_track = dynamic_cast<AutomatableTrack *> (this))
         {
           automatable_track->get_automation_tracklist ().set_caches (
             CacheType::AutomationLaneRecordModes
             | CacheType::AutomationLanePorts);
         }
+#endif
     }
 }
 

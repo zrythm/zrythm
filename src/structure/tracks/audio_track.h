@@ -5,7 +5,6 @@
 
 #include "dsp/stretcher.h"
 #include "structure/arrangement/audio_region.h"
-#include "structure/tracks/automatable_track.h"
 #include "structure/tracks/channel_track.h"
 #include "structure/tracks/laned_track.h"
 #include "structure/tracks/recordable_track.h"
@@ -13,9 +12,7 @@
 namespace zrythm::structure::tracks
 {
 /**
- * The AudioTrack class represents an audio track in the project. It
- * inherits from ChannelTrack, LanedTrack, and AutomatableTrack, providing
- * functionality for managing audio channels, lanes, and automation.
+ * @brief Track containing AudioRegion's.
  */
 class AudioTrack final
     : public QObject,
@@ -28,7 +25,7 @@ class AudioTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (AudioTrack)
   DEFINE_LANED_TRACK_QML_PROPERTIES (AudioTrack)
-  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (AudioTrack)
+  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (AudioTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (AudioTrack)
   DEFINE_RECORDABLE_TRACK_QML_PROPERTIES (AudioTrack)
 
@@ -38,14 +35,7 @@ public:
   using AudioRegion = arrangement::AudioRegion;
 
 private:
-  AudioTrack (
-    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-    TrackRegistry                   &track_registry,
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    ArrangerObjectRegistry          &obj_registry,
-    bool                             new_identity);
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (AudioTrack)
 
 public:
   void init_loaded (
@@ -94,7 +84,6 @@ private:
   {
     to_json (j, static_cast<const Track &> (track));
     to_json (j, static_cast<const ProcessableTrack &> (track));
-    to_json (j, static_cast<const AutomatableTrack &> (track));
     to_json (j, static_cast<const RecordableTrack &> (track));
     to_json (j, static_cast<const ChannelTrack &> (track));
     to_json (j, static_cast<const LanedTrackImpl &> (track));
@@ -103,7 +92,6 @@ private:
   {
     from_json (j, static_cast<Track &> (track));
     from_json (j, static_cast<ProcessableTrack &> (track));
-    from_json (j, static_cast<AutomatableTrack &> (track));
     from_json (j, static_cast<RecordableTrack &> (track));
     from_json (j, static_cast<ChannelTrack &> (track));
     from_json (j, static_cast<LanedTrackImpl &> (track));

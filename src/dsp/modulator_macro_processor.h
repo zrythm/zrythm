@@ -29,10 +29,9 @@ class ModulatorMacroProcessor final : public QObject, public dsp::ProcessorBase
 
 public:
   ModulatorMacroProcessor (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    int                              idx,
-    QObject *                        parent = nullptr);
+    ProcessorBaseDependencies dependencies,
+    int                       idx,
+    QObject *                 parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -91,8 +90,7 @@ private:
   }
 
 private:
-  dsp::PortRegistry               &port_registry_;
-  dsp::ProcessorParameterRegistry &param_registry_;
+  ProcessorBaseDependencies dependencies_;
 
   /**
    * Name to be shown in the modulators tab.

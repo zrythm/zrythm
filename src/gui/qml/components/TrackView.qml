@@ -199,10 +199,10 @@ Control {
                             padding: control.buttonPadding
                             checkable: true
                             visible: track.isAutomatable
-                            checked: track.isAutomatable && track.automationVisible
+                            checked: track.isAutomatable && track.automatableTrackMixin.automationVisible
                             icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
                             onClicked: {
-                                track.automationVisible = !track.automationVisible;
+                                track.automatableTrackMixin.automationVisible = !track.automatableTrackMixin.automationVisible;
                             }
 
                             ToolTip {
@@ -449,16 +449,15 @@ Control {
                 Loader {
                     id: automationLoader
 
-                    active: track.isAutomatable && track.automationVisible
+                    active: track.isAutomatable && track.automatableTrackMixin.automationVisible
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
 
                     sourceComponent: AutomationTracksListView {
                         id: automationTracksListView
 
                         track: control.track
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        width: automationLoader.width
+                        height: contentHeight
                     }
 
                 }

@@ -9,39 +9,30 @@
 
 namespace zrythm::structure::tracks
 {
-MidiTrack::MidiTrack (
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry,
-  bool                             new_identity)
+MidiTrack::MidiTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Midi,
         PortType::Event,
         PortType::Event,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        obj_registry),
-      AutomatableTrack (
-        file_audio_source_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      ProcessableTrack (port_registry, param_registry, new_identity),
-      RecordableTrack (port_registry, param_registry, new_identity),
-      ChannelTrack (
-        track_registry,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        new_identity)
+        dependencies.plugin_registry_,
+        dependencies.port_registry_,
+        dependencies.param_registry_,
+        dependencies.obj_registry_),
+      ProcessableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ }),
+      RecordableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ }),
+      ChannelTrack (dependencies)
 {
   color_ = Color (QColor ("#F79616"));
   icon_name_ = u8"signal-midi";
-  automation_tracklist_->setParent (this);
+  automatableTrackMixin ()->setParent (this);
 }
 
 void
@@ -52,7 +43,6 @@ MidiTrack::init_loaded (
 {
   // ChannelTrack must be initialized before AutomatableTrack
   ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  AutomatableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   LanedTrackImpl::init_loaded (plugin_registry, port_registry, param_registry);
@@ -77,9 +67,6 @@ init_from (
     static_cast<ProcessableTrack &> (obj),
     static_cast<const ProcessableTrack &> (other), clone_type);
   init_from (
-    static_cast<AutomatableTrack &> (obj),
-    static_cast<const AutomatableTrack &> (other), clone_type);
-  init_from (
     static_cast<RecordableTrack &> (obj),
     static_cast<const RecordableTrack &> (other), clone_type);
   init_from (
@@ -91,7 +78,7 @@ bool
 MidiTrack::initialize ()
 {
   init_channel ();
-  generate_automation_tracks ();
+  generate_automation_tracks (*this);
   init_recordable_track ([] () {
     return ZRYTHM_HAVE_UI
            && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();

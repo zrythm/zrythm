@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -41,15 +41,16 @@ ListView {
     }
 
     model: AutomationTracklistProxyModel {
-        sourceModel: track.automationTracks
+        sourceModel: track.automatableTrackMixin.automationTracklist
         showOnlyVisible: true
         showOnlyCreated: true
     }
 
     delegate: ItemDelegate {
-        readonly property var automationTrack: modelData
+        required property var automationTrackHolder
+        readonly property var automationTrack: automationTrackHolder.automationTrack
 
-        height: automationTrack.height
+        height: automationTrackHolder.height
         width: ListView.view.width
 
         ButtonGroup {
@@ -83,7 +84,7 @@ ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: false
                     Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
-                    text: automationTrack.label
+                    text: automationTrackHolder.automationTrack.parameter.label
                     icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
                     styleHeight: control.buttonHeight
                     padding: control.buttonPadding
@@ -104,7 +105,10 @@ ListView {
                     Layout.fillWidth: false
                     Layout.fillHeight: false
                     Layout.alignment: Qt.AlignRight | Qt.AlignBaseline
-                    text: automationTrack.height // "1.0"
+                    text: {
+                        automationTrackHolder.automationTrack.parameter.baseValue;
+                        return automationTrackHolder.automationTrack.parameter.range.convertFrom0To1(automationTrackHolder.automationTrack.parameter.currentValue());
+                    }
                     font: Style.smallTextFont
                 }
 
@@ -116,7 +120,7 @@ ListView {
                 Layout.fillWidth: true
                 Layout.fillHeight: false
                 Layout.alignment: Qt.AlignBottom
-                visible: automationTrack.height > automationTopRowLayout.height + height + 6
+                visible: automationTrackHolder.height > automationTopRowLayout.height + height + 6
 
                 LinkedButtons {
                     id: automationModeButtons
@@ -191,7 +195,7 @@ ListView {
                         styleHeight: control.buttonHeight
                         padding: control.buttonPadding
                         onClicked: {
-                            track.automationTracks.hideAutomationTrack(automationTrack);
+                            track.automatableTrackMixin.automationTracklist.hideAutomationTrack(automationTrack);
                         }
 
                         ToolTip {
@@ -214,7 +218,7 @@ ListView {
                         styleHeight: control.buttonHeight
                         padding: control.buttonPadding
                         onClicked: {
-                            track.automationTracks.showNextAvailableAutomationTrack(automationTrack);
+                            track.automatableTrackMixin.automationTracklist.showNextAvailableAutomationTrack(automationTrack);
                         }
 
                         ToolTip {
@@ -236,7 +240,7 @@ ListView {
         }
 
         Loader {
-            property var resizeTarget: automationTrack
+            property var resizeTarget: automationTrackHolder
 
             sourceComponent: resizeHandle
             anchors.left: parent.left
@@ -249,7 +253,7 @@ ListView {
                 track.fullVisibleHeightChanged();
             }
 
-            target: automationTrack
+            target: automationTrackHolder
         }
 
     }

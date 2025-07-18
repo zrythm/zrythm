@@ -247,8 +247,7 @@ public:
   float get_current_amount_value () const
   {
     const auto &amount_param = get_amount_param ();
-    return amount_param.range ().convert_from_0_to_1 (
-      amount_param.currentValue ());
+    return amount_param.range ().convertFrom0To1 (amount_param.currentValue ());
   }
 
   /**
@@ -284,11 +283,6 @@ public:
   {
     return is_connected_to (std::nullopt, midi);
   }
-
-  /**
-   * Finds the project send from a given send instance.
-   */
-  ChannelSend * find_in_project () const;
 
   bool is_audio () const { return get_signal_type () == PortType::Audio; }
   bool is_midi () const { return get_signal_type () == PortType::Event; }

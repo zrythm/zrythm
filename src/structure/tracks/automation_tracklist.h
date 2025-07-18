@@ -3,19 +3,127 @@
 
 #pragma once
 
-#include "plugins/plugin_slot.h"
 #include "structure/tracks/automation_track.h"
 
 #include <QAbstractListModel>
 
 namespace zrythm::structure::tracks
 {
-class AutomatableTrack;
-class Channel;
+static constexpr int DEFAULT_AUTOMATION_TRACK_HEIGHT = 48;
+static constexpr int MIN_AUTOMATION_TRACK_HEIGHT = 26;
+
+class AutomationTracklist;
 
 /**
- * Each track has an automation tracklist with automation tracks to be generated
- * at runtime, and filled in with automation points/curves when loading projects.
+ * @brief Holder of an automation track and some metadata about it.
+ */
+class AutomationTrackHolder : public QObject
+{
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (double height READ height WRITE setHeight NOTIFY heightChanged)
+  Q_PROPERTY (bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
+  Q_PROPERTY (AutomationTrack * automationTrack READ automationTrack CONSTANT)
+
+public:
+  struct Dependencies
+  {
+    const dsp::TempoMap                            &tempo_map_;
+    dsp::FileAudioSourceRegistry                   &file_audio_source_registry_;
+    dsp::PortRegistry                              &port_registry_;
+    dsp::ProcessorParameterRegistry                &param_registry_;
+    structure::arrangement::ArrangerObjectRegistry &object_registry_;
+  };
+
+  AutomationTrackHolder (Dependencies dependencies, QObject * parent = nullptr)
+      : QObject (parent), dependencies_ (dependencies)
+  {
+  }
+  AutomationTrackHolder (
+    Dependencies                               dependencies,
+    utils::QObjectUniquePtr<AutomationTrack> &&at,
+    QObject *                                  parent = nullptr)
+      : AutomationTrackHolder (dependencies, parent)
+  {
+    automation_track_ = std::move (at);
+    automation_track_->setParent (this);
+  }
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  double height () const { return height_; }
+  void   setHeight (double height)
+  {
+    height =
+      std::max (height, static_cast<double> (MIN_AUTOMATION_TRACK_HEIGHT));
+    if (qFuzzyCompare (height, height_))
+      return;
+
+    height_ = height;
+    Q_EMIT heightChanged (height);
+  }
+  Q_SIGNAL void heightChanged (double height);
+
+  bool visible () const { return visible_; }
+  void setVisible (bool visible)
+  {
+    assert (created_by_user_);
+    if (visible == visible_)
+      return;
+
+    visible_ = visible;
+    Q_EMIT visibleChanged (visible);
+  }
+  Q_SIGNAL void visibleChanged (bool visible);
+
+  AutomationTrack * automationTrack () const
+  {
+    return automation_track_.get ();
+  }
+
+  // ========================================================================
+
+public:
+  /**
+   * @brief Whether this automation track has been created by the user in
+   * the UI.
+   */
+  bool created_by_user_{};
+
+private:
+  Dependencies dependencies_;
+
+  utils::QObjectUniquePtr<AutomationTrack> automation_track_;
+
+  /**
+   * Whether this automation track is visible.
+   *
+   * Being created is a precondition for this.
+   */
+  bool visible_{};
+
+  /** Position of multipane handle. */
+  double height_{ DEFAULT_AUTOMATION_TRACK_HEIGHT };
+
+private:
+  static constexpr auto kAutomationTrackKey = "automationTrack"sv;
+  static constexpr auto kCreatedByUserKey = "createdByUser"sv;
+  static constexpr auto kVisible = "visible"sv;
+  static constexpr auto kHeightKey = "height"sv;
+  friend void to_json (nlohmann::json &j, const AutomationTrackHolder &nfo)
+  {
+    j[kAutomationTrackKey] = nfo.automation_track_;
+    j[kCreatedByUserKey] = nfo.created_by_user_;
+    j[kVisible] = nfo.visible_;
+    j[kHeightKey] = nfo.height_;
+  }
+  friend void from_json (const nlohmann::json &j, AutomationTrackHolder &nfo);
+};
+
+/**
+ * @brief A container that manages a list of automation tracks.
  */
 class AutomationTracklist final : public QAbstractListModel
 {
@@ -26,17 +134,14 @@ class AutomationTracklist final : public QAbstractListModel
 
 public:
   AutomationTracklist (
-    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    ArrangerObjectRegistry          &object_registry,
-    AutomatableTrack                &track,
-    QObject *                        parent = nullptr);
+    AutomationTrackHolder::Dependencies dependencies,
+    QObject *                           parent = nullptr);
 
 public:
   enum Roles
   {
-    AutomationTrackPtrRole = Qt::UserRole + 1,
+    AutomationTrackHolderRole = Qt::UserRole + 1,
+    AutomationTrackRole,
   };
 
   // ========================================================================
@@ -60,57 +165,28 @@ public:
     utils::ObjectCloneType     clone_type);
 
   /**
-   * Inits a loaded AutomationTracklist.
-   */
-  [[gnu::cold]] void init_loaded ();
-
-  TrackPtrVariant get_track () const;
-
-  /**
    * @brief Adds the given automation track.
-   *
-   * This takes (QObject) ownership of the AutomationTrack.
    */
-  AutomationTrack * add_automation_track (AutomationTrack &at);
+  AutomationTrack *
+  add_automation_track (utils::QObjectUniquePtr<AutomationTrack> &&at);
 
-  /**
-   * Prints info about all the automation tracks.
-   *
-   * Used for debugging.
-   */
-  void print_ats () const;
-
-  AutomationTrack * get_prev_visible_at (const AutomationTrack &at) const;
-
-  AutomationTrack * get_next_visible_at (const AutomationTrack &at) const;
-
-  void set_at_visible (AutomationTrack &at, bool visible);
-
-  AutomationTrack * get_automation_track_at (size_t index)
+  AutomationTrack * automation_track_at (size_t index) const
   {
-    return ats_.at (index).get ();
-  }
-
-  auto &get_automation_tracks_in_record_mode () { return ats_in_record_mode_; }
-  auto &get_automation_tracks_in_record_mode () const
-  {
-    return ats_in_record_mode_;
+    return automation_tracks_.at (index)->automationTrack ();
   }
 
   /**
    * Returns the AutomationTrack after delta visible AutomationTrack's.
    *
    * Negative delta searches backwards.
-   *
-   * This function searches tracks only in the same Tracklist as the given one
-   * (ie, pinned or not).
    */
   AutomationTrack *
-  get_visible_at_after_delta (const AutomationTrack &at, int delta) const;
-
-  int
-  get_visible_at_diff (const AutomationTrack &src, const AutomationTrack &dest)
+  get_visible_automation_track_after_delta (const AutomationTrack &at, int delta)
     const;
+
+  int get_visible_automation_track_count_between (
+    const AutomationTrack &src,
+    const AutomationTrack &dest) const;
 
   /**
    * Removes the AutomationTrack from the AutomationTracklist, optionally
@@ -119,30 +195,31 @@ public:
    * @return The removed automation track (in case we want to move it). Can be
    * ignored to let it get free'd when it goes out of scope.
    */
-  utils::QObjectUniquePtr<AutomationTrack>
-  remove_at (AutomationTrack &at, bool free, bool fire_events);
+  utils::QObjectUniquePtr<AutomationTrackHolder>
+  remove_automation_track (AutomationTrack &at);
 
   /**
-   * Removes the AutomationTrack's associated with this channel from the
-   * AutomationTracklist in the corresponding Track.
+   * Removes all arranger objects recursively.
    */
-  void remove_channel_ats (Channel * ch);
+  void clear_arranger_objects ();
 
   /**
-   * Unselects all arranger objects.
+   * Returns the y pixels from the value based on the allocation of the
+   * automation track.
    */
-  void unselect_all ();
+  static int get_y_px_from_normalized_val (
+    const double automation_track_height,
+    const float  normalized_val)
+  {
+    return static_cast<int> (
+      automation_track_height - (normalized_val * automation_track_height));
+  }
 
   /**
-   * Removes all objects recursively.
-   */
-  void clear_objects ();
-
-  /**
-   * Sets the index of the AutomationTrack and swaps it with the
-   * AutomationTrack at that index or pushes the other AutomationTrack's down.
+   * Swaps @p at with the automation track at @p index or pushes the other
+   * automation tracks down.
    *
-   * A special case is when @p index == @ref ats_.size(). In this case, the
+   * A special case is when @p index == size(). In this case, the
    * given automation track is set last and all the other automation tracks
    * are pushed upwards.
    *
@@ -159,50 +236,69 @@ public:
    * Marks the first invisible automation track as visible, or marks an
    * uncreated one as created if all invisible ones are visible, and returns
    * it.
+   *
+   * @return The holder or nullptr.
    */
-  AutomationTrack * get_first_invisible_at () const;
+  AutomationTrackHolder * get_first_invisible_automation_track_holder () const;
 
-  void
-  append_objects (std::vector<arrangement::ArrangerObject *> objects) const;
+  auto &automation_track_holders () const { return automation_tracks_; }
 
-  /**
-   * Returns the number of visible AutomationTrack's.
-   */
-  int get_num_visible () const;
+  auto automation_tracks () const
+  {
+    return std::views::transform (
+      automation_track_holders (),
+      [] (const auto &th) { return th->automationTrack (); });
+  }
 
-  /**
-   * Counts the total number of regions in the automation tracklist.
-   */
-  int get_num_regions () const;
+  AutomationTrack *
+  get_previous_visible_automation_track (const AutomationTrack &at) const;
 
-  void print_regions () const;
-
-  auto &get_visible_automation_tracks () { return visible_ats_; }
-  auto &get_visible_automation_tracks () const { return visible_ats_; }
-
-  auto &get_automation_tracks () { return ats_; }
-  auto &get_automation_tracks () const { return ats_; }
-
-  dsp::ProcessorParameter &get_port (dsp::ProcessorParameter::Uuid id) const;
-
-  void set_caches (CacheType types);
+  AutomationTrack *
+  get_next_visible_automation_track (const AutomationTrack &at) const;
 
 private:
-  static constexpr std::string_view kAutomationTracksKey = "automationTracks";
+  static constexpr auto kAutomationTracksKey = "automationTracks"sv;
   friend void to_json (nlohmann::json &j, const AutomationTracklist &ats)
   {
-    j[kAutomationTracksKey] = ats.ats_;
+    j[kAutomationTracksKey] = ats.automation_tracks_;
   }
   friend void from_json (const nlohmann::json &j, AutomationTracklist &ats);
 
-  auto &get_port_registry () { return port_registry_; }
-  auto &get_port_registry () const { return port_registry_; }
+  auto &get_port_registry () { return dependencies_.port_registry_; }
+  auto &get_port_registry () const { return dependencies_.port_registry_; }
+
+  auto &automation_track_holders () { return automation_tracks_; }
+  auto  get_iterator_for_automation_track (const AutomationTrack &at) const
+  {
+    auto it = std::ranges::find (
+      automation_track_holders (), &at,
+      [&] (const auto &ath) { return ath->automationTrack (); });
+    if (it == automation_track_holders ().end ())
+      {
+        throw std::runtime_error ("Automation track not found");
+      }
+    return it;
+  }
+  auto get_iterator_for_automation_track (const AutomationTrack &at)
+  {
+    auto it = std::ranges::find (
+      automation_track_holders (), &at,
+      [&] (const auto &ath) { return ath->automationTrack (); });
+    if (it == automation_track_holders ().end ())
+      {
+        throw std::runtime_error ("Automation track not found");
+      }
+    return it;
+  }
+  int get_automation_track_index (const AutomationTrack &at) const
+  {
+    return static_cast<int> (std::distance (
+      automation_track_holders ().begin (),
+      get_iterator_for_automation_track (at)));
+  }
 
 private:
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry_;
-  ArrangerObjectRegistry          &object_registry_;
-  dsp::PortRegistry               &port_registry_;
-  dsp::ProcessorParameterRegistry &param_registry_;
+  AutomationTrackHolder::Dependencies dependencies_;
 
   /**
    * @brief Automation tracks in this automation tracklist.
@@ -217,23 +313,9 @@ private:
    * Automation tracks become active automation lanes when they have
    * automation or are selected.
    */
-  std::vector<utils::QObjectUniquePtr<AutomationTrack>> ats_;
+  std::vector<utils::QObjectUniquePtr<AutomationTrackHolder>> automation_tracks_;
 
-  /**
-   * Cache of automation tracks in record mode, used in recording manager to
-   * avoid looping over all automation tracks.
-   */
-  std::vector<QPointer<AutomationTrack>> ats_in_record_mode_;
-
-  /**
-   * Cache of visible automation tracks.
-   */
-  std::vector<QPointer<AutomationTrack>> visible_ats_;
-
-  /**
-   * Owner track.
-   */
-  AutomatableTrack &track_;
+  BOOST_DESCRIBE_CLASS (AutomationTracklist, (), (), (), (automation_tracks_))
 };
 
 }

@@ -243,8 +243,14 @@ public:
    */
   bool contains_non_automatable_track () const
   {
-    return !std::ranges::all_of (
-      *this, Base::template derived_from_type_projection<AutomatableTrack>);
+    return std::ranges::any_of (*this, [&] (auto &&track_var) {
+      return std::visit (
+        [] (auto &&tr) {
+          using TrackT = base_type<decltype (tr)>;
+          return !AutomatableTrack<TrackT>;
+        },
+        track_var);
+    });
   }
 
   bool contains_undeletable_track () const
@@ -429,24 +435,17 @@ public:
   }
 #endif
 
-  std::vector<TrackUuidReference> create_new_identities (
-    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-    TrackRegistry                   &track_registry,
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    ArrangerObjectRegistry          &obj_registry) const
+  std::vector<TrackUuidReference>
+  create_new_identities (FinalTrackDependencies track_deps) const
   {
-    return std::ranges::to<
-      std::vector> (*this | std::views::transform ([&] (const auto &track_var) {
-      return std::visit (
-        [&] (auto &&track) -> TrackUuidReference {
-          return track_registry.clone_object (
-            *track, file_audio_source_registry, track_registry, plugin_registry,
-            port_registry, param_registry, obj_registry, true);
-        },
-        track_var);
-    }));
+    return std::ranges::to<std::vector> (
+      *this | std::views::transform ([&] (const auto &track_var) {
+        return std::visit (
+          [&] (auto &&track) -> TrackUuidReference {
+            return track_deps.track_registry_.clone_object (*track, track_deps);
+          },
+          track_var);
+      }));
   }
 };
 

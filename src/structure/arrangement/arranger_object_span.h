@@ -662,14 +662,7 @@ public:
         using ObjT = base_type<decltype (ptr)>;
         if constexpr (BoundedObject<ObjT>)
           {
-            if constexpr (RegionObject<ObjT>)
-              {
-                return ptr->regionMixin ()->bounds ();
-              }
-            else
-              {
-                return ptr->bounds ();
-              }
+            return get_object_bounds (*ptr);
           }
         else
           {

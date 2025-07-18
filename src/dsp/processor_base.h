@@ -21,12 +21,16 @@ namespace zrythm::dsp
 class ProcessorBase : public dsp::graph::IProcessable
 {
 public:
+  struct ProcessorBaseDependencies
+  {
+    dsp::PortRegistry               &port_registry_;
+    dsp::ProcessorParameterRegistry &param_registry_;
+  };
+
   ProcessorBase (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    utils::Utf8String                name = { u8"ProcessorBase" })
-      : port_registry_ (port_registry), param_registry_ (param_registry),
-        name_ (std::move (name))
+    ProcessorBaseDependencies dependencies,
+    utils::Utf8String         name = { u8"ProcessorBase" })
+      : dependencies_ (dependencies), name_ (std::move (name))
   {
   }
 
@@ -93,30 +97,30 @@ private:
     p.input_ports_.clear ();
     for (const auto &input_port : j.at (kInputPortsKey))
       {
-        auto port_ref = dsp::PortUuidReference{ p.port_registry_ };
+        auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
         from_json (input_port, port_ref);
         p.input_ports_.emplace_back (std::move (port_ref));
       }
     p.output_ports_.clear ();
     for (const auto &output_port : j.at (kOutputPortsKey))
       {
-        auto port_ref = dsp::PortUuidReference{ p.port_registry_ };
+        auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
         from_json (output_port, port_ref);
         p.output_ports_.emplace_back (std::move (port_ref));
       }
     p.params_.clear ();
     for (const auto &param : j.at (kParametersKey))
       {
-        auto param_ref =
-          dsp::ProcessorParameterUuidReference{ p.param_registry_ };
+        auto param_ref = dsp::ProcessorParameterUuidReference{
+          p.dependencies_.param_registry_
+        };
         from_json (param, param_ref);
         p.params_.emplace_back (std::move (param_ref));
       }
   }
 
 protected:
-  dsp::PortRegistry                                &port_registry_;
-  dsp::ProcessorParameterRegistry                  &param_registry_;
+  ProcessorBaseDependencies                         dependencies_;
   utils::Utf8String                                 name_;
   std::vector<dsp::PortUuidReference>               input_ports_;
   std::vector<dsp::PortUuidReference>               output_ports_;

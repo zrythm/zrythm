@@ -19,7 +19,7 @@ class InstrumentTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (InstrumentTrack)
   DEFINE_LANED_TRACK_QML_PROPERTIES (InstrumentTrack)
-  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (InstrumentTrack)
+  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (InstrumentTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (InstrumentTrack)
   DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES (InstrumentTrack)
 
@@ -60,7 +60,6 @@ private:
   {
     to_json (j, static_cast<const Track &> (instrument_track));
     to_json (j, static_cast<const ProcessableTrack &> (instrument_track));
-    to_json (j, static_cast<const AutomatableTrack &> (instrument_track));
     to_json (j, static_cast<const RecordableTrack &> (instrument_track));
     to_json (j, static_cast<const PianoRollTrack &> (instrument_track));
     to_json (j, static_cast<const ChannelTrack &> (instrument_track));
@@ -72,7 +71,6 @@ private:
   {
     from_json (j, static_cast<Track &> (instrument_track));
     from_json (j, static_cast<ProcessableTrack &> (instrument_track));
-    from_json (j, static_cast<AutomatableTrack &> (instrument_track));
     from_json (j, static_cast<RecordableTrack &> (instrument_track));
     from_json (j, static_cast<PianoRollTrack &> (instrument_track));
     from_json (j, static_cast<ChannelTrack &> (instrument_track));

@@ -832,10 +832,8 @@ CarlaNativePlugin::get_descriptor_from_cached (
 }
 #endif // HAVE_CARLA
 
-CarlaNativePlugin::CarlaNativePlugin (
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-    : Plugin (port_registry, param_registry, *this)
+CarlaNativePlugin::CarlaNativePlugin (ProcessorBaseDependencies dependencies)
+    : Plugin (dependencies, *this)
 {
 }
 

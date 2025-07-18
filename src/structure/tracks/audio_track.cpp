@@ -18,44 +18,32 @@
 namespace zrythm::structure::tracks
 {
 
-AudioTrack::AudioTrack (
-  dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry,
-  bool                             new_identity)
+AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Audio,
         PortType::Audio,
         PortType::Audio,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        obj_registry),
-      AutomatableTrack (
-        file_audio_source_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      ProcessableTrack (port_registry, param_registry, new_identity),
-      ChannelTrack (
-        track_registry,
-        plugin_registry,
-        port_registry,
-        param_registry,
-        new_identity),
-      RecordableTrack (port_registry, param_registry, new_identity)
-
+        dependencies.plugin_registry_,
+        dependencies.port_registry_,
+        dependencies.param_registry_,
+        dependencies.obj_registry_),
+      ProcessableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ }),
+      ChannelTrack (dependencies),
+      RecordableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ })
 {
-  if (new_identity)
-    {
-      color_ = Color (QColor ("#2BD700"));
-      /* signal-audio also works */
-      icon_name_ = u8"view-media-visualization";
-    }
-  automation_tracklist_->setParent (this);
+  color_ = Color (QColor ("#2BD700"));
+  /* signal-audio also works */
+  icon_name_ = u8"view-media-visualization";
+  automatableTrackMixin ()->setParent (this);
+
   // TODO
   // samplerate_ = samplerate;
   // rt_stretcher_ = dsp::Stretcher::create_rubberband (samplerate_,
@@ -70,7 +58,6 @@ AudioTrack::init_loaded (
 {
   // ChannelTrack must be initialized before AutomatableTrack
   ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  AutomatableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
   LanedTrackImpl::init_loaded (plugin_registry, port_registry, param_registry);
 // TODO
@@ -89,7 +76,7 @@ bool
 AudioTrack::initialize ()
 {
   init_channel ();
-  generate_automation_tracks ();
+  generate_automation_tracks (*this);
   init_recordable_track ([] () {
     return ZRYTHM_HAVE_UI
            && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
@@ -102,7 +89,7 @@ void
 AudioTrack::clear_objects ()
 {
   LanedTrackImpl::clear_objects ();
-  AutomatableTrack::clear_objects ();
+  automatableTrackMixin ()->automationTracklist ()->clear_arranger_objects ();
 }
 
 void
@@ -147,14 +134,14 @@ AudioTrack::get_regions_in_range (
   std::optional<signed_frame_t>                          p2)
 {
   LanedTrackImpl::get_regions_in_range (regions, p1, p2);
-  AutomatableTrack::get_regions_in_range (regions, p1, p2);
+  // AutomatableTrack::get_regions_in_range (regions, p1, p2);
 }
 
 void
 AudioTrack::set_playback_caches ()
 {
   LanedTrackImpl::set_playback_caches ();
-  AutomatableTrack::set_playback_caches ();
+  // AutomatableTrack::set_playback_caches ();
 }
 
 void
@@ -182,9 +169,6 @@ init_from (
   init_from (
     static_cast<ProcessableTrack &> (obj),
     static_cast<const ProcessableTrack &> (other), clone_type);
-  init_from (
-    static_cast<AutomatableTrack &> (obj),
-    static_cast<const AutomatableTrack &> (other), clone_type);
   init_from (
     static_cast<RecordableTrack &> (obj),
     static_cast<const RecordableTrack &> (other), clone_type);

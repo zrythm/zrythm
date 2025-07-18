@@ -7,15 +7,13 @@
 
 namespace zrythm::structure::tracks
 {
-RecordableTrack::RecordableTrack (
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  bool                             new_identity)
-    : ProcessableTrack (port_registry, param_registry, new_identity),
-      recording_id_ (param_registry)
+RecordableTrack::RecordableTrack (ProcessableTrack::Dependencies dependencies)
+    : ProcessableTrack (dependencies), recording_id_ (dependencies.param_registry_)
 {
-  recording_id_ = param_registry.create_object<dsp::ProcessorParameter> (
-    port_registry, dsp::ProcessorParameter::UniqueId (u8"track_record"),
+  recording_id_ = dependencies.param_registry_.create_object<
+    dsp::ProcessorParameter> (
+    dependencies.port_registry_,
+    dsp::ProcessorParameter::UniqueId (u8"track_record"),
     dsp::ParameterRange::make_toggle (false),
     utils::Utf8String::from_qstring (QObject::tr ("Track record")));
 }

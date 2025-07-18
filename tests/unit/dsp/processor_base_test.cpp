@@ -20,7 +20,11 @@ public:
   TestProcessor (
     PortRegistry               &port_registry,
     ProcessorParameterRegistry &param_registry)
-      : ProcessorBase (port_registry, param_registry, u8"TestProcessor"),
+      : ProcessorBase (
+          ProcessorBase::ProcessorBaseDependencies{
+            .port_registry_ = port_registry,
+            .param_registry_ = param_registry },
+          u8"TestProcessor"),
         input_port_ (port_registry.create_object<dsp::AudioPort> (
           u8"Input",
           PortFlow::Input)),

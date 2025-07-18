@@ -25,19 +25,10 @@ class TrackFactory : public QObject
 public:
   TrackFactory () = delete;
   TrackFactory (
-    dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-    TrackRegistry                   &track_registry,
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    ArrangerObjectRegistry          &arranger_object_registry,
-    gui::SettingsManager            &settings_mgr,
-    QObject *                        parent = nullptr)
-      : QObject (parent),
-        file_audio_source_registry_ (file_audio_source_registry),
-        track_registry_ (track_registry), plugin_registry_ (plugin_registry),
-        port_registry_ (port_registry), param_registry_ (param_registry),
-        arranger_object_registry_ (arranger_object_registry),
+    FinalTrackDependencies track_deps,
+    gui::SettingsManager  &settings_mgr,
+    QObject *              parent = nullptr)
+      : QObject (parent), track_deps_ (track_deps),
         settings_manager_ (settings_mgr)
   {
   }
@@ -49,17 +40,8 @@ public:
     friend class TrackFactory;
 
   private:
-    explicit Builder (
-      dsp::FileAudioSourceRegistry    &file_audio_source_registry,
-      TrackRegistry                   &track_registry,
-      PluginRegistry                  &plugin_registry,
-      dsp::PortRegistry               &port_registry,
-      dsp::ProcessorParameterRegistry &param_registry,
-      ArrangerObjectRegistry          &arranger_object_registry)
-        : file_audio_source_registry_ (file_audio_source_registry),
-          track_registry_ (track_registry), plugin_registry_ (plugin_registry),
-          port_registry_ (port_registry), param_registry_ (param_registry),
-          arranger_object_registry_ (arranger_object_registry)
+    explicit Builder (FinalTrackDependencies track_deps)
+        : track_deps_ (track_deps)
     {
     }
 
@@ -75,24 +57,18 @@ public:
       // FIXME: DRY
       if constexpr (utils::Initializable<TrackT>)
         {
-          return TrackT::create_unique (
-            file_audio_source_registry_, track_registry_, plugin_registry_,
-            port_registry_, param_registry_, arranger_object_registry_, false);
+          return TrackT::create_unique (track_deps_);
         }
       else
         {
-          return std::make_unique<TrackT> (
-            file_audio_source_registry_, track_registry_, plugin_registry_,
-            port_registry_, param_registry_, arranger_object_registry_, false);
+          return std::make_unique<TrackT> (track_deps_);
         }
     }
 
     auto build ()
     {
       auto obj_ref = [&] () {
-        return track_registry_.create_object<TrackT> (
-          file_audio_source_registry_, track_registry_, plugin_registry_,
-          port_registry_, param_registry_, arranger_object_registry_, true);
+        return track_deps_.track_registry_.create_object<TrackT> (track_deps_);
       }();
 
       // auto * obj = std::get<PluginT *> (obj_ref.get_object ());
@@ -101,22 +77,14 @@ public:
     }
 
   private:
-    dsp::FileAudioSourceRegistry     &file_audio_source_registry_;
-    TrackRegistry                    &track_registry_;
-    PluginRegistry                   &plugin_registry_;
-    dsp::PortRegistry                &port_registry_;
-    dsp::ProcessorParameterRegistry  &param_registry_;
-    ArrangerObjectRegistry           &arranger_object_registry_;
+    FinalTrackDependencies            track_deps_;
     OptionalRef<gui::SettingsManager> settings_manager_;
   };
 
   template <typename TrackT> auto get_builder () const
   {
     auto builder =
-      Builder<TrackT> (
-        file_audio_source_registry_, track_registry_, plugin_registry_,
-        port_registry_, param_registry_, arranger_object_registry_)
-        .with_settings_manager (settings_manager_);
+      Builder<TrackT> (track_deps_).with_settings_manager (settings_manager_);
     return builder;
   }
 
@@ -207,7 +175,8 @@ public:
   template <typename TrackT>
   auto clone_new_object_identity (const TrackT &other) const
   {
-    return plugin_registry_.clone_object (other, plugin_registry_);
+    return track_deps_.plugin_registry_.clone_object (
+      other, track_deps_.plugin_registry_);
   }
 
   template <typename TrackT>
@@ -216,18 +185,13 @@ public:
     TrackT * new_obj{};
 
     new_obj = other.clone_qobject (
-      &owner, utils::ObjectCloneType::Snapshot, plugin_registry_);
+      &owner, utils::ObjectCloneType::Snapshot, track_deps_.plugin_registry_);
     return new_obj;
   }
 
 private:
-  dsp::FileAudioSourceRegistry        &file_audio_source_registry_;
-  TrackRegistry                       &track_registry_;
-  PluginRegistry                      &plugin_registry_;
-  dsp::PortRegistry                   &port_registry_;
-  dsp::ProcessorParameterRegistry     &param_registry_;
-  arrangement::ArrangerObjectRegistry &arranger_object_registry_;
-  gui::SettingsManager                &settings_manager_;
+  FinalTrackDependencies track_deps_;
+  gui::SettingsManager  &settings_manager_;
 };
 
 } // namespace zrythm::structure::tracks

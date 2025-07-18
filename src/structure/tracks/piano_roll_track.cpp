@@ -46,7 +46,7 @@ void
 PianoRollTrack::clear_objects ()
 {
   LanedTrackImpl::clear_objects ();
-  AutomatableTrack::clear_objects ();
+  automatableTrackMixin ()->automationTracklist ()->clear_arranger_objects ();
 }
 
 uint8_t
@@ -80,7 +80,8 @@ PianoRollTrack::get_regions_in_range (
   std::optional<signed_frame_t>                          p2)
 {
   LanedTrackImpl::get_regions_in_range (regions, p1, p2);
-  AutomatableTrack::get_regions_in_range (regions, p1, p2);
+  // TODO
+  // AutomatableTrack::get_regions_in_range (regions, p1, p2);
 }
 
 void
@@ -98,7 +99,7 @@ void
 PianoRollTrack::set_playback_caches ()
 {
   LanedTrackImpl::set_playback_caches ();
-  AutomatableTrack::set_playback_caches ();
+  // AutomatableTrack::set_playback_caches ();
 }
 
 void

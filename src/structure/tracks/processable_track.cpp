@@ -4,7 +4,6 @@
 #include "engine/device_io/engine.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/chord_region.h"
 #include "structure/tracks/chord_track.h"
@@ -14,17 +13,18 @@
 
 namespace zrythm::structure::tracks
 {
-ProcessableTrack::ProcessableTrack (
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  bool                             new_identity)
-    : port_registry_ (port_registry), param_registry_ (param_registry)
+ProcessableTrack::ProcessableTrack (Dependencies dependencies)
+    : automatable_track_mixin_ (
+        utils::make_qobject_unique<AutomatableTrackMixin> (dependencies)),
+      processor_ (
+        utils::make_qobject_unique<TrackProcessor> (
+          *this,
+          TrackProcessor::ProcessorBaseDependencies{
+            .port_registry_ = dependencies.port_registry_,
+            .param_registry_ = dependencies.param_registry_ })),
+      port_registry_ (dependencies.port_registry_),
+      param_registry_ (dependencies.param_registry_)
 {
-  if (new_identity)
-    {
-      processor_ = std::make_unique<TrackProcessor> (
-        *this, port_registry, param_registry, true);
-    }
 }
 
 void
@@ -43,9 +43,9 @@ init_from (
   const ProcessableTrack &other,
   utils::ObjectCloneType  clone_type)
 {
-  obj.processor_ = utils::clone_unique (
-    *other.processor_, utils::ObjectCloneType::Snapshot, obj,
-    obj.port_registry_, obj.param_registry_, false);
+  init_from (*obj.processor_, *other.processor_, clone_type);
+  init_from (
+    *obj.automatable_track_mixin_, *other.automatable_track_mixin_, clone_type);
   obj.processor_->track_ = &obj;
 }
 
@@ -276,8 +276,8 @@ ProcessableTrack::fill_events_common (
 void
 from_json (const nlohmann::json &j, ProcessableTrack &p)
 {
-  p.processor_ = std::make_unique<TrackProcessor> (
-    p, p.port_registry_, p.param_registry_, false);
   j[ProcessableTrack::kProcessorKey].get_to (*p.processor_);
+  j[ProcessableTrack::kAutomatableTrackMixinKey].get_to (
+    *p.automatable_track_mixin_);
 }
 }

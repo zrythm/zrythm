@@ -17,7 +17,7 @@ class MasterTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MasterTrack)
-  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MasterTrack)
+  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (MasterTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MasterTrack)
 
   DECLARE_FINAL_TRACK_CONSTRUCTORS (MasterTrack)
@@ -42,7 +42,6 @@ private:
   {
     to_json (j, static_cast<const Track &> (project));
     to_json (j, static_cast<const ProcessableTrack &> (project));
-    to_json (j, static_cast<const AutomatableTrack &> (project));
     to_json (j, static_cast<const ChannelTrack &> (project));
     to_json (j, static_cast<const GroupTargetTrack &> (project));
   }
@@ -50,7 +49,6 @@ private:
   {
     from_json (j, static_cast<Track &> (project));
     from_json (j, static_cast<ProcessableTrack &> (project));
-    from_json (j, static_cast<AutomatableTrack &> (project));
     from_json (j, static_cast<ChannelTrack &> (project));
     from_json (j, static_cast<GroupTargetTrack &> (project));
   }

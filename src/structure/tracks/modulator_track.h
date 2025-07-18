@@ -26,7 +26,7 @@ class ModulatorTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (ModulatorTrack)
-  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (ModulatorTrack)
+  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (ModulatorTrack)
 
   friend class InitializableObject;
   friend struct ModulatorImportData;
@@ -59,6 +59,20 @@ public:
 
   plugins::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
 
+  /**
+   * Returns the plugin at the given slot, if any.
+   */
+  std::optional<PluginPtrVariant> get_plugin_at_slot (plugins::PluginSlot slot)
+  {
+    if (
+      slot.is_modulator ()
+      && slot.get_slot_with_index ().second < (int) modulators_.size ())
+      {
+        return modulators_[slot.get_slot_with_index ().second].get_object ();
+      }
+    return std::nullopt;
+  }
+
   void init_loaded (
     PluginRegistry                  &plugin_registry,
     dsp::PortRegistry               &port_registry,
@@ -85,7 +99,6 @@ private:
   {
     to_json (j, static_cast<const Track &> (track));
     to_json (j, static_cast<const ProcessableTrack &> (track));
-    to_json (j, static_cast<const AutomatableTrack &> (track));
     j[kModulatorsKey] = track.modulators_;
     j[kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
   }

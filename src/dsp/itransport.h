@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "utils/types.h"
+
 namespace zrythm::dsp
 {
 /**

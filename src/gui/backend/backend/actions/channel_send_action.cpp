@@ -72,6 +72,8 @@ init_from (
 bool
 ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
 {
+// TODO
+#if 0
   /* get the actual channel send from the project */
   auto send = send_before_->find_in_project ();
 
@@ -127,13 +129,15 @@ ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
        * connections manager */
       send->copy_values_from (*send_before_);
     }
-
+#endif
   return true;
 }
 
 void
 ChannelSendAction::perform_impl ()
 {
+  // TODO
+#if 0
   /* get the actual channel send from the project */
   ChannelSend * send = send_before_->find_in_project ();
 
@@ -174,11 +178,14 @@ ChannelSendAction::perform_impl ()
     }
 
   /* EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send); */
+#endif
 }
 
 void
 ChannelSendAction::undo_impl ()
 {
+// TODO
+#if 0
   /* get the actual channel send from the project */
   ChannelSend * send = send_before_->find_in_project ();
 
@@ -219,6 +226,7 @@ ChannelSendAction::undo_impl ()
     }
 
   /* EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send); */
+#endif
 }
 
 QString

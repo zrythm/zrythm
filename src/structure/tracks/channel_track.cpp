@@ -10,20 +10,21 @@
 namespace zrythm::structure::tracks
 {
 
-ChannelTrack::ChannelTrack (
-  TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  bool                             new_identity)
-    : ProcessableTrack (port_registry, param_registry, new_identity),
-      track_registry_ (track_registry)
+ChannelTrack::ChannelTrack (FinalTrackDependencies dependencies)
+    : ProcessableTrack (
+        Dependencies{
+          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
+          dependencies.port_registry_, dependencies.param_registry_,
+          dependencies.obj_registry_ }),
+      channel_ (
+        utils::make_qobject_unique<Channel> (
+          dependencies.track_registry_,
+          dependencies.plugin_registry_,
+          dependencies.port_registry_,
+          dependencies.param_registry_,
+          *this)),
+      track_registry_ (dependencies.track_registry_)
 {
-  if (new_identity)
-    {
-      channel_.reset (new Channel (
-        track_registry, plugin_registry, port_registry, param_registry, *this));
-    }
 }
 
 ChannelTrack::~ChannelTrack () { }
