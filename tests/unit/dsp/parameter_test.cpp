@@ -71,7 +71,7 @@ protected:
 
 TEST_F (ProcessorParameterTest, BasicParameterSetup)
 {
-  EXPECT_EQ (param->baseValue (), param->range ().convert_to_0_to_1 (1000.f));
+  EXPECT_EQ (param->baseValue (), param->range ().convertTo0To1 (1000.f));
 }
 
 TEST_F (ProcessorParameterTest, AutomationValueApplication)
@@ -287,20 +287,20 @@ TEST_F (ProcessorParameterTest, ParameterTypeHandling)
   ProcessorParameter linearParam (
     port_registry, ProcessorParameter::UniqueId (u8"linear"),
     ParameterRange (ParameterRange::Type::Linear, 4.f, 8.f), u8"Linear");
-  EXPECT_FLOAT_EQ (linearParam.range ().convert_from_0_to_1 (0.5f), 6.f);
+  EXPECT_FLOAT_EQ (linearParam.range ().convertFrom0To1 (0.5f), 6.f);
 
   // Test Logarithmic type
   ProcessorParameter logParam (
     port_registry, ProcessorParameter::UniqueId (u8"log"),
     ParameterRange (ParameterRange::Type::Logarithmic, 20.f, 20000.f), u8"Log");
-  EXPECT_NEAR (logParam.range ().convert_from_0_to_1 (0.8f), 5023.7734f, 0.1f);
+  EXPECT_NEAR (logParam.range ().convertFrom0To1 (0.8f), 5023.7734f, 0.1f);
 
   // Test Toggle type
   ProcessorParameter toggleParam (
     port_registry, ProcessorParameter::UniqueId (u8"toggle"),
     ParameterRange (ParameterRange::Type::Toggle, 0.f, 1.f), u8"Toggle");
   EXPECT_FLOAT_EQ (
-    toggleParam.range ().convert_from_0_to_1 (0.5f), 1.f); // Should clamp to 1
+    toggleParam.range ().convertFrom0To1 (0.5f), 1.f); // Should clamp to 1
 }
 
 TEST_F (ProcessorParameterTest, ValueClamping)

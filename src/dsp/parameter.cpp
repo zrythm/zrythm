@@ -16,8 +16,7 @@ ProcessorParameter::ProcessorParameter (
   utils::Utf8String label,
   QObject *         parent)
     : QObject (parent), unique_id_ (std::move (unique_id)), range_ (range),
-      label_ (std::move (label)),
-      base_value_ (range.convert_to_0_to_1 (range.deff_)),
+      label_ (std::move (label)), base_value_ (range.convertTo0To1 (range.deff_)),
       modulation_input_uuid_ (
         { port_registry.create_object<
           CVPort> (label_ + u8" Mod In", PortFlow::Input) })

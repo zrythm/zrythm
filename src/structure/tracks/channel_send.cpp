@@ -531,7 +531,7 @@ void
 ChannelSend::set_amount_in_amplitude (float amount)
 {
   get_amount_param ().setBaseValue (
-    get_amount_param ().range ().convert_to_0_to_1 (amount));
+    get_amount_param ().range ().convertTo0To1 (amount));
 }
 
 utils::Utf8String

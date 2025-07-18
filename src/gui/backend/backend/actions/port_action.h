@@ -70,7 +70,7 @@ public:
       : PortAction (
           PortAction::Type::SetControlValue,
           port.get_uuid (),
-          port.range ().convert_to_0_to_1 (port.range ().deff_))
+          port.range ().convertTo0To1 (port.range ().deff_))
   {
   }
 };

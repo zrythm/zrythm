@@ -879,7 +879,7 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
           const auto &stereo_out = get_stereo_out_ports ();
           const auto  input_gain = [this] () {
             const auto &input_gain_param = get_input_gain_param ();
-            return input_gain_param.range ().convert_from_0_to_1 (
+            return input_gain_param.range ().convertFrom0To1 (
               input_gain_param.currentValue ());
           };
           const auto mono = [this] () {
@@ -986,9 +986,8 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
       if constexpr (std::is_same_v<TrackT, AudioTrack>)
         {
           const auto &output_gain_param = get_output_gain_param ();
-          const auto  output_gain =
-            output_gain_param.range ().convert_from_0_to_1 (
-              output_gain_param.currentValue ());
+          const auto  output_gain = output_gain_param.range ().convertFrom0To1 (
+            output_gain_param.currentValue ());
 
           const auto stereo_out = get_stereo_out_ports ();
           utils::float_ranges::mul_k2 (

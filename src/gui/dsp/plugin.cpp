@@ -679,7 +679,7 @@ Plugin::custom_process_block (const EngineProcessTimeInfo time_nfo)
   /* if plugin has gain, apply it */
   const auto gain_param = gain_.get_object_as<dsp::ProcessorParameter> ();
   const auto gain =
-    gain_param->range ().convert_from_0_to_1 (gain_param->currentValue ());
+    gain_param->range ().convertFrom0To1 (gain_param->currentValue ());
   if (!utils::math::floats_near (gain, 1.f, 0.001f))
     {
       for (
