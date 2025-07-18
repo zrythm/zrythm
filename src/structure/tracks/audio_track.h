@@ -50,18 +50,6 @@ public:
 
   void temporary_virtual_method_hack () const override { }
 
-  /**
-   * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
-   *
-   * @note The engine splits the cycle so transport loop related logic is not
-   * needed.
-   *
-   * @param stereo_ports StereoPorts to fill.
-   */
-  void fill_events (
-    const EngineProcessTimeInfo                  &time_nfo,
-    std::pair<std::span<float>, std::span<float>> stereo_ports);
-
   void clear_objects () override;
 
   void get_regions_in_range (

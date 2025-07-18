@@ -50,21 +50,6 @@ public:
   }
 
   /**
-   * Inits a TrackProcessor after a project is loaded.
-   */
-  void init_loaded (
-    ProcessableTrack *               track,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry);
-
-#if 0
-  /**
-   * Copy port values from @ref src to this TrackProcessor.
-   */
-  void copy_values (TrackProcessor * src);
-#endif
-
-  /**
    * Clears all buffers.
    */
   void clear_buffers (std::size_t block_length);
@@ -218,29 +203,6 @@ private:
   }
   friend void from_json (const nlohmann::json &j, TrackProcessor &tp);
 
-  void init_common ();
-
-  /**
-   * Inits the MIDI In port of the Channel while exposing it to JACK.
-   *
-   * This assumes the caller already checked that this channel should have the
-   * given MIDI port enabled.
-   *
-   * @param in True if input (false for output).
-   */
-  void init_midi_port (bool in);
-  void init_midi_cc_ports ();
-
-  /**
-   * Inits the stereo ports of the Channel while exposing them to the backend.
-   *
-   * This assumes the caller already checked that this channel should have the
-   * given ports enabled.
-   *
-   * @param in Whether input (false for output).
-   */
-  void init_stereo_out_ports (bool in);
-
   /**
    * Splits the cycle and handles recording for each
    * slot.
@@ -253,13 +215,7 @@ private:
   [[gnu::hot]] void
   add_events_from_midi_cc_control_ports (nframes_t local_offset);
 
-  void connect_ports (const dsp::PortUuid &src, const dsp::PortUuid &dst);
-  void disconnect_ports (const dsp::PortUuid &src, const dsp::PortUuid &dst);
-
 public:
-  dsp::PortRegistry               &port_registry_;
-  dsp::ProcessorParameterRegistry &param_registry_;
-
   /** Mono toggle, if audio. */
   std::optional<dsp::ProcessorParameterUuidReference> mono_id_;
 

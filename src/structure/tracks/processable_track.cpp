@@ -33,8 +33,6 @@ ProcessableTrack::init_loaded (
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry)
 {
-  processor_->track_ = this;
-  processor_->init_loaded (this, port_registry, param_registry);
 }
 
 void
@@ -50,14 +48,6 @@ init_from (
 }
 
 void
-ProcessableTrack::fill_midi_events (
-  const EngineProcessTimeInfo &time_nfo,
-  dsp::MidiEventVector        &midi_events)
-{
-  fill_events_common (time_nfo, &midi_events, std::nullopt);
-}
-
-void
 ProcessableTrack::fill_events_common (
   const EngineProcessTimeInfo &time_nfo,
   dsp::MidiEventVector *       midi_events,
@@ -70,16 +60,6 @@ ProcessableTrack::fill_events_common (
 
   const unsigned_frame_t g_end_frames =
     time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_;
-
-#if 0
-  z_info (
-    "%s: TRACK %s STARTING from %ld, "
-    "local start frame {}, nframes {}",
-    __func__, self->name, time_nfo->g_start_frame_w_offset,
-    time_nfo->local_offset, time_nfo->nframes);
-#endif
-
-  // Track::Type tt = type_;
 
   const bool use_caches = !is_auditioner ();
 

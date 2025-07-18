@@ -145,14 +145,6 @@ AudioTrack::set_playback_caches ()
 }
 
 void
-AudioTrack::fill_events (
-  const EngineProcessTimeInfo                  &time_nfo,
-  std::pair<std::span<float>, std::span<float>> stereo_ports)
-{
-  fill_events_common (time_nfo, nullptr, stereo_ports);
-}
-
-void
 init_from (
   AudioTrack            &obj,
   const AudioTrack      &other,
