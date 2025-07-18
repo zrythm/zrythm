@@ -641,13 +641,8 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
         {
           auto &pr = get_piano_roll_port ();
 
-          /* panic MIDI if necessary */
-          if (AUDIO_ENGINE->panic_.load ())
-            {
-              pr.midi_events_.queued_events_.panic ();
-            }
           /* get events from track if playing */
-          else if (TRANSPORT->isRolling () || tr->is_auditioner ())
+          if (TRANSPORT->isRolling () || tr->is_auditioner ())
             {
               /* fill midi events from piano roll data */
               track_->fill_midi_events (
@@ -795,14 +790,6 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
               get_midi_out_port ().midi_events_.active_events_.append (
                 get_midi_in_port ().midi_events_.active_events_,
                 time_nfo.local_offset_, time_nfo.nframes_);
-            }
-
-          /* if pending a panic message, append it */
-          if (pending_midi_panic_)
-            {
-              get_midi_out_port ()
-                .midi_events_.active_events_.panic_without_lock ();
-              pending_midi_panic_ = false;
             }
         }
 

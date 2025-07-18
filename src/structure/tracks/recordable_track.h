@@ -69,8 +69,11 @@ public:
       {
         z_info ("disabled recording on {}", self.name_);
 
+// TODO
+#if 0
         /* send all notes off if can record MIDI */
         self.processor_->pending_midi_panic_ = true;
+#endif
       }
 
     Q_EMIT self.recordingChanged (recording);

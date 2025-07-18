@@ -458,7 +458,7 @@ Transport::requestPause (bool with_wait)
     && gui::SettingsManager::transportReturnToCue ())
     {
       auto tmp = cue_pos_->get_position ();
-      move_playhead (tmp.ticks_, true, false, true);
+      move_playhead (tmp.ticks_, false);
     }
 
   if (with_wait)
@@ -557,11 +557,7 @@ Transport::get_playhead_position_in_gui_thread () const
 }
 
 void
-Transport::move_playhead (
-  double target_ticks,
-  bool   panic,
-  bool   set_cue_point,
-  bool   fire_events)
+Transport::move_playhead (double target_ticks, bool set_cue_point)
 {
   /* if currently recording, do nothing */
   if (!can_user_move_playhead ())
@@ -622,13 +618,6 @@ Transport::move_playhead (
       Position target{ target_ticks, AUDIO_ENGINE->frames_per_tick_ };
       cue_pos_->set_position_rtsafe (target);
     }
-
-  if (fire_events)
-    {
-      /* FIXME use another flag to decide when to do this */
-      last_manual_playhead_change_ =
-        Zrythm::getInstance ()->get_monotonic_time_usecs ();
-    }
 }
 
 void
@@ -673,8 +662,7 @@ Transport::move_to_marker_or_pos_and_fire_events (
   std::optional<double>                  pos_ticks)
 {
   move_playhead (
-    (marker != nullptr) ? marker->position ()->ticks () : *pos_ticks, true,
-    true, true);
+    (marker != nullptr) ? marker->position ()->ticks () : *pos_ticks, true);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -1012,7 +1000,7 @@ Transport::move_backward (bool with_wait)
       ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, tmp.ticks_, true);
       z_return_if_fail (ret);
     }
-  move_playhead (pos.ticks_, true, true, true);
+  move_playhead (pos.ticks_, true);
 }
 
 void
@@ -1034,7 +1022,7 @@ Transport::move_forward (bool with_wait)
   [[maybe_unused]] const bool ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (
     pos, playhead_.position_ticks (), false);
   assert (ret);
-  move_playhead (pos.ticks_, true, true, true);
+  move_playhead (pos.ticks_, true);
 }
 
 /**

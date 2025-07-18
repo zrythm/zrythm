@@ -291,7 +291,7 @@ Exporter::export_audio (Settings &info)
     AUDIO_ENGINE->bounce_mode_ = engine::device_io::BounceMode::Off;
     AUDIO_ENGINE->bounce_with_parents_ = false;
   }
-  TRANSPORT->move_playhead (prev_playhead_ticks, true, false, false);
+  TRANSPORT->move_playhead (prev_playhead_ticks, false);
 
   /* if cancelled, delete */
   if (progress_info_->pending_cancellation ())

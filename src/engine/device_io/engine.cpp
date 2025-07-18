@@ -69,6 +69,11 @@ AudioEngine::AudioEngine (
           this)),
       port_connections_manager_ (project->port_connections_manager_),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
+      midi_panic_processor_ (
+        utils::make_qobject_unique<dsp::MidiPanicProcessor> (
+          dsp::MidiPanicProcessor::ProcessorBaseDependencies{
+            .port_registry_ = *port_registry_,
+            .param_registry_ = *param_registry_ })),
       audio_callback_ (
         std::make_unique<AudioCallback> (
           [this] (nframes_t frames_to_process) {
@@ -411,7 +416,7 @@ AudioEngine::resume (State &state)
   if (state.playing_)
     {
       project_->transport_->move_playhead (
-        project_->transport_->playhead_before_pause_, false, false, false);
+        project_->transport_->playhead_before_pause_, false);
       project_->transport_->requestRoll (true);
     }
   else
@@ -885,9 +890,6 @@ finalize_processing:
 void
 AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes)
 {
-  /* stop panicking */
-  panic_.store (false);
-
   /* remember current position info */
   update_position_info (pos_nfo_before_, 0);
 
@@ -909,24 +911,7 @@ void
 AudioEngine::panic_all ()
 {
   z_info ("~ midi panic all ~");
-
-  midi_editor_manual_press_->midi_events_.queued_events_.panic ();
-
-  for (auto track_var : TRACKLIST->get_track_span ())
-    {
-      std::visit (
-        [&] (auto &&track) {
-          using TrackT = base_type<decltype (track)>;
-          if constexpr (
-            std::derived_from<TrackT, structure::tracks::PianoRollTrack>
-            || std::is_same_v<TrackT, structure::tracks::ChordTrack>)
-            {
-              track->processor_->get_piano_roll_port ()
-                .midi_events_.queued_events_.panic ();
-            }
-        },
-        track_var);
-    }
+  midi_panic_processor_->request_panic ();
 }
 
 void

@@ -40,6 +40,7 @@ target_sources(zrythm_dsp_lib
     kmeter_dsp.cpp
     midi_event.h
     midi_event.cpp
+    midi_panic_processor.h
     midi_port.h
     midi_port.cpp
     modulator_macro_processor.h

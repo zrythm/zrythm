@@ -287,14 +287,6 @@ public:
   ProcessableTrack * track_ = nullptr;
 
   /**
-   * To be set to true when a panic (all notes off) message should be sent
-   * during processing.
-   *
-   * Only applies to tracks that receive MIDI input.
-   */
-  bool pending_midi_panic_ = false;
-
-  /**
    * A queue of MIDI CC ports whose values have been recently updated.
    *
    * This is used during processing to avoid checking every single MIDI CC

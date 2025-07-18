@@ -304,7 +304,7 @@ MidiEventVector::panic ()
     {
       std::this_thread::sleep_for (std::chrono::milliseconds (10));
     }
-  panic_without_lock ();
+  panic_without_lock (0);
   lock_.unlock ();
 }
 

@@ -327,14 +327,9 @@ public:
    * Should not be used during exporting.
    *
    * @param target_ticks Position to set to.
-   * @param panic Send MIDI panic or not FIXME unused.
    * @param set_cue_point Also set the cue point at this position.
    */
-  void move_playhead (
-    double target_ticks,
-    bool   panic,
-    bool   set_cue_point,
-    bool   fire_events);
+  void move_playhead (double target_ticks, bool set_cue_point);
 
   /**
    * Enables or disables loop.

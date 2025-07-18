@@ -361,11 +361,11 @@ public:
   /**
    * Adds a note off message to every MIDI channel.
    */
-  void panic_without_lock ()
+  void panic_without_lock (midi_time_t time)
   {
     for (midi_byte_t i = 1; i < 17; i++)
       {
-        add_all_notes_off (i, 0, false);
+        add_all_notes_off (i, time, false);
       }
   }
 

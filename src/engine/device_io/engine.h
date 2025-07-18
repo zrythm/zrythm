@@ -6,6 +6,7 @@
 #include "zrythm-config.h"
 
 #include "dsp/audio_port.h"
+#include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
 #include "dsp/panning.h"
 #include "engine/device_io/audio_callback.h"
@@ -267,8 +268,6 @@ public:
 
   /**
    * Queues MIDI note off to event queues.
-   *
-   * @note This pushes the events to the queued events, not the active events.
    */
   void panic_all ();
 
@@ -434,9 +433,6 @@ public:
   /** Whether currently exporting. */
   std::atomic_bool exporting_{ false };
 
-  /** Send note off MIDI everywhere. */
-  std::atomic_bool panic_{ false };
-
   /* note: these 2 are ignored at the moment */
   /** Pan law. */
   dsp::PanLaw pan_law_ = {};
@@ -547,6 +543,8 @@ public:
    * Expected position info at the end of the current cycle.
    */
   PositionInfo pos_nfo_at_end_ = {};
+
+  utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
   std::unique_ptr<AudioCallback> audio_callback_;
 };

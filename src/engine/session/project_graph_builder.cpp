@@ -62,6 +62,10 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   /* add the initial processor */
   auto * initial_processor_node = graph.add_initial_processor (*transport);
 
+  // add midi panic processor
+  dsp::ProcessorGraphBuilder::add_nodes (
+    graph, *transport, *engine->midi_panic_processor_);
+
   /* add the hardware input processor */
   // add_node_for_processable (*hw_in_processor);
 
@@ -155,6 +159,16 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       sample_processor->fader_->get_stereo_out_ports ());
   }
 #endif
+
+  // connect midi panic processor
+  {
+    dsp::ProcessorGraphBuilder::add_connections (
+      graph, *engine->midi_panic_processor_);
+    auto * midi_panic_processor_node =
+      graph.get_nodes ().find_node_for_processable (
+        *engine->midi_panic_processor_);
+    initial_processor_node->connect_to (*midi_panic_processor_node);
+  }
 
   /* connect the monitor fader */
   dsp::ProcessorGraphBuilder::add_connections (graph, *monitor_fader);
@@ -279,9 +293,27 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       {
                         std::visit (
                           [&] (auto &&tp_in_port) {
-                            initial_processor_node->connect_to (
-                              *graph.get_nodes ().find_node_for_processable (
-                                *tp_in_port));
+                            using PortT = base_type<decltype (tp_in_port)>;
+                            // MIDI ports go via MIDI panic
+                            if constexpr (std::is_same_v<PortT, dsp::MidiPort>)
+                              {
+                                graph.get_nodes ()
+                                  .find_node_for_processable (
+                                    *engine->midi_panic_processor_
+                                       ->get_output_ports ()
+                                       .front ()
+                                       .get_object_as<dsp::MidiPort> ())
+                                  ->connect_to (
+                                    *graph.get_nodes ()
+                                       .find_node_for_processable (*tp_in_port));
+                              }
+                            // other ports go directly via initial processor
+                            else
+                              {
+                                initial_processor_node->connect_to (
+                                  *graph.get_nodes ().find_node_for_processable (
+                                    *tp_in_port));
+                              }
                           },
                           tp_in_port_ref.get_object ());
                       }

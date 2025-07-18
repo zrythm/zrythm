@@ -19,6 +19,7 @@ add_executable(zrythm_dsp_unit_tests
   graph_scheduler_test.cpp
   graph_test.cpp
   midi_event_test.cpp
+  midi_panic_processor_test.cpp
   midi_port_test.cpp
   modulator_macro_processor_test.cpp
   musical_scale_test.cpp
