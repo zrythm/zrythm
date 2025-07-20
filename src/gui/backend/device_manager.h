@@ -5,6 +5,8 @@
 
 #include "utils/types.h"
 
+#include <QtQmlIntegration>
+
 #include <juce_wrapper.h>
 
 namespace zrythm::gui::backend

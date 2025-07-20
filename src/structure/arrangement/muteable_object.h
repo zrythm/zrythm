@@ -5,6 +5,8 @@
 
 #include "utils/types.h"
 
+#include <QtQmlIntegration>
+
 #include <boost/describe.hpp>
 #include <nlohmann/json.hpp>
 

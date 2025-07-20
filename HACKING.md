@@ -363,46 +363,15 @@ way that one can understand what is happening in
 each step by only reading the comments.
 
 ## Coding Style
-We use a custom coding style based on the
-[GNU coding standards](https://www.gnu.org/prep/standards/html_node/Writing-C.html).
 
-There is a
-[clang-format target](https://mesonbuild.com/Code-formatting.html#clangformat)
-provided. Please run `ninja -C build clang-format`
-before submitting patches and it will auto-format
-the code. `ninja -C build clang-format-check`
-should pass for a patch to be accepted.
-
-## Error Handling
-To report invalid program states (such as programming
-errors), use the `z_return_*`/`z_return_*` functions or
-`g_critical`. This will show a bug report popup
-if hit.
-
-To report non-programming errors, such as failure
-to open a file, use the
-[GError](https://www.freedesktop.org/software/gstreamer-sdk/data/docs/latest/glib/glib-Error-Reporting.html) mechanism.
-
-## Function attributes
-There are macros available for function
-attributes that help the compiler optimize better
-or provide better feedback. See the headers for
-examples.
-
-Tips
-* `inline` small functions that are called very
-often
-* `CONST`/`PURE` can be combined with inline
-* `HOT` should not be combined with inline
-* only use `CONST`/`PURE` on functions that do not log (or use `z_warn_*()`/`z_return_*()`)
+TODO: explain contributors need to run clang-format
 
 ## Licensing
 For license headers, we use SPDX license
 identifiers. The comment style depends on the file
 type:
 
-    C source: // SPDX-License-Identifier: <SPDX License Expression>
-    C header: /* SPDX-License-Identifier: <SPDX License Expression> */
+    C++: // SPDX-License-Identifier: <SPDX License Expression>
     scripts:  # SPDX-License-Identifier: <SPDX License Expression>
     .rst:     .. SPDX-License-Identifier: <SPDX License Expression>
 
@@ -437,38 +406,3 @@ See `git log` for examples.
 We are considering switching to a format that
 resembles the
 [GNU ChangeLog style](https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html#Style-of-Change-Logs).
-
-## Comparison Operators and Inheritance
-
-We use `operator==` to compare objects. Since `operator==` doesn't work well with inheritance, please follow these guidelines:
-* Declare the operator outside the class declaration to ensure symmetry (if necessary, declare the operator as `friend` of the class)
-* Non-final (base) classes must only compare their own members (not members of inherited classes)
-* Final classes must compare their own members and (manually) invoke the `==` operator on all inherited classes in the hierarchy (the dev docs shows the hierarchy in visual form)
-
-The same guidelines apply to other comparison operators.
-
-Note that if a base class needs to be compared polymorphically (i.e., comparing instances of derived classes through base class pointers or references), the pointers will need to be casted first.
-
-# Troubleshooting
-
-*TODO: move this section to the dev docs.*
-
-## Getting random GUI related errors with no trace in valgrind or GTK warnings
-This might happen when calling GTK code or
-`g_idle_add()` from non-GUI threads. GTK runs in a
-single GUI thread. Any GTK-related code must be run
-from the GUI thread only.
-
-## Values not being read properly at specific parts of the code (e.g. getting a zero value when we know the variable is non-zero)
-Delete the build dir and reconfigure. This is likely
-an optimization problem with meson/ninja that
-appears rarely.
-
-## Widget not receiving keyboard input/focus
-For a widget to receive keyboard input/focus, every
-single parent in the hierarchy must have
-can-focus=true (default).
-
-## Error building template class 'TimelineToolbarWidget'...:0:0 `<property>` is not a valid tag here
-The error is correct but line numbers are not
-available because the resource files are compressed.

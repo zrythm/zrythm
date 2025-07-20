@@ -1,154 +1,225 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+  "version": "0.2.0",
+  // see https://doc.qt.io/vscodeext/vscodeext-how-debug-apps-qml.html
+  "compounds": [
+    {
+      "name": "C++/QML",
+      "configurations": [
+        "Qt: Debug with cppdbg and QML debugger",
+        "Qt: QML: Attach by port"
+      ],
+      "preLaunchTask": "Qt: Acquire Port",
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Qt: QML: Attach by port",
+      "type": "qml",
+      "request": "attach",
+      "host": "localhost",
+      "port": "${command:qt-qml.debugPort}"
+    },
+    {
+      "name": "Qt: Debug with cppdbg and QML debugger",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      // note: this required creating a symlink from qt6.natvis to qtopt.natvis
+      "visualizerFile": "${command:qt-cpp.natvis}",
+      "showDisplayString": true,
+      "args": [
+        "-qmljsdebugger=host:localhost,port:${command:qt-qml.debugPort},block,services:DebugMessages,QmlDebugger,V8Debugger",
+        // "--gtest_filter='*PassthroughProcessor*'",
+      ],
+      "linux": {
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "environment": [
+          {
+            "name": "ASAN_OPTIONS",
+            "value": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:halt_on_error=1:abort_on_error=1",
+          },
+          {
+            "name": "UBSAN_OPTIONS",
+            "value": "halt_on_error=1:abort_on_error=1"
+          },
+          {
+            "name": "ZRYTHM_SAMPLES_PATH",
+            "value": "${workspaceFolder}/data/samples",
+          },
+        ],
+        "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
+      },
+      "osx": {
+        "MIMode": "lldb"
+      },
+      "windows": {
+        "environment": [
+          {
+            "name": "PATH",
+            "value": "${env:PATH};${command:qt-cpp.qtDir}"
+          },
+          {
+            "name": "QT_QPA_PLATFORM_PLUGIN_PATH",
+            "value": "${command:qt-cpp.QT_QPA_PLATFORM_PLUGIN_PATH}"
+          },
+          {
+            "name": "QML_IMPORT_PATH",
+            "value": "${command:qt-cpp.QML_IMPORT_PATH}"
+          }
+        ],
+        "MIMode": "gdb",
+        "miDebuggerPath": "${command:qt-cpp.minGWgdb}"
+      },
+    },
+    {
+      "name": "Debug (GDB)",
+      "type": "gdb",
+      "request": "launch",
+      "target": "${command:cmake.launchTargetPath}",
+      "cwd": "${workspaceFolder}",
+      "valuesFormatting": "parseText",
+      "env": {
+        "ZRYTHM_BREAK_ON_ERROR": "1",
+      },
+      "arguments": "--dummy"
+    },
+    {
+      "name": "Launch Debugger with valgrind",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [
         {
-            "name": "Debug (GDB)",
-            "type": "gdb",
-            "request": "launch",
-            "target": "${command:cmake.launchTargetPath}",
-            "cwd": "${workspaceFolder}",
-            "valuesFormatting": "parseText",
-            "env": {
-                "GSETTINGS_SCHEMA_DIR": "${config:cmake.installPrefix}/share/glib-2.0/schemas",
-                "G_DEBUG": "fatal_criticals",
-                "ZRYTHM_BREAK_ON_ERROR": "1",
-            },
-            "arguments": "--dummy"
+          "name": "PATH",
+          "value": "$PATH:${command:cmake.launchTargetDirectory}"
+        }
+      ],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
         },
         {
-            "name": "Launch Debugger with valgrind",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${command:cmake.launchTargetPath}",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [
-                {
-                    "name": "PATH",
-                    "value": "$PATH:${command:cmake.launchTargetDirectory}"
-                }
-            ],
-            "externalConsole": true,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "Connect to valgrind",
-                    "text": "${command:valgrind-task-integration.valgrindGdbArg}",
-                    "ignoreFailures": true
-                }
-            ]
+          "description": "Connect to valgrind",
+          "text": "${command:valgrind-task-integration.valgrindGdbArg}",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "Debug CMake Target",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "cwd": "${workspaceFolder}",
+      "environment": [
+        {
+          "name": "ZRYTHM_BREAK_ON_ERROR",
+          "value": "1",
         },
         {
-            "name": "Debug CMake Target",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${command:cmake.launchTargetPath}",
-            "cwd": "${workspaceFolder}",
-            "environment": [
-                {
-                    "name": "ZRYTHM_BREAK_ON_ERROR",
-                    "value": "1",
-                },
-                {
-                    "name": "ASAN_OPTIONS",
-                    "value": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:halt_on_error=1:abort_on_error=1",
-                },
-                {
-                    "name": "UBSAN_OPTIONS",
-                    "value": "halt_on_error=1:abort_on_error=1"
-                },
-                {
-                    "name": "ZRYTHM_ENGINE_PATH",
-                    "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
-                },
-                {
-                    "name": "ZRYTHM_SAMPLES_PATH",
-                    "value": "${workspaceFolder}/data/samples",
-                },
-                {
-                    "name": "QT_QPA_PLATFORM",
-                    "value": "wayland",
-                  },
-                  {
-                    "name": "QT_DEBUG_PLUGINS",
-                    "value": "0",
-                  },
-                  {
-                    "name": "QT_FATAL_WARNINGS",
-                    "value": "0",
-                },
-            ],
-            "args": [
-                // "--gtest_filter='*ResourceManage*'",
-            ],
-            "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
+          "name": "ASAN_OPTIONS",
+          "value": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:halt_on_error=1:abort_on_error=1",
         },
         {
-            "name": "Launch CMake target with GammaRay",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "/usr/bin/gammaray",
-            "args": [
-                "${command:cmake.launchTargetPath}"
-            ],
-            "environment": [
-                {
-                    "name": "QT_QPA_PLATFORM",
-                    "value": "wayland",
-                },
-                {
-                    "name": "ZRYTHM_ENGINE_PATH",
-                    "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
-                },
-                {
-                    "name": "ZRYTHM_SAMPLES_PATH",
-                    "value": "${workspaceFolder}/data/samples",
-                },
-            ],
-            "cwd": "${workspaceFolder}"
+          "name": "UBSAN_OPTIONS",
+          "value": "halt_on_error=1:abort_on_error=1"
         },
         {
-            "name": "Debug Plugin Scanner",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${config:cmake.buildDirectory}/src/common/plugins/plugin-scanner",
-            "cwd": "${workspaceFolder}",
-            "environment": [
-                {
-                    "name": "ZRYTHM_BREAK_ON_ERROR",
-                    "value": "1",
-                },
-                {
-                    "name": "ASAN_OPTIONS",
-                    "value": "check_initialization_order=1",
-                },
-                {
-                    "name": "QT_QPA_PLATFORM",
-                    "value": "wayland",
-                },
-                {
-                    "name": "ZRYTHM_ENGINE_PATH",
-                    "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
-                },
-            ],
-            "args": [
-                "VST3",
-                "/usr/lib/vst3/ToolBox.vst3",
-            ],
-            "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
+          "name": "ZRYTHM_ENGINE_PATH",
+          "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
         },
-        // {
-        //     "name": "CTest Target",
-        //     "type": "cppdbg",
-        //     "request": "launch",
-        //     "program": "${command:cmake.launchTargetPath}",
-        //     "cwd": "${workspaceFolder}",
-        // }
-    ]
+        {
+          "name": "ZRYTHM_SAMPLES_PATH",
+          "value": "${workspaceFolder}/data/samples",
+        },
+        {
+          "name": "QT_QPA_PLATFORM",
+          "value": "wayland",
+        },
+        {
+          "name": "QT_DEBUG_PLUGINS",
+          "value": "0",
+        },
+        {
+          "name": "QT_FATAL_WARNINGS",
+          "value": "0",
+        },
+      ],
+      "args": [
+        // "--gtest_filter='*PassthroughProcessor*'",
+      ],
+      "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
+    },
+    {
+      "name": "Launch CMake target with GammaRay",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/home/alex/opt/gammaray-qt6.9/bin/gammaray",
+      "args": [
+        "${command:cmake.launchTargetPath}"
+      ],
+      "environment": [
+        {
+          "name": "QT_QPA_PLATFORM",
+          "value": "wayland",
+        },
+        {
+          "name": "ZRYTHM_ENGINE_PATH",
+          "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
+        },
+        {
+          "name": "ZRYTHM_SAMPLES_PATH",
+          "value": "${workspaceFolder}/data/samples",
+        },
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Debug Plugin Scanner",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${config:cmake.buildDirectory}/src/common/plugins/plugin-scanner",
+      "cwd": "${workspaceFolder}",
+      "environment": [
+        {
+          "name": "ZRYTHM_BREAK_ON_ERROR",
+          "value": "1",
+        },
+        {
+          "name": "ASAN_OPTIONS",
+          "value": "check_initialization_order=1",
+        },
+        {
+          "name": "QT_QPA_PLATFORM",
+          "value": "wayland",
+        },
+        {
+          "name": "ZRYTHM_ENGINE_PATH",
+          "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
+        },
+      ],
+      "args": [
+        "VST3",
+        "/usr/lib/vst3/ToolBox.vst3",
+      ],
+      "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
+    },
+    // {
+    //     "name": "CTest Target",
+    //     "type": "cppdbg",
+    //     "request": "launch",
+    //     "program": "${command:cmake.launchTargetPath}",
+    //     "cwd": "${workspaceFolder}",
+    // }
+  ]
 }

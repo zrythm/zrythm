@@ -186,3 +186,6 @@ CMakeLists.txt.user
 
 # PlantUML
 out
+
+# Qt
+**/.qmlls.ini

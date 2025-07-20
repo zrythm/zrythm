@@ -92,13 +92,11 @@ ListView {
                     Component.onCompleted: {
                         if (background && background instanceof Rectangle)
                             background.radius = Style.textFieldRadius;
-
                     }
 
                     ToolTip {
                         text: qsTr("Change automatable")
                     }
-
                 }
 
                 Label {
@@ -111,7 +109,6 @@ ListView {
                     }
                     font: Style.smallTextFont
                 }
-
             }
 
             RowLayout {
@@ -171,7 +168,6 @@ ListView {
                             automationTrack.automationMode = 2;
                         }
                     }
-
                 }
 
                 Item {
@@ -207,7 +203,6 @@ ListView {
                             pixelSize: 14
                             bold: true
                         }
-
                     }
 
                     Button {
@@ -230,13 +225,9 @@ ListView {
                             pixelSize: 14
                             bold: true
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         Loader {
@@ -255,7 +246,5 @@ ListView {
 
             target: automationTrackHolder
         }
-
     }
-
 }

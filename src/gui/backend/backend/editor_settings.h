@@ -6,6 +6,8 @@
 #include "utils/icloneable.h"
 #include "utils/math.h"
 
+#include <QtQmlIntegration>
+
 namespace zrythm::gui::backend
 {
 

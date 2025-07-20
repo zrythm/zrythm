@@ -5,6 +5,8 @@
 
 #include "utils/format.h"
 
+#include <QtQmlIntegration>
+
 #include <nlohmann/json.hpp>
 
 namespace zrythm::dsp

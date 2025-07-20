@@ -5,6 +5,8 @@
 
 #include "utils/string.h"
 
+#include <QtQmlIntegration>
+
 namespace zrythm::structure::arrangement
 {
 

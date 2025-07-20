@@ -5,6 +5,8 @@
 
 #include "utils/color.h"
 
+#include <QtQmlIntegration>
+
 namespace zrythm::structure::arrangement
 {
 

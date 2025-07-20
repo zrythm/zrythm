@@ -5,6 +5,8 @@
 
 #include "dsp/playhead.h"
 
+#include <QtQmlIntegration>
+
 namespace zrythm::dsp
 {
 class PlayheadQmlWrapper : public QObject
