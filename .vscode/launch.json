@@ -51,6 +51,12 @@
           },
         ],
         "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb (note this is not really compatible with natvis files according to vscode)",
+            "text": "-enable-pretty-printing",
+          },
+        ]
       },
       "osx": {
         "MIMode": "lldb"
