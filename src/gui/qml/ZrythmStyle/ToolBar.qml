@@ -6,16 +6,14 @@ import QtQuick
 import QtQuick.Templates as T
 
 T.ToolBar {
-    id: control
+  id: control
 
-    padding: 2
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
-                            contentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
-                             contentHeight + topPadding + bottomPadding)
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
+  padding: 2
 
-    background: Rectangle {
-        implicitHeight: 26
-        color: control.palette.window
-    }
+  background: Rectangle {
+    color: control.palette.window
+    implicitHeight: 26
+  }
 }

@@ -6,11 +6,13 @@ import QtQuick.Effects
 import ZrythmStyle 1.0
 
 MultiEffect {
-    id: root
-    readonly property real shadowOffset: 2
-    shadowEnabled: true
-    shadowHorizontalOffset: shadowOffset
-    shadowVerticalOffset: shadowOffset
-    shadowColor: Style.shadowColor
-    shadowBlur: 0.6
+  id: root
+
+  readonly property real shadowOffset: 2
+
+  shadowBlur: 0.6
+  shadowColor: Style.shadowColor
+  shadowEnabled: true
+  shadowHorizontalOffset: shadowOffset
+  shadowVerticalOffset: shadowOffset
 }

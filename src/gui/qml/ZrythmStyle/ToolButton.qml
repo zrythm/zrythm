@@ -9,94 +9,88 @@ import ZrythmStyle 1.0
 
 // assume flat and non-highlighted - other uses not supported
 T.ToolButton {
-    id: control
+  id: control
 
-    function getTextColor() : color {
-        let c = control.palette.buttonText;
-        if (control.checked)
-            c = control.palette.highlight;
+  function getTextColor(): color {
+    let c = control.palette.buttonText;
+    if (control.checked)
+      c = control.palette.highlight;
 
-        if (!control.hovered && !control.focus && !control.down)
-            return c;
-        else if (control.down)
-            return Style.getStrongerColor(c);
-        else if (hovered || focus)
-            return c;
+    if (!control.hovered && !control.focus && !control.down)
+      return c;
+    else if (control.down)
+      return Style.getStrongerColor(c);
+    else if (hovered || focus)
+      return c;
+  }
+
+  flat: true
+  font: Style.buttonTextFont
+  hoverEnabled: true
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  padding: Style.buttonPadding
+  spacing: Style.buttonPadding
+
+  background: Rectangle {
+    color: {
+      let c = Qt.color("transparent");
+      if (control.hovered)
+        c = Style.buttonHoverBackgroundAppendColor;
+
+      if (control.down) {
+        if (Style.isColorDark(c))
+          c.lighter(Style.lightenFactor);
+        else
+          c.darker(Style.lightenFactor);
+      }
+      return c;
+    }
+    implicitHeight: Style.buttonHeight
+    implicitWidth: Style.buttonHeight
+    radius: Style.toolButtonRadius
+
+    Behavior on border.width {
+      animation: Style.propertyAnimation
+    }
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
-    padding: Style.buttonPadding
-    spacing: Style.buttonPadding
-    hoverEnabled: true
-    flat: true
-    font: Style.buttonTextFont
-    opacity: Style.getOpacity(control.enabled, control.Window.active)
-
-    TextMetrics {
-        id: textMetrics
-
-        font: control.font
-        text: "Test"
+    border {
+      color: control.palette.highlight
+      width: control.visualFocus ? 2 : 0
     }
+  }
+  contentItem: IconLabel {
+    color: control.getTextColor()
+    display: control.display
+    font: control.font
+    icon: control.icon
+    mirrored: control.mirrored
+    spacing: control.spacing
+    text: control.text
 
-    icon {
-        width: Style.buttonHeight - 2 * control.padding
-        height: Style.buttonHeight - 2 * control.padding
-        color: control.getTextColor()
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
+  }
 
-    contentItem: IconLabel {
-        spacing: control.spacing
-        mirrored: control.mirrored
-        display: control.display
-        icon: control.icon
-        text: control.text
-        font: control.font
-        color: control.getTextColor()
+  TextMetrics {
+    id: textMetrics
 
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
+    font: control.font
+    text: "Test"
+  }
 
+  icon {
+    color: control.getTextColor()
+    height: Style.buttonHeight - 2 * control.padding
+    width: Style.buttonHeight - 2 * control.padding
+
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
-
-    background: Rectangle {
-        implicitWidth: Style.buttonHeight
-        implicitHeight: Style.buttonHeight
-        color: {
-            let c = Qt.color("transparent");
-            if (control.hovered)
-                c = Style.buttonHoverBackgroundAppendColor;
-
-            if (control.down) {
-                if (Style.isColorDark(c))
-                    c.lighter(Style.lightenFactor);
-                else
-                    c.darker(Style.lightenFactor);
-            }
-            return c;
-        }
-        radius: Style.toolButtonRadius
-
-        border {
-            width: control.visualFocus ? 2 : 0
-            color: control.palette.highlight
-        }
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
-        Behavior on border.width {
-            animation: Style.propertyAnimation
-        }
-
-    }
-
+  }
 }

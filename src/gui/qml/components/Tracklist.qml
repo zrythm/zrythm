@@ -8,59 +8,56 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 Item {
-    id: root
+  id: root
 
-    required property var tracklist
-    required property bool pinned
-    readonly property real contentHeight: listView.contentHeight + (pinned ? 0 : dropSpace.height)
+  readonly property real contentHeight: listView.contentHeight + (pinned ? 0 : dropSpace.height)
+  required property bool pinned
+  required property var tracklist
 
-    ListView {
-        id: listView
+  ListView {
+    id: listView
 
-        implicitWidth: 200
-        implicitHeight: 200
+    implicitHeight: 200
+    implicitWidth: 200
 
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: root.pinned ? parent.bottom : dropSpace.top
-        }
+    delegate: TrackView {
+      width: ListView.view.width
+    }
+    model: TrackFilterProxyModel {
+      sourceModel: tracklist
 
-        model: TrackFilterProxyModel {
-            sourceModel: tracklist
-            Component.onCompleted: {
-                addVisibilityFilter(true);
-                addPinnedFilter(root.pinned);
-            }
-        }
-
-        delegate: TrackView {
-            width: ListView.view.width
-        }
-
+      Component.onCompleted: {
+        addVisibilityFilter(true);
+        addPinnedFilter(root.pinned);
+      }
     }
 
-    Item {
-        id: dropSpace
+    anchors {
+      bottom: root.pinned ? parent.bottom : dropSpace.top
+      left: parent.left
+      right: parent.right
+      top: parent.top
+    }
+  }
 
-        visible: !root.pinned
-        height: 40
+  Item {
+    id: dropSpace
 
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
+    height: 40
+    visible: !root.pinned
 
-        ContextMenu.menu: Menu {
-            MenuItem {
-                text: qsTr("Test")
-                onTriggered: console.log("Clicked")
-            }
+    ContextMenu.menu: Menu {
+      MenuItem {
+        text: qsTr("Test")
 
-        }
-
+        onTriggered: console.log("Clicked")
+      }
     }
 
+    anchors {
+      bottom: parent.bottom
+      left: parent.left
+      right: parent.right
+    }
+  }
 }

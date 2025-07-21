@@ -9,128 +9,122 @@ import QtQuick.Layouts
 import Zrythm 1.0
 
 GridLayout {
-    id: root
+  id: root
 
-    required property var project
-    required property var clipEditor
-    readonly property var region: clipEditor.region
-    readonly property var track: clipEditor.track
+  required property var clipEditor
+  required property var project
+  readonly property var region: clipEditor.region
+  readonly property var track: clipEditor.track
 
-    rows: 2
-    columns: 3
+  columns: 3
+  rows: 2
 
-    RowLayout {
-        id: selectedRegionInfo
+  RowLayout {
+    id: selectedRegionInfo
 
-        Layout.fillHeight: true
-        Layout.rowSpan: 2
+    Layout.fillHeight: true
+    Layout.rowSpan: 2
 
-        Rectangle {
-            color: region.regionMixin.color.useColor ? region.regionMixin.color.color : track.color
-            Layout.fillHeight: true
-            width: 5
-        }
-
-        RotatedLabel {
-            id: rotatedText
-
-            font: Style.normalTextFont
-            Layout.fillHeight: true
-            text: root.region.regionMixin.name.name
-        }
-
+    Rectangle {
+      Layout.fillHeight: true
+      color: region.regionMixin.color.useColor ? region.regionMixin.color.color : track.color
+      width: 5
     }
 
-    ZrythmToolBar {
-        id: editorToolbar
+    RotatedLabel {
+      id: rotatedText
 
-        Layout.columnSpan: 2
-        Layout.fillWidth: true
-        leftItems: [
-            ToolButton {
-                text: "left"
-            }
-        ]
-        centerItems: [
-            ToolButton {
-                text: "center"
-            }
-        ]
-        rightItems: [
-            ToolButton {
-                text: "right"
-            }
-        ]
+      Layout.fillHeight: true
+      font: Style.normalTextFont
+      text: root.region.regionMixin.name.name
+    }
+  }
+
+  ZrythmToolBar {
+    id: editorToolbar
+
+    Layout.columnSpan: 2
+    Layout.fillWidth: true
+
+    centerItems: [
+      ToolButton {
+        text: "center"
+      }
+    ]
+    leftItems: [
+      ToolButton {
+        text: "left"
+      }
+    ]
+    rightItems: [
+      ToolButton {
+        text: "right"
+      }
+    ]
+  }
+
+  StackLayout {
+    id: editorSpecializedStack
+
+    currentIndex: {
+      switch (root.region.type) {
+      case ArrangerObject.MidiRegion:
+        return 0;
+      case ArrangerObject.AudioRegion:
+        return 1;
+      case ArrangerObject.ChordRegion:
+        return 3;
+      case ArrangerObject.AutomationRegion:
+        return 2;
+      default:
+        return 0;
+      }
     }
 
-    StackLayout {
-        id: editorSpecializedStack
+    Loader {
+      id: midiEditorLoader
 
-        currentIndex: {
-          switch (root.region.type) {
-            case ArrangerObject.MidiRegion:
-              return 0
-            case ArrangerObject.AudioRegion:
-              return 1
-            case ArrangerObject.ChordRegion:
-              return 3
-            case ArrangerObject.AutomationRegion:
-              return 2
-            default:
-              return 0
-          }
-        }
+      active: editorSpecializedStack.currentIndex === 0
 
-        Loader {
-            id: midiEditorLoader
-
-            active: editorSpecializedStack.currentIndex === 0
-
-            sourceComponent: MidiEditorPane {
-                project: root.project
-                region: root.region
-                clipEditor: root.clipEditor
-                pianoRoll: root.clipEditor.pianoRoll
-            }
-
-        }
-
-        Loader {
-            id: audioEditorLoader
-
-            active: editorSpecializedStack.currentIndex === 1
-
-            sourceComponent: AudioEditorPane {
-                project: root.project
-                region: root.region
-            }
-
-        }
-
-        Loader {
-            id: automationEditorLoader
-
-            active: editorSpecializedStack.currentIndex === 2
-
-            sourceComponent: AutomationEditorPane {
-                project: root.project
-                region: root.region
-            }
-
-        }
-
-        Loader {
-            id: chordEditorLoader
-
-            active: editorSpecializedStack.currentIndex === 3
-
-            sourceComponent: ChordEditorPane {
-                project: root.project
-                region: root.region
-            }
-
-        }
-
+      sourceComponent: MidiEditorPane {
+        clipEditor: root.clipEditor
+        pianoRoll: root.clipEditor.pianoRoll
+        project: root.project
+        region: root.region
+      }
     }
 
+    Loader {
+      id: audioEditorLoader
+
+      active: editorSpecializedStack.currentIndex === 1
+
+      sourceComponent: AudioEditorPane {
+        project: root.project
+        region: root.region
+      }
+    }
+
+    Loader {
+      id: automationEditorLoader
+
+      active: editorSpecializedStack.currentIndex === 2
+
+      sourceComponent: AutomationEditorPane {
+        project: root.project
+        region: root.region
+      }
+    }
+
+    Loader {
+      id: chordEditorLoader
+
+      active: editorSpecializedStack.currentIndex === 3
+
+      sourceComponent: ChordEditorPane {
+        project: root.project
+        region: root.region
+      }
+    }
+  }
 }

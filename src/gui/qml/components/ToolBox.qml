@@ -8,110 +8,109 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 RowLayout {
-    id: root
+  id: root
 
-    required property var tool
+  required property var tool
 
-    ButtonGroup {
-        id: toolGroup
+  ButtonGroup {
+    id: toolGroup
+
+  }
+
+  LinkedButtons {
+    id: linkedButtons
+
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+
+    Button {
+      ButtonGroup.group: toolGroup
+      checkable: true
+      checked: root.tool.toolValue === Tool.Select
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "box-dotted-symbolic.svg")
+
+      onClicked: {
+        root.tool.toolValue = Tool.Select;
+      }
+
+      ToolTip {
+        text: qsTr("Select tool")
+      }
     }
 
-    LinkedButtons {
-        id: linkedButtons
+    Button {
+      ButtonGroup.group: toolGroup
+      checkable: true
+      checked: root.tool.toolValue === Tool.Edit
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "pencil-symbolic.svg")
 
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+      onClicked: {
+        root.tool.toolValue = Tool.Edit;
+      }
 
-        Button {
-            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "box-dotted-symbolic.svg")
-            ButtonGroup.group: toolGroup
-            checkable: true
-            checked: root.tool.toolValue === Tool.Select
-            onClicked: {
-                root.tool.toolValue = Tool.Select;
-            }
-
-            ToolTip {
-                text: qsTr("Select tool")
-            }
-
-        }
-
-        Button {
-            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "pencil-symbolic.svg")
-            ButtonGroup.group: toolGroup
-            checkable: true
-            checked: root.tool.toolValue === Tool.Edit
-            onClicked: {
-                root.tool.toolValue = Tool.Edit;
-            }
-
-            ToolTip {
-                text: qsTr("Pencil tool")
-            }
-
-        }
-
-        Button {
-            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "cut-symbolic.svg")
-            ButtonGroup.group: toolGroup
-            checkable: true
-            checked: root.tool.toolValue === Tool.Cut
-            onClicked: {
-                root.tool.toolValue = Tool.Cut;
-            }
-
-            ToolTip {
-                text: qsTr("Scissors tool")
-            }
-
-        }
-
-        Button {
-            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "eraser2-symbolic.svg")
-            ButtonGroup.group: toolGroup
-            checkable: true
-            checked: root.tool.toolValue === Tool.Eraser
-            onClicked: {
-                root.tool.toolValue = Tool.Eraser;
-            }
-
-            ToolTip {
-                text: qsTr("Eraser tool")
-            }
-
-        }
-
-        Button {
-            icon.source: ResourceManager.getIconUrl("zrythm-dark", "draw-line.svg")
-            ButtonGroup.group: toolGroup
-            checkable: true
-            checked: root.tool.toolValue === Tool.Ramp
-            onClicked: {
-                root.tool.toolValue = Tool.Ramp;
-            }
-
-            ToolTip {
-                text: qsTr("Ramp tool")
-            }
-
-        }
-
-        Button {
-            icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-volume-high.svg")
-            ButtonGroup.group: toolGroup
-            checkable: true
-            checked: root.tool.toolValue === Tool.Audition
-            onClicked: {
-                root.tool.toolValue = Tool.Audition;
-            }
-
-            ToolTip {
-                text: qsTr("Audition tool")
-            }
-
-        }
-
+      ToolTip {
+        text: qsTr("Pencil tool")
+      }
     }
 
+    Button {
+      ButtonGroup.group: toolGroup
+      checkable: true
+      checked: root.tool.toolValue === Tool.Cut
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "cut-symbolic.svg")
+
+      onClicked: {
+        root.tool.toolValue = Tool.Cut;
+      }
+
+      ToolTip {
+        text: qsTr("Scissors tool")
+      }
+    }
+
+    Button {
+      ButtonGroup.group: toolGroup
+      checkable: true
+      checked: root.tool.toolValue === Tool.Eraser
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "eraser2-symbolic.svg")
+
+      onClicked: {
+        root.tool.toolValue = Tool.Eraser;
+      }
+
+      ToolTip {
+        text: qsTr("Eraser tool")
+      }
+    }
+
+    Button {
+      ButtonGroup.group: toolGroup
+      checkable: true
+      checked: root.tool.toolValue === Tool.Ramp
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "draw-line.svg")
+
+      onClicked: {
+        root.tool.toolValue = Tool.Ramp;
+      }
+
+      ToolTip {
+        text: qsTr("Ramp tool")
+      }
+    }
+
+    Button {
+      ButtonGroup.group: toolGroup
+      checkable: true
+      checked: root.tool.toolValue === Tool.Audition
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-volume-high.svg")
+
+      onClicked: {
+        root.tool.toolValue = Tool.Audition;
+      }
+
+      ToolTip {
+        text: qsTr("Audition tool")
+      }
+    }
+  }
 }

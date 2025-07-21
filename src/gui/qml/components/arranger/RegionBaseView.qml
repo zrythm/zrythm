@@ -2,140 +2,142 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import ZrythmStyle
 import ZrythmGui
+import ZrythmStyle
 
 ArrangerObjectBaseView {
-    id: root
+  id: root
 
-    required property ClipEditor clipEditor
-    property string regionName: arrangerObject.regionMixin.name.name
+  required property ClipEditor clipEditor
+  property string regionName: arrangerObject.regionMixin.name.name
 
-    onArrangerObjectClicked: {
-        console.log("region clicked, setting clip editor region to ", regionName);
-        clipEditor.setRegion(arrangerObject, root.track);
+  implicitHeight: 10
+  implicitWidth: 10
+
+  onArrangerObjectClicked: {
+    console.log("region clicked, setting clip editor region to ", regionName);
+    clipEditor.setRegion(arrangerObject, root.track);
+  }
+
+  Rectangle {
+    id: backgroundRect
+
+    anchors.fill: parent
+    color: root.objectColor
+    radius: Style.toolButtonRadius
+  }
+
+  Rectangle {
+    id: nameRect
+
+    bottomRightRadius: Style.toolButtonRadius
+    color: root.palette.button
+    height: Math.min(textMetrics.height + 2 * Style.buttonPadding, root.height - Style.toolButtonRadius)
+    topLeftRadius: Style.toolButtonRadius
+    width: Math.min(textMetrics.width + 2 * Style.buttonPadding, root.width - Style.toolButtonRadius)
+
+    anchors {
+      left: parent.left
+      top: parent.top
     }
 
-    implicitWidth: 10
-    implicitHeight: 10
+    Text {
+      id: nameText
 
-    Rectangle {
-        id: backgroundRect
-
-        color: root.objectColor
-        anchors.fill: parent
-        radius: Style.toolButtonRadius
+      anchors.fill: parent
+      color: root.palette.buttonText
+      elide: Text.ElideRight
+      font: root.font
+      horizontalAlignment: Text.AlignLeft
+      padding: Style.buttonPadding
+      text: root.arrangerObject.regionMixin.name.name
+      verticalAlignment: Text.AlignVCenter
     }
 
-    Rectangle {
-        id: nameRect
+    TextMetrics {
+      id: textMetrics
 
-        color: root.palette.button
-        width: Math.min(textMetrics.width + 2 * Style.buttonPadding, root.width - Style.toolButtonRadius)
-        height: Math.min(textMetrics.height + 2 * Style.buttonPadding, root.height - Style.toolButtonRadius)
-        bottomRightRadius: Style.toolButtonRadius
-        topLeftRadius: Style.toolButtonRadius
-
-        anchors {
-            left: parent.left
-            top: parent.top
-        }
-
-        Text {
-            id: nameText
-
-            text: root.arrangerObject.regionMixin.name.name
-            color: root.palette.buttonText
-            font: root.font
-            anchors.fill: parent
-            padding: Style.buttonPadding
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-        }
-
-        TextMetrics {
-            id: textMetrics
-
-            text: nameText.text
-            font: nameText.font
-        }
+      font: nameText.font
+      text: nameText.text
     }
+  }
 
-    // Left resize handle
-    Rectangle {
-        id: leftHandle
+  // Left resize handle
+  Rectangle {
+    id: leftHandle
 
-        width: 5
-        z: 10
-        height: parent.height
-        color: Style.backgroundAppendColor
-        visible: root.hovered || leftDrag.drag.active
-        topLeftRadius: Style.toolButtonRadius
-        bottomLeftRadius: Style.toolButtonRadius
+    bottomLeftRadius: Style.toolButtonRadius
+    color: Style.backgroundAppendColor
+    height: parent.height
+    topLeftRadius: Style.toolButtonRadius
+    visible: root.hovered || leftDrag.drag.active
+    width: 5
+    z: 10
 
-        MouseArea {
-            id: leftDrag
+    MouseArea {
+      id: leftDrag
 
-            property real startX
+      property real startX
 
-            acceptedButtons: Qt.LeftButton
-            anchors.fill: parent
-            anchors.margins: -5
-            cursorShape: Qt.SizeHorCursor
-            drag.target: parent
-            drag.axis: Drag.XAxis
-            onPressed: mouse => {
-                startX = root.x;
-            }
-            onPositionChanged: mouse => {
-                if (drag.active) {
-                    let ticksDiff = (root.x - startX) / root.pxPerTick;
-                    root.arrangerObject.position.ticks += ticksDiff;
-                    if (root.arrangerObject.hasLength) {
-                        root.arrangerObject.clipStartTicks += ticksDiff;
-                        root.arrangerObject.endPosition.ticks -= ticksDiff;
-                    }
-                    startX = root.x;
-                    parent.x = 0;
-                }
-            }
+      acceptedButtons: Qt.LeftButton
+      anchors.fill: parent
+      anchors.margins: -5
+      cursorShape: Qt.SizeHorCursor
+      drag.axis: Drag.XAxis
+      drag.target: parent
+
+      onPositionChanged: mouse => {
+        if (drag.active) {
+          let ticksDiff = (root.x - startX) / root.pxPerTick;
+          root.arrangerObject.position.ticks += ticksDiff;
+          if (root.arrangerObject.hasLength) {
+            root.arrangerObject.clipStartTicks += ticksDiff;
+            root.arrangerObject.endPosition.ticks -= ticksDiff;
+          }
+          startX = root.x;
+          parent.x = 0;
         }
+      }
+      onPressed: mouse => {
+        startX = root.x;
+      }
     }
+  }
 
-    // Right resize handle
-    Rectangle {
-        id: rightHandle
+  // Right resize handle
+  Rectangle {
+    id: rightHandle
 
-        width: 5
-        height: parent.height
-        anchors.right: parent.right
-        color: Style.backgroundAppendColor
-        visible: root.hovered || rightDrag.drag.active
-        z: 10
-        topRightRadius: Style.toolButtonRadius
-        bottomRightRadius: Style.toolButtonRadius
+    anchors.right: parent.right
+    bottomRightRadius: Style.toolButtonRadius
+    color: Style.backgroundAppendColor
+    height: parent.height
+    topRightRadius: Style.toolButtonRadius
+    visible: root.hovered || rightDrag.drag.active
+    width: 5
+    z: 10
 
-        MouseArea {
-            id: rightDrag
+    MouseArea {
+      id: rightDrag
 
-            property real startX
+      property real startX
 
-            acceptedButtons: Qt.LeftButton
-            anchors.fill: parent
-            anchors.margins: -5
-            cursorShape: Qt.SizeHorCursor
-            drag.target: parent
-            drag.axis: Drag.XAxis
-            onPressed: mouse => {
-                startX = mouse.x;
-            }
-            onPositionChanged: mouse => {
-                if (drag.active) {
-                    let ticksDiff = (mouse.x - startX) / root.pxPerTick;
-                    root.arrangerObject.regionMixin.bounds.length.ticks += ticksDiff;
-                }
-            }
+      acceptedButtons: Qt.LeftButton
+      anchors.fill: parent
+      anchors.margins: -5
+      cursorShape: Qt.SizeHorCursor
+      drag.axis: Drag.XAxis
+      drag.target: parent
+
+      onPositionChanged: mouse => {
+        if (drag.active) {
+          let ticksDiff = (mouse.x - startX) / root.pxPerTick;
+          root.arrangerObject.regionMixin.bounds.length.ticks += ticksDiff;
         }
+      }
+      onPressed: mouse => {
+        startX = mouse.x;
+      }
     }
+  }
 }

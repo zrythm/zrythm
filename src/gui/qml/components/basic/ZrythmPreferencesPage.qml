@@ -3,41 +3,39 @@
 
 import QtQuick
 import QtQuick.Controls
-import ZrythmStyle 1.0
 import QtQuick.Layouts
+import ZrythmStyle 1.0
 
 ScrollView {
-    id: control
+  id: control
 
-    property string title: ""
-    default property alias content: contentLayout.children
+  default property alias content: contentLayout.children
+  property string title: ""
 
-    clip: true
-    contentWidth: availableWidth
-    Layout.fillWidth: true
+  Layout.fillWidth: true
+  clip: true
+  contentWidth: availableWidth
 
-    ColumnLayout {
-        width: control.width
-        spacing: 0
+  ColumnLayout {
+    spacing: 0
+    width: control.width
 
-        Label {
-            id: pageTitle
+    Label {
+      id: pageTitle
 
-            text: control.title
-            font.pointSize: 16
-            font.weight: Font.Bold
-            padding: 16
-            Layout.fillWidth: true
-        }
-
-        ColumnLayout {
-            id: contentLayout
-
-            Layout.fillWidth: true
-            Layout.margins: 16
-            spacing: 16
-        }
-
+      Layout.fillWidth: true
+      font.pointSize: 16
+      font.weight: Font.Bold
+      padding: 16
+      text: control.title
     }
 
+    ColumnLayout {
+      id: contentLayout
+
+      Layout.fillWidth: true
+      Layout.margins: 16
+      spacing: 16
+    }
+  }
 }

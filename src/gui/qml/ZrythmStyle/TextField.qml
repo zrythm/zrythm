@@ -8,55 +8,55 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.TextField {
-    id: control
+  id: control
 
-    implicitWidth: implicitBackgroundWidth + leftInset + rightInset || Math.max(contentWidth, placeholder.implicitWidth) + leftPadding + rightPadding
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding, placeholder.implicitHeight + topPadding + bottomPadding)
-    opacity: Style.getOpacity(control.enabled, control.Window.active)
-    padding: Style.buttonPadding
-    leftPadding: padding + 4
-    color: control.palette.text
-    selectionColor: control.palette.highlight
-    selectedTextColor: control.palette.highlightedText
-    placeholderTextColor: control.palette.placeholderText
-    verticalAlignment: TextInput.AlignVCenter
-    font: Style.normalTextFont
+  color: control.palette.text
+  font: Style.normalTextFont
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding, placeholder.implicitHeight + topPadding + bottomPadding)
+  implicitWidth: implicitBackgroundWidth + leftInset + rightInset || Math.max(contentWidth, placeholder.implicitWidth) + leftPadding + rightPadding
+  leftPadding: padding + 4
+  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  padding: Style.buttonPadding
+  placeholderTextColor: control.palette.placeholderText
+  selectedTextColor: control.palette.highlightedText
+  selectionColor: control.palette.highlight
+  verticalAlignment: TextInput.AlignVCenter
 
-    PlaceholderText {
-        id: placeholder
+  background: Rectangle {
+    color: control.palette.base
+    implicitHeight: Style.buttonHeight
+    implicitWidth: 200
+    radius: Style.textFieldRadius
 
-        x: control.leftPadding
-        y: control.topPadding
-        width: control.width - (control.leftPadding + control.rightPadding)
-        height: control.height - (control.topPadding + control.bottomPadding)
-        text: control.placeholderText
-        font: control.font
-        color: control.placeholderTextColor
-        verticalAlignment: control.verticalAlignment
-        visible: !control.length && !control.preeditText && (!control.activeFocus || control.horizontalAlignment !== Qt.AlignHCenter)
-        elide: Text.ElideRight
-        renderType: control.renderType
+    Behavior on border.color {
+      animation: Style.propertyAnimation
+    }
+    Behavior on border.width {
+      animation: Style.propertyAnimation
+    }
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
 
-    background: Rectangle {
-        implicitWidth: 200
-        implicitHeight: Style.buttonHeight
-        radius: Style.textFieldRadius
-        color: control.palette.base
-        border {
-            width: control.activeFocus ? 2 : 1
-            color: control.activeFocus ? control.palette.highlight : control.palette.mid
-        }
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-        Behavior on border.color {
-            animation: Style.propertyAnimation
-        }
-        Behavior on border.width {
-            animation: Style.propertyAnimation
-        }
+    border {
+      color: control.activeFocus ? control.palette.highlight : control.palette.mid
+      width: control.activeFocus ? 2 : 1
     }
+  }
 
+  PlaceholderText {
+    id: placeholder
+
+    color: control.placeholderTextColor
+    elide: Text.ElideRight
+    font: control.font
+    height: control.height - (control.topPadding + control.bottomPadding)
+    renderType: control.renderType
+    text: control.placeholderText
+    verticalAlignment: control.verticalAlignment
+    visible: !control.length && !control.preeditText && (!control.activeFocus || control.horizontalAlignment !== Qt.AlignHCenter)
+    width: control.width - (control.leftPadding + control.rightPadding)
+    x: control.leftPadding
+    y: control.topPadding
+  }
 }

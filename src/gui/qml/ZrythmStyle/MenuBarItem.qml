@@ -8,42 +8,41 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.MenuBarItem {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
-    spacing: Style.buttonPadding
-    padding: Style.buttonPadding
-    leftPadding: 12
-    rightPadding: 16
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  leftPadding: 12
+  padding: Style.buttonPadding
+  rightPadding: 16
+  spacing: Style.buttonPadding
 
-    font {
-        family: control.font.family
-        pointSize: Style.fontPointSize
-    }
+  background: Rectangle {
+    readonly property color baseColor: control.highlighted ? Style.backgroundAppendColor : "transparent"
 
-    icon {
-        width: Style.buttonHeight - padding * 2
-        // height: 24
-        color: control.palette.buttonText
-    }
+    color: control.down ? control.palette.highlight : baseColor
+    implicitHeight: Style.buttonHeight
+    implicitWidth: 40
+  }
+  contentItem: IconLabel {
+    alignment: Qt.AlignLeft
+    color: control.palette.buttonText
+    display: control.display
+    font: control.font
+    icon: control.icon
+    mirrored: control.mirrored
+    spacing: control.spacing
+    text: control.text
+  }
 
-    contentItem: IconLabel {
-        spacing: control.spacing
-        mirrored: control.mirrored
-        display: control.display
-        alignment: Qt.AlignLeft
-        icon: control.icon
-        text: control.text
-        font: control.font
-        color: control.palette.buttonText
-    }
+  font {
+    family: control.font.family
+    pointSize: Style.fontPointSize
+  }
 
-    background: Rectangle {
-        readonly property color baseColor: control.highlighted ? Style.backgroundAppendColor : "transparent"
-        implicitWidth: 40
-        implicitHeight: Style.buttonHeight
-        color: control.down ? control.palette.highlight : baseColor
-    }
-
+  icon {
+    // height: 24
+    color: control.palette.buttonText
+    width: Style.buttonHeight - padding * 2
+  }
 }

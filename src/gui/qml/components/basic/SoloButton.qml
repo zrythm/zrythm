@@ -8,17 +8,16 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 Button {
-    id: root
+  id: root
 
-    checkable: true
-    text: "S"
+  checkable: true
+  text: "S"
 
-    palette {
-        accent: Style.soloGreenColor
-    }
+  palette {
+    accent: Style.soloGreenColor
+  }
 
-    ToolTip {
-        text: qsTr("Solo")
-    }
-
+  ToolTip {
+    text: qsTr("Solo")
+  }
 }

@@ -9,146 +9,130 @@ import QtQuick.Controls.impl
 import QtQuick.Templates as T
 
 T.ComboBox {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
-    leftPadding: padding + (!control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
-    rightPadding: padding + (control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
-    hoverEnabled: true
-    font: Style.buttonTextFont
-    opacity: Style.getOpacity(control.enabled, control.Window.active)
+  font: Style.buttonTextFont
+  hoverEnabled: true
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  leftPadding: padding + (!control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
+  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  rightPadding: padding + (control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
 
-    delegate: ItemDelegate {
-        required property var model
-        required property int index
+  background: Rectangle {
+    border.color: control.palette.highlight
+    border.width: !control.editable && (control.visualFocus || control.down) ? 2 : 0
+    color: Style.adjustColorForHoverOrVisualFocusOrDown(control.palette.button, control.hovered, control.visualFocus, control.down)
+    implicitHeight: Style.buttonHeight
+    implicitWidth: 140
+    radius: Style.buttonRadius
+    visible: !control.flat || control.down
 
-        width: ListView.view.width - 2
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: model[control.textRole]
-        highlighted: control.highlightedIndex === index
-        hoverEnabled: control.hoverEnabled
+    Behavior on border.width {
+      animation: Style.propertyAnimation
     }
-
-    indicator: ColorImage {
-        readonly property real additionalPadding: 4
-
-        x: control.mirrored ? (control.padding + additionalPadding) : control.width - width - control.padding - additionalPadding
-        y: control.topPadding + (control.availableHeight - height) / 2
-        width: 16
-        height: 16
-        color: control.palette.dark
-        source: "qrc:/qt/qml/Zrythm/icons/lucide/chevrons-up-down.svg"
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
-
-    contentItem: T.TextField {
-        leftPadding: !control.mirrored ? 12 : control.editable && activeFocus ? 3 : 1
-        rightPadding: control.mirrored ? 12 : control.editable && activeFocus ? 3 : 1
-        topPadding: 6 - control.padding
-        bottomPadding: 6 - control.padding
-        text: control.editable ? control.editText : control.displayText
-        enabled: control.editable
-        autoScroll: control.editable
-        readOnly: control.down
-        inputMethodHints: control.inputMethodHints
-        validator: control.validator
-        selectByMouse: control.selectTextByMouse
-        color: control.editable ? control.palette.text : control.palette.buttonText
-        selectionColor: control.palette.highlight
-        selectedTextColor: control.palette.highlightedText
-        verticalAlignment: Text.AlignVCenter
-
-        background: Rectangle {
-            visible: control.enabled && control.editable && !control.flat
-            border.width: parent && parent.activeFocus ? 2 : 1
-            border.color: parent && parent.activeFocus ? control.palette.highlight : control.palette.button
-            color: control.palette.base
-        }
-
-    }
+  }
+  contentItem: T.TextField {
+    autoScroll: control.editable
+    bottomPadding: 6 - control.padding
+    color: control.editable ? control.palette.text : control.palette.buttonText
+    enabled: control.editable
+    inputMethodHints: control.inputMethodHints
+    leftPadding: !control.mirrored ? 12 : control.editable && activeFocus ? 3 : 1
+    readOnly: control.down
+    rightPadding: control.mirrored ? 12 : control.editable && activeFocus ? 3 : 1
+    selectByMouse: control.selectTextByMouse
+    selectedTextColor: control.palette.highlightedText
+    selectionColor: control.palette.highlight
+    text: control.editable ? control.editText : control.displayText
+    topPadding: 6 - control.padding
+    validator: control.validator
+    verticalAlignment: Text.AlignVCenter
 
     background: Rectangle {
-        implicitWidth: 140
-        implicitHeight: Style.buttonHeight
-        color: Style.adjustColorForHoverOrVisualFocusOrDown(control.palette.button, control.hovered, control.visualFocus, control.down)
-        border.color: control.palette.highlight
-        border.width: !control.editable && (control.visualFocus || control.down) ? 2 : 0
-        visible: !control.flat || control.down
-        radius: Style.buttonRadius
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
-        Behavior on border.width {
-            animation: Style.propertyAnimation
-        }
-
+      border.color: parent && parent.activeFocus ? control.palette.highlight : control.palette.button
+      border.width: parent && parent.activeFocus ? 2 : 1
+      color: control.palette.base
+      visible: control.enabled && control.editable && !control.flat
     }
+  }
+  delegate: ItemDelegate {
+    required property int index
+    required property var model
 
-    popup: T.Popup {
-        y: control.height
-        width: control.width
-        height: Math.min(contentItem.implicitHeight, control.Window.height - topMargin - bottomMargin)
-        topMargin: 4
-        bottomMargin: 4
-        palette: control.palette
-        background: PopupBackgroundRect {}
+    anchors.horizontalCenter: parent.horizontalCenter
+    highlighted: control.highlightedIndex === index
+    hoverEnabled: control.hoverEnabled
+    text: model[control.textRole]
+    width: ListView.view.width - 2
+  }
+  indicator: ColorImage {
+    readonly property real additionalPadding: 4
 
-        contentItem: ListView {
-            clip: true
-            implicitHeight: contentHeight
-            model: control.delegateModel
-            currentIndex: control.highlightedIndex
-            highlightMoveDuration: 0
-            headerPositioning: ListView.OverlayHeader
-            footerPositioning: ListView.OverlayFooter
+    color: control.palette.dark
+    height: 16
+    source: "qrc:/qt/qml/Zrythm/icons/lucide/chevrons-up-down.svg"
+    width: 16
+    x: control.mirrored ? (control.padding + additionalPadding) : control.width - width - control.padding - additionalPadding
+    y: control.topPadding + (control.availableHeight - height) / 2
+  }
+  popup: T.Popup {
+    bottomMargin: 4
+    height: Math.min(contentItem.implicitHeight, control.Window.height - topMargin - bottomMargin)
+    palette: control.palette
+    topMargin: 4
+    width: control.width
+    y: control.height
 
-            header: Item {
-                height: Style.buttonRadius
-            }
-
-            footer: Item {
-                height: Style.buttonRadius
-            }
-
-            T.ScrollIndicator.vertical: ScrollIndicator {
-            }
-
-        }
-
-        enter: Transition {
-            ParallelAnimation {
-                PropertyAnimation {
-                    property: "y"
-                    from: control.height / 2
-                    to: control.height - 1
-                    duration: Style.animationDuration
-                    easing.type: Style.animationEasingType
-                }
-
-                PropertyAnimation {
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: Style.animationDuration
-                    easing.type: Style.animationEasingType
-                }
-
-            }
-
-        }
-
-        exit: Transition {
-            PropertyAnimation {
-                property: "opacity"
-                to: 0
-                duration: Style.animationDuration
-                easing.type: Style.animationEasingType
-            }
-
-        }
-
+    background: PopupBackgroundRect {
     }
+    contentItem: ListView {
+      clip: true
+      currentIndex: control.highlightedIndex
+      footerPositioning: ListView.OverlayFooter
+      headerPositioning: ListView.OverlayHeader
+      highlightMoveDuration: 0
+      implicitHeight: contentHeight
+      model: control.delegateModel
 
+      T.ScrollIndicator.vertical: ScrollIndicator {
+      }
+      footer: Item {
+        height: Style.buttonRadius
+      }
+      header: Item {
+        height: Style.buttonRadius
+      }
+    }
+    enter: Transition {
+      ParallelAnimation {
+        PropertyAnimation {
+          duration: Style.animationDuration
+          easing.type: Style.animationEasingType
+          from: control.height / 2
+          property: "y"
+          to: control.height - 1
+        }
+
+        PropertyAnimation {
+          duration: Style.animationDuration
+          easing.type: Style.animationEasingType
+          from: 0
+          property: "opacity"
+          to: 1
+        }
+      }
+    }
+    exit: Transition {
+      PropertyAnimation {
+        duration: Style.animationDuration
+        easing.type: Style.animationEasingType
+        property: "opacity"
+        to: 0
+      }
+    }
+  }
 }

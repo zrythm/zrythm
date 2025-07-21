@@ -7,24 +7,22 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.MenuBar {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
-                            contentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
-                             contentHeight + topPadding + bottomPadding)
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
 
-    delegate: MenuBarItem { }
+  background: Rectangle {
+    color: Style.backgroundColor
+    implicitHeight: Style.buttonHeight
+  }
+  contentItem: Row {
+    spacing: control.spacing
 
-    contentItem: Row {
-        spacing: control.spacing
-        Repeater {
-            model: control.contentModel
-        }
+    Repeater {
+      model: control.contentModel
     }
-
-    background: Rectangle {
-        implicitHeight: Style.buttonHeight
-        color: Style.backgroundColor
-    }
+  }
+  delegate: MenuBarItem {
+  }
 }

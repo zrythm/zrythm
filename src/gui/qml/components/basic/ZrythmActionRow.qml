@@ -7,54 +7,51 @@ import QtQuick.Layouts
 import ZrythmStyle 1.0
 
 Item {
-    id: control
+  id: control
 
-    property string title: "aaaa"
-    property string subtitle: "bbbb"
-    default property alias content: suffixLayout.data
+  default property alias content: suffixLayout.data
+  property string subtitle: "bbbb"
+  property string title: "aaaa"
 
-    implicitHeight: layout.implicitHeight
-    Layout.fillWidth: true
+  Layout.fillWidth: true
+  implicitHeight: layout.implicitHeight
 
-    RowLayout {
-        id: layout
+  RowLayout {
+    id: layout
 
-        spacing: 12
-        anchors.fill: parent
+    anchors.fill: parent
+    spacing: 12
 
-        ColumnLayout {
-            spacing: 2
+    ColumnLayout {
+      spacing: 2
 
-            Label {
-                id: titleLabel
+      Label {
+        id: titleLabel
 
-                text: control.title
-                font.bold: true
-                elide: Text.ElideRight
-                Layout.fillWidth: true
-            }
+        Layout.fillWidth: true
+        elide: Text.ElideRight
+        font.bold: true
+        text: control.title
+      }
 
-            Label {
-                id: subtitleLabel
+      Label {
+        id: subtitleLabel
 
-                text: control.subtitle
-                visible: text !== ""
-                opacity: 0.7
-                font.pixelSize: titleLabel.font.pixelSize * 0.9
-                elide: Text.ElideRight
-                Layout.fillWidth: true
-            }
-
-        }
-
-        RowLayout {
-            id: suffixLayout
-
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-            Layout.fillWidth: true
-            spacing: 8
-        }
-
+        Layout.fillWidth: true
+        elide: Text.ElideRight
+        font.pixelSize: titleLabel.font.pixelSize * 0.9
+        opacity: 0.7
+        text: control.subtitle
+        visible: text !== ""
+      }
     }
 
+    RowLayout {
+      id: suffixLayout
+
+      Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+      Layout.fillWidth: true
+      spacing: 8
+    }
+  }
 }

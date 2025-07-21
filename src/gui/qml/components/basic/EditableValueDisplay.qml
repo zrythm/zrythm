@@ -10,52 +10,49 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 Control {
-    id: control
+  id: control
 
-    property alias value: valueDisplay.text
-    property string label
-    property real minValueWidth: 0
-    property real minValueHeight: 0
+  property string label
+  property real minValueHeight: 0
+  property real minValueWidth: 0
+  property alias value: valueDisplay.text
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
-    padding: 2
-    opacity: Style.getOpacity(control.enabled, control.Window.active)
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  padding: 2
 
-    contentItem: RowLayout {
-        id: rowLayout
+  contentItem: RowLayout {
+    id: rowLayout
 
-        spacing: 3
-        implicitWidth: valueDisplay.implicitWidth + textDisplay.implicitWidth + spacing
-        implicitHeight: Math.max(valueDisplay.implicitHeight, textDisplay.implicitHeight)
+    implicitHeight: Math.max(valueDisplay.implicitHeight, textDisplay.implicitHeight)
+    implicitWidth: valueDisplay.implicitWidth + textDisplay.implicitWidth + spacing
+    spacing: 3
 
-        Text {
-            id: valueDisplay
+    Text {
+      id: valueDisplay
 
-            color: control.palette.text
-            font: Style.semiBoldTextFont
-            Layout.alignment: Qt.AlignBaseline
-            Layout.minimumWidth: control.minValueWidth
-            Layout.minimumHeight: control.minValueHeight
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignCenter
-            textFormat: Text.PlainText
+      Layout.alignment: Qt.AlignBaseline
+      Layout.fillWidth: true
+      Layout.minimumHeight: control.minValueHeight
+      Layout.minimumWidth: control.minValueWidth
+      color: control.palette.text
+      font: Style.semiBoldTextFont
+      horizontalAlignment: Text.AlignCenter
+      textFormat: Text.PlainText
 
-            Behavior on text {
-                animation: Style.propertyAnimation
-            }
-
-        }
-
-        Text {
-            id: textDisplay
-
-            text: control.label
-            color: control.palette.placeholderText
-            font: Style.fadedTextFont
-            Layout.alignment: Qt.AlignBaseline
-        }
-
+      Behavior on text {
+        animation: Style.propertyAnimation
+      }
     }
 
+    Text {
+      id: textDisplay
+
+      Layout.alignment: Qt.AlignBaseline
+      color: control.palette.placeholderText
+      font: Style.fadedTextFont
+      text: control.label
+    }
+  }
 }

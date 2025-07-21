@@ -8,72 +8,67 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.MenuItem {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
-    padding: Style.buttonPadding
-    spacing: Style.buttonPadding
-    icon.width: Style.buttonHeight - 2 * control.padding
-    // icon.height: 24
-    icon.color: Style.colorPalette.windowText
-    font: Style.semiBoldTextFont
+  font: Style.semiBoldTextFont
+  // icon.height: 24
+  icon.color: Style.colorPalette.windowText
+  icon.width: Style.buttonHeight - 2 * control.padding
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  padding: Style.buttonPadding
+  spacing: Style.buttonPadding
 
-    contentItem: IconLabel {
-        readonly property real arrowPadding: control.subMenu && control.arrow ? control.arrow.width + control.spacing : 0
-        readonly property real indicatorPadding: control.checkable && control.indicator ? control.indicator.width + control.spacing : 0
+  arrow: ColorImage {
+    color: Style.colorPalette.windowText
+    defaultColor: "#353637"
+    mirror: control.mirrored
+    source: control.subMenu ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png" : ""
+    sourceSize.height: control.icon.width - 4
+    sourceSize.width: control.icon.width - 4
+    visible: control.subMenu
+    x: control.mirrored ? control.leftPadding : control.width - width - control.rightPadding
+    y: control.topPadding + (control.availableHeight - height) / 2
+  }
+  background: Rectangle {
+    readonly property color baseColor: control.highlighted ? Style.colorPalette.highlight : Style.colorPalette.button
+    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, false, control.visualFocus, control.down) //control.hovered
 
-        leftPadding: !control.mirrored ? indicatorPadding : arrowPadding
-        rightPadding: control.mirrored ? indicatorPadding : arrowPadding
-        spacing: control.spacing
-        mirrored: control.mirrored
-        display: control.display
-        alignment: Qt.AlignLeft
-        icon: control.icon
-        text: control.text
-        font: control.font
-        color: control.highlighted ? Style.colorPalette.highlightedText : Style.colorPalette.windowText
+    color: colorAdjustedForHoverOrFocusOrDown
+    height: control.height - 2
+    implicitHeight: Style.buttonHeight
+    implicitWidth: 200
+    width: control.width - 2
+    x: 1
+    y: 1
+
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
+  }
+  contentItem: IconLabel {
+    readonly property real arrowPadding: control.subMenu && control.arrow ? control.arrow.width + control.spacing : 0
+    readonly property real indicatorPadding: control.checkable && control.indicator ? control.indicator.width + control.spacing : 0
 
-    indicator: ColorImage {
-        x: control.mirrored ? control.width - width - control.rightPadding : control.leftPadding
-        y: control.topPadding + (control.availableHeight - height) / 2
-        visible: control.checked
-        source: control.checkable ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/check.png" : ""
-        color: Style.colorPalette.windowText
-        defaultColor: "#353637"
-        sourceSize.width: control.icon.width
-        sourceSize.height: control.icon.width
-    }
-
-    arrow: ColorImage {
-        x: control.mirrored ? control.leftPadding : control.width - width - control.rightPadding
-        y: control.topPadding + (control.availableHeight - height) / 2
-        visible: control.subMenu
-        mirror: control.mirrored
-        source: control.subMenu ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png" : ""
-        color: Style.colorPalette.windowText
-        defaultColor: "#353637"
-        sourceSize.width: control.icon.width - 4
-        sourceSize.height: control.icon.width - 4
-    }
-
-    background: Rectangle {
-        readonly property color baseColor: control.highlighted ? Style.colorPalette.highlight : Style.colorPalette.button
-        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, /*control.hovered*/ false, control.visualFocus, control.down)
-
-        implicitWidth: 200
-        implicitHeight: Style.buttonHeight
-        x: 1
-        y: 1
-        width: control.width - 2
-        height: control.height - 2
-        color: colorAdjustedForHoverOrFocusOrDown
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
-    }
-
+    alignment: Qt.AlignLeft
+    color: control.highlighted ? Style.colorPalette.highlightedText : Style.colorPalette.windowText
+    display: control.display
+    font: control.font
+    icon: control.icon
+    leftPadding: !control.mirrored ? indicatorPadding : arrowPadding
+    mirrored: control.mirrored
+    rightPadding: control.mirrored ? indicatorPadding : arrowPadding
+    spacing: control.spacing
+    text: control.text
+  }
+  indicator: ColorImage {
+    color: Style.colorPalette.windowText
+    defaultColor: "#353637"
+    source: control.checkable ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/check.png" : ""
+    sourceSize.height: control.icon.width
+    sourceSize.width: control.icon.width
+    visible: control.checked
+    x: control.mirrored ? control.width - width - control.rightPadding : control.leftPadding
+    y: control.topPadding + (control.availableHeight - height) / 2
+  }
 }

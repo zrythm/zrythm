@@ -46,6 +46,6 @@
     "-v",
   ],
   "[qml]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": false,
   },
 }

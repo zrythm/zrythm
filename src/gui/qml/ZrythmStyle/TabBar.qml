@@ -6,32 +6,26 @@ import QtQuick
 import QtQuick.Templates as T
 
 T.TabBar {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
-                            contentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
-                             contentHeight + topPadding + bottomPadding)
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
+  spacing: 1
 
-    spacing: 1
-
-    contentItem: ListView {
-        model: control.contentModel
-        currentIndex: control.currentIndex
-
-        spacing: control.spacing
-        orientation: ListView.Horizontal
-        boundsBehavior: Flickable.StopAtBounds
-        flickableDirection: Flickable.AutoFlickIfNeeded
-        snapMode: ListView.SnapToItem
-
-        highlightMoveDuration: 0
-        highlightRangeMode: ListView.ApplyRange
-        preferredHighlightBegin: 40
-        preferredHighlightEnd: width - 40
-    }
-
-    background: Rectangle {
-        color: control.palette.window
-    }
+  background: Rectangle {
+    color: control.palette.window
+  }
+  contentItem: ListView {
+    boundsBehavior: Flickable.StopAtBounds
+    currentIndex: control.currentIndex
+    flickableDirection: Flickable.AutoFlickIfNeeded
+    highlightMoveDuration: 0
+    highlightRangeMode: ListView.ApplyRange
+    model: control.contentModel
+    orientation: ListView.Horizontal
+    preferredHighlightBegin: 40
+    preferredHighlightEnd: width - 40
+    snapMode: ListView.SnapToItem
+    spacing: control.spacing
+  }
 }

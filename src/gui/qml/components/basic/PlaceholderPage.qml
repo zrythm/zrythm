@@ -8,71 +8,70 @@ import QtQuick.Layouts
 import ZrythmStyle 1.0
 
 ColumnLayout {
-    id: root
+  id: root
 
-    property alias icon: placeholderIcon
-    property alias title: titleLabel.text
-    property alias description: descriptionLabel.text
-    property alias action: actionButton.action
-    property alias buttonText: actionButton.text
+  property alias action: actionButton.action
+  property alias buttonText: actionButton.text
+  property alias description: descriptionLabel.text
+  property alias icon: placeholderIcon
+  property alias title: titleLabel.text
 
-    spacing: 10
-    width: Math.min(parent.width - 40, parent.width * 0.8)
+  spacing: 10
+  width: Math.min(parent.width - 40, parent.width * 0.8)
 
-    IconImage {
-        id: placeholderIcon
+  IconImage {
+    id: placeholderIcon
 
-        Layout.alignment: Qt.AlignHCenter
-        Layout.preferredWidth: 128
-        Layout.preferredHeight: 128
-        Layout.bottomMargin: 16
-        fillMode: Image.PreserveAspectFit
-        visible: status === Image.Ready
-        // these ensure SVGs are scaled and not stretched
-        sourceSize.width: width
-        sourceSize.height: height
-        color: root.palette.buttonText
+    Layout.alignment: Qt.AlignHCenter
+    Layout.bottomMargin: 16
+    Layout.preferredHeight: 128
+    Layout.preferredWidth: 128
+    color: root.palette.buttonText
+    fillMode: Image.PreserveAspectFit
+    sourceSize.height: height
+    // these ensure SVGs are scaled and not stretched
+    sourceSize.width: width
+    visible: status === Image.Ready
+  }
+
+  Label {
+    id: titleLabel
+
+    Layout.fillWidth: true
+    font.bold: true
+    font.pointSize: 20
+    horizontalAlignment: Text.AlignHCenter
+    wrapMode: Text.WordWrap
+  }
+
+  Label {
+    id: descriptionLabel
+
+    Layout.fillWidth: true
+    font.pointSize: 10.5
+    horizontalAlignment: Text.AlignHCenter
+    text: ""
+    visible: text !== ""
+    wrapMode: Text.WordWrap
+
+    onLinkActivated: link => {
+      console.log("Link clicked:", link);
+      Qt.openUrlExternally(link);
     }
 
-    Label {
-        id: titleLabel
-
-        Layout.fillWidth: true
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
-        font.pointSize: 20
-        font.bold: true
+    MouseArea {
+      acceptedButtons: Qt.NoButton
+      anchors.fill: parent
+      cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
+  }
 
-    Label {
-        id: descriptionLabel
+  Button {
+    id: actionButton
 
-        Layout.fillWidth: true
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
-        font.pointSize: 10.5
-        text: ""
-        visible: text !== ""
-        onLinkActivated: (link) => {
-            console.log("Link clicked:", link);
-            Qt.openUrlExternally(link);
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.NoButton
-            cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-        }
-
-    }
-
-    Button {
-        id: actionButton
-
-        highlighted: true
-        Layout.topMargin: 10
-        Layout.alignment: Qt.AlignHCenter
-        visible: action || text
-    }
-
+    Layout.alignment: Qt.AlignHCenter
+    Layout.topMargin: 10
+    highlighted: true
+    visible: action || text
+  }
 }

@@ -8,36 +8,32 @@ import QtQuick
 import QtQuick.Templates as T
 
 T.DialogButtonBox {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
-                            (control.count === 1 ? implicitContentWidth * 2 : implicitContentWidth) + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
-                             implicitContentHeight + topPadding + bottomPadding)
-    contentWidth: (contentItem as ListView)?.contentWidth
+  alignment: count === 1 ? Qt.AlignRight : undefined
+  contentWidth: (contentItem as ListView)?.contentWidth
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, (control.count === 1 ? implicitContentWidth * 2 : implicitContentWidth) + leftPadding + rightPadding)
+  padding: 12
+  spacing: 2
 
-    spacing: 2
-    padding: 12
-    alignment: count === 1 ? Qt.AlignRight : undefined
-
-    delegate: Button {
-        width: control.count === 1 ? control.availableWidth / 2 : undefined
-    }
-
-    contentItem: ListView {
-        implicitWidth: contentWidth
-        model: control.contentModel
-        spacing: control.spacing
-        orientation: ListView.Horizontal
-        boundsBehavior: Flickable.StopAtBounds
-        snapMode: ListView.SnapToItem
-    }
-
-    background: Rectangle {
-        implicitHeight: 40
-        x: 1; y: 1
-        width: parent.width - 2
-        height: parent.height - 2
-        color: control.palette.window
-    }
+  background: Rectangle {
+    color: control.palette.window
+    height: parent.height - 2
+    implicitHeight: 40
+    width: parent.width - 2
+    x: 1
+    y: 1
+  }
+  contentItem: ListView {
+    boundsBehavior: Flickable.StopAtBounds
+    implicitWidth: contentWidth
+    model: control.contentModel
+    orientation: ListView.Horizontal
+    snapMode: ListView.SnapToItem
+    spacing: control.spacing
+  }
+  delegate: Button {
+    width: control.count === 1 ? control.availableWidth / 2 : undefined
+  }
 }

@@ -8,35 +8,34 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 SplitButton {
-    id: undoBtn
+  id: undoBtn
 
-    property var undoStack: isUndo ? undoManager.undoStack : undoManager.redoStack
-    required property bool isUndo
-    required property var undoManager
-    readonly property string undoString: isUndo ? qsTr("Undo") : qsTr("Redo")
+  required property bool isUndo
+  required property var undoManager
+  property var undoStack: isUndo ? undoManager.undoStack : undoManager.redoStack
+  readonly property string undoString: isUndo ? qsTr("Undo") : qsTr("Redo")
 
-    enabled: undoStack.rowCount > 0
-    tooltipText: undoStack.rowCount > 0 ? qsTr("%1 %2").arg(undoString).arg(undoStack.data(undoStack.index(0, 0), 257).getDescription()) : undoString
-    menuTooltipText: qsTr("Undo multiple")
-    iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-" + (isUndo ? "undo" : "redo") + ".svg")
-    onClicked: isUndo ? undoManager.undo() : undoManager.redo()
+  enabled: undoStack.rowCount > 0
+  iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-" + (isUndo ? "undo" : "redo") + ".svg")
+  menuTooltipText: qsTr("Undo multiple")
+  tooltipText: undoStack.rowCount > 0 ? qsTr("%1 %2").arg(undoString).arg(undoStack.data(undoStack.index(0, 0), 257).getDescription()) : undoString
 
-    menuItems: Menu {
-        Repeater {
-            model: undoStack
+  menuItems: Menu {
+    Repeater {
+      model: undoStack
 
-            delegate: MenuItem {
-                required property var undoableAction
+      delegate: MenuItem {
+        required property var undoableAction
 
-                text: qsTr("%1 %2").arg(undoString).arg(undoableAction.getDescription())
-                onTriggered: {
-                    // TODO: implement properly
-                    isUndo ? undoManager.undo() : undoManager.redo();
-                }
-            }
+        text: qsTr("%1 %2").arg(undoString).arg(undoableAction.getDescription())
 
+        onTriggered: {
+          // TODO: implement properly
+          isUndo ? undoManager.undo() : undoManager.redo();
         }
-
+      }
     }
+  }
 
+  onClicked: isUndo ? undoManager.undo() : undoManager.redo()
 }

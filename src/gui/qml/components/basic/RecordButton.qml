@@ -8,17 +8,17 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 Button {
-    id: root
-    checkable: true
+  id: root
 
-    icon.source: ResourceManager.getIconUrl("zrythm-dark", "record.svg")
+  checkable: true
+  icon.source: ResourceManager.getIconUrl("zrythm-dark", "record.svg")
 
-    palette {
-        buttonText: Style.dangerColor
-        accent: Style.dangerColor
-    }
+  palette {
+    accent: Style.dangerColor
+    buttonText: Style.dangerColor
+  }
 
-    ToolTip {
-        text: qsTr("Record")
-    }
+  ToolTip {
+    text: qsTr("Record")
+  }
 }

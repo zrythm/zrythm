@@ -8,41 +8,38 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.ItemDelegate {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
-    padding: 4
-    spacing: 4
-    icon.width: 24
-    icon.height: 24
-    icon.color: control.palette.text
-    font: Style.semiBoldTextFont
+  font: Style.semiBoldTextFont
+  icon.color: control.palette.text
+  icon.height: 24
+  icon.width: 24
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  padding: 4
+  spacing: 4
 
-    contentItem: IconLabel {
-        spacing: control.spacing
-        mirrored: control.mirrored
-        display: control.display
-        alignment: control.display === IconLabel.IconOnly || control.display === IconLabel.TextUnderIcon ? Qt.AlignCenter : Qt.AlignLeft
-        icon: control.icon
-        text: control.text
-        font: control.font
-        color: control.highlighted ? control.palette.highlightedText : control.palette.text
+  background: Rectangle {
+    readonly property color baseColor: control.highlighted ? control.palette.highlight : control.palette.button
+    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, false, control.visualFocus, control.down) //control.hovered
+
+    color: colorAdjustedForHoverOrFocusOrDown
+    implicitHeight: Style.buttonHeight
+    implicitWidth: 100
+    visible: control.down || control.highlighted || control.visualFocus
+
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
-
-    background: Rectangle {
-        readonly property color baseColor: control.highlighted ? control.palette.highlight : control.palette.button
-        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, /*control.hovered*/ false, control.visualFocus, control.down)
-
-        implicitWidth: 100
-        implicitHeight: Style.buttonHeight
-        visible: control.down || control.highlighted || control.visualFocus
-        color: colorAdjustedForHoverOrFocusOrDown
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
-    }
-
+  }
+  contentItem: IconLabel {
+    alignment: control.display === IconLabel.IconOnly || control.display === IconLabel.TextUnderIcon ? Qt.AlignCenter : Qt.AlignLeft
+    color: control.highlighted ? control.palette.highlightedText : control.palette.text
+    display: control.display
+    font: control.font
+    icon: control.icon
+    mirrored: control.mirrored
+    spacing: control.spacing
+    text: control.text
+  }
 }

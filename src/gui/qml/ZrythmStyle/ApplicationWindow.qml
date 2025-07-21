@@ -6,8 +6,8 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.ApplicationWindow {
-    id: window
+  id: window
 
-    palette: Style.colorPalette
-    color: palette.window
+  color: palette.window
+  palette: Style.colorPalette
 }

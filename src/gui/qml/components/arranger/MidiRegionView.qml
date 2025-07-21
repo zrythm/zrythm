@@ -7,8 +7,8 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 RegionBaseView {
-    id: root
+  id: root
 
-    property bool isLanePart: false
-    required property var lane
+  property bool isLanePart: false
+  required property var lane
 }

@@ -11,507 +11,483 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 Control {
-    id: control
+  id: control
 
-    required property var track // connected automatically when used as a delegate for a Tracklist model
-    readonly property real buttonHeight: 18
-    readonly property real buttonPadding: 1
-    readonly property real contentTopMargins: 1
-    readonly property real contentBottomMargins: 3
-    property bool isResizing: false
+  readonly property real buttonHeight: 18
+  readonly property real buttonPadding: 1
+  readonly property real contentBottomMargins: 3
+  readonly property real contentTopMargins: 1
+  property bool isResizing: false
+  required property var track // connected automatically when used as a delegate for a Tracklist model
 
-    hoverEnabled: true
-    implicitWidth: 200
-    implicitHeight: track.fullVisibleHeight
-    opacity: Style.getOpacity(track.enabled, control.Window.active)
+  hoverEnabled: true
+  implicitHeight: track.fullVisibleHeight
+  implicitWidth: 200
+  opacity: Style.getOpacity(track.enabled, control.Window.active)
 
-    Connections {
-        function onHeightChanged() {
-            track.fullVisibleHeightChanged();
-        }
+  background: Rectangle {
+    color: {
+      let c = control.palette.window;
+      if (control.hovered)
+        c = Style.getColorBlendedTowardsContrast(c);
 
-        function onLanesVisibleChanged() {
-            track.fullVisibleHeightChanged();
-        }
+      if (track.selected || control.down)
+        c = Style.getColorBlendedTowardsContrast(c);
 
-        function onAutomationVisibleChanged() {
-            track.fullVisibleHeightChanged();
-        }
-
-        ignoreUnknownSignals: true
-        target: track
+      return c;
     }
 
-    Component {
-        id: mainTrackView
+    Behavior on color {
+      animation: Style.propertyAnimation
+    }
 
-        Item {
-            id: mainTrackViewItem
+    TapHandler {
+      acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-            ColumnLayout {
-                id: mainTrackViewColumnLayout
+      onTapped: function (point) {
+        tracklist.setExclusivelySelectedTrack(control.track);
+      }
+    }
+  }
+  contentItem: Item {
+    id: trackContent
 
-                spacing: 0
+    anchors.fill: parent
 
-                anchors {
+    RowLayout {
+      id: mainLayout
+
+      Layout.rightMargin: 6
+      anchors.fill: parent
+      spacing: 4
+
+      Rectangle {
+        id: trackColor
+
+        Layout.fillHeight: true
+        color: track.color
+        width: 6
+      }
+
+      ColumnLayout {
+        id: allTrackComponentRows
+
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        spacing: 0
+
+        Loader {
+          Layout.bottomMargin: 3
+          Layout.fillWidth: true
+          Layout.maximumHeight: track.height - Layout.bottomMargin - Layout.topMargin
+          Layout.minimumHeight: track.height - Layout.bottomMargin - Layout.topMargin
+          Layout.topMargin: 3
+          sourceComponent: mainTrackView
+        }
+
+        Loader {
+          id: lanesLoader
+
+          Layout.fillHeight: true
+          Layout.fillWidth: true
+          active: track.hasLanes && track.lanesVisible
+          visible: active
+
+          sourceComponent: ColumnLayout {
+            id: lanesColumnLayout
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            spacing: 0
+
+            ListView {
+              id: lanesListView
+
+              Layout.fillHeight: true
+              Layout.fillWidth: true
+              implicitHeight: contentHeight
+              model: track.lanes
+
+              delegate: ItemDelegate {
+                readonly property var lane: modelData
+
+                height: lane.height
+                width: ListView.view.width
+
+                RowLayout {
+                  spacing: 2
+
+                  anchors {
+                    bottomMargin: control.contentBottomMargins
                     fill: parent
                     topMargin: control.contentTopMargins
-                    bottomMargin: control.contentBottomMargins
-                }
+                  }
 
-                RowLayout {
-                    id: topRow
-
-                    readonly property real contentHeight: Math.max(trackNameLabel.implicitHeight, linkedButtons.implicitHeight)
-
-                    Layout.alignment: Qt.AlignTop
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    Layout.minimumHeight: contentHeight
-                    Layout.preferredHeight: contentHeight
-
-                    IconImage {
-                        id: trackIcon
-
-                        readonly property real iconSize: 14
-
-                        Layout.alignment: Qt.AlignTop | Qt.AlignBaseline
-                        source: {
-                            if (track.icon.startsWith("gnome-icon-library-"))
-                                return ResourceManager.getIconUrl("gnome-icon-library", track.icon.substring(19) + ".svg");
-
-                            if (track.icon.startsWith("fluentui-"))
-                                return ResourceManager.getIconUrl("fluentui", track.icon.substring(9) + ".svg");
-
-                            if (track.icon.startsWith("lorc-"))
-                                return ResourceManager.getIconUrl("lorc", track.icon.substring(5) + ".svg");
-
-                            if (track.icon.startsWith("jam-icons-"))
-                                return ResourceManager.getIconUrl("jam-icons", track.icon.substring(10) + ".svg");
-
-                            return ResourceManager.getIconUrl("zrythm-dark", track.icon + ".svg");
-                        }
-                        sourceSize.width: iconSize
-                        sourceSize.height: iconSize
-                        width: iconSize
-                        height: iconSize
-                        fillMode: Image.PreserveAspectFit
-                        color: trackNameLabel.color
-                    }
-
-                    Label {
-                        id: trackNameLabel
-
-                        text: track.name
-                        elide: Text.ElideRight
-                        font: track.selected ? Style.buttonTextFont : Style.normalTextFont
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
-                    }
-
-                    LinkedButtons {
-                        id: linkedButtons
-
-                        layer.enabled: true
-                        Layout.fillWidth: false
-                        Layout.alignment: Qt.AlignRight | Qt.AlignBaseline | Qt.AlignTop
-
-                        MuteButton {
-                            styleHeight: control.buttonHeight
-                            padding: control.buttonPadding
-                        }
-
-                        SoloButton {
-                            id: soloButton
-
-                            styleHeight: control.buttonHeight
-                            padding: control.buttonPadding
-                        }
-
-                        RecordButton {
-                            styleHeight: control.buttonHeight
-                            padding: control.buttonPadding
-                            height: soloButton.height
-                            visible: track.isRecordable
-                            checked: track.isRecordable && track.recording
-                            onClicked: {
-                              track.recording = !track.recording;
-                            }
-                        }
-
-                        layer.effect: DropShadowEffect {
-                        }
-
-                    }
-
-                }
-
-                RowLayout {
-                    id: bottomRow
-
-                    Layout.fillWidth: true
+                  Label {
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     Layout.fillHeight: false
-                    Layout.alignment: Qt.AlignBottom
-                    visible: track.height > control.buttonHeight + height + 12
+                    Layout.fillWidth: true
+                    text: lane.name
+                  }
 
-                    Label {
-                        id: chordScalesLabel
+                  LinkedButtons {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                    Layout.fillHeight: false
+                    Layout.fillWidth: false
 
-                        text: qsTr("Scales")
-                        font: Style.smallTextFont
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-                        visible: track.type === Track.Chord
+                    SoloButton {
+                      id: soloButton
+
+                      padding: control.buttonPadding
+                      styleHeight: control.buttonHeight
                     }
 
-                    Item {
-                        id: filler
-
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                    MuteButton {
+                      padding: control.buttonPadding
+                      styleHeight: control.buttonHeight
                     }
-
-                    LinkedButtons {
-                        id: bottomRightButtons
-
-                        layer.enabled: true
-                        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                        Layout.fillHeight: true
-
-                        Button {
-                            styleHeight: control.buttonHeight
-                            padding: control.buttonPadding
-                            checkable: true
-                            visible: track.hasLanes
-                            checked: track.hasLanes && track.lanesVisible
-                            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "list-compact-symbolic.svg")
-                            onClicked: {
-                                track.lanesVisible = !track.lanesVisible;
-                            }
-
-                            ToolTip {
-                                text: qsTr("Show lanes")
-                            }
-
-                        }
-
-                        Button {
-                            styleHeight: control.buttonHeight
-                            padding: control.buttonPadding
-                            checkable: true
-                            visible: track.isAutomatable
-                            checked: track.isAutomatable && track.automatableTrackMixin.automationVisible
-                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
-                            onClicked: {
-                                track.automatableTrackMixin.automationVisible = !track.automatableTrackMixin.automationVisible;
-                            }
-
-                            ToolTip {
-                                text: qsTr("Show automation")
-                            }
-
-                        }
-
-                        layer.effect: DropShadowEffect {
-                        }
-
-                    }
-
+                  }
                 }
 
-            }
+                Loader {
+                  property var resizeTarget: lane
 
-            Loader {
-                property var resizeTarget: track
-
-                sourceComponent: resizeHandle
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-            }
-
-        }
-
-    }
-
-    Component {
-        id: resizeHandle
-
-        Rectangle {
-            id: resizeHandleRect
-
-            height: 6
-            color: "transparent"
-
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
-
-            Rectangle {
-                anchors.centerIn: parent
-                height: 2
-                width: 24
-                color: Qt.alpha(Style.backgroundAppendColor, 0.2)
-                radius: 2
-            }
-
-            DragHandler {
-                id: resizer
-
-                property real startHeight: 0
-
-                yAxis.enabled: true
-                xAxis.enabled: false
-                grabPermissions: PointerHandler.CanTakeOverFromItems | PointerHandler.CanTakeOverFromHandlers
-                onActiveChanged: {
-                    control.isResizing = active;
-                    if (active)
-                        resizer.startHeight = resizeTarget.height;
-
+                  anchors.bottom: parent.bottom
+                  anchors.left: parent.left
+                  anchors.right: parent.right
+                  sourceComponent: resizeHandle
                 }
-                onTranslationChanged: {
-                    if (active) {
-                        let newHeight = Math.max(resizer.startHeight + translation.y, 24);
-                        resizeTarget.height = newHeight;
-                    }
+
+                Connections {
+                  function onHeightChanged() {
+                    track.fullVisibleHeightChanged();
+                  }
+
+                  target: lane
                 }
+              }
             }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.SizeVerCursor
-                acceptedButtons: Qt.NoButton // Pass through mouse events to the DragHandler
-            }
-
+          }
         }
 
+        Loader {
+          id: automationLoader
+
+          Layout.fillWidth: true
+          active: track.isAutomatable && track.automatableTrackMixin.automationVisible
+
+          sourceComponent: AutomationTracksListView {
+            id: automationTracksListView
+
+            height: contentHeight
+            track: control.track
+            width: automationLoader.width
+          }
+        }
+      }
+
+      Loader {
+        id: audioMetersLoader
+
+        Layout.fillHeight: true
+        Layout.fillWidth: false
+        active: track.hasChannel && track.channel.leftAudioOut
+        visible: active
+
+        sourceComponent: RowLayout {
+          id: meters
+
+          anchors.fill: parent
+          spacing: 0
+
+          Meter {
+            Layout.fillHeight: true
+            Layout.preferredWidth: width
+            port: track.channel.leftAudioOut
+          }
+
+          Meter {
+            Layout.fillHeight: true
+            Layout.preferredWidth: width
+            port: track.channel.rightAudioOut
+          }
+        }
+      }
+
+      Loader {
+        id: midiMetersLoader
+
+        Layout.fillHeight: true
+        Layout.fillWidth: false
+        Layout.preferredWidth: 4
+        active: track.hasChannel && track.channel.midiOut
+        visible: active
+
+        sourceComponent: Meter {
+          anchors.fill: parent
+          port: track.channel.midiOut
+        }
+      }
+    }
+  }
+  Behavior on implicitHeight {
+    animation: Style.propertyAnimation
+    // FIXME: stops working after some operations, not sure why
+    enabled: !control.isResizing
+  }
+
+  Connections {
+    function onAutomationVisibleChanged() {
+      track.fullVisibleHeightChanged();
     }
 
-    Behavior on implicitHeight {
-        // FIXME: stops working after some operations, not sure why
-        enabled: !control.isResizing
-        animation: Style.propertyAnimation
+    function onHeightChanged() {
+      track.fullVisibleHeightChanged();
     }
 
-    background: Rectangle {
-        color: {
-            let c = control.palette.window;
-            if (control.hovered)
-                c = Style.getColorBlendedTowardsContrast(c);
-
-            if (track.selected || control.down)
-                c = Style.getColorBlendedTowardsContrast(c);
-
-            return c;
-        }
-
-        TapHandler {
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onTapped: function(point) {
-                tracklist.setExclusivelySelectedTrack(control.track);
-            }
-        }
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
+    function onLanesVisibleChanged() {
+      track.fullVisibleHeightChanged();
     }
 
-    contentItem: Item {
-        id: trackContent
+    ignoreUnknownSignals: true
+    target: track
+  }
 
-        anchors.fill: parent
+  Component {
+    id: mainTrackView
+
+    Item {
+      id: mainTrackViewItem
+
+      ColumnLayout {
+        id: mainTrackViewColumnLayout
+
+        spacing: 0
+
+        anchors {
+          bottomMargin: control.contentBottomMargins
+          fill: parent
+          topMargin: control.contentTopMargins
+        }
 
         RowLayout {
-            id: mainLayout
+          id: topRow
 
-            anchors.fill: parent
-            spacing: 4
-            Layout.rightMargin: 6
+          readonly property real contentHeight: Math.max(trackNameLabel.implicitHeight, linkedButtons.implicitHeight)
 
-            Rectangle {
-                id: trackColor
+          Layout.alignment: Qt.AlignTop
+          Layout.fillHeight: true
+          Layout.fillWidth: true
+          Layout.minimumHeight: contentHeight
+          Layout.preferredHeight: contentHeight
 
-                width: 6
-                Layout.fillHeight: true
-                color: track.color
+          IconImage {
+            id: trackIcon
+
+            readonly property real iconSize: 14
+
+            Layout.alignment: Qt.AlignTop | Qt.AlignBaseline
+            color: trackNameLabel.color
+            fillMode: Image.PreserveAspectFit
+            height: iconSize
+            source: {
+              if (track.icon.startsWith("gnome-icon-library-"))
+                return ResourceManager.getIconUrl("gnome-icon-library", track.icon.substring(19) + ".svg");
+
+              if (track.icon.startsWith("fluentui-"))
+                return ResourceManager.getIconUrl("fluentui", track.icon.substring(9) + ".svg");
+
+              if (track.icon.startsWith("lorc-"))
+                return ResourceManager.getIconUrl("lorc", track.icon.substring(5) + ".svg");
+
+              if (track.icon.startsWith("jam-icons-"))
+                return ResourceManager.getIconUrl("jam-icons", track.icon.substring(10) + ".svg");
+
+              return ResourceManager.getIconUrl("zrythm-dark", track.icon + ".svg");
+            }
+            sourceSize.height: iconSize
+            sourceSize.width: iconSize
+            width: iconSize
+          }
+
+          Label {
+            id: trackNameLabel
+
+            Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
+            Layout.fillWidth: true
+            elide: Text.ElideRight
+            font: track.selected ? Style.buttonTextFont : Style.normalTextFont
+            text: track.name
+          }
+
+          LinkedButtons {
+            id: linkedButtons
+
+            Layout.alignment: Qt.AlignRight | Qt.AlignBaseline | Qt.AlignTop
+            Layout.fillWidth: false
+            layer.enabled: true
+
+            layer.effect: DropShadowEffect {
             }
 
-            ColumnLayout {
-                id: allTrackComponentRows
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                spacing: 0
-
-                Loader {
-                    Layout.bottomMargin: 3
-                    Layout.topMargin: 3
-                    sourceComponent: mainTrackView
-                    Layout.fillWidth: true
-                    Layout.minimumHeight: track.height - Layout.bottomMargin - Layout.topMargin
-                    Layout.maximumHeight: track.height - Layout.bottomMargin - Layout.topMargin
-                }
-
-                Loader {
-                    id: lanesLoader
-
-                    active: track.hasLanes && track.lanesVisible
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    visible: active
-
-                    sourceComponent: ColumnLayout {
-                        id: lanesColumnLayout
-
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        spacing: 0
-
-                        ListView {
-                            id: lanesListView
-
-                            model: track.lanes
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            implicitHeight: contentHeight
-
-                            delegate: ItemDelegate {
-                                readonly property var lane: modelData
-
-                                height: lane.height
-                                width: ListView.view.width
-
-                                RowLayout {
-                                    spacing: 2
-
-                                    anchors {
-                                        fill: parent
-                                        topMargin: control.contentTopMargins
-                                        bottomMargin: control.contentBottomMargins
-                                    }
-
-                                    Label {
-                                        text: lane.name
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: false
-                                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                                    }
-
-                                    LinkedButtons {
-                                        Layout.fillWidth: false
-                                        Layout.fillHeight: false
-                                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
-
-                                        SoloButton {
-                                            id: soloButton
-
-                                            styleHeight: control.buttonHeight
-                                            padding: control.buttonPadding
-                                        }
-
-                                        MuteButton {
-                                            styleHeight: control.buttonHeight
-                                            padding: control.buttonPadding
-                                        }
-
-                                    }
-
-                                }
-
-                                Loader {
-                                    property var resizeTarget: lane
-
-                                    sourceComponent: resizeHandle
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.bottom: parent.bottom
-                                }
-
-                                Connections {
-                                    function onHeightChanged() {
-                                        track.fullVisibleHeightChanged();
-                                    }
-
-                                    target: lane
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                Loader {
-                    id: automationLoader
-
-                    active: track.isAutomatable && track.automatableTrackMixin.automationVisible
-                    Layout.fillWidth: true
-
-                    sourceComponent: AutomationTracksListView {
-                        id: automationTracksListView
-
-                        track: control.track
-                        width: automationLoader.width
-                        height: contentHeight
-                    }
-
-                }
-
+            MuteButton {
+              padding: control.buttonPadding
+              styleHeight: control.buttonHeight
             }
 
-            Loader {
-                id: audioMetersLoader
+            SoloButton {
+              id: soloButton
 
-                active: track.hasChannel && track.channel.leftAudioOut
-                visible: active
-                Layout.fillHeight: true
-                Layout.fillWidth: false
-
-                sourceComponent: RowLayout {
-                    id: meters
-
-                    spacing: 0
-                    anchors.fill: parent
-
-                    Meter {
-                        Layout.fillHeight: true
-                        Layout.preferredWidth: width
-                        port: track.channel.leftAudioOut
-                    }
-
-                    Meter {
-                        Layout.fillHeight: true
-                        Layout.preferredWidth: width
-                        port: track.channel.rightAudioOut
-                    }
-
-                }
-
+              padding: control.buttonPadding
+              styleHeight: control.buttonHeight
             }
 
-            Loader {
-                id: midiMetersLoader
+            RecordButton {
+              checked: track.isRecordable && track.recording
+              height: soloButton.height
+              padding: control.buttonPadding
+              styleHeight: control.buttonHeight
+              visible: track.isRecordable
 
-                active: track.hasChannel && track.channel.midiOut
-                visible: active
-                Layout.fillHeight: true
-                Layout.fillWidth: false
-                Layout.preferredWidth: 4
-
-                sourceComponent: Meter {
-                    anchors.fill: parent
-                    port: track.channel.midiOut
-                }
-
+              onClicked: {
+                track.recording = !track.recording;
+              }
             }
-
+          }
         }
 
-    }
+        RowLayout {
+          id: bottomRow
 
+          Layout.alignment: Qt.AlignBottom
+          Layout.fillHeight: false
+          Layout.fillWidth: true
+          visible: track.height > control.buttonHeight + height + 12
+
+          Label {
+            id: chordScalesLabel
+
+            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+            font: Style.smallTextFont
+            text: qsTr("Scales")
+            visible: track.type === Track.Chord
+          }
+
+          Item {
+            id: filler
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+          }
+
+          LinkedButtons {
+            id: bottomRightButtons
+
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+            Layout.fillHeight: true
+            layer.enabled: true
+
+            layer.effect: DropShadowEffect {
+            }
+
+            Button {
+              checkable: true
+              checked: track.hasLanes && track.lanesVisible
+              icon.source: ResourceManager.getIconUrl("gnome-icon-library", "list-compact-symbolic.svg")
+              padding: control.buttonPadding
+              styleHeight: control.buttonHeight
+              visible: track.hasLanes
+
+              onClicked: {
+                track.lanesVisible = !track.lanesVisible;
+              }
+
+              ToolTip {
+                text: qsTr("Show lanes")
+              }
+            }
+
+            Button {
+              checkable: true
+              checked: track.isAutomatable && track.automatableTrackMixin.automationVisible
+              icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
+              padding: control.buttonPadding
+              styleHeight: control.buttonHeight
+              visible: track.isAutomatable
+
+              onClicked: {
+                track.automatableTrackMixin.automationVisible = !track.automatableTrackMixin.automationVisible;
+              }
+
+              ToolTip {
+                text: qsTr("Show automation")
+              }
+            }
+          }
+        }
+      }
+
+      Loader {
+        property var resizeTarget: track
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        sourceComponent: resizeHandle
+      }
+    }
+  }
+
+  Component {
+    id: resizeHandle
+
+    Rectangle {
+      id: resizeHandleRect
+
+      color: "transparent"
+      height: 6
+
+      anchors {
+        bottom: parent.bottom
+        left: parent.left
+        right: parent.right
+      }
+
+      Rectangle {
+        anchors.centerIn: parent
+        color: Qt.alpha(Style.backgroundAppendColor, 0.2)
+        height: 2
+        radius: 2
+        width: 24
+      }
+
+      DragHandler {
+        id: resizer
+
+        property real startHeight: 0
+
+        grabPermissions: PointerHandler.CanTakeOverFromItems | PointerHandler.CanTakeOverFromHandlers
+        xAxis.enabled: false
+        yAxis.enabled: true
+
+        onActiveChanged: {
+          control.isResizing = active;
+          if (active)
+            resizer.startHeight = resizeTarget.height;
+        }
+        onTranslationChanged: {
+          if (active) {
+            let newHeight = Math.max(resizer.startHeight + translation.y, 24);
+            resizeTarget.height = newHeight;
+          }
+        }
+      }
+
+      MouseArea {
+        acceptedButtons: Qt.NoButton // Pass through mouse events to the DragHandler
+        anchors.fill: parent
+        cursorShape: Qt.SizeVerCursor
+      }
+    }
+  }
 }

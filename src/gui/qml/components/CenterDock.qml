@@ -8,173 +8,166 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 ColumnLayout {
-    id: root
+  id: root
 
-    required property var project
+  required property var project
 
-    spacing: 0
+  spacing: 0
 
-    StackLayout {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        currentIndex: centerTabBar.currentIndex
+  StackLayout {
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+    currentIndex: centerTabBar.currentIndex
 
-        SplitView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            orientation: Qt.Horizontal
+    SplitView {
+      Layout.fillHeight: true
+      Layout.fillWidth: true
+      orientation: Qt.Horizontal
 
-            ColumnLayout {
-                id: leftPane
+      ColumnLayout {
+        id: leftPane
 
-                spacing: 1
-                SplitView.minimumWidth: 120
-                SplitView.preferredWidth: 200
+        SplitView.minimumWidth: 120
+        SplitView.preferredWidth: 200
+        spacing: 1
 
-                TracklistHeader {
-                    id: tracklistHeader
+        TracklistHeader {
+          id: tracklistHeader
 
-                    Layout.fillWidth: true
-                    Layout.minimumHeight: ruler.height
-                    Layout.maximumHeight: ruler.height
-                    tracklist: project.tracklist
-                    trackFactory: project.trackFactory
-                }
+          Layout.fillWidth: true
+          Layout.maximumHeight: ruler.height
+          Layout.minimumHeight: ruler.height
+          trackFactory: project.trackFactory
+          tracklist: project.tracklist
+        }
 
-                Tracklist {
-                    id: pinnedTracklist
+        Tracklist {
+          id: pinnedTracklist
 
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: contentHeight
-                    tracklist: project.tracklist
-                    pinned: true
-                }
+          Layout.fillWidth: true
+          Layout.preferredHeight: contentHeight
+          pinned: true
+          tracklist: project.tracklist
+        }
 
-                Tracklist {
-                    id: unpinnedTracklist
+        Tracklist {
+          id: unpinnedTracklist
 
-                    tracklist: project.tracklist
-                    Layout.fillWidth: true
-                    Layout.minimumHeight: unpinnedTimelineArranger.height
-                    Layout.maximumHeight: unpinnedTimelineArranger.height
-                    pinned: false
-                }
+          Layout.fillWidth: true
+          Layout.maximumHeight: unpinnedTimelineArranger.height
+          Layout.minimumHeight: unpinnedTimelineArranger.height
+          pinned: false
+          tracklist: project.tracklist
+        }
+      }
 
+      ColumnLayout {
+        id: rightPane
+
+        SplitView.fillHeight: true
+        SplitView.fillWidth: true
+        SplitView.minimumWidth: 200
+        spacing: 1
+
+        ScrollView {
+          id: rulerScrollView
+
+          Layout.fillWidth: true
+          ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+          ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+          height: ruler.height
+
+          Ruler {
+            id: ruler
+
+            editorSettings: project.timeline.editorSettings
+            tempoMap: project.tempoMap
+            transport: project.transport
+          }
+
+          Binding {
+            property: "contentX"
+            target: rulerScrollView.contentItem
+            value: root.project.timeline.editorSettings.x
+          }
+
+          Connections {
+            function onContentXChanged() {
+              root.project.timeline.editorSettings.x = rulerScrollView.contentItem.contentX;
             }
 
-            ColumnLayout {
-                id: rightPane
-
-                spacing: 1
-                SplitView.fillWidth: true
-                SplitView.fillHeight: true
-                SplitView.minimumWidth: 200
-
-                ScrollView {
-                    id: rulerScrollView
-
-                    Layout.fillWidth: true
-                    height: ruler.height
-                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-
-                    Ruler {
-                        id: ruler
-
-                        editorSettings: project.timeline.editorSettings
-                        transport: project.transport
-                        tempoMap: project.tempoMap
-                    }
-
-                    Binding {
-                        target: rulerScrollView.contentItem
-                        property: "contentX"
-                        value: root.project.timeline.editorSettings.x
-                    }
-
-                    Connections {
-                        function onContentXChanged() {
-                            root.project.timeline.editorSettings.x = rulerScrollView.contentItem.contentX;
-                        }
-
-                        target: rulerScrollView.contentItem
-                    }
-
-                }
-
-                Timeline {
-                    id: pinnedTimelineArranger
-
-                    pinned: true
-                    timeline: project.timeline
-                    tracklist: project.tracklist
-                    clipEditor: project.clipEditor
-                    objectFactory: project.arrangerObjectFactory
-                    ruler: ruler
-                    transport: project.transport
-                    tempoMap: project.tempoMap
-                    tool: project.tool
-                    Layout.fillWidth: true
-                    Layout.minimumHeight: pinnedTracklist.height
-                    Layout.maximumHeight: pinnedTracklist.height
-                }
-
-                Timeline {
-                    id: unpinnedTimelineArranger
-
-                    pinned: false
-                    timeline: project.timeline
-                    tracklist: project.tracklist
-                    clipEditor: project.clipEditor
-                    objectFactory: project.arrangerObjectFactory
-                    ruler: ruler
-                    transport: project.transport
-                    tempoMap: project.tempoMap
-                    tool: project.tool
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
-
-            }
-
+            target: rulerScrollView.contentItem
+          }
         }
 
-        Item {
-            id: portConnectionsTab
+        Timeline {
+          id: pinnedTimelineArranger
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+          Layout.fillWidth: true
+          Layout.maximumHeight: pinnedTracklist.height
+          Layout.minimumHeight: pinnedTracklist.height
+          clipEditor: project.clipEditor
+          objectFactory: project.arrangerObjectFactory
+          pinned: true
+          ruler: ruler
+          tempoMap: project.tempoMap
+          timeline: project.timeline
+          tool: project.tool
+          tracklist: project.tracklist
+          transport: project.transport
         }
 
-        Item {
-            id: midiCcBindingsTab
+        Timeline {
+          id: unpinnedTimelineArranger
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+          Layout.fillHeight: true
+          Layout.fillWidth: true
+          clipEditor: project.clipEditor
+          objectFactory: project.arrangerObjectFactory
+          pinned: false
+          ruler: ruler
+          tempoMap: project.tempoMap
+          timeline: project.timeline
+          tool: project.tool
+          tracklist: project.tracklist
+          transport: project.transport
         }
-
+      }
     }
 
-    TabBar {
-        id: centerTabBar
+    Item {
+      id: portConnectionsTab
 
-        Layout.fillWidth: true
-
-        TabButton {
-            icon.source: ResourceManager.getIconUrl("zrythm-dark", "roadmap.svg")
-            text: qsTr("Timeline")
-        }
-
-        TabButton {
-            icon.source: ResourceManager.getIconUrl("zrythm-dark", "connector.svg")
-            text: qsTr("Port Connections")
-        }
-
-        TabButton {
-            icon.source: ResourceManager.getIconUrl("zrythm-dark", "signal-midi.svg")
-            text: qsTr("Midi CC Bindings")
-        }
-
+      Layout.fillHeight: true
+      Layout.fillWidth: true
     }
 
+    Item {
+      id: midiCcBindingsTab
+
+      Layout.fillHeight: true
+      Layout.fillWidth: true
+    }
+  }
+
+  TabBar {
+    id: centerTabBar
+
+    Layout.fillWidth: true
+
+    TabButton {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "roadmap.svg")
+      text: qsTr("Timeline")
+    }
+
+    TabButton {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "connector.svg")
+      text: qsTr("Port Connections")
+    }
+
+    TabButton {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "signal-midi.svg")
+      text: qsTr("Midi CC Bindings")
+    }
+  }
 }

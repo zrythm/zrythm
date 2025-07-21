@@ -9,117 +9,112 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 ApplicationWindow {
-    id: root
+  id: root
 
-    required property var project
-    required property var deviceManager
+  required property var deviceManager
+  required property var project
 
-    function closeAndDestroy() {
-        console.log("Closing and destroying project window");
-        close();
-        destroy();
-    }
+  function closeAndDestroy() {
+    console.log("Closing and destroying project window");
+    close();
+    destroy();
+  }
 
-    title: project.title
-    width: 1280
-    height: 720
-    visible: true
-    onClosing: {
-    }
-    Component.onCompleted: {
-        console.log("ApplicationWindow created on platform", Qt.platform.os);
-        project.aboutToBeDeleted.connect(closeAndDestroy);
-        project.activate();
-    }
+  height: 720
+  title: project.title
+  visible: true
+  width: 1280
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
+  header: MainToolbar {
+    id: headerBar
 
-        SplitView {
-            id: mainSplitView
+    project: root.project
+  }
+  menuBar: MainMenuBar {
+    id: mainMenuBar
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            orientation: Qt.Horizontal
+    deviceManager: root.deviceManager
+    project: root.project
+  }
 
-            LeftDock {
-                SplitView.fillHeight: true
-                SplitView.preferredWidth: 200
-                SplitView.minimumWidth: 30
-                visible: GlobalState.settingsManager.leftPanelVisible
-            }
+  Component.onCompleted: {
+    console.log("ApplicationWindow created on platform", Qt.platform.os);
+    project.aboutToBeDeleted.connect(closeAndDestroy);
+    project.activate();
+  }
+  onClosing: {}
 
-            SplitView {
-                // Pane {
-                //     SplitView.fillWidth: true
-                //     SplitView.preferredHeight: 200
-                //     SplitView.minimumHeight: 30
-                // }
+  ColumnLayout {
+    anchors.fill: parent
+    spacing: 0
 
-                id: centerSplitView
+    SplitView {
+      id: mainSplitView
 
-                SplitView.fillWidth: true
-                SplitView.fillHeight: true
-                orientation: Qt.Vertical
+      Layout.fillHeight: true
+      Layout.fillWidth: true
+      orientation: Qt.Horizontal
 
-                CenterDock {
-                    project: root.project
-                    SplitView.fillWidth: true
-                    SplitView.fillHeight: true
-                    SplitView.preferredHeight: 200
-                    SplitView.minimumHeight: implicitHeight
-                    Layout.verticalStretchFactor: 2
-                }
+      LeftDock {
+        SplitView.fillHeight: true
+        SplitView.minimumWidth: 30
+        SplitView.preferredWidth: 200
+        visible: GlobalState.settingsManager.leftPanelVisible
+      }
 
-                BottomDock {
-                    SplitView.fillWidth: true
-                    SplitView.fillHeight: true
-                    SplitView.minimumHeight: 30
-                    visible: GlobalState.settingsManager.bottomPanelVisible
-                    Layout.verticalStretchFactor: 1
-                    project: root.project
-                }
+      SplitView {
+        // Pane {
+        //     SplitView.fillWidth: true
+        //     SplitView.preferredHeight: 200
+        //     SplitView.minimumHeight: 30
+        // }
 
-            }
+        id: centerSplitView
 
-            RightDock {
-                id: rightDock
+        SplitView.fillHeight: true
+        SplitView.fillWidth: true
+        orientation: Qt.Vertical
 
-                SplitView.fillHeight: true
-                SplitView.preferredWidth: 200
-                SplitView.minimumWidth: 30
-                visible: GlobalState.settingsManager.rightPanelVisible
-            }
-
+        CenterDock {
+          Layout.verticalStretchFactor: 2
+          SplitView.fillHeight: true
+          SplitView.fillWidth: true
+          SplitView.minimumHeight: implicitHeight
+          SplitView.preferredHeight: 200
+          project: root.project
         }
 
-        Item {
-            id: botBar
-
-            implicitHeight: 24
-            Layout.fillWidth: true
-
-            Text {
-                anchors.right: parent.right
-                text: "Status Bar"
-                font: root.font
-            }
-
+        BottomDock {
+          Layout.verticalStretchFactor: 1
+          SplitView.fillHeight: true
+          SplitView.fillWidth: true
+          SplitView.minimumHeight: 30
+          project: root.project
+          visible: GlobalState.settingsManager.bottomPanelVisible
         }
+      }
 
+      RightDock {
+        id: rightDock
+
+        SplitView.fillHeight: true
+        SplitView.minimumWidth: 30
+        SplitView.preferredWidth: 200
+        visible: GlobalState.settingsManager.rightPanelVisible
+      }
     }
 
-    menuBar: MainMenuBar {
-        id: mainMenuBar
-        project: root.project
-        deviceManager: root.deviceManager
+    Item {
+      id: botBar
+
+      Layout.fillWidth: true
+      implicitHeight: 24
+
+      Text {
+        anchors.right: parent.right
+        font: root.font
+        text: "Status Bar"
+      }
     }
-
-    header: MainToolbar {
-        id: headerBar
-
-        project: root.project
-    }
-
+  }
 }

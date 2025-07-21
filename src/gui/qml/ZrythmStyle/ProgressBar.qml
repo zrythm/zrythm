@@ -10,71 +10,64 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.ProgressBar {
-    id: control
+  id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
-    opacity: Style.getOpacity(control.enabled, control.Window.active)
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  opacity: Style.getOpacity(control.enabled, control.Window.active)
 
-    contentItem: Item {
-        implicitWidth: 200
-        implicitHeight: 6
+  background: Rectangle {
+    color: control.palette.text
+    implicitHeight: 6
+    implicitWidth: 200
+    // y: (control.height - height) / 2
+    // height: 6
+    radius: 3
+  }
+  contentItem: Item {
+    implicitHeight: 6
+    implicitWidth: 200
 
-        // Progress indicator for determinate state.
-        Rectangle {
-            width: control.visualPosition * parent.width
-            height: parent.height
+    // Progress indicator for determinate state.
+    Rectangle {
+      color: palette.highlight
+      height: parent.height
+      radius: 4
+      visible: !control.indeterminate
+      width: control.visualPosition * parent.width
+    }
+
+    // Scrolling animation for indeterminate state.
+    Item {
+      anchors.fill: parent
+      clip: true
+      visible: control.indeterminate
+
+      Row {
+        anchors.fill: parent
+        spacing: 0
+
+        Repeater {
+          model: 5
+
+          Rectangle {
+            id: rectangle
+
+            color: control.palette.highlight
+            height: control.height
             radius: 4
-            color: palette.highlight
-            visible: !control.indeterminate
-        }
+            width: control.width / 3
 
-        // Scrolling animation for indeterminate state.
-        Item {
-            anchors.fill: parent
-            visible: control.indeterminate
-            clip: true
-
-            Row {
-                anchors.fill: parent
-                spacing: 0
-
-                Repeater {
-                    model: 5
-
-                    Rectangle {
-                        id: rectangle
-
-                        width: control.width / 3
-                        height: control.height
-                        radius: 4
-                        color: control.palette.highlight
-
-                        NumberAnimation on x {
-                            from: -rectangle.width
-                            to: control.width
-                            duration: 1500
-                            loops: Animation.Infinite
-                            easing.type: Easing.InOutQuad
-                        }
-
-                    }
-
-                }
-
+            NumberAnimation on x {
+              duration: 1500
+              easing.type: Easing.InOutQuad
+              from: -rectangle.width
+              loops: Animation.Infinite
+              to: control.width
             }
-
+          }
         }
-
+      }
     }
-
-    background: Rectangle {
-        implicitWidth: 200
-        implicitHeight: 6
-        // y: (control.height - height) / 2
-        // height: 6
-        radius: 3
-        color: control.palette.text
-    }
-
+  }
 }

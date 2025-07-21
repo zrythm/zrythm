@@ -8,66 +8,62 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.RoundButton {
-    id: control
+  id: control
 
-    property real styleHeight: Style.buttonHeight
+  property real styleHeight: Style.buttonHeight
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
-    padding: 4
-    horizontalPadding: padding + 2
-    spacing: 4
-    font: Style.buttonTextFont
-    opacity: Style.getOpacity(control.enabled, control.Window.active)
+  font: Style.buttonTextFont
+  horizontalPadding: padding + 2
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  padding: 4
+  spacing: 4
 
-    TextMetrics {
-        id: textMetrics
+  background: Rectangle {
+    readonly property color baseColor: control.highlighted ? control.palette.dark : control.palette.button
+    readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
+    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
 
-        font: control.font
-        text: "Test"
+    border.color: control.palette.highlight
+    border.width: control.visualFocus || control.down ? 2 : 0
+    color: colorAdjustedForHoverOrFocusOrDown
+    implicitHeight: control.styleHeight
+    implicitWidth: control.styleHeight
+    radius: control.radius
+    visible: !control.flat || control.down || control.checked || control.highlighted
+
+    Behavior on border.width {
+      animation: Style.propertyAnimation
     }
-
-    icon {
-        // console.log("text metrics height: " + textMetrics.height);
-
-        width: Math.max(control.styleHeight - padding * 2, textMetrics.height)
-        // height: 24
-        color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
-        Component.onCompleted: {
-        }
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
+  }
+  contentItem: IconLabel {
+    color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
+    display: control.display
+    font: control.font
+    icon: control.icon
+    mirrored: control.mirrored
+    spacing: control.spacing
+    text: control.text
+  }
 
-    contentItem: IconLabel {
-        spacing: control.spacing
-        mirrored: control.mirrored
-        display: control.display
-        icon: control.icon
-        text: control.text
-        font: control.font
-        color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
-    }
+  TextMetrics {
+    id: textMetrics
 
-    background: Rectangle {
-        readonly property color baseColor: control.highlighted ? control.palette.dark : control.palette.button
-        readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
-        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
+    font: control.font
+    text: "Test"
+  }
 
-        radius: control.radius
-        implicitWidth: control.styleHeight
-        implicitHeight: control.styleHeight
-        visible: !control.flat || control.down || control.checked || control.highlighted
-        color: colorAdjustedForHoverOrFocusOrDown
-        border.color: control.palette.highlight
-        border.width: control.visualFocus || control.down ? 2 : 0
+  icon {
+    // height: 24
+    color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
+    // console.log("text metrics height: " + textMetrics.height);
 
-        Behavior on border.width {
-            animation: Style.propertyAnimation
-        }
+    width: Math.max(control.styleHeight - padding * 2, textMetrics.height)
 
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
-    }
-
+    Component.onCompleted: {}
+  }
 }

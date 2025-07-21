@@ -105,7 +105,9 @@ QtObject {
   readonly property FontLoader notoSansThaiFont: FontLoader {
     source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansThai-VariableFont_wdth_wght.ttf")
   }
-  property color pageColor: darkMode ? "#161616" : "#E3E3E3" // used in contrast with textColor
+  // used in contrast with textColor
+
+  property color pageColor: darkMode ? "#161616" : "#E3E3E3"
   property color placeholderTextColor: darkMode ? Qt.rgba(1, 1, 1, 0.5) : Qt.rgba(0, 0, 0, 0.5)
   property color primaryColor: celestialBlueColor
   readonly property PropertyAnimation propertyAnimation: PropertyAnimation {

@@ -6,30 +6,29 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 Item {
-    id: root
+  id: root
 
-    property string text: "Text"
-    property int rotation: 270
-    property alias font: rotatedText.font
+  property alias font: rotatedText.font
+  property int rotation: 270
+  property string text: "Text"
 
-    implicitWidth: textMetrics.height
-    implicitHeight: textMetrics.width
+  implicitHeight: textMetrics.width
+  implicitWidth: textMetrics.height
 
-    TextMetrics {
-        id: textMetrics
+  TextMetrics {
+    id: textMetrics
 
-        text: rotatedText.text
-        font: rotatedText.font
-    }
+    font: rotatedText.font
+    text: rotatedText.text
+  }
 
-    Label {
-        id: rotatedText
+  Label {
+    id: rotatedText
 
-        anchors.fill: parent
-        text: root.text
-        rotation: root.rotation
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-    }
-
+    anchors.fill: parent
+    horizontalAlignment: Text.AlignHCenter
+    rotation: root.rotation
+    text: root.text
+    verticalAlignment: Text.AlignVCenter
+  }
 }

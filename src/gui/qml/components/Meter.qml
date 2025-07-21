@@ -5,78 +5,73 @@ import QtQuick
 import ZrythmStyle 1.0
 
 Rectangle {
-    id: root
+  id: root
 
-    required property var port
-    readonly property real currentPx: meterProcessor.toFader(meterProcessor.currentAmplitude) * root.height
-    readonly property real peakPx: meterProcessor.toFader(meterProcessor.peakAmplitude) * root.height
+  readonly property real currentPx: meterProcessor.toFader(meterProcessor.currentAmplitude) * root.height
+  readonly property real peakPx: meterProcessor.toFader(meterProcessor.peakAmplitude) * root.height
+  required property var port
 
-    width: 4
-    color: "transparent"
-    clip: true
-    layer.enabled: true
-    layer.smooth: true
+  clip: true
+  color: "transparent"
+  layer.enabled: true
+  layer.smooth: true
+  width: 4
 
-    MeterProcessor {
-        id: meterProcessor
+  MeterProcessor {
+    id: meterProcessor
 
-        port: root.port
+    port: root.port
+  }
+
+  Rectangle {
+    id: filledRect
+
+    height: root.currentPx
+
+    gradient: Gradient {
+      GradientStop {
+        color: "#FF9C11"
+        position: 0
+      }
+
+      GradientStop {
+        color: "#F7FF11"
+        position: 0.25
+      }
+
+      GradientStop {
+        color: "#2BD700"
+        position: 1
+      }
+    }
+    Behavior on height {
+      animation: Style.propertyAnimation
     }
 
-    Rectangle {
-        id: filledRect
+    anchors {
+      bottom: parent.bottom
+      left: parent.left
+      right: parent.right
+    }
+  }
 
-        height: root.currentPx
+  Rectangle {
+    id: peakRect
 
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
+    readonly property bool isOver: meterProcessor.peakAmplitude > 1
 
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: "#FF9C11"
-            }
+    color: isOver ? Style.dangerColor : Style.backgroundAppendColor
+    height: isOver ? 2 : 1.5
+    opacity: isOver ? 1 : meterProcessor.peakAmplitude
+    y: root.height - root.peakPx
 
-            GradientStop {
-                position: 0.25
-                color: "#F7FF11"
-            }
-
-            GradientStop {
-                position: 1
-                color: "#2BD700"
-            }
-
-        }
-
-        Behavior on height {
-            animation: Style.propertyAnimation
-        }
-
+    Behavior on y {
+      animation: Style.propertyAnimation
     }
 
-    Rectangle {
-        id: peakRect
-
-        readonly property bool isOver: meterProcessor.peakAmplitude > 1
-
-        height: isOver ? 2 : 1.5
-        y: root.height - root.peakPx
-        color: isOver ? Style.dangerColor : Style.backgroundAppendColor
-        opacity: isOver ? 1 : meterProcessor.peakAmplitude
-
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
-
-        Behavior on y {
-            animation: Style.propertyAnimation
-        }
-
+    anchors {
+      left: parent.left
+      right: parent.right
     }
-
+  }
 }

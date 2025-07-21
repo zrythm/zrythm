@@ -5,25 +5,30 @@ import QtQuick
 import QtQuick.Controls.Basic
 
 Dialog {
-    id: alertDialog
-    title: "Alert"
-    modal: true
-    standardButtons: Dialog.Ok
+  id: alertDialog
 
-    property alias alertTitle: titleText.text
-    property alias alertMessage: messageText.text
+  property alias alertMessage: messageText.text
+  property alias alertTitle: titleText.text
 
-    Column {
-        spacing: 10
-        Text {
-            id: titleText
-            font.bold: true
-            font.pixelSize: 16
-        }
-        Text {
-            id: messageText
-            wrapMode: Text.Wrap
-            width: parent.width
-        }
+  modal: true
+  standardButtons: Dialog.Ok
+  title: "Alert"
+
+  Column {
+    spacing: 10
+
+    Text {
+      id: titleText
+
+      font.bold: true
+      font.pixelSize: 16
     }
+
+    Text {
+      id: messageText
+
+      width: parent.width
+      wrapMode: Text.Wrap
+    }
+  }
 }

@@ -4,138 +4,138 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import ZrythmStyle
 import ZrythmGui
+import ZrythmStyle
 
 GridLayout {
-    id: root
+  id: root
 
-    required property Project project
-    required property ClipEditor clipEditor
-    required property PianoRoll pianoRoll
-    required property var region
+  required property ClipEditor clipEditor
+  required property PianoRoll pianoRoll
+  required property Project project
+  required property var region
 
-    rows: 3
-    columns: 3
-    columnSpacing: 0
-    rowSpacing: 0
+  columnSpacing: 0
+  columns: 3
+  rowSpacing: 0
+  rows: 3
 
-    ZrythmToolBar {
-        id: topOfPianoRollToolbar
+  ZrythmToolBar {
+    id: topOfPianoRollToolbar
 
-        leftItems: [
-            ToolButton {
-                icon.source: ResourceManager.getIconUrl("font-awesome", "drum-solid.svg")
-                checkable: true
-                checked: false
+    leftItems: [
+      ToolButton {
+        checkable: true
+        checked: false
+        icon.source: ResourceManager.getIconUrl("font-awesome", "drum-solid.svg")
 
-                ToolTip {
-                    text: qsTr("Drum Notation")
-                }
-            },
-            ToolButton {
-                icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-volume-high.svg")
-                checkable: true
-                checked: true
-
-                ToolTip {
-                    text: qsTr("Listen Notes")
-                }
-            },
-            ToolButton {
-                icon.source: ResourceManager.getIconUrl("gnome-icon-library", "chat-symbolic.svg")
-                checkable: true
-                checked: false
-
-                ToolTip {
-                    text: qsTr("Show Automation Values")
-                }
-            }
-        ]
-    }
-
-    Ruler {
-        id: ruler
-
-        Layout.fillWidth: true
-        editorSettings: root.project.clipEditor.pianoRoll.editorSettings
-        transport: root.project.transport
-        tempoMap: root.project.tempoMap
-    }
-
-    ColumnLayout {
-        Layout.rowSpan: 3
-        Layout.alignment: Qt.AlignTop
-
-        ToolButton {
-            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "chat-symbolic.svg")
-
-            ToolTip {
-                text: qsTr("Zoom In")
-            }
+        ToolTip {
+          text: qsTr("Drum Notation")
         }
-    }
+      },
+      ToolButton {
+        checkable: true
+        checked: true
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-volume-high.svg")
 
-    ScrollView {
-        id: pianoRollKeysScrollView
-
-        Layout.fillHeight: true
-        Layout.preferredHeight: 480
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-
-        PianoRollKeys {
-            id: pianoRollKeys
-
-            pianoRoll: root.pianoRoll
+        ToolTip {
+          text: qsTr("Listen Notes")
         }
+      },
+      ToolButton {
+        checkable: true
+        checked: false
+        icon.source: ResourceManager.getIconUrl("gnome-icon-library", "chat-symbolic.svg")
 
-        Binding {
-            target: pianoRollKeysScrollView.contentItem
-            property: "contentY"
-            value: root.pianoRoll.y
+        ToolTip {
+          text: qsTr("Show Automation Values")
         }
+      }
+    ]
+  }
 
-        Connections {
-            function onContentYChanged() {
-                root.pianoRoll.y = pianoRollKeysScrollView.contentItem.contentY;
-            }
+  Ruler {
+    id: ruler
 
-            target: pianoRollKeysScrollView.contentItem
-        }
+    Layout.fillWidth: true
+    editorSettings: root.project.clipEditor.pianoRoll.editorSettings
+    tempoMap: root.project.tempoMap
+    transport: root.project.transport
+  }
+
+  ColumnLayout {
+    Layout.alignment: Qt.AlignTop
+    Layout.rowSpan: 3
+
+    ToolButton {
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "chat-symbolic.svg")
+
+      ToolTip {
+        text: qsTr("Zoom In")
+      }
+    }
+  }
+
+  ScrollView {
+    id: pianoRollKeysScrollView
+
+    Layout.fillHeight: true
+    Layout.preferredHeight: 480
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+
+    PianoRollKeys {
+      id: pianoRollKeys
+
+      pianoRoll: root.pianoRoll
     }
 
-    MidiArranger {
-        id: midiArranger
-
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        clipEditor: root.clipEditor
-        pianoRoll: root.pianoRoll
-        objectFactory: root.project.arrangerObjectFactory
-        ruler: ruler
-        transport: root.project.transport
-        tempoMap: root.project.tempoMap
-        tool: root.project.tool
+    Binding {
+      property: "contentY"
+      target: pianoRollKeysScrollView.contentItem
+      value: root.pianoRoll.y
     }
 
-    Rectangle {
-        Label {
-            text: qsTr("Velocity")
-        }
-    }
+    Connections {
+      function onContentYChanged() {
+        root.pianoRoll.y = pianoRollKeysScrollView.contentItem.contentY;
+      }
 
-    VelocityArranger {
-        id: velocityArranger
-
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        clipEditor: root.clipEditor
-        pianoRoll: root.pianoRoll
-        objectFactory: root.project.arrangerObjectFactory
-        ruler: ruler
-        transport: root.project.transport
-        tempoMap: root.project.tempoMap
-        tool: root.project.tool
+      target: pianoRollKeysScrollView.contentItem
     }
+  }
+
+  MidiArranger {
+    id: midiArranger
+
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+    clipEditor: root.clipEditor
+    objectFactory: root.project.arrangerObjectFactory
+    pianoRoll: root.pianoRoll
+    ruler: ruler
+    tempoMap: root.project.tempoMap
+    tool: root.project.tool
+    transport: root.project.transport
+  }
+
+  Rectangle {
+    Label {
+      text: qsTr("Velocity")
+    }
+  }
+
+  VelocityArranger {
+    id: velocityArranger
+
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+    clipEditor: root.clipEditor
+    objectFactory: root.project.arrangerObjectFactory
+    pianoRoll: root.pianoRoll
+    ruler: ruler
+    tempoMap: root.project.tempoMap
+    tool: root.project.tool
+    transport: root.project.transport
+  }
 }

@@ -8,76 +8,70 @@ import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
 T.Button {
-    id: control
+  id: control
 
-    property real styleHeight: Style.buttonHeight
+  property real styleHeight: Style.buttonHeight
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
-    padding: 4
-    horizontalPadding: padding + 2
-    spacing: 4
-    hoverEnabled: true
-    font: Style.buttonTextFont
-    opacity: Style.getOpacity(control.enabled, control.Window.active)
-    layer.enabled: true
+  font: Style.buttonTextFont
+  horizontalPadding: padding + 2
+  hoverEnabled: true
+  implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  layer.enabled: true
+  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  padding: 4
+  spacing: 4
 
-    TextMetrics {
-        id: textMetrics
+  background: Rectangle {
+    readonly property color baseColor: control.highlighted ? control.palette.dark : control.palette.button
+    readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
+    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
 
-        font: control.font
-        text: "Test"
+    border.color: control.palette.highlight
+    border.width: control.visualFocus || control.down ? 2 : 0
+    color: colorAdjustedForHoverOrFocusOrDown
+    implicitHeight: control.styleHeight
+    implicitWidth: control.styleHeight
+    radius: Style.buttonRadius
+    visible: !control.flat || control.down || control.checked || control.highlighted
+
+    Behavior on border.width {
+      animation: Style.propertyAnimation
     }
-
-    icon {
-        width: Math.max(control.styleHeight - padding * 2, textMetrics.height)
-        // height: 24
-        color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
+  }
+  contentItem: IconLabel {
+    readonly property color baseColor: control.highlighted ? control.palette.brightText : control.palette.buttonText
+    readonly property color colorAdjustedForChecked: control.checked ? control.palette.brightText : baseColor
+    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, false, false, control.down)
 
-    contentItem: IconLabel {
-        readonly property color baseColor: control.highlighted ? control.palette.brightText : control.palette.buttonText
-        readonly property color colorAdjustedForChecked: control.checked ? control.palette.brightText : baseColor
-        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, false, false, control.down)
+    color: colorAdjustedForHoverOrFocusOrDown
+    display: control.display
+    font: control.font
+    icon: control.icon
+    mirrored: control.mirrored
+    spacing: control.spacing
+    text: control.text
 
-        spacing: control.spacing
-        mirrored: control.mirrored
-        display: control.display
-        icon: control.icon
-        text: control.text
-        font: control.font
-        color: colorAdjustedForHoverOrFocusOrDown
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
+    Behavior on color {
+      animation: Style.propertyAnimation
     }
+  }
+  layer.effect: DropShadowEffect {
+  }
 
-    background: Rectangle {
-        readonly property color baseColor: control.highlighted ? control.palette.dark : control.palette.button
-        readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
-        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
+  TextMetrics {
+    id: textMetrics
 
-        implicitWidth: control.styleHeight
-        implicitHeight: control.styleHeight
-        visible: !control.flat || control.down || control.checked || control.highlighted
-        color: colorAdjustedForHoverOrFocusOrDown
-        border.color: control.palette.highlight
-        border.width: control.visualFocus || control.down ? 2 : 0
-        radius: Style.buttonRadius
+    font: control.font
+    text: "Test"
+  }
 
-        Behavior on border.width {
-            animation: Style.propertyAnimation
-        }
-
-        Behavior on color {
-            animation: Style.propertyAnimation
-        }
-
-    }
-
-    layer.effect: DropShadowEffect {
-    }
-
+  icon {
+    // height: 24
+    color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
+    width: Math.max(control.styleHeight - padding * 2, textMetrics.height)
+  }
 }

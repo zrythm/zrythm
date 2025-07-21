@@ -6,20 +6,19 @@ import QtQuick.Effects
 import ZrythmStyle 1.0
 
 Rectangle {
-    id: root
+  id: root
 
-    implicitWidth: Style.buttonHeight // 200
-    implicitHeight: Style.buttonHeight
-    color: Style.colorPalette.button
-    radius: Style.textFieldRadius
-    layer.enabled: true
+  color: Style.colorPalette.button
+  implicitHeight: Style.buttonHeight
+  implicitWidth: Style.buttonHeight // 200
+  layer.enabled: true
+  radius: Style.textFieldRadius
 
-    border {
-        color: Style.backgroundAppendColor
-        width: 1
-    }
+  layer.effect: DropShadowEffect {
+  }
 
-    layer.effect: DropShadowEffect {
-    }
-
+  border {
+    color: Style.backgroundAppendColor
+    width: 1
+  }
 }
