@@ -264,8 +264,8 @@ qt_add_qml_module(zrythm
     backend/translation_manager.cpp
     backend/zrythm_application.h
     backend/zrythm_application.cpp
-    qquick/RulerItem.h
-    qquick/RulerItem.cpp
+    # qquick/RulerItem.h
+    # qquick/RulerItem.cpp
 
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)
