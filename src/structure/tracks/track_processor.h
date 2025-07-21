@@ -76,10 +76,36 @@ public:
 
   // ============================================================================
 
-  friend void init_from (
-    TrackProcessor        &obj,
-    const TrackProcessor  &other,
-    utils::ObjectCloneType clone_type);
+  /**
+   * Wrapper for MIDI/instrument/chord tracks to fill in MidiEvents from the
+   * timeline data.
+   *
+   * @note The engine splits the cycle so transport loop related logic is not
+   * needed.
+   *
+   * @param midi_events MidiEvents to fill.
+   */
+  void fill_midi_events (
+    const EngineProcessTimeInfo &time_nfo,
+    dsp::MidiEventVector        &midi_events)
+  {
+    fill_events_common (time_nfo, &midi_events, std::nullopt);
+  }
+
+  /**
+   * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
+   *
+   * @note The engine splits the cycle so transport loop related logic is not
+   * needed.
+   *
+   * @param stereo_ports StereoPorts to fill.
+   */
+  void fill_audio_events (
+    const EngineProcessTimeInfo                  &time_nfo,
+    std::pair<std::span<float>, std::span<float>> stereo_ports)
+  {
+    fill_events_common (time_nfo, nullptr, stereo_ports);
+  }
 
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
   {
@@ -175,6 +201,23 @@ public:
   }
 
 private:
+  /**
+   * Common logic for audio and MIDI/instrument tracks to fill in MidiEvents
+   * or StereoPorts from the timeline data.
+   *
+   * @note The engine splits the cycle so transport loop related logic is not
+   * needed.
+   *
+   * @param stereo_ports StereoPorts to fill.
+   * @param midi_events MidiEvents to fill (from Piano Roll Port for example).
+   */
+  void fill_events_common (
+    const EngineProcessTimeInfo                                 &time_nfo,
+    dsp::MidiEventVector *                                       midi_events,
+    std::optional<std::pair<std::span<float>, std::span<float>>> stereo_ports)
+    const;
+
+private:
   static constexpr auto kMonoKey = "mono"sv;
   static constexpr auto kInputGainKey = "inputGain"sv;
   static constexpr auto kOutputGainKey = "outputGain"sv;
@@ -203,6 +246,11 @@ private:
     j[kChannelPressureKey] = tp.channel_pressure_ids_;
   }
   friend void from_json (const nlohmann::json &j, TrackProcessor &tp);
+
+  friend void init_from (
+    TrackProcessor        &obj,
+    const TrackProcessor  &other,
+    utils::ObjectCloneType clone_type);
 
   /**
    * Splits the cycle and handles recording for each

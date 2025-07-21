@@ -45,54 +45,7 @@ public:
     dsp::PortRegistry                     &port_registry,
     dsp::ProcessorParameterRegistry       &param_registry) override;
 
-  /**
-   * Wrapper for MIDI/instrument/chord tracks to fill in MidiEvents from the
-   * timeline data.
-   *
-   * @note The engine splits the cycle so transport loop related logic is not
-   * needed.
-   *
-   * @param midi_events MidiEvents to fill.
-   */
-  void fill_midi_events (
-    const EngineProcessTimeInfo &time_nfo,
-    dsp::MidiEventVector        &midi_events)
-  {
-    fill_events_common (time_nfo, &midi_events, std::nullopt);
-  }
-
-  /**
-   * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
-   *
-   * @note The engine splits the cycle so transport loop related logic is not
-   * needed.
-   *
-   * @param stereo_ports StereoPorts to fill.
-   */
-  void fill_audio_events (
-    const EngineProcessTimeInfo                  &time_nfo,
-    std::pair<std::span<float>, std::span<float>> stereo_ports)
-  {
-    fill_events_common (time_nfo, nullptr, stereo_ports);
-  }
-
 protected:
-  /**
-   * Common logic for audio and MIDI/instrument tracks to fill in MidiEvents or
-   * StereoPorts from the timeline data.
-   *
-   * @note The engine splits the cycle so transport loop related logic is not
-   * needed.
-   *
-   * @param stereo_ports StereoPorts to fill.
-   * @param midi_events MidiEvents to fill (from Piano Roll Port for example).
-   */
-  void fill_events_common (
-    const EngineProcessTimeInfo                                 &time_nfo,
-    dsp::MidiEventVector *                                       midi_events,
-    std::optional<std::pair<std::span<float>, std::span<float>>> stereo_ports)
-    const;
-
   friend void init_from (
     ProcessableTrack       &obj,
     const ProcessableTrack &other,
