@@ -3,24 +3,57 @@
 
 target_sources(zrythm_gui_lib
   PRIVATE
+    action_controller.h
+    action_controller.cpp
     alert_manager.h
     alert_manager.cpp
+    automation_tracklist_proxy_model.h
+    automation_tracklist_proxy_model.cpp
     carla_discovery.h
     carla_discovery.cpp
+    cursor_manager.h
+    cursor_manager.cpp
     curve_preset.h
     curve_preset.cpp
     device_manager.h
     device_manager.cpp
+    global_state.h
+    global_state.cpp
+    meter.h
+    meter.cpp
     plugin_collections.h
     plugin_collections.cpp
     plugin_manager.h
     plugin_manager.cpp
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
+    position_proxy.h
+    position_proxy.cpp
+    project_info.h
+    project_info.cpp
     project_manager.h
     project_manager.cpp
+    project_templates_model.h
+    project_templates_model.cpp
+    qml_utils.h
+    qml_utils.cpp
+    realtime_property.h
+    realtime_updater.h
+    realtime_updater.cpp
+    recent_projects_model.h
+    recent_projects_model.cpp
+    resource_manager.h
+    resource_manager.cpp
+    tool.h
+    tool.cpp
+    track_filter_proxy_model.h
+    track_filter_proxy_model.cpp
+    translation_manager.h
+    translation_manager.cpp
     ui.h
     ui.cpp
+    zrythm_application.h
+    zrythm_application.cpp
 )
 
 add_subdirectory(backend)

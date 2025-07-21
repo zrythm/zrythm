@@ -8,7 +8,7 @@ import ZrythmStyle
 import ZrythmDsp
 import ZrythmGui
 
-Item {
+Control {
   id: control
 
   readonly property real barLineOpacity: 0.8
@@ -36,6 +36,7 @@ Item {
   readonly property real visibleEndTick: visibleStartTick + (parent.width / pxPerTick)
   readonly property real visibleStartTick: editorSettings.x / pxPerTick
 
+  clip: true
   height: rulerHeight
   width: maxBars * pxPerBar
 

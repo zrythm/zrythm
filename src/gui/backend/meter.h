@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef GUI_BACKEND_METER_H
-#define GUI_BACKEND_METER_H
+#pragma once
 
 #include "dsp/kmeter_dsp.h"
 #include "dsp/peak_dsp.h"
@@ -141,5 +140,3 @@ private:
   std::atomic<float> current_amp_ = 0.f;
   std::atomic<float> peak_amp_ = 0.f;
 };
-
-#endif

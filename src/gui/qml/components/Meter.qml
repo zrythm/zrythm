@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import ZrythmStyle 1.0
+import ZrythmStyle
+import ZrythmGui
 
 Rectangle {
   id: root
