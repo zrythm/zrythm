@@ -6,8 +6,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 import "config.js" as Config
 
 ApplicationWindow {
@@ -33,7 +33,7 @@ ApplicationWindow {
         return GlobalState.alertManager;
     }
 
-    function deviceManager() {
+    function deviceManager(): DeviceManager {
         return GlobalState.deviceManager;
     }
 
@@ -67,7 +67,6 @@ ApplicationWindow {
             title: qsTr("About Flatpak")
             description: qsTr("Only audio plugins installed via Flatpak are supported.")
         }
-
     }
 
     Item {
@@ -78,7 +77,6 @@ ApplicationWindow {
             title: qsTr("Donate")
             description: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
         }
-
     }
 
     Item {
@@ -91,9 +89,7 @@ ApplicationWindow {
                 text: qsTr("Proceed to Configuration")
                 onTriggered: stack.push(configPage)
             }
-
         }
-
     }
 
     StackView {
@@ -129,7 +125,6 @@ ApplicationWindow {
                             title: qsTr("Welcome")
                             description: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
                         }
-
                     }
 
                     Item {
@@ -138,9 +133,7 @@ ApplicationWindow {
                             title: qsTr("Read the Manual")
                             description: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
                         }
-
                     }
-
                 }
 
                 // Add left navigation button
@@ -181,9 +174,7 @@ ApplicationWindow {
                     interactive: true
                     onCurrentIndexChanged: welcomeCarousel.currentIndex = currentIndex
                 }
-
             }
-
         }
 
         Component {
@@ -205,18 +196,14 @@ ApplicationWindow {
                         ComboBox {
                             model: ["English", "Spanish", "French"]
                         }
-
                     }
 
                     ZrythmActionRow {
                         title: "User Path"
                         subtitle: "Location to save user files"
 
-                        ZrythmFilePicker {
-                        }
-
+                        ZrythmFilePicker {}
                     }
-
                 }
 
                 header: ToolBar {
@@ -236,9 +223,7 @@ ApplicationWindow {
                             verticalAlignment: Qt.AlignVCenter
                             Layout.fillWidth: true
                         }
-
                     }
-
                 }
 
                 footer: DialogButtonBox {
@@ -258,11 +243,8 @@ ApplicationWindow {
                         }
                         DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                     }
-
                 }
-
             }
-
         }
 
         Component {
@@ -315,11 +297,8 @@ ApplicationWindow {
                         indeterminate: true
                         Layout.fillWidth: true
                     }
-
                 }
-
             }
-
         }
 
         Component {
@@ -360,11 +339,8 @@ ApplicationWindow {
                                 leftMargin: 2
                                 rightMargin: 2
                             }
-
                         }
-
                     }
-
                 }
 
                 ListView {
@@ -401,7 +377,7 @@ ApplicationWindow {
                                 Action {
                                     text: qsTr("Device Selector")
                                     onTriggered: {
-                                      deviceManager().showDeviceSelector()
+                                        root.deviceManager().showDeviceSelector();
                                     }
                                 }
 
@@ -409,16 +385,11 @@ ApplicationWindow {
                                     // Handle about action
 
                                     text: qsTr("About Zrythm")
-                                    onTriggered: {
-                                    }
+                                    onTriggered: {}
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
 
                 footer: DialogButtonBox {
@@ -432,11 +403,8 @@ ApplicationWindow {
                     Button {
                         text: qsTr("Open From Path...")
                     }
-
                 }
-
             }
-
         }
 
         Component {
@@ -479,9 +447,7 @@ ApplicationWindow {
                         textRole: "name"
                         valueRole: "path"
 
-                        model: ProjectTemplatesModel {
-                        }
-
+                        model: ProjectTemplatesModel {}
                     }
 
                     Button {
@@ -493,11 +459,8 @@ ApplicationWindow {
                             stack.push(projectCreationProgressPage);
                         }
                     }
-
                 }
-
             }
-
         }
 
         Component {
@@ -524,11 +487,8 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignHCenter
                         running: true
                     }
-
                 }
-
             }
-
         }
 
         Connections {
@@ -536,7 +496,7 @@ ApplicationWindow {
                 console.log("Project loaded: ", project.title);
                 root.projectManager().activeProject = project;
                 console.log("Opening project: ", root.projectManager().activeProject.title);
-                openProjectWindow(project);
+                root.openProjectWindow(project);
             }
 
             function onProjectLoadingFailed(errorMessage) {
@@ -572,7 +532,6 @@ ApplicationWindow {
                 to: 1
                 duration: 200
             }
-
         }
 
         popExit: Transition {
@@ -582,9 +541,6 @@ ApplicationWindow {
                 to: 0
                 duration: 200
             }
-
         }
-
     }
-
 }

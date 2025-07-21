@@ -25,6 +25,7 @@ class TrackProcessor final : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
   using PortType = dsp::PortType;
   using PortFlow = dsp::PortFlow;

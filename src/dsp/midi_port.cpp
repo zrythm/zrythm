@@ -11,8 +11,6 @@ MidiPort::MidiPort (utils::Utf8String label, PortFlow flow)
 {
 }
 
-MidiPort::~MidiPort () = default;
-
 void
 init_from (MidiPort &obj, const MidiPort &other, utils::ObjectCloneType clone_type)
 {

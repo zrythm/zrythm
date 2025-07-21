@@ -41,5 +41,11 @@
     "--header-insertion=never",
     "--query-driver=gcc,g++"
   ],
-  "clangd.checkUpdates": true
+  "clangd.checkUpdates": true,
+  "qt-qml.qmlls.customArgs": [
+    "-v",
+  ],
+  "[qml]": {
+    "editor.formatOnSave": false
+  },
 }

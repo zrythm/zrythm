@@ -27,6 +27,7 @@ class MidiRegion final
   Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (MidiRegion, midiNotes, MidiNote)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
   friend class ArrangerObjectFactory;
 

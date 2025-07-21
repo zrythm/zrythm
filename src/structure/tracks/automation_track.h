@@ -13,7 +13,7 @@
 
 namespace zrythm::structure::tracks
 {
-class AutomationTrack final
+class AutomationTrack
     : public QObject,
       public arrangement::ArrangerObjectOwner<arrangement::AutomationRegion>
 {
@@ -30,6 +30,7 @@ class AutomationTrack final
     AutomationTrack,
     regions,
     arrangement::AutomationRegion)
+  QML_UNCREATABLE ("")
 
 public:
   using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;

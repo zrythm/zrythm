@@ -21,10 +21,10 @@ class MidiPort final
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   MidiPort (utils::Utf8String label, PortFlow flow);
-  ~MidiPort () override;
 
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 

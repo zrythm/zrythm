@@ -1,677 +1,603 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-// pragma ComponentBehavior: Bound
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import ZrythmArrangement
+import Zrythm
 
 Arranger {
-    id: root
+  id: root
 
-    required property bool pinned
-    required property var timeline
-    required property var tracklist
+  required property bool pinned
+  required property var timeline
+  required property var tracklist
 
-    function getTrackAtY(y: real): var {
-        const item = tracksListView.itemAt(0, y + tracksListView.contentY)
-        return item?.track ?? null
+  function beginObjectCreation(x: real, y: real): var {
+    const track = getTrackAtY(y);
+    if (!track) {
+      return null;
     }
 
-    function getAutomationTrackAtY(y: real): var {
-        y += tracksListView.contentY;
-        const trackItem = tracksListView.itemAt(0, y);
-        if (!trackItem?.track?.isAutomatable || !trackItem?.track?.automationVisible) {
-            return null;
-        }
+    const automationTrack = getAutomationTrackAtY(y);
+    if (!automationTrack) {}
+    const trackLane = getTrackLaneAtY(y);
+    if (!trackLane) {}
+    console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
 
-        y -= trackItem.y;
+    switch (track.type) {
+    case Track.Chord:
+      console.log("creating chord");
+      break;
+    case Track.Marker:
+      console.log("creating marker", Track.Marker, ArrangerObject.Marker);
+      let marker = objectFactory.addMarker(Marker.Custom, track, qsTr("Custom Marker"), x / root.ruler.pxPerTick);
+      root.currentAction = Arranger.CreatingMoving;
+      root.setObjectSnapshotsAtStart();
+      CursorManager.setClosedHandCursor();
+      root.actionObject = marker;
+      return marker;
+    case Track.Midi:
+    case Track.Instrument:
+      console.log("creating midi region", track.lanes.getFirstLane());
+      let region = objectFactory.addEmptyMidiRegion(trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
+      root.currentAction = Arranger.CreatingResizingR;
+      root.setObjectSnapshotsAtStart();
+      CursorManager.setResizeEndCursor();
+      root.actionObject = region;
+      return region;
+    default:
+      return null;
+    }
+    return null;
+  }
 
-        // Get the automation loader instance
-        const columnLayout = trackItem.children[0] // trackSectionRows
-        const loader = columnLayout.children[2] // automationLoader
-        if (!loader?.item) {
-            return null;
-        }
-
-        // Get relative Y position within the automation tracks list
-        const automationListY = y - loader.y;
-        const automationItem = loader.item.itemAt(0, automationListY);
-        console.log("Timeline: getAutomationTrackAtY", y, trackItem, loader, automationListY, automationItem);
-        return automationItem?.automationTrack ?? null;
+  function getAutomationTrackAtY(y: real): var {
+    y += tracksListView.contentY;
+    const trackItem = tracksListView.itemAt(0, y);
+    if (!trackItem?.track?.isAutomatable || !trackItem?.track?.automationVisible) {
+      return null;
     }
 
-   function getTrackLaneAtY(y: real): var {
-        // Get the track delegate
-        const trackItem = tracksListView.itemAt(0, y + tracksListView.contentY)
-        if (!trackItem?.track?.hasLanes || !trackItem?.track?.lanesVisible) {
-            return null
-        }
+    y -= trackItem.y;
 
-        // Make y relative to trackItem
-        const relativeY = y + tracksListView.contentY - trackItem.y
-
-        // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
-        const columnLayout = trackItem.children[0]
-        const laneLoader = columnLayout.children[1] // laneRegionsLoader is second child
-        if (!laneLoader?.item) {
-            return null
-        }
-
-        // Get relative Y position within the lanes list
-        const laneListY = relativeY - laneLoader.y
-        const laneItem = laneLoader.item.itemAt(0, laneListY)
-        console.log("Timeline: getTrackLaneAtY", relativeY, trackItem, laneLoader, laneListY, laneItem);
-        return laneItem?.trackLane ?? null
+    // Get the automation loader instance
+    const columnLayout = trackItem.children[0]; // trackSectionRows
+    const loader = columnLayout.children[2]; // automationLoader
+    if (!loader?.item) {
+      return null;
     }
 
-    function updateCursor() {
-        let cursor = "default";
+    // Get relative Y position within the automation tracks list
+    const automationListY = y - loader.y;
+    const automationItem = loader.item.itemAt(0, automationListY);
+    console.log("Timeline: getAutomationTrackAtY", y, trackItem, loader, automationListY, automationItem);
+    return automationItem?.automationTrack ?? null;
+  }
 
-        switch (root.currentAction) {
-            case Arranger.None:
-                switch (root.tool.toolValue) {
-                    case Tool.Select:
-                        CursorManager.setPointerCursor();
-                        return;
+  function getTrackAtY(y: real): var {
+    const item = tracksListView.itemAt(0, y + tracksListView.contentY);
+    return item?.track ?? null;
+  }
 
-                    case Tool.Edit:
-                        CursorManager.setPencilCursor();
-                        return;
+  function getTrackLaneAtY(y: real): var {
+    // Get the track delegate
+    const trackItem = tracksListView.itemAt(0, y + tracksListView.contentY);
+    if (!trackItem?.track?.hasLanes || !trackItem?.track?.lanesVisible) {
+      return null;
+    }
 
-                    case Tool.Cut:
-                        CursorManager.setCutCursor();
-                        return;
+    // Make y relative to trackItem
+    const relativeY = y + tracksListView.contentY - trackItem.y;
 
-                    case Tool.Eraser:
-                        CursorManager.setEraserCursor();
-                        return;
+    // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
+    const columnLayout = trackItem.children[0];
+    const laneLoader = columnLayout.children[1]; // laneRegionsLoader is second child
+    if (!laneLoader?.item) {
+      return null;
+    }
 
-                    case Tool.Ramp:
-                        CursorManager.setRampCursor();
-                        return;
+    // Get relative Y position within the lanes list
+    const laneListY = relativeY - laneLoader.y;
+    const laneItem = laneLoader.item.itemAt(0, laneListY);
+    console.log("Timeline: getTrackLaneAtY", relativeY, trackItem, laneLoader, laneListY, laneItem);
+    return laneItem?.trackLane ?? null;
+  }
 
-                    case Tool.Audition:
-                        CursorManager.setAuditionCursor();
-                        return;
-                }
-                break;
+  function updateCursor() {
+    let cursor = "default";
 
-            case Arranger.StartingDeleteSelection:
-            case Arranger.DeleteSelecting:
-            case Arranger.StartingErasing:
-            case Arranger.Erasing:
-                CursorManager.setEraserCursor();
-                return;
-
-            case Arranger.StartingMovingCopy:
-            case Arranger.MovingCopy:
-                CursorManager.setCopyCursor();
-                return;
-
-            case Arranger.StartingMovingLink:
-            case Arranger.MovingLink:
-                CursorManager.setLinkCursor();
-                return;
-
-            case Arranger.StartingMoving:
-            case Arranger.CreatingMoving:
-            case Arranger.Moving:
-                CursorManager.setClosedHandCursor();
-                return;
-
-            case Arranger.StartingPanning:
-            case Arranger.Panning:
-                CursorManager.setClosedHandCursor();
-                return;
-
-            case Arranger.StretchingL:
-                CursorManager.setStretchStartCursor();
-                return;
-
-            case Arranger.ResizingL:
-                CursorManager.setResizeStartCursor();
-                return;
-
-            case Arranger.ResizingLLoop:
-                CursorManager.setResizeLoopStartCursor();
-                return;
-
-            case Arranger.ResizingLFade:
-                CursorManager.setFadeInCursor();
-                return;
-
-            case Arranger.StretchingR:
-                CursorManager.setStretchEndCursor();
-                return;
-
-            case Arranger.CreatingResizingR:
-            case Arranger.ResizingR:
-                CursorManager.setResizeEndCursor();
-                return;
-
-            case Arranger.ResizingRLoop:
-                CursorManager.setResizeLoopEndCursor();
-                return;
-
-            case Arranger.ResizingRFade:
-            case Arranger.ResizingUpFadeOut:
-                CursorManager.setFadeOutCursor();
-                return;
-
-            case Arranger.ResizingUpFadeIn:
-                CursorManager.setFadeInCursor();
-                return;
-
-            case Arranger.Autofilling:
-                CursorManager.setBrushCursor();
-                return;
-
-            case Arranger.StartingSelection:
-            case Arranger.Selecting:
-                CursorManager.setPointerCursor();
-                return;
-
-            case Arranger.Renaming:
-                cursor = "text";
-                break;
-
-            case Arranger.Cutting:
-                CursorManager.setCutCursor();
-                return;
-
-            case Arranger.StartingAuditioning:
-            case Arranger.Auditioning:
-                CursorManager.setAuditionCursor();
-                return;
-        }
-
+    switch (root.currentAction) {
+    case Arranger.None:
+      switch (root.tool.toolValue) {
+      case Tool.Select:
         CursorManager.setPointerCursor();
         return;
+      case Tool.Edit:
+        CursorManager.setPencilCursor();
+        return;
+      case Tool.Cut:
+        CursorManager.setCutCursor();
+        return;
+      case Tool.Eraser:
+        CursorManager.setEraserCursor();
+        return;
+      case Tool.Ramp:
+        CursorManager.setRampCursor();
+        return;
+      case Tool.Audition:
+        CursorManager.setAuditionCursor();
+        return;
+      }
+      break;
+    case Arranger.StartingDeleteSelection:
+    case Arranger.DeleteSelecting:
+    case Arranger.StartingErasing:
+    case Arranger.Erasing:
+      CursorManager.setEraserCursor();
+      return;
+    case Arranger.StartingMovingCopy:
+    case Arranger.MovingCopy:
+      CursorManager.setCopyCursor();
+      return;
+    case Arranger.StartingMovingLink:
+    case Arranger.MovingLink:
+      CursorManager.setLinkCursor();
+      return;
+    case Arranger.StartingMoving:
+    case Arranger.CreatingMoving:
+    case Arranger.Moving:
+      CursorManager.setClosedHandCursor();
+      return;
+    case Arranger.StartingPanning:
+    case Arranger.Panning:
+      CursorManager.setClosedHandCursor();
+      return;
+    case Arranger.StretchingL:
+      CursorManager.setStretchStartCursor();
+      return;
+    case Arranger.ResizingL:
+      CursorManager.setResizeStartCursor();
+      return;
+    case Arranger.ResizingLLoop:
+      CursorManager.setResizeLoopStartCursor();
+      return;
+    case Arranger.ResizingLFade:
+      CursorManager.setFadeInCursor();
+      return;
+    case Arranger.StretchingR:
+      CursorManager.setStretchEndCursor();
+      return;
+    case Arranger.CreatingResizingR:
+    case Arranger.ResizingR:
+      CursorManager.setResizeEndCursor();
+      return;
+    case Arranger.ResizingRLoop:
+      CursorManager.setResizeLoopEndCursor();
+      return;
+    case Arranger.ResizingRFade:
+    case Arranger.ResizingUpFadeOut:
+      CursorManager.setFadeOutCursor();
+      return;
+    case Arranger.ResizingUpFadeIn:
+      CursorManager.setFadeInCursor();
+      return;
+    case Arranger.Autofilling:
+      CursorManager.setBrushCursor();
+      return;
+    case Arranger.StartingSelection:
+    case Arranger.Selecting:
+      CursorManager.setPointerCursor();
+      return;
+    case Arranger.Renaming:
+      cursor = "text";
+      break;
+    case Arranger.Cutting:
+      CursorManager.setCutCursor();
+      return;
+    case Arranger.StartingAuditioning:
+    case Arranger.Auditioning:
+      CursorManager.setAuditionCursor();
+      return;
     }
 
-    function beginObjectCreation(x: real, y: real): var {
-        const track = getTrackAtY(y);
-        if (!track) {
-            return null;
-        }
+    CursorManager.setPointerCursor();
+    return;
+  }
 
-        const automationTrack = getAutomationTrackAtY(y);
-        if (!automationTrack) {
-        }
-        const trackLane = getTrackLaneAtY(y);
-        if (!trackLane) {
-        }
-        console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
+  editorSettings: timeline.editorSettings
+  enableYScroll: !pinned
+  scrollView.ScrollBar.horizontal.policy: pinned ? ScrollBar.AlwaysOff : ScrollBar.AsNeeded
 
-        switch (track.type) {
-            case Track.Chord:
-                console.log("creating chord");
-                break;
-            case Track.Marker:
-                console.log("creating marker", Track.Marker, ArrangerObject.Marker);
-                let marker = objectFactory.addMarker(Marker.Custom, track, qsTr("Custom Marker"), x / root.ruler.pxPerTick);
-                root.currentAction = Arranger.CreatingMoving;
-                root.setObjectSnapshotsAtStart();
-                CursorManager.setClosedHandCursor();
-                root.actionObject = marker;
-                return marker;
-            case Track.Midi:
-            case Track.Instrument:
-                console.log("creating midi region", track.lanes.getFirstLane());
-                let region = objectFactory.addEmptyMidiRegion(trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
-                root.currentAction = Arranger.CreatingResizingR;
-                root.setObjectSnapshotsAtStart();
-                CursorManager.setResizeEndCursor();
-                root.actionObject = region;
-                return region;
-            default:
-                return null;
-        }
-        return null;
-    }
+  content: ListView {
+    id: tracksListView
 
-    editorSettings: timeline.editorSettings
-    enableYScroll: !pinned
-    scrollView.ScrollBar.horizontal.policy: pinned ? ScrollBar.AlwaysOff : ScrollBar.AsNeeded
+    anchors.fill: parent
+    interactive: false
 
-    content: ListView {
-        id: tracksListView
+    delegate: Item {
+      id: trackDelegate
+
+      required property var track
+
+      height: track.fullVisibleHeight
+      width: tracksListView.width
+
+      TextMetrics {
+        id: arrangerObjectTextMetrics
+
+        font: Style.arrangerObjectTextFont
+        text: "Some text"
+      }
+
+      ColumnLayout {
+        id: trackSectionRows
 
         anchors.fill: parent
-        interactive: false
+        spacing: 0
 
-        model: TrackFilterProxyModel {
-            sourceModel: tracklist
-            Component.onCompleted: {
-                addVisibilityFilter(true);
-                addPinnedFilter(root.pinned);
+        Item {
+          id: mainTrackObjectsContainer
+
+          Layout.fillWidth: true
+          Layout.maximumHeight: trackDelegate.track.height
+          Layout.minimumHeight: trackDelegate.track.height
+
+          Loader {
+            id: scalesLoader
+
+            active: trackDelegate.track.type === Track.Chord
+            height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
+            visible: active
+            width: parent.width
+            y: trackDelegate.track.height - height
+
+            sourceComponent: Repeater {
+              id: scalesRepeater
+
+              model: trackDelegate.track.scaleObjects
+
+              delegate: Loader {
+                id: scaleLoader
+
+                required property var arrangerObject
+                property var scaleObject: arrangerObject
+                readonly property real scaleX: scaleObject.position.ticks * root.ruler.pxPerTick
+
+                active: scaleX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && scaleX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+                asynchronous: true
+                visible: status === Loader.Ready
+
+                sourceComponent: Component {
+                  ScaleObjectView {
+                    id: scaleItem
+
+                    arrangerObject: scaleLoader.scaleObject
+                    pxPerTick: root.ruler.pxPerTick
+                    track: trackDelegate.track
+                    x: scaleLoader.scaleX
+                  }
+                }
+              }
             }
+          }
+
+          Loader {
+            id: markersLoader
+
+            active: trackDelegate.track.type === Track.Marker
+            height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
+            visible: active
+            width: parent.width
+            y: trackDelegate.track.height - height
+
+            sourceComponent: Repeater {
+              id: markersRepeater
+
+              model: trackDelegate.track.markers
+
+              delegate: Loader {
+                id: markerLoader
+
+                required property var arrangerObject
+                property var marker: arrangerObject
+                readonly property real markerX: marker.position.ticks * root.ruler.pxPerTick
+
+                active: markerX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && markerX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+                asynchronous: true
+                visible: status === Loader.Ready
+
+                sourceComponent: Component {
+                  MarkerView {
+                    id: markerItem
+
+                    arrangerObject: markerLoader.marker
+                    pxPerTick: root.ruler.pxPerTick
+                    track: trackDelegate.track
+                    x: markerLoader.markerX
+                  }
+                }
+              }
+            }
+          }
+
+          Loader {
+            id: chordRegionsLoader
+
+            active: trackDelegate.track.type === Track.Chord
+            height: trackDelegate.track.height - scalesLoader.height
+            visible: active
+            width: parent.width
+            y: 0
+
+            sourceComponent: Repeater {
+              id: chordRegionsRepeater
+
+              model: trackDelegate.track.regions
+
+              delegate: Loader {
+                id: chordRegionLoader
+
+                readonly property real chordRegionEndX: region.endPosition.ticks * root.ruler.pxPerTick
+                readonly property real chordRegionWidth: chordRegionEndX - chordRegionX
+                readonly property real chordRegionX: region.position.ticks * root.ruler.pxPerTick
+                required property var region
+
+                active: chordRegionEndX + Style.scrollLoaderBufferPx >= root.scrollX && chordRegionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+                asynchronous: true
+                visible: status === Loader.Ready
+
+                sourceComponent: Component {
+                  ChordRegionView {
+                    arrangerObject: chordRegionLoader.region
+                    clipEditor: root.clipEditor
+                    height: chordRegionsRepeater.height
+                    pxPerTick: root.ruler.pxPerTick
+                    track: trackDelegate.track
+                    width: chordRegionLoader.chordRegionWidth
+                    x: chordRegionLoader.chordRegionX
+                  }
+                }
+              }
+            }
+          }
+
+          Loader {
+            id: mainTrackLanedRegionsLoader
+
+            active: trackDelegate.track.hasLanes
+            anchors.fill: parent
+            visible: active
+
+            sourceComponent: Repeater {
+              id: mainTrackLanesRepeater
+
+              model: trackDelegate.track.lanes
+
+              delegate: Repeater {
+                id: mainTrackLaneRegionsRepeater
+
+                required property var trackLane
+
+                model: trackLane.regions
+
+                delegate: Loader {
+                  id: mainTrackRegionLoader
+
+                  required property var arrangerObject
+                  property var region: arrangerObject
+                  readonly property real regionEndX: regionX + regionWidth
+                  readonly property real regionHeight: mainTrackLanedRegionsLoader.height
+                  readonly property real regionWidth: region.regionMixin.bounds.length.ticks * root.ruler.pxPerTick
+                  readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
+                  readonly property var trackLane: mainTrackLaneRegionsRepeater.trackLane
+
+                  active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+                  asynchronous: true
+                  height: regionHeight
+                  sourceComponent: region.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
+                  visible: status === Loader.Ready
+
+                  Component {
+                    id: midiRegionComponent
+
+                    MidiRegionView {
+                      arrangerObject: mainTrackRegionLoader.region
+                      clipEditor: root.clipEditor
+                      height: mainTrackRegionLoader.regionHeight
+                      lane: mainTrackLaneRegionsRepeater.trackLane
+                      pxPerTick: root.ruler.pxPerTick
+                      track: trackDelegate.track
+                      width: mainTrackRegionLoader.regionWidth
+                      x: mainTrackRegionLoader.regionX
+                    }
+                  }
+
+                  Component {
+                    id: audioRegionComponent
+
+                    AudioRegionView {
+                      arrangerObject: mainTrackRegionLoader.region
+                      clipEditor: root.clipEditor
+                      height: mainTrackRegionLoader.regionHeight
+                      lane: mainTrackLaneRegionsRepeater.trackLane
+                      pxPerTick: root.ruler.pxPerTick
+                      track: trackDelegate.track
+                      width: mainTrackRegionLoader.regionWidth
+                      x: mainTrackRegionLoader.regionX
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
 
-        delegate: Item {
-            id: trackDelegate
+        Loader {
+          id: laneRegionsLoader
 
-            required property var track
+          Layout.fillWidth: true
+          Layout.maximumHeight: Layout.preferredHeight
+          Layout.minimumHeight: Layout.preferredHeight
+          Layout.preferredHeight: item ? item.contentHeight : 0
+          active: trackDelegate.track.hasLanes && trackDelegate.track.lanesVisible
+          visible: active
 
-            width: tracksListView.width
-            height: track.fullVisibleHeight
+          sourceComponent: ListView {
+            id: lanesListView
 
-            TextMetrics {
-                id: arrangerObjectTextMetrics
+            anchors.fill: parent
+            clip: true
+            interactive: false
+            model: trackDelegate.track.lanes
+            orientation: Qt.Vertical
+            spacing: 0
 
-                text: "Some text"
-                font: Style.arrangerObjectTextFont
-            }
+            delegate: Item {
+              id: laneItem
 
-            ColumnLayout {
-                id: trackSectionRows
+              required property var trackLane
+
+              height: trackLane.height
+              width: ListView.view.width
+
+              Repeater {
+                id: laneRegionsRepeater
 
                 anchors.fill: parent
-                spacing: 0
+                model: laneItem.trackLane.regions
 
-                Item {
-                    id: mainTrackObjectsContainer
+                delegate: Loader {
+                  id: laneRegionLoader
 
-                    Layout.fillWidth: true
-                    Layout.minimumHeight: trackDelegate.track.height
-                    Layout.maximumHeight: trackDelegate.track.height
+                  required property var region
+                  readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
+                  readonly property real regionHeight: parent.height
+                  readonly property real regionWidth: regionEndX - regionX
+                  readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
+                  readonly property var trackLane: laneItem.trackLane
 
-                    Loader {
-                        id: scalesLoader
+                  active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+                  asynchronous: true
+                  height: regionHeight
+                  sourceComponent: region.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
+                  visible: status === Loader.Ready
 
-                        width: parent.width
-                        y: trackDelegate.track.height - height
-                        height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
-                        active: trackDelegate.track.type === Track.Chord
-                        visible: active
+                  Component {
+                    id: laneMidiRegionComponent
 
-                        sourceComponent: Repeater {
-                            id: scalesRepeater
-
-                            model: trackDelegate.track.scaleObjects
-
-                            delegate: Loader {
-                                id: scaleLoader
-
-                                required property var arrangerObject
-                                property var scaleObject: arrangerObject
-                                readonly property real scaleX: scaleObject.position.ticks * root.ruler.pxPerTick
-
-                                active: scaleX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && scaleX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                                visible: status === Loader.Ready
-                                asynchronous: true
-
-                                sourceComponent: Component {
-                                    ScaleObject {
-                                        id: scaleItem
-
-                                        arrangerObject: scaleLoader.scaleObject
-                                        track: trackDelegate.track
-                                        ruler: root.ruler
-                                        x: scaleLoader.scaleX
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
+                    MidiRegionView {
+                      arrangerObject: laneRegionLoader.region
+                      clipEditor: root.clipEditor
+                      height: laneItem.trackLane.height
+                      lane: laneItem.trackLane
+                      pxPerTick: root.ruler.pxPerTick
+                      track: trackDelegate.track
+                      width: laneRegionLoader.regionWidth
+                      x: laneRegionLoader.regionX
                     }
+                  }
 
-                    Loader {
-                        id: markersLoader
+                  Component {
+                    id: laneAudioRegionComponent
 
-                        width: parent.width
-                        y: trackDelegate.track.height - height
-                        height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
-                        active: trackDelegate.track.type === Track.Marker
-                        visible: active
-
-                        sourceComponent: Repeater {
-                            id: markersRepeater
-
-                            model: trackDelegate.track.markers
-
-                            delegate: Loader {
-                                id: markerLoader
-
-                                required property var arrangerObject
-                                property var marker: arrangerObject
-                                readonly property real markerX: marker.position.ticks * root.ruler.pxPerTick
-
-                                active: markerX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && markerX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                                visible: status === Loader.Ready
-                                asynchronous: true
-
-                                sourceComponent: Component {
-                                    Marker {
-                                        id: markerItem
-
-                                        arrangerObject: markerLoader.marker
-                                        track: trackDelegate.track
-                                        ruler: root.ruler
-                                        x: markerLoader.markerX
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
+                    AudioRegionView {
+                      arrangerObject: laneRegionLoader.region
+                      clipEditor: root.clipEditor
+                      height: laneItem.trackLane.height
+                      lane: laneItem.trackLane
+                      pxPerTick: root.ruler.pxPerTick
+                      track: trackDelegate.track
+                      width: laneRegionLoader.regionWidth
+                      x: laneRegionLoader.regionX
                     }
-
-                    Loader {
-                        id: chordRegionsLoader
-
-                        active: track.type === Track.Chord
-                        visible: active
-                        y: 0
-                        width: parent.width
-                        height: trackDelegate.track.height - scalesLoader.height
-
-                        sourceComponent: Repeater {
-                            id: chordRegionsRepeater
-
-                            model: track.regions
-
-                            delegate: Loader {
-                                id: chordRegionLoader
-
-                                required property var region
-                                readonly property real chordRegionX: region.position.ticks * root.ruler.pxPerTick
-                                readonly property real chordRegionEndX: region.endPosition.ticks * root.ruler.pxPerTick
-                                readonly property real chordRegionWidth: chordRegionEndX - chordRegionX
-
-                                active: chordRegionEndX + Style.scrollLoaderBufferPx >= root.scrollX && chordRegionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                                visible: status === Loader.Ready
-                                asynchronous: true
-
-                                sourceComponent: Component {
-                                    ChordRegion {
-                                        ruler: root.ruler
-                                        track: trackDelegate.track
-                                        clipEditor: root.clipEditor
-                                        arrangerObject: chordRegionLoader.region
-                                        x: chordRegionLoader.chordRegionX
-                                        width: chordRegionLoader.chordRegionWidth
-                                        height: chordRegionsRepeater.height
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                    Loader {
-                        id: mainTrackLanedRegionsLoader
-
-                        active: track.hasLanes
-                        anchors.fill: parent
-                        visible: active
-
-                        Component {
-                            id: midiRegionComponent
-
-                            MidiRegion {
-                                ruler: root.ruler
-                                track: trackDelegate.track
-                                clipEditor: root.clipEditor
-                                arrangerObject: region
-                                lane: trackLane
-                                height: regionHeight
-                                x: regionX
-                                width: regionWidth
-                            }
-
-                        }
-
-                        Component {
-                            id: audioRegionComponent
-
-                            AudioRegion {
-                                ruler: root.ruler
-                                track: trackDelegate.track
-                                clipEditor: root.clipEditor
-                                arrangerObject: region
-                                lane: trackLane
-                                height: regionHeight
-                                x: regionX
-                                width: regionWidth
-                            }
-
-                        }
-
-                        sourceComponent: Repeater {
-                            id: mainTrackLanesRepeater
-
-                            model: track.lanes
-
-                            delegate: Repeater {
-                                id: mainTrackLaneRegionsRepeater
-
-                                required property var trackLane
-
-                                model: trackLane.regions
-
-                                delegate: Loader {
-                                    id: mainTrackRegionLoader
-
-                                    readonly property var trackLane: mainTrackLaneRegionsRepeater.trackLane
-                                    required property var arrangerObject
-                                    property var region: arrangerObject
-                                    readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
-                                    readonly property real regionWidth: region.regionMixin.bounds.length.ticks * root.ruler.pxPerTick
-                                    readonly property real regionEndX: regionX + regionWidth
-                                    readonly property real regionHeight: mainTrackLanedRegionsLoader.height
-
-                                    height: regionHeight
-                                    active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                                    visible: status === Loader.Ready
-                                    asynchronous: true
-                                    sourceComponent: region.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
-                                }
-
-                            }
-
-                        }
-
-                    }
-
+                  }
                 }
-
-                Loader {
-                    id: laneRegionsLoader
-
-                    active: track.hasLanes && track.lanesVisible
-                    Layout.preferredHeight: item ? item.contentHeight : 0
-                    Layout.minimumHeight: Layout.preferredHeight
-                    Layout.maximumHeight: Layout.preferredHeight
-                    Layout.fillWidth: true
-                    visible: active
-
-                    Component {
-                        id: laneMidiRegionComponent
-
-                        MidiRegion {
-                            ruler: root.ruler
-                            track: trackDelegate.track
-                            clipEditor: root.clipEditor
-                            arrangerObject: region
-                            lane: trackLane
-                            height: trackLane.height
-                            x: regionX
-                            width: regionWidth
-                        }
-
-                    }
-
-                    Component {
-                        id: laneAudioRegionComponent
-
-                        AudioRegion {
-                            ruler: root.ruler
-                            track: trackDelegate.track
-                            clipEditor: root.clipEditor
-                            arrangerObject: region
-                            lane: trackLane
-                            height: trackLane.height
-                            x: regionX
-                            width: regionWidth
-                        }
-
-                    }
-
-                    sourceComponent: ListView {
-                        id: lanesListView
-
-                        anchors.fill: parent
-                        clip: true
-                        interactive: false
-                        spacing: 0
-                        orientation: Qt.Vertical
-                        model: track.lanes
-
-                        delegate: Item {
-                            id: laneItem
-
-                            required property var trackLane
-
-                            width: ListView.view.width
-                            height: trackLane.height
-
-                            Repeater {
-                                id: laneRegionsRepeater
-
-                                anchors.fill: parent
-                                model: laneItem.trackLane.regions
-
-                                delegate: Loader {
-                                    id: laneRegionLoader
-
-                                    readonly property var trackLane: laneItem.trackLane
-                                    required property var region
-                                    readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
-                                    readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
-                                    readonly property real regionWidth: regionEndX - regionX
-                                    readonly property real regionHeight: parent.height
-
-                                    height: regionHeight
-                                    active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                                    visible: status === Loader.Ready
-                                    asynchronous: true
-                                    sourceComponent: region.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                Loader {
-                    id: automationLoader
-
-                    active: track.isAutomatable && track.automatableTrackMixin.automationVisible
-                    Layout.preferredHeight: item ? item.contentHeight : 0
-                    Layout.minimumHeight: Layout.preferredHeight
-                    Layout.maximumHeight: Layout.preferredHeight
-                    Layout.fillWidth: true
-                    visible: active
-
-                    Component {
-                        id: automationRegion
-
-                        AutomationRegion {
-                            ruler: root.ruler
-                            track: trackDelegate.track
-                            arrangerObject: region
-                            height: automationTrack.height
-                            x: regionX
-                            width: regionWidth
-                        }
-
-                    }
-
-                    sourceComponent: ListView {
-                        id: automationTracksListView
-
-                        anchors.fill: parent
-                        clip: true
-                        interactive: false
-                        spacing: 0
-                        orientation: Qt.Vertical
-
-                        model: AutomationTracklistProxyModel {
-                            sourceModel: track.automatableTrackMixin.automationTracklist
-                            showOnlyVisible: true
-                            showOnlyCreated: true
-                        }
-
-                        delegate: Item {
-                            id: automationTrackItem
-
-                            required property var automationTrackHolder
-                            readonly property var automationTrack: automationTrackHolder.automationTrack
-
-                            width: ListView.view.width
-                            height: automationTrackHolder.height
-
-                            Repeater {
-                                id: automationRegionsRepeater
-
-                                anchors.fill: parent
-                                model: automationTrackItem.automationTrack.regions
-
-                                delegate: Loader {
-                                    id: automationRegionLoader
-
-                                    readonly property var automationTrack: automationTrackItem.automationTrack
-                                    required property var region
-                                    readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
-                                    readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
-                                    readonly property real regionWidth: regionEndX - regionX
-                                    readonly property real regionHeight: parent.height
-
-                                    height: regionHeight
-                                    active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                                    visible: status === Loader.Ready
-                                    asynchronous: true
-
-                                    sourceComponent: AutomationRegion {
-                                        ruler: root.ruler
-                                        track: trackDelegate.track
-                                        clipEditor: root.clipEditor
-                                        arrangerObject: region
-                                        automationTrack: automationRegionLoader.automationTrack
-                                        height: automationTrackHolder.height
-                                        x: regionX
-                                        width: regionWidth
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
+              }
             }
-
+          }
         }
 
-    }
+        Loader {
+          id: automationLoader
 
+          Layout.fillWidth: true
+          Layout.maximumHeight: Layout.preferredHeight
+          Layout.minimumHeight: Layout.preferredHeight
+          Layout.preferredHeight: item ? item.contentHeight : 0
+          active: trackDelegate.track.isAutomatable && trackDelegate.track.automatableTrackMixin.automationVisible
+          visible: active
+
+          sourceComponent: ListView {
+            id: automationTracksListView
+
+            anchors.fill: parent
+            clip: true
+            interactive: false
+            orientation: Qt.Vertical
+            spacing: 0
+
+            delegate: Item {
+              id: automationTrackItem
+
+              readonly property var automationTrack: automationTrackHolder.automationTrack
+              required property var automationTrackHolder
+
+              height: automationTrackHolder.height
+              width: ListView.view.width
+
+              Repeater {
+                id: automationRegionsRepeater
+
+                anchors.fill: parent
+                model: automationTrackItem.automationTrack.regions
+
+                delegate: Loader {
+                  id: automationRegionLoader
+
+                  readonly property var automationTrack: automationTrackItem.automationTrack
+                  required property var region
+                  readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
+                  readonly property real regionHeight: parent.height
+                  readonly property real regionWidth: regionEndX - regionX
+                  readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
+
+                  active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+                  asynchronous: true
+                  height: regionHeight
+                  visible: status === Loader.Ready
+
+                  sourceComponent: AutomationRegionView {
+                    arrangerObject: automationRegionLoader.region
+                    automationTrack: automationRegionLoader.automationTrack
+                    clipEditor: root.clipEditor
+                    height: automationTrackItem.automationTrackHolder.height
+                    pxPerTick: root.ruler.pxPerTick
+                    track: trackDelegate.track
+                    width: automationRegionLoader.regionWidth
+                    x: automationRegionLoader.regionX
+                  }
+                }
+              }
+            }
+            model: AutomationTracklistProxyModel {
+              showOnlyCreated: true
+              showOnlyVisible: true
+              sourceModel: trackDelegate.track.automatableTrackMixin.automationTracklist
+            }
+          }
+        }
+      }
+    }
+    model: TrackFilterProxyModel {
+      sourceModel: root.tracklist
+
+      Component.onCompleted: {
+        addVisibilityFilter(true);
+        addPinnedFilter(root.pinned);
+      }
+    }
+  }
 }

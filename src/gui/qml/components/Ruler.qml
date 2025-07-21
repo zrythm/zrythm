@@ -3,17 +3,17 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Shapes
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import ZrythmStyle
+import ZrythmDsp
+import ZrythmGui
 
 Item {
     id: control
 
-    required property var editorSettings
-    required property var transport
-    required property var tempoMap
+    required property EditorSettings editorSettings
+    required property Transport transport
+    required property TempoMap tempoMap
     readonly property int rulerHeight: 24
     readonly property int markerSize: 8
     readonly property real minZoomLevel: 0.04
@@ -74,7 +74,6 @@ Item {
                         font.pixelSize: Style.smallTextFont.pixelSize
                         font.weight: Font.Medium
                     }
-
                 }
 
                 Loader {
@@ -82,14 +81,14 @@ Item {
                     visible: active
 
                     sourceComponent: Repeater {
-                        model: tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)).numerator
+                        model: control.tempoMap.timeSignatureAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)).numerator
 
                         delegate: Item {
                             id: beatItem
 
                             required property int index
                             readonly property int beat: index + 1
-                            readonly property int beatTick: tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
+                            readonly property int beatTick: control.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
 
                             Rectangle {
                                 width: 1
@@ -108,7 +107,6 @@ Item {
                                     font: Style.xSmallTextFont
                                     visible: control.pxPerBeat > control.detailMeasureLabelPxThreshold
                                 }
-
                             }
 
                             Loader {
@@ -116,14 +114,14 @@ Item {
                                 visible: active
 
                                 sourceComponent: Repeater {
-                                    model: 16 / tempoMap.timeSignatureAtTick(tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0)).denominator
+                                    model: 16 / control.tempoMap.timeSignatureAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0)).denominator
 
                                     Rectangle {
                                         id: sixteenthRect
 
                                         required property int index
                                         readonly property int sixteenth: index + 1
-                                        readonly property int sixteenthTick: tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
+                                        readonly property int sixteenthTick: control.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
 
                                         width: 1
                                         height: 8
@@ -141,23 +139,14 @@ Item {
                                             font: Style.xxSmallTextFont
                                             visible: control.pxPerSixteenth > control.detailMeasureLabelPxThreshold
                                         }
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
 
     Item {
@@ -170,15 +159,15 @@ Item {
 
             width: 12
             height: 8
-            x: transport.playhead.ticks * control.pxPerTick - width / 2
+            x: control.transport.playhead.ticks * control.pxPerTick - width / 2
             y: control.height - height
         }
 
         Item {
             id: loopRange
 
-            readonly property real startX: transport.loopStartPosition.ticks * defaultPxPerTick * editorSettings.horizontalZoomLevel
-            readonly property real endX: transport.loopEndPosition.ticks * defaultPxPerTick * editorSettings.horizontalZoomLevel
+            readonly property real startX: control.transport.loopStartPosition.ticks * defaultPxPerTick * editorSettings.horizontalZoomLevel
+            readonly property real endX: control.transport.loopEndPosition.ticks * defaultPxPerTick * editorSettings.horizontalZoomLevel
             readonly property real loopMarkerWidth: 10
             readonly property real loopMarkerHeight: 8
 
@@ -186,7 +175,7 @@ Item {
                 id: loopStartShape
 
                 antialiasing: true
-                visible: transport.loopEnabled
+                visible: control.transport.loopEnabled
                 x: loopRange.startX
                 width: loopRange.loopMarkerWidth
                 height: loopRange.loopMarkerHeight
@@ -212,9 +201,7 @@ Item {
                         x: 0
                         y: loopStartShape.height
                     }
-
                 }
-
             }
 
             Shape {
@@ -223,7 +210,7 @@ Item {
                 antialiasing: true
                 width: loopRange.loopMarkerWidth
                 height: loopRange.loopMarkerHeight
-                visible: transport.loopEnabled
+                visible: control.transport.loopEnabled
                 x: loopRange.endX - loopRange.loopMarkerWidth
                 z: 10
                 layer.enabled: true
@@ -247,23 +234,19 @@ Item {
                         x: loopEndShape.width
                         y: loopEndShape.height
                     }
-
                 }
-
             }
 
             Rectangle {
                 id: loopRangeRect
 
                 color: Qt.alpha(control.palette.accent, 0.1)
-                visible: transport.loopEnabled
+                visible: control.transport.loopEnabled
                 x: loopRange.startX
                 width: loopRange.endX - loopRange.startX
                 height: control.height
             }
-
         }
-
     }
 
     MouseArea {
@@ -271,26 +254,24 @@ Item {
 
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onPressed: (mouse) => {
+        onPressed: mouse => {
             if (mouse.button === Qt.LeftButton) {
                 dragging = true;
-                transport.playhead.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
+                control.transport.playhead.ticks = mouse.x / (control.defaultPxPerTick * editorSettings.horizontalZoomLevel);
             }
         }
         onReleased: {
             dragging = false;
         }
-        onPositionChanged: (mouse) => {
+        onPositionChanged: mouse => {
             if (dragging)
-                transport.playhead.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
-
+            control.transport.playhead.ticks = mouse.x / (control.defaultPxPerTick * control.editorSettings.horizontalZoomLevel);
         }
-        onWheel: (wheel) => {
+        onWheel: wheel => {
             if (wheel.modifiers & Qt.ControlModifier) {
                 const multiplier = wheel.angleDelta.y > 0 ? 1.3 : 1 / 1.3;
-                editorSettings.horizontalZoomLevel = Math.min(Math.max(editorSettings.horizontalZoomLevel * multiplier, minZoomLevel), maxZoomLevel);
+                control.editorSettings.horizontalZoomLevel = Math.min(Math.max(control.editorSettings.horizontalZoomLevel * multiplier, control.minZoomLevel), control.maxZoomLevel);
             }
         }
     }
-
 }

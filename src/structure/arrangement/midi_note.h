@@ -18,7 +18,7 @@ concept RangeOfMidiNotePointers = RangeOf<T, MidiNote *>;
 /**
  * A MIDI note inside a Region shown in the piano roll.
  */
-class MidiNote final : public QObject, public ArrangerObject
+class MidiNote : public QObject, public ArrangerObject
 {
   Q_OBJECT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (MidiNote)
@@ -28,6 +28,7 @@ class MidiNote final : public QObject, public ArrangerObject
   Q_PROPERTY (
     int velocity READ velocity WRITE setVelocity NOTIFY velocityChanged)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   MidiNote (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);

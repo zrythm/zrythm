@@ -19,7 +19,7 @@
 /**
  * @brief Timeline settings.
  */
-class Timeline final : public QObject
+class Timeline : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

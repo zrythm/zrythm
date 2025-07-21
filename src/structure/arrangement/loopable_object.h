@@ -23,6 +23,7 @@ class ArrangerObjectLoopRange : public QObject
     bool trackLength READ trackLength WRITE setTrackLength NOTIFY
       trackLengthChanged)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   ArrangerObjectLoopRange (

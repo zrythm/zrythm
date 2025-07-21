@@ -26,6 +26,7 @@ class ModulatorMacroProcessor final : public QObject, public dsp::ProcessorBase
   Q_OBJECT
   Q_PROPERTY (QString name READ name CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   ModulatorMacroProcessor (

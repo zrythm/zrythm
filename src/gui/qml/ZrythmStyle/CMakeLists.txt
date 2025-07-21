@@ -1,17 +1,17 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-qt_add_library(zrythm_style STATIC)
 
 set_source_files_properties(
   Style.qml
   PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )
 
+qt_add_library(zrythm_style STATIC)
+
 qt_add_qml_module(zrythm_style
   URI ZrythmStyle
   VERSION 1.0
-  IMPORTS QtQuick.Controls.Basic/6.8 # fallback to Basic
+  IMPORTS QtQuick.Controls.Basic/6.9 # fallback to Basic
   QML_FILES
     ApplicationWindow.qml
     # Action.qml

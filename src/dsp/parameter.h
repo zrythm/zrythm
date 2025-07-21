@@ -228,6 +228,7 @@ class ProcessorParameter
   Q_PROPERTY (ParameterRange range READ range CONSTANT)
   Q_PROPERTY (bool automatable READ automatable CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   struct UniqueId final

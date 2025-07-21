@@ -22,6 +22,7 @@ class ArrangerObjectFactory : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
   using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
   using ArrangerObjectSelectionManager =

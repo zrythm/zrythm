@@ -21,11 +21,12 @@
 /**
  * Chord preset pack.
  */
-class ChordPresetPack final : public QObject
+class ChordPresetPack : public QObject
 {
   Q_OBJECT
-  QML_ELEMENT
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged)
+  QML_ELEMENT
+
 public:
   using NameT = QString;
   ChordPresetPack (QObject * parent = nullptr);

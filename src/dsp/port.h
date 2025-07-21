@@ -26,7 +26,7 @@ namespace zrythm::dsp
  * graph.
  */
 class Port
-    : public virtual dsp::graph::IProcessable,
+    : public dsp::graph::IProcessable,
       public utils::UuidIdentifiableObject<Port>
 {
   Z_DISABLE_COPY_MOVE (Port)
@@ -207,16 +207,14 @@ public:
   // std::vector<ElementType> port_destinations_;
 };
 
-class AudioAndCVPortMixin
-    : public virtual dsp::graph::IProcessable,
-      public RingBufferOwningPortMixin
+class AudioAndCVPortMixin : public RingBufferOwningPortMixin
 {
 public:
   ~AudioAndCVPortMixin () override = default;
 
-  void
-  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
-    final
+  void prepare_for_processing_impl (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length)
   {
     size_t max = std::max (max_block_length, 1u);
     buf_.resize (max);
@@ -225,7 +223,7 @@ public:
     audio_ring_ = std::make_unique<RingBuffer<float>> (max * 8);
   }
 
-  void release_resources () final
+  void release_resources_impl ()
   {
     buf_.clear ();
     audio_ring_.reset ();

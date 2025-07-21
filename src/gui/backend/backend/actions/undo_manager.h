@@ -15,12 +15,12 @@ namespace zrythm::gui::actions
 /**
  * Undo manager.
  */
-class UndoManager final : public QObject
+class UndoManager : public QObject
 {
   Q_OBJECT
-  QML_ELEMENT
   Q_PROPERTY (UndoStack * undoStack READ getUndoStack CONSTANT)
   Q_PROPERTY (UndoStack * redoStack READ getRedoStack CONSTANT)
+  QML_ELEMENT
 
 public:
   UndoManager (QObject * parent = nullptr);

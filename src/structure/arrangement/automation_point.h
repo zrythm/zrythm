@@ -19,6 +19,7 @@ class AutomationPoint final : public QObject, public ArrangerObject
   Q_PROPERTY (float value READ value WRITE setValue NOTIFY valueChanged)
   Q_PROPERTY (dsp::CurveOptionsQmlAdapter * curveOpts READ curveOpts CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   AutomationPoint (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);

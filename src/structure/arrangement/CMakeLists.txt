@@ -55,6 +55,14 @@ target_precompile_headers(zrythm_arrangement_lib PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/arranger_object_all.h>
 )
 
+# create a plugin so that types get exposed to QML
+qt_add_qml_module(zrythm_arrangement_lib
+  URI ZrythmArrangement
+  VERSION 1.0
+  IMPORTS TARGET zrythm_dsp_lib
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmArrangement
+)
+
 target_sources(zrythm_gui_lib
   PRIVATE
     audio_function.h

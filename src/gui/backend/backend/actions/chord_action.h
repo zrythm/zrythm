@@ -14,7 +14,7 @@ namespace zrythm::gui::actions
 /**
  * Action for chord pad changes.
  */
-class ChordAction final : public QObject, public UndoableAction
+class ChordAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT

@@ -15,6 +15,7 @@ class MidiLane final : public QObject, public TrackLaneImpl<arrangement::MidiReg
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_LANE_QML_PROPERTIES (MidiLane, arrangement::MidiRegion)
+  QML_UNCREATABLE ("")
 
 public:
   using MidiRegion = arrangement::MidiRegion;

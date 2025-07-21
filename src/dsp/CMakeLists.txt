@@ -94,5 +94,12 @@ target_link_libraries(zrythm_dsp_lib
     zrythm::all_compile_options
 )
 
+# create a plugin so that types get exposed to QML
+qt_add_qml_module(zrythm_dsp_lib
+  URI ZrythmDsp
+  VERSION 1.0
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmDsp
+)
+
 # this breaks things on MSVC (:: in path names)
 # add_library(zrythm::dsp_lib ALIAS zrythm_dsp_lib)

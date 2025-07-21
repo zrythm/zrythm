@@ -27,6 +27,7 @@ class AutomationRegion final
     automationPoints,
     AutomationPoint)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   AutomationRegion (

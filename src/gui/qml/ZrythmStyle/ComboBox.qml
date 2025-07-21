@@ -7,7 +7,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
 
 T.ComboBox {
     id: control

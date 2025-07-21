@@ -22,6 +22,7 @@ class ChordRegion final
     chordObjects,
     ChordObject)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   ChordRegion (

@@ -83,19 +83,19 @@ public:
  *
  * The actual widgets should reflect the information here.
  */
-class PianoRoll final : public QObject
+class PianoRoll : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+    zrythm::gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
   Q_PROPERTY (int keyHeight READ getKeyHeight NOTIFY keyHeightChanged)
 public:
   /**
    * Highlighting for the piano roll.
    */
-  enum class Highlighting
+  enum class Highlighting : std::uint8_t
   {
     None,
     Chord,
@@ -189,7 +189,7 @@ public:
    * Returns the MidiNoteDescriptor matching the value (0-127).
    */
   const MidiNoteDescriptor *
-  find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val);
+  find_midi_note_descriptor_by_val (bool drum_mode, uint8_t val);
 
   /**
    * Updates the highlighting and notifies the UI.

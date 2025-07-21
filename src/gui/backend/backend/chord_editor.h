@@ -32,13 +32,13 @@ constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 /**
  * Backend for the chord editor.
  */
-class ChordEditor final : public QObject
+class ChordEditor : public QObject
 {
   Q_OBJECT
-  QML_ELEMENT
   Q_PROPERTY (
     gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
+  QML_ELEMENT
 
 public:
   using ChordDescriptor = dsp::ChordDescriptor;

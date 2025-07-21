@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __SETTINGS_SETTINGS_MANAGER_H__
-#define __SETTINGS_SETTINGS_MANAGER_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -73,9 +72,11 @@ public: \
       } \
   }
 
-class SettingsManager final : public QObject
+class SettingsManager : public QObject
 {
   Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
 
   // FIXME: should be part of DirectoryManager, not an editable setting
   DEFINE_SETTING_PROPERTY (
@@ -191,5 +192,3 @@ private:
 } // namespace zrythm::gui::glue
 
 #undef DEFINE_SETTING_PROPERTY
-
-#endif // __SETTINGS_SETTINGS_MANAGER_H__

@@ -13,7 +13,8 @@ class PlayheadQmlWrapper : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (double ticks READ ticks WRITE setTicks NOTIFY ticksChanged)
-  QML_ELEMENT
+  QML_NAMED_ELEMENT (Playhead)
+  QML_UNCREATABLE ("")
 
 public:
   explicit PlayheadQmlWrapper (Playhead &playhead, QObject * parent = nullptr);

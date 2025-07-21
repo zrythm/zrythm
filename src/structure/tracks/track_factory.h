@@ -19,6 +19,7 @@ class TrackFactory : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
   using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;
 

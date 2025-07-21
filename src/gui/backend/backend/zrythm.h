@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __ZRYTHM_H__
-#define __ZRYTHM_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -248,5 +247,3 @@ public:
 /**
  * @}
  */
-
-#endif /* __ZRYTHM_H__ */

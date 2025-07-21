@@ -21,6 +21,7 @@ class AudioSourceObject final : public QObject, public ArrangerObject
   Q_OBJECT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AudioSourceObject)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   /**

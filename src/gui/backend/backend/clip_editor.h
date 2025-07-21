@@ -23,10 +23,9 @@ class ArrangerSelections;
 /**
  * Backend for the clip editor part of the UI.
  */
-class ClipEditor final : public QObject
+class ClipEditor : public QObject
 {
   Q_OBJECT
-  QML_ELEMENT
   Q_PROPERTY (QVariant region READ region NOTIFY regionChanged)
   Q_PROPERTY (QVariant track READ track NOTIFY regionChanged)
   Q_PROPERTY (PianoRoll * pianoRoll READ getPianoRoll CONSTANT FINAL)
@@ -35,6 +34,8 @@ class ClipEditor final : public QObject
     AudioClipEditor * audioEditor READ getAudioClipEditor CONSTANT FINAL)
   Q_PROPERTY (
     AutomationEditor * automationEditor READ getAutomationEditor CONSTANT FINAL)
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
 
   using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
   using TrackResolver = structure::tracks::TrackResolver;

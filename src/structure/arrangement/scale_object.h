@@ -18,6 +18,7 @@ class ScaleObject final : public QObject, public ArrangerObject
   Q_PROPERTY (MusicalScale * scale READ scale WRITE setScale NOTIFY scaleChanged)
   Q_PROPERTY (ArrangerObjectMuteFunctionality * mute READ mute CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   using MusicalScale = dsp::MusicalScale;

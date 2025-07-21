@@ -23,11 +23,12 @@ class ChordPresetPack;
 /**
  * A preset of chord descriptors.
  */
-class ChordPreset final : public QObject
+class ChordPreset : public QObject
 {
   Q_OBJECT
-  QML_ELEMENT
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged)
+  QML_ELEMENT
+
 public:
   using NameT = QString;
   ChordPreset (QObject * parent = nullptr);

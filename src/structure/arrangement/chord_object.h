@@ -25,6 +25,7 @@ class ChordObject final : public QObject, public ArrangerObject
       setChordDescriptorIndex NOTIFY chordDescriptorIndexChanged)
   Q_PROPERTY (ArrangerObjectMuteFunctionality * mute READ mute CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   ChordObject (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);

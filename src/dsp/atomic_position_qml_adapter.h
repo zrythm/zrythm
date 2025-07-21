@@ -18,7 +18,8 @@ class AtomicPositionQmlAdapter : public QObject
   Q_PROPERTY (
     qint64 samples READ samples WRITE setSamples NOTIFY positionChanged)
   Q_PROPERTY (TimeFormat mode READ mode WRITE setMode NOTIFY positionChanged)
-  QML_ELEMENT
+  QML_NAMED_ELEMENT (AtomicPosition)
+  QML_UNCREATABLE ("")
 
 public:
   explicit AtomicPositionQmlAdapter (

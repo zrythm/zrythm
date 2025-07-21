@@ -18,7 +18,7 @@
 /**
  * Backend for the automation editor.
  */
-class AutomationEditor final : public QObject
+class AutomationEditor : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

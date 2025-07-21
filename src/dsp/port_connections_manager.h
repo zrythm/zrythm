@@ -12,7 +12,7 @@ namespace zrythm::dsp
 /**
  * Port connections manager.
  */
-class PortConnectionsManager final : public QObject
+class PortConnectionsManager : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

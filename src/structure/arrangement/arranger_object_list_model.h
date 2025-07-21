@@ -18,6 +18,7 @@ class ArrangerObjectListModel final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   enum ArrangerObjectListModelRoles

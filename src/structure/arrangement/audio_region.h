@@ -35,6 +35,7 @@ class AudioRegion final
     audioSources,
     AudioSourceObject)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   using BitDepth = dsp::FileAudioSource::BitDepth;

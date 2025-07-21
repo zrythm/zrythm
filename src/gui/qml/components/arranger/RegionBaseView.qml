@@ -2,27 +2,22 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import ZrythmStyle
+import ZrythmGui
 
-ArrangerObjectBase {
+ArrangerObjectBaseView {
     id: root
 
-    required property var clipEditor
-    property var regionName: arrangerObject.regionMixin.name.name
+    required property ClipEditor clipEditor
+    property string regionName: arrangerObject.regionMixin.name.name
 
     onArrangerObjectClicked: {
-      console.log("region clicked, setting clip editor region to ", regionName)
-      clipEditor.setRegion(arrangerObject, root.track);
+        console.log("region clicked, setting clip editor region to ", regionName);
+        clipEditor.setRegion(arrangerObject, root.track);
     }
 
     implicitWidth: 10
     implicitHeight: 10
-    Component.onCompleted: {
-        console.log("component completed: ", root.regionName);
-    }
 
     Rectangle {
         id: backgroundRect
@@ -49,7 +44,7 @@ ArrangerObjectBase {
         Text {
             id: nameText
 
-            text: arrangerObject.regionMixin.name.name
+            text: root.arrangerObject.regionMixin.name.name
             color: root.palette.buttonText
             font: root.font
             anchors.fill: parent
@@ -65,7 +60,6 @@ ArrangerObjectBase {
             text: nameText.text
             font: nameText.font
         }
-
     }
 
     // Left resize handle
@@ -91,23 +85,22 @@ ArrangerObjectBase {
             cursorShape: Qt.SizeHorCursor
             drag.target: parent
             drag.axis: Drag.XAxis
-            onPressed: (mouse) => {
+            onPressed: mouse => {
                 startX = root.x;
             }
-            onPositionChanged: (mouse) => {
+            onPositionChanged: mouse => {
                 if (drag.active) {
-                    let ticksDiff = (root.x - startX) / ruler.pxPerTick;
-                    arrangerObject.position.ticks += ticksDiff;
-                    if (arrangerObject.hasLength) {
-                        arrangerObject.clipStartTicks += ticksDiff;
-                        arrangerObject.endPosition.ticks -= ticksDiff;
+                    let ticksDiff = (root.x - startX) / root.pxPerTick;
+                    root.arrangerObject.position.ticks += ticksDiff;
+                    if (root.arrangerObject.hasLength) {
+                        root.arrangerObject.clipStartTicks += ticksDiff;
+                        root.arrangerObject.endPosition.ticks -= ticksDiff;
                     }
                     startX = root.x;
                     parent.x = 0;
                 }
             }
         }
-
     }
 
     // Right resize handle
@@ -134,17 +127,15 @@ ArrangerObjectBase {
             cursorShape: Qt.SizeHorCursor
             drag.target: parent
             drag.axis: Drag.XAxis
-            onPressed: (mouse) => {
+            onPressed: mouse => {
                 startX = mouse.x;
             }
-            onPositionChanged: (mouse) => {
+            onPositionChanged: mouse => {
                 if (drag.active) {
-                    let ticksDiff = (mouse.x - startX) / ruler.pxPerTick;
+                    let ticksDiff = (mouse.x - startX) / root.pxPerTick;
                     root.arrangerObject.regionMixin.bounds.length.ticks += ticksDiff;
                 }
             }
         }
-
     }
-
 }

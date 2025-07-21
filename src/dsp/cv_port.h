@@ -25,6 +25,8 @@ class CVPort final
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   CVPort (utils::Utf8String label, PortFlow flow);
 
@@ -34,6 +36,14 @@ public:
 
   friend void
   init_from (CVPort &obj, const CVPort &other, utils::ObjectCloneType clone_type);
+
+  void
+  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
+    override
+  {
+    prepare_for_processing_impl (sample_rate, max_block_length);
+  }
+  void release_resources () override { release_resources_impl (); }
 
 private:
   static constexpr std::string_view kRangeKey = "range";

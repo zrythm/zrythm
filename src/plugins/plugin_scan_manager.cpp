@@ -95,7 +95,7 @@ PluginScanManager::PluginScanManager (
   std::shared_ptr<juce::AudioPluginFormatManager> format_manager,
   ProtocolPluginPathsProvider                     plugin_paths_provider,
   QObject *                                       parent)
-    : QObject (parent), known_plugin_list_ (known_plugins),
+    : QObject (parent), known_plugin_list_ (std::move (known_plugins)),
       plugin_paths_provider_ (std::move (plugin_paths_provider)),
       format_manager_ (std::move (format_manager)),
       currently_scanning_plugin_ (tr ("Scanning..."))

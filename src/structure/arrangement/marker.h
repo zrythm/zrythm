@@ -20,6 +20,7 @@ class Marker final : public QObject, public ArrangerObject
   Q_PROPERTY (Marker::MarkerType markerType READ markerType CONSTANT)
   Q_PROPERTY (ArrangerObjectName * name READ name CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   /**

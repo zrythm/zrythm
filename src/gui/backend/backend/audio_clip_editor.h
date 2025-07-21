@@ -21,7 +21,7 @@
  *
  * The actual widgets should reflect the* information here.
  */
-class AudioClipEditor final : public QObject
+class AudioClipEditor : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

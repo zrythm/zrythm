@@ -20,6 +20,7 @@ class RegionMixin : public QObject
   Q_PROPERTY (ArrangerObjectColor * color READ color CONSTANT)
   Q_PROPERTY (ArrangerObjectMuteFunctionality * mute READ mute CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   RegionMixin (const dsp::AtomicPositionQmlAdapter &start_position);

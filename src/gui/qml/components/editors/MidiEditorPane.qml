@@ -4,15 +4,15 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import ZrythmStyle
+import ZrythmGui
 
 GridLayout {
     id: root
 
-    required property var project
-    required property var clipEditor
-    required property var pianoRoll
+    required property Project project
+    required property ClipEditor clipEditor
+    required property PianoRoll pianoRoll
     required property var region
 
     rows: 3
@@ -32,7 +32,6 @@ GridLayout {
                 ToolTip {
                     text: qsTr("Drum Notation")
                 }
-
             },
             ToolButton {
                 icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-volume-high.svg")
@@ -42,7 +41,6 @@ GridLayout {
                 ToolTip {
                     text: qsTr("Listen Notes")
                 }
-
             },
             ToolButton {
                 icon.source: ResourceManager.getIconUrl("gnome-icon-library", "chat-symbolic.svg")
@@ -52,7 +50,6 @@ GridLayout {
                 ToolTip {
                     text: qsTr("Show Automation Values")
                 }
-
             }
         ]
     }
@@ -61,9 +58,9 @@ GridLayout {
         id: ruler
 
         Layout.fillWidth: true
-        editorSettings: project.clipEditor.pianoRoll.editorSettings
-        transport: project.transport
-        tempoMap: project.tempoMap
+        editorSettings: root.project.clipEditor.pianoRoll.editorSettings
+        transport: root.project.transport
+        tempoMap: root.project.tempoMap
     }
 
     ColumnLayout {
@@ -76,9 +73,7 @@ GridLayout {
             ToolTip {
                 text: qsTr("Zoom In")
             }
-
         }
-
     }
 
     ScrollView {
@@ -108,7 +103,6 @@ GridLayout {
 
             target: pianoRollKeysScrollView.contentItem
         }
-
     }
 
     MidiArranger {
@@ -120,16 +114,15 @@ GridLayout {
         pianoRoll: root.pianoRoll
         objectFactory: root.project.arrangerObjectFactory
         ruler: ruler
-        transport: project.transport
-        tempoMap: project.tempoMap
-        tool: project.tool
+        transport: root.project.transport
+        tempoMap: root.project.tempoMap
+        tool: root.project.tool
     }
 
     Rectangle {
         Label {
             text: qsTr("Velocity")
         }
-
     }
 
     VelocityArranger {
@@ -141,9 +134,8 @@ GridLayout {
         pianoRoll: root.pianoRoll
         objectFactory: root.project.arrangerObjectFactory
         ruler: ruler
-        transport: project.transport
-        tempoMap: project.tempoMap
-        tool: project.tool
+        transport: root.project.transport
+        tempoMap: root.project.tempoMap
+        tool: root.project.tool
     }
-
 }

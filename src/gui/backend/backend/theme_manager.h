@@ -18,7 +18,7 @@ namespace zrythm::gui
  * https://forum.qt.io/topic/124965/how-to-define-a-property-of-type-palette/8
  *
  */
-class ThemeManager final : public QObject
+class ThemeManager : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

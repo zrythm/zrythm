@@ -20,6 +20,7 @@ class TempoEventWrapper : public QObject
   Q_PROPERTY (double bpm READ bpm CONSTANT)
   Q_PROPERTY (TempoMap::CurveType curve READ curve CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   explicit TempoEventWrapper (
@@ -44,6 +45,7 @@ class TimeSignatureEventWrapper : public QObject
   Q_PROPERTY (int numerator READ numerator CONSTANT)
   Q_PROPERTY (int denominator READ denominator CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   explicit TimeSignatureEventWrapper (
@@ -99,7 +101,8 @@ class TempoMapWrapper : public QObject
   Q_PROPERTY (
     double sampleRate READ sampleRate WRITE setSampleRate NOTIFY
       sampleRateChanged)
-  QML_ELEMENT
+  QML_NAMED_ELEMENT (TempoMap)
+  QML_UNCREATABLE ("")
 
 public:
   explicit TempoMapWrapper (TempoMap &tempo_map, QObject * parent = nullptr)

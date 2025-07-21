@@ -14,7 +14,7 @@ namespace zrythm::gui::actions
 /**
  * MIDI mapping action.
  */
-class MidiMappingAction final : public QObject, public UndoableAction
+class MidiMappingAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT

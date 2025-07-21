@@ -17,6 +17,8 @@ class ArrangerObjectFadeRange : public QObject
   Q_PROPERTY (
     dsp::CurveOptionsQmlAdapter * fadeInCurveOpts READ fadeInCurveOpts CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   ArrangerObjectFadeRange (
     const dsp::TempoMap &tempo_map,

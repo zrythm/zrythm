@@ -40,6 +40,7 @@ class Fader final : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   /**

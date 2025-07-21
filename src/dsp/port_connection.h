@@ -13,7 +13,7 @@ namespace zrythm::dsp
 /**
  * A connection between two ports.
  */
-class PortConnection final : public QObject
+class PortConnection : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

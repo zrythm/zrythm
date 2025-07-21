@@ -9,7 +9,7 @@
 
 namespace zrythm::structure::tracks
 {
-class TrackLaneList final : public QAbstractListModel
+class TrackLaneList : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT

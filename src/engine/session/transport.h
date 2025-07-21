@@ -45,7 +45,7 @@ static const char * preroll_count_bars_str[] = {
  * engine. It manages playback, recording, and other transport-related
  * functionality.
  */
-class Transport final : public QObject, public dsp::ITransport
+class Transport : public QObject, public dsp::ITransport
 {
   Q_OBJECT
   QML_ELEMENT
@@ -58,13 +58,15 @@ class Transport final : public QObject, public dsp::ITransport
   Q_PROPERTY (
     PlayState playState READ getPlayState WRITE setPlayState NOTIFY
       playStateChanged)
-  Q_PROPERTY (dsp::PlayheadQmlWrapper * playhead READ getPlayhead CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::PlayheadQmlWrapper * playhead READ getPlayhead CONSTANT)
   Q_PROPERTY (PositionProxy * cuePosition READ getCuePosition CONSTANT)
   Q_PROPERTY (
     PositionProxy * loopStartPosition READ getLoopStartPosition CONSTANT)
   Q_PROPERTY (PositionProxy * loopEndPosition READ getLoopEndPosition CONSTANT)
   Q_PROPERTY (PositionProxy * punchInPosition READ getPunchInPosition CONSTANT)
   Q_PROPERTY (PositionProxy * punchOutPosition READ getPunchOutPosition CONSTANT)
+  QML_UNCREATABLE ("")
 
 public:
   Q_ENUM (PlayState)

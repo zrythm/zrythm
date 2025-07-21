@@ -140,17 +140,17 @@ set(rel_qml_file_paths
   components/basic/ZrythmResizablePanel.qml
   components/basic/SplitButton.qml
   components/basic/ZrythmToolBar.qml
-  components/arranger/AudioRegion.qml
-  components/arranger/AutomationRegion.qml
+  components/arranger/AudioRegionView.qml
+  components/arranger/AutomationRegionView.qml
   components/arranger/Arranger.qml
-  components/arranger/ArrangerObjectBase.qml
-  components/arranger/ChordRegion.qml
-  components/arranger/Marker.qml
+  components/arranger/ArrangerObjectBaseView.qml
+  components/arranger/ChordRegionView.qml
+  components/arranger/MarkerView.qml
   components/arranger/MidiArranger.qml
-  components/arranger/MidiNote.qml
-  components/arranger/MidiRegion.qml
-  components/arranger/RegionBase.qml
-  components/arranger/ScaleObject.qml
+  components/arranger/MidiNoteView.qml
+  components/arranger/MidiRegionView.qml
+  components/arranger/RegionBaseView.qml
+  components/arranger/ScaleObjectView.qml
   components/arranger/Timeline.qml
   components/arranger/VelocityArranger.qml
   components/editors/AudioEditorPane.qml
@@ -216,7 +216,11 @@ target_include_directories(zrythm
 qt_add_qml_module(zrythm
   URI Zrythm
   VERSION 1.0
-  IMPORTS ZrythmStyle/1.0
+  IMPORTS
+    TARGET zrythm_dsp_lib
+    TARGET zrythm_arrangement_lib
+    TARGET zrythm_gui_lib
+    TARGET zrythm_style
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Zrythm
   QML_FILES
     ${qml_file_paths}
@@ -260,10 +264,10 @@ qt_add_qml_module(zrythm
     backend/translation_manager.cpp
     backend/zrythm_application.h
     backend/zrythm_application.cpp
+    qquick/RulerItem.h
+    qquick/RulerItem.cpp
 
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)
   # ENABLE_TYPE_COMPILER
 )
-
-target_link_libraries(zrythm PRIVATE zrythm_styleplugin)

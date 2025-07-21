@@ -21,6 +21,8 @@ class PluginFactory : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 

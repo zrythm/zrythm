@@ -96,6 +96,7 @@ class Project final : public QObject
     structure::tracks::TrackFactory * trackFactory READ getTrackFactory CONSTANT
       FINAL)
   Q_PROPERTY (dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
+  QML_UNCREATABLE ("")
 
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;

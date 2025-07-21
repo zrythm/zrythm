@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QtQml/qqmlregistration.h>
+#include <QtQmlIntegration>
 
 namespace zrythm::gui
 {
@@ -20,8 +20,7 @@ public:
 
   Q_INVOKABLE void showAlert (const QString &title, const QString &message);
 
-Q_SIGNALS:
-  void alertRequested (const QString &title, const QString &message);
+  Q_SIGNAL void alertRequested (const QString &title, const QString &message);
 };
 
 } // namespace zrythm::gui

@@ -124,7 +124,8 @@ class CurveOptionsQmlAdapter : public QObject
     double curviness READ curviness WRITE setCurviness NOTIFY curvinessChanged)
   Q_PROPERTY (
     int algorithm READ algorithm WRITE setAlgorithm NOTIFY algorithmChanged)
-  QML_ELEMENT
+  QML_NAMED_ELEMENT (CurveOptions)
+  QML_UNCREATABLE ("")
 
 public:
   CurveOptionsQmlAdapter (CurveOptions &options, QObject * parent = nullptr)

@@ -19,8 +19,10 @@ namespace zrythm::structure::arrangement
 class ArrangerObjectBounds : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY (dsp::AtomicPositionQmlAdapter * length READ length CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::AtomicPositionQmlAdapter * length READ length CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   ArrangerObjectBounds (

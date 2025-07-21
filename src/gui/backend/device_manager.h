@@ -18,6 +18,7 @@ class DeviceManager : public QObject, public juce::AudioDeviceManager
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   using XmlStateGetter = std::function<std::unique_ptr<juce::XmlElement> ()>;

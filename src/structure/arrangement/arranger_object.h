@@ -5,6 +5,7 @@
 
 #include "dsp/atomic_position_qml_adapter.h"
 #include "structure/arrangement/arranger_object_fwd.h"
+#include "utils/types.h"
 
 #include <QtQmlIntegration>
 
@@ -13,7 +14,8 @@ public: \
   Q_PROPERTY (ArrangerObject::Type type READ type CONSTANT) \
   Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
   Q_SIGNAL void selectedChanged (bool selected); \
-  Q_PROPERTY (dsp::AtomicPositionQmlAdapter * position READ position CONSTANT) \
+  Q_PROPERTY ( \
+    zrythm::dsp::AtomicPositionQmlAdapter * position READ position CONSTANT) \
   Q_SIGNAL void addedToProject (); \
   Q_SIGNAL void removedFromProject ();
 
@@ -159,6 +161,5 @@ using ArrangerObjectSelectionManager =
 
 template <typename T>
 concept FinalArrangerObjectSubclass =
-  std::derived_from<T, ArrangerObject> && FinalClass<T> && CompleteType<T>;
-
+  std::derived_from<T, ArrangerObject> && CompleteType<T>;
 }

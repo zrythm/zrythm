@@ -3,14 +3,15 @@
 
 #include "engine/session/router.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/project_manager.h"
 #include "gui/backend/zrythm_application.h"
-#include "project_manager.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 
-using namespace zrythm::gui;
 using namespace std::chrono_literals;
+namespace zrythm::gui
+{
 
 ProjectManager::ProjectManager (QObject * parent)
     : QObject (parent), recent_projects_model_ (new RecentProjectsModel (this))
@@ -245,4 +246,5 @@ ProjectManager::setActiveProject (Project * project)
     }
 
   Q_EMIT activeProjectChanged (active_project_);
+}
 }

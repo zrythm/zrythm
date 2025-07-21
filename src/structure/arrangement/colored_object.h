@@ -16,6 +16,7 @@ class ArrangerObjectColor : public QObject
   Q_PROPERTY (bool useColor READ useColor NOTIFY useColorChanged)
   Q_PROPERTY (QColor color READ color WRITE setColor NOTIFY colorChanged)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   ArrangerObjectColor (QObject * parent = nullptr) noexcept : QObject (parent)

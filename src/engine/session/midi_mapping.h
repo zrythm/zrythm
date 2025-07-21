@@ -13,10 +13,11 @@ namespace zrythm::engine::session
 /**
  * A mapping from a MIDI CC value to a destination ControlPort.
  */
-class MidiMapping final : public QObject
+class MidiMapping : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   MidiMapping (

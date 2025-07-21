@@ -7,8 +7,28 @@ qt_add_library(zrythm_gui_lib STATIC)
 add_subdirectory(utils)
 add_subdirectory(dsp)
 add_subdirectory(plugins)
-add_subdirectory(gui)
 add_subdirectory(structure)
+
+target_include_directories(zrythm_gui_lib
+  PUBLIC
+    # C++ headers in QML modules must be available as toplevel includes
+    # https://bugreports.qt.io/browse/QTBUG-87221
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/backend
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/backend/backend
+)
+
+# create a plugin so that types get exposed to QML
+# Note: this needs to be in the same directory as the qt_add_library() call
+qt_add_qml_module(zrythm_gui_lib
+  URI ZrythmGui
+  VERSION 1.0
+  IMPORTS
+    TARGET zrythm_dsp_lib
+    TARGET zrythm_arrangement_lib
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmGui
+)
+
+add_subdirectory(gui)
 add_subdirectory(engine)
 
 target_sources(zrythm_gui_lib PRIVATE globals.cpp)

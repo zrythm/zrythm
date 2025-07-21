@@ -24,6 +24,8 @@ class MidiPreFader final : public QObject, public dsp::MidiPassthroughProcessor
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   MidiPreFader (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
@@ -34,6 +36,8 @@ class AudioPreFader final : public QObject, public dsp::StereoPassthroughProcess
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   AudioPreFader (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
@@ -62,6 +66,7 @@ class Channel final : public QObject
   Q_PROPERTY (dsp::AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
   Q_PROPERTY (dsp::AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
   Q_PROPERTY (dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
+  QML_UNCREATABLE ("")
 
 public:
   using PortType = zrythm::dsp::PortType;

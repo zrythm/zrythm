@@ -14,7 +14,7 @@ namespace zrythm::gui::actions
 /**
  * Transport action.
  */
-class TransportAction final : public QObject, public UndoableAction
+class TransportAction : public QObject, public UndoableAction
 {
   Q_OBJECT
   QML_ELEMENT

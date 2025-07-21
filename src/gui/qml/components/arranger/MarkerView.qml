@@ -2,15 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Layouts
-import Zrythm 1.0
 import ZrythmStyle 1.0
+import ZrythmArrangement 1.0
 
-ArrangerObjectBase {
+ArrangerObjectBaseView {
     id: root
 
-    height: textMetrics.height + 2 * Style.buttonPadding
     width: textMetrics.width + 2 * Style.buttonPadding
+    height: textMetrics.height + 2 * Style.buttonPadding
 
     Rectangle {
         color: root.objectColor
@@ -21,15 +20,11 @@ ArrangerObjectBase {
     Text {
         id: nameText
 
-        text: {
-          // bindings
-          arrangerObject.scale.scaleType;
-          arrangerObject.scale.rootKey;
-          return arrangerObject.scale.toString();
-        }
-        font: root.font
+        text: arrangerObject.name.name
         color: root.palette.text
+        font: root.font
         padding: Style.buttonPadding
+        anchors.centerIn: parent
     }
 
     TextMetrics {
@@ -38,5 +33,4 @@ ArrangerObjectBase {
         text: nameText.text
         font: nameText.font
     }
-
 }

@@ -18,7 +18,7 @@ namespace zrythm::gui::old_dsp::plugins
  * The PluginManager is responsible for scanning and keeping track of available
  * Plugin's.
  */
-class PluginManager final : public QObject
+class PluginManager : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

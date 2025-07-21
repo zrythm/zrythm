@@ -15,7 +15,7 @@ namespace zrythm::gui::actions
  *
  * This is used for both undo and redo.
  */
-class UndoStack final : public QAbstractListModel
+class UndoStack : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
