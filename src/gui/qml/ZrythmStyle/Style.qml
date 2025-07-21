@@ -60,7 +60,7 @@ QtObject {
     windowText: root.textColor
   }
   readonly property color dangerColor: "#D90368"
-  property bool darkMode: false
+  property bool darkMode: Application.styleHints.colorScheme === Qt.Dark
   readonly property real disabledOpacityFactor: 0.7
   readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
   readonly property font fadedTextFont: ({
@@ -180,4 +180,6 @@ QtObject {
   function isColorDark(arg: color): bool {
     return arg.hslLightness < 0.5;
   }
+
+  Component.onCompleted: {}
 }

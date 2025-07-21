@@ -6,8 +6,9 @@ cmake_minimum_required(VERSION 3.24)
 if(APPLE)
   # 10.15 -> std::filesystem::path
   # 11.0 -> semaphore.try_acquire
+  # 13 -> https://doc-snapshots.qt.io/qt6-dev/macos.html
   # must be specified before project()
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum OS X deployment version")
 
   # this might be needed for homebrew
   if(NOT DEFINED CMAKE_OSX_SYSROOT)
