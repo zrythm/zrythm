@@ -46,8 +46,9 @@ init_from (
 {
   obj.channel_.reset (clone_qobject (
     *other.channel_, dynamic_cast<QObject *> (&obj),
-    utils::ObjectCloneType::Snapshot, obj.track_registry_, obj.plugin_registry_,
-    obj.port_registry_, obj.param_registry_, OptionalRef<ChannelTrack>{}));
+    utils::ObjectCloneType::Snapshot, obj.track_registry_,
+    obj.get_plugin_registry (), obj.get_port_registry (),
+    obj.get_param_registry (), OptionalRef<ChannelTrack>{}));
   obj.channel_->set_track_ptr (obj);
 }
 

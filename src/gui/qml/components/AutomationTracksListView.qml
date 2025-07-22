@@ -171,7 +171,7 @@ ListView {
             text: "-"
 
             onClicked: {
-              track.automatableTrackMixin.automationTracklist.hideAutomationTrack(automationTrack);
+              track.automationTracklist.hideAutomationTrack(automationTrack);
             }
 
             ToolTip {
@@ -195,7 +195,7 @@ ListView {
             text: "+"
 
             onClicked: {
-              track.automatableTrackMixin.automationTracklist.showNextAvailableAutomationTrack(automationTrack);
+              track.automationTracklist.showNextAvailableAutomationTrack(automationTrack);
             }
 
             ToolTip {
@@ -235,7 +235,7 @@ ListView {
   model: AutomationTracklistProxyModel {
     showOnlyCreated: true
     showOnlyVisible: true
-    sourceModel: track.automatableTrackMixin.automationTracklist
+    sourceModel: track.automationTracklist
   }
 
   Connections {

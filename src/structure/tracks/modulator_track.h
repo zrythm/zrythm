@@ -6,7 +6,6 @@
 #include "dsp/modulator_macro_processor.h"
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/plugin_span.h"
-#include "structure/tracks/automatable_track.h"
 #include "structure/tracks/processable_track.h"
 
 #define P_MODULATOR_TRACK (TRACKLIST->modulator_track_)

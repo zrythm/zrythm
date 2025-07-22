@@ -18,10 +18,7 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
         Track::Type::Chord,
         PortType::Event,
         PortType::Event,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_),
+        dependencies.to_base_dependencies ()),
       ProcessableTrack (
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
@@ -44,7 +41,7 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
 {
   color_ = Color (QColor ("#1C8FFB"));
   icon_name_ = u8"gnome-icon-library-library-music-symbolic";
-  automatableTrackMixin ()->setParent (this);
+  automationTracklist ()->setParent (this);
 }
 
 void

@@ -523,11 +523,13 @@ Arranger {
         Loader {
           id: automationLoader
 
+          readonly property var automationTracklist: trackDelegate.track.automationTracklist
+
           Layout.fillWidth: true
           Layout.maximumHeight: Layout.preferredHeight
           Layout.minimumHeight: Layout.preferredHeight
           Layout.preferredHeight: item ? item.contentHeight : 0
-          active: trackDelegate.track.isAutomatable && trackDelegate.track.automatableTrackMixin.automationVisible
+          active: trackDelegate.track.isAutomatable && automationTracklist.automationVisible
           visible: active
 
           sourceComponent: ListView {
@@ -585,7 +587,7 @@ Arranger {
             model: AutomationTracklistProxyModel {
               showOnlyCreated: true
               showOnlyVisible: true
-              sourceModel: trackDelegate.track.automatableTrackMixin.automationTracklist
+              sourceModel: trackDelegate.track.automationTracklist
             }
           }
         }

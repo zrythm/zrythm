@@ -11,10 +11,7 @@ MarkerTrack::MarkerTrack (FinalTrackDependencies dependencies)
         Track::Type::Marker,
         PortType::Unknown,
         PortType::Unknown,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_),
+        dependencies.to_base_dependencies ()),
       arrangement::ArrangerObjectOwner<Marker> (
         dependencies.obj_registry_,
         dependencies.file_audio_source_registry_,

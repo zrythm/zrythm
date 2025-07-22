@@ -138,8 +138,8 @@ private:
   friend void from_json (const nlohmann::json &j, ChannelTrack &channel_track)
   {
     channel_track.channel_.reset (new Channel (
-      channel_track.track_registry_, channel_track.plugin_registry_,
-      channel_track.port_registry_, channel_track.param_registry_));
+      channel_track.track_registry_, channel_track.get_plugin_registry (),
+      channel_track.get_port_registry (), channel_track.get_param_registry ()));
     j.at (kChannelKey).get_to (*channel_track.channel_);
   }
 

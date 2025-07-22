@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/processor_base.h"
 #include "structure/tracks/automation_track.h"
 
 #include <QAbstractListModel>
@@ -129,6 +130,10 @@ class AutomationTracklist final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
+  Q_PROPERTY (
+    bool automationVisible READ automationVisible WRITE setAutomationVisible
+      NOTIFY automationVisibleChanged)
+  QML_UNCREATABLE ("")
 
   using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;
 
@@ -156,6 +161,10 @@ public:
   showNextAvailableAutomationTrack (AutomationTrack * current_automation_track);
   Q_INVOKABLE void
   hideAutomationTrack (AutomationTrack * current_automation_track);
+
+  bool          automationVisible () const { return automation_visible_; }
+  void          setAutomationVisible (bool visible);
+  Q_SIGNAL void automationVisibleChanged (bool visible);
 
   // ========================================================================
 
@@ -258,9 +267,11 @@ public:
 
 private:
   static constexpr auto kAutomationTracksKey = "automationTracks"sv;
+  static constexpr auto kAutomationVisibleKey = "automationVisible"sv;
   friend void to_json (nlohmann::json &j, const AutomationTracklist &ats)
   {
     j[kAutomationTracksKey] = ats.automation_tracks_;
+    j[kAutomationVisibleKey] = ats.automation_visible_;
   }
   friend void from_json (const nlohmann::json &j, AutomationTracklist &ats);
 
@@ -315,7 +326,15 @@ private:
    */
   std::vector<utils::QObjectUniquePtr<AutomationTrackHolder>> automation_tracks_;
 
-  BOOST_DESCRIBE_CLASS (AutomationTracklist, (), (), (), (automation_tracks_))
+  /** Flag to set automations visible or not. */
+  bool automation_visible_{};
+
+  BOOST_DESCRIBE_CLASS (
+    AutomationTracklist,
+    (),
+    (),
+    (),
+    (automation_tracks_, automation_visible_))
 };
 
 }

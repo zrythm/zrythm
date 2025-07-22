@@ -46,7 +46,7 @@ void
 PianoRollTrack::clear_objects ()
 {
   LanedTrackImpl::clear_objects ();
-  automatableTrackMixin ()->automationTracklist ()->clear_arranger_objects ();
+  automationTracklist ()->clear_arranger_objects ();
 }
 
 uint8_t

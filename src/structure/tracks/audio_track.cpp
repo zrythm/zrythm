@@ -23,10 +23,7 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
         Track::Type::Audio,
         PortType::Audio,
         PortType::Audio,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_),
+        dependencies.to_base_dependencies ()),
       ProcessableTrack (
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
@@ -42,7 +39,7 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
   color_ = Color (QColor ("#2BD700"));
   /* signal-audio also works */
   icon_name_ = u8"view-media-visualization";
-  automatableTrackMixin ()->setParent (this);
+  automationTracklist ()->setParent (this);
 
   // TODO
   // samplerate_ = samplerate;
@@ -89,7 +86,7 @@ void
 AudioTrack::clear_objects ()
 {
   LanedTrackImpl::clear_objects ();
-  automatableTrackMixin ()->automationTracklist ()->clear_arranger_objects ();
+  automationTracklist ()->clear_arranger_objects ();
 }
 
 void

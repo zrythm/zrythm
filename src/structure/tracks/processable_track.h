@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "structure/tracks/automatable_track.h"
+#include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_processor.h"
 
 #define DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES(ClassType) \
 public: \
   Q_PROPERTY ( \
-    structure::tracks::AutomatableTrackMixin * automatableTrackMixin READ \
-      automatableTrackMixin CONSTANT)
+    zrythm::structure::tracks::AutomationTracklist * automationTracklist READ \
+      automationTracklist CONSTANT)
 
 namespace zrythm::structure::tracks
 {
@@ -35,9 +35,9 @@ public:
   ~ProcessableTrack () override = default;
   Z_DISABLE_COPY_MOVE (ProcessableTrack)
 
-  AutomatableTrackMixin * automatableTrackMixin () const
+  AutomationTracklist * automationTracklist () const
   {
-    return automatable_track_mixin_.get ();
+    return automation_tracklist_.get ();
   }
 
   void init_loaded (
@@ -53,16 +53,16 @@ protected:
 
 private:
   static constexpr auto kProcessorKey = "processor"sv;
-  static constexpr auto kAutomatableTrackMixinKey = "automatableTrackMixin"sv;
+  static constexpr auto kAutomationTracklistKey = "automationTracklist"sv;
   friend void           to_json (nlohmann::json &j, const ProcessableTrack &p)
   {
     j[kProcessorKey] = p.processor_;
-    j[kAutomatableTrackMixinKey] = p.automatable_track_mixin_;
+    j[kAutomationTracklistKey] = p.automation_tracklist_;
   }
   friend void from_json (const nlohmann::json &j, ProcessableTrack &p);
 
 private:
-  utils::QObjectUniquePtr<AutomatableTrackMixin> automatable_track_mixin_;
+  utils::QObjectUniquePtr<AutomationTracklist> automation_tracklist_;
 
 public:
   /**

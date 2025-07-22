@@ -18,10 +18,7 @@ InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
         Track::Type::Instrument,
         PortType::Event,
         PortType::Audio,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_),
+        dependencies.to_base_dependencies ()),
       ProcessableTrack (
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
@@ -36,7 +33,7 @@ InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
 {
   color_ = Color (QColor ("#FF9616"));
   icon_name_ = u8"instrument";
-  automatableTrackMixin ()->setParent (this);
+  automationTracklist ()->setParent (this);
 }
 
 bool

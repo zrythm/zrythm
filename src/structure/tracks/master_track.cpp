@@ -10,10 +10,7 @@ MasterTrack::MasterTrack (FinalTrackDependencies dependencies)
         Track::Type::Master,
         PortType::Audio,
         PortType::Audio,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_),
+        dependencies.to_base_dependencies ()),
       ProcessableTrack (
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
@@ -24,7 +21,7 @@ MasterTrack::MasterTrack (FinalTrackDependencies dependencies)
   /* GTK color picker color */
   color_ = Color (QColor ("#D90368"));
   icon_name_ = u8"jam-icons-crown";
-  automatableTrackMixin ()->setParent (this);
+  automationTracklist ()->setParent (this);
 }
 
 bool

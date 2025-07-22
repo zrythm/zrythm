@@ -12,10 +12,7 @@ FolderTrack::FolderTrack (FinalTrackDependencies dependencies)
         Track::Type::Folder,
         PortType::Unknown,
         PortType::Unknown,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_)
+        dependencies.to_base_dependencies ())
 {
   color_ = Color (QColor ("#865E3C"));
   icon_name_ = u8"fluentui-folder-regular";

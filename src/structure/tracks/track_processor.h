@@ -4,9 +4,7 @@
 #pragma once
 
 #include "dsp/port.h"
-#include "dsp/port_connections_manager.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/dsp/plugin.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"

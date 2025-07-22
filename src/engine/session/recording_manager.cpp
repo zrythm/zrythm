@@ -14,7 +14,6 @@
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/chord_region.h"
 #include "structure/tracks/audio_track.h"
-#include "structure/tracks/automatable_track.h"
 #include "structure/tracks/chord_track.h"
 #include "structure/tracks/laned_track.h"
 #include "structure/tracks/piano_roll_track.h"

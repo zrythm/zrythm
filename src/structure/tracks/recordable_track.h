@@ -83,7 +83,8 @@ public:
   {
     if (!recording_region_)
       return std::nullopt;
-    return object_registry_.find_by_id_or_throw (recording_region_.value ());
+    return get_object_registry ().find_by_id_or_throw (
+      recording_region_.value ());
   }
 
   /**

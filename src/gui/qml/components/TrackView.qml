@@ -174,7 +174,7 @@ Control {
           id: automationLoader
 
           Layout.fillWidth: true
-          active: track.isAutomatable && track.automatableTrackMixin.automationVisible
+          active: track.isAutomatable && track.automationTracklist.automationVisible
 
           sourceComponent: AutomationTracksListView {
             id: automationTracksListView
@@ -409,14 +409,14 @@ Control {
 
             Button {
               checkable: true
-              checked: track.isAutomatable && track.automatableTrackMixin.automationVisible
+              checked: track.isAutomatable && track.automationTracklist.automationVisible
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
               visible: track.isAutomatable
 
               onClicked: {
-                track.automatableTrackMixin.automationVisible = !track.automatableTrackMixin.automationVisible;
+                track.automationTracklist.automationVisible = !track.automationTracklist.automationVisible;
               }
 
               ToolTip {

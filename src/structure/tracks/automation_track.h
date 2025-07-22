@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "dsp/parameter.h"
+#include "dsp/processor_base.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/automation_region.h"
 
@@ -247,6 +248,30 @@ private:
   AutomationRecordMode record_mode_ = (AutomationRecordMode) 0;
 };
 
+/**
+ * @brief Generates automatables for the given processor.
+ */
+inline void
+generate_automation_tracks_for_processor (
+  std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ret,
+  const dsp::ProcessorBase                              &processor,
+  const dsp::TempoMap                                   &tempo_map,
+  dsp::FileAudioSourceRegistry        &file_audio_source_registry,
+  arrangement::ArrangerObjectRegistry &object_registry)
+{
+  z_debug ("generating automation tracks for {}...", processor.get_node_name ());
+  for (const auto &param_ref : processor.get_parameters ())
+    {
+      auto * const param =
+        param_ref.template get_object_as<dsp::ProcessorParameter> ();
+      if (!param->automatable ())
+        continue;
+
+      ret.emplace_back (
+        utils::make_qobject_unique<AutomationTrack> (
+          tempo_map, file_audio_source_registry, object_registry, param_ref));
+    }
+}
 }
 
 DEFINE_ENUM_FORMATTER (

@@ -16,7 +16,6 @@
 #include "gui/backend/ui.h"
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/plugin.h"
-#include "structure/tracks/automatable_track.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_track.h"

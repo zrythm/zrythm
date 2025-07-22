@@ -10,10 +10,7 @@ MidiBusTrack::MidiBusTrack (FinalTrackDependencies dependencies)
         Track::Type::MidiBus,
         PortType::Event,
         PortType::Event,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_),
+        dependencies.to_base_dependencies ()),
       ProcessableTrack (
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
@@ -23,7 +20,7 @@ MidiBusTrack::MidiBusTrack (FinalTrackDependencies dependencies)
 {
   color_ = Color (QColor ("#F5C211"));
   icon_name_ = u8"signal-midi";
-  automatableTrackMixin ()->setParent (this);
+  automationTracklist ()->setParent (this);
 }
 
 bool

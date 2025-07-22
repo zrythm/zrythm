@@ -794,7 +794,7 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
 
       if (
         !tr->is_auditioner () && TRANSPORT->preroll_frames_remaining_ == 0
-        && (std::derived_from<TrackT, RecordableTrack> || !tr->automatableTrackMixin()->automationTracklist()->automation_tracks().empty ()))
+        && (std::derived_from<TrackT, RecordableTrack> || !tr->automationTracklist()->automation_tracks().empty ()))
         {
           /* handle recording. this will only create events in regions. it
            * will not copy the input content to the output ports. this will

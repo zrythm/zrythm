@@ -1,21 +1,14 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/device_io/engine.h"
-#include "engine/session/transport.h"
-#include "gui/backend/backend/project.h"
-#include "structure/arrangement/audio_region.h"
-#include "structure/arrangement/chord_region.h"
-#include "structure/tracks/chord_track.h"
-#include "structure/tracks/laned_track.h"
 #include "structure/tracks/processable_track.h"
 #include "structure/tracks/track_processor.h"
 
 namespace zrythm::structure::tracks
 {
 ProcessableTrack::ProcessableTrack (Dependencies dependencies)
-    : automatable_track_mixin_ (
-        utils::make_qobject_unique<AutomatableTrackMixin> (dependencies)),
+    : automation_tracklist_ (
+        utils::make_qobject_unique<AutomationTracklist> (dependencies)),
       processor_ (
         utils::make_qobject_unique<TrackProcessor> (
           *this,
@@ -43,7 +36,7 @@ init_from (
 {
   init_from (*obj.processor_, *other.processor_, clone_type);
   init_from (
-    *obj.automatable_track_mixin_, *other.automatable_track_mixin_, clone_type);
+    *obj.automation_tracklist_, *other.automation_tracklist_, clone_type);
   obj.processor_->track_ = &obj;
 }
 
@@ -51,7 +44,6 @@ void
 from_json (const nlohmann::json &j, ProcessableTrack &p)
 {
   j[ProcessableTrack::kProcessorKey].get_to (*p.processor_);
-  j[ProcessableTrack::kAutomatableTrackMixinKey].get_to (
-    *p.automatable_track_mixin_);
+  j[ProcessableTrack::kAutomationTracklistKey].get_to (*p.automation_tracklist_);
 }
 }

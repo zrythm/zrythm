@@ -493,11 +493,11 @@ TracklistSelectionsAction::create_track (int idx)
       FinalTrackDependencies track_deps{
         PROJECT->get_tempo_map (),
         PROJECT->get_file_audio_source_registry (),
-        PROJECT->get_track_registry (),
         PROJECT->get_plugin_registry (),
         PROJECT->get_port_registry (),
         PROJECT->get_param_registry (),
-        PROJECT->get_arranger_object_registry ()
+        PROJECT->get_arranger_object_registry (),
+        PROJECT->get_track_registry ()
       };
       if (track_type_ == Track::Type::Audio && pool_id_.has_value ())
         {
@@ -674,11 +674,11 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     structure::tracks::FinalTrackDependencies{
                       PROJECT->get_tempo_map (),
                       PROJECT->get_file_audio_source_registry (),
-                      PROJECT->get_track_registry (),
                       PROJECT->get_plugin_registry (),
                       PROJECT->get_port_registry (),
                       PROJECT->get_param_registry (),
-                      PROJECT->get_arranger_object_registry () });
+                      PROJECT->get_arranger_object_registry (),
+                      PROJECT->get_track_registry () });
                   // TODO...
                   auto track = std::get<TrackT *> (track_ref.get_object ());
 
@@ -1117,11 +1117,12 @@ TracklistSelectionsAction::
                     FinalTrackDependencies{
                       PROJECT->get_tempo_map (),
                       PROJECT->get_file_audio_source_registry (),
-                      PROJECT->get_track_registry (),
                       PROJECT->get_plugin_registry (),
                       PROJECT->get_port_registry (),
                       PROJECT->get_param_registry (),
-                      PROJECT->get_arranger_object_registry () });
+                      PROJECT->get_arranger_object_registry (),
+                      PROJECT->get_track_registry (),
+                    });
                   // FIXME
                   auto * track = std::get<TrackT *> (track_ref.get_object ());
 

@@ -17,10 +17,7 @@ ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
         Track::Type::Modulator,
         PortType::Unknown,
         PortType::Unknown,
-        dependencies.plugin_registry_,
-        dependencies.port_registry_,
-        dependencies.param_registry_,
-        dependencies.obj_registry_),
+        dependencies.to_base_dependencies ()),
       ProcessableTrack (
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
@@ -35,7 +32,7 @@ ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
   /* set invisible */
   visible_ = false;
 
-  automatableTrackMixin ()->setParent (this);
+  automationTracklist ()->setParent (this);
 }
 
 bool
@@ -108,7 +105,7 @@ struct ModulatorImportData
         z_debug (
           "Inserting modulator {} at {}:{}", mod->get_name (), self->name_,
           this->slot);
-        self->plugin_registry_.register_object (mod);
+        self->get_plugin_registry ().register_object (mod);
         self->modulators_.insert (
           self->modulators_.cbegin () + this->slot, modulator_id);
 
@@ -267,7 +264,7 @@ from_json (const nlohmann::json &j, ModulatorTrack &track)
   from_json (j, static_cast<ProcessableTrack &> (track));
   for (const auto &modulator_json : j.at (ModulatorTrack::kModulatorsKey))
     {
-      PluginUuidReference modulator_id_ref{ track.plugin_registry_ };
+      PluginUuidReference modulator_id_ref{ track.get_plugin_registry () };
       from_json (modulator_json, modulator_id_ref);
       track.modulators_.push_back (std::move (modulator_id_ref));
     }

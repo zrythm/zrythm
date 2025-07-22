@@ -7,7 +7,7 @@
 #include "dsp/position.h"
 #include "gui/dsp/plugin.h"
 #include "structure/arrangement/arranger_object_all.h"
-#include "structure/tracks/automation_track.h"
+#include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/fader.h"
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane.h"
@@ -340,6 +340,16 @@ class TrackFactory;
  */
 using TracksReadyCallback = void (*) (const FileImportInfo *);
 
+struct BaseTrackDependencies
+{
+  const dsp::TempoMap                   &tempo_map_;
+  dsp::FileAudioSourceRegistry          &file_audio_source_registry_;
+  gui::old_dsp::plugins::PluginRegistry &plugin_registry_;
+  dsp::PortRegistry                     &port_registry_;
+  dsp::ProcessorParameterRegistry       &param_registry_;
+  arrangement::ArrangerObjectRegistry   &obj_registry_;
+};
+
 /**
  * @brief Represents a track in the project.
  *
@@ -528,13 +538,10 @@ protected:
    * @param pos Position in the Tracklist.
    */
   Track (
-    Type                             type,
-    PortType                         in_signal_type,
-    PortType                         out_signal_type,
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    ArrangerObjectRegistry          &obj_registry);
+    Type                  type,
+    PortType              in_signal_type,
+    PortType              out_signal_type,
+    BaseTrackDependencies dependencies);
 
 public:
   /**
@@ -599,10 +606,9 @@ public:
       }
     if constexpr (AutomatableTrack<DerivedT>)
       {
-        const auto * automatable_track = self.automatableTrackMixin ();
-        if (automatable_track->automationVisible ())
+        const AutomationTracklist * atl = self.automationTracklist ();
+        if (atl->automationVisible ())
           {
-            const auto * atl = automatable_track->automationTracklist ();
             for (const auto &at_holder : atl->automation_track_holders ())
               {
                 if (at_holder->visible ())
@@ -1362,14 +1368,77 @@ public:
     track_selection_status_getter_.reset ();
   }
 
-  auto &get_plugin_registry () const { return plugin_registry_; }
-  auto &get_plugin_registry () { return plugin_registry_; }
-  auto &get_port_registry () const { return port_registry_; }
-  auto &get_port_registry () { return port_registry_; }
-  auto &get_param_registry () const { return param_registry_; }
-  auto &get_param_registry () { return param_registry_; }
-  auto &get_object_registry () const { return object_registry_; }
-  auto &get_object_registry () { return object_registry_; }
+  template <AutomatableTrack TrackT>
+  friend void generate_automation_tracks (TrackT &track)
+  {
+    std::vector<utils::QObjectUniquePtr<AutomationTrack>> ats;
+
+    const auto gen = [&] (const dsp::ProcessorBase &processor) {
+      generate_automation_tracks_for_processor (
+        ats, processor, track.base_dependencies_.tempo_map_,
+        track.base_dependencies_.file_audio_source_registry_,
+        track.base_dependencies_.obj_registry_);
+    };
+
+    if constexpr (std::derived_from<TrackT, ChannelTrack>)
+      {
+        auto &ch = track.channel_;
+        gen (*ch->fader_);
+        for (auto &send : ch->sends_)
+          {
+            gen (*send);
+          }
+      }
+
+    if constexpr (std::derived_from<TrackT, ProcessableTrack>)
+      {
+        gen (*track.processor_);
+      }
+
+    if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+      {
+        const auto processors = track.get_modulator_macro_processors ();
+        for (const auto &macro : processors)
+          {
+            gen (*macro);
+          }
+      }
+
+    // insert the generated automation tracks
+    auto * atl = track.automationTracklist ();
+    for (auto &at : ats)
+      {
+        atl->add_automation_track (std::move (at));
+      }
+
+    // mark first automation track as created & visible
+    auto * ath = atl->get_first_invisible_automation_track_holder ();
+    if (ath != nullptr)
+      {
+        ath->created_by_user_ = true;
+        ath->setVisible (true);
+      }
+
+    z_debug ("generated automation tracks for '{}'", track.getName ());
+  }
+
+  auto &get_plugin_registry () const
+  {
+    return base_dependencies_.plugin_registry_;
+  }
+  auto &get_plugin_registry () { return base_dependencies_.plugin_registry_; }
+  auto &get_port_registry () const { return base_dependencies_.port_registry_; }
+  auto &get_port_registry () { return base_dependencies_.port_registry_; }
+  auto &get_param_registry () const
+  {
+    return base_dependencies_.param_registry_;
+  }
+  auto &get_param_registry () { return base_dependencies_.param_registry_; }
+  auto &get_object_registry () const
+  {
+    return base_dependencies_.obj_registry_;
+  }
+  auto &get_object_registry () { return base_dependencies_.obj_registry_; }
 
   auto get_type () const { return type_; }
   auto get_icon_name () const { return icon_name_; }
@@ -1442,10 +1511,7 @@ private:
     int                                          index);
 
 protected:
-  PluginRegistry                      &plugin_registry_;
-  dsp::PortRegistry                   &port_registry_;
-  dsp::ProcessorParameterRegistry     &param_registry_;
-  arrangement::ArrangerObjectRegistry &object_registry_;
+  BaseTrackDependencies base_dependencies_;
 
   /**
    * Position in the Tracklist.
@@ -1556,15 +1622,33 @@ using TrackUuidReference = utils::UuidReference<TrackRegistry>;
 using TrackSelectionManager =
   utils::UuidIdentifiableObjectSelectionManager<TrackRegistry>;
 
-struct FinalTrackDependencies
+struct FinalTrackDependencies : public BaseTrackDependencies
 {
-  const dsp::TempoMap                   &tempo_map_;
-  dsp::FileAudioSourceRegistry          &file_audio_source_registry_;
-  TrackRegistry                         &track_registry_;
-  gui::old_dsp::plugins::PluginRegistry &plugin_registry_;
-  dsp::PortRegistry                     &port_registry_;
-  dsp::ProcessorParameterRegistry       &param_registry_;
-  arrangement::ArrangerObjectRegistry   &obj_registry_;
+  FinalTrackDependencies (
+    const dsp::TempoMap                   &tempo_map,
+    dsp::FileAudioSourceRegistry          &file_audio_source_registry,
+    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+    dsp::PortRegistry                     &port_registry,
+    dsp::ProcessorParameterRegistry       &param_registry,
+    arrangement::ArrangerObjectRegistry   &obj_registry,
+    TrackRegistry                         &track_registry)
+      : BaseTrackDependencies (
+          tempo_map,
+          file_audio_source_registry,
+          plugin_registry,
+          port_registry,
+          param_registry,
+          obj_registry),
+        track_registry_ (track_registry)
+  {
+  }
+
+  TrackRegistry &track_registry_;
+
+  BaseTrackDependencies to_base_dependencies ()
+  {
+    return static_cast<BaseTrackDependencies> (*this); // NOLINT
+  }
 };
 
 } // namespace zrythm::structure::tracks

@@ -21,6 +21,7 @@ init_from (
   utils::ObjectCloneType     clone_type)
 {
   // TODO
+  obj.automation_visible_ = other.automation_visible_;
 }
 
 // ========================================================================
@@ -314,6 +315,34 @@ AutomationTracklist::remove_automation_track (AutomationTrack &at)
 }
 
 void
+AutomationTracklist::setAutomationVisible (const bool visible)
+{
+  if (automation_visible_ == visible)
+    return;
+
+  automation_visible_ = visible;
+
+  if (visible)
+    {
+      /* if no visible automation tracks, set the first one visible */
+      const auto &ath = automation_track_holders ();
+
+      if (
+        std::ranges::none_of (ath, [] (const auto &h) { return h->visible (); }))
+        {
+          auto * at = get_first_invisible_automation_track_holder ();
+          if (at != nullptr)
+            {
+              at->created_by_user_ = true;
+              at->setVisible (true);
+            }
+        }
+    }
+
+  Q_EMIT automationVisibleChanged (visible);
+}
+
+void
 from_json (const nlohmann::json &j, AutomationTrackHolder &nfo)
 {
   const auto &at_j = j.at (AutomationTrackHolder::kAutomationTrackKey);
@@ -340,5 +369,7 @@ from_json (const nlohmann::json &j, AutomationTracklist &ats)
       from_json (ath_json, *automation_track_holder);
       ats.automation_tracks_.emplace_back (std::move (automation_track_holder));
     }
+  j.at (AutomationTracklist::kAutomationVisibleKey)
+    .get_to (ats.automation_visible_);
 }
 }

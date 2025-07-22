@@ -60,6 +60,16 @@ protected:
 TEST_F (AutomationTracklistTest, InitialState)
 {
   EXPECT_EQ (automation_tracklist->rowCount (), 0);
+  EXPECT_FALSE (automation_tracklist->automationVisible ());
+}
+
+TEST_F (AutomationTracklistTest, AutomationVisibility)
+{
+  automation_tracklist->setAutomationVisible (true);
+  EXPECT_TRUE (automation_tracklist->automationVisible ());
+
+  automation_tracklist->setAutomationVisible (false);
+  EXPECT_FALSE (automation_tracklist->automationVisible ());
 }
 
 TEST_F (AutomationTracklistTest, AddAutomationTrack)
@@ -285,6 +295,27 @@ TEST_F (AutomationTracklistTest, FirstInvisibleTrack)
     nullptr);
 }
 
+TEST_F (AutomationTracklistTest, AutomationVisibilityShowsFirstTrack)
+{
+  {
+    auto at = create_automation_track (param_id1);
+    automation_tracklist->add_automation_track (std::move (at));
+  }
+
+  // When setting automation visible and no tracks are visible, should show
+  // first track
+  automation_tracklist->setAutomationVisible (true);
+
+  auto * holder =
+    automation_tracklist
+      ->data (
+        automation_tracklist->index (0),
+        AutomationTracklist::AutomationTrackHolderRole)
+      .value<AutomationTrackHolder *> ();
+  EXPECT_TRUE (holder->visible ());
+  EXPECT_TRUE (holder->created_by_user_);
+}
+
 TEST_F (AutomationTracklistTest, Serialization)
 {
   // Add tracks to tracklist
@@ -304,6 +335,9 @@ TEST_F (AutomationTracklistTest, Serialization)
   holder->created_by_user_ = true;
   holder->setVisible (true);
 
+  // Set visibility of the tracklist itself
+  automation_tracklist->setAutomationVisible (true);
+
   // Serialize to JSON
   nlohmann::json j;
   to_json (j, *automation_tracklist);
@@ -322,6 +356,7 @@ TEST_F (AutomationTracklistTest, Serialization)
 
   // Verify serialization/deserialization
   EXPECT_EQ (dummy_tracklist->rowCount (), 2);
+  EXPECT_TRUE (dummy_tracklist->automationVisible ());
 
   // Verify track properties
   auto * dummy_holder0 =

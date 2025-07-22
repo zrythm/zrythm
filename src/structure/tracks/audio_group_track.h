@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "structure/tracks/automatable_track.h"
 #include "structure/tracks/foldable_track.h"
 #include "structure/tracks/group_target_track.h"
 

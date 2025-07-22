@@ -9,8 +9,6 @@ target_link_libraries(zrythm_structure_tracks_lib
 )
 target_sources(zrythm_structure_tracks_lib
   PRIVATE
-    automatable_track.h
-    automatable_track.cpp
     automation_track.h
     automation_track.cpp
     automation_tracklist.h

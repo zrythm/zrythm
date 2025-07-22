@@ -127,13 +127,14 @@ Project::Project (
         this)),
       track_factory_ (new structure::tracks::TrackFactory (
         structure::tracks::FinalTrackDependencies{
-          .tempo_map_ = tempo_map_,
-          .file_audio_source_registry_ = *file_audio_source_registry_,
-          .track_registry_ = *track_registry_,
-          .plugin_registry_ = *plugin_registry_,
-          .port_registry_ = *port_registry_,
-          .param_registry_ = *param_registry_,
-          .obj_registry_ = *arranger_object_registry_ },
+          tempo_map_,
+          *file_audio_source_registry_,
+          *plugin_registry_,
+          *port_registry_,
+          *param_registry_,
+          *arranger_object_registry_,
+          *track_registry_,
+        },
         *gui::SettingsManager::get_instance (),
         this)),
       device_manager_ (device_manager)
@@ -389,13 +390,14 @@ Project::add_default_tracks ()
     TrackT * track =
       TrackT::create_unique (
         structure::tracks::FinalTrackDependencies{
-          .tempo_map_ = tempo_map_,
-          .file_audio_source_registry_ = get_file_audio_source_registry (),
-          .track_registry_ = get_track_registry (),
-          .plugin_registry_ = get_plugin_registry (),
-          .port_registry_ = get_port_registry (),
-          .param_registry_ = get_param_registry (),
-          .obj_registry_ = get_arranger_object_registry () })
+          tempo_map_,
+          get_file_audio_source_registry (),
+          get_plugin_registry (),
+          get_port_registry (),
+          get_param_registry (),
+          get_arranger_object_registry (),
+          get_track_registry (),
+        })
         .release ();
     get_track_registry ().register_object (track);
     track->setName (name);

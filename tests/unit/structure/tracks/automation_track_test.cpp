@@ -207,6 +207,70 @@ TEST_F (AutomationTrackTest, NormalizedValueCalculation)
   EXPECT_FALSE (value.has_value ());
 }
 
+TEST_F (AutomationTrackTest, GenerateAutomationTracks)
+{
+  // Mock ProcessorBase for testing
+  class MockProcessor : public dsp::ProcessorBase
+  {
+  public:
+    MockProcessor (dsp::ProcessorBase::ProcessorBaseDependencies dependencies)
+        : ProcessorBase (dependencies, u8"MockProcessor"),
+          param_registry_ (dependencies.param_registry_)
+    {
+      // Create test parameters
+      add_parameter (param_registry_.create_object<dsp::ProcessorParameter> (
+        dependencies.port_registry_,
+        dsp::ProcessorParameter::UniqueId (u8"param1"),
+        dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+        u8"Param 1"));
+      get_parameters ()
+        .at (0)
+        .get_object_as<dsp::ProcessorParameter> ()
+        ->set_automatable (true);
+
+      add_parameter (param_registry_.create_object<dsp::ProcessorParameter> (
+        dependencies.port_registry_,
+        dsp::ProcessorParameter::UniqueId (u8"param2"),
+        dsp::ParameterRange (dsp::ParameterRange::Type::Linear, -1.0f, 1.0f),
+        u8"Param 2"));
+      get_parameters ()
+        .at (1)
+        .get_object_as<dsp::ProcessorParameter> ()
+        ->set_automatable (true);
+
+      // Non-automatable parameter
+      add_parameter (param_registry_.create_object<dsp::ProcessorParameter> (
+        dependencies.port_registry_,
+        dsp::ProcessorParameter::UniqueId (u8"param3"),
+        dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 100.0f),
+        u8"Param 3"));
+      get_parameters ()
+        .at (2)
+        .get_object_as<dsp::ProcessorParameter> ()
+        ->set_automatable (false);
+    }
+
+  private:
+    dsp::ProcessorParameterRegistry &param_registry_;
+  };
+
+  MockProcessor processor{
+    MockProcessor::ProcessorBaseDependencies{
+                                             .port_registry_ = port_registry,
+                                             .param_registry_ = processor_param_registry }
+  };
+  std::vector<utils::QObjectUniquePtr<AutomationTrack>> tracks;
+  generate_automation_tracks_for_processor (
+    tracks, processor, *tempo_map, file_audio_source_registry, obj_registry);
+
+  // Should create tracks for automatable parameters only (2 of 3)
+  EXPECT_EQ (tracks.size (), 2);
+
+  // Verify parameter names
+  EXPECT_EQ (tracks[0]->parameter ()->label (), "Param 1");
+  EXPECT_EQ (tracks[1]->parameter ()->label (), "Param 2");
+}
+
 TEST_F (AutomationTrackTest, Serialization)
 {
   // Create and populate automation track

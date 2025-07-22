@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "structure/tracks/automatable_track.h"
 #include "structure/tracks/channel_track.h"
 #include "structure/tracks/piano_roll_track.h"
 #include "utils/initializable_object.h"

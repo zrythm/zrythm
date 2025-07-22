@@ -22,17 +22,12 @@ namespace zrythm::structure::tracks
 Track::~Track () = default;
 
 Track::Track (
-  Type                             type,
-  PortType                         in_signal_type,
-  PortType                         out_signal_type,
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry,
-  ArrangerObjectRegistry          &obj_registry)
-    : plugin_registry_ (plugin_registry), port_registry_ (port_registry),
-      param_registry_ (param_registry), object_registry_ (obj_registry),
-      type_ (type), in_signal_type_ (in_signal_type),
-      out_signal_type_ (out_signal_type)
+  Type                  type,
+  PortType              in_signal_type,
+  PortType              out_signal_type,
+  BaseTrackDependencies dependencies)
+    : base_dependencies_ (dependencies), type_ (type),
+      in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
 {
   z_debug ("creating {} track", type);
 }
@@ -408,11 +403,7 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
         }
       if constexpr (AutomatableTrack<TrackT>)
         {
-          for (
-            auto * at :
-            self->automatableTrackMixin ()
-              ->automationTracklist ()
-              ->automation_tracks ())
+          for (auto * at : self->automationTracklist ()->automation_tracks ())
             {
               std::ranges::copy (
                 at->get_children_view (), std::back_inserter (objs));
