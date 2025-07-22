@@ -488,17 +488,9 @@ TracklistSelectionsAction::create_track (int idx)
       TrackUniquePtrVariant track;
 
       /* if creating audio track from file */
-      bool                   has_plugin = false;
-      utils::Utf8String      name{};
-      FinalTrackDependencies track_deps{
-        PROJECT->get_tempo_map (),
-        PROJECT->get_file_audio_source_registry (),
-        PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_param_registry (),
-        PROJECT->get_arranger_object_registry (),
-        PROJECT->get_track_registry ()
-      };
+      bool              has_plugin = false;
+      utils::Utf8String name{};
+      const auto        track_deps = PROJECT->get_final_track_dependencies ();
       if (track_type_ == Track::Type::Audio && pool_id_.has_value ())
         {
           track = AudioTrack::create_unique (track_deps);
@@ -670,15 +662,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
                   /* clone our own track */
                   auto track_ref = PROJECT->get_track_registry ().clone_object (
-                    *own_track,
-                    structure::tracks::FinalTrackDependencies{
-                      PROJECT->get_tempo_map (),
-                      PROJECT->get_file_audio_source_registry (),
-                      PROJECT->get_plugin_registry (),
-                      PROJECT->get_port_registry (),
-                      PROJECT->get_param_registry (),
-                      PROJECT->get_arranger_object_registry (),
-                      PROJECT->get_track_registry () });
+                    *own_track, PROJECT->get_final_track_dependencies ());
                   // TODO...
                   auto track = std::get<TrackT *> (track_ref.get_object ());
 
@@ -1113,16 +1097,7 @@ TracklistSelectionsAction::
 
                   /* create a new clone to use in the project */
                   auto track_ref = PROJECT->get_track_registry ().clone_object (
-                    *own_track_ptr,
-                    FinalTrackDependencies{
-                      PROJECT->get_tempo_map (),
-                      PROJECT->get_file_audio_source_registry (),
-                      PROJECT->get_plugin_registry (),
-                      PROJECT->get_port_registry (),
-                      PROJECT->get_param_registry (),
-                      PROJECT->get_arranger_object_registry (),
-                      PROJECT->get_track_registry (),
-                    });
+                    *own_track_ptr, PROJECT->get_final_track_dependencies ());
                   // FIXME
                   auto * track = std::get<TrackT *> (track_ref.get_object ());
 

@@ -20,12 +20,14 @@ InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
         PortType::Audio,
         dependencies.to_base_dependencies ()),
       ProcessableTrack (
+        dependencies.transport_,
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
           dependencies.port_registry_, dependencies.param_registry_,
           dependencies.obj_registry_ }),
       ChannelTrack (dependencies),
       RecordableTrack (
+        dependencies.transport_,
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
           dependencies.port_registry_, dependencies.param_registry_,

@@ -126,15 +126,7 @@ Project::Project (
         *gui::SettingsManager::get_instance (),
         this)),
       track_factory_ (new structure::tracks::TrackFactory (
-        structure::tracks::FinalTrackDependencies{
-          tempo_map_,
-          *file_audio_source_registry_,
-          *plugin_registry_,
-          *port_registry_,
-          *param_registry_,
-          *arranger_object_registry_,
-          *track_registry_,
-        },
+        get_final_track_dependencies (),
         *gui::SettingsManager::get_instance (),
         this)),
       device_manager_ (device_manager)
@@ -388,17 +380,7 @@ Project::add_default_tracks ()
 
     z_debug ("adding {} track...", typeid (TrackT).name ());
     TrackT * track =
-      TrackT::create_unique (
-        structure::tracks::FinalTrackDependencies{
-          tempo_map_,
-          get_file_audio_source_registry (),
-          get_plugin_registry (),
-          get_port_registry (),
-          get_param_registry (),
-          get_arranger_object_registry (),
-          get_track_registry (),
-        })
-        .release ();
+      TrackT::create_unique (get_final_track_dependencies ()).release ();
     get_track_registry ().register_object (track);
     track->setName (name);
     tracklist_->append_track (

@@ -1631,7 +1631,8 @@ struct FinalTrackDependencies : public BaseTrackDependencies
     dsp::PortRegistry                     &port_registry,
     dsp::ProcessorParameterRegistry       &param_registry,
     arrangement::ArrangerObjectRegistry   &obj_registry,
-    TrackRegistry                         &track_registry)
+    TrackRegistry                         &track_registry,
+    const dsp::ITransport                 &transport)
       : BaseTrackDependencies (
           tempo_map,
           file_audio_source_registry,
@@ -1639,11 +1640,12 @@ struct FinalTrackDependencies : public BaseTrackDependencies
           port_registry,
           param_registry,
           obj_registry),
-        track_registry_ (track_registry)
+        track_registry_ (track_registry), transport_ (transport)
   {
   }
 
-  TrackRegistry &track_registry_;
+  TrackRegistry         &track_registry_;
+  const dsp::ITransport &transport_;
 
   BaseTrackDependencies to_base_dependencies ()
   {

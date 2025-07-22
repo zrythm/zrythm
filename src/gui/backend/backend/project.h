@@ -320,6 +320,17 @@ public:
    */
   void add_default_tracks ();
 
+  structure::tracks::FinalTrackDependencies
+  get_final_track_dependencies () const
+  {
+    return structure::tracks::FinalTrackDependencies{
+      tempo_map_,        *file_audio_source_registry_,
+      *plugin_registry_, *port_registry_,
+      *param_registry_,  *arranger_object_registry_,
+      *track_registry_,  *transport_
+    };
+  }
+
   auto &get_file_audio_source_registry () const
   {
     return *file_audio_source_registry_;

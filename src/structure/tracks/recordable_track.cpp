@@ -7,8 +7,11 @@
 
 namespace zrythm::structure::tracks
 {
-RecordableTrack::RecordableTrack (ProcessableTrack::Dependencies dependencies)
-    : ProcessableTrack (dependencies), recording_id_ (dependencies.param_registry_)
+RecordableTrack::RecordableTrack (
+  const dsp::ITransport         &transport,
+  ProcessableTrack::Dependencies dependencies)
+    : ProcessableTrack (transport, dependencies),
+      recording_id_ (dependencies.param_registry_)
 {
   recording_id_ = dependencies.param_registry_.create_object<
     dsp::ProcessorParameter> (

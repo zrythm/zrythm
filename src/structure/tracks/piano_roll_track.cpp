@@ -9,6 +9,26 @@
 
 namespace zrythm::structure::tracks
 {
+PianoRollTrack::PianoRollTrack ()
+{
+  processor_->set_fill_events_callback (
+    [this] (
+      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
+      dsp::MidiEventVector *                        midi_events,
+      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
+      for (auto &lane_var : lanes_)
+        {
+          using TrackLaneT = LanedTrackImpl::TrackLaneType;
+          auto * lane = std::get<TrackLaneT *> (lane_var);
+          for (const auto * r : lane->get_children_view ())
+            {
+              TrackProcessor::fill_events_from_region_rt (
+                transport, time_nfo, midi_events, stereo_ports, *r);
+            }
+        }
+    });
+}
+
 void
 PianoRollTrack::write_to_midi_file (
   MIDI_FILE *            mf,

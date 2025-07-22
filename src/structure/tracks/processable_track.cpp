@@ -6,11 +6,14 @@
 
 namespace zrythm::structure::tracks
 {
-ProcessableTrack::ProcessableTrack (Dependencies dependencies)
+ProcessableTrack::ProcessableTrack (
+  const dsp::ITransport &transport,
+  Dependencies           dependencies)
     : automation_tracklist_ (
         utils::make_qobject_unique<AutomationTracklist> (dependencies)),
       processor_ (
         utils::make_qobject_unique<TrackProcessor> (
+          transport,
           *this,
           TrackProcessor::ProcessorBaseDependencies{
             .port_registry_ = dependencies.port_registry_,

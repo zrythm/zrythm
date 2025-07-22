@@ -20,11 +20,13 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
         PortType::Event,
         dependencies.to_base_dependencies ()),
       ProcessableTrack (
+        dependencies.transport_,
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
           dependencies.port_registry_, dependencies.param_registry_,
           dependencies.obj_registry_ }),
       RecordableTrack (
+        dependencies.transport_,
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
           dependencies.port_registry_, dependencies.param_registry_,
@@ -42,6 +44,19 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
   color_ = Color (QColor ("#1C8FFB"));
   icon_name_ = u8"gnome-icon-library-library-music-symbolic";
   automationTracklist ()->setParent (this);
+  processor_->set_fill_events_callback (
+    [this] (
+      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
+      dsp::MidiEventVector *                        midi_events,
+      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
+      for (
+        const auto * r : structure::arrangement::template ArrangerObjectOwner<
+          structure::arrangement::ChordRegion>::get_children_view ())
+        {
+          TrackProcessor::fill_events_from_region_rt (
+            transport, time_nfo, midi_events, stereo_ports, *r);
+        }
+    });
 }
 
 void

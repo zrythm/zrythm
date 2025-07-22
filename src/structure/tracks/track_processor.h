@@ -29,12 +29,33 @@ class TrackProcessor final : public QObject, public dsp::ProcessorBase
   using PortFlow = dsp::PortFlow;
 
 public:
+  using StereoPortPair = std::pair<std::span<float>, std::span<float>>;
+
+  /**
+   * @brief Function called during processing to fill events.
+   *
+   * For regions, a helper method is provided for filling events from a single
+   * region. Implementations of this are supposed to call that for all their
+   * regions (including muted/disabled/etc.).
+   */
+  using FillEventsCallback = std::function<void (
+    const dsp::ITransport        &transport,
+    const EngineProcessTimeInfo  &time_nfo,
+    dsp::MidiEventVector *        midi_events,
+    std::optional<StereoPortPair> stereo_ports)>;
+
   /**
    * Creates a new track processor for the given track.
    */
   TrackProcessor (
+    const dsp::ITransport    &transport,
     ProcessableTrack         &track,
     ProcessorBaseDependencies dependencies);
+
+  void set_fill_events_callback (FillEventsCallback cb)
+  {
+    fill_events_cb_ = cb;
+  }
 
   bool is_audio () const;
 
@@ -52,6 +73,128 @@ public:
    * Clears all buffers.
    */
   void clear_buffers (std::size_t block_length);
+
+  /**
+   * @brief To be called by the user-provided FillEventsFunc for processing one
+   * of its regions.
+   *
+   * @param transport
+   * @param time_nfo
+   * @param[out] midi_events
+   * @param[out] stereo_ports
+   * @param r
+   */
+  template <arrangement::RegionObject RegionT>
+  static void fill_events_from_region_rt (
+    const dsp::ITransport        &transport,
+    const EngineProcessTimeInfo  &time_nfo,
+    dsp::MidiEventVector *        midi_events,
+    std::optional<StereoPortPair> stereo_ports,
+    const RegionT                &region) [[clang::nonblocking]]
+    requires std::is_same_v<RegionT, arrangement::AudioRegion>
+             || std::is_same_v<RegionT, arrangement::MidiRegion>
+             || std::is_same_v<RegionT, arrangement::ChordRegion>
+  {
+    const unsigned_frame_t g_end_frames =
+      time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_;
+
+    // skip region if muted (TODO: check parents)
+    if (region.regionMixin ()->mute ()->muted ())
+      {
+        return;
+      }
+
+      /* skip if in bounce mode and the region should not be bounced */
+// TODO
+#if 0
+        if (
+          AUDIO_ENGINE->bounce_mode_ != engine::device_io::BounceMode::Off
+          && (!r->bounce_ || !bounce_))
+          {
+            return;
+          }
+#endif
+
+    /* skip if region is not hit (inclusive of its last point) */
+    if (
+      !region.regionMixin ()->bounds ()->is_hit_by_range (
+        std::make_pair (
+          (signed_frame_t) time_nfo.g_start_frame_w_offset_,
+          (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1))),
+        true))
+      {
+        return;
+      }
+
+    signed_frame_t num_frames_to_process = std::min (
+      region.regionMixin ()->bounds ()->get_end_position_samples (true)
+        - (signed_frame_t) time_nfo.g_start_frame_w_offset_,
+      (signed_frame_t) time_nfo.nframes_);
+    nframes_t frames_processed = 0;
+
+    while (num_frames_to_process > 0)
+      {
+        unsigned_frame_t cur_g_start_frame =
+          time_nfo.g_start_frame_ + frames_processed;
+        unsigned_frame_t cur_g_start_frame_w_offset =
+          time_nfo.g_start_frame_w_offset_ + frames_processed;
+        nframes_t cur_local_start_frame =
+          time_nfo.local_offset_ + frames_processed;
+
+        auto [cur_num_frames_till_next_r_loop_or_end, is_loop_end] =
+          get_frames_till_next_loop_or_end (
+            region, (signed_frame_t) cur_g_start_frame_w_offset);
+
+        const bool is_region_end =
+          (signed_frame_t) time_nfo.g_start_frame_w_offset_ + num_frames_to_process
+          == region.regionMixin ()->bounds ()->get_end_position_samples (true);
+
+        const bool is_transport_end =
+          transport.get_loop_enabled ()
+          && (signed_frame_t) time_nfo.g_start_frame_w_offset_ + num_frames_to_process
+               == transport.get_loop_range_positions ().second;
+
+        /* whether we need a note off */
+        const bool need_note_off =
+          (cur_num_frames_till_next_r_loop_or_end < num_frames_to_process)
+          || (cur_num_frames_till_next_r_loop_or_end == num_frames_to_process && !is_loop_end)
+          /* region end */
+          || is_region_end
+          /* transport end */
+          || is_transport_end;
+
+        /* number of frames to process this time */
+        cur_num_frames_till_next_r_loop_or_end = std::min (
+          cur_num_frames_till_next_r_loop_or_end, num_frames_to_process);
+
+        const EngineProcessTimeInfo nfo = {
+          .g_start_frame_ = cur_g_start_frame,
+          .g_start_frame_w_offset_ = cur_g_start_frame_w_offset,
+          .local_offset_ = cur_local_start_frame,
+          .nframes_ =
+            static_cast<nframes_t> (cur_num_frames_till_next_r_loop_or_end)
+        };
+
+        if constexpr (
+          std::is_same_v<RegionT, arrangement::MidiRegion>
+          || std::is_same_v<RegionT, arrangement::ChordRegion>)
+          {
+            assert (midi_events);
+            arrangement::fill_midi_events (
+              region, nfo, need_note_off,
+              !is_transport_end && (is_loop_end || is_region_end), *midi_events);
+          }
+        else if constexpr (
+          std::is_same_v<RegionT, structure::arrangement::AudioRegion>)
+          {
+            assert (stereo_ports);
+            region.fill_stereo_ports (nfo, *stereo_ports);
+          }
+
+        frames_processed += cur_num_frames_till_next_r_loop_or_end;
+        num_frames_to_process -= cur_num_frames_till_next_r_loop_or_end;
+      } /* end while frames left */
+  }
 
   // ============================================================================
   // IProcessable Interface
@@ -73,37 +216,6 @@ public:
   void custom_process_block (EngineProcessTimeInfo time_nfo) override;
 
   // ============================================================================
-
-  /**
-   * Wrapper for MIDI/instrument/chord tracks to fill in MidiEvents from the
-   * timeline data.
-   *
-   * @note The engine splits the cycle so transport loop related logic is not
-   * needed.
-   *
-   * @param midi_events MidiEvents to fill.
-   */
-  void fill_midi_events (
-    const EngineProcessTimeInfo &time_nfo,
-    dsp::MidiEventVector        &midi_events)
-  {
-    fill_events_common (time_nfo, &midi_events, std::nullopt);
-  }
-
-  /**
-   * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
-   *
-   * @note The engine splits the cycle so transport loop related logic is not
-   * needed.
-   *
-   * @param stereo_ports StereoPorts to fill.
-   */
-  void fill_audio_events (
-    const EngineProcessTimeInfo                  &time_nfo,
-    std::pair<std::span<float>, std::span<float>> stereo_ports)
-  {
-    fill_events_common (time_nfo, nullptr, stereo_ports);
-  }
 
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
   {
@@ -198,22 +310,39 @@ public:
               .get_object_as<dsp::ProcessorParameter> ();
   }
 
-private:
   /**
-   * Common logic for audio and MIDI/instrument tracks to fill in MidiEvents
-   * or StereoPorts from the timeline data.
+   * Wrapper for MIDI/instrument/chord tracks to fill in MidiEvents from the
+   * timeline data.
+   *
+   * @note The engine splits the cycle so transport loop related logic is not
+   * needed.
+   *
+   * @param midi_events MidiEvents to fill.
+   */
+  void fill_midi_events (
+    const EngineProcessTimeInfo &time_nfo,
+    dsp::MidiEventVector        &midi_events)
+  {
+    std::invoke (
+      *fill_events_cb_, transport_, time_nfo, &midi_events, std::nullopt);
+    midi_events.clear_duplicates ();
+    midi_events.sort ();
+  }
+
+  /**
+   * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
    *
    * @note The engine splits the cycle so transport loop related logic is not
    * needed.
    *
    * @param stereo_ports StereoPorts to fill.
-   * @param midi_events MidiEvents to fill (from Piano Roll Port for example).
    */
-  void fill_events_common (
-    const EngineProcessTimeInfo                                 &time_nfo,
-    dsp::MidiEventVector *                                       midi_events,
-    std::optional<std::pair<std::span<float>, std::span<float>>> stereo_ports)
-    const;
+  void fill_audio_events (
+    const EngineProcessTimeInfo &time_nfo,
+    StereoPortPair               stereo_ports)
+  {
+    std::invoke (*fill_events_cb_, transport_, time_nfo, nullptr, stereo_ports);
+  }
 
 private:
   static constexpr auto kMonoKey = "mono"sv;
@@ -261,6 +390,11 @@ private:
    */
   [[gnu::hot]] void
   add_events_from_midi_cc_control_ports (nframes_t local_offset);
+
+private:
+  const dsp::ITransport &transport_;
+
+  std::optional<FillEventsCallback> fill_events_cb_;
 
 public:
   /** Mono toggle, if audio. */

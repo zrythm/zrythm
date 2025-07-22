@@ -25,12 +25,14 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
         PortType::Audio,
         dependencies.to_base_dependencies ()),
       ProcessableTrack (
+        dependencies.transport_,
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
           dependencies.port_registry_, dependencies.param_registry_,
           dependencies.obj_registry_ }),
       ChannelTrack (dependencies),
       RecordableTrack (
+        dependencies.transport_,
         Dependencies{
           dependencies.tempo_map_, dependencies.file_audio_source_registry_,
           dependencies.port_registry_, dependencies.param_registry_,
@@ -40,6 +42,23 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
   /* signal-audio also works */
   icon_name_ = u8"view-media-visualization";
   automationTracklist ()->setParent (this);
+
+  processor_->set_fill_events_callback (
+    [this] (
+      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
+      dsp::MidiEventVector *                        midi_events,
+      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
+      for (auto &lane_var : lanes_)
+        {
+          using TrackLaneT = LanedTrackImpl::TrackLaneType;
+          auto * lane = std::get<TrackLaneT *> (lane_var);
+          for (const auto * r : lane->get_children_view ())
+            {
+              TrackProcessor::fill_events_from_region_rt (
+                transport, time_nfo, midi_events, stereo_ports, *r);
+            }
+        }
+    });
 
   // TODO
   // samplerate_ = samplerate;

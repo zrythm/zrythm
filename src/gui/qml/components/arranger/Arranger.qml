@@ -5,8 +5,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import ZrythmStyle 1.0
-import Zrythm 1.0
+import ZrythmStyle
+import Zrythm
 
 Item {
   id: root

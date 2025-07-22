@@ -30,7 +30,7 @@ class ProcessableTrack : virtual public Track
 {
 public:
   using Dependencies = AutomationTrackHolder::Dependencies;
-  ProcessableTrack (Dependencies dependencies);
+  ProcessableTrack (const dsp::ITransport &transport, Dependencies dependencies);
 
   ~ProcessableTrack () override = default;
   Z_DISABLE_COPY_MOVE (ProcessableTrack)
