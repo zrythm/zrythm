@@ -7,6 +7,8 @@ target_sources(zrythm_gui_lib
     control_room.cpp
     exporter.h
     exporter.cpp
+    graph_dispatcher.h
+    graph_dispatcher.cpp
     graph_export.h
     graph_export.cpp
     metronome.h
@@ -19,8 +21,6 @@ target_sources(zrythm_gui_lib
     recording_event.cpp
     recording_manager.h
     recording_manager.cpp
-    router.h
-    router.cpp
     sample_processor.h
     sample_processor.cpp
     transport.h

@@ -61,18 +61,29 @@ public:
   using ChordRegion = arrangement::ChordRegion;
   using ChordObject = arrangement::ChordObject;
   using ScaleObjectPtr = ScaleObject *;
+  using NotePitchToChordDescriptorFunc =
+    dsp::MidiEventVector::NotePitchToChordDescriptorFunc;
 
   void init_loaded (
     PluginRegistry                  &plugin_registry,
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry) override;
 
-  ScaleObject * get_scale_at (size_t index) const;
+  const dsp::ChordDescriptor *
+  note_pitch_to_chord_descriptor (midi_byte_t note_pitch) const
+  {
+    assert (note_pitch_to_descriptor_.has_value ());
+    std::invoke (*note_pitch_to_descriptor_, note_pitch);
+  }
 
-/**
- * Returns the current chord.
- */
-#define get_chord_at_playhead() get_chord_at_pos (PLAYHEAD)
+  // FIXME: eventually this dependency should be injected via a constructor
+  // argument
+  void set_note_pitch_to_descriptor_func (NotePitchToChordDescriptorFunc func)
+  {
+    note_pitch_to_descriptor_ = func;
+  }
+
+  ScaleObject * get_scale_at (size_t index) const;
 
   /**
    * Returns the ChordObject at the given Position
@@ -137,6 +148,10 @@ private:
 
   bool initialize ();
   void set_playback_caches () override;
+
+private:
+  std::optional<dsp::MidiEventVector::NotePitchToChordDescriptorFunc>
+    note_pitch_to_descriptor_;
 };
 
 } // namespace zrythm::structure::tracks

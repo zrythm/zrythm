@@ -5,13 +5,14 @@
 
 #include "dsp/port.h"
 #include "engine/session/midi_mapping.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
 
 namespace zrythm::structure::tracks
 {
-class ProcessableTrack;
+class Track;
 
 /**
  * A TrackProcessor is a standalone processor that is used as the first step
@@ -44,30 +45,79 @@ public:
     dsp::MidiEventVector *        midi_events,
     std::optional<StereoPortPair> stereo_ports)>;
 
+  using HandleRecordingCallback =
+    std::function<void (const EngineProcessTimeInfo &time_nfo)>;
+
+  /**
+   * @brief Custom logic to use when appending the MIDI input events to the
+   * output events.
+   *
+   * If not explicitly set, this will simply copy the events over.
+   *
+   * Mainly used by ChordTrack to transform input MIDI notes into multiple
+   * output notes that match the chord.
+   */
+  using AppendMidiInputsToOutputsFunc = std::function<void (
+    dsp::MidiEventVector        &out_events,
+    const dsp::MidiEventVector  &in_events,
+    const EngineProcessTimeInfo &time_nfo)>;
+
+  /**
+   * @brief Function to transform the given MIDI inputs.
+   *
+   * This is used to, for example, change the channel of all events.
+   */
+  using TransformMidiInputsFunc = std::function<void (dsp::MidiEventVector &)>;
+
+  /**
+   * @brief Function that returns if the track for this processor is enabled.
+   *
+   * Used to conditionally skip processing if disabled.
+   */
+  using EnabledProvider = std::function<bool ()>;
+
+  using TrackNameProvider = std::function<utils::Utf8String ()>;
+
   /**
    * Creates a new track processor for the given track.
    */
   TrackProcessor (
-    const dsp::ITransport    &transport,
-    ProcessableTrack         &track,
-    ProcessorBaseDependencies dependencies);
+    const dsp::ITransport                 &transport,
+    Track                                 &track,
+    ProcessorBaseDependencies              dependencies,
+    std::optional<FillEventsCallback>      fill_events_cb = std::nullopt,
+    std::optional<TransformMidiInputsFunc> transform_midi_inputs_func =
+      std::nullopt,
+    std::optional<AppendMidiInputsToOutputsFunc>
+      append_midi_inputs_to_outputs_func = std::nullopt);
 
+  // TODO: remove this and the other setters - use constructor
   void set_fill_events_callback (FillEventsCallback cb)
   {
-    fill_events_cb_ = cb;
+    fill_events_cb_ = std::move (cb);
   }
 
-  bool is_audio () const;
+  void set_handle_recording_callback (HandleRecordingCallback handle_rec_cb)
+  {
+    handle_recording_cb_ = std::move (handle_rec_cb);
+  }
 
-  bool is_midi () const;
+  void
+  set_append_midi_inputs_to_outputs_func (AppendMidiInputsToOutputsFunc func)
+  {
+    append_midi_inputs_to_outputs_func_ = std::move (func);
+  }
+
+  void set_transform_midi_inputs_func (TransformMidiInputsFunc func)
+  {
+    transform_midi_inputs_func_ = std::move (func);
+  }
+
+  bool is_audio () const { return is_audio_; }
+
+  constexpr bool is_midi () const { return is_midi_; }
 
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
-
-  ProcessableTrack * get_track () const
-  {
-    z_return_val_if_fail (track_, nullptr);
-    return track_;
-  }
 
   /**
    * Clears all buffers.
@@ -150,9 +200,10 @@ public:
           == region.regionMixin ()->bounds ()->get_end_position_samples (true);
 
         const bool is_transport_end =
-          transport.get_loop_enabled ()
+          transport.loop_enabled ()
           && (signed_frame_t) time_nfo.g_start_frame_w_offset_ + num_frames_to_process
-               == transport.get_loop_range_positions ().second;
+               == static_cast<signed_frame_t> (
+                 transport.get_loop_range_positions ().second);
 
         /* whether we need a note off */
         const bool need_note_off =
@@ -282,7 +333,7 @@ public:
    */
   dsp::MidiPort &get_piano_roll_port () const
   {
-    return *get_input_ports ().at (1).get_object_as<dsp::MidiPort> ();
+    return *piano_roll_port_id_->get_object_as<dsp::MidiPort> ();
   }
   dsp::ProcessorParameter &
   get_midi_cc_param (int channel_index, int cc_index) const
@@ -388,15 +439,28 @@ private:
   /**
    * Adds events to midi out based on any changes in MIDI CC control ports.
    */
-  [[gnu::hot]] void
-  add_events_from_midi_cc_control_ports (nframes_t local_offset);
+  [[gnu::hot]] void add_events_from_midi_cc_control_ports (
+    dsp::MidiEventVector &events,
+    nframes_t             local_offset);
 
 private:
   const dsp::ITransport &transport_;
 
-  std::optional<FillEventsCallback> fill_events_cb_;
+  const bool is_midi_;
+  const bool is_audio_;
+
+  const EnabledProvider   enabled_provider_;
+  const TrackNameProvider track_name_provider_;
+
+  std::optional<FillEventsCallback>      fill_events_cb_;
+  std::optional<HandleRecordingCallback> handle_recording_cb_;
+  AppendMidiInputsToOutputsFunc          append_midi_inputs_to_outputs_func_;
+  std::optional<TransformMidiInputsFunc> transform_midi_inputs_func_;
 
 public:
+  // Cached piano roll port ID.
+  std::optional<dsp::PortUuidReference> piano_roll_port_id_;
+
   /** Mono toggle, if audio. */
   std::optional<dsp::ProcessorParameterUuidReference> mono_id_;
 
@@ -463,9 +527,6 @@ public:
    */
   float l_port_db_ = 0.0f;
   float r_port_db_ = 0.0f;
-
-  /** Pointer to owner track, if any. */
-  ProcessableTrack * track_ = nullptr;
 
   /**
    * A queue of MIDI CC ports whose values have been recently updated.

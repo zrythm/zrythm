@@ -8,7 +8,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/midi_event.h"
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"

@@ -17,9 +17,7 @@ ProcessableTrack::ProcessableTrack (
           *this,
           TrackProcessor::ProcessorBaseDependencies{
             .port_registry_ = dependencies.port_registry_,
-            .param_registry_ = dependencies.param_registry_ })),
-      port_registry_ (dependencies.port_registry_),
-      param_registry_ (dependencies.param_registry_)
+            .param_registry_ = dependencies.param_registry_ }))
 {
 }
 
@@ -40,7 +38,6 @@ init_from (
   init_from (*obj.processor_, *other.processor_, clone_type);
   init_from (
     *obj.automation_tracklist_, *other.automation_tracklist_, clone_type);
-  obj.processor_->track_ = &obj;
 }
 
 void

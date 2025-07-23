@@ -9,7 +9,7 @@
 #include "dsp/port.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"

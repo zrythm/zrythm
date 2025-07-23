@@ -9,7 +9,7 @@
 #include "zrythm-test-config.h"
 
 #include "dsp/graph.h"
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"

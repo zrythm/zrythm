@@ -4,7 +4,7 @@
 #include "zrythm-test-config.h"
 
 #include "dsp/midi_event.h"
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "structure/tracks/fader.h"
 #include "utils/math.h"
 

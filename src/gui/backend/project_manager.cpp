@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/zrythm_application.h"

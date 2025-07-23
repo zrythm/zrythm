@@ -230,6 +230,9 @@ public:
   void
   append (const MidiEventVector &src, nframes_t local_offset, nframes_t nframes);
 
+  using NotePitchToChordDescriptorFunc =
+    std::function<const ChordDescriptor *(midi_byte_t)>;
+
   /**
    * Transforms the given MIDI input to the MIDI notes of the corresponding
    * chord.
@@ -237,12 +240,11 @@ public:
    * Only C0~B0 are considered.
    */
   void transform_chord_and_append (
-    MidiEventVector &src,
-    std::function<const ChordDescriptor *(midi_byte_t)>
-                note_number_to_chord_descriptor,
-    midi_byte_t velocity_to_use,
-    nframes_t   local_offset,
-    nframes_t   nframes);
+    const MidiEventVector         &src,
+    NotePitchToChordDescriptorFunc note_number_to_chord_descriptor,
+    midi_byte_t                    velocity_to_use,
+    nframes_t                      local_offset,
+    nframes_t                      nframes);
 
   /**
    * Adds a note on event to the given MidiEvents.

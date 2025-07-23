@@ -3,9 +3,9 @@
 
 #include "dsp/graph.h"
 #include "dsp/port.h"
+#include "engine/session/graph_dispatcher.h"
 #include "engine/session/graph_export.h"
 #include "engine/session/project_graph_builder.h"
-#include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/plugin.h"

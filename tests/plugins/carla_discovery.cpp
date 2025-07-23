@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/dsp/carla_discovery.h"
 #include "structure/tracks/fader.h"
 #include "utils/math.h"

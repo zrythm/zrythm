@@ -18,7 +18,7 @@ struct FileImportInfo;
 
 namespace zrythm::engine::session
 {
-class Router;
+class DspGraphDispatcher;
 }
 
 class Project;
@@ -182,7 +182,8 @@ public:
     TrackUuid track_id,
     int       pos,
     bool      always_before_pos,
-    std::optional<std::reference_wrapper<engine::session::Router>> router);
+    std::optional<std::reference_wrapper<engine::session::DspGraphDispatcher>>
+      router);
 
   std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
   {

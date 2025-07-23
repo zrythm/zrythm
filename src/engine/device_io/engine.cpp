@@ -37,9 +37,9 @@
 #include "dsp/port.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
+#include "engine/session/graph_dispatcher.h"
 #include "engine/session/metronome.h"
 #include "engine/session/recording_manager.h"
-#include "engine/session/router.h"
 #include "engine/session/sample_processor.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
@@ -87,10 +87,6 @@ AudioEngine::AudioEngine (
 {
   z_debug ("Creating audio engine...");
 
-  midi_editor_manual_press_ = std::make_unique<dsp::MidiPort> (
-    u8"MIDI Editor Manual Press", dsp::PortFlow::Input);
-  midi_editor_manual_press_->set_symbol (u8"midi_editor_manual_press");
-
   midi_in_ = std::make_unique<dsp::MidiPort> (u8"MIDI in", dsp::PortFlow::Input);
   midi_in_->set_symbol (u8"midi_in");
 
@@ -117,8 +113,6 @@ init_from (
   obj.monitor_out_right_ = other.monitor_out_right_;
 // TODO
 #if 0
-  obj.midi_editor_manual_press_ =
-    utils::clone_unique (*other.midi_editor_manual_press_);
   obj.midi_in_ = utils::clone_unique (*other.midi_in_);
   obj.control_room_ = utils::clone_unique (*other.control_room_);
   obj.sample_processor_ = utils::clone_unique (*other.sample_processor_);
@@ -225,7 +219,7 @@ void
 AudioEngine::init_common ()
 {
   metronome_ = std::make_unique<session::Metronome> (*this);
-  router_ = std::make_unique<session::Router> (this);
+  router_ = std::make_unique<session::DspGraphDispatcher> (this);
 
   pan_law_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -641,7 +635,6 @@ AudioEngine::process_prepare (
   /* reset all buffers */
   control_room_->monitor_fader_->clear_buffers (block_length);
   midi_in_->clear_buffer (block_length);
-  midi_editor_manual_press_->clear_buffer (block_length);
 
   // TODO
   // sample_processor_->prepare_process (nframes);
@@ -938,17 +931,6 @@ AudioEngine::~AudioEngine ()
       activate (false);
     }
 
-// TODO
-#if 0
-  if (PROJECT && AUDIO_ENGINE && this == AUDIO_ENGINE)
-    {
-      iterate_tuple (
-        [&] (auto &port) { port.disconnect_all (); }, get_monitor_out_ports ());
-      midi_in_->disconnect_all ();
-      midi_editor_manual_press_->disconnect_all ();
-    }
-#endif
-
   z_debug ("finished freeing engine");
 }
 
@@ -971,8 +953,6 @@ from_json (const nlohmann::json &j, AudioEngine &engine)
   j.at (AudioEngine::kFramesPerTickKey).get_to (engine.frames_per_tick_);
   j.at (AudioEngine::kMonitorOutLKey).get_to (engine.monitor_out_left_);
   j.at (AudioEngine::kMonitorOutRKey).get_to (engine.monitor_out_right_);
-  j.at (AudioEngine::kMidiEditorManualPressKey)
-    .get_to (engine.midi_editor_manual_press_);
   j.at (AudioEngine::kMidiInKey).get_to (engine.midi_in_);
   j.at (AudioEngine::kControlRoomKey).get_to (engine.control_room_);
   j.at (AudioEngine::kSampleProcessorKey).get_to (engine.sample_processor_);

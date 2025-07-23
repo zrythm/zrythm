@@ -298,7 +298,6 @@ private:
   static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
   static constexpr auto kMonitorOutLKey = "monitorOutL"sv;
   static constexpr auto kMonitorOutRKey = "monitorOutR"sv;
-  static constexpr auto kMidiEditorManualPressKey = "midiEditorManualPress"sv;
   static constexpr auto kMidiInKey = "midiIn"sv;
   static constexpr auto kControlRoomKey = "controlRoom"sv;
   static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
@@ -307,13 +306,12 @@ private:
   friend void           to_json (nlohmann::json &j, const AudioEngine &engine)
   {
     j = nlohmann::json{
-      { kFramesPerTickKey,         engine.frames_per_tick_          },
-      { kMonitorOutLKey,           engine.monitor_out_left_         },
-      { kMonitorOutRKey,           engine.monitor_out_right_        },
-      { kMidiEditorManualPressKey, engine.midi_editor_manual_press_ },
-      { kMidiInKey,                engine.midi_in_                  },
-      { kControlRoomKey,           engine.control_room_             },
-      { kSampleProcessorKey,       engine.sample_processor_         },
+      { kFramesPerTickKey,   engine.frames_per_tick_   },
+      { kMonitorOutLKey,     engine.monitor_out_left_  },
+      { kMonitorOutRKey,     engine.monitor_out_right_ },
+      { kMidiInKey,          engine.midi_in_           },
+      { kControlRoomKey,     engine.control_room_      },
+      { kSampleProcessorKey, engine.sample_processor_  },
     };
   }
   friend void from_json (const nlohmann::json &j, AudioEngine &engine);
@@ -353,7 +351,7 @@ public:
   bool buf_size_set_{};
 
   /** The processing graph router. */
-  std::unique_ptr<session::Router> router_;
+  std::unique_ptr<session::DspGraphDispatcher> router_;
 
 // TODO: these should be separate processors
 #if 0
@@ -395,14 +393,17 @@ public:
   /**
    * Manual note press events from the piano roll.
    *
-   * The events from here should be read by the corresponding track
+   * The events from here should be fed to the corresponding track
    * processor's MIDI in port (TrackProcessor.midi_in). To avoid having to
    * recalculate the graph to reattach this port to the correct track
    * processor, only connect this port to the initial processor in the
    * routing graph and fetch the events manually when processing the
-   * corresponding track processor.
+   * corresponding track processor (or just do this at the start of each
+   * processing cycle).
+   *
+   * @see DspGraphDispatcher.
    */
-  std::unique_ptr<dsp::MidiPort> midi_editor_manual_press_;
+  dsp::MidiEventVector midi_editor_manual_press_;
 
   /**
    * Port used for receiving MIDI in messages for binding CC and other

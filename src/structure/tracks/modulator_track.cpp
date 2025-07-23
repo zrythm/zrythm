@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/project.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/modulator_track.h"
@@ -45,7 +45,8 @@ ModulatorTrack::initialize ()
       modulator_macro_processors_.emplace_back (
         utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
           dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
-            .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+            .port_registry_ = base_dependencies_.port_registry_,
+            .param_registry_ = base_dependencies_.param_registry_ },
           i, this));
     }
 
@@ -275,8 +276,8 @@ from_json (const nlohmann::json &j, ModulatorTrack &track)
     {
       auto macro_proc = utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
         dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
-          .port_registry_ = track.port_registry_,
-          .param_registry_ = track.param_registry_ },
+          .port_registry_ = track.base_dependencies_.port_registry_,
+          .param_registry_ = track.base_dependencies_.param_registry_ },
         index, &track);
       from_json (macro_proc_json, *macro_proc);
       track.modulator_macro_processors_.push_back (std::move (macro_proc));

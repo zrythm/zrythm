@@ -134,7 +134,7 @@ private:
   }
   friend void from_json (const nlohmann::json &j, RecordableTrack &track)
   {
-    track.recording_id_ = { track.param_registry_ };
+    track.recording_id_ = { track.base_dependencies_.param_registry_ };
     j.at (kRecordingIdKey).get_to (track.recording_id_);
     j.at (kRecordSetAutomaticallyKey).get_to (track.record_set_automatically_);
   }

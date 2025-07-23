@@ -149,7 +149,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 }
 
 void
-MidiMappings::apply_from_cc_events (dsp::MidiEventVector &events)
+MidiMappings::apply_from_cc_events (const dsp::MidiEventVector &events)
 {
   for (const auto &ev : events)
     {

@@ -33,8 +33,13 @@ public:
     (signed_frame_t),
     (const, override));
   MOCK_METHOD (
-    (std::pair<signed_frame_t, signed_frame_t>),
+    (std::pair<unsigned_frame_t, unsigned_frame_t>),
     get_loop_range_positions,
+    (),
+    (const, override));
+  MOCK_METHOD (
+    (std::pair<unsigned_frame_t, unsigned_frame_t>),
+    get_punch_range_positions,
     (),
     (const, override));
   MOCK_METHOD (PlayState, get_play_state, (), (const, override));
@@ -43,11 +48,14 @@ public:
     get_playhead_position_in_audio_thread,
     (),
     (const, override));
-  MOCK_METHOD (bool, get_loop_enabled, (), (const, override));
+  MOCK_METHOD (bool, loop_enabled, (), (const, override));
+  MOCK_METHOD (bool, punch_enabled, (), (const, override));
+  MOCK_METHOD (bool, recording_enabled, (), (const, override));
+  MOCK_METHOD (bool, has_preroll_frames_remaining, (), (const, override));
   MOCK_METHOD (
     nframes_t,
     is_loop_point_met_in_audio_thread,
-    (signed_frame_t g_start_frames, nframes_t nframes),
+    (unsigned_frame_t g_start_frames, nframes_t nframes),
     (const, override));
 };
 }

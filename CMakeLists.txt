@@ -920,8 +920,10 @@ FetchContent_Declare(
     libs/assert
     libs/concept_check
     libs/config
+    libs/container
     libs/core
     libs/move
+    libs/intrusive
     libs/static_assert
     libs/throw_exception
     libs/type_traits
@@ -932,7 +934,7 @@ FetchContent_Declare(
     tools/cmake
   EXCLUDE_FROM_ALL
 )
-set(BOOST_INCLUDE_LIBRARIES circular_buffer stl_interfaces describe)
+set(BOOST_INCLUDE_LIBRARIES circular_buffer stl_interfaces describe container)
 FetchContent_MakeAvailable(Boost)
 
 CPMFindPackage(

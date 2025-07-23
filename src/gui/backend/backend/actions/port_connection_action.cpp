@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_all.h"
+#include "engine/session/graph_dispatcher.h"
 #include "engine/session/project_graph_builder.h"
-#include "engine/session/router.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

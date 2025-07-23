@@ -7,6 +7,7 @@
 
 #include "engine/session/recording_event.h"
 #include "structure/arrangement/automation_point.h"
+#include "structure/tracks/processable_track.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 #include "utils/types.h"
@@ -61,8 +62,8 @@ public:
    * @ref RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
    */
   void handle_recording (
-    const structure::tracks::TrackProcessor * track_processor,
-    const EngineProcessTimeInfo *             time_nfo);
+    structure::tracks::ProcessableTrackPtrVariant track_var,
+    const EngineProcessTimeInfo                  &time_nfo);
 
   Q_SLOT void process_events ();
 

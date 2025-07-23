@@ -8,7 +8,7 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/cyaml_schemas/project.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"

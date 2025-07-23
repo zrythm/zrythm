@@ -825,12 +825,6 @@ Transport::get_range_positions () const
            : std::make_pair (range_2_, range_1_);
 }
 
-std::pair<signed_frame_t, signed_frame_t>
-Transport::get_loop_range_positions () const
-{
-  return std::make_pair (loop_start_pos_->frames_, loop_end_pos_->frames_);
-}
-
 void
 Transport::set_range (
   bool             range1,

@@ -57,6 +57,18 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
             transport, time_nfo, midi_events, stereo_ports, *r);
         }
     });
+  processor_->set_append_midi_inputs_to_outputs_func (
+    [this] (
+      dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
+      const EngineProcessTimeInfo &time_nfo) {
+      out_events.transform_chord_and_append (
+        in_events,
+        [this] (midi_byte_t note_number) {
+          return note_pitch_to_chord_descriptor (note_number);
+        },
+        arrangement::MidiNote::DEFAULT_VELOCITY, time_nfo.local_offset_,
+        time_nfo.nframes_);
+    });
 }
 
 void
@@ -164,9 +176,9 @@ ChordTrack::get_scale_at_ticks (double timeline_ticks) const -> ScaleObject *
 auto
 ChordTrack::get_chord_at_ticks (double timeline_ticks) const -> ChordObject *
 {
-  const auto timeline_frames = static_cast<signed_frame_t> (
-    std::round (PROJECT->get_tempo_map ().tick_to_samples (timeline_ticks)));
-  auto region_var =
+  const auto timeline_frames = static_cast<signed_frame_t> (std::round (
+    base_dependencies_.tempo_map_.tick_to_samples (timeline_ticks)));
+  auto       region_var =
     arrangement::ArrangerObjectSpan{
       arrangement::ArrangerObjectOwner<
         arrangement::ChordRegion>::get_children_vector ()

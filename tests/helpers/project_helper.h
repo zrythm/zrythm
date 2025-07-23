@@ -13,8 +13,8 @@
 #include "zrythm-test-config.h"
 
 #include "engine/device_io/engine_dummy.h"
+#include "engine/session/graph_dispatcher.h"
 #include "engine/session/recording_manager.h"
-#include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"
 #include "gui/backend/backend/zrythm.h"

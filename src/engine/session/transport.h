@@ -289,15 +289,15 @@ public:
   Position get_playhead_position_in_gui_thread () const;
 
   nframes_t is_loop_point_met_in_audio_thread (
-    const signed_frame_t g_start_frames,
-    const nframes_t      nframes) const override
+    const unsigned_frame_t g_start_frames,
+    const nframes_t        nframes) const override
   {
     auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
     bool loop_end_between_start_and_end =
       (loop_end_pos > g_start_frames
        && loop_end_pos <= g_start_frames + (long) nframes);
 
-    if (loop_end_between_start_and_end && get_loop_enabled ()) [[unlikely]]
+    if (loop_end_between_start_and_end && loop_enabled ()) [[unlikely]]
       {
         return (nframes_t) (loop_end_pos - g_start_frames);
       }
@@ -393,8 +393,18 @@ frames_add_frames (
    */
   std::pair<Position, Position> get_range_positions () const;
 
-  std::pair<signed_frame_t, signed_frame_t>
-  get_loop_range_positions () const override;
+  std::pair<unsigned_frame_t, unsigned_frame_t>
+  get_loop_range_positions () const override
+  {
+    return std::make_pair (loop_start_pos_->frames_, loop_end_pos_->frames_);
+  }
+
+  std::pair<unsigned_frame_t, unsigned_frame_t>
+  get_punch_range_positions () const override
+  {
+    return std::make_pair (
+      punch_in_pos_->getFrames (), punch_out_pos_->getFrames ());
+  }
 
   PlayState get_play_state () const override { return play_state_; }
 
@@ -427,7 +437,13 @@ frames_add_frames (
 
   bool position_is_inside_punch_range (Position pos);
 
-  bool get_loop_enabled () const override { return loop_; }
+  bool loop_enabled () const override { return loop_; }
+  bool punch_enabled () const override { return punch_mode_; }
+  bool recording_enabled () const override { return recording_; }
+  bool has_preroll_frames_remaining () const override
+  {
+    return preroll_frames_remaining_ > 0;
+  }
 
   /**
    * Recalculates the total bars based on the last object's position.
@@ -583,17 +599,17 @@ public:
   nframes_t position_ = 0;
 
   /** Looping or not. */
-  bool loop_ = false;
+  std::atomic_bool loop_ = false;
 
   /** Whether punch in/out mode is enabled. */
-  bool punch_mode_ = false;
+  std::atomic_bool punch_mode_ = false;
 
   /** Whether MIDI/audio recording is enabled (recording toggle in transport
    * bar). */
-  bool recording_ = false;
+  std::atomic_bool recording_ = false;
 
   /** Metronome enabled or not. */
-  bool metronome_enabled_ = false;
+  std::atomic_bool metronome_enabled_ = false;
 
   /** Recording preroll frames remaining. */
   signed_frame_t preroll_frames_remaining_ = 0;

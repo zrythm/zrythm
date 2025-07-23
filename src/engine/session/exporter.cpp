@@ -8,7 +8,7 @@
 #include "dsp/position.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/exporter.h"
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"

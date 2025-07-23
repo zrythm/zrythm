@@ -27,6 +27,15 @@ PianoRollTrack::PianoRollTrack ()
             }
         }
     });
+
+  // change the MIDI channel on the midi input to the channel set on the track
+  processor_->set_transform_midi_inputs_func (
+    [this] (dsp::MidiEventVector &events) {
+      if (!passthrough_midi_input_)
+        {
+          events.set_channel (midi_ch_);
+        }
+    });
 }
 
 void

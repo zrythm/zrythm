@@ -71,10 +71,6 @@ public:
    * This is the starting point when processing a Track.
    */
   utils::QObjectUniquePtr<TrackProcessor> processor_;
-
-protected:
-  dsp::PortRegistry               &port_registry_;
-  dsp::ProcessorParameterRegistry &param_registry_;
 };
 
 using ProcessableTrackVariant = std::variant<

@@ -83,6 +83,16 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               /* add the track processor */
               dsp::ProcessorGraphBuilder::add_nodes (
                 graph, *transport, *tr->processor_);
+
+              // set appropriate callbacks
+              if constexpr (
+                std::derived_from<TrackT, structure::tracks::RecordableTrack>)
+                {
+                  tr->processor_->set_handle_recording_callback (
+                    [tr] (const EngineProcessTimeInfo &time_nfo) {
+                      RECORDING_MANAGER->handle_recording (tr, time_nfo);
+                    });
+                }
             }
 
           /* handle modulator track */
@@ -226,16 +236,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       hw_processor_node->connect_to (*node2);
     }
 #endif
-
-  /* connect MIDI editor manual press */
-  {
-// TODO
-#if 0
-    auto node2 = graph.get_nodes ().find_node_for_processable (
-      *engine->midi_editor_manual_press_);
-    node2->connect_to (*initial_processor_node);
-#endif
-  }
 
   /* connect the transport ports */
   {

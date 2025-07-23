@@ -50,7 +50,7 @@ MidiEventVector::append (
 
 void
 MidiEventVector::transform_chord_and_append (
-  MidiEventVector &src,
+  const MidiEventVector &src,
   std::function<const ChordDescriptor *(midi_byte_t)>
                   note_number_to_chord_descriptor,
   midi_byte_t     velocity_to_use,

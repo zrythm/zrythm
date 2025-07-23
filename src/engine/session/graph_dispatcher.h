@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -39,17 +39,19 @@ namespace zrythm::engine::session
 {
 
 /**
- * @brief The Router class manages the processing graph for the audio engine.
+ * @brief The DspGraphDispatcher class manages the processing graph for the
+ * audio engine.
  *
- * The Router class is responsible for maintaining the active processing graph,
- * handling graph setup and recalculation, and managing the processing cycle.
- * It provides methods for starting a new processing cycle, retrieving the
- * maximum playback latency, and checking the current processing thread.
+ * The DspGraphDispatcher class is responsible for maintaining the active
+ * processing graph, handling graph setup and recalculation, and managing the
+ * processing cycle. It provides methods for starting a new processing cycle,
+ * retrieving the maximum playback latency, and checking the current processing
+ * thread.
  */
-class Router final
+class DspGraphDispatcher final
 {
 public:
-  Router (device_io::AudioEngine * engine = nullptr);
+  DspGraphDispatcher (device_io::AudioEngine * engine = nullptr);
 
   /**
    * Recalculates the process acyclic directed graph.
@@ -57,6 +59,23 @@ public:
    * @param soft If true, only readjusts latencies.
    */
   void recalc_graph (bool soft);
+
+  /**
+   * @brief Global cycle pre-processing logic that does not require rebuilding
+   * the graph.
+   *
+   * Some examples of what could go here:
+   * 1. live piano-roll keys
+   * 2. transport (start/stop/seek/loop/tempo)
+   * 3. global panic
+   * 4. external clock/time-sig
+   * 5. one-shot automation jumps
+   *
+   * Everything else (plugins, clips, faders) lives inside the graph.
+   *
+   * @param time_nfo Current cycle time info.
+   */
+  void preprocess_at_start_of_cycle (const EngineProcessTimeInfo &time_nfo);
 
   /**
    * Starts a new cycle.

@@ -31,8 +31,8 @@
 #include "dsp/graph.h"
 #include "dsp/port.h"
 #include "engine/device_io/engine.h"
+#include "engine/session/graph_dispatcher.h"
 #include "engine/session/project_graph_builder.h"
-#include "engine/session/router.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/track_processor.h"
@@ -41,10 +41,13 @@
 
 namespace zrythm::engine::session
 {
-Router::Router (device_io::AudioEngine * engine) : audio_engine_ (engine) { }
+DspGraphDispatcher::DspGraphDispatcher (device_io::AudioEngine * engine)
+    : audio_engine_ (engine)
+{
+}
 
 nframes_t
-Router::get_max_route_playback_latency ()
+DspGraphDispatcher::get_max_route_playback_latency ()
 {
   z_return_val_if_fail (scheduler_, 0);
   max_route_playback_latency_ =
@@ -54,11 +57,50 @@ Router::get_max_route_playback_latency ()
 }
 
 void
-Router::start_cycle (EngineProcessTimeInfo time_nfo)
+DspGraphDispatcher::preprocess_at_start_of_cycle (
+  const EngineProcessTimeInfo &time_nfo)
 {
-  z_return_if_fail (scheduler_);
-  z_return_if_fail (
-    time_nfo.local_offset_ + time_nfo.nframes_ <= AUDIO_ENGINE->nframes_);
+
+  // fill live key-press events for the currently active piano roll
+  {
+    auto &midi_events = audio_engine_->midi_editor_manual_press_;
+    if (time_nfo.local_offset_ == 0 && CLIP_EDITOR->has_region ())
+      {
+        auto clip_editor_track_var =
+          CLIP_EDITOR->get_region_and_track ()->second;
+        std::visit (
+          [&] (auto &&track) {
+            using TrackT = base_type<decltype (track)>;
+            if constexpr (
+              std::derived_from<TrackT, structure::tracks::PianoRollTrack>)
+              {
+                auto &target_port = track->processor_->get_midi_in_port ();
+                /* if not set to "all channels", filter-append */
+                if (track->channel_->midi_channels_.has_value ())
+                  {
+                    target_port.midi_events_.active_events_.append_w_filter (
+                      midi_events, track->channel_->midi_channels_,
+                      time_nfo.local_offset_, time_nfo.nframes_);
+                  }
+                /* otherwise append normally */
+                else
+                  {
+                    target_port.midi_events_.active_events_.append (
+                      midi_events, time_nfo.local_offset_, time_nfo.nframes_);
+                  }
+                midi_events.clear ();
+              }
+          },
+          clip_editor_track_var);
+      }
+  }
+}
+
+void
+DspGraphDispatcher::start_cycle (EngineProcessTimeInfo time_nfo)
+{
+  assert (scheduler_);
+  assert (time_nfo.local_offset_ + time_nfo.nframes_ <= audio_engine_->nframes_);
 
   /* only set the kickoff thread when not called from the gtk thread (sometimes
    * this is called from the gtk thread to force some processing) */
@@ -73,18 +115,21 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
     }
 
   global_offset_ =
-    max_route_playback_latency_ - AUDIO_ENGINE->remaining_latency_preroll_;
+    max_route_playback_latency_ - audio_engine_->remaining_latency_preroll_;
   time_nfo_ = time_nfo;
   z_return_if_fail_cmp (
     time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
 
   callback_in_progress_ = true;
-  scheduler_->run_cycle (time_nfo_, AUDIO_ENGINE->remaining_latency_preroll_);
+
+  preprocess_at_start_of_cycle (time_nfo_);
+
+  scheduler_->run_cycle (time_nfo_, audio_engine_->remaining_latency_preroll_);
   callback_in_progress_ = false;
 }
 
 void
-Router::recalc_graph (bool soft)
+DspGraphDispatcher::recalc_graph (bool soft)
 {
   z_info ("Recalculating{}...", soft ? " (soft)" : "");
 

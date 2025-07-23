@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -253,33 +253,16 @@ Tracklist::disconnect_channel (Channel &channel)
 void
 Tracklist::disconnect_track_processor (TrackProcessor &track_processor)
 {
-  auto track = track_processor.get_track ();
-  z_return_if_fail (track);
-
-  const auto disconnect_port = [&] (auto &port) {
-    port_connections_manager_->remove_all_connections (port.get_uuid ());
+  const auto disconnect_port_id = [&] (const dsp::PortUuid &port_id) {
+    port_connections_manager_->remove_all_connections (port_id);
   };
 
-  switch (track->get_input_signal_type ())
-    {
-    case dsp::PortType::Audio:
-      // disconnect_port (track_processor.get_mono_port ());
-      // disconnect_port (track_processor.get_input_gain_port ());
-      // disconnect_port (track_processor.get_output_gain_port ());
-      // disconnect_port (track_processor.get_monitor_audio_port ());
-      iterate_tuple (disconnect_port, track_processor.get_stereo_in_ports ());
-      iterate_tuple (disconnect_port, track_processor.get_stereo_out_ports ());
-
-      break;
-    case dsp::PortType::Event:
-      disconnect_port (track_processor.get_midi_in_port ());
-      disconnect_port (track_processor.get_midi_out_port ());
-      if (track->has_piano_roll ())
-        disconnect_port (track_processor.get_piano_roll_port ());
-      break;
-    default:
-      break;
-    }
+  std::ranges::for_each (
+    track_processor.get_input_ports (), disconnect_port_id,
+    &dsp::PortUuidReference::id);
+  std::ranges::for_each (
+    track_processor.get_output_ports (), disconnect_port_id,
+    &dsp::PortUuidReference::id);
 }
 
 void
@@ -1167,7 +1150,8 @@ Tracklist::move_track (
   const TrackUuid track_id,
   int             pos,
   bool            always_before_pos,
-  std::optional<std::reference_wrapper<engine::session::Router>> router)
+  std::optional<std::reference_wrapper<engine::session::DspGraphDispatcher>>
+    router)
 {
   auto       track_var = get_track (track_id);
   const auto track_index = get_track_index (track_id);

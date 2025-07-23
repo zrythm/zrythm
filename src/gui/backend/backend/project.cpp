@@ -7,7 +7,7 @@
 
 #include "dsp/port_connections_manager.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
@@ -393,6 +393,11 @@ Project::add_default_tracks ()
 
   /* chord */
   add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
+  tracklist_->get_chord_track ()->set_note_pitch_to_descriptor_func (
+    [this] (midi_byte_t note_pitch) {
+      return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
+        note_pitch);
+    });
 
   /* tempo */
   transport_->update_caches (
@@ -1410,4 +1415,11 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kMidiMappingsKey).get_to (*project.midi_mappings_);
   j.at (Project::kUndoManagerKey).get_to (*project.undo_manager_);
   j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
+
+  project.tracklist_->get_chord_track ()->set_note_pitch_to_descriptor_func (
+    [&project] (midi_byte_t note_pitch) {
+      return project.getClipEditor ()
+        ->getChordEditor ()
+        ->get_chord_from_note_number (note_pitch);
+    });
 }

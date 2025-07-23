@@ -3,7 +3,7 @@
 
 #include <ranges>
 
-#include "engine/session/router.h"
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/project.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/group_target_track.h"

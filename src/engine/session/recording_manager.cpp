@@ -229,8 +229,8 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
 void
 RecordingManager::handle_recording (
-  const TrackProcessor *              track_processor,
-  const EngineProcessTimeInfo * const time_nfo)
+  structure::tracks::ProcessableTrackPtrVariant track_var,
+  const EngineProcessTimeInfo                  &time_nfo)
 {
 #if 0
   z_info (
@@ -248,13 +248,13 @@ RecordingManager::handle_recording (
   bool inside_punch_range = false;
 
   z_return_if_fail_cmp (
-    time_nfo->local_offset_ + time_nfo->nframes_, <=,
+    time_nfo.local_offset_ + time_nfo.nframes_, <=,
     AUDIO_ENGINE->get_block_length ());
 
   if (TRANSPORT->punch_mode_)
     {
       dsp::Position tmp (
-        (signed_frame_t) time_nfo->g_start_frame_w_offset_,
+        (signed_frame_t) time_nfo.g_start_frame_w_offset_,
         AUDIO_ENGINE->ticks_per_frame_);
       inside_punch_range = TRANSPORT->position_is_inside_punch_range (tmp);
     }
@@ -264,8 +264,6 @@ RecordingManager::handle_recording (
     }
 
   /* ---- handle start/stop/pause recording events ---- */
-  auto tr_var = convert_to_variant<ProcessableTrackPtrVariant> (
-    track_processor->get_track ());
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
@@ -286,20 +284,20 @@ RecordingManager::handle_recording (
                   /* send stop recording event */
                   auto re = event_obj_pool_.acquire ();
                   re->init (
-                    RecordingEvent::Type::StopTrackRecording, *tr, *time_nfo);
+                    RecordingEvent::Type::StopTrackRecording, *tr, time_nfo);
                   event_queue_.push_back (re);
                 }
               skip_adding_track_events = true;
             }
           /* if pausing */
-          else if (time_nfo->nframes_ == 0)
+          else if (time_nfo.nframes_ == 0)
             {
               if (tr->recording_region_ || tr->recording_start_sent_)
                 {
                   /* send pause event */
                   auto re = event_obj_pool_.acquire ();
                   re->init (
-                    RecordingEvent::Type::PauseTrackRecording, *tr, *time_nfo);
+                    RecordingEvent::Type::PauseTrackRecording, *tr, time_nfo);
                   event_queue_.push_back (re);
 
                   skip_adding_track_events = true;
@@ -316,7 +314,7 @@ RecordingManager::handle_recording (
                   /* send start recording event */
                   auto re = event_obj_pool_.acquire ();
                   re->init (
-                    RecordingEvent::Type::StartTrackRecording, *tr, *time_nfo);
+                    RecordingEvent::Type::StartTrackRecording, *tr, time_nfo);
                   event_queue_.push_back (re);
                 }
             }
@@ -384,6 +382,7 @@ RecordingManager::handle_recording (
 
       if (!skip_adding_track_events)
         {
+          const auto &track_processor = *tr->processor_;
           /* add recorded track material to event queue */
           if constexpr (
             std::derived_from<TrackT, PianoRollTrack>
@@ -391,12 +390,12 @@ RecordingManager::handle_recording (
             {
 
               auto &midi_events =
-                track_processor->get_midi_in_port ().midi_events_.active_events_;
+                track_processor.get_midi_in_port ().midi_events_.active_events_;
 
               for (const auto &me : midi_events)
                 {
                   auto re = event_obj_pool_.acquire ();
-                  re->init (RecordingEvent::Type::Midi, *tr, *time_nfo);
+                  re->init (RecordingEvent::Type::Midi, *tr, time_nfo);
                   re->has_midi_event_ = true;
                   re->midi_event_ = me;
                   event_queue_.push_back (re);
@@ -405,30 +404,30 @@ RecordingManager::handle_recording (
               if (midi_events.empty ())
                 {
                   auto re = event_obj_pool_.acquire ();
-                  re->init (RecordingEvent::Type::Midi, *tr, *time_nfo);
+                  re->init (RecordingEvent::Type::Midi, *tr, time_nfo);
                   re->has_midi_event_ = false;
                   event_queue_.push_back (re);
                 }
             }
           else if (tr->get_type () == structure::tracks::Track::Type::Audio)
             {
-              const auto &mono_param = track_processor->get_mono_param ();
+              const auto &mono_param = track_processor.get_mono_param ();
               const auto  mono =
                 mono_param.range ().is_toggled (mono_param.currentValue ());
               auto re = event_obj_pool_.acquire ();
-              re->init (RecordingEvent::Type::Audio, *tr, *time_nfo);
-              auto tp_stereo_ins = track_processor->get_stereo_in_ports ();
+              re->init (RecordingEvent::Type::Audio, *tr, time_nfo);
+              auto tp_stereo_ins = track_processor.get_stereo_in_ports ();
               utils::float_ranges::copy (
-                &re->lbuf_[time_nfo->local_offset_],
-                &tp_stereo_ins.first.buf_[time_nfo->local_offset_],
-                time_nfo->nframes_);
+                &re->lbuf_[time_nfo.local_offset_],
+                &tp_stereo_ins.first.buf_[time_nfo.local_offset_],
+                time_nfo.nframes_);
               auto &r =
-                track_processor->mono_id_ && mono
+                track_processor.mono_id_ && mono
                   ? tp_stereo_ins.first
                   : tp_stereo_ins.second;
               utils::float_ranges::copy (
-                &re->rbuf_[time_nfo->local_offset_],
-                &r.buf_[time_nfo->local_offset_], time_nfo->nframes_);
+                &re->rbuf_[time_nfo.local_offset_],
+                &r.buf_[time_nfo.local_offset_], time_nfo.nframes_);
               event_queue_.push_back (re);
             }
         }
@@ -461,7 +460,7 @@ RecordingManager::handle_recording (
         }
 #endif
     },
-    tr_var);
+    track_var);
 }
 
 void
