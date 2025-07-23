@@ -73,7 +73,7 @@ public:
   note_pitch_to_chord_descriptor (midi_byte_t note_pitch) const
   {
     assert (note_pitch_to_descriptor_.has_value ());
-    std::invoke (*note_pitch_to_descriptor_, note_pitch);
+    return std::invoke (*note_pitch_to_descriptor_, note_pitch);
   }
 
   // FIXME: eventually this dependency should be injected via a constructor

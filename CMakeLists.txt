@@ -1124,6 +1124,7 @@ list(APPEND zrythm_link_libs
   kissfft::kissfft
   Boost::describe
   Boost::stl_interfaces
+  Boost::container
   gsl-lite::gsl-lite
   TBB::tbb
   zrythm::qt_libs
