@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cstddef>
 #include <utility>
 
 #include "dsp/midi_event.h"
@@ -504,12 +505,12 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
     return false;
   };
 
-  dsp::ProcessorParameter * cc{};
-  while (updated_midi_automatable_ports_->pop_front (cc))
+  dsp::ProcessorParameter * popped_cc{};
+  while (updated_midi_automatable_ports_->pop_front (popped_cc))
     {
       if (
         add_event_for_cc_if_in_range (
-          *pitch_bend_ids_, *cc,
+          *pitch_bend_ids_, *popped_cc,
           [] (
             const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
             const size_t index_in_vector, midi_byte_t time) {
@@ -524,7 +525,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 
       if (
         add_event_for_cc_if_in_range (
-          *poly_key_pressure_ids_, *cc,
+          *poly_key_pressure_ids_, *popped_cc,
           [] (
             const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
             const size_t index_in_vector, midi_byte_t time) {
@@ -534,7 +535,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 
       if (
         add_event_for_cc_if_in_range (
-          *channel_pressure_ids_, *cc,
+          *channel_pressure_ids_, *popped_cc,
           [] (
             const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
             const size_t index_in_vector, midi_byte_t time) {
@@ -552,9 +553,10 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
           /* starting from 1 */
           const midi_byte_t channel = i + 1;
 
-          auto begin_it = midi_cc_ids_->begin () + (i * 128);
+          auto * begin_it = std::next (midi_cc_ids_->begin (), i * 128);
           event_added = add_event_for_cc_if_in_range (
-            std::ranges::subrange (begin_it, begin_it + 128), *cc,
+            std::ranges::subrange (begin_it, std::next (begin_it, 128)),
+            *popped_cc,
             [channel] (
               const dsp::ProcessorParameter &cc,
               dsp::MidiEventVector &vec_to_fill, const size_t index_in_vector,
