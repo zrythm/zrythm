@@ -849,6 +849,7 @@ if(0)
       GIT_TAG 703438d8e55dbfd1c2021d0bc12e36edd1e227e2
       GIT_SHALLOW TRUE
       EXCLUDE_FROM_ALL
+      SYSTEM
     )
     FetchContent_MakeAvailable(vamp-sdk)
   else()
@@ -933,6 +934,7 @@ FetchContent_Declare(
     libs/preprocessor
     tools/cmake
   EXCLUDE_FROM_ALL
+  SYSTEM
 )
 set(BOOST_INCLUDE_LIBRARIES circular_buffer stl_interfaces describe container)
 FetchContent_MakeAvailable(Boost)
@@ -956,6 +958,7 @@ if(0)
     GIT_SHALLOW TRUE
     SOURCE_SUBDIR src
     EXCLUDE_FROM_ALL
+    SYSTEM
   )
   set(MP_UNITS_BUILD_AS_SYSTEM_HEADERS ON)
   set(MP_UNITS_API_STD_FORMAT OFF)
