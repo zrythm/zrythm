@@ -196,7 +196,6 @@ Channel::prepare_process (nframes_t nframes)
   const auto out_type = track_->get_output_signal_type ();
 
   /* clear buffers */
-  track_->processor_->clear_buffers (nframes);
   // prefader_->clear_buffers (nframes); // TODO
   fader_->clear_buffers (nframes);
 

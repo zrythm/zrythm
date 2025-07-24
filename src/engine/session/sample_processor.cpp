@@ -227,10 +227,6 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
               using TrackT = base_type<decltype (track)>;
               if constexpr (std::derived_from<TrackT, ProcessableTrack>)
                 {
-
-                  track->processor_->clear_buffers (
-                    AUDIO_ENGINE->get_block_length ());
-
                   EngineProcessTimeInfo inner_time_nfo = {
                     .g_start_frame_ =
                       static_cast<unsigned_frame_t> (playhead_.frames_),

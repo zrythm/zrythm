@@ -421,10 +421,7 @@ RecordingManager::handle_recording (
                 &re->lbuf_[time_nfo.local_offset_],
                 &tp_stereo_ins.first.buf_[time_nfo.local_offset_],
                 time_nfo.nframes_);
-              auto &r =
-                track_processor.mono_id_ && mono
-                  ? tp_stereo_ins.first
-                  : tp_stereo_ins.second;
+              auto &r = mono ? tp_stereo_ins.first : tp_stereo_ins.second;
               utils::float_ranges::copy (
                 &re->rbuf_[time_nfo.local_offset_],
                 &r.buf_[time_nfo.local_offset_], time_nfo.nframes_);

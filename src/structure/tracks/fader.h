@@ -339,18 +339,10 @@ private:
   std::optional<dsp::ProcessorParameterUuidReference> swap_phase_id_;
 
 public:
-  /**
-   * Current dBFS after processing each output port.
-   *
-   * Transient variables only used by the GUI.
-   */
-  float l_port_db_ = 0.f;
-  float r_port_db_ = 0.f;
-
-  Type type_ = (Type) 0;
+  Type type_{};
 
   /** MIDI fader mode. */
-  MidiFaderMode midi_mode_ = (MidiFaderMode) 0;
+  MidiFaderMode midi_mode_{};
 
   /** Pointer to owner track, if any. */
   Track * track_ = nullptr;

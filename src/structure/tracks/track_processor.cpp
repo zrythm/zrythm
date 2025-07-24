@@ -310,32 +310,6 @@ init_from (
 #endif
 }
 
-/**
- * Clears all buffers.
- */
-void
-TrackProcessor::clear_buffers (std::size_t block_length)
-{
-  if (is_audio ())
-    {
-      iterate_tuple (
-        [&] (auto &port) { port.clear_buffer (block_length); },
-        get_stereo_in_ports ());
-      iterate_tuple (
-        [&] (auto &port) { port.clear_buffer (block_length); },
-        get_stereo_out_ports ());
-    }
-  else if (is_midi ())
-    {
-      get_midi_in_port ().clear_buffer (block_length);
-      get_midi_out_port ().clear_buffer (block_length);
-    }
-  if (piano_roll_port_id_.has_value ())
-    {
-      get_piano_roll_port ().clear_buffer (block_length);
-    }
-}
-
 void
 TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 {
@@ -553,7 +527,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
           /* starting from 1 */
           const midi_byte_t channel = i + 1;
 
-          auto * begin_it = std::next (midi_cc_ids_->begin (), i * 128);
+          auto begin_it = std::next (midi_cc_ids_->begin (), i * 128);
           event_added = add_event_for_cc_if_in_range (
             std::ranges::subrange (begin_it, std::next (begin_it, 128)),
             *popped_cc,
@@ -579,6 +553,14 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 // ============================================================================
 // IProcessable Interface
 // ============================================================================
+
+void
+TrackProcessor::prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
+{
+  dsp::ProcessorBase::prepare_for_processing (sample_rate, max_block_length);
+}
 
 void
 TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)

@@ -120,11 +120,6 @@ public:
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
   /**
-   * Clears all buffers.
-   */
-  void clear_buffers (std::size_t block_length);
-
-  /**
    * @brief To be called by the user-provided FillEventsFunc for processing one
    * of its regions.
    *
@@ -265,6 +260,10 @@ public:
    *   MIDI CC automation, based on the MIDI CC control ports)
    */
   void custom_process_block (EngineProcessTimeInfo time_nfo) override;
+
+  void
+  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
+    override;
 
   // ============================================================================
 
@@ -457,7 +456,6 @@ private:
   AppendMidiInputsToOutputsFunc          append_midi_inputs_to_outputs_func_;
   std::optional<TransformMidiInputsFunc> transform_midi_inputs_func_;
 
-public:
   // Cached piano roll port ID.
   std::optional<dsp::PortUuidReference> piano_roll_port_id_;
 
@@ -520,13 +518,6 @@ public:
   std::unique_ptr<SixteenPortUuidArray> channel_pressure_ids_;
 
   /* --- end MIDI controls --- */
-  /**
-   * Current dBFS after processing each output port.
-   *
-   * Transient variables only used by the GUI.
-   */
-  float l_port_db_ = 0.0f;
-  float r_port_db_ = 0.0f;
 
   /**
    * A queue of MIDI CC ports whose values have been recently updated.
