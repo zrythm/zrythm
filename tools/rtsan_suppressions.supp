@@ -1,4 +1,6 @@
 # SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: FSFAP
 
-call-stack-contains:testing::internal::*
+# Mocked methods use mutexes internally
+call-stack-contains:testing::internal::FunctionMocker*::Invoke
+call-stack-contains:testing::internal::UntypedFunctionMockerBase::SetOwnerAndName
