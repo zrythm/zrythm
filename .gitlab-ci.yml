@@ -53,6 +53,7 @@ stages:
   variables:
     BUILDDIR: "build_gnu_linux"
     QT_QPA_PLATFORM: "offscreen"
+    INSTALLED_QT_PREFIX: "/opt/Qt6.9-Release"
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - *unix-activate-venv
@@ -75,7 +76,7 @@ stages:
       -G "Ninja"
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clang++
-      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_PREFIX_PATH=${INSTALLED_QT_PREFIX}
       -DCMAKE_BUILD_TYPE=Debug
       -DZRYTHM_ENABLE_SANITIZER_${SANITIZER_TYPE}=ON
       -DZRYTHM_TESTS=ON
@@ -129,7 +130,7 @@ configure:gnu/linux:
       -G "Ninja"
       -DCMAKE_C_COMPILER=gcc
       -DCMAKE_CXX_COMPILER=g++
-      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_PREFIX_PATH=${INSTALLED_QT_PREFIX}
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -DZRYTHM_USER_MANUAL=OFF
       -DZRYTHM_WITH_LIBDW=OFF
@@ -159,7 +160,7 @@ configure-for-tools:gnu/linux:
       -G "Ninja"
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clang++
-      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_PREFIX_PATH=${INSTALLED_QT_PREFIX}
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -DZRYTHM_USER_MANUAL=ON
       -DZRYTHM_STRICT_SPHINX_OPTS=ON
@@ -255,7 +256,7 @@ check:clazy:
       -G "Ninja"
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clazy
-      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_PREFIX_PATH=${INSTALLED_QT_PREFIX}
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
       -DZRYTHM_UNITY_BUILD=OFF
@@ -308,7 +309,7 @@ check:clang-tidy:
       -G "Ninja"
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clang++
-      -DCMAKE_PREFIX_PATH=/opt/Qt6.9-Release
+      -DCMAKE_PREFIX_PATH=${INSTALLED_QT_PREFIX}
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
       -DZRYTHM_UNITY_BUILD=OFF
