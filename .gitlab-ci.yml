@@ -66,6 +66,7 @@ stages:
   variables:
     BUILDDIR: "build_sanitizer"
     SANITIZER_TYPE: "address"  # Default sanitizer
+    RTSAN_OPTIONS: "suppressions=$CI_PROJECT_DIR/tools/rtsan_suppressions.supp"
   before_script:
     - *unix-activate-venv
   script:
