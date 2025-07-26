@@ -97,7 +97,6 @@ private:
   friend void           to_json (nlohmann::json &j, const ModulatorTrack &track)
   {
     to_json (j, static_cast<const Track &> (track));
-    to_json (j, static_cast<const ProcessableTrack &> (track));
     j[kModulatorsKey] = track.modulators_;
     j[kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
   }

@@ -13,6 +13,8 @@ target_sources(zrythm_structure_tracks_lib
     automation_track.cpp
     automation_tracklist.h
     automation_tracklist.cpp
+    track_processor.h
+    track_processor.cpp
 )
 target_precompile_headers(zrythm_structure_tracks_lib PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/automation_track.h>
@@ -79,8 +81,6 @@ target_sources(zrythm_gui_lib
     track_lane.cpp
     track_lane_list.h
     track_lane_list.cpp
-    track_processor.h
-    track_processor.cpp
     track_span.h
     track_span.cpp
     tracklist.h

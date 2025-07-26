@@ -4,6 +4,7 @@
 add_executable(zrythm_structure_tracks_unit_tests
   automation_track_test.cpp
   automation_tracklist_test.cpp
+  track_processor_test.cpp
 )
 
 set_target_properties(zrythm_structure_tracks_unit_tests PROPERTIES

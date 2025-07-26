@@ -11,7 +11,7 @@
 namespace zrythm::engine::session
 {
 /**
- * A mapping from a MIDI CC value to a destination ControlPort.
+ * A mapping from a MIDI CC value to a destination parameter.
  */
 class MidiMapping : public QObject
 {

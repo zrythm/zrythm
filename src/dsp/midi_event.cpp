@@ -271,12 +271,12 @@ void
 MidiEventVector::
   add_all_notes_off (midi_byte_t channel, midi_time_t time, bool with_lock)
 {
-  z_return_if_fail (channel > 0 && channel <= 16);
+  assert (channel > 0 && channel <= 16);
 
   MidiEvent ev (
     (midi_byte_t) (utils::midi::MIDI_CH1_CTRL_CHANGE | (channel - 1)),
     utils::midi::MIDI_ALL_NOTES_OFF, 0x00, time);
-  z_return_if_fail (utils::midi::midi_is_all_notes_off (ev.raw_buffer_));
+  assert (utils::midi::midi_is_all_notes_off (ev.raw_buffer_));
 
   if (with_lock)
     {

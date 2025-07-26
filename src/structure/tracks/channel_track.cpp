@@ -11,13 +11,7 @@ namespace zrythm::structure::tracks
 {
 
 ChannelTrack::ChannelTrack (FinalTrackDependencies dependencies)
-    : ProcessableTrack (
-        dependencies.transport_,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      channel_ (
+    : channel_ (
         utils::make_qobject_unique<Channel> (
           dependencies.track_registry_,
           dependencies.plugin_registry_,
@@ -27,8 +21,6 @@ ChannelTrack::ChannelTrack (FinalTrackDependencies dependencies)
       track_registry_ (dependencies.track_registry_)
 {
 }
-
-ChannelTrack::~ChannelTrack () { }
 
 void
 ChannelTrack::init_loaded (

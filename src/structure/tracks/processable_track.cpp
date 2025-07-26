@@ -8,13 +8,19 @@ namespace zrythm::structure::tracks
 {
 ProcessableTrack::ProcessableTrack (
   const dsp::ITransport &transport,
+  PortType               signal_type,
   Dependencies           dependencies)
     : automation_tracklist_ (
         utils::make_qobject_unique<AutomationTracklist> (dependencies)),
       processor_ (
         utils::make_qobject_unique<TrackProcessor> (
           transport,
-          *this,
+          signal_type,
+          [this] () { return get_name (); },
+          [this] () { return is_enabled (); },
+          has_piano_roll () || is_chord (),
+          has_piano_roll (),
+          is_audio (),
           TrackProcessor::ProcessorBaseDependencies{
             .port_registry_ = dependencies.port_registry_,
             .param_registry_ = dependencies.param_registry_ }))

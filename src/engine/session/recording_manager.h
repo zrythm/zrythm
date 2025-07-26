@@ -63,7 +63,10 @@ public:
    */
   void handle_recording (
     structure::tracks::ProcessableTrackPtrVariant track_var,
-    const EngineProcessTimeInfo                  &time_nfo);
+    const EngineProcessTimeInfo                  &time_nfo,
+    const dsp::MidiEventVector *                  midi_events,
+    std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
+      stereo_ports);
 
   Q_SLOT void process_events ();
 

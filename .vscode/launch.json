@@ -8,6 +8,7 @@
         "Qt: Debug with cppdbg and QML debugger",
         "Qt: QML: Attach by port"
       ],
+      // this may require to run the "Qt: Restart QML Language Server" task first
       "preLaunchTask": "Qt: Acquire Port",
     }
   ],

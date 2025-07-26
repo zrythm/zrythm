@@ -89,8 +89,14 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 std::derived_from<TrackT, structure::tracks::RecordableTrack>)
                 {
                   tr->processor_->set_handle_recording_callback (
-                    [tr] (const EngineProcessTimeInfo &time_nfo) {
-                      RECORDING_MANAGER->handle_recording (tr, time_nfo);
+                    [tr] (
+                      const EngineProcessTimeInfo &time_nfo,
+                      const dsp::MidiEventVector * midi_events,
+                      std::optional<
+                        structure::tracks::TrackProcessor::ConstStereoPortPair>
+                        stereo_ports) {
+                      RECORDING_MANAGER->handle_recording (
+                        tr, time_nfo, midi_events, stereo_ports);
                     });
                 }
             }

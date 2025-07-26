@@ -28,7 +28,7 @@ protected:
   ChannelTrack (FinalTrackDependencies dependencies);
 
 public:
-  ~ChannelTrack () override;
+  ~ChannelTrack () override = default;
 
   void init_loaded (
     gui::old_dsp::plugins::PluginRegistry &plugin_registry,

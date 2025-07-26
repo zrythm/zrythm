@@ -880,6 +880,16 @@ CPMFindPackage(
     "FMT_INSTALL OFF"
 )
 
+# scnlib
+CPMFindPackage(
+  NAME scnlib
+  GITHUB_REPOSITORY eliaskosunen/scnlib
+  VERSION 4.0.1
+  GIT_TAG e937be1a52588621b406d58ce8614f96bb5de747
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+)
+
 # spdlog
 CPMFindPackage(
   NAME spdlog
@@ -1121,6 +1131,7 @@ list(APPEND zrythm_link_libs
   backward_cpp::backward_cpp
   crill::crill
   fmt::fmt
+  scn::scn
   zrythm::spdlog
   type_safe
   midilib::midilib

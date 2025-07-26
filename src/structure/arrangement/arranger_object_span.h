@@ -11,46 +11,6 @@ namespace zrythm::structure::arrangement
 {
 
 /**
- * Returns the number of frames until the next loop end point or the
- * end of the region.
- *
- * @param timeline_frames Global frames at start.
- * @return Number of frames and whether the return frames are for a loop (if
- * false, the return frames are for the region's end).
- */
-template <RegionObject ObjectT>
-[[gnu::nonnull]] std::pair<signed_frame_t, bool>
-get_frames_till_next_loop_or_end (
-  const ObjectT &obj,
-  signed_frame_t timeline_frames)
-{
-  const auto * loop_range = obj.regionMixin ()->loopRange ();
-  const auto   loop_size = loop_range->get_loop_length_in_frames ();
-  assert (loop_size > 0);
-  const auto           object_position_frames = obj.position ()->samples ();
-  const signed_frame_t loop_end_frames =
-    loop_range->loopEndPosition ()->samples ();
-  const signed_frame_t clip_start_frames =
-    loop_range->clipStartPosition ()->samples ();
-
-  signed_frame_t local_frames = timeline_frames - object_position_frames;
-  local_frames += clip_start_frames;
-  while (local_frames >= loop_end_frames)
-    {
-      local_frames -= loop_size;
-    }
-
-  const signed_frame_t frames_till_next_loop = loop_end_frames - local_frames;
-  const signed_frame_t frames_till_end =
-    obj.regionMixin ()->bounds ()->get_end_position_samples (true)
-    - timeline_frames;
-
-  return std::make_pair (
-    std::min (frames_till_end, frames_till_next_loop),
-    frames_till_next_loop < frames_till_end);
-}
-
-/**
  * Flag used in some functions.
  */
 enum class ResizeType : basic_enum_base_type_t
