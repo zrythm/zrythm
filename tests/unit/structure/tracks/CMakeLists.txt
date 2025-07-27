@@ -4,6 +4,7 @@
 add_executable(zrythm_structure_tracks_unit_tests
   automation_track_test.cpp
   automation_tracklist_test.cpp
+  channel_send_test.cpp
   track_processor_test.cpp
 )
 

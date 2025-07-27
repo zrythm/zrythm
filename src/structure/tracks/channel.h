@@ -62,7 +62,7 @@ public:
  *
  * @see ChannelTrack, ProcessableTrack and TrackProcessor.
  */
-class Channel final : public QObject
+class Channel : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -409,7 +409,7 @@ public:
    *
    * @note See CHANNEL_SEND_POST_FADER_START_SLOT.
    */
-  std::array<std::unique_ptr<ChannelSend>, STRIP_SIZE> sends_;
+  std::array<utils::QObjectUniquePtr<ChannelSend>, STRIP_SIZE> sends_;
 
   /**
    * External MIDI inputs (juce::MidiDeviceInfo::identifier) that are currently

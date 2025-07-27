@@ -24,6 +24,8 @@ ChannelSendAction::ChannelSendAction (
   float                          amount,
   const PortConnectionsManager * port_connections_mgr)
     : UndoableAction (UndoableAction::Type::ChannelSend),
+// TODO
+#if 0
       send_before_ (
         utils::clone_unique (
           send,
@@ -31,6 +33,7 @@ ChannelSendAction::ChannelSendAction (
           PROJECT->get_track_registry (),
           PROJECT->get_port_registry (),
           PROJECT->get_param_registry ())),
+#endif
       amount_ (amount), send_action_type_ (type)
 {
   if (port != nullptr)
@@ -59,6 +62,8 @@ init_from (
   init_from (
     static_cast<UndoableAction &> (obj),
     static_cast<const UndoableAction &> (other), clone_type);
+// TODO
+#if 0
   obj.send_before_ = utils::clone_unique (
     *other.send_before_, clone_type, other.send_before_->track_registry_,
     other.send_before_->port_registry_, other.send_before_->param_registry_);
@@ -67,6 +72,7 @@ init_from (
   obj.r_id_ = other.r_id_;
   obj.midi_id_ = other.midi_id_;
   obj.send_action_type_ = other.send_action_type_;
+#endif
 }
 
 bool

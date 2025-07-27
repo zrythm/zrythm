@@ -221,17 +221,6 @@ Channel::prepare_process (nframes_t nframes)
   std::ranges::for_each (inserts_, process_plugin);
   std::ranges::for_each (midi_fx_, process_plugin);
   process_plugin (instrument_);
-
-  for (auto &send : sends_)
-    {
-      send->prepare_process (nframes);
-    }
-
-  if (track_->get_input_signal_type () == PortType::Event)
-    {
-      /* copy the cached MIDI events to the MIDI events in the MIDI in port */
-      track_->processor_->get_midi_in_port ().midi_events_.dequeue (0, nframes);
-    }
 }
 
 void
@@ -273,12 +262,6 @@ Channel::init_loaded ()
       init_plugin (midi_fx_.at (i), PluginSlot (PluginSlotType::MidiFx, i));
     }
   init_plugin (instrument_, PluginSlot (PluginSlotType::Instrument));
-
-  /* init sends */
-  for (auto &send : sends_)
-    {
-      send->init_loaded (track_);
-    }
 }
 
 #if 0
@@ -531,9 +514,11 @@ Channel::init ()
   /* init sends */
   for (const auto &[i, send] : utils::views::enumerate (sends_))
     {
-      send = std::make_unique<ChannelSend> (
-        *track_, get_track_registry (), get_port_registry (), param_registry_,
-        i);
+      send = utils::make_qobject_unique<ChannelSend> (
+        dsp::ProcessorBase::ProcessorBaseDependencies{
+          .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+        track_->get_output_signal_type (), i,
+        i < CHANNEL_SEND_POST_FADER_START_SLOT);
     }
 }
 
@@ -1004,8 +989,12 @@ from_json (const nlohmann::json &j, Channel &c)
     {
       if (send_json.is_null ())
         continue;
-      auto send = std::make_unique<ChannelSend> (
-        *c.track_, c.track_registry_, c.port_registry_, c.param_registry_);
+      auto send = utils::make_qobject_unique<ChannelSend> (
+        dsp::ProcessorBase::ProcessorBaseDependencies{
+          .port_registry_ = c.port_registry_,
+          .param_registry_ = c.param_registry_ },
+        c.track_->get_output_signal_type (), index,
+        index < CHANNEL_SEND_POST_FADER_START_SLOT);
       from_json (send_json, *send);
       c.sends_.at (index) = std::move (send);
     }

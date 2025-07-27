@@ -396,35 +396,6 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                 {
                   out_track_uuids_.emplace_back (std::nullopt);
                 }
-
-              for (
-                const auto &cur_track :
-                TRACKLIST->get_track_span ()
-                  | std::views::filter (
-                    TrackSpan::derived_from_type_projection<ChannelTrack>)
-                  | std::views::transform (
-                    TrackSpan::derived_type_transformation<ChannelTrack>))
-                {
-                  for (
-                    const auto &send :
-                    cur_track->channel_->sends_
-                      | std::views::filter (&ChannelSend::is_enabled))
-                    {
-                      Track * target_track = send->get_target_track ();
-                      z_return_if_fail (target_track);
-
-                      if (
-                        target_track->get_index () == clone_track->get_index ())
-                        {
-                          src_sends_.emplace_back (
-                            utils::clone_unique (
-                              *send, utils::ObjectCloneType::Snapshot,
-                              PROJECT->get_track_registry (),
-                              PROJECT->get_port_registry (),
-                              PROJECT->get_param_registry ()));
-                        }
-                    }
-                }
             },
             clone_track_var);
         }
@@ -670,12 +641,6 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     {
                       /* remove output */
                       track->get_channel ()->output_track_uuid_ = std::nullopt;
-
-                      /* remove the sends (will be added later) */
-                      for (auto &send : track->get_channel ()->sends_)
-                        {
-                          send->get_enabled_param ().setBaseValue (0.f);
-                        }
                     }
 
                   /* insert it to the tracklist at its original pos */
@@ -756,7 +721,9 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                           own_track->get_channel ()->sends_,
                           prj_track->get_channel ()->sends_))
                         {
-                          send->copy_values_from (*clone_send);
+                          init_from (
+                            *send, *clone_send,
+                            utils::ObjectCloneType::Snapshot);
                         }
 
                       /* reconnect any custom connections */
@@ -1061,6 +1028,8 @@ TracklistSelectionsAction::
                       outputs_in_prj.push_back (
                         own_track->get_channel ()->get_output_track ());
 
+// TODO
+#if 0
                       for (size_t j = 0; j < Channel::STRIP_SIZE; ++j)
                         {
                           auto &send = own_track->get_channel ()->sends_.at (j);
@@ -1074,6 +1043,7 @@ TracklistSelectionsAction::
                             port_connections_before_.get (),
                             send_conns.at (i).at (j));
                         }
+#endif
                     }
                   else
                     {
@@ -1106,12 +1076,6 @@ TracklistSelectionsAction::
                       /* remove output */
                       // track->get_channel ()->has_output_ = false;
                       track->get_channel ()->output_track_uuid_ = std::nullopt;
-
-                      /* remove sends */
-                      for (auto &send : track->get_channel ()->sends_)
-                        {
-                          send->get_enabled_param ().setBaseValue (0.f);
-                        }
                     }
 
                   /* remove children */
@@ -1161,7 +1125,9 @@ TracklistSelectionsAction::
                           sends.at (i), send_conns.at (i),
                           track->get_channel ()->sends_))
                         {
-                          track_send->copy_values_from (*own_send);
+                          init_from (
+                            *track_send, *own_send,
+                            utils::ObjectCloneType::Snapshot);
                           if (
                             !own_conns.empty ()
                             && track->get_output_signal_type () == PortType::Audio)

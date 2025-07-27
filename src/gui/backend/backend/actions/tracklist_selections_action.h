@@ -307,9 +307,6 @@ public:
    */
   std::optional<dsp::FileAudioSourceUuidReference> pool_id_;
 
-  /** Source sends that need to be deleted/ recreated on do/undo. */
-  std::vector<std::unique_ptr<ChannelSend>> src_sends_;
-
   /**
    * Direct out tracks of the original tracks.
    */

@@ -13,6 +13,8 @@ target_sources(zrythm_structure_tracks_lib
     automation_track.cpp
     automation_tracklist.h
     automation_tracklist.cpp
+    channel_send.h
+    channel_send.cpp
     track_processor.h
     track_processor.cpp
 )
@@ -32,8 +34,6 @@ target_sources(zrythm_gui_lib
     audio_track.cpp
     channel.h
     channel.cpp
-    channel_send.h
-    channel_send.cpp
     channel_subgraph_builder.h
     channel_subgraph_builder.cpp
     channel_track.h
