@@ -595,12 +595,12 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo)
                             && t->currently_listened ())
                             {
                               auto * f = t->get_channel ()->fader ();
-                              utils::float_ranges::mix_product (
+                              utils::float_ranges::product (
                                 &stereo_out.first.buf_[time_nfo.local_offset_],
                                 &f->get_stereo_out_ports ()
                                    .first.buf_[time_nfo.local_offset_],
                                 listen_amp, time_nfo.nframes_);
-                              utils::float_ranges::mix_product (
+                              utils::float_ranges::product (
                                 &stereo_out.second.buf_[time_nfo.local_offset_],
                                 &f->get_stereo_out_ports ()
                                    .second.buf_[time_nfo.local_offset_],

@@ -191,6 +191,29 @@ add2 (float * dest, const float * src, size_t count, bool optimized = true)
 }
 
 /**
+ * @brief Calculate dest[i] = src[i] * k.
+ */
+[[using gnu: nonnull, hot]] static inline void
+product (
+  float *       dest,
+  const float * src,
+  float         k,
+  size_t        size,
+  bool          optimized = true)
+{
+  if (optimized)
+    {
+      juce::FloatVectorOperations::copyWithMultiply (dest, src, k, size);
+    }
+  else
+    {
+      std::transform (dest, dest + size, src, dest, [k] (float x, float y) {
+        return y * k;
+      });
+    }
+}
+
+/**
  * @brief Calculate dest[i] = dest[i] + src[i] * k.
  */
 [[using gnu: nonnull, hot]] static inline void

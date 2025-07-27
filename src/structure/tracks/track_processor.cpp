@@ -696,14 +696,14 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
       // "monitor" param (in which case inputs are always taken into account)
       if (!monitor_audio_id_.has_value () || monitor_audio ())
         {
-          utils::float_ranges::mix_product (
+          utils::float_ranges::product (
             &stereo_out.first.buf_[time_nfo.local_offset_],
             &stereo_in.first.buf_[time_nfo.local_offset_],
             input_gain_id_ ? input_gain () : 1.f, time_nfo.nframes_);
 
           const auto &src_right_buf =
             (mono_id_ && mono ()) ? stereo_in.first.buf_ : stereo_in.second.buf_;
-          utils::float_ranges::mix_product (
+          utils::float_ranges::product (
             &stereo_out.second.buf_[time_nfo.local_offset_],
             &src_right_buf[time_nfo.local_offset_],
             input_gain_id_ ? input_gain () : 1.f, time_nfo.nframes_);

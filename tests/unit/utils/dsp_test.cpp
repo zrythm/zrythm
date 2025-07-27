@@ -88,6 +88,32 @@ TEST (DspTest, Add)
     }
 }
 
+TEST (DspTest, Product)
+{
+  float src[4] = { 1.0f, 2.0f, 3.0f, 4.0f };
+  float dest[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  product (dest, src, 2.5f, 4);
+  for (int i = 0; i < 4; i++)
+    {
+      EXPECT_FLOAT_EQ (dest[i], (i + 1) * 2.5f);
+    }
+
+  // Test with negative multiplier
+  float src2[3] = { -1.0f, 0.0f, 2.0f };
+  float dest2[3];
+  product (dest2, src2, -1.5f, 3);
+  EXPECT_FLOAT_EQ (dest2[0], 1.5f);
+  EXPECT_FLOAT_EQ (dest2[1], 0.0f);
+  EXPECT_FLOAT_EQ (dest2[2], -3.0f);
+
+  // Test with zero multiplier
+  float src3[2] = { 5.0f, -7.0f };
+  float dest3[2];
+  product (dest3, src3, 0.0f, 2);
+  EXPECT_FLOAT_EQ (dest3[0], 0.0f);
+  EXPECT_FLOAT_EQ (dest3[1], 0.0f);
+}
+
 TEST (DspTest, MixProduct)
 {
   float dest[4] = { 1.0f, 2.0f, 3.0f, 4.0f };
