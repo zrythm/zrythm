@@ -17,10 +17,7 @@ class Port;
 class ProjectGraphBuilder final : public dsp::graph::IGraphBuilder
 {
 public:
-  ProjectGraphBuilder (Project &project, bool drop_unnecessary_ports)
-      : project_ (project), drop_unnecessary_ports_ (drop_unnecessary_ports)
-  {
-  }
+  ProjectGraphBuilder (Project &project) : project_ (project) { }
 
   /**
    * Adds a new connection for the given src and dest ports and validates the
@@ -39,9 +36,4 @@ private:
 
 private:
   Project &project_;
-
-  /**
-   * @brief Whether to drop any ports that don't connect anywhere.
-   */
-  bool drop_unnecessary_ports_{};
 };

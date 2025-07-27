@@ -13,50 +13,6 @@
 
 namespace zrythm::structure::tracks
 {
-class ChannelTrack;
-
-/**
- * The slot where post-fader sends begin (starting from 0).
- */
-constexpr int CHANNEL_SEND_POST_FADER_START_SLOT = 6;
-
-/**
- * Target type.
- */
-enum class ChannelSendTargetType
-{
-  /** Remove send. */
-  None,
-
-  /** Send to track inputs. */
-  Track,
-
-  /** Send to plugin sidechain inputs. */
-  PluginSidechain,
-};
-
-/**
- * Send target (used in list views).
- */
-struct ChannelSendTarget
-{
-  ChannelSendTargetType type = {};
-
-  int track_pos = 0;
-
-  gui::old_dsp::plugins::Plugin::Uuid pl_id;
-
-  utils::Utf8String port_group;
-
-  /**
-   * Returns a string describing this target (track/plugin name/etc.).
-   */
-  utils::Utf8String describe () const;
-
-  utils::Utf8String get_icon () const;
-
-  static void free_func (void * target) { delete (ChannelSendTarget *) target; }
-};
 
 /**
  * Channel send.

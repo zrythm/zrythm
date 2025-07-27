@@ -63,57 +63,6 @@ ChannelSend::get_signal_type () const
   return track->get_output_signal_type ();
 }
 
-utils::Utf8String
-ChannelSendTarget::describe () const
-{
-  switch (type)
-    {
-    case ChannelSendTargetType::None:
-      return utils::Utf8String::from_qstring (QObject::tr ("None"));
-    case ChannelSendTargetType::Track:
-      {
-        auto tr =
-          Track::from_variant (TRACKLIST->get_track_at_index (track_pos));
-        return tr->get_name ();
-      }
-    case ChannelSendTargetType::PluginSidechain:
-      {
-        auto pl_var = PROJECT->find_plugin_by_id (pl_id);
-        return std::visit (
-          [&] (auto &&pl) {
-            return pl->get_full_port_group_designation (port_group);
-          },
-          *pl_var);
-      }
-    default:
-      break;
-    }
-  z_return_val_if_reached (
-    utils::Utf8String::from_qstring (QObject::tr ("Invalid")));
-}
-
-utils::Utf8String
-ChannelSendTarget::get_icon () const
-{
-  switch (type)
-    {
-    case ChannelSendTargetType::None:
-      return u8"edit-none";
-    case ChannelSendTargetType::Track:
-      {
-        Track * tr =
-          Track::from_variant (TRACKLIST->get_track_at_index (track_pos));
-        return tr->get_icon_name ();
-      }
-    case ChannelSendTargetType::PluginSidechain:
-      return u8"media-album-track";
-    default:
-      break;
-    }
-  z_return_val_if_reached (
-    utils::Utf8String::from_qstring (QObject::tr ("Invalid")));
-}
-
 void
 ChannelSend::init_loaded (ChannelTrack * track)
 {

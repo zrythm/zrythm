@@ -8,11 +8,8 @@
 namespace zrythm::structure::tracks
 {
 void
-ChannelSubgraphBuilder::add_nodes (
-  dsp::graph::Graph &graph,
-  dsp::ITransport   &transport,
-  Channel           &ch,
-  bool               skip_unnecessary)
+ChannelSubgraphBuilder::
+  add_nodes (dsp::graph::Graph &graph, dsp::ITransport &transport, Channel &ch)
 {
   // prefader
   if (ch.audio_prefader_)
@@ -43,11 +40,7 @@ ChannelSubgraphBuilder::add_nodes (
     }
 
   // sends
-  for (
-    auto &send :
-    ch.sends_ | std::views::filter ([skip_unnecessary] (const auto &send) {
-      return !skip_unnecessary || send->is_enabled ();
-    }))
+  for (auto &send : ch.sends_)
     {
       dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *send);
     }
@@ -70,8 +63,7 @@ void
 ChannelSubgraphBuilder::add_connections (
   dsp::graph::Graph                      &graph,
   Channel                                &ch,
-  std::span<const dsp::PortUuidReference> track_processor_outputs,
-  bool                                    skip_unnecessary)
+  std::span<const dsp::PortUuidReference> track_processor_outputs)
 {
   const auto connect_ports =
     [&] (const dsp::Port::Uuid src_id, const dsp::Port::Uuid &dest_id) {
@@ -300,11 +292,7 @@ ChannelSubgraphBuilder::add_connections (
     }
 
   // connect sends
-  for (
-    auto &send :
-    ch.sends_ | std::views::filter ([skip_unnecessary] (const auto &send) {
-      return !skip_unnecessary || send->is_enabled ();
-    }))
+  for (auto &send : ch.sends_)
     {
       dsp::ProcessorGraphBuilder::add_connections (graph, *send);
 

@@ -15,11 +15,8 @@ namespace zrythm::structure::tracks
 class ChannelSubgraphBuilder
 {
 public:
-  static void add_nodes (
-    dsp::graph::Graph &graph,
-    dsp::ITransport   &transport,
-    Channel           &ch,
-    bool               skip_unnecessary);
+  static void
+  add_nodes (dsp::graph::Graph &graph, dsp::ITransport &transport, Channel &ch);
 
   /**
    * @brief
@@ -32,7 +29,6 @@ public:
   static void add_connections (
     dsp::graph::Graph                      &graph,
     Channel                                &ch,
-    std::span<const dsp::PortUuidReference> track_processor_outputs,
-    bool                                    skip_unnecessary);
+    std::span<const dsp::PortUuidReference> track_processor_outputs);
 };
 } // namespace zrythm::structure::tracks

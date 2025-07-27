@@ -16,6 +16,11 @@ namespace zrythm::structure::tracks
 class ChannelTrack;
 class GroupTargetTrack;
 
+/**
+ * The slot where post-fader sends begin (starting from 0).
+ */
+constexpr int CHANNEL_SEND_POST_FADER_START_SLOT = 6;
+
 static constexpr float MAX_FADER_AMP = 1.42f;
 
 struct PluginImportData;

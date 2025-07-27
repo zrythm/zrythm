@@ -14,8 +14,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 {
   z_debug ("building graph...");
 
-  const bool drop_unnecessary_ports = drop_unnecessary_ports_;
-
   /* ========================
    * first add all the nodes
    * ======================== */
@@ -83,22 +81,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               /* add the track processor */
               dsp::ProcessorGraphBuilder::add_nodes (
                 graph, *transport, *tr->processor_);
-
-              // set appropriate callbacks
-              if constexpr (
-                std::derived_from<TrackT, structure::tracks::RecordableTrack>)
-                {
-                  tr->processor_->set_handle_recording_callback (
-                    [tr] (
-                      const EngineProcessTimeInfo &time_nfo,
-                      const dsp::MidiEventVector * midi_events,
-                      std::optional<
-                        structure::tracks::TrackProcessor::ConstStereoPortPair>
-                        stereo_ports) {
-                      RECORDING_MANAGER->handle_recording (
-                        tr, time_nfo, midi_events, stereo_ports);
-                    });
-                }
             }
 
           /* handle modulator track */
@@ -131,30 +113,10 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             {
               auto &channel = tr->channel_;
               structure::tracks::ChannelSubgraphBuilder::add_nodes (
-                graph, *transport, *channel, drop_unnecessary_ports);
+                graph, *transport, *channel);
             }
         },
         cur_tr);
-    }
-
-  // go through all ports and reset their source/dest caches
-  std::vector<dsp::PortUuidReference> all_ports;
-  all_ports.reserve (graph.get_nodes ().graph_nodes_.size ());
-  for (auto &node : graph.get_nodes ().graph_nodes_)
-    {
-      if (
-        auto * port_base = dynamic_cast<dsp::Port *> (&node->get_processable ());
-        port_base != nullptr)
-        {
-          all_ports.emplace_back (
-            port_base->get_uuid (), project.get_port_registry ());
-        }
-    }
-  for (const auto &port_ref : all_ports)
-    {
-      std::visit (
-        [&] (auto &&port) { port->port_sources_.clear (); },
-        port_ref.get_object ());
     }
 
     /* ========================
@@ -348,13 +310,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                                         auto port_node =
                                           graph.get_nodes ()
                                             .find_node_for_processable (*pl_port);
-                                        if (!port_node)
-                                          {
-                                            z_error (
-                                              "failed to find node for port {}",
-                                              pl_port->get_label ());
-                                            return;
-                                          }
+                                        assert (port_node != nullptr);
                                         track_processor_node->connect_to (
                                           *port_node);
                                       },
@@ -387,8 +343,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 {
                   auto &ch = tr->channel_;
                   structure::tracks::ChannelSubgraphBuilder::add_connections (
-                    graph, *ch, std::span (tr->processor_->get_output_ports ()),
-                    drop_unnecessary_ports);
+                    graph, *ch, std::span (tr->processor_->get_output_ports ()));
 
                   // connect to target track
                   if (ch->has_output ())
@@ -438,32 +393,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         cur_tr);
     }
 
-  // add standard connections made above
-  for (const auto &port_ref : all_ports)
-    {
-      std::visit (
-        [&] (auto &&src_port) {
-          using PortT = base_type<decltype (src_port)>;
-          auto * src_node =
-            graph.get_nodes ().find_node_for_processable (*src_port);
-          for (const auto &child_node : src_node->childnodes_)
-            {
-              auto * dest_port =
-                dynamic_cast<PortT *> (&child_node.get ().get_processable ());
-              if (dest_port != nullptr)
-                {
-                  dest_port->port_sources_.push_back (
-                    std::make_pair (
-                      src_port,
-                      std::make_unique<dsp::PortConnection> (
-                        src_port->get_uuid (), dest_port->get_uuid (), 1.f,
-                        true, true)));
-                }
-            }
-        },
-        port_ref.get_object ());
-    }
-
   // add additional custom connections from the PortConnectionsManager
   {
     const auto &mgr = *project.port_connections_manager_;
@@ -482,9 +411,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 auto * dest_node =
                   graph.get_nodes ().find_node_for_processable (*dest_port);
                 src_node->connect_to (*dest_node);
-
-                dest_port->port_sources_.push_back (
-                  std::make_pair (src_port, utils::clone_unique (*conn)));
               }
           },
           src_port_var, dest_port_var);
@@ -502,12 +428,9 @@ ProjectGraphBuilder::can_ports_be_connected (
   const dsp::Port &src,
   const dsp::Port &dest)
 {
-  engine::device_io::AudioEngine::State state{};
-  project.audio_engine_->wait_for_pause (state, false, true);
-
   z_debug ("validating for {} to {}", src.get_label (), dest.get_label ());
 
-  ProjectGraphBuilder builder (project, false);
+  ProjectGraphBuilder builder (project);
   dsp::graph::Graph   graph;
   builder.build_graph (graph);
 
@@ -536,8 +459,6 @@ ProjectGraphBuilder::can_ports_be_connected (
   bool valid = graph.is_valid ();
 
   z_debug ("valid {}", valid);
-
-  project.audio_engine_->resume (state);
 
   return valid;
 }

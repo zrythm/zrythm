@@ -136,15 +136,93 @@ DspGraphDispatcher::recalc_graph (bool soft)
   auto       device_mgr = audio_engine_->get_device_manager ();
   const auto current_device = device_mgr->getCurrentAudioDevice ();
 
-  auto rebuild_graph = [&] () {
+  // set various caches on processors and ports inside the graph
+  const auto set_caches_on_graph_nodes = [&] (const auto &graph_nodes) {
+    // collect all ports while going through each node
+    std::vector<std::pair<dsp::PortPtrVariant, dsp::PortPtrVariant>>
+      port_connections_in_graph;
+    for (auto &node : graph_nodes)
+      {
+        if (
+          auto * port_base =
+            dynamic_cast<dsp::Port *> (&node->get_processable ());
+          port_base != nullptr)
+          {
+            std::visit (
+              [&] (auto &&port) {
+                using PortT = base_type<decltype (port)>;
+                port->port_sources_.clear ();
+                for (const auto &child_node : node->childnodes_)
+                  {
+                    auto * dest_port = dynamic_cast<PortT *> (
+                      &child_node.get ().get_processable ());
+                    if (dest_port != nullptr)
+                      {
+                        port_connections_in_graph.emplace_back (port, dest_port);
+                      }
+                  }
+              },
+              convert_to_variant<dsp::PortPtrVariant> (port_base));
+          }
+      }
+
+    // set up caches for ports
+    for (const auto &[src_port_var, dest_port_var] : port_connections_in_graph)
+      {
+        std::visit (
+          [&] (auto &&src_port) {
+            using PortT = base_type<decltype (src_port)>;
+            auto * dest_port = std::get<PortT *> (dest_port_var);
+            dest_port->port_sources_.push_back (
+              std::make_pair (
+                src_port,
+                std::make_unique<dsp::PortConnection> (
+                  src_port->get_uuid (), dest_port->get_uuid (), 1.f, true,
+                  true)));
+          },
+          src_port_var);
+      }
+
+    // set appropriate callbacks
+    for (const auto &cur_tr : PROJECT->getTracklist ()->get_track_span ())
+      {
+        std::visit (
+          [&] (auto &&tr) {
+            z_return_if_fail (tr);
+            using TrackT = base_type<decltype (tr)>;
+
+            if constexpr (
+              std::derived_from<TrackT, structure::tracks::RecordableTrack>)
+              {
+                tr->processor_->set_handle_recording_callback (
+                  [tr] (
+                    const EngineProcessTimeInfo &time_nfo,
+                    const dsp::MidiEventVector * midi_events,
+                    std::optional<
+                      structure::tracks::TrackProcessor::ConstStereoPortPair>
+                      stereo_ports) {
+                    RECORDING_MANAGER->handle_recording (
+                      tr, time_nfo, midi_events, stereo_ports);
+                  });
+              }
+          },
+          cur_tr);
+      }
+  };
+
+  const auto rebuild_graph = [&] () {
     graph_setup_in_progress_.store (true);
-    ProjectGraphBuilder builder (*PROJECT, true);
+    ProjectGraphBuilder builder (*PROJECT);
     dsp::graph::Graph   graph;
     builder.build_graph (graph);
+
+    set_caches_on_graph_nodes (graph.get_nodes ().graph_nodes_);
+
     // TODO
     // PROJECT->clip_editor_->set_caches ();
     TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
     scheduler_->rechain_from_node_collection (graph.steal_nodes ());
+
     graph_setup_in_progress_.store (false);
   };
 

@@ -385,7 +385,7 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
   AUDIO_ENGINE->wait_for_pause (state, true, true);
 
   dsp::graph::Graph   graph;
-  ProjectGraphBuilder builder (*PROJECT, false);
+  ProjectGraphBuilder builder (*PROJECT);
   builder.build_graph (graph);
 
   graph_export_as (&graph, type, export_path);
