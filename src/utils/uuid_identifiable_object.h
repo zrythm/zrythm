@@ -379,7 +379,7 @@ public:
    * @return A non-owning pointer to the object.
    */
   [[gnu::hot]] std::optional<std::reference_wrapper<const VariantT>>
-  find_by_id (const UuidType &id) const
+  find_by_id (const UuidType &id) const [[clang::nonblocking]]
   {
     const auto it = get_iterator_for_id (id);
     if (it == objects_by_id_.end ())
@@ -534,8 +534,19 @@ private:
   }
 
 private:
+  /**
+   * @brief Hash map of the objects.
+   *
+   * @note Must allow realtime-safe (no locks) concurrent reads.
+   */
   QHash<QUuid, VariantT> objects_by_id_;
-  QHash<QUuid, int>      ref_counts_;
+
+  /**
+   * @brief Reference counts for each hash.
+   *
+   * @note Only the main thread may read or write to this map.
+   */
+  QHash<QUuid, int> ref_counts_;
 };
 
 template <typename RegistryT> class UuidIdentifiableObjectSelectionManager

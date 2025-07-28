@@ -4,3 +4,6 @@
 # Mocked methods use mutexes internally
 call-stack-contains:testing::internal::FunctionMocker*::Invoke
 call-stack-contains:testing::internal::UntypedFunctionMockerBase::SetOwnerAndName
+
+# JUCE debugging
+call-stack-contains:juce::PerformanceCounter::printStatistics

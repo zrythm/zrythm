@@ -695,12 +695,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                           out_track->remove_child (
                             prj_track->get_uuid (), true, false, false);
                           auto out_track_var =
-                            PROJECT->get_track_registry ().find_by_id (
+                            PROJECT->get_track_registry ().find_by_id_or_throw (
                               out_track_id.value ());
-                          if (!out_track_var.has_value ())
-                            {
-                              throw ZrythmException ("Out track not found");
-                            }
                           out_track = std::visit (
                             [&] (auto &&out_track_inner) -> GroupTargetTrack * {
                               using InnerTrackT =
@@ -710,7 +706,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                                 return out_track_inner;
                               return nullptr;
                             },
-                            out_track_var->get ());
+                            out_track_var);
                           out_track->add_child (
                             prj_track->get_uuid (), true, false, false);
                         }

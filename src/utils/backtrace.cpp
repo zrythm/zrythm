@@ -17,8 +17,11 @@ Backtrace::Backtrace () = default;
 void
 Backtrace::init_signal_handlers ()
 {
+#if defined(__has_feature) && __has_feature(thread_sanitizer)
+#else
   // this attaches signal handlers automatically
   static backward::SignalHandling sh;
+#endif
 }
 
 std::string

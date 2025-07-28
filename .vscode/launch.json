@@ -43,6 +43,14 @@
             "value": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:halt_on_error=1:abort_on_error=1",
           },
           {
+            "name": "RTSAN_OPTIONS",
+            "value": "suppressions=${workspaceFolder}/tools/rtsan_suppressions.supp",
+          },
+          {
+            "name": "TSAN_OPTIONS",
+            "value": "suppressions=${workspaceFolder}/tools/tsan_suppressions.supp:ignore_noninstrumented_modules=1",
+          },
+          {
             "name": "UBSAN_OPTIONS",
             "value": "halt_on_error=1:abort_on_error=1"
           },
