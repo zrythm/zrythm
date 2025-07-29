@@ -6,8 +6,10 @@
 #include "dsp/port_all.h"
 #include "utils/uuid_identifiable_object.h"
 
+namespace zrythm::dsp
+{
 /**
- * @brief Track span that offers helper methods on a range of tracks.
+ * @brief Span that offers helper methods on a range of ports.
  */
 class PortSpan : public utils::UuidIdentifiableObjectView<dsp::PortRegistry>
 {
@@ -25,3 +27,4 @@ public:
 };
 
 static_assert (std::ranges::random_access_range<PortSpan>);
+}

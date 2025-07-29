@@ -10,7 +10,6 @@ target_sources(zrythm_gui_lib
     plugin_factory.h
     plugin_span.h
     plugin_span.cpp
-    port_span.h
     quantize_options.h
     quantize_options.cpp
     snap_grid.h

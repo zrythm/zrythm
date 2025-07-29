@@ -32,6 +32,7 @@ add_executable(zrythm_dsp_unit_tests
   playhead_qml_adapter_test.cpp
   port_connection_test.cpp
   port_connections_manager_test.cpp
+  port_span_test.cpp
   port_test.cpp
   position_test.cpp
   processor_base_test.cpp

@@ -62,6 +62,7 @@ target_sources(zrythm_dsp_lib
     port.h
     port.cpp
     port_all.h
+    port_span.h
     port_connection.h
     port_connection.cpp
     port_connections_manager.h

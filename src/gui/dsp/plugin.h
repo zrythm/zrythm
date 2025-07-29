@@ -8,8 +8,8 @@
 
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
+#include "dsp/port_span.h"
 #include "dsp/processor_base.h"
-#include "gui/dsp/port_span.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_slot.h"
@@ -154,8 +154,8 @@ public:
     return std::visit ([&] (auto &&val) { return val->get_name (); }, var);
   }
 
-  auto get_input_port_span () const { return PortSpan{ in_ports_ }; }
-  auto get_output_port_span () const { return PortSpan{ out_ports_ }; }
+  auto get_input_port_span () const { return dsp::PortSpan{ in_ports_ }; }
+  auto get_output_port_span () const { return dsp::PortSpan{ out_ports_ }; }
 
   /**
    * @brief Sets the plugin setting to use.
