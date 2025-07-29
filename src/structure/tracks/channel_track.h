@@ -55,10 +55,12 @@ public:
     return channel_->get_post_fader ().currently_listened ();
   }
 
-  bool get_implied_soloed () const override
-  {
-    return channel_->get_post_fader ().get_implied_soloed ();
-  }
+  /**
+   * Returns whether the fader is not soloed on its own but its direct out (or
+   * its direct out's direct out, etc.) or its child (or its children's child,
+   * etc.) is soloed.
+   */
+  bool get_implied_soloed () const override;
 
   bool currently_soloed () const override
   {
@@ -103,11 +105,6 @@ public:
    */
   void
   set_muted (bool mute, bool trigger_undo, bool auto_select, bool fire_events);
-
-  /**
-   * Returns the Fader::Type.
-   */
-  Fader::Type get_fader_type () { return type_get_fader_type (type_); }
 
   /**
    * Returns the plugin at the given slot, if any.

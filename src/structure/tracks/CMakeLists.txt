@@ -15,11 +15,13 @@ target_sources(zrythm_structure_tracks_lib
     automation_tracklist.cpp
     channel_send.h
     channel_send.cpp
+    fader.h
+    fader.cpp
     track_processor.h
     track_processor.cpp
 )
 target_precompile_headers(zrythm_structure_tracks_lib PUBLIC
-  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/automation_track.h>
+  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/automation_tracklist.h>
 )
 
 target_sources(zrythm_gui_lib
@@ -40,8 +42,6 @@ target_sources(zrythm_gui_lib
     channel_track.cpp
     chord_track.h
     chord_track.cpp
-    fader.h
-    fader.cpp
     foldable_track.h
     foldable_track.cpp
     folder_track.h

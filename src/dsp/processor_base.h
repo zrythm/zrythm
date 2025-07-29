@@ -79,6 +79,12 @@ protected:
    */
   virtual void custom_process_block (EngineProcessTimeInfo time_nfo);
 
+  virtual void custom_prepare_for_processing (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length)
+  {
+  }
+
 private:
   static constexpr auto kProcessorNameKey = "processorName"sv;
   static constexpr auto kInputPortsKey = "inputPorts"sv;

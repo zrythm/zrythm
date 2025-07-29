@@ -19,6 +19,7 @@ struct FileImportInfo;
 namespace zrythm::engine::session
 {
 class DspGraphDispatcher;
+class SampleProcessor;
 }
 
 class Project;

@@ -14,6 +14,7 @@
 
 #include "type_safe/strong_typedef.hpp"
 #include <boost/stl_interfaces/iterator_interface.hpp>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::utils
 {

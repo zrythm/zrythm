@@ -55,6 +55,71 @@ ChannelTrack::init_channel ()
   }
 }
 
+bool
+ChannelTrack::get_implied_soloed () const
+{
+  if (currently_soloed ())
+    {
+      return false;
+    }
+
+  const ChannelTrack * track = this;
+
+  /* check parents */
+  const auto * out_track = track;
+  do
+    {
+      auto soloed = std::visit (
+        [&] (auto &&out_track_casted) -> bool {
+          if constexpr (
+            std::derived_from<
+              base_type<decltype (out_track_casted)>, ChannelTrack>)
+            {
+              out_track = out_track_casted->channel_->get_output_track ();
+              if (out_track && out_track->currently_soloed ())
+                {
+                  return true;
+                }
+            }
+          else
+            {
+              out_track = nullptr;
+            }
+          return false;
+        },
+        convert_to_variant<TrackPtrVariant> (out_track));
+      if (soloed)
+        return true;
+    }
+  while (out_track != nullptr);
+
+  /* check children */
+  if (track->can_be_group_target ())
+    {
+      const auto * group_target = dynamic_cast<const GroupTargetTrack *> (track);
+      for (const auto &child_id : group_target->children_)
+        {
+          auto child_track_var = TRACKLIST->get_track (child_id);
+
+          auto child_soloed_or_implied_soloed =
+            child_track_var.has_value ()
+            && std::visit (
+              [&] (auto &&child_track) {
+                return static_cast<bool> (
+                  child_track->currently_soloed ()
+                  || child_track->get_implied_soloed ());
+              },
+              child_track_var.value ());
+          if (child_soloed_or_implied_soloed)
+            {
+              return true;
+            }
+        }
+    }
+
+  return false;
+}
+
 void
 ChannelTrack::
   set_muted (bool mute, bool trigger_undo, bool auto_select, bool fire_events)

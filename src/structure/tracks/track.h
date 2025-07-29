@@ -384,32 +384,6 @@ public:
   using Color = utils::Color;
   using Position = dsp::Position;
 
-  /**
-   * Returns the prefader type.
-   */
-  static Fader::Type type_get_fader_type (const Type type)
-  {
-    switch (type)
-      {
-      case Type::Midi:
-      case Type::MidiBus:
-      case Type::Chord:
-      case Type::MidiGroup:
-        return Fader::Type::MidiChannel;
-      case Type::Instrument:
-      case Type::Audio:
-      case Type::AudioBus:
-      case Type::Master:
-      case Type::AudioGroup:
-        return Fader::Type::AudioChannel;
-      case Type::Marker:
-      case Type::Folder:
-        return Fader::Type::None;
-      default:
-        z_return_val_if_reached (Fader::Type::None);
-      }
-  }
-
   static constexpr bool type_can_have_direct_out (Type type)
   {
     return type != Type::Master;

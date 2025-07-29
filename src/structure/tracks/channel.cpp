@@ -158,9 +158,6 @@ Channel::set_track_ptr (ChannelTrack &track)
 {
   track_ = &track;
 
-  // prefader_->track_ = track_;
-  fader_->track_ = track_;
-
   std::vector<Channel::Plugin *> pls;
   get_plugins (pls);
   for (auto * pl : pls)
@@ -194,10 +191,6 @@ void
 Channel::prepare_process (nframes_t nframes)
 {
   const auto out_type = track_->get_output_signal_type ();
-
-  /* clear buffers */
-  // prefader_->clear_buffers (nframes); // TODO
-  fader_->clear_buffers (nframes);
 
   if (out_type == PortType::Audio)
     {
@@ -235,12 +228,6 @@ Channel::init_loaded ()
     {
       throw ZrythmException ("track not found");
     }
-
-  /* fader */
-  fader_->track_ = track_;
-
-  fader_->init_loaded (
-    port_registry_, param_registry_, track_, nullptr, nullptr);
 
   auto init_plugin = [&] (auto &plugin_id, PluginSlot slot) {
     if (plugin_id.has_value ())
@@ -492,9 +479,22 @@ Channel::init ()
       break;
     }
 
-  auto fader_type = track_->get_fader_type ();
   fader_ = utils::make_qobject_unique<Fader> (
-    port_registry_, param_registry_, fader_type, track_, nullptr, nullptr);
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+    track_->get_output_signal_type (), track_->is_master (), true,
+    [this] () { return track_->get_name (); },
+    [&] (bool fader_solo_status) {
+      // Effectively muted if any of the following is true:
+      // - other track(s) is soloed and this isn't
+      // - bounce mode is ON and the track is set to BOUNCE_OFF
+      return (TRACKLIST->get_track_span ().has_soloed () && !fader_solo_status
+             && !track_->get_implied_soloed () && !track_->is_master ())
+             || (AUDIO_ENGINE->bounce_mode_ == engine::device_io::BounceMode::On
+         &&
+      !track_->is_master()
+         && !track_->bounce_);
+    });
   fader_->setParent (this);
   if (track_->get_output_signal_type () == PortType::Audio)
     {

@@ -88,7 +88,7 @@ ChannelSubgraphBuilder::add_connections (
       ? dsp::PortType::Event
       : dsp::PortType::Audio;
   const auto output_type =
-    ch.fader ()->has_midi_ports () ? dsp::PortType::Event : dsp::PortType::Audio;
+    ch.fader ()->is_midi () ? dsp::PortType::Event : dsp::PortType::Audio;
 
   std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
   ch.get_plugins (plugins);

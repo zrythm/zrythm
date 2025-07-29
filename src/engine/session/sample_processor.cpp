@@ -35,8 +35,12 @@ SampleProcessor::SampleProcessor (device_io::AudioEngine * engine)
     : audio_engine_ (engine)
 {
   fader_ = std::make_unique<Fader> (
-    engine->get_port_registry (), engine->get_param_registry (),
-    Fader::Type::SampleProcessor, nullptr, nullptr, this);
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = engine->get_port_registry (),
+      .param_registry_ = engine->get_param_registry () },
+    dsp::PortType::Audio, true, false,
+    [] () -> utils::Utf8String { return u8"Sample Processor"; },
+    [] (bool fader_solo_status) { return false; });
 
   init_common ();
 }
@@ -106,16 +110,8 @@ void
 SampleProcessor::init_loaded (device_io::AudioEngine * engine)
 {
   audio_engine_ = engine;
-  fader_->init_loaded (
-    engine->get_port_registry (), engine->get_param_registry (), nullptr,
-    nullptr, this);
 
   init_common ();
-}
-void
-SampleProcessor::prepare_process (const nframes_t nframes)
-{
-  fader_->clear_buffers (nframes);
 }
 
 void

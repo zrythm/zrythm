@@ -317,24 +317,24 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
   if (with_fadeout && state.running_)
     {
+// TODO (or use graph cross-fade)
+#if 0
       z_debug (
         "setting fade out samples and waiting for remaining samples to become 0");
-      control_room_->monitor_fader_->fade_out_samples_.store (
-        FADER_DEFAULT_FADE_FRAMES);
+      control_room_->monitor_fader_->request_fade_out ();
       const auto start_time = SteadyClock::now ();
       const auto max_time_to_wait = std::chrono::seconds (2);
-      control_room_->monitor_fader_->fading_out_.store (true);
-      while (control_room_->monitor_fader_->fade_out_samples_.load () > 0)
+      while (control_room_->monitor_fader_->has_fade_out_samples_left ())
         {
           std::this_thread::sleep_for (std::chrono::microseconds (100));
           if (SteadyClock::now () - start_time > max_time_to_wait)
             {
               /* abort */
-              control_room_->monitor_fader_->fading_out_.store (false);
-              control_room_->monitor_fader_->fade_out_samples_.store (0);
+              control_room_->monitor_fader_->abort_fade_out ();
               break;
             }
         }
+#endif
     }
 
   if (!destroying_)
@@ -371,7 +371,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
     }
   z_debug ("cycle finished");
 
-  control_room_->monitor_fader_->fading_out_.store (false);
+  // control_room_->monitor_fader_->abort_fade_out ();
 
   if ((project_ != nullptr) && project_->loaded_)
     {
@@ -418,9 +418,8 @@ AudioEngine::resume (State &state)
       project_->transport_->requestPause (true);
     }
 
-  z_debug ("restarting engine: setting fade in samples");
-  control_room_->monitor_fader_->fade_in_samples_.store (
-    FADER_DEFAULT_FADE_FRAMES);
+  // z_debug ("restarting engine: setting fade in samples");
+  // control_room_->monitor_fader_->request_fade_in ();
 
   run_.store (state.running_);
 }
@@ -633,7 +632,7 @@ AudioEngine::process_prepare (
   }
 
   /* reset all buffers */
-  control_room_->monitor_fader_->clear_buffers (block_length);
+  // control_room_->monitor_fader_->clear_buffers (block_length);
   midi_in_->clear_buffer (block_length);
 
   // TODO

@@ -18,9 +18,77 @@ ControlRoom::ControlRoom (
       param_registry_ (param_registry)
 {
   monitor_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Monitor, nullptr, this,
-    nullptr);
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    dsp::PortType::Audio, true, false,
+    [] () -> utils::Utf8String { return u8"Control Room"; },
+    [] (bool fader_solo_status) { return false; });
   init_common ();
+  monitor_fader_->set_mute_gain_callback ([this] () {
+    return mute_volume_->baseValue ();
+  });
+  monitor_fader_->set_preprocess_audio_callback (
+    [&] (
+      std::pair<std::span<float>, std::span<float>> stereo_bufs,
+      const EngineProcessTimeInfo                  &time_nfo) {
+      const float dim_amp = dim_volume_->baseValue ();
+
+      /* if have listened tracks */
+      if (TRACKLIST->get_track_span ().has_listened ())
+        {
+          /* dim signal */
+          utils::float_ranges::mul_k2 (
+            &stereo_bufs.first[time_nfo.local_offset_], dim_amp,
+            time_nfo.nframes_);
+          utils::float_ranges::mul_k2 (
+            &stereo_bufs.second[time_nfo.local_offset_], dim_amp,
+            time_nfo.nframes_);
+
+          /* add listened signal */
+          /* TODO add "listen" buffer on fader struct and add listened
+           * tracks to it during processing instead of looping here */
+          const float listen_amp = listen_volume_->baseValue ();
+          for (const auto &cur_t : TRACKLIST->get_track_span ())
+            {
+              std::visit (
+                [&] (auto &&t) {
+                  using TrackT = base_type<decltype (t)>;
+                  if constexpr (
+                    std::derived_from<TrackT, structure::tracks::ChannelTrack>)
+                    {
+                      if (
+                        t->get_output_signal_type () == dsp::PortType::Audio
+                        && t->currently_listened ())
+                        {
+                          auto * f = t->get_channel ()->fader ();
+                          utils::float_ranges::product (
+                            &stereo_bufs.first[time_nfo.local_offset_],
+                            &f->get_stereo_out_ports ()
+                               .first.buf_[time_nfo.local_offset_],
+                            listen_amp, time_nfo.nframes_);
+                          utils::float_ranges::product (
+                            &stereo_bufs.second[time_nfo.local_offset_],
+                            &f->get_stereo_out_ports ()
+                               .second.buf_[time_nfo.local_offset_],
+                            listen_amp, time_nfo.nframes_);
+                        }
+                    }
+                },
+                cur_t);
+            }
+        } /* endif have listened tracks */
+
+      /* apply dim if enabled */
+      if (dim_output_)
+        {
+          utils::float_ranges::mul_k2 (
+            &stereo_bufs.first[time_nfo.local_offset_], dim_amp,
+            time_nfo.nframes_);
+          utils::float_ranges::mul_k2 (
+            &stereo_bufs.second[time_nfo.local_offset_], dim_amp,
+            time_nfo.nframes_);
+        }
+    });
 }
 
 void
@@ -36,9 +104,10 @@ ControlRoom::init_common ()
 #endif
 
   /* init listen/mute/dim faders */
-  mute_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Generic, nullptr, this,
-    nullptr);
+  mute_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
+    *port_registry_,
+    dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"mute_volume") },
+    dsp::ParameterRange::make_gain (2.f), utils::Utf8String (u8"Mute"), this);
 #if 0
   amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -56,9 +125,10 @@ ControlRoom::init_common ()
   mute_fader_->set_amp (amp);
 #endif
 
-  listen_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Generic, nullptr, this,
-    nullptr);
+  listen_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
+    *port_registry_,
+    dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"listen_volume") },
+    dsp::ParameterRange::make_gain (2.f), utils::Utf8String (u8"Listen"), this);
 #if 0
   amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -76,9 +146,10 @@ ControlRoom::init_common ()
     }
 #endif
 
-  dim_fader_ = std::make_unique<Fader> (
-    *port_registry_, *param_registry_, Fader::Type::Generic, nullptr, this,
-    nullptr);
+  dim_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
+    *port_registry_,
+    dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"dim_volume") },
+    dsp::ParameterRange::make_gain (2.f), utils::Utf8String (u8"Dim"), this);
 #if 0
     amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -114,6 +185,37 @@ ControlRoom::init_common ()
   monitor_fader_->get_mute_port ().set_control_value (
     mute ? 1.f : 0.f, false, false);
 #endif
+
+// TODO: attach to signals when there are changes for the
+// monitor/mute/listen/dim gains and update user settings to remember the values
+#if 0
+void
+Fader::set_fader_val (float fader_val)
+{
+  fader_val_ = fader_val;
+  float fader_amp = utils::math::get_amp_val_from_fader (fader_val);
+  fader_amp = get_amp_port ().range_.clamp_to_range (fader_amp);
+  set_amp (fader_amp);
+  volume_ = utils::math::amp_to_dbfs (fader_amp);
+
+  if (this == MONITOR_FADER.get ())
+    {
+      gui::SettingsManager::get_instance ()->set_monitorVolume (fader_amp);
+    }
+  else if (this == CONTROL_ROOM->mute_fader_.get ())
+    {
+      gui::SettingsManager::get_instance ()->set_monitorMuteVolume (fader_amp);
+    }
+  else if (this == CONTROL_ROOM->listen_fader_.get ())
+    {
+      gui::SettingsManager::get_instance ()->set_monitorListenVolume (fader_amp);
+    }
+  else if (this == CONTROL_ROOM->dim_fader_.get ())
+    {
+      gui::SettingsManager::get_instance ()->set_monitorDimVolume (fader_amp);
+    }
+}
+#endif
 }
 
 void
@@ -135,8 +237,6 @@ ControlRoom::init_loaded (
   audio_engine_ = engine;
   port_registry_ = port_registry;
   param_registry_ = param_registry;
-  monitor_fader_->init_loaded (
-    *port_registry_, *param_registry_, nullptr, this, nullptr);
   init_common ();
 }
 }

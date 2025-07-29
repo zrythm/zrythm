@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <atomic>
+#include <cstdint>
 
 #include "dsp/audio_port.h"
 #include "dsp/midi_port.h"
@@ -12,61 +12,31 @@
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
-#include <fmt/printf.h>
-
-namespace zrythm::engine::session
-{
-class ControlRoom;
-class SampleProcessor;
-}
-
-#define MONITOR_FADER (CONTROL_ROOM->monitor_fader_)
-
-/** Causes loud volume in when < 1k. */
-constexpr int FADER_DEFAULT_FADE_FRAMES_SHORT = 1024;
-#define FADER_DEFAULT_FADE_FRAMES \
-  (ZRYTHM_TESTING ? FADER_DEFAULT_FADE_FRAMES_SHORT : 8192)
-
 namespace zrythm::structure::tracks
 {
-
-class Channel;
-class Track;
-
 /**
  * A Fader is a processor that is used for volume controls and pan.
  */
-class Fader final : public QObject, public dsp::ProcessorBase
+class Fader : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
+  Q_PROPERTY (
+    MidiFaderMode midiMode READ midiMode WRITE setMidiMode NOTIFY midiModeChanged)
+  Q_PROPERTY (zrythm::dsp::ProcessorParameter * gain READ gain CONSTANT)
+  Q_PROPERTY (zrythm::dsp::ProcessorParameter * balance READ balance CONSTANT)
+  Q_PROPERTY (zrythm::dsp::ProcessorParameter * mute READ mute CONSTANT)
+  Q_PROPERTY (zrythm::dsp::ProcessorParameter * solo READ solo CONSTANT)
+  Q_PROPERTY (zrythm::dsp::ProcessorParameter * listen READ listen CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::ProcessorParameter * monoToggle READ monoToggle CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::ProcessorParameter * swapPhaseToggle READ swapPhaseToggle
+      CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
 public:
-  /**
-   * Fader type.
-   */
-  enum class Type
-  {
-    None,
-
-    /** Audio fader for the monitor. */
-    Monitor,
-
-    /** Audio fader for the sample processor. */
-    SampleProcessor,
-
-    /** Audio fader for Channel's. */
-    AudioChannel,
-
-    /* MIDI fader for Channel's. */
-    MidiChannel,
-
-    /** For generic uses. */
-    Generic,
-  };
-
-  enum class MidiFaderMode
+  enum class MidiFaderMode : std::uint_fast8_t
   {
     /** Multiply velocity of all MIDI note ons. */
     MIDI_FADER_MODE_VEL_MULTIPLIER,
@@ -74,44 +44,127 @@ public:
     /** Send CC volume event on change TODO. */
     MIDI_FADER_MODE_CC_VOLUME,
   };
+  Q_ENUM (MidiFaderMode)
 
 public:
   /**
+   * @brief A callback to check if the fader should be muted based on various
+   * external factors (such as solo status of other tracks).
+   *
+   * @note If the fader itself is muted this will not be called - fader is
+   * assumed to be muted.
+   *
+   * @param current_solo_status The fader's own solo status.
+   */
+  using ShouldBeMutedCallback = std::function<bool (bool fader_solo_status)>;
+
+  /**
+   * @brief Callback to get the gain that should be used if the fader is
+   * effectively muted.
+   */
+  using MuteGainCallback = std::function<float ()>;
+
+  /**
+   * @brief Callback to pre-process the incoming audio before applying gain,
+   * pan, etc.
+   *
+   * Mainly for use by the monitor fader.
+   */
+  using PreProcessAudioCallback = std::function<void (
+    std::pair<std::span<float>, std::span<float>> stereo_bufs,
+    const EngineProcessTimeInfo                  &time_nfo)>;
+
+  /**
    * Creates a new fader.
    *
-   * This assumes that the channel has no plugins.
-   *
-   * @param type The Fader::Type.
-   * @param ch Channel, if this is a channel Fader.
+   * @param hard_limit_output Whether the output should be hard-limited (only
+   * applies to audio faders). This should be true for the master track fader,
+   * the monitor fader and the sample processor (deprecated?) fader.
+   * @param make_params_automatable Whether to make (a subset of) the parameters
+   * automatable. If false, no parameter will be automatable.
    */
   Fader (
-    dsp::PortRegistry                 &port_registry,
-    dsp::ProcessorParameterRegistry   &param_registry,
-    Type                               type,
-    Track *                            track,
-    engine::session::ControlRoom *     control_room,
-    engine::session::SampleProcessor * sample_processor,
-    QObject *                          parent = nullptr);
+    dsp::ProcessorBase::ProcessorBaseDependencies      dependencies,
+    dsp::PortType                                      signal_type,
+    bool                                               hard_limit_output,
+    bool                                               make_params_automatable,
+    std::optional<std::function<utils::Utf8String ()>> owner_name_provider,
+    ShouldBeMutedCallback                              should_be_muted_cb,
+    QObject *                                          parent = nullptr);
 
-  /**
-   * Inits fader after a project is loaded.
-   */
-  [[gnu::cold]] void init_loaded (
-    dsp::PortRegistry                 &port_registry,
-    dsp::ProcessorParameterRegistry   &param_registry,
-    Track *                            track,
-    engine::session::ControlRoom *     control_room,
-    engine::session::SampleProcessor * sample_processor);
+  // ============================================================================
+  // QML Interface
+  // ============================================================================
 
-  /**
-   * Sets the amp value with an undoable action.
-   *
-   * @param skip_if_equal Whether to skip the action
-   *   if the amp hasn't changed.
-   */
-  void set_amp_with_action (float amp_from, float amp_to, bool skip_if_equal);
+  MidiFaderMode midiMode () const { return midi_mode_; }
+  void          setMidiMode (MidiFaderMode mode)
+  {
+    if (midi_mode_ == mode)
+      return;
 
-  void set_midi_mode (MidiFaderMode mode, bool with_action, bool fire_events);
+    midi_mode_ = mode;
+    Q_EMIT midiModeChanged (mode);
+  }
+  Q_SIGNAL void midiModeChanged (MidiFaderMode mode);
+
+  zrythm::dsp::ProcessorParameter * gain () const
+  {
+    if (amp_id_.has_value ())
+      {
+        return &get_amp_param ();
+      }
+    return nullptr;
+  }
+  zrythm::dsp::ProcessorParameter * balance () const
+  {
+    if (balance_id_.has_value ())
+      {
+        return &get_balance_param ();
+      }
+    return nullptr;
+  }
+  zrythm::dsp::ProcessorParameter * mute () const
+  {
+    if (mute_id_.has_value ())
+      {
+        return &get_mute_param ();
+      }
+    return nullptr;
+  }
+  zrythm::dsp::ProcessorParameter * solo () const
+  {
+    if (solo_id_.has_value ())
+      {
+        return &get_solo_param ();
+      }
+    return nullptr;
+  }
+  zrythm::dsp::ProcessorParameter * listen () const
+  {
+    if (listen_id_.has_value ())
+      {
+        return &get_listen_param ();
+      }
+    return nullptr;
+  }
+  zrythm::dsp::ProcessorParameter * monoToggle () const
+  {
+    if (mono_compat_enabled_id_.has_value ())
+      {
+        return &get_mono_compat_enabled_param ();
+      }
+    return nullptr;
+  }
+  zrythm::dsp::ProcessorParameter * swapPhaseToggle () const
+  {
+    if (swap_phase_id_.has_value ())
+      {
+        return &get_swap_phase_param ();
+      }
+    return nullptr;
+  }
+
+  // ============================================================================
 
   /**
    * Returns if the fader is muted.
@@ -132,14 +185,6 @@ public:
   }
 
   /**
-   * Returns whether the fader is not soloed on its
-   * own but its direct out (or its direct out's direct
-   * out, etc.) or its child (or its children's child,
-   * etc.) is soloed.
-   */
-  bool get_implied_soloed () const;
-
-  /**
    * Returns whether the fader is listened.
    */
   bool currently_listened () const
@@ -157,77 +202,76 @@ public:
     return amp_param.range ().convertFrom0To1 (amp_param.currentValue ());
   }
 
-  float get_default_fader_val () const
-  {
-    return utils::math::get_fader_val_from_amp (get_amp_param ().range ().deff_);
-  }
-
   std::string db_string_getter () const;
 
-  Channel * get_channel () const;
+  void set_mute_gain_callback (MuteGainCallback cb)
+  {
+    mute_gain_cb_ = std::move (cb);
+  }
 
-  Track * get_track () const;
+  void set_preprocess_audio_callback (PreProcessAudioCallback cb)
+  {
+    preprocess_audio_cb_ = std::move (cb);
+  }
 
-  /**
-   * Clears all buffers.
-   */
-  [[gnu::hot]] void clear_buffers (std::size_t block_length);
+  // ============================================================================
+  // IProcessable Interface
+  // ============================================================================
 
-  void set_fader_val_with_action_from_db (const std::string &str);
+  void custom_prepare_for_processing (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length) override;
 
-  /**
-   * Process the Fader.
-   */
   [[gnu::hot]] void
   custom_process_block (EngineProcessTimeInfo time_nfo) override;
 
-  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
+  // ============================================================================
 
-  static int fade_frames_for_type (Type type);
-
-  bool has_audio_ports () const
-  {
-    return type_ == Type::AudioChannel || type_ == Type::Monitor
-           || type_ == Type::SampleProcessor;
-  }
-
-  bool has_midi_ports () const { return type_ == Type::MidiChannel; }
+  bool is_audio () const { return signal_type_ == dsp::PortType::Audio; }
+  bool is_midi () const { return signal_type_ == dsp::PortType::Event; }
 
   friend void
   init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type);
 
   dsp::ProcessorParameter &get_amp_param () const
   {
-    return *amp_id_->get_object_as<dsp::ProcessorParameter> ();
+    return *std::get<dsp::ProcessorParameter *> (
+      dependencies_.param_registry_.find_by_id_or_throw (*amp_id_));
   }
   dsp::ProcessorParameter &get_balance_param () const
   {
-    return *balance_id_->get_object_as<dsp::ProcessorParameter> ();
+    return *std::get<dsp::ProcessorParameter *> (
+      dependencies_.param_registry_.find_by_id_or_throw (*balance_id_));
   }
   dsp::ProcessorParameter &get_mute_param () const
   {
-    return *mute_id_->get_object_as<dsp::ProcessorParameter> ();
+    return *std::get<dsp::ProcessorParameter *> (
+      dependencies_.param_registry_.find_by_id_or_throw (*mute_id_));
   }
   dsp::ProcessorParameter &get_solo_param () const
   {
-    return *solo_id_->get_object_as<dsp::ProcessorParameter> ();
+    return *std::get<dsp::ProcessorParameter *> (
+      dependencies_.param_registry_.find_by_id_or_throw (*solo_id_));
   }
   dsp::ProcessorParameter &get_listen_param () const
   {
-    return *listen_id_->get_object_as<dsp::ProcessorParameter> ();
+    return *std::get<dsp::ProcessorParameter *> (
+      dependencies_.param_registry_.find_by_id_or_throw (*listen_id_));
   }
   dsp::ProcessorParameter &get_mono_compat_enabled_param () const
   {
     return *std::get<dsp::ProcessorParameter *> (
-      mono_compat_enabled_id_->get_object ());
+      dependencies_.param_registry_.find_by_id_or_throw (
+        *mono_compat_enabled_id_));
   }
   dsp::ProcessorParameter &get_swap_phase_param () const
   {
-    return *swap_phase_id_->get_object_as<dsp::ProcessorParameter> ();
+    return *std::get<dsp::ProcessorParameter *> (
+      dependencies_.param_registry_.find_by_id_or_throw (*swap_phase_id_));
   }
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
   {
-    if (!has_audio_ports ())
+    if (!is_audio ())
       {
         throw std::runtime_error ("Not an audio fader");
       }
@@ -237,7 +281,7 @@ public:
   }
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
   {
-    if (!has_audio_ports ())
+    if (!is_audio ())
       {
         throw std::runtime_error ("Not an audio fader");
       }
@@ -255,50 +299,37 @@ public:
   }
 
 private:
-  static constexpr auto kTypeKey = "type"sv;
-  static constexpr auto kVolumeKey = "volume"sv;
-  static constexpr auto kAmpKey = "amp"sv;
-  static constexpr auto kPhaseKey = "phase"sv;
-  static constexpr auto kBalanceKey = "balance"sv;
-  static constexpr auto kMuteKey = "mute"sv;
-  static constexpr auto kSoloKey = "solo"sv;
-  static constexpr auto kListenKey = "listen"sv;
-  static constexpr auto kMonoCompatEnabledKey = "monoCompatEnabled"sv;
-  static constexpr auto kSwapPhaseKey = "swapPhase"sv;
-  static constexpr auto kMidiInKey = "midiIn"sv;
-  static constexpr auto kMidiOutKey = "midiOut"sv;
-  static constexpr auto kStereoInLKey = "stereoInL"sv;
-  static constexpr auto kStereoInRKey = "stereoInR"sv;
-  static constexpr auto kStereoOutLKey = "stereoOutL"sv;
-  static constexpr auto kStereoOutRKey = "stereoOutR"sv;
   static constexpr auto kMidiModeKey = "midiMode"sv;
   friend void           to_json (nlohmann::json &j, const Fader &fader)
   {
     to_json (j, static_cast<const dsp::ProcessorBase &> (fader));
-    j[kTypeKey] = fader.type_;
-    j[kAmpKey] = fader.amp_id_;
-    j[kPhaseKey] = fader.phase_;
-    j[kBalanceKey] = fader.balance_id_;
-    j[kMuteKey] = fader.mute_id_;
-    j[kSoloKey] = fader.solo_id_;
-    j[kListenKey] = fader.listen_id_;
-    j[kMonoCompatEnabledKey] = fader.mono_compat_enabled_id_;
-    j[kSwapPhaseKey] = fader.swap_phase_id_;
     j[kMidiModeKey] = fader.midi_mode_;
   }
   friend void from_json (const nlohmann::json &j, Fader &fader);
 
-public:
   /**
-   * Volume in dBFS. (-inf ~ +6)
+   * @brief Initializes various parameter caches used during processing.
+   *
+   * @note This is only needed after construction. Logic that needs to be called
+   * on sample rate/buffer size changes must go in prepare_for_processing().
    */
-  // float volume_ = 0.f;
+  void init_param_caches ();
 
-  /** Used by the phase knob (0.0 ~ 360.0). */
-  float phase_ = 0.f;
+  /**
+   * @brief Calculates the gain based on the current gain parameter value and
+   * the fader's mute/solo/etc. status.
+   */
+  float calculate_target_gain () const;
 
-  /** 0.0 ~ 1.0 for widgets. */
-  // float fader_val_ = 0.f;
+  bool effectively_muted () const
+  {
+    return currently_muted () || should_be_muted_cb_ (currently_soloed ());
+  }
+
+private:
+  dsp::PortType signal_type_;
+
+  bool hard_limit_output_{};
 
   /**
    * Value of @ref amp during last processing.
@@ -309,77 +340,47 @@ public:
    */
   float last_cc_volume_ = 0.f;
 
-private:
-  OptionalRef<dsp::PortRegistry>               port_registry_;
-  OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
-
   /**
    * A control port that controls the volume in amplitude (0.0 ~ 1.5)
    */
-  std::optional<dsp::ProcessorParameterUuidReference> amp_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> amp_id_;
 
   /** A control Port that controls the balance (0.0 ~ 1.0) 0.5 is center. */
-  std::optional<dsp::ProcessorParameterUuidReference> balance_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> balance_id_;
 
   /**
    * Control port for muting the (channel) fader.
    */
-  std::optional<dsp::ProcessorParameterUuidReference> mute_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> mute_id_;
 
   /** Soloed or not. */
-  std::optional<dsp::ProcessorParameterUuidReference> solo_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> solo_id_;
 
   /** Listened or not. */
-  std::optional<dsp::ProcessorParameterUuidReference> listen_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> listen_id_;
 
   /** Whether mono compatibility switch is enabled. */
-  std::optional<dsp::ProcessorParameterUuidReference> mono_compat_enabled_id_;
+  std::optional<dsp::ProcessorParameter::Uuid> mono_compat_enabled_id_;
 
   /** Swap phase toggle. */
-  std::optional<dsp::ProcessorParameterUuidReference> swap_phase_id_;
-
-public:
-  Type type_{};
+  std::optional<dsp::ProcessorParameter::Uuid> swap_phase_id_;
 
   /** MIDI fader mode. */
-  MidiFaderMode midi_mode_{};
-
-  /** Pointer to owner track, if any. */
-  Track * track_ = nullptr;
-
-  /** Pointer to owner control room, if any. */
-  engine::session::ControlRoom * control_room_ = nullptr;
-
-  /** Pointer to owner sample processor, if any. */
-  engine::session::SampleProcessor * sample_processor_ = nullptr;
-
-  bool is_project_ = false;
-
-  /* TODO Caches to be set when recalculating the
-   * graph. */
-  bool implied_soloed_ = false;
-  bool soloed_ = false;
+  MidiFaderMode midi_mode_{ MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER };
 
   /**
-   * Number of samples left to fade out.
+   * @brief Current gain to apply after taking into account the gain parameter
+   * and mute/listen/dim status.
    *
-   * This is atomic because it is used during processing (@ref process()) and
-   * also checked in the main thread by @ref Engine.wait_for_pause().
+   * This is used to prevent artifacts when the actual gain quickly changes
+   * (such as when muting/unmuting the fader).
    */
-  std::atomic<int> fade_out_samples_ = 0;
+  juce::SmoothedValue<float> current_gain_{ 0.f };
 
-  /** Number of samples left to fade in. */
-  std::atomic<int> fade_in_samples_ = 0;
+  ShouldBeMutedCallback should_be_muted_cb_;
 
-  /**
-   * Whether currently fading out.
-   *
-   * When true, if fade_out_samples becomes 0 then the output will be silenced.
-   */
-  std::atomic<bool> fading_out_ = false;
+  std::optional<PreProcessAudioCallback> preprocess_audio_cb_;
 
-  /** Cache. */
-  bool was_effectively_muted_ = false;
+  MuteGainCallback mute_gain_cb_ = [] () { return 0.f; };
 };
-
 }

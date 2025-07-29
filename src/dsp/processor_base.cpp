@@ -63,6 +63,8 @@ ProcessorBase::prepare_for_processing (
     {
       std::visit (port_visitor, out_ref.get_object ());
     }
+
+  custom_prepare_for_processing (sample_rate, max_block_length);
 }
 
 void

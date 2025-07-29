@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "dsp/processor_base.h"
 #include "structure/tracks/automation_track.h"
 
 #include <QAbstractListModel>

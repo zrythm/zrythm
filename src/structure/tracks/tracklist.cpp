@@ -215,7 +215,7 @@ Tracklist::disconnect_channel (Channel &channel)
   };
 
   const auto disconnect_fader = [&] (const Fader &fader) {
-    if (fader.has_audio_ports ())
+    if (fader.is_audio ())
       {
         auto stereo_in = fader.get_stereo_in_ports ();
         disconnect (stereo_in.first);
@@ -224,7 +224,7 @@ Tracklist::disconnect_channel (Channel &channel)
         disconnect (stereo_out.first);
         disconnect (stereo_out.second);
       }
-    else if (fader.has_midi_ports ())
+    else if (fader.is_midi ())
       {
         auto &midi_in = fader.get_midi_in_port ();
         disconnect (midi_in);

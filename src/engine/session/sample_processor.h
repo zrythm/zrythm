@@ -60,11 +60,6 @@ public:
   void load_instrument_if_empty ();
 
   /**
-   * Clears the buffers.
-   */
-  void prepare_process (nframes_t nframes);
-
-  /**
    * Process the samples for the given number of frames.
    */
   void process_block (EngineProcessTimeInfo time_nfo) override;
