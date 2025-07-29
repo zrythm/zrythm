@@ -1,0 +1,1034 @@
+// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "dsp/parameter.h"
+#include "dsp/port.h"
+#include "dsp/processor_base.h"
+#include "structure/tracks/fader.h"
+
+#include <QObject>
+
+#include <gtest/gtest.h>
+
+namespace zrythm::structure::tracks
+{
+
+class FaderTest : public ::testing::Test
+{
+protected:
+  void SetUp () override
+  {
+    port_registry_ = std::make_unique<dsp::PortRegistry> ();
+    param_registry_ =
+      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
+
+    // Create audio fader without hard limiting for most tests
+    audio_fader_ = std::make_unique<Fader> (
+      dsp::ProcessorBase::ProcessorBaseDependencies{
+        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+      dsp::PortType::Audio, false, true, [] { return u8"Test Track"; },
+      [] (bool solo_status) { return false; });
+
+    // Create MIDI fader without hard limiting and non-automatable parameters
+    midi_fader_ = std::make_unique<Fader> (
+      dsp::ProcessorBase::ProcessorBaseDependencies{
+        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+      dsp::PortType::Event, false, false, [] { return u8"Test MIDI Track"; },
+      [] (bool solo_status) { return false; });
+  }
+
+  void TearDown () override
+  {
+    if (audio_fader_)
+      {
+        audio_fader_->release_resources ();
+      }
+    if (midi_fader_)
+      {
+        midi_fader_->release_resources ();
+      }
+  }
+
+  std::unique_ptr<dsp::PortRegistry>               port_registry_;
+  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
+  sample_rate_t                                    sample_rate_{ 48000 };
+  nframes_t                                        max_block_length_{ 1024 };
+  std::unique_ptr<Fader>                           audio_fader_;
+  std::unique_ptr<Fader>                           midi_fader_;
+};
+
+TEST_F (FaderTest, ConstructionAndBasicProperties)
+{
+  // Test audio fader
+  EXPECT_EQ (audio_fader_->is_audio (), true);
+  EXPECT_EQ (audio_fader_->is_midi (), false);
+
+  // Test MIDI fader
+  EXPECT_EQ (midi_fader_->is_audio (), false);
+  EXPECT_EQ (midi_fader_->is_midi (), true);
+
+  // Test parameter accessors
+  EXPECT_NE (audio_fader_->gain (), nullptr);
+  EXPECT_NE (audio_fader_->balance (), nullptr);
+  EXPECT_NE (audio_fader_->mute (), nullptr);
+  EXPECT_NE (audio_fader_->solo (), nullptr);
+  EXPECT_NE (audio_fader_->listen (), nullptr);
+  EXPECT_NE (audio_fader_->monoToggle (), nullptr);
+  EXPECT_NE (audio_fader_->swapPhaseToggle (), nullptr);
+
+  // MIDI fader should not have mono/swap phase toggles
+  EXPECT_EQ (midi_fader_->monoToggle (), nullptr);
+  EXPECT_EQ (midi_fader_->swapPhaseToggle (), nullptr);
+}
+
+TEST_F (FaderTest, PortConfiguration)
+{
+  // Test audio fader ports
+  EXPECT_EQ (audio_fader_->get_input_ports ().size (), 2);
+  EXPECT_EQ (audio_fader_->get_output_ports ().size (), 2);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  EXPECT_EQ (left_in.get_node_name (), u8"Test Track Fader/Fader input L");
+  EXPECT_EQ (right_in.get_node_name (), u8"Test Track Fader/Fader input R");
+  EXPECT_EQ (left_out.get_node_name (), u8"Test Track Fader/Fader output L");
+  EXPECT_EQ (right_out.get_node_name (), u8"Test Track Fader/Fader output R");
+
+  // Test MIDI fader ports
+  EXPECT_EQ (midi_fader_->get_input_ports ().size (), 1);
+  EXPECT_EQ (midi_fader_->get_output_ports ().size (), 1);
+
+  auto &midi_in = midi_fader_->get_midi_in_port ();
+  auto &midi_out = midi_fader_->get_midi_out_port ();
+
+  EXPECT_EQ (
+    midi_in.get_node_name (), u8"Test MIDI Track Fader/Ch MIDI Fader in");
+  EXPECT_EQ (
+    midi_out.get_node_name (), u8"Test MIDI Track Fader/Ch MIDI Fader out");
+}
+
+TEST_F (FaderTest, ParameterFunctionality)
+{
+  auto * gain_param = audio_fader_->gain ();
+  auto * balance_param = audio_fader_->balance ();
+  auto * mute_param = audio_fader_->mute ();
+  auto * solo_param = audio_fader_->solo ();
+  auto * listen_param = audio_fader_->listen ();
+
+  // Test gain parameter range
+  EXPECT_NEAR (gain_param->range ().minf_, 0.0f, 0.001f);
+  EXPECT_NEAR (gain_param->range ().maxf_, 2.0f, 0.001f);
+  EXPECT_NEAR (gain_param->range ().deff_, 1.0f, 0.001f);
+
+  // Test balance parameter range
+  EXPECT_NEAR (balance_param->range ().minf_, 0.0f, 0.001f);
+  EXPECT_NEAR (balance_param->range ().maxf_, 1.0f, 0.001f);
+  EXPECT_NEAR (balance_param->range ().deff_, 0.5f, 0.001f);
+
+  // Test toggle parameters
+  EXPECT_NEAR (mute_param->range ().minf_, 0.0f, 0.001f);
+  EXPECT_NEAR (mute_param->range ().maxf_, 1.0f, 0.001f);
+  EXPECT_NEAR (mute_param->range ().deff_, 0.0f, 0.001f);
+
+  // Test parameter value setting
+  gain_param->setBaseValue (0.5f);
+  EXPECT_NEAR (gain_param->baseValue (), 0.5f, 0.001f);
+
+  balance_param->setBaseValue (0.3f);
+  EXPECT_NEAR (balance_param->baseValue (), 0.3f, 0.001f);
+
+  // Test automatable flags
+  EXPECT_TRUE (gain_param->automatable ());
+  EXPECT_TRUE (balance_param->automatable ());
+  EXPECT_TRUE (mute_param->automatable ());
+  EXPECT_FALSE (solo_param->automatable ());
+  EXPECT_FALSE (listen_param->automatable ());
+}
+
+TEST_F (FaderTest, PrepareAndReleaseResources)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  EXPECT_GE (left_in.buf_.size (), max_block_length_);
+  EXPECT_GE (right_in.buf_.size (), max_block_length_);
+  EXPECT_GE (left_out.buf_.size (), max_block_length_);
+  EXPECT_GE (right_out.buf_.size (), max_block_length_);
+
+  audio_fader_->release_resources ();
+
+  EXPECT_EQ (left_in.buf_.size (), 0);
+  EXPECT_EQ (right_in.buf_.size (), 0);
+  EXPECT_EQ (left_out.buf_.size (), 0);
+  EXPECT_EQ (right_out.buf_.size (), 0);
+}
+
+TEST_F (FaderTest, AudioProcessing)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 2.0f;
+    }
+
+  // Test unity gain (1.0) - account for smoothing
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Process multiple blocks to allow smoothing to reach target
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // After smoothing, should be close to target
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 2.0f, 0.05f);
+    }
+
+  // Test gain reduction (0.5) - account for smoothing
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (0.5f));
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.5f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+    }
+
+  // Test boost (2.0) - account for smoothing (no hard limiting)
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (2.0f));
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 2.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 4.0f, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, MidiProcessing)
+{
+  midi_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto &midi_in = midi_fader_->get_midi_in_port ();
+  auto &midi_out = midi_fader_->get_midi_out_port ();
+
+  // Add MIDI events to input
+  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
+  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
+  midi_in.midi_events_.active_events_.add_note_off (1, 60, 100);
+
+  // Set gain parameter
+  midi_fader_->gain ()->setBaseValue (0.8f);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+  midi_fader_->process_block (time_nfo);
+
+  // Verify MIDI events are copied (fader doesn't modify MIDI events)
+  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
+}
+
+TEST_F (FaderTest, MuteFunctionality)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  // Set gain to 1.0 and wait for smoothing
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Process multiple blocks to allow smoothing to reach target
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // After smoothing, should be close to target
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+    }
+
+  // Test muted - account for smoothing
+  audio_fader_->mute ()->setBaseValue (1.0f);
+
+  // Process multiple blocks to allow smoothing to reach mute
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // After smoothing, should be close to 0
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, BalanceFunctionality)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers with equal values
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  // Set gain to 1.0 and wait for smoothing
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Process multiple blocks to allow smoothing to reach target
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // Test center balance (0.5)
+  audio_fader_->balance ()->setBaseValue (0.5f);
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+    }
+
+  // Test hard left (0.0)
+  audio_fader_->balance ()->setBaseValue (0.0f);
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.05f);
+    }
+
+  // Test hard right (1.0)
+  audio_fader_->balance ()->setBaseValue (1.0f);
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, SoloAndListenFunctionality)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Test solo functionality
+  EXPECT_FALSE (audio_fader_->currently_soloed ());
+  audio_fader_->solo ()->setBaseValue (1.0f);
+  audio_fader_->process_block (time_nfo);
+  EXPECT_TRUE (audio_fader_->currently_soloed ());
+
+  // Test listen functionality
+  EXPECT_FALSE (audio_fader_->currently_listened ());
+  audio_fader_->listen ()->setBaseValue (1.0f);
+  audio_fader_->process_block (time_nfo);
+  EXPECT_TRUE (audio_fader_->currently_listened ());
+}
+
+TEST_F (FaderTest, MonoCompatibilityFunctionality)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers with different values
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 0.5f;
+    }
+
+  // Set gain to 1.0
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  // Test stereo mode (mono off)
+  audio_fader_->monoToggle ()->setBaseValue (0.0f);
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 1e-5);
+      EXPECT_NEAR (right_out.buf_[i], 0.5f, 1e-5);
+    }
+
+  // Test mono mode
+  audio_fader_->monoToggle ()->setBaseValue (1.0f);
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      float expected_mono = (1.0f + 0.5f) * 0.5f;
+      EXPECT_NEAR (left_out.buf_[i], expected_mono, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], expected_mono, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, SwapPhaseFunctionality)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  // Set gain to 1.0
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  // Test normal phase
+  audio_fader_->swapPhaseToggle ()->setBaseValue (0.0f);
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 1e-5);
+      EXPECT_NEAR (right_out.buf_[i], 1.0f, 1e-5);
+    }
+
+  // Test phase swap
+  audio_fader_->swapPhaseToggle ()->setBaseValue (1.0f);
+
+  // Process multiple blocks to allow smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], -1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], -1.0f, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, MidiModeFunctionality)
+{
+  // Test default MIDI mode
+  EXPECT_EQ (
+    midi_fader_->midiMode (),
+    Fader::MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER);
+
+  // Test setting MIDI mode
+  midi_fader_->setMidiMode (Fader::MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME);
+  EXPECT_EQ (
+    midi_fader_->midiMode (), Fader::MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME);
+
+  // Test signal emission
+  bool signal_emitted = false;
+  QObject::connect (
+    midi_fader_.get (), &Fader::midiModeChanged, midi_fader_.get (),
+    [&signal_emitted] (Fader::MidiFaderMode mode) {
+      signal_emitted = true;
+      EXPECT_EQ (mode, Fader::MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER);
+    });
+
+  midi_fader_->setMidiMode (
+    Fader::MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER);
+  EXPECT_TRUE (signal_emitted);
+}
+
+TEST_F (FaderTest, JsonSerializationRoundtrip)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  // Set some parameter values
+  audio_fader_->gain ()->setBaseValue (0.75f);
+  audio_fader_->balance ()->setBaseValue (0.3f);
+  audio_fader_->mute ()->setBaseValue (1.0f);
+  audio_fader_->solo ()->setBaseValue (1.0f);
+  audio_fader_->listen ()->setBaseValue (1.0f);
+  audio_fader_->monoToggle ()->setBaseValue (1.0f);
+  audio_fader_->swapPhaseToggle ()->setBaseValue (1.0f);
+  audio_fader_->setMidiMode (Fader::MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME);
+
+  // Serialize
+  nlohmann::json j = *audio_fader_;
+
+  // Create new fader from JSON
+  Fader deserialized (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    dsp::PortType::Audio, true, true, [] { return u8"Test Track"; },
+    [] (bool solo_status) { return false; });
+
+  from_json (j, deserialized);
+
+  // Reinitialize after deserialization
+  deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+
+  // Verify parameters
+  EXPECT_NEAR (deserialized.gain ()->baseValue (), 0.75f, 0.001f);
+  EXPECT_NEAR (deserialized.balance ()->baseValue (), 0.3f, 0.001f);
+  EXPECT_NEAR (deserialized.mute ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_NEAR (deserialized.solo ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_NEAR (deserialized.listen ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_NEAR (deserialized.monoToggle ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_NEAR (deserialized.swapPhaseToggle ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_EQ (
+    deserialized.midiMode (), Fader::MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME);
+  EXPECT_EQ (
+    deserialized.gain ()->get_uuid (), audio_fader_->gain ()->get_uuid ());
+}
+
+TEST_F (FaderTest, JsonSerializationMidiRoundtrip)
+{
+  midi_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  // Set some parameter values
+  midi_fader_->gain ()->setBaseValue (0.7f);
+  midi_fader_->balance ()->setBaseValue (0.8f);
+  midi_fader_->mute ()->setBaseValue (1.0f);
+  midi_fader_->solo ()->setBaseValue (1.0f);
+  midi_fader_->listen ()->setBaseValue (1.0f);
+  midi_fader_->setMidiMode (Fader::MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME);
+
+  // Serialize
+  nlohmann::json j = *midi_fader_;
+
+  // Create new fader from JSON
+  Fader deserialized (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    dsp::PortType::Event, false, false, [] { return u8"Test MIDI Track"; },
+    [] (bool solo_status) { return false; });
+
+  from_json (j, deserialized);
+
+  // Reinitialize after deserialization
+  deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+
+  // Verify parameters
+  EXPECT_NEAR (deserialized.gain ()->baseValue (), 0.7f, 0.001f);
+  EXPECT_NEAR (deserialized.balance ()->baseValue (), 0.8f, 0.001f);
+  EXPECT_NEAR (deserialized.mute ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_NEAR (deserialized.solo ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_NEAR (deserialized.listen ()->baseValue (), 1.0f, 0.001f);
+  EXPECT_EQ (deserialized.monoToggle (), nullptr);
+  EXPECT_EQ (deserialized.swapPhaseToggle (), nullptr);
+  EXPECT_EQ (
+    deserialized.midiMode (), Fader::MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME);
+}
+TEST_F (FaderTest, ShouldBeMutedCallback)
+{
+  bool should_mute = false;
+  auto fader_with_callback = std::make_unique<Fader> (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    dsp::PortType::Audio, true, true, [] { return u8"Test Track"; },
+    [&should_mute] (bool solo_status) { return should_mute; });
+
+  fader_with_callback->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = fader_with_callback->get_stereo_in_ports ();
+  auto [left_out, right_out] = fader_with_callback->get_stereo_out_ports ();
+
+  // Fill input buffers
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  fader_with_callback->gain ()->setBaseValue (
+    fader_with_callback->gain ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Test no mute callback - wait for smoothing
+  should_mute = false;
+  for (int block = 0; block < 10; block++)
+    {
+      fader_with_callback->process_block (time_nfo);
+    }
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+    }
+
+  // Test mute callback - wait for smoothing
+  should_mute = true;
+  for (int block = 0; block < 10; block++)
+    {
+      fader_with_callback->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, PreProcessAudioCallback)
+{
+  bool callback_called = false;
+  auto pre_process_cb =
+    [&callback_called] (
+      std::pair<std::span<float>, std::span<float>> stereo_bufs,
+      const EngineProcessTimeInfo                  &time_nfo) {
+      callback_called = true;
+      // Modify the buffers
+      for (auto &sample : stereo_bufs.first)
+        {
+          sample *= 2.0f;
+        }
+      for (auto &sample : stereo_bufs.second)
+        {
+          sample *= 0.5f;
+        }
+    };
+
+  audio_fader_->set_preprocess_audio_callback (pre_process_cb);
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  EXPECT_TRUE (callback_called);
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 2.0f, 1e-5);
+      EXPECT_NEAR (right_out.buf_[i], 0.5f, 1e-5);
+    }
+}
+
+TEST_F (FaderTest, MuteGainCallback)
+{
+  bool mute_gain_called = false;
+  auto mute_gain_cb = [&mute_gain_called] () {
+    mute_gain_called = true;
+    return 0.25f;
+  };
+
+  audio_fader_->set_mute_gain_callback (mute_gain_cb);
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Test normal operation (no mute) - wait for smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+  EXPECT_FALSE (mute_gain_called);
+
+  // Test mute with custom gain - wait for smoothing
+  audio_fader_->mute ()->setBaseValue (1.0f);
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+  EXPECT_TRUE (mute_gain_called);
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.25f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 0.25f, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, EdgeCases)
+{
+  // Test with zero frames
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 0
+  };
+  EXPECT_NO_THROW (audio_fader_->process_block (time_nfo));
+
+  // Test with maximum gain
+  audio_fader_->gain ()->setBaseValue (1.0f); // 0-1 range for parameter
+  EXPECT_NO_THROW (audio_fader_->process_block (time_nfo));
+
+  // Test with zero gain (silence)
+  audio_fader_->gain ()->setBaseValue (0.0f);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  for (int i = 0; i < 10; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  time_nfo.nframes_ = 10;
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 10; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.0f, 1e-6);
+      EXPECT_NEAR (right_out.buf_[i], 0.0f, 1e-6);
+    }
+
+  // Test exception for non-audio fader trying to get stereo ports
+  EXPECT_THROW (midi_fader_->get_stereo_in_ports (), std::runtime_error);
+  EXPECT_THROW (midi_fader_->get_stereo_out_ports (), std::runtime_error);
+}
+
+TEST_F (FaderTest, DbStringGetter)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 0
+  };
+
+  // Test default value (0 dB)
+  audio_fader_->process_block (time_nfo);
+  std::string db_str = audio_fader_->db_string_getter ();
+  EXPECT_TRUE (db_str.find ("0.0") != std::string::npos);
+
+  // Test -6 dB
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (0.5f));
+  audio_fader_->process_block (time_nfo);
+  db_str = audio_fader_->db_string_getter ();
+  EXPECT_TRUE (db_str.find ("-6.0") != std::string::npos);
+
+  // Test +6 dB
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (2.0f));
+  audio_fader_->process_block (time_nfo);
+  db_str = audio_fader_->db_string_getter ();
+  EXPECT_TRUE (db_str.find ("6.0") != std::string::npos);
+}
+
+TEST_F (FaderTest, HardLimitingFunctionality)
+{
+  // Create fader with hard limiting enabled
+  auto hard_limit_fader = std::make_unique<Fader> (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    dsp::PortType::Audio, true, true, [] { return u8"Test Track Hard Limit"; },
+    [] (bool solo_status) { return false; });
+
+  hard_limit_fader->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = hard_limit_fader->get_stereo_in_ports ();
+  auto [left_out, right_out] = hard_limit_fader->get_stereo_out_ports ();
+
+  // Fill input buffers with values that would exceed the limits
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 5.0f;   // Above 2.0 limit
+      right_in.buf_[i] = -5.0f; // Below -2.0 limit
+    }
+
+  // Set high gain to amplify beyond limits
+  hard_limit_fader->gain ()->setBaseValue (
+    hard_limit_fader->gain ()->range ().convertTo0To1 (3.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Process multiple blocks to allow smoothing to reach target
+  for (int block = 0; block < 15; block++)
+    {
+      hard_limit_fader->process_block (time_nfo);
+    }
+
+  // Verify hard limiting is applied
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_LE (left_out.buf_[i], 2.0f);
+      EXPECT_GE (left_out.buf_[i], -2.0f);
+      EXPECT_LE (right_out.buf_[i], 2.0f);
+      EXPECT_GE (right_out.buf_[i], -2.0f);
+    }
+
+  // Test that values within limits are not affected
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = -1.0f;
+    }
+
+  hard_limit_fader->gain ()->setBaseValue (
+    hard_limit_fader->gain ()->range ().convertTo0To1 (1.0f));
+
+  for (int block = 0; block < 10; block++)
+    {
+      hard_limit_fader->process_block (time_nfo);
+    }
+
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], -1.0f, 0.05f);
+    }
+}
+
+TEST_F (FaderTest, GainSmoothing)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Fill input buffers
+  for (int i = 0; i < 512; i++)
+    {
+      left_in.buf_[i] = 1.0f;
+      right_in.buf_[i] = 1.0f;
+    }
+
+  // Start with 0 gain
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (0.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Process until we reach silence
+  for (int block = 0; block < 10; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // Verify we're at 0
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.01f);
+      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.01f);
+    }
+
+  // Now set to 1.0 and test gradual increase
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  // Test that gain increases gradually over multiple blocks
+  std::vector<float> first_block_values;
+  audio_fader_->process_block (time_nfo);
+  for (int i = 0; i < 512; i++)
+    {
+      first_block_values.push_back (left_out.buf_[i]);
+    }
+
+  // After first block, should be between 0 and 1 due to smoothing
+  EXPECT_GT (first_block_values[0], 0.0f);
+  EXPECT_LT (first_block_values[0], 1.0f);
+
+  // Process more blocks until we reach close to target
+  for (int block = 0; block < 20; block++)
+    {
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // After sufficient blocks, should be close to target
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+    }
+
+  // Test rapid changes
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (0.5f));
+
+  // Should not immediately jump to new values
+  auto prev_values = left_out.buf_;
+  audio_fader_->process_block (time_nfo);
+  EXPECT_FLOAT_EQ (left_out.buf_.front (), prev_values.front ());
+  for (int i = 1; i < 10; ++i)
+    {
+      EXPECT_NE (left_out.buf_[i], 0.5f);
+      EXPECT_LT (left_out.buf_[i], prev_values[i]);
+    }
+}
+
+} // namespace zrythm::structure::tracks
