@@ -124,7 +124,7 @@ PluginManager::createPluginInstance (
     instance_ptr->processBlock (buf, midi_buf);
   });
   timer->start ();
-};
+}
 
 void
 PluginManager::add_category_and_author (

@@ -17,7 +17,7 @@ using namespace zrythm;
 namespace zrythm::dsp
 {
 class Graph;
-};
+}
 
 /**
  * @addtogroup dsp

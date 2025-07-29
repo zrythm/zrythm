@@ -58,7 +58,7 @@ public:
   {
   }
 
-  std::string get_document_type () const { return "ZrythmClipboard"; };
+  std::string get_document_type () const { return "ZrythmClipboard"; }
   int         get_format_major_version () const { return 3; }
   int         get_format_minor_version () const { return 0; }
 

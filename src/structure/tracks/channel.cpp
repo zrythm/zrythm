@@ -79,7 +79,7 @@ Channel::Channel (
             get_stereo_out_ports ().second.set_full_designation_provider (this);
           }
           break;
-        case PortType::Event:
+        case PortType::Midi:
           {
             midi_out_id_ = get_port_registry ().create_object<dsp::MidiPort> (
               utils::Utf8String::from_qstring (QObject::tr ("MIDI out")),
@@ -197,7 +197,7 @@ Channel::prepare_process (nframes_t nframes)
       get_stereo_out_ports ().first.clear_buffer (nframes);
       get_stereo_out_ports ().second.clear_buffer (nframes);
     }
-  else if (out_type == PortType::Event)
+  else if (out_type == PortType::Midi)
     {
       get_midi_out_port ().clear_buffer (nframes);
     }
@@ -469,7 +469,7 @@ Channel::init ()
           stereo_outs);
       }
       break;
-    case PortType::Event:
+    case PortType::Midi:
       {
         auto &midi_out = get_midi_out_port ();
         midi_out.set_full_designation_provider (this);
@@ -503,7 +503,7 @@ Channel::init ()
           .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
         this);
     }
-  else if (track_->get_output_signal_type () == PortType::Event)
+  else if (track_->get_output_signal_type () == PortType::Midi)
     {
       midi_prefader_ = utils::make_qobject_unique<MidiPreFader> (
         dsp::ProcessorBase::ProcessorBaseDependencies{
@@ -1044,4 +1044,4 @@ from_json (const nlohmann::json &j, Channel &c)
   j.at (Channel::kWidthKey).get_to (c.width_);
 }
 
-};
+}

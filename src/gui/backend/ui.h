@@ -77,7 +77,7 @@ DEFINE_ENUM_FORMATTER (
   QT_TR_NOOP_UTF8 ("High"),
   QT_TR_NOOP_UTF8 ("Normal"),
   QT_TR_NOOP_UTF8 ("Low"),
-  QT_TR_NOOP_UTF8 ("Ultra Low"));
+  QT_TR_NOOP_UTF8 ("Ultra Low"))
 
 /**
  * Commonly used UI colors.
@@ -340,7 +340,7 @@ DEFINE_ENUM_FORMATTER (
   "RENAMING",
   "STARTING_PANNING",
   "PANNING",
-  "--INVALID--");
+  "--INVALID--")
 
 /**
  * Dragging modes for widgets that have click&drag.

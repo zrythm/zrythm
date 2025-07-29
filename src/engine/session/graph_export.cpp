@@ -185,7 +185,7 @@ create_anode (Agraph_t * aroot_graph, GraphNode * node, GHashTable * anodes)
           agsafeset (
             anode, (char *) "color", (char *) "crimson", (char *) "black");
           break;
-        case PortType::Event:
+        case PortType::Midi:
           agsafeset (anode, (char *) "color", (char *) "navy", (char *) "black");
           break;
         case PortType::Control:

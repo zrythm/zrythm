@@ -27,7 +27,7 @@ enum class PortType : std::uint_fast8_t
 {
   Unknown,
   Audio,
-  Event,
+  Midi,
   CV
 };
 

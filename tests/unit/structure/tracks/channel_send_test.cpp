@@ -32,7 +32,7 @@ protected:
     midi_send_ = std::make_unique<ChannelSend> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Event, 1, false);
+      dsp::PortType::Midi, 1, false);
   }
 
   void TearDown () override
@@ -265,7 +265,7 @@ TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
   ChannelSend deserialized (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Event, 3, true);
+    dsp::PortType::Midi, 3, true);
 
   from_json (j, deserialized);
 

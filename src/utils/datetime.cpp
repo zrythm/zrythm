@@ -51,4 +51,4 @@ get_for_filename ()
   return utils::Utf8String::from_qstring (str_datetime);
 }
 
-}; // zrythm::utils::datetime
+} // namespace zrythm::utils::datetime

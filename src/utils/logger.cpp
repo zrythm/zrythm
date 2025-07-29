@@ -311,4 +311,4 @@ TestLogger::get_log_file_path () const
   return tmp_log_dir / str_datetime.to_path ();
 }
 
-}; // namespace zrythm::utils
+} // namespace zrythm::utils

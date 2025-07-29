@@ -299,4 +299,4 @@ AudioBuffer::normalize_peak ()
     }
 }
 
-}; // namespace zrythm::utils::audio
+} // namespace zrythm::utils::audio

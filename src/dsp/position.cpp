@@ -421,4 +421,4 @@ Position::get_ticks_part (FramesPerTick frames_per_tick) const
   return ticks_ - (total_sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL);
 }
 
-}; // namespace zrythm::dsp
+} // namespace zrythm::dsp

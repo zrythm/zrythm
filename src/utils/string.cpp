@@ -205,4 +205,4 @@ Utf8String::expand_env_vars () const
   return result;
 }
 
-}; // namespace zrythm::utils
+} // namespace zrythm::utils

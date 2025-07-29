@@ -160,4 +160,4 @@ QuantizeOptions::quantize_position (const Position &pos)
   return { ret_pos, diff };
 }
 
-}; // namespace zrythm::gui::old_dsp
+} // namespace zrythm::gui::old_dsp

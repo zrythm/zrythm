@@ -1139,7 +1139,7 @@ TracklistSelectionsAction::
                             }
                           else if (
                             !own_conns.empty ()
-                            && track->get_output_signal_type () == PortType::Event)
+                            && track->get_output_signal_type () == PortType::Midi)
                             {
                               PORT_CONNECTIONS_MGR->add_connection (
                                 track_send->get_midi_out_port ().get_uuid (),

@@ -46,4 +46,4 @@ note_type_to_str (NoteType type)
   return it->second;
 }
 
-}; // namespace zrythm::utils
+} // namespace zrythm::utils

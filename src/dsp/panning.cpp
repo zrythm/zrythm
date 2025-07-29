@@ -96,4 +96,4 @@ calculate_balance_control (
   return { left_gain, right_gain };
 }
 
-}; // namespace zrythm::dsp
+} // namespace zrythm::dsp

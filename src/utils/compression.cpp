@@ -78,4 +78,4 @@ decompress_string_from_base64 (const QByteArray &b64)
   return { dest };
 }
 
-};
+} // namespace zrythm::utils::compression

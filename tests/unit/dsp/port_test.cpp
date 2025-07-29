@@ -31,7 +31,7 @@ protected:
     cv_out = std::make_unique<TestPort> (
       u8"ControlOut", PortType::CV, PortFlow::Output);
     midi_in =
-      std::make_unique<TestPort> (u8"MIDIIn", PortType::Event, PortFlow::Input);
+      std::make_unique<TestPort> (u8"MIDIIn", PortType::Midi, PortFlow::Input);
   }
 
   std::unique_ptr<TestPort> audio_in;

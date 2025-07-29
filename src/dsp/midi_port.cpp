@@ -7,7 +7,7 @@
 namespace zrythm::dsp
 {
 MidiPort::MidiPort (utils::Utf8String label, PortFlow flow)
-    : Port (std::move (label), PortType::Event, flow)
+    : Port (std::move (label), PortType::Midi, flow)
 {
 }
 

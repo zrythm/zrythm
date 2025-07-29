@@ -279,18 +279,18 @@ DEFINE_ENUM_FORMATTER (
   "WAV",
   "W64",
   "MIDI Type 0",
-  "MIDI Type 1");
+  "MIDI Type 1")
 
 DEFINE_ENUM_FORMATTER (
   zrythm::engine::session::Exporter::TimeRange,
   Exporter_TimeRange,
   QT_TR_NOOP_UTF8 ("Loop"),
   QT_TR_NOOP_UTF8 ("Song"),
-  QT_TR_NOOP_UTF8 ("Custom"));
+  QT_TR_NOOP_UTF8 ("Custom"))
 
 DEFINE_ENUM_FORMATTER (
   zrythm::engine::session::Exporter::Mode,
   Exporter_Mode,
   "Full",
   "Tracks",
-  "Regions");
+  "Regions")

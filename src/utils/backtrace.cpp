@@ -49,4 +49,4 @@ Backtrace::get_backtrace (std::string prefix, size_t depth, bool write_to_file)
   return oss.str ();
 }
 
-}; // namespace zrythm::utils
+} // namespace zrythm::utils

@@ -450,4 +450,4 @@ SnapGrid::snap (
   return ret;
 }
 
-}; // namespace zrythm::gui
+} // namespace zrythm::gui

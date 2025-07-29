@@ -536,7 +536,16 @@ if(ZRYTHM_STRICT)
 
     target_compile_options(_zrythm_strict_warning_flags INTERFACE
       -Werror=alloca
-      # -Werror=cast-qual
+      -Werror=cast-align
+      -Werror=cast-qual
+      -Werror=ctor-dtor-privacy
+      -Werror=deprecated-copy-dtor
+      -Werror=extra-semi
+      -Werror=format-signedness
+      -Wframe-larger-than=65536 # 64 KiB
+      -Werror=multichar
+      -Werror=non-virtual-dtor
+      -Werror=range-loop-construct
 
       # TODO: re-enable and fix errors
       # -Werror=conversion
@@ -549,6 +558,7 @@ if(ZRYTHM_STRICT)
       # errors on qml/intermediate files
       # -Werror=missing-declarations
       # -Werror=float-equal
+      # -Werror=missing-braces
 
       -Werror=int-to-pointer-cast
 
@@ -599,7 +609,7 @@ if(ZRYTHM_STRICT)
       -Werror=inline
       -Werror=sizeof-array-argument
       -Werror=odr
-      # -Werror=mismatched-tags # note: broken in gcc 14.2.1
+      -Werror=mismatched-tags # note: broken in gcc 14.2.1
       -Werror=narrowing
 
       # these interfere with gbenchmark
@@ -625,7 +635,7 @@ if(ZRYTHM_STRICT)
       #-Wsuggest-attribute=const
       #-Wsuggest-attribute=noreturn
       -Wsuggest-attribute=format
-      #-Wsuggest-attribute=malloc
+      -Wsuggest-attribute=malloc
       -Wsuggest-attribute=cold
       # only do the following on GCC because clang reports unnecessary errors
       # TODO fix and re-enable
@@ -647,6 +657,8 @@ if(ZRYTHM_STRICT)
       -Werror=dangling-reference
       -Werror=dangling-pointer
       -Werror=missing-template-keyword
+      # -Werror=noexcept # TODO: investigate further
+      -Wformat-overflow=2
 
       # -fanalyzer
       -Werror=analyzer-possible-null-dereference

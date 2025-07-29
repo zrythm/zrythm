@@ -262,4 +262,4 @@ operator== (const Color &lhs, const Color &rhs)
          && utils::math::floats_equal (lhs.alpha_, rhs.alpha_);
 }
 
-}; // namespace zrythm::utils
+} // namespace zrythm::utils

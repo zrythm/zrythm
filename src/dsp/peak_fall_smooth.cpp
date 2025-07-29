@@ -46,4 +46,4 @@ PeakFallSmooth::get_smoothed_value () const
   return result;
 }
 
-}; // namespace zrythm::dsp
+} // namespace zrythm::dsp

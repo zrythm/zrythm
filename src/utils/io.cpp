@@ -582,4 +582,4 @@ split_paths (const QString &paths)
   return paths.split (QDir::listSeparator ());
 }
 
-}; // namespace zrythm::utils::io
+} // namespace zrythm::utils::io

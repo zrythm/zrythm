@@ -55,7 +55,7 @@ public:
   bool is_input () const { return flow_ == PortFlow::Input; }
   bool is_output () const { return flow_ == PortFlow::Output; }
 
-  bool is_midi () const { return type_ == PortType::Event; }
+  bool is_midi () const { return type_ == PortType::Midi; }
   bool is_cv () const { return type_ == PortType::CV; }
   bool is_audio () const { return type_ == PortType::Audio; }
 

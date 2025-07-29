@@ -337,7 +337,7 @@ void
 PortConnectionsManager::print () const
 {
   std::string str =
-    fmt::format ("Port connections manager ({}):\n", (void *) this);
+    fmt::format ("Port connections manager ({}):\n", fmt::ptr (this));
   for (size_t i = 0; i < connections_.size (); i++)
     {
       str += fmt::format ("[{}] {}\n", i, *connections_[i]);

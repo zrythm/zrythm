@@ -35,4 +35,11 @@ main (int argc, char ** argv)
 }
 #endif
 
+#ifdef __GNUC__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wcast-qual"
+#endif // __GNUC__
 START_JUCE_APPLICATION (zrythm::engine::AudioEngineApplication)
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif // __GNUC__

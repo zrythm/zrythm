@@ -136,4 +136,4 @@ PeakDsp::init (float samplerate)
   hold_ = (int) (HOLD * samplerate + 0.5f); // number of samples to hold peak
 }
 
-}; // namespace zrythm::dsp
+} // namespace zrythm::dsp

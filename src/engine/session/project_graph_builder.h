@@ -12,7 +12,7 @@ class Project;
 namespace zrythm::dsp
 {
 class Port;
-};
+}
 
 class ProjectGraphBuilder final : public dsp::graph::IGraphBuilder
 {

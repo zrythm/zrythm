@@ -92,7 +92,7 @@ ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
           auto track = send->get_track ();
           switch (track->get_output_signal_type ())
             {
-            case PortType::Event:
+            case PortType::Midi:
               {
                 const auto port_var = PROJECT->find_port_by_id (*midi_id_);
                 z_return_val_if_fail (

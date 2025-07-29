@@ -28,7 +28,7 @@
 
 using namespace zrythm;
 
-JUCE_IMPLEMENT_SINGLETON (Zrythm);
+JUCE_IMPLEMENT_SINGLETON (Zrythm)
 
 using namespace Qt::StringLiterals;
 

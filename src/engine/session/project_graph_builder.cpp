@@ -364,7 +364,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                         }
                       else if (
                         output_track->get_input_signal_type ()
-                        == dsp::PortType::Event)
+                        == dsp::PortType::Midi)
                         {
                           connect_ports (
                             ch->get_midi_out_port ().get_uuid (),

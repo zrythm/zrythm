@@ -103,7 +103,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
     }
     // TODO port these from MidiPort's to parameters
 #if 0
-  else if (dest_->id_->type_ == dsp::PortType::Event)
+  else if (dest_->id_->type_ == dsp::PortType::Midi)
     {
       /* FIXME these are called during processing they should be queued as UI
        * events instead */

@@ -163,4 +163,4 @@ AudioFile::read_full (
     }
 }
 
-}; //  namespace zrythm::utils::io
+} //  namespace zrythm::utils::io

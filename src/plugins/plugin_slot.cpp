@@ -16,4 +16,4 @@ PluginSlot::get_hash () const
   return hash;
 }
 
-};
+}

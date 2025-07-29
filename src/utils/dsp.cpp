@@ -95,4 +95,4 @@ make_mono (float * l, float * r, size_t size, bool equal_power, bool optimize)
   copy (r, l, size, optimize);
 }
 
-}; // zrythm::dsp::float_ranges
+} // zrythm::dsp::float_ranges

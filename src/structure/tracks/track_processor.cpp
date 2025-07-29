@@ -46,7 +46,7 @@ TrackProcessor::TrackProcessor (
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("{} Processor", track_name_provider()))),
       transport_ (transport),
-      is_midi_ (signal_type == PortType::Event),
+      is_midi_ (signal_type == PortType::Midi),
       is_audio_ (signal_type == PortType::Audio),
       has_piano_roll_port_(generates_midi_events),
       has_midi_cc_(has_midi_cc),

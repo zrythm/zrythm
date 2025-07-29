@@ -33,7 +33,7 @@ protected:
     midi_fader_ = std::make_unique<Fader> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Event, false, false, [] { return u8"Test MIDI Track"; },
+      dsp::PortType::Midi, false, false, [] { return u8"Test MIDI Track"; },
       [] (bool solo_status) { return false; });
   }
 
@@ -619,7 +619,7 @@ TEST_F (FaderTest, JsonSerializationMidiRoundtrip)
   Fader deserialized (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Event, false, false, [] { return u8"Test MIDI Track"; },
+    dsp::PortType::Midi, false, false, [] { return u8"Test MIDI Track"; },
     [] (bool solo_status) { return false; });
 
   from_json (j, deserialized);

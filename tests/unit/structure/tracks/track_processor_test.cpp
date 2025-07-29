@@ -115,7 +115,7 @@ TEST_F (TrackProcessorTest, AudioTrackInitialState)
 TEST_F (TrackProcessorTest, MidiTrackInitialState)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"Test MIDI Track"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"Test MIDI Track"; },
     [] { return true; }, true, false, false, dependencies_);
 
   EXPECT_FALSE (processor.is_audio ());
@@ -133,9 +133,8 @@ TEST_F (TrackProcessorTest, MidiTrackInitialState)
 TEST_F (TrackProcessorTest, MidiTrackWithCCInitialState)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event,
-    [] { return u8"Test MIDI Track with CC"; }, [] { return true; }, true, true,
-    false, dependencies_);
+    *transport_, dsp::PortType::Midi, [] { return u8"Test MIDI Track with CC"; },
+    [] { return true; }, true, true, false, dependencies_);
 
   EXPECT_FALSE (processor.is_audio ());
   EXPECT_TRUE (processor.is_midi ());
@@ -369,7 +368,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransform)
     };
 
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI Transform"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Transform"; },
     [] { return true; }, true, false, false, dependencies_, std::nullopt,
     transform_func);
 
@@ -484,7 +483,7 @@ TEST_F (TrackProcessorTest, JsonSerializationMidiTrack)
 {
   // Create a MIDI track processor with CC support
   TrackProcessor midi_processor (
-    *transport_, dsp::PortType::Event, [] { return u8"Test MIDI Track"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"Test MIDI Track"; },
     [] { return true; }, true, true, false, dependencies_);
 
   // Set some MIDI CC parameter values
@@ -501,9 +500,8 @@ TEST_F (TrackProcessorTest, JsonSerializationMidiTrack)
 
   // Deserialize back to a new processor
   TrackProcessor deserialized_processor (
-    *transport_, dsp::PortType::Event,
-    [] { return u8"Deserialized MIDI Track"; }, [] { return true; }, true, true,
-    false, dependencies_);
+    *transport_, dsp::PortType::Midi, [] { return u8"Deserialized MIDI Track"; },
+    [] { return true; }, true, true, false, dependencies_);
   from_json (j, deserialized_processor);
 
   // Verify deserialized processor has same state
@@ -545,7 +543,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
     };
 
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI Append"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Append"; },
     [] { return true; }, true, false, false, dependencies_, std::nullopt,
     std::nullopt, append_func);
 
@@ -657,7 +655,7 @@ TEST_F (TrackProcessorTest, FillEventsFromAudioRegion)
 TEST_F (TrackProcessorTest, FillEventsFromMidiRegion)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI Fill"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Fill"; },
     [] { return true; }, true, false, false, dependencies_);
 
   // Create MIDI region with notes
@@ -714,7 +712,7 @@ TEST_F (TrackProcessorTest, FillEventsFromMidiRegion)
 TEST_F (TrackProcessorTest, FillEventsFromMutedRegion)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI Muted"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Muted"; },
     [] { return true; }, true, false, false, dependencies_);
 
   // Create muted MIDI region
@@ -746,7 +744,7 @@ TEST_F (TrackProcessorTest, FillEventsFromMutedRegion)
 TEST_F (TrackProcessorTest, FillEventsFromRegionOutsideRange)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI Outside Range"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Outside Range"; },
     [] { return true; }, true, false, false, dependencies_);
 
   // Create MIDI region outside processing range
@@ -777,7 +775,7 @@ TEST_F (TrackProcessorTest, FillEventsFromRegionOutsideRange)
 TEST_F (TrackProcessorTest, FillEventsFromChordRegion)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"Chord Fill"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"Chord Fill"; },
     [] { return true; }, true, false, false, dependencies_);
 
   // Create chord region
@@ -872,7 +870,7 @@ TEST_F (TrackProcessorTest, GetFullDesignationForPort)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI Piano Roll"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Piano Roll"; },
     [] { return true; }, true, false, false, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
@@ -955,7 +953,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithCCParameters)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI CC Track"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI CC Track"; },
     [] { return true; }, true, true, false, dependencies_);
 
   // Test CC parameter access
@@ -982,7 +980,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingHasZeroLatency)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyInput)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"Empty MIDI Track"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"Empty MIDI Track"; },
     [] { return true; }, true, false, false, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
@@ -1035,7 +1033,7 @@ TEST_F (TrackProcessorTest, AudioBusTrackProcessingWithLargeBuffer)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"Multi MIDI Track"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"Multi MIDI Track"; },
     [] { return true; }, true, false, false, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
@@ -1115,7 +1113,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
     };
 
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"MIDI Transform Append"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Transform Append"; },
     [] { return true; }, true, false, false, dependencies_, std::nullopt,
     transform_func, append_func);
 
@@ -1181,7 +1179,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
 TEST_F (TrackProcessorTest, FillEventsFromRegionWithOffset)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Event, [] { return u8"Offset Region"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"Offset Region"; },
     [] { return true; }, true, false, false, dependencies_);
 
   // Create MIDI region with offset

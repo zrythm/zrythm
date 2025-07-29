@@ -62,7 +62,7 @@ public:
 
   bool is_prefader () const { return is_prefader_; }
   bool is_audio () const { return signal_type_ == dsp::PortType::Audio; }
-  bool is_midi () const { return signal_type_ == dsp::PortType::Event; }
+  bool is_midi () const { return signal_type_ == dsp::PortType::Midi; }
 
   std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
   {

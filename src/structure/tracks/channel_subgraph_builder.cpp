@@ -85,10 +85,10 @@ ChannelSubgraphBuilder::add_connections (
     }
   const auto input_type =
     processor_midi_out_ref.has_value ()
-      ? dsp::PortType::Event
+      ? dsp::PortType::Midi
       : dsp::PortType::Audio;
   const auto output_type =
-    ch.fader ()->is_midi () ? dsp::PortType::Event : dsp::PortType::Audio;
+    ch.fader ()->is_midi () ? dsp::PortType::Midi : dsp::PortType::Audio;
 
   std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
   ch.get_plugins (plugins);
@@ -103,7 +103,7 @@ ChannelSubgraphBuilder::add_connections (
               // connect processor out to plugin input
               size_t last_index, num_ports_to_connect, i;
               auto   pl_in_ports = pl->get_input_port_span ();
-              if (input_type == dsp::PortType::Event)
+              if (input_type == dsp::PortType::Midi)
                 {
                   for (
                     const auto * in_port :
@@ -247,7 +247,7 @@ ChannelSubgraphBuilder::add_connections (
                 }
             }
         }
-      else if (output_type == dsp::PortType::Event)
+      else if (output_type == dsp::PortType::Midi)
         {
           if (processor_midi_out_ref.has_value ())
             {
@@ -265,7 +265,7 @@ ChannelSubgraphBuilder::add_connections (
       dsp::ProcessorGraphBuilder::add_connections (
         graph, ch.get_audio_pre_fader ());
     }
-  else if (output_type == dsp::PortType::Event)
+  else if (output_type == dsp::PortType::Midi)
     {
       dsp::ProcessorGraphBuilder::add_connections (
         graph, ch.get_midi_pre_fader ());
@@ -283,7 +283,7 @@ ChannelSubgraphBuilder::add_connections (
       connect_ports (prefader_outs.at (0).id (), fader_ins.first.get_uuid ());
       connect_ports (prefader_outs.at (1).id (), fader_ins.second.get_uuid ());
     }
-  else if (output_type == dsp::PortType::Event)
+  else if (output_type == dsp::PortType::Midi)
     {
       auto &prefader = ch.get_midi_pre_fader ();
       connect_ports (
@@ -337,7 +337,7 @@ ChannelSubgraphBuilder::add_connections (
     }
 
   // connect fader out to channel out
-  if (output_type == dsp::PortType::Event)
+  if (output_type == dsp::PortType::Midi)
     {
       connect_ports (
         fader->get_output_ports ().front ().id (),
