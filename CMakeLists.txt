@@ -540,7 +540,6 @@ if(ZRYTHM_STRICT)
       -Werror=cast-qual
       -Werror=ctor-dtor-privacy
       -Werror=deprecated-copy-dtor
-      -Werror=extra-semi
       -Werror=format-signedness
       -Wframe-larger-than=65536 # 64 KiB
       -Werror=multichar
