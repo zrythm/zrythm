@@ -38,11 +38,11 @@ public:
 
   auto get_midi_in_port (size_t index) -> dsp::MidiPort &
   {
-    return *input_ports_.at (index).get_object_as<dsp::MidiPort> ();
+    return *get_input_ports ().at (index).get_object_as<dsp::MidiPort> ();
   }
   auto get_midi_out_port (size_t index) -> dsp::MidiPort &
   {
-    return *output_ports_.at (index).get_object_as<dsp::MidiPort> ();
+    return *get_output_ports ().at (index).get_object_as<dsp::MidiPort> ();
   }
 };
 
@@ -75,11 +75,11 @@ public:
 
   auto get_audio_in_port (size_t index) -> dsp::AudioPort &
   {
-    return *input_ports_.at (index).get_object_as<dsp::AudioPort> ();
+    return *get_input_ports ().at (index).get_object_as<dsp::AudioPort> ();
   }
   auto get_audio_out_port (size_t index) -> dsp::AudioPort &
   {
-    return *output_ports_.at (index).get_object_as<dsp::AudioPort> ();
+    return *get_output_ports ().at (index).get_object_as<dsp::AudioPort> ();
   }
   auto
   get_first_stereo_in_pair () -> std::pair<dsp::AudioPort &, dsp::AudioPort &>
@@ -100,19 +100,6 @@ public:
     ProcessorBase::ProcessorBaseDependencies dependencies)
       : AudioPassthroughProcessor (dependencies, 2)
   {
-    set_name (u8"Stereo Passthrough");
-    input_ports_.clear ();
-    output_ports_.clear ();
-    auto stereo_in_ports = dsp::StereoPorts::create_stereo_ports (
-      dependencies.port_registry_, true, get_node_name () + u8" In",
-      u8"stereo_passthrough_in");
-    auto stereo_out_ports = dsp::StereoPorts::create_stereo_ports (
-      dependencies.port_registry_, false, get_node_name () + u8" Out",
-      u8"stereo_passthrough_out");
-    add_input_port (stereo_in_ports.first);
-    add_input_port (stereo_in_ports.second);
-    add_output_port (stereo_out_ports.first);
-    add_output_port (stereo_out_ports.second);
   }
 
   ~StereoPassthroughProcessor () override = default;

@@ -16,7 +16,7 @@
 class Clipboard final
 {
 public:
-  using PluginUuid = Plugin::Uuid;
+  using PluginUuid = plugins::Plugin::Uuid;
 
   /**
    * Clipboard type.
@@ -40,7 +40,7 @@ public:
   }
 
   Clipboard (std::ranges::range auto plugins)
-    requires std::is_same_v<decltype (*plugins.begin ()), PluginPtrVariant>
+    requires std::is_same_v<decltype (*plugins.begin ()), plugins::PluginPtrVariant>
 
       : type_ (Type::Plugins), plugins_ (std::ranges::to (plugins))
   {

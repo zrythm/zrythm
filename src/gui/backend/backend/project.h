@@ -13,9 +13,9 @@
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/timeline.h"
 #include "gui/backend/tool.h"
-#include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_factory.h"
 #include "gui/dsp/quantize_options.h"
+#include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/track_factory.h"
 #include "utils/progress_info.h"
@@ -102,8 +102,8 @@ public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
   using SnapGrid = zrythm::gui::SnapGrid;
   using TrackUuid = structure::tracks::TrackUuid;
-  using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
-  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
+  using PluginPtrVariant = plugins::PluginPtrVariant;
+  using PluginRegistry = plugins::PluginRegistry;
 
   static constexpr auto PROJECT_FILE = "project.zpj"sv;
   static constexpr auto PROJECT_BACKUPS_DIR = "backups"sv;
@@ -194,7 +194,7 @@ public:
    * @param backup Whether to get the path for the current backup instead of the
    * main project.
    */
-  fs::path get_path (ProjectPath path, bool backup);
+  fs::path get_path (ProjectPath path, bool backup) const;
 
   static Project * get_active_instance ();
 
@@ -368,8 +368,8 @@ public:
     return nullptr;
   }
 
-  std::optional<gui::old_dsp::plugins::PluginPtrVariant>
-  find_plugin_by_id (gui::old_dsp::plugins::Plugin::Uuid id) const
+  std::optional<plugins::PluginPtrVariant>
+  find_plugin_by_id (plugins::Plugin::Uuid id) const
   {
     return get_plugin_registry ().find_by_id (id);
   }

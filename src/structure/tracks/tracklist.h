@@ -363,10 +363,10 @@ public:
    * @brief Moves the Plugin's automation from one Channel to another.
    */
   void move_plugin_automation (
-    const Plugin::Uuid         &plugin_id,
-    const Track::Uuid          &prev_track_id,
-    const Track::Uuid          &track_id_to_move_to,
-    zrythm::plugins::PluginSlot new_slot);
+    const plugins::Plugin::Uuid &plugin_id,
+    const Track::Uuid           &prev_track_id,
+    const Track::Uuid           &track_id_to_move_to,
+    zrythm::plugins::PluginSlot  new_slot);
 
   /**
    * Moves the plugin to the given slot in the given channel.
@@ -377,12 +377,12 @@ public:
    * overwrite when a plugin already exists.
    */
   void move_plugin (
-    const Plugin::Uuid &plugin_id,
-    const Track::Uuid  &target_track_id,
-    plugins::PluginSlot slot,
-    bool                confirm_overwrite);
+    const plugins::Plugin::Uuid &plugin_id,
+    const Track::Uuid           &target_track_id,
+    plugins::PluginSlot          slot,
+    bool                         confirm_overwrite);
 
-  Channel * get_channel_for_plugin (const Plugin::Uuid &plugin_id);
+  Channel * get_channel_for_plugin (const plugins::Plugin::Uuid &plugin_id);
 
   /**
    * Begins file import Handles a file drop inside the timeline or in empty
@@ -523,7 +523,7 @@ public:
     get_track_span ().mark_all_tracks_for_bounce (*this, bounce);
   }
 
-  void disconnect_plugin (const Plugin::Uuid &plugin_id);
+  void disconnect_plugin (const plugins::Plugin::Uuid &plugin_id);
 
   std::string print_port_connection (const dsp::PortConnection &conn) const;
 
@@ -579,7 +579,7 @@ private:
   OptionalRef<TrackRegistry>                   track_registry_;
   OptionalRef<dsp::PortRegistry>               port_registry_;
   OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
-  OptionalRef<PluginRegistry>                  plugin_registry_;
+  OptionalRef<plugins::PluginRegistry>         plugin_registry_;
 
   /**
    * All tracks that exist.

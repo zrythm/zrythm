@@ -53,7 +53,7 @@ TEST_F (CVPortTest, BufferClearing)
 {
   // Add some data to input buffer
   std::fill (input_port->buf_.begin (), input_port->buf_.end (), 1.0f);
-  input_port->clear_buffer (BLOCK_LENGTH);
+  input_port->clear_buffer (0, BLOCK_LENGTH);
 
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
     {

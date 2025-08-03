@@ -4,7 +4,6 @@
 #pragma once
 
 #include "dsp/modulator_macro_processor.h"
-#include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/plugin_span.h"
 #include "structure/tracks/processable_track.h"
 
@@ -33,10 +32,6 @@ class ModulatorTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (ModulatorTrack)
 
 public:
-  using PluginBase = gui::old_dsp::plugins::Plugin;
-  using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
-  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
-
   /**
    * Inserts and connects a Modulator to the Track.
    *
@@ -45,13 +40,13 @@ public:
    * other modulators forward if false).
    */
   PluginPtrVariant insert_modulator (
-    plugins::PluginSlot::SlotNo slot,
-    PluginUuidReference         modulator_id,
-    bool                        replace_mode,
-    bool                        confirm,
-    bool                        gen_automatables,
-    bool                        recalc_graph,
-    bool                        pub_events);
+    plugins::PluginSlot::SlotNo  slot,
+    plugins::PluginUuidReference modulator_id,
+    bool                         replace_mode,
+    bool                         confirm,
+    bool                         gen_automatables,
+    bool                         recalc_graph,
+    bool                         pub_events);
 
   std::optional<PluginPtrVariant>
   get_modulator (plugins::PluginSlot::SlotNo slot) const;
@@ -106,7 +101,7 @@ private:
 
 public:
   /** Modulators. */
-  std::vector<PluginUuidReference> modulators_;
+  std::vector<plugins::PluginUuidReference> modulators_;
 
   /** Modulator macros. */
   std::vector<utils::QObjectUniquePtr<dsp::ModulatorMacroProcessor>>

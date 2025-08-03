@@ -24,9 +24,9 @@ ChannelTrack::ChannelTrack (FinalTrackDependencies dependencies)
 
 void
 ChannelTrack::init_loaded (
-  gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-  dsp::PortRegistry                     &port_registry,
-  dsp::ProcessorParameterRegistry       &param_registry)
+  plugins::PluginRegistry         &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
   channel_->init_loaded ();
 }

@@ -4,8 +4,8 @@
 #pragma once
 
 #include "dsp/passthrough_processors.h"
-#include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_span.h"
+#include "plugins/plugin.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/fader.h"
 #include "structure/tracks/track.h"
@@ -76,11 +76,11 @@ class Channel : public QObject
 public:
   using PortType = zrythm::dsp::PortType;
   using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
-  using Plugin = gui::old_dsp::plugins::Plugin;
+  using Plugin = plugins::Plugin;
   using PluginDescriptor = zrythm::plugins::PluginDescriptor;
   using PluginSlot = zrythm::plugins::PluginSlot;
   using PluginSlotType = zrythm::plugins::PluginSlotType;
-  using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
+  using PluginPtrVariant = plugins::PluginPtrVariant;
   using PluginUuid = Plugin::Uuid;
 
   // FIXME: leftover from C port, fix/refactor how import works in channel.cpp
@@ -105,7 +105,7 @@ public:
    */
   explicit Channel (
     TrackRegistry                   &track_registry,
-    PluginRegistry                  &plugin_registry,
+    plugins::PluginRegistry         &plugin_registry,
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry,
     OptionalRef<ChannelTrack>        track);
@@ -115,7 +115,7 @@ public:
    */
   explicit Channel (
     TrackRegistry                   &track_registry,
-    PluginRegistry                  &plugin_registry,
+    plugins::PluginRegistry         &plugin_registry,
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry)
       : Channel (track_registry, plugin_registry, port_registry, param_registry, {})
@@ -236,13 +236,13 @@ public:
    * @throw ZrythmException on error.
    */
   PluginPtrVariant add_plugin (
-    PluginUuidReference plugin_id,
-    PluginSlot          slot,
-    bool                confirm,
-    bool                moving_plugin,
-    bool                gen_automatables,
-    bool                recalc_graph,
-    bool                pub_events);
+    plugins::PluginUuidReference plugin_id,
+    PluginSlot                   slot,
+    bool                         confirm,
+    bool                         moving_plugin,
+    bool                         gen_automatables,
+    bool                         recalc_graph,
+    bool                         pub_events);
 
   ChannelTrack &get_track () const { return *track_; }
 
@@ -283,11 +283,6 @@ public:
    * Selects/deselects all plugins in the given slot type.
    */
   void select_all (PluginSlotType type, bool select);
-
-  /**
-   * Sets caches for processing.
-   */
-  void set_caches ();
 
   friend void init_from (
     Channel               &obj,
@@ -387,20 +382,20 @@ public:
   TrackRegistry                   &track_registry_;
   dsp::PortRegistry               &port_registry_;
   dsp::ProcessorParameterRegistry &param_registry_;
-  PluginRegistry                  &plugin_registry_;
+  plugins::PluginRegistry         &plugin_registry_;
 
   /**
    * The MIDI effect strip on instrument/MIDI tracks.
    *
    * This is processed before the instrument/inserts.
    */
-  std::array<std::optional<PluginUuidReference>, STRIP_SIZE> midi_fx_;
+  std::array<std::optional<plugins::PluginUuidReference>, STRIP_SIZE> midi_fx_;
 
   /** The channel insert strip. */
-  std::array<std::optional<PluginUuidReference>, STRIP_SIZE> inserts_;
+  std::array<std::optional<plugins::PluginUuidReference>, STRIP_SIZE> inserts_;
 
   /** The instrument plugin, if instrument track. */
-  std::optional<PluginUuidReference> instrument_;
+  std::optional<plugins::PluginUuidReference> instrument_;
 
   /**
    * The sends strip.

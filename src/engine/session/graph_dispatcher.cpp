@@ -249,7 +249,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
       AUDIO_ENGINE->run_.store (false);
       while (AUDIO_ENGINE->cycle_running_.load ())
         {
-          std::this_thread::sleep_for (std::chrono::milliseconds (100));
+          std::this_thread::sleep_for (std::chrono::milliseconds (10));
         }
       rebuild_graph ();
       AUDIO_ENGINE->run_.store (running);

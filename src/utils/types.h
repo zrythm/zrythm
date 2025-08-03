@@ -252,7 +252,7 @@ enum class BeatUnit
 enum class CacheType
 {
   // TrackNameHashes = 1 << 0,
-  PluginPorts = 1 << 1,
+  // PluginPorts = 1 << 1,
   PlaybackSnapshots = 1 << 2,
   AutomationLaneRecordModes = 1 << 3,
   AutomationLanePorts = 1 << 4,
@@ -261,8 +261,8 @@ enum class CacheType
 ENUM_ENABLE_BITSET (CacheType);
 
 constexpr CacheType ALL_CACHE_TYPES =
-  CacheType::PluginPorts | CacheType::PlaybackSnapshots
-  | CacheType::AutomationLaneRecordModes | CacheType::AutomationLanePorts;
+  CacheType::PlaybackSnapshots | CacheType::AutomationLaneRecordModes
+  | CacheType::AutomationLanePorts;
 
 /* types for simple timestamps/durations */
 using SteadyClock = std::chrono::steady_clock;

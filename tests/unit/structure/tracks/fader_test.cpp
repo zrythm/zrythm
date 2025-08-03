@@ -174,11 +174,13 @@ TEST_F (FaderTest, AudioProcessing)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 2.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   // Test unity gain (1.0) - account for smoothing
   audio_fader_->gain ()->setBaseValue (
@@ -194,6 +196,7 @@ TEST_F (FaderTest, AudioProcessing)
   // Process multiple blocks to allow smoothing to reach target
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 2.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -211,6 +214,7 @@ TEST_F (FaderTest, AudioProcessing)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 2.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -227,6 +231,7 @@ TEST_F (FaderTest, AudioProcessing)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 2.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -272,11 +277,13 @@ TEST_F (FaderTest, MuteFunctionality)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   // Set gain to 1.0 and wait for smoothing
   audio_fader_->gain ()->setBaseValue (
@@ -292,6 +299,7 @@ TEST_F (FaderTest, MuteFunctionality)
   // Process multiple blocks to allow smoothing to reach target
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -308,6 +316,7 @@ TEST_F (FaderTest, MuteFunctionality)
   // Process multiple blocks to allow smoothing to reach mute
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -327,11 +336,13 @@ TEST_F (FaderTest, BalanceFunctionality)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers with equal values
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   // Set gain to 1.0 and wait for smoothing
   audio_fader_->gain ()->setBaseValue (
@@ -347,6 +358,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   // Process multiple blocks to allow smoothing to reach target
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -356,6 +368,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -371,6 +384,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -386,6 +400,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -428,11 +443,13 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers with different values
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 0.5f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   // Set gain to 1.0
   audio_fader_->gain ()->setBaseValue (
@@ -450,6 +467,7 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 0.5f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -465,6 +483,7 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 0.5f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -484,11 +503,13 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   // Set gain to 1.0
   audio_fader_->gain ()->setBaseValue (
@@ -506,6 +527,7 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -521,6 +543,7 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
   // Process multiple blocks to allow smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -653,11 +676,13 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
   auto [left_out, right_out] = fader_with_callback->get_stereo_out_ports ();
 
   // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   fader_with_callback->gain ()->setBaseValue (
     fader_with_callback->gain ()->range ().convertTo0To1 (1.0f));
@@ -673,6 +698,7 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
   should_mute = false;
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       fader_with_callback->process_block (time_nfo);
     }
   for (int i = 0; i < 512; i++)
@@ -685,6 +711,7 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
   should_mute = true;
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       fader_with_callback->process_block (time_nfo);
     }
 
@@ -721,11 +748,13 @@ TEST_F (FaderTest, PreProcessAudioCallback)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
@@ -739,6 +768,7 @@ TEST_F (FaderTest, PreProcessAudioCallback)
 
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -765,11 +795,13 @@ TEST_F (FaderTest, MuteGainCallback)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
@@ -784,6 +816,7 @@ TEST_F (FaderTest, MuteGainCallback)
   // Test normal operation (no mute) - wait for smoothing
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
   EXPECT_FALSE (mute_gain_called);
@@ -792,6 +825,7 @@ TEST_F (FaderTest, MuteGainCallback)
   audio_fader_->mute ()->setBaseValue (1.0f);
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
   EXPECT_TRUE (mute_gain_called);
@@ -826,15 +860,18 @@ TEST_F (FaderTest, EdgeCases)
   auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
-  for (int i = 0; i < 10; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 10; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   time_nfo.nframes_ = 10;
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -895,11 +932,13 @@ TEST_F (FaderTest, HardLimitingFunctionality)
   auto [left_out, right_out] = hard_limit_fader->get_stereo_out_ports ();
 
   // Fill input buffers with values that would exceed the limits
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 5.0f;   // Above 2.0 limit
-      right_in.buf_[i] = -5.0f; // Below -2.0 limit
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   // Set high gain to amplify beyond limits
   hard_limit_fader->gain ()->setBaseValue (
@@ -915,6 +954,7 @@ TEST_F (FaderTest, HardLimitingFunctionality)
   // Process multiple blocks to allow smoothing to reach target
   for (int block = 0; block < 15; block++)
     {
+      fill_inputs (5.f, -5.f);
       hard_limit_fader->process_block (time_nfo);
     }
 
@@ -928,17 +968,13 @@ TEST_F (FaderTest, HardLimitingFunctionality)
     }
 
   // Test that values within limits are not affected
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = -1.0f;
-    }
 
   hard_limit_fader->gain ()->setBaseValue (
     hard_limit_fader->gain ()->range ().convertTo0To1 (1.0f));
 
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, -1.f);
       hard_limit_fader->process_block (time_nfo);
     }
 
@@ -957,11 +993,13 @@ TEST_F (FaderTest, GainSmoothing)
   auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
 
   // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
-    }
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
 
   // Start with 0 gain
   audio_fader_->gain ()->setBaseValue (
@@ -977,6 +1015,7 @@ TEST_F (FaderTest, GainSmoothing)
   // Process until we reach silence
   for (int block = 0; block < 10; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -993,6 +1032,7 @@ TEST_F (FaderTest, GainSmoothing)
 
   // Test that gain increases gradually over multiple blocks
   std::vector<float> first_block_values;
+  fill_inputs (1.f, 1.f);
   audio_fader_->process_block (time_nfo);
   for (int i = 0; i < 512; i++)
     {
@@ -1006,6 +1046,7 @@ TEST_F (FaderTest, GainSmoothing)
   // Process more blocks until we reach close to target
   for (int block = 0; block < 20; block++)
     {
+      fill_inputs (1.f, 1.f);
       audio_fader_->process_block (time_nfo);
     }
 
@@ -1022,12 +1063,96 @@ TEST_F (FaderTest, GainSmoothing)
 
   // Should not immediately jump to new values
   auto prev_values = left_out.buf_;
+  fill_inputs (1.f, 1.f);
   audio_fader_->process_block (time_nfo);
   EXPECT_FLOAT_EQ (left_out.buf_.front (), prev_values.front ());
   for (int i = 1; i < 10; ++i)
     {
       EXPECT_NE (left_out.buf_[i], 0.5f);
       EXPECT_LT (left_out.buf_[i], prev_values[i]);
+    }
+}
+
+TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+
+  // Set gain to 1.0 for direct pass-through
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  const auto fill_input_bufs = [&] (float left_val, float right_val) {
+    // Fill with test data
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
+
+  // Process and wait for smoothing
+  for (int block = 0; block < 10; block++)
+    {
+      fill_input_bufs (1.f, 2.f);
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // Verify first cycle processed correctly
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 2.0f, 0.05f);
+    }
+
+  // Process second cycle
+  for (int block = 0; block < 10; block++)
+    {
+      fill_input_bufs (3.f, 4.f);
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // Verify second cycle processed correctly
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 3.0f, 0.05f);
+      EXPECT_NEAR (right_out.buf_[i], 4.0f, 0.05f);
+    }
+
+  // Third processing cycle - verify no accumulation from previous cycles
+  // Fill with zeroes to test clearing behavior
+
+  // Process third cycle
+  for (int block = 0; block < 10; block++)
+    {
+      fill_input_bufs (0.1f, 0.1f);
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // Verify third cycle processed correctly (should be silent)
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_out.buf_[i], 0.1f, 1e-6f);
+      EXPECT_NEAR (right_out.buf_[i], 0.1f, 1e-6f);
+    }
+
+  // Verify input buffers are cleared after processing
+  // This tests the buffer clearing behavior between process calls
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (left_in.buf_[i], 0.0f, 1e-6f)
+        << "Input buffer not cleared at left channel index " << i;
+      EXPECT_NEAR (right_in.buf_[i], 0.0f, 1e-6f)
+        << "Input buffer not cleared at right channel index " << i;
     }
 }
 

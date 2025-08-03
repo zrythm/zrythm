@@ -318,7 +318,7 @@ reflink_file (const fs::path &dest, const fs::path &src);
  * @return QByteArray
  * @throw ZrythmException on error.
  */
-QByteArray
+[[nodiscard]] QByteArray
 read_file_contents (const fs::path &path);
 
 /**

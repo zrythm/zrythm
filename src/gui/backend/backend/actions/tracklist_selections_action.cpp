@@ -9,7 +9,7 @@
 #include "gui/backend/io/file_descriptor.h"
 #include "gui/backend/io/midi_file.h"
 #include "gui/backend/ui.h"
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/base64.h"
 #include "utils/debug.h"
@@ -503,16 +503,12 @@ TracklistSelectionsAction::create_track (int idx)
           added_track->setName (name.to_qstring ());
           added_track->set_index (pos);
 
-          std::optional<PluginUuidReference> added_plugin_if_has_plugin;
+          std::optional<plugins::PluginUuidReference> added_plugin_if_has_plugin;
           if (has_plugin)
             {
               added_plugin_if_has_plugin =
                 PROJECT->getPluginFactory ()->create_plugin_from_setting (
                   *pl_setting_);
-              auto * pl_ptr = std::get<old_dsp::plugins::CarlaNativePlugin *> (
-                added_plugin_if_has_plugin->get_object ());
-              pl_ptr->instantiate ();
-              pl_ptr->activate ();
             }
 
           TRACKLIST->insert_track (
@@ -522,16 +518,12 @@ TracklistSelectionsAction::create_track (int idx)
             {
               if (has_plugin)
                 {
+                  // TODO: use correct slot?
                   added_track->channel_->add_plugin (
                     *added_plugin_if_has_plugin,
                     std::is_same_v<TrackT, InstrumentTrack>
                       ? plugins::PluginSlot (plugins::PluginSlotType::Instrument)
-                      : plugins::PluginSlot (
-                          plugins::PluginSlotType::Insert,
-                          PluginSpan::slot_projection (
-                            added_plugin_if_has_plugin->get_object ())
-                            .get_slot_with_index ()
-                            .second),
+                      : plugins::PluginSlot (plugins::PluginSlotType::Insert, 0),
                     true, false, true, false, false);
                 }
             }
@@ -579,11 +571,7 @@ TracklistSelectionsAction::create_track (int idx)
                  ->get_openPluginsOnInstantiation ())
             {
               std::visit (
-                [&] (auto &&plugin) {
-                  plugin->visible_ = true;
-                  /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
-                   * added_pl); */
-                },
+                [&] (auto &&plugin) { plugin->setUiVisible (true); },
                 added_plugin_if_has_plugin->get_object ());
             }
         },

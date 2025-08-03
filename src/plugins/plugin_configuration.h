@@ -13,10 +13,14 @@ namespace zrythm::plugins
  *
  * (Previously `PluginSetting`).
  */
-class PluginConfiguration final
+class PluginConfiguration : public QObject
 {
+  Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
-  PluginConfiguration () = default;
+  PluginConfiguration (QObject * parent = nullptr) : QObject (parent) { };
 
   /**
    * Creates a plugin setting with the recommended settings for the given plugin

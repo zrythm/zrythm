@@ -14,6 +14,8 @@ PluginSpan::can_be_pasted (const plugins::PluginSlot &slot) const
   if (std::ranges::distance (*this) == 0)
     return false;
 
+// TODO
+#if 0
   auto slots = std::ranges::to<std::vector> (
     std::views::transform (*this, slot_projection));
   auto [highest_slot_it, lowest_slot_it] = std::ranges::minmax_element (slots);
@@ -27,6 +29,7 @@ PluginSpan::can_be_pasted (const plugins::PluginSlot &slot) const
       return slot.get_slot_with_index ().second + delta
              < (int) structure::tracks::Channel::STRIP_SIZE;
     }
+#endif
   // non-indexed slots not supported yet
   return false;
 }

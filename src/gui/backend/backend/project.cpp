@@ -30,6 +30,24 @@
 
 using namespace zrythm;
 
+static auto
+juce_plugin_toplevel_window_provider (juce::AudioProcessorEditor &editor)
+{
+  auto window = std::make_unique<juce::DocumentWindow> (
+    editor.getAudioProcessor ()->getName (), juce::Colours::cadetblue,
+    juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton);
+  window->setAlwaysOnTop (true); // Optional: keep on top
+  window->setUsingNativeTitleBar (true);
+  window->setContentNonOwned (&editor, true);
+  window->centreWithSize (
+    editor.getWidth (), editor.getHeight ()); // Center on screen
+  window->setResizable (true, true);
+  window->addToDesktop ();
+  window->setVisible (true);
+  window->toFront (true);
+  return window;
+}
+
 Project::Project (
   std::shared_ptr<juce::AudioDeviceManager> device_manager,
   QObject *                                 parent)
@@ -54,7 +72,9 @@ Project::Project (
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
-          [this] (bool backup) { return get_path (ProjectPath::POOL, backup); },
+          [this] (bool backup) {
+            return get_path (ProjectPath::POOL, backup);
+},
           [this] () { return audio_engine_->get_sample_rate (); })),
       quantize_opts_editor_ (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
@@ -119,10 +139,31 @@ Project::Project (
         *clip_editor_,
         this)),
       plugin_factory_ (new PluginFactory (
-        *plugin_registry_,
-        dsp::ProcessorBase::ProcessorBaseDependencies{
-          .port_registry_ = *port_registry_,
-          .param_registry_ = *param_registry_ },
+        PluginFactory::CommonFactoryDependencies{
+          .plugin_registry_ = *plugin_registry_,
+          .processor_base_dependencies_ =
+            dsp::ProcessorBase::ProcessorBaseDependencies{
+              .port_registry_ = *port_registry_,
+              .param_registry_ = *param_registry_ },
+          .state_dir_path_provider_ =
+            [this] () { return get_path (ProjectPath::PluginStates, false); },
+          .create_plugin_instance_async_func_ =
+            [] (
+              const juce::PluginDescription                  &description,
+              double                                          initialSampleRate,
+              int                                             initialBufferSize,
+              juce::AudioPluginFormat::PluginCreationCallback callback) {
+              Zrythm::getInstance ()
+                ->getPluginManager ()
+                ->get_format_manager ()
+                ->createPluginInstanceAsync (
+                  description, initialSampleRate, initialBufferSize, callback);
+            },
+          .sample_rate_provider_ =
+            [this] () { return audio_engine_->get_sample_rate (); },
+          .buffer_size_provider_ =
+            [this] () { return audio_engine_->get_block_length (); },
+          .top_level_window_provider_ = juce_plugin_toplevel_window_provider },
         *gui::SettingsManager::get_instance (),
         this)),
       track_factory_ (new structure::tracks::TrackFactory (
@@ -689,7 +730,7 @@ Project::autosave_cb (void * data)
 }
 
 fs::path
-Project::get_path (ProjectPath path, bool backup)
+Project::get_path (ProjectPath path, bool backup) const
 {
   const auto dir = backup ? *backup_dir_ : dir_;
   switch (path)
@@ -1362,9 +1403,24 @@ struct PluginBuilderForDeserialization
   }
   template <typename T> std::unique_ptr<T> build () const
   {
-    return std::make_unique<T> (Plugin::ProcessorBaseDependencies{
-      .port_registry_ = project_.get_port_registry (),
-      .param_registry_ = project_.get_param_registry () });
+    return std::make_unique<T> (
+      plugins::Plugin::ProcessorBaseDependencies{
+        .port_registry_ = project_.get_port_registry (),
+        .param_registry_ = project_.get_param_registry () },
+      [this] () { return project_.get_path (ProjectPath::PluginStates, false); },
+      [] (
+        const juce::PluginDescription &description, double initialSampleRate,
+        int                                             initialBufferSize,
+        juce::AudioPluginFormat::PluginCreationCallback callback) {
+        Zrythm::getInstance ()
+          ->getPluginManager ()
+          ->get_format_manager ()
+          ->createPluginInstanceAsync (
+            description, initialSampleRate, initialBufferSize, callback);
+      },
+      [this] () { return project_.audio_engine_->get_sample_rate (); },
+      [this] () { return project_.audio_engine_->get_block_length (); },
+      juce_plugin_toplevel_window_provider);
   }
 
   const Project &project_;

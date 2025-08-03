@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "gui/backend/backend/settings_manager.h"
-#include "gui/dsp/plugin_all.h"
+#include "plugins/plugin_all.h"
 #include "structure/tracks/track_all.h"
 
 namespace zrythm::structure::tracks

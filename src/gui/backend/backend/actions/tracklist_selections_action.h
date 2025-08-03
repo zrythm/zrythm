@@ -180,8 +180,7 @@ public:
     return true;
   }
 
-  void get_plugins (
-    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &plugins) override
+  void get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) override
   {
     if (tls_before_)
       {

@@ -8,7 +8,6 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
-#include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/plugin_span.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/tracks/channel.h"
@@ -283,7 +282,7 @@ MixerSelectionsAction::save_existing_plugin (
             from_tr ? from_tr->get_name () : u8"(none)", from_slot,
             to_tr ? to_tr->get_name () : u8"(none)", to_slot,
             existing_pl
-              ? old_dsp::plugins::Plugin::name_projection (existing_pl.value ())
+              ? plugins::Plugin::name_projection (existing_pl.value ())
               : u8"(none)");
           if (existing_pl && (from_tr != to_tr || from_slot != to_slot))
             {
@@ -308,6 +307,8 @@ MixerSelectionsAction::revert_deleted_plugin (
   Track              &to_tr_base,
   plugins::PluginSlot to_slot)
 {
+  // TODO
+#if 0
   std::visit (
     [&] (auto &&to_tr) {
       using TrackT = base_type<decltype (to_tr)>;
@@ -367,8 +368,9 @@ MixerSelectionsAction::revert_deleted_plugin (
             },
             deleted_pl_var);
         }
-    },
-    convert_to_variant<TrackPtrVariant> (&to_tr_base));
+      },
+      convert_to_variant<TrackPtrVariant> (&to_tr_base));
+#endif
 }
 
 void
@@ -635,6 +637,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 void
 MixerSelectionsAction::do_or_undo_change_status (bool do_it)
 {
+#if 0
   auto ms = PluginSpan{ *ms_before_ };
   auto track_var =
     TRACKLIST->get_track (PluginSpan::track_id_projection (ms.front ()));
@@ -659,22 +662,24 @@ MixerSelectionsAction::do_or_undo_change_status (bool do_it)
         }
     },
     track_var.value ());
+#endif
 }
 
 void
 MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 {
+#if 0
   auto ms = PluginSpan{ *ms_before_ };
   auto track_var = TRACKLIST->get_track (ms.get_track_id_of_first_plugin ());
 
   std::visit (
     [&] (auto &&track) {
-#if 0
+#  if 0
       auto ch =
         track->has_channel ()
           ? dynamic_cast<ChannelTrack *> (track)->channel_
           : nullptr;
-#endif
+#  endif
       for (const auto &own_pl_var : ms)
         {
           std::visit (
@@ -686,7 +691,7 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
                     do_it ? new_bridge_mode_ : own_pl->setting_->bridge_mode_;
 
             /* TODO - below is tricky */
-#if 0
+#  if 0
       carla_set_engine_option (
         pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, false, nullptr);
       carla_set_engine_option (
@@ -712,7 +717,7 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
       carla_native_plugin_add_internal_plugin_from_descr (
         pl->carla, pl->setting_->descr);
       pl->activate (true);
-#endif
+#  endif
                 },
                 *pl_var);
             },
@@ -722,15 +727,16 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
       if (ZRYTHM_HAVE_UI)
         {
 // TODO
-#if 0
+#  if 0
       ui_show_error_message (
         QObject::tr ("Project Reload Needed"),
         QObject::tr (
           "Plugin load behavior changes will only take effect after you save and re-load the project"));
-#endif
+#  endif
         }
     },
     track_var.value ());
+#endif
 }
 
 void

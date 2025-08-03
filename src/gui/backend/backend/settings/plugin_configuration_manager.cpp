@@ -214,7 +214,7 @@ PluginConfigurationManager::activate_plugin_configuration (
           auto pl_audio_outs = std::visit (
             [&] (auto &&pl) {
               return std::ranges::to<std::vector> (
-                pl->get_output_port_span ()
+                dsp::PortSpan{ pl->get_output_ports () }
                   .template get_elements_by_type<dsp::AudioPort> ());
             },
             pl_var.value ());

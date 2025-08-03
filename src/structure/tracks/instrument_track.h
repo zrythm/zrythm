@@ -29,28 +29,14 @@ class InstrumentTrack final
 
 public:
   void init_loaded (
-    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    dsp::PortRegistry                     &port_registry,
-    dsp::ProcessorParameterRegistry       &param_registry) override;
+    plugins::PluginRegistry         &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   friend void init_from (
     InstrumentTrack       &obj,
     const InstrumentTrack &other,
     utils::ObjectCloneType clone_type);
-
-  zrythm::gui::old_dsp::plugins::Plugin * get_instrument ();
-
-  const zrythm::gui::old_dsp::plugins::Plugin * get_instrument () const;
-
-  /**
-   * Returns if the first plugin's UI in the instrument track is visible.
-   */
-  bool is_plugin_visible () const;
-
-  /**
-   * Toggles whether the first plugin's UI in the instrument Track is visible.
-   */
-  void toggle_plugin_visible ();
 
   void temporary_virtual_method_hack () const override { }
 

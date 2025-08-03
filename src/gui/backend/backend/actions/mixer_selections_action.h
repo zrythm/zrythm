@@ -6,8 +6,8 @@
 
 #include "dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_span.h"
+#include "plugins/plugin.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/track.h"
 
@@ -43,12 +43,11 @@ public:
     ChangeLoadBehavior,
   };
 
-  using PluginSlotType = zrythm::plugins::PluginSlotType;
-  using Plugin = old_dsp::plugins::Plugin;
+  using PluginSlotType = plugins::PluginSlotType;
+  using Plugin = plugins::Plugin;
   using PluginUuid = Plugin::Uuid;
-  using PluginPtrVariant = old_dsp::plugins::PluginPtrVariant;
-  using CarlaNativePlugin = old_dsp::plugins::CarlaNativePlugin;
-  using PluginConfiguration = zrythm::plugins::PluginConfiguration;
+  using PluginPtrVariant = plugins::PluginPtrVariant;
+  using PluginConfiguration = plugins::PluginConfiguration;
 
   MixerSelectionsAction (QObject * parent = nullptr);
 
@@ -78,10 +77,13 @@ public:
 
   void get_plugins (std::vector<Plugin *> &plugins) override
   {
+// TODO
+#if 0
     if (ms_before_)
       PluginSpan{ *ms_before_ }.get_plugins (plugins);
     if (deleted_ms_)
       PluginSpan{ *deleted_ms_ }.get_plugins (plugins);
+#endif
   }
 
   friend void init_from (

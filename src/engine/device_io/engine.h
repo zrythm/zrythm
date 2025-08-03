@@ -17,11 +17,6 @@
 #include "utils/concurrency.h"
 #include "utils/types.h"
 
-namespace zrythm::gui::old_dsp::plugins
-{
-class Plugin;
-}
-
 #define AUDIO_ENGINE \
   (zrythm::engine::device_io::AudioEngine::get_active_instance ())
 

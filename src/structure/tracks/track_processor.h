@@ -297,22 +297,22 @@ public:
   dsp::ProcessorParameter &get_mono_param () const
   {
     return *std::get<dsp::ProcessorParameter *> (
-      dependencies_.param_registry_.find_by_id_or_throw (*mono_id_));
+      dependencies ().param_registry_.find_by_id_or_throw (*mono_id_));
   }
   dsp::ProcessorParameter &get_input_gain_param () const
   {
     return *std::get<dsp::ProcessorParameter *> (
-      dependencies_.param_registry_.find_by_id_or_throw (*input_gain_id_));
+      dependencies ().param_registry_.find_by_id_or_throw (*input_gain_id_));
   }
   dsp::ProcessorParameter &get_output_gain_param () const
   {
     return *std::get<dsp::ProcessorParameter *> (
-      dependencies_.param_registry_.find_by_id_or_throw (*output_gain_id_));
+      dependencies ().param_registry_.find_by_id_or_throw (*output_gain_id_));
   }
   dsp::ProcessorParameter &get_monitor_audio_param () const
   {
     return *std::get<dsp::ProcessorParameter *> (
-      dependencies_.param_registry_.find_by_id_or_throw (*monitor_audio_id_));
+      dependencies ().param_registry_.find_by_id_or_throw (*monitor_audio_id_));
   }
 
   /**
@@ -326,7 +326,7 @@ public:
   {
     assert (has_midi_cc_);
     return *std::get<dsp::ProcessorParameter *> (
-      dependencies_.param_registry_.find_by_id_or_throw (
+      dependencies ().param_registry_.find_by_id_or_throw (
         midi_cc_caches_->midi_cc_ids_.at ((channel * 128) + control_no)));
   }
 

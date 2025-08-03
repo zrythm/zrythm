@@ -93,7 +93,7 @@ apply_plugin (
   z_return_val_if_fail (setting, -1);
   setting->force_generic_ui = true;
   GError * err = NULL;
-  zrythm::gui::old_dsp::plugins::Plugin * pl =
+  zrythm::plugins::Plugin * pl =
     plugin_new_from_setting (setting, 0, zrythm::plugins::PluginSlotType::Insert, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {

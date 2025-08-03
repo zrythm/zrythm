@@ -18,7 +18,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
 #include "gui/backend/plugin_manager.h"
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
@@ -258,6 +258,8 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                         return;
                       std::visit (
                         [&] (auto &&ins) {
+// TODO
+#if 0
                           ins->prepare_process (
                             AUDIO_ENGINE->get_block_length ());
                           ins->midi_in_port_->midi_events_.active_events_.append (
@@ -265,6 +267,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                           ins->process_block (inner_time_nfo);
                           audio_data_l = ins->l_out_->buf_.data ();
                           audio_data_r = ins->r_out_->buf_.data ();
+#endif
                         },
                         *ins_var);
                     }
@@ -373,7 +376,7 @@ SampleProcessor::queue_file_or_chord_preset (
           if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
             {
               auto state_dir =
-                zrythm::gui::old_dsp::plugins::Plugin::from_variant (
+                zrythm::plugins::Plugin::from_variant (
                   *tr->channel_->get_instrument ())
                   ->get_abs_state_dir (false, true);
               if (!state_dir.empty ())

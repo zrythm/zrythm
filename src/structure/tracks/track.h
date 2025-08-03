@@ -5,7 +5,7 @@
 
 #include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/fader.h"
@@ -342,12 +342,12 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
 
 struct BaseTrackDependencies
 {
-  const dsp::TempoMap                   &tempo_map_;
-  dsp::FileAudioSourceRegistry          &file_audio_source_registry_;
-  gui::old_dsp::plugins::PluginRegistry &plugin_registry_;
-  dsp::PortRegistry                     &port_registry_;
-  dsp::ProcessorParameterRegistry       &param_registry_;
-  arrangement::ArrangerObjectRegistry   &obj_registry_;
+  const dsp::TempoMap                 &tempo_map_;
+  dsp::FileAudioSourceRegistry        &file_audio_source_registry_;
+  plugins::PluginRegistry             &plugin_registry_;
+  dsp::PortRegistry                   &port_registry_;
+  dsp::ProcessorParameterRegistry     &param_registry_;
+  arrangement::ArrangerObjectRegistry &obj_registry_;
 };
 
 /**
@@ -364,9 +364,10 @@ struct BaseTrackDependencies
 class Track : public utils::UuidIdentifiableObject<Track>
 {
 public:
-  using PluginUuid = gui::old_dsp::plugins::Plugin::Uuid;
+  using Plugin = plugins::Plugin;
+  using PluginUuid = Plugin::Uuid;
   using PortType = dsp::PortType;
-  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
+  using PluginRegistry = plugins::PluginRegistry;
   using PluginPtrVariant = PluginRegistry::VariantType;
   using PluginSlot = plugins::PluginSlot;
   using ArrangerObject = structure::arrangement::ArrangerObject;
@@ -524,7 +525,7 @@ public:
    * @note Each implementor must chain up to its direct superclass.
    */
   virtual void init_loaded (
-    PluginRegistry                  &plugin_registry,
+    plugins::PluginRegistry         &plugin_registry,
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry) = 0;
 
@@ -816,10 +817,11 @@ public:
     requires std::derived_from<base_type<DerivedT>, Track>
              && FinalClass<base_type<DerivedT>>
   {
-    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
+    std::vector<zrythm::plugins::Plugin *> plugins;
     self.get_plugins (plugins);
-    return std::ranges::any_of (plugins, [] (auto pl) {
-      return pl->instantiation_failed_;
+    return std::ranges::any_of (plugins, [] (const auto &pl) {
+      return pl->instantiationStatus ()
+             != plugins::Plugin::InstantiationStatus::Successful;
     });
   }
 
@@ -918,9 +920,8 @@ public:
    * Fills in the given array with all plugins in the track.
    */
   template <typename DerivedT>
-  void get_plugins (
-    this DerivedT                                       &&self,
-    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr)
+  void
+  get_plugins (this DerivedT &&self, std::vector<zrythm::plugins::Plugin *> &arr)
     requires std::derived_from<base_type<DerivedT>, Track>
              && FinalClass<base_type<DerivedT>>
   {
@@ -937,41 +938,6 @@ public:
               {
                 arr.push_back (modulator.get ());
               }
-          }
-      }
-  }
-
-  /**
-   * Activate or deactivate all plugins.
-   *
-   * This is useful for exporting: deactivating and reactivating a plugin will
-   * reset its state.
-   */
-  template <typename DerivedT>
-  void activate_all_plugins (this DerivedT &&self, bool activate)
-    requires std::derived_from<base_type<DerivedT>, Track>
-             && FinalClass<base_type<DerivedT>>
-  {
-    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> pls;
-    self.get_plugins (pls);
-
-    for (auto &pl : pls)
-      {
-        if (!pl->instantiated_ && !pl->instantiation_failed_)
-          {
-            try
-              {
-                pl->instantiate ();
-              }
-            catch (const ZrythmException &e)
-              {
-                e.handle ("Failed to instantiate plugin");
-              }
-          }
-
-        if (pl->instantiated_)
-          {
-            pl->activate (activate);
           }
       }
   }
@@ -1020,17 +986,17 @@ public:
    * @param instantiate_plugin Whether to attempt to instantiate the plugin.
    */
   template <typename DerivedT>
-  PluginPtrVariant insert_plugin (
-    this DerivedT     &&self,
-    PluginUuid          plugin_id,
-    plugins::PluginSlot slot,
-    bool                instantiate_plugin,
-    bool                replacing_plugin,
-    bool                moving_plugin,
-    bool                confirm,
-    bool                gen_automatables,
-    bool                recalc_graph,
-    bool                fire_events)
+  plugins::PluginPtrVariant insert_plugin (
+    this DerivedT       &&self,
+    plugins::Plugin::Uuid plugin_id,
+    plugins::PluginSlot   slot,
+    bool                  instantiate_plugin,
+    bool                  replacing_plugin,
+    bool                  moving_plugin,
+    bool                  confirm,
+    bool                  gen_automatables,
+    bool                  recalc_graph,
+    bool                  fire_events)
     requires std::derived_from<base_type<DerivedT>, Track>
              && FinalClass<base_type<DerivedT>>
   {
@@ -1039,7 +1005,7 @@ public:
         throw std::runtime_error ("Invalid slot type and slot combo");
       }
 
-    PluginPtrVariant plugin_var{};
+    plugins::PluginPtrVariant plugin_var{};
 
     if (slot.is_modulator ())
       {
@@ -1104,28 +1070,18 @@ public:
         auto       plugin_var = plugin_id.get_object ();
         std::visit (
           [&] (auto &&plugin) {
-            assert (plugin->get_track_id () == self.get_uuid ());
-
-            plugin->remove_ats_from_automation_tracklist (true, !false && !true);
+            // TODO
+            // plugin->remove_ats_from_automation_tracklist (true, !false &&
+            // !true);
 
             z_debug (
               "Removing {} from {}:{}", plugin->get_name (), self.get_name (),
               slot);
 
             /* if deleting plugin disconnect the plugin entirely */
-            plugin->set_selected (false);
             self.tracklist_->disconnect_plugin (plugin->get_uuid ());
 
-            auto it =
-              self.modulators_.erase (self.modulators_.begin () + slot_idx);
-            for (; it != self.modulators_.end (); ++it)
-              {
-                const auto &mod_id = *it;
-                auto        mod_var = mod_id.get_object ();
-                std::visit (
-                  [&] (auto &&mod) { mod->set_track (self.get_uuid ()); },
-                  mod_var);
-              }
+            self.modulators_.erase (self.modulators_.begin () + slot_idx);
           },
           plugin_var);
       }
@@ -1147,18 +1103,14 @@ public:
              * plugin_move_automation() inside plugin_move(). */
             if (!moving_plugin)
               {
-                plugin->remove_ats_from_automation_tracklist (
-                  deleting_plugin, !deleting_plugin);
+                // TODO
+                // plugin->remove_ats_from_automation_tracklist (
+                // deleting_plugin, !deleting_plugin);
               }
 
             /* if deleting plugin disconnect the plugin entirely */
             if (deleting_plugin)
               {
-                if (plugin->is_selected ())
-                  {
-                    plugin->set_selected (false);
-                  }
-
                 self.tracklist_->disconnect_plugin (plugin->get_uuid ());
               }
           },
@@ -1168,7 +1120,7 @@ public:
 
   template <typename SelfT>
   plugins::PluginSlot
-  get_plugin_slot (this const SelfT &self, const PluginUuid &plugin_id)
+  get_plugin_slot (this const SelfT &self, const plugins::Plugin::Uuid &plugin_id)
     requires (
       std::derived_from<SelfT, ChannelTrack>
       || std::is_same_v<SelfT, ModulatorTrack>)
@@ -1288,6 +1240,41 @@ public:
   {
     return dynamic_cast<T *> (create_for_plugin_at_idx_w_action (
       get_type_for_class<T> (), pl_setting, index));
+  }
+
+  utils::Utf8String
+  generate_window_name_for_plugin (const plugins::Plugin &plugin) const
+  {
+    const auto track_name = get_name ();
+    const auto plugin_name = plugin.get_name ();
+    assert (!track_name.empty () && !plugin_name.empty ());
+
+// TODO
+#if 0
+    std::string bridge_mode;
+    if (
+      plugin.configuration ()->bridge_mode_ != zrythm::plugins::BridgeMode::None)
+      {
+        bridge_mode =
+          fmt::format (" - bridge: {}", plugin.configuration ()->bridge_mode_);
+      }
+
+    const auto  slot = *plugin.get_slot ();
+    std::string slot_str;
+    const auto  slot_type = plugin.get_slot_type ();
+    if (slot_type == plugins::PluginSlotType::Instrument)
+      {
+        slot_str = "instrument";
+      }
+    else
+      {
+        const auto slot_no = slot.get_slot_with_index ().second;
+        slot_str = fmt::format ("#{}", slot_no + 1);
+      }
+#endif
+
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("{} ({})", plugin_name, track_name));
   }
 
   /**
@@ -1599,14 +1586,14 @@ using TrackSelectionManager =
 struct FinalTrackDependencies : public BaseTrackDependencies
 {
   FinalTrackDependencies (
-    const dsp::TempoMap                   &tempo_map,
-    dsp::FileAudioSourceRegistry          &file_audio_source_registry,
-    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    dsp::PortRegistry                     &port_registry,
-    dsp::ProcessorParameterRegistry       &param_registry,
-    arrangement::ArrangerObjectRegistry   &obj_registry,
-    TrackRegistry                         &track_registry,
-    const dsp::ITransport                 &transport)
+    const dsp::TempoMap                 &tempo_map,
+    dsp::FileAudioSourceRegistry        &file_audio_source_registry,
+    plugins::PluginRegistry             &plugin_registry,
+    dsp::PortRegistry                   &port_registry,
+    dsp::ProcessorParameterRegistry     &param_registry,
+    arrangement::ArrangerObjectRegistry &obj_registry,
+    TrackRegistry                       &track_registry,
+    const dsp::ITransport               &transport)
       : BaseTrackDependencies (
           tempo_map,
           file_audio_source_registry,

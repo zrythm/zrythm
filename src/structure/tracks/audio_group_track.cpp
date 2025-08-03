@@ -37,9 +37,9 @@ AudioGroupTrack::initialize ()
 
 void
 AudioGroupTrack::init_loaded (
-  gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-  dsp::PortRegistry                     &port_registry,
-  dsp::ProcessorParameterRegistry       &param_registry)
+  plugins::PluginRegistry         &plugin_registry,
+  dsp::PortRegistry               &port_registry,
+  dsp::ProcessorParameterRegistry &param_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
   ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);

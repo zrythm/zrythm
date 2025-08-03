@@ -331,7 +331,7 @@ public:
    */
   void add_song_pos (int64_t total_sixteenths, midi_time_t time);
 
-  void add_raw (uint8_t * buf, size_t buf_sz, midi_time_t time);
+  void add_raw (const uint8_t * buf, size_t buf_sz, midi_time_t time);
 
   void add_simple (
     midi_byte_t byte1,

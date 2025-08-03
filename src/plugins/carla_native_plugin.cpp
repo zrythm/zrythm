@@ -14,7 +14,7 @@
 #include "gui/backend/carla_discovery.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/directory_manager.h"

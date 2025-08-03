@@ -33,9 +33,9 @@ AudioCallback::audioDeviceIOCallbackWithContext (
       utils::float_ranges::fill (ch_data, 0.f, numSamples);
     }
 
-  process_cb_ (numSamples);
-
-  // TODO: forward master ouptut to outputChannelData
+  process_cb_ (
+    inputChannelData, numInputChannels, outputChannelData, numOutputChannels,
+    numSamples);
 }
 
 void

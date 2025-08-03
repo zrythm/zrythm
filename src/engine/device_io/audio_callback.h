@@ -8,7 +8,12 @@ namespace zrythm::engine::device_io
 class AudioCallback : public juce::AudioIODeviceCallback
 {
 public:
-  using EngineProcessCallback = std::function<void (nframes_t)>;
+  using EngineProcessCallback = std::function<void (
+    const float * const * inputChannelData,
+    int                   numInputChannels,
+    float * const *       outputChannelData,
+    int                   numOutputChannels,
+    int                   numSamples)>;
   using DeviceAboutToStartCallback = std::function<void (juce::AudioIODevice *)>;
   using DeviceStoppedCallback = std::function<void ()>;
 

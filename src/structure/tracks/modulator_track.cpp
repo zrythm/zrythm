@@ -64,27 +64,23 @@ ModulatorTrack::init_loaded (
 {
   // ChannelTrack must be initialized before AutomatableTrack
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  for (auto &modulator_id : modulators_)
-    {
-      auto modulator = modulator_id.get_object ();
-      std::visit ([&] (auto &&pl) { pl->init_loaded (); }, modulator);
-    }
 }
 
 struct ModulatorImportData
 {
-  ModulatorImportData (PluginUuidReference ref) : modulator_id (std::move (ref))
+  ModulatorImportData (plugins::PluginUuidReference ref)
+      : modulator_id (std::move (ref))
   {
   }
 
-  ModulatorTrack *    track{};
-  int                 slot{};
-  PluginUuidReference modulator_id;
-  bool                replace_mode{};
-  bool                confirm{};
-  bool                gen_automatables{};
-  bool                recalc_graph{};
-  bool                pub_events{};
+  ModulatorTrack *             track{};
+  int                          slot{};
+  plugins::PluginUuidReference modulator_id;
+  bool                         replace_mode{};
+  bool                         confirm{};
+  bool                         gen_automatables{};
+  bool                         recalc_graph{};
+  bool                         pub_events{};
 
   void do_insert ()
   {
@@ -111,18 +107,6 @@ struct ModulatorImportData
         self->get_plugin_registry ().register_object (mod);
         self->modulators_.insert (
           self->modulators_.cbegin () + this->slot, modulator_id);
-
-        /* adjust affected modulators */
-        for (size_t i = this->slot; i < self->modulators_.size (); ++i)
-          {
-            const auto &cur_mod_id = self->modulators_[i];
-            auto        cur_mod = cur_mod_id.get_object ();
-            std::visit (
-              [&] (auto &&cur_mod_ptr) {
-                cur_mod_ptr->set_track (self->get_uuid ());
-              },
-              cur_mod);
-          }
 
         if (this->gen_automatables)
           {
@@ -163,13 +147,13 @@ overwrite_plugin_response_cb (
 
 ModulatorTrack::PluginPtrVariant
 ModulatorTrack::insert_modulator (
-  plugins::PluginSlot::SlotNo slot,
-  PluginUuidReference         modulator_id,
-  bool                        replace_mode,
-  bool                        confirm,
-  bool                        gen_automatables,
-  bool                        recalc_graph,
-  bool                        pub_events)
+  plugins::PluginSlot::SlotNo  slot,
+  plugins::PluginUuidReference modulator_id,
+  bool                         replace_mode,
+  bool                         confirm,
+  bool                         gen_automatables,
+  bool                         recalc_graph,
+  bool                         pub_events)
 {
   z_return_val_if_fail (slot <= (int) modulators_.size (), nullptr);
 
@@ -251,8 +235,8 @@ ModulatorTrack::get_modulator (plugins::PluginSlot::SlotNo slot) const
 plugins::PluginSlot
 ModulatorTrack::get_plugin_slot (const PluginUuid &plugin_id) const
 {
-  const auto it =
-    std::ranges::find (modulators_, plugin_id, &PluginUuidReference::id);
+  const auto it = std::ranges::find (
+    modulators_, plugin_id, &plugins::PluginUuidReference::id);
   if (it == modulators_.end ())
     throw std::runtime_error ("Plugin not found");
   return plugins::PluginSlot (
@@ -267,7 +251,9 @@ from_json (const nlohmann::json &j, ModulatorTrack &track)
   from_json (j, static_cast<ProcessableTrack &> (track));
   for (const auto &modulator_json : j.at (ModulatorTrack::kModulatorsKey))
     {
-      PluginUuidReference modulator_id_ref{ track.get_plugin_registry () };
+      plugins::PluginUuidReference modulator_id_ref{
+        track.get_plugin_registry ()
+      };
       from_json (modulator_json, modulator_id_ref);
       track.modulators_.push_back (std::move (modulator_id_ref));
     }

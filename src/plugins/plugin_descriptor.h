@@ -113,6 +113,7 @@ class PluginDescriptor final : public QObject
   QML_ELEMENT
   Q_PROPERTY (QString name READ getName CONSTANT FINAL)
   Q_PROPERTY (QString format READ getFormat CONSTANT FINAL)
+  QML_UNCREATABLE ("")
 
 public:
   static std::unique_ptr<PluginDescriptor>

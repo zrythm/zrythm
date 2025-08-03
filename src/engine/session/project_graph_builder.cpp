@@ -92,9 +92,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 {
                   std::visit (
                     [&] (auto &&pl) {
-                      if (pl->deleting_)
-                        return;
-
                       dsp::ProcessorGraphBuilder::add_nodes (
                         graph, *transport, *pl);
                     },
@@ -294,13 +291,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       {
                         std::visit (
                           [&] (auto &&pl) {
-                            if (pl && !pl->deleting_)
+                            if (pl)
                               {
                                 dsp::ProcessorGraphBuilder::add_connections (
                                   graph, *pl);
                                 for (
-                                  const auto &pl_port_var :
-                                  pl->get_input_port_span ())
+                                  const auto &pl_port_ref :
+                                  pl->get_input_ports ())
                                   {
                                     std::visit (
                                       [&] (auto &&pl_port) {
@@ -314,7 +311,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                                         track_processor_node->connect_to (
                                           *port_node);
                                       },
-                                      pl_port_var);
+                                      pl_port_ref.get_object ());
                                   }
                               }
                           },

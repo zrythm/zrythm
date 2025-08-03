@@ -4,7 +4,7 @@
 #pragma once
 
 #include "dsp/port_connections_manager.h"
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "utils/types.h"
 
 namespace zrythm::gui::actions
@@ -107,8 +107,7 @@ public:
    *
    * @param plugins
    */
-  virtual void
-  get_plugins (std::vector<gui::old_dsp::plugins::Plugin *> &plugins) { };
+  virtual void get_plugins (std::vector<plugins::Plugin *> &plugins) { };
 
   auto get_frames_per_tick () const { return frames_per_tick_; }
   auto get_ticks_per_frame () const

@@ -35,7 +35,7 @@ public:
 
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  void clear_buffer (std::size_t block_length) override;
+  void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
   bool is_stereo_port () const { return is_stereo_; }
 

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object.h"
 #include "utils/format.h"
 #include "utils/logger.h"

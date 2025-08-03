@@ -29,7 +29,7 @@ ChannelSubgraphBuilder::
   }
 
   // plugins
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
+  std::vector<zrythm::plugins::Plugin *> plugins;
   ch.get_plugins (plugins);
   for (auto * pl : plugins)
     {
@@ -90,146 +90,164 @@ ChannelSubgraphBuilder::add_connections (
   const auto output_type =
     ch.fader ()->is_midi () ? dsp::PortType::Midi : dsp::PortType::Audio;
 
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
+  std::vector<zrythm::plugins::Plugin *> plugins;
   ch.get_plugins (plugins);
-  Plugin * last_plugin = nullptr;
+  plugins::Plugin * last_plugin = nullptr;
   for (auto * const pl : plugins)
     {
-      if (pl != nullptr)
+      dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
+      if (last_plugin == nullptr)
         {
-          dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
-          if (last_plugin == nullptr)
+          // connect processor out to plugin input
+          bool   connection_made{};
+          size_t last_index, num_ports_to_connect, i;
+          auto   pl_in_ports = dsp::PortSpan{ pl->get_input_ports () };
+          if (input_type == dsp::PortType::Midi)
             {
-              // connect processor out to plugin input
-              size_t last_index, num_ports_to_connect, i;
-              auto   pl_in_ports = pl->get_input_port_span ();
-              if (input_type == dsp::PortType::Midi)
+              for (
+                const auto * in_port :
+                pl_in_ports.get_elements_by_type<dsp::MidiPort> ())
+                {
+                  connect_ports (
+                    processor_midi_out_ref->id (), in_port->get_uuid ());
+                  connection_made = true;
+                }
+            }
+          else if (input_type == dsp::PortType::Audio)
+            {
+              auto num_pl_audio_ins = std::ranges::distance (
+                pl_in_ports.get_elements_by_type<dsp::AudioPort> ());
+
+              num_ports_to_connect = 0;
+              if (num_pl_audio_ins == 1)
+                {
+                  num_ports_to_connect = 1;
+                }
+              else if (num_pl_audio_ins > 1)
+                {
+                  num_ports_to_connect = 2;
+                }
+              last_index = 0;
+              for (i = 0; i < num_ports_to_connect; i++)
                 {
                   for (
-                    const auto * in_port :
-                    pl_in_ports.get_elements_by_type<dsp::MidiPort> ())
+                    ; last_index < pl->get_input_ports ().size (); last_index++)
                     {
-                      connect_ports (
-                        processor_midi_out_ref->id (), in_port->get_uuid ());
-                    }
-                }
-              else if (input_type == dsp::PortType::Audio)
-                {
-                  auto num_pl_audio_ins = std::ranges::distance (
-                    pl_in_ports.get_elements_by_type<dsp::AudioPort> ());
-
-                  num_ports_to_connect = 0;
-                  if (num_pl_audio_ins == 1)
-                    {
-                      num_ports_to_connect = 1;
-                    }
-                  else if (num_pl_audio_ins > 1)
-                    {
-                      num_ports_to_connect = 2;
-                    }
-                  last_index = 0;
-                  for (i = 0; i < num_ports_to_connect; i++)
-                    {
-                      for (; last_index < pl->in_ports_.size (); last_index++)
+                      const auto in_port_var = pl_in_ports[last_index];
+                      if (std::holds_alternative<dsp::AudioPort *> (in_port_var))
                         {
-                          const auto in_port_var = pl_in_ports[last_index];
-                          if (std::holds_alternative<dsp::AudioPort *> (
-                                in_port_var))
-                            {
-                              auto * in_port =
-                                std::get<dsp::AudioPort *> (in_port_var);
-                              connect_ports (
-                                processor_audio_out_refs->at (i).id (),
-                                in_port->get_uuid ());
-                              last_index++;
-                              break;
-                            }
+                          auto * in_port =
+                            std::get<dsp::AudioPort *> (in_port_var);
+                          connect_ports (
+                            processor_audio_out_refs->at (i).id (),
+                            in_port->get_uuid ());
+                          connection_made = true;
+                          last_index++;
+                          break;
                         }
                     }
                 }
             }
-          else
+
+          // if no connection was made (plugin had no matching inputs), connect
+          // the track processor outputs directly to the plugin processor
+          if (!connection_made)
             {
-              // connect last plugin to this plugin
-              const auto connect_plugins = [&] (Plugin &src, Plugin &dest) {
-                // Get audio ports
-                auto src_audio_outs =
-                  src.get_output_port_span ()
-                    .get_elements_by_type<dsp::AudioPort> ();
-                auto dest_audio_ins =
-                  dest.get_input_port_span ()
-                    .get_elements_by_type<dsp::AudioPort> ();
-
-                const size_t num_src_outs =
-                  std::ranges::distance (src_audio_outs);
-                const size_t num_dest_ins =
-                  std::ranges::distance (dest_audio_ins);
-
-                // Handle audio connections
-                if (num_src_outs > 0 && num_dest_ins > 0)
-                  {
-                    if (num_src_outs == 1 && num_dest_ins == 1)
-                      {
-                        // 1:1 connection
-                        connect_ports (
-                          src_audio_outs.front ()->get_uuid (),
-                          dest_audio_ins.front ()->get_uuid ());
-                      }
-                    else if (num_src_outs == 1)
-                      {
-                        // 1:N connection - mono to stereo/multi
-                        for (auto * in_port : dest_audio_ins)
-                          {
-                            connect_ports (
-                              src_audio_outs.front ()->get_uuid (),
-                              in_port->get_uuid ());
-                          }
-                      }
-                    else if (num_dest_ins == 1)
-                      {
-                        // N:1 connection - stereo/multi to mono
-                        connect_ports (
-                          src_audio_outs.front ()->get_uuid (),
-                          dest_audio_ins.front ()->get_uuid ());
-                      }
-                    else
-                      {
-                        // N:N connection - connect min(N,M) ports
-                        for (
-                          const auto &[src_audio_out, dest_audio_in] :
-                          std::views::zip (src_audio_outs, dest_audio_ins))
-                          {
-                            connect_ports (
-                              src_audio_out->get_uuid (),
-                              dest_audio_in->get_uuid ());
-                          }
-                      }
-                  }
-
-                // Handle MIDI connections
-                auto src_midi_outs =
-                  src.get_output_port_span ()
-                    .get_elements_by_type<dsp::MidiPort> ();
-                auto dest_midi_ins =
-                  dest.get_input_port_span ()
-                    .get_elements_by_type<dsp::MidiPort> ();
-
-                if (!src_midi_outs.empty () && !dest_midi_ins.empty ())
-                  {
-                    // Connect first MIDI out to all MIDI ins
-                    auto * midi_out = src_midi_outs.front ();
-                    for (auto * midi_in : dest_midi_ins)
-                      {
-                        connect_ports (
-                          midi_out->get_uuid (), midi_in->get_uuid ());
-                      }
-                  }
-              };
-              connect_plugins (*last_plugin, *pl);
+              for (const auto &out_port_ref : track_processor_outputs)
+                {
+                  std::visit (
+                    [&] (auto &&out_port) {
+                      graph.get_nodes ()
+                        .find_node_for_processable (*out_port)
+                        ->connect_to (
+                          *graph.get_nodes ().find_node_for_processable (*pl));
+                    },
+                    out_port_ref.get_object ());
+                }
             }
         }
+      else // else if last processed plugin exists
+        {
+          // connect last plugin to this plugin
+          const auto connect_plugins =
+            [&] (plugins::Plugin &src, plugins::Plugin &dest) {
+              // Get audio ports
+              auto src_audio_outs =
+                dsp::PortSpan{ src.get_output_ports () }
+                  .get_elements_by_type<dsp::AudioPort> ();
+              auto dest_audio_ins =
+                dsp::PortSpan{ dest.get_input_ports () }
+                  .get_elements_by_type<dsp::AudioPort> ();
+
+              const size_t num_src_outs = std::ranges::distance (src_audio_outs);
+              const size_t num_dest_ins = std::ranges::distance (dest_audio_ins);
+
+              // Handle audio connections
+              if (num_src_outs > 0 && num_dest_ins > 0)
+                {
+                  if (num_src_outs == 1 && num_dest_ins == 1)
+                    {
+                      // 1:1 connection
+                      connect_ports (
+                        src_audio_outs.front ()->get_uuid (),
+                        dest_audio_ins.front ()->get_uuid ());
+                    }
+                  else if (num_src_outs == 1)
+                    {
+                      // 1:N connection - mono to stereo/multi
+                      for (auto * in_port : dest_audio_ins)
+                        {
+                          connect_ports (
+                            src_audio_outs.front ()->get_uuid (),
+                            in_port->get_uuid ());
+                        }
+                    }
+                  else if (num_dest_ins == 1)
+                    {
+                      // N:1 connection - stereo/multi to mono
+                      connect_ports (
+                        src_audio_outs.front ()->get_uuid (),
+                        dest_audio_ins.front ()->get_uuid ());
+                    }
+                  else
+                    {
+                      // N:N connection - connect min(N,M) ports
+                      for (
+                        const auto &[src_audio_out, dest_audio_in] :
+                        std::views::zip (src_audio_outs, dest_audio_ins))
+                        {
+                          connect_ports (
+                            src_audio_out->get_uuid (),
+                            dest_audio_in->get_uuid ());
+                        }
+                    }
+                }
+
+              // Handle MIDI connections
+              auto src_midi_outs =
+                dsp::PortSpan{ src.get_output_ports () }
+                  .get_elements_by_type<dsp::MidiPort> ();
+              auto dest_midi_ins =
+                dsp::PortSpan{ dest.get_input_ports () }
+                  .get_elements_by_type<dsp::MidiPort> ();
+
+              if (!src_midi_outs.empty () && !dest_midi_ins.empty ())
+                {
+                  // Connect first MIDI out to all MIDI ins
+                  auto * midi_out = src_midi_outs.front ();
+                  for (auto * midi_in : dest_midi_ins)
+                    {
+                      connect_ports (
+                        midi_out->get_uuid (), midi_in->get_uuid ());
+                    }
+                }
+            };
+          connect_plugins (*last_plugin, *pl);
+        }
+      last_plugin = pl;
     }
-  if (last_plugin == nullptr)
+
+  if (plugins.empty ())
     {
       // connect processor outs to channel prefader
       if (output_type == dsp::PortType::Audio)
@@ -255,6 +273,75 @@ ChannelSubgraphBuilder::add_connections (
               connect_ports (
                 processor_midi_out_ref->id (),
                 prefader.get_midi_in_port (0).get_uuid ());
+            }
+        }
+    }
+  else // else if there is at least 1 plugin
+    {
+      // connect plugin outputs to channel prefader
+      auto * last_pl = plugins.back ();
+      if (output_type == dsp::PortType::Audio)
+        {
+          auto prefader_audio_ins =
+            dsp::PortSpan{ ch.get_audio_pre_fader ().get_input_ports () }
+              .get_elements_by_type<dsp::AudioPort> ();
+          auto pl_audio_outs =
+            dsp::PortSpan{ last_pl->get_output_ports () }
+              .get_elements_by_type<dsp::AudioPort> ();
+
+          bool connections_made{};
+          for (
+            const auto &[pl_audio_out, prefader_audio_in] :
+            std::views::zip (pl_audio_outs, prefader_audio_ins))
+            {
+              connect_ports (
+                pl_audio_out->get_uuid (), prefader_audio_in->get_uuid ());
+              connections_made = true;
+            }
+
+          // if no compatible ports were connected, connect the plugin
+          // outputs directly to the prefader processor
+          if (!connections_made)
+            {
+              for (const auto &pl_audio_out : pl_audio_outs)
+                {
+                  graph.get_nodes ()
+                    .find_node_for_processable (ch.get_midi_pre_fader ())
+                    ->connect_to (*graph.get_nodes ().find_node_for_processable (
+                      *pl_audio_out));
+                }
+            }
+        }
+      else if (output_type == dsp::PortType::Midi)
+        {
+          auto prefader_midi_ins =
+            dsp::PortSpan{ ch.get_midi_pre_fader ().get_input_ports () }
+              .get_elements_by_type<dsp::MidiPort> ();
+          auto pl_midi_outs =
+            dsp::PortSpan{ last_pl->get_output_ports () }
+              .get_elements_by_type<dsp::MidiPort> ();
+
+          bool connections_made{};
+          for (
+            const auto &[pl_midi_out, prefader_midi_in] :
+            std::views::zip (pl_midi_outs, prefader_midi_ins))
+            {
+              connect_ports (
+                pl_midi_out->get_uuid (), prefader_midi_in->get_uuid ());
+              connections_made = true;
+            }
+
+          // if no compatible ports were connected, connect the plugin
+          // outputs directly to the prefader processor
+          if (!connections_made)
+            {
+              for (const auto &pl_midi_out : pl_midi_outs)
+                {
+                  graph.get_nodes ()
+                    .find_node_for_processable (ch.get_midi_pre_fader ())
+                    ->connect_to (*graph.get_nodes ().find_node_for_processable (
+                      *pl_midi_out));
+                }
             }
         }
     }

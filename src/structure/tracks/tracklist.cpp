@@ -154,8 +154,10 @@ Tracklist::disconnect_port (const dsp::Port::Uuid &port_id)
 }
 
 void
-Tracklist::disconnect_plugin (const Plugin::Uuid &plugin_id)
+Tracklist::disconnect_plugin (const plugins::Plugin::Uuid &plugin_id)
 {
+// TODO
+#if 0
   auto plugin_var = plugin_registry_->find_by_id_or_throw (plugin_id);
   std::visit (
     [&] (auto &&pl) {
@@ -184,6 +186,7 @@ Tracklist::disconnect_plugin (const Plugin::Uuid &plugin_id)
       z_debug ("finished disconnecting plugin {}", pl->get_name ());
     },
     plugin_var);
+#endif
 }
 
 void
@@ -191,7 +194,7 @@ Tracklist::disconnect_channel (Channel &channel)
 {
   z_debug ("disconnecting channel {}", channel.track_->get_name ());
   {
-    std::vector<Plugin *> plugins;
+    std::vector<plugins::Plugin *> plugins;
     channel.get_plugins (plugins);
     for (const auto &pl : plugins)
       {
@@ -338,10 +341,10 @@ Tracklist::print_port_connection (const dsp::PortConnection &conn) const
 
 void
 Tracklist::move_plugin_automation (
-  const Plugin::Uuid         &plugin_id,
-  const Track::Uuid          &prev_track_id,
-  const Track::Uuid          &track_id_to_move_to,
-  zrythm::plugins::PluginSlot new_slot)
+  const plugins::Plugin::Uuid &plugin_id,
+  const Track::Uuid           &prev_track_id,
+  const Track::Uuid           &track_id_to_move_to,
+  zrythm::plugins::PluginSlot  new_slot)
 {
   auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
   auto prev_track_var = track_registry_->find_by_id_or_throw (prev_track_id);
@@ -397,26 +400,11 @@ Tracklist::move_plugin_automation (
 }
 
 Channel *
-Tracklist::get_channel_for_plugin (const Plugin::Uuid &plugin_id)
+Tracklist::get_channel_for_plugin (const plugins::Plugin::Uuid &plugin_id)
 {
-  auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
-  return std::visit (
-    [&] (auto &&pl) {
-      assert (pl->track_id_.has_value ());
-      auto track_var = get_track (*pl->track_id_);
-      assert (track_var.has_value ());
-      return std::visit (
-        [] (auto &&track) -> Channel * {
-          using TrackT = base_type<decltype (track)>;
-          if constexpr (std::derived_from<TrackT, ChannelTrack>)
-            {
-              return track->get_channel ();
-            }
-          throw std::runtime_error ("Plugin not in a channel");
-        },
-        *track_var);
-    },
-    pl_var);
+  // auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
+  // TODO
+  z_return_val_if_reached (nullptr);
 }
 
 void
@@ -589,7 +577,7 @@ Tracklist::get_region_at_pos (
       region_var.get_object ());
   };
 
-  if (track)
+  if (track != nullptr)
     {
       return std::visit (
         [&] (auto &&track_derived) -> std::optional<ArrangerObjectPtrVariant> {
@@ -629,7 +617,7 @@ Tracklist::get_region_at_pos (
         },
         convert_to_variant<TrackPtrVariant> (track));
     }
-  if (at)
+  if (at != nullptr)
     {
       auto region_vars = at->get_children_vector ();
       auto it = std::ranges::find_if (region_vars, is_at_pos);
@@ -724,8 +712,6 @@ Tracklist::insert_track (
             }
         }
 
-      track->activate_all_plugins (true);
-
       if (recalc_graph)
         {
           ROUTER->recalc_graph (false);
@@ -755,7 +741,7 @@ Tracklist::get_chord_track () const
 
 struct PluginMoveData
 {
-  Plugin *                pl = nullptr;
+  plugins::Plugin *       pl = nullptr;
   OptionalTrackPtrVariant track_var;
   plugins::PluginSlot     slot;
 };
@@ -842,10 +828,10 @@ overwrite_plugin_response_cb (
 
 void
 Tracklist::move_plugin (
-  const Plugin::Uuid &plugin_id,
-  const Track::Uuid  &target_track_id,
-  plugins::PluginSlot slot,
-  bool                confirm_overwrite)
+  const plugins::Plugin::Uuid &plugin_id,
+  const Track::Uuid           &target_track_id,
+  plugins::PluginSlot          slot,
+  bool                         confirm_overwrite)
 {
   auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
   auto track_var = get_track (target_track_id);

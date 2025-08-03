@@ -141,12 +141,14 @@ TEST_F (ChannelSendTest, AudioProcessing)
   auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
   auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
 
-  // Fill input buffers
-  for (int i = 0; i < 512; i++)
-    {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 2.0f;
-    }
+  const auto fill_input_bufs = [&] () {
+    // Fill input buffers
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = 1.0f;
+        right_in.buf_[i] = 2.0f;
+      }
+  };
 
   // Test passthrough (gain = 1.0)
   audio_send_->amountParam ()->setBaseValue (
@@ -157,6 +159,7 @@ TEST_F (ChannelSendTest, AudioProcessing)
     .local_offset_ = 0,
     .nframes_ = 512
   };
+  fill_input_bufs ();
   audio_send_->process_block (time_nfo);
 
   for (int i = 0; i < 512; i++)
@@ -168,6 +171,7 @@ TEST_F (ChannelSendTest, AudioProcessing)
   // Test gain reduction (gain = 0.5)
   audio_send_->amountParam ()->setBaseValue (
     audio_send_->amountParam ()->range ().convertTo0To1 (0.5f));
+  fill_input_bufs ();
   audio_send_->process_block (time_nfo);
 
   for (int i = 0; i < 512; i++)
@@ -179,6 +183,7 @@ TEST_F (ChannelSendTest, AudioProcessing)
   // Test boost (gain = 2.0)
   audio_send_->amountParam ()->setBaseValue (
     audio_send_->amountParam ()->range ().convertTo0To1 (2.0f));
+  fill_input_bufs ();
   audio_send_->process_block (time_nfo);
 
   for (int i = 0; i < 512; i++)
@@ -348,6 +353,129 @@ TEST_F (ChannelSendTest, EdgeCases)
       EXPECT_NEAR (left_out.buf_[i], 0.0f, 1e-6);
       EXPECT_NEAR (right_out.buf_[i], 0.0f, 1e-6);
     }
+}
+
+TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
+{
+  audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
+  auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
+
+  // Set amount to 1.0 (unity gain)
+  audio_send_->amountParam ()->setBaseValue (
+    audio_send_->amountParam ()->range ().convertTo0To1 (1.0f));
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  const auto fill_input_bufs = [&] (float left_val, float right_val) {
+    // Fill with test data
+    for (int i = 0; i < 512; i++)
+      {
+        left_in.buf_[i] = left_val;
+        right_in.buf_[i] = right_val;
+      }
+  };
+
+  // First process call
+  fill_input_bufs (1.f, 2.f);
+  audio_send_->process_block (time_nfo);
+
+  // Verify output contains expected values
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_FLOAT_EQ (left_out.buf_[i], 1.0f);
+      EXPECT_FLOAT_EQ (right_out.buf_[i], 2.0f);
+    }
+
+  // Second process call with same input data
+  fill_input_bufs (1.f, 2.f);
+  audio_send_->process_block (time_nfo);
+
+  // Verify output still contains expected values (no accumulation)
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_FLOAT_EQ (left_out.buf_[i], 1.0f);
+      EXPECT_FLOAT_EQ (right_out.buf_[i], 2.0f);
+    }
+
+  // Third process call with different input data
+  fill_input_bufs (0.5f, 1.5f);
+  audio_send_->process_block (time_nfo);
+
+  // Verify output contains new expected values
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_FLOAT_EQ (left_out.buf_[i], 0.5f);
+      EXPECT_FLOAT_EQ (right_out.buf_[i], 1.5f);
+    }
+
+  // Fourth process call with zero input
+  fill_input_bufs (0.f, 0.f);
+  audio_send_->process_block (time_nfo);
+
+  // Verify output is zero (no residual from previous calls)
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_FLOAT_EQ (left_out.buf_[i], 0.0f);
+      EXPECT_FLOAT_EQ (right_out.buf_[i], 0.0f);
+    }
+}
+
+TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
+{
+  midi_send_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto &midi_in = midi_send_->get_midi_in_port ();
+  auto &midi_out = midi_send_->get_midi_out_port ();
+
+  // Set amount parameter
+  midi_send_->amountParam ()->setBaseValue (0.8f);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  // Add MIDI events to input
+  const auto add_events = [&] () {
+    midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
+    midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
+    midi_in.midi_events_.active_events_.add_note_off (1, 60, 100);
+  };
+
+  // First process call
+  add_events ();
+  midi_send_->process_block (time_nfo);
+
+  // Verify MIDI events are copied
+  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
+
+  // Clear output events
+  midi_out.midi_events_.queued_events_.clear ();
+
+  // Second process call with same input
+  add_events ();
+  midi_send_->process_block (time_nfo);
+
+  // Verify MIDI events are copied again (no accumulation)
+  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
+
+  // Third process call with no new MIDI events
+  midi_in.midi_events_.active_events_.clear ();
+  midi_out.midi_events_.queued_events_.clear ();
+
+  midi_send_->process_block (time_nfo);
+
+  // Verify no events are output when input is empty
+  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 0);
 }
 
 } // namespace zrythm::structure::tracks

@@ -45,9 +45,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/ui.h"
-#include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_track.h"
 #include "structure/tracks/tracklist.h"
@@ -76,11 +74,27 @@ AudioEngine::AudioEngine (
             .param_registry_ = *param_registry_ })),
       audio_callback_ (
         std::make_unique<AudioCallback> (
-          [this] (nframes_t frames_to_process) {
+          [this] (
+            const float * const * inputChannelData,
+            int                   numInputChannels,
+            float * const *       outputChannelData,
+            int                   numOutputChannels,
+            int                   numSamples) {
             dsp::PlayheadProcessingGuard guard{
               this->project_->transport_->playhead_
             };
-            this->process (frames_to_process);
+            this->process (numSamples);
+            const auto &[monitor_left, monitor_right] = get_monitor_out_ports ();
+            if (numOutputChannels > 0)
+              {
+                utils::float_ranges::copy (
+                  outputChannelData[0], monitor_left.buf_.data (), numSamples);
+              }
+            if (numOutputChannels > 1)
+              {
+                utils::float_ranges::copy (
+                  outputChannelData[1], monitor_right.buf_.data (), numSamples);
+              }
           },
           [] (juce::AudioIODevice * _) {},
           [] () {}))
@@ -491,7 +505,7 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
     "Block length changed to {}. reallocating buffers...", get_block_length ());
 
   /* TODO make function that fetches all plugins in the project */
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
+  std::vector<zrythm::plugins::Plugin *> plugins;
   TRACKLIST->get_track_span ().get_plugins (plugins);
 // TODO: needed?
 #if 0
@@ -522,7 +536,7 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
 
   /* clear the monitor output (used by rtaudio) */
   iterate_tuple (
-    [&] (auto &port) { port.clear_buffer (get_block_length ()); },
+    [&] (auto &port) { port.clear_buffer (0, get_block_length ()); },
     get_monitor_out_ports ());
   // midi_clock_out_->clear_buffer (get_block_length ());
 
@@ -633,7 +647,7 @@ AudioEngine::process_prepare (
 
   /* reset all buffers */
   // control_room_->monitor_fader_->clear_buffers (block_length);
-  midi_in_->clear_buffer (block_length);
+  midi_in_->clear_buffer (0, block_length);
 
   // TODO
   // sample_processor_->prepare_process (nframes);

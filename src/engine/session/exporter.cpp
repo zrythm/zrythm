@@ -149,7 +149,8 @@ Exporter::export_audio (Settings &info)
       throw ZrythmException ("Failed to create parent directories");
     }
 
-  auto file_output_stream = new juce::FileOutputStream (outputFile);
+  auto file_output_stream =
+    std::make_unique<juce::FileOutputStream> (outputFile);
   if (!file_output_stream->openedOk ())
     {
       throw ZrythmException ("Failed to open output file");
@@ -166,8 +167,9 @@ Exporter::export_audio (Settings &info)
   metadata.set ("software", PROGRAM_NAME);
 
   juce::AudioFormatWriter * writer = format->createWriterFor (
-    file_output_stream, AUDIO_ENGINE->get_sample_rate (), EXPORT_CHANNELS,
-    utils::audio::bit_depth_enum_to_int (info.depth_), metadata, 0);
+    file_output_stream.release (), AUDIO_ENGINE->get_sample_rate (),
+    EXPORT_CHANNELS, utils::audio::bit_depth_enum_to_int (info.depth_),
+    metadata, 0);
   if (writer == nullptr)
     {
       throw ZrythmException ("Failed to create audio writer");
@@ -496,8 +498,8 @@ Exporter::prepare_tracks_for_export (
   /* deactivate and activate all plugins to make them reset their states */
   /* TODO this doesn't reset the plugin state as expected, so sending note off
    * is needed */
-  TRACKLIST->get_track_span ().activate_all_plugins (false);
-  TRACKLIST->get_track_span ().activate_all_plugins (true);
+  // TRACKLIST->get_track_span ().activate_all_plugins (false);
+  // TRACKLIST->get_track_span ().activate_all_plugins (true);
 
   connections_ =
     std::make_unique<dsp::PortConnectionsManager::ConnectionsVector> ();

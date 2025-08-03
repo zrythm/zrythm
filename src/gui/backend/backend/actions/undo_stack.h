@@ -101,8 +101,7 @@ public:
   /**
    * Returns the plugins referred to in the undo stack.
    */
-  void
-  get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const;
+  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const;
 
   friend void init_from (
     UndoStack             &obj,

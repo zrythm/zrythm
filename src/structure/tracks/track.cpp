@@ -723,14 +723,6 @@ Track::set_caches (CacheType types)
       set_playback_caches ();
     }
 
-  if (ENUM_BITSET_TEST (types, CacheType::PluginPorts))
-    {
-      if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
-        {
-          channel_track->get_channel ()->set_caches ();
-        }
-    }
-
   if (
     ENUM_BITSET_TEST (types, CacheType::AutomationLaneRecordModes)
     || ENUM_BITSET_TEST (types, CacheType::AutomationLanePorts))

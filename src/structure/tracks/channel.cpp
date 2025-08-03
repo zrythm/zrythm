@@ -14,7 +14,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "plugins/plugin_slot.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/automation_tracklist.h"
@@ -50,7 +50,7 @@ AudioPreFader::AudioPreFader (
 
 Channel::Channel (
   TrackRegistry                   &track_registry,
-  PluginRegistry                  &plugin_registry,
+  plugins::PluginRegistry         &plugin_registry,
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry,
   OptionalRef<ChannelTrack>        track)
@@ -157,13 +157,6 @@ void
 Channel::set_track_ptr (ChannelTrack &track)
 {
   track_ = &track;
-
-  std::vector<Channel::Plugin *> pls;
-  get_plugins (pls);
-  for (auto * pl : pls)
-    {
-      pl->set_track (track.get_uuid ());
-    }
 }
 
 utils::Utf8String
@@ -194,26 +187,13 @@ Channel::prepare_process (nframes_t nframes)
 
   if (out_type == PortType::Audio)
     {
-      get_stereo_out_ports ().first.clear_buffer (nframes);
-      get_stereo_out_ports ().second.clear_buffer (nframes);
+      get_stereo_out_ports ().first.clear_buffer (0, nframes);
+      get_stereo_out_ports ().second.clear_buffer (0, nframes);
     }
   else if (out_type == PortType::Midi)
     {
-      get_midi_out_port ().clear_buffer (nframes);
+      get_midi_out_port ().clear_buffer (0, nframes);
     }
-
-  auto process_plugin = [&] (auto &&pl_id) {
-    if (pl_id.has_value ())
-      {
-        std::visit (
-          [&] (auto &&plugin) { plugin->prepare_process (nframes); },
-          pl_id->get_object ());
-      }
-  };
-
-  std::ranges::for_each (inserts_, process_plugin);
-  std::ranges::for_each (midi_fx_, process_plugin);
-  process_plugin (instrument_);
 }
 
 void
@@ -228,27 +208,6 @@ Channel::init_loaded ()
     {
       throw ZrythmException ("track not found");
     }
-
-  auto init_plugin = [&] (auto &plugin_id, PluginSlot slot) {
-    if (plugin_id.has_value ())
-      {
-        auto plugin_var = plugin_id->get_object ();
-        std::visit (
-          [&] (auto &&plugin) {
-            plugin->set_track (track_->get_uuid ());
-            plugin->init_loaded ();
-          },
-          plugin_var);
-      }
-  };
-
-  /* init plugins */
-  for (int i = 0; i < (int) STRIP_SIZE; i++)
-    {
-      init_plugin (inserts_.at (i), PluginSlot (PluginSlotType::Insert, i));
-      init_plugin (midi_fx_.at (i), PluginSlot (PluginSlotType::MidiFx, i));
-    }
-  init_plugin (instrument_, PluginSlot (PluginSlotType::Instrument));
 }
 
 #if 0
@@ -548,13 +507,13 @@ Channel::disconnect_port_hardware_inputs (dsp::Port &port)
 
 Channel::PluginPtrVariant
 Channel::add_plugin (
-  PluginUuidReference plugin_id,
-  PluginSlot          slot,
-  bool                confirm,
-  bool                moving_plugin,
-  bool                gen_automatables,
-  bool                recalc_graph,
-  bool                pub_events)
+  plugins::PluginUuidReference plugin_id,
+  PluginSlot                   slot,
+  bool                         confirm,
+  bool                         moving_plugin,
+  bool                         gen_automatables,
+  bool                         recalc_graph,
+  bool                         pub_events)
 {
   bool prev_enabled = track_->enabled ();
   track_->set_enabled (false);
@@ -599,8 +558,6 @@ Channel::add_plugin (
           midi_fx_[slot_index] = plugin_id;
         }
 
-      plugin->set_track (track_->get_uuid ());
-
       track_->set_enabled (prev_enabled);
 
       if (gen_automatables)
@@ -624,7 +581,7 @@ Channel::add_plugin (
   return plugin_var;
 }
 
-std::optional<gui::old_dsp::plugins::PluginPtrVariant>
+std::optional<plugins::PluginPtrVariant>
 Channel::get_plugin_at_slot (PluginSlot slot) const
 {
   auto slot_type =
@@ -633,7 +590,7 @@ Channel::get_plugin_at_slot (PluginSlot slot) const
       : slot.get_slot_type_only ();
   auto slot_index =
     slot.has_slot_index () ? slot.get_slot_with_index ().second : -1;
-  auto existing_pl_id = [&] () -> std::optional<PluginUuidReference> {
+  auto existing_pl_id = [&] () -> std::optional<plugins::PluginUuidReference> {
     switch (slot_type)
       {
       case PluginSlotType::Insert:
@@ -664,8 +621,8 @@ Channel::get_plugin_slot (const PluginUuid &plugin_id) const -> PluginSlot
   {
     // note: for some reason `it` is not a pointer on msvc so `const auto * it`
     // won't work
-    const auto it =
-      std::ranges::find (inserts_, plugin_id, &PluginUuidReference::id);
+    const auto it = std::ranges::find (
+      inserts_, plugin_id, &plugins::PluginUuidReference::id);
     if (it != inserts_.end ())
       {
         return PluginSlot{
@@ -675,8 +632,8 @@ Channel::get_plugin_slot (const PluginUuid &plugin_id) const -> PluginSlot
       }
   }
   {
-    const auto it =
-      std::ranges::find (midi_fx_, plugin_id, &PluginUuidReference::id);
+    const auto it = std::ranges::find (
+      midi_fx_, plugin_id, &plugins::PluginUuidReference::id);
     if (it != midi_fx_.end ())
       {
         return PluginSlot{
@@ -689,6 +646,8 @@ Channel::get_plugin_slot (const PluginUuid &plugin_id) const -> PluginSlot
   throw std::runtime_error ("Plugin not found in channel");
 }
 
+// TODO
+#if 0
 struct PluginImportData
 {
   Channel *                                 ch{};
@@ -730,7 +689,7 @@ struct PluginImportData
 
         if (
           Track::is_plugin_descriptor_valid_for_slot_type (
-            *this->pl->setting_->get_descriptor (), slot_type,
+            *this->pl->configuration_->get_descriptor (), slot_type,
             this->ch->track_->get_type ()))
           {
             try
@@ -800,7 +759,7 @@ struct PluginImportData
     if (!plugin_valid)
       {
         const auto &pl_descr =
-          this->descr ? *this->descr : *this->pl->setting_->descr_;
+          this->descr ? *this->descr : *this->pl->configuration_->descr_;
         ZrythmException e (format_qstr (
           QObject::tr ("Channel::PluginBase {} cannot be added to this slot"),
           pl_descr.name_));
@@ -808,6 +767,7 @@ struct PluginImportData
       }
   }
 };
+#endif
 
 #if 0
 static void
@@ -905,6 +865,8 @@ Channel::handle_plugin_import (
 void
 Channel::select_all (PluginSlotType type, bool select)
 {
+// TODO
+#if 0
   TRACKLIST->get_track_span ().deselect_all_plugins ();
   if (!select)
     return;
@@ -935,45 +897,36 @@ Channel::select_all (PluginSlotType type, bool select)
       z_warning ("not implemented");
       break;
     }
-}
-
-void
-Channel::set_caches ()
-{
-  std::vector<Channel::Plugin *> pls;
-  Channel::get_plugins (pls);
-
-  for (auto pl : pls)
-    {
-      pl->set_caches ();
-    }
+#endif
 }
 
 void
 Channel::get_plugins (std::vector<Channel::Plugin *> &pls)
 {
-  std::vector<PluginUuid> uuids;
+  std::vector<plugins::PluginUuidReference> refs;
   for (auto &insert : inserts_)
     {
       if (insert)
         {
-          uuids.push_back (insert->id ());
+          refs.push_back (*insert);
         }
     }
   for (auto &midi_fx : midi_fx_)
     {
       if (midi_fx)
         {
-          uuids.push_back (midi_fx->id ());
+          refs.push_back (*midi_fx);
         }
     }
   if (instrument_)
     {
-      uuids.push_back (instrument_->id ());
+      refs.push_back (*instrument_);
     }
 
-  std::ranges::transform (uuids, std::back_inserter (pls), [&] (const auto &uuid) {
-    return Plugin::from_variant (*get_plugin_from_id (uuid));
+  std::ranges::transform (refs, std::back_inserter (pls), [&] (const auto &ref) {
+    return std::visit (
+      [] (const auto &pl) -> plugins::Plugin * { return pl; },
+      ref.get_object ());
   });
 }
 

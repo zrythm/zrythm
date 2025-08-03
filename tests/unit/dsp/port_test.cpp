@@ -17,8 +17,8 @@ public:
   {
   }
 
-  void clear_buffer (std::size_t) override { }
-  void process_block (EngineProcessTimeInfo) override { }
+  MOCK_METHOD (void, clear_buffer, (std::size_t, std::size_t), (override));
+  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
 };
 
 class PortTest : public ::testing::Test

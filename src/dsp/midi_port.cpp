@@ -34,10 +34,12 @@ MidiPort::release_resources ()
 }
 
 void
-MidiPort::clear_buffer (std::size_t block_length)
+MidiPort::clear_buffer (std::size_t offset, std::size_t nframes)
 {
-  midi_events_.active_events_.clear ();
-  // midi_events_.queued_events_.clear ();
+  midi_events_.active_events_.remove_if (
+    [offset, nframes] (const auto &ev) -> bool {
+      return ev.time_ >= offset && ev.time_ < (offset + nframes);
+    });
 }
 
 void

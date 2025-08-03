@@ -32,9 +32,9 @@ public:
     utils::ObjectCloneType clone_type);
 
   void init_loaded (
-    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    dsp::PortRegistry                     &port_registry,
-    dsp::ProcessorParameterRegistry       &param_registry) override;
+    plugins::PluginRegistry         &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry) override;
 
   void temporary_virtual_method_hack () const override { }
 

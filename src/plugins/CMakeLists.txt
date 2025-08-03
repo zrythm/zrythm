@@ -6,8 +6,15 @@ qt_add_library(zrythm_plugins_lib STATIC)
 
 target_sources(zrythm_plugins_lib
   PRIVATE
+    # carla_native_plugin.h
+    # carla_native_plugin.cpp
+    juce_plugin.h
+    juce_plugin.cpp
     out_of_process_scanner.h
     out_of_process_scanner.cpp
+    plugin.h
+    plugin.cpp
+    plugin_all.h
     plugin_configuration.h
     plugin_configuration.cpp
     plugin_descriptor.h

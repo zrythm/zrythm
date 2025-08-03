@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "gui/backend/backend/settings_manager.h"
-#include "gui/dsp/plugin_all.h"
+#include "plugins/plugin_all.h"
 #include "structure/tracks/track_all.h"
 
 /**
@@ -26,14 +26,25 @@ class PluginFactory : public QObject
 public:
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
+  struct CommonFactoryDependencies
+  {
+    plugins::PluginRegistry                      &plugin_registry_;
+    dsp::ProcessorBase::ProcessorBaseDependencies processor_base_dependencies_;
+    plugins::Plugin::StateDirectoryParentPathProvider state_dir_path_provider_;
+    plugins::JucePlugin::CreatePluginInstanceAsyncFunc
+                                    create_plugin_instance_async_func_;
+    std::function<sample_rate_t ()> sample_rate_provider_;
+    std::function<nframes_t ()>     buffer_size_provider_;
+    plugins::JucePlugin::TopLevelWindowProvider top_level_window_provider_;
+  };
+
   PluginFactory () = delete;
   PluginFactory (
-    PluginRegistry                               &registry,
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    gui::SettingsManager                         &settings_mgr,
-    QObject *                                     parent = nullptr)
-      : QObject (parent), plugin_registry_ (registry),
-        dependencies_ (dependencies), settings_manager_ (settings_mgr)
+    CommonFactoryDependencies dependencies,
+    gui::SettingsManager     &settings_mgr,
+    QObject *                 parent = nullptr)
+      : QObject (parent), dependencies_ (std::move (dependencies)),
+        settings_manager_ (settings_mgr)
   {
   }
 
@@ -44,10 +55,8 @@ public:
     friend class PluginFactory;
 
   private:
-    explicit Builder (
-      PluginRegistry                               &registry,
-      dsp::ProcessorBase::ProcessorBaseDependencies dependencies)
-        : registry_ (registry), dependencies_ (dependencies)
+    explicit Builder (CommonFactoryDependencies dependencies)
+        : dependencies_ (std::move (dependencies))
     {
     }
 
@@ -67,8 +76,15 @@ public:
     auto build ()
     {
       auto obj_ref = [&] () {
-        auto ref = registry_.create_object<PluginT> (dependencies_);
-        ref.template get_object_as<PluginT> ()->set_setting (*setting_);
+        plugins::PluginUuidReference ref =
+          dependencies_.plugin_registry_.create_object<PluginT> (
+            dependencies_.processor_base_dependencies_,
+            dependencies_.state_dir_path_provider_,
+            dependencies_.create_plugin_instance_async_func_,
+            dependencies_.sample_rate_provider_,
+            dependencies_.buffer_size_provider_,
+            dependencies_.top_level_window_provider_);
+        ref.template get_object_as<PluginT> ()->set_configuration (*setting_);
         return std::move (ref);
       }();
 
@@ -78,29 +94,29 @@ public:
     }
 
   private:
-    PluginRegistry                               &registry_;
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;
-    OptionalRef<gui::SettingsManager>             settings_manager_;
-    OptionalRef<const PluginConfiguration>        setting_;
+    CommonFactoryDependencies              dependencies_;
+    OptionalRef<gui::SettingsManager>      settings_manager_;
+    OptionalRef<const PluginConfiguration> setting_;
   };
 
   template <typename PluginT> auto get_builder () const
   {
     auto builder =
-      Builder<PluginT> (plugin_registry_, dependencies_)
-        .with_settings_manager (settings_manager_);
+      Builder<PluginT> (dependencies_).with_settings_manager (settings_manager_);
     return builder;
   }
 
 public:
-  PluginUuidReference
+  plugins::PluginUuidReference
   create_plugin_from_setting (const PluginConfiguration &setting) const
   {
     auto obj_ref =
-      get_builder<CarlaNativePlugin> ().with_setting (setting).build ();
+      get_builder<plugins::JucePlugin> ().with_setting (setting).build ();
     return obj_ref;
   }
 
+// TODO
+#if 0
   template <typename PluginT>
   auto clone_new_object_identity (const PluginT &other) const
   {
@@ -116,9 +132,9 @@ public:
       other, &owner, utils::ObjectCloneType::Snapshot, plugin_registry_);
     return new_obj;
   }
+#endif
 
 private:
-  PluginRegistry                               &plugin_registry_;
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;
-  gui::SettingsManager                         &settings_manager_;
+  CommonFactoryDependencies dependencies_;
+  gui::SettingsManager     &settings_manager_;
 };

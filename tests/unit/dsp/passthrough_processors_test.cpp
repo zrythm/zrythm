@@ -188,8 +188,8 @@ TEST_F (PassthroughProcessorsTest, PortInitialization)
 
   EXPECT_EQ (audio_in_l.flow (), PortFlow::Input);
   EXPECT_EQ (audio_out_l.flow (), PortFlow::Output);
-  EXPECT_EQ (audio_in_l.get_label (), u8"Stereo Passthrough In L");
-  EXPECT_EQ (audio_out_l.get_label (), u8"Stereo Passthrough Out L");
+  EXPECT_EQ (audio_in_l.get_label (), u8"Audio Passthrough In 1");
+  EXPECT_EQ (audio_out_l.get_label (), u8"Audio Passthrough Out 1");
 }
 
 TEST_F (PassthroughProcessorsTest, ZeroFramesProcessing)

@@ -52,40 +52,6 @@ InstrumentTrack::initialize ()
   return true;
 }
 
-Plugin *
-InstrumentTrack::get_instrument ()
-{
-  auto plugin = channel_->get_instrument ();
-  z_return_val_if_fail (plugin, nullptr);
-  return Plugin::from_variant (*plugin);
-}
-
-const Plugin *
-InstrumentTrack::get_instrument () const
-{
-  auto plugin = channel_->get_instrument ();
-  z_return_val_if_fail (plugin, nullptr);
-  return Plugin::from_variant (*plugin);
-}
-
-bool
-InstrumentTrack::is_plugin_visible () const
-{
-  const auto &plugin = get_instrument ();
-  z_return_val_if_fail (plugin, false);
-  return plugin->visible_;
-}
-
-void
-InstrumentTrack::toggle_plugin_visible ()
-{
-  zrythm::gui::old_dsp::plugins::Plugin * plugin = get_instrument ();
-  z_return_if_fail (plugin);
-  plugin->visible_ = !plugin->visible_;
-
-  // EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
-}
-
 void
 init_from (
   InstrumentTrack       &obj,

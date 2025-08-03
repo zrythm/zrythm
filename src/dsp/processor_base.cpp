@@ -52,6 +52,9 @@ ProcessorBase::prepare_for_processing (
   sample_rate_t sample_rate,
   nframes_t     max_block_length)
 {
+  sample_rate_ = sample_rate;
+  max_block_length_ = max_block_length;
+
   const auto port_visitor = [&] (auto &&port) {
     port->prepare_for_processing (sample_rate, max_block_length);
   };
@@ -79,11 +82,37 @@ ProcessorBase::release_resources ()
     {
       std::visit (port_visitor, out_ref.get_object ());
     }
+
+  sample_rate_ = 0;
+  max_block_length_ = 0;
 }
 
 void
 ProcessorBase::process_block (EngineProcessTimeInfo time_nfo)
 {
+  // correct invalid time info
+  if (time_nfo.local_offset_ + time_nfo.nframes_ > max_block_length_)
+    [[unlikely]]
+    {
+      auto local_offset = time_nfo.local_offset_;
+      auto nframes = time_nfo.nframes_;
+      if (local_offset >= max_block_length_)
+        {
+          local_offset = 0;
+          nframes = 0;
+        }
+      else
+        nframes = max_block_length_ - local_offset;
+
+      time_nfo.local_offset_ = local_offset;
+      time_nfo.g_start_frame_w_offset_ = time_nfo.g_start_frame_ + local_offset;
+      time_nfo.nframes_ = nframes;
+
+      z_warning (
+        "Invalid time info provided - correction applied for {}",
+        get_node_name ());
+    }
+
   // process all parameters first
   for (const auto &param_ref : params_)
     {
@@ -93,6 +122,16 @@ ProcessorBase::process_block (EngineProcessTimeInfo time_nfo)
 
   // do processor logic
   custom_process_block (time_nfo);
+
+  // clear input ports for next cycle
+  for (const auto &in_port_ref : input_ports_)
+    {
+      std::visit (
+        [&] (auto &&in_port) {
+          in_port->clear_buffer (time_nfo.local_offset_, time_nfo.nframes_);
+        },
+        in_port_ref.get_object ());
+    }
 }
 
 void
@@ -128,11 +167,10 @@ ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo)
     const auto &[in_port, out_port] :
     std::views::zip (midi_in_ports, midi_out_ports))
     {
-      out_port->midi_events_.active_events_.clear ();
+      out_port->clear_buffer (time_nfo.local_offset_, time_nfo.nframes_);
       out_port->midi_events_.queued_events_.append (
         in_port->midi_events_.active_events_, time_nfo.local_offset_,
         time_nfo.nframes_);
-      in_port->midi_events_.active_events_.clear ();
     }
   for (
     const auto &[in_port, out_port] :

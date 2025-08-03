@@ -34,7 +34,7 @@ public:
 
   void release_resources () override;
 
-  void clear_buffer (std::size_t block_length) override;
+  void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
   friend void init_from (
     MidiPort              &obj,

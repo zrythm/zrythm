@@ -184,9 +184,6 @@ TEST_P (PluginScannerTest, SinglePluginScan)
 
   finishedSpy.wait (1000);
 
-  // wait a bit more for scan worker thread to be destroyed
-  QTest::qWait (50);
-
   EXPECT_EQ (finishedSpy.count (), 1);
   if (test_with_plugin)
     {

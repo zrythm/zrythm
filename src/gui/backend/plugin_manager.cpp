@@ -29,6 +29,7 @@
 
 #include "zrythm-config.h"
 
+#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -77,53 +78,24 @@ void
 PluginManager::createPluginInstance (
   const zrythm::plugins::PluginDescriptor * descr) const
 {
-  // FIXME: this is temporary test code
+  // FIXME: this is temporary test code that adds the plugin to the master's
+  // first index slot
   z_debug ("creating plugin instance for: {}", descr->getName ());
-  auto         juce_desc = descr->to_juce_description ();
-  juce::String err;
-  auto         plugin_instance = format_manager_->createPluginInstance (
-    *juce_desc, AUDIO_ENGINE->get_sample_rate (),
-    AUDIO_ENGINE->get_block_length (), err);
-  if (!plugin_instance)
-    {
-      z_error ("Failed to create plugin instance: {}", err);
-      return;
-    }
-  juce::AudioProcessorEditor * editor{};
-  if (plugin_instance->hasEditor ())
-    {
-      editor = plugin_instance->createEditorIfNeeded ();
-    }
-  else
-    {
-      editor = new juce::GenericAudioProcessorEditor (*plugin_instance);
-    }
-  editor->setVisible (true); // Ensure visibility
-  auto * window = new juce::DocumentWindow (
-    plugin_instance->getName (), juce::Colours::cadetblue,
-    juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton);
-  window->setAlwaysOnTop (true); // Optional: keep on top
-  window->setUsingNativeTitleBar (true);
-  window->setContentOwned (editor, true);
-  window->centreWithSize (
-    editor->getWidth (), editor->getHeight ()); // Center on screen
-  window->setResizable (true, true);
-  window->addToDesktop ();
-  window->setVisible (true);
-  window->toFront (true);
-
-  // schedule processing to be called every 10ms
-  QTimer * timer = new QTimer ();
-  timer->setInterval (10);
-  auto instance_ptr = plugin_instance.release ();
-  QObject::connect (timer, &QTimer::timeout, timer, [instance_ptr] () {
-    juce::AudioSampleBuffer buf;
-    buf.setSize (2, AUDIO_ENGINE->get_block_length ());
-    juce::MidiBuffer midi_buf;
-    // z_debug ("processing block");
-    instance_ptr->processBlock (buf, midi_buf);
-  });
-  timer->start ();
+  auto juce_desc = descr->to_juce_description ();
+  auto config = PluginConfiguration::create_new_for_descriptor (*descr);
+  auto plugin_ref =
+    PROJECT->getPluginFactory ()->create_plugin_from_setting (*config);
+  P_MASTER_TRACK->channel_->add_plugin (
+    plugin_ref,
+    zrythm::plugins::PluginSlot (zrythm::plugins::PluginSlotType::Insert, 0),
+    false, false, true, false, true);
+  auto * pl = plugin_ref.get_object_as<zrythm::plugins::JucePlugin> ();
+  QObject::connect (
+    pl, &zrythm::plugins::Plugin::instantiationFinished, pl, [pl] () {
+      z_debug ("instantiation done");
+      ROUTER->recalc_graph (false);
+      pl->setUiVisible (true);
+    });
 }
 
 void

@@ -32,7 +32,7 @@ public:
 
   [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  void clear_buffer (std::size_t block_length) override;
+  void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
   friend void
   init_from (CVPort &obj, const CVPort &other, utils::ObjectCloneType clone_type);

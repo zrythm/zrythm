@@ -12,9 +12,9 @@ CVPort::CVPort (utils::Utf8String label, PortFlow flow)
 }
 
 void
-CVPort::clear_buffer (std::size_t block_length)
+CVPort::clear_buffer (std::size_t offset, std::size_t nframes)
 {
-  utils::float_ranges::fill (buf_.data (), 0.f, block_length);
+  utils::float_ranges::fill (&buf_[offset], 0.f, nframes);
 }
 
 void

@@ -83,7 +83,7 @@ public:
   /**
    * Clears the port buffer.
    */
-  virtual void clear_buffer (std::size_t block_length) = 0;
+  virtual void clear_buffer (std::size_t offset, std::size_t nframes) = 0;
 
   /**
    * Gets a full designation of the port in the format "Track/Port" or

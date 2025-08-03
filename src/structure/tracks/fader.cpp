@@ -149,7 +149,7 @@ Fader::Fader (
 
         /* stereo in */
         auto stereo_in_ports = dsp::StereoPorts::create_stereo_ports (
-          dependencies_.port_registry_, true, name, sym);
+          dependencies.port_registry_, true, name, sym);
         add_input_port (stereo_in_ports.first);
         add_input_port (stereo_in_ports.second);
       }
@@ -163,7 +163,7 @@ Fader::Fader (
         {
           /* stereo out */
           auto stereo_out_ports = dsp::StereoPorts::create_stereo_ports (
-            dependencies_.port_registry_, false, name, sym);
+            dependencies.port_registry_, false, name, sym);
           add_output_port (stereo_out_ports.first);
           add_output_port (stereo_out_ports.second);
         }
@@ -178,7 +178,7 @@ Fader::Fader (
         name =
           utils::Utf8String::from_qstring (QObject::tr ("Ch MIDI Fader in"));
         sym = u8"ch_midi_fader_in";
-        add_input_port (dependencies_.port_registry_.create_object<dsp::MidiPort> (
+        add_input_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
           name, dsp::PortFlow::Input));
         auto &midi_in_port = get_midi_in_port ();
         midi_in_port.set_symbol (sym);
@@ -191,9 +191,8 @@ Fader::Fader (
         name =
           utils::Utf8String::from_qstring (QObject::tr ("Ch MIDI Fader out"));
         sym = u8"ch_midi_fader_out";
-        add_output_port (
-          dependencies_.port_registry_.create_object<dsp::MidiPort> (
-            name, dsp::PortFlow::Output));
+        add_output_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
+          name, dsp::PortFlow::Output));
         auto &midi_out_port = get_midi_out_port ();
         midi_out_port.set_symbol (sym);
       }
@@ -374,7 +373,7 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo)
             &stereo_out.second.buf_[time_nfo.local_offset_], -2.f, 2.f,
             time_nfo.nframes_);
         }
-    } /* fi monitor/audio fader */
+    } // endif is_audio()
   else if (is_midi ())
     {
       if (!effectively_muted ())

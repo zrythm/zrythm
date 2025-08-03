@@ -205,6 +205,10 @@ private:
 
   mutable QMutex currently_scanning_plugin_mutex_;
   QString        currently_scanning_plugin_;
+
+  // Temporaries
+  utils::QObjectUniquePtr<QThread>                 scan_thread_;
+  utils::QObjectUniquePtr<scanner_private::Worker> worker_;
 };
 
 } // namespace zrythm::plugins

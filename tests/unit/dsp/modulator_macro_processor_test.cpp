@@ -35,8 +35,7 @@ protected:
     mod_source = mod_source_ref->get_object_as<CVPort> ();
 
     // Prepare for processing
-    cv_in->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
-    cv_out->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+    macro_processor->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
     mod_source->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
     macro_param->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
 

@@ -17,6 +17,9 @@ namespace zrythm::dsp
 
 /**
  * @brief A base class for processors in the DSP graph.
+ *
+ * @note Custom connections to processors should only be made on their output
+ * ports (because input ports are clared after processing processors).
  */
 class ProcessorBase : public dsp::graph::IProcessable
 {
@@ -85,6 +88,8 @@ protected:
   {
   }
 
+  auto dependencies () const { return dependencies_; }
+
 private:
   static constexpr auto kProcessorNameKey = "processorName"sv;
   static constexpr auto kInputPortsKey = "inputPorts"sv;
@@ -125,12 +130,16 @@ private:
       }
   }
 
-protected:
+private:
   ProcessorBaseDependencies                         dependencies_;
   utils::Utf8String                                 name_;
   std::vector<dsp::PortUuidReference>               input_ports_;
   std::vector<dsp::PortUuidReference>               output_ports_;
   std::vector<dsp::ProcessorParameterUuidReference> params_;
+
+  // Caches
+  sample_rate_t sample_rate_{};
+  nframes_t     max_block_length_{};
 };
 
 /**

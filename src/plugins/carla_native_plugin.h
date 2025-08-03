@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "gui/dsp/plugin.h"
+#include "plugins/plugin.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
@@ -16,7 +16,7 @@
 #  include "carla_wrapper.h"
 #endif
 
-namespace zrythm::gui::old_dsp::plugins
+namespace zrythm::plugins
 {
 
 using CarlaPluginHandle = void *;
@@ -27,7 +27,7 @@ using CarlaPluginHandle = void *;
  * @{
  */
 
-constexpr const char * CARLA_STATE_FILENAME = "state.carla";
+constexpr auto CARLA_STATE_FILENAME = "state.carla"sv;
 
 /**
  * The type of the Carla plugin.
@@ -60,7 +60,7 @@ struct CarlaPatchbayPortInfo
   std::string  port_name;
 };
 
-class CarlaNativePlugin final : public QObject, public Plugin
+class CarlaNativePlugin : public Plugin
 {
 public:
   /**
@@ -74,6 +74,7 @@ public:
    * Deactivates, cleanups and frees the instance.
    */
   ~CarlaNativePlugin () override;
+  Z_DISABLE_COPY_MOVE (CarlaNativePlugin)
 
 #if HAVE_CARLA
   /**
@@ -255,8 +256,4 @@ public:
   unsigned int max_variant_midi_outs_ = 0;
 };
 
-} // namespace zrythm::gui::old_dsp::plugins
-
-/**
- * @}
- */
+} // namespace zrythm::plugins

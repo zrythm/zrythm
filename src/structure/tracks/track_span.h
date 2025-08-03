@@ -300,12 +300,7 @@ public:
 
   void deselect_all_plugins ()
   {
-    std::vector<Plugin *> plugins;
-    get_plugins (plugins);
-    for (const auto &pl : plugins)
-      {
-        pl->set_selected (false);
-      }
+    // TODO?
   }
 
   auto has_soloed () const
@@ -374,25 +369,10 @@ public:
    */
   bool fix_audio_regions (dsp::FramesPerTick frames_per_tick);
 
-  /**
-   * Activate or deactivate all plugins.
-   *
-   * This is useful for exporting: deactivating and reactivating a plugin will
-   * reset its state.
-   */
-  void activate_all_plugins (bool activate)
-  {
-    std::ranges::for_each (*this, [&] (const auto &track_var) {
-      std::visit (
-        [&] (auto &&track) { track->activate_all_plugins (activate); },
-        track_var);
-    });
-  }
-
   void init_loaded (
-    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
-    dsp::PortRegistry                     &port_registry,
-    dsp::ProcessorParameterRegistry       &param_registry)
+    plugins::PluginRegistry         &plugin_registry,
+    dsp::PortRegistry               &port_registry,
+    dsp::ProcessorParameterRegistry &param_registry)
   {
     std::ranges::for_each (*this, [&] (const auto &track_var) {
       std::visit (
