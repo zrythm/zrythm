@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <numbers>
 
 #include "dsp/processor_base.h"
 #include "plugins/juce_plugin.h"
@@ -53,8 +54,8 @@ public:
 class MockAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
-  MockAudioProcessorEditor (juce::AudioProcessor &processor)
-      : juce::AudioProcessorEditor (processor)
+  MockAudioProcessorEditor (juce::AudioProcessor &p)
+      : juce::AudioProcessorEditor (p)
   {
   }
   ~MockAudioProcessorEditor () override
@@ -1007,8 +1008,8 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
   for (size_t i = 0; i < test_buffer_size; ++i)
     {
       float phase =
-        2.0f * M_PI * static_cast<float> (i)
-        / static_cast<float> (test_buffer_size);
+        2.0f * std::numbers::pi_v<float>
+        * static_cast<float> (i) / static_cast<float> (test_buffer_size);
       left_input[i] = std::sin (phase);
       right_input[i] = std::cos (phase);
     }
@@ -1050,12 +1051,12 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
           }
 
         // Simulate unity gain pass-through
-        float * left_out = buffer.getWritePointer (0);
-        float * right_out = buffer.getWritePointer (1);
+        float * inner_left_out = buffer.getWritePointer (0);
+        float * inner_right_out = buffer.getWritePointer (1);
         for (size_t i = 0; i < test_buffer_size; ++i)
           {
-            left_out[i] = left_channel[i];
-            right_out[i] = right_channel[i];
+            inner_left_out[i] = left_channel[i];
+            inner_right_out[i] = right_channel[i];
           }
       });
 
@@ -1115,8 +1116,8 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
   for (size_t i = split_offset; i < split_offset + split_frames; ++i)
     {
       float phase =
-        2.0f * M_PI * static_cast<float> (i)
-        / static_cast<float> (full_buffer_size);
+        2.0f * std::numbers::pi_v<float>
+        * static_cast<float> (i) / static_cast<float> (full_buffer_size);
       left_input[i] = std::sin (phase);
       right_input[i] = std::cos (phase);
     }
@@ -1155,12 +1156,12 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
           }
 
         // Simulate processing with unity gain
-        float * left_out = buffer.getWritePointer (0);
-        float * right_out = buffer.getWritePointer (1);
+        float * inner_left_out = buffer.getWritePointer (0);
+        float * inner_right_out = buffer.getWritePointer (1);
         for (size_t i = 0; i < split_frames; ++i)
           {
-            left_out[i] = left_channel[i];
-            right_out[i] = right_channel[i];
+            inner_left_out[i] = left_channel[i];
+            inner_right_out[i] = right_channel[i];
           }
       });
 

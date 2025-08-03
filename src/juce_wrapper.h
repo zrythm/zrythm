@@ -10,6 +10,7 @@
 #ifdef __GNUC__
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wundef"
+#  pragma GCC diagnostic ignored "-Wcast-qual"
 #  ifndef __clang__
 #    pragma GCC diagnostic ignored "-Wduplicated-branches"
 #    pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
