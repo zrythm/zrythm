@@ -333,14 +333,6 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info)
         &juce_audio_buffer_.getWritePointer (ch)[local_offset], 0.0f, nframes);
     }
 
-#if 0
-  // Clear output channels
-  for (int ch = 0; ch < num_juce_plugin_outputs; ++ch)
-    {
-      std::fill (output_channels_[ch], output_channels_[ch] + nframes, 0.0f);
-    }
-#endif
-
   // Clear MIDI buffer
   juce_midi_buffer_.clear ();
 

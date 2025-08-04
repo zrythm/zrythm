@@ -150,4 +150,10 @@ PluginScanManager::set_currently_scanning_plugin (const QString &plugin)
   Q_EMIT currentlyScanningPluginChanged (currently_scanning_plugin_);
 }
 
-PluginScanManager::~PluginScanManager () = default;
+PluginScanManager::~PluginScanManager ()
+{
+  if (scan_thread_)
+    {
+      scan_thread_->wait ();
+    }
+}
