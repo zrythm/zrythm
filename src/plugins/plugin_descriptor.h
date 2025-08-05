@@ -107,7 +107,7 @@ enum class BridgeMode : std::uint_fast8_t
  * metadata, such as its author, name, website, category, port counts,
  * architecture, protocol, and unique ID (for VST plugins).
  */
-class PluginDescriptor final : public QObject
+class PluginDescriptor : public QObject
 {
   Q_OBJECT
   QML_ELEMENT

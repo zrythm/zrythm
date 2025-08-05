@@ -75,7 +75,7 @@ ColumnLayout {
           Layout.fillWidth: true
           ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
           ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-          height: ruler.height
+          Layout.preferredHeight: ruler.height
 
           Ruler {
             id: ruler

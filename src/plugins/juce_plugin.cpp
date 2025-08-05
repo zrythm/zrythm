@@ -250,6 +250,8 @@ JucePlugin::create_parameters_from_juce_plugin ()
       zrythm_param->set_automatable (param->isAutomatable ());
 
       // Store mapping
+      // TODO: consider using a map for lookups by ID/index
+      // see https://forum.juce.com/t/how-to-use-paramterid-in-the-host
       ParameterMapping mapping{
         .juce_param = param,
         .zrythm_param = zrythm_param,
@@ -391,6 +393,7 @@ JucePlugin::update_parameter_values ()
   if (!juce_plugin_)
     return;
 
+  // FIXME: we are iterating over all params
   for (const auto &mapping : parameter_mappings_)
     {
       if ((mapping.juce_param != nullptr) && (mapping.zrythm_param != nullptr))

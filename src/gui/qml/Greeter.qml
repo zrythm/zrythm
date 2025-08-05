@@ -22,17 +22,12 @@ ApplicationWindow {
   }
 
   function openProjectWindow(project) {
-    let component = Qt.createComponent("views/ProjectWindow.qml");
-    if (component.status === Component.Ready) {
-      let newWindow = component.createObject(project, {
-        "project": project,
-        "deviceManager": deviceManager()
-      });
-      newWindow.show();
-      root.close();
-    } else {
-      console.error("Error loading component:", component.errorString());
-    }
+    let newWindow = projectWindowComponent.createObject(project, {
+      "project": project,
+      "deviceManager": deviceManager()
+    }) as ProjectWindow;
+    newWindow.show();
+    root.close();
   }
 
   function pluginManager() {
@@ -58,6 +53,13 @@ ApplicationWindow {
   title: "Zrythm"
   visible: true
   width: 640
+
+  Component {
+    id: projectWindowComponent
+
+    ProjectWindow {
+    }
+  }
 
   Item {
     id: flatpakPage

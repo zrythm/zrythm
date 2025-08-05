@@ -31,7 +31,7 @@ Control {
       if (control.hovered)
         c = Style.getColorBlendedTowardsContrast(c);
 
-      if (track.selected || control.down)
+      if (track.selected || bgTapHandler.pressed)
         c = Style.getColorBlendedTowardsContrast(c);
 
       return c;
@@ -42,6 +42,8 @@ Control {
     }
 
     TapHandler {
+      id: bgTapHandler
+
       acceptedButtons: Qt.LeftButton | Qt.RightButton
 
       onTapped: function (point) {
@@ -65,8 +67,8 @@ Control {
         id: trackColor
 
         Layout.fillHeight: true
-        color: track.color
-        width: 6
+        Layout.preferredWidth: 6
+        color: control.track.color
       }
 
       ColumnLayout {
@@ -136,7 +138,7 @@ Control {
                     Layout.fillWidth: false
 
                     SoloButton {
-                      id: soloButton
+                      id: laneSoloButton
 
                       padding: control.buttonPadding
                       styleHeight: control.buttonHeight
@@ -287,9 +289,10 @@ Control {
             readonly property real iconSize: 14
 
             Layout.alignment: Qt.AlignTop | Qt.AlignBaseline
+            Layout.preferredHeight: iconSize
+            Layout.preferredWidth: iconSize
             color: trackNameLabel.color
             fillMode: Image.PreserveAspectFit
-            height: iconSize
             source: {
               if (track.icon.startsWith("gnome-icon-library-"))
                 return ResourceManager.getIconUrl("gnome-icon-library", track.icon.substring(19) + ".svg");
@@ -307,7 +310,6 @@ Control {
             }
             sourceSize.height: iconSize
             sourceSize.width: iconSize
-            width: iconSize
           }
 
           Label {
@@ -336,15 +338,15 @@ Control {
             }
 
             SoloButton {
-              id: soloButton
+              id: trackSoloButton
 
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
             }
 
             RecordButton {
+              Layout.preferredHeight: trackSoloButton.height
               checked: track.isRecordable && track.recording
-              height: soloButton.height
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
               visible: track.isRecordable
@@ -466,7 +468,7 @@ Control {
 
         property real startHeight: 0
 
-        grabPermissions: PointerHandler.CanTakeOverFromItems | PointerHandler.CanTakeOverFromHandlers
+        grabPermissions: PointerHandler.CanTakeOverFromItems | PointerHandler.CanTakeOverFromHandlersOfSameType
         xAxis.enabled: false
         yAxis.enabled: true
 

@@ -27,8 +27,8 @@ GridLayout {
 
     Rectangle {
       Layout.fillHeight: true
-      color: region.regionMixin.color.useColor ? region.regionMixin.color.color : track.color
-      width: 5
+      color: root.region.regionMixin.color.useColor ? root.region.regionMixin.color.color : root.track.color
+      Layout.preferredWidth: 5
     }
 
     RotatedLabel {

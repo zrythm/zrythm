@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
@@ -32,6 +34,7 @@ ApplicationWindow {
           id: enabledRepeater
 
           property bool enabledBoolData: modelData
+          required property bool modelData
 
           Repeater {
             model: [true, false]
@@ -40,6 +43,7 @@ ApplicationWindow {
               id: checkedFlow
 
               property bool checkableBoolData: modelData
+              required property bool modelData
 
               ToolButton {
                 checkable: checkedFlow.checkableBoolData
@@ -202,12 +206,11 @@ ApplicationWindow {
     Repeater {
       model: [true, false]
 
-      Flow {
-        // put things in here
-
-        id: enabledRepeater
+      delegate: Flow {
+        id: enabledRepeater2
 
         property bool enabledBoolData: modelData
+        required property bool modelData
 
         spacing: root.spacing
         width: parent.width
@@ -224,13 +227,17 @@ ApplicationWindow {
 
             model: 3
 
-            Flow {
+            delegate: Flow {
+              id: buttonFlow
+
+              required property int index
+
               spacing: root.spacing
 
               Button {
-                checkable: modelData === 1
-                enabled: enabledRepeater.enabledBoolData
-                highlighted: modelData === 2
+                checkable: buttonFlow.index === 1
+                enabled: enabledRepeater2.enabledBoolData
+                highlighted: buttonFlow.index === 2
                 text: "Button"
 
                 ToolTip {
@@ -239,25 +246,25 @@ ApplicationWindow {
               }
 
               Button {
-                checkable: modelData === 1
-                enabled: enabledRepeater.enabledBoolData
-                highlighted: modelData === 2
+                checkable: buttonFlow.index === 1
+                enabled: enabledRepeater2.enabledBoolData
+                highlighted: buttonFlow.index === 2
                 icon.source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/icons/zrythm-dark/zrythm-monochrome.svg")
                 text: "Button"
               }
 
               Button {
-                checkable: modelData === 1
-                checked: modelData === 1
-                enabled: enabledRepeater.enabledBoolData
-                highlighted: modelData === 2
+                checkable: buttonFlow.index === 1
+                checked: buttonFlow.index === 1
+                enabled: enabledRepeater2.enabledBoolData
+                highlighted: buttonFlow.index === 2
                 icon.source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/icons/zrythm-dark/zrythm-monochrome.svg")
               }
 
               RoundButton {
-                checkable: modelData === 1
-                enabled: enabledRepeater.enabledBoolData
-                highlighted: modelData === 2
+                checkable: buttonFlow.index === 1
+                enabled: enabledRepeater2.enabledBoolData
+                highlighted: buttonFlow.index === 2
                 text: "Button"
 
                 ToolTip {
@@ -266,38 +273,39 @@ ApplicationWindow {
               }
 
               RoundButton {
-                checkable: modelData === 1
-                enabled: enabledRepeater.enabledBoolData
-                highlighted: modelData === 2
+                checkable: buttonFlow.index === 1
+                enabled: enabledRepeater2.enabledBoolData
+                highlighted: buttonFlow.index === 2
                 icon.source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/icons/zrythm-dark/zrythm-monochrome.svg")
                 text: "Button"
               }
 
               RoundButton {
-                checkable: modelData === 1
-                checked: modelData === 1
-                enabled: enabledRepeater.enabledBoolData
-                highlighted: modelData === 2
+                checkable: buttonFlow.index === 1
+                checked: buttonFlow.index === 1
+                enabled: enabledRepeater2.enabledBoolData
+                highlighted: buttonFlow.index === 2
                 icon.source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/icons/zrythm-dark/zrythm-monochrome.svg")
               }
             }
           }
 
           ComboBox {
-            enabled: enabledRepeater.enabledBoolData
+            enabled: enabledRepeater2.enabledBoolData
             model: ['日本語', 'bbbb long text', 'short']
           }
 
           ProgressBar {
-            enabled: enabledRepeater.enabledBoolData
+            enabled: enabledRepeater2.enabledBoolData
             indeterminate: true
           }
 
           ProgressBar {
-            enabled: enabledRepeater.enabledBoolData
+            enabled: enabledRepeater2.enabledBoolData
             from: 0
             to: 100
-            value: 50
+
+            // value: 50
 
             // Dummy animation to move the progress bar back and forth
             SequentialAnimation on value {
@@ -321,32 +329,32 @@ ApplicationWindow {
 
           TabBar {
             TabButton {
-              enabled: enabledRepeater.enabledBoolData
+              enabled: enabledRepeater2.enabledBoolData
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "piano-roll.svg")
               text: qsTr("Editor")
             }
 
             TabButton {
-              enabled: enabledRepeater.enabledBoolData
+              enabled: enabledRepeater2.enabledBoolData
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "mixer.svg")
               text: qsTr("Mixer")
             }
 
             TabButton {
-              enabled: enabledRepeater.enabledBoolData
+              enabled: enabledRepeater2.enabledBoolData
               icon.source: ResourceManager.getIconUrl("gnome-icon-library", "encoder-knob-symbolic.svg")
               text: qsTr("Modulators")
             }
 
             TabButton {
-              enabled: enabledRepeater.enabledBoolData
+              enabled: enabledRepeater2.enabledBoolData
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "chord-pad.svg")
               text: "Chord Pad"
             }
           }
 
           TabBar {
-            enabled: enabledRepeater.enabledBoolData
+            enabled: enabledRepeater2.enabledBoolData
 
             TabButton {
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "track-inspector.svg")
@@ -360,7 +368,7 @@ ApplicationWindow {
           }
 
           TabBar {
-            enabled: enabledRepeater.enabledBoolData
+            enabled: enabledRepeater2.enabledBoolData
 
             TabButton {
               icon.source: ResourceManager.getIconUrl("gnome-icon-library", "shapes-large-symbolic.svg")
@@ -396,12 +404,12 @@ ApplicationWindow {
           }
 
           TextField {
-            enabled: enabledRepeater.enabledBoolData
+            enabled: enabledRepeater2.enabledBoolData
             placeholderText: "Placeholder text"
           }
 
           TextField {
-            enabled: enabledRepeater.enabledBoolData
+            enabled: enabledRepeater2.enabledBoolData
             placeholderText: "Placeholder text"
             text: "Text"
           }

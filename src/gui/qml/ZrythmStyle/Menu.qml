@@ -1,10 +1,9 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-only
 
 import QtQuick
 import QtQuick.Controls.impl
-import QtQuick.Effects
 import QtQuick.Templates as T
 import ZrythmStyle 1.0
 

@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include "utils/logger.h"
 #include "utils/math.h"
 

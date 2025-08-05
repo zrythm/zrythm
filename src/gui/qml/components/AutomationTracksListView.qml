@@ -1,14 +1,16 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 ListView {
-  id: automationTracksListView
+  id: control
 
   property var track
 
@@ -17,6 +19,8 @@ ListView {
   interactive: false
 
   delegate: ItemDelegate {
+    id: automationTrackItem
+
     readonly property var automationTrack: automationTrackHolder.automationTrack
     required property var automationTrackHolder
 
@@ -62,7 +66,7 @@ ListView {
           icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
           padding: control.buttonPadding
           styleHeight: control.buttonHeight
-          text: automationTrackHolder.automationTrack.parameter.label
+          text: automationTrackItem.automationTrackHolder.automationTrack.parameter.label
 
           Component.onCompleted: {
             if (background && background instanceof Rectangle)
@@ -80,8 +84,8 @@ ListView {
           Layout.fillWidth: false
           font: Style.smallTextFont
           text: {
-            automationTrackHolder.automationTrack.parameter.baseValue;
-            return automationTrackHolder.automationTrack.parameter.range.convertFrom0To1(automationTrackHolder.automationTrack.parameter.currentValue());
+            automationTrackItem.automationTrackHolder.automationTrack.parameter.baseValue;
+            return automationTrackItem.automationTrackHolder.automationTrack.parameter.range.convertFrom0To1(automationTrackItem.automationTrackHolder.automationTrack.parameter.currentValue());
           }
         }
       }
@@ -92,7 +96,7 @@ ListView {
         Layout.alignment: Qt.AlignBottom
         Layout.fillHeight: false
         Layout.fillWidth: true
-        visible: automationTrackHolder.height > automationTopRowLayout.height + height + 6
+        visible: automationTrackItem.automationTrackHolder.height > automationTopRowLayout.height + height + 6
 
         LinkedButtons {
           id: automationModeButtons
@@ -105,14 +109,14 @@ ListView {
           Button {
             ButtonGroup.group: automationModeGroup
             checkable: true
-            checked: automationTrack.automationMode === 0
+            checked: automationTrackItem.automationTrack.automationMode === 0
             font: automationColumnLayout.buttonFont
             padding: control.buttonPadding
             styleHeight: control.buttonHeight
             text: qsTr("On")
 
             onClicked: {
-              automationTrack.automationMode = 0;
+              automationTrackItem.automationTrack.automationMode = 0;
             }
           }
 
@@ -195,7 +199,7 @@ ListView {
             text: "+"
 
             onClicked: {
-              track.automationTracklist.showNextAvailableAutomationTrack(automationTrack);
+              control.track.automationTracklist.showNextAvailableAutomationTrack(automationTrackItem.automationTrack);
             }
 
             ToolTip {
@@ -235,26 +239,26 @@ ListView {
   model: AutomationTracklistProxyModel {
     showOnlyCreated: true
     showOnlyVisible: true
-    sourceModel: track.automationTracklist
+    sourceModel: control.track.automationTracklist
   }
 
   Connections {
     function onDataChanged() {
-      track.fullVisibleHeightChanged();
+      control.track.fullVisibleHeightChanged();
     }
 
     function onModelReset() {
-      track.fullVisibleHeightChanged();
+      control.track.fullVisibleHeightChanged();
     }
 
     function onRowsInserted() {
-      track.fullVisibleHeightChanged();
+      control.track.fullVisibleHeightChanged();
     }
 
     function onRowsRemoved() {
-      track.fullVisibleHeightChanged();
+      control.track.fullVisibleHeightChanged();
     }
 
-    target: automationTracksListView.model
+    target: control.model
   }
 }

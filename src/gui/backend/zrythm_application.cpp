@@ -297,7 +297,7 @@ ZrythmApplication::setup_ui ()
   // files in qrc are pre-compiled
   // files in host file system are compiled at runtime
   // ${RESOURCE_PREFIX}/${URI}
-  // const QUrl url ("qrc:/qt/qml/Zrythm/DemoView.qml");
+  // const QUrl url (u"qrc:/qt/qml/Zrythm/DemoView.qml"_s);
   const QUrl url (u"qrc:/qt/qml/Zrythm/Greeter.qml"_s);
   qml_engine_->load (url);
   // qml_engine_->loadFromModule ("Zrythm", "greeter");

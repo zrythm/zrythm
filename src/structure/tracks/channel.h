@@ -21,8 +21,6 @@ class GroupTargetTrack;
  */
 constexpr int CHANNEL_SEND_POST_FADER_START_SLOT = 6;
 
-static constexpr float MAX_FADER_AMP = 1.42f;
-
 struct PluginImportData;
 
 class MidiPreFader final : public QObject, public dsp::MidiPassthroughProcessor

@@ -22,6 +22,8 @@ target_include_directories(zrythm_gui_lib
 qt_add_qml_module(zrythm_gui_lib
   URI ZrythmGui
   VERSION 1.0
+  DEPENDENCIES
+    QtCore # Needed for QAbstractItemModel-derived types
   IMPORTS
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib

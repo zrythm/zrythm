@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
 
 Item {
   id: root
@@ -24,7 +21,7 @@ Item {
       width: ListView.view.width
     }
     model: TrackFilterProxyModel {
-      sourceModel: tracklist
+      sourceModel: root.tracklist
 
       Component.onCompleted: {
         addVisibilityFilter(true);

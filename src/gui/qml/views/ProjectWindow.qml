@@ -11,8 +11,8 @@ import ZrythmStyle 1.0
 ApplicationWindow {
   id: root
 
-  required property var deviceManager
-  required property var project
+  required property DeviceManager deviceManager
+  required property Project project
 
   function closeAndDestroy() {
     console.log("Closing and destroying project window");

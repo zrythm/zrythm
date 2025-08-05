@@ -17,7 +17,7 @@ T.ToolTip {
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
   margins: Style.buttonPadding
   padding: Style.buttonPadding
-  visible: parent ? parent.hovered : false
+  visible: parent ? parent.hovered : false // qmllint disable missing-property
   x: parent ? (parent.width - implicitWidth) / 2 : 0
   y: -implicitHeight - 3
 
