@@ -131,7 +131,7 @@ SampleProcessor::remove_sample_playback (SamplePlayback &in_sp)
 }
 
 void
-SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
+SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
   const auto    cycle_offset = time_nfo.local_offset_;
   const auto    nframes = time_nfo.nframes_;

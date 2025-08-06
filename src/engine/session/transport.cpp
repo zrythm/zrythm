@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "zrythm-config.h"
-
 #include <algorithm>
 
 #include "engine/device_io/engine.h"
@@ -10,15 +8,12 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/marker.h"
-#include "structure/tracks/audio_track.h"
 #include "structure/tracks/laned_track.h"
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::engine::session
 {

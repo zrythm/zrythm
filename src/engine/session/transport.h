@@ -166,6 +166,62 @@ public:
 
   // ==================================================================
 
+  // ==================================================================
+  // ITransport Interface
+  // ==================================================================
+
+  signed_frame_t
+  get_playhead_position_in_audio_thread () const noexcept override
+  {
+    return static_cast<signed_frame_t> (
+      playhead_.position_during_processing_rounded ());
+  }
+
+  nframes_t is_loop_point_met_in_audio_thread (
+    const unsigned_frame_t g_start_frames,
+    const nframes_t        nframes) const noexcept override
+  {
+    auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
+    bool loop_end_between_start_and_end =
+      (loop_end_pos > g_start_frames
+       && loop_end_pos <= g_start_frames + (long) nframes);
+
+    if (loop_end_between_start_and_end && loop_enabled ()) [[unlikely]]
+      {
+        return (nframes_t) (loop_end_pos - g_start_frames);
+      }
+    return 0;
+  }
+
+  std::pair<unsigned_frame_t, unsigned_frame_t>
+  get_loop_range_positions () const noexcept override
+  {
+    return std::make_pair (loop_start_pos_->frames_, loop_end_pos_->frames_);
+  }
+
+  std::pair<unsigned_frame_t, unsigned_frame_t>
+  get_punch_range_positions () const noexcept override
+  {
+    return std::make_pair (
+      punch_in_pos_->getFrames (), punch_out_pos_->getFrames ());
+  }
+
+  PlayState get_play_state () const noexcept override { return play_state_; }
+
+  bool loop_enabled () const noexcept override { return loop_; }
+  bool punch_enabled () const noexcept override { return punch_mode_; }
+  bool recording_enabled () const noexcept override { return recording_; }
+  unsigned_frame_t recording_preroll_frames_remaining () const noexcept override
+  {
+    return recording_preroll_frames_remaining_;
+  }
+  unsigned_frame_t metronome_countin_frames_remaining () const noexcept override
+  {
+    return countin_frames_remaining_;
+  }
+
+  // ==================================================================
+
   static const char * preroll_count_to_str (PrerollCountBars bars)
   {
     return preroll_count_bars_str[static_cast<int> (bars)];
@@ -277,31 +333,9 @@ public:
 
   void set_play_state_rt_safe (PlayState state);
 
-  signed_frame_t get_playhead_position_in_audio_thread () const override
-  {
-    return static_cast<signed_frame_t> (
-      playhead_.position_during_processing_rounded ());
-  }
-
   [[deprecated (
     "Use the Playhead API to get ticks instead. Optionally convert via the TempoMap API")]]
   Position get_playhead_position_in_gui_thread () const;
-
-  nframes_t is_loop_point_met_in_audio_thread (
-    const unsigned_frame_t g_start_frames,
-    const nframes_t        nframes) const override
-  {
-    auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
-    bool loop_end_between_start_and_end =
-      (loop_end_pos > g_start_frames
-       && loop_end_pos <= g_start_frames + (long) nframes);
-
-    if (loop_end_between_start_and_end && loop_enabled ()) [[unlikely]]
-      {
-        return (nframes_t) (loop_end_pos - g_start_frames);
-      }
-    return 0;
-  }
 
   /**
    * Move to the previous snap point on the timeline.
@@ -389,21 +423,6 @@ frames_add_frames (
    */
   std::pair<Position, Position> get_range_positions () const;
 
-  std::pair<unsigned_frame_t, unsigned_frame_t>
-  get_loop_range_positions () const override
-  {
-    return std::make_pair (loop_start_pos_->frames_, loop_end_pos_->frames_);
-  }
-
-  std::pair<unsigned_frame_t, unsigned_frame_t>
-  get_punch_range_positions () const override
-  {
-    return std::make_pair (
-      punch_in_pos_->getFrames (), punch_out_pos_->getFrames ());
-  }
-
-  PlayState get_play_state () const override { return play_state_; }
-
   /**
    * Sets if the project has range and updates UI.
    */
@@ -432,18 +451,6 @@ frames_add_frames (
     bool             snap);
 
   bool position_is_inside_punch_range (Position pos);
-
-  bool             loop_enabled () const override { return loop_; }
-  bool             punch_enabled () const override { return punch_mode_; }
-  bool             recording_enabled () const override { return recording_; }
-  unsigned_frame_t recording_preroll_frames_remaining () const override
-  {
-    return recording_preroll_frames_remaining_;
-  }
-  unsigned_frame_t metronome_countin_frames_remaining () const override
-  {
-    return countin_frames_remaining_;
-  }
 
   /**
    * Recalculates the total bars based on the last object's position.
