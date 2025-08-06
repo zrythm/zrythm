@@ -48,7 +48,7 @@ public:
 
   // void set_name (const utils::Utf8String &name) { name_ = name; }
 
-  void custom_process_block (EngineProcessTimeInfo time_nfo) override;
+  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
   friend void init_from (
     ModulatorMacroProcessor       &obj,

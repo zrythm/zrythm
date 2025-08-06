@@ -36,7 +36,11 @@ public:
     add_output_port (output_port_);
   }
 
-  MOCK_METHOD (void, custom_process_block, (EngineProcessTimeInfo), (override));
+  MOCK_METHOD (
+    void,
+    custom_process_block,
+    (EngineProcessTimeInfo),
+    (noexcept, override));
 
 private:
   PortUuidReference input_port_;

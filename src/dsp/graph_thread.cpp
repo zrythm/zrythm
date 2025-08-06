@@ -154,7 +154,7 @@ GraphThread::on_reached_terminal_node ()
 }
 
 void
-GraphThread::run_worker () noexcept [[clang::nonblocking]]
+GraphThread::run_worker () noexcept
 {
   auto * scheduler = &scheduler_;
 

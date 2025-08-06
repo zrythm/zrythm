@@ -90,7 +90,7 @@ ProcessorBase::release_resources ()
 }
 
 void
-ProcessorBase::process_block (EngineProcessTimeInfo time_nfo)
+ProcessorBase::process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
   // correct invalid time info
   if (time_nfo.local_offset_ + time_nfo.nframes_ > max_block_length_)
@@ -109,10 +109,6 @@ ProcessorBase::process_block (EngineProcessTimeInfo time_nfo)
       time_nfo.local_offset_ = local_offset;
       time_nfo.g_start_frame_w_offset_ = time_nfo.g_start_frame_ + local_offset;
       time_nfo.nframes_ = nframes;
-
-      z_warning (
-        "Invalid time info provided - correction applied for {}",
-        get_node_name ());
     }
 
   // process all parameters first
@@ -137,7 +133,7 @@ ProcessorBase::process_block (EngineProcessTimeInfo time_nfo)
 }
 
 void
-ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo)
+ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
   using ObjectView = utils::UuidIdentifiableObjectView<PortRegistry>;
   const auto object_getter = [] (auto &&port_ref) {

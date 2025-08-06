@@ -180,7 +180,8 @@ public:
     sample_rate_t sample_rate,
     nframes_t     max_block_length) final;
 
-  [[gnu::hot]] void custom_process_block (EngineProcessTimeInfo time_nfo) final;
+  [[gnu::hot]] void
+  custom_process_block (EngineProcessTimeInfo time_nfo) noexcept final;
 
   // ============================================================================
 
@@ -229,7 +230,7 @@ private:
     sample_rate_t sample_rate,
     nframes_t     max_block_length) { };
 
-  virtual void process_impl (EngineProcessTimeInfo time_info) = 0;
+  virtual void process_impl (EngineProcessTimeInfo time_info) noexcept = 0;
 
   /**
    * @brief Processes the plugin by passing through the input to its output.
@@ -240,7 +241,7 @@ private:
    * override this.
    */
   [[gnu::hot]] virtual void
-  process_passthrough_impl (EngineProcessTimeInfo time_nfo);
+  process_passthrough_impl (EngineProcessTimeInfo time_nfo) noexcept;
 
   // ============================================================================
 

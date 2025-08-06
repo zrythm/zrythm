@@ -608,7 +608,9 @@ if(ZRYTHM_STRICT)
       -Werror=inline
       -Werror=sizeof-array-argument
       -Werror=odr
-      -Werror=mismatched-tags # note: broken in gcc 14.2.1
+      # note: broken in gcc 14.2.1 and 15.1.1
+      # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99642
+      # -Werror=mismatched-tags
       -Werror=narrowing
 
       # these interfere with gbenchmark

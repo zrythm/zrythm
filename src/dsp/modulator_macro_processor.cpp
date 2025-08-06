@@ -61,7 +61,7 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 
 void
 ModulatorMacroProcessor::custom_process_block (
-  const EngineProcessTimeInfo time_nfo)
+  const EngineProcessTimeInfo time_nfo) noexcept
 {
   auto &macro = get_macro_param ();
   auto &cv_in = get_cv_in_port ();

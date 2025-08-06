@@ -35,18 +35,19 @@ public:
    */
   struct PlayableSampleSingleChannel
   {
+    using UnmutableSampleSpan = std::span<const float>;
     PlayableSampleSingleChannel (
-      std::span<const float> buf,
-      channels_t             channel_index,
-      float                  volume,
-      nframes_t              start_offset,
-      std::source_location   source_location)
+      UnmutableSampleSpan  buf,
+      channels_t           channel_index,
+      float                volume,
+      nframes_t            start_offset,
+      std::source_location source_location)
         : buf_ (buf), channel_index_ (channel_index), volume_ (volume),
           start_offset_ (start_offset), source_location_ (source_location)
     {
     }
     /** Samples to play for a single channel. */
-    std::span<const float> buf_;
+    UnmutableSampleSpan buf_;
 
     /**
      * @brief Channel index to play this sample at.
@@ -107,8 +108,7 @@ public:
     };
   }
 
-  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
-    [[clang::nonblocking]] override
+  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override
   {
     const auto cycle_offset = time_nfo.local_offset_;
     const auto nframes = time_nfo.nframes_;

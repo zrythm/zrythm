@@ -89,7 +89,9 @@ protected:
   std::unique_ptr<graph_test::MockTransport>       transport_;
   juce::AudioSampleBuffer                          emphasis_sample_;
   juce::AudioSampleBuffer                          normal_sample_;
-  std::vector<AudioSampleProcessor::PlayableSampleSingleChannel> queued_samples_;
+  boost::container::
+    static_vector<AudioSampleProcessor::PlayableSampleSingleChannel, 128>
+      queued_samples_;
 };
 
 TEST_F (MetronomeTest, Construction)

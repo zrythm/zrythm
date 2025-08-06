@@ -223,7 +223,7 @@ public:
     nframes_t     max_block_length) override;
 
   [[gnu::hot]] void
-  custom_process_block (EngineProcessTimeInfo time_nfo) override;
+  custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
   // ============================================================================
 

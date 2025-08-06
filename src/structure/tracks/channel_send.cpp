@@ -74,7 +74,7 @@ ChannelSend::ChannelSend (
 }
 
 void
-ChannelSend::custom_process_block (const EngineProcessTimeInfo time_nfo)
+ChannelSend::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   const auto local_offset = time_nfo.local_offset_;
   const auto nframes = time_nfo.nframes_;

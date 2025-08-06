@@ -380,7 +380,7 @@ public:
    * @return A non-owning pointer to the object.
    */
   [[gnu::hot]] std::optional<std::reference_wrapper<const VariantT>>
-  find_by_id (const UuidType &id) const [[clang::nonblocking]]
+  find_by_id (const UuidType &id) const noexcept [[clang::nonblocking]]
   {
     const auto it = get_iterator_for_id (id);
     if (it == objects_by_id_.end ())

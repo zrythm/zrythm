@@ -69,7 +69,7 @@ protected:
     sample_rate_t sample_rate,
     nframes_t     max_block_length) override;
 
-  void process_impl (EngineProcessTimeInfo time_info) override;
+  void process_impl (EngineProcessTimeInfo time_info) noexcept override;
 
 private Q_SLOTS:
   /**
@@ -170,16 +170,23 @@ private:
     {
     }
 
-    void parameterValueChanged (int parameterIndex, float newValue) override
+    void parameterValueChanged (int parameterIndex, float newValue)
+      [[clang::blocking]] override
     {
+      // FIXME: this may get called from the audio thread, according to the
+      // docs
+      // The logic here is not realtime-safe, and currently no test hits this
       z_debug (
         "{}: Parameter on JUCE side changed to {}",
         zrythm_param_.get_node_name (), newValue);
       zrythm_param_.setBaseValue (newValue);
     }
-    void
-    parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override
+    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
+      [[clang::blocking]] override
     {
+      // FIXME: this may get called from the audio thread, according to the
+      // docs
+      // The logic here is not realtime-safe, and currently no test hits this
     }
 
   private:

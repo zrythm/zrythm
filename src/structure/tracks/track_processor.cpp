@@ -618,7 +618,7 @@ TrackProcessor::set_midi_mappings ()
 // ============================================================================
 
 void
-TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
+TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
   if (!enabled_provider_ ())
     {

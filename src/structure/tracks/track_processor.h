@@ -275,7 +275,7 @@ public:
    * - handle recording (create events in regions and automation, including
    *   MIDI CC automation, based on the MIDI CC control ports)
    */
-  void custom_process_block (EngineProcessTimeInfo time_nfo) override;
+  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
   // ============================================================================
 

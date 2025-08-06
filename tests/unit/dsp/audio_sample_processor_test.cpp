@@ -80,7 +80,8 @@ TEST_F (AudioSampleProcessorTest, PlayableSampleSingleChannelConstruction)
   std::vector<float> test_buffer = { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f };
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
-    std::span (test_buffer),
+    AudioSampleProcessor::PlayableSampleSingleChannel::UnmutableSampleSpan (
+      test_buffer),
     0,    // channel_index
     1.0f, // volume
     0,    // start_offset
@@ -100,7 +101,8 @@ TEST_F (AudioSampleProcessorTest, AddSampleToProcess)
   std::vector<float> test_buffer = { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f };
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
-    std::span (test_buffer),
+    AudioSampleProcessor::PlayableSampleSingleChannel::UnmutableSampleSpan (
+      test_buffer),
     0,    // channel_index
     1.0f, // volume
     0,    // start_offset

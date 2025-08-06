@@ -18,7 +18,7 @@ CVPort::clear_buffer (std::size_t offset, std::size_t nframes)
 }
 
 void
-CVPort::process_block (const EngineProcessTimeInfo time_nfo)
+CVPort::process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   for (const auto &[src_port, conn] : port_sources_)
     {

@@ -341,7 +341,7 @@ public:
    * Since parameters are not part of the graph, this should be spinned manually
    * by the owning processor.
    */
-  void process_block (EngineProcessTimeInfo time_nfo) override;
+  void process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
   // ========================================================================
 

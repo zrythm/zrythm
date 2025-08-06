@@ -35,7 +35,7 @@ public:
    */
   void request_panic () { panic_.store (true); }
 
-  void custom_process_block (EngineProcessTimeInfo time_nfo) override
+  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override
   {
     const auto panic = panic_.exchange (false);
     if (!panic)

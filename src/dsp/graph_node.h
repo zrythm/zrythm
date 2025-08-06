@@ -78,7 +78,9 @@ public:
   {
   }
 
-  [[gnu::hot]] virtual void process_block (EngineProcessTimeInfo time_nfo) { };
+  [[gnu::hot]] virtual void
+  process_block (EngineProcessTimeInfo time_nfo) noexcept
+    [[clang::nonblocking]] { };
 
   /**
    * @brief Called to release resources allocated by @ref

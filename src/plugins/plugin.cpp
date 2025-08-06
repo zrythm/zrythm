@@ -85,7 +85,7 @@ Plugin::custom_prepare_for_processing (
 }
 
 void
-Plugin::custom_process_block (const EngineProcessTimeInfo time_nfo)
+Plugin::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   if (instantiation_failed_)
     return;
@@ -97,6 +97,13 @@ Plugin::custom_process_block (const EngineProcessTimeInfo time_nfo)
     }
 
   process_impl (time_nfo);
+}
+
+void
+Plugin::process_passthrough_impl (const EngineProcessTimeInfo time_nfo) noexcept
+{
+  // ProcessorBase's processing logic does passthrough
+  dsp::ProcessorBase::custom_process_block (time_nfo);
 }
 
 // ============================================================================
@@ -135,13 +142,6 @@ Plugin::init_param_caches ()
         },
         port_var.get_object ());
     }
-}
-
-void
-Plugin::process_passthrough_impl (const EngineProcessTimeInfo time_nfo)
-{
-  // ProcessorBase's processing logic does passthrough
-  dsp::ProcessorBase::custom_process_block (time_nfo);
 }
 
 void

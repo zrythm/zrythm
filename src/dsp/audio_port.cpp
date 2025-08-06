@@ -30,7 +30,7 @@ AudioPort::clear_buffer (std::size_t offset, std::size_t nframes)
 }
 
 void
-AudioPort::process_block (const EngineProcessTimeInfo time_nfo)
+AudioPort::process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   for (const auto &[_src_port, conn] : port_sources_)
     {

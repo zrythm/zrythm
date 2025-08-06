@@ -43,7 +43,7 @@ MidiPort::clear_buffer (std::size_t offset, std::size_t nframes)
 }
 
 void
-MidiPort::process_block (const EngineProcessTimeInfo time_nfo)
+MidiPort::process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   midi_events_.active_events_.clear ();
   midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);

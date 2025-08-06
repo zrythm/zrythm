@@ -285,7 +285,7 @@ Fader::custom_prepare_for_processing (
 }
 
 void
-Fader::custom_process_block (const EngineProcessTimeInfo time_nfo)
+Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   current_gain_.setTargetValue (calculate_target_gain ());
 

@@ -60,7 +60,7 @@ public:
     last_max_block_length_ = max_block_length;
   }
 
-  void process_impl (EngineProcessTimeInfo time_info) override
+  void process_impl (EngineProcessTimeInfo time_info) noexcept override
   {
     process_called_ = true;
     last_time_info_ = time_info;

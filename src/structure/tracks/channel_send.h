@@ -56,7 +56,7 @@ public:
   // IProcessable Interface
   // ============================================================================
 
-  void custom_process_block (EngineProcessTimeInfo time_nfo) override;
+  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
   // ============================================================================
 

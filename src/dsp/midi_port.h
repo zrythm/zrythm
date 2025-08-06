@@ -26,7 +26,8 @@ class MidiPort final
 public:
   MidiPort (utils::Utf8String label, PortFlow flow);
 
-  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
+  [[gnu::hot]] void
+  process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
   void
   prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)

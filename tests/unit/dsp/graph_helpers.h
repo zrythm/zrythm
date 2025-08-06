@@ -20,7 +20,7 @@ public:
     prepare_for_processing,
     (sample_rate_t, nframes_t),
     (override));
-  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
+  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (noexcept, override));
   MOCK_METHOD (void, release_resources, (), (override));
 };
 
@@ -31,35 +31,35 @@ public:
     (std::pair<unsigned_frame_t, unsigned_frame_t>),
     get_loop_range_positions,
     (),
-    (const, override));
+    (const, noexcept, override));
   MOCK_METHOD (
     (std::pair<unsigned_frame_t, unsigned_frame_t>),
     get_punch_range_positions,
     (),
-    (const, override));
-  MOCK_METHOD (PlayState, get_play_state, (), (const, override));
+    (const, noexcept, override));
+  MOCK_METHOD (PlayState, get_play_state, (), (const, noexcept, override));
   MOCK_METHOD (
     signed_frame_t,
     get_playhead_position_in_audio_thread,
     (),
-    (const, override));
-  MOCK_METHOD (bool, loop_enabled, (), (const, override));
-  MOCK_METHOD (bool, punch_enabled, (), (const, override));
-  MOCK_METHOD (bool, recording_enabled, (), (const, override));
+    (const, noexcept, override));
+  MOCK_METHOD (bool, loop_enabled, (), (const, noexcept, override));
+  MOCK_METHOD (bool, punch_enabled, (), (const, noexcept, override));
+  MOCK_METHOD (bool, recording_enabled, (), (const, noexcept, override));
   MOCK_METHOD (
     unsigned_frame_t,
     recording_preroll_frames_remaining,
     (),
-    (const, override));
+    (const, noexcept, override));
   MOCK_METHOD (
     unsigned_frame_t,
     metronome_countin_frames_remaining,
     (),
-    (const, override));
+    (const, noexcept, override));
   MOCK_METHOD (
     nframes_t,
     is_loop_point_met_in_audio_thread,
     (unsigned_frame_t g_start_frames, nframes_t nframes),
-    (const, override));
+    (const, noexcept, override));
 };
 }

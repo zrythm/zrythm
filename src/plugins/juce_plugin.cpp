@@ -306,7 +306,7 @@ JucePlugin::prepare_for_processing_impl (
 }
 
 void
-JucePlugin::process_impl (EngineProcessTimeInfo time_info)
+JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 {
   if (!juce_plugin_ || !juce_initialized_)
     return;
@@ -371,9 +371,6 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info)
         &audio_out_ports_[ch]->buf_[local_offset],
         &output_channels_[ch][local_offset], nframes);
     }
-
-  // Update parameter values from JUCE
-  update_parameter_values ();
 
   // Process MIDI output if available
   auto * midi_out = midi_out_port_;

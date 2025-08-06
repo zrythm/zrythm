@@ -51,7 +51,7 @@ private:
   /**
    * @brief The actual worker thread.
    */
-  void run_worker () noexcept;
+  void run_worker () noexcept [[clang::nonblocking]];
 
 public:
   /**

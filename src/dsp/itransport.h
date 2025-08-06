@@ -28,22 +28,23 @@ public:
    * Returns the loop range positions in samples.
    */
   virtual std::pair<unsigned_frame_t, unsigned_frame_t>
-  get_loop_range_positions () const = 0;
+  get_loop_range_positions () const noexcept [[clang::nonblocking]] = 0;
 
   /**
    * @brief Returns the punch recording range positions in samples.
    */
   virtual std::pair<unsigned_frame_t, unsigned_frame_t>
-  get_punch_range_positions () const = 0;
+  get_punch_range_positions () const noexcept [[clang::nonblocking]] = 0;
 
-  virtual PlayState get_play_state () const = 0;
+  virtual PlayState get_play_state () const noexcept [[clang::nonblocking]] = 0;
 
   /**
    * @brief Get the playhead position.
    *
    * @return The position in samples.
    */
-  virtual signed_frame_t get_playhead_position_in_audio_thread () const = 0;
+  virtual signed_frame_t get_playhead_position_in_audio_thread () const noexcept
+    [[clang::nonblocking]] = 0;
 
   /**
    * Gets the playhead position, similarly to @ref get_playhead_position(),
@@ -53,7 +54,7 @@ public:
    */
   signed_frame_t get_playhead_position_after_adding_frames_in_audio_thread (
     const signed_frame_t current_playhead_position,
-    const signed_frame_t frames_to_add) const
+    const signed_frame_t frames_to_add) const noexcept [[clang::nonblocking]]
   {
     auto new_pos = current_playhead_position + frames_to_add;
 
@@ -75,14 +76,14 @@ public:
     return new_pos;
   }
 
-  virtual bool loop_enabled () const = 0;
+  virtual bool loop_enabled () const noexcept [[clang::nonblocking]] = 0;
 
-  virtual bool punch_enabled () const = 0;
+  virtual bool punch_enabled () const noexcept [[clang::nonblocking]] = 0;
 
   /**
    * @brief Returns whether recording is enabled.
    */
-  virtual bool recording_enabled () const = 0;
+  virtual bool recording_enabled () const noexcept [[clang::nonblocking]] = 0;
 
   /**
    * @brief Frames remaining to preroll (playing back some time
@@ -91,9 +92,11 @@ public:
    * Preroll is a number of frames earlier to start at before the punch in
    * position during recording.
    */
-  virtual unsigned_frame_t recording_preroll_frames_remaining () const = 0;
+  virtual unsigned_frame_t recording_preroll_frames_remaining () const noexcept
+    [[clang::nonblocking]] = 0;
 
-  bool has_recording_preroll_frames_remaining () const
+  bool
+  has_recording_preroll_frames_remaining () const noexcept [[clang::nonblocking]]
   {
     return recording_preroll_frames_remaining () > 0;
   }
@@ -103,7 +106,8 @@ public:
    *
    * @note Count-in happens while the playhead is not moving.
    */
-  virtual unsigned_frame_t metronome_countin_frames_remaining () const = 0;
+  virtual unsigned_frame_t metronome_countin_frames_remaining () const noexcept
+    [[clang::nonblocking]] = 0;
 
   /**
    * Returns the number of processable frames until and excluding the loop end
@@ -112,7 +116,7 @@ public:
    */
   virtual nframes_t is_loop_point_met_in_audio_thread (
     unsigned_frame_t g_start_frames,
-    nframes_t        nframes) const = 0;
+    nframes_t        nframes) const noexcept [[clang::nonblocking]] = 0;
 };
 
 } // namespace zrythm::dsp

@@ -62,8 +62,7 @@ public:
 
   // ============================================================================
 
-  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
-    [[clang::nonblocking]] override;
+  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
   void custom_prepare_for_processing (
     sample_rate_t sample_rate,
