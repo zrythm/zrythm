@@ -6,6 +6,7 @@ add_executable(zrythm_dsp_unit_tests
   atomic_position_test.cpp
   audio_pool_test.cpp
   audio_port_test.cpp
+  audio_sample_processor_test.cpp
   chord_descriptor_test.cpp
   curve_test.cpp
   cv_port_test.cpp
@@ -18,6 +19,7 @@ add_executable(zrythm_dsp_unit_tests
   graph_node_test.cpp
   graph_scheduler_test.cpp
   graph_test.cpp
+  metronome_test.cpp
   midi_event_test.cpp
   midi_panic_processor_test.cpp
   midi_port_test.cpp

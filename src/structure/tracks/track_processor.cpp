@@ -736,7 +736,7 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo)
     }
 
   if (
-    !transport_.has_preroll_frames_remaining ()
+    !transport_.has_recording_preroll_frames_remaining ()
     && handle_recording_cb_.has_value ())
     {
       /* handle recording. this will only create events in regions. it

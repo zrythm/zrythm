@@ -69,8 +69,8 @@ public:
   void process_block (EngineProcessTimeInfo time_nfo) final;
   void
   prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
-    override;
-  void release_resources () override;
+    final;
+  void release_resources () final;
 
   // ============================================================================
 
@@ -87,6 +87,8 @@ protected:
     nframes_t     max_block_length)
   {
   }
+
+  virtual void custom_release_resources () { }
 
   auto dependencies () const { return dependencies_; }
 

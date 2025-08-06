@@ -7,7 +7,6 @@
 #include "dsp/port.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/metronome.h"
 #include "engine/session/project_graph_builder.h"
 #include "engine/session/sample_processor.h"
 #include "gui/backend/backend/project.h"
@@ -292,63 +291,6 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
   // Stop rolling if no more material
   if (playhead_ > file_end_pos_)
     roll_ = false;
-}
-
-void
-SampleProcessor::queue_metronome_countin ()
-{
-  auto bars = ENUM_INT_TO_VALUE (
-    PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
-  int num_bars = Transport::preroll_count_bars_enum_to_int (bars);
-  // FIXME: use accurate beats per bar
-  int beats_per_bar = get_tempo_map ().time_signature_at_tick (0).numerator;
-  int num_beats = beats_per_bar * num_bars;
-
-  double frames_per_bar =
-    type_safe::get (AUDIO_ENGINE->frames_per_tick_)
-    * static_cast<double> (TRANSPORT->ticks_per_bar_);
-  for (int i = 0; i < num_bars; i++)
-    {
-      long offset = static_cast<long> (static_cast<double> (i) * frames_per_bar);
-      current_samples_.emplace_back (
-        METRONOME->emphasis_, 0.1f * METRONOME->volume_, offset, __FILE__,
-        __func__, __LINE__);
-    }
-
-  double frames_per_beat =
-    type_safe::get (AUDIO_ENGINE->frames_per_tick_)
-    * static_cast<double> (TRANSPORT->ticks_per_beat_);
-  for (int i = 0; i < num_beats; i++)
-    {
-      if (i % beats_per_bar == 0)
-        continue;
-
-      long offset =
-        static_cast<long> (static_cast<double> (i) * frames_per_beat);
-      current_samples_.emplace_back (
-        METRONOME->normal_, 0.1f * METRONOME->volume_, offset, __FILE__,
-        __func__, __LINE__);
-    }
-}
-
-void
-SampleProcessor::queue_metronome (Metronome::Type type, nframes_t offset)
-{
-  z_return_if_fail (METRONOME->emphasis_ && METRONOME->normal_);
-  z_return_if_fail (offset < AUDIO_ENGINE->get_block_length ());
-
-  if (type == Metronome::Type::Emphasis)
-    {
-      current_samples_.emplace_back (
-        METRONOME->emphasis_, 0.1f * METRONOME->volume_, offset, __FILE__,
-        __func__, __LINE__);
-    }
-  else if (type == Metronome::Type::Normal)
-    {
-      current_samples_.emplace_back (
-        METRONOME->normal_, 0.1f * METRONOME->volume_, offset, __FILE__,
-        __func__, __LINE__);
-    }
 }
 
 void
@@ -658,111 +600,6 @@ const dsp::TempoMap &
 SampleProcessor::get_tempo_map () const
 {
   return audio_engine_->project_->get_tempo_map ();
-}
-
-void
-SampleProcessor::find_and_queue_metronome (
-  const signed_frame_t start_pos,
-  const signed_frame_t end_pos,
-  const nframes_t      loffset)
-{
-  /* special case */
-  if (start_pos == end_pos)
-    return;
-
-  const auto &audio_engine = *audio_engine_;
-  const auto &transport = *audio_engine.project_->transport_;
-  const auto &tempo_map = get_tempo_map ();
-  // FIXME: use accurate beats per bar
-  const auto beats_per_bar = tempo_map.time_signature_at_tick (0).numerator;
-
-  /* find each bar / beat change from start to finish */
-  const auto ticks_before = static_cast<int64_t> (
-    tempo_map.samples_to_tick (static_cast<double> (start_pos)));
-  // end pos in samples is excluded so -1
-  const auto ticks_after_excluding_last_sample = static_cast<int64_t> (
-    tempo_map.samples_to_tick (static_cast<double> (end_pos - 1)));
-  const auto musical_pos_before =
-    tempo_map.tick_to_musical_position (ticks_before);
-  const auto musical_pos_after =
-    tempo_map.tick_to_musical_position (ticks_after_excluding_last_sample);
-
-  /* handle start (not caught below) */
-  if (start_pos == 0)
-    {
-      queue_metronome (Metronome::Type::Emphasis, loffset);
-    }
-
-  for (int bar = musical_pos_before.bar + 1; bar <= musical_pos_after.bar; bar++)
-    {
-      /* get position of bar */
-      const auto bar_pos_in_ticks = get_tempo_map ().musical_position_to_tick (
-        { .bar = bar, .beat = 1, .sixteenth = 1, .tick = 0 });
-      assert (bar_pos_in_ticks >= ticks_before);
-      assert (bar_pos_in_ticks <= ticks_after_excluding_last_sample);
-      const auto bar_pos_in_samples =
-        static_cast<signed_frame_t> (get_tempo_map ().tick_to_samples_rounded (
-          static_cast<double> (bar_pos_in_ticks)));
-      assert (bar_pos_in_samples >= start_pos);
-      assert (bar_pos_in_samples < end_pos);
-
-      /* offset of bar pos from start pos */
-      signed_frame_t bar_offset_long = bar_pos_in_samples - start_pos;
-
-      /* add local offset */
-      signed_frame_t metronome_offset_long =
-        bar_offset_long + (signed_frame_t) loffset;
-      z_return_if_fail_cmp (metronome_offset_long, >=, 0);
-      auto metronome_offset = (nframes_t) metronome_offset_long;
-      z_return_if_fail_cmp (
-        metronome_offset, <, audio_engine_->get_block_length ());
-      queue_metronome (Metronome::Type::Emphasis, metronome_offset);
-    }
-
-  const int num_beats_before = musical_pos_before.beat;
-  // this intentionally doesn't account for changes from e.g. 1.4.1.0 => 2.1.1.0
-  // since that is a bar change
-  const int beats_diff = musical_pos_after.beat - num_beats_before;
-
-  for (int i = 0; i < beats_diff; i++)
-    {
-      /* get position of beat */
-      const auto beat_pos_before_in_ticks =
-        get_tempo_map ().musical_position_to_tick (
-          { .bar = musical_pos_before.bar,
-            .beat = musical_pos_before.beat,
-            .sixteenth = 1,
-            .tick = 0 });
-      Position beat_pos{
-        beat_pos_before_in_ticks, audio_engine_->ticks_per_frame_
-      };
-      beat_pos.add_beats (
-        i + 1, transport.ticks_per_beat_, audio_engine_->frames_per_tick_);
-
-      /* if not a bar (already handled above) */
-      if (
-        beat_pos.get_beats (true, beats_per_bar, transport.ticks_per_beat_) != 1)
-        {
-          /* adjust position because even though the start and beat pos have the
-           * same ticks, their frames differ (the beat position might be before
-           * the start position in frames) */
-          beat_pos.frames_ = std::max (beat_pos.frames_, start_pos);
-
-          /* offset of beat pos from start pos */
-          signed_frame_t beat_offset_long = beat_pos.frames_ - start_pos;
-          z_return_if_fail_cmp (beat_offset_long, >=, 0);
-
-          /* add local offset */
-          signed_frame_t metronome_offset_long =
-            beat_offset_long + (signed_frame_t) loffset;
-          z_return_if_fail_cmp (metronome_offset_long, >=, 0);
-
-          auto metronome_offset = (nframes_t) metronome_offset_long;
-          z_return_if_fail_cmp (
-            metronome_offset, <, AUDIO_ENGINE->get_block_length ());
-          queue_metronome (Metronome::Type::Normal, metronome_offset);
-        }
-    }
 }
 
 SampleProcessor::~SampleProcessor ()

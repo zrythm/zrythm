@@ -111,9 +111,6 @@ TEST_F (GraphNodeTest, ProcessingWithTransport)
 {
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (Return (ITransport::PlayState::Rolling));
-  EXPECT_CALL (
-    *transport_, get_playhead_position_after_adding_frames_in_audio_thread (_))
-    .Times (1);
   EXPECT_CALL (*processable_, process_block (_)).Times (1);
 
   auto                  node = create_test_node ();

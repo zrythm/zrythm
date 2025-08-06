@@ -25,6 +25,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   auto * monitor_fader = engine->control_room_->monitor_fader_.get ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project.transport_;
+  auto  &metronome = *transport->metronome_;
 
   const auto add_node_for_processable = [&] (auto &processable) {
     return graph.add_node_for_processable (processable, *transport);
@@ -53,6 +54,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       add_node_for_processable (*fader_out.get_object_as<dsp::AudioPort> ());
     }
 #endif
+
+  // add metronome processor
+  dsp::ProcessorGraphBuilder::add_nodes (graph, *transport, metronome);
 
   /* add the monitor fader */
   dsp::ProcessorGraphBuilder::add_nodes (graph, *transport, *monitor_fader);
@@ -134,6 +138,25 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       sample_processor->fader_->get_stereo_out_ports ());
   }
 #endif
+
+  // connect metronome processor
+  {
+    dsp::ProcessorGraphBuilder::add_connections (graph, metronome);
+    const auto &[monitor_l_in, monitor_r_in] =
+      monitor_fader->get_stereo_in_ports ();
+    auto * monitor_l_in_node =
+      graph.get_nodes ().find_node_for_processable (monitor_l_in);
+    auto * monitor_r_in_node =
+      graph.get_nodes ().find_node_for_processable (monitor_r_in);
+    auto [metronome_l_out, metronome_r_out] =
+      metronome.get_output_audio_ports ();
+    auto * metronome_l_out_node =
+      graph.get_nodes ().find_node_for_processable (*metronome_l_out);
+    auto * metronome_r_out_node =
+      graph.get_nodes ().find_node_for_processable (*metronome_r_out);
+    metronome_l_out_node->connect_to (*monitor_l_in_node);
+    metronome_r_out_node->connect_to (*monitor_r_in_node);
+  }
 
   // connect midi panic processor
   {

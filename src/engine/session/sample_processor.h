@@ -6,7 +6,6 @@
 #include "dsp/graph.h"
 #include "dsp/midi_event.h"
 #include "dsp/position.h"
-#include "engine/session/metronome.h"
 #include "gui/dsp/sample_playback.h"
 #include "structure/tracks/fader.h"
 #include "structure/tracks/tracklist.h"
@@ -77,21 +76,6 @@ public:
   void remove_sample_playback (SamplePlayback &sp);
 
   /**
-   * Queues a metronomem tick at the given offset.
-   *
-   * Used for countin.
-   */
-  void queue_metronome_countin ();
-
-  /**
-   * Queues a metronomem tick at the given local
-   * offset.
-   *
-   * Realtime function.
-   */
-  void queue_metronome (Metronome::Type type, nframes_t offset);
-
-  /**
    * Adds a sample to play to the queue from a file path.
    */
   void queue_sample_from_file (const char * path);
@@ -116,19 +100,6 @@ public:
    * audio_engine_.
    */
   const dsp::TempoMap &get_tempo_map () const;
-
-  /**
-   * Finds all metronome events (beat and bar changes)
-   * within the given range and adds them to the
-   * queue.
-   *
-   * @param end_pos End position, exclusive.
-   * @param loffset Local offset (this is where @p start_pos starts at).
-   */
-  void find_and_queue_metronome (
-    signed_frame_t start_pos,
-    signed_frame_t end_pos,
-    nframes_t      loffset);
 
 private:
   static constexpr auto kFaderKey = "fader"sv;

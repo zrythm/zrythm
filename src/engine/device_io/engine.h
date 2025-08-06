@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include "dsp/audio_port.h"
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
@@ -489,9 +487,6 @@ public:
 
   /** Whether currently bouncing with parents (cache). */
   bool bounce_with_parents_ = false;
-
-  /** The metronome. */
-  std::unique_ptr<session::Metronome> metronome_;
 
   /** Whether the cycle is currently running. */
   std::atomic_bool cycle_running_{ false };

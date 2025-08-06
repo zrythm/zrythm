@@ -51,9 +51,29 @@ public:
    *
    * @return The position in samples.
    */
-  virtual signed_frame_t
-  get_playhead_position_after_adding_frames_in_audio_thread (
-    signed_frame_t frames) const = 0;
+  signed_frame_t get_playhead_position_after_adding_frames_in_audio_thread (
+    const signed_frame_t current_playhead_position,
+    const signed_frame_t frames_to_add) const
+  {
+    auto new_pos = current_playhead_position + frames_to_add;
+
+    /* if start frames were before the loop-end point and the new frames are
+     * after (loop crossed) */
+    if (loop_enabled ())
+      {
+        const auto loop_points = get_loop_range_positions ();
+        const auto loop_start = static_cast<signed_frame_t> (loop_points.first);
+        const auto loop_end = static_cast<signed_frame_t> (loop_points.second);
+        if (current_playhead_position < loop_end && new_pos >= loop_end)
+          {
+            /* adjust the new frames */
+            new_pos += loop_start - loop_end;
+            assert (new_pos < loop_end);
+          }
+      }
+
+    return new_pos;
+  }
 
   virtual bool loop_enabled () const = 0;
 
@@ -65,10 +85,25 @@ public:
   virtual bool recording_enabled () const = 0;
 
   /**
-   * @brief Whether we still have frames to preroll (playing back some time
-   * earlier before actually recording).
+   * @brief Frames remaining to preroll (playing back some time
+   * earlier before actually recording/rolling).
+   *
+   * Preroll is a number of frames earlier to start at before the punch in
+   * position during recording.
    */
-  virtual bool has_preroll_frames_remaining () const = 0;
+  virtual unsigned_frame_t recording_preroll_frames_remaining () const = 0;
+
+  bool has_recording_preroll_frames_remaining () const
+  {
+    return recording_preroll_frames_remaining () > 0;
+  }
+
+  /**
+   * @brief Frames remaining for metronome countin.
+   *
+   * @note Count-in happens while the playhead is not moving.
+   */
+  virtual unsigned_frame_t metronome_countin_frames_remaining () const = 0;
 
   /**
    * Returns the number of processable frames until and excluding the loop end

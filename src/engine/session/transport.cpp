@@ -40,8 +40,6 @@ Transport::init_common ()
   const bool testing_or_benchmarking = ZRYTHM_TESTING || ZRYTHM_BENCHMARKING;
   loop_ =
     testing_or_benchmarking ? true : gui::SettingsManager::transportLoop ();
-  metronome_enabled_ =
-    testing_or_benchmarking ? true : gui::SettingsManager::metronomeEnabled ();
   punch_mode_ =
     testing_or_benchmarking ? true : gui::SettingsManager::punchModeEnabled ();
   start_playback_on_midi_input_ =
@@ -148,6 +146,60 @@ Transport::Transport (Project * parent)
   rec_toggle_->set_symbol (u8"rec_toggle");
   rec_toggle_->set_full_designation_provider (this);
   // rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
+
+  const auto load_metronome_sample = [] (QFile f) {
+    if (!f.open (QFile::ReadOnly | QFile::Text))
+      {
+        throw std::runtime_error (
+          fmt::format ("Failed to open file at {}", f.fileName ()));
+      }
+    const QByteArray                         wavBytes = f.readAll ();
+    std::unique_ptr<juce::AudioFormatReader> reader;
+    {
+      auto stream = std::make_unique<juce::MemoryInputStream> (
+        wavBytes.constData (), static_cast<size_t> (wavBytes.size ()), false);
+      juce::WavAudioFormat wavFormat;
+      reader.reset (wavFormat.createReaderFor (stream.release (), false));
+    }
+    if (!reader)
+      throw std::runtime_error ("Not a valid WAV");
+
+    const int numChannels = static_cast<int> (reader->numChannels);
+    const int numSamples = static_cast<int> (reader->lengthInSamples);
+
+    juce::AudioBuffer<float> buffer;
+    buffer.setSize (numChannels, numSamples);
+
+    reader->read (&buffer, 0, numSamples, 0, true, numChannels > 1);
+    return buffer;
+  };
+  metronome_ = utils::make_qobject_unique<dsp::Metronome> (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = project_->get_port_registry (),
+      .param_registry_ = project_->get_param_registry () },
+    *this, project_->get_tempo_map (),
+    load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
+    load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
+    zrythm::gui::SettingsManager::get_instance ()->get_metronomeEnabled (),
+    zrythm::gui::SettingsManager::get_instance ()->get_metronomeVolume (), this);
+  QObject::connect (
+    metronome_.get (), &dsp::Metronome::volumeChanged,
+    zrythm::gui::SettingsManager::get_instance (), [] (float val) {
+      zrythm::gui::SettingsManager::get_instance ()->set_metronomeVolume (val);
+    });
+  QObject::connect (
+    zrythm::gui::SettingsManager::get_instance (),
+    &zrythm::gui::SettingsManager::metronomeVolume_changed, metronome_.get (),
+    [this] (float val) { metronome_->setVolume (val); });
+  QObject::connect (
+    metronome_.get (), &dsp::Metronome::enabledChanged,
+    zrythm::gui::SettingsManager::get_instance (), [] (bool val) {
+      zrythm::gui::SettingsManager::get_instance ()->set_metronomeEnabled (val);
+    });
+  QObject::connect (
+    zrythm::gui::SettingsManager::get_instance (),
+    &zrythm::gui::SettingsManager::metronomeEnabled_changed, metronome_.get (),
+    [this] (bool val) { metronome_->setEnabled (val); });
 
   init_common ();
 }
@@ -492,10 +544,6 @@ Transport::requestRoll (bool with_wait)
         type_safe::get (audio_engine_->frames_per_tick_)
         * (double) ticks_per_bar_;
       countin_frames_remaining_ = (long) ((double) num_bars * frames_per_bar);
-      if (metronome_enabled_)
-        {
-          SAMPLE_PROCESSOR->queue_metronome_countin ();
-        }
 
       if (recording_)
         {
@@ -513,16 +561,12 @@ Transport::requestRoll (bool with_wait)
             playhead_.get_tempo_map ().musical_position_to_tick (
               new_pos_musical));
           auto pos_frame = playhead_.get_tempo_map ().tick_to_samples (pos_tick);
-          preroll_frames_remaining_ = static_cast<signed_frame_t> (std::round (
+          recording_preroll_frames_remaining_ = static_cast<
+            signed_frame_t> (std::round (
             playhead_.get_tempo_map ().tick_to_samples (
               playhead_.position_ticks ())
             - pos_frame));
           playhead_adapter_->setTicks (pos_tick);
-#if 0
-          z_debug (
-            "preroll %ld frames",
-            preroll_frames_remaining_);
-#endif
         }
     }
 
@@ -533,8 +577,8 @@ void
 Transport::add_to_playhead_in_audio_thread (const signed_frame_t nframes)
 {
   const auto cur_pos = get_playhead_position_in_audio_thread ();
-  auto       new_pos =
-    get_playhead_position_after_adding_frames_in_audio_thread (nframes);
+  auto new_pos = get_playhead_position_after_adding_frames_in_audio_thread (
+    get_playhead_position_in_audio_thread (), nframes);
   auto diff = new_pos - cur_pos;
   playhead_.advance_processing (diff);
 }
@@ -618,13 +662,6 @@ Transport::move_playhead (double target_ticks, bool set_cue_point)
       Position target{ target_ticks, AUDIO_ENGINE->frames_per_tick_ };
       cue_pos_->set_position_rtsafe (target);
     }
-}
-
-void
-Transport::set_metronome_enabled (bool enabled)
-{
-  metronome_enabled_ = enabled;
-  gui::SettingsManager::get_instance ()->set_metronomeEnabled (enabled);
 }
 
 double
@@ -785,28 +822,6 @@ Transport::set_loop (bool enabled, bool with_wait)
     }
 
   Q_EMIT (loopEnabledChanged (loop_));
-}
-
-signed_frame_t
-Transport::get_playhead_position_after_adding_frames_in_audio_thread (
-  const signed_frame_t frames) const
-{
-  const auto pos_before_adding =
-    static_cast<int64_t> (playhead_.position_during_processing_rounded ());
-  auto new_pos = pos_before_adding + frames;
-
-  /* if start frames were before the loop-end point and the new frames are after
-   * (loop crossed) */
-  if (
-    loop_ && pos_before_adding < loop_end_pos_->frames_
-    && new_pos >= loop_end_pos_->frames_)
-    {
-      /* adjust the new frames */
-      new_pos += loop_start_pos_->frames_ - loop_end_pos_->frames_;
-      assert (new_pos < loop_end_pos_->frames_);
-    }
-
-  return new_pos;
 }
 
 void

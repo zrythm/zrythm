@@ -38,7 +38,6 @@
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/metronome.h"
 #include "engine/session/recording_manager.h"
 #include "engine/session/sample_processor.h"
 #include "engine/session/transport.h"
@@ -236,7 +235,6 @@ AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter
 void
 AudioEngine::init_common ()
 {
-  metronome_ = std::make_unique<session::Metronome> (*this);
   router_ = std::make_unique<session::DspGraphDispatcher> (this);
 
   pan_law_ =
@@ -745,13 +743,6 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     {
       nframes_t num_preroll_frames =
         std::min (total_frames_remaining, remaining_latency_preroll_);
-      if (ZRYTHM_TESTING)
-        {
-          if (num_preroll_frames > 0)
-            {
-              z_info ("prerolling for {} frames", num_preroll_frames);
-            }
-        }
 
       /* loop through each route */
       for (
@@ -807,12 +798,6 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     {
       nframes_t cur_offset = total_frames_to_process - total_frames_remaining;
 
-      /* queue metronome if met within this cycle */
-      if (transport_->metronome_enabled_ && transport_->isRolling ())
-        {
-          metronome_->queue_events (this, cur_offset, total_frames_remaining);
-        }
-
       /* split at countin */
       if (transport_->countin_frames_remaining_ > 0)
         {
@@ -838,11 +823,12 @@ AudioEngine::process (const nframes_t total_frames_to_process)
       /* split at preroll */
       if (
         transport_->countin_frames_remaining_ == 0
-        && transport_->preroll_frames_remaining_ > 0)
+        && transport_->has_recording_preroll_frames_remaining ())
         {
           nframes_t preroll_frames = std::min (
             total_frames_remaining,
-            static_cast<nframes_t> (transport_->preroll_frames_remaining_));
+            static_cast<nframes_t> (
+              transport_->recording_preroll_frames_remaining ()));
 
           /* process for preroll frames */
           split_time_nfo.g_start_frame_w_offset_ =
@@ -850,7 +836,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
           split_time_nfo.local_offset_ = cur_offset;
           split_time_nfo.nframes_ = preroll_frames;
           router_->start_cycle (split_time_nfo);
-          transport_->preroll_frames_remaining_ -= preroll_frames;
+          transport_->recording_preroll_frames_remaining_ -= preroll_frames;
 
           /* process for remaining frames */
           cur_offset += preroll_frames;

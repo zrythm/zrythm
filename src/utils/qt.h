@@ -12,6 +12,21 @@
 namespace zrythm::utils
 {
 
+/**
+ * @brief Helper that checks if 2 values are equal.
+ *
+ * This is intended used in QObject property setters.
+ */
+template <class T>
+constexpr bool
+values_equal_for_qproperty_type (const T &a, const T &b)
+{
+  if constexpr (std::is_floating_point_v<T>)
+    return qFuzzyCompare (a, b);
+  else
+    return a == b;
+}
+
 template <typename T>
 concept QObjectDerived = std::is_base_of_v<QObject, T>;
 

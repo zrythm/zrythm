@@ -32,7 +32,8 @@
       "showDisplayString": true,
       "args": [
         "-qmljsdebugger=host:localhost,port:${command:qt-qml.debugPort},block,services:DebugMessages,QmlDebugger,V8Debugger",
-        // "--gtest_filter='*PassthroughProcessor*'",
+        // note: Removing all breakpoints fixes occasional segfaults on gdb launch
+        // "--gtest_filter='*MetronomeTest.PrerollTicks*'",
       ],
       "linux": {
         "MIMode": "gdb",

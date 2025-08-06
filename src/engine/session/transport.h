@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/itransport.h"
+#include "dsp/metronome.h"
 #include "dsp/midi_port.h"
 #include "dsp/playhead.h"
 #include "dsp/playhead_qml_adapter.h"
@@ -66,6 +67,7 @@ class Transport : public QObject, public dsp::ITransport
   Q_PROPERTY (PositionProxy * loopEndPosition READ getLoopEndPosition CONSTANT)
   Q_PROPERTY (PositionProxy * punchInPosition READ getPunchInPosition CONSTANT)
   Q_PROPERTY (PositionProxy * punchOutPosition READ getPunchOutPosition CONSTANT)
+  Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
@@ -157,6 +159,8 @@ public:
 
   PositionProxy * getPunchOutPosition () const;
 
+  dsp::Metronome * metronome () const { return metronome_.get (); }
+
   Q_INVOKABLE void moveBackward ();
   Q_INVOKABLE void moveForward ();
 
@@ -244,11 +248,6 @@ public:
   void set_start_playback_on_midi_input (bool enabled);
 
   void set_recording_mode (RecordingMode mode);
-
-  /**
-   * Sets whether metronome is enabled or not.
-   */
-  void set_metronome_enabled (bool enabled);
 
   /**
    * Moves the playhead by the time corresponding to given samples, taking into
@@ -380,9 +379,6 @@ frames_add_frames (
   const nframes_t   frames);
 #endif
 
-  signed_frame_t get_playhead_position_after_adding_frames_in_audio_thread (
-    signed_frame_t frames) const override;
-
   /**
    * Returns the PPQN (Parts/Ticks Per Quarter Note).
    */
@@ -437,12 +433,16 @@ frames_add_frames (
 
   bool position_is_inside_punch_range (Position pos);
 
-  bool loop_enabled () const override { return loop_; }
-  bool punch_enabled () const override { return punch_mode_; }
-  bool recording_enabled () const override { return recording_; }
-  bool has_preroll_frames_remaining () const override
+  bool             loop_enabled () const override { return loop_; }
+  bool             punch_enabled () const override { return punch_mode_; }
+  bool             recording_enabled () const override { return recording_; }
+  unsigned_frame_t recording_preroll_frames_remaining () const override
   {
-    return preroll_frames_remaining_ > 0;
+    return recording_preroll_frames_remaining_;
+  }
+  unsigned_frame_t metronome_countin_frames_remaining () const override
+  {
+    return countin_frames_remaining_;
   }
 
   /**
@@ -555,6 +555,9 @@ public:
   dsp::Playhead                                    playhead_;
   utils::QObjectUniquePtr<dsp::PlayheadQmlWrapper> playhead_adapter_;
 
+  /** The metronome. */
+  utils::QObjectUniquePtr<dsp::Metronome> metronome_;
+
   /** Cue point position. */
   PositionProxy * cue_pos_ = nullptr;
 
@@ -608,11 +611,8 @@ public:
    * bar). */
   std::atomic_bool recording_ = false;
 
-  /** Metronome enabled or not. */
-  std::atomic_bool metronome_enabled_ = false;
-
   /** Recording preroll frames remaining. */
-  signed_frame_t preroll_frames_remaining_ = 0;
+  signed_frame_t recording_preroll_frames_remaining_ = 0;
 
   /** Metronome countin frames remaining. */
   signed_frame_t countin_frames_remaining_ = 0;

@@ -81,9 +81,10 @@ GraphNode::compensate_latency (
    * loop end (there is a loop inside the range), that should be handled
    * by the ports/processors instead */
   z_return_if_fail (route_playback_latency_ >= remaining_preroll_frames);
-  auto adjusted_playhead_position =
+  const auto playhead_pos = transport_.get_playhead_position_in_audio_thread ();
+  auto       adjusted_playhead_position =
     transport_.get_playhead_position_after_adding_frames_in_audio_thread (
-      route_playback_latency_ - remaining_preroll_frames);
+      playhead_pos, route_playback_latency_ - remaining_preroll_frames);
   time_nfo.g_start_frame_ =
     static_cast<unsigned_frame_t> (adjusted_playhead_position);
   time_nfo.g_start_frame_w_offset_ =

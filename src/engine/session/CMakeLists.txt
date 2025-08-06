@@ -11,8 +11,6 @@ target_sources(zrythm_gui_lib
     graph_dispatcher.cpp
     graph_export.h
     graph_export.cpp
-    metronome.h
-    metronome.cpp
     midi_mapping.h
     midi_mapping.cpp
     project_graph_builder.h

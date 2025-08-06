@@ -83,6 +83,8 @@ ProcessorBase::release_resources ()
       std::visit (port_visitor, out_ref.get_object ());
     }
 
+  custom_release_resources ();
+
   sample_rate_ = 0;
   max_block_length_ = 0;
 }

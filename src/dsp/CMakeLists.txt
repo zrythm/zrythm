@@ -38,6 +38,8 @@ target_sources(zrythm_dsp_lib
     itransport.h
     kmeter_dsp.h
     kmeter_dsp.cpp
+    metronome.h
+    metronome.cpp
     midi_event.h
     midi_event.cpp
     midi_panic_processor.h

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "utils/logger.h"
-#include "utils/math.h"
+#include "utils/qt.h"
 
 #include <QCoreApplication>
 #include <QSettings>
@@ -15,7 +15,7 @@ using namespace Qt::StringLiterals;
 namespace zrythm::gui
 {
 
-#define DEFINE_SETTING_PROPERTY_WITHOUT_SETTER(ptype, name, default_value) \
+#define DEFINE_SETTING_PROPERTY(ptype, name, default_value) \
 \
   Q_PROPERTY ( \
     ptype name READ get_##name WRITE set_##name NOTIFY name##_changed) \
@@ -34,41 +34,18 @@ public: \
   { \
     return get_instance ()->get_##name (); \
   } \
-\
-  Q_SIGNAL void name##_changed ();
-
-#define DEFINE_SETTING_PROPERTY(ptype, name, default_value) \
-\
-  DEFINE_SETTING_PROPERTY_WITHOUT_SETTER (ptype, name, default_value) \
   void set_##name (ptype value) \
   { \
-    if ( \
-      settings_.value (QStringLiteral (#name), default_value).value<ptype> () \
-      != value) \
-      { \
-        z_debug ("setting '{}' to '{}'", #name, value); \
-        settings_.setValue (QStringLiteral (#name), value); \
-        Q_EMIT name##_changed (); \
-        settings_.sync (); \
-      } \
-  }
-
-#define DEFINE_SETTING_PROPERTY_DOUBLE(ptype, name, default_value) \
-\
-  DEFINE_SETTING_PROPERTY_WITHOUT_SETTER (ptype, name, default_value) \
-  void set_##name (ptype value) \
-  { \
-    if ( \
-      !utils::math::floats_equal ( \
-        settings_.value (QStringLiteral (#name), default_value).value<ptype> (), \
-        value)) \
-      { \
-        z_debug ("setting '{}' to '{}'", #name, value); \
-        settings_.setValue (QStringLiteral (#name), value); \
-        Q_EMIT name##_changed (); \
-        settings_.sync (); \
-      } \
-  }
+    const auto current_value = \
+      settings_.value (QStringLiteral (#name), default_value).value<ptype> (); \
+    if (utils::values_equal_for_qproperty_type (current_value, value)) \
+      return; \
+    z_debug ("setting '{}' to '{}'", #name, value); \
+    settings_.setValue (QStringLiteral (#name), value); \
+    Q_EMIT name##_changed (value); \
+    settings_.sync (); \
+  } \
+  Q_SIGNAL void name##_changed (ptype value);
 
 class SettingsManager : public QObject
 {
@@ -85,7 +62,7 @@ class SettingsManager : public QObject
   DEFINE_SETTING_PROPERTY (bool, transportLoop, true)
   DEFINE_SETTING_PROPERTY (bool, transportReturnToCue, true)
   // note: in amplitude (0 to 2)
-  DEFINE_SETTING_PROPERTY_DOUBLE (double, metronomeVolume, 1.0)
+  DEFINE_SETTING_PROPERTY (double, metronomeVolume, 1.0)
   DEFINE_SETTING_PROPERTY (bool, metronomeEnabled, -1)
   DEFINE_SETTING_PROPERTY (int, metronomeCountIn, 0) // none
   DEFINE_SETTING_PROPERTY (bool, punchModeEnabled, false)
@@ -131,10 +108,10 @@ class SettingsManager : public QObject
   DEFINE_SETTING_PROPERTY (int, pianoRollHighlight, 3)    // both
   DEFINE_SETTING_PROPERTY (int, pianoRollMidiModifier, 0) // velocity
   /* these are all in amplitude (0.0 ~ 2.0) */
-  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorVolume, 1.0f)
-  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorMuteVolume, 0.0f)
-  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorListenVolume, 1.0f)
-  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorDimVolume, 0.1f)
+  DEFINE_SETTING_PROPERTY (float, monitorVolume, 1.0f)
+  DEFINE_SETTING_PROPERTY (float, monitorMuteVolume, 0.0f)
+  DEFINE_SETTING_PROPERTY (float, monitorListenVolume, 1.0f)
+  DEFINE_SETTING_PROPERTY (float, monitorDimVolume, 0.1f)
   DEFINE_SETTING_PROPERTY (bool, monitorDimEnabled, false)
   DEFINE_SETTING_PROPERTY (bool, monitorMuteEnabled, false)
   DEFINE_SETTING_PROPERTY (bool, monitorMonoEnabled, false)
@@ -159,18 +136,12 @@ class SettingsManager : public QObject
   DEFINE_SETTING_PROPERTY (bool, autoSelectTracks, true)
   DEFINE_SETTING_PROPERTY (int, lastAutomationFunction, -1)
   DEFINE_SETTING_PROPERTY (int, lastAudioFunction, -1)
-  DEFINE_SETTING_PROPERTY_DOUBLE (double, lastAudioFunctionPitchShiftRatio, 1.0)
+  DEFINE_SETTING_PROPERTY (double, lastAudioFunctionPitchShiftRatio, 1.0)
   DEFINE_SETTING_PROPERTY (int, lastMidiFunction, -1)
   DEFINE_SETTING_PROPERTY (QString, fileBrowserInstrument, {})
   DEFINE_SETTING_PROPERTY (int, automationCurveAlgorithm, 1) // superellipse
-  DEFINE_SETTING_PROPERTY_DOUBLE (
-    double,
-    timelineLastCreatedObjectLengthInTicks,
-    3840.0)
-  DEFINE_SETTING_PROPERTY_DOUBLE (
-    double,
-    editorLastCreatedObjectLengthInTicks,
-    480.0)
+  DEFINE_SETTING_PROPERTY (double, timelineLastCreatedObjectLengthInTicks, 3840.0)
+  DEFINE_SETTING_PROPERTY (double, editorLastCreatedObjectLengthInTicks, 480.0)
   DEFINE_SETTING_PROPERTY (QString, uiLocale, {})
 
 public:

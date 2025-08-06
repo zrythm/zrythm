@@ -28,11 +28,6 @@ class MockTransport : public zrythm::dsp::ITransport
 {
 public:
   MOCK_METHOD (
-    signed_frame_t,
-    get_playhead_position_after_adding_frames_in_audio_thread,
-    (signed_frame_t),
-    (const, override));
-  MOCK_METHOD (
     (std::pair<unsigned_frame_t, unsigned_frame_t>),
     get_loop_range_positions,
     (),
@@ -51,7 +46,16 @@ public:
   MOCK_METHOD (bool, loop_enabled, (), (const, override));
   MOCK_METHOD (bool, punch_enabled, (), (const, override));
   MOCK_METHOD (bool, recording_enabled, (), (const, override));
-  MOCK_METHOD (bool, has_preroll_frames_remaining, (), (const, override));
+  MOCK_METHOD (
+    unsigned_frame_t,
+    recording_preroll_frames_remaining,
+    (),
+    (const, override));
+  MOCK_METHOD (
+    unsigned_frame_t,
+    metronome_countin_frames_remaining,
+    (),
+    (const, override));
   MOCK_METHOD (
     nframes_t,
     is_loop_point_met_in_audio_thread,

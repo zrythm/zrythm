@@ -6,6 +6,7 @@
 #include "zrythm-config.h"
 
 #include <filesystem>
+#include <source_location>
 
 #include "utils/qt.h"
 #include "utils/string.h"
@@ -257,6 +258,21 @@ template <> struct fmt::formatter<QUuid> : fmt::formatter<std::string_view>
   {
     return fmt::formatter<QString>{}.format (
       uuid.toString (QUuid::WithoutBraces), ctx);
+  }
+};
+
+// Formatter for source_location
+template <>
+struct fmt::formatter<std::source_location> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const std::source_location &loc, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (
+      fmt::format (
+        "{}:{}:{}:{}", loc.file_name (), loc.function_name (), loc.line (),
+        loc.column ()),
+      ctx);
   }
 };
 

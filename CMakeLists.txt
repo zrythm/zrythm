@@ -690,6 +690,11 @@ if(ZRYTHM_STRICT)
       -Werror=null-dereference
       -Werror=defaulted-function-deleted
       -fsafe-buffer-usage-suggestions
+
+      # For RealtimeSanitizer compile-time checks
+      # TODO: enable and convert to -Werror=
+      # -Wfunction-effects
+      -Wperf-constraint-implies-noexcept
     )
   endif()
 endif()

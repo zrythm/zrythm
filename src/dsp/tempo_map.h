@@ -90,6 +90,10 @@ public:
     int beat{ 1 };      ///< Beat in bar (1-indexed)
     int sixteenth{ 1 }; ///< Sixteenth in beat (1-indexed)
     int tick{};         ///< Ticks in sixteenth (0-indexed)
+
+    friend bool
+    operator== (const MusicalPosition &lhs, const MusicalPosition &rhs) =
+      default;
   };
 
   /**
@@ -492,6 +496,15 @@ public:
       static_cast<int> (ticks_in_beat % ticks_per_sixteenth_);
 
     return { bar, beat, sixteenth, tick_in_sixteenth };
+  }
+
+  MusicalPosition samples_to_musical_position (int64_t samples) const
+  {
+    // Note: we are using `floor()` because we never want the MusicalPosition to
+    // be after the given samples
+    const auto tick = static_cast<std::int64_t> (
+      std::floor (samples_to_tick (static_cast<double> (samples))));
+    return tick_to_musical_position (tick);
   }
 
   /**

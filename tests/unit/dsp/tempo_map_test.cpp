@@ -519,4 +519,52 @@ TEST_F (TempoMapTest, EmptySerialization)
   EXPECT_EQ (ts.numerator, 4);
   EXPECT_EQ (ts.denominator, 4);
 }
+
+// Test samples to musical position conversion
+TEST_F (TempoMapTest, SamplesToMusicalPosition)
+{
+  // Test basic conversion with default 120 BPM, 4/4 time
+  auto pos = map->samples_to_musical_position (0);
+  EXPECT_EQ (pos.bar, 1);
+  EXPECT_EQ (pos.beat, 1);
+  EXPECT_EQ (pos.sixteenth, 1);
+  EXPECT_EQ (pos.tick, 0);
+
+  // Test quarter note at 120 BPM (0.5 seconds = 22050 samples at 44.1kHz)
+  const int64_t quarterNoteSamples = static_cast<int64_t> (0.5 * SAMPLE_RATE);
+  pos = map->samples_to_musical_position (quarterNoteSamples);
+  EXPECT_EQ (pos.bar, 1);
+  EXPECT_EQ (pos.beat, 2);
+  EXPECT_EQ (pos.sixteenth, 1);
+  EXPECT_EQ (pos.tick, 0);
+
+  // Test half note (1 second = 44100 samples)
+  const int64_t halfNoteSamples = static_cast<int64_t> (1.0 * SAMPLE_RATE);
+  pos = map->samples_to_musical_position (halfNoteSamples);
+  EXPECT_EQ (pos.bar, 1);
+  EXPECT_EQ (pos.beat, 3);
+  EXPECT_EQ (pos.sixteenth, 1);
+  EXPECT_EQ (pos.tick, 0);
+
+  // Test full bar (2 seconds = 88200 samples)
+  const int64_t fullBarSamples = static_cast<int64_t> (2.0 * SAMPLE_RATE);
+  pos = map->samples_to_musical_position (fullBarSamples);
+  EXPECT_EQ (pos.bar, 2);
+  EXPECT_EQ (pos.beat, 1);
+  EXPECT_EQ (pos.sixteenth, 1);
+  EXPECT_EQ (pos.tick, 0);
+
+  // Test fractional samples (should use floor rounding)
+  pos = map->samples_to_musical_position (quarterNoteSamples - 1);
+  EXPECT_EQ (pos.bar, 1);
+  EXPECT_EQ (pos.beat, 1);
+  EXPECT_EQ (pos.sixteenth, 4); // Last sixteenth of beat 1
+  EXPECT_EQ (pos.tick, 239);    // 240 ticks per sixteenth - 1
+
+  pos = map->samples_to_musical_position (quarterNoteSamples + 1);
+  EXPECT_EQ (pos.bar, 1);
+  EXPECT_EQ (pos.beat, 2);
+  EXPECT_EQ (pos.sixteenth, 1);
+  EXPECT_EQ (pos.tick, 0);
+}
 }

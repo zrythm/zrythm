@@ -132,6 +132,21 @@ foreach(font_filepath ${font_filepaths})
   list(APPEND font_files ${font_filepath})
 endforeach()
 
+# WAV files
+set(wav_filepaths
+  ${CMAKE_SOURCE_DIR}/data/samples/klick/square_emphasis.wav
+  ${CMAKE_SOURCE_DIR}/data/samples/klick/square_normal.wav
+)
+set(wav_files)
+foreach(wav_filepath ${wav_filepaths})
+  get_filename_component(wav_name ${wav_filepath} NAME)
+  set_source_files_properties(${wav_filepath}
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTIES QT_RESOURCE_ALIAS "wav/${wav_name}"
+    )
+  list(APPEND wav_files ${wav_filepath})
+endforeach()
+
 set(rel_qml_file_paths
   components/basic/EditableValueDisplay.qml
   components/basic/LinkedButtons.qml
@@ -236,6 +251,7 @@ qt_add_qml_module(zrythm
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf
     ${icon_files}
     ${font_files}
+    ${wav_files}
 
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)
