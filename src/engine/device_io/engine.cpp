@@ -80,9 +80,13 @@ AudioEngine::AudioEngine (
             float * const *       outputChannelData,
             int                   numOutputChannels,
             int                   numSamples) {
+            juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
+              load_measurer_
+            };
             dsp::PlayheadProcessingGuard guard{
               this->project_->transport_->playhead_
             };
+
             this->process (numSamples);
             const auto &[monitor_left, monitor_right] = get_monitor_out_ports ();
             if (numOutputChannels > 0)
@@ -480,6 +484,8 @@ AudioEngine::activate (bool activate)
 
   if (activate)
     {
+      load_measurer_.reset (
+        get_sample_rate (), static_cast<int> (get_block_length ()));
       device_manager_->addAudioCallback (audio_callback_.get ());
     }
   else
@@ -905,12 +911,6 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
     {
       transport_->add_to_playhead_in_audio_thread (roll_nframes);
     }
-
-  /* update max time taken (for calculating DSP %) */
-  auto last_time_taken =
-    Zrythm::getInstance ()->get_monotonic_time_usecs () - timestamp_start_;
-  max_time_taken_ =
-    std::max<utils::MonotonicTime> (max_time_taken_, last_time_taken);
 }
 
 void

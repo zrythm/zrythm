@@ -435,19 +435,7 @@ public:
   /** Pan algorithm */
   dsp::PanAlgorithm pan_algo_ = {};
 
-  /** Time taken to process in the last cycle */
-  // SteadyDuration last_time_taken_;
-
-  /**
-   * @brief Max time taken in the last few processing cycles.
-   *
-   * This is used by the DSP usage meter, which also clears the value to 0
-   * upon reading it.
-   *
-   * @note Could use a lock since it is written to by 2 different threads,
-   * but there are no consequences if it has bad data.
-   */
-  RtDuration max_time_taken_{};
+  juce::AudioProcessLoadMeasurer load_measurer_;
 
   /** Timestamp at the start of the current cycle. */
   RtTimePoint timestamp_start_{};
