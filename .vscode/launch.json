@@ -55,10 +55,6 @@
             "name": "UBSAN_OPTIONS",
             "value": "halt_on_error=1:abort_on_error=1"
           },
-          {
-            "name": "ZRYTHM_SAMPLES_PATH",
-            "value": "${workspaceFolder}/data/samples",
-          },
         ],
         "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
         "setupCommands": [
@@ -155,10 +151,6 @@
           "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
         },
         {
-          "name": "ZRYTHM_SAMPLES_PATH",
-          "value": "${workspaceFolder}/data/samples",
-        },
-        {
           "name": "QT_QPA_PLATFORM",
           "value": "wayland",
         },
@@ -192,10 +184,6 @@
         {
           "name": "ZRYTHM_ENGINE_PATH",
           "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
-        },
-        {
-          "name": "ZRYTHM_SAMPLES_PATH",
-          "value": "${workspaceFolder}/data/samples",
         },
       ],
       "cwd": "${workspaceFolder}"

@@ -37,13 +37,15 @@ protected:
     EXPECT_CALL (*transport_, get_play_state ())
       .Times (::testing::AnyNumber ())
       .WillRepeatedly (Return (dsp::ITransport::PlayState::Rolling));
-    EXPECT_CALL (
-      *transport_, get_playhead_position_after_adding_frames_in_audio_thread (_))
+    EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
       .Times (::testing::AnyNumber ())
       .WillRepeatedly (Return (0));
     EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
       .Times (::testing::AnyNumber ())
       .WillRepeatedly (Return (0));
+    EXPECT_CALL (*transport_, loop_enabled ())
+      .Times (::testing::AnyNumber ())
+      .WillRepeatedly (Return (false));
   }
 
   void TearDown (benchmark::State &state) override
