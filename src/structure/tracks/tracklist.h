@@ -42,6 +42,9 @@ class Tracklist final : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
+  Q_PROPERTY (
+    zrythm::structure::tracks::MasterTrack * masterTrack READ masterTrack
+      CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
@@ -90,6 +93,8 @@ public:
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  MasterTrack * masterTrack () const { return master_track_; }
 
   Q_INVOKABLE void setExclusivelySelectedTrack (QVariant track);
 

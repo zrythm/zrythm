@@ -4,13 +4,13 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 ZrythmToolBar {
   id: root
 
-  required property var project
+  required property Project project
 
   centerItems: [
     TransportControls {
@@ -67,6 +67,18 @@ ZrythmToolBar {
     }
   ]
   rightItems: [
+    SpectrumAnalyzer {
+      leftPort: root.project.tracklist.masterTrack.channel.leftAudioOut
+      padding: 4
+      rightPort: root.project.tracklist.masterTrack.channel.rightAudioOut
+      width: 120
+    },
+    WaveformViewer {
+      leftPort: root.project.tracklist.masterTrack.channel.leftAudioOut
+      padding: 4
+      rightPort: root.project.tracklist.masterTrack.channel.rightAudioOut
+      width: 120
+    },
     ToolButton {
       id: toggleRightDock
 

@@ -2,22 +2,22 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
+import QtQuick.Controls
 import ZrythmGui
 
-Item {
+Control {
   id: root
 
   property int fft_size: 512
   required property AudioPort leftPort
   readonly property real max_frequency: sampleRate / 2
   property real min_frequency: 40.0
-  property int sampleRate: 44100 // TODO: get from engine
   required property AudioPort rightPort
+  property int sampleRate: 44100 // TODO: get from engine
   readonly property color spectrumColor: root.palette.text
 
-  implicitWidth: 120
-  implicitHeight: 60
-
+  implicitHeight: 24
+  implicitWidth: 60
 
   onLeftPortChanged: canvas.requestPaint()
   onRightPortChanged: canvas.requestPaint()
@@ -36,17 +36,15 @@ Item {
   Canvas {
     id: canvas
 
-    function lerp(a, b, t) {
-      return a * (1 - t) + b * t;
-    }
-
     function get_bin_pos(bin, num_bins) {
       // Use C++ for frequency scaling calculations
       const scaled_freq = spectrumAnalyzer.getScaledFrequency(bin, num_bins, root.min_frequency, root.max_frequency);
       return Math.max(0, Math.min(width - 1, scaled_freq * width));
     }
 
-    anchors.fill: parent
+    function lerp(a, b, t) {
+      return a * (1 - t) + b * t;
+    }
 
     onPaint: {
       const ctx = getContext("2d");
@@ -81,6 +79,11 @@ Item {
       const last_power = data[bin_count - 1];
       const last_bar_height = height * last_power;
       ctx.fillRect(last_freq_pos, height - last_bar_height, 1, last_bar_height);
+    }
+
+    anchors {
+      fill: parent
+      margins: root.padding
     }
   }
 }

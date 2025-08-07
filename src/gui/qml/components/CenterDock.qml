@@ -37,8 +37,8 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: ruler.height
           Layout.minimumHeight: ruler.height
-          trackFactory: project.trackFactory
-          tracklist: project.tracklist
+          trackFactory: root.project.trackFactory
+          tracklist: root.project.tracklist
         }
 
         Tracklist {
@@ -47,7 +47,7 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.preferredHeight: contentHeight
           pinned: true
-          tracklist: project.tracklist
+          tracklist: root.project.tracklist
         }
 
         Tracklist {
@@ -57,7 +57,7 @@ ColumnLayout {
           Layout.maximumHeight: unpinnedTimelineArranger.height
           Layout.minimumHeight: unpinnedTimelineArranger.height
           pinned: false
-          tracklist: project.tracklist
+          tracklist: root.project.tracklist
         }
       }
 
@@ -80,9 +80,9 @@ ColumnLayout {
           Ruler {
             id: ruler
 
-            editorSettings: project.timeline.editorSettings
-            tempoMap: project.tempoMap
-            transport: project.transport
+            editorSettings: root.project.timeline.editorSettings
+            tempoMap: root.project.tempoMap
+            transport: root.project.transport
           }
 
           Binding {
@@ -106,15 +106,15 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: pinnedTracklist.height
           Layout.minimumHeight: pinnedTracklist.height
-          clipEditor: project.clipEditor
-          objectFactory: project.arrangerObjectFactory
+          clipEditor: root.project.clipEditor
+          objectFactory: root.project.arrangerObjectFactory
           pinned: true
           ruler: ruler
-          tempoMap: project.tempoMap
-          timeline: project.timeline
-          tool: project.tool
-          tracklist: project.tracklist
-          transport: project.transport
+          tempoMap: root.project.tempoMap
+          timeline: root.project.timeline
+          tool: root.project.tool
+          tracklist: root.project.tracklist
+          transport: root.project.transport
         }
 
         Timeline {
@@ -122,15 +122,15 @@ ColumnLayout {
 
           Layout.fillHeight: true
           Layout.fillWidth: true
-          clipEditor: project.clipEditor
-          objectFactory: project.arrangerObjectFactory
+          clipEditor: root.project.clipEditor
+          objectFactory: root.project.arrangerObjectFactory
           pinned: false
           ruler: ruler
-          tempoMap: project.tempoMap
-          timeline: project.timeline
-          tool: project.tool
-          tracklist: project.tracklist
-          transport: project.transport
+          tempoMap: root.project.tempoMap
+          timeline: root.project.timeline
+          tool: root.project.tool
+          tracklist: root.project.tracklist
+          transport: root.project.transport
         }
       }
     }
