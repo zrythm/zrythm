@@ -76,6 +76,7 @@ target_link_libraries(juce_lib
     juce::juce_audio_utils
     juce::juce_core
     juce::juce_data_structures
+    juce::juce_dsp
   PUBLIC
     juce::juce_recommended_config_flags
     # juce::juce_recommended_warning_flags

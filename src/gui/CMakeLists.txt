@@ -192,12 +192,14 @@ set(rel_qml_file_paths
   components/PluginBrowserPage.qml
   components/RightDock.qml
   components/Ruler.qml
+  components/SpectrumAnalyzer.qml
   components/ToolBox.qml
   components/Tracklist.qml
   components/TracklistHeader.qml
   components/TrackView.qml
   components/TransportControls.qml
   components/UndoSplitButton.qml
+  components/WaveformViewer.qml
   Greeter.qml
   DemoView.qml
   utils/ArrangerObjectHelpers.qml

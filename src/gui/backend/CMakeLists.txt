@@ -44,6 +44,8 @@ target_sources(zrythm_gui_lib
     recent_projects_model.cpp
     resource_manager.h
     resource_manager.cpp
+    spectrum_analyzer.h
+    spectrum_analyzer.cpp
     tool.h
     tool.cpp
     track_filter_proxy_model.h
@@ -52,6 +54,8 @@ target_sources(zrythm_gui_lib
     translation_manager.cpp
     ui.h
     ui.cpp
+    waveform_viewer.h
+    waveform_viewer.cpp
     zrythm_application.h
     zrythm_application.cpp
 )
