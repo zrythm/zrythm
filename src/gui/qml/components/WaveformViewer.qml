@@ -4,11 +4,11 @@
 import QtQuick
 import QtQuick.Controls
 import Zrythm
+import ZrythmStyle
 
 Control {
   id: root
 
-  readonly property color backgroundColor: root.palette.window
   required property AudioPort leftPort
   required property AudioPort rightPort
   readonly property color waveformColor: root.palette.text
@@ -42,76 +42,85 @@ Control {
     onWaveformDataChanged: canvas.requestPaint()
   }
 
-  Canvas {
-    id: canvas
+  Rectangle {
+    border.color: root.palette.mid
+    border.width: 1
+    color: root.palette.base
+    radius: 2
 
-    onPaint: {
-      var ctx = getContext("2d");
-      ctx.clearRect(0, 0, width, height);
+    Canvas {
+      id: canvas
 
-      if (!processor.waveformData || processor.waveformData.length === 0) {
-        return;
-      }
+      anchors.fill: parent
 
-      const data = processor.waveformData;
-      const dataLength = data.length;
-      const canvasWidth = width;
-      const canvasHeight = height;
-      const centerY = canvasHeight / 2;
+      onPaint: {
+        var ctx = getContext("2d");
+        ctx.clearRect(0, 0, width, height);
 
-      // Background
-      ctx.fillStyle = root.backgroundColor;
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        if (!processor.waveformData || processor.waveformData.length === 0) {
+          return;
+        }
 
-      // Center line
-      ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.2);
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, centerY);
-      ctx.lineTo(canvasWidth, centerY);
-      ctx.stroke();
+        const data = processor.waveformData;
+        const dataLength = data.length;
+        const canvasWidth = width;
+        const canvasHeight = height;
+        const centerY = canvasHeight / 2;
 
-      // Waveform
-      ctx.strokeStyle = root.waveformColor;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
+        // Center line
+        ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.2);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, centerY);
+        ctx.lineTo(canvasWidth, centerY);
+        ctx.stroke();
 
-      const barWidth = canvasWidth / dataLength;
+        // Waveform
+        ctx.strokeStyle = root.waveformColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
 
-      for (let i = 0; i < dataLength; i++) {
-        const value = data[i] * root.zoomLevel;
-        const x = i * barWidth;
-        const barHeight = value * centerY;
+        const barWidth = canvasWidth / dataLength;
 
-        if (i === 0) {
-          ctx.moveTo(x, centerY - barHeight);
-        } else {
+        for (let i = 0; i < dataLength; i++) {
+          const value = data[i] * root.zoomLevel;
+          const x = i * barWidth;
+          const barHeight = value * centerY;
+
+          if (i === 0) {
+            ctx.moveTo(x, centerY - barHeight);
+          } else {
+            ctx.lineTo(x, centerY - barHeight);
+          }
+        }
+
+        ctx.stroke();
+
+        // Fill under waveform
+        ctx.fillStyle = Qt.rgba(root.waveformColor.r, root.waveformColor.g, root.waveformColor.b, 0.3);
+        ctx.beginPath();
+        ctx.moveTo(0, centerY);
+
+        for (let i = 0; i < dataLength; i++) {
+          const value = data[i] * root.zoomLevel;
+          const x = i * barWidth;
+          const barHeight = value * centerY;
           ctx.lineTo(x, centerY - barHeight);
         }
+
+        ctx.lineTo(canvasWidth, centerY);
+        ctx.closePath();
+        ctx.fill();
       }
-
-      ctx.stroke();
-
-      // Fill under waveform
-      ctx.fillStyle = Qt.rgba(root.waveformColor.r, root.waveformColor.g, root.waveformColor.b, 0.3);
-      ctx.beginPath();
-      ctx.moveTo(0, centerY);
-
-      for (let i = 0; i < dataLength; i++) {
-        const value = data[i] * root.zoomLevel;
-        const x = i * barWidth;
-        const barHeight = value * centerY;
-        ctx.lineTo(x, centerY - barHeight);
-      }
-
-      ctx.lineTo(canvasWidth, centerY);
-      ctx.closePath();
-      ctx.fill();
     }
 
     anchors {
       fill: parent
       margins: root.padding
     }
+  }
+
+  ToolTip {
+    text: qsTr("Master Output Visualizer")
   }
 }

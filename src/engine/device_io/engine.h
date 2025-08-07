@@ -47,8 +47,11 @@ enum class BounceMode : basic_enum_base_type_t
 /**
  * The audio engine.
  */
-class AudioEngine final
+class AudioEngine : public QObject
 {
+  Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
 public:
   /**
    * Samplerates to be used in comboboxes.
@@ -144,7 +147,13 @@ public:
   /**
    * Closes any connections and free's data.
    */
-  ~AudioEngine ();
+  ~AudioEngine () override;
+
+  Q_INVOKABLE int xRunCount () const { return load_measurer_.getXRunCount (); }
+  Q_INVOKABLE double loadPercentage () const
+  {
+    return load_measurer_.getLoadAsPercentage ();
+  }
 
   auto &get_port_registry () { return *port_registry_; }
   auto &get_port_registry () const { return *port_registry_; }

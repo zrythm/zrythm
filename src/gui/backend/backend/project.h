@@ -80,22 +80,28 @@ class Project final : public QObject
     QString directory READ getDirectory WRITE setDirectory NOTIFY
       directoryChanged FINAL)
   Q_PROPERTY (
-    structure::tracks::Tracklist * tracklist READ getTracklist CONSTANT FINAL)
+    zrythm::structure::tracks::Tracklist * tracklist READ getTracklist CONSTANT
+      FINAL)
   Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
   Q_PROPERTY (
-    engine::session::Transport * transport READ getTransport CONSTANT FINAL)
+    zrythm::engine::device_io::AudioEngine * engine READ engine CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::engine::session::Transport * transport READ getTransport CONSTANT
+      FINAL)
   Q_PROPERTY (gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (
-    gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
+    zrythm::gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT
+      FINAL)
   Q_PROPERTY (
-    structure::arrangement::ArrangerObjectFactory * arrangerObjectFactory READ
-      getArrangerObjectFactory CONSTANT FINAL)
+    zrythm::structure::arrangement::ArrangerObjectFactory *
+      arrangerObjectFactory READ getArrangerObjectFactory CONSTANT FINAL)
   Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
   Q_PROPERTY (
-    structure::tracks::TrackFactory * trackFactory READ getTrackFactory CONSTANT
-      FINAL)
-  Q_PROPERTY (dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
+    zrythm::structure::tracks::TrackFactory * trackFactory READ getTrackFactory
+      CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
 public:
@@ -166,16 +172,17 @@ public:
   // QML interface
   // =========================================================
 
-  QString                        getTitle () const;
-  void                           setTitle (const QString &title);
-  QString                        getDirectory () const;
-  void                           setDirectory (const QString &directory);
-  structure::tracks::Tracklist * getTracklist () const;
-  Timeline *                     getTimeline () const;
-  engine::session::Transport *   getTransport () const;
-  gui::backend::Tool *           getTool () const;
-  ClipEditor *                   getClipEditor () const;
-  gui::actions::UndoManager *    getUndoManager () const;
+  QString                          getTitle () const;
+  void                             setTitle (const QString &title);
+  QString                          getDirectory () const;
+  void                             setDirectory (const QString &directory);
+  structure::tracks::Tracklist *   getTracklist () const;
+  Timeline *                       getTimeline () const;
+  engine::session::Transport *     getTransport () const;
+  engine::device_io::AudioEngine * engine () const;
+  gui::backend::Tool *             getTool () const;
+  ClipEditor *                     getClipEditor () const;
+  gui::actions::UndoManager *      getUndoManager () const;
   structure::arrangement::ArrangerObjectFactory *
                                     getArrangerObjectFactory () const;
   PluginFactory *                   getPluginFactory () const;
@@ -576,7 +583,7 @@ public:
   /**
    * The audio backend.
    */
-  std::unique_ptr<engine::device_io::AudioEngine> audio_engine_;
+  utils::QObjectUniquePtr<engine::device_io::AudioEngine> audio_engine_;
 
   /**
    * Timeline metadata like BPM, time signature, etc.

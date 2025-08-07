@@ -1,9 +1,8 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle
 
@@ -69,15 +68,18 @@ ZrythmToolBar {
   rightItems: [
     SpectrumAnalyzer {
       leftPort: root.project.tracklist.masterTrack.channel.leftAudioOut
-      padding: 4
+      padding: 2
       rightPort: root.project.tracklist.masterTrack.channel.rightAudioOut
       width: 120
     },
     WaveformViewer {
       leftPort: root.project.tracklist.masterTrack.channel.leftAudioOut
-      padding: 4
+      padding: 2
       rightPort: root.project.tracklist.masterTrack.channel.rightAudioOut
       width: 120
+    },
+    DspLoadIndicator {
+      id: dspLoadIndicator
     },
     ToolButton {
       id: toggleRightDock
@@ -205,4 +207,15 @@ ZrythmToolBar {
       }
     }
   ]
+
+  Timer {
+    interval: 1000
+    repeat: true
+    running: true
+
+    onTriggered: {
+      dspLoadIndicator.xRuns = root.project.engine.xRunCount();
+      dspLoadIndicator.loadValue = root.project.engine.loadPercentage();
+    }
+  }
 }

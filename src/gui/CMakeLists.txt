@@ -185,6 +185,7 @@ set(rel_qml_file_paths
   components/MainToolbar.qml
   components/BottomDock.qml
   components/CenterDock.qml
+  components/DspLoadIndicator.qml
   components/LeftDock.qml
   components/MainMenuBar.qml
   components/Meter.qml

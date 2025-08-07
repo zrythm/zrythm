@@ -67,7 +67,8 @@ Project::Project (
       tool_ (new gui::backend::Tool (this)),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       audio_engine_ (
-        std::make_unique<engine::device_io::AudioEngine> (this, device_manager)),
+        utils::make_qobject_unique<
+          engine::device_io::AudioEngine> (this, device_manager)),
       transport_ (new engine::session::Transport (this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
@@ -1179,8 +1180,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   obj.datetime_str_ = other.datetime_str_;
   obj.version_ = other.version_;
   obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
-  obj.audio_engine_ = utils::clone_unique (
-    *other.audio_engine_, clone_type, &obj, obj.device_manager_);
+  obj.audio_engine_ = utils::clone_qobject (
+    *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
   obj.pool_ = utils::clone_unique (
     *other.pool_, clone_type, *obj.file_audio_source_registry_,
     [&obj] (bool backup) { return obj.get_path (ProjectPath::POOL, backup); },
@@ -1264,6 +1265,12 @@ engine::session::Transport *
 Project::getTransport () const
 {
   return transport_;
+}
+
+engine::device_io::AudioEngine *
+Project::engine () const
+{
+  return audio_engine_.get ();
 }
 
 gui::backend::Tool *

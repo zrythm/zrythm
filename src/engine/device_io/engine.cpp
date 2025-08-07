@@ -56,7 +56,7 @@ namespace zrythm::engine::device_io
 AudioEngine::AudioEngine (
   Project *                                 project,
   std::shared_ptr<juce::AudioDeviceManager> device_mgr)
-    : port_registry_ (project->get_port_registry ()),
+    : QObject (project), port_registry_ (project->get_port_registry ()),
       param_registry_ (project->get_param_registry ()), project_ (project),
       device_manager_ (std::move (device_mgr)),
       control_room_ (

@@ -4,7 +4,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 // upward popup TODO
 ColumnLayout {
