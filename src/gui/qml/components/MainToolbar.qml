@@ -209,7 +209,7 @@ ZrythmToolBar {
   ]
 
   Timer {
-    interval: 1000
+    interval: 600
     repeat: true
     running: true
 
