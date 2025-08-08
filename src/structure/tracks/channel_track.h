@@ -8,14 +8,7 @@
 
 #define DEFINE_CHANNEL_TRACK_QML_PROPERTIES(ClassType) \
 public: \
-  /* ================================================================ */ \
-  /* channel */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (Channel * channel READ getChannel CONSTANT) \
-  Channel * getChannel () const \
-  { \
-    return channel_.get (); \
-  }
+  Q_PROPERTY (Channel * channel READ channel CONSTANT)
 
 namespace zrythm::structure::tracks
 {
@@ -35,16 +28,14 @@ public:
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry) override;
 
-  Channel * get_channel () { return channel_.get (); }
-
-  const Channel * get_channel () const { return channel_.get (); }
+  Channel * channel () const { return channel_.get (); }
 
   /**
    * Returns if the track is muted.
    */
   bool currently_muted () const override
   {
-    return channel_->get_post_fader ().currently_muted ();
+    return channel_->get_fader ().currently_muted ();
   }
 
   /**
@@ -52,7 +43,7 @@ public:
    */
   bool currently_listened () const override
   {
-    return channel_->get_post_fader ().currently_listened ();
+    return channel_->get_fader ().currently_listened ();
   }
 
   /**
@@ -64,7 +55,7 @@ public:
 
   bool currently_soloed () const override
   {
-    return channel_->get_post_fader ().currently_soloed ();
+    return channel_->get_fader ().currently_soloed ();
   }
 
   /**
@@ -112,8 +103,19 @@ public:
   std::optional<PluginPtrVariant>
   get_plugin_at_slot (plugins::PluginSlot slot) const
   {
-    return get_channel ()->get_plugin_at_slot (slot);
+    return channel ()->get_plugin_at_slot (slot);
   }
+
+  void set_output (std::optional<Track::Uuid> id) { output_track_uuid_ = id; }
+
+  bool has_output () const { return output_track_uuid_.has_value (); }
+
+  auto output_track () const
+  {
+    return track_registry_.find_by_id_or_throw (output_track_uuid_.value ());
+  }
+
+  GroupTargetTrack &output_track_as_group_target () const;
 
 protected:
   friend void init_from (
@@ -123,30 +125,37 @@ protected:
 
   /**
    * @brief Initializes the channel.
+   *
+   * This is mainly used to set the parent on the channel.
    */
   void init_channel ();
 
 private:
   static constexpr auto kChannelKey = "channel"sv;
-  friend void to_json (nlohmann::json &j, const ChannelTrack &channel_track)
+  static constexpr auto kOutputIdKey = "outputId"sv;
+  friend void           to_json (nlohmann::json &j, const ChannelTrack &c)
   {
-    j[kChannelKey] = channel_track.channel_;
+    j[kChannelKey] = c.channel_;
+    j[kOutputIdKey] = c.output_track_uuid_;
   }
-  friend void from_json (const nlohmann::json &j, ChannelTrack &channel_track)
+  friend void from_json (const nlohmann::json &j, ChannelTrack &c)
   {
-    channel_track.channel_.reset (new Channel (
-      channel_track.track_registry_, channel_track.get_plugin_registry (),
-      channel_track.get_port_registry (), channel_track.get_param_registry ()));
-    j.at (kChannelKey).get_to (*channel_track.channel_);
+    c.channel_ = c.generate_channel ();
+    j.at (kChannelKey).get_to (*c.channel_);
+    j.at (kOutputIdKey).get_to (c.output_track_uuid_);
   }
 
-public:
+  utils::QObjectUniquePtr<Channel> generate_channel ();
+
+private:
   /**
    * @brief Owned channel object.
    */
   utils::QObjectUniquePtr<Channel> channel_;
 
-private:
+  /** Output track. */
+  std::optional<Uuid> output_track_uuid_;
+
   TrackRegistry &track_registry_;
 };
 

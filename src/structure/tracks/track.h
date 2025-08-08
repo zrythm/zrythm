@@ -5,7 +5,7 @@
 
 #include "dsp/port_connections_manager.h"
 #include "dsp/position.h"
-#include "plugins/plugin.h"
+#include "plugins/plugin_all.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/fader.h"
@@ -1020,7 +1020,7 @@ public:
       {
         if constexpr (std::derived_from<DerivedT, ChannelTrack>)
           {
-            plugin_var = self.get_channel ()->add_plugin (
+            plugin_var = self.channel ()->add_plugin (
               plugin_id, slot, confirm, moving_plugin, gen_automatables,
               recalc_graph, fire_events);
           }
@@ -1043,79 +1043,6 @@ public:
       plugin_var);
 
     return plugin_var;
-  }
-
-  /**
-   * Removes a plugin at the given slot from the track.
-   *
-   * @param moving_plugin Whether or not we are moving the plugin.
-   * @param deleting_plugin Whether or not we are deleting the plugin.
-   */
-  template <typename SelfT>
-  void remove_plugin (
-    this SelfT         &self,
-    plugins::PluginSlot slot,
-    bool                moving_plugin = false,
-    bool                deleting_plugin = true)
-    requires (
-      std::derived_from<SelfT, ChannelTrack>
-      || std::is_same_v<SelfT, ModulatorTrack>)
-  {
-    z_debug ("removing plugin from track {}", self.name_);
-    if constexpr (std::is_same_v<SelfT, ModulatorTrack>)
-      {
-        assert (slot.is_modulator ());
-        const auto slot_idx = slot.get_slot_with_index ().second;
-        auto       plugin_id = self.modulators_[slot_idx];
-        auto       plugin_var = plugin_id.get_object ();
-        std::visit (
-          [&] (auto &&plugin) {
-            // TODO
-            // plugin->remove_ats_from_automation_tracklist (true, !false &&
-            // !true);
-
-            z_debug (
-              "Removing {} from {}:{}", plugin->get_name (), self.get_name (),
-              slot);
-
-            /* if deleting plugin disconnect the plugin entirely */
-            self.tracklist_->disconnect_plugin (plugin->get_uuid ());
-
-            self.modulators_.erase (self.modulators_.begin () + slot_idx);
-          },
-          plugin_var);
-      }
-    else if constexpr (std::derived_from<SelfT, ChannelTrack>)
-      {
-        assert (!slot.is_modulator ());
-        auto channel = self.get_channel ();
-        auto plugin_opt = channel->get_plugin_at_slot (slot);
-        assert (plugin_opt);
-        auto plugin_ptr = *plugin_opt;
-
-        std::visit (
-          [&] (auto &&plugin) {
-            z_debug (
-              "Removing {} from {}:{}", plugin->get_name (), self.get_name (),
-              slot);
-
-            /* if moving, the move is already handled in
-             * plugin_move_automation() inside plugin_move(). */
-            if (!moving_plugin)
-              {
-                // TODO
-                // plugin->remove_ats_from_automation_tracklist (
-                // deleting_plugin, !deleting_plugin);
-              }
-
-            /* if deleting plugin disconnect the plugin entirely */
-            if (deleting_plugin)
-              {
-                self.tracklist_->disconnect_plugin (plugin->get_uuid ());
-              }
-          },
-          plugin_ptr);
-      }
   }
 
   template <typename SelfT>
@@ -1343,9 +1270,9 @@ public:
 
     if constexpr (std::derived_from<TrackT, ChannelTrack>)
       {
-        auto &ch = track.channel_;
-        gen (*ch->fader_);
-        for (auto &send : ch->sends_)
+        auto ch = track.channel ();
+        gen (*ch->fader ());
+        for (auto &send : ch->sends ())
           {
             gen (*send);
           }

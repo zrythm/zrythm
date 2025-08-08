@@ -80,21 +80,26 @@ PluginManager::createPluginInstance (
 {
   // FIXME: this is temporary test code that adds the plugin to the master's
   // first index slot
+
+  auto state_ptr = new engine::device_io::AudioEngine::State ();
+  AUDIO_ENGINE->wait_for_pause (*state_ptr, false, true);
+
   z_debug ("creating plugin instance for: {}", descr->getName ());
   auto juce_desc = descr->to_juce_description ();
   auto config = PluginConfiguration::create_new_for_descriptor (*descr);
   auto plugin_ref =
     PROJECT->getPluginFactory ()->create_plugin_from_setting (*config);
-  P_MASTER_TRACK->channel_->add_plugin (
+  P_MASTER_TRACK->channel ()->add_plugin (
     plugin_ref,
-    zrythm::plugins::PluginSlot (zrythm::plugins::PluginSlotType::Insert, 0),
-    false, false, true, false, true);
+    zrythm::plugins::PluginSlot (zrythm::plugins::PluginSlotType::Insert, 0));
   auto * pl = plugin_ref.get_object_as<zrythm::plugins::JucePlugin> ();
   QObject::connect (
-    pl, &zrythm::plugins::Plugin::instantiationFinished, pl, [pl] () {
+    pl, &zrythm::plugins::Plugin::instantiationFinished, pl, [pl, state_ptr] () {
       z_debug ("instantiation done");
       ROUTER->recalc_graph (false);
       pl->setUiVisible (true);
+
+      AUDIO_ENGINE->resume (*state_ptr);
     });
 }
 

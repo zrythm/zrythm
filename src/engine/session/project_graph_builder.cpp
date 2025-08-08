@@ -112,7 +112,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           if constexpr (
             std::derived_from<TrackT, structure::tracks::ChannelTrack>)
             {
-              auto &channel = tr->channel_;
+              auto * channel = tr->channel ();
               structure::tracks::ChannelSubgraphBuilder::add_nodes (
                 graph, *transport, *channel);
             }
@@ -361,34 +361,41 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               if constexpr (
                 std::derived_from<TrackT, structure::tracks::ChannelTrack>)
                 {
-                  auto &ch = tr->channel_;
+                  auto * ch = tr->channel ();
                   structure::tracks::ChannelSubgraphBuilder::add_connections (
-                    graph, *ch, std::span (tr->processor_->get_output_ports ()));
+                    graph, tr->get_port_registry (), *ch,
+                    std::span (tr->processor_->get_output_ports ()));
 
                   // connect to target track
-                  if (ch->has_output ())
+                  if (tr->has_output ())
                     {
-                      auto * output_track = ch->get_output_track ();
+                      auto &output_track = tr->output_track_as_group_target ();
                       if (
-                        output_track->get_input_signal_type ()
+                        output_track.get_input_signal_type ()
                         == dsp::PortType::Audio)
                         {
                           connect_ports (
-                            ch->get_stereo_out_ports ().first.get_uuid (),
-                            output_track->processor_->get_stereo_in_ports ()
+                            ch->get_audio_post_fader ()
+                              .get_audio_out_port (0)
+                              .get_uuid (),
+                            output_track.processor_->get_stereo_in_ports ()
                               .first.get_uuid ());
                           connect_ports (
-                            ch->get_stereo_out_ports ().second.get_uuid (),
-                            output_track->processor_->get_stereo_in_ports ()
+                            ch->get_audio_post_fader ()
+                              .get_audio_out_port (1)
+                              .get_uuid (),
+                            output_track.processor_->get_stereo_in_ports ()
                               .second.get_uuid ());
                         }
                       else if (
-                        output_track->get_input_signal_type ()
+                        output_track.get_input_signal_type ()
                         == dsp::PortType::Midi)
                         {
                           connect_ports (
-                            ch->get_midi_out_port ().get_uuid (),
-                            output_track->processor_->get_midi_in_port ()
+                            ch->get_midi_post_fader ()
+                              .get_midi_out_port (0)
+                              .get_uuid (),
+                            output_track.processor_->get_midi_in_port ()
                               .get_uuid ());
                         }
                     }
@@ -397,14 +404,17 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                   if constexpr (
                     std::is_same_v<TrackT, structure::tracks::MasterTrack>)
                     {
-                      const auto &ch_stereo_outs = ch->get_stereo_out_ports ();
                       const auto &monitor_fader_ins =
                         monitor_fader->get_stereo_in_ports ();
                       connect_ports (
-                        ch_stereo_outs.first.get_uuid (),
+                        ch->get_audio_post_fader ()
+                          .get_audio_out_port (0)
+                          .get_uuid (),
                         monitor_fader_ins.first.get_uuid ());
                       connect_ports (
-                        ch_stereo_outs.second.get_uuid (),
+                        ch->get_audio_post_fader ()
+                          .get_audio_out_port (1)
+                          .get_uuid (),
                         monitor_fader_ins.second.get_uuid ());
                     }
                 }

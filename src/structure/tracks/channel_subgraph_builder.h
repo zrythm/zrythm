@@ -5,6 +5,7 @@
 
 #include "dsp/graph.h"
 #include "dsp/port_all.h"
+#include "structure/tracks/channel.h"
 
 namespace zrythm::structure::tracks
 {
@@ -28,6 +29,7 @@ public:
    */
   static void add_connections (
     dsp::graph::Graph                      &graph,
+    dsp::PortRegistry                      &port_registry,
     Channel                                &ch,
     std::span<const dsp::PortUuidReference> track_processor_outputs);
 };

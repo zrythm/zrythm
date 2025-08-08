@@ -252,7 +252,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                     }
                   else if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
                     {
-                      auto ins_var = track->channel_->get_instrument ();
+                      auto ins_var = track->channel ()->get_instrument ();
                       if (!ins_var)
                         return;
                       std::visit (

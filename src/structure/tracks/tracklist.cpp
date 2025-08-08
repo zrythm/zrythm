@@ -192,6 +192,8 @@ Tracklist::disconnect_plugin (const plugins::Plugin::Uuid &plugin_id)
 void
 Tracklist::disconnect_channel (Channel &channel)
 {
+// TODO
+#if 0
   z_debug ("disconnecting channel {}", channel.track_->get_name ());
   {
     std::vector<plugins::Plugin *> plugins;
@@ -251,6 +253,8 @@ Tracklist::disconnect_channel (Channel &channel)
     }
 
   // TODO: disconnect all ports for channel
+
+#endif
 }
 
 void
@@ -293,7 +297,7 @@ Tracklist::disconnect_track (Track &track)
 
   if (auto channel_track = dynamic_cast<ChannelTrack *> (&track))
     {
-      disconnect_channel (*channel_track->channel_);
+      disconnect_channel (*channel_track->channel ());
     }
 
   track.disconnecting_ = false;
@@ -456,7 +460,7 @@ Tracklist::mark_track_for_bounce (
 
       if constexpr (std::derived_from<TrackT, ChannelTrack>)
         {
-          auto * direct_out = track->get_channel ()->get_output_track ();
+          auto * direct_out = track->channel ()->get_output_track ();
           if (direct_out && mark_parents)
             {
               std::visit (

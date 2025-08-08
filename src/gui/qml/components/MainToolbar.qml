@@ -159,14 +159,6 @@ ZrythmToolBar {
           onTriggered: {}
         }
 
-        MenuItem {
-          // Implement export graph action
-
-          text: qsTr("Export Graph…")
-
-          onTriggered: {}
-        }
-
         MenuSeparator {
         }
 

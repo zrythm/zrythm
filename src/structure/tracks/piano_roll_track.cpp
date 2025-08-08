@@ -122,6 +122,7 @@ init_from (
   obj.drum_mode_ = other.drum_mode_;
   obj.midi_ch_ = other.midi_ch_;
   obj.passthrough_midi_input_ = other.passthrough_midi_input_;
+  obj.midi_channels_ = other.midi_channels_;
 }
 
 void

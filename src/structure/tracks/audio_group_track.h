@@ -22,6 +22,7 @@ class AudioGroupTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (AudioGroupTrack)
   DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (AudioGroupTrack)
+  DEFINE_CHANNEL_TRACK_QML_PROPERTIES (AudioGroupTrack)
 
   friend class InitializableObject;
 

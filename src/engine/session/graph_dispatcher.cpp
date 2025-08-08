@@ -76,10 +76,10 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
               {
                 auto &target_port = track->processor_->get_midi_in_port ();
                 /* if not set to "all channels", filter-append */
-                if (track->channel_->midi_channels_.has_value ())
+                if (track->allow_only_specific_midi_channels ())
                   {
                     target_port.midi_events_.active_events_.append_w_filter (
-                      midi_events, track->channel_->midi_channels_,
+                      midi_events, track->midi_channels_to_allow (),
                       time_nfo.local_offset_, time_nfo.nframes_);
                   }
                 /* otherwise append normally */

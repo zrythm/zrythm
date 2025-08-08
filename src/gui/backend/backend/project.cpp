@@ -643,7 +643,7 @@ Project::autosave_cb (void * data)
     return G_SOURCE_CONTINUE;
 
   auto &out_ports =
-    PROJECT->tracklist_->master_track_->get_channel ()->stereo_out_;
+    PROJECT->tracklist_->master_track_->channel ()->stereo_out_;
   auto cur_time = SteadyClock::now ();
   /* subtract 4 seconds because the time this gets called is not exact (this is
    * an old comment and I don't remember why this is done) */

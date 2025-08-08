@@ -66,6 +66,32 @@ ModulatorTrack::init_loaded (
   ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
 }
 
+void
+ModulatorTrack::remove_plugin (
+  plugins::PluginSlot slot,
+  bool                moving_plugin,
+  bool                deleting_plugin)
+{
+  z_debug ("removing plugin from track {}", name_);
+  const auto slot_idx = slot.get_slot_with_index ().second;
+  auto       plugin_id = modulators_[slot_idx];
+  auto       plugin_var = plugin_id.get_object ();
+  std::visit (
+    [&] (auto &&plugin) {
+      // TODO
+      // plugin->remove_ats_from_automation_tracklist (true, !false &&
+      // !true);
+
+      z_debug ("Removing {} from {}:{}", plugin->get_name (), get_name (), slot);
+
+      /* if deleting plugin disconnect the plugin entirely */
+      tracklist_->disconnect_plugin (plugin->get_uuid ());
+
+      modulators_.erase (modulators_.begin () + slot_idx);
+    },
+    plugin_var);
+}
+
 struct ModulatorImportData
 {
   ModulatorImportData (plugins::PluginUuidReference ref)

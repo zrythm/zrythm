@@ -87,19 +87,24 @@ AudioEngine::AudioEngine (
             };
 
             this->process (numSamples);
-            const auto &[monitor_left, monitor_right] = get_monitor_out_ports ();
             if (numOutputChannels > 0)
               {
                 utils::float_ranges::copy (
-                  outputChannelData[0], monitor_left.buf_.data (), numSamples);
+                  outputChannelData[0], monitor_out_left_port_->buf_.data (),
+                  numSamples);
               }
             if (numOutputChannels > 1)
               {
                 utils::float_ranges::copy (
-                  outputChannelData[1], monitor_right.buf_.data (), numSamples);
+                  outputChannelData[1], monitor_out_right_port_->buf_.data (),
+                  numSamples);
               }
           },
-          [] (juce::AudioIODevice * _) {},
+          [this] (juce::AudioIODevice * _) {
+            const auto &[monitor_left, monitor_right] = get_monitor_out_ports ();
+            monitor_out_left_port_ = &monitor_left;
+            monitor_out_right_port_ = &monitor_right;
+          },
           [] () {}))
 {
   z_debug ("Creating audio engine...");
@@ -652,23 +657,6 @@ AudioEngine::process_prepare (
   /* reset all buffers */
   // control_room_->monitor_fader_->clear_buffers (block_length);
   midi_in_->clear_buffer (0, block_length);
-
-  // TODO
-  // sample_processor_->prepare_process (nframes);
-
-  /* prepare channels for this cycle */
-  for (
-    auto track :
-    project_->tracklist_->get_track_span ()
-      | std::views::filter (
-        structure::tracks::TrackSpan::derived_from_type_projection<
-          structure::tracks::ChannelTrack>)
-      | std::views::transform (
-        structure::tracks::TrackSpan::derived_type_transformation<
-          structure::tracks::ChannelTrack>))
-    {
-      track->channel_->prepare_process (nframes);
-    }
 
   return false;
 }

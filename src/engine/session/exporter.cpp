@@ -239,8 +239,14 @@ Exporter::export_audio (Settings &info)
           {
             auto &ch_data =
               i == 0
-                ? P_MASTER_TRACK->channel_->get_stereo_out_ports ().first.buf_
-                : P_MASTER_TRACK->channel_->get_stereo_out_ports ().second.buf_;
+                ? P_MASTER_TRACK->channel ()
+                    ->get_audio_post_fader ()
+                    .get_audio_out_port (0)
+                    .buf_
+                : P_MASTER_TRACK->channel ()
+                    ->get_audio_post_fader ()
+                    .get_audio_out_port (1)
+                    .buf_;
             buffer.copyFrom (i, 0, ch_data.data (), (int) nframes);
           }
 
@@ -507,6 +513,8 @@ Exporter::prepare_tracks_for_export (
     {
       /* disconnect all track faders from their channel outputs so that sends
        * and custom connections will work */
+// TODO? or delete
+#if 0
       for (
         auto cur_tr :
         TRACKLIST->get_track_span ()
@@ -523,9 +531,9 @@ Exporter::prepare_tracks_for_export (
             continue;
 
           const auto &l_src_id =
-            cur_tr->channel_->fader_->get_output_ports ().at (0).id ();
+            cur_tr->channel ()->fader ()->get_output_ports ().at (0).id ();
           const auto &l_dest_id =
-            cur_tr->channel_->get_stereo_out_ports ().first.get_uuid ();
+            cur_tr->channel ()->get_stereo_out_ports ().first.get_uuid ();
           auto l_conn =
             PORT_CONNECTIONS_MGR->get_connection (l_src_id, l_dest_id);
           z_return_if_fail (l_conn);
@@ -533,15 +541,16 @@ Exporter::prepare_tracks_for_export (
           PORT_CONNECTIONS_MGR->remove_connection (l_src_id, l_dest_id);
 
           const auto &r_src_id =
-            cur_tr->channel_->fader_->get_output_ports ().at (1).id ();
+            cur_tr->channel ()->fader ()->get_output_ports ().at (1).id ();
           const auto &r_dest_id =
-            cur_tr->channel_->get_stereo_out_ports ().second.get_uuid ();
+            cur_tr->channel ()->get_stereo_out_ports ().second.get_uuid ();
           auto r_conn =
             PORT_CONNECTIONS_MGR->get_connection (r_src_id, r_dest_id);
           z_return_if_fail (r_conn);
           connections_->push_back (utils::clone_qobject (*r_conn, this));
           PORT_CONNECTIONS_MGR->remove_connection (r_src_id, r_dest_id);
         }
+#endif
 
       /* recalculate the graph to apply the changes */
       ROUTER->recalc_graph (false);

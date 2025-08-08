@@ -6,6 +6,7 @@ qt_add_library(zrythm_structure_tracks_lib STATIC)
 target_link_libraries(zrythm_structure_tracks_lib
   PUBLIC
     zrythm_arrangement_lib
+    zrythm_plugins_lib
 )
 target_sources(zrythm_structure_tracks_lib
   PRIVATE
@@ -13,15 +14,21 @@ target_sources(zrythm_structure_tracks_lib
     automation_track.cpp
     automation_tracklist.h
     automation_tracklist.cpp
+    channel.h
+    channel.cpp
     channel_send.h
     channel_send.cpp
+    channel_subgraph_builder.h
+    channel_subgraph_builder.cpp
     fader.h
     fader.cpp
     track_processor.h
     track_processor.cpp
 )
-target_precompile_headers(zrythm_structure_tracks_lib PUBLIC
-  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/automation_tracklist.h>
+target_precompile_headers(zrythm_structure_tracks_lib
+  PUBLIC
+    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/automation_tracklist.h>
+    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/channel_subgraph_builder.h>
 )
 
 target_sources(zrythm_gui_lib
@@ -34,10 +41,6 @@ target_sources(zrythm_gui_lib
     audio_lane.cpp
     audio_track.h
     audio_track.cpp
-    channel.h
-    channel.cpp
-    channel_subgraph_builder.h
-    channel_subgraph_builder.cpp
     channel_track.h
     channel_track.cpp
     chord_track.h

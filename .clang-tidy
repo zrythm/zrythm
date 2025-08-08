@@ -26,6 +26,7 @@ WarningsAsErrors: >
   bugprone-undelegated-constructor,
   bugprone-string-constructor,
   bugprone-forward-declaration-namespace,
+  bugprone-use-after-move,
   bugprone-unused-raii,
   modernize-use-override,
   readability-redundant-declaration,
@@ -38,6 +39,7 @@ WarningsAsErrors: >
   readability-implicit-bool-conversion,
   clang-diagnostic-reorder-ctor,
   clang-analyzer-deadcode.DeadStores,
+  clang-analyzer-cplusplus.Move,
   cppcoreguidelines-pro-type-static-cast-downcast,
   cppcoreguidelines-avoid-const-or-ref-data-members,
   cppcoreguidelines-narrowing-conversions

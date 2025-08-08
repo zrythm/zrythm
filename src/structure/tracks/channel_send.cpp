@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/channel_send.h"
@@ -14,9 +14,10 @@ ChannelSend::ChannelSend (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
   dsp::PortType                                 signal_type,
   int                                           slot,
-  bool                                          is_prefader)
-    : dsp::ProcessorBase (dependencies), signal_type_ (signal_type),
-      is_prefader_ (is_prefader)
+  bool                                          is_prefader,
+  QObject *                                     parent)
+    : QObject (parent), dsp::ProcessorBase (dependencies),
+      signal_type_ (signal_type), is_prefader_ (is_prefader)
 {
   add_parameter (dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
     dependencies.port_registry_,

@@ -54,6 +54,17 @@ public:
   plugins::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
 
   /**
+   * Removes a plugin at the given slot from the track.
+   *
+   * @param moving_plugin Whether or not we are moving the plugin.
+   * @param deleting_plugin Whether or not we are deleting the plugin.
+   */
+  void remove_plugin (
+    plugins::PluginSlot slot,
+    bool                moving_plugin = false,
+    bool                deleting_plugin = true);
+
+  /**
    * Returns the plugin at the given slot, if any.
    */
   std::optional<PluginPtrVariant> get_plugin_at_slot (plugins::PluginSlot slot)

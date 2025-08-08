@@ -14,15 +14,13 @@ namespace zrythm::structure::tracks
 {
 void
 GroupTargetTrack::update_child_output (
-  Channel *          ch,
+  ChannelTrack      &ch_track,
   GroupTargetTrack * output,
   bool               recalc_graph,
   bool               pub_events)
 {
-  z_return_if_fail (ch);
-
-  ch->output_track_uuid_ =
-    (output != nullptr) ? std::make_optional (output->get_uuid ()) : std::nullopt;
+  ch_track.set_output (
+    (output != nullptr) ? std::make_optional (output->get_uuid ()) : std::nullopt);
 
   if (recalc_graph)
     {
@@ -66,8 +64,7 @@ GroupTargetTrack::remove_child (
 
           if (disconnect)
             {
-              update_child_output (
-                child->get_channel (), nullptr, recalc_graph, pub_events);
+              update_child_output (*child, nullptr, recalc_graph, pub_events);
             }
           std::erase (children_, child_id);
 
@@ -110,9 +107,8 @@ GroupTargetTrack::add_child (
           using TrackT = base_type<decltype (out_track)>;
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
-              z_return_if_fail (out_track->get_channel ());
-              update_child_output (
-                out_track->get_channel (), this, recalc_graph, pub_events);
+              z_return_if_fail (out_track->channel ());
+              update_child_output (*out_track, this, recalc_graph, pub_events);
             }
         },
         *out_track_var);
@@ -160,7 +156,7 @@ GroupTargetTrack::update_children ()
             {
               z_return_if_fail (
                 child->get_output_signal_type () == in_signal_type_);
-              child->get_channel ()->output_track_uuid_ = id;
+              child->set_output (id);
               z_debug (
                 "setting output of track {} [{}] to {} [{}]",
                 child->get_name (), child->get_index (), get_name (), pos_);

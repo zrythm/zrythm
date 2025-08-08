@@ -382,10 +382,10 @@ TracklistSelectionsAction::TracklistSelectionsAction (
               if constexpr (
                 std::derived_from<base_type<decltype (clone_track)>, ChannelTrack>)
                 {
-                  if (clone_track->channel_->has_output ())
+                  if (clone_track->has_output ())
                     {
                       out_track_uuids_.push_back (
-                        clone_track->channel_->output_track_uuid_);
+                        clone_track->output_track_as_group_target ().get_uuid ());
                     }
                   else
                     {
@@ -519,12 +519,11 @@ TracklistSelectionsAction::create_track (int idx)
               if (has_plugin)
                 {
                   // TODO: use correct slot?
-                  added_track->channel_->add_plugin (
+                  added_track->channel ()->add_plugin (
                     *added_plugin_if_has_plugin,
                     std::is_same_v<TrackT, InstrumentTrack>
                       ? plugins::PluginSlot (plugins::PluginSlotType::Instrument)
-                      : plugins::PluginSlot (plugins::PluginSlotType::Insert, 0),
-                    true, false, true, false, false);
+                      : plugins::PluginSlot (plugins::PluginSlotType::Insert, 0));
                 }
             }
 
@@ -628,7 +627,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
                       /* remove output */
-                      track->get_channel ()->output_track_uuid_ = std::nullopt;
+                      track->set_output (std::nullopt);
                     }
 
                   /* insert it to the tracklist at its original pos */
@@ -649,11 +648,11 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     dynamic_cast<InstrumentTrack &> (*own_track);
                   auto added_instrument_track =
                     dynamic_cast<InstrumentTrack *> (added_track);
-                  if (own_instrument_track.get_channel ()->instrument_->visible_)
+                  if (own_instrument_track.channel ()->instrument_->visible_)
                     {
                       // EVENTS_PUSH (
                       //   EventType::ET_PLUGIN_VISIBILITY_CHANGED,
-                      //   added_instrument_track->get_channel ()
+                      //   added_instrument_track->channel ()
                       //     ->instrument_.get ());
                     }
 #endif
@@ -678,8 +677,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       /* reconnect output */
                       if (out_track_id.has_value ())
                         {
-                          auto out_track =
-                            prj_track->get_channel ()->get_output_track ();
+                          auto * out_track =
+                            &prj_track->output_track_as_group_target ();
                           out_track->remove_child (
                             prj_track->get_uuid (), true, false, false);
                           auto out_track_var =
@@ -702,8 +701,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       /* reconnect any sends sent from the track */
                       for (
                         const auto &[clone_send, send] : std::views::zip (
-                          own_track->get_channel ()->sends_,
-                          prj_track->get_channel ()->sends_))
+                          own_track->channel ()->sends (),
+                          prj_track->channel ()->sends ()))
                         {
                           init_from (
                             *send, *clone_send,
@@ -1010,13 +1009,13 @@ TracklistSelectionsAction::
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
                       outputs_in_prj.push_back (
-                        own_track->get_channel ()->get_output_track ());
+                        &own_track->output_track_as_group_target ());
 
 // TODO
 #if 0
                       for (size_t j = 0; j < Channel::STRIP_SIZE; ++j)
                         {
-                          auto &send = own_track->get_channel ()->sends_.at (j);
+                          auto &send = own_track->channel ()->sends_.at (j);
                           sends.at (i).at (j) = utils::clone_unique (
                             *send, utils::ObjectCloneType::Snapshot,
                             PROJECT->get_track_registry (),
@@ -1058,8 +1057,7 @@ TracklistSelectionsAction::
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
                       /* remove output */
-                      // track->get_channel ()->has_output_ = false;
-                      track->get_channel ()->output_track_uuid_ = std::nullopt;
+                      track->set_output (std::nullopt);
                     }
 
                   /* remove children */
@@ -1095,8 +1093,8 @@ TracklistSelectionsAction::
                     {
                       if (outputs_in_prj[i])
                         {
-                          auto out_track =
-                            track->get_channel ()->get_output_track ();
+                          auto * out_track =
+                            &track->output_track_as_group_target ();
                           out_track->remove_child (
                             track->get_uuid (), true, false, false);
                           outputs_in_prj[i]->add_child (
@@ -1107,7 +1105,7 @@ TracklistSelectionsAction::
                         const auto &[own_send, own_conns, track_send] :
                         std::views::zip (
                           sends.at (i), send_conns.at (i),
-                          track->get_channel ()->sends_))
+                          track->channel ()->sends ()))
                         {
                           init_from (
                             *track_send, *own_send,
@@ -1384,7 +1382,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
               if constexpr (std::derived_from<TrackT, ChannelTrack>)
                 {
                   z_return_if_fail (track);
-                  track->get_channel ()->set_balance_control (
+                  track->channel ()->set_balance_control (
                     _do ? val_after_ : val_before_);
                 }
               break;
@@ -1415,21 +1413,21 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                     z_return_if_fail (track);
 
                     int cur_direct_out_pos = -1;
-                    if (track->get_channel ()->has_output ())
+                    if (track->channel ()->has_output ())
                       {
                         auto cur_direct_out_track =
-                          track->get_channel ()->get_output_track ();
+                          track->channel ()->get_output_track ();
                         cur_direct_out_pos = cur_direct_out_track->get_index ();
                       }
 
                     /* disconnect from the current track */
-                    if (track->get_channel ()->has_output ())
+                    if (track->channel ()->has_output ())
                       {
                         auto target_track = dynamic_cast<
                           GroupTargetTrack *> (Track::from_variant (
                           TRACKLIST
                             ->get_track (
-                              track->get_channel ()->output_track_uuid_.value ())
+                              track->channel ()->output_track_uuid_.value ())
                             .value ()));
                         target_track->remove_child (
                           track->get_uuid (), true, false, true);

@@ -392,6 +392,10 @@ public:
   std::optional<dsp::PortUuidReference> monitor_out_left_;
   std::optional<dsp::PortUuidReference> monitor_out_right_;
 
+  // Realtime caches
+  dsp::AudioPort * monitor_out_left_port_{};
+  dsp::AudioPort * monitor_out_right_port_{};
+
   /**
    * Manual note press events from the piano roll.
    *

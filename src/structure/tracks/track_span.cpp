@@ -57,7 +57,7 @@ TrackSpan::reconnect_ext_input_ports (engine::device_io::AudioEngine &engine)
         using TrackT = base_type<decltype (tr)>;
         if constexpr (std::derived_from<TrackT, ChannelTrack>)
           {
-            tr->get_channel ()->reconnect_ext_input_ports (engine);
+            tr->channel ()->reconnect_ext_input_ports (engine);
           }
       },
       track_var);

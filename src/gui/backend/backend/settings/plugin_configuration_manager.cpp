@@ -181,8 +181,7 @@ PluginConfigurationManager::activate_plugin_configuration (
               type, &config, TRACKLIST->track_count ()));
           num_actions++;
 
-          auto pl_id = pl_track->channel_->instrument_;
-          auto pl_var = pl_track->channel_->get_instrument ();
+          auto pl_var = pl_track->channel ()->get_instrument ();
 
           /* move the plugin track inside the group */
           TRACKLIST->get_selection_manager ().select_unique (

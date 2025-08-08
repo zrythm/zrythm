@@ -42,9 +42,9 @@ MeterProcessor::setPort (QVariant port_var)
             {
               bool is_master_fader =
                 port_->get_uuid ()
-                  == P_MASTER_TRACK->getChannel ()->stereo_out_left_id_->id ()
+                  == P_MASTER_TRACK->channel ()->getLeftAudioOut ()->get_uuid ()
                 || port_->get_uuid ()
-                     == P_MASTER_TRACK->getChannel ()->stereo_out_right_id_->id ();
+                     == P_MASTER_TRACK->channel ()->getRightAudioOut ()->get_uuid ();
 
               if (is_master_fader)
                 {

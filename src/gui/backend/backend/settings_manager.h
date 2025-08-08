@@ -9,6 +9,7 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QtQmlIntegration>
 
 using namespace Qt::StringLiterals;
 

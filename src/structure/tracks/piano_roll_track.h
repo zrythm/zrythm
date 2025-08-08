@@ -74,6 +74,12 @@ public:
     std::optional<signed_frame_t>                          p1,
     std::optional<signed_frame_t>                          p2) override;
 
+  bool allow_only_specific_midi_channels () const
+  {
+    return midi_channels_.has_value ();
+  }
+  auto &midi_channels_to_allow () const { return midi_channels_.value (); }
+
 protected:
   friend void init_from (
     PianoRollTrack        &obj,
@@ -86,20 +92,26 @@ private:
   static constexpr auto kDrumModeKey = "drumMode"sv;
   static constexpr auto kMidiChKey = "midiCh"sv;
   static constexpr auto kPassthroughMidiInputKey = "passthroughMidiInput"sv;
+  static constexpr auto kMidiChannelsKey = "midiChannels"sv;
   friend void           to_json (nlohmann::json &j, const PianoRollTrack &track)
   {
     j[kDrumModeKey] = track.drum_mode_;
     j[kMidiChKey] = track.midi_ch_;
     j[kPassthroughMidiInputKey] = track.passthrough_midi_input_;
+    j[kMidiChannelsKey] = track.midi_channels_;
   }
   friend void from_json (const nlohmann::json &j, PianoRollTrack &track)
   {
     j.at (kDrumModeKey).get_to (track.drum_mode_);
     j.at (kMidiChKey).get_to (track.midi_ch_);
     j.at (kPassthroughMidiInputKey).get_to (track.passthrough_midi_input_);
+    if (j.contains (kMidiChannelsKey))
+      {
+        j.at (kMidiChannelsKey).get_to (track.midi_channels_);
+      }
   }
 
-public:
+private:
   /**
    * Whether drum mode in the piano roll is enabled for this track.
    */
@@ -116,6 +128,13 @@ public:
    * selected MIDI channel.
    */
   bool passthrough_midi_input_ = false;
+
+  /**
+   * 1 or 0 flags for each channel to enable it or disable it.
+   *
+   * If nullopt, the channel will accept MIDI messages from all MIDI channels.
+   */
+  std::optional<std::array<bool, 16>> midi_channels_;
 };
 
 using PianoRollTrackVariant = std::variant<MidiTrack, InstrumentTrack>;

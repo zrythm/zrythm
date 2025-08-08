@@ -90,7 +90,7 @@ private:
    * Updates the output of the child channel (where the Channel routes to).
    */
   static void update_child_output (
-    Channel *          ch,
+    ChannelTrack      &ch_track,
     GroupTargetTrack * output,
     bool               recalc_graph,
     bool               pub_events);

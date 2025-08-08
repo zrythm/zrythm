@@ -5,19 +5,14 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/channel_track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 
 namespace zrythm::structure::tracks
 {
 
 ChannelTrack::ChannelTrack (FinalTrackDependencies dependencies)
-    : channel_ (
-        utils::make_qobject_unique<Channel> (
-          dependencies.track_registry_,
-          dependencies.plugin_registry_,
-          dependencies.port_registry_,
-          dependencies.param_registry_,
-          *this)),
+    : channel_ (generate_channel ()),
       track_registry_ (dependencies.track_registry_)
 {
 }
@@ -28,7 +23,21 @@ ChannelTrack::init_loaded (
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry)
 {
-  channel_->init_loaded ();
+}
+
+GroupTargetTrack &
+ChannelTrack::output_track_as_group_target () const
+{
+  return *std::visit (
+    [] (auto &&track) -> GroupTargetTrack * {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (std::derived_from<TrackT, GroupTargetTrack>)
+        {
+          return track;
+        }
+      throw std::runtime_error ("Not a group target track");
+    },
+    output_track ());
 }
 
 void
@@ -37,18 +46,31 @@ init_from (
   const ChannelTrack    &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.channel_.reset (clone_qobject (
-    *other.channel_, dynamic_cast<QObject *> (&obj),
-    utils::ObjectCloneType::Snapshot, obj.track_registry_,
-    obj.get_plugin_registry (), obj.get_port_registry (),
-    obj.get_param_registry (), OptionalRef<ChannelTrack>{}));
-  obj.channel_->set_track_ptr (obj);
+  init_from (*obj.channel_, *other.channel_, clone_type);
+}
+
+utils::QObjectUniquePtr<Channel>
+ChannelTrack::generate_channel ()
+{
+  return utils::make_qobject_unique<Channel> (
+    get_plugin_registry (),
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = get_port_registry (),
+      .param_registry_ = get_param_registry () },
+    out_signal_type_, [&] () { return get_name (); }, is_master (),
+    [&] (bool fader_solo_status) {
+      // Effectively muted if any of the following is true:
+      // - other track(s) is soloed and this isn't
+      // - bounce mode is ON and the track is set to BOUNCE_OFF
+      return (TRACKLIST->get_track_span ().has_soloed () && !fader_solo_status
+              && !get_implied_soloed () && !is_master ())
+             || (AUDIO_ENGINE->bounce_mode_ == engine::device_io::BounceMode::On && !is_master () && !bounce_);
+    });
 }
 
 void
 ChannelTrack::init_channel ()
 {
-  channel_->init ();
   {
     auto * qobject = dynamic_cast<QObject *> (this);
     channel_->setParent (qobject);
@@ -75,7 +97,22 @@ ChannelTrack::get_implied_soloed () const
             std::derived_from<
               base_type<decltype (out_track_casted)>, ChannelTrack>)
             {
-              out_track = out_track_casted->channel_->get_output_track ();
+              out_track = nullptr;
+              auto out_track_id = out_track_casted->output_track_uuid_;
+              if (out_track_id.has_value ())
+                {
+                  auto out_track_obj =
+                    track_registry_.find_by_id_or_throw (out_track_id.value ());
+                  std::visit (
+                    [&] (auto &&cur_out_track) {
+                      using CurOutTrack = base_type<decltype (cur_out_track)>;
+                      if constexpr (std::derived_from<CurOutTrack, ChannelTrack>)
+                        {
+                          out_track = cur_out_track;
+                        }
+                    },
+                    out_track_obj);
+                }
               if (out_track && out_track->currently_soloed ())
                 {
                   return true;

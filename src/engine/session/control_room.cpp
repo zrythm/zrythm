@@ -60,7 +60,7 @@ ControlRoom::ControlRoom (
                         t->get_output_signal_type () == dsp::PortType::Audio
                         && t->currently_listened ())
                         {
-                          auto * f = t->get_channel ()->fader ();
+                          auto * f = t->channel ()->fader ();
                           utils::float_ranges::product (
                             &stereo_bufs.first[time_nfo.local_offset_],
                             &f->get_stereo_out_ports ()

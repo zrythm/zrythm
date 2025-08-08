@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_all.h"
-#include "structure/tracks/channel.h"
 #include "structure/tracks/channel_subgraph_builder.h"
 
 namespace zrythm::structure::tracks
@@ -11,16 +10,20 @@ void
 ChannelSubgraphBuilder::
   add_nodes (dsp::graph::Graph &graph, dsp::ITransport &transport, Channel &ch)
 {
-  // prefader
-  if (ch.audio_prefader_)
+  // prefader & post-fader
+  if (ch.is_audio ())
     {
       dsp::ProcessorGraphBuilder::add_nodes (
-        graph, transport, *ch.audio_prefader_);
+        graph, transport, ch.get_audio_pre_fader ());
+      dsp::ProcessorGraphBuilder::add_nodes (
+        graph, transport, ch.get_audio_post_fader ());
     }
-  else if (ch.midi_prefader_)
+  else if (ch.is_midi ())
     {
       dsp::ProcessorGraphBuilder::add_nodes (
-        graph, transport, *ch.midi_prefader_);
+        graph, transport, ch.get_midi_pre_fader ());
+      dsp::ProcessorGraphBuilder::add_nodes (
+        graph, transport, ch.get_midi_post_fader ());
     }
 
   // fader
@@ -40,38 +43,26 @@ ChannelSubgraphBuilder::
     }
 
   // sends
-  for (auto &send : ch.sends_)
+  for (const auto &send : ch.sends ())
     {
       dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *send);
-    }
-
-  // channel outputs
-  if (ch.midi_out_id_.has_value ())
-    {
-      graph.add_node_for_processable (ch.get_midi_out_port (), transport);
-    }
-  else if (ch.stereo_out_left_id_.has_value ())
-    {
-      graph.add_node_for_processable (
-        ch.get_stereo_out_ports ().first, transport);
-      graph.add_node_for_processable (
-        ch.get_stereo_out_ports ().second, transport);
     }
 }
 
 void
 ChannelSubgraphBuilder::add_connections (
   dsp::graph::Graph                      &graph,
+  dsp::PortRegistry                      &port_registry,
   Channel                                &ch,
   std::span<const dsp::PortUuidReference> track_processor_outputs)
 {
   const auto connect_ports =
     [&] (const dsp::Port::Uuid src_id, const dsp::Port::Uuid &dest_id) {
       dsp::add_connection_for_ports (
-        graph, { src_id, ch.port_registry_ }, { dest_id, ch.port_registry_ });
+        graph, { src_id, port_registry }, { dest_id, port_registry });
     };
 
-  auto                                              &fader = ch.fader_;
+  auto *                                             fader = ch.fader ();
   std::optional<dsp::PortUuidReference>              processor_midi_out_ref;
   std::optional<std::vector<dsp::PortUuidReference>> processor_audio_out_refs;
   if (track_processor_outputs.size () == 1)
@@ -346,16 +337,20 @@ ChannelSubgraphBuilder::add_connections (
         }
     }
 
-  /* connect the prefader */
+  // connect the prefader & postfader
   if (output_type == dsp::PortType::Audio)
     {
       dsp::ProcessorGraphBuilder::add_connections (
         graph, ch.get_audio_pre_fader ());
+      dsp::ProcessorGraphBuilder::add_connections (
+        graph, ch.get_audio_post_fader ());
     }
   else if (output_type == dsp::PortType::Midi)
     {
       dsp::ProcessorGraphBuilder::add_connections (
         graph, ch.get_midi_pre_fader ());
+      dsp::ProcessorGraphBuilder::add_connections (
+        graph, ch.get_midi_post_fader ());
     }
 
   // connect the fader
@@ -379,7 +374,7 @@ ChannelSubgraphBuilder::add_connections (
     }
 
   // connect sends
-  for (auto &send : ch.sends_)
+  for (const auto &send : ch.sends ())
     {
       dsp::ProcessorGraphBuilder::add_connections (graph, *send);
 
@@ -423,21 +418,21 @@ ChannelSubgraphBuilder::add_connections (
         }
     }
 
-  // connect fader out to channel out
+  // connect fader out to channel post-fader inputs
   if (output_type == dsp::PortType::Midi)
     {
       connect_ports (
         fader->get_output_ports ().front ().id (),
-        ch.get_midi_out_port ().get_uuid ());
+        ch.get_midi_post_fader ().get_midi_in_port (0).get_uuid ());
     }
   else if (output_type == dsp::PortType::Audio)
     {
       connect_ports (
         fader->get_output_ports ().at (0).id (),
-        ch.get_stereo_out_ports ().first.get_uuid ());
+        ch.get_audio_post_fader ().get_audio_out_port (0).get_uuid ());
       connect_ports (
         fader->get_output_ports ().at (1).id (),
-        ch.get_stereo_out_ports ().second.get_uuid ());
+        ch.get_audio_post_fader ().get_audio_out_port (1).get_uuid ());
     }
 }
 }
