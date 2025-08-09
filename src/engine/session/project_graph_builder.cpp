@@ -9,6 +9,103 @@
 
 using namespace zrythm;
 
+// Extracted to a separate function because MSVC ICEs if used in lambda
+template <typename TrackT>
+static void
+process_track_connections (
+  TrackT *                         tr,
+  dsp::graph::Graph               &graph,
+  ProjectGraphBuilder             &self,
+  const dsp::ITransport           &transport,
+  const Project                   &project,
+  dsp::graph::GraphNode *          initial_processor_node,
+  engine::device_io::AudioEngine * engine,
+  structure::tracks::Fader *       monitor_fader)
+{
+  /* connect the track processor */
+  auto         track_processor = tr->processor_.get ();
+  auto * const track_processor_node =
+    graph.get_nodes ().find_node_for_processable (*track_processor);
+  assert (track_processor_node);
+  dsp::ProcessorGraphBuilder::add_connections (graph, *track_processor);
+
+  // connect initial processor to track processor inputs (or track
+  // processor itself if no inputs)
+  if (track_processor->get_input_ports ().empty ())
+    {
+      initial_processor_node->connect_to (*track_processor_node);
+    }
+  else
+    {
+      for (const auto &tp_in_port_ref : track_processor->get_input_ports ())
+        {
+          std::visit (
+            [&] (auto &&tp_in_port) {
+              using PortT = base_type<decltype (tp_in_port)>;
+              // MIDI ports go via MIDI panic
+              if constexpr (std::is_same_v<PortT, dsp::MidiPort>)
+                {
+                  graph.get_nodes ()
+                    .find_node_for_processable (
+                      *engine->midi_panic_processor_->get_output_ports ()
+                         .front ()
+                         .get_object_as<dsp::MidiPort> ())
+                    ->connect_to (*graph.get_nodes ().find_node_for_processable (
+                      *tp_in_port));
+                }
+              // other ports go directly via initial processor
+              else
+                {
+                  initial_processor_node->connect_to (
+                    *graph.get_nodes ().find_node_for_processable (*tp_in_port));
+                }
+            },
+            tp_in_port_ref.get_object ());
+        }
+    }
+
+  if constexpr (std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
+    {
+      for (
+        const auto &pl_obj :
+        tr->modulators ()->plugins ()
+          | std::views::transform (&plugins::PluginUuidReference::get_object))
+        {
+          std::visit (
+            [&] (auto &&pl) {
+              dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
+              for (
+                const auto &pl_port_obj :
+                pl->get_input_ports ()
+                  | std::views::transform (&dsp::PortUuidReference::get_object))
+                {
+                  std::visit (
+                    [&] (auto &&pl_port) {
+                      auto port_node =
+                        graph.get_nodes ().find_node_for_processable (*pl_port);
+                      assert (port_node != nullptr);
+                      track_processor_node->connect_to (*port_node);
+                    },
+                    pl_port_obj);
+                }
+            },
+            pl_obj);
+        }
+
+      /* connect the modulator macro processors */
+      for (const auto &mmp : tr->get_modulator_macro_processors ())
+        {
+          dsp::ProcessorGraphBuilder::add_connections (graph, *mmp);
+
+          // special case - track processor connected directly to
+          // the mmp input(s)
+          auto * const cv_in_node = graph.get_nodes ().find_node_for_processable (
+            mmp->get_cv_in_port ());
+          track_processor_node->connect_to (*cv_in_node);
+        }
+    } // if modulator track
+}
+
 void
 ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 {
@@ -259,102 +356,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             std::derived_from<TrackT, structure::tracks::ProcessableTrack>)
             {
               {
-                /* connect the track processor */
-                auto         track_processor = tr->processor_.get ();
-                auto * const track_processor_node =
-                  graph.get_nodes ().find_node_for_processable (*track_processor);
-                assert (track_processor_node);
-                dsp::ProcessorGraphBuilder::add_connections (
-                  graph, *track_processor);
-
-                // connect initial processor to track processor inputs (or track
-                // processor itself if no inputs)
-                if (track_processor->get_input_ports ().empty ())
-                  {
-                    initial_processor_node->connect_to (*track_processor_node);
-                  }
-                else
-                  {
-                    for (
-                      const auto &tp_in_port_ref :
-                      track_processor->get_input_ports ())
-                      {
-                        std::visit (
-                          [&] (auto &&tp_in_port) {
-                            using PortT = base_type<decltype (tp_in_port)>;
-                            // MIDI ports go via MIDI panic
-                            if constexpr (std::is_same_v<PortT, dsp::MidiPort>)
-                              {
-                                graph.get_nodes ()
-                                  .find_node_for_processable (
-                                    *engine->midi_panic_processor_
-                                       ->get_output_ports ()
-                                       .front ()
-                                       .get_object_as<dsp::MidiPort> ())
-                                  ->connect_to (
-                                    *graph.get_nodes ()
-                                       .find_node_for_processable (*tp_in_port));
-                              }
-                            // other ports go directly via initial processor
-                            else
-                              {
-                                initial_processor_node->connect_to (
-                                  *graph.get_nodes ().find_node_for_processable (
-                                    *tp_in_port));
-                              }
-                          },
-                          tp_in_port_ref.get_object ());
-                      }
-                  }
-
-                if constexpr (
-                  std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
-                  {
-                    for (
-                      const auto &pl_obj :
-                      tr->modulators ()->plugins ()
-                        | std::views::transform (
-                          &plugins::PluginUuidReference::get_object))
-                      {
-                        std::visit (
-                          [&] (auto &&pl) {
-                            dsp::ProcessorGraphBuilder::add_connections (
-                              graph, *pl);
-                            for (
-                              const auto &pl_port_obj :
-                              pl->get_input_ports ()
-                                | std::views::transform (
-                                  &dsp::PortUuidReference::get_object))
-                              {
-                                std::visit (
-                                  [&] (auto &&pl_port) {
-                                    auto port_node =
-                                      graph.get_nodes ()
-                                        .find_node_for_processable (*pl_port);
-                                    assert (port_node != nullptr);
-                                    track_processor_node->connect_to (
-                                      *port_node);
-                                  },
-                                  pl_port_obj);
-                              }
-                          },
-                          pl_obj);
-                      }
-
-                    /* connect the modulator macro processors */
-                    for (const auto &mmp : tr->get_modulator_macro_processors ())
-                      {
-                        dsp::ProcessorGraphBuilder::add_connections (
-                          graph, *mmp);
-
-                        // special case - track processor connected directly to
-                        // the mmp input(s)
-                        auto * const cv_in_node =
-                          graph.get_nodes ().find_node_for_processable (
-                            mmp->get_cv_in_port ());
-                        track_processor_node->connect_to (*cv_in_node);
-                      }
-                  } // if modulator track
+                process_track_connections (
+                  tr, graph, *this, *transport, project, initial_processor_node,
+                  engine.get (), monitor_fader);
               }
 
               // connect the channel
