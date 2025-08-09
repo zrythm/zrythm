@@ -79,10 +79,10 @@ TEST_F (ChannelSendTest, PortConfiguration)
   auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
   auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
 
-  EXPECT_EQ (left_in.get_node_name (), u8"Channel Send 1/Audio input L");
-  EXPECT_EQ (right_in.get_node_name (), u8"Channel Send 1/Audio input R");
-  EXPECT_EQ (left_out.get_node_name (), u8"Channel Send 1/Audio output L");
-  EXPECT_EQ (right_out.get_node_name (), u8"Channel Send 1/Audio output R");
+  EXPECT_EQ (left_in.get_node_name (), u8"Pre-Fader Send 1/Audio input L");
+  EXPECT_EQ (right_in.get_node_name (), u8"Pre-Fader Send 1/Audio input R");
+  EXPECT_EQ (left_out.get_node_name (), u8"Pre-Fader Send 1/Audio output L");
+  EXPECT_EQ (right_out.get_node_name (), u8"Pre-Fader Send 1/Audio output R");
 
   // Test MIDI send ports
   EXPECT_EQ (midi_send_->get_input_ports ().size (), 1);
@@ -91,8 +91,8 @@ TEST_F (ChannelSendTest, PortConfiguration)
   auto &midi_in = midi_send_->get_midi_in_port ();
   auto &midi_out = midi_send_->get_midi_out_port ();
 
-  EXPECT_EQ (midi_in.get_node_name (), u8"Channel Send 2/MIDI input");
-  EXPECT_EQ (midi_out.get_node_name (), u8"Channel Send 2/MIDI output");
+  EXPECT_EQ (midi_in.get_node_name (), u8"Post-Fader Send 2/MIDI input");
+  EXPECT_EQ (midi_out.get_node_name (), u8"Post-Fader Send 2/MIDI output");
 }
 
 TEST_F (ChannelSendTest, ParameterFunctionality)

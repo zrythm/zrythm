@@ -43,7 +43,11 @@ ChannelSubgraphBuilder::
     }
 
   // sends
-  for (const auto &send : ch.sends ())
+  for (const auto &send : ch.pre_fader_sends ())
+    {
+      dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *send);
+    }
+  for (const auto &send : ch.post_fader_sends ())
     {
       dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *send);
     }
@@ -374,47 +378,48 @@ ChannelSubgraphBuilder::add_connections (
     }
 
   // connect sends
-  for (const auto &send : ch.sends ())
+  for (const auto &send : ch.pre_fader_sends ())
     {
       dsp::ProcessorGraphBuilder::add_connections (graph, *send);
 
       if (send->is_midi ())
         {
-          // connect (pre)fader output to send input
-          if (send->is_prefader ())
-            {
-              connect_ports (
-                ch.get_midi_pre_fader ().get_midi_out_port (0).get_uuid (),
-                send->get_midi_in_port ().get_uuid ());
-            }
-          else
-            {
-              connect_ports (
-                fader->get_output_ports ().front ().id (),
-                send->get_midi_in_port ().get_uuid ());
-            }
+          // connect prefader output to send input
+          connect_ports (
+            ch.get_midi_pre_fader ().get_midi_out_port (0).get_uuid (),
+            send->get_midi_in_port ().get_uuid ());
         }
       else if (send->is_audio ())
         {
-          // connect (pre)fader output to send input
-          if (send->is_prefader ())
-            {
-              connect_ports (
-                ch.get_audio_pre_fader ().get_audio_out_port (0).get_uuid (),
-                send->get_stereo_in_ports ().first.get_uuid ());
-              connect_ports (
-                ch.get_audio_pre_fader ().get_audio_out_port (1).get_uuid (),
-                send->get_stereo_in_ports ().second.get_uuid ());
-            }
-          else
-            {
-              connect_ports (
-                fader->get_output_ports ().at (0).id (),
-                send->get_stereo_in_ports ().first.get_uuid ());
-              connect_ports (
-                fader->get_output_ports ().at (1).id (),
-                send->get_stereo_in_ports ().second.get_uuid ());
-            }
+          // connect prefader output to send input
+          connect_ports (
+            ch.get_audio_pre_fader ().get_audio_out_port (0).get_uuid (),
+            send->get_stereo_in_ports ().first.get_uuid ());
+          connect_ports (
+            ch.get_audio_pre_fader ().get_audio_out_port (1).get_uuid (),
+            send->get_stereo_in_ports ().second.get_uuid ());
+        }
+    }
+  for (const auto &send : ch.post_fader_sends ())
+    {
+      dsp::ProcessorGraphBuilder::add_connections (graph, *send);
+
+      if (send->is_midi ())
+        {
+          // connect fader output to send input
+          connect_ports (
+            fader->get_output_ports ().front ().id (),
+            send->get_midi_in_port ().get_uuid ());
+        }
+      else if (send->is_audio ())
+        {
+          // connect fader output to send input
+          connect_ports (
+            fader->get_output_ports ().at (0).id (),
+            send->get_stereo_in_ports ().first.get_uuid ());
+          connect_ports (
+            fader->get_output_ports ().at (1).id (),
+            send->get_stereo_in_ports ().second.get_uuid ());
         }
     }
 

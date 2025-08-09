@@ -71,7 +71,8 @@ ChannelSend::ChannelSend (
 
   set_name (
     utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("Channel Send {}", slot + 1)));
+      fmt::format (
+        "{} Send {}", is_prefader_ ? "Pre-Fader" : "Post-Fader", slot + 1)));
 }
 
 void

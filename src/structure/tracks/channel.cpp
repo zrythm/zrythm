@@ -62,12 +62,12 @@ Channel::Channel (
     }
 
   /* init sends */
-  for (const auto &[i, send] : utils::views::enumerate (sends_))
-    {
-      send = utils::make_qobject_unique<ChannelSend> (
-        dependencies (), signal_type_, i,
-        i < CHANNEL_SEND_POST_FADER_START_SLOT, this);
-    }
+  prefader_sends_.emplace_back (
+    utils::make_qobject_unique<ChannelSend> (
+      dependencies (), signal_type_, 0, true, this));
+  postfader_sends_.emplace_back (
+    utils::make_qobject_unique<ChannelSend> (
+      dependencies (), signal_type_, 0, false, this));
 }
 
 void
@@ -299,15 +299,21 @@ from_json (const nlohmann::json &j, Channel &c)
   // j.at (Channel::kInsertsKey).get_to (c.inserts_);
   for (
     const auto &[index, send_json] :
-    utils::views::enumerate (j.at (Channel::kSendsKey)))
+    utils::views::enumerate (j.at (Channel::kPreFaderSendsKey)))
     {
-      if (send_json.is_null ())
-        continue;
       auto send = utils::make_qobject_unique<ChannelSend> (
-        c.dependencies (), c.signal_type_, index,
-        index < CHANNEL_SEND_POST_FADER_START_SLOT);
+        c.dependencies (), c.signal_type_, index, true);
       from_json (send_json, *send);
-      c.sends_.at (index) = std::move (send);
+      c.prefader_sends_.at (index) = std::move (send);
+    }
+  for (
+    const auto &[index, send_json] :
+    utils::views::enumerate (j.at (Channel::kPostFaderSendsKey)))
+    {
+      auto send = utils::make_qobject_unique<ChannelSend> (
+        c.dependencies (), c.signal_type_, index, false);
+      from_json (send_json, *send);
+      c.postfader_sends_.at (index) = std::move (send);
     }
   if (j.contains (Channel::kInstrumentKey))
     {

@@ -11,10 +11,6 @@
 
 namespace zrythm::structure::tracks
 {
-/**
- * The slot where post-fader sends begin (starting from 0).
- */
-constexpr int CHANNEL_SEND_POST_FADER_START_SLOT = 6;
 
 class ChannelMidiPassthroughProcessor final
     : public QObject,
@@ -180,12 +176,14 @@ public:
   auto  &get_midi_post_fader () const { return *midi_postfader_; }
   auto  &get_audio_post_fader () const { return *audio_postfader_; }
 
-  auto &sends () const { return sends_; }
+  auto &pre_fader_sends () const { return prefader_sends_; }
+  auto &post_fader_sends () const { return postfader_sends_; }
 
 private:
   static constexpr auto kMidiFxKey = "midiFx"sv;
   static constexpr auto kInsertsKey = "inserts"sv;
-  static constexpr auto kSendsKey = "sends"sv;
+  static constexpr auto kPreFaderSendsKey = "preFaderSends"sv;
+  static constexpr auto kPostFaderSendsKey = "postFaderSends"sv;
   static constexpr auto kInstrumentKey = "instrument"sv;
   static constexpr auto kMidiPrefaderKey = "midiPrefader"sv;
   static constexpr auto kAudioPrefaderKey = "audioPrefader"sv;
@@ -195,7 +193,8 @@ private:
   {
     j[kMidiFxKey] = c.midi_fx_;
     j[kInsertsKey] = c.inserts_;
-    j[kSendsKey] = c.sends_;
+    j[kPreFaderSendsKey] = c.prefader_sends_;
+    j[kPostFaderSendsKey] = c.postfader_sends_;
     j[kInstrumentKey] = c.instrument_;
     j[kMidiPrefaderKey] = c.midi_prefader_;
     j[kAudioPrefaderKey] = c.audio_prefader_;
@@ -232,14 +231,8 @@ private:
   /** The instrument plugin, if instrument track. */
   std::optional<plugins::PluginUuidReference> instrument_;
 
-  /**
-   * The sends strip.
-   *
-   * The first 6 (slots 0-5) are pre-fader and the rest are post-fader.
-   *
-   * @note See CHANNEL_SEND_POST_FADER_START_SLOT.
-   */
-  std::array<utils::QObjectUniquePtr<ChannelSend>, STRIP_SIZE> sends_;
+  std::vector<utils::QObjectUniquePtr<ChannelSend>> prefader_sends_;
+  std::vector<utils::QObjectUniquePtr<ChannelSend>> postfader_sends_;
 
   /** The channel fader. */
   utils::QObjectUniquePtr<Fader> fader_;

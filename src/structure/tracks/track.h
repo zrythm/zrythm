@@ -1272,7 +1272,11 @@ public:
       {
         auto ch = track.channel ();
         gen (*ch->fader ());
-        for (auto &send : ch->sends ())
+        for (auto &send : ch->pre_fader_sends ())
+          {
+            gen (*send);
+          }
+        for (auto &send : ch->post_fader_sends ())
           {
             gen (*send);
           }

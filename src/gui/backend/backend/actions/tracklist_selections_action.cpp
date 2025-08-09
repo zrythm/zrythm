@@ -701,8 +701,17 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       /* reconnect any sends sent from the track */
                       for (
                         const auto &[clone_send, send] : std::views::zip (
-                          own_track->channel ()->sends (),
-                          prj_track->channel ()->sends ()))
+                          own_track->channel ()->pre_fader_sends (),
+                          prj_track->channel ()->pre_fader_sends ()))
+                        {
+                          init_from (
+                            *send, *clone_send,
+                            utils::ObjectCloneType::Snapshot);
+                        }
+                      for (
+                        const auto &[clone_send, send] : std::views::zip (
+                          own_track->channel ()->post_fader_sends (),
+                          prj_track->channel ()->post_fader_sends ()))
                         {
                           init_from (
                             *send, *clone_send,
@@ -1082,7 +1091,9 @@ TracklistSelectionsAction::
                 own_track_var);
             }
 
-          /* reroute new tracks to correct outputs & sends */
+            /* reroute new tracks to correct outputs & sends */
+// TODO
+#if 0
           for (
             const auto &[i, track_base] : utils::views::enumerate (new_tracks))
             {
@@ -1137,6 +1148,7 @@ TracklistSelectionsAction::
                 convert_to_variant<TrackPtrVariant> (track_base));
 
             } /* endforeach track */
+#endif
 
           /* EVENTS_PUSH (EventType::ET_TRACK_ADDED, nullptr); */
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
