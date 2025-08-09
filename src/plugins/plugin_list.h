@@ -98,11 +98,12 @@ public:
       throw std::invalid_argument ("Plugin ID not found");
 
     const auto index = std::ranges::distance (plugins_.begin (), it);
+    auto       ret = *it;
     beginRemoveRows ({}, static_cast<int> (index), static_cast<int> (index));
-    auto erased_plugin_it = plugins_.erase (it);
+    plugins_.erase (it);
     endRemoveRows ();
 
-    return *erased_plugin_it;
+    return ret;
   }
 
   auto &plugins () const { return plugins_; }
