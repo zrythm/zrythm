@@ -310,35 +310,35 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 if constexpr (
                   std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
                   {
-                    for (const auto &pl_ref : tr->modulators ()->plugins ())
+                    for (
+                      const auto &pl_obj :
+                      tr->modulators ()->plugins ()
+                        | std::views::transform (
+                          &plugins::PluginUuidReference::get_object))
                       {
                         std::visit (
                           [&] (auto &&pl) {
-                            if (pl)
+                            dsp::ProcessorGraphBuilder::add_connections (
+                              graph, *pl);
+                            for (
+                              const auto &pl_port_obj :
+                              pl->get_input_ports ()
+                                | std::views::transform (
+                                  &dsp::PortUuidReference::get_object))
                               {
-                                dsp::ProcessorGraphBuilder::add_connections (
-                                  graph, *pl);
-                                for (
-                                  const auto &pl_port_ref :
-                                  pl->get_input_ports ())
-                                  {
-                                    std::visit (
-                                      [&] (auto &&pl_port) {
-                                        // z_return_if_fail (pl_port->get_plugin
-                                        // (true)
-                                        // != nullptr);
-                                        auto port_node =
-                                          graph.get_nodes ()
-                                            .find_node_for_processable (*pl_port);
-                                        assert (port_node != nullptr);
-                                        track_processor_node->connect_to (
-                                          *port_node);
-                                      },
-                                      pl_port_ref.get_object ());
-                                  }
+                                std::visit (
+                                  [&] (auto &&pl_port) {
+                                    auto port_node =
+                                      graph.get_nodes ()
+                                        .find_node_for_processable (*pl_port);
+                                    assert (port_node != nullptr);
+                                    track_processor_node->connect_to (
+                                      *port_node);
+                                  },
+                                  pl_port_obj);
                               }
                           },
-                          pl_ref.get_object ());
+                          pl_obj);
                       }
 
                     /* connect the modulator macro processors */

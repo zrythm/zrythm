@@ -49,6 +49,7 @@ public:
     std::size_t hash () const { return qHash (type_safe::get (*this)); }
   };
   static_assert (std::regular<Uuid>);
+  static_assert (sizeof (Uuid) == sizeof (QUuid));
 
   UuidIdentifiableObject () : uuid_ (Uuid (QUuid::createUuid ())) { }
   UuidIdentifiableObject (const Uuid &id) : uuid_ (id) { }
