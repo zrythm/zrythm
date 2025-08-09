@@ -363,5 +363,7 @@ using PluginUuidReference = utils::UuidReference<PluginRegistry>;
 
 } // namespace zrythm::plugins
 
+DEFINE_UUID_HASH_SPECIALIZATION (zrythm::plugins::Plugin::Uuid)
+
 void
 from_json (const nlohmann::json &j, zrythm::plugins::PluginRegistry &registry);

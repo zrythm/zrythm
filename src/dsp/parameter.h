@@ -491,7 +491,12 @@ format_as (const ProcessorParameter::UniqueId &id)
 }
 
 using ProcessorParameterPtrVariant = std::variant<ProcessorParameter *>;
+}
 
+DEFINE_UUID_HASH_SPECIALIZATION (zrythm::dsp::ProcessorParameter::Uuid)
+
+namespace zrythm::dsp
+{
 /**
  * @brief Wrapper over a Uuid registry that provides (slow) lookup by unique ID.
  *
@@ -517,7 +522,7 @@ public:
   find_by_unique_id (const ProcessorParameter::UniqueId &id) const
   {
     const auto &map = get_hash_map ();
-    for (const auto &kv : map.asKeyValueRange ())
+    for (const auto &kv : map)
       {
         if (std::get<ProcessorParameter *> (kv.second)->get_unique_id () == id)
           {
@@ -583,5 +588,3 @@ template <> struct hash<zrythm::dsp::ProcessorParameter::UniqueId>
   }
 };
 }
-
-DEFINE_UUID_HASH_SPECIALIZATION (zrythm::dsp::ProcessorParameter::Uuid)

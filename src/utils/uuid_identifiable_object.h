@@ -14,6 +14,7 @@
 
 #include "type_safe/strong_typedef.hpp"
 #include <boost/stl_interfaces/iterator_interface.hpp>
+#include <boost/unordered/unordered_flat_map.hpp>
 #include <nlohmann/json.hpp>
 
 namespace zrythm::utils
@@ -106,9 +107,19 @@ template <typename T>
 concept UuidIdentifiableQObject =
   UuidIdentifiable<T> && std::derived_from<T, QObject>;
 
-// specialization for std::hash and QHash
+// specialization for std::hash and boost::hash
 #define DEFINE_UUID_HASH_SPECIALIZATION(UuidType) \
   namespace std \
+  { \
+  template <> struct hash<UuidType> \
+  { \
+    size_t operator() (const UuidType &uuid) const \
+    { \
+      return uuid.hash (); \
+    } \
+  }; \
+  } \
+  namespace boost \
   { \
   template <> struct hash<UuidType> \
   { \
@@ -364,14 +375,12 @@ public:
 
   [[gnu::hot]] auto get_iterator_for_id (const UuidType &id) const
   {
-    const auto &uuid = type_safe::get (id);
-    return objects_by_id_.constFind (uuid);
+    return objects_by_id_.find (id);
   }
 
   [[gnu::hot]] auto get_iterator_for_id (const UuidType &id)
   {
-    const auto &uuid = type_safe::get (id);
-    return objects_by_id_.find (uuid);
+    return objects_by_id_.find (id);
   }
 
   /**
@@ -379,7 +388,7 @@ public:
    *
    * @return A non-owning pointer to the object.
    */
-  [[gnu::hot]] std::optional<std::reference_wrapper<const VariantT>>
+  [[gnu::hot]] std::optional<VariantT>
   find_by_id (const UuidType &id) const noexcept [[clang::nonblocking]]
   {
     const auto it = get_iterator_for_id (id);
@@ -387,10 +396,10 @@ public:
       {
         return std::nullopt;
       }
-    return *it;
+    return it->second;
   }
 
-  [[gnu::hot]] auto &find_by_id_or_throw (const UuidType &id) const
+  [[gnu::hot]] auto find_by_id_or_throw (const UuidType &id) const
   {
     auto val = find_by_id (id);
     if (!val.has_value ())
@@ -398,13 +407,12 @@ public:
         throw std::runtime_error (
           fmt::format ("Object with id {} not found", id));
       }
-    return val.value ().get ();
+    return val.value ();
   }
 
   bool contains (const UuidType &id) const
   {
-    const auto &uuid = type_safe::get (id);
-    return objects_by_id_.contains (uuid);
+    return objects_by_id_.contains (id);
   }
 
   /**
@@ -423,7 +431,7 @@ public:
           }
         z_trace ("Registering (inserting) object {}", obj->get_uuid ());
         obj->setParent (this);
-        objects_by_id_.insert (type_safe::get (obj->get_uuid ()), obj);
+        objects_by_id_.emplace (obj->get_uuid (), obj);
       },
       obj_ptr);
   }
@@ -442,19 +450,14 @@ public:
    */
   auto reference_count (const UuidType &id) const
   {
-    return ref_counts_[type_safe::get (id)];
+    return ref_counts_.at (id);
   }
 
-  void acquire_reference (const UuidType &id)
-  {
-    const auto &quuid = type_safe::get (id);
-    ref_counts_[quuid]++;
-  }
+  void acquire_reference (const UuidType &id) { ref_counts_[id]++; }
 
   void release_reference (const UuidType &id)
   {
-    const auto &quuid = type_safe::get (id);
-    if (--ref_counts_[quuid] <= 0)
+    if (--ref_counts_[id] <= 0)
       {
         delete_object_by_id (id);
       }
@@ -467,10 +470,7 @@ public:
    */
   auto get_uuids () const
   {
-    return objects_by_id_.keys () | std::views::transform ([] (const auto &uuid) {
-             return UuidType (uuid);
-           })
-           | std::ranges::to<std::vector> ();
+    return objects_by_id_ | std::views::keys | std::ranges::to<std::vector> ();
   }
 
   size_t size () const { return objects_by_id_.size (); }
@@ -478,7 +478,7 @@ public:
   friend void to_json (nlohmann::json &j, const OwningObjectRegistry &obj)
   {
     auto objects = nlohmann::json::array ();
-    for (const auto &var : obj.objects_by_id_.values ())
+    for (const auto &var : obj.objects_by_id_ | std::views::values)
       {
         objects.push_back (var);
       }
@@ -511,7 +511,7 @@ private:
    */
   VariantT unregister_object (const UuidType &id)
   {
-    if (!objects_by_id_.contains (type_safe::get (id)))
+    if (!objects_by_id_.contains (id))
       {
         throw std::runtime_error (
           fmt::format ("Object with id {} not found", id));
@@ -519,12 +519,11 @@ private:
 
     z_trace ("Unregistering object with id {}", id);
 
-    auto obj_var = objects_by_id_.take (type_safe::get (id));
+    auto obj_it = get_iterator_for_id (id);
+    auto obj_var = obj_it->second;
+    objects_by_id_.erase (obj_it);
     std::visit ([&] (auto &&obj) { obj->setParent (nullptr); }, obj_var);
-    if (ref_counts_.contains (type_safe::get (id)))
-      {
-        ref_counts_.remove (type_safe::get (id));
-      }
+    ref_counts_.erase (id);
     return obj_var;
   }
 
@@ -540,14 +539,14 @@ private:
    *
    * @note Must allow realtime-safe (no locks) concurrent reads.
    */
-  QHash<QUuid, VariantT> objects_by_id_;
+  boost::unordered::unordered_flat_map<UuidType, VariantT> objects_by_id_;
 
   /**
    * @brief Reference counts for each hash.
    *
    * @note Only the main thread may read or write to this map.
    */
-  QHash<QUuid, int> ref_counts_;
+  boost::unordered::unordered_flat_map<UuidType, int> ref_counts_;
 };
 
 template <typename RegistryT> class UuidIdentifiableObjectSelectionManager

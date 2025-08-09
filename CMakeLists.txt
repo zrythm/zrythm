@@ -945,26 +945,35 @@ FetchContent_Declare(
   GIT_TAG 199ef13d6034c85232431130142159af3adfce22
   GIT_SHALLOW TRUE
   GIT_SUBMODULES
-    libs/circular_buffer
     libs/assert
+    libs/circular_buffer
     libs/concept_check
     libs/config
     libs/container
+    libs/container_hash
     libs/core
-    libs/move
+    libs/describe
     libs/intrusive
+    libs/move
+    libs/mp11
+    libs/predef
+    libs/preprocessor
     libs/static_assert
+    libs/stl_interfaces
     libs/throw_exception
     libs/type_traits
-    libs/stl_interfaces
-    libs/describe
-    libs/mp11
-    libs/preprocessor
+    libs/unordered
     tools/cmake
   EXCLUDE_FROM_ALL
   SYSTEM
 )
-set(BOOST_INCLUDE_LIBRARIES circular_buffer stl_interfaces describe container)
+set(BOOST_INCLUDE_LIBRARIES
+  circular_buffer
+  container
+  describe
+  stl_interfaces
+  unordered
+)
 FetchContent_MakeAvailable(Boost)
 
 CPMFindPackage(
@@ -1157,6 +1166,7 @@ list(APPEND zrythm_link_libs
   Boost::describe
   Boost::stl_interfaces
   Boost::container
+  Boost::unordered
   gsl-lite::gsl-lite
   TBB::tbb
   zrythm::qt_libs

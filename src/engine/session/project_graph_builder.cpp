@@ -310,7 +310,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 if constexpr (
                   std::is_same_v<TrackT, structure::tracks::ModulatorTrack>)
                   {
-                    for (const auto &pl_var : tr->get_modulator_span ())
+                    for (const auto &pl_ref : tr->modulators ()->plugins ())
                       {
                         std::visit (
                           [&] (auto &&pl) {
@@ -338,7 +338,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                                   }
                               }
                           },
-                          pl_var);
+                          pl_ref.get_object ());
                       }
 
                     /* connect the modulator macro processors */

@@ -14,7 +14,6 @@
 #include "utils/format.h"
 
 #include <QColor>
-#include <QHash>
 #include <QtQmlIntegration>
 
 struct FileImportInfo;

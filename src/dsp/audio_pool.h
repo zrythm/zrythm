@@ -125,9 +125,8 @@ public:
   auto get_clip_ptrs () const
   {
     return std::views::transform (
-      clip_registry_.get_hash_map ().values (), [] (const auto &clip) {
-        return std::get<dsp::FileAudioSource *> (clip);
-      });
+      clip_registry_.get_hash_map () | std::views::values,
+      [] (const auto &clip) { return std::get<dsp::FileAudioSource *> (clip); });
   }
 
 private:

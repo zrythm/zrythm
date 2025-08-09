@@ -370,7 +370,7 @@ public:
     const auto opt_var = get_param_registry ().find_by_id (id);
     if (opt_var.has_value ())
       {
-        return std::get<dsp::ProcessorParameter *> (opt_var.value ().get ());
+        return std::get<dsp::ProcessorParameter *> (opt_var.value ());
       }
     return nullptr;
   }

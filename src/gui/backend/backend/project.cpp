@@ -899,11 +899,13 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
   std::vector<PluginPtrVariant> plugins;
   for (
     const auto &pl_var :
-    main_project.get_plugin_registry ().get_hash_map ().values ())
+    main_project.get_plugin_registry ().get_hash_map () | std::views::values)
     {
       plugins.push_back (pl_var);
     }
-  for (const auto &pl_var : get_plugin_registry ().get_hash_map ().values ())
+  for (
+    const auto &pl_var :
+    get_plugin_registry ().get_hash_map () | std::views::values)
     {
       plugins.push_back (pl_var);
     }
