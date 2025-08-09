@@ -66,6 +66,8 @@ class Channel : public QObject
   Q_PROPERTY (zrythm::dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
   Q_PROPERTY (zrythm::plugins::PluginList * inserts READ inserts CONSTANT)
   Q_PROPERTY (zrythm::plugins::PluginList * midiFx READ midiFx CONSTANT)
+  Q_PROPERTY (
+    zrythm::plugins::Plugin * instrument READ instrument NOTIFY instrumentChanged)
   QML_UNCREATABLE ("")
 
 public:
@@ -116,6 +118,15 @@ public:
   }
   plugins::PluginList * midiFx () const { return midi_fx_.get (); }
   plugins::PluginList * inserts () const { return inserts_.get (); }
+  plugins::Plugin *     instrument () const
+  {
+    return instrument_.has_value ()
+             ? std::visit (
+                 [] (const auto &pl) -> plugins::Plugin * { return pl; },
+                 instrument_.value ().get_object ())
+             : nullptr;
+  }
+  Q_SIGNAL void instrumentChanged (plugins::Plugin *);
 
   // ============================================================================
 
@@ -132,6 +143,12 @@ public:
   std::optional<PluginPtrVariant> get_instrument () const
   {
     return instrument_ ? std::make_optional (instrument_->get_object ()) : std::nullopt;
+  }
+
+  void set_instrument (plugins::PluginUuidReference instrument_ref)
+  {
+    instrument_ = instrument_ref;
+    Q_EMIT instrumentChanged (instrument ());
   }
 
   /**
@@ -192,8 +209,7 @@ private:
 
   dsp::PortType signal_type_;
 
-  bool                         hard_limit_fader_output_;
-  Fader::ShouldBeMutedCallback should_be_muted_cb_;
+  bool hard_limit_fader_output_;
 
   /**
    * The MIDI effect strip on instrument/MIDI tracks.

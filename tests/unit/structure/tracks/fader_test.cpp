@@ -79,6 +79,10 @@ TEST_F (FaderTest, ConstructionAndBasicProperties)
   // MIDI fader should not have mono/swap phase toggles
   EXPECT_EQ (midi_fader_->monoToggle (), nullptr);
   EXPECT_EQ (midi_fader_->swapPhaseToggle (), nullptr);
+
+  // No hard limiting by default
+  EXPECT_FALSE (audio_fader_->hard_limiting_enabled ());
+  EXPECT_FALSE (midi_fader_->hard_limiting_enabled ());
 }
 
 TEST_F (FaderTest, PortConfiguration)
@@ -925,6 +929,7 @@ TEST_F (FaderTest, HardLimitingFunctionality)
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
     dsp::PortType::Audio, true, true, [] { return u8"Test Track Hard Limit"; },
     [] (bool solo_status) { return false; });
+  EXPECT_TRUE (hard_limit_fader->hard_limiting_enabled ());
 
   hard_limit_fader->prepare_for_processing (sample_rate_, max_block_length_);
 

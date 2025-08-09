@@ -37,7 +37,6 @@ Channel::Channel (
       plugin_registry_ (plugin_registry),
       name_provider_ (std::move (name_provider)), signal_type_ (signal_type),
       hard_limit_fader_output_ (hard_limit_fader_output),
-      should_be_muted_cb_ (std::move (should_be_muted_cb)),
       midi_fx_ (
         utils::make_qobject_unique<plugins::PluginList> (plugin_registry, this)),
       inserts_ (
@@ -49,7 +48,7 @@ Channel::Channel (
           hard_limit_fader_output_,
           true,
           name_provider_,
-          should_be_muted_cb_,
+          should_be_muted_cb,
           this))
 {
 
@@ -129,8 +128,9 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
   std::optional<plugins::PluginUuidReference> ret;
   if (instrument_.has_value () && instrument_->id () == id)
     {
-      ret = instrument_;
+      ret = instrument_.value ();
       instrument_.reset ();
+      Q_EMIT instrumentChanged (nullptr);
     }
 
   const auto check_plugin_list = [id, &ret] (auto &container) {

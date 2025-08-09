@@ -230,6 +230,8 @@ public:
   bool is_audio () const { return signal_type_ == dsp::PortType::Audio; }
   bool is_midi () const { return signal_type_ == dsp::PortType::Midi; }
 
+  bool hard_limiting_enabled () const { return hard_limit_output_; }
+
   friend void
   init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type);
 
