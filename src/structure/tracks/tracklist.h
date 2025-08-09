@@ -382,10 +382,10 @@ public:
    * overwrite when a plugin already exists.
    */
   void move_plugin (
-    const plugins::Plugin::Uuid &plugin_id,
-    const Track::Uuid           &target_track_id,
-    plugins::PluginSlot          slot,
-    bool                         confirm_overwrite);
+    const plugins::Plugin::Uuid         &plugin_id,
+    const Track::Uuid                   &target_track_id,
+    std::optional<plugins::Plugin::Uuid> previous_plugin_id_at_destination,
+    bool                                 confirm_overwrite);
 
   Channel * get_channel_for_plugin (const plugins::Plugin::Uuid &plugin_id);
 

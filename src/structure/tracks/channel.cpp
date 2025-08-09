@@ -37,11 +37,22 @@ Channel::Channel (
       plugin_registry_ (plugin_registry),
       name_provider_ (std::move (name_provider)), signal_type_ (signal_type),
       hard_limit_fader_output_ (hard_limit_fader_output),
-      should_be_muted_cb_ (std::move (should_be_muted_cb))
+      should_be_muted_cb_ (std::move (should_be_muted_cb)),
+      midi_fx_ (
+        utils::make_qobject_unique<plugins::PluginList> (plugin_registry, this)),
+      inserts_ (
+        utils::make_qobject_unique<plugins::PluginList> (plugin_registry, this)),
+      fader_ (
+        utils::make_qobject_unique<Fader> (
+          dependencies (),
+          signal_type_,
+          hard_limit_fader_output_,
+          true,
+          name_provider_,
+          should_be_muted_cb_,
+          this))
 {
-  fader_ = utils::make_qobject_unique<Fader> (
-    dependencies (), signal_type_, hard_limit_fader_output_, true,
-    name_provider_, should_be_muted_cb_, this);
+
   if (signal_type_ == PortType::Audio)
     {
       audio_prefader_ = utils::make_qobject_unique<
@@ -75,8 +86,9 @@ init_from (Channel &obj, const Channel &other, utils::ObjectCloneType clone_type
 {
   if (clone_type == utils::ObjectCloneType::Snapshot)
     {
-      obj.midi_fx_ = other.midi_fx_;
-      obj.inserts_ = other.inserts_;
+      // TODO
+      // obj.midi_fx_ = other.midi_fx_;
+      // obj.inserts_ = other.inserts_;
       obj.instrument_ = other.instrument_;
       // TODO
       // utils::clone_unique_ptr_container (obj.sends_, other.sends_);
@@ -121,21 +133,16 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
       instrument_.reset ();
     }
 
-  const auto id_projection =
-    [] (const std::optional<plugins::PluginUuidReference> &ref) {
-      return ref.has_value () ? ref->id () : plugins::Plugin::Uuid{};
-    };
-  const auto check_plugin_container =
-    [id, id_projection, &ret] (auto &container) {
-      auto it = std::ranges::find (container, id, id_projection);
-      if (it != container.end ())
-        {
-          ret = it->value ();
-          it->reset ();
-        }
-    };
-  check_plugin_container (inserts_);
-  check_plugin_container (midi_fx_);
+  const auto check_plugin_list = [id, &ret] (auto &container) {
+    auto it = std::ranges::find (
+      container->plugins (), id, &plugins::PluginUuidReference::id);
+    if (it != container->plugins ().end ())
+      {
+        ret = container->remove_plugin (it->id ());
+      }
+  };
+  check_plugin_list (inserts_);
+  check_plugin_list (midi_fx_);
   assert (ret.has_value ());
 
   std::visit (
@@ -147,138 +154,12 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
   return ret.value ();
 }
 
-std::optional<plugins::PluginUuidReference>
-Channel::add_plugin (plugins::PluginUuidReference plugin_id, PluginSlot slot)
-{
-  std::optional<plugins::PluginUuidReference> ret;
-
-  auto slot_type =
-    slot.has_slot_index ()
-      ? slot.get_slot_with_index ().first
-      : slot.get_slot_type_only ();
-  auto slot_index =
-    slot.has_slot_index () ? slot.get_slot_with_index ().second : -1;
-  auto existing_pl_id =
-    (slot_type == PluginSlotType::Instrument) ? instrument_
-    : (slot_type == PluginSlotType::Insert)
-      ? inserts_[slot_index]
-      : midi_fx_[slot_index];
-
-  /* free current plugin */
-  if (existing_pl_id.has_value ())
-    {
-      z_debug ("existing plugin exists at {}:{}", name_provider_ (), slot);
-      ret = remove_plugin (existing_pl_id->id ());
-    }
-
-  auto plugin_var = plugin_id.get_object ();
-  std::visit (
-    [&] (auto &&plugin) {
-      z_debug (
-        "Inserting {} {} at {}:{}:{}", slot_type, plugin->get_name (),
-        name_provider_ (), slot_type, slot);
-    },
-    plugin_var);
-
-  if (slot_type == PluginSlotType::Instrument)
-    {
-      instrument_ = plugin_id;
-    }
-  else if (slot_type == PluginSlotType::Insert)
-    {
-      inserts_[slot_index] = plugin_id;
-    }
-  else
-    {
-      midi_fx_[slot_index] = plugin_id;
-    }
-
-  return ret;
-}
-
-std::optional<plugins::PluginPtrVariant>
-Channel::get_plugin_at_slot (PluginSlot slot) const
-{
-  auto slot_type =
-    slot.has_slot_index ()
-      ? slot.get_slot_with_index ().first
-      : slot.get_slot_type_only ();
-  auto slot_index =
-    slot.has_slot_index () ? slot.get_slot_with_index ().second : -1;
-  auto existing_pl_id = [&] () -> std::optional<plugins::PluginUuidReference> {
-    switch (slot_type)
-      {
-      case PluginSlotType::Insert:
-        return inserts_[slot_index];
-      case PluginSlotType::MidiFx:
-        return midi_fx_[slot_index];
-      case PluginSlotType::Instrument:
-        return instrument_;
-      case PluginSlotType::Modulator:
-      default:
-        z_return_val_if_reached (std::nullopt);
-      }
-  }();
-  if (!existing_pl_id.has_value ())
-    {
-      return std::nullopt;
-    }
-  return existing_pl_id->get_object ();
-}
-
-auto
-Channel::get_plugin_slot (const PluginUuid &plugin_id) const -> PluginSlot
-{
-  if (instrument_ && plugin_id == instrument_->id ())
-    {
-      return PluginSlot{ PluginSlotType::Instrument };
-    }
-  {
-    // note: for some reason `it` is not a pointer on msvc so `const auto * it`
-    // won't work
-    const auto it = std::ranges::find (
-      inserts_, plugin_id, &plugins::PluginUuidReference::id);
-    if (it != inserts_.end ())
-      {
-        return PluginSlot{
-          PluginSlotType::Insert,
-          static_cast<PluginSlot::SlotNo> (std::distance (inserts_.begin (), it))
-        };
-      }
-  }
-  {
-    const auto it = std::ranges::find (
-      midi_fx_, plugin_id, &plugins::PluginUuidReference::id);
-    if (it != midi_fx_.end ())
-      {
-        return PluginSlot{
-          PluginSlotType::MidiFx,
-          static_cast<PluginSlot::SlotNo> (std::distance (midi_fx_.begin (), it))
-        };
-      }
-  }
-
-  throw std::runtime_error ("Plugin not found in channel");
-}
-
 void
 Channel::get_plugins (std::vector<Channel::Plugin *> &pls) const
 {
   std::vector<plugins::PluginUuidReference> refs;
-  for (const auto &insert : inserts_)
-    {
-      if (insert)
-        {
-          refs.push_back (*insert);
-        }
-    }
-  for (const auto &midi_fx : midi_fx_)
-    {
-      if (midi_fx)
-        {
-          refs.push_back (*midi_fx);
-        }
-    }
+  std::ranges::copy (midi_fx_->plugins (), std::back_inserter (refs));
+  std::ranges::copy (inserts_->plugins (), std::back_inserter (refs));
   if (instrument_)
     {
       refs.push_back (*instrument_);
@@ -294,9 +175,8 @@ Channel::get_plugins (std::vector<Channel::Plugin *> &pls) const
 void
 from_json (const nlohmann::json &j, Channel &c)
 {
-  // TODO
-  // j.at (Channel::kMidiFxKey).get_to (c.midi_fx_);
-  // j.at (Channel::kInsertsKey).get_to (c.inserts_);
+  j.at (Channel::kMidiFxKey).get_to (*c.midi_fx_);
+  j.at (Channel::kInsertsKey).get_to (*c.inserts_);
   for (
     const auto &[index, send_json] :
     utils::views::enumerate (j.at (Channel::kPreFaderSendsKey)))

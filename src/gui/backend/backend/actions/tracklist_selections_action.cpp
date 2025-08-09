@@ -514,6 +514,8 @@ TracklistSelectionsAction::create_track (int idx)
           TRACKLIST->insert_track (
             added_track_ref, pos, *AUDIO_ENGINE, false, false);
 
+// TODO
+#if 0
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
               if (has_plugin)
@@ -526,6 +528,7 @@ TracklistSelectionsAction::create_track (int idx)
                       : plugins::PluginSlot (plugins::PluginSlotType::Insert, 0));
                 }
             }
+#endif
 
           Position start_pos = have_pos_ ? pos_ : Position ();
           if (track_type_ == Track::Type::Audio)
@@ -994,6 +997,8 @@ TracklistSelectionsAction::
         }
       else if (copy)
         {
+// TODO
+#if 0
           unsigned int num_tracks = tls_before_->size ();
 
           if (inside)
@@ -1021,7 +1026,7 @@ TracklistSelectionsAction::
                         &own_track->output_track_as_group_target ());
 
 // TODO
-#if 0
+#  if 0
                       for (size_t j = 0; j < Channel::STRIP_SIZE; ++j)
                         {
                           auto &send = own_track->channel ()->sends_.at (j);
@@ -1035,7 +1040,7 @@ TracklistSelectionsAction::
                             port_connections_before_.get (),
                             send_conns.at (i).at (j));
                         }
-#endif
+#  endif
                     }
                   else
                     {
@@ -1093,7 +1098,7 @@ TracklistSelectionsAction::
 
             /* reroute new tracks to correct outputs & sends */
 // TODO
-#if 0
+#  if 0
           for (
             const auto &[i, track_base] : utils::views::enumerate (new_tracks))
             {
@@ -1148,11 +1153,12 @@ TracklistSelectionsAction::
                 convert_to_variant<TrackPtrVariant> (track_base));
 
             } /* endforeach track */
-#endif
+#  endif
 
           /* EVENTS_PUSH (EventType::ET_TRACK_ADDED, nullptr); */
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
 
+#endif
         } /* endif copy */
 
       if (inside)

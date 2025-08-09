@@ -1410,24 +1410,39 @@ struct PluginBuilderForDeserialization
   }
   template <typename T> std::unique_ptr<T> build () const
   {
-    return std::make_unique<T> (
-      plugins::Plugin::ProcessorBaseDependencies{
-        .port_registry_ = project_.get_port_registry (),
-        .param_registry_ = project_.get_param_registry () },
-      [this] () { return project_.get_path (ProjectPath::PluginStates, false); },
-      [] (
-        const juce::PluginDescription &description, double initialSampleRate,
-        int                                             initialBufferSize,
-        juce::AudioPluginFormat::PluginCreationCallback callback) {
-        Zrythm::getInstance ()
-          ->getPluginManager ()
-          ->get_format_manager ()
-          ->createPluginInstanceAsync (
-            description, initialSampleRate, initialBufferSize, callback);
-      },
-      [this] () { return project_.audio_engine_->get_sample_rate (); },
-      [this] () { return project_.audio_engine_->get_block_length (); },
-      juce_plugin_toplevel_window_provider);
+    if constexpr (std::derived_from<T, plugins::InternalPluginBase>)
+      {
+        return std::make_unique<T> (
+          plugins::Plugin::ProcessorBaseDependencies{
+            .port_registry_ = project_.get_port_registry (),
+            .param_registry_ = project_.get_param_registry () },
+          [this] () {
+            return project_.get_path (ProjectPath::PluginStates, false);
+          });
+      }
+    else
+      {
+        return std::make_unique<T> (
+          plugins::Plugin::ProcessorBaseDependencies{
+            .port_registry_ = project_.get_port_registry (),
+            .param_registry_ = project_.get_param_registry () },
+          [this] () {
+            return project_.get_path (ProjectPath::PluginStates, false);
+          },
+          [] (
+            const juce::PluginDescription &description,
+            double initialSampleRate, int initialBufferSize,
+            juce::AudioPluginFormat::PluginCreationCallback callback) {
+            Zrythm::getInstance ()
+              ->getPluginManager ()
+              ->get_format_manager ()
+              ->createPluginInstanceAsync (
+                description, initialSampleRate, initialBufferSize, callback);
+          },
+          [this] () { return project_.audio_engine_->get_sample_rate (); },
+          [this] () { return project_.audio_engine_->get_block_length (); },
+          juce_plugin_toplevel_window_provider);
+      }
   }
 
   const Project &project_;

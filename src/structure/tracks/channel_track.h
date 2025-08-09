@@ -97,15 +97,6 @@ public:
   void
   set_muted (bool mute, bool trigger_undo, bool auto_select, bool fire_events);
 
-  /**
-   * Returns the plugin at the given slot, if any.
-   */
-  std::optional<PluginPtrVariant>
-  get_plugin_at_slot (plugins::PluginSlot slot) const
-  {
-    return channel ()->get_plugin_at_slot (slot);
-  }
-
   void set_output (std::optional<Track::Uuid> id) { output_track_uuid_ = id; }
 
   bool has_output () const { return output_track_uuid_.has_value (); }

@@ -89,9 +89,7 @@ PluginManager::createPluginInstance (
   auto config = PluginConfiguration::create_new_for_descriptor (*descr);
   auto plugin_ref =
     PROJECT->getPluginFactory ()->create_plugin_from_setting (*config);
-  P_MASTER_TRACK->channel ()->add_plugin (
-    plugin_ref,
-    zrythm::plugins::PluginSlot (zrythm::plugins::PluginSlotType::Insert, 0));
+  P_MASTER_TRACK->channel ()->inserts ()->append_plugin (plugin_ref);
   auto * pl = plugin_ref.get_object_as<zrythm::plugins::JucePlugin> ();
   QObject::connect (
     pl, &zrythm::plugins::Plugin::instantiationFinished, pl, [pl, state_ptr] () {

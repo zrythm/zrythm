@@ -22,6 +22,7 @@ class ModulatorTrack final
       public utils::InitializableObject<ModulatorTrack>
 {
   Q_OBJECT
+  Q_PROPERTY (zrythm::plugins::PluginList * modulators READ modulators CONSTANT)
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (ModulatorTrack)
   DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (ModulatorTrack)
@@ -32,6 +33,14 @@ class ModulatorTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (ModulatorTrack)
 
 public:
+  // ============================================================================
+  // QML Interface
+  // ============================================================================
+
+  plugins::PluginList * modulators () const { return modulators_.get (); }
+
+  // ============================================================================
+
   /**
    * Inserts and connects a Modulator to the Track.
    *
@@ -51,33 +60,6 @@ public:
   std::optional<PluginPtrVariant>
   get_modulator (plugins::PluginSlot::SlotNo slot) const;
 
-  plugins::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
-
-  /**
-   * Removes a plugin at the given slot from the track.
-   *
-   * @param moving_plugin Whether or not we are moving the plugin.
-   * @param deleting_plugin Whether or not we are deleting the plugin.
-   */
-  void remove_plugin (
-    plugins::PluginSlot slot,
-    bool                moving_plugin = false,
-    bool                deleting_plugin = true);
-
-  /**
-   * Returns the plugin at the given slot, if any.
-   */
-  std::optional<PluginPtrVariant> get_plugin_at_slot (plugins::PluginSlot slot)
-  {
-    if (
-      slot.is_modulator ()
-      && slot.get_slot_with_index ().second < (int) modulators_.size ())
-      {
-        return modulators_[slot.get_slot_with_index ().second].get_object ();
-      }
-    return std::nullopt;
-  }
-
   void init_loaded (
     PluginRegistry                  &plugin_registry,
     dsp::PortRegistry               &port_registry,
@@ -93,7 +75,10 @@ public:
     return std::span (modulator_macro_processors_);
   }
 
-  auto get_modulator_span () const { return PluginSpan{ modulators_ }; }
+  auto get_modulator_span () const
+  {
+    return PluginSpan{ modulators_->plugins () };
+  }
 
   void temporary_virtual_method_hack () const override { }
 
@@ -103,7 +88,7 @@ private:
   friend void           to_json (nlohmann::json &j, const ModulatorTrack &track)
   {
     to_json (j, static_cast<const Track &> (track));
-    j[kModulatorsKey] = track.modulators_;
+    j[kModulatorsKey] = *track.modulators_;
     j[kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
   }
   friend void from_json (const nlohmann::json &j, ModulatorTrack &track);
@@ -112,7 +97,7 @@ private:
 
 public:
   /** Modulators. */
-  std::vector<plugins::PluginUuidReference> modulators_;
+  utils::QObjectUniquePtr<plugins::PluginList> modulators_;
 
   /** Modulator macros. */
   std::vector<utils::QObjectUniquePtr<dsp::ModulatorMacroProcessor>>

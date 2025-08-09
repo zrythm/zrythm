@@ -4,7 +4,7 @@
 #pragma once
 
 #include "dsp/passthrough_processors.h"
-#include "plugins/plugin_all.h"
+#include "plugins/plugin_list.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/fader.h"
 #include "utils/icloneable.h"
@@ -59,24 +59,21 @@ class Channel : public QObject
   QML_ELEMENT
   Q_PROPERTY (Fader * fader READ fader CONSTANT)
   Q_PROPERTY (QVariant preFader READ preFader CONSTANT)
-  Q_PROPERTY (dsp::AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
-  Q_PROPERTY (dsp::AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
-  Q_PROPERTY (dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
+  Q_PROPERTY (zrythm::dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
+  Q_PROPERTY (zrythm::plugins::PluginList * inserts READ inserts CONSTANT)
+  Q_PROPERTY (zrythm::plugins::PluginList * midiFx READ midiFx CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
   using PortType = zrythm::dsp::PortType;
   using Plugin = plugins::Plugin;
   using PluginDescriptor = zrythm::plugins::PluginDescriptor;
-  using PluginSlot = zrythm::plugins::PluginSlot;
-  using PluginSlotType = zrythm::plugins::PluginSlotType;
   using PluginPtrVariant = plugins::PluginPtrVariant;
   using PluginUuid = Plugin::Uuid;
-
-  /**
-   * Number of plugin slots per channel.
-   */
-  static constexpr auto STRIP_SIZE = 9u;
 
   using NameProvider = std::function<utils::Utf8String ()>;
 
@@ -117,6 +114,8 @@ public:
     return is_midi () ? std::addressof (midi_postfader_->get_midi_out_port (0))
                       : nullptr;
   }
+  plugins::PluginList * midiFx () const { return midi_fx_.get (); }
+  plugins::PluginList * inserts () const { return inserts_.get (); }
 
   // ============================================================================
 
@@ -124,33 +123,11 @@ public:
   bool is_audio () const { return signal_type_ == PortType::Audio; }
 
   /**
-   * Adds given plugin to given position in the strip.
-   *
-   * This does not concern itself with automation tracks or graph rebuilding.
-   * When plugins are added or removed, automation tracks should be
-   * generated/moved accordingly and the DSP graph should be regenerated.
-   *
-   * This removes the existing plugin, so callers should handle related logic
-   * like asking for confirmation or storing the previous plugin.
-   *
-   * @param slot The position in the strip starting from 0.
-   * @param plugin The plugin to add.
-   *
-   * @return The previous plugin that was at that slot, if any.
-   */
-  std::optional<plugins::PluginUuidReference>
-  add_plugin (plugins::PluginUuidReference plugin_id, PluginSlot slot);
-
-  /**
    * @brief Returns all existing plugins in the channel.
    *
    * @param pls Vector to add plugins to.
    */
   void get_plugins (std::vector<Plugin *> &pls) const;
-
-  std::optional<PluginPtrVariant> get_plugin_at_slot (PluginSlot slot) const;
-
-  auto get_plugin_slot (const PluginUuid &plugin_id) const -> PluginSlot;
 
   std::optional<PluginPtrVariant> get_instrument () const
   {
@@ -191,8 +168,8 @@ private:
 
   friend void to_json (nlohmann::json &j, const Channel &c)
   {
-    j[kMidiFxKey] = c.midi_fx_;
-    j[kInsertsKey] = c.inserts_;
+    j[kMidiFxKey] = *c.midi_fx_;
+    j[kInsertsKey] = *c.inserts_;
     j[kPreFaderSendsKey] = c.prefader_sends_;
     j[kPostFaderSendsKey] = c.postfader_sends_;
     j[kInstrumentKey] = c.instrument_;
@@ -223,10 +200,10 @@ private:
    *
    * This is processed before the instrument/inserts.
    */
-  std::array<std::optional<plugins::PluginUuidReference>, STRIP_SIZE> midi_fx_;
+  utils::QObjectUniquePtr<plugins::PluginList> midi_fx_;
 
   /** The channel insert strip. */
-  std::array<std::optional<plugins::PluginUuidReference>, STRIP_SIZE> inserts_;
+  utils::QObjectUniquePtr<plugins::PluginList> inserts_;
 
   /** The instrument plugin, if instrument track. */
   std::optional<plugins::PluginUuidReference> instrument_;

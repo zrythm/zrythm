@@ -759,11 +759,11 @@ plugin_move_data_free (void * _data, GClosure * closure)
 }
 #endif
 
+// TODO
+#if 0
 static void
 do_move (PluginMoveData * data)
 {
-// TODO
-#if 0
   auto * pl = data->pl;
   auto   prev_slot = *pl->get_slot ();
   auto * prev_track = TrackSpan::derived_type_transformation<AutomatableTrack> (
@@ -810,8 +810,8 @@ do_move (PluginMoveData * data)
         }
     },
     *data->track_var);
-#endif
 }
+#endif
 
 #if 0
 static void
@@ -832,11 +832,13 @@ overwrite_plugin_response_cb (
 
 void
 Tracklist::move_plugin (
-  const plugins::Plugin::Uuid &plugin_id,
-  const Track::Uuid           &target_track_id,
-  plugins::PluginSlot          slot,
-  bool                         confirm_overwrite)
+  const plugins::Plugin::Uuid         &plugin_id,
+  const Track::Uuid                   &target_track_id,
+  std::optional<plugins::Plugin::Uuid> previous_plugin_id_at_destination,
+  bool                                 confirm_overwrite)
 {
+// TODO
+#if 0
   auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
   auto track_var = get_track (target_track_id);
   std::visit (
@@ -852,14 +854,14 @@ Tracklist::move_plugin (
           auto existing_pl = track->get_plugin_at_slot (slot);
           if (existing_pl && confirm_overwrite && ZRYTHM_HAVE_UI)
             {
-#if 0
+#  if 0
       auto dialog =
         dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
       gtk_window_present (GTK_WINDOW (dialog));
       g_signal_connect_data (
         dialog, "response", G_CALLBACK (overwrite_plugin_response_cb),
         data.release (), plugin_move_data_free, G_CONNECT_DEFAULT);
-#endif
+#  endif
               return;
             }
 
@@ -867,6 +869,7 @@ Tracklist::move_plugin (
         }
     },
     pl_var, *track_var);
+#endif
 }
 
 bool

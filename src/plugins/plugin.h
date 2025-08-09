@@ -350,8 +350,9 @@ private:
 
 class CarlaNativePlugin;
 class JucePlugin;
+class InternalPluginBase;
 
-using PluginVariant = std::variant<JucePlugin>;
+using PluginVariant = std::variant<JucePlugin, InternalPluginBase>;
 using PluginPtrVariant = to_pointer_variant<PluginVariant>;
 using PluginUniquePtrVariant = to_unique_ptr_variant<PluginVariant>;
 
