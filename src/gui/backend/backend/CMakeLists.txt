@@ -13,7 +13,6 @@ target_sources(zrythm_gui_lib
     piano_roll.cpp
     project.cpp
     # project/project_init_flow_manager.cpp
-    project_info.cpp
     settings_manager.h
     settings_manager.cpp
     theme_manager.h
