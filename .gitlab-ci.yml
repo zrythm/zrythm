@@ -289,7 +289,7 @@ check:exif:
    - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D NightlyStart -D NightlyConfigure -D NightlyBuild -D NightlyTest || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D NightlyTest || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
   - if [ "${BUILD_TYPE}" = "Debug" ]; then
       ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyCoverage ;
     fi
@@ -403,7 +403,7 @@ build:windows:
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
     - if (! $?) { exit 1 }  # Check if the previous command failed
-    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -V -D NightlyStart -D NightlyConfigure -D NightlyBuild -D NightlyTest -D NightlySubmit; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
+    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -V -D NightlyTest -D NightlySubmit; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
     - if ("${env:BUILD_TYPE}" -eq "Release") { cmake --build "${BUILDDIR}-${BUILD_TYPE}" --config "${env:BUILD_TYPE}" --target run_all_benchmarks }
     - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config ${env:BUILDDIR}-${env:BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${env:BUILD_TYPE}; if (-not $?) { Get-Content "package-${env:BUILD_TYPE}/_CPack_Packages/win64/INNOSETUP/ISCCOutput.log"; exit 1 }
   parallel:

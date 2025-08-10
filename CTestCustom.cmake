@@ -18,3 +18,11 @@ set(CTEST_CUSTOM_MEMCHECK_IGNORE
   ${CTEST_CUSTOM_MEMCHECK_IGNORE}
   # Example-vtkLocal
 )
+
+# ignore everything under build_*/.qt and build_*/_deps
+set(CTEST_CUSTOM_COVERAGE_EXCLUDE
+    ".*/\\.qt/.*"
+    ".*/_deps/.*"
+    ".*/build_.*/.*_autogen/.*"
+    ".*/qrc_.*\\.cpp"
+)
