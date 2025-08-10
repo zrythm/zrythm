@@ -80,6 +80,7 @@ target_sources(zrythm_gui_lib
     track.cpp
     track_all.h
     track_factory.h
+    track_factory.cpp
     track_fwd.h
     track_lane.h
     track_lane.cpp

@@ -195,8 +195,8 @@ set(rel_qml_file_paths
   components/Ruler.qml
   components/SpectrumAnalyzer.qml
   components/ToolBox.qml
-  components/Tracklist.qml
   components/TracklistHeader.qml
+  components/TracklistView.qml
   components/TrackView.qml
   components/TransportControls.qml
   components/UndoSplitButton.qml

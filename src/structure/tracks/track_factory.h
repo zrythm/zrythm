@@ -145,33 +145,7 @@ public:
     return track_ref;
   }
 
-  Q_INVOKABLE QVariant addEmptyTrackFromType (int type)
-  {
-    Track::Type tt = ENUM_INT_TO_VALUE (Track::Type, type);
-    //   if (zrythm_app->check_and_show_trial_limit_error ())
-    //     return;
-
-    try
-      {
-        auto * track_base = Track::create_empty_with_action (tt);
-        std::visit (
-          [&] (auto &&track) {
-            using TrackT = base_type<decltype (track)>;
-            z_debug (
-              "created {} track: {}", typename_to_string<TrackT> (),
-              track->get_name ());
-          },
-          convert_to_variant<TrackPtrVariant> (track_base));
-        return QVariant::fromStdVariant (
-          convert_to_variant<TrackPtrVariant> (track_base));
-      }
-    catch (const ZrythmException &e)
-      {
-        e.handle (QObject::tr ("Failed to create track"));
-      }
-    // TODO
-    return {};
-  }
+  Q_INVOKABLE QVariant addEmptyTrackFromType (Track::Type tt);
 
   template <typename TrackT>
   auto clone_new_object_identity (const TrackT &other) const

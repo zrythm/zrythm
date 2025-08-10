@@ -704,6 +704,7 @@ if(ZRYTHM_STRICT)
       # -Wfunction-effects
       -Wperf-constraint-implies-noexcept
     )
+  elseif(MSVC)
   endif()
 endif()
 add_library(zrythm::coverage ALIAS _zrythm_coverage_lib)

@@ -389,6 +389,7 @@ public:
 
   Channel * get_channel_for_plugin (const plugins::Plugin::Uuid &plugin_id);
 
+#if 0
   /**
    * Begins file import Handles a file drop inside the timeline or in empty
    * space in the tracklist.
@@ -411,7 +412,6 @@ public:
     const zrythm::dsp::Position *                 pos,
     TracksReadyCallback                           ready_cb);
 
-#if 0
   /**
    * Handles a move or copy action based on a drag.
    *

@@ -150,6 +150,8 @@ PluginConfigurationManager::activate_plugin_configuration (
   bool                       autoroute_multiout,
   bool                       has_stereo_outputs)
 {
+// TODO
+#if 0
   using namespace structure::tracks;
   bool has_errors = false;
 
@@ -306,6 +308,7 @@ PluginConfigurationManager::activate_plugin_configuration (
     {
       increment_num_instantiations_for_plugin (*config.get_descriptor ());
     }
+#endif
 }
 
 #if 0

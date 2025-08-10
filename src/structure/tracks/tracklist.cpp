@@ -1517,6 +1517,7 @@ Tracklist::move_region_to_track (
 #endif
 }
 
+#if 0
 void
 Tracklist::import_files (
   std::optional<std::vector<utils::Utf8String>> uri_list,
@@ -1588,7 +1589,7 @@ Tracklist::import_files (
     }
 
     // TODO
-#if 0
+#  if 0
   auto nfo = FileImportInfo (
     track ? track->name_hash_ : 0, lane ? lane->pos_ : 0,
     pos ? *pos : Position (),
@@ -1623,8 +1624,9 @@ Tracklist::import_files (
       file_import_progress_dialog_run (dialog);
       g_strfreev (filepaths_null_terminated);
     }
-#endif
+#  endif
 }
+#endif
 
 #if 0
 void

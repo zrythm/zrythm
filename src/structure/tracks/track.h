@@ -334,11 +334,6 @@ class ChannelTrack;
 class GroupTargetTrack;
 class TrackFactory;
 
-/**
- * Called when track(s) are actually imported into the project.
- */
-using TracksReadyCallback = void (*) (const FileImportInfo *);
-
 struct BaseTrackDependencies
 {
   const dsp::TempoMap                 &tempo_map_;
@@ -1032,60 +1027,6 @@ public:
    */
   void set_caches (CacheType types);
 
-  /**
-   * @brief Creates a new track with the given parameters.
-   *
-   * @param disable_track_idx Track index to disable, or -1.
-   * @param ready_cb Callback to be called when the tracks are ready (added
-   * to the project).
-   *
-   * @throw ZrythmException on error.
-   */
-  static void create_with_action (
-    Type                                         type,
-    const zrythm::plugins::PluginConfiguration * pl_setting,
-    const FileDescriptor *                       file_descr,
-    const dsp::Position *                        pos,
-    int                                          index,
-    int                                          num_tracks,
-    int                                          disable_track_idx,
-    TracksReadyCallback                          ready_cb);
-
-  /**
-   * @brief Creates a new empty track at the given index.
-   *
-   * @param type
-   * @param index
-   * @param error
-   * @return Track*
-   * @throw ZrythmException on error.
-   */
-  static Track * create_empty_at_idx_with_action (Type type, int index);
-
-  /**
-   * @brief Creates a new track for the given plugin at the given index.
-   *
-   * @param type
-   * @param pl_setting
-   * @param index
-   * @param error
-   * @return Track*
-   * @throw ZrythmException on error.
-   */
-  static Track * create_for_plugin_at_idx_w_action (
-    Type                                         type,
-    const zrythm::plugins::PluginConfiguration * pl_setting,
-    int                                          index);
-
-  template <typename T = Track>
-  static T * create_for_plugin_at_idx_w_action (
-    const zrythm::plugins::PluginConfiguration * pl_setting,
-    int                                          index)
-  {
-    return dynamic_cast<T *> (create_for_plugin_at_idx_w_action (
-      get_type_for_class<T> (), pl_setting, index));
-  }
-
   utils::Utf8String
   generate_window_name_for_plugin (const plugins::Plugin &plugin) const
   {
@@ -1120,33 +1061,6 @@ public:
     return utils::Utf8String::from_utf8_encoded_string (
       fmt::format ("{} ({})", plugin_name, track_name));
   }
-
-  /**
-   * @brief Creates a new empty track at the end of the tracklist.
-   *
-   * @param type
-   * @return Track*
-   * @throw ZrythmException on error.
-   */
-  static Track * create_empty_with_action (Type type);
-
-  template <typename T = Track> static T * create_empty_with_action ()
-  {
-    return dynamic_cast<T *> (
-      create_empty_with_action (get_type_for_class<T> ()));
-  }
-
-#if 0
-  /**
-   * @brief Create a track of the given type with the given name and position.
-   *
-   * @note Only works for non-singleton tracks.
-   * @param name
-   * @param pos
-   */
-  [[nodiscard]] static TrackUniquePtrVariant
-  create_track (Type type, const utils::Utf8String &name, int pos);
-#endif
 
   // GMenu * generate_edit_context_menu (int num_selected);
 
@@ -1304,20 +1218,6 @@ private:
     j[kFrozenClipIdKey] = track.frozen_clip_id_;
   }
   friend void from_json (const nlohmann::json &j, Track &track);
-
-  /**
-   * @brief Create a new track.
-   *
-   * @param type
-   * @param pl_setting
-   * @param index
-   * @return void*
-   * @throw ZrythmException on error.
-   */
-  static Track * create_without_file_with_action (
-    Type                                         type,
-    const zrythm::plugins::PluginConfiguration * pl_setting,
-    int                                          index);
 
 protected:
   BaseTrackDependencies base_dependencies_;

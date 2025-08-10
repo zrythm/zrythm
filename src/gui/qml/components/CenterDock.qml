@@ -4,13 +4,13 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 ColumnLayout {
   id: root
 
-  required property var project
+  required property Project project
 
   spacing: 0
 
@@ -41,7 +41,7 @@ ColumnLayout {
           tracklist: root.project.tracklist
         }
 
-        Tracklist {
+        TracklistView {
           id: pinnedTracklist
 
           Layout.fillWidth: true
@@ -50,7 +50,7 @@ ColumnLayout {
           tracklist: root.project.tracklist
         }
 
-        Tracklist {
+        TracklistView {
           id: unpinnedTracklist
 
           Layout.fillWidth: true
