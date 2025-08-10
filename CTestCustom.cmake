@@ -12,3 +12,9 @@ list(APPEND CTEST_CUSTOM_TESTS_IGNORE
   28-bit-perfect-44100-65537
   28-bit-perfect-65537-44100
 )
+
+# TODO: add tests to ignore from Memcheck here
+set (CTEST_CUSTOM_MEMCHECK_IGNORE
+  ${CTEST_CUSTOM_MEMCHECK_IGNORE}
+  # Example-vtkLocal
+)

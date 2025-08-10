@@ -197,6 +197,7 @@ option(ZRYTHM_ENABLE_SANITIZER_MEMORY "Compile with memory sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_REALTIME "Compile with realtime sanitizer" OFF)
 option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay variant in carla" ON)
 option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
+option(ZRYTHM_COVERAGE "Build with --coverage" OFF)
 
 # Dependency feature options
 option(ZRYTHM_WITH_RTMIDI "Build with RtMidi support" ON)
@@ -399,6 +400,7 @@ endif()
 
 add_library(_zrythm_compile_options INTERFACE)
 add_library(_zrythm_warning_flags INTERFACE)
+add_library(_zrythm_coverage_lib INTERFACE)
 
 if(ZRYTHM_OPTIMIZED_BUILD)
   # LTO
@@ -420,6 +422,10 @@ if(compiler_gnulike)
   target_compile_options(_zrythm_warning_flags INTERFACE -Wall -Wextra) # -Weffc++)
   if(compiler_is_clang)
     # target_compile_options(_zrythm_compile_options INTERFACE -Weverything)
+  endif()
+  if(ZRYTHM_COVERAGE)
+    target_compile_options(_zrythm_coverage_lib INTERFACE --coverage)
+    target_link_options(_zrythm_coverage_lib INTERFACE --coverage)
   endif()
 elseif(MSVC)
   target_compile_options(_zrythm_warning_flags INTERFACE /W3)
@@ -700,6 +706,7 @@ if(ZRYTHM_STRICT)
     )
   endif()
 endif()
+add_library(zrythm::coverage ALIAS _zrythm_coverage_lib)
 add_library(zrythm::compile_options ALIAS _zrythm_compile_options)
 add_library(zrythm::warning_flags ALIAS _zrythm_warning_flags)
 add_library(zrythm::strict_warning_flags ALIAS _zrythm_strict_warning_flags)
@@ -708,6 +715,7 @@ target_link_libraries(_zrythm_all_compile_options INTERFACE
   zrythm::compile_options
   zrythm::warning_flags
   zrythm::strict_warning_flags
+  zrythm::coverage
 )
 add_library(zrythm::all_compile_options ALIAS _zrythm_all_compile_options)
 
