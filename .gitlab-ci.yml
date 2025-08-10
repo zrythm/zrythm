@@ -195,7 +195,6 @@ configure:mac-arm:
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/Qt6.10-beta1-Release"
       -DZRYTHM_UNITY_BUILD=ON
-      $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
       -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
     matrix:
@@ -292,7 +291,7 @@ check:exif:
 .unix_test_cmd: &unix_test_cmd
   - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D NightlyStart -D NightlyConfigure -D NightlyBuild -D NightlyTest || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
   - if [ "${BUILD_TYPE}" = "Debug" ]; then
-      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D NightlyCoverage ;
+      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyCoverage ;
     fi
   - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D NightlySubmit
   - if [ "${BUILD_TYPE}" = "Release" ]; then
