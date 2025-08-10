@@ -80,13 +80,15 @@ elseif(WIN32)
 endif()
 
 # Install samples
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_emphasis.wav
-    ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_normal.wav
-  DESTINATION $<IF:$<PLATFORM_ID:Darwin>,$<TARGET_BUNDLE_DIR_NAME:zrythm>/Contents/,>${CMAKE_INSTALL_DATADIR}/zrythm/samples
-  COMPONENT Runtime
-)
+if(false)
+  install(
+    FILES
+      ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_emphasis.wav
+      ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_normal.wav
+    DESTINATION $<IF:$<PLATFORM_ID:Darwin>,$<TARGET_BUNDLE_DIR_NAME:zrythm>/Contents/,>${CMAKE_INSTALL_DATADIR}/zrythm/samples
+    COMPONENT Runtime
+  )
+endif()
 
 # Configure and install launcher scripts
 if(OS_GNU)
