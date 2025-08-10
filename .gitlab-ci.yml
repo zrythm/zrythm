@@ -290,7 +290,8 @@ check:exif:
    - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousStart - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousConfigure
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousStart
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousConfigure
   - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousBuild
   - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousTest || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
   - if [ "${BUILD_TYPE}" = "Debug" ]; then
