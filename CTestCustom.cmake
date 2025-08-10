@@ -14,7 +14,7 @@ list(APPEND CTEST_CUSTOM_TESTS_IGNORE
 )
 
 # TODO: add tests to ignore from Memcheck here
-set (CTEST_CUSTOM_MEMCHECK_IGNORE
+set(CTEST_CUSTOM_MEMCHECK_IGNORE
   ${CTEST_CUSTOM_MEMCHECK_IGNORE}
   # Example-vtkLocal
 )

@@ -1065,30 +1065,28 @@ CPMFindPackage(
   SYSTEM YES
 )
 
-if(false)
-  set(tbb_opts "")
-  list(APPEND tbb_opts "TBB_STRICT OFF")
-  list(APPEND tbb_opts "TBB_TEST OFF")
-  list(APPEND tbb_opts "TBB_INSTALL OFF")
-  list(APPEND tbb_opts "TBBMALLOC_BUILD OFF")
-  list(APPEND tbb_opts "TBBMALLOC_PROXY_BUILD OFF")
-  if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
-    list(APPEND tbb_opts "TBB_SANITIZE address")
-  elseif(ZRYTHM_ENABLE_SANITIZER_THREAD)
-    list(APPEND tbb_opts "TBB_SANITIZE thread")
-  elseif(ZRYTHM_ENABLE_SANITIZER_MEMORY)
-    list(APPEND tbb_opts "TBB_SANITIZE memory")
-  endif()
-  CPMFindPackage(
-    NAME tbb
-    GITHUB_REPOSITORY "zrythm/oneTBB"
-    VERSION 2022.2.0
-    GIT_TAG fe153f04aebb223d500f27bc3f93374a012273ec
-    EXCLUDE_FROM_ALL YES
-    SYSTEM YES
-    OPTIONS ${tbb_opts}
-  )
+set(tbb_opts "")
+list(APPEND tbb_opts "TBB_STRICT OFF")
+list(APPEND tbb_opts "TBB_TEST OFF")
+list(APPEND tbb_opts "TBB_INSTALL OFF")
+list(APPEND tbb_opts "TBBMALLOC_BUILD OFF")
+list(APPEND tbb_opts "TBBMALLOC_PROXY_BUILD OFF")
+if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
+  list(APPEND tbb_opts "TBB_SANITIZE address")
+elseif(ZRYTHM_ENABLE_SANITIZER_THREAD)
+  list(APPEND tbb_opts "TBB_SANITIZE thread")
+elseif(ZRYTHM_ENABLE_SANITIZER_MEMORY)
+  list(APPEND tbb_opts "TBB_SANITIZE memory")
 endif()
+CPMFindPackage(
+  NAME tbb
+  GITHUB_REPOSITORY "zrythm/oneTBB"
+  VERSION 2022.2.0
+  GIT_TAG fe153f04aebb223d500f27bc3f93374a012273ec
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+  OPTIONS ${tbb_opts}
+)
 
 if(ZRYTHM_TESTS)
   CPMFindPackage(
@@ -1178,7 +1176,7 @@ list(APPEND zrythm_link_libs
   Boost::container
   Boost::unordered
   gsl-lite::gsl-lite
-  # TBB::tbb
+  TBB::tbb
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers

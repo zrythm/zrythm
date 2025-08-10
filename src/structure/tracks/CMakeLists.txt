@@ -7,6 +7,7 @@ target_link_libraries(zrythm_structure_tracks_lib
   PUBLIC
     zrythm_arrangement_lib
     zrythm_plugins_lib
+    zrythm::all_compile_options
 )
 target_sources(zrythm_structure_tracks_lib
   PRIVATE

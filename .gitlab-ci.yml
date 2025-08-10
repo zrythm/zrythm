@@ -135,6 +135,7 @@ configure:gnu/linux:
       -DZRYTHM_USER_MANUAL=OFF
       -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
+      $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -194,6 +195,7 @@ configure:mac-arm:
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/Qt6.10-beta1-Release"
       -DZRYTHM_UNITY_BUILD=ON
+      $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
       -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
     matrix:
@@ -288,7 +290,11 @@ check:exif:
    - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousStart -D ContinuousTest || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
+  - if [ "${BUILD_TYPE}" = "Debug" ]; then
+      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousCoverage ;
+    fi
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D ContinuousSubmit
   - if [ "${BUILD_TYPE}" = "Release" ]; then
       cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --target run_all_benchmarks ;
     fi
@@ -398,7 +404,7 @@ build:windows:
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
     - if (! $?) { exit 1 }  # Check if the previous command failed
-    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -V; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
+    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -V -D ContinuousStart -D ContinuousTest -D ContinuousSubmit; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
     - if ("${env:BUILD_TYPE}" -eq "Release") { cmake --build "${BUILDDIR}-${BUILD_TYPE}" --config "${env:BUILD_TYPE}" --target run_all_benchmarks }
     - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config ${env:BUILDDIR}-${env:BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${env:BUILD_TYPE}; if (-not $?) { Get-Content "package-${env:BUILD_TYPE}/_CPack_Packages/win64/INNOSETUP/ISCCOutput.log"; exit 1 }
   parallel:
