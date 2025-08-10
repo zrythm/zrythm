@@ -782,44 +782,44 @@ add_library(zrythm::chromaprint_lib ALIAS _zrythm_chromaprint_lib)
 
 # Carla
 if(false)
-pkg_check_modules(CARLA carla-host-plugin>=2.6.0 REQUIRED IMPORTED_TARGET)
-set(HAVE_CARLA TRUE)
-if(ZRYTHM_CARLA_BINARIES_DIR)
-  string(REPLACE "\\" "/" ZRYTHM_CARLA_BINARIES_DIR ${ZRYTHM_CARLA_BINARIES_DIR})
-else()
-  pkg_get_variable(carla_lib_dir carla-host-plugin "carla_libdir")
-  set(ZRYTHM_CARLA_BINARIES_DIR ${carla_lib_dir})
-endif()
-find_program(CARLA_DISCOVERY_NATIVE_EXECUTABLE
-  NAMES "carla-discovery-native" "carla-discovery-native.exe"
-  PATHS "${ZRYTHM_CARLA_BINARIES_DIR}"
-  REQUIRED)
-set(zrythm_carla_libdir "${zrythm_libdir}/carla")
-install(PROGRAMS ${CARLA_DISCOVERY_NATIVE_EXECUTABLE}
-  DESTINATION "${zrythm_carla_libdir}")
-set(CARLA_HAVE_CLAP_SUPPORT TRUE)
-set(CARLA_HAVE_CV32_PATCHBAY_VARIANT ${ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT})
-
-# install gnu/linux bridges
-set(bridge_types
-  native lv2-gtk2 lv2-gtk3 lv2-qt4 lv2-qt5 lv2-x11)
-foreach(bridge_type ${bridge_types})
-  find_program(CARLA_BRIDGE_${bridge_type}
-    NAMES "carla-bridge-${bridge_type}"
-    PATHS "${ZRYTHM_CARLA_BINARIES_DIR}"
-    NO_DEFAULT_PATH)
-  if(CARLA_BRIDGE_${bridge_type} AND (OS_GNU))
-    string(TOUPPER ${bridge_type} bridge_type_upper)
-    string(REPLACE "-" "_" bridge_type_upper ${bridge_type_upper})
-    set(HAVE_CARLA_BRIDGE_${bridge_type_upper} 1)
-    install(PROGRAMS ${CARLA_BRIDGE_${bridge_type}}
-      DESTINATION "${zrythm_libdir}/carla")
+  pkg_check_modules(CARLA carla-host-plugin>=2.6.0 REQUIRED IMPORTED_TARGET)
+  set(HAVE_CARLA TRUE)
+  if(ZRYTHM_CARLA_BINARIES_DIR)
+    string(REPLACE "\\" "/" ZRYTHM_CARLA_BINARIES_DIR ${ZRYTHM_CARLA_BINARIES_DIR})
+  else()
+    pkg_get_variable(carla_lib_dir carla-host-plugin "carla_libdir")
+    set(ZRYTHM_CARLA_BINARIES_DIR ${carla_lib_dir})
   endif()
-endforeach()
-set(CMAKE_REQUIRED_LIBRARIES ${CARLA_LIBRARIES})
-check_symbol_exists(carla_get_native_patchbay_cv8_plugin "carla/CarlaHost.h" CARLA_HAVE_CV8_PATCHBAY_VARIANT)
-check_symbol_exists(carla_get_audio_port_hints "carla/CarlaHost.h" CARLA_HAVE_AUDIO_PORT_HINTS)
-set(CMAKE_REQUIRED_LIBRARIES)
+  find_program(CARLA_DISCOVERY_NATIVE_EXECUTABLE
+    NAMES "carla-discovery-native" "carla-discovery-native.exe"
+    PATHS "${ZRYTHM_CARLA_BINARIES_DIR}"
+    REQUIRED)
+  set(zrythm_carla_libdir "${zrythm_libdir}/carla")
+  install(PROGRAMS ${CARLA_DISCOVERY_NATIVE_EXECUTABLE}
+    DESTINATION "${zrythm_carla_libdir}")
+  set(CARLA_HAVE_CLAP_SUPPORT TRUE)
+  set(CARLA_HAVE_CV32_PATCHBAY_VARIANT ${ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT})
+
+  # install gnu/linux bridges
+  set(bridge_types
+    native lv2-gtk2 lv2-gtk3 lv2-qt4 lv2-qt5 lv2-x11)
+  foreach(bridge_type ${bridge_types})
+    find_program(CARLA_BRIDGE_${bridge_type}
+      NAMES "carla-bridge-${bridge_type}"
+      PATHS "${ZRYTHM_CARLA_BINARIES_DIR}"
+      NO_DEFAULT_PATH)
+    if(CARLA_BRIDGE_${bridge_type} AND (OS_GNU))
+      string(TOUPPER ${bridge_type} bridge_type_upper)
+      string(REPLACE "-" "_" bridge_type_upper ${bridge_type_upper})
+      set(HAVE_CARLA_BRIDGE_${bridge_type_upper} 1)
+      install(PROGRAMS ${CARLA_BRIDGE_${bridge_type}}
+        DESTINATION "${zrythm_libdir}/carla")
+    endif()
+  endforeach()
+  set(CMAKE_REQUIRED_LIBRARIES ${CARLA_LIBRARIES})
+  check_symbol_exists(carla_get_native_patchbay_cv8_plugin "carla/CarlaHost.h" CARLA_HAVE_CV8_PATCHBAY_VARIANT)
+  check_symbol_exists(carla_get_audio_port_hints "carla/CarlaHost.h" CARLA_HAVE_AUDIO_PORT_HINTS)
+  set(CMAKE_REQUIRED_LIBRARIES)
 endif()
 set(HAVE_CARLA FALSE)
 
@@ -1057,28 +1057,30 @@ CPMFindPackage(
   SYSTEM YES
 )
 
-set(tbb_opts "")
-list(APPEND tbb_opts "TBB_STRICT OFF")
-list(APPEND tbb_opts "TBB_TEST OFF")
-list(APPEND tbb_opts "TBB_INSTALL OFF")
-list(APPEND tbb_opts "TBBMALLOC_BUILD OFF")
-list(APPEND tbb_opts "TBBMALLOC_PROXY_BUILD OFF")
-if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
-  list(APPEND tbb_opts "TBB_SANITIZE address")
-elseif(ZRYTHM_ENABLE_SANITIZER_THREAD)
-  list(APPEND tbb_opts "TBB_SANITIZE thread")
-elseif(ZRYTHM_ENABLE_SANITIZER_MEMORY)
-  list(APPEND tbb_opts "TBB_SANITIZE memory")
+if(false)
+  set(tbb_opts "")
+  list(APPEND tbb_opts "TBB_STRICT OFF")
+  list(APPEND tbb_opts "TBB_TEST OFF")
+  list(APPEND tbb_opts "TBB_INSTALL OFF")
+  list(APPEND tbb_opts "TBBMALLOC_BUILD OFF")
+  list(APPEND tbb_opts "TBBMALLOC_PROXY_BUILD OFF")
+  if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
+    list(APPEND tbb_opts "TBB_SANITIZE address")
+  elseif(ZRYTHM_ENABLE_SANITIZER_THREAD)
+    list(APPEND tbb_opts "TBB_SANITIZE thread")
+  elseif(ZRYTHM_ENABLE_SANITIZER_MEMORY)
+    list(APPEND tbb_opts "TBB_SANITIZE memory")
+  endif()
+  CPMFindPackage(
+    NAME tbb
+    GITHUB_REPOSITORY "zrythm/oneTBB"
+    VERSION 2022.2.0
+    GIT_TAG fe153f04aebb223d500f27bc3f93374a012273ec
+    EXCLUDE_FROM_ALL YES
+    SYSTEM YES
+    OPTIONS ${tbb_opts}
+  )
 endif()
-CPMFindPackage(
-  NAME tbb
-  GITHUB_REPOSITORY "zrythm/oneTBB"
-  VERSION 2022.2.0
-  GIT_TAG fe153f04aebb223d500f27bc3f93374a012273ec
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS ${tbb_opts}
-)
 
 if(ZRYTHM_TESTS)
   CPMFindPackage(
@@ -1168,7 +1170,7 @@ list(APPEND zrythm_link_libs
   Boost::container
   Boost::unordered
   gsl-lite::gsl-lite
-  TBB::tbb
+  # TBB::tbb
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers

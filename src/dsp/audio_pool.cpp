@@ -79,13 +79,10 @@ AudioPool::
   // get last known hash
   std::optional<utils::hash::HashT> last_known_hash_for_clip;
   {
-    decltype (last_known_file_hashes_)::const_accessor last_known_hash_accessor;
-    const auto                                         last_known_hash_found =
-      last_known_file_hashes_.find (last_known_hash_accessor, clip_id);
-    if (last_known_hash_found)
-      {
-        last_known_hash_for_clip = last_known_hash_accessor->second;
-      }
+    last_known_file_hashes_.cvisit (
+      clip_id, [&last_known_hash_for_clip] (const auto &hash) {
+        last_known_hash_for_clip = hash.second;
+      });
   }
 
   /* skip if file with same hash already exists */
@@ -136,9 +133,8 @@ AudioPool::
   if (!parts)
     {
       /* store file hash */
-      decltype (last_known_file_hashes_)::accessor last_known_hash_accessor;
-      last_known_file_hashes_.insert (last_known_hash_accessor, clip_id);
-      last_known_hash_accessor->second = utils::hash::get_file_hash (new_path);
+      last_known_file_hashes_.emplace (
+        clip_id, utils::hash::get_file_hash (new_path));
     }
 }
 

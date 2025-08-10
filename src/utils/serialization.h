@@ -13,8 +13,8 @@
 
 #include <QUuid>
 
+#include <boost/unordered/concurrent_flat_map_fwd.hpp>
 #include <nlohmann/json.hpp>
-#include <tbb/concurrent_hash_map.h>
 
 using zrythm::utils::exceptions::ZrythmException;
 
@@ -217,17 +217,16 @@ template <StrongTypedef T> struct adl_serializer<T>
 };
 
 template <typename Key, typename T>
-struct adl_serializer<tbb::concurrent_hash_map<Key, T>>
+struct adl_serializer<boost::unordered::concurrent_flat_map<Key, T>>
 {
-  using ConcurrentHashMap = tbb::concurrent_hash_map<Key, T>;
+  using ConcurrentHashMap = boost::unordered::concurrent_flat_map<Key, T>;
   // convert to std::map since nlohmann::json knows how to serialize it
   static void to_json (json &j, const ConcurrentHashMap &map)
   {
     std::map<Key, T> temp;
-    for (const auto &kv : map)
-      {
-        temp.insert ({ kv.first, kv.second });
-      }
+    map.visit_all ([&temp] (const auto &kv) {
+      temp.emplace (kv.first, kv.second);
+    });
     j = temp;
   }
 
@@ -237,9 +236,7 @@ struct adl_serializer<tbb::concurrent_hash_map<Key, T>>
     map.clear ();
     for (const auto &kv : temp)
       {
-        typename ConcurrentHashMap::accessor insert_accessor;
-        map.insert (insert_accessor, kv.first);
-        insert_accessor->second = kv.second;
+        map.emplace (kv.first, kv.second);
       }
   }
 };
