@@ -131,8 +131,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   const auto connect_ports =
     [&] (const dsp::Port::Uuid src_id, const dsp::Port::Uuid &dest_id) {
       dsp::add_connection_for_ports (
-        graph, { src_id, project.get_port_registry () },
-        { dest_id, project.get_port_registry () });
+        graph, project.get_port_registry ().find_by_id_or_throw (src_id),
+        project.get_port_registry ().find_by_id_or_throw (dest_id));
     };
 
   // add engine monitor output

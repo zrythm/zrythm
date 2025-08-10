@@ -143,6 +143,8 @@ private:
   // Caches
   sample_rate_t sample_rate_{};
   nframes_t     max_block_length_{};
+
+  BOOST_DESCRIBE_CLASS (ProcessorBase, (), (), (), (name_))
 };
 
 /**

@@ -90,6 +90,13 @@ private:
    * enabled if requested.
    */
   bool requires_limiting_{};
+
+  BOOST_DESCRIBE_CLASS (
+    AudioPort,
+    (Port),
+    (),
+    (),
+    (is_stereo_, is_sidechain_, requires_limiting_))
 };
 
 /**

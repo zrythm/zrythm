@@ -69,6 +69,8 @@ public:
    * for now, but we should have one ring for each reader.
    */
   std::unique_ptr<RingBuffer<dsp::MidiEvent>> midi_ring_;
+
+  BOOST_DESCRIBE_CLASS (MidiPort, (Port), (), (), ())
 };
 
 } // namespace zrythm::dsp

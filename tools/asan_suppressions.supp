@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: FSFAP
+
+# Qt Quick delivery agent negative-size-param error during mouse event handling
+# This appears to be a Qt bug in QQuickDeliveryAgentPrivate::deliverHoverEvent
+# where memmove is called with negative size parameter
+interceptor_via_fun:QQuickDeliveryAgentPrivate::deliverHoverEvent

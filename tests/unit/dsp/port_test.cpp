@@ -8,6 +8,7 @@
 
 namespace zrythm::dsp
 {
+static_assert (fmt::is_formattable<Port> ());
 
 class TestPort : public Port
 {

@@ -37,6 +37,7 @@ WarningsAsErrors: >
   readability-redundant-string-cstr,
   readability-redundant-casting,
   readability-implicit-bool-conversion,
+  readability-use-anyofallof,
   clang-diagnostic-reorder-ctor,
   clang-analyzer-deadcode.DeadStores,
   clang-analyzer-cplusplus.Move,

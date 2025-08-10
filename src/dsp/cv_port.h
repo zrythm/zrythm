@@ -56,6 +56,8 @@ private:
   {
     from_json (j, static_cast<Port &> (p));
   }
+
+  BOOST_DESCRIBE_CLASS (CVPort, (Port), (), (), ())
 };
 
 } // namespace zrythm::dsp

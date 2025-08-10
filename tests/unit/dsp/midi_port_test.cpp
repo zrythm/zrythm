@@ -9,6 +9,7 @@
 
 namespace zrythm::dsp
 {
+static_assert (fmt::is_formattable<MidiPort> ());
 
 class MidiPortTest : public ::testing::Test
 {

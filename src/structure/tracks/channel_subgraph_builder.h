@@ -20,7 +20,12 @@ public:
   add_nodes (dsp::graph::Graph &graph, dsp::ITransport &transport, Channel &ch);
 
   /**
-   * @brief
+   * @brief Adds connections for the nodes already in the graph.
+   *
+   * This requires add_nodes() to be called beforehand.
+   *
+   * @note @p track_processor_outputs must be added to the graph before calling
+   * this.
    *
    * @param graph
    * @param ch

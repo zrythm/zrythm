@@ -148,6 +148,13 @@ private:
 
   /** Port group this port is part of (only applicable for LV2 plugin ports). */
   std::optional<utils::Utf8String> port_group_;
+
+  BOOST_DESCRIBE_CLASS (
+    Port,
+    (utils::UuidIdentifiableObject<Port>),
+    (),
+    (),
+    (label_, sym_, port_group_))
 };
 
 class RingBufferOwningPortMixin

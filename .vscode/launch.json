@@ -41,7 +41,7 @@
         "environment": [
           {
             "name": "ASAN_OPTIONS",
-            "value": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:halt_on_error=1:abort_on_error=1",
+            "value": "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:halt_on_error=1:abort_on_error=1:suppressions=${workspaceFolder}/tools/asan_suppressions.supp",
           },
           {
             "name": "RTSAN_OPTIONS",
