@@ -25,4 +25,5 @@ set(CTEST_CUSTOM_COVERAGE_EXCLUDE
     ".*/_deps/.*"
     ".*/build_.*/.*_autogen/.*"
     ".*/qrc_.*\\.cpp"
+    ".*/CPM/.*"
 )
