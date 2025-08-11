@@ -104,6 +104,7 @@ AudioEngine::AudioEngine (
             const auto &[monitor_left, monitor_right] = get_monitor_out_ports ();
             monitor_out_left_port_ = &monitor_left;
             monitor_out_right_port_ = &monitor_right;
+            router_->recalc_graph (false);
           },
           [] () {}))
 {

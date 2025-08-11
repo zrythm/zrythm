@@ -91,8 +91,13 @@ public:
    * may be called while another graph is using them.
    *
    * @param nodes Nodes to steal.
+   * @param sample_rate The current sample rate to prepare the nodes for.
+   * @param block_length The current block length to prepare the nodes for.
    */
-  void rechain_from_node_collection (GraphNodeCollection &&nodes);
+  void rechain_from_node_collection (
+    GraphNodeCollection &&nodes,
+    sample_rate_t         sample_rate,
+    nframes_t             max_block_length);
 
   /**
    * Starts the threads that will be processing the graph.

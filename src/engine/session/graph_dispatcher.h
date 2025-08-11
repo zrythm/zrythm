@@ -151,7 +151,7 @@ public:
   /** Used when recalculating the graph. */
   std::binary_semaphore graph_access_sem_{ 1 };
 
-  bool callback_in_progress_ = false;
+  std::atomic_bool callback_in_progress_ = false;
 
   /** ID of the thread that calls kicks off the cycle. */
   unsigned int process_kickoff_thread_ = 0;

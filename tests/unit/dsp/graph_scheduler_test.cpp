@@ -26,7 +26,7 @@ protected:
   {
     transport_ = std::make_unique<MockTransport> ();
     processable_ = std::make_unique<MockProcessable> ();
-    scheduler_ = std::make_unique<GraphScheduler> (48000, 256);
+    scheduler_ = std::make_unique<GraphScheduler> (sample_rate_, block_length_);
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return (u8"test_node"));
@@ -55,6 +55,8 @@ protected:
     return collection;
   }
 
+  int                              sample_rate_{ 48000 };
+  int                              block_length_{ 256 };
   std::unique_ptr<MockTransport>   transport_;
   std::unique_ptr<MockProcessable> processable_;
   std::unique_ptr<GraphScheduler>  scheduler_;
@@ -73,7 +75,8 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
 
   EXPECT_CALL (*processable_, process_block (_)).Times (3); // Once for each node
 
-  scheduler_->rechain_from_node_collection (std::move (collection));
+  scheduler_->rechain_from_node_collection (
+    std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
   EngineProcessTimeInfo time_info{};
@@ -93,7 +96,8 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
     std::this_thread::sleep_for (10ms);
   });
 
-  scheduler_->rechain_from_node_collection (std::move (collection));
+  scheduler_->rechain_from_node_collection (
+    std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (4);
 
   EngineProcessTimeInfo time_info{};
@@ -115,7 +119,8 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
     process_order.push_back (process_order.size ());
   });
 
-  scheduler_->rechain_from_node_collection (std::move (collection));
+  scheduler_->rechain_from_node_collection (
+    std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (1); // Single thread to ensure deterministic order
 
   EngineProcessTimeInfo time_info{};
@@ -136,10 +141,45 @@ TEST_F (GraphSchedulerTest, ResourceManagement)
   // Expect release to be called when scheduler is destroyed
   EXPECT_CALL (*processable_, release_resources ()).Times (3);
 
-  scheduler_->rechain_from_node_collection (std::move (collection));
+  scheduler_->rechain_from_node_collection (
+    std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
   // Trigger resource release
+  scheduler_->terminate_threads ();
+}
+
+TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
+{
+  auto collection = create_test_collection ();
+
+  // First chain with initial parameters
+  EXPECT_CALL (*processable_, prepare_for_processing (48000, 256)).Times (3);
+  scheduler_->rechain_from_node_collection (
+    std::move (collection), sample_rate_, block_length_);
+
+  // Create new collection for rechaining
+  auto new_collection = create_test_collection ();
+
+  // Rechain with larger buffer size and different sample rate
+  const int new_sample_rate = 96000;
+  const int new_block_length = 512;
+
+  // Expect prepare to be called with new parameters
+  EXPECT_CALL (
+    *processable_, prepare_for_processing (new_sample_rate, new_block_length))
+    .Times (3);
+
+  scheduler_->rechain_from_node_collection (
+    std::move (new_collection), new_sample_rate, new_block_length);
+
+  // Run a processing cycle to ensure everything works
+  scheduler_->start_threads (2);
+
+  EngineProcessTimeInfo time_info{};
+  time_info.nframes_ = new_block_length;
+  scheduler_->run_cycle (time_info, 0);
+
   scheduler_->terminate_threads ();
 }
 }

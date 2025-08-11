@@ -210,6 +210,10 @@ DspGraphDispatcher::recalc_graph (bool soft)
       }
   };
 
+  const auto sample_rate =
+    static_cast<sample_rate_t> (current_device->getCurrentSampleRate ());
+  const auto buffer_size = current_device->getCurrentBufferSizeSamples ();
+
   const auto rebuild_graph = [&] () {
     graph_setup_in_progress_.store (true);
     ProjectGraphBuilder builder (*PROJECT);
@@ -221,7 +225,8 @@ DspGraphDispatcher::recalc_graph (bool soft)
     // TODO
     // PROJECT->clip_editor_->set_caches ();
     TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
-    scheduler_->rechain_from_node_collection (graph.steal_nodes ());
+    scheduler_->rechain_from_node_collection (
+      graph.steal_nodes (), sample_rate, buffer_size);
 
     graph_setup_in_progress_.store (false);
   };
@@ -229,8 +234,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
   if (!scheduler_ && !soft)
     {
       scheduler_ = std::make_unique<dsp::graph::GraphScheduler> (
-        static_cast<sample_rate_t> (current_device->getCurrentSampleRate ()),
-        current_device->getCurrentBufferSizeSamples (), std::nullopt,
+        sample_rate, buffer_size, std::nullopt,
         device_mgr->getDeviceAudioWorkgroup ());
       rebuild_graph ();
       scheduler_->start_threads ();

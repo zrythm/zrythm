@@ -74,7 +74,10 @@ GraphScheduler::trigger_node (GraphNode &node)
 }
 
 void
-GraphScheduler::rechain_from_node_collection (GraphNodeCollection &&nodes)
+GraphScheduler::rechain_from_node_collection (
+  GraphNodeCollection &&nodes,
+  sample_rate_t         sample_rate,
+  nframes_t             max_block_length)
 {
   z_debug ("rechaining graph...");
 
@@ -87,6 +90,8 @@ GraphScheduler::rechain_from_node_collection (GraphNodeCollection &&nodes)
 
   trigger_queue_.reserve (graph_nodes_.graph_nodes_.size ());
 
+  sample_rate_ = sample_rate;
+  max_block_length_ = max_block_length;
   prepare_nodes_for_processing ();
 
   z_debug ("rechaining done");
@@ -260,6 +265,9 @@ GraphScheduler::run_cycle (
 void
 GraphScheduler::prepare_nodes_for_processing ()
 {
+  z_debug (
+    "preparing nodes for processing with sample rate {} and max block length {}",
+    sample_rate_, max_block_length_);
   for (auto &node : graph_nodes_.graph_nodes_)
     {
       node->get_processable ().prepare_for_processing (

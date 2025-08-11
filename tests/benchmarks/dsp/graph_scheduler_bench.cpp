@@ -28,7 +28,8 @@ protected:
     // here before assigning processable_ to a new processable
     scheduler_.reset ();
     transport_ = std::make_unique<MockTransport> ();
-    scheduler_ = std::make_unique<GraphScheduler> (48000, 1024);
+    scheduler_ =
+      std::make_unique<GraphScheduler> (sample_rate_, max_block_length_);
 
     ON_CALL (*transport_, get_play_state ())
       .WillByDefault (Return (dsp::ITransport::PlayState::Rolling));
@@ -195,6 +196,8 @@ protected:
     return collection;
   }
 
+  sample_rate_t                                     sample_rate_{ 48000 };
+  size_t                                            max_block_length_{ 1024 };
   std::unique_ptr<MockTransport>                    transport_;
   std::unique_ptr<GraphScheduler>                   scheduler_;
   std::vector<std::unique_ptr<MockProcessable>>     processables_;
@@ -211,7 +214,8 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, LinearChain)
   const auto block_size = state.range (1);
   const auto num_threads = state.range (2);
 
-  scheduler_->rechain_from_node_collection (create_linear_chain (num_nodes));
+  scheduler_->rechain_from_node_collection (
+    create_linear_chain (num_nodes), sample_rate_, max_block_length_);
   scheduler_->start_threads (num_threads);
 
   EngineProcessTimeInfo time_info{};
@@ -235,7 +239,8 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, SplitChain)
   const auto num_threads = state.range (3);
 
   scheduler_->rechain_from_node_collection (
-    create_split_chain (num_branches, nodes_per_branch));
+    create_split_chain (num_branches, nodes_per_branch), sample_rate_,
+    max_block_length_);
   scheduler_->start_threads (num_threads);
 
   EngineProcessTimeInfo time_info{};
@@ -259,7 +264,8 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, ComplexGraph)
   const float connectivity = state.range (3) / 100.0f;
 
   scheduler_->rechain_from_node_collection (
-    create_complex_graph (num_nodes, connectivity));
+    create_complex_graph (num_nodes, connectivity), sample_rate_,
+    max_block_length_);
   scheduler_->start_threads (num_threads);
 
   EngineProcessTimeInfo time_info{};
