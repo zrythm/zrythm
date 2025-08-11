@@ -144,18 +144,6 @@ ChordTrack::set_playback_caches ()
 #endif
 }
 
-void
-ChordTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-  // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-}
-
 auto
 ChordTrack::get_scale_at (size_t index) const -> ScaleObject *
 {

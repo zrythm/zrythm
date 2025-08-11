@@ -28,14 +28,6 @@ ProcessableTrack::ProcessableTrack (
 }
 
 void
-ProcessableTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-}
-
-void
 init_from (
   ProcessableTrack       &obj,
   const ProcessableTrack &other,

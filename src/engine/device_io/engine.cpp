@@ -900,7 +900,8 @@ AudioEngine::reset_bounce_mode ()
 {
   bounce_mode_ = BounceMode::Off;
 
-  TRACKLIST->mark_all_tracks_for_bounce (false);
+  // TODO
+  // TRACKLIST->mark_all_tracks_for_bounce (false);
 }
 
 AudioEngine::~AudioEngine ()

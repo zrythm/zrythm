@@ -28,14 +28,6 @@ MarkerTrack::initialize ()
   return true;
 }
 
-void
-MarkerTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-}
-
 auto
 MarkerTrack::get_start_marker () const -> Marker *
 {

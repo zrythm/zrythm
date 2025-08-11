@@ -39,12 +39,4 @@ init_from (
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 }
-
-void
-FolderTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-}
 }

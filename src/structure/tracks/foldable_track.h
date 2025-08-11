@@ -32,23 +32,6 @@ public:
   bool is_status (MixerStatus status) const;
 
   /**
-   * Returns whether @p child is a direct folder child of this track.
-   */
-  bool is_direct_child (const Track &child) const;
-
-  /**
-   * Returns whether @p child is a folder child of this track.
-   */
-  bool is_child (const Track &child) const;
-
-  /**
-   * Adds to the size recursively.
-   *
-   * This must only be called from the lowest-level foldable track.
-   */
-  void add_to_size (int delta);
-
-  /**
    * Sets track folded and optionally adds the action to the undo stack.
    */
   void

@@ -43,11 +43,6 @@ public:
     return automation_tracklist_.get ();
   }
 
-  void init_loaded (
-    plugins::PluginRegistry         &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
 protected:
   friend void init_from (
     ProcessableTrack       &obj,

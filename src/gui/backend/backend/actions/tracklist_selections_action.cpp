@@ -82,6 +82,7 @@ TracklistSelectionsAction::copy_track_positions_from_selections (
   std::vector<int> &track_positions,
   TrackSpan         selections_var)
 {
+#if 0
   num_tracks_ = static_cast<int> (selections_var.size ());
   for (const auto &track_var : selections_var)
     {
@@ -89,6 +90,7 @@ TracklistSelectionsAction::copy_track_positions_from_selections (
         std::visit (TrackSpan::position_projection, track_var));
     }
   std::ranges::sort (track_positions);
+#endif
 }
 
 void
@@ -112,6 +114,7 @@ TracklistSelectionsAction::reset_foldable_track_sizes ()
 bool
 TracklistSelectionsAction::validate () const
 {
+#if 0
   if (tracklist_selections_action_type_ == Type::Delete)
     {
       if (
@@ -128,7 +131,7 @@ TracklistSelectionsAction::validate () const
           TrackSpan{ *tls_before_ }, track_pos_, TrackSpan::position_projection))
         return false;
     }
-
+#endif
   return true;
 }
 
@@ -315,7 +318,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                 PROJECT->get_arranger_object_registry ());
 #endif
             }
-          TrackCollections::sort_by_position (*tls_before_);
+          // TrackCollections::sort_by_position (*tls_before_);
 
           // FIXME: need new identities?
           const auto foldable_tracks = std::ranges::to<std::vector> (
@@ -362,7 +365,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 #endif
             }
 
-          TrackCollections::sort_by_position (*tls_after_);
+          // TrackCollections::sort_by_position (*tls_after_);
         }
       else
         {
@@ -403,6 +406,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 
   if (tracklist_selections_action_type_ == Type::Edit && track_var.has_value ())
     {
+#if 0
       num_tracks_ = 1;
       std::visit (
         [&] (auto &&track) {
@@ -410,6 +414,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
           track_positions_after_.push_back (track->get_index ());
         },
         track_var.value ());
+#endif
     }
 
   if (color_new != nullptr)
@@ -501,7 +506,6 @@ TracklistSelectionsAction::create_track (int idx)
             added_track->get_uuid (), PROJECT->get_track_registry ()
           };
           added_track->setName (name.to_qstring ());
-          added_track->set_index (pos);
 
           std::optional<plugins::PluginUuidReference> added_plugin_if_has_plugin;
           if (has_plugin)
@@ -601,6 +605,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
           /* disable given track, if any (e.g., when bouncing) */
           if (ival_after_ > -1)
             {
+#if 0
               z_return_if_fail (
                 ival_after_ < static_cast<int> (TRACKLIST->track_count ()));
               auto _tr_to_disable = TRACKLIST->get_track_at_index (ival_after_);
@@ -610,11 +615,13 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                   tr_to_disable->set_enabled (false, false, false, true);
                 },
                 _tr_to_disable);
+#endif
             }
         }
       /* else if delete undo */
       else
         {
+#if 0
           for (auto &own_track_var : *tls_before_)
             {
               std::visit (
@@ -646,7 +653,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
                   if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
                     {
-#if 0
+#  if 0
                   auto &own_instrument_track =
                     dynamic_cast<InstrumentTrack &> (*own_track);
                   auto added_instrument_track =
@@ -658,7 +665,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       //   added_instrument_track->channel ()
                       //     ->instrument_.get ());
                     }
-#endif
+#  endif
                     }
                 },
                 own_track_var);
@@ -723,7 +730,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
                       /* reconnect any custom connections */
 // TODO
-#if 0
+#  if 0
                       std::vector<dsp::Port *> ports;
                       own_track->append_ports (ports, true);
                       for (auto * port : ports)
@@ -737,7 +744,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                             },
                             *prj_port_var);
                         }
-#endif
+#  endif
                     }
                 },
                 own_track_var);
@@ -745,7 +752,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
             /* re-connect any source sends */
 // TODO
-#if 0
+#  if 0
           for (auto &clone_send : src_sends_)
             {
 
@@ -753,10 +760,11 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
               auto * prj_send = clone_send->find_in_project ();
               prj_send->copy_values_from (*clone_send);
             }
-#endif
+#  endif
 
           /* reset foldable track sizes */
           reset_foldable_track_sizes ();
+#endif
         } /* if delete undo */
 
       /* EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr); */
@@ -786,8 +794,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                 ival_after_ < static_cast<int> (TRACKLIST->track_count ()));
               auto tr_to_enable = TRACKLIST->get_track_at_index (ival_after_);
               std::visit (
-                [&] (auto &&tr) { tr->set_enabled (true, false, false, true); },
-                tr_to_enable);
+                [&] (auto &&tr) { tr->setEnabled (true); }, tr_to_enable);
             }
         }
       /* else if delete do */
@@ -813,7 +820,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                   using TrackT = base_type<decltype (own_track)>;
                   /* get track from pos */
                   auto prj_track = std::get<TrackT *> (
-                    TRACKLIST->get_track_at_index (own_track->get_index ()));
+                    TRACKLIST->get_track (own_track->get_uuid ()).value ());
 
 // TODO
 #if 0
@@ -871,6 +878,7 @@ void
 TracklistSelectionsAction::
   do_or_undo_move_or_copy (bool _do, bool copy, bool inside)
 {
+#if 0
   bool move = !copy;
   bool pin = tracklist_selections_action_type_ == Type::Pin;
   bool unpin = tracklist_selections_action_type_ == Type::Unpin;
@@ -998,7 +1006,7 @@ TracklistSelectionsAction::
       else if (copy)
         {
 // TODO
-#if 0
+#  if 0
           unsigned int num_tracks = tls_before_->size ();
 
           if (inside)
@@ -1026,7 +1034,7 @@ TracklistSelectionsAction::
                         &own_track->output_track_as_group_target ());
 
 // TODO
-#  if 0
+#    if 0
                       for (size_t j = 0; j < Channel::STRIP_SIZE; ++j)
                         {
                           auto &send = own_track->channel ()->sends_.at (j);
@@ -1040,7 +1048,7 @@ TracklistSelectionsAction::
                             port_connections_before_.get (),
                             send_conns.at (i).at (j));
                         }
-#  endif
+#    endif
                     }
                   else
                     {
@@ -1098,7 +1106,7 @@ TracklistSelectionsAction::
 
             /* reroute new tracks to correct outputs & sends */
 // TODO
-#  if 0
+#    if 0
           for (
             const auto &[i, track_base] : utils::views::enumerate (new_tracks))
             {
@@ -1153,12 +1161,12 @@ TracklistSelectionsAction::
                 convert_to_variant<TrackPtrVariant> (track_base));
 
             } /* endforeach track */
-#  endif
+#    endif
 
           /* EVENTS_PUSH (EventType::ET_TRACK_ADDED, nullptr); */
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
 
-#endif
+#  endif
         } /* endif copy */
 
       if (inside)
@@ -1264,11 +1272,11 @@ TracklistSelectionsAction::
   if (move && prev_clip_editor_region_opt.has_value ())
     {
 // TODO
-#if 0
+#  if 0
       std::visit (
         [&] (auto &&r) { CLIP_EDITOR->set_region (r->get_uuid ()); },
         *prev_clip_editor_region_opt);
-#endif
+#  endif
     }
 
   /* restore connections */
@@ -1277,6 +1285,7 @@ TracklistSelectionsAction::
   TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
 
   ROUTER->recalc_graph (false);
+#endif
 }
 
 void

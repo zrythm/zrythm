@@ -33,11 +33,6 @@ protected:
 public:
   ~PianoRollTrack () override = default;
 
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   /**
    * Writes the track to the given MIDI file.
    *
@@ -56,8 +51,9 @@ public:
   void write_to_midi_file (
     MIDI_FILE *            mf,
     dsp::MidiEventVector * events,
-    const Position *       start,
-    const Position *       end,
+    const dsp::Position *  start,
+    const dsp::Position *  end,
+    int                    track_index,
     bool                   lanes_as_tracks,
     bool                   use_track_pos);
 

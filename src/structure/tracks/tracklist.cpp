@@ -53,48 +53,6 @@ Tracklist::Tracklist (
 {
 }
 
-void
-Tracklist::init_loaded (
-  dsp::PortRegistry                 &port_registry,
-  dsp::ProcessorParameterRegistry   &param_registry,
-  Project *                          project,
-  engine::session::SampleProcessor * sample_processor)
-{
-  port_registry_ = port_registry;
-  param_registry_ = param_registry;
-  project_ = project;
-  sample_processor_ = sample_processor;
-
-  z_debug ("initializing loaded Tracklist...");
-  for (const auto &track_var : get_track_span ())
-    {
-      std::visit (
-        [&] (auto &track) {
-          using T = base_type<decltype (track)>;
-          if constexpr (std::is_same_v<T, ChordTrack>)
-            {
-              chord_track_ = track;
-            }
-          else if constexpr (std::is_same_v<T, MarkerTrack>)
-            {
-              marker_track_ = track;
-            }
-          else if constexpr (std::is_same_v<T, MasterTrack>)
-            {
-              master_track_ = track;
-            }
-          else if constexpr (std::is_same_v<T, ModulatorTrack>)
-            {
-              modulator_track_ = track;
-            }
-          track->tracklist_ = this;
-          track->init_loaded (
-            *plugin_registry_, *port_registry_, *param_registry_);
-        },
-        track_var);
-    }
-}
-
 // ========================================================================
 // QML Interface
 // ========================================================================
@@ -275,12 +233,14 @@ Tracklist::disconnect_track_processor (TrackProcessor &track_processor)
 void
 Tracklist::disconnect_track (Track &track)
 {
-  z_debug ("disconnecting track '{}' ({})...", track.get_name (), track.pos_);
+// TODO? or delete
+#if 0
+  z_debug ("disconnecting track '{}'...", track.get_name ());
 
   track.disconnecting_ = true;
 
   /* if this is a group track and has children, remove them */
-  if (!track.is_auditioner () && track.can_be_group_target ())
+  if (track.can_be_group_target ())
     {
       auto * group_target = dynamic_cast<GroupTargetTrack *> (&track);
       if (group_target != nullptr)
@@ -289,11 +249,8 @@ Tracklist::disconnect_track (Track &track)
         }
     }
 
-  if (!track.is_auditioner ())
-    {
       /* disconnect from folders */
       track.remove_from_folder_parents ();
-    }
 
   if (auto channel_track = dynamic_cast<ChannelTrack *> (&track))
     {
@@ -303,6 +260,7 @@ Tracklist::disconnect_track (Track &track)
   track.disconnecting_ = false;
 
   z_debug ("done disconnecting");
+#endif
 }
 
 std::string
@@ -516,7 +474,9 @@ Tracklist::get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track
   // Count visible tracks in the range (exclusive upper bound)
   auto       span = get_track_span ();
   const auto count = std::ranges::count_if (
-    span.begin () + lower, span.begin () + upper, TrackSpan::visible_projection);
+    span.begin () + lower, span.begin () + upper, [this] (const auto &track_var) {
+      return should_be_visible (TrackSpan::uuid_projection (track_var));
+    });
 
   // Apply direction modifier
   return sign * count;
@@ -541,14 +501,14 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
   std::iter_swap (tracks_.begin () + index1, tracks_.begin () + index2);
 
   {
-    auto        span = get_track_span ();
-    const auto &src_track = Track::from_variant (span.at (index1));
-    const auto &dest_track = Track::from_variant (span.at (index2));
+    // auto        span = get_track_span ();
+    // const auto &src_track = Track::from_variant (span.at (index1));
+    // const auto &dest_track = Track::from_variant (span.at (index2));
 
-    if (src_track)
-      src_track->set_index (index1);
-    if (dest_track)
-      dest_track->set_index (index2);
+    // if (src_track)
+    //   src_track->set_index (index1);
+    // if (dest_track)
+    //   dest_track->set_index (index2);
   }
 
   z_debug ("tracks swapped");
@@ -663,7 +623,7 @@ Tracklist::insert_track (
         }
 
       /* set to -1 so other logic knows it is a new track */
-      track->set_index (-1);
+      // track->set_index (-1);
 
       /* this needs to be called before appending the track to the tracklist */
       track->set_name (*this, track->get_name (), false);
@@ -674,7 +634,7 @@ Tracklist::insert_track (
         return TrackSelectionManager{ selected_tracks_, *track_registry_ }
           .is_selected (id);
       });
-      track->tracklist_ = this;
+      // track->tracklist_ = this;
 
       /* remember important tracks */
       if constexpr (std::is_same_v<TrackT, MasterTrack>)
@@ -695,7 +655,7 @@ Tracklist::insert_track (
             }
         }
 
-      track->set_index (pos);
+      // track->set_index (pos);
 
       if (
         /* auditioner doesn't need automation */
@@ -873,6 +833,71 @@ Tracklist::move_plugin (
 }
 
 bool
+Tracklist::should_be_visible (const Track::Uuid &track_id) const
+{
+  auto track = Track::from_variant (get_track (track_id).value ());
+  if (!track->visible_ || track->filtered_)
+    return false;
+
+  std::vector<FoldableTrack *> parents;
+  add_folder_parents (track_id, parents, false);
+  return std::ranges::all_of (parents, [] (const auto &parent) {
+    return parent->visible_ && !parent->folded_;
+  });
+}
+
+void
+Tracklist::add_folder_parents (
+  const Track::Uuid            &track_id,
+  std::vector<FoldableTrack *> &parents,
+  bool                          prepend) const
+{
+// TODO
+#if 0
+  for (
+    const auto &cur_track_var :
+    get_track_span ()
+      | std::views::filter (
+        TrackSpan::derived_from_type_projection<FoldableTrack>))
+    {
+      std::visit (
+        [&] (const auto &cur_track) {
+          using TrackT = base_type<decltype (cur_track)>;
+          if constexpr (std::derived_from<TrackT, FoldableTrack>)
+            {
+              /* last position covered by the foldable track cur_track */
+              int last_covered_pos = cur_track->pos_ + (cur_track->size_ - 1);
+
+              if (cur_track->pos_ < pos_ && pos_ <= last_covered_pos)
+                {
+                  if (prepend)
+                    {
+                      parents.insert (parents.begin (), cur_track);
+                    }
+                  else
+                    {
+                      parents.push_back (cur_track);
+                    }
+                }
+            }
+        },
+        cur_track_var);
+    }
+#endif
+}
+
+void
+Tracklist::remove_from_folder_parents (const Track::Uuid &track_id)
+{
+  std::vector<FoldableTrack *> parents;
+  add_folder_parents (track_id, parents, false);
+  for (auto parent : parents)
+    {
+      parent->size_--;
+    }
+}
+
+bool
 Tracklist::multiply_track_heights (
   double multiplier,
   bool   visible_only,
@@ -884,7 +909,7 @@ Tracklist::multiply_track_heights (
     {
       bool ret = std::visit (
         [&] (auto &&track) {
-          if (visible_only && !track->should_be_visible ())
+          if (visible_only && !should_be_visible (track->get_uuid ()))
             return true;
 
           if (!track->multiply_heights (multiplier, visible_only, check_only))
@@ -913,13 +938,15 @@ Tracklist::multiply_track_heights (
 int
 Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 {
+  // TODO
+  return 0;
+#if 0
   auto span =
-
     std::views::filter (
       get_track_span (),
       [&] (const auto &track_var) {
         const auto &tr = Track::from_variant (track_var);
-        const bool  is_pinned = is_track_pinned (tr->get_index ());
+        const bool  is_pinned = is_track_pinned (index);
         if (pin_opt == PinOption::PinnedOnly && !is_pinned)
           return false;
         if (pin_opt == PinOption::UnpinnedOnly && is_pinned)
@@ -937,11 +964,15 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 
   return std::visit (
     [&] (const auto &track) { return track->get_index (); }, span.front ());
+#endif
 }
 
 std::optional<TrackPtrVariant>
 Tracklist::get_visible_track_after_delta (Track::Uuid track_id, int delta) const
 {
+  // TODO
+  return std::nullopt;
+#if 0
   auto span =
     get_track_span () | std::views::filter (TrackSpan::visible_projection);
   auto current_it =
@@ -950,11 +981,15 @@ Tracklist::get_visible_track_after_delta (Track::Uuid track_id, int delta) const
   if (found == span.end ())
     return std::nullopt;
   return *(found);
+#endif
 }
 
 std::optional<TrackPtrVariant>
 Tracklist::get_first_visible_track (const bool pinned) const
 {
+  // TODO
+  return std::nullopt;
+#if 0
   auto span = get_track_span ().get_visible_tracks ();
   auto it = std::ranges::find_if (span, [&] (const auto &track_var) {
     return std::visit (
@@ -964,6 +999,7 @@ Tracklist::get_first_visible_track (const bool pinned) const
       track_var);
   });
   return it != span.end () ? std::make_optional (*it) : std::nullopt;
+#endif
 }
 
 std::optional<TrackPtrVariant>
@@ -988,7 +1024,6 @@ Tracklist::remove_track (const TrackUuid &track_id)
   auto       track_var = span.at (track_index);
   std::visit (
     [&] (auto &&track) {
-      z_return_if_fail (track->get_index () == track_index);
       z_debug (
         "removing [{}] {} - num tracks before deletion: {}", track_index,
         track->get_name (), tracks_.size ());
@@ -1151,7 +1186,6 @@ Tracklist::move_track (
 
   std::visit (
     [&] (auto &&track) {
-      z_return_if_fail (track_index == track->get_index ());
       z_debug (
         "moving track: {} from {} to {}", track->get_name (), track_index, pos);
 
@@ -1952,6 +1986,8 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
         {
           if (!selected_tracks.empty ())
             {
+// TODO
+#if 0
               TrackSpan selected_tracks_span{ selected_tracks };
               auto      highest_var = selected_tracks_span.get_first_track ();
               auto      lowest_var = selected_tracks_span.get_last_track ();
@@ -1989,6 +2025,7 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
                     }
                 },
                 highest_var, lowest_var);
+#endif
             }
         }
       else if (ctrl)

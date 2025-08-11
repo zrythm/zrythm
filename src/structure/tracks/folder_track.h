@@ -46,10 +46,6 @@ public:
   {
     return is_status (MixerStatus::Soloed);
   }
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
 
   friend void init_from (
     FolderTrack           &obj,

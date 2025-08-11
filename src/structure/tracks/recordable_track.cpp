@@ -19,13 +19,4 @@ RecordableTrack::RecordableTrack (
     dsp::ParameterRange::make_toggle (false),
     utils::Utf8String::from_qstring (QObject::tr ("Track record")));
 }
-
-void
-RecordableTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-  ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-}
 }

@@ -28,11 +28,6 @@ class MidiTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiTrack)
 
 public:
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   friend void init_from (
     MidiTrack             &obj,
     const MidiTrack       &other,

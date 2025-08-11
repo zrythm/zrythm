@@ -34,11 +34,6 @@ public:
     const AudioGroupTrack &other,
     utils::ObjectCloneType clone_type);
 
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   void temporary_virtual_method_hack () const override { }
 
 private:

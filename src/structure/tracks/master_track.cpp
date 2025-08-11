@@ -36,17 +36,6 @@ MasterTrack::initialize ()
 }
 
 void
-MasterTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-  // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-}
-
-void
 init_from (
   MasterTrack           &obj,
   const MasterTrack     &other,

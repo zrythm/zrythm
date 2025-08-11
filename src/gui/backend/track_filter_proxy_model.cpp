@@ -53,7 +53,9 @@ TrackFilterProxyModel::filterAcceptsRow (
 
           if (use_visible_filter_)
             {
-              if (track->should_be_visible () != visible_filter_)
+              if (
+                tracklist->should_be_visible (track->get_uuid ())
+                != visible_filter_)
                 {
                   return false;
                 }

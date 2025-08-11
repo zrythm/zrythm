@@ -14,6 +14,9 @@ namespace zrythm::structure::tracks
 bool
 FoldableTrack::is_status (MixerStatus status) const
 {
+  return false;
+// TODO
+#if 0
   z_return_val_if_fail (tracklist_, false);
   bool all_soloed = size_ > 1;
   bool has_channel_tracks = false;
@@ -50,60 +53,7 @@ FoldableTrack::is_status (MixerStatus status) const
         }
     }
   return has_channel_tracks && all_soloed;
-}
-
-bool
-FoldableTrack::is_direct_child (const Track &child) const
-{
-  std::vector<FoldableTrack *> parents;
-  child.add_folder_parents (parents, true);
-
-  bool match = !parents.empty ();
-  if (match)
-    {
-      auto parent = parents.front ();
-      if (parent != this)
-        {
-          match = false;
-        }
-    }
-
-  return match;
-}
-
-bool
-FoldableTrack::is_child (const Track &child) const
-{
-  std::vector<FoldableTrack *> parents;
-  child.add_folder_parents (parents, false);
-
-  bool match = false;
-  for (auto parent : parents)
-    {
-      if (parent == this)
-        {
-          match = true;
-          break;
-        }
-    }
-
-  return match;
-}
-
-void
-FoldableTrack::add_to_size (int delta)
-{
-  std::vector<FoldableTrack *> parents;
-  add_folder_parents (parents, false);
-
-  size_ += delta;
-  z_debug ("new {} size: {} (added {})", name_, size_, delta);
-  for (auto parent : parents)
-    {
-      parent->size_ += delta;
-      z_debug (
-        "new {} size: {} (added {})", parent->name_, parent->size_, delta);
-    }
+#endif
 }
 
 void

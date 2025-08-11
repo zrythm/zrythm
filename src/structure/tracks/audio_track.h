@@ -38,11 +38,6 @@ private:
   DECLARE_FINAL_TRACK_CONSTRUCTORS (AudioTrack)
 
 public:
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   friend void init_from (
     AudioTrack            &obj,
     const AudioTrack      &other,

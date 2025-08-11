@@ -25,11 +25,6 @@ class MasterTrack final
 public:
   friend class InitializableObject;
 
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   friend void init_from (
     MasterTrack           &obj,
     const MasterTrack     &other,

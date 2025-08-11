@@ -49,7 +49,7 @@ GroupTargetTrack::remove_child (
   z_return_if_fail (child_id != get_uuid ());
   z_return_if_fail (contains_child (child_id));
 
-  auto * tracklist = get_tracklist ();
+  auto * tracklist = TRACKLIST;
 
   auto child_var = tracklist->get_track (child_id);
   z_return_if_fail (child_var);
@@ -100,7 +100,7 @@ GroupTargetTrack::add_child (
 
   if (connect)
     {
-      Tracklist * tracklist = get_tracklist ();
+      Tracklist * tracklist = TRACKLIST;
       auto        out_track_var = tracklist->get_track (child_id);
       std::visit (
         [&] (auto &&out_track) {
@@ -148,7 +148,7 @@ GroupTargetTrack::update_children ()
   auto id = get_uuid ();
   for (auto &child_id : children_)
     {
-      auto child_var = get_tracklist ()->get_track (child_id);
+      auto child_var = TRACKLIST->get_track (child_id);
       std::visit (
         [&] (auto &&child) {
           using TrackT = base_type<decltype (child)>;
@@ -158,8 +158,8 @@ GroupTargetTrack::update_children ()
                 child->get_output_signal_type () == in_signal_type_);
               child->set_output (id);
               z_debug (
-                "setting output of track {} [{}] to {} [{}]",
-                child->get_name (), child->get_index (), get_name (), pos_);
+                "setting output of track {} to {}", child->get_name (),
+                get_name ());
             }
         },
         *child_var);

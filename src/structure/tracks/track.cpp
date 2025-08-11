@@ -32,31 +32,6 @@ Track::Track (
   z_debug ("creating {} track", type);
 }
 
-Tracklist *
-Track::get_tracklist () const
-{
-  if (tracklist_ != nullptr)
-    return tracklist_;
-
-  if (is_auditioner ())
-    {
-      return SAMPLE_PROCESSOR->tracklist_.get ();
-    }
-  else
-    {
-      return TRACKLIST;
-    }
-}
-
-dsp::PortConnectionsManager *
-Track::get_port_connections_manager () const
-{
-  auto * tracklist = get_tracklist ();
-  z_return_val_if_fail (tracklist, nullptr);
-  z_return_val_if_fail (tracklist_->port_connections_manager_, nullptr);
-  return tracklist->port_connections_manager_.get ();
-}
-
 Track *
 Track::from_variant (const TrackPtrVariant &variant)
 {
@@ -69,7 +44,6 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   init_from (
     static_cast<Track::UuidIdentifiableObject &> (obj),
     static_cast<const Track::UuidIdentifiableObject &> (other), clone_type);
-  obj.pos_ = other.pos_;
   obj.type_ = other.type_;
   obj.name_ = other.name_;
   obj.icon_name_ = other.icon_name_;
@@ -81,10 +55,7 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   obj.in_signal_type_ = other.in_signal_type_;
   obj.out_signal_type_ = other.out_signal_type_;
   obj.comment_ = other.comment_;
-  obj.bounce_ = other.bounce_;
-  obj.bounce_to_master_ = other.bounce_to_master_;
   obj.frozen_clip_id_ = other.frozen_clip_id_;
-  obj.disconnecting_ = other.disconnecting_;
 }
 
 utils::Utf8String
@@ -92,12 +63,6 @@ Track::get_full_designation_for_port (const dsp::Port &port) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("{}/{}", get_name (), port.get_label ()));
-}
-
-bool
-Track::is_auditioner () const
-{
-  return (tracklist_ != nullptr) && tracklist_->is_auditioner ();
 }
 
 Track::Type
@@ -110,65 +75,6 @@ Track::type_get_from_plugin_descriptor (
     return Track::Type::Midi;
   else
     return Track::Type::AudioBus;
-}
-
-void
-Track::add_folder_parents (std::vector<FoldableTrack *> &parents, bool prepend)
-  const
-{
-  for (
-    const auto &cur_track_var :
-    tracklist_->get_track_span ()
-      | std::views::filter (
-        TrackSpan::derived_from_type_projection<FoldableTrack>))
-    {
-      std::visit (
-        [&] (const auto &cur_track) {
-          using TrackT = base_type<decltype (cur_track)>;
-          if constexpr (std::derived_from<TrackT, FoldableTrack>)
-            {
-              /* last position covered by the foldable track cur_track */
-              int last_covered_pos = cur_track->pos_ + (cur_track->size_ - 1);
-
-              if (cur_track->pos_ < pos_ && pos_ <= last_covered_pos)
-                {
-                  if (prepend)
-                    {
-                      parents.insert (parents.begin (), cur_track);
-                    }
-                  else
-                    {
-                      parents.push_back (cur_track);
-                    }
-                }
-            }
-        },
-        cur_track_var);
-    }
-}
-
-void
-Track::remove_from_folder_parents ()
-{
-  std::vector<FoldableTrack *> parents;
-  add_folder_parents (parents, false);
-  for (auto parent : parents)
-    {
-      parent->size_--;
-    }
-}
-
-bool
-Track::should_be_visible () const
-{
-  if (!visible_ || filtered_)
-    return false;
-
-  std::vector<FoldableTrack *> parents;
-  add_folder_parents (parents, false);
-  return std::ranges::all_of (parents, [] (const auto &parent) {
-    return parent->visible_ && !parent->folded_;
-  });
 }
 
 #if 0
@@ -273,9 +179,6 @@ track_freeze (Track * self, bool freeze, GError ** error)
 void
 Track::unselect_all ()
 {
-  if (is_auditioner ())
-    return;
-
   std::vector<ArrangerObjectPtrVariant> objs;
   append_objects (objs);
   for (auto obj_var : objs)
@@ -421,133 +324,6 @@ Track::set_name (
     }
 }
 
-void
-Track::set_comment (const utils::Utf8String &comment, bool undoable)
-{
-  if (undoable)
-    {
-      tracklist_->get_selection_manager ().select_unique (get_uuid ());
-
-      try
-        {
-          UNDO_MANAGER->perform (new gui::actions::EditTrackCommentAction (
-            convert_to_variant<TrackPtrVariant> (this), comment));
-        }
-      catch (const ZrythmException &e)
-        {
-          e.handle (QObject::tr ("Failed to set track comment"));
-          return;
-        }
-    }
-  else
-    {
-      comment_ = comment;
-    }
-}
-
-void
-Track::set_color (const Color &color, bool undoable, bool fire_events)
-{
-  if (undoable)
-    {
-      tracklist_->get_selection_manager ().select_unique (get_uuid ());
-
-      try
-        {
-          UNDO_MANAGER->perform (new gui::actions::EditTrackColorAction (
-            convert_to_variant<TrackPtrVariant> (this), color));
-        }
-      catch (const ZrythmException &e)
-        {
-          e.handle (QObject::tr ("Failed to set track color"));
-          return;
-        }
-    }
-  else
-    {
-      color_ = color;
-
-      if (fire_events)
-        {
-          // EVENTS_PUSH (EventType::ET_TRACK_COLOR_CHANGED, this);
-        }
-    }
-}
-
-void
-Track::
-  set_icon (const utils::Utf8String &icon_name, bool undoable, bool fire_events)
-{
-  if (undoable)
-    {
-      tracklist_->get_selection_manager ().select_unique (get_uuid ());
-
-      try
-        {
-          UNDO_MANAGER->perform (new gui::actions::EditTrackIconAction (
-            convert_to_variant<TrackPtrVariant> (this), icon_name));
-        }
-      catch (const ZrythmException &e)
-        {
-          e.handle (QObject::tr ("Cannot set track icon"));
-          return;
-        }
-    }
-  else
-    {
-      icon_name_ = icon_name;
-
-      if (fire_events)
-        {
-          // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
-        }
-    }
-}
-
-void
-Track::set_enabled (
-  bool enabled,
-  bool trigger_undo,
-  bool auto_select,
-  bool fire_events)
-{
-  if (enabled_ == enabled)
-    return;
-
-  enabled_ = enabled;
-  z_debug ("Setting track {} {}", name_, enabled_ ? "enabled" : "disabled");
-
-  if (auto_select)
-    {
-      tracklist_->get_selection_manager ().select_unique (get_uuid ());
-    }
-
-  if (trigger_undo)
-    {
-      try
-        {
-          UNDO_MANAGER->perform (new gui::actions::EnableTrackAction (
-            convert_to_variant<TrackPtrVariant> (this), enabled_));
-        }
-      catch (const ZrythmException &e)
-        {
-          e.handle (QObject::tr ("Cannot set track enabled status"));
-          return;
-        }
-    }
-  else
-    {
-      enabled_ = enabled;
-
-      if (fire_events)
-        {
-          std::visit (
-            [this] (auto &&track) { Q_EMIT track->enabledChanged (enabled_); },
-            convert_to_variant<TrackPtrVariant> (this));
-        }
-    }
-}
-
 int
 Track::get_total_bars (
   const engine::session::Transport &transport,
@@ -575,8 +351,7 @@ Track::get_total_bars (
 void
 Track::set_caches (CacheType types)
 {
-  if (
-    ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots) && !is_auditioner ())
+  if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
     {
       z_return_if_fail (AUDIO_ENGINE->run_.load () == false);
 
@@ -682,7 +457,6 @@ from_json (const nlohmann::json &j, Track &track)
   j.at (Track::kTypeKey).get_to (track.type_);
   j.at (Track::kNameKey).get_to (track.name_);
   j.at (Track::kIconNameKey).get_to (track.icon_name_);
-  j.at (Track::kIndexKey).get_to (track.pos_);
   j.at (Track::kVisibleKey).get_to (track.visible_);
   j.at (Track::kMainHeightKey).get_to (track.main_height_);
   j.at (Track::kEnabledKey).get_to (track.enabled_);

@@ -556,7 +556,8 @@ Exporter::prepare_tracks_for_export (
       ROUTER->recalc_graph (false);
 
       /* remark all tracks for bounce */
-      TRACKLIST->mark_all_tracks_for_bounce (true);
+      // TODO
+      // TRACKLIST->mark_all_tracks_for_bounce (true);
     }
 
   z_debug ("preparing playback snapshots...");
@@ -586,11 +587,14 @@ Exporter::post_export ()
       ROUTER->recalc_graph (false);
     }
 
-  /* reset "bounce to master" on each track */
+    /* reset "bounce to master" on each track */
+// TODO
+#if 0
   std::ranges::for_each (TRACKLIST->get_track_span (), [] (const auto &track) {
     auto tr = structure::tracks::Track::from_variant (track);
     tr->bounce_to_master_ = false;
   });
+#endif
 
   /* restart engine */
   AUDIO_ENGINE->exporting_ = false;

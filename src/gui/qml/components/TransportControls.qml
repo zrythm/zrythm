@@ -1,3 +1,4 @@
+
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -10,20 +11,20 @@ import ZrythmStyle 1.0
 RowLayout {
   id: root
 
-  required property var tempoMap
-  required property var transport
+  required property TempoMap tempoMap
+  required property Transport transport
 
   LinkedButtons {
     Button {
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-backward-large-symbolic.svg")
 
-      onClicked: transport.moveBackward()
+      onClicked: root.transport.moveBackward()
     }
 
     Button {
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-forward-large-symbolic.svg")
 
-      onClicked: transport.moveForward()
+      onClicked: root.transport.moveForward()
     }
 
     Button {
@@ -31,30 +32,30 @@ RowLayout {
     }
 
     Button {
-      icon.source: ResourceManager.getIconUrl("gnome-icon-library", (transport.playState == 1 ? "pause" : "play") + "-large-symbolic.svg")
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", (root.transport.playState == 1 ? "pause" : "play") + "-large-symbolic.svg")
 
       onClicked: {
-        transport.isRolling() ? transport.requestPause(true) : transport.requestRoll(true);
+        root.transport.isRolling() ? root.transport.requestPause(true) : root.transport.requestRoll(true);
       }
     }
 
     RecordButton {
       id: recordButton
 
-      checked: transport.recordEnabled
+      checked: root.transport.recordEnabled
 
       onCheckedChanged: {
-        transport.recordEnabled = checked;
+        root.transport.recordEnabled = checked;
       }
     }
 
     Button {
       checkable: true
-      checked: transport.loopEnabled
+      checked: root.transport.loopEnabled
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "loop-arrow-symbolic.svg")
 
       onCheckedChanged: {
-        transport.loopEnabled = checked;
+        root.transport.loopEnabled = checked;
       }
     }
   }
@@ -64,7 +65,7 @@ RowLayout {
 
     EditableValueDisplay {
       label: "bpm"
-      value: root.tempoMap.tempoAtTick(transport.playhead.ticks).toFixed(2)
+      value: root.tempoMap.tempoAtTick(root.transport.playhead.ticks).toFixed(2)
     }
 
     EditableValueDisplay {
@@ -73,7 +74,7 @@ RowLayout {
       label: "time"
       minValueHeight: timeTextMetrics.height
       minValueWidth: timeTextMetrics.width
-      value: root.tempoMap.getMusicalPositionString(transport.playhead.ticks)
+      value: root.tempoMap.getMusicalPositionString(root.transport.playhead.ticks)
 
       TextMetrics {
         id: timeTextMetrics
@@ -86,7 +87,7 @@ RowLayout {
     EditableValueDisplay {
       label: "sig"
       value: {
-        let timeSig = root.tempoMap.timeSignatureAtTick(transport.playhead.ticks);
+        let timeSig = root.tempoMap.timeSignatureAtTick(root.transport.playhead.ticks) as TimeSignatureEventWrapper;
         return `${timeSig.numerator}/${timeSig.denominator}`;
       }
     }

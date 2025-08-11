@@ -23,11 +23,6 @@ protected:
 public:
   ~ChannelTrack () override = default;
 
-  void init_loaded (
-    plugins::PluginRegistry         &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   Channel * channel () const { return channel_.get (); }
 
   /**

@@ -206,11 +206,6 @@ public:
   static Project * get_active_instance ();
 
   /**
-   * @return Whether positions were adjusted.
-   */
-  bool fix_audio_regions ();
-
-  /**
    * Saves the project to a project file in the given dir.
    *
    * @param is_backup 1 if this is a backup. Backups will be saved as <original

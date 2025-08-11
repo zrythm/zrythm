@@ -162,8 +162,6 @@ public:
   {
   }
 
-  bool is_auditioner () const;
-
   /**
    * Sets track lane soloed, updates UI and optionally
    * adds the action to the undo stack.
@@ -227,8 +225,6 @@ public:
     bool                   lanes_as_tracks,
     bool                   use_track_or_lane_pos)
     requires std::derived_from<MidiRegion, RegionT>;
-
-  Tracklist * get_tracklist () const;
 
   LanedTrackT * get_track () const
   {

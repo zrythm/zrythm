@@ -751,9 +751,8 @@ public:
           nullptr,
           -1,
           EditType::DirectOut,
-          direct_out
-            ? std::visit ([&] (auto &&track) { return track->get_index (); }, *direct_out)
-            : -1,
+          direct_out ? 561561156 /* random index for now */
+                     : -1,
           nullptr,
           0.f,
           0.f,

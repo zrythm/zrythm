@@ -399,7 +399,7 @@ Project::activate ()
   audio_engine_->router_->recalc_graph (false);
 
   /* fix audio regions in case running under a new sample rate */
-  fix_audio_regions ();
+  // fix_audio_regions ();
 
   /* resume engine */
   audio_engine_->resume (state);
@@ -499,13 +499,6 @@ Project::add_default_tracks ()
   tracklist_->get_selection_manager ().select_unique (master_track->get_uuid ());
 
   last_selection_ = SelectionType::Tracklist;
-}
-
-bool
-Project::fix_audio_regions ()
-{
-  return tracklist_->get_track_span ().fix_audio_regions (
-    audio_engine_->frames_per_tick_);
 }
 
 #if 0

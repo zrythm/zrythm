@@ -64,11 +64,6 @@ public:
   using NotePitchToChordDescriptorFunc =
     dsp::MidiEventVector::NotePitchToChordDescriptorFunc;
 
-  void init_loaded (
-    PluginRegistry                  &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   const dsp::ChordDescriptor *
   note_pitch_to_chord_descriptor (midi_byte_t note_pitch) const
   {

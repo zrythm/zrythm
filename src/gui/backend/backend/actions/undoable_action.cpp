@@ -103,7 +103,7 @@ UndoableAction::do_or_undo (bool perform)
 
   if (affects_audio_region_internal_positions ())
     {
-      PROJECT->fix_audio_regions ();
+      // PROJECT->fix_audio_regions ();
     }
 
   if (needs_pause ())

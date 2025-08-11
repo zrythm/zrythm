@@ -166,22 +166,6 @@ TrackLaneImpl<RegionT>::is_effectively_muted () const
   return false;
 }
 
-template <arrangement::RegionObject RegionT>
-bool
-TrackLaneImpl<RegionT>::is_auditioner () const
-{
-  return track_ && track_->is_auditioner ();
-}
-
-template <arrangement::RegionObject RegionT>
-Tracklist *
-TrackLaneImpl<RegionT>::get_tracklist () const
-{
-  if (is_auditioner ())
-    return SAMPLE_PROCESSOR->tracklist_.get ();
-  return TRACKLIST;
-}
-
 /**
  * Calculates a unique index for this lane.
  */
@@ -190,7 +174,7 @@ int
 TrackLaneImpl<RegionT>::calculate_lane_idx_for_midi_serialization () const
 {
   auto        track = get_track ();
-  Tracklist * tracklist = get_tracklist ();
+  Tracklist * tracklist = TRACKLIST;
   int         pos = 1;
   for (
     const auto * cur_track :

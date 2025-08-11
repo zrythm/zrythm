@@ -42,17 +42,17 @@ void
 PianoRollTrack::write_to_midi_file (
   MIDI_FILE *            mf,
   dsp::MidiEventVector * events,
-  const Position *       start,
-  const Position *       end,
+  const dsp::Position *  start,
+  const dsp::Position *  end,
+  int                    track_index,
   bool                   lanes_as_tracks,
   bool                   use_track_pos)
 {
-  [[maybe_unused]] int                  midi_track_pos = pos_;
   std::unique_ptr<dsp::MidiEventVector> own_events;
   if (!lanes_as_tracks && use_track_pos)
     {
       z_return_if_fail (!events);
-      midiTrackAddText (mf, pos_, textTrackName, name_.c_str ());
+      midiTrackAddText (mf, track_index, textTrackName, name_.c_str ());
       own_events = std::make_unique<dsp::MidiEventVector> ();
     }
 
@@ -130,15 +130,5 @@ PianoRollTrack::set_playback_caches ()
 {
   LanedTrackImpl::set_playback_caches ();
   // AutomatableTrack::set_playback_caches ();
-}
-
-void
-PianoRollTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-  RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  LanedTrackImpl::init_loaded (plugin_registry, port_registry, param_registry);
 }
 }

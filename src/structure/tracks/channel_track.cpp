@@ -17,14 +17,6 @@ ChannelTrack::ChannelTrack (FinalTrackDependencies dependencies)
 {
 }
 
-void
-ChannelTrack::init_loaded (
-  plugins::PluginRegistry         &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-}
-
 GroupTargetTrack &
 ChannelTrack::output_track_as_group_target () const
 {
@@ -59,12 +51,9 @@ ChannelTrack::generate_channel ()
       .param_registry_ = get_param_registry () },
     out_signal_type_, [&] () { return get_name (); }, is_master (),
     [&] (bool fader_solo_status) {
-      // Effectively muted if any of the following is true:
-      // - other track(s) is soloed and this isn't
-      // - bounce mode is ON and the track is set to BOUNCE_OFF
-      return (TRACKLIST->get_track_span ().has_soloed () && !fader_solo_status
-              && !get_implied_soloed () && !is_master ())
-             || (AUDIO_ENGINE->bounce_mode_ == engine::device_io::BounceMode::On && !is_master () && !bounce_);
+      // Effectively muted if other track(s) is soloed and this isn't
+      return TRACKLIST->get_track_span ().has_soloed () && !fader_solo_status
+             && !get_implied_soloed () && !is_master ();
     });
 }
 

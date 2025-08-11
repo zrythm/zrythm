@@ -79,19 +79,4 @@ init_from (
     static_cast<PianoRollTrack &> (obj),
     static_cast<const PianoRollTrack &> (other), clone_type);
 }
-
-void
-InstrumentTrack::init_loaded (
-  PluginRegistry                  &plugin_registry,
-  dsp::PortRegistry               &port_registry,
-  dsp::ProcessorParameterRegistry &param_registry)
-{
-  // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  ProcessableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  RecordableTrack::init_loaded (plugin_registry, port_registry, param_registry);
-  LanedTrackImpl<MidiLane>::init_loaded (
-    plugin_registry, port_registry, param_registry);
-  PianoRollTrack::init_loaded (plugin_registry, port_registry, param_registry);
-}
 }

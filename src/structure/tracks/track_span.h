@@ -32,16 +32,6 @@ public:
     return std::ranges::contains (*this, id, Base::uuid_projection);
   }
 
-  static auto position_projection (const VariantType &track_var)
-  {
-    return std::visit (
-      [] (const auto &track) { return track->get_index (); }, track_var);
-  }
-  static auto visible_projection (const VariantType &track_var)
-  {
-    return std::visit (
-      [] (const auto &track) { return track->should_be_visible (); }, track_var);
-  }
   static auto name_projection (const VariantType &track_var)
   {
     return std::visit (
@@ -98,12 +88,6 @@ public:
       track_var);
   }
 
-  std::optional<VariantType> get_track_by_pos (int pos) const
-  {
-    auto it = std::ranges::find (*this, pos, position_projection);
-    return it != this->end () ? std::make_optional (*it) : std::nullopt;
-  }
-
   std::optional<VariantType>
   get_track_by_name (const utils::Utf8String &name) const
   {
@@ -111,69 +95,14 @@ public:
     return it != this->end () ? std::make_optional (*it) : std::nullopt;
   }
 
-  /**
-   * @brief Returns the highest track (with smallest position).
-   */
-  VariantType get_first_track () const
-  {
-    return std::ranges::min (*this, {}, position_projection);
-  }
-
-  /**
-   * @brief Returns the lowest track (with largest position).
-   */
-  VariantType get_last_track () const
-  {
-    return std::ranges::max (*this, {}, position_projection);
-  }
-
   bool contains_track_name (const utils::Utf8String &name) const
   {
     return std::ranges::contains (*this, name, name_projection);
   }
 
-  auto get_visible_tracks () const
-  {
-    return std::views::filter (*this, visible_projection);
-  }
-
   auto get_selected_tracks () const
   {
     return std::views::filter (*this, selected_projection);
-  }
-
-  /**
-   * @brief Prints the track collection contents (for debugging).
-   */
-  void print_tracks () const
-  {
-    z_info ("----- tracklist tracks ------");
-    for (const auto [index, track_var] : utils::views::enumerate (*this))
-      {
-        std::visit (
-          [&] (auto &&track_ref) {
-            const auto                  &track = *track_ref;
-            std::string                  parent_str;
-            std::vector<FoldableTrack *> parents;
-            track.add_folder_parents (parents, false);
-            parent_str.append (parents.size () * 2, '-');
-            if (!parents.empty ())
-              parent_str += ' ';
-
-            int fold_size = 1;
-            if constexpr (
-              std::is_same_v<base_type<decltype (track)>, FoldableTrack>)
-              {
-                fold_size = track->size_;
-              }
-
-            z_info (
-              "[{:03}] {}{} (pos {}, parents {}, size {})", index, parent_str,
-              track.get_name (), track.get_index (), parents.size (), fold_size);
-          },
-          track_var);
-      }
-    z_info ("------ end ------");
   }
 
   MasterTrack &get_master_track () const
@@ -187,21 +116,6 @@ public:
       }
     return *std::get<MasterTrack *> (*it);
   }
-
-  /**
-   * Marks the tracks to be bounced.
-   *
-   * @param with_parents Also mark all the track's parents recursively.
-   * @param mark_master Also mark the master track.
-   *   Set to true when exporting the mixdown, false otherwise.
-   */
-  void
-  mark_for_bounce (Tracklist &tracklist, bool with_parents, bool mark_master);
-
-  /**
-   * Marks or unmarks all tracks for bounce.
-   */
-  void mark_all_tracks_for_bounce (Tracklist &tracklist, bool bounce);
 
   /**
    * Toggle visibility of the tracks in this collection.
@@ -279,14 +193,6 @@ public:
   }
 
   /**
-   * @brief Paste to the given position in the tracklist (performs a copy).
-   *
-   * @param pos
-   * @throw ZrythmException if failed to paste.
-   */
-  void paste_to_pos (int pos);
-
-  /**
    * Fills in the given array with all plugins in the tracklist.
    */
   template <typename T> void get_plugins (T &container)
@@ -360,33 +266,6 @@ public:
   }
 
   /**
-   * @brief @see Channel.reconnect_ext_input_ports().
-   */
-  // void reconnect_ext_input_ports (engine::device_io::AudioEngine &engine);
-
-  /**
-   * @brief Fixes audio regions and returns whether positions were adjusted.
-   */
-  bool fix_audio_regions (dsp::FramesPerTick frames_per_tick);
-
-  void init_loaded (
-    plugins::PluginRegistry         &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry)
-  {
-    std::ranges::for_each (*this, [&] (const auto &track_var) {
-      std::visit (
-        [&] (auto &&track) {
-          track->init_loaded (plugin_registry, port_registry, param_registry);
-        },
-        track_var);
-    });
-  }
-
-  void
-  move_after_copying_or_moving_inside (int diff_between_track_below_and_parent);
-
-  /**
    * @brief Creates a snapshot of the track collection.
    *
    * Intended to be used in undoable actions.
@@ -430,15 +309,4 @@ public:
 };
 
 static_assert (std::ranges::random_access_range<TrackSpan>);
-
-namespace TrackCollections
-{
-
-template <std::ranges::range TrackRange>
-void
-sort_by_position (TrackRange &tracks)
-{
-  std::ranges::sort (tracks, {}, TrackSpan::position_projection);
-}
-}; // namespace TrackCollections
 }

@@ -117,30 +117,6 @@ public:
     utils::ObjectCloneType clone_type);
 
   /**
-   * Initializes the tracklist when loading a project.
-   */
-  void init_loaded (
-    dsp::PortRegistry                 &port_registry,
-    dsp::ProcessorParameterRegistry   &param_registry,
-    Project *                          project,
-    engine::session::SampleProcessor * sample_processor);
-
-  void init_loaded (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    Project                         &project)
-  {
-    init_loaded (port_registry, param_registry, &project, nullptr);
-  }
-  void init_loaded (
-    dsp::PortRegistry                &port_registry,
-    dsp::ProcessorParameterRegistry  &param_registry,
-    engine::session::SampleProcessor &sample_processor)
-  {
-    init_loaded (port_registry, param_registry, nullptr, &sample_processor);
-  }
-
-  /**
    * Adds given track to given spot in tracklist.
    *
    * @param publish_events Publish UI events.
@@ -272,8 +248,7 @@ public:
   get_last_track (PinOption pin_opt = PinOption::Both, bool visible_only = false)
     const
   {
-    return get_track_span ().get_track_by_pos (
-      get_last_pos (pin_opt, visible_only));
+    return get_track_span ()[get_last_pos (pin_opt, visible_only)];
   }
 
   /**
@@ -426,6 +401,45 @@ public:
 #endif
 
   /**
+   * Adds the track's folder parents to the given vector.
+   *
+   * @param prepend Whether to prepend instead of append.
+   */
+  void add_folder_parents (
+    const Track::Uuid            &track_id,
+    std::vector<FoldableTrack *> &parents,
+    bool                          prepend) const;
+
+  /**
+   * Returns the closest foldable parent or NULL.
+   */
+  FoldableTrack * get_direct_folder_parent (const Track::Uuid &track_id) const
+  {
+    std::vector<FoldableTrack *> parents;
+    add_folder_parents (track_id, parents, true);
+    if (!parents.empty ())
+      {
+        return parents.front ();
+      }
+    return nullptr;
+  }
+
+  /**
+   * Remove the track from all folders.
+   *
+   * Used when deleting tracks.
+   */
+  void remove_from_folder_parents (const Track::Uuid &track_id);
+
+  /**
+   * Returns whether the track should be visible.
+   *
+   * Takes into account Track.visible and whether any of the track's foldable
+   * parents are folded.
+   */
+  bool should_be_visible (const Track::Uuid &track_id) const;
+
+  /**
    * Returns whether the track name is not taken.
    *
    * @param track_to_skip Track to skip when searching.
@@ -522,11 +536,6 @@ public:
     bool            mark_regions,
     bool            mark_children,
     bool            mark_parents);
-
-  void mark_all_tracks_for_bounce (bool bounce)
-  {
-    get_track_span ().mark_all_tracks_for_bounce (*this, bounce);
-  }
 
   void disconnect_plugin (const plugins::Plugin::Uuid &plugin_id);
 

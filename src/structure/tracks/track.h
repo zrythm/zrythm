@@ -120,7 +120,10 @@ public: \
 \
   void setEnabled (bool enabled) \
   { \
-    set_enabled (enabled, true, true, true); \
+    if (enabled_ == enabled) \
+      return; \
+    enabled_ = enabled; \
+    Q_EMIT enabledChanged (enabled); \
   } \
   Q_SIGNAL void enabledChanged (bool enabled); \
 \
@@ -377,7 +380,6 @@ public:
   friend class Tracklist;
 
   using Color = utils::Color;
-  using Position = dsp::Position;
 
   static constexpr bool type_can_have_direct_out (Type type)
   {
@@ -513,29 +515,7 @@ protected:
     BaseTrackDependencies dependencies);
 
 public:
-  /**
-   * @brief Adds additional metadata to track members after deserialization.
-   *
-   * @note Each implementor must chain up to its direct superclass.
-   */
-  virtual void init_loaded (
-    plugins::PluginRegistry         &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) = 0;
-
-  Tracklist * get_tracklist () const;
-
-  dsp::PortConnectionsManager * get_port_connections_manager () const;
-
   bool has_piano_roll () const { return type_has_piano_roll (type_); }
-
-  /**
-   * Returns whether the track should be visible.
-   *
-   * Takes into account Track.visible and whether any of the track's foldable
-   * parents are folded.
-   */
-  bool should_be_visible () const;
 
   bool is_folder () const { return type_ == Type::Folder; }
   bool is_audio_group () const { return type_ == Type::AudioGroup; }
@@ -651,9 +631,6 @@ public:
     return true;
   }
 
-  /** Whether this track is part of the SampleProcessor auditioner tracklist. */
-  bool is_auditioner () const;
-
   bool can_be_group_target () const { return type_can_be_group_target (type_); }
 
   bool is_frozen () const { return frozen_clip_id_.has_value (); }
@@ -755,20 +732,6 @@ public:
           }
       }
 
-    /* write clip if audio region */
-    if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
-      {
-        if (!self.is_auditioner ())
-          {
-            // TODO in pool, just listen to when a new clip is added in the clip
-            // registry and auto-write then
-#if 0
-            auto * clip = region->get_clip ();
-            self.write_audio_clip_to_pool_after_adding_audio_region (*clip);
-#endif
-          }
-      }
-
     z_debug ("inserted: {}", *region);
   }
 
@@ -829,35 +792,6 @@ public:
   virtual void temporary_virtual_method_hack () const = 0;
 
   /**
-   * Adds the track's folder parents to the given vector.
-   *
-   * @param prepend Whether to prepend instead of append.
-   */
-  void
-  add_folder_parents (std::vector<FoldableTrack *> &parents, bool prepend) const;
-
-  /**
-   * Returns the closest foldable parent or NULL.
-   */
-  FoldableTrack * get_direct_folder_parent () const
-  {
-    std::vector<FoldableTrack *> parents;
-    add_folder_parents (parents, true);
-    if (!parents.empty ())
-      {
-        return parents.front ();
-      }
-    return nullptr;
-  }
-
-  /**
-   * Remove the track from all folders.
-   *
-   * Used when deleting tracks.
-   */
-  void remove_from_folder_parents ();
-
-  /**
    * Getter for the track name.
    */
   utils::Utf8String get_name () const { return name_; };
@@ -903,10 +837,6 @@ public:
   {
   }
 
-  // FIXME: this member is likely not needed
-  int  get_index () const { return pos_; }
-  void set_index (int index) { pos_ = index; }
-
   auto get_input_signal_type () const { return in_signal_type_; }
   auto get_output_signal_type () const { return out_signal_type_; }
 
@@ -935,29 +865,6 @@ public:
           }
       }
   }
-
-  utils::Utf8String get_comment () const { return comment_; }
-
-  /**
-   * @param undoable Create an undable action.
-   */
-  void set_comment (const utils::Utf8String &comment, bool undoable);
-
-  void set_comment_with_action (const utils::Utf8String &comment)
-  {
-    set_comment (comment, true);
-  }
-
-  /**
-   * Sets the track color.
-   */
-  void set_color (const Color &color, bool undoable, bool fire_events);
-
-  /**
-   * Sets the track icon.
-   */
-  void
-  set_icon (const utils::Utf8String &icon_name, bool undoable, bool fire_events);
 
   /**
    * Freezes or unfreezes the track.
@@ -1009,13 +916,6 @@ public:
   bool is_enabled () const { return enabled_; }
   bool enabled () const { return enabled_; }
   bool disabled () const { return !enabled_; }
-  void set_enabled (bool enabled) { enabled_ = enabled; }
-
-  void set_enabled (
-    bool enabled,
-    bool trigger_undo,
-    bool auto_select,
-    bool fire_events);
 
   int
   get_total_bars (const engine::session::Transport &transport, int total_bars)
@@ -1166,11 +1066,6 @@ public:
   auto get_type () const { return type_; }
   auto get_icon_name () const { return icon_name_; }
 
-  friend bool operator< (const Track &lhs, const Track &rhs)
-  {
-    return lhs.pos_ < rhs.pos_;
-  }
-
 protected:
   friend void
   init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type);
@@ -1192,7 +1087,6 @@ private:
   static constexpr std::string_view kTypeKey = "type";
   static constexpr std::string_view kNameKey = "name";
   static constexpr std::string_view kIconNameKey = "iconName";
-  static constexpr std::string_view kIndexKey = "index";
   static constexpr std::string_view kVisibleKey = "visible";
   static constexpr std::string_view kMainHeightKey = "mainHeight";
   static constexpr std::string_view kEnabledKey = "enabled";
@@ -1207,7 +1101,6 @@ private:
     j[kTypeKey] = track.type_;
     j[kNameKey] = track.name_;
     j[kIconNameKey] = track.icon_name_;
-    j[kIndexKey] = track.pos_;
     j[kVisibleKey] = track.visible_;
     j[kMainHeightKey] = track.main_height_;
     j[kEnabledKey] = track.enabled_;
@@ -1222,29 +1115,14 @@ private:
 protected:
   BaseTrackDependencies base_dependencies_;
 
-  /**
-   * Position in the Tracklist.
-   *
-   * This is also used in the Mixer for the Channels.
-   * If a track doesn't have a Channel, the Mixer can just skip.
-   */
-  int pos_ = 0;
-
   /** The type of track this is. */
-  Type type_ = {};
+  Type type_{};
 
   /** Track name, used in channel too. */
   utils::Utf8String name_;
 
   /** Icon name of the track. */
   utils::Utf8String icon_name_;
-
-  /**
-   * Track Widget created dynamically.
-   *
-   * 1 track has 1 widget.
-   */
-  // TrackWidget * widget_ = nullptr;
 
   /** Whole Track is visible or not. */
   bool visible_ = true;
@@ -1283,28 +1161,8 @@ protected:
   /** User comments. */
   utils::Utf8String comment_;
 
-public:
-  /**
-   * Set to ON during bouncing if this track should be included.
-   *
-   * Only relevant for tracks that output audio.
-   */
-  bool bounce_{};
-
-  /**
-   * Whether to temporarily route the output to master (e.g., when bouncing
-   * the track on its own without its parents).
-   */
-  bool bounce_to_master_ = false;
-
-  /** Whether currently disconnecting. */
-  bool disconnecting_ = false;
-
   /** Pool ID of the clip if track is frozen (unset if not frozen). */
   std::optional<dsp::FileAudioSourceUuidReference> frozen_clip_id_;
-
-  /** Pointer to owner tracklist, if any. */
-  Tracklist * tracklist_ = nullptr;
 
   /**
    * @brief Track selection status getter.
@@ -1316,9 +1174,6 @@ public:
 
 template <typename T>
 concept TrackSubclass = std::derived_from<T, Track>;
-
-template <typename TrackT>
-concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
 
 template <typename TrackT>
 concept TrackWithPlugins =

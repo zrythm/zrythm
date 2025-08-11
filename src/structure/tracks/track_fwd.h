@@ -54,6 +54,17 @@ using TrackResolver =
 
 template <typename TrackT>
 concept AutomatableTrack = std::derived_from<TrackT, ProcessableTrack>;
+
+template <typename TrackT>
+concept FinalTrackSubclass =
+  std::is_same_v<TrackT, MarkerTrack> || std::is_same_v<TrackT, InstrumentTrack>
+  || std::is_same_v<TrackT, MidiTrack> || std::is_same_v<TrackT, MasterTrack>
+  || std::is_same_v<TrackT, MidiGroupTrack>
+  || std::is_same_v<TrackT, AudioGroupTrack>
+  || std::is_same_v<TrackT, FolderTrack> || std::is_same_v<TrackT, MidiBusTrack>
+  || std::is_same_v<TrackT, AudioBusTrack> || std::is_same_v<TrackT, AudioTrack>
+  || std::is_same_v<TrackT, ChordTrack>
+  || std::is_same_v<TrackT, ModulatorTrack>;
 }
 
 DEFINE_UUID_HASH_SPECIALIZATION (zrythm::structure::tracks::TrackUuid);

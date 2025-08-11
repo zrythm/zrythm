@@ -28,11 +28,6 @@ class InstrumentTrack final
   DECLARE_FINAL_TRACK_CONSTRUCTORS (InstrumentTrack)
 
 public:
-  void init_loaded (
-    plugins::PluginRegistry         &plugin_registry,
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry) override;
-
   friend void init_from (
     InstrumentTrack       &obj,
     const InstrumentTrack &other,
