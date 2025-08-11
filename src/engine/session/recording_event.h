@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <format>
+#include <source_location>
 
 #include "dsp/midi_event.h"
 #include "structure/tracks/track.h"
@@ -51,15 +51,7 @@ public:
     const Type                      type,
     const structure::tracks::Track &track,
     const EngineProcessTimeInfo    &time_nfo,
-#if defined(__GNUC__) || defined(__clang__)
-    const char * file = __builtin_FILE (),
-    const char * func = __builtin_FUNCTION (),
-    int          lineno = __builtin_LINE ())
-#else
-    const char * file = nullptr,
-    const char * func = nullptr,
-    int          lineno = 0)
-#endif
+    std::source_location source_location = std::source_location::current ())
   {
     type_ = type;
     track_uuid_ = track.get_uuid ();
@@ -69,9 +61,7 @@ public:
     midi_event_ = dsp::MidiEvent{};
     automation_track_idx_ = 0;
     nframes_ = time_nfo.nframes_;
-    file_ = file;
-    func_ = func;
-    lineno_ = lineno;
+    source_location_ = source_location;
   }
 
 public:
@@ -108,9 +98,7 @@ public:
   dsp::MidiEvent midi_event_;
 
   /* debug info */
-  const char * file_ = nullptr;
-  const char * func_ = nullptr;
-  int          lineno_ = 0;
+  std::source_location source_location_;
 
   BOOST_DESCRIBE_CLASS (
     RecordingEvent,
@@ -122,9 +110,7 @@ public:
      nframes_,
      automation_track_idx_,
      has_midi_event_,
-     file_,
-     func_,
-     lineno_),
+     source_location_),
     (),
     ())
 };

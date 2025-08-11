@@ -25,5 +25,7 @@ set(CTEST_CUSTOM_COVERAGE_EXCLUDE
     ".*/_deps/.*"
     ".*/build_.*/.*_autogen/.*"
     ".*/qrc_.*\\.cpp"
-    ".*/CPM/.*"
+    # these 2 give errors
+    ".*/src/utils/format\\.h"
+    ".*/src/utils/logger\\.h"
 )

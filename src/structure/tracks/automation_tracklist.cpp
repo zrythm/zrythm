@@ -124,8 +124,10 @@ AutomationTracklist::add_automation_track (
 }
 
 void
-AutomationTracklist::
-  set_automation_track_index (AutomationTrack &at, int index, bool push_down)
+AutomationTracklist::set_automation_track_index (
+  AutomationTrack &at,
+  const int        index,
+  bool             push_down)
 {
   auto      &at_holders = automation_track_holders ();
   const auto ats_size = at_holders.size ();
