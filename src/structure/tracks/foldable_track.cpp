@@ -1,110 +1,72 @@
 // SPDX-FileCopyrightText: © 2021, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/foldable_track.h"
-#include "structure/tracks/track.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/rt_thread_id.h"
+#include "structure/tracks/track_all.h"
 
 namespace zrythm::structure::tracks
 {
-bool
-FoldableTrack::is_status (MixerStatus status) const
+
+FoldableTrackMixin::FoldableTrackMixin (
+  TrackRegistry &track_registry,
+  QObject *      parent) noexcept
+    : QAbstractListModel (parent), track_registry_ (track_registry)
 {
-  return false;
-// TODO
-#if 0
-  z_return_val_if_fail (tracklist_, false);
-  bool all_soloed = size_ > 1;
-  bool has_channel_tracks = false;
-  for (int i = 1; i < size_; i++)
-    {
-      int  pos = pos_ + i;
-      auto child_var = tracklist_->get_track_at_index (pos);
-
-      if (!TrackSpan::derived_from_type_projection<ChannelTrack> (child_var))
-        continue;
-
-      has_channel_tracks = true;
-
-      auto * ch_child =
-        TrackSpan::derived_from_type_transformation<ChannelTrack> (child_var);
-      switch (status)
-        {
-        case MixerStatus::Muted:
-          if (!ch_child->currently_muted ())
-            return false;
-          break;
-        case MixerStatus::Soloed:
-          if (!ch_child->currently_soloed ())
-            return false;
-          break;
-        case MixerStatus::ImpliedSoloed:
-          if (!ch_child->get_implied_soloed ())
-            return false;
-          break;
-        case MixerStatus::Listened:
-          if (!ch_child->currently_listened ())
-            return false;
-          break;
-        }
-    }
-  return has_channel_tracks && all_soloed;
-#endif
 }
 
-void
-FoldableTrack::
-  set_folded (bool folded, bool trigger_undo, bool auto_select, bool fire_events)
+// ========================================================================
+// QML Interface
+// ========================================================================
+
+QHash<int, QByteArray>
+FoldableTrackMixin::roleNames () const
 {
-  z_info ("Setting track {} folded ({})", name_, folded);
-  if (auto_select)
-    {
-      TRACKLIST->get_selection_manager ().select_unique (get_uuid ());
-    }
+  QHash<int, QByteArray> roles;
+  roles[TrackPtrRole] = "track";
+  return roles;
+}
 
-  if (trigger_undo)
-    {
-      auto highest_track_var =
-        TRACKLIST->get_track_span ().get_selected_tracks ().front ();
-      std::visit (
-        [&] (auto &&highest_track) {
-          if (
-            std::ranges::distance (
-              TRACKLIST->get_track_span ().get_selected_tracks ())
-              != 1
-            || dynamic_cast<FoldableTrack *> (highest_track) != this)
-            {
-              throw ZrythmException (
-                "Cannot set track folded: not the highest track");
-            }
-        },
-        highest_track_var);
+int
+FoldableTrackMixin::rowCount (const QModelIndex &parent) const
+{
+  return static_cast<int> (children_.size ());
+}
 
-      try
-        {
-          UNDO_MANAGER->perform (new gui::actions::FoldTracksAction (
-            TrackSpan{ std::ranges::to<std::vector> (
-              TRACKLIST->get_track_span ().get_selected_tracks ()) },
-            folded));
-        }
-      catch (const ZrythmException &e)
-        {
-          e.handle (QObject::tr ("Cannot set track folded"));
-          return;
-        }
-    }
-  else
-    {
-      folded_ = folded;
+QVariant
+FoldableTrackMixin::data (const QModelIndex &index, int role) const
+{
+  if (!index.isValid ())
+    return {};
 
-      if (fire_events)
-        {
-          // EVENTS_PUSH (EventType::ET_TRACK_FOLD_CHANGED, this);
-        }
+  auto track_id = children_.at (index.row ());
+  auto track = track_id.get_object ();
+
+  switch (role)
+    {
+    case TrackPtrRole:
+      return QVariant::fromStdVariant (track);
+    default:
+      return {};
     }
+}
+
+// ========================================================================
+
+void
+to_json (nlohmann::json &j, const FoldableTrackMixin &track)
+{
+  j[FoldableTrackMixin::kChildrenKey] = track.children_;
+  j[FoldableTrackMixin::kFoldedKey] = track.folded_;
+}
+void
+from_json (const nlohmann::json &j, FoldableTrackMixin &track)
+{
+  for (const auto &child_j : j.at (FoldableTrackMixin::kChildrenKey))
+    {
+      TrackUuidReference ref{ track.track_registry_ };
+      from_json (child_j, ref);
+      track.children_.push_back (ref);
+    }
+  j.at (FoldableTrackMixin::kFoldedKey).get_to (track.folded_);
 }
 }

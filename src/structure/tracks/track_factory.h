@@ -29,7 +29,7 @@ public:
     FinalTrackDependencies track_deps,
     gui::SettingsManager  &settings_mgr,
     QObject *              parent = nullptr)
-      : QObject (parent), track_deps_ (track_deps),
+      : QObject (parent), track_deps_ (std::move (track_deps)),
         settings_manager_ (settings_mgr)
   {
   }
@@ -42,7 +42,7 @@ public:
 
   private:
     explicit Builder (FinalTrackDependencies track_deps)
-        : track_deps_ (track_deps)
+        : track_deps_ (std::move (track_deps))
     {
     }
 

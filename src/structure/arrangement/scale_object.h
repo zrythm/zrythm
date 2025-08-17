@@ -11,10 +11,9 @@
 namespace zrythm::structure::arrangement
 {
 
-class ScaleObject final : public QObject, public ArrangerObject
+class ScaleObject final : public ArrangerObject
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ScaleObject)
   Q_PROPERTY (MusicalScale * scale READ scale WRITE setScale NOTIFY scaleChanged)
   Q_PROPERTY (ArrangerObjectMuteFunctionality * mute READ mute CONSTANT)
   QML_ELEMENT

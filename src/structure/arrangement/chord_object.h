@@ -16,10 +16,9 @@ namespace zrythm::structure::arrangement
  *
  * This is normally part of a ChordRegion.
  */
-class ChordObject final : public QObject, public ArrangerObject
+class ChordObject final : public ArrangerObject
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ChordObject)
   Q_PROPERTY (
     int chordDescriptorIndex READ chordDescriptorIndex WRITE
       setChordDescriptorIndex NOTIFY chordDescriptorIndexChanged)

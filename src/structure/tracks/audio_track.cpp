@@ -1,19 +1,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 
-#include <cmath>
-#include <cstdlib>
-
-#include "dsp/port.h"
 #include "dsp/stretcher.h"
-#include "engine/device_io/engine.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/audio_track.h"
-#include "structure/tracks/automation_tracklist.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/objects.h"
 
 namespace zrythm::structure::tracks
 {
@@ -23,68 +12,26 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
         Track::Type::Audio,
         PortType::Audio,
         PortType::Audio,
-        dependencies.to_base_dependencies ()),
-      ProcessableTrack (
-        dependencies.transport_,
-        PortType::Audio,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      ChannelTrack (dependencies),
-      RecordableTrack (
-        dependencies.transport_,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ })
+        TrackFeatures::Automation | TrackFeatures::Lanes | TrackFeatures::Recording,
+        dependencies.to_base_dependencies ())
 {
   color_ = Color (QColor ("#2BD700"));
   /* signal-audio also works */
   icon_name_ = u8"view-media-visualization";
-  automationTracklist ()->setParent (this);
 
-  processor_->set_fill_events_callback (
+  processor_ = make_track_processor (
     [this] (
       const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
       dsp::MidiEventVector *                        midi_events,
       std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
-      for (auto &lane_var : lanes_)
-        {
-          using TrackLaneT = LanedTrackImpl::TrackLaneType;
-          auto * lane = std::get<TrackLaneT *> (lane_var);
-          for (const auto * r : lane->get_children_view ())
-            {
-              TrackProcessor::fill_events_from_region_rt (
-                transport, time_nfo, midi_events, stereo_ports, *r);
-            }
-        }
+      lanes ()->fill_events_callback (
+        transport, time_nfo, midi_events, stereo_ports);
     });
 
   // TODO
   // samplerate_ = samplerate;
   // rt_stretcher_ = dsp::Stretcher::create_rubberband (samplerate_,
   // 2, 1.0, 1.0, true);
-}
-
-bool
-AudioTrack::initialize ()
-{
-  init_channel ();
-  generate_automation_tracks (*this);
-  init_recordable_track ([] () {
-    return ZRYTHM_HAVE_UI
-           && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
-  });
-
-  return true;
-}
-
-void
-AudioTrack::clear_objects ()
-{
-  LanedTrackImpl::clear_objects ();
-  automationTracklist ()->clear_arranger_objects ();
 }
 
 void
@@ -123,20 +70,8 @@ AudioTrack::timestretch_buf (
 }
 
 void
-AudioTrack::get_regions_in_range (
-  std::vector<arrangement::ArrangerObjectUuidReference> &regions,
-  std::optional<signed_frame_t>                          p1,
-  std::optional<signed_frame_t>                          p2)
-{
-  LanedTrackImpl::get_regions_in_range (regions, p1, p2);
-  // AutomatableTrack::get_regions_in_range (regions, p1, p2);
-}
-
-void
 AudioTrack::set_playback_caches ()
 {
-  LanedTrackImpl::set_playback_caches ();
-  // AutomatableTrack::set_playback_caches ();
 }
 
 void
@@ -150,17 +85,5 @@ init_from (
     dsp::Stretcher::create_rubberband (obj.samplerate_, 2, 1.0, 1.0, true);
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
-  init_from (
-    static_cast<ChannelTrack &> (obj),
-    static_cast<const ChannelTrack &> (other), clone_type);
-  init_from (
-    static_cast<ProcessableTrack &> (obj),
-    static_cast<const ProcessableTrack &> (other), clone_type);
-  init_from (
-    static_cast<RecordableTrack &> (obj),
-    static_cast<const RecordableTrack &> (other), clone_type);
-  init_from (
-    static_cast<AudioTrack::LanedTrackImpl &> (obj),
-    static_cast<const AudioTrack::LanedTrackImpl &> (other), clone_type);
 }
 }

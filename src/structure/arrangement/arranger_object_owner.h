@@ -10,12 +10,9 @@
 #define DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES( \
   ClassType, QPropertyName, ChildType) \
 public: \
-  /* ================================================================ */ \
-  /* arrangerObjects */ \
-  /* ================================================================ */ \
   Q_PROPERTY ( \
-    structure::arrangement::ArrangerObjectListModel * QPropertyName READ \
-      QPropertyName CONSTANT) \
+    zrythm::structure::arrangement::ArrangerObjectListModel * QPropertyName \
+      READ QPropertyName CONSTANT) \
   structure::arrangement::ArrangerObjectListModel * QPropertyName () const \
   { \
     return ArrangerObjectOwner<ChildType>::get_model (); \
@@ -69,9 +66,10 @@ public:
   ArrangerObjectUuidReference
   remove_object (this SelfT &self, const ArrangerObject::Uuid &id)
   {
-    auto it_to_remove =
-      std::ranges::find (self.children_, id, &ArrangerObjectUuidReference::id);
-    if (it_to_remove == self.children_.end ())
+    auto it_to_remove = std::ranges::find (
+      self.ArrangerObjectOwner<ChildT>::children_, id,
+      &ArrangerObjectUuidReference::id);
+    if (it_to_remove == self.ArrangerObjectOwner<ChildT>::children_.end ())
       {
         throw std::runtime_error (
           fmt::format ("object to remove not found: {}", id));
@@ -79,9 +77,9 @@ public:
     z_trace ("removing object: {}", id);
 
     auto       obj_ref = *it_to_remove;
-    const auto remove_idx =
-      std::distance (self.children_.begin (), it_to_remove);
-    self.list_model_->removeRows (remove_idx, 1);
+    const auto remove_idx = std::distance (
+      self.ArrangerObjectOwner<ChildT>::children_.begin (), it_to_remove);
+    self.ArrangerObjectOwner<ChildT>::list_model_->removeRows (remove_idx, 1);
     return obj_ref;
   }
 

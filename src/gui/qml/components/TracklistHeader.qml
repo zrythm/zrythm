@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick.Controls
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import ZrythmGui
+import Zrythm
+import ZrythmStyle
 
 ToolBar {
   id: root

@@ -1,15 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "zrythm-config.h"
-
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/arrangement/region.h"
 #include "structure/tracks/instrument_track.h"
-#include "structure/tracks/track.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::structure::tracks
 {
@@ -18,38 +10,24 @@ InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
         Track::Type::Instrument,
         PortType::Midi,
         PortType::Audio,
-        dependencies.to_base_dependencies ()),
-      ProcessableTrack (
-        dependencies.transport_,
-        PortType::Midi,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      ChannelTrack (dependencies),
-      RecordableTrack (
-        dependencies.transport_,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ })
+        TrackFeatures::Automation | TrackFeatures::Lanes
+          | TrackFeatures::PianoRoll | TrackFeatures::Recording,
+        dependencies.to_base_dependencies ())
 {
   color_ = Color (QColor ("#FF9616"));
   icon_name_ = u8"instrument";
-  automationTracklist ()->setParent (this);
-}
 
-bool
-InstrumentTrack::initialize ()
-{
-  init_channel ();
-  generate_automation_tracks (*this);
-  init_recordable_track ([] () {
-    return ZRYTHM_HAVE_UI
-           && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
-  });
-
-  return true;
+  processor_ = make_track_processor (
+    [this] (
+      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
+      dsp::MidiEventVector *                        midi_events,
+      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
+      lanes ()->fill_events_callback (
+        transport, time_nfo, midi_events, stereo_ports);
+    },
+    [this] (dsp::MidiEventVector &events) {
+      pianoRollTrackMixin ()->transform_midi_inputs_func (events);
+    });
 }
 
 void
@@ -60,23 +38,5 @@ init_from (
 {
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
-  init_from (
-    static_cast<ProcessableTrack &> (obj),
-    static_cast<const ProcessableTrack &> (other), clone_type);
-  init_from (
-    static_cast<ChannelTrack &> (obj),
-    static_cast<const ChannelTrack &> (other), clone_type);
-  init_from (
-    static_cast<GroupTargetTrack &> (obj),
-    static_cast<const GroupTargetTrack &> (other), clone_type);
-  init_from (
-    static_cast<RecordableTrack &> (obj),
-    static_cast<const RecordableTrack &> (other), clone_type);
-  init_from (
-    static_cast<LanedTrackImpl<MidiLane> &> (obj),
-    static_cast<const LanedTrackImpl<MidiLane> &> (other), clone_type);
-  init_from (
-    static_cast<PianoRollTrack &> (obj),
-    static_cast<const PianoRollTrack &> (other), clone_type);
 }
 }

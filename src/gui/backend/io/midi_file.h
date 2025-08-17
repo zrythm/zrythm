@@ -100,6 +100,78 @@ public:
     int                                       midi_version,
     bool                                      export_full);
 
+  /**
+   * Writes the lane to the given MIDI sequence.
+   *
+   * @param lanes_as_tracks Export lanes as separate MIDI tracks.
+   * @param use_track_or_lane_pos Whether to use the track position (or lane
+   * position if @ref lanes_as_tracks is true) in the MIDI data. The MIDI track
+   * will be set to 1 if false.
+   * @param events Track events, if not using lanes as tracks.
+   * @param start Events before this position (global ticks) will be skipped.
+   * @param end Events after this position (global ticks) will be skipped.
+   */
+  static void export_midi_lane_to_sequence (
+    juce::MidiMessageSequence          &message_sequence,
+    const structure::tracks::Tracklist &tracklist,
+    const structure::tracks::Track     &track,
+    const structure::tracks::TrackLane &lane,
+    dsp::MidiEventVector *              events,
+    std::optional<double>               start,
+    std::optional<double>               end,
+    bool                                lanes_as_tracks,
+    bool                                use_track_or_lane_pos);
+
+  /**
+   * Writes the track to the given MIDI file.
+   *
+   * @param use_track_pos Whether to use the track position in
+   *   the MIDI data. The track will be set to 1 if false.
+   * @param events Track events, if not using lanes as tracks or
+   *   using track position.
+   * @param lanes_as_tracks Export lanes as separate tracks (only possible with
+   * MIDI type 1). This will calculate a unique MIDI track number for the
+   * region's lane.
+   * @param use_track_or_lane_pos Whether to use the track/lane position in the
+   * MIDI data. The MIDI track will be set to 1 if false.
+   * @param start Events before this position will be skipped.
+   * @param end Events after this position will be skipped.
+   */
+  static void export_track_to_sequence (
+    juce::MidiMessageSequence          &message_sequence,
+    const structure::tracks::Tracklist &tracklist,
+    const structure::tracks::Track     &track,
+    dsp::MidiEventVector *              events,
+    std::optional<double>               start,
+    std::optional<double>               end,
+    int                                 track_index,
+    bool                                lanes_as_tracks,
+    bool                                use_track_pos)
+  {
+// TODO
+#if 0
+  std::unique_ptr<dsp::MidiEventVector> own_events;
+  if (!lanes_as_tracks && use_track_pos)
+    {
+      z_return_if_fail (!events);
+      midiTrackAddText (mf, track_index, textTrackName, name_.c_str ());
+      own_events = std::make_unique<dsp::MidiEventVector> ();
+    }
+
+  for (auto &lane : laned_track_mixin_->lanes ())
+    {
+      lane->write_to_midi_file (
+        mf, own_events ? own_events.get () : events, start, end,
+        lanes_as_tracks, use_track_pos);
+    }
+
+  if (own_events)
+    {
+      own_events->write_to_midi_file (mf, midi_track_pos);
+    }
+#endif
+  }
+
 private:
   juce::MidiFile midi_file_;
   Format         format_ = Format::MIDI0;

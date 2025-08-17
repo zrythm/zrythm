@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_COLOR_H__
-#define __UTILS_COLOR_H__
+#pragma once
 
 #include "utils/serialization.h"
 
@@ -169,5 +168,3 @@ public:
 };
 
 }; // namespace zrythm::utils
-
-#endif

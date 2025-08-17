@@ -182,6 +182,8 @@ public:
 
   void get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) override
   {
+// TODO
+#if 0
     if (tls_before_)
       {
         TrackSpan{ *tls_before_ }.get_plugins (plugins);
@@ -194,6 +196,7 @@ public:
       {
         TrackSpan{ *foldable_tls_before_ }.get_plugins (plugins);
       }
+#endif
   }
 
   friend void init_from (
@@ -614,22 +617,23 @@ public:
 class TrackLaneIntAction : public TracklistSelectionsAction
 {
 protected:
-  template <structure::arrangement::RegionObject T>
   TrackLaneIntAction (
-    EditType                                   edit_type,
-    const structure::tracks::TrackLaneImpl<T> &track_lane,
-    int                                        value_after)
+    EditType                            edit_type,
+    const structure::tracks::TrackLane &track_lane,
+    int                                 value_after)
       : TracklistSelectionsAction (
           Type::Edit,
           std::nullopt,
           std::nullopt,
           nullptr,
-          convert_to_variant<TrackPtrVariant> (track_lane.get_track ()),
+          TrackPtrVariant{}, // TODO
+          // convert_to_variant<TrackPtrVariant> (track_lane.get_track ()),
           (Track::Type) 0,
           nullptr,
           nullptr,
           -1,
-          track_lane.get_index_in_track (),
+          -1, // TODO
+          // track_lane.get_index_in_track (),
           nullptr,
           -1,
           edit_type,
@@ -646,10 +650,9 @@ protected:
 class MuteTrackLaneAction : public TrackLaneIntAction
 {
 public:
-  template <structure::arrangement::RegionObject T>
   MuteTrackLaneAction (
-    const structure::tracks::TrackLaneImpl<T> &track_lane,
-    bool                                       mute_new)
+    const structure::tracks::TrackLane &track_lane,
+    bool                                mute_new)
       : TrackLaneIntAction (EditType::MuteLane, track_lane, mute_new)
   {
   }
@@ -676,10 +679,9 @@ public:
 class SoloTrackLaneAction : public TrackLaneIntAction
 {
 public:
-  template <structure::arrangement::RegionObject T>
   SoloTrackLaneAction (
-    const structure::tracks::TrackLaneImpl<T> &track_lane,
-    bool                                       solo_new)
+    const structure::tracks::TrackLane &track_lane,
+    bool                                solo_new)
       : TrackLaneIntAction (EditType::SoloLane, track_lane, solo_new)
   {
   }
@@ -923,16 +925,16 @@ public:
 class RenameTrackLaneAction : public TracklistSelectionsAction
 {
 public:
-  template <structure::arrangement::RegionObject T>
   RenameTrackLaneAction (
-    const structure::tracks::TrackLaneImpl<T> &track_lane,
-    const utils::Utf8String                   &name)
+    const structure::tracks::TrackLane &track_lane,
+    const utils::Utf8String            &name)
       : TracklistSelectionsAction (
           Type::Edit,
           std::nullopt,
           std::nullopt,
           nullptr,
-          convert_to_variant<TrackPtrVariant> (track_lane.get_track ()),
+          TrackPtrVariant{}, // TODO
+          // convert_to_variant<TrackPtrVariant> (track_lane.get_track ()),
           {},
           nullptr,
           nullptr,

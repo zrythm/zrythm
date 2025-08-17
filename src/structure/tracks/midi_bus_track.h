@@ -3,54 +3,35 @@
 
 #pragma once
 
-#include "structure/tracks/channel_track.h"
+#include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
 {
 /**
- * @class MidiBusTrack
  * @brief A track that processes MIDI data.
- *
- * The MidiBusTrack class is a concrete implementation of the ProcessableTrack,
- * ChannelTrack interfaces. It represents a track that processes MIDI data.
  */
-class MidiBusTrack final
-    : public QObject,
-      public ChannelTrack,
-      public utils::InitializableObject<MidiBusTrack>
+class MidiBusTrack : public Track
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES (MidiBusTrack)
-  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (MidiBusTrack)
-  DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MidiBusTrack)
-
-  friend class InitializableObject;
-
-  DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiBusTrack)
+  QML_UNCREATABLE ("")
 
 public:
+  MidiBusTrack (FinalTrackDependencies dependencies);
+
   friend void init_from (
     MidiBusTrack          &obj,
     const MidiBusTrack    &other,
     utils::ObjectCloneType clone_type);
 
-  void temporary_virtual_method_hack () const override { }
-
 private:
   friend void to_json (nlohmann::json &j, const MidiBusTrack &track)
   {
     to_json (j, static_cast<const Track &> (track));
-    to_json (j, static_cast<const ProcessableTrack &> (track));
-    to_json (j, static_cast<const ChannelTrack &> (track));
   }
   friend void from_json (const nlohmann::json &j, MidiBusTrack &track)
   {
     from_json (j, static_cast<Track &> (track));
-    from_json (j, static_cast<ProcessableTrack &> (track));
-    from_json (j, static_cast<ChannelTrack &> (track));
   }
-
-  bool initialize ();
 };
 }

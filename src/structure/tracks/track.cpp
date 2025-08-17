@@ -1,21 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <algorithm>
+#include <utility>
 
-#include "dsp/midi_event.h"
-#include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/tracks/automation_track.h"
-#include "structure/tracks/channel.h"
-#include "structure/tracks/track_all.h"
-#include "structure/tracks/track_processor.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/logger.h"
-#include "utils/string.h"
+#include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
 {
@@ -25,17 +13,40 @@ Track::Track (
   Type                  type,
   PortType              in_signal_type,
   PortType              out_signal_type,
+  TrackFeatures         enabled_features,
   BaseTrackDependencies dependencies)
-    : base_dependencies_ (dependencies), type_ (type),
-      in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
+    : base_dependencies_ (std::move (dependencies)), type_ (type),
+      features_ (enabled_features), in_signal_type_ (in_signal_type),
+      out_signal_type_ (out_signal_type)
 {
   z_debug ("creating {} track", type);
-}
 
-Track *
-Track::from_variant (const TrackPtrVariant &variant)
-{
-  return std::visit ([&] (auto &&t) -> Track * { return t; }, variant);
+  if (
+    out_signal_type == dsp::PortType::Audio
+    || out_signal_type == dsp::PortType::Midi)
+    {
+      channel_ = make_channel ();
+    }
+  if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::Modulators))
+    {
+      modulators_ = make_modulators ();
+    }
+  if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::Automation))
+    {
+      automation_tracklist_ = make_automation_tracklist ();
+    }
+  if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::Lanes))
+    {
+      lanes_ = make_lanes ();
+    }
+  if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::Recording))
+    {
+      recordable_track_mixin_ = make_recordable_track_mixin ();
+    }
+  if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::PianoRoll))
+    {
+      piano_roll_track_mixin_ = make_piano_roll_track_mixin ();
+    }
 }
 
 void
@@ -48,7 +59,6 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   obj.name_ = other.name_;
   obj.icon_name_ = other.icon_name_;
   obj.visible_ = other.visible_;
-  obj.filtered_ = other.filtered_;
   obj.main_height_ = other.main_height_;
   obj.enabled_ = other.enabled_;
   obj.color_ = other.color_;
@@ -56,6 +66,11 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   obj.out_signal_type_ = other.out_signal_type_;
   obj.comment_ = other.comment_;
   obj.frozen_clip_id_ = other.frozen_clip_id_;
+  init_from (*obj.processor_, *other.processor_, clone_type);
+  init_from (
+    *obj.automation_tracklist_, *other.automation_tracklist_, clone_type);
+  utils::clone_unique_ptr_container (
+    obj.modulator_macro_processors_, other.modulator_macro_processors_);
 }
 
 utils::Utf8String
@@ -77,275 +92,252 @@ Track::type_get_from_plugin_descriptor (
     return Track::Type::AudioBus;
 }
 
-#if 0
-static void
-freeze_progress_close_cb (ExportData * data)
+uint8_t
+Track::get_midi_ch (const arrangement::MidiRegion &midi_region) const
 {
-  g_thread_join (data->thread);
+  assert (lanes_);
+  assert (piano_roll_track_mixin_);
 
-  Track * self = (Track *) g_ptr_array_index (data->tracks, 0);
-
-  exporter_post_export (data->info, data->conns, data->state);
-
-  /* assert exporting is finished */
-  z_return_if_fail (!AUDIO_ENGINE->exporting);
-
-  if (
-    data->info->progress_info->get_completion_type ()
-    == ProgressInfo::CompletionType::SUCCESS)
+  // return lane MIDI channel if set
+  for (const auto &lane : lanes_->lanes_view ())
     {
-      /* move the temporary file to the pool */
-      GError *    err = NULL;
-      FileAudioSource * clip = audio_clip_new_from_file (data->info->file_uri, &err);
-      if (!clip)
+      auto midi_regions = lane->arrangement::ArrangerObjectOwner<
+        arrangement::MidiRegion>::get_children_view ();
+      auto it = std::ranges::find (midi_regions, &midi_region);
+      if (it != midi_regions.end () && lane->midiChannel () > 0)
         {
-          HANDLE_ERROR (
-            err, QObject::tr ("Failed creating audio clip from file at {}"),
-            data->info->file_uri);
-          return;
+          return lane->midiChannel ();
         }
-      audio_pool_add_clip (AUDIO_POOL, clip);
-      err = NULL;
-      bool success =
-        audio_clip_write_to_pool (clip, F_NO_PARTS, F_NOT_BACKUP, &err);
-      if (!success)
-        {
-          HANDLE_ERROR (
-            err, "Failed to write frozen audio for track '{}' to pool",
-            self->name);
-          return;
-        }
-      self->pool_id_ = clip->pool_id_;
     }
 
-  if (g_file_test (data->info->file_uri, G_FILE_TEST_IS_REGULAR))
+  // otherwise return piano roll's channel
+  return piano_roll_track_mixin_->midiChannel ();
+}
+
+utils::QObjectUniquePtr<TrackProcessor>
+Track::make_track_processor (
+  std::optional<TrackProcessor::FillEventsCallback> fill_events_cb,
+  std::optional<TrackProcessor::TransformMidiInputsFunc>
+    transform_midi_inputs_func,
+  std::optional<TrackProcessor::AppendMidiInputsToOutputsFunc>
+    append_midi_inputs_to_outputs_func)
+{
+  return utils::make_qobject_unique<TrackProcessor> (
+    base_dependencies_.transport_, in_signal_type_,
+    [this] () { return get_name (); }, [this] () { return enabled (); },
+    has_piano_roll () || is_chord (), has_piano_roll (), is_audio (),
+    TrackProcessor::ProcessorBaseDependencies{
+      .port_registry_ = base_dependencies_.port_registry_,
+      .param_registry_ = base_dependencies_.param_registry_ },
+    fill_events_cb, transform_midi_inputs_func,
+    append_midi_inputs_to_outputs_func, this);
+}
+
+utils::QObjectUniquePtr<AutomationTracklist>
+Track::make_automation_tracklist ()
+{
+  return utils::make_qobject_unique<AutomationTracklist> (
+    AutomationTrackHolder::Dependencies{
+      .tempo_map_ = base_dependencies_.tempo_map_,
+      .file_audio_source_registry_ =
+        base_dependencies_.file_audio_source_registry_,
+      .port_registry_ = base_dependencies_.port_registry_,
+      .param_registry_ = base_dependencies_.param_registry_,
+      .object_registry_ = base_dependencies_.obj_registry_ },
+    this);
+}
+
+utils::QObjectUniquePtr<Channel>
+Track::make_channel ()
+{
+  return utils::make_qobject_unique<Channel> (
+    get_plugin_registry (),
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = get_port_registry (),
+      .param_registry_ = get_param_registry () },
+    out_signal_type_, [&] () { return get_name (); }, is_master (),
+    [this] (bool fader_solo_status) {
+      // Effectively muted if other track(s) is soloed and this isn't
+      return base_dependencies_.soloed_tracks_exist_getter_ ()
+             && !fader_solo_status && !is_master ();
+    },
+    this);
+}
+
+utils::QObjectUniquePtr<plugins::PluginList>
+Track::make_modulators ()
+{
+  return utils::make_qobject_unique<plugins::PluginList> (
+    base_dependencies_.plugin_registry_, this);
+}
+
+utils::QObjectUniquePtr<TrackLaneList>
+Track::make_lanes ()
+{
+  auto ret = utils::make_qobject_unique<TrackLaneList> (
+    base_dependencies_.obj_registry_,
+    base_dependencies_.file_audio_source_registry_, this);
+  ret->create_missing_lanes (0);
+  return ret;
+}
+
+utils::QObjectUniquePtr<RecordableTrackMixin>
+Track::make_recordable_track_mixin ()
+{
+  return utils::make_qobject_unique<RecordableTrackMixin> (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = get_port_registry (),
+      .param_registry_ = get_param_registry () },
+    [this] () { return name_; }, base_dependencies_.autoarm_enabled_getter_,
+    this);
+  QObject::connect (
+    this, &Track::selectedChanged, recordable_track_mixin_.get (),
+    &RecordableTrackMixin::onRecordableTrackSelectedChanged);
+}
+
+utils::QObjectUniquePtr<PianoRollTrackMixin>
+Track::make_piano_roll_track_mixin ()
+{
+  return utils::make_qobject_unique<PianoRollTrackMixin> (this);
+}
+
+void
+Track::generate_basic_automation_tracks ()
+{
+  if (!automation_tracklist_)
+    return;
+
+  std::vector<utils::QObjectUniquePtr<AutomationTrack>> ats;
+
+  const auto gen = [&] (const dsp::ProcessorBase &processor) {
+    generate_automation_tracks_for_processor (ats, processor);
+  };
+
+  if (channel_)
     {
-      io_remove (data->info->file_uri);
+      gen (*channel_->fader ());
     }
 
-  self->frozen = true;
-  // EVENTS_PUSH (EventType::ET_TRACK_FREEZE_CHANGED, self);
+  if (processor_)
+    {
+      gen (*processor_);
+    }
+
+  // insert the generated automation tracks
+  auto * atl = automationTracklist ();
+  for (auto &at : ats)
+    {
+      atl->add_automation_track (std::move (at));
+    }
+
+  // mark first automation track as created & visible
+  auto * ath = atl->get_first_invisible_automation_track_holder ();
+  if (ath != nullptr)
+    {
+      ath->created_by_user_ = true;
+      ath->setVisible (true);
+    }
+
+  z_debug ("generated automation tracks for '{}'", name ());
+}
+
+double
+Track::get_full_visible_height () const
+{
+  double height = main_height_;
+
+  if (lanes_)
+    {
+      height += lanes_->get_visible_lane_heights ();
+    }
+  if (automation_tracklist_)
+    {
+      if (automation_tracklist_->automationVisible ())
+        {
+          for (
+            const auto &at_holder :
+            const_cast<const AutomationTracklist &> (*automation_tracklist_)
+              .automation_track_holders ())
+            {
+              if (at_holder->visible ())
+                height += at_holder->height ();
+            }
+        }
+    }
+  return height;
 }
 
 bool
-track_freeze (Track * self, bool freeze, GError ** error)
+Track::multiply_heights (double multiplier, bool visible_only, bool check_only)
 {
-  z_info ("{}freezing {}...", freeze ? "" : "un", self->name);
+  if (main_height_ * multiplier < MIN_HEIGHT)
+    return false;
 
-  if (freeze)
+  if (!check_only)
     {
-      ExportSettings * info = export_settings_new ();
-      ExportData *     data = export_data_new (nullptr, info);
-      data->tracks = g_ptr_array_new ();
-      g_ptr_array_add (data->tracks, self);
-      self->bounce_to_master = true;
-      track_mark_for_bounce (
-        self, F_BOUNCE, F_MARK_REGIONS, F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
-      data->info->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
-      export_settings_set_bounce_defaults (
-        data->info, Exporter::Format::WAV, "", self->name);
-
-      data->conns = exporter_prepare_tracks_for_export (data->info, data->state);
-
-      /* start exporting in a new thread */
-      data->thread = g_thread_new (
-        "bounce_thread", (GThreadFunc) exporter_generic_export_thread,
-        data->info);
-      Exporter exporter (*info);
-      data->thread = exporter.begin_generic_thread ();
-
-      /* create a progress dialog and block */
-      ExportProgressDialogWidget * progress_dialog =
-        export_progress_dialog_widget_new (
-          data, true, freeze_progress_close_cb, false, F_CANCELABLE);
-      adw_dialog_present (
-        ADW_DIALOG (progress_dialog), GTK_WIDGET (MAIN_WINDOW));
-      return true;
+      main_height_ *= multiplier;
     }
-  else
-    {
-      /* FIXME */
-      /*audio_pool_remove_clip (*/
-      /*AUDIO_POOL, self->pool_id_, true);*/
 
-      self->frozen = false;
-      // EVENTS_PUSH (EventType::ET_TRACK_FREEZE_CHANGED, self);
+  if (lanes_)
+    {
+      if (!visible_only || lanes_->lanesVisible ())
+        {
+          for (const auto &lane : lanes_->lanes_view ())
+            {
+              if (lane->height () * multiplier < MIN_HEIGHT)
+                {
+                  return false;
+                }
+
+              if (!check_only)
+                {
+                  lane->setHeight (lane->height () * multiplier);
+                }
+            }
+        }
+    }
+  if (automation_tracklist_)
+    {
+      if (!visible_only || automation_tracklist_->automationVisible ())
+        {
+          for (
+            const auto &ath :
+            const_cast<const AutomationTracklist &> (*automation_tracklist_)
+              .automation_track_holders ())
+            {
+              if (visible_only && !ath->visible ())
+                continue;
+
+              if (ath->height () * multiplier < MIN_HEIGHT)
+                {
+                  return false;
+                }
+
+              if (!check_only)
+                {
+                  ath->setHeight (ath->height () * multiplier);
+                }
+            }
+        }
     }
 
   return true;
 }
-#endif
-
-void
-Track::unselect_all ()
-{
-  std::vector<ArrangerObjectPtrVariant> objs;
-  append_objects (objs);
-  for (auto obj_var : objs)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          auto selection_mgr =
-            arrangement::ArrangerObjectFactory::get_instance ()
-              ->get_selection_manager_for_object (*obj);
-          selection_mgr.remove_from_selection (obj->get_uuid ());
-        },
-        obj_var);
-    }
-}
-
-void
-Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
-{
-  std::visit (
-    [&] (auto &&self) {
-      using TrackT = base_type<decltype (self)>;
-
-      if constexpr (std::derived_from<TrackT, LanedTrack>)
-        {
-          for (auto &lane_var : self->lanes_)
-            {
-              using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
-              auto lane = std::get<TrackLaneT *> (lane_var);
-              std::ranges::copy (
-                lane->get_children_view (), std::back_inserter (objs));
-            }
-        }
-
-      if constexpr (std::is_same_v<TrackT, ChordTrack>)
-        {
-          std::ranges::copy (
-            self->arrangement::template ArrangerObjectOwner<
-              arrangement::ChordRegion>::get_children_view (),
-            std::back_inserter (objs));
-          std::ranges::copy (
-            self->arrangement::template ArrangerObjectOwner<
-              arrangement::ScaleObject>::get_children_view (),
-            std::back_inserter (objs));
-        }
-      else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
-        {
-          std::ranges::copy (
-            self->get_children_view (), std::back_inserter (objs));
-        }
-      if constexpr (AutomatableTrack<TrackT>)
-        {
-          for (auto * at : self->automationTracklist ()->automation_tracks ())
-            {
-              std::ranges::copy (
-                at->get_children_view (), std::back_inserter (objs));
-            }
-        }
-    },
-    convert_to_variant<TrackPtrVariant> (const_cast<Track *> (this)));
-}
 
 bool
-Track::set_name_with_action_full (const utils::Utf8String &name)
+Track::contains_uninstantiated_plugin () const
 {
-  try
-    {
-      UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
-        convert_to_variant<TrackPtrVariant> (this), *PORT_CONNECTIONS_MGR,
-        name));
-      return true;
-    }
-  catch (const ZrythmException &ex)
-    {
-      ex.handle (QObject::tr ("Failed to rename track"));
-      return false;
-    }
-}
-
-void
-Track::set_name_with_action (const utils::Utf8String &name)
-{
-  set_name_with_action_full (name);
-}
-
-void
-Track::add_region_if_in_range (
-  std::optional<signed_frame_t>                          p1,
-  std::optional<signed_frame_t>                          p2,
-  std::vector<arrangement::ArrangerObjectUuidReference> &regions,
-  arrangement::ArrangerObjectUuidReference               region)
-{
-  if (!p1 && !p2)
-    {
-      regions.push_back (region);
-      return;
-    }
-
-  std::visit (
-    [&] (auto &&r) {
-      if constexpr (arrangement::RegionObject<base_type<decltype (r)>>)
-        {
-          if (r->regionMixin ()->bounds ()->is_hit_by_range ({ *p1, *p2 }))
-            {
-              regions.push_back (region);
-            }
-        }
-    },
-    region.get_object ());
-}
-
-utils::Utf8String
-Track::get_unique_name (const Tracklist &tracklist, const utils::Utf8String &name)
-{
-  auto new_name = name;
-  while (!tracklist.track_name_is_unique (new_name, get_uuid ()))
-    {
-      auto [ending_num, name_without_num] = new_name.get_int_after_last_space ();
-      if (ending_num == -1)
-        {
-          new_name += u8" 1";
-        }
-      else
-        {
-          new_name = utils::Utf8String::from_utf8_encoded_string (
-            fmt::format ("{} {}", name_without_num, ending_num + 1));
-        }
-    }
-  return new_name;
-}
-
-void
-Track::set_name (
-  const Tracklist         &tracklist,
-  const utils::Utf8String &name,
-  bool                     pub_events)
-{
-  auto new_name = get_unique_name (tracklist, name);
-  name_ = new_name;
-
-  if (pub_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRACK_NAME_CHANGED, this);
-    }
-}
-
-int
-Track::get_total_bars (
-  const engine::session::Transport &transport,
-  int                               total_bars) const
-{
-  const auto &tempo_map = PROJECT->get_tempo_map ();
-  double      pos_ticks = static_cast<double> (
-    tempo_map.musical_position_to_tick ({ .bar = total_bars }));
-
-  std::vector<ArrangerObjectPtrVariant> objs;
-  append_objects (objs);
-
-  for (auto obj_var : objs)
-    {
-      auto end_pos_ticks = arrangement::ArrangerObjectSpan::
-        end_position_ticks_with_start_position_fallback_projection (obj_var);
-      pos_ticks = std::max (end_pos_ticks, pos_ticks);
-    }
-
-  int new_total_bars =
-    tempo_map.tick_to_musical_position (static_cast<int64_t> (pos_ticks)).bar;
-  return std::max (new_total_bars, total_bars);
+  std::vector<plugins::PluginPtrVariant> plugins;
+  collect_plugins (plugins);
+  return std::ranges::any_of (
+    plugins | std::views::transform ([] (const auto &pl_var) {
+      return std::visit (
+        [] (auto &&pl) -> plugins::Plugin * { return pl; }, pl_var);
+    }),
+    [] (const auto &pl) {
+      return pl->instantiationStatus ()
+             != plugins::Plugin::InstantiationStatus::Successful;
+    });
 }
 
 void
@@ -353,8 +345,6 @@ Track::set_caches (CacheType types)
 {
   if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
     {
-      z_return_if_fail (AUDIO_ENGINE->run_.load () == false);
-
       set_playback_caches ();
     }
 
@@ -374,81 +364,20 @@ Track::set_caches (CacheType types)
     }
 }
 
-#if 0
-GMenu *
-Track::generate_edit_context_menu (int num_selected)
+void
+Track::collect_timeline_objects (
+  std::vector<ArrangerObjectPtrVariant> &objects) const
 {
-  GMenu *     edit_submenu = g_menu_new ();
-  GMenuItem * menuitem;
-
-  if (type_is_copyable (type_))
+  if (automation_tracklist_)
     {
-      char * str;
-      /* delete track */
-      if (num_selected == 1)
-        str = g_strdup (QObject::tr ("_Delete Track"));
-      else
-        str = g_strdup (QObject::tr ("_Delete Tracks"));
-      menuitem = g_menu_item_new (str, "app.delete-selected-tracks");
-      g_menu_item_set_attribute (
-        menuitem, "verb-icon", "s",
-        "gnome-icon-library-user-trash-full-symbolic");
-      g_free (str);
-      g_menu_append_item (edit_submenu, menuitem);
-
-      /* duplicate track */
-      if (num_selected == 1)
-        str = g_strdup (QObject::tr ("Duplicate Track"));
-      else
-        str = g_strdup (QObject::tr ("Duplicate Tracks"));
-      menuitem = g_menu_item_new (str, "app.duplicate-selected-tracks");
-      g_menu_item_set_attribute (
-        menuitem, "verb-icon", "s", "gnome-icon-library-copy-symbolic");
-      g_free (str);
-      g_menu_append_item (edit_submenu, menuitem);
+      // TODO
     }
-
-    /* add regions TODO */
-#  if 0
-  if (track->type == Track::Type::INSTRUMENT)
+  if (lanes_)
     {
-      menuitem = g_menu_item_new (
-        _("Add Region"), "app.add-region");
-      g_menu_item_set_attribute (menuitem, "verb-icon", "s", "add");
-      g_menu_append_item (edit_submenu, menuitem);
+      // TODO
     }
-#  endif
-
-  menuitem = g_menu_item_new (
-    num_selected == 1 ? QObject::tr ("Hide Track") : QObject::tr ("Hide Tracks"),
-    "app.hide-selected-tracks");
-  g_menu_item_set_attribute (
-    menuitem, "verb-icon", "s", "gnome-icon-library-eye-not-looking-symbolic");
-  g_menu_append_item (edit_submenu, menuitem);
-
-  menuitem = g_menu_item_new (
-    num_selected == 1 ? QObject::tr ("Pin/Unpin Track") : QObject::tr ("Pin/Unpin Tracks"),
-    "app.pin-selected-tracks");
-  g_menu_item_set_attribute (
-    menuitem, "verb-icon", "s", "gnome-icon-library-pin-symbolic");
-  g_menu_append_item (edit_submenu, menuitem);
-
-  menuitem = g_menu_item_new (QObject::tr ("Change Color..."), "app.change-track-color");
-  g_menu_item_set_attribute (
-    menuitem, "verb-icon", "s", "gnome-icon-library-color-picker-symbolic");
-  g_menu_append_item (edit_submenu, menuitem);
-
-  if (num_selected == 1)
-    {
-      menuitem = g_menu_item_new (QObject::tr ("Rename..."), "app.rename-track");
-      g_menu_item_set_attribute (
-        menuitem, "verb-icon", "s", "gnome-icon-library-text-insert-symbolic");
-      g_menu_append_item (edit_submenu, menuitem);
-    }
-
-  return edit_submenu;
+  collect_additional_timeline_objects (objects);
 }
-#endif
 
 void
 from_json (const nlohmann::json &j, Track &track)
@@ -466,5 +395,23 @@ from_json (const nlohmann::json &j, Track &track)
   j.at (Track::kCommentKey).get_to (track.comment_);
   // TODO
   // j.at (Track::kFrozenClipIdKey).get_to (track.frozen_clip_id_);
+  j[Track::kProcessorKey].get_to (*track.processor_);
+  j[Track::kAutomationTracklistKey].get_to (*track.automation_tracklist_);
+  j.at (Track::kModulatorsKey).get_to (*track.modulators_);
+  for (
+    const auto &[index, macro_proc_json] :
+    utils::views::enumerate (j.at (Track::kModulatorMacroProcessorsKey)))
+    {
+      auto macro_proc = utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
+        dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
+          .port_registry_ = track.base_dependencies_.port_registry_,
+          .param_registry_ = track.base_dependencies_.param_registry_ },
+        index, &track);
+      from_json (macro_proc_json, *macro_proc);
+      track.modulator_macro_processors_.push_back (std::move (macro_proc));
+    }
+  j[Track::kTrackLanesKey].get_to (*track.lanes_);
+  j[Track::kRecordableTrackMixinKey].get_to (*track.recordable_track_mixin_);
+  j[Track::kPianoRollTrackMixinKey].get_to (*track.piano_roll_track_mixin_);
 }
 }

@@ -241,7 +241,7 @@ struct fmt::formatter<utils::QObjectUniquePtr<T>>
   template <typename FormatContext>
   auto format (const utils::QObjectUniquePtr<T> &opt, FormatContext &ctx) const
   {
-    if (!opt)
+    if (opt)
       {
         return fmt::formatter<std::string_view>::format (
           fmt::format ("{}", *opt), ctx);

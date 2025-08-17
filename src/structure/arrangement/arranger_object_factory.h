@@ -37,8 +37,8 @@ class ArrangerObjectFactory : public QObject
   using ChordRegion = structure::arrangement::ChordRegion;
   using Marker = structure::arrangement::Marker;
   using ArrangerObject = structure::arrangement ::ArrangerObject;
-  using MidiLane = structure::tracks::MidiLane;
-  using AudioLane = structure::tracks::AudioLane;
+  using TrackLane = structure::tracks::TrackLane;
+  using Track = structure::tracks::Track;
 
 public:
   ArrangerObjectFactory () = delete;
@@ -364,35 +364,35 @@ private:
   /**
    * @brief Used for MIDI/Audio regions.
    */
-  template <structure::tracks::TrackLaneSubclass TrackLaneT>
-  void add_laned_object (TrackLaneT &lane, auto obj_ref)
+  void add_laned_object (
+    Track                      &track,
+    TrackLane                  &lane,
+    ArrangerObjectUuidReference obj_ref)
   {
-    using RegionT = typename TrackLaneT::RegionT;
-    tracks::TrackUuid track_id;
     std::visit (
-      [&] (auto &&track) {
+      [&] (auto &&obj) {
+        using ObjectT = base_type<decltype (obj)>;
         if constexpr (
-          std::is_same_v<
-            typename base_type<decltype (track)>::TrackLaneType, TrackLaneT>)
+          std::is_same_v<ObjectT, MidiRegion>
+          || std::is_same_v<ObjectT, AudioRegion>)
           {
-            track->template add_region<RegionT> (
-              obj_ref, nullptr, lane.get_index_in_track (), true);
-            track_id = track->get_uuid ();
+            obj->regionMixin ()->name ()->setName (
+              track.generate_name_for_region (*obj).to_qstring ());
+
+            lane.ArrangerObjectOwner<ObjectT>::add_object (obj_ref);
+            set_selection_handler_to_object (*obj);
+
+            timeline_selections_manager_.append_to_selection (obj->get_uuid ());
+            clip_editor_.set_region (obj->get_uuid (), track.get_uuid ());
           }
       },
-      convert_to_variant<structure::tracks::LanedTrackPtrVariant> (
-        lane.get_track ()));
-    auto * obj = std::get<RegionT *> (obj_ref.get_object ());
-    set_selection_handler_to_object (*obj);
-    timeline_selections_manager_.append_to_selection (obj->get_uuid ());
-    clip_editor_.set_region (obj->get_uuid (), track_id);
+      obj_ref.get_object ());
   }
 
   /**
    * @brief To be used by the backend.
    */
   auto create_audio_region_with_clip (
-    AudioLane                        &lane,
     dsp::FileAudioSourceUuidReference clip_id,
     double                            startTicks) const
   {
@@ -411,7 +411,6 @@ private:
    * Possible use cases: splitting audio regions, audio functions, recording.
    */
   auto create_audio_region_from_audio_buffer (
-    AudioLane                       &lane,
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
     const utils::Utf8String         &clip_name,
@@ -419,8 +418,7 @@ private:
   {
     auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
       buf, bit_depth, sample_rate_provider_ (), bpm_provider_ (), clip_name);
-    auto region =
-      create_audio_region_with_clip (lane, std::move (clip), start_ticks);
+    auto region = create_audio_region_with_clip (std::move (clip), start_ticks);
     return region;
   }
 
@@ -477,13 +475,14 @@ public :
      * @return AudioRegion*
      */
     AudioRegion * add_audio_region_with_clip (
-      structure::tracks::AudioLane     &lane,
+      Track                            &track,
+      TrackLane                        &lane,
       dsp::FileAudioSourceUuidReference clip_id,
       double                            start_ticks)
   {
     auto obj_ref =
-      create_audio_region_with_clip (lane, std::move (clip_id), start_ticks);
-    add_laned_object (lane, obj_ref);
+      create_audio_region_with_clip (std::move (clip_id), start_ticks);
+    add_laned_object (track, lane, obj_ref);
     return std::get<AudioRegion *> (obj_ref.get_object ());
   }
 
@@ -518,13 +517,13 @@ public :
   }
 
   Q_INVOKABLE MidiRegion *
-  addEmptyMidiRegion (structure::tracks::MidiLane * lane, double startTicks)
+  addEmptyMidiRegion (Track * track, TrackLane * lane, double startTicks)
   {
     auto mr_ref =
       get_builder<MidiRegion> ()
         .with_start_ticks (startTicks)
         .build_in_registry ();
-    add_laned_object (*lane, mr_ref);
+    add_laned_object (*track, *lane, mr_ref);
     return std::get<MidiRegion *> (mr_ref.get_object ());
   }
 
@@ -535,8 +534,11 @@ public :
       get_builder<ChordRegion> ()
         .with_start_ticks (startTicks)
         .build_in_registry ();
-    track->Track::add_region<ChordRegion> (cr_ref, nullptr, std::nullopt, true);
-    return std::get<ChordRegion *> (cr_ref.get_object ());
+    auto * chord_region = cr_ref.get_object_as<ChordRegion> ();
+    chord_region->regionMixin ()->name ()->setName (
+      track->generate_name_for_region (*chord_region));
+    track->ArrangerObjectOwner<ChordRegion>::add_object (cr_ref);
+    return cr_ref.get_object_as<ChordRegion> ();
   }
 
   Q_INVOKABLE AutomationRegion * addEmptyAutomationRegion (
@@ -563,7 +565,8 @@ public :
   }
 
   AudioRegion * add_empty_audio_region_for_recording (
-    AudioLane               &lane,
+    Track                   &track,
+    TrackLane               &lane,
     int                      num_channels,
     const utils::Utf8String &clip_name,
     double                   start_ticks)
@@ -571,22 +574,22 @@ public :
     auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
       num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
     auto region_ref =
-      create_audio_region_with_clip (lane, std::move (clip), start_ticks);
-    add_laned_object (lane, region_ref);
+      create_audio_region_with_clip (std::move (clip), start_ticks);
+    add_laned_object (track, lane, region_ref);
     return std::get<AudioRegion *> (region_ref.get_object ());
   }
 
   Q_INVOKABLE AudioRegion * addAudioRegionFromFile (
-    AudioLane *    lane,
+    Track *        track,
+    TrackLane *    lane,
     const QString &absPath,
     double         startTicks)
   {
     auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
       utils::Utf8String::from_qstring (absPath), sample_rate_provider_ (),
       bpm_provider_ ());
-    auto ar_ref =
-      create_audio_region_with_clip (*lane, std::move (clip), startTicks);
-    add_laned_object (*lane, ar_ref);
+    auto ar_ref = create_audio_region_with_clip (std::move (clip), startTicks);
+    add_laned_object (*track, *lane, ar_ref);
     return std::get<AudioRegion *> (ar_ref.get_object ());
   }
 
@@ -595,7 +598,8 @@ public :
    * starting at @p startTicks.
    */
   Q_INVOKABLE MidiRegion * addMidiRegionFromChordDescriptor (
-    MidiLane *                  lane,
+    Track *                     track,
+    TrackLane *                 lane,
     const dsp::ChordDescriptor &descr,
     double                      startTicks);
 
@@ -608,7 +612,8 @@ public :
    * has tracks 5 and 7, it will use track 7.
    */
   Q_INVOKABLE MidiRegion * addMidiRegionFromMidiFile (
-    MidiLane *     lane,
+    Track *        track,
+    TrackLane *    lane,
     const QString &absolutePath,
     double         startTicks,
     int            midiTrackIndex);
@@ -640,14 +645,14 @@ public :
    * also adds it to the project like the rest of the public API here.
    */
   auto create_audio_region_from_audio_buffer_FIXME (
-    AudioLane                       &lane,
+    TrackLane                       &lane,
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
     const utils::Utf8String         &clip_name,
     double                           start_ticks) const
   {
     return create_audio_region_from_audio_buffer (
-      lane, buf, bit_depth, clip_name, start_ticks);
+      buf, bit_depth, clip_name, start_ticks);
   }
 
   template <structure::arrangement::FinalArrangerObjectSubclass ObjT>

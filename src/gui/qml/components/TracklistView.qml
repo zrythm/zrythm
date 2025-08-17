@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import Zrythm
@@ -9,7 +11,7 @@ Item {
 
   readonly property real contentHeight: listView.contentHeight + (pinned ? 0 : dropSpace.height)
   required property bool pinned
-  required property var tracklist
+  required property Tracklist tracklist
 
   ListView {
     id: listView
@@ -19,6 +21,7 @@ Item {
 
     delegate: TrackView {
       width: ListView.view.width
+      tracklist: root.tracklist
     }
     model: TrackFilterProxyModel {
       sourceModel: root.tracklist

@@ -10,29 +10,14 @@ MasterTrack::MasterTrack (FinalTrackDependencies dependencies)
         Track::Type::Master,
         PortType::Audio,
         PortType::Audio,
-        dependencies.to_base_dependencies ()),
-      ProcessableTrack (
-        dependencies.transport_,
-        PortType::Audio,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      ChannelTrack (dependencies)
+        TrackFeatures::Automation,
+        dependencies.to_base_dependencies ())
 {
   /* GTK color picker color */
   color_ = Color (QColor ("#D90368"));
   icon_name_ = u8"jam-icons-crown";
-  automationTracklist ()->setParent (this);
-}
 
-bool
-MasterTrack::initialize ()
-{
-  init_channel ();
-  generate_automation_tracks (*this);
-
-  return true;
+  processor_ = make_track_processor ();
 }
 
 void
@@ -43,14 +28,5 @@ init_from (
 {
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
-  init_from (
-    static_cast<ProcessableTrack &> (obj),
-    static_cast<const ProcessableTrack &> (other), clone_type);
-  init_from (
-    static_cast<ChannelTrack &> (obj),
-    static_cast<const ChannelTrack &> (other), clone_type);
-  init_from (
-    static_cast<GroupTargetTrack &> (obj),
-    static_cast<const GroupTargetTrack &> (other), clone_type);
 }
 }

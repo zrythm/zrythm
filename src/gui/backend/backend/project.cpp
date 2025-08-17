@@ -181,6 +181,24 @@ Project::~Project ()
   loaded_ = false;
 }
 
+structure::tracks::FinalTrackDependencies
+Project::get_final_track_dependencies () const
+{
+  return structure::tracks::FinalTrackDependencies{
+    tempo_map_,
+    *file_audio_source_registry_,
+    *plugin_registry_,
+    *port_registry_,
+    *param_registry_,
+    *arranger_object_registry_,
+    *track_registry_,
+    *transport_,
+    [this] () {
+      return tracklist_->get_track_span ().get_num_soloed_tracks () > 0;
+    }
+  };
+}
+
 std::optional<fs::path>
 Project::get_newer_backup ()
 {
@@ -421,8 +439,7 @@ Project::add_default_tracks ()
       "T must be derived from Track");
 
     z_debug ("adding {} track...", typeid (TrackT).name ());
-    TrackT * track =
-      TrackT::create_unique (get_final_track_dependencies ()).release ();
+    auto * track = new TrackT (get_final_track_dependencies ());
     get_track_registry ().register_object (track);
     track->setName (name);
     tracklist_->append_track (

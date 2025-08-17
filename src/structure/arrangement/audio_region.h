@@ -18,12 +18,10 @@ namespace zrythm::structure::arrangement
  * A region for playing back audio samples.
  */
 class AudioRegion final
-    : public QObject,
-      public ArrangerObject,
+    : public ArrangerObject,
       public ArrangerObjectOwner<AudioSourceObject>
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AudioRegion)
   Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
   Q_PROPERTY (ArrangerObjectFadeRange * fadeRange READ fadeRange CONSTANT)
   Q_PROPERTY (

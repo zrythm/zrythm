@@ -9,16 +9,6 @@
 
 #include <QtQmlIntegration>
 
-#define DEFINE_ARRANGER_OBJECT_QML_PROPERTIES(ClassType) \
-public: \
-  Q_PROPERTY (ArrangerObject::Type type READ type CONSTANT) \
-  Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
-  Q_SIGNAL void selectedChanged (bool selected); \
-  Q_PROPERTY ( \
-    zrythm::dsp::AtomicPositionQmlAdapter * position READ position CONSTANT) \
-  Q_SIGNAL void addedToProject (); \
-  Q_SIGNAL void removedFromProject ();
-
 namespace zrythm::structure::arrangement
 {
 /**
@@ -29,9 +19,18 @@ namespace zrythm::structure::arrangement
  * It provides common functionality and properties shared by all these
  * objects.
  */
-class ArrangerObject : public utils::UuidIdentifiableObject<ArrangerObject>
+class ArrangerObject
+    : public QObject,
+      public utils::UuidIdentifiableObject<ArrangerObject>
 {
-  Q_GADGET
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (
+    zrythm::structure::arrangement::ArrangerObject::Type type READ type CONSTANT)
+  Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged)
+  Q_PROPERTY (
+    zrythm::dsp::AtomicPositionQmlAdapter * position READ position CONSTANT)
+  QML_UNCREATABLE ("")
 
   Z_DISABLE_COPY_MOVE (ArrangerObject)
 
@@ -55,6 +54,10 @@ public:
     AudioSourceObject,
   };
   Q_ENUM (Type)
+
+  Q_SIGNAL void selectedChanged (bool selected);
+  Q_SIGNAL void addedToProject ();
+  Q_SIGNAL void removedFromProject ();
 
 public:
   ~ArrangerObject () noexcept override = default;
@@ -119,7 +122,7 @@ protected:
   ArrangerObject (
     Type                 type,
     const dsp::TempoMap &tempo_map,
-    QObject             &derived) noexcept;
+    QObject *            parent = nullptr) noexcept;
 
   friend void init_from (
     ArrangerObject        &obj,

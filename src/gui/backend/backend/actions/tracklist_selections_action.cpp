@@ -96,6 +96,8 @@ TracklistSelectionsAction::copy_track_positions_from_selections (
 void
 TracklistSelectionsAction::reset_foldable_track_sizes ()
 {
+// TODO
+#if 0
   for (auto own_tr_var : *foldable_tls_before_)
     {
       std::visit (
@@ -109,6 +111,7 @@ TracklistSelectionsAction::reset_foldable_track_sizes ()
         },
         own_tr_var);
     }
+#endif
 }
 
 bool
@@ -200,10 +203,13 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     tracklist_selections_action_type_ == Type::MoveInside
     || tracklist_selections_action_type_ == Type::CopyInside)
     {
+// TODO
+#if 0
       [[maybe_unused]] auto _foldable_tr =
         TRACKLIST->get_track_at_index (track_pos);
       assert (
         TrackSpan::derived_from_type_projection<FoldableTrack> (_foldable_tr));
+#endif
     }
 
     /* --- end validation --- */
@@ -377,6 +383,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
   /* if need to clone tls_before */
   if (tls_before_var && need_full_selections)
     {
+// TODO
+#if 0
       /* save the outputs & incoming sends */
       for (const auto &clone_track_var : *tls_before_)
         {
@@ -402,6 +410,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
             },
             clone_track_var);
         }
+#endif
     }
 
   if (tracklist_selections_action_type_ == Type::Edit && track_var.has_value ())
@@ -469,14 +478,14 @@ TracklistSelectionsAction::create_track (int idx)
       const auto        track_deps = PROJECT->get_final_track_dependencies ();
       if (track_type_ == Track::Type::Audio && pool_id_.has_value ())
         {
-          track = AudioTrack::create_unique (track_deps);
+          track = std::make_unique<AudioTrack> (track_deps);
           // TODO set samplerate on AudioTrack
           name = utils::Utf8String::from_path (file_basename_);
         }
       /* else if creating MIDI track from file */
       else if (track_type_ == Track::Type::Midi && !base64_midi_.empty ())
         {
-          track = MidiTrack::create_unique (track_deps);
+          track = std::make_unique<MidiTrack> (track_deps);
           name = utils::Utf8String::from_path (file_basename_);
         }
       /* at this point we can assume it has a plugin */
@@ -542,14 +551,16 @@ TracklistSelectionsAction::create_track (int idx)
                   /* create an audio region & add to track*/
                   structure::arrangement::ArrangerObjectFactory::get_instance ()
                     ->add_audio_region_with_clip (
-                      added_track->get_lane_at (0), *pool_id_, start_pos.ticks_);
+                      *added_track,
+                      *added_track->lanes ()->lanes_view ().front (), *pool_id_,
+                      start_pos.ticks_);
                 }
             }
           else if (
             track_type_ == Track::Type::Midi && !base64_midi_.empty ()
             && !file_basename_.empty ())
             {
-              if constexpr (std::derived_from<TrackT, PianoRollTrack>)
+              if (added_track->pianoRollTrackMixin ())
                 {
                   /* create a temporary midi file */
                   auto full_path_file = utils::io::make_tmp_file (
@@ -565,7 +576,7 @@ TracklistSelectionsAction::create_track (int idx)
                   /* create a MIDI region from the MIDI file & add to track */
                   structure::arrangement::ArrangerObjectFactory::get_instance ()
                     ->addMidiRegionFromMidiFile (
-                      &added_track->get_lane_at (0),
+                      added_track, added_track->lanes ()->lanes_view ().front (),
                       utils::Utf8String::from_path (full_path).to_qstring (),
                       pos_.ticks_, idx);
                 }
@@ -848,12 +859,15 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     }
 #endif
 
-                  /* if group track, remove all children */
+                /* if group track, remove all children */
+// TODO
+#if 0
                   if (prj_track->can_be_group_target ())
                     {
                       dynamic_cast<GroupTargetTrack &> (*prj_track)
                         .remove_all_children (true, false, false);
                     }
+#endif
 
                   /* remove it */
                   TRACKLIST->remove_track (prj_track->get_uuid ());
@@ -1806,14 +1820,9 @@ TracklistSelectionsAction::to_string () const
     case Type::MoveInside:
       if (tls_before_->size () == 1)
         {
-          if (tracklist_selections_action_type_ == Type::MoveInside)
-            {
-              return QObject::tr ("Move Track inside");
-            }
-          else
-            {
-              return QObject::tr ("Move Track");
-            }
+          return tracklist_selections_action_type_ == Type::MoveInside
+                   ? QObject::tr ("Move Track inside")
+                   : QObject::tr ("Move Track");
         }
       else
         {

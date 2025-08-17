@@ -6,13 +6,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "structure/arrangement/audio_region.h"
-#include "structure/arrangement/automation_region.h"
-#include "structure/tracks/automation_track.h"
-#include "structure/tracks/chord_track.h"
-#include "structure/tracks/laned_track.h"
-#include "structure/tracks/marker_track.h"
-#include "structure/tracks/track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
@@ -2186,6 +2180,8 @@ ArrangerSelectionsAction::do_or_undo (bool do_it)
   TRACKLIST->get_track_span ().set_caches (CacheType::PlaybackSnapshots);
 
   /* reset new_lane_created */
+// TODO/delete
+#if 0
   for (auto track_var : TRACKLIST->get_track_span ())
     {
       std::visit (
@@ -2200,7 +2196,8 @@ ArrangerSelectionsAction::do_or_undo (bool do_it)
             }
         },
         track_var);
-    }
+      }
+#endif
 
   /* this is only needed in a few cases but it's cheap so send the event here
    * anyway */

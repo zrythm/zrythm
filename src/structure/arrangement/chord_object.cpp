@@ -8,7 +8,7 @@
 namespace zrythm::structure::arrangement
 {
 ChordObject::ChordObject (const dsp::TempoMap &tempo_map, QObject * parent)
-    : QObject (parent), ArrangerObject (Type::ChordObject, tempo_map, *this),
+    : ArrangerObject (Type::ChordObject, tempo_map, parent),
       mute_ (utils::make_qobject_unique<ArrangerObjectMuteFunctionality> (this))
 {
 }

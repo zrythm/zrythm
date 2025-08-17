@@ -6,8 +6,7 @@
 namespace zrythm::structure::arrangement
 {
 ScaleObject::ScaleObject (const dsp::TempoMap &tempo_map, QObject * parent)
-    : QObject (parent),
-      ArrangerObject (ArrangerObject::Type::ScaleObject, tempo_map, *this),
+    : ArrangerObject (ArrangerObject::Type::ScaleObject, tempo_map, parent),
       scale_ (utils::make_qobject_unique<MusicalScale> (this)),
       mute_ (utils::make_qobject_unique<ArrangerObjectMuteFunctionality> (this))
 {

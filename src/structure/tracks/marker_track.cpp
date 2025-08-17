@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/marker_track.h"
-#include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
 {
@@ -11,6 +10,7 @@ MarkerTrack::MarkerTrack (FinalTrackDependencies dependencies)
         Track::Type::Marker,
         PortType::Unknown,
         PortType::Unknown,
+        {},
         dependencies.to_base_dependencies ()),
       arrangement::ArrangerObjectOwner<Marker> (
         dependencies.obj_registry_,
@@ -20,12 +20,6 @@ MarkerTrack::MarkerTrack (FinalTrackDependencies dependencies)
   main_height_ = DEF_HEIGHT / 2;
   icon_name_ = u8"gnome-icon-library-flag-filled-symbolic";
   color_ = Color (QColor ("#7C009B"));
-}
-
-bool
-MarkerTrack::initialize ()
-{
-  return true;
 }
 
 auto
@@ -46,21 +40,6 @@ MarkerTrack::get_end_marker () const -> Marker *
     std::ranges::find (markers, Marker::MarkerType::End, &Marker::markerType);
   z_return_val_if_fail (it != markers.end (), nullptr);
   return *it;
-}
-void
-MarkerTrack::clear_objects ()
-{
-  std::vector<Marker::Uuid> markers_to_delete;
-  for (auto * marker : get_children_view () | std::views::reverse)
-    {
-      if (marker->isStartMarker () || marker->isEndMarker ())
-        continue;
-      markers_to_delete.push_back (marker->get_uuid ());
-    }
-  for (const auto &id : markers_to_delete)
-    {
-      remove_object (id);
-    }
 }
 
 void

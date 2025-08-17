@@ -3,42 +3,28 @@
 
 #pragma once
 
-#include "structure/arrangement/arranger_object_span.h"
+#include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/marker.h"
 #include "structure/tracks/track.h"
 
-#define P_MARKER_TRACK (TRACKLIST->marker_track_)
-
 namespace zrythm::structure::tracks
 {
-class MarkerTrack final
-    : public QObject,
-      public Track,
-      public arrangement::ArrangerObjectOwner<arrangement::Marker>,
-      public utils::InitializableObject<MarkerTrack>
+class MarkerTrack
+    : public Track,
+      public arrangement::ArrangerObjectOwner<arrangement::Marker>
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES (MarkerTrack)
+  QML_UNCREATABLE ("")
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     MarkerTrack,
     markers,
     arrangement::Marker)
 
-  friend class InitializableObject;
-
-  DECLARE_FINAL_TRACK_CONSTRUCTORS (MarkerTrack)
-
 public:
   using Marker = arrangement::Marker;
 
-public:
-  /**
-   * Removes all objects from the marker track.
-   *
-   * Mainly used in testing.
-   */
-  void clear_objects () override;
+  MarkerTrack (FinalTrackDependencies dependencies);
 
   auto get_marker_at (size_t index) const
   {
@@ -73,8 +59,6 @@ public:
     return "markers";
   }
 
-  void temporary_virtual_method_hack () const override { }
-
 private:
   friend void to_json (nlohmann::json &j, const MarkerTrack &track)
   {
@@ -88,7 +72,6 @@ private:
   }
 
 private:
-  bool initialize ();
   void set_playback_caches () override;
 };
 

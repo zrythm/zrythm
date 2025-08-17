@@ -9,7 +9,6 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/marker.h"
-#include "structure/tracks/laned_track.h"
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
@@ -609,43 +608,37 @@ Transport::move_playhead (double target_ticks, bool set_cue_point)
   for (
     auto * track :
     TRACKLIST->get_track_span ()
-      .get_elements_derived_from<structure::tracks::LanedTrack> ())
+      | std::views::transform ([] (const auto &track_var) {
+          return structure::tracks::from_variant (track_var);
+        }))
     {
-      std::visit (
-        [&] (auto &&t) {
-          using TrackT = base_type<decltype (t)>;
-          for (auto &lane_var : t->lanes_)
-            {
-              using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
-              auto lane = std::get<TrackLaneT *> (lane_var);
-              for (auto * region : lane->get_children_view ())
-                {
-                  const auto playhead_pos =
-                    get_playhead_position_in_gui_thread ();
-                  if (!region->regionMixin ()->bounds ()->is_hit (
-                        playhead_pos.frames_, true))
-                    continue;
+      if (track->lanes () == nullptr)
+        continue;
 
-                  if constexpr (
-                    std::is_same_v<
-                      typename TrackLaneT::RegionT,
-                      structure::arrangement::MidiRegion>)
+      for (const auto &lane : track->lanes ()->lanes_view ())
+        {
+          for (
+            auto * region :
+            lane->structure::arrangement::ArrangerObjectOwner<
+              structure::arrangement::MidiRegion>::get_children_view ())
+            {
+              const auto playhead_pos = get_playhead_position_in_gui_thread ();
+              if (!region->regionMixin ()->bounds ()->is_hit (
+                    playhead_pos.frames_, true))
+                continue;
+
+              for (auto * midi_note : region->get_children_view ())
+                {
+                  if (midi_note->bounds ()->is_hit (playhead_pos.frames_))
                     {
-                      for (auto * midi_note : region->get_children_view ())
-                        {
-                          if (
-                            midi_note->bounds ()->is_hit (playhead_pos.frames_))
-                            {
-                              t->processor_->get_piano_roll_port ()
-                                .midi_events_.queued_events_
-                                .add_note_off (1, midi_note->pitch (), 0);
-                            }
-                        }
+                      track->get_track_processor ()
+                        ->get_piano_roll_port ()
+                        .midi_events_.queued_events_
+                        .add_note_off (1, midi_note->pitch (), 0);
                     }
                 }
             }
-        },
-        convert_to_variant<structure::tracks::LanedTrackPtrVariant> (track));
+        }
     }
 
   /* move to new pos */

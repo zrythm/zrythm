@@ -3,72 +3,74 @@
 
 #pragma once
 
-#include <vector>
-
 #include "dsp/midi_event.h"
-#include "dsp/position.h"
-#include "structure/arrangement/midi_region.h"
-#include "structure/tracks/laned_track.h"
-#include "structure/tracks/recordable_track.h"
 #include "utils/types.h"
 
-using MIDI_FILE = void;
-
-#define DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES(ClassType) \
-  DEFINE_RECORDABLE_TRACK_QML_PROPERTIES (ClassType)
+#include <QtQmlIntegration>
 
 namespace zrythm::structure::tracks
 {
 /**
- * Interface for a piano roll track.
+ * @brief Mixin for a piano roll-based track.
  */
-class PianoRollTrack
-    : virtual public RecordableTrack,
-      public LanedTrackImpl<MidiLane>
+class PianoRollTrackMixin : public QObject
 {
-  Z_DISABLE_COPY_MOVE (PianoRollTrack)
-protected:
-  PianoRollTrack ();
-
+  Q_OBJECT
+  Q_PROPERTY (
+    bool drumMode READ drumMode WRITE setDrumMode NOTIFY drumModeChanged)
+  Q_PROPERTY (
+    bool passthroughMidiInput READ passthroughMidiInput WRITE
+      setPassthroughMidiInput NOTIFY passthroughMidiInputChanged)
+  Q_PROPERTY (
+    std::uint8_t midiChannel READ midiChannel WRITE setMidiChannel NOTIFY
+      midiChannelChanged)
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
 public:
-  ~PianoRollTrack () override = default;
+  PianoRollTrackMixin (QObject * parent = nullptr);
+  Z_DISABLE_COPY_MOVE (PianoRollTrackMixin)
+  ~PianoRollTrackMixin () override = default;
 
-  /**
-   * Writes the track to the given MIDI file.
-   *
-   * @param use_track_pos Whether to use the track position in
-   *   the MIDI data. The track will be set to 1 if false.
-   * @param events Track events, if not using lanes as tracks or
-   *   using track position.
-   * @param lanes_as_tracks Export lanes as separate tracks (only possible with
-   * MIDI type 1). This will calculate a unique MIDI track number for the
-   * region's lane.
-   * @param use_track_or_lane_pos Whether to use the track/lane position in the
-   * MIDI data. The MIDI track will be set to 1 if false.
-   * @param start Events before this position will be skipped.
-   * @param end Events after this position will be skipped.
-   */
-  void write_to_midi_file (
-    MIDI_FILE *            mf,
-    dsp::MidiEventVector * events,
-    const dsp::Position *  start,
-    const dsp::Position *  end,
-    int                    track_index,
-    bool                   lanes_as_tracks,
-    bool                   use_track_pos);
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  /**
-   * Returns the MIDI channel that this region should be played on, starting
-   * from 1.
-   */
-  uint8_t get_midi_ch (const arrangement::MidiRegion &midi_region) const;
+  std::uint8_t midiChannel () const { return midi_ch_; }
+  void         setMidiChannel (std::uint8_t midi_ch)
+  {
+    midi_ch = std::clamp (
+      midi_ch, static_cast<std::uint8_t> (1), static_cast<std::uint8_t> (16));
+    if (midi_ch_ == midi_ch)
+      return;
 
-  void clear_objects () override;
+    midi_ch_ = midi_ch;
+    Q_EMIT midiChannelChanged (midi_ch);
+  }
+  Q_SIGNAL void midiChannelChanged (std::uint8_t midi_ch);
 
-  void get_regions_in_range (
-    std::vector<arrangement::ArrangerObjectUuidReference> &regions,
-    std::optional<signed_frame_t>                          p1,
-    std::optional<signed_frame_t>                          p2) override;
+  bool passthroughMidiInput () const { return passthrough_midi_input_; }
+  void setPassthroughMidiInput (bool passthrough)
+  {
+    if (passthrough_midi_input_ == passthrough)
+      return;
+
+    passthrough_midi_input_ = passthrough;
+    Q_EMIT passthroughMidiInputChanged (passthrough);
+  }
+  Q_SIGNAL void passthroughMidiInputChanged (bool passthrough);
+
+  bool drumMode () const { return drum_mode_; }
+  void setDrumMode (bool drum_mode)
+  {
+    if (drum_mode_ == drum_mode)
+      return;
+
+    drum_mode_ = drum_mode;
+    Q_EMIT drumModeChanged (drum_mode);
+  }
+  Q_SIGNAL void drumModeChanged (bool drum_mode);
+
+  // ========================================================================
 
   bool allow_only_specific_midi_channels () const
   {
@@ -76,36 +78,47 @@ public:
   }
   auto &midi_channels_to_allow () const { return midi_channels_.value (); }
 
-protected:
-  friend void init_from (
-    PianoRollTrack        &obj,
-    const PianoRollTrack  &other,
-    utils::ObjectCloneType clone_type);
-
-  void set_playback_caches () override;
+  /**
+   * @brief Callback to be used as TrackProcessor's transform function.
+   */
+  void transform_midi_inputs_func (dsp::MidiEventVector &events) const
+  {
+    // change the MIDI channel on the midi input to the channel set on the track
+    if (!passthrough_midi_input_)
+      {
+        events.set_channel (midi_ch_);
+      }
+  }
 
 private:
   static constexpr auto kDrumModeKey = "drumMode"sv;
   static constexpr auto kMidiChKey = "midiCh"sv;
   static constexpr auto kPassthroughMidiInputKey = "passthroughMidiInput"sv;
   static constexpr auto kMidiChannelsKey = "midiChannels"sv;
-  friend void           to_json (nlohmann::json &j, const PianoRollTrack &track)
+  friend void to_json (nlohmann::json &j, const PianoRollTrackMixin &track)
   {
     j[kDrumModeKey] = track.drum_mode_;
     j[kMidiChKey] = track.midi_ch_;
-    j[kPassthroughMidiInputKey] = track.passthrough_midi_input_;
+    j[kPassthroughMidiInputKey] = track.passthrough_midi_input_.load ();
     j[kMidiChannelsKey] = track.midi_channels_;
   }
-  friend void from_json (const nlohmann::json &j, PianoRollTrack &track)
+  friend void from_json (const nlohmann::json &j, PianoRollTrackMixin &track)
   {
     j.at (kDrumModeKey).get_to (track.drum_mode_);
     j.at (kMidiChKey).get_to (track.midi_ch_);
-    j.at (kPassthroughMidiInputKey).get_to (track.passthrough_midi_input_);
+    bool passthrough_midi_input{};
+    j.at (kPassthroughMidiInputKey).get_to (passthrough_midi_input);
+    track.passthrough_midi_input_.store (passthrough_midi_input);
     if (j.contains (kMidiChannelsKey))
       {
         j.at (kMidiChannelsKey).get_to (track.midi_channels_);
       }
   }
+
+  friend void init_from (
+    PianoRollTrackMixin       &obj,
+    const PianoRollTrackMixin &other,
+    utils::ObjectCloneType     clone_type);
 
 private:
   /**
@@ -123,7 +136,7 @@ private:
    * If false, all input received will have its channel changed to the
    * selected MIDI channel.
    */
-  bool passthrough_midi_input_ = false;
+  std::atomic_bool passthrough_midi_input_ = false;
 
   /**
    * 1 or 0 flags for each channel to enable it or disable it.
@@ -132,7 +145,4 @@ private:
    */
   std::optional<std::array<bool, 16>> midi_channels_;
 };
-
-using PianoRollTrackVariant = std::variant<MidiTrack, InstrumentTrack>;
-using PianoRollTrackPtrVariant = to_pointer_variant<PianoRollTrackVariant>;
 }

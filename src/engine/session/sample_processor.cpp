@@ -210,17 +210,12 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
   if (roll_)
     {
       midi_events_->active_events_.clear ();
-      for (
-        auto track_var :
-        tracklist_->get_track_span ()
-          | std::views::filter (
-            TrackSpan::derived_from_type_projection<ProcessableTrack>)
-          | std::views::reverse)
+      for (auto track_var : tracklist_->get_track_span () | std::views::reverse)
         {
           std::visit (
             [&] (auto &&track) {
               using TrackT = base_type<decltype (track)>;
-              if constexpr (std::derived_from<TrackT, ProcessableTrack>)
+              if constexpr (ProcessableTrack<TrackT>)
                 {
                   EngineProcessTimeInfo inner_time_nfo = {
                     .g_start_frame_ =
@@ -236,17 +231,20 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                   const float * audio_data_r = nullptr;
                   if constexpr (std::is_same_v<TrackT, AudioTrack>)
                     {
-                      track->processor_->process_block (inner_time_nfo);
+                      track->get_track_processor ()->process_block (
+                        inner_time_nfo);
                       auto processor_stereo_outs =
-                        track->processor_->get_stereo_out_ports ();
+                        track->get_track_processor ()->get_stereo_out_ports ();
                       audio_data_l = processor_stereo_outs.first.buf_.data ();
                       audio_data_r = processor_stereo_outs.second.buf_.data ();
                     }
                   else if constexpr (std::is_same_v<TrackT, MidiTrack>)
                     {
-                      track->processor_->process_block (inner_time_nfo);
+                      track->get_track_processor ()->process_block (
+                        inner_time_nfo);
                       midi_events_->active_events_.append (
-                        track->processor_->get_midi_out_port ()
+                        track->get_track_processor ()
+                          ->get_midi_out_port ()
                           .midi_events_.active_events_,
                         cycle_offset, nframes);
                     }

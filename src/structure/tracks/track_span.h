@@ -4,8 +4,6 @@
 #pragma once
 
 #include "structure/tracks/track_all.h"
-#include "utils/uuid_identifiable_object.h"
-#include "utils/views.h"
 
 namespace zrythm::engine::device_io
 {
@@ -40,11 +38,15 @@ public:
   static auto selected_projection (const VariantType &track_var)
   {
     return std::visit (
-      [] (const auto &track) { return track->getSelected (); }, track_var);
+      [] (const auto &track) { return track->selected (); }, track_var);
   }
   static auto foldable_projection (const VariantType &track_var)
   {
-    return Base::template derived_from_type_projection<FoldableTrack> (
+    return std::visit (
+      [] (const auto &track) {
+        using TrackT = base_type<decltype (track)>;
+        return FoldableTrack<TrackT>;
+      },
       track_var);
   }
 
@@ -66,11 +68,7 @@ public:
       }, \
       track_var); \
   }
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (currently_listened, ChannelTrack)
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (currently_muted, ChannelTrack)
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (currently_soloed, ChannelTrack)
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (enabled, ChannelTrack)
-  DEFINE_PROJECTION_FOR_TRACK_TYPE (disabled, ChannelTrack)
+  DEFINE_PROJECTION_FOR_TRACK_TYPE (enabled, Track)
 
   template <typename BaseType>
   static auto derived_type_transformation (const VariantType &track_var)
@@ -124,7 +122,7 @@ public:
   {
     std::ranges::for_each (*this, [&] (auto &&track_var) {
       std::visit (
-        [&] (auto &&tr) { tr->setVisible (!tr->getVisible ()); }, track_var);
+        [&] (auto &&tr) { tr->setVisible (!tr->visible ()); }, track_var);
     });
   }
 
@@ -159,11 +157,7 @@ public:
   {
     return std::ranges::any_of (*this, [&] (auto &&track_var) {
       return std::visit (
-        [] (auto &&tr) {
-          using TrackT = base_type<decltype (tr)>;
-          return !AutomatableTrack<TrackT>;
-        },
-        track_var);
+        [] (auto &&tr) { return !tr->has_automation (); }, track_var);
     });
   }
 
@@ -199,7 +193,7 @@ public:
   {
     std::ranges::for_each (*this, [&container] (const auto &track_var) {
       std::visit (
-        [&container] (auto &&track) { track->get_plugins (container); },
+        [&container] (auto &&track) { track->collect_plugins (container); },
         track_var);
     });
   }
@@ -207,6 +201,37 @@ public:
   void deselect_all_plugins ()
   {
     // TODO?
+  }
+
+  static bool currently_soloed_projection (const VariantType &var)
+  {
+    return std::visit (
+      [] (auto &&track) {
+        if (!track->channel ())
+          return false;
+        return track->channel ()->fader ()->currently_soloed ();
+      },
+      var);
+  }
+  static bool currently_muted_projection (const VariantType &var)
+  {
+    return std::visit (
+      [] (auto &&track) {
+        if (!track->channel ())
+          return false;
+        return track->channel ()->fader ()->currently_muted ();
+      },
+      var);
+  }
+  static bool currently_listened_projection (const VariantType &var)
+  {
+    return std::visit (
+      [] (auto &&track) {
+        if (!track->channel ())
+          return false;
+        return track->channel ()->fader ()->currently_listened ();
+      },
+      var);
   }
 
   auto has_soloed () const
@@ -232,26 +257,6 @@ public:
   auto get_num_listened_tracks () const
   {
     return std::ranges::count_if (*this, currently_listened_projection);
-  }
-
-  /**
-   * @brief Get the total (max) bars in the track list.
-   *
-   * @param total_bars Current known total bars
-   * @return New total bars if > than @p total_bars, or @p total_bars.
-   */
-  int
-  get_total_bars (const engine::session::Transport &transport, int total_bars)
-    const
-  {
-    std::ranges::for_each (*this, [&] (const auto &track_var) {
-      std::visit (
-        [&] (auto &&track) {
-          total_bars = track->get_total_bars (transport, total_bars);
-        },
-        track_var);
-    });
-    return total_bars;
   }
 
   /**
@@ -292,7 +297,6 @@ public:
           track_var);
       }));
   }
-#endif
 
   std::vector<TrackUuidReference>
   create_new_identities (FinalTrackDependencies track_deps) const
@@ -306,6 +310,7 @@ public:
           track_var);
       }));
   }
+#endif
 };
 
 static_assert (std::ranges::random_access_range<TrackSpan>);

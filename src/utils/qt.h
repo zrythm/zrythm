@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include "utils/types.h"
 
 #include <QPointer>

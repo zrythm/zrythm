@@ -18,10 +18,9 @@ concept RangeOfMidiNotePointers = RangeOf<T, MidiNote *>;
 /**
  * A MIDI note inside a Region shown in the piano roll.
  */
-class MidiNote : public QObject, public ArrangerObject
+class MidiNote : public ArrangerObject
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (MidiNote)
   Q_PROPERTY (ArrangerObjectBounds * bounds READ bounds CONSTANT)
   Q_PROPERTY (ArrangerObjectMuteFunctionality * mute READ mute CONSTANT)
   Q_PROPERTY (int pitch READ pitch WRITE setPitch NOTIFY pitchChanged)

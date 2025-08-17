@@ -3,51 +3,32 @@
 
 #pragma once
 
-#include "structure/tracks/group_target_track.h"
-
-#define P_MASTER_TRACK (TRACKLIST->master_track_)
+#include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
 {
-class MasterTrack final
-    : public QObject,
-      public GroupTargetTrack,
-      public utils::InitializableObject<MasterTrack>
+class MasterTrack : public Track
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES (MasterTrack)
-  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (MasterTrack)
-  DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MasterTrack)
-
-  DECLARE_FINAL_TRACK_CONSTRUCTORS (MasterTrack)
+  QML_UNCREATABLE ("")
 
 public:
-  friend class InitializableObject;
+  MasterTrack (FinalTrackDependencies dependencies);
 
   friend void init_from (
     MasterTrack           &obj,
     const MasterTrack     &other,
     utils::ObjectCloneType clone_type);
 
-  void temporary_virtual_method_hack () const override { }
-
 private:
   friend void to_json (nlohmann::json &j, const MasterTrack &project)
   {
     to_json (j, static_cast<const Track &> (project));
-    to_json (j, static_cast<const ProcessableTrack &> (project));
-    to_json (j, static_cast<const ChannelTrack &> (project));
-    to_json (j, static_cast<const GroupTargetTrack &> (project));
   }
   friend void from_json (const nlohmann::json &j, MasterTrack &project)
   {
     from_json (j, static_cast<Track &> (project));
-    from_json (j, static_cast<ProcessableTrack &> (project));
-    from_json (j, static_cast<ChannelTrack &> (project));
-    from_json (j, static_cast<GroupTargetTrack &> (project));
   }
-
-  bool initialize ();
 };
 }

@@ -17,13 +17,9 @@ namespace zrythm::structure::arrangement
  * controller data. It is specific to instrument/MIDI tracks and can be
  * constructed from a MIDI file or a chord descriptor.
  */
-class MidiRegion final
-    : public QObject,
-      public ArrangerObject,
-      public ArrangerObjectOwner<MidiNote>
+class MidiRegion final : public ArrangerObject, public ArrangerObjectOwner<MidiNote>
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (MidiRegion)
   Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (MidiRegion, midiNotes, MidiNote)
   QML_ELEMENT

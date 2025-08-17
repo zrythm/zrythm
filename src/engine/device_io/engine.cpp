@@ -46,7 +46,6 @@
 #include "gui/backend/backend/zrythm.h"
 #include "plugins/plugin.h"
 #include "structure/tracks/channel.h"
-#include "structure/tracks/channel_track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 
@@ -514,21 +513,6 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
   z_info (
     "Block length changed to {}. reallocating buffers...", get_block_length ());
 
-  /* TODO make function that fetches all plugins in the project */
-  std::vector<zrythm::plugins::Plugin *> plugins;
-  TRACKLIST->get_track_span ().get_plugins (plugins);
-// TODO: needed?
-#if 0
-  for (auto &pl : plugins)
-    {
-      if (pl && !pl->instantiation_failed_ && pl->setting_->open_with_carla_)
-        {
-          auto carla = dynamic_cast<
-            zrythm::gui::old_dsp::plugins::CarlaNativePlugin *> (pl);
-          carla->update_buffer_size_and_sample_rate ();
-        }
-      }
-#endif
   nframes_ = nframes;
 
   ROUTER->recalc_graph (false);

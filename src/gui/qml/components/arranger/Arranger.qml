@@ -58,7 +58,7 @@ Item {
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
   required property var editorSettings
   property bool enableYScroll: false
-  required property var objectFactory
+  required property ArrangerObjectFactory objectFactory
   property var objectSnapshotsAtStart: null // snapshots of objects at the start
   required property Ruler ruler
   property alias scrollView: scrollView

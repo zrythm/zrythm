@@ -36,7 +36,7 @@ class Fader : public QObject, public dsp::ProcessorBase
   QML_UNCREATABLE ("")
 
 public:
-  enum class MidiFaderMode : std::uint_fast8_t
+  enum class MidiFaderMode : basic_enum_base_type_t
   {
     /** Multiply velocity of all MIDI note ons. */
     MIDI_FADER_MODE_VEL_MULTIPLIER,

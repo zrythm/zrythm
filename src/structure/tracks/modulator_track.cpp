@@ -1,14 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <utility>
-
-#include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/project.h"
-#include "structure/tracks/automation_track.h"
 #include "structure/tracks/modulator_track.h"
-#include "structure/tracks/track.h"
-#include "utils/logger.h"
 
 namespace zrythm::structure::tracks
 {
@@ -17,17 +10,8 @@ ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
         Track::Type::Modulator,
         PortType::Unknown,
         PortType::Unknown,
-        dependencies.to_base_dependencies ()),
-      ProcessableTrack (
-        dependencies.transport_,
-        PortType::Unknown,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      modulators_ (
-        utils::make_qobject_unique<
-          plugins::PluginList> (dependencies.plugin_registry_, this))
+        TrackFeatures::Automation | TrackFeatures::Modulators,
+        dependencies.to_base_dependencies ())
 {
   main_height_ = DEF_HEIGHT / 2;
 
@@ -37,12 +21,6 @@ ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
   /* set invisible */
   visible_ = false;
 
-  automationTracklist ()->setParent (this);
-}
-
-bool
-ModulatorTrack::initialize ()
-{
   constexpr int max_macros = 8;
   for (int i = 0; i < max_macros; i++)
     {
@@ -53,10 +31,6 @@ ModulatorTrack::initialize ()
             .param_registry_ = base_dependencies_.param_registry_ },
           i, this));
     }
-
-  generate_automation_tracks (*this);
-
-  return true;
 }
 
 void
@@ -65,9 +39,6 @@ init_from (
   const ModulatorTrack  &other,
   utils::ObjectCloneType clone_type)
 {
-  init_from (
-    static_cast<ProcessableTrack &> (obj),
-    static_cast<const ProcessableTrack &> (other), clone_type);
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 // TODO
@@ -89,27 +60,5 @@ init_from (
     }
 #endif
   // obj.modulators_ = other.modulators_;
-  utils::clone_unique_ptr_container (
-    obj.modulator_macro_processors_, other.modulator_macro_processors_);
-}
-
-void
-from_json (const nlohmann::json &j, ModulatorTrack &track)
-{
-  from_json (j, static_cast<Track &> (track));
-  from_json (j, static_cast<ProcessableTrack &> (track));
-  j.at (ModulatorTrack::kModulatorsKey).get_to (*track.modulators_);
-  for (
-    const auto &[index, macro_proc_json] : utils::views::enumerate (
-      j.at (ModulatorTrack::kModulatorMacroProcessorsKey)))
-    {
-      auto macro_proc = utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
-        dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
-          .port_registry_ = track.base_dependencies_.port_registry_,
-          .param_registry_ = track.base_dependencies_.param_registry_ },
-        index, &track);
-      from_json (macro_proc_json, *macro_proc);
-      track.modulator_macro_processors_.push_back (std::move (macro_proc));
-    }
 }
 }

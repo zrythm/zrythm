@@ -18,7 +18,7 @@ AudioRegion::AudioRegion (
   dsp::FileAudioSourceRegistry &file_audio_source_registry,
   GlobalMusicalModeGetter       musical_mode_getter,
   QObject *                     parent) noexcept
-    : QObject (parent), ArrangerObject (Type::AudioRegion, tempo_map, *this),
+    : ArrangerObject (Type::AudioRegion, tempo_map, parent),
       ArrangerObjectOwner (object_registry, file_audio_source_registry, *this),
       file_audio_source_registry_ (file_audio_source_registry),
       region_mixin_ (utils::make_qobject_unique<RegionMixin> (*position ())),

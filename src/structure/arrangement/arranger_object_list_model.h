@@ -14,7 +14,7 @@ namespace zrythm::structure::arrangement
  * All operations on the list should be performed via this class so we can take
  * advantage of signal emissions.
  */
-class ArrangerObjectListModel final : public QAbstractListModel
+class ArrangerObjectListModel : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT

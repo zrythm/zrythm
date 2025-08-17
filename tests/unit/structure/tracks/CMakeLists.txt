@@ -8,6 +8,11 @@ add_executable(zrythm_structure_tracks_unit_tests
   channel_send_test.cpp
   channel_subgraph_builder_test.cpp
   fader_test.cpp
+  piano_roll_track_test.cpp
+  recordable_track_test.cpp
+  track_lane_test.cpp
+  track_lane_list_test.cpp
+  track_test.cpp
   track_processor_test.cpp
 )
 

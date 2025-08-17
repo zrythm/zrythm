@@ -15,12 +15,10 @@ namespace zrythm::structure::arrangement
  * recorded automation point is also stored.
  */
 class AutomationRegion final
-    : public QObject,
-      public ArrangerObject,
+    : public ArrangerObject,
       public ArrangerObjectOwner<AutomationPoint>
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AutomationRegion)
   Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     AutomationRegion,

@@ -120,4 +120,24 @@ TEST (QObjectUniquePtrTest, Accessors)
   EXPECT_EQ (ptr.get ()->objectName (), "Test");
 }
 
+inline auto
+format_as (const QtTestQObject &obj)
+{
+  return std::string ("TestObject");
+}
+
+TEST (QObjectUniquePtrTest, Formatting)
+{
+  // Test formatting with valid object
+  auto ptr = make_qobject_unique<QtTestQObject> ();
+
+  auto formatted = fmt::format ("{}", ptr);
+  EXPECT_TRUE (formatted.find ("TestObject") != std::string::npos);
+
+  // Test formatting with null object
+  QObjectUniquePtr<QtTestQObject> null_ptr;
+  auto                            null_formatted = fmt::format ("{}", null_ptr);
+  EXPECT_EQ (null_formatted, "(null)");
+}
+
 #include "qt_test.moc"

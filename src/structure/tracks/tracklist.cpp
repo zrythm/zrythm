@@ -34,8 +34,9 @@ Tracklist::Tracklist (
   const dsp::TempoMap             &tempo_map)
     : QAbstractListModel (&project), tempo_map_ (tempo_map),
       track_registry_ (track_registry), port_registry_ (port_registry),
-      param_registry_ (param_registry), project_ (&project),
-      port_connections_manager_ (&port_connections_manager)
+      param_registry_ (param_registry),
+      routing_ (utils::make_qobject_unique<TrackRouting> (track_registry, this)),
+      project_ (&project), port_connections_manager_ (&port_connections_manager)
 {
 }
 
@@ -313,14 +314,12 @@ Tracklist::move_plugin_automation (
   auto track_var = track_registry_->find_by_id_or_throw (track_id_to_move_to);
   std::visit (
     [&] (auto &&plugin, auto &&prev_track, auto &&track) {
-      using PrevTrackT = base_type<decltype (prev_track)>;
-      using TrackT = base_type<decltype (track)>;
+      // using PrevTrackT = base_type<decltype (prev_track)>;
+      // using TrackT = base_type<decltype (track)>;
       z_debug (
         "moving plugin '{}' automation from {} to {} -> {}", plugin->get_name (),
         prev_track->get_name (), track->get_name (), new_slot);
 
-      if constexpr (AutomatableTrack<PrevTrackT> && AutomatableTrack<TrackT>)
-        {
 // TODO
 #if 0
           auto &prev_atl = prev_track->get_automation_tracklist ();
@@ -356,7 +355,6 @@ Tracklist::move_plugin_automation (
                 && added_at->get_children_vector ().size () == num_regions_before);
               }
 #endif
-        }
     },
     pl_var, prev_track_var, track_var);
 }
@@ -490,8 +488,8 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
 
   {
     auto        span = get_track_span ();
-    const auto &src_track = Track::from_variant (span.at (index1));
-    const auto &dest_track = Track::from_variant (span.at (index2));
+    const auto &src_track = from_variant (span.at (index1));
+    const auto &dest_track = from_variant (span.at (index2));
     z_debug (
       "swapping tracks {} [{}] and {} [{}]...",
       src_track ? src_track->get_name () : u8"(none)", index1,
@@ -546,12 +544,12 @@ Tracklist::get_region_at_pos (
       return std::visit (
         [&] (auto &&track_derived) -> std::optional<ArrangerObjectPtrVariant> {
           using TrackT = base_type<decltype (track_derived)>;
-          if constexpr (std::derived_from<TrackT, tracks::LanedTrack>)
+          if (track_derived->lanes ())
             {
-              for (auto &lane_var : track_derived->lanes_)
+// TODO
+#if 0
+              for (const auto &lane : track_derived->lanes ()->lanes_view ())
                 {
-                  using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
-                  auto lane = std::get<TrackLaneT *> (lane_var);
                   auto ret_var =
                     arrangement::ArrangerObjectSpan{ lane->get_children_vector () }
                       .get_bounded_object_at_position (
@@ -565,7 +563,8 @@ Tracklist::get_region_at_pos (
                     {
                       return (*it).get_object ();
                     }
-                }
+                  }
+#endif
             }
           if constexpr (std::is_same_v<TrackT, tracks::ChordTrack>)
             {
@@ -626,7 +625,9 @@ Tracklist::insert_track (
       // track->set_index (-1);
 
       /* this needs to be called before appending the track to the tracklist */
-      track->set_name (*this, track->get_name (), false);
+      track->setName (
+        get_unique_name_for_track (track->get_uuid (), track->get_name ())
+          .to_qstring ());
 
       /* append the track at the end */
       tracks_.emplace_back (track_id);
@@ -672,7 +673,8 @@ Tracklist::insert_track (
             track->get_output_signal_type () == dsp::PortType::Audio
             && master_track_)
             {
-              master_track_->add_child (track->get_uuid (), true, false, false);
+              routing_->add_or_replace_route (
+                track->get_uuid (), master_track_->get_uuid ());
             }
         }
 
@@ -835,25 +837,29 @@ Tracklist::move_plugin (
 bool
 Tracklist::should_be_visible (const Track::Uuid &track_id) const
 {
-  auto track = Track::from_variant (get_track (track_id).value ());
-  if (!track->visible_ || track->filtered_)
+  auto track = from_variant (get_track (track_id).value ());
+  if (!track->visible ())
     return false;
 
+  return true;
+// TODO
+#if 0
   std::vector<FoldableTrack *> parents;
   add_folder_parents (track_id, parents, false);
   return std::ranges::all_of (parents, [] (const auto &parent) {
     return parent->visible_ && !parent->folded_;
   });
+#endif
 }
 
+// TODO
+#if 0
 void
 Tracklist::add_folder_parents (
   const Track::Uuid            &track_id,
   std::vector<FoldableTrack *> &parents,
   bool                          prepend) const
 {
-// TODO
-#if 0
   for (
     const auto &cur_track_var :
     get_track_span ()
@@ -883,8 +889,7 @@ Tracklist::add_folder_parents (
         },
         cur_track_var);
     }
-#endif
-}
+  }
 
 void
 Tracklist::remove_from_folder_parents (const Track::Uuid &track_id)
@@ -896,6 +901,7 @@ Tracklist::remove_from_folder_parents (const Track::Uuid &track_id)
       parent->size_--;
     }
 }
+#endif
 
 bool
 Tracklist::multiply_track_heights (
@@ -1038,9 +1044,6 @@ Tracklist::remove_track (const TrackUuid &track_id)
           next_visible = get_next_visible_track (track_id);
         }
 
-      /* remove/deselect all objects */
-      track->clear_objects ();
-
       disconnect_track (*track);
 
       /* move track to the end */
@@ -1074,7 +1077,7 @@ Tracklist::remove_track (const TrackUuid &track_id)
 
       endRemoveRows ();
 
-      z_debug ("done removing track {}", track->getName ());
+      z_debug ("done removing track {}", track->name ());
     },
     track_var);
 }
@@ -1141,7 +1144,7 @@ Tracklist::get_timeline_objects_in_range (
       std::vector<ArrangerObjectPtrVariant> objs;
       std::visit (
         [&] (auto &&tr) {
-          tr->append_objects (objs);
+          tr->collect_timeline_objects (objs);
 
           for (auto &obj_var : objs)
             {
@@ -1205,7 +1208,8 @@ Tracklist::move_track (
           // CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
 
           /* deselect all objects */
-          track->Track::unselect_all ();
+          // TODO
+          // track->Track::unselect_all ();
 
           get_selection_manager ().remove_from_selection (track->get_uuid ());
 

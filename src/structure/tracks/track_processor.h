@@ -105,28 +105,13 @@ public:
     std::optional<TransformMidiInputsFunc> transform_midi_inputs_func =
       std::nullopt,
     std::optional<AppendMidiInputsToOutputsFunc>
-      append_midi_inputs_to_outputs_func = std::nullopt);
+              append_midi_inputs_to_outputs_func = std::nullopt,
+    QObject * parent = nullptr);
 
-  // TODO: remove this and the other setters - use constructor
-  void set_fill_events_callback (FillEventsCallback cb)
-  {
-    fill_events_cb_ = std::move (cb);
-  }
-
+  // note: this should eventually be passed from the constructor
   void set_handle_recording_callback (HandleRecordingCallback handle_rec_cb)
   {
     handle_recording_cb_ = std::move (handle_rec_cb);
-  }
-
-  void
-  set_append_midi_inputs_to_outputs_func (AppendMidiInputsToOutputsFunc func)
-  {
-    append_midi_inputs_to_outputs_func_ = std::move (func);
-  }
-
-  void set_transform_midi_inputs_func (TransformMidiInputsFunc func)
-  {
-    transform_midi_inputs_func_ = std::move (func);
   }
 
   bool is_audio () const { return is_audio_; }

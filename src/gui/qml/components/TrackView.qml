@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -18,7 +18,9 @@ Control {
   readonly property real contentBottomMargins: 3
   readonly property real contentTopMargins: 1
   property bool isResizing: false
-  required property var track // connected automatically when used as a delegate for a Tracklist model
+  required property Track track // connected automatically when used as a delegate for a Tracklist model
+
+  required property Tracklist tracklist
 
   hoverEnabled: true
   implicitHeight: track.fullVisibleHeight
@@ -31,7 +33,7 @@ Control {
       if (control.hovered)
         c = Style.getColorBlendedTowardsContrast(c);
 
-      if (track.selected || bgTapHandler.pressed)
+      if (control.track.selected || bgTapHandler.pressed)
         c = Style.getColorBlendedTowardsContrast(c);
 
       return c;
@@ -47,7 +49,7 @@ Control {
       acceptedButtons: Qt.LeftButton | Qt.RightButton
 
       onTapped: function (point) {
-        tracklist.setExclusivelySelectedTrack(control.track);
+        control.tracklist.setExclusivelySelectedTrack(control.track);
       }
     }
   }
@@ -81,8 +83,8 @@ Control {
         Loader {
           Layout.bottomMargin: 3
           Layout.fillWidth: true
-          Layout.maximumHeight: track.height - Layout.bottomMargin - Layout.topMargin
-          Layout.minimumHeight: track.height - Layout.bottomMargin - Layout.topMargin
+          Layout.maximumHeight: control.track.height - Layout.bottomMargin - Layout.topMargin
+          Layout.minimumHeight: control.track.height - Layout.bottomMargin - Layout.topMargin
           Layout.topMargin: 3
           sourceComponent: mainTrackView
         }
@@ -92,7 +94,7 @@ Control {
 
           Layout.fillHeight: true
           Layout.fillWidth: true
-          active: track.hasLanes && track.lanesVisible
+          active: control.track.lanes && control.track.lanes.lanesVisible
           visible: active
 
           sourceComponent: ColumnLayout {
@@ -108,12 +110,14 @@ Control {
               Layout.fillHeight: true
               Layout.fillWidth: true
               implicitHeight: contentHeight
-              model: track.lanes
+              model: control.track.lanes
 
               delegate: ItemDelegate {
-                readonly property var lane: modelData
+                id: laneDelegate
 
-                height: lane.height
+                required property TrackLane trackLane
+
+                height: trackLane.height
                 width: ListView.view.width
 
                 RowLayout {
@@ -129,7 +133,7 @@ Control {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                     Layout.fillHeight: false
                     Layout.fillWidth: true
-                    text: lane.name
+                    text: laneDelegate.trackLane.name
                   }
 
                   LinkedButtons {
@@ -152,7 +156,7 @@ Control {
                 }
 
                 Loader {
-                  property var resizeTarget: lane
+                  property var resizeTarget: laneDelegate.trackLane
 
                   anchors.bottom: parent.bottom
                   anchors.left: parent.left
@@ -162,10 +166,10 @@ Control {
 
                 Connections {
                   function onHeightChanged() {
-                    track.fullVisibleHeightChanged();
+                    control.track.fullVisibleHeightChanged();
                   }
 
-                  target: lane
+                  target: laneDelegate.trackLane
                 }
               }
             }
@@ -176,7 +180,7 @@ Control {
           id: automationLoader
 
           Layout.fillWidth: true
-          active: track.isAutomatable && track.automationTracklist.automationVisible
+          active: control.track.automationTracklist && control.track.automationTracklist.automationVisible
 
           sourceComponent: AutomationTracksListView {
             id: automationTracksListView
@@ -193,7 +197,7 @@ Control {
 
         Layout.fillHeight: true
         Layout.fillWidth: false
-        active: track.hasChannel && track.channel.leftAudioOut
+        active: control.track.channel && control.track.channel.leftAudioOut
         visible: active
 
         sourceComponent: RowLayout {
@@ -205,13 +209,13 @@ Control {
           Meter {
             Layout.fillHeight: true
             Layout.preferredWidth: width
-            port: track.channel.leftAudioOut
+            port: control.track.channel.leftAudioOut
           }
 
           Meter {
             Layout.fillHeight: true
             Layout.preferredWidth: width
-            port: track.channel.rightAudioOut
+            port: control.track.channel.rightAudioOut
           }
         }
       }
@@ -222,12 +226,12 @@ Control {
         Layout.fillHeight: true
         Layout.fillWidth: false
         Layout.preferredWidth: 4
-        active: track.hasChannel && track.channel.midiOut
+        active: control.track.channel && control.track.channel.midiOut
         visible: active
 
         sourceComponent: Meter {
           anchors.fill: parent
-          port: track.channel.midiOut
+          port: control.track.channel.midiOut
         }
       }
     }
@@ -240,19 +244,19 @@ Control {
 
   Connections {
     function onAutomationVisibleChanged() {
-      track.fullVisibleHeightChanged();
+      control.track.fullVisibleHeightChanged();
     }
 
     function onHeightChanged() {
-      track.fullVisibleHeightChanged();
+      control.track.fullVisibleHeightChanged();
     }
 
     function onLanesVisibleChanged() {
-      track.fullVisibleHeightChanged();
+      control.track.fullVisibleHeightChanged();
     }
 
     ignoreUnknownSignals: true
-    target: track
+    target: control.track
   }
 
   Component {
@@ -294,19 +298,19 @@ Control {
             color: trackNameLabel.color
             fillMode: Image.PreserveAspectFit
             source: {
-              if (track.icon.startsWith("gnome-icon-library-"))
-                return ResourceManager.getIconUrl("gnome-icon-library", track.icon.substring(19) + ".svg");
+              if (control.track.icon.startsWith("gnome-icon-library-"))
+                return ResourceManager.getIconUrl("gnome-icon-library", control.track.icon.substring(19) + ".svg");
 
-              if (track.icon.startsWith("fluentui-"))
-                return ResourceManager.getIconUrl("fluentui", track.icon.substring(9) + ".svg");
+              if (control.track.icon.startsWith("fluentui-"))
+                return ResourceManager.getIconUrl("fluentui", control.track.icon.substring(9) + ".svg");
 
-              if (track.icon.startsWith("lorc-"))
-                return ResourceManager.getIconUrl("lorc", track.icon.substring(5) + ".svg");
+              if (control.track.icon.startsWith("lorc-"))
+                return ResourceManager.getIconUrl("lorc", control.track.icon.substring(5) + ".svg");
 
-              if (track.icon.startsWith("jam-icons-"))
-                return ResourceManager.getIconUrl("jam-icons", track.icon.substring(10) + ".svg");
+              if (control.track.icon.startsWith("jam-icons-"))
+                return ResourceManager.getIconUrl("jam-icons", control.track.icon.substring(10) + ".svg");
 
-              return ResourceManager.getIconUrl("zrythm-dark", track.icon + ".svg");
+              return ResourceManager.getIconUrl("zrythm-dark", control.track.icon + ".svg");
             }
             sourceSize.height: iconSize
             sourceSize.width: iconSize
@@ -318,8 +322,8 @@ Control {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
             Layout.fillWidth: true
             elide: Text.ElideRight
-            font: track.selected ? Style.buttonTextFont : Style.normalTextFont
-            text: track.name
+            font: control.track.selected ? Style.buttonTextFont : Style.normalTextFont
+            text: control.track.name
           }
 
           LinkedButtons {
@@ -346,13 +350,13 @@ Control {
 
             RecordButton {
               Layout.preferredHeight: trackSoloButton.height
-              checked: track.isRecordable && track.recording
+              checked: control.track.recordableTrackMixin && control.track.recordableTrackMixin.recording
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
-              visible: track.isRecordable
+              visible: control.track.recordableTrackMixin !== null
 
               onClicked: {
-                track.recording = !track.recording;
+                control.track.recordableTrackMixin.recording = !control.track.recordableTrackMixin.recording;
               }
             }
           }
@@ -364,7 +368,7 @@ Control {
           Layout.alignment: Qt.AlignBottom
           Layout.fillHeight: false
           Layout.fillWidth: true
-          visible: track.height > control.buttonHeight + height + 12
+          visible: control.track.height > control.buttonHeight + height + 12
 
           Label {
             id: chordScalesLabel
@@ -372,7 +376,7 @@ Control {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
             font: Style.smallTextFont
             text: qsTr("Scales")
-            visible: track.type === Track.Chord
+            visible: control.track.type === Track.Chord
           }
 
           Item {
@@ -394,14 +398,14 @@ Control {
 
             Button {
               checkable: true
-              checked: track.hasLanes && track.lanesVisible
+              checked: control.track.lanes && control.track.lanes.lanesVisible
               icon.source: ResourceManager.getIconUrl("gnome-icon-library", "list-compact-symbolic.svg")
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
-              visible: track.hasLanes
+              visible: control.track.lanes !== null
 
               onClicked: {
-                track.lanesVisible = !track.lanesVisible;
+                control.track.lanes.lanesVisible = !control.track.lanes.lanesVisible;
               }
 
               ToolTip {
@@ -411,14 +415,14 @@ Control {
 
             Button {
               checkable: true
-              checked: track.isAutomatable && track.automationTracklist.automationVisible
+              checked: control.track.automationTracklist && control.track.automationTracklist.automationVisible
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
-              visible: track.isAutomatable
+              visible: control.track.automationTracklist !== null
 
               onClicked: {
-                track.automationTracklist.automationVisible = !track.automationTracklist.automationVisible;
+                control.track.automationTracklist.automationVisible = !control.track.automationTracklist.automationVisible;
               }
 
               ToolTip {
@@ -430,7 +434,7 @@ Control {
       }
 
       Loader {
-        property var resizeTarget: track
+        property var resizeTarget: control.track
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -445,6 +449,8 @@ Control {
 
     Rectangle {
       id: resizeHandleRect
+
+      property var resizeTarget: parent.resizeTarget
 
       color: "transparent"
       height: 6
@@ -475,12 +481,12 @@ Control {
         onActiveChanged: {
           control.isResizing = active;
           if (active)
-            resizer.startHeight = resizeTarget.height;
+            resizer.startHeight = resizeHandleRect.resizeTarget.height;
         }
         onTranslationChanged: {
           if (active) {
             let newHeight = Math.max(resizer.startHeight + translation.y, 24);
-            resizeTarget.height = newHeight;
+            resizeHandleRect.resizeTarget.height = newHeight;
           }
         }
       }

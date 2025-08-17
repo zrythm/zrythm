@@ -155,7 +155,7 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
 }
 
 void
-Channel::get_plugins (std::vector<Channel::Plugin *> &pls) const
+Channel::get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
 {
   std::vector<plugins::PluginUuidReference> refs;
   std::ranges::copy (midi_fx_->plugins (), std::back_inserter (refs));
@@ -165,11 +165,9 @@ Channel::get_plugins (std::vector<Channel::Plugin *> &pls) const
       refs.push_back (*instrument_);
     }
 
-  std::ranges::transform (refs, std::back_inserter (pls), [&] (const auto &ref) {
-    return std::visit (
-      [] (const auto &pl) -> plugins::Plugin * { return pl; },
-      ref.get_object ());
-  });
+  std::ranges::transform (
+    refs, std::back_inserter (plugins),
+    &plugins::PluginUuidReference::get_object);
 }
 
 void

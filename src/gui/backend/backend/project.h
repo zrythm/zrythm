@@ -32,6 +32,11 @@ using namespace zrythm;
 #define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_.get ())
 #define AUDIO_POOL (PROJECT->audio_pool_.get ())
 
+#define P_CHORD_TRACK (TRACKLIST->chord_track_)
+#define P_MARKER_TRACK (TRACKLIST->marker_track_)
+#define P_MASTER_TRACK (TRACKLIST->master_track_)
+#define P_MODULATOR_TRACK (TRACKLIST->modulator_track_)
+
 enum class ProjectPath
 {
   ProjectFile,
@@ -323,15 +328,7 @@ public:
   void add_default_tracks ();
 
   structure::tracks::FinalTrackDependencies
-  get_final_track_dependencies () const
-  {
-    return structure::tracks::FinalTrackDependencies{
-      tempo_map_,        *file_audio_source_registry_,
-      *plugin_registry_, *port_registry_,
-      *param_registry_,  *arranger_object_registry_,
-      *track_registry_,  *transport_
-    };
-  }
+  get_final_track_dependencies () const;
 
   auto &get_file_audio_source_registry () const
   {

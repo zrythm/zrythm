@@ -9,7 +9,7 @@
 namespace zrythm::structure::arrangement
 {
 MidiNote::MidiNote (const dsp::TempoMap &tempo_map, QObject * parent)
-    : QObject (parent), ArrangerObject (Type::MidiNote, tempo_map, *this),
+    : ArrangerObject (Type::MidiNote, tempo_map, parent),
       bounds_ (utils::make_qobject_unique<ArrangerObjectBounds> (*position ())),
       mute_ (utils::make_qobject_unique<ArrangerObjectMuteFunctionality> (this))
 {

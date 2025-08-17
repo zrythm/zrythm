@@ -13,7 +13,7 @@ Arranger {
 
   required property bool pinned
   required property var timeline
-  required property var tracklist
+  required property Tracklist tracklist
 
   function beginObjectCreation(x: real, y: real): var {
     const track = getTrackAtY(y);
@@ -23,7 +23,7 @@ Arranger {
 
     const automationTrack = getAutomationTrackAtY(y);
     if (!automationTrack) {}
-    const trackLane = getTrackLaneAtY(y);
+    const trackLane = getTrackLaneAtY(y) as TrackLane;
     if (!trackLane) {}
     console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
 
@@ -42,7 +42,7 @@ Arranger {
     case Track.Midi:
     case Track.Instrument:
       console.log("creating midi region", track.lanes.getFirstLane());
-      let region = objectFactory.addEmptyMidiRegion(trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
+      let region = objectFactory.addEmptyMidiRegion(track, trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
       root.currentAction = Arranger.CreatingResizingR;
       root.setObjectSnapshotsAtStart();
       CursorManager.setResizeEndCursor();
@@ -220,7 +220,7 @@ Arranger {
     delegate: Item {
       id: trackDelegate
 
-      required property var track
+      required property Track track
 
       height: track.fullVisibleHeight
       width: tracksListView.width
@@ -257,7 +257,9 @@ Arranger {
             sourceComponent: Repeater {
               id: scalesRepeater
 
-              model: trackDelegate.track.scaleObjects
+              readonly property ChordTrack track: trackDelegate.track as ChordTrack
+
+              model: track.scaleObjects
 
               delegate: Loader {
                 id: scaleLoader
@@ -296,7 +298,9 @@ Arranger {
             sourceComponent: Repeater {
               id: markersRepeater
 
-              model: trackDelegate.track.markers
+              readonly property MarkerTrack track: trackDelegate.track as MarkerTrack
+
+              model: track.markers
 
               delegate: Loader {
                 id: markerLoader
@@ -335,7 +339,9 @@ Arranger {
             sourceComponent: Repeater {
               id: chordRegionsRepeater
 
-              model: trackDelegate.track.regions
+              readonly property ChordTrack track: trackDelegate.track as ChordTrack
+
+              model: track.chordRegions
 
               delegate: Loader {
                 id: chordRegionLoader
@@ -367,7 +373,7 @@ Arranger {
           Loader {
             id: mainTrackLanedRegionsLoader
 
-            active: trackDelegate.track.hasLanes
+            active: trackDelegate.track.lanes !== null
             anchors.fill: parent
             visible: active
 
@@ -379,9 +385,9 @@ Arranger {
               delegate: Repeater {
                 id: mainTrackLaneRegionsRepeater
 
-                required property var trackLane
+                required property TrackLane trackLane
 
-                model: trackLane.regions
+                model: trackDelegate.track.type === Track.Audio ? trackLane.audioRegions : trackLane.midiRegions
 
                 delegate: Loader {
                   id: mainTrackRegionLoader
@@ -442,7 +448,7 @@ Arranger {
           Layout.maximumHeight: Layout.preferredHeight
           Layout.minimumHeight: Layout.preferredHeight
           Layout.preferredHeight: item ? item.contentHeight : 0
-          active: trackDelegate.track.hasLanes && trackDelegate.track.lanesVisible
+          active: trackDelegate.track.lanes && trackDelegate.track.lanes.lanesVisible
           visible: active
 
           sourceComponent: ListView {
@@ -458,24 +464,22 @@ Arranger {
             delegate: Item {
               id: laneItem
 
-              required property var trackLane
+              required property TrackLane trackLane
 
               height: trackLane.height
               width: ListView.view.width
 
-              Repeater {
-                id: laneRegionsRepeater
+              Component {
+                id: laneRegionLoaderComponent
 
-                anchors.fill: parent
-                model: laneItem.trackLane.regions
-
-                delegate: Loader {
+                Loader {
                   id: laneRegionLoader
 
-                  required property var region
-                  readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
-                  readonly property real regionHeight: parent.height
-                  readonly property real regionWidth: regionEndX - regionX
+                  required property var arrangerObject
+                  property var region: arrangerObject
+                  readonly property real regionEndX: regionX + regionWidth
+                  readonly property real regionHeight: trackLane.height
+                  readonly property real regionWidth: region.regionMixin.bounds.length.ticks * root.ruler.pxPerTick
                   readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
                   readonly property var trackLane: laneItem.trackLane
 
@@ -516,6 +520,22 @@ Arranger {
                   }
                 }
               }
+
+              Repeater {
+                id: laneMidiRegionsRepeater
+
+                anchors.fill: parent
+                delegate: laneRegionLoaderComponent
+                model: laneItem.trackLane.midiRegions
+              }
+
+              Repeater {
+                id: laneAudioRegionsRepeater
+
+                anchors.fill: parent
+                delegate: laneRegionLoaderComponent
+                model: laneItem.trackLane.audioRegions
+              }
             }
           }
         }
@@ -523,13 +543,13 @@ Arranger {
         Loader {
           id: automationLoader
 
-          readonly property var automationTracklist: trackDelegate.track.automationTracklist
+          readonly property AutomationTracklist automationTracklist: trackDelegate.track.automationTracklist
 
           Layout.fillWidth: true
           Layout.maximumHeight: Layout.preferredHeight
           Layout.minimumHeight: Layout.preferredHeight
           Layout.preferredHeight: item ? item.contentHeight : 0
-          active: trackDelegate.track.isAutomatable && automationTracklist.automationVisible
+          active: trackDelegate.track.automationTracklist !== null && automationTracklist.automationVisible
           visible: active
 
           sourceComponent: ListView {
@@ -587,7 +607,7 @@ Arranger {
             model: AutomationTracklistProxyModel {
               showOnlyCreated: true
               showOnlyVisible: true
-              sourceModel: trackDelegate.track.automationTracklist
+              sourceModel: automationLoader.automationTracklist
             }
           }
         }

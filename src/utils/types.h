@@ -369,7 +369,9 @@ iterate_tuple (Callable c, Tuple &&t)
 
 using SampleRateGetter = std::function<sample_rate_t ()>;
 
-using basic_enum_base_type_t = std::uint_fast8_t;
+// We're using the C type here because MOC complains it can't find the type
+// otherwise (not even std::uint8_t)
+using basic_enum_base_type_t = uint8_t;
 
 /**
  * @}

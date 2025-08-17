@@ -525,9 +525,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAudioPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::Plugin *> plugins;
-  audio_channel_->get_plugins (plugins);
-  EXPECT_EQ (plugins.size (), 2);
+  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
+  audio_channel_->get_plugins (plugin_vars);
+  EXPECT_EQ (plugin_vars.size (), 2);
+
+  auto plugins =
+    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
 
   // Verify connections
   verifyProcessorsConnected (*track_processor, *plugins[0]);
@@ -570,9 +573,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithMidiPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::Plugin *> plugins;
-  midi_channel_->get_plugins (plugins);
-  EXPECT_EQ (plugins.size (), 2);
+  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
+  midi_channel_->get_plugins (plugin_vars);
+  EXPECT_EQ (plugin_vars.size (), 2);
+
+  auto plugins =
+    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
 
   // Verify connections
   verifyProcessorsConnected (*track_processor, *plugins[0]);
@@ -668,9 +674,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::Plugin *> plugins;
-  audio_channel_->get_plugins (plugins);
-  EXPECT_EQ (plugins.size (), 1);
+  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
+  audio_channel_->get_plugins (plugin_vars);
+  EXPECT_EQ (plugin_vars.size (), 1);
+
+  auto plugins =
+    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
 
   // Check that we have connections between components
   verifyProcessorsConnected (*track_processor, *plugins.front ());
@@ -712,24 +721,27 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAsymmetricAudioPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::Plugin *> plugins;
-  audio_channel_->get_plugins (plugins);
-  EXPECT_EQ (plugins.size (), 2);
+  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
+  audio_channel_->get_plugins (plugin_vars);
+  EXPECT_EQ (plugin_vars.size (), 2);
+
+  auto plugins =
+    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
 
   // Verify connections handle asymmetric I/O correctly
   verifyProcessorsConnected (*track_processor, *plugins.front ());
-  verifyProcessorsConnected (*plugins.at (0), *plugins.at (1));
+  verifyProcessorsConnected (*plugins[0], *plugins[1]);
   EXPECT_TRUE (hasConnection (
-    *plugins.at (0)->get_output_ports ().front ().get_object_as<dsp::AudioPort> (),
-    *plugins.at (1)->get_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
+    *plugins[0]->get_output_ports ().front ().get_object_as<dsp::AudioPort> (),
+    *plugins[1]->get_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
   EXPECT_TRUE (hasConnection (
-    *plugins.at (0)->get_output_ports ().front ().get_object_as<dsp::AudioPort> (),
-    *plugins.at (1)->get_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
+    *plugins[0]->get_output_ports ().front ().get_object_as<dsp::AudioPort> (),
+    *plugins[1]->get_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
   EXPECT_FALSE (hasConnection (
-    *plugins.at (0)->get_output_ports ().at (0).get_object_as<dsp::AudioPort> (),
-    *plugins.at (1)->get_input_ports ().at (1).get_object_as<dsp::AudioPort> ()));
+    *plugins[0]->get_output_ports ().at (0).get_object_as<dsp::AudioPort> (),
+    *plugins[1]->get_input_ports ().at (1).get_object_as<dsp::AudioPort> ()));
   verifyProcessorsConnected (
-    *plugins.at (1), audio_channel_->get_audio_pre_fader ());
+    *plugins[1], audio_channel_->get_audio_pre_fader ());
   verifyProcessorsConnected (
     audio_channel_->get_audio_pre_fader (), audio_channel_->get_fader ());
   verifyProcessorsConnected (
@@ -762,9 +774,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithInstrumentPlugin)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::Plugin *> plugins;
-  audio_channel_->get_plugins (plugins);
-  EXPECT_EQ (plugins.size (), 1);
+  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
+  audio_channel_->get_plugins (plugin_vars);
+  EXPECT_EQ (plugin_vars.size (), 1);
+
+  auto plugins =
+    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
 
   // Verify MIDI to audio conversion path
   verifyProcessorsConnected (*track_processor, *plugins.front ());

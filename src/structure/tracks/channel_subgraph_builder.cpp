@@ -32,13 +32,12 @@ ChannelSubgraphBuilder::
   }
 
   // plugins
-  std::vector<zrythm::plugins::Plugin *> plugins;
+  std::vector<plugins::PluginPtrVariant> plugins;
   ch.get_plugins (plugins);
-  for (auto * pl : plugins)
+  for (
+    auto * pl :
+    plugins | std::views::transform (&plugins::plugin_ptr_variant_to_base))
     {
-      if (pl == nullptr)
-        continue;
-
       dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *pl);
     }
 
@@ -95,10 +94,12 @@ ChannelSubgraphBuilder::add_connections (
   const auto channel_output_type =
     ch.fader ()->is_midi () ? dsp::PortType::Midi : dsp::PortType::Audio;
 
-  std::vector<zrythm::plugins::Plugin *> plugins;
+  std::vector<zrythm::plugins::PluginPtrVariant> plugins;
   ch.get_plugins (plugins);
   plugins::Plugin * last_plugin = nullptr;
-  for (auto * const pl : plugins)
+  for (
+    auto * const pl :
+    plugins | std::views::transform (&plugins::plugin_ptr_variant_to_base))
     {
       dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
       if (last_plugin == nullptr)
@@ -237,7 +238,7 @@ ChannelSubgraphBuilder::add_connections (
   else // else if there is at least 1 plugin
     {
       // connect plugin outputs to channel prefader
-      auto * last_pl = plugins.back ();
+      auto * last_pl = plugins::plugin_ptr_variant_to_base (plugins.back ());
       if (channel_output_type == dsp::PortType::Audio)
         {
           auto prefader_audio_ins =

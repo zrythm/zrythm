@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/audio_group_track.h"
+#include "structure/tracks/track_all.h"
 
 namespace zrythm::structure::tracks
 {
@@ -10,29 +11,16 @@ AudioGroupTrack::AudioGroupTrack (FinalTrackDependencies dependencies)
         Track::Type::AudioGroup,
         PortType::Audio,
         PortType::Audio,
+        TrackFeatures::Automation,
         dependencies.to_base_dependencies ()),
-      ProcessableTrack (
-        dependencies.transport_,
-        PortType::Audio,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      ChannelTrack (dependencies)
+      foldable_track_mixin_ (
+        utils::make_qobject_unique<
+          FoldableTrackMixin> (dependencies.track_registry_, this))
 {
   /* GTK color picker color */
   color_ = Color (QColor ("#26A269"));
   icon_name_ = u8"effect";
-  automationTracklist ()->setParent (this);
-}
-
-bool
-AudioGroupTrack::initialize ()
-{
-  init_channel ();
-  generate_automation_tracks (*this);
-
-  return true;
+  processor_ = make_track_processor ();
 }
 
 void
@@ -41,15 +29,6 @@ init_from (
   const AudioGroupTrack &other,
   utils::ObjectCloneType clone_type)
 {
-  init_from (
-    static_cast<FoldableTrack &> (obj),
-    static_cast<const FoldableTrack &> (other), clone_type);
-  init_from (
-    static_cast<ChannelTrack &> (obj),
-    static_cast<const ChannelTrack &> (other), clone_type);
-  init_from (
-    static_cast<ProcessableTrack &> (obj),
-    static_cast<const ProcessableTrack &> (other), clone_type);
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 }

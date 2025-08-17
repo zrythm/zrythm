@@ -71,15 +71,17 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
         std::visit (
           [&] (auto &&track) {
             using TrackT = base_type<decltype (track)>;
-            if constexpr (
-              std::derived_from<TrackT, structure::tracks::PianoRollTrack>)
+            if constexpr (structure::tracks::PianoRollTrack<TrackT>)
               {
-                auto &target_port = track->processor_->get_midi_in_port ();
+                auto &target_port =
+                  track->get_track_processor ()->get_midi_in_port ();
                 /* if not set to "all channels", filter-append */
-                if (track->allow_only_specific_midi_channels ())
+                if (track->pianoRollTrackMixin ()
+                      ->allow_only_specific_midi_channels ())
                   {
                     target_port.midi_events_.active_events_.append_w_filter (
-                      midi_events, track->midi_channels_to_allow (),
+                      midi_events,
+                      track->pianoRollTrackMixin ()->midi_channels_to_allow (),
                       time_nfo.local_offset_, time_nfo.nframes_);
                   }
                 /* otherwise append normally */
@@ -191,10 +193,9 @@ DspGraphDispatcher::recalc_graph (bool soft)
             z_return_if_fail (tr);
             using TrackT = base_type<decltype (tr)>;
 
-            if constexpr (
-              std::derived_from<TrackT, structure::tracks::RecordableTrack>)
+            if constexpr (structure::tracks::RecordableTrack<TrackT>)
               {
-                tr->processor_->set_handle_recording_callback (
+                tr->get_track_processor ()->set_handle_recording_callback (
                   [tr] (
                     const EngineProcessTimeInfo &time_nfo,
                     const dsp::MidiEventVector * midi_events,

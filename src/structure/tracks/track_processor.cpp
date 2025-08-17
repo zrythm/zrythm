@@ -40,8 +40,8 @@ TrackProcessor::TrackProcessor (
   ProcessorBaseDependencies              dependencies,
   std::optional<FillEventsCallback>      fill_events_cb,
   std::optional<TransformMidiInputsFunc> transform_midi_inputs_func,
-  std::optional<AppendMidiInputsToOutputsFunc> append_midi_inputs_to_outputs_func)
-    : dsp::ProcessorBase (
+  std::optional<AppendMidiInputsToOutputsFunc> append_midi_inputs_to_outputs_func, QObject * parent)
+    : QObject(parent), dsp::ProcessorBase (
         dependencies,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("{} Processor", track_name_provider()))),

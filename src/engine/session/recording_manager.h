@@ -7,7 +7,7 @@
 
 #include "engine/session/recording_event.h"
 #include "structure/arrangement/automation_point.h"
-#include "structure/tracks/processable_track.h"
+#include "structure/tracks/track_all.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 #include "utils/types.h"
@@ -62,9 +62,9 @@ public:
    * @ref RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
    */
   void handle_recording (
-    structure::tracks::ProcessableTrackPtrVariant track_var,
-    const EngineProcessTimeInfo                  &time_nfo,
-    const dsp::MidiEventVector *                  midi_events,
+    structure::tracks::TrackPtrVariant track_var,
+    const EngineProcessTimeInfo       &time_nfo,
+    const dsp::MidiEventVector *       midi_events,
     std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
       stereo_ports);
 
@@ -187,6 +187,10 @@ private:
         lane + 1));
   }
 
+  std::optional<structure::arrangement::ArrangerObjectPtrVariant>
+  get_recording_region_for_track (
+    const structure::tracks::Track::Uuid &track_id) const;
+
 public:
   /** Number of recordings currently in progress. */
   int num_active_recordings_ = 0;
@@ -234,6 +238,40 @@ public:
     structure::arrangement::ArrangerObjectUuid,
     QPointer<AutomationPoint>>
     last_recorded_aps_per_region_;
+
+  /**
+   * Region currently recording on.
+   *
+   * This must only be set when processing an event.
+   */
+  std::unordered_map<
+    structure::tracks::Track::Uuid,
+    structure::arrangement::ArrangerObject::Uuid>
+    recording_region_per_track_;
+
+  /**
+   * @brief Tracks that recording stop event was sent.
+   *
+   * Ported from RecordableTrack. Below are old docs:
+   *
+   * This is a flag to let the recording manager know that a STOP signal was
+   * already sent for recording.i
+   *
+   * This is because @ref recording_region_ takes a cycle or 2 to become NULL.
+   */
+  std::unordered_set<structure::tracks::Track::Uuid>
+    tracks_recording_stop_was_sent_to_;
+
+  std::unordered_set<structure::tracks::Track::Uuid>
+    tracks_recording_start_was_sent_to_;
+
+  /**
+   * This must only be set by the RecordingManager when temporarily pausing
+   * recording, eg when looping or leaving the punch range.
+   *
+   * See @ref RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING.
+   */
+  std::unordered_set<structure::tracks::Track::Uuid> tracks_recording_was_paused_;
 
   /** Pending recorded automation points. */
   std::vector<structure::arrangement::AutomationPoint *> pending_aps_;

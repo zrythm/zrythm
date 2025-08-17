@@ -310,8 +310,6 @@ ZrythmApplication::setup_ui ()
       // manually
       qmlRegisterUncreatableType<structure::arrangement::ArrangerObject> (
         "Zrythm", 1, 0, "ArrangerObject", "Cannot create ArrangerObject");
-      qmlRegisterUncreatableType<TrackTypeWrapper> (
-        "Zrythm", 1, 0, "Track", "Cannot create Track");
 
 #if 0
       qmlRegisterSingletonType (

@@ -5,9 +5,11 @@
 
 #include "dsp/parameter.h"
 #include "dsp/port.h"
+#include "dsp/port_connections_manager.h"
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_span.h"
 #include "structure/tracks/track.h"
+#include "structure/tracks/track_routing.h"
 #include "structure/tracks/track_span.h"
 
 #include <QtQmlIntegration>
@@ -176,6 +178,31 @@ public:
         return std::nullopt;
       }
     return std::make_optional (*it);
+  }
+
+  /**
+   * Returns a unique name for a new track based on the given name.
+   */
+  utils::Utf8String get_unique_name_for_track (
+    const Track::Uuid       &track_to_skip,
+    const utils::Utf8String &name) const
+  {
+    auto new_name = name;
+    while (!track_name_is_unique (new_name, track_to_skip))
+      {
+        auto [ending_num, name_without_num] =
+          new_name.get_int_after_last_space ();
+        if (ending_num == -1)
+          {
+            new_name += u8" 1";
+          }
+        else
+          {
+            new_name = utils::Utf8String::from_utf8_encoded_string (
+              fmt::format ("{} {}", name_without_num, ending_num + 1));
+          }
+      }
+    return new_name;
   }
 
   /**
@@ -400,6 +427,8 @@ public:
     GdkDragAction        action);
 #endif
 
+// TODO
+#if 0
   /**
    * Adds the track's folder parents to the given vector.
    *
@@ -430,6 +459,7 @@ public:
    * Used when deleting tracks.
    */
   void remove_from_folder_parents (const Track::Uuid &track_id);
+#endif
 
   /**
    * Returns whether the track should be visible.
@@ -487,6 +517,7 @@ public:
     return TrackSelectionManager{ selected_tracks_, *track_registry_ };
   }
 
+#if 0
   /**
    * @brief Also selects the children of foldable tracks in the currently
    * selected tracks.
@@ -513,6 +544,12 @@ public:
         },
         track_var);
     });
+  }
+#endif
+
+  auto get_track_route_target (const TrackUuid &source_track) const
+  {
+    return routing_->get_output_track (source_track);
   }
 
   auto get_pinned_tracks_cutoff_index () const { return pinned_tracks_cutoff_; }
@@ -614,6 +651,8 @@ private:
    */
   std::vector<TrackUuidReference> tracks_;
 
+  utils::QObjectUniquePtr<TrackRouting> track_routing_;
+
   /**
    * @brief A subset of tracks that are currently selected.
    *
@@ -648,6 +687,8 @@ private:
 
   /** Pointer to owner sample processor, if any. */
   engine::session::SampleProcessor * sample_processor_ = nullptr;
+
+  utils::QObjectUniquePtr<TrackRouting> routing_;
 
 public:
   /** Pointer to owner project, if any. */

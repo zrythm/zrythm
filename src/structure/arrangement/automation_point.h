@@ -12,10 +12,9 @@ namespace zrythm::structure::arrangement
 /**
  * An automation point inside an AutomationTrack.
  */
-class AutomationPoint final : public QObject, public ArrangerObject
+class AutomationPoint final : public ArrangerObject
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AutomationPoint)
   Q_PROPERTY (float value READ value WRITE setValue NOTIFY valueChanged)
   Q_PROPERTY (dsp::CurveOptionsQmlAdapter * curveOpts READ curveOpts CONSTANT)
   QML_ELEMENT

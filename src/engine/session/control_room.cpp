@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/device_io/engine.h"
 #include "engine/session/control_room.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/fader.h"
-#include "utils/gtest_wrapper.h"
 
 namespace zrythm::engine::session
 {
@@ -52,13 +48,11 @@ ControlRoom::ControlRoom (
             {
               std::visit (
                 [&] (auto &&t) {
-                  using TrackT = base_type<decltype (t)>;
-                  if constexpr (
-                    std::derived_from<TrackT, structure::tracks::ChannelTrack>)
+                  if (t->channel ())
                     {
                       if (
                         t->get_output_signal_type () == dsp::PortType::Audio
-                        && t->currently_listened ())
+                        && t->channel ()->fader ()->currently_listened ())
                         {
                           auto * f = t->channel ()->fader ();
                           utils::float_ranges::product (

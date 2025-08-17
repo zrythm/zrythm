@@ -3,13 +3,7 @@
 
 #include <algorithm>
 
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/arrangement/chord_region.h"
 #include "structure/tracks/chord_track.h"
-#include "structure/tracks/track.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::structure::tracks
 {
@@ -18,21 +12,8 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
         Track::Type::Chord,
         PortType::Midi,
         PortType::Midi,
+        TrackFeatures::Automation | TrackFeatures::Recording,
         dependencies.to_base_dependencies ()),
-      ProcessableTrack (
-        dependencies.transport_,
-        PortType::Midi,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      RecordableTrack (
-        dependencies.transport_,
-        Dependencies{
-          dependencies.tempo_map_, dependencies.file_audio_source_registry_,
-          dependencies.port_registry_, dependencies.param_registry_,
-          dependencies.obj_registry_ }),
-      ChannelTrack (dependencies),
       arrangement::ArrangerObjectOwner<ChordRegion> (
         dependencies.obj_registry_,
         dependencies.file_audio_source_registry_,
@@ -44,8 +25,8 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
 {
   color_ = Color (QColor ("#1C8FFB"));
   icon_name_ = u8"gnome-icon-library-library-music-symbolic";
-  automationTracklist ()->setParent (this);
-  processor_->set_fill_events_callback (
+
+  processor_ = make_track_processor (
     [this] (
       const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
       dsp::MidiEventVector *                        midi_events,
@@ -57,8 +38,8 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
           TrackProcessor::fill_events_from_region_rt (
             transport, time_nfo, midi_events, stereo_ports, *r);
         }
-    });
-  processor_->set_append_midi_inputs_to_outputs_func (
+    },
+    std::nullopt,
     [this] (
       dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
       const EngineProcessTimeInfo &time_nfo) {
@@ -81,15 +62,6 @@ init_from (
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
   init_from (
-    static_cast<ProcessableTrack &> (obj),
-    static_cast<const ProcessableTrack &> (other), clone_type);
-  init_from (
-    static_cast<RecordableTrack &> (obj),
-    static_cast<const RecordableTrack &> (other), clone_type);
-  init_from (
-    static_cast<ChannelTrack &> (obj),
-    static_cast<const ChannelTrack &> (other), clone_type);
-  init_from (
     static_cast<arrangement::ArrangerObjectOwner<arrangement::ChordRegion> &> (
       obj),
     static_cast<const arrangement::ArrangerObjectOwner<
@@ -101,26 +73,6 @@ init_from (
     static_cast<const arrangement::ArrangerObjectOwner<
       arrangement::ScaleObject> &> (other),
     clone_type);
-}
-
-bool
-ChordTrack::initialize ()
-{
-  init_channel ();
-  generate_automation_tracks (*this);
-  init_recordable_track ([] () {
-    return ZRYTHM_HAVE_UI
-           && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
-  });
-
-  return true;
-}
-
-void
-ChordTrack::clear_objects ()
-{
-  ArrangerObjectOwner<ChordRegion>::clear_objects ();
-  ArrangerObjectOwner<ScaleObject>::clear_objects ();
 }
 
 void
@@ -167,17 +119,18 @@ ChordTrack::get_chord_at_ticks (double timeline_ticks) const -> ChordObject *
 {
   const auto timeline_frames = static_cast<signed_frame_t> (std::round (
     base_dependencies_.tempo_map_.tick_to_samples (timeline_ticks)));
-  auto       region_var =
-    arrangement::ArrangerObjectSpan{
-      arrangement::ArrangerObjectOwner<
-        arrangement::ChordRegion>::get_children_vector ()
-    }
-      .get_bounded_object_at_position (timeline_frames, false);
-  if (!region_var)
-    {
-      return nullptr;
-    }
-  const auto * region = std::get<ChordRegion *> (*region_var);
+
+  auto chord_regions_view = arrangement::ArrangerObjectOwner<
+    arrangement::ChordRegion>::get_children_view ();
+  auto region_var = std::ranges::find_if (
+    chord_regions_view, [timeline_frames] (const auto &chord_region) {
+      return chord_region->regionMixin ()->bounds ()->is_hit (
+        timeline_frames, false);
+    });
+  if (region_var == chord_regions_view.end ())
+    return nullptr;
+
+  const auto * region = *region_var;
 
   const auto local_frames =
     timeline_frames_to_local (*region, timeline_frames, true);

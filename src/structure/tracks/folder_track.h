@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "structure/tracks/channel_track.h"
 #include "structure/tracks/foldable_track.h"
+#include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
 {
@@ -12,56 +12,45 @@ namespace zrythm::structure::tracks
 /**
  * @brief A track that can contain other tracks.
  */
-class FolderTrack final
-    : public QObject,
-      public FoldableTrack,
-      // public ChannelTrack,
-      public utils::InitializableObject<FolderTrack>
+class FolderTrack : public Track
 {
   Q_OBJECT
+  Q_PROPERTY (
+    zrythm::structure::tracks::FoldableTrackMixin * foldableTrackMixin READ
+      foldableTrackMixin CONSTANT)
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES (FolderTrack)
-
-  friend class InitializableObject;
-
-  DECLARE_FINAL_TRACK_CONSTRUCTORS (FolderTrack)
+  QML_UNCREATABLE ("")
 
 public:
-  bool currently_listened () const override
+  FolderTrack (FinalTrackDependencies dependencies);
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  FoldableTrackMixin * foldableTrackMixin () const
   {
-    return is_status (MixerStatus::Listened);
+    return foldable_track_mixin_.get ();
   }
 
-  bool currently_muted () const override
-  {
-    return is_status (MixerStatus::Muted);
-  }
+  // ========================================================================
 
-  bool get_implied_soloed () const override
+private:
+  static constexpr auto kFoldableTrackMixinKey = "foldableTrackMixin"sv;
+  friend void           to_json (nlohmann::json &j, const FolderTrack &track)
   {
-    return is_status (MixerStatus::ImpliedSoloed);
+    to_json (j, static_cast<const Track &> (track));
+    j.at (kFoldableTrackMixinKey).get_to (*track.foldable_track_mixin_);
   }
-
-  bool currently_soloed () const override
-  {
-    return is_status (MixerStatus::Soloed);
-  }
+  friend void from_json (const nlohmann::json &j, FolderTrack &track);
 
   friend void init_from (
     FolderTrack           &obj,
     const FolderTrack     &other,
     utils::ObjectCloneType clone_type);
 
-  void temporary_virtual_method_hack () const override { }
-
 private:
-  friend void to_json (nlohmann::json &j, const FolderTrack &track)
-  {
-    to_json (j, static_cast<const Track &> (track));
-    to_json (j, static_cast<const FoldableTrack &> (track));
-  }
-
-  bool initialize ();
+  utils::QObjectUniquePtr<FoldableTrackMixin> foldable_track_mixin_;
 };
 
 } // namespace zrythm::structure::tracks

@@ -24,6 +24,7 @@ class AutomationTrackHolder : public QObject
   Q_PROPERTY (double height READ height WRITE setHeight NOTIFY heightChanged)
   Q_PROPERTY (bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
   Q_PROPERTY (AutomationTrack * automationTrack READ automationTrack CONSTANT)
+  QML_UNCREATABLE ("")
 
 public:
   struct Dependencies
@@ -125,7 +126,7 @@ private:
 /**
  * @brief A container that manages a list of automation tracks.
  */
-class AutomationTracklist final : public QAbstractListModel
+class AutomationTracklist : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT

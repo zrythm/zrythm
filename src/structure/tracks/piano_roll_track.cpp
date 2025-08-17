@@ -1,134 +1,23 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/arrangement/midi_region.h"
 #include "structure/tracks/piano_roll_track.h"
-
-#include <midilib/src/midifile.h>
-#include <midilib/src/midiinfo.h>
 
 namespace zrythm::structure::tracks
 {
-PianoRollTrack::PianoRollTrack ()
+PianoRollTrackMixin::PianoRollTrackMixin (QObject * parent) : QObject (parent)
 {
-  processor_->set_fill_events_callback (
-    [this] (
-      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
-      dsp::MidiEventVector *                        midi_events,
-      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
-      for (auto &lane_var : lanes_)
-        {
-          using TrackLaneT = LanedTrackImpl::TrackLaneType;
-          auto * lane = std::get<TrackLaneT *> (lane_var);
-          for (const auto * r : lane->get_children_view ())
-            {
-              TrackProcessor::fill_events_from_region_rt (
-                transport, time_nfo, midi_events, stereo_ports, *r);
-            }
-        }
-    });
-
-  // change the MIDI channel on the midi input to the channel set on the track
-  processor_->set_transform_midi_inputs_func (
-    [this] (dsp::MidiEventVector &events) {
-      if (!passthrough_midi_input_)
-        {
-          events.set_channel (midi_ch_);
-        }
-    });
-}
-
-void
-PianoRollTrack::write_to_midi_file (
-  MIDI_FILE *            mf,
-  dsp::MidiEventVector * events,
-  const dsp::Position *  start,
-  const dsp::Position *  end,
-  int                    track_index,
-  bool                   lanes_as_tracks,
-  bool                   use_track_pos)
-{
-  std::unique_ptr<dsp::MidiEventVector> own_events;
-  if (!lanes_as_tracks && use_track_pos)
-    {
-      z_return_if_fail (!events);
-      midiTrackAddText (mf, track_index, textTrackName, name_.c_str ());
-      own_events = std::make_unique<dsp::MidiEventVector> ();
-    }
-
-  for (auto &lane_var : lanes_)
-    {
-      auto lane = std::get<MidiLane *> (lane_var);
-      lane->write_to_midi_file (
-        mf, own_events ? own_events.get () : events, start, end,
-        lanes_as_tracks, use_track_pos);
-    }
-
-  if (own_events)
-    {
-      // TODO
-      // own_events->write_to_midi_file (mf, midi_track_pos);
-    }
-}
-
-void
-PianoRollTrack::clear_objects ()
-{
-  LanedTrackImpl::clear_objects ();
-  automationTracklist ()->clear_arranger_objects ();
-}
-
-uint8_t
-PianoRollTrack::get_midi_ch (const arrangement::MidiRegion &midi_region) const
-{
-  return 1;
-// TODO
-#if 0
-  uint8_t ret;
-  auto   &lane = get_lane_for_mr (midi_region);
-  if (lane.midi_ch_ > 0)
-    ret = lane.midi_ch_;
-  else
-    {
-      auto * track = lane.get_track ();
-      z_return_val_if_fail (track, 1);
-      auto piano_roll_track = dynamic_cast<tracks::PianoRollTrack *> (track);
-      ret = piano_roll_track->midi_ch_;
-    }
-
-  z_return_val_if_fail (ret > 0, 1);
-
-  return ret;
-#endif
-}
-
-void
-PianoRollTrack::get_regions_in_range (
-  std::vector<arrangement::ArrangerObjectUuidReference> &regions,
-  std::optional<signed_frame_t>                          p1,
-  std::optional<signed_frame_t>                          p2)
-{
-  LanedTrackImpl::get_regions_in_range (regions, p1, p2);
-  // TODO
-  // AutomatableTrack::get_regions_in_range (regions, p1, p2);
 }
 
 void
 init_from (
-  PianoRollTrack        &obj,
-  const PianoRollTrack  &other,
-  utils::ObjectCloneType clone_type)
+  PianoRollTrackMixin       &obj,
+  const PianoRollTrackMixin &other,
+  utils::ObjectCloneType     clone_type)
 {
   obj.drum_mode_ = other.drum_mode_;
   obj.midi_ch_ = other.midi_ch_;
-  obj.passthrough_midi_input_ = other.passthrough_midi_input_;
+  obj.passthrough_midi_input_.store (other.passthrough_midi_input_.load ());
   obj.midi_channels_ = other.midi_channels_;
-}
-
-void
-PianoRollTrack::set_playback_caches ()
-{
-  LanedTrackImpl::set_playback_caches ();
-  // AutomatableTrack::set_playback_caches ();
 }
 }

@@ -11,7 +11,7 @@ AutomationRegion::AutomationRegion (
   ArrangerObjectRegistry       &object_registry,
   dsp::FileAudioSourceRegistry &file_audio_source_registry,
   QObject *                     parent)
-    : QObject (parent), ArrangerObject (Type::AutomationRegion, tempo_map, *this),
+    : ArrangerObject (Type::AutomationRegion, tempo_map, parent),
       ArrangerObjectOwner (object_registry, file_audio_source_registry, *this),
       region_mixin_ (utils::make_qobject_unique<RegionMixin> (*position ()))
 {

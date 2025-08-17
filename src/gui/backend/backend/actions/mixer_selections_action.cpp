@@ -9,11 +9,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/plugin_span.h"
-#include "structure/arrangement/automation_region.h"
-#include "structure/tracks/channel.h"
-#include "structure/tracks/channel_track.h"
-#include "structure/tracks/modulator_track.h"
-#include "structure/tracks/track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
 
@@ -47,7 +43,7 @@ MixerSelectionsAction::MixerSelectionsAction (
   num_plugins_ = num_plugins;
   new_val_ = new_val;
   new_bridge_mode_ = new_bridge_mode;
-  if (setting)
+  if (setting != nullptr)
     {
       setting_ = utils::clone_unique (*setting);
       setting_->validate ();
@@ -61,7 +57,7 @@ MixerSelectionsAction::MixerSelectionsAction (
       clone_ats (PluginSpan{ *ms_before_ }, false, 0);
     }
 
-  if (connections_mgr)
+  if (connections_mgr != nullptr)
     port_connections_before_ = utils::clone_unique (*connections_mgr);
 }
 

@@ -233,3 +233,102 @@ MidiFile::export_midi_region_to_midi_file (
     }
   mf.writeTo (*output_stream, midi_version);
 }
+
+void
+MidiFile::export_midi_lane_to_sequence (
+  juce::MidiMessageSequence          &message_sequence,
+  const structure::tracks::Tracklist &tracklist,
+  const structure::tracks::Track     &track,
+  const structure::tracks::TrackLane &lane,
+  dsp::MidiEventVector *              events,
+  std::optional<double>               start,
+  std::optional<double>               end,
+  bool                                lanes_as_tracks,
+  bool                                use_track_or_lane_pos)
+{
+// TODO
+#if 0
+  auto calculate_lane_idx_for_midi_serialization =
+    [&tracklist, &track, &lane] () {
+      const auto lane_index = track.lanes ().get_lane_index (lane.get_uuid ());
+      int        pos = 1;
+      for (const auto &cur_track_var : tracklist.get_track_span ())
+        {
+          auto * cur_track = structure::tracks::from_variant (cur_track_var);
+          if (cur_track->get_uuid () == track.get_uuid ())
+            {
+              pos += lane_index;
+              break;
+            }
+
+          pos += cur_track->lanes () ? cur_track->lanes ()->rowCount () : 0;
+        }
+
+      return pos;
+    };
+
+  auto midi_track_pos = tracklist.get_track_index (track.get_uuid ());
+  std::unique_ptr<dsp::MidiEventVector> own_events;
+  if (lanes_as_tracks)
+    {
+      z_return_if_fail (!events);
+      midi_track_pos = calculate_lane_idx_for_midi_serialization ();
+      own_events = std::make_unique<dsp::MidiEventVector> ();
+    }
+  else if (!use_track_or_lane_pos)
+    {
+      z_return_if_fail (events);
+      midi_track_pos = 1;
+    }
+  /* else if using track positions */
+  else
+    {
+      z_return_if_fail (events);
+    }
+
+  /* All data is written out to tracks not channels. We therefore set the
+   * current channel before writing data out. Channel assignments can change any
+   * number of times during the file, and affect all tracks messages until it is
+   * changed. */
+  // midiFileSetTracksDefaultChannel (mf, midi_track_pos, MIDI_CHANNEL_1);
+
+  /* add track name */
+  if (lanes_as_tracks && use_track_or_lane_pos)
+    {
+      // const auto midi_track_name =
+      //   fmt::format ("{} - {}", track.get_name (), lane.name());
+      // midiTrackAddText (
+      // mf, midi_track_pos, textTrackName, midi_track_name.c_str ());
+    }
+
+  for (
+    auto * region :
+    lane.structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiRegion>::get_children_view ())
+    {
+      /* skip regions not inside the given range */
+      if (start)
+        {
+          if (
+            (region->position ()->ticks ()
+             + region->regionMixin ()->bounds ()->length ()->ticks ())
+            < *start)
+            continue;
+        }
+      if (end)
+        {
+          if (region->position ()->ticks () > *end)
+            continue;
+        }
+
+      region->add_midi_region_events (
+        own_events ? *own_events : *events, start, end, true, true);
+    }
+
+  if (own_events)
+    {
+      // TODO
+      // own_events->write_to_midi_file (mf, midi_track_pos);
+    }
+#endif
+}

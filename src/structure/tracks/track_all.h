@@ -15,3 +15,12 @@
 #include "structure/tracks/midi_group_track.h"
 #include "structure/tracks/midi_track.h"
 #include "structure/tracks/modulator_track.h"
+
+namespace zrythm::structure::tracks
+{
+inline Track *
+from_variant (const TrackPtrVariant &variant)
+{
+  return std::visit ([&] (auto &&t) -> Track * { return t; }, variant);
+}
+}

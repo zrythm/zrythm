@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "structure/tracks/automation_track.h"
 #include "utils/uuid_identifiable_object.h"
 #include "utils/variant_helpers.h"
 
@@ -23,10 +22,6 @@ class AudioBusTrack;
 class AudioTrack;
 class ChordTrack;
 class ModulatorTrack;
-class LanedTrack;
-class RecordableTrack;
-class ProcessableTrack;
-class ChannelTrack;
 
 using TrackVariant = std::variant<
   MarkerTrack,
@@ -53,9 +48,6 @@ using TrackResolver =
   utils::UuidIdentifiablObjectResolver<TrackPtrVariant, TrackUuid>;
 
 template <typename TrackT>
-concept AutomatableTrack = std::derived_from<TrackT, ProcessableTrack>;
-
-template <typename TrackT>
 concept FinalTrackSubclass =
   std::is_same_v<TrackT, MarkerTrack> || std::is_same_v<TrackT, InstrumentTrack>
   || std::is_same_v<TrackT, MidiTrack> || std::is_same_v<TrackT, MasterTrack>
@@ -65,6 +57,36 @@ concept FinalTrackSubclass =
   || std::is_same_v<TrackT, AudioBusTrack> || std::is_same_v<TrackT, AudioTrack>
   || std::is_same_v<TrackT, ChordTrack>
   || std::is_same_v<TrackT, ModulatorTrack>;
+
+template <typename TrackT>
+concept FoldableTrack =
+  std::is_same_v<TrackT, AudioGroupTrack>
+  || std::is_same_v<TrackT, MidiGroupTrack>
+  || std::is_same_v<TrackT, FolderTrack>;
+
+template <typename TrackT>
+concept RecordableTrack =
+  std::is_same_v<TrackT, AudioTrack> || std::is_same_v<TrackT, ChordTrack>
+  || std::is_same_v<TrackT, InstrumentTrack>
+  || std::is_same_v<TrackT, MidiTrack>;
+
+template <typename TrackT>
+concept ProcessableTrack =
+  std::is_same_v<TrackT, InstrumentTrack> || std::is_same_v<TrackT, MidiTrack>
+  || std::is_same_v<TrackT, MasterTrack>
+  || std::is_same_v<TrackT, MidiGroupTrack>
+  || std::is_same_v<TrackT, AudioGroupTrack>
+  || std::is_same_v<TrackT, MidiBusTrack>
+  || std::is_same_v<TrackT, AudioBusTrack> || std::is_same_v<TrackT, AudioTrack>
+  || std::is_same_v<TrackT, ChordTrack>;
+
+template <typename TrackT>
+concept AutomatableTrack =
+  ProcessableTrack<TrackT> || std::is_same_v<TrackT, ModulatorTrack>;
+
+template <typename TrackT>
+concept PianoRollTrack =
+  std::is_same_v<TrackT, InstrumentTrack> || std::is_same_v<TrackT, MidiTrack>;
 }
 
 DEFINE_UUID_HASH_SPECIALIZATION (zrythm::structure::tracks::TrackUuid);

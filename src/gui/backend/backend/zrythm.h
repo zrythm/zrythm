@@ -48,6 +48,7 @@ class Zrythm final : public QObject, public utils::QElapsedTimeProvider
     zrythm::gui::old_dsp::plugins::PluginManager * pluginManager READ
       getPluginManager CONSTANT FINAL)
   Q_PROPERTY (QString version READ getVersion CONSTANT FINAL)
+  QML_UNCREATABLE ("")
 public:
   ~Zrythm () override;
 

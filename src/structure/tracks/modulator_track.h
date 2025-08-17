@@ -3,41 +3,25 @@
 
 #pragma once
 
-#include "dsp/modulator_macro_processor.h"
-#include "gui/dsp/plugin_span.h"
-#include "structure/tracks/processable_track.h"
-
-#define P_MODULATOR_TRACK (TRACKLIST->modulator_track_)
+#include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
 {
 /**
  * @brief A track that can host modulator plugins.
- *
- * FIXME: why is this a ProcessableTrack? It doesn't use the processor...
  */
-class ModulatorTrack final
-    : public QObject,
-      public ProcessableTrack,
-      public utils::InitializableObject<ModulatorTrack>
+class ModulatorTrack : public Track
 {
   Q_OBJECT
-  Q_PROPERTY (zrythm::plugins::PluginList * modulators READ modulators CONSTANT)
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES (ModulatorTrack)
-  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (ModulatorTrack)
-
-  friend class InitializableObject;
-  friend struct ModulatorImportData;
-
-  DECLARE_FINAL_TRACK_CONSTRUCTORS (ModulatorTrack)
+  QML_UNCREATABLE ("")
 
 public:
+  ModulatorTrack (FinalTrackDependencies dependencies);
+
   // ============================================================================
   // QML Interface
   // ============================================================================
-
-  plugins::PluginList * modulators () const { return modulators_.get (); }
 
   // ============================================================================
 
@@ -45,8 +29,8 @@ public:
    * Inserts and connects a Modulator to the Track.
    *
    * @param replace_mode Whether to perform the operation in replace mode
-   * (replace current modulator if true, not touching other modulators, or push
-   * other modulators forward if false).
+   * (replace current modulator if true, not touching other modulators, or
+   * push other modulators forward if false).
    */
   PluginPtrVariant insert_modulator (
     plugins::PluginSlot::SlotNo  slot,
@@ -70,32 +54,14 @@ public:
     return std::span (modulator_macro_processors_);
   }
 
-  auto get_modulator_span () const
-  {
-    return PluginSpan{ modulators_->plugins () };
-  }
-
-  void temporary_virtual_method_hack () const override { }
-
 private:
-  static constexpr auto kModulatorsKey = "modulators"sv;
-  static constexpr auto kModulatorMacroProcessorsKey = "modulatorMacros"sv;
-  friend void           to_json (nlohmann::json &j, const ModulatorTrack &track)
+  friend void to_json (nlohmann::json &j, const ModulatorTrack &track)
   {
     to_json (j, static_cast<const Track &> (track));
-    j[kModulatorsKey] = *track.modulators_;
-    j[kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
   }
-  friend void from_json (const nlohmann::json &j, ModulatorTrack &track);
-
-  bool initialize ();
-
-public:
-  /** Modulators. */
-  utils::QObjectUniquePtr<plugins::PluginList> modulators_;
-
-  /** Modulator macros. */
-  std::vector<utils::QObjectUniquePtr<dsp::ModulatorMacroProcessor>>
-    modulator_macro_processors_;
+  friend void from_json (const nlohmann::json &j, ModulatorTrack &track)
+  {
+    from_json (j, static_cast<Track &> (track));
+  }
 };
 }

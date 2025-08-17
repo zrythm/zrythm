@@ -3,17 +3,19 @@
 
 #pragma once
 
-#include "structure/tracks/audio_lane.h"
-#include "structure/tracks/midi_lane.h"
 #include "structure/tracks/track_lane.h"
+#include "structure/tracks/track_processor.h"
 
 namespace zrythm::structure::tracks
 {
 class TrackLaneList : public QAbstractListModel
 {
   Q_OBJECT
+  Q_PROPERTY (
+    bool lanesVisible READ lanesVisible WRITE setLanesVisible NOTIFY
+      lanesVisibleChanged)
   QML_ELEMENT
-  Z_DISABLE_COPY_MOVE (TrackLaneList)
+  QML_UNCREATABLE ("")
 
 public:
   enum Roles
@@ -22,11 +24,12 @@ public:
   };
 
 public:
-  TrackLaneList (QObject * parent = nullptr);
-  ~TrackLaneList () override;
-
-  friend class LanedTrackImpl<AudioLane>;
-  friend class LanedTrackImpl<MidiLane>;
+  TrackLaneList (
+    structure::arrangement::ArrangerObjectRegistry &obj_registry,
+    dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
+    QObject *                                       parent = nullptr);
+  ~TrackLaneList () override = default;
+  Z_DISABLE_COPY_MOVE (TrackLaneList)
 
   // ========================================================================
   // QML Interface
@@ -41,6 +44,26 @@ public:
     return data (index (0, 0), TrackLanePtrRole);
   }
 
+  bool lanesVisible () const { return lanes_visible_; }
+  void setLanesVisible (bool visible)
+  {
+    if (lanes_visible_ == visible)
+      return;
+
+    lanes_visible_ = visible;
+    Q_EMIT lanesVisibleChanged (visible);
+  }
+  Q_SIGNAL void lanesVisibleChanged (bool visible);
+
+  /**
+   * @brief Adds a lane to the end of the list with default settings.
+   */
+  Q_INVOKABLE TrackLane * addLane () { return insertLane (rowCount ()); }
+  Q_INVOKABLE TrackLane * insertLane (size_t index);
+  Q_INVOKABLE void        removeLane (size_t index);
+
+  Q_INVOKABLE void moveLane (size_t from_index, size_t to_index);
+
   // ========================================================================
 
   friend void init_from (
@@ -52,37 +75,34 @@ public:
 
   [[nodiscard]] bool empty () const noexcept { return lanes_.empty (); }
 
-  [[nodiscard]] auto at (size_t idx) const { return lanes_.at (idx); }
+  TrackLane * at (size_t idx) const { return lanes_.at (idx).get (); }
 
+#if 0
   void reserve (size_t size) { lanes_.reserve (size); }
 
-  void push_back (const TrackLanePtrVariant lane)
+  void push_back (utils::QObjectUniquePtr<TrackLane> &&lane)
   {
     const int idx = static_cast<int> (lanes_.size ());
     beginInsertRows (QModelIndex (), idx, idx);
-    lanes_.push_back (lane);
-    std::visit ([&] (auto &&l) { l->setParent (this); }, lane);
+    lane->setParent (this);
+    lanes_.emplace_back (std::move (lane));
     endInsertRows ();
   }
+#endif
 
   /** Removes last lane. */
-  void pop_back ()
+  utils::QObjectUniquePtr<TrackLane> pop_back ()
   {
     if (!empty ())
       {
         const int idx = static_cast<int> (lanes_.size () - 1);
         beginRemoveRows (QModelIndex (), idx, idx);
-        auto lane = lanes_.back ();
-        std::visit (
-          [&] (auto &&l) {
-            l->setParent (nullptr);
-            lanes_.pop_back ();
-            l->deleteLater ();
-          },
-          lane);
-
+        auto lane = std::move (lanes_.back ());
+        lanes_.pop_back ();
         endRemoveRows ();
+        return lane;
       }
+    return {};
   }
 
   void clear ()
@@ -91,65 +111,79 @@ public:
       {
         beginRemoveRows (
           QModelIndex (), 0, static_cast<int> (lanes_.size () - 1));
-        for (auto &lane : lanes_)
-          {
-            std::visit (
-              [&] (auto &&l) {
-                l->setParent (nullptr);
-                l->deleteLater ();
-              },
-              lane);
-          }
         lanes_.clear ();
         endRemoveRows ();
       }
   }
 
-  /** Iterator access. */
-  [[nodiscard]] auto begin () noexcept { return lanes_.begin (); }
+  auto &lanes () const { return lanes_; }
 
-  [[nodiscard]] auto end () noexcept { return lanes_.end (); }
+  auto lanes_view () const
+  {
+    return lanes_
+           | std::views::transform (&utils::QObjectUniquePtr<TrackLane>::get);
+  }
 
-  [[nodiscard]] auto begin () const noexcept { return lanes_.begin (); }
+  /**
+   * @brief Gets the total height of all visible lanes (if any).
+   */
+  double get_visible_lane_heights () const
+  {
+    if (!lanes_visible_)
+      return 0;
 
-  [[nodiscard]] auto end () const noexcept { return lanes_.end (); }
+    return std::ranges::fold_left (
+      lanes_view () | std::views::transform (&TrackLane::height), 0,
+      std::plus{});
+  }
 
-  void erase (size_t pos);
+  /**
+   * @brief Creates missing TrackLane's until @p index.
+   */
+  void create_missing_lanes (size_t index);
 
-  [[nodiscard]] auto front () noexcept { return lanes_.front (); }
+  /**
+   * @brief Removes the empty last lanes of the Track (except the last one).
+   */
+  void remove_empty_last_lanes ();
 
-  [[nodiscard]] auto back () noexcept { return lanes_.back (); }
-
-  [[nodiscard]] auto front () const noexcept { return lanes_.front (); }
-
-  [[nodiscard]] auto back () const noexcept { return lanes_.back (); }
+  void fill_events_callback (
+    const dsp::ITransport                        &transport,
+    const EngineProcessTimeInfo                  &time_nfo,
+    dsp::MidiEventVector *                        midi_events,
+    std::optional<TrackProcessor::StereoPortPair> stereo_ports);
 
 private:
-  static constexpr std::string_view kLanesKey = "lanes";
+  static constexpr auto             kLanesKey = "lanes"sv;
+  static constexpr std::string_view kLanesVisibleKey = "lanesVisible";
   friend void to_json (nlohmann::json &j, const TrackLaneList &p)
   {
     j[kLanesKey] = p.lanes_;
+    j[kLanesVisibleKey] = p.lanes_visible_;
   }
-  struct Builder
-  {
-    template <typename TrackLaneT> std::unique_ptr<TrackLaneT> build () const
-    {
-      // TODO. also should get rid of the Track dependency in track lanes...
-      return {};
-    }
-  };
   friend void from_json (const nlohmann::json &j, TrackLaneList &p)
   {
+    p.lanes_.clear ();
     for (const auto &lane_json : j.at (kLanesKey))
       {
-        TrackLanePtrVariant lane;
-        utils::serialization::variant_from_json_with_builder (
-          lane_json, lane, Builder{});
-        p.lanes_.push_back (lane);
+        p.lanes_.emplace_back (
+          utils::make_qobject_unique<TrackLane> (p.dependencies_, &p));
+        lane_json.get_to (*p.lanes_.back ());
       }
+    j.at (kLanesVisibleKey).get_to (p.lanes_visible_);
   }
 
+  void erase (size_t pos);
+
+  void update_default_lane_names ();
+
 private:
-  std::vector<TrackLanePtrVariant> lanes_;
+  TrackLane::TrackLaneDependencies                dependencies_;
+  std::vector<utils::QObjectUniquePtr<TrackLane>> lanes_;
+
+  /** Flag to set lanes visible or not. */
+  bool lanes_visible_ = false;
+
+  BOOST_DESCRIBE_CLASS (TrackLaneList, (), (), (), (lanes_, lanes_visible_))
 };
 }

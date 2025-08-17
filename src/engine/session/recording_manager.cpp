@@ -13,13 +13,7 @@
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/chord_region.h"
-#include "structure/tracks/audio_track.h"
-#include "structure/tracks/chord_track.h"
-#include "structure/tracks/laned_track.h"
-#include "structure/tracks/piano_roll_track.h"
-#include "structure/tracks/processable_track.h"
-#include "structure/tracks/recordable_track.h"
-#include "structure/tracks/track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
@@ -76,6 +70,18 @@ RecordingManager::start_unended_note (
   /* add to unended notes */
   unended_notes_per_region_.at (mr.get_uuid ())
     .push_back (std::get<MidiNote *> (mn.get_object ()));
+}
+
+std::optional<structure::arrangement::ArrangerObjectPtrVariant>
+RecordingManager::get_recording_region_for_track (
+  const structure::tracks::Track::Uuid &track_id) const
+{
+  auto it = recording_region_per_track_.find (track_id);
+  if (it == recording_region_per_track_.end ())
+    return std::nullopt;
+
+  return PROJECT->get_arranger_object_registry ().find_by_id_or_throw (
+    (*it).second);
 }
 
 void
@@ -229,9 +235,9 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
 void
 RecordingManager::handle_recording (
-  structure::tracks::ProcessableTrackPtrVariant track_var,
-  const EngineProcessTimeInfo                  &time_nfo,
-  const dsp::MidiEventVector *                  midi_events,
+  structure::tracks::TrackPtrVariant track_var,
+  const EngineProcessTimeInfo       &time_nfo,
+  const dsp::MidiEventVector *       midi_events,
   std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
     stereo_ports)
 {
@@ -271,18 +277,21 @@ RecordingManager::handle_recording (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
 
-      if constexpr (std::derived_from<TrackT, RecordableTrack>)
+      if (tr->recordableTrackMixin ())
         {
           /*  if not recording at all (recording stopped) */
           if (
-            !TRANSPORT->is_recording () || !tr->get_recording ()
+            !TRANSPORT->is_recording ()
+            || !tr->recordableTrackMixin ()->recording ()
             || !TRANSPORT->isRolling ())
             {
               /* if track had previously recorded */
               if (
-                Q_UNLIKELY (tr->recording_region_) && !tr->recording_stop_sent_)
+                recording_region_per_track_.contains (tr->get_uuid ())
+                && !std::ranges::contains (
+                  tracks_recording_stop_was_sent_to_, tr->get_uuid ()))
                 {
-                  tr->recording_stop_sent_ = true;
+                  tracks_recording_stop_was_sent_to_.emplace (tr->get_uuid ());
 
                   /* send stop recording event */
                   auto re = event_obj_pool_.acquire ();
@@ -295,7 +304,10 @@ RecordingManager::handle_recording (
           /* if pausing */
           else if (time_nfo.nframes_ == 0)
             {
-              if (tr->recording_region_ || tr->recording_start_sent_)
+              if (
+                recording_region_per_track_.contains (tr->get_uuid ())
+                || std::ranges::contains (
+                  tracks_recording_start_was_sent_to_, tr->get_uuid ()))
                 {
                   /* send pause event */
                   auto re = event_obj_pool_.acquire ();
@@ -310,9 +322,12 @@ RecordingManager::handle_recording (
           else if (inside_punch_range)
             {
               /* if no recording started yet */
-              if (!tr->recording_region_ && !tr->recording_start_sent_)
+              if (
+                !recording_region_per_track_.contains (tr->get_uuid ())
+                && !std::ranges::contains (
+                  tracks_recording_start_was_sent_to_, tr->get_uuid ()))
                 {
-                  tr->recording_start_sent_ = true;
+                  tracks_recording_start_was_sent_to_.emplace (tr->get_uuid ());
 
                   /* send start recording event */
                   auto re = event_obj_pool_.acquire ();
@@ -386,9 +401,7 @@ RecordingManager::handle_recording (
       if (!skip_adding_track_events)
         {
           /* add recorded track material to event queue */
-          if constexpr (
-            std::derived_from<TrackT, PianoRollTrack>
-            || std::is_same_v<TrackT, ChordTrack>)
+          if (tr->pianoRollTrackMixin () || std::is_same_v<TrackT, ChordTrack>)
             {
               assert (midi_events != nullptr);
               for (const auto &me : *midi_events)
@@ -408,7 +421,7 @@ RecordingManager::handle_recording (
                   event_queue_.push_back (re);
                 }
             }
-          else if (tr->get_type () == structure::tracks::Track::Type::Audio)
+          else if (std::is_same_v<TrackT, AudioTrack>)
             {
               assert (stereo_ports.has_value ());
               auto re = event_obj_pool_.acquire ();
@@ -543,7 +556,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
-      if constexpr (AutomatableTrack<TrackT>)
+      if (tr->automationTracklist ())
         {
 
           /* position to pause at */
@@ -556,13 +569,13 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
 
           if (ev.type_ == RecordingEvent::Type::PauseTrackRecording)
             {
-              if constexpr (std::derived_from<TrackT, RecordableTrack>)
+              if constexpr (RecordableTrack<TrackT>)
                 {
-                  tr->recording_paused_ = true;
+                  tracks_recording_was_paused_.emplace (tr->get_uuid ());
 
                   /* get the recording region */
                   [[maybe_unused]] auto region_var =
-                    tr->get_recording_region ().value ();
+                    recording_region_per_track_.at (tr->get_uuid ());
 
 // TODO
 #if 0
@@ -1379,14 +1392,14 @@ RecordingManager::process_events ()
             std::visit (
               [&] (auto &&tr) {
                 using TrackT = base_type<decltype (tr)>;
-                if constexpr (std::derived_from<TrackT, RecordableTrack>)
+                if constexpr (RecordableTrack<TrackT>)
                   {
                     z_debug (
                       "-------- STOP TRACK RECORDING ({})", tr->get_name ());
                     handle_stop_recording (false);
-                    tr->recording_region_.reset ();
-                    tr->recording_start_sent_ = false;
-                    tr->recording_stop_sent_ = false;
+                    recording_region_per_track_.erase (tr->get_uuid ());
+                    tracks_recording_start_was_sent_to_.erase (tr->get_uuid ());
+                    tracks_recording_stop_was_sent_to_.erase (tr->get_uuid ());
                   }
                 else
                   {

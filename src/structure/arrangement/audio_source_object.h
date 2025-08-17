@@ -16,10 +16,9 @@ namespace zrythm::structure::arrangement
  * easily via a delegate to ArrangerObjectOwner (since audio region is now also
  * an ArrangerObjectOwner).
  */
-class AudioSourceObject final : public QObject, public ArrangerObject
+class AudioSourceObject final : public ArrangerObject
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AudioSourceObject)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 

@@ -138,7 +138,7 @@ public:
    *
    * @param pls Vector to add plugins to.
    */
-  void get_plugins (std::vector<Plugin *> &pls) const;
+  void get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const;
 
   std::optional<PluginPtrVariant> get_instrument () const
   {

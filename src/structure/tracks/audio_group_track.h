@@ -4,56 +4,55 @@
 #pragma once
 
 #include "structure/tracks/foldable_track.h"
-#include "structure/tracks/group_target_track.h"
+#include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
 {
 /**
- * An audio group track that can be folded and is a target for other tracks.
- * It is also an automatable track, meaning it can have automation data.
+ * A track that can be folded and can be a target for other tracks.
  */
-class AudioGroupTrack final
-    : public QObject,
-      public FoldableTrack,
-      public GroupTargetTrack,
-      public utils::InitializableObject<AudioGroupTrack>
+class AudioGroupTrack : public Track
 {
   Q_OBJECT
+  Q_PROPERTY (
+    zrythm::structure::tracks::FoldableTrackMixin * foldableTrackMixin READ
+      foldableTrackMixin CONSTANT)
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES (AudioGroupTrack)
-  DEFINE_PROCESSABLE_TRACK_QML_PROPERTIES (AudioGroupTrack)
-  DEFINE_CHANNEL_TRACK_QML_PROPERTIES (AudioGroupTrack)
-
-  friend class InitializableObject;
-
-  DECLARE_FINAL_TRACK_CONSTRUCTORS (AudioGroupTrack)
+  QML_UNCREATABLE ("")
 
 public:
+  AudioGroupTrack (FinalTrackDependencies dependencies);
+
   friend void init_from (
     AudioGroupTrack       &obj,
     const AudioGroupTrack &other,
     utils::ObjectCloneType clone_type);
 
-  void temporary_virtual_method_hack () const override { }
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  FoldableTrackMixin * foldableTrackMixin () const
+  {
+    return foldable_track_mixin_.get ();
+  }
+
+  // ========================================================================
 
 private:
+  static constexpr auto kFoldableTrackMixinKey = "foldableTrackMixin"sv;
   friend void to_json (nlohmann::json &j, const AudioGroupTrack &track)
   {
     to_json (j, static_cast<const Track &> (track));
-    to_json (j, static_cast<const ProcessableTrack &> (track));
-    to_json (j, static_cast<const ChannelTrack &> (track));
-    to_json (j, static_cast<const GroupTargetTrack &> (track));
-    to_json (j, static_cast<const FoldableTrack &> (track));
+    j[kFoldableTrackMixinKey] = track.foldable_track_mixin_;
   }
   friend void from_json (const nlohmann::json &j, AudioGroupTrack &track)
   {
     from_json (j, static_cast<Track &> (track));
-    from_json (j, static_cast<ProcessableTrack &> (track));
-    from_json (j, static_cast<ChannelTrack &> (track));
-    from_json (j, static_cast<GroupTargetTrack &> (track));
-    from_json (j, static_cast<FoldableTrack &> (track));
+    j.at (kFoldableTrackMixinKey).get_to (*track.foldable_track_mixin_);
   }
 
-  bool initialize ();
+private:
+  utils::QObjectUniquePtr<FoldableTrackMixin> foldable_track_mixin_;
 };
 }

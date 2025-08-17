@@ -8,59 +8,62 @@
 namespace zrythm::structure::tracks
 {
 /**
- * @brief Abstract base for a foldable track.
+ * @brief Mixin class for a foldable track.
  */
-class FoldableTrack : virtual public Track
+class FoldableTrackMixin : public QAbstractListModel
 {
+  Q_OBJECT
+  Q_PROPERTY (bool folded READ folded WRITE setFolded NOTIFY foldedChanged)
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
-  enum class MixerStatus
+  FoldableTrackMixin (
+    TrackRegistry &track_registry,
+    QObject *      parent = nullptr) noexcept;
+  ~FoldableTrackMixin () noexcept override = default;
+  Z_DISABLE_COPY_MOVE (FoldableTrackMixin)
+
+  enum TrackRoles
   {
-    Muted,
-    Soloed,
-    ImpliedSoloed,
-    Listened,
+    TrackPtrRole = Qt::UserRole + 1,
   };
 
-public:
-  FoldableTrack () noexcept { }
-  ~FoldableTrack () noexcept override = default;
-  Z_DISABLE_COPY_MOVE (FoldableTrack)
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  /**
-   * Used to check if soloed/muted/etc.
-   */
-  bool is_status (MixerStatus status) const;
+  bool folded () const { return folded_; }
+  void setFolded (bool folded)
+  {
+    if (folded_ == folded)
+      return;
 
-  /**
-   * Sets track folded and optionally adds the action to the undo stack.
-   */
-  void
-  set_folded (bool folded, bool trigger_undo, bool auto_select, bool fire_events);
+    folded_ = folded;
+    Q_EMIT foldedChanged (folded);
+  }
+  Q_SIGNAL void foldedChanged (bool folded);
+
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  // ========================================================================
 
 private:
-  static constexpr auto kSizeKey = "size"sv;
+  static constexpr auto kChildrenKey = "children"sv;
   static constexpr auto kFoldedKey = "folded"sv;
-  friend void           to_json (nlohmann::json &j, const FoldableTrack &track)
-  {
-    j[kSizeKey] = track.size_;
-    j[kFoldedKey] = track.folded_;
-  }
-  friend void from_json (const nlohmann::json &j, FoldableTrack &track)
-  {
-    j.at (kSizeKey).get_to (track.size_);
-    j.at (kFoldedKey).get_to (track.folded_);
-  }
+  friend void to_json (nlohmann::json &j, const FoldableTrackMixin &track);
+  friend void from_json (const nlohmann::json &j, FoldableTrackMixin &track);
 
-public:
-  /**
-   * @brief Number of tracks inside this track.
-   *
-   * 1 means no other tracks inside.
-   */
-  int size_ = 1;
+private:
+  TrackRegistry &track_registry_;
 
   /** Whether currently folded. */
   bool folded_ = false;
+
+  std::vector<TrackUuidReference> children_;
 };
 
 } // namespace zrythm::structure::tracks

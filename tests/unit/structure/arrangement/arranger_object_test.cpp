@@ -21,9 +21,9 @@ protected:
 
     // Create objects with proper parenting
     obj = std::make_unique<MockArrangerObject> (
-      ArrangerObject::Type::Marker, *tempo_map, *parent);
+      ArrangerObject::Type::Marker, *tempo_map, parent.get ());
     obj2 = std::make_unique<MockArrangerObject> (
-      ArrangerObject::Type::MidiNote, *tempo_map, *parent);
+      ArrangerObject::Type::MidiNote, *tempo_map, parent.get ());
   }
 
   std::unique_ptr<dsp::TempoMap>            tempo_map;
@@ -151,7 +151,8 @@ TEST_F (ArrangerObjectTest, UuidFunctionality)
 
   // Test persistence through cloning
   const auto         original_uuid = obj->get_uuid ();
-  MockArrangerObject temp (ArrangerObject::Type::Marker, *tempo_map, *parent);
+  MockArrangerObject temp (
+    ArrangerObject::Type::Marker, *tempo_map, parent.get ());
   init_from (temp, *obj, utils::ObjectCloneType::Snapshot);
   EXPECT_EQ (temp.get_uuid (), original_uuid);
 }
@@ -168,7 +169,8 @@ TEST_F (ArrangerObjectTest, Serialization)
   to_json (j, *obj);
 
   // Create new object from serialized data
-  MockArrangerObject new_obj (ArrangerObject::Type::Marker, *tempo_map, *parent);
+  MockArrangerObject new_obj (
+    ArrangerObject::Type::Marker, *tempo_map, parent.get ());
   from_json (j, new_obj);
 
   // Verify state

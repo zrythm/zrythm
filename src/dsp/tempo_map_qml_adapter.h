@@ -71,6 +71,7 @@ class MusicalPositionWrapper : public QObject
   Q_PROPERTY (int sixteenth READ sixteenth CONSTANT)
   Q_PROPERTY (int tick READ tick CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   explicit MusicalPositionWrapper (

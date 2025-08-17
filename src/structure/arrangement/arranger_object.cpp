@@ -9,11 +9,10 @@ namespace zrythm::structure::arrangement
 ArrangerObject::ArrangerObject (
   Type                 type,
   const dsp::TempoMap &tempo_map,
-  QObject             &derived) noexcept
-    : type_ (type), position_ (tempo_map),
+  QObject *            parent) noexcept
+    : QObject (parent), type_ (type), position_ (tempo_map),
       position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (position_, &derived))
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (position_, this))
 {
 }
 

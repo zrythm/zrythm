@@ -13,10 +13,9 @@ namespace zrythm::structure::arrangement
 /**
  * Marker for the MarkerTrack.
  */
-class Marker final : public QObject, public ArrangerObject
+class Marker final : public ArrangerObject
 {
   Q_OBJECT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (Marker)
   Q_PROPERTY (Marker::MarkerType markerType READ markerType CONSTANT)
   Q_PROPERTY (ArrangerObjectName * name READ name CONSTANT)
   QML_ELEMENT
