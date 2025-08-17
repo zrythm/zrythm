@@ -8,7 +8,6 @@
 #include <variant>
 #include <vector>
 
-#include "utils/initializable_object.h"
 #include "utils/qt.h"
 #include "utils/traits.h"
 #include "utils/variant_helpers.h"
@@ -49,17 +48,7 @@ clone_unique (
   Args &&... args)
 {
   std::unique_ptr<Derived> cloned;
-  if constexpr (utils::Initializable<Derived>)
-    {
-      auto result = Derived::create_unique (std::forward<Args> (args)...);
-      if (!result)
-        return nullptr;
-      cloned = std::move (result);
-    }
-  else
-    {
-      cloned = std::make_unique<Derived> (std::forward<Args> (args)...);
-    }
+  cloned = std::make_unique<Derived> (std::forward<Args> (args)...);
   init_from (*cloned, obj, clone_type);
   return cloned;
 }
@@ -72,18 +61,7 @@ clone_shared (
   Args &&... args)
 {
   std::shared_ptr<Derived> cloned;
-  if constexpr (utils::Initializable<Derived>)
-    {
-      auto result =
-        Derived::template create_shared<Derived> (std::forward<Args> (args)...);
-      if (!result)
-        return nullptr;
-      cloned = std::move (result);
-    }
-  else
-    {
-      cloned = std::make_shared<Derived> (std::forward<Args> (args)...);
-    }
+  cloned = std::make_shared<Derived> (std::forward<Args> (args)...);
   init_from (*cloned, obj, clone_type);
   return cloned;
 }

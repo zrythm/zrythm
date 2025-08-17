@@ -5,7 +5,6 @@
 
 #include "utils/format.h"
 #include "utils/icloneable.h"
-#include "utils/initializable_object.h"
 #include "utils/logger.h"
 #include "utils/serialization.h"
 #include "utils/string.h"
@@ -344,17 +343,7 @@ public:
   auto create_object (Args &&... args) -> UuidReference<OwningObjectRegistry>
     requires std::derived_from<CreateType, BaseT>
   {
-    CreateType * obj{};
-    if constexpr (utils::Initializable<CreateType>)
-      {
-        auto obj_unique_ptr =
-          CreateType::create_unique (std::forward<Args> (args)...);
-        obj = obj_unique_ptr.release ();
-      }
-    else
-      {
-        obj = new CreateType (std::forward<Args> (args)...);
-      }
+    auto * obj = new CreateType (std::forward<Args> (args)...);
     z_trace (
       "created object of type {} with ID {}", typeid (CreateType).name (),
       obj->get_uuid ());

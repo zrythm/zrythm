@@ -23,7 +23,6 @@
 #include "./gtest_wrapper.h"
 #include "./hash.h"
 #include "./icloneable.h"
-#include "./initializable_object.h"
 #include "./io.h"
 #include "./logger.h"
 #include "./math.h"

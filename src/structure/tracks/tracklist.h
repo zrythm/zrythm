@@ -57,7 +57,7 @@ public:
   /**
    * Used in track search functions.
    */
-  enum class PinOption
+  enum class PinOption : basic_enum_base_type_t
   {
     PinnedOnly,
     UnpinnedOnly,

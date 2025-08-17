@@ -55,15 +55,7 @@ public:
   public:
     std::unique_ptr<TrackT> build_for_deserialization () const
     {
-      // FIXME: DRY
-      if constexpr (utils::Initializable<TrackT>)
-        {
-          return TrackT::create_unique (track_deps_);
-        }
-      else
-        {
-          return std::make_unique<TrackT> (track_deps_);
-        }
+      return std::make_unique<TrackT> (track_deps_);
     }
 
     auto build ()

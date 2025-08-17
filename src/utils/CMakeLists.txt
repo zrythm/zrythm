@@ -41,7 +41,6 @@ target_sources(zrythm_utils_lib
     gtest_wrapper.cpp
     hash.h
     hash.cpp
-    initializable_object.h
     io.h
     io.cpp
     icloneable.h
