@@ -1,32 +1,25 @@
-Zrythm is free software: you can redistribute it
-and/or modify it under the terms of the GNU Affero
-General Public License (GNU AGPL) as published by the
-Free Software Foundation, either version 3 of the
-License, or (at your option) any later version, with
-the additional terms below.
+Zrythm is free software: you can redistribute it and/or modify it under the
+terms of the GNU Affero General Public License (GNU AGPL) as published by the
+Free Software Foundation, either version 3 of the License, or (at your option)
+any later version, with the additional terms below.
 
-Zrythm is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR
+Zrythm is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 A PARTICULAR PURPOSE.
 
 ---
 
 Additional terms under Section 7 of the GNU AGPL:
 
-Zrythm and the Zrythm logo are trademarks of
-Alexandros Theodotou and are governed by the Zrythm
-Trademark Policy, found in the TRADEMARKS.md file.
-You may distribute unaltered copies of Zrythm that
-include the Zrythm trademarks without express
-permission from Alexandros Theodotou. However,
-if you make any changes to Zrythm, you may not
-redistribute that product using any Zrythm trademark
-without Alexandros Theodotou’s prior written consent.
-For example, you may not distribute a modified form
-of Zrythm and continue to call it Zrythm, or
-include the Zrythm logo, unless explicitly allowed
-by the Trademark Policy.
+Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou and are
+governed by the Zrythm Trademark Policy, found in the TRADEMARKS.md file.
+You may distribute unaltered copies of Zrythm that include the Zrythm
+trademarks without express permission from Alexandros Theodotou. However, if
+you make any changes to Zrythm, you may not redistribute that product using any
+Zrythm trademark without Alexandros Theodotou’s prior written consent. For
+example, you may not distribute a modified form of Zrythm and continue to call
+it Zrythm, or include the Zrythm logo, unless explicitly allowed by the
+Trademark Policy.
 
 ---
 
@@ -693,4 +686,3 @@ specific requirements.
 if any, to sign a "copyright disclaimer" for the program, if necessary.
 For more information on this, and how to apply and follow the GNU AGPL, see
 <https://www.gnu.org/licenses/>.
-
