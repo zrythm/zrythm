@@ -192,47 +192,10 @@ Control {
         }
       }
 
-      Loader {
-        id: audioMetersLoader
-
+      TrackMeters {
         Layout.fillHeight: true
         Layout.fillWidth: false
-        active: control.track.channel && control.track.channel.leftAudioOut
-        visible: active
-
-        sourceComponent: RowLayout {
-          id: meters
-
-          anchors.fill: parent
-          spacing: 0
-
-          Meter {
-            Layout.fillHeight: true
-            Layout.preferredWidth: width
-            port: control.track.channel.leftAudioOut
-          }
-
-          Meter {
-            Layout.fillHeight: true
-            Layout.preferredWidth: width
-            port: control.track.channel.rightAudioOut
-          }
-        }
-      }
-
-      Loader {
-        id: midiMetersLoader
-
-        Layout.fillHeight: true
-        Layout.fillWidth: false
-        Layout.preferredWidth: 4
-        active: control.track.channel && control.track.channel.midiOut
-        visible: active
-
-        sourceComponent: Meter {
-          anchors.fill: parent
-          port: control.track.channel.midiOut
-        }
+        channel: control.track.channel
       }
     }
   }
@@ -337,15 +300,35 @@ Control {
             }
 
             MuteButton {
+              id: muteButton
+
+              checked: control.track.channel && control.track.channel.fader.mute.baseValue > 0.5
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
+              visible: control.track.channel !== null
+
+              Binding {
+                property: "baseValue"
+                target: control.track.channel.fader.mute
+                value: muteButton.checked ? 1.0 : 0.0
+                when: control.track.channel.fader.mute !== null
+              }
             }
 
             SoloButton {
               id: trackSoloButton
 
+              checked: control.track.channel && control.track.channel.fader.solo.baseValue > 0.5
               padding: control.buttonPadding
               styleHeight: control.buttonHeight
+              visible: control.track.channel !== null
+
+              Binding {
+                property: "baseValue"
+                target: control.track.channel.fader.solo
+                value: trackSoloButton.checked ? 1.0 : 0.0
+                when: control.track.channel.fader.solo !== null
+              }
             }
 
             RecordButton {

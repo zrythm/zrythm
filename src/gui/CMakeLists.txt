@@ -183,20 +183,27 @@ set(rel_qml_file_paths
   components/editors/PianoRollKeys.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
+  components/BalanceControl.qml
   components/BottomDock.qml
   components/CenterDock.qml
+  components/ChannelView.qml
   components/DspLoadIndicator.qml
+  components/FaderButtons.qml
+  components/FaderControl.qml
   components/LeftDock.qml
   components/MainMenuBar.qml
   components/Meter.qml
+  components/MixerView.qml
   components/PlayheadTriangle.qml
   components/PluginBrowserPage.qml
+  components/PluginSlotView.qml
   components/RightDock.qml
   components/Ruler.qml
   components/SpectrumAnalyzer.qml
   components/ToolBox.qml
   components/TracklistHeader.qml
   components/TracklistView.qml
+  components/TrackMeters.qml
   components/TrackView.qml
   components/TransportControls.qml
   components/UndoSplitButton.qml
@@ -244,6 +251,7 @@ qt_add_qml_module(zrythm
   IMPORTS
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib
+    TARGET zrythm_plugins_lib
     TARGET zrythm_structure_tracks_lib
     TARGET zrythm_gui_lib
     TARGET zrythm_style

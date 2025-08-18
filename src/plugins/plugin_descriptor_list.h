@@ -16,6 +16,7 @@ class PluginDescriptorList : public QAbstractListModel
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   explicit PluginDescriptorList (

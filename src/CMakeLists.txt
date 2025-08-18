@@ -27,6 +27,8 @@ qt_add_qml_module(zrythm_gui_lib
   IMPORTS
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib
+    TARGET zrythm_structure_tracks_lib
+    TARGET zrythm_plugins_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmGui
 )
 

@@ -6,6 +6,8 @@
 #include "plugins/plugin_all.h"
 #include "utils/views.h"
 
+#include <QtQmlIntegration>
+
 namespace zrythm::plugins
 {
 

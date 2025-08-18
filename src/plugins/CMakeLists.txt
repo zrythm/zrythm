@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-
 qt_add_library(zrythm_plugins_lib STATIC)
 
 target_sources(zrythm_plugins_lib
@@ -51,6 +50,17 @@ target_link_libraries(zrythm_plugins_lib
 )
 
 add_library(zrythm::plugins_lib ALIAS zrythm_plugins_lib)
+
+# create a plugin so that types get exposed to QML
+qt_add_qml_module(zrythm_plugins_lib
+  URI ZrythmPlugins
+  VERSION 1.0
+  DEPENDENCIES
+    QtCore # Needed for QAbstractItemModel-derived types
+  IMPORTS
+    TARGET zrythm_dsp_lib
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmPlugins
+)
 
 add_subdirectory(plugin-scanner)
 # add_subdirectory(lv2apply)

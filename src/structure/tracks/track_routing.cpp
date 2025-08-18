@@ -7,11 +7,18 @@
 namespace zrythm::structure::tracks
 {
 QVariant
-TrackRouting::getOutputTrack (const TrackUuid &source) const
+TrackRouting::getOutputTrack (const Track * source) const
 {
-  auto output = get_output_track (source);
+  auto output = get_output_track (source->get_uuid ());
   return output ? QVariant::fromStdVariant (output.value ().get_object ())
                 : QVariant{};
+}
+
+void
+TrackRouting::setOutputTrack (const Track * source, const Track * destination)
+{
+  z_info ("routing track '{}' to '{}'", source->name (), destination->name ());
+  add_or_replace_route (source->get_uuid (), destination->get_uuid ());
 }
 
 std::optional<TrackUuidReference>

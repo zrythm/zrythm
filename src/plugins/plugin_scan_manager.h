@@ -124,6 +124,7 @@ class PluginScanManager final : public QObject
   Q_PROPERTY (
     QString currentlyScanningPlugin READ getCurrentlyScanningPlugin NOTIFY
       currentlyScanningPluginChanged FINAL)
+  QML_UNCREATABLE ("")
 
   Z_DISABLE_COPY_MOVE (PluginScanManager)
 

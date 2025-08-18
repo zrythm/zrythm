@@ -16,11 +16,21 @@ namespace zrythm::plugins
 class PluginConfiguration : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY (
+    zrythm::plugins::PluginDescriptor * descriptor READ descriptor CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
 public:
   PluginConfiguration (QObject * parent = nullptr) : QObject (parent) { };
+
+  // ============================================================================
+  // QML Interface
+  // ============================================================================
+
+  PluginDescriptor * descriptor () const { return descr_.get (); }
+
+  // ============================================================================
 
   /**
    * Creates a plugin setting with the recommended settings for the given plugin

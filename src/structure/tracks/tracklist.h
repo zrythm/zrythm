@@ -45,6 +45,9 @@ class Tracklist final : public QAbstractListModel
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
+    zrythm::structure::tracks::TrackRouting * trackRouting READ trackRouting
+      CONSTANT)
+  Q_PROPERTY (
     zrythm::structure::tracks::MasterTrack * masterTrack READ masterTrack
       CONSTANT)
   QML_UNCREATABLE ("")
@@ -97,6 +100,8 @@ public:
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
   MasterTrack * masterTrack () const { return master_track_; }
+
+  TrackRouting * trackRouting () const { return track_routing_.get (); }
 
   Q_INVOKABLE void setExclusivelySelectedTrack (QVariant track);
 
@@ -549,7 +554,7 @@ public:
 
   auto get_track_route_target (const TrackUuid &source_track) const
   {
-    return routing_->get_output_track (source_track);
+    return track_routing_->get_output_track (source_track);
   }
 
   auto get_pinned_tracks_cutoff_index () const { return pinned_tracks_cutoff_; }
@@ -687,8 +692,6 @@ private:
 
   /** Pointer to owner sample processor, if any. */
   engine::session::SampleProcessor * sample_processor_ = nullptr;
-
-  utils::QObjectUniquePtr<TrackRouting> routing_;
 
 public:
   /** Pointer to owner project, if any. */

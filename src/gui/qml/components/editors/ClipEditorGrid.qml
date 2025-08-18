@@ -6,7 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
+import Zrythm
 
 GridLayout {
   id: root

@@ -57,7 +57,7 @@ class Channel : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (Fader * fader READ fader CONSTANT)
+  Q_PROPERTY (zrythm::structure::tracks::Fader * fader READ fader CONSTANT)
   Q_PROPERTY (QVariant preFader READ preFader CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)

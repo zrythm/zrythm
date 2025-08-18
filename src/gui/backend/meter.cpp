@@ -192,15 +192,21 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
         }
       else if constexpr (std::derived_from<PortT, dsp::MidiPort>)
         {
-          bool                   on = false;
-          zrythm::dsp::MidiEvent event;
-          while (port->midi_ring_->peek (event))
+          bool on = false;
+          tmp_events_.clear ();
+          const auto events_read = port->midi_ring_->peek_multiple (
+            tmp_events_.data (), decltype (tmp_events_)::capacity ());
+          if (events_read > 0)
             {
-              if (event.systime_ > last_midi_trigger_time_)
+              tmp_events_.resize (events_read);
+              for (const auto &event : tmp_events_)
                 {
-                  on = true;
-                  last_midi_trigger_time_ = event.systime_;
-                  break;
+                  if (event.systime_ > last_midi_trigger_time_)
+                    {
+                      on = true;
+                      last_midi_trigger_time_ = event.systime_;
+                      break;
+                    }
                 }
             }
 

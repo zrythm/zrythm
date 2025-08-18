@@ -25,13 +25,10 @@ public:
   // QML Interface
   // ========================================================================
 
-  Q_INVOKABLE QVariant getOutputTrack (const TrackUuid &source) const;
+  Q_INVOKABLE QVariant getOutputTrack (const Track * source) const;
 
   Q_INVOKABLE void
-  setOutputTrack (const TrackUuid &source, const TrackUuid &destination)
-  {
-    add_or_replace_route (source, destination);
-  }
+  setOutputTrack (const Track * source, const Track * destination);
 
   /**
    * @brief Emitted when a change was made in the routing.

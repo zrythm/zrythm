@@ -30,10 +30,19 @@ TrackFilterProxyModel::addPinnedFilter (bool pinned)
 }
 
 void
+TrackFilterProxyModel::addChannelFilter (bool channel)
+{
+  use_channel_filter_ = true;
+  channel_filter_ = channel;
+  invalidateFilter ();
+}
+
+void
 TrackFilterProxyModel::clearFilters ()
 {
   use_visible_filter_ = false;
   use_pinned_filter_ = false;
+  use_channel_filter_ = false;
   invalidateFilter ();
 }
 
@@ -66,6 +75,14 @@ TrackFilterProxyModel::filterAcceptsRow (
               if (
                 tracklist->is_track_pinned (track->get_uuid ())
                 != pinned_filter_)
+                {
+                  return false;
+                }
+            }
+
+          if (use_channel_filter_)
+            {
+              if ((track->channel () != nullptr) != channel_filter_)
                 {
                   return false;
                 }

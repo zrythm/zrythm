@@ -35,7 +35,8 @@ Tracklist::Tracklist (
     : QAbstractListModel (&project), tempo_map_ (tempo_map),
       track_registry_ (track_registry), port_registry_ (port_registry),
       param_registry_ (param_registry),
-      routing_ (utils::make_qobject_unique<TrackRouting> (track_registry, this)),
+      track_routing_ (
+        utils::make_qobject_unique<TrackRouting> (track_registry, this)),
       project_ (&project), port_connections_manager_ (&port_connections_manager)
 {
 }
@@ -673,7 +674,7 @@ Tracklist::insert_track (
             track->get_output_signal_type () == dsp::PortType::Audio
             && master_track_)
             {
-              routing_->add_or_replace_route (
+              track_routing_->add_or_replace_route (
                 track->get_uuid (), master_track_->get_uuid ());
             }
         }

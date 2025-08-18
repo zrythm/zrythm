@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef TRACK_FILTER_PROXY_MODEL_H
-#define TRACK_FILTER_PROXY_MODEL_H
+#pragma once
 
 #include <QSortFilterProxyModel>
 #include <QtQmlIntegration>
@@ -19,6 +18,7 @@ public:
 
   Q_INVOKABLE void addVisibilityFilter (bool visible);
   Q_INVOKABLE void addPinnedFilter (bool pinned);
+  Q_INVOKABLE void addChannelFilter (bool channel);
   Q_INVOKABLE void clearFilters ();
 
 protected:
@@ -30,7 +30,7 @@ private:
   bool visible_filter_ = true;
   bool use_pinned_filter_ = false;
   bool pinned_filter_ = false;
+  bool use_channel_filter_ = false;
+  bool channel_filter_ = false;
 };
 } // namespace zrythm::gui
-
-#endif // TRACK_FILTER_PROXY_MODEL_H

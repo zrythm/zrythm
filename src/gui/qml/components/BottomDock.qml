@@ -12,11 +12,13 @@ import ZrythmStyle 1.0
 ColumnLayout {
   id: root
 
-  required property var project
+  required property Project project
 
   spacing: 0
 
   StackLayout {
+    id: mainStack
+
     Layout.fillHeight: true
     Layout.fillWidth: true
     currentIndex: centerTabBar.currentIndex
@@ -48,8 +50,12 @@ ColumnLayout {
       }
     }
 
+    MixerView {
+      tracklist: root.project.tracklist
+    }
+
     Repeater {
-      model: 3
+      model: 2
 
       Rectangle {
         required property int index

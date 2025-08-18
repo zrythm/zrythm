@@ -12,6 +12,8 @@
 
 #include <QtQmlIntegration>
 
+#include <boost/container/static_vector.hpp>
+
 /**
  * @addtogroup dsp
  *
@@ -139,4 +141,6 @@ private:
 
   std::atomic<float> current_amp_ = 0.f;
   std::atomic<float> peak_amp_ = 0.f;
+
+  boost::container::static_vector<dsp::MidiEvent, 256> tmp_events_;
 };
