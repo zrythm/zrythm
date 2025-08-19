@@ -55,6 +55,10 @@
             "name": "UBSAN_OPTIONS",
             "value": "halt_on_error=1:abort_on_error=1"
           },
+          {
+            "name": "QT_QPA_PLATFORM",
+            "value": "xcb",
+          },
         ],
         "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
         "setupCommands": [
