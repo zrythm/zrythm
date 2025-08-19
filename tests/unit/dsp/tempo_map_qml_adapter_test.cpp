@@ -48,10 +48,10 @@ TEST_F (TempoMapWrapperTest, InitialState)
   auto time_sig_events = wrapper_->timeSignatureEvents ();
   ASSERT_EQ (time_sig_events.count (&time_sig_events), 0);
 
-  auto first_sig = wrapper_->timeSignatureAtTick (0);
-  EXPECT_EQ (first_sig->tick (), 0);
-  EXPECT_EQ (first_sig->numerator (), 4);
-  EXPECT_EQ (first_sig->denominator (), 4);
+  auto first_sig_numerator = wrapper_->timeSignatureNumeratorAtTick (0);
+  auto first_sig_denominator = wrapper_->timeSignatureDenominatorAtTick (0);
+  EXPECT_EQ (first_sig_numerator, 4);
+  EXPECT_EQ (first_sig_denominator, 4);
 
   // Verify sample rate
   EXPECT_DOUBLE_EQ (wrapper_->sampleRate (), 44100.0);

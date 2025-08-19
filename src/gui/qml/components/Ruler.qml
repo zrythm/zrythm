@@ -82,7 +82,7 @@ Control {
           visible: active
 
           sourceComponent: Repeater {
-            model: control.tempoMap.timeSignatureAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)).numerator
+            model: control.tempoMap.timeSignatureNumeratorAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0))
 
             delegate: Item {
               id: beatItem
@@ -115,7 +115,7 @@ Control {
                 visible: active
 
                 sourceComponent: Repeater {
-                  model: 16 / control.tempoMap.timeSignatureAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0)).denominator
+                  model: 16 / control.tempoMap.timeSignatureDenominatorAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0))
 
                   Rectangle {
                     id: sixteenthRect

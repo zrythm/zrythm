@@ -125,8 +125,8 @@ public:
   /**
    * @brief Returns the time signature at the given tick.
    */
-  Q_INVOKABLE TimeSignatureEventWrapper *
-  timeSignatureAtTick (int64_t tick) const;
+  Q_INVOKABLE int timeSignatureNumeratorAtTick (int64_t tick) const;
+  Q_INVOKABLE int timeSignatureDenominatorAtTick (int64_t tick) const;
 
   Q_INVOKABLE double tempoAtTick (int64_t tick) const;
 
@@ -236,7 +236,6 @@ private:
   TempoMap                          &tempo_map_;
   QList<TempoEventWrapper *>         tempoEventWrappers_;
   QList<TimeSignatureEventWrapper *> timeSigEventWrappers_;
-  mutable utils::QObjectUniquePtr<TimeSignatureEventWrapper> default_time_sig_;
 };
 
 } // namespace zrythm::dsp

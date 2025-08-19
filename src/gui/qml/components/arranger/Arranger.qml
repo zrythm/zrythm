@@ -192,7 +192,7 @@ Item {
               visible: active
 
               sourceComponent: Repeater {
-                model: root.tempoMap.timeSignatureAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)).numerator
+                model: root.tempoMap.timeSignatureNumeratorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0))
 
                 delegate: Item {
                   id: beatItem
@@ -215,7 +215,7 @@ Item {
                     visible: active
 
                     sourceComponent: Repeater {
-                      model: 16 / root.tempoMap.timeSignatureAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0)).denominator
+                      model: 16 / root.tempoMap.timeSignatureDenominatorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0))
 
                       Rectangle {
                         required property int index

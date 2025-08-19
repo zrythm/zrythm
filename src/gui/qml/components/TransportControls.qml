@@ -1,4 +1,3 @@
-
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -87,8 +86,9 @@ RowLayout {
     EditableValueDisplay {
       label: "sig"
       value: {
-        let timeSig = root.tempoMap.timeSignatureAtTick(root.transport.playhead.ticks) as TimeSignatureEventWrapper;
-        return `${timeSig.numerator}/${timeSig.denominator}`;
+        const timeSigNumerator = root.tempoMap.timeSignatureNumeratorAtTick(root.transport.playhead.ticks);
+        const timeSigDenominator = root.tempoMap.timeSignatureDenominatorAtTick(root.transport.playhead.ticks);
+        return `${timeSigNumerator}/${timeSigDenominator}`;
       }
     }
   }

@@ -15,25 +15,18 @@ TempoMapWrapper::getMusicalPositionString (int64_t tick) const
       musical_pos.sixteenth, musical_pos.tick));
 }
 
-TimeSignatureEventWrapper *
-TempoMapWrapper::timeSignatureAtTick (int64_t tick) const
+int
+TempoMapWrapper::timeSignatureNumeratorAtTick (int64_t tick) const
 {
   const auto time_sig = tempo_map_.time_signature_at_tick (tick);
-  // find corresponding time signature here
-  auto it = std::ranges::find (
-    timeSigEventWrappers_, time_sig.tick, &TimeSignatureEventWrapper::tick);
-  if (it == timeSigEventWrappers_.end ())
-    {
-      if (
-        !default_time_sig_
-        || default_time_sig_->numerator () != time_sig.numerator
-        || default_time_sig_->denominator () != time_sig.denominator)
-        {
-          default_time_sig_.reset (new TimeSignatureEventWrapper (time_sig));
-        }
-      return default_time_sig_.get ();
-    }
-  return *it;
+  return time_sig.numerator;
+}
+
+int
+TempoMapWrapper::timeSignatureDenominatorAtTick (int64_t tick) const
+{
+  const auto time_sig = tempo_map_.time_signature_at_tick (tick);
+  return time_sig.denominator;
 }
 
 double
