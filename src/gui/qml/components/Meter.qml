@@ -11,6 +11,7 @@ Rectangle {
   readonly property real currentPx: meterProcessor.toFader(meterProcessor.currentAmplitude) * root.height
   readonly property real peakPx: meterProcessor.toFader(meterProcessor.peakAmplitude) * root.height
   required property var port
+  readonly property alias meterProcessor: meterProcessor
 
   clip: true
   color: "transparent"

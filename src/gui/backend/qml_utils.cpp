@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/qml_utils.h"
+#include "utils/math.h"
 #include "utils/string.h"
 
 QString
@@ -14,4 +15,10 @@ QUrl
 QmlUtils::localFileToQUrl (const QString &path)
 {
   return QUrl::fromLocalFile (path);
+}
+
+float
+QmlUtils::amplitudeToDbfs (float amplitude)
+{
+  return utils::math::amp_to_dbfs (amplitude);
 }

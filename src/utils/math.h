@@ -25,8 +25,7 @@
  * ---
  */
 
-#ifndef ZRYTHM_UTILS_MATH_H
-#define ZRYTHM_UTILS_MATH_H
+#pragma once
 
 #include <cfloat>
 #include <cmath>
@@ -279,5 +278,3 @@ bool
 is_string_valid_float (const std::string &str, float * ret);
 
 } // namespace zrythm::utils::math
-
-#endif
