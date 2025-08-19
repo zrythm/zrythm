@@ -351,6 +351,7 @@ build:gnu/linux:
     - job: check:exif
     - job: check:reuse
     - job: check:clang-format
+  timeout: 2h # a lot of tools are run here
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
     - *unix_test_cmd
