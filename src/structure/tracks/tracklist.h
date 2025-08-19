@@ -50,6 +50,8 @@ class Tracklist final : public QAbstractListModel
   Q_PROPERTY (
     zrythm::structure::tracks::MasterTrack * masterTrack READ masterTrack
       CONSTANT)
+  Q_PROPERTY (
+    QVariant selectedTrack READ selectedTrack NOTIFY selectedTracksChanged)
   QML_UNCREATABLE ("")
 
 public:
@@ -104,6 +106,9 @@ public:
   TrackRouting * trackRouting () const { return track_routing_.get (); }
 
   Q_INVOKABLE void setExclusivelySelectedTrack (QVariant track);
+
+  QVariant      selectedTrack () const;
+  Q_SIGNAL void selectedTracksChanged ();
 
   // ========================================================================
 
@@ -517,9 +522,9 @@ public:
     return is_track_pinned (get_track_index (track_id));
   }
 
-  auto get_selection_manager ()
+  TrackSelectionManager get_selection_manager () const
   {
-    return TrackSelectionManager{ selected_tracks_, *track_registry_ };
+    return *track_selection_manager_;
   }
 
 #if 0
@@ -664,6 +669,8 @@ private:
    * There must always be at least 1 selected track.
    */
   TrackSelectionManager::UuidSet selected_tracks_;
+
+  std::unique_ptr<TrackSelectionManager> track_selection_manager_;
 
 public:
   /** The chord track, for convenience. */

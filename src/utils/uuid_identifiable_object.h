@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "utils/format.h"
 #include "utils/icloneable.h"
 #include "utils/logger.h"
@@ -546,10 +548,14 @@ template <typename RegistryT> class UuidIdentifiableObjectSelectionManager
 public:
   using UuidSet = std::unordered_set<UuidType>;
 
+  using SelectionChangedCallback = std::function<void ()>;
+
   UuidIdentifiableObjectSelectionManager (
-    UuidSet         &selected_objs,
-    const RegistryT &registry)
-      : selected_objects_ (selected_objs), registry_ (registry)
+    UuidSet                                &selected_objs,
+    const RegistryT                        &registry,
+    std::optional<SelectionChangedCallback> selection_changed_cb = std::nullopt)
+      : selected_objects_ (selected_objs), registry_ (registry),
+        selection_changed_cb_ (std::move (selection_changed_cb))
   {
   }
   void append_to_selection (const UuidType &id)
@@ -614,11 +620,16 @@ private:
     std::visit (
       [&] (auto &&obj) { Q_EMIT obj->selectedChanged (is_selected (id)); },
       get_object_for_id (id));
+    if (selection_changed_cb_.has_value ())
+      {
+        std::invoke (selection_changed_cb_.value ());
+      }
   }
 
 private:
-  UuidSet         &selected_objects_;
-  const RegistryT &registry_;
+  UuidSet                                &selected_objects_;
+  const RegistryT                        &registry_;
+  std::optional<SelectionChangedCallback> selection_changed_cb_;
 };
 
 /**

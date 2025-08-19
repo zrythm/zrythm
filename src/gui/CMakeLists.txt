@@ -149,6 +149,7 @@ endforeach()
 
 set(rel_qml_file_paths
   components/basic/EditableValueDisplay.qml
+  components/basic/ExpanderBox.qml
   components/basic/LinkedButtons.qml
   components/basic/MuteButton.qml
   components/basic/PlaceholderPage.qml
@@ -203,6 +204,7 @@ set(rel_qml_file_paths
   components/ToolBox.qml
   components/TracklistHeader.qml
   components/TracklistView.qml
+  components/TrackInspectorPage.qml
   components/TrackMeters.qml
   components/TrackView.qml
   components/TransportControls.qml

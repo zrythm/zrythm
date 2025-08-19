@@ -1,13 +1,17 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 ColumnLayout {
+
+  id: root
+  required property Tracklist tracklist
+
   TabBar {
     id: tabBar
 
@@ -35,19 +39,8 @@ ColumnLayout {
     Layout.fillWidth: true
     currentIndex: tabBar.currentIndex
 
-    ZrythmResizablePanel {
-      title: "Browser"
-      vertical: false
-
-      content: Rectangle {
-        color: "#2C2C2C"
-
-        Label {
-          anchors.centerIn: parent
-          color: "white"
-          text: "Browser content"
-        }
-      }
+    TrackInspectorPage {
+      track: root.tracklist.selectedTrack
     }
 
     Repeater {

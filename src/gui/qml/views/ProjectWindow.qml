@@ -59,6 +59,7 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 30
         SplitView.preferredWidth: 200
+        tracklist: root.project.tracklist
         visible: GlobalState.settingsManager.leftPanelVisible
       }
 

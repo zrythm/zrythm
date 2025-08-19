@@ -37,6 +37,11 @@ Tracklist::Tracklist (
       param_registry_ (param_registry),
       track_routing_ (
         utils::make_qobject_unique<TrackRouting> (track_registry, this)),
+      track_selection_manager_ (
+        std::make_unique<TrackSelectionManager> (
+          selected_tracks_,
+          *track_registry_,
+          [this] () { Q_EMIT selectedTracksChanged (); })),
       project_ (&project), port_connections_manager_ (&port_connections_manager)
 {
 }
@@ -95,6 +100,15 @@ Tracklist::data (const QModelIndex &index, int role) const
     default:
       return {};
     }
+}
+
+QVariant
+Tracklist::selectedTrack () const
+{
+  if (selected_tracks_.empty ())
+    return {};
+  return QVariant::fromStdVariant (
+    track_registry_->find_by_id_or_throw (*selected_tracks_.begin ()));
 }
 
 void
