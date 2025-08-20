@@ -100,6 +100,12 @@ Plugin::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
 }
 
 void
+Plugin::custom_release_resources ()
+{
+  release_resources_impl ();
+}
+
+void
 Plugin::process_passthrough_impl (const EngineProcessTimeInfo time_nfo) noexcept
 {
   // ProcessorBase's processing logic does passthrough

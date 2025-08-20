@@ -519,9 +519,12 @@ TracklistSelectionsAction::create_track (int idx)
           std::optional<plugins::PluginUuidReference> added_plugin_if_has_plugin;
           if (has_plugin)
             {
+// TODO
+#if 0
               added_plugin_if_has_plugin =
                 PROJECT->getPluginFactory ()->create_plugin_from_setting (
                   *pl_setting_);
+#endif
             }
 
           TRACKLIST->insert_track (

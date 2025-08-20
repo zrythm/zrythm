@@ -164,7 +164,9 @@ Project::Project (
             [this] () { return audio_engine_->get_sample_rate (); },
           .buffer_size_provider_ =
             [this] () { return audio_engine_->get_block_length (); },
-          .top_level_window_provider_ = juce_plugin_toplevel_window_provider },
+          .top_level_window_provider_ = juce_plugin_toplevel_window_provider,
+          .audio_thread_checker_ =
+            [this] () { return audio_engine_->router_->is_processing_thread (); } },
         *gui::SettingsManager::get_instance (),
         this)),
       track_factory_ (new structure::tracks::TrackFactory (
@@ -1430,6 +1432,19 @@ struct PluginBuilderForDeserialization
             .param_registry_ = project_.get_param_registry () },
           [this] () {
             return project_.get_path (ProjectPath::PluginStates, false);
+          });
+      }
+    else if constexpr (std::is_same_v<T, plugins::ClapPlugin>)
+      {
+        return std::make_unique<T> (
+          plugins::Plugin::ProcessorBaseDependencies{
+            .port_registry_ = project_.get_port_registry (),
+            .param_registry_ = project_.get_param_registry () },
+          [this] () {
+            return project_.get_path (ProjectPath::PluginStates, false);
+          },
+          [this] () {
+            return project_.audio_engine_->router_->is_processing_thread ();
           });
       }
     else

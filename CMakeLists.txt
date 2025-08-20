@@ -1089,6 +1089,15 @@ CPMFindPackage(
   OPTIONS ${tbb_opts}
 )
 
+CPMFindPackage(
+  NAME clap-helpers
+  GITHUB_REPOSITORY "free-audio/clap-helpers"
+  VERSION 0
+  GIT_TAG 4d8c96fd7da2a7a67a91cf87b008643d6ad2c9ba
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+)
+
 if(ZRYTHM_TESTS)
   CPMFindPackage(
     NAME cpp_httplib
@@ -1177,6 +1186,7 @@ list(APPEND zrythm_link_libs
   Boost::container
   Boost::unordered
   gsl-lite::gsl-lite
+  clap-helpers
   TBB::tbb
   zrythm::qt_libs
   zrythm::gtest

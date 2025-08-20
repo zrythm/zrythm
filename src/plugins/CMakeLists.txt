@@ -7,6 +7,10 @@ target_sources(zrythm_plugins_lib
   PRIVATE
     # carla_native_plugin.h
     # carla_native_plugin.cpp
+    clap_plugin.h
+    clap_plugin.cpp
+    clap_plugin_param.h
+    clap_plugin_param.cpp
     internal_plugin_base.h
     internal_plugin_base.cpp
     juce_plugin.h

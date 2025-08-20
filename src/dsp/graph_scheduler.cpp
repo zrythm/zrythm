@@ -81,6 +81,9 @@ GraphScheduler::rechain_from_node_collection (
 {
   z_debug ("rechaining graph...");
 
+  // cleanup previous graph nodes
+  release_node_resources ();
+
   /* --- swap setup nodes with graph nodes --- */
 
   graph_nodes_ = std::move (nodes);

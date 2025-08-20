@@ -76,7 +76,7 @@ PluginManager::get_active_instance ()
 
 void
 PluginManager::createPluginInstance (
-  const zrythm::plugins::PluginDescriptor * descr) const
+  const zrythm::plugins::PluginDescriptor * descr)
 {
   // FIXME: this is temporary test code that adds the plugin to the master's
   // first index slot
@@ -87,18 +87,20 @@ PluginManager::createPluginInstance (
   z_debug ("creating plugin instance for: {}", descr->getName ());
   auto juce_desc = descr->to_juce_description ();
   auto config = PluginConfiguration::create_new_for_descriptor (*descr);
-  auto plugin_ref =
-    PROJECT->getPluginFactory ()->create_plugin_from_setting (*config);
-  P_MASTER_TRACK->channel ()->inserts ()->append_plugin (plugin_ref);
-  auto * pl = plugin_ref.get_object_as<zrythm::plugins::JucePlugin> ();
-  QObject::connect (
-    pl, &zrythm::plugins::Plugin::instantiationFinished, pl, [pl, state_ptr] () {
-      z_debug ("instantiation done");
-      ROUTER->recalc_graph (false);
-      pl->setUiVisible (true);
+  auto plugin_ref = PROJECT->getPluginFactory ()->create_plugin_from_setting (
+    *config,
+    PluginFactory::InstantiationFinishOptions{
+      .handler_ =
+        [state_ptr] (::zrythm::plugins::PluginUuidReference plugin_ref) {
+          z_debug ("instantiation done");
+          P_MASTER_TRACK->channel ()->inserts ()->append_plugin (plugin_ref);
+          ROUTER->recalc_graph (false);
+          zrythm::plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ())
+            ->setUiVisible (true);
 
-      AUDIO_ENGINE->resume (*state_ptr);
-    });
+          AUDIO_ENGINE->resume (*state_ptr);
+        },
+      .handler_context_ = this });
 }
 
 void

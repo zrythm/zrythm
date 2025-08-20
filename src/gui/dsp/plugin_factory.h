@@ -26,6 +26,23 @@ class PluginFactory : public QObject
 public:
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
+  // A handler that will be called on the main thread either asynchronously or
+  // synchronously (depending on the plugin format) when the plugin has finished
+  // instantiation
+  using InstantiationFinishedHandler =
+    std::function<void (plugins::PluginUuidReference)>;
+
+  struct InstantiationFinishOptions
+  {
+    InstantiationFinishedHandler handler_;
+    QObject *                    handler_context_{};
+  };
+
+  /**
+   * @brief Function that returns whether the caller is an audio DSP thread.
+   */
+  using AudioThreadChecker = std::function<bool ()>;
+
   struct CommonFactoryDependencies
   {
     plugins::PluginRegistry                      &plugin_registry_;
@@ -36,6 +53,7 @@ public:
     std::function<sample_rate_t ()> sample_rate_provider_;
     std::function<nframes_t ()>     buffer_size_provider_;
     plugins::JucePlugin::TopLevelWindowProvider top_level_window_provider_;
+    AudioThreadChecker                          audio_thread_checker_;
   };
 
   PluginFactory () = delete;
@@ -72,31 +90,76 @@ public:
       return *this;
     }
 
+    Builder &with_instantiation_finished_options (
+      InstantiationFinishOptions instantiation_finish_options)
+    {
+      instantiation_finish_options_.emplace (instantiation_finish_options);
+      return *this;
+    }
+
   public:
     auto build ()
     {
       auto obj_ref = [&] () {
-        plugins::PluginUuidReference ref =
-          dependencies_.plugin_registry_.create_object<PluginT> (
-            dependencies_.processor_base_dependencies_,
-            dependencies_.state_dir_path_provider_,
-            dependencies_.create_plugin_instance_async_func_,
-            dependencies_.sample_rate_provider_,
-            dependencies_.buffer_size_provider_,
-            dependencies_.top_level_window_provider_);
-        ref.template get_object_as<PluginT> ()->set_configuration (*setting_);
-        return std::move (ref);
+        if constexpr (std::is_same_v<PluginT, plugins::ClapPlugin>)
+          {
+            return dependencies_.plugin_registry_.create_object<PluginT> (
+              dependencies_.processor_base_dependencies_,
+              dependencies_.state_dir_path_provider_,
+              dependencies_.audio_thread_checker_);
+          }
+        else if constexpr (
+          std::derived_from<PluginT, plugins::InternalPluginBase>)
+          {
+            return dependencies_.plugin_registry_.create_object<PluginT> (
+              dependencies_.processor_base_dependencies_,
+              dependencies_.state_dir_path_provider_);
+          }
+        else
+          {
+            return dependencies_.plugin_registry_.create_object<PluginT> (
+              dependencies_.processor_base_dependencies_,
+              dependencies_.state_dir_path_provider_,
+              dependencies_.create_plugin_instance_async_func_,
+              dependencies_.sample_rate_provider_,
+              dependencies_.buffer_size_provider_,
+              dependencies_.top_level_window_provider_);
+          }
       }();
 
-      // auto * obj = std::get<PluginT *> (obj_ref.get_object ());
+      if (instantiation_finish_options_.has_value ())
+        {
+          // set instantiation finished handler and apply configuration, which
+          // will either fire the instantiation finished handler immediately or
+          // later (depending on the plugin format)
+          std::visit (
+            [&] (auto &&pl) {
+              const auto instantiation_finish_opts =
+                instantiation_finish_options_.value ();
+              QObject::connect (
+                pl, &zrythm::plugins::Plugin::instantiationFinished,
+                instantiation_finish_opts.handler_context_,
+                [obj_ref, instantiation_finish_opts] () {
+                  instantiation_finish_opts.handler_ (obj_ref);
+                });
+            },
+            obj_ref.get_object ());
+        }
+
+      if (setting_.has_value ())
+        {
+          obj_ref.template get_object_as<PluginT> ()->set_configuration (
+            *setting_);
+        }
 
       return obj_ref;
     }
 
   private:
-    CommonFactoryDependencies              dependencies_;
-    OptionalRef<gui::SettingsManager>      settings_manager_;
-    OptionalRef<const PluginConfiguration> setting_;
+    CommonFactoryDependencies                 dependencies_;
+    OptionalRef<gui::SettingsManager>         settings_manager_;
+    OptionalRef<const PluginConfiguration>    setting_;
+    std::optional<InstantiationFinishOptions> instantiation_finish_options_;
   };
 
   template <typename PluginT> auto get_builder () const
@@ -107,12 +170,30 @@ public:
   }
 
 public:
-  plugins::PluginUuidReference
-  create_plugin_from_setting (const PluginConfiguration &setting) const
+  plugins::PluginUuidReference create_plugin_from_setting (
+    const PluginConfiguration &setting,
+    InstantiationFinishOptions instantiation_finish_options) const
   {
-    auto obj_ref =
-      get_builder<plugins::JucePlugin> ().with_setting (setting).build ();
-    return obj_ref;
+    const auto protocol = setting.descriptor ()->protocol_;
+    if (protocol == plugins::Protocol::ProtocolType::CLAP)
+      {
+        return get_builder<plugins::ClapPlugin> ()
+          .with_setting (setting)
+          .with_instantiation_finished_options (instantiation_finish_options)
+          .build ();
+      }
+    if (protocol == plugins::Protocol::ProtocolType::Internal)
+      {
+        return get_builder<plugins::InternalPluginBase> ()
+          .with_setting (setting)
+          .with_instantiation_finished_options (instantiation_finish_options)
+          .build ();
+      }
+
+    return get_builder<plugins::JucePlugin> ()
+      .with_setting (setting)
+      .with_instantiation_finished_options (instantiation_finish_options)
+      .build ();
   }
 
 // TODO

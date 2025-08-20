@@ -183,6 +183,8 @@ public:
   [[gnu::hot]] void
   custom_process_block (EngineProcessTimeInfo time_nfo) noexcept final;
 
+  void custom_release_resources () final;
+
   // ============================================================================
 
   fs::path get_state_directory () const
@@ -231,6 +233,8 @@ private:
     nframes_t     max_block_length) { };
 
   virtual void process_impl (EngineProcessTimeInfo time_info) noexcept = 0;
+
+  virtual void release_resources_impl () { }
 
   /**
    * @brief Processes the plugin by passing through the input to its output.
@@ -350,9 +354,10 @@ private:
 
 class CarlaNativePlugin;
 class JucePlugin;
+class ClapPlugin;
 class InternalPluginBase;
 
-using PluginVariant = std::variant<JucePlugin, InternalPluginBase>;
+using PluginVariant = std::variant<JucePlugin, ClapPlugin, InternalPluginBase>;
 using PluginPtrVariant = to_pointer_variant<PluginVariant>;
 
 // TODO: consider having a ProcessorRegistry instead for all
