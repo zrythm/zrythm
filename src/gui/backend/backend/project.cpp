@@ -13,6 +13,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/ui.h"
+#include "plugins/plugin_view_window.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"

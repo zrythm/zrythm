@@ -38,15 +38,181 @@
 #include <utility>
 
 #include "plugins/clap_plugin.h"
+#include "plugins/clap_plugin_param.h"
 #include "plugins/plugin_view_window.h"
 
+#include <QLibrary>
+
+#include <clap/helpers/event-list.hh>
 #include <clap/helpers/host.hxx>
+#include <clap/helpers/plugin-proxy.hh>
 #include <clap/helpers/plugin-proxy.hxx>
+#include <clap/helpers/reducing-param-queue.hh>
 #include <clap/helpers/reducing-param-queue.hxx>
 
 namespace zrythm::plugins
 {
 thread_local bool is_main_thread = false;
+
+using ClapPluginProxy = clap::helpers::PluginProxy<
+  clap::helpers::MisbehaviourHandler::Terminate,
+  clap::helpers::CheckingLevel::Maximal>;
+
+class ClapPlugin::ClapPluginImpl
+{
+  friend class ClapPlugin;
+
+  enum PluginState
+  {
+    // The plugin is inactive, only the main thread uses it
+    Inactive,
+
+    // Activation failed
+    InactiveWithError,
+
+    // The plugin is active and sleeping, the audio engine can call
+    // set_processing()
+    ActiveAndSleeping,
+
+    // The plugin is processing
+    ActiveAndProcessing,
+
+    // The plugin did process but is in error
+    ActiveWithError,
+
+    // The plugin is not used anymore by the audio engine and can be
+    // deactivated on the main thread
+    ActiveAndReadyToDeactivate,
+  };
+  bool isPluginActive () const;
+  bool isPluginProcessing () const;
+  bool isPluginSleeping () const;
+  void setPluginState (PluginState state);
+
+  /* clap host callbacks */
+  void             scanParam (int32_t index);
+  ClapPluginParam &checkValidParamId (
+    const std::string_view &function,
+    const std::string_view &param_name,
+    clap_id                 param_id);
+  void        checkValidParamValue (const ClapPluginParam &param, double value);
+  double      getParamValue (const clap_param_info &info);
+  static bool clapParamsRescanMayValueChange (uint32_t flags)
+  {
+    return (flags & (CLAP_PARAM_RESCAN_ALL | CLAP_PARAM_RESCAN_VALUES)) != 0u;
+  }
+  static bool clapParamsRescanMayInfoChange (uint32_t flags)
+  {
+    return (flags & (CLAP_PARAM_RESCAN_ALL | CLAP_PARAM_RESCAN_INFO)) != 0u;
+  }
+
+  void paramFlushOnMainThread ();
+  void handlePluginOutputEvents ();
+  void generatePluginInputEvents ();
+
+  void setup_audio_ports_for_processing (
+    int       num_audio_ins,
+    int       num_audio_outs,
+    nframes_t block_size);
+
+  void setPluginWindowVisibility (bool isVisible);
+
+private:
+  AudioThreadChecker audio_thread_checker_;
+
+  QLibrary library_;
+
+  const clap_plugin_entry *        pluginEntry_ = nullptr;
+  const clap_plugin_factory *      pluginFactory_ = nullptr;
+  std::unique_ptr<ClapPluginProxy> plugin_;
+
+  /* timers */
+  clap_id                                              nextTimerId_ = 0;
+  std::unordered_map<clap_id, std::unique_ptr<QTimer>> timers_;
+
+  /* fd events */
+  struct Notifiers
+  {
+    std::unique_ptr<QSocketNotifier> rd;
+    std::unique_ptr<QSocketNotifier> wr;
+  };
+  std::unordered_map<int, std::unique_ptr<Notifiers>> fds_;
+
+  /* process stuff */
+  clap_audio_buffer        audioIn_{};
+  clap_audio_buffer        audioOut_{};
+  juce::AudioSampleBuffer  audio_in_buf_;
+  std::vector<float *>     audio_in_channel_ptrs_;
+  juce::AudioSampleBuffer  audio_out_buf_;
+  std::vector<float *>     audio_out_channel_ptrs_;
+  clap::helpers::EventList evIn_;
+  clap::helpers::EventList evOut_;
+  clap_process             process_{};
+
+  /* param update queues */
+  std::unordered_map<clap_id, std::unique_ptr<ClapPluginParam>> params_;
+
+  struct AppToEngineParamQueueValue
+  {
+    void * cookie;
+    double value;
+  };
+
+  struct EngineToAppParamQueueValue
+  {
+    void update (const EngineToAppParamQueueValue &v) noexcept
+    {
+      if (v.has_value)
+        {
+          has_value = true;
+          value = v.value;
+        }
+
+      if (v.has_gesture)
+        {
+          has_gesture = true;
+          is_begin = v.is_begin;
+        }
+    }
+
+    bool   has_value = false;
+    bool   has_gesture = false;
+    bool   is_begin = false;
+    double value = 0;
+  };
+
+  clap::helpers::ReducingParamQueue<clap_id, AppToEngineParamQueueValue>
+    appToEngineValueQueue_;
+  clap::helpers::ReducingParamQueue<clap_id, AppToEngineParamQueueValue>
+    appToEngineModQueue_;
+  clap::helpers::ReducingParamQueue<clap_id, EngineToAppParamQueueValue>
+    engineToAppValueQueue_;
+
+  PluginState state_{ Inactive };
+  bool        stateIsDirty_ = false;
+
+  bool scheduleRestart_ = false;
+  bool scheduleDeactivate_ = false;
+
+  bool scheduleProcess_ = true;
+
+  bool scheduleParamFlush_ = false;
+
+  std::unordered_map<clap_id, bool> isAdjustingParameter_;
+
+  const char * guiApi_ = nullptr;
+  bool         isGuiCreated_ = false;
+  bool         isGuiVisible_ = false;
+  bool         isGuiFloating_ = false;
+
+  bool scheduleMainThreadCallback_ = false;
+
+  // work-around the fact that stopProcessing() requires being called by an
+  // audio thread for whatever reason
+  std::atomic_bool force_audio_thread_check_{ false };
+
+  std::unique_ptr<PluginViewWindow> editor_;
+};
 
 ClapPlugin::ClapPlugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
@@ -59,9 +225,11 @@ ClapPlugin::ClapPlugin (
         "Alexandros Theodotou",
         "https://www.zrythm.org",
         PACKAGE_VERSION),
-      audio_thread_checker_ (std::move (audio_thread_checker))
+      pimpl_ (std::make_unique<ClapPluginImpl> ())
 {
   is_main_thread = true;
+
+  pimpl_->audio_thread_checker_ = std::move (audio_thread_checker);
 
   // Connect to configuration changes
   connect (
@@ -95,11 +263,11 @@ ClapPlugin::on_configuration_changed ()
 void
 ClapPlugin::on_ui_visibility_changed ()
 {
-  if (uiVisible () && !isGuiVisible_)
+  if (uiVisible () && !pimpl_->isGuiVisible_)
     {
       show_editor ();
     }
-  else if (!uiVisible () && isGuiVisible_)
+  else if (!uiVisible () && pimpl_->isGuiVisible_)
     {
       hide_editor ();
     }
@@ -128,14 +296,14 @@ ClapPlugin::show_editor ()
 {
   assert (is_main_thread);
 
-  if (!plugin_->canUseGui ())
+  if (!pimpl_->plugin_->canUseGui ())
     return;
 
-  if (isGuiCreated_)
+  if (pimpl_->isGuiCreated_)
     {
-      plugin_->guiDestroy ();
-      isGuiCreated_ = false;
-      isGuiVisible_ = false;
+      pimpl_->plugin_->guiDestroy ();
+      pimpl_->isGuiCreated_ = false;
+      pimpl_->isGuiVisible_ = false;
     }
 
   const auto getCurrentClapGuiApi = [] () -> const char * {
@@ -149,76 +317,79 @@ ClapPlugin::show_editor ()
 #  error "unsupported platform"
 #endif
   };
-  guiApi_ = getCurrentClapGuiApi ();
+  pimpl_->guiApi_ = getCurrentClapGuiApi ();
 
-  isGuiFloating_ = false;
-  if (!plugin_->guiIsApiSupported (guiApi_, false))
+  pimpl_->isGuiFloating_ = false;
+  if (!pimpl_->plugin_->guiIsApiSupported (pimpl_->guiApi_, false))
     {
-      if (!plugin_->guiIsApiSupported (guiApi_, true))
+      if (!pimpl_->plugin_->guiIsApiSupported (pimpl_->guiApi_, true))
         {
           z_warning ("could not find a suitable gui api");
           return;
         }
-      isGuiFloating_ = true;
+      pimpl_->isGuiFloating_ = true;
     }
 
-  editor_ = std::make_unique<PluginViewWindow> (
+  pimpl_->editor_ = std::make_unique<PluginViewWindow> (
     get_name ().to_juce_string (), [this] () {
       z_debug ("close button pressed on CLAP plugin window");
       setUiVisible (false);
     });
 
-  const auto embed_id = editor_->getEmbedWindowId ();
+  const auto embed_id = pimpl_->editor_->getEmbedWindowId ();
   auto       w = makeClapWindow (embed_id);
-  if (!plugin_->guiCreate (w.api, isGuiFloating_))
+  if (!pimpl_->plugin_->guiCreate (w.api, pimpl_->isGuiFloating_))
     {
       z_warning ("could not create the plugin gui");
       return;
     }
 
-  isGuiCreated_ = true;
-  assert (isGuiVisible_ == false);
+  pimpl_->isGuiCreated_ = true;
+  assert (pimpl_->isGuiVisible_ == false);
 
-  if (isGuiFloating_)
+  if (pimpl_->isGuiFloating_)
     {
-      plugin_->guiSetTransient (&w);
-      plugin_->guiSuggestTitle ("using clap-host suggested title");
+      pimpl_->plugin_->guiSetTransient (&w);
+      pimpl_->plugin_->guiSuggestTitle ("using clap-host suggested title");
     }
   else
     {
       uint32_t width = 0;
       uint32_t height = 0;
 
-      if (!plugin_->guiGetSize (&width, &height))
+      if (!pimpl_->plugin_->guiGetSize (&width, &height))
         {
           z_warning ("could not get the size of the plugin gui");
-          isGuiCreated_ = false;
-          plugin_->guiDestroy ();
+          pimpl_->isGuiCreated_ = false;
+          pimpl_->plugin_->guiDestroy ();
           return;
         }
 
-      editor_->setSize (static_cast<int> (width), static_cast<int> (height));
+      pimpl_->editor_->setSize (
+        static_cast<int> (width), static_cast<int> (height));
+      pimpl_->editor_->centreWithSize (
+        static_cast<int> (width), static_cast<int> (height)); // Center on screen
 
-      if (!plugin_->guiSetParent (&w))
+      if (!pimpl_->plugin_->guiSetParent (&w))
         {
           z_warning ("could embbed the plugin gui");
-          isGuiCreated_ = false;
-          plugin_->guiDestroy ();
+          pimpl_->isGuiCreated_ = false;
+          pimpl_->plugin_->guiDestroy ();
           return;
         }
     }
 
-  setPluginWindowVisibility (true);
+  pimpl_->setPluginWindowVisibility (true);
 }
 
 void
 ClapPlugin::hide_editor ()
 {
-  setPluginWindowVisibility (false);
+  pimpl_->setPluginWindowVisibility (false);
 }
 
 void
-ClapPlugin::setPluginWindowVisibility (bool isVisible)
+ClapPlugin::ClapPluginImpl::setPluginWindowVisibility (bool isVisible)
 {
   assert (is_main_thread);
 
@@ -247,7 +418,7 @@ ClapPlugin::guiResizeHintsChanged () noexcept
 bool
 ClapPlugin::guiRequestResize (uint32_t width, uint32_t height) noexcept
 {
-  editor_->setSize (static_cast<int> (width), static_cast<int> (height));
+  pimpl_->editor_->setSize (static_cast<int> (width), static_cast<int> (height));
 
   return true;
 }
@@ -282,19 +453,19 @@ ClapPlugin::timerSupportRegisterTimer (
   assert (is_main_thread);
 
   // Dexed fails this check even though it uses timer so make it a warning...
-  z_warn_if_fail (plugin_->canUseTimerSupport ());
+  z_warn_if_fail (pimpl_->plugin_->canUseTimerSupport ());
 
-  auto id = nextTimerId_++;
+  auto id = pimpl_->nextTimerId_++;
   *timerId = id;
   auto timer = std::make_unique<QTimer> ();
 
   QObject::connect (timer.get (), &QTimer::timeout, this, [this, id] {
     assert (is_main_thread);
-    plugin_->timerSupportOnTimer (id);
+    pimpl_->plugin_->timerSupportOnTimer (id);
   });
 
   auto t = timer.get ();
-  timers_.insert_or_assign (*timerId, std::move (timer));
+  pimpl_->timers_.insert_or_assign (*timerId, std::move (timer));
   t->start (static_cast<int> (periodMs));
   return true;
 }
@@ -304,12 +475,12 @@ ClapPlugin::timerSupportUnregisterTimer (clap_id timerId) noexcept
 {
   assert (is_main_thread);
 
-  z_warn_if_fail (plugin_->canUseTimerSupport ());
+  z_warn_if_fail (pimpl_->plugin_->canUseTimerSupport ());
 
-  auto it = timers_.find (timerId);
-  assert (it != timers_.end ());
+  auto it = pimpl_->timers_.find (timerId);
+  assert (it != pimpl_->timers_.end ());
 
-  timers_.erase (it);
+  pimpl_->timers_.erase (it);
   return true;
 }
 
@@ -320,20 +491,22 @@ ClapPlugin::prepare_for_processing_impl (
 {
   assert (is_main_thread);
 
-  if (!plugin_)
+  if (!pimpl_->plugin_)
     return;
 
-  setup_audio_ports_for_processing (max_block_length);
+  pimpl_->setup_audio_ports_for_processing (
+    static_cast<int> (audio_in_ports_.size ()),
+    static_cast<int> (audio_out_ports_.size ()), max_block_length);
 
-  assert (!isPluginActive ());
-  if (!plugin_->activate (sample_rate, 1, max_block_length))
+  assert (!pimpl_->isPluginActive ());
+  if (!pimpl_->plugin_->activate (sample_rate, 1, max_block_length))
     {
-      setPluginState (InactiveWithError);
+      pimpl_->setPluginState (ClapPluginImpl::InactiveWithError);
       return;
     }
 
-  scheduleProcess_ = true;
-  setPluginState (ActiveAndSleeping);
+  pimpl_->scheduleProcess_ = true;
+  pimpl_->setPluginState (ClapPluginImpl::ActiveAndSleeping);
 }
 
 void
@@ -341,84 +514,84 @@ ClapPlugin::release_resources_impl ()
 {
   assert (is_main_thread);
 
-  if (!isPluginActive ())
+  if (!pimpl_->isPluginActive ())
     return;
 
-  if (state_ == ActiveAndProcessing)
+  if (pimpl_->state_ == ClapPluginImpl::ActiveAndProcessing)
     {
-      force_audio_thread_check_.store (true);
-      plugin_->stopProcessing ();
-      force_audio_thread_check_.store (false);
+      pimpl_->force_audio_thread_check_.store (true);
+      pimpl_->plugin_->stopProcessing ();
+      pimpl_->force_audio_thread_check_.store (false);
     }
-  setPluginState (ActiveAndReadyToDeactivate);
-  scheduleDeactivate_ = false;
+  pimpl_->setPluginState (ClapPluginImpl::ActiveAndReadyToDeactivate);
+  pimpl_->scheduleDeactivate_ = false;
 
-  plugin_->deactivate ();
-  setPluginState (Inactive);
+  pimpl_->plugin_->deactivate ();
+  pimpl_->setPluginState (ClapPluginImpl::Inactive);
 }
 
 void
 ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 {
-  process_.frames_count = time_info.nframes_;
-  process_.steady_time = -1;
+  pimpl_->process_.frames_count = time_info.nframes_;
+  pimpl_->process_.steady_time = -1;
 
   assert (threadCheckIsAudioThread ());
 
-  if (!plugin_)
+  if (!pimpl_->plugin_)
     return;
 
   // Can't process a plugin that is not active
-  if (!isPluginActive ())
+  if (!pimpl_->isPluginActive ())
     return;
 
   // Do we want to deactivate the plugin?
-  if (scheduleDeactivate_)
+  if (pimpl_->scheduleDeactivate_)
     {
-      scheduleDeactivate_ = false;
-      if (state_ == ActiveAndProcessing)
-        plugin_->stopProcessing ();
-      setPluginState (ActiveAndReadyToDeactivate);
+      pimpl_->scheduleDeactivate_ = false;
+      if (pimpl_->state_ == ClapPluginImpl::ActiveAndProcessing)
+        pimpl_->plugin_->stopProcessing ();
+      pimpl_->setPluginState (ClapPluginImpl::ActiveAndReadyToDeactivate);
       return;
     }
 
   // We can't process a plugin which failed to start processing
-  if (state_ == ActiveWithError)
+  if (pimpl_->state_ == ClapPluginImpl::ActiveWithError)
     return;
 
-  process_.transport = nullptr;
+  pimpl_->process_.transport = nullptr;
 
-  process_.in_events = evIn_.clapInputEvents ();
-  process_.out_events = evOut_.clapOutputEvents ();
+  pimpl_->process_.in_events = pimpl_->evIn_.clapInputEvents ();
+  pimpl_->process_.out_events = pimpl_->evOut_.clapOutputEvents ();
 
-  process_.audio_inputs = &audioIn_;
-  process_.audio_inputs_count = 1;
-  process_.audio_outputs = &audioOut_;
-  process_.audio_outputs_count = 1;
+  pimpl_->process_.audio_inputs = &pimpl_->audioIn_;
+  pimpl_->process_.audio_inputs_count = 1;
+  pimpl_->process_.audio_outputs = &pimpl_->audioOut_;
+  pimpl_->process_.audio_outputs_count = 1;
 
-  evOut_.clear ();
-  generatePluginInputEvents ();
+  pimpl_->evOut_.clear ();
+  pimpl_->generatePluginInputEvents ();
 
-  if (isPluginSleeping ())
+  if (pimpl_->isPluginSleeping ())
     {
-      if (!scheduleProcess_ && evIn_.empty ())
+      if (!pimpl_->scheduleProcess_ && pimpl_->evIn_.empty ())
         // The plugin is sleeping, there is no request to wake it up and there
         // are no events to process
         return;
 
-      scheduleProcess_ = false;
-      if (!plugin_->startProcessing ())
+      pimpl_->scheduleProcess_ = false;
+      if (!pimpl_->plugin_->startProcessing ())
         {
           // the plugin failed to start processing
-          setPluginState (ActiveWithError);
+          pimpl_->setPluginState (ClapPluginImpl::ActiveWithError);
           return;
         }
 
-      setPluginState (ActiveAndProcessing);
+      pimpl_->setPluginState (ClapPluginImpl::ActiveAndProcessing);
     }
 
   [[maybe_unused]] int32_t status = CLAP_PROCESS_SLEEP;
-  if (isPluginProcessing ())
+  if (pimpl_->isPluginProcessing ())
     {
       const auto local_offset = time_info.local_offset_;
       const auto nframes = time_info.nframes_;
@@ -426,7 +599,7 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
       // Copy input audio to JUCE buffer
       for (
         const auto &[i, channel_ptr] :
-        utils::views::enumerate (audio_in_channel_ptrs_))
+        utils::views::enumerate (pimpl_->audio_in_channel_ptrs_))
         {
           utils::float_ranges::copy (
             &channel_ptr[local_offset], &audio_in_ports_[i]->buf_[local_offset],
@@ -434,12 +607,12 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
         }
 
       // Run plugin processing
-      status = plugin_->process (&process_);
+      status = pimpl_->plugin_->process (&pimpl_->process_);
 
       // Copy output audio from JUCE buffer
       for (
         const auto &[i, channel_ptr] :
-        utils::views::enumerate (audio_out_channel_ptrs_))
+        utils::views::enumerate (pimpl_->audio_out_channel_ptrs_))
         {
           utils::float_ranges::copy (
             &audio_out_ports_[i]->buf_[local_offset],
@@ -447,12 +620,12 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
         }
     }
 
-  handlePluginOutputEvents ();
+  pimpl_->handlePluginOutputEvents ();
 
-  evOut_.clear ();
-  evIn_.clear ();
+  pimpl_->evOut_.clear ();
+  pimpl_->evIn_.clear ();
 
-  engineToAppValueQueue_.producerDone ();
+  pimpl_->engineToAppValueQueue_.producerDone ();
 
   // TODO: send plugin to sleep if possible
 }
@@ -472,41 +645,42 @@ ClapPlugin::load_plugin (const fs::path &path, int plugin_index)
 {
   assert (is_main_thread);
 
-  if (library_.isLoaded ())
+  if (pimpl_->library_.isLoaded ())
     unload_current_plugin ();
 
-  library_.setFileName (utils::Utf8String::from_path (path).to_qstring ());
-  library_.setLoadHints (
+  pimpl_->library_.setFileName (
+    utils::Utf8String::from_path (path).to_qstring ());
+  pimpl_->library_.setLoadHints (
     QLibrary::ResolveAllSymbolsHint
 #if !defined(__has_feature) || !__has_feature(address_sanitizer)
     | QLibrary::DeepBindHint
 #endif
   );
-  if (!library_.load ())
+  if (!pimpl_->library_.load ())
     {
       z_warning (
-        "Failed to load plugin '{}': {}", path, library_.errorString ());
+        "Failed to load plugin '{}': {}", path, pimpl_->library_.errorString ());
       return false;
     }
 
-  pluginEntry_ = reinterpret_cast<const struct clap_plugin_entry *> (
-    library_.resolve ("clap_entry"));
-  if (pluginEntry_ == nullptr)
+  pimpl_->pluginEntry_ = reinterpret_cast<const struct clap_plugin_entry *> (
+    pimpl_->library_.resolve ("clap_entry"));
+  if (pimpl_->pluginEntry_ == nullptr)
     {
       z_warning ("Unable to resolve entry point 'clap_entry' in '{}'", path);
-      library_.unload ();
+      pimpl_->library_.unload ();
       return false;
     }
 
-  if (!pluginEntry_->init (utils::Utf8String::from_path (path).c_str ()))
+  if (!pimpl_->pluginEntry_->init (utils::Utf8String::from_path (path).c_str ()))
     {
       z_warning ("clap_entry->init() failed for '{}'", path);
     }
 
-  pluginFactory_ = static_cast<const clap_plugin_factory *> (
-    pluginEntry_->get_factory (CLAP_PLUGIN_FACTORY_ID));
+  pimpl_->pluginFactory_ = static_cast<const clap_plugin_factory *> (
+    pimpl_->pluginEntry_->get_factory (CLAP_PLUGIN_FACTORY_ID));
 
-  auto count = pluginFactory_->get_plugin_count (pluginFactory_);
+  auto count = pimpl_->pluginFactory_->get_plugin_count (pimpl_->pluginFactory_);
   if (plugin_index >= static_cast<int> (count))
     {
       z_warning (
@@ -515,8 +689,8 @@ ClapPlugin::load_plugin (const fs::path &path, int plugin_index)
       return false;
     }
 
-  const auto * desc =
-    pluginFactory_->get_plugin_descriptor (pluginFactory_, plugin_index);
+  const auto * desc = pimpl_->pluginFactory_->get_plugin_descriptor (
+    pimpl_->pluginFactory_, plugin_index);
   if (desc == nullptr)
     {
       z_warning ("no plugin descriptor");
@@ -535,17 +709,17 @@ ClapPlugin::load_plugin (const fs::path &path, int plugin_index)
 
   z_info ("Loading plugin with id: {}, index: {}", desc->id, plugin_index);
 
-  const auto * const plugin =
-    pluginFactory_->create_plugin (pluginFactory_, clapHost (), desc->id);
+  const auto * const plugin = pimpl_->pluginFactory_->create_plugin (
+    pimpl_->pluginFactory_, clapHost (), desc->id);
   if (plugin == nullptr)
     {
       z_warning ("could not create the plugin with id: {}", desc->id);
       return false;
     }
 
-  plugin_ = std::make_unique<ClapPluginProxy> (*plugin, *this);
+  pimpl_->plugin_ = std::make_unique<ClapPluginProxy> (*plugin, *this);
 
-  if (!plugin_->init ())
+  if (!pimpl_->plugin_->init ())
     {
       z_warning ("could not init the plugin with id: {}", desc->id);
       return false;
@@ -567,31 +741,31 @@ ClapPlugin::unload_current_plugin ()
 
   pluginLoadedChanged (false);
 
-  if (!library_.isLoaded ())
+  if (!pimpl_->library_.isLoaded ())
     return;
 
-  if (isGuiCreated_)
+  if (pimpl_->isGuiCreated_)
     {
-      plugin_->guiDestroy ();
-      isGuiCreated_ = false;
-      isGuiVisible_ = false;
+      pimpl_->plugin_->guiDestroy ();
+      pimpl_->isGuiCreated_ = false;
+      pimpl_->isGuiVisible_ = false;
     }
 
   release_resources_impl ();
 
-  if (plugin_)
+  if (pimpl_->plugin_)
     {
-      plugin_->destroy ();
+      pimpl_->plugin_->destroy ();
     }
 
-  pluginEntry_->deinit ();
-  pluginEntry_ = nullptr;
+  pimpl_->pluginEntry_->deinit ();
+  pimpl_->pluginEntry_ = nullptr;
 
-  library_.unload ();
+  pimpl_->library_.unload ();
 }
 
 bool
-ClapPlugin::isPluginActive () const
+ClapPlugin::ClapPluginImpl::isPluginActive () const
 {
   switch (state_)
     {
@@ -604,13 +778,13 @@ ClapPlugin::isPluginActive () const
 }
 
 bool
-ClapPlugin::isPluginProcessing () const
+ClapPlugin::ClapPluginImpl::isPluginProcessing () const
 {
   return state_ == ActiveAndProcessing;
 }
 
 bool
-ClapPlugin::isPluginSleeping () const
+ClapPlugin::ClapPluginImpl::isPluginSleeping () const
 {
   return state_ == ActiveAndSleeping;
 }
@@ -618,12 +792,12 @@ ClapPlugin::isPluginSleeping () const
 bool
 ClapPlugin::threadCheckIsAudioThread () const noexcept
 {
-  if (force_audio_thread_check_.load ())
+  if (pimpl_->force_audio_thread_check_.load ())
     {
       return true;
     }
 
-  return audio_thread_checker_ ();
+  return pimpl_->audio_thread_checker_ ();
 }
 bool
 ClapPlugin::threadCheckIsMainThread () const noexcept
@@ -632,7 +806,7 @@ ClapPlugin::threadCheckIsMainThread () const noexcept
 }
 
 void
-ClapPlugin::generatePluginInputEvents ()
+ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
 {
   appToEngineValueQueue_.consume (
     [this] (clap_id param_id, const AppToEngineParamQueueValue &value) {
@@ -672,7 +846,7 @@ ClapPlugin::generatePluginInputEvents ()
 }
 
 void
-ClapPlugin::handlePluginOutputEvents ()
+ClapPlugin::ClapPluginImpl::handlePluginOutputEvents ()
 {
   for (uint32_t i = 0; i < evOut_.size (); ++i)
     {
@@ -733,19 +907,19 @@ ClapPlugin::handlePluginOutputEvents ()
 void
 ClapPlugin::requestRestart () noexcept
 {
-  scheduleRestart_ = true;
+  pimpl_->scheduleRestart_ = true;
 }
 
 void
 ClapPlugin::requestProcess () noexcept
 {
-  scheduleProcess_ = true;
+  pimpl_->scheduleProcess_ = true;
 }
 
 void
 ClapPlugin::requestCallback () noexcept
 {
-  scheduleMainThreadCallback_ = true;
+  pimpl_->scheduleMainThreadCallback_ = true;
 }
 
 void
@@ -781,12 +955,12 @@ void
 ClapPlugin::create_ports_from_clap_plugin ()
 {
   assert (is_main_thread);
-  assert (!isPluginActive ());
+  assert (!pimpl_->isPluginActive ());
 
-  if (plugin_->canUseNotePorts ())
+  if (pimpl_->plugin_->canUseNotePorts ())
     {
-      const auto midi_in_ports = plugin_->notePortsCount (true);
-      const auto midi_out_ports = plugin_->notePortsCount (false);
+      const auto midi_in_ports = pimpl_->plugin_->notePortsCount (true);
+      const auto midi_out_ports = pimpl_->plugin_->notePortsCount (false);
       for (const auto i : std::views::iota (0u, midi_in_ports))
         {
           auto port_ref =
@@ -807,14 +981,14 @@ ClapPlugin::create_ports_from_clap_plugin ()
         }
     }
 
-  if (plugin_->canUseAudioPorts ())
+  if (pimpl_->plugin_->canUseAudioPorts ())
     {
-      const auto audio_in_ports = plugin_->audioPortsCount (true);
-      const auto audio_out_ports = plugin_->audioPortsCount (false);
+      const auto audio_in_ports = pimpl_->plugin_->audioPortsCount (true);
+      const auto audio_out_ports = pimpl_->plugin_->audioPortsCount (false);
       for (const auto i : std::views::iota (0u, audio_in_ports))
         {
           clap_audio_port_info_t nfo{};
-          plugin_->audioPortsGet (i, true, &nfo);
+          pimpl_->plugin_->audioPortsGet (i, true, &nfo);
           for (const auto ch : std::views::iota (0u, nfo.channel_count))
             {
               auto port_ref =
@@ -833,7 +1007,7 @@ ClapPlugin::create_ports_from_clap_plugin ()
       for (const auto i : std::views::iota (0u, audio_out_ports))
         {
           clap_audio_port_info_t nfo{};
-          plugin_->audioPortsGet (i, false, &nfo);
+          pimpl_->plugin_->audioPortsGet (i, false, &nfo);
           for (const auto ch : std::views::iota (0u, nfo.channel_count))
             {
               auto port_ref =
@@ -853,38 +1027,36 @@ ClapPlugin::create_ports_from_clap_plugin ()
 }
 
 void
-ClapPlugin::setup_audio_ports_for_processing (nframes_t block_size)
+ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
+  int       num_audio_ins,
+  int       num_audio_outs,
+  nframes_t block_size)
 {
-  const auto num_inputs = audio_in_ports_.size ();
-  const auto num_outputs = audio_out_ports_.size ();
-
   // Resize audio buffers
-  audio_in_buf_.setSize (
-    static_cast<int> (num_inputs), static_cast<int> (block_size));
-  audio_out_buf_.setSize (
-    static_cast<int> (num_outputs), static_cast<int> (block_size));
+  audio_in_buf_.setSize (num_audio_ins, static_cast<int> (block_size));
+  audio_out_buf_.setSize (num_audio_outs, static_cast<int> (block_size));
 
   // Setup channel pointers
-  audio_in_channel_ptrs_.resize (num_inputs);
-  audio_out_channel_ptrs_.resize (num_outputs);
+  audio_in_channel_ptrs_.resize (num_audio_ins);
+  audio_out_channel_ptrs_.resize (num_audio_outs);
 
-  for (int i = 0; i < static_cast<int> (num_inputs); ++i)
+  for (int i = 0; i < num_audio_ins; ++i)
     {
       audio_in_channel_ptrs_[i] = audio_in_buf_.getWritePointer (i);
     }
 
-  for (int i = 0; i < static_cast<int> (num_outputs); ++i)
+  for (int i = 0; i < num_audio_outs; ++i)
     {
       audio_out_channel_ptrs_[i] = audio_out_buf_.getWritePointer (i);
     }
 
-  audioIn_.channel_count = num_inputs;
+  audioIn_.channel_count = num_audio_ins;
   audioIn_.data32 = audio_in_channel_ptrs_.data ();
   audioIn_.data64 = nullptr;
   audioIn_.constant_mask = 0;
   audioIn_.latency = 0;
 
-  audioOut_.channel_count = num_outputs;
+  audioOut_.channel_count = num_audio_outs;
   audioOut_.data32 = audio_out_channel_ptrs_.data ();
   audioOut_.data64 = nullptr;
   audioOut_.constant_mask = 0;
@@ -892,7 +1064,9 @@ ClapPlugin::setup_audio_ports_for_processing (nframes_t block_size)
 }
 
 void
-ClapPlugin::checkValidParamValue (const ClapPluginParam &param, double value)
+ClapPlugin::ClapPluginImpl::checkValidParamValue (
+  const ClapPluginParam &param,
+  double                 value)
 {
   assert (is_main_thread);
 
@@ -918,57 +1092,57 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
 {
   assert (is_main_thread);
 
-  if (!plugin_->canUseParams ())
+  if (!pimpl_->plugin_->canUseParams ())
     return;
 
   // 1. it is forbidden to use CLAP_PARAM_RESCAN_ALL if the plugin is active
-  assert (!isPluginActive () || !(flags & CLAP_PARAM_RESCAN_ALL));
+  assert (!pimpl_->isPluginActive () || !(flags & CLAP_PARAM_RESCAN_ALL));
 
   // 2. scan the params.
-  auto                        count = plugin_->paramsCount ();
+  auto                        count = pimpl_->plugin_->paramsCount ();
   std::unordered_set<clap_id> paramIds (count * 2);
 
   for (const auto i : std::views::iota (0u, count))
     {
       clap_param_info info{};
-      assert (plugin_->paramsGetInfo (i, &info));
+      assert (pimpl_->plugin_->paramsGetInfo (i, &info));
 
       assert (info.id != CLAP_INVALID_ID);
 
-      auto it = params_.find (info.id);
+      auto it = pimpl_->params_.find (info.id);
 
       // check that the parameter is not declared twice
       assert (!paramIds.contains (info.id));
       paramIds.insert (info.id);
 
-      if (it == params_.end ())
+      if (it == pimpl_->params_.end ())
         {
           assert ((flags & CLAP_PARAM_RESCAN_ALL) != 0u);
 
-          double value = getParamValue (info);
+          double value = pimpl_->getParamValue (info);
           auto   param = std::make_unique<ClapPluginParam> (info, value, this);
-          checkValidParamValue (*param, value);
-          params_.insert_or_assign (info.id, std::move (param));
+          pimpl_->checkValidParamValue (*param, value);
+          pimpl_->params_.insert_or_assign (info.id, std::move (param));
         }
       else
         {
           // update param info
           if (!it->second->isInfoEqualTo (info))
             {
-              assert (clapParamsRescanMayInfoChange (flags));
+              assert (pimpl_->clapParamsRescanMayInfoChange (flags));
               assert (
                 ((flags & CLAP_PARAM_RESCAN_ALL) != 0u)
                 || it->second->isInfoCriticallyDifferentTo (info));
               it->second->setInfo (info);
             }
 
-          double value = getParamValue (info);
+          double value = pimpl_->getParamValue (info);
           if (it->second->value () != value)
             {
-              assert (clapParamsRescanMayValueChange (flags));
+              assert (pimpl_->clapParamsRescanMayValueChange (flags));
 
               // update param value
-              checkValidParamValue (*it->second, value);
+              pimpl_->checkValidParamValue (*it->second, value);
               it->second->setValue (value);
               it->second->setModulation (value);
             }
@@ -976,14 +1150,14 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
     }
 
   // remove parameters which are gone
-  for (auto it = params_.begin (); it != params_.end ();)
+  for (auto it = pimpl_->params_.begin (); it != pimpl_->params_.end ();)
     {
       if (paramIds.contains (it->first))
         ++it;
       else
         {
           assert ((flags & CLAP_PARAM_RESCAN_ALL) != 0u);
-          it = params_.erase (it);
+          it = pimpl_->params_.erase (it);
         }
     }
 
@@ -998,7 +1172,7 @@ ClapPlugin::paramsClear (clap_id paramId, clap_param_clear_flags flags) noexcept
 }
 
 void
-ClapPlugin::paramFlushOnMainThread ()
+ClapPlugin::ClapPluginImpl::paramFlushOnMainThread ()
 {
   assert (is_main_thread);
 
@@ -1022,18 +1196,18 @@ ClapPlugin::paramFlushOnMainThread ()
 void
 ClapPlugin::paramsRequestFlush () noexcept
 {
-  if (!isPluginActive () && threadCheckIsMainThread ())
+  if (!pimpl_->isPluginActive () && threadCheckIsMainThread ())
     {
       // Perform the flush immediately
-      paramFlushOnMainThread ();
+      pimpl_->paramFlushOnMainThread ();
       return;
     }
 
-  scheduleParamFlush_ = true;
+  pimpl_->scheduleParamFlush_ = true;
 }
 
 double
-ClapPlugin::getParamValue (const clap_param_info &info)
+ClapPlugin::ClapPluginImpl::getParamValue (const clap_param_info &info)
 {
   assert (is_main_thread);
 
@@ -1051,7 +1225,7 @@ ClapPlugin::getParamValue (const clap_param_info &info)
 }
 
 void
-ClapPlugin::setPluginState (PluginState state)
+ClapPlugin::ClapPluginImpl::setPluginState (PluginState state)
 {
   switch (state)
     {
