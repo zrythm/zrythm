@@ -13,11 +13,11 @@ namespace zrythm::plugins
 JucePlugin::JucePlugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
   StateDirectoryParentPathProvider              state_path_provider,
-  CreatePluginInstanceAsyncFunc   create_plugin_instance_async_func,
-  std::function<sample_rate_t ()> sample_rate_provider,
-  std::function<nframes_t ()>     buffer_size_provider,
-  TopLevelWindowProvider          top_level_window_provider,
-  QObject *                       parent)
+  CreatePluginInstanceAsyncFunc    create_plugin_instance_async_func,
+  std::function<sample_rate_t ()>  sample_rate_provider,
+  std::function<nframes_t ()>      buffer_size_provider,
+  JucePluginTopLevelWindowProvider top_level_window_provider,
+  QObject *                        parent)
     : Plugin (dependencies, std::move (state_path_provider), parent),
       create_plugin_instance_async_func_ (
         std::move (create_plugin_instance_async_func)),
@@ -522,7 +522,7 @@ JucePlugin::show_editor ()
     {
       editor_->setVisible (true);
 
-      top_level_window_ = top_level_window_provider_ (*editor_);
+      top_level_window_ = top_level_window_provider_ (*editor_, *this);
 
       editor_visible_ = true;
     }

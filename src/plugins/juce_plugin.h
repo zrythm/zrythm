@@ -33,8 +33,8 @@ public:
    * @brief Called to create a visible top-level window that contains the given
    * editor component.
    */
-  using TopLevelWindowProvider = std::function<
-    std::unique_ptr<juce::Component> (juce::AudioProcessorEditor &)>;
+  using JucePluginTopLevelWindowProvider = std::function<std::unique_ptr<
+    juce::Component> (juce::AudioProcessorEditor &, JucePlugin &)>;
 
   /**
    * @brief Constructor for JucePlugin.
@@ -49,11 +49,11 @@ public:
   JucePlugin (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
     StateDirectoryParentPathProvider              state_path_provider,
-    CreatePluginInstanceAsyncFunc   create_plugin_instance_async_func,
-    std::function<sample_rate_t ()> sample_rate_provider,
-    std::function<nframes_t ()>     buffer_size_provider,
-    TopLevelWindowProvider          top_level_window_provider,
-    QObject *                       parent = nullptr);
+    CreatePluginInstanceAsyncFunc    create_plugin_instance_async_func,
+    std::function<sample_rate_t ()>  sample_rate_provider,
+    std::function<nframes_t ()>      buffer_size_provider,
+    JucePluginTopLevelWindowProvider top_level_window_provider,
+    QObject *                        parent = nullptr);
 
   ~JucePlugin () override;
 
@@ -217,7 +217,7 @@ private:
   // instantiated).
   std::optional<juce::MemoryBlock> state_to_apply_;
 
-  TopLevelWindowProvider top_level_window_provider_;
+  JucePluginTopLevelWindowProvider top_level_window_provider_;
 };
 
 } // namespace zrythm::plugins

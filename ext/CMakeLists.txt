@@ -28,23 +28,6 @@ CPMFindPackage(
 )
 
 if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
-  CPMFindPackage(
-    NAME clap
-    GITHUB_REPOSITORY free-audio/clap
-    VERSION 1.2.2
-    GIT_TAG 27f20f81dec40b930d79ef429fd35dcc2d45db5b
-    EXCLUDE_FROM_ALL YES
-    SYSTEM YES
-  )
-  CPMFindPackage(
-    NAME clap-helpers
-    GITHUB_REPOSITORY free-audio/clap-helpers
-    # main branch
-    GIT_TAG 59791394dc26637d9425c2745233a979602be2a7
-    EXCLUDE_FROM_ALL YES
-    SYSTEM YES
-  )
-
   juce_add_module(juce_clap_hosting)
   add_library(juce_clap_hosting_lib STATIC)
   target_sources(juce_clap_hosting_lib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp")

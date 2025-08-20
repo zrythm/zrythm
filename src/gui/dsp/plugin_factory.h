@@ -52,8 +52,9 @@ public:
                                     create_plugin_instance_async_func_;
     std::function<sample_rate_t ()> sample_rate_provider_;
     std::function<nframes_t ()>     buffer_size_provider_;
-    plugins::JucePlugin::TopLevelWindowProvider top_level_window_provider_;
-    AudioThreadChecker                          audio_thread_checker_;
+    plugins::JucePlugin::JucePluginTopLevelWindowProvider
+                       top_level_window_provider_;
+    AudioThreadChecker audio_thread_checker_;
   };
 
   PluginFactory () = delete;

@@ -31,21 +31,17 @@
 using namespace zrythm;
 
 static auto
-juce_plugin_toplevel_window_provider (juce::AudioProcessorEditor &editor)
+juce_plugin_toplevel_window_provider (
+  juce::AudioProcessorEditor &editor,
+  plugins::JucePlugin        &plugin)
 {
-  auto window = std::make_unique<juce::DocumentWindow> (
-    editor.getAudioProcessor ()->getName (), juce::Colours::cadetblue,
-    juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton);
-  window->setAlwaysOnTop (true); // Optional: keep on top
-  window->setUsingNativeTitleBar (true);
-  window->setContentNonOwned (&editor, true);
-  window->centreWithSize (
-    editor.getWidth (), editor.getHeight ()); // Center on screen
-  window->setResizable (true, true);
-  window->addToDesktop ();
-  window->setVisible (true);
-  window->toFront (true);
-  return window;
+  auto ret = std::make_unique<plugins::PluginViewWindow> (
+    editor.getAudioProcessor ()->getName (), [&plugin] () {
+      z_debug ("close button pressed on JUCE plugin window");
+      plugin.setUiVisible (false);
+    });
+  ret->setJuceComponentContentNonOwned (&editor);
+  return ret;
 }
 
 Project::Project (

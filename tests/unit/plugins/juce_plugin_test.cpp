@@ -96,9 +96,10 @@ protected:
       }
   }
 
-  JucePlugin::TopLevelWindowProvider createMockTopLevelWindowProvider ()
+  JucePlugin::JucePluginTopLevelWindowProvider
+  createMockTopLevelWindowProvider ()
   {
-    return [] (juce::AudioProcessorEditor &editor) {
+    return [] (juce::AudioProcessorEditor &editor, JucePlugin &) {
       auto mock_window = std::make_unique<MockTopLevelWindow> ();
       EXPECT_CALL (*mock_window, setVisible (::testing::_))
         .Times (::testing::AnyNumber ());

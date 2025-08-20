@@ -38,6 +38,7 @@
 #include <utility>
 
 #include "plugins/clap_plugin.h"
+#include "plugins/plugin_view_window.h"
 
 #include <clap/helpers/host.hxx>
 #include <clap/helpers/plugin-proxy.hxx>
@@ -94,6 +95,222 @@ ClapPlugin::on_configuration_changed ()
 void
 ClapPlugin::on_ui_visibility_changed ()
 {
+  if (uiVisible () && !isGuiVisible_)
+    {
+      show_editor ();
+    }
+  else if (!uiVisible () && isGuiVisible_)
+    {
+      hide_editor ();
+    }
+}
+
+static clap_window
+makeClapWindow (WId window)
+{
+  clap_window w{};
+#ifdef Q_OS_LINUX
+  w.api = CLAP_WINDOW_API_X11;
+  w.x11 = window;
+#elifdef Q_OS_MACX
+  w.api = CLAP_WINDOW_API_COCOA;
+  w.cocoa = reinterpret_cast<clap_nsview> (window);
+#elifdef Q_OS_WIN
+  w.api = CLAP_WINDOW_API_WIN32;
+  w.win32 = reinterpret_cast<clap_hwnd> (window);
+#endif
+
+  return w;
+}
+
+void
+ClapPlugin::show_editor ()
+{
+  assert (is_main_thread);
+
+  if (!plugin_->canUseGui ())
+    return;
+
+  if (isGuiCreated_)
+    {
+      plugin_->guiDestroy ();
+      isGuiCreated_ = false;
+      isGuiVisible_ = false;
+    }
+
+  const auto getCurrentClapGuiApi = [] () -> const char * {
+#if defined(Q_OS_LINUX)
+    return CLAP_WINDOW_API_X11;
+#elif defined(Q_OS_WIN)
+    return CLAP_WINDOW_API_WIN32;
+#elif defined(Q_OS_MACOS)
+    return CLAP_WINDOW_API_COCOA;
+#else
+#  error "unsupported platform"
+#endif
+  };
+  guiApi_ = getCurrentClapGuiApi ();
+
+  isGuiFloating_ = false;
+  if (!plugin_->guiIsApiSupported (guiApi_, false))
+    {
+      if (!plugin_->guiIsApiSupported (guiApi_, true))
+        {
+          z_warning ("could not find a suitable gui api");
+          return;
+        }
+      isGuiFloating_ = true;
+    }
+
+  editor_ = std::make_unique<PluginViewWindow> (
+    get_name ().to_juce_string (), [this] () {
+      z_debug ("close button pressed on CLAP plugin window");
+      setUiVisible (false);
+    });
+
+  const auto embed_id = editor_->getEmbedWindowId ();
+  auto       w = makeClapWindow (embed_id);
+  if (!plugin_->guiCreate (w.api, isGuiFloating_))
+    {
+      z_warning ("could not create the plugin gui");
+      return;
+    }
+
+  isGuiCreated_ = true;
+  assert (isGuiVisible_ == false);
+
+  if (isGuiFloating_)
+    {
+      plugin_->guiSetTransient (&w);
+      plugin_->guiSuggestTitle ("using clap-host suggested title");
+    }
+  else
+    {
+      uint32_t width = 0;
+      uint32_t height = 0;
+
+      if (!plugin_->guiGetSize (&width, &height))
+        {
+          z_warning ("could not get the size of the plugin gui");
+          isGuiCreated_ = false;
+          plugin_->guiDestroy ();
+          return;
+        }
+
+      editor_->setSize (static_cast<int> (width), static_cast<int> (height));
+
+      if (!plugin_->guiSetParent (&w))
+        {
+          z_warning ("could embbed the plugin gui");
+          isGuiCreated_ = false;
+          plugin_->guiDestroy ();
+          return;
+        }
+    }
+
+  setPluginWindowVisibility (true);
+}
+
+void
+ClapPlugin::hide_editor ()
+{
+  setPluginWindowVisibility (false);
+}
+
+void
+ClapPlugin::setPluginWindowVisibility (bool isVisible)
+{
+  assert (is_main_thread);
+
+  if (!isGuiCreated_)
+    return;
+
+  if (isVisible && !isGuiVisible_)
+    {
+      plugin_->guiShow ();
+      isGuiVisible_ = true;
+    }
+  else if (!isVisible && isGuiVisible_)
+    {
+      plugin_->guiHide ();
+      editor_->setVisible (false);
+      isGuiVisible_ = false;
+    }
+}
+
+void
+ClapPlugin::guiResizeHintsChanged () noexcept
+{
+  // TODO
+}
+
+bool
+ClapPlugin::guiRequestResize (uint32_t width, uint32_t height) noexcept
+{
+  editor_->setSize (static_cast<int> (width), static_cast<int> (height));
+
+  return true;
+}
+
+bool
+ClapPlugin::guiRequestShow () noexcept
+{
+  setUiVisible (true);
+
+  return true;
+}
+
+bool
+ClapPlugin::guiRequestHide () noexcept
+{
+  setUiVisible (false);
+
+  return true;
+}
+
+void
+ClapPlugin::guiClosed (bool wasDestroyed) noexcept
+{
+  assert (is_main_thread);
+}
+
+bool
+ClapPlugin::timerSupportRegisterTimer (
+  uint32_t  periodMs,
+  clap_id * timerId) noexcept
+{
+  assert (is_main_thread);
+
+  // Dexed fails this check even though it uses timer so make it a warning...
+  z_warn_if_fail (plugin_->canUseTimerSupport ());
+
+  auto id = nextTimerId_++;
+  *timerId = id;
+  auto timer = std::make_unique<QTimer> ();
+
+  QObject::connect (timer.get (), &QTimer::timeout, this, [this, id] {
+    assert (is_main_thread);
+    plugin_->timerSupportOnTimer (id);
+  });
+
+  auto t = timer.get ();
+  timers_.insert_or_assign (*timerId, std::move (timer));
+  t->start (static_cast<int> (periodMs));
+  return true;
+}
+
+bool
+ClapPlugin::timerSupportUnregisterTimer (clap_id timerId) noexcept
+{
+  assert (is_main_thread);
+
+  z_warn_if_fail (plugin_->canUseTimerSupport ());
+
+  auto it = timers_.find (timerId);
+  assert (it != timers_.end ());
+
+  timers_.erase (it);
+  return true;
 }
 
 void
@@ -827,10 +1044,10 @@ ClapPlugin::getParamValue (const clap_param_info &info)
   if (plugin_->paramsGetValue (info.id, &value))
     return value;
 
-  std::ostringstream msg;
-  msg << "failed to get the param value, id: " << info.id
-      << ", name: " << info.name << ", module: " << info.module;
-  throw std::logic_error (msg.str ());
+  throw std::logic_error (
+    fmt::format (
+      "Failed to get the param value, id: {}, name: {}, module: {}", info.id,
+      info.name, info.module));
 }
 
 void

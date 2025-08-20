@@ -37,6 +37,7 @@
 
 #include "plugins/clap_plugin_param.h"
 #include "plugins/plugin.h"
+#include "plugins/plugin_view_window.h"
 
 #include <QLibrary>
 
@@ -99,6 +100,20 @@ public:
   void requestRestart () noexcept override;
   void requestProcess () noexcept override;
   void requestCallback () noexcept override;
+
+  // clap_host_gui
+  bool implementsGui () const noexcept override { return true; }
+  void guiResizeHintsChanged () noexcept override;
+  bool guiRequestResize (uint32_t width, uint32_t height) noexcept override;
+  bool guiRequestShow () noexcept override;
+  bool guiRequestHide () noexcept override;
+  void guiClosed (bool wasDestroyed) noexcept override;
+
+  // clap_host_timer_support
+  bool implementsTimerSupport () const noexcept override { return true; }
+  bool timerSupportRegisterTimer (uint32_t periodMs, clap_id * timerId) noexcept
+    override;
+  bool timerSupportUnregisterTimer (clap_id timerId) noexcept override;
 
   // clap_host_log
   bool implementsLog () const noexcept override { return true; }
@@ -203,6 +218,10 @@ private:
   void generatePluginInputEvents ();
 
   void setup_audio_ports_for_processing (nframes_t block_size);
+
+  void show_editor ();
+  void hide_editor ();
+  void setPluginWindowVisibility (bool isVisible);
 
   static constexpr auto kStateKey = "state"sv;
   friend void           to_json (nlohmann::json &j, const ClapPlugin &p)
@@ -311,6 +330,8 @@ private:
   // work-around the fact that stopProcessing() requires being called by an
   // audio thread for whatever reason
   std::atomic_bool force_audio_thread_check_{ false };
+
+  std::unique_ptr<PluginViewWindow> editor_;
 };
 
 } // namespace zrythm::plugins

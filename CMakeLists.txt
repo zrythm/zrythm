@@ -750,6 +750,23 @@ CPMFindPackage(
     "JSON_SystemInclude ON"
 )
 
+CPMFindPackage(
+  NAME clap
+  GITHUB_REPOSITORY free-audio/clap
+  VERSION 1.2.6
+  GIT_TAG 69a69252fdd6ac1d06e246d9a04c0a89d9607a17
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+)
+CPMFindPackage(
+  NAME clap-helpers
+  GITHUB_REPOSITORY free-audio/clap-helpers
+  VERSION 0
+  GIT_TAG 4d8c96fd7da2a7a67a91cf87b008643d6ad2c9ba
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+)
+
 add_subdirectory(ext)
 
 CPMFindPackage(
@@ -1059,7 +1076,7 @@ add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
 CPMFindPackage(
   NAME gsl-lite
-  GITHUB_REPOSITORY "gsl-lite/gsl-lite"
+  GITHUB_REPOSITORY gsl-lite/gsl-lite
   VERSION 1.0.1
   GIT_TAG 56dab5ce071c4ca17d3e0dbbda9a94bd5a1cbca1
   EXCLUDE_FROM_ALL YES
@@ -1089,19 +1106,10 @@ CPMFindPackage(
   OPTIONS ${tbb_opts}
 )
 
-CPMFindPackage(
-  NAME clap-helpers
-  GITHUB_REPOSITORY "free-audio/clap-helpers"
-  VERSION 0
-  GIT_TAG 4d8c96fd7da2a7a67a91cf87b008643d6ad2c9ba
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
-
 if(ZRYTHM_TESTS)
   CPMFindPackage(
     NAME cpp_httplib
-    GITHUB_REPOSITORY "yhirose/cpp-httplib"
+    GITHUB_REPOSITORY yhirose/cpp-httplib
     VERSION 0.20.1
     GIT_TAG 3af7f2c16147f3fbc6e4d717032daf505dc1652c
     OPTIONS

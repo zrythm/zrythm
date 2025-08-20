@@ -56,6 +56,17 @@ public:
     return *this;
   }
 
+  template <typename U>
+  QObjectUniquePtr &operator= (QObjectUniquePtr<U> &&other) noexcept
+    requires std::derived_from<U, T>
+  {
+    if (this != &other)
+      {
+        reset (other.release ());
+      }
+    return *this;
+  }
+
   void reset (T * ptr = nullptr)
   {
     if (ptr_ != ptr)
