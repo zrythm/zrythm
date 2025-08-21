@@ -499,7 +499,7 @@ ClapPlugin::posixFdSupportModifyFd (int fd, clap_posix_fd_flags_t flags) noexcep
 
   z_warn_if_fail (pimpl_->plugin_->canUsePosixFdSupport ());
 
-  auto it = pimpl_->fds_.find (fd);
+  [[maybe_unused]] auto it = pimpl_->fds_.find (fd);
   assert (it != pimpl_->fds_.end ());
 
   pimpl_->fds_.insert_or_assign (
@@ -807,9 +807,9 @@ ClapPlugin::save_state (std::optional<fs::path> abs_state_dir)
 
       const fs::path state_file = *abs_state_dir / "clap_state.dat";
 
-      clap_ostream_t stream{};
-      stream.ctx = this;
-      stream.write =
+      clap_ostream_t ostream{};
+      ostream.ctx = this;
+      ostream.write =
         +[] (const clap_ostream * stream, const void * buffer, uint64_t size)
         -> int64_t {
         assert (is_main_thread);
@@ -820,7 +820,7 @@ ClapPlugin::save_state (std::optional<fs::path> abs_state_dir)
       };
       pimpl_->stateData_.clear ();
       z_debug ("writing {}'s state to {}", get_name (), state_file);
-      pimpl_->plugin_->stateSave (&stream);
+      pimpl_->plugin_->stateSave (&ostream);
 
       // Create state directory if it doesn't exist
       fs::create_directories (*abs_state_dir);
@@ -861,9 +861,9 @@ ClapPlugin::load_state (std::optional<fs::path> abs_state_dir)
 
       pimpl_->stateData_ = utils::io::read_file_contents (state_file);
 
-      clap_istream_t stream{};
-      stream.ctx = this;
-      stream.read =
+      clap_istream_t istream{};
+      istream.ctx = this;
+      istream.read =
         +[] (const clap_istream * stream, void * buffer, uint64_t size)
         -> int64_t {
         assert (is_main_thread);
@@ -874,7 +874,7 @@ ClapPlugin::load_state (std::optional<fs::path> abs_state_dir)
         return static_cast<int64_t> (size);
       };
       z_debug ("loading {}'s state from {}", get_name (), state_file);
-      pimpl_->plugin_->stateLoad (&stream);
+      pimpl_->plugin_->stateLoad (&istream);
     }
 }
 
