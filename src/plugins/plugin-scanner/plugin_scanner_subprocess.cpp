@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -37,9 +37,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include "plugins/CLAPPluginFormat.h"
+
 #include "plugin_scanner_subprocess.h"
 
-using namespace zrythm::gui::old_dsp::plugins;
+namespace zrythm::plugins::scanner
+{
 
 PluginScannerSubprocess::PluginScannerSubprocess ()
     : file_logger_ (
@@ -161,9 +164,7 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
   // formats must be initialized before starting to receive messages
   juce::Logger::writeToLog ("Adding default formats");
   format_manager_.addDefaultFormats ();
-#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
-  format_manager_.addFormat (new juce::CLAPPluginFormat ());
-#endif
+  format_manager_.addFormat (new plugins::CLAPPluginFormat ());
   for (auto * format : format_manager_.getFormats ())
     {
       juce::Logger::writeToLog ("Found format: " + format->getName ());
@@ -255,5 +256,8 @@ PluginScannerSubprocess::~PluginScannerSubprocess ()
 {
   juce::Logger::setCurrentLogger (nullptr);
 }
+}
 
-START_JUCE_APPLICATION (PluginScannerSubprocess)
+JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wcast-qual")
+START_JUCE_APPLICATION (zrythm::plugins::scanner::PluginScannerSubprocess)
+JUCE_END_IGNORE_WARNINGS_GCC_LIKE

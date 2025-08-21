@@ -27,29 +27,6 @@ CPMFindPackage(
   SYSTEM YES
 )
 
-if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
-  juce_add_module(juce_clap_hosting)
-  add_library(juce_clap_hosting_lib STATIC)
-  target_sources(juce_clap_hosting_lib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp")
-  target_link_libraries(juce_clap_hosting_lib
-    PRIVATE
-      juce_clap_hosting
-      juce_lib
-      clap
-      clap-helpers
-    PUBLIC
-      juce::juce_recommended_config_flags
-  )
-  if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
-   target_link_libraries(juce_clap_hosting_lib
-      PUBLIC juce::juce_recommended_lto_flags
-    )
-  endif()
-  target_include_directories(juce_clap_hosting_lib
-    INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/juce_clap_hosting"
-  )
-endif()
-
 target_link_libraries(juce_lib
   PRIVATE
     juce::juce_audio_basics
@@ -151,23 +128,17 @@ if(OS_GNU)
   target_link_libraries(_juce_dependencies INTERFACE
    CURL::libcurl Freetype::Freetype Fontconfig::Fontconfig)
   target_link_libraries(juce_lib PRIVATE _juce_dependencies)
-  target_link_libraries(juce_clap_hosting_lib PRIVATE _juce_dependencies)
 endif()
 # sord/serd don't play well with UBSan
 if(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
-  foreach(cur_lib juce_lib juce_clap_hosting_lib)
-    if(TARGET ${cur_lib})
-      target_compile_options(${cur_lib} PRIVATE -fno-sanitize=undefined)
-      target_link_options(${cur_lib} PRIVATE -fno-sanitize=undefined)
-    endif()
-  endforeach()
+  if(TARGET juce_lib)
+    target_compile_options(juce_lib PRIVATE -fno-sanitize=undefined)
+    target_link_options(juce_lib PRIVATE -fno-sanitize=undefined)
+  endif()
 endif()
 
 add_library(_juce_libs INTERFACE)
 target_link_libraries(_juce_libs INTERFACE juce_lib)
-if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
-  target_link_libraries(_juce_libs INTERFACE juce_clap_hosting_lib)
-endif()
 
 add_library(zrythm::juce_libs ALIAS _juce_libs)
 

@@ -8,6 +8,7 @@ add_executable(plugin-scanner
 )
 target_link_libraries(plugin-scanner
   zrythm::juce_libs
+  zrythm_plugins_lib
 )
 target_include_directories(plugin-scanner
   PRIVATE

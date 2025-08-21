@@ -35,6 +35,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/plugin_protocol_paths.h"
+#include "plugins/CLAPPluginFormat.h"
 #include "plugins/out_of_process_scanner.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
@@ -57,9 +58,7 @@ PluginManager::PluginManager (QObject * parent)
 #endif
 {
   format_manager_->addDefaultFormats ();
-#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
-  format_manager_->addFormat (new juce::CLAPPluginFormat ());
-#endif
+  format_manager_->addFormat (new zrythm::plugins::CLAPPluginFormat ());
   known_plugin_list_->setCustomScanner (
     std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (

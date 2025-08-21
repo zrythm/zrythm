@@ -11,6 +11,8 @@ target_sources(zrythm_plugins_lib
     clap_plugin.cpp
     clap_plugin_param.h
     clap_plugin_param.cpp
+    CLAPPluginFormat.h
+    CLAPPluginFormat.cpp
     internal_plugin_base.h
     internal_plugin_base.cpp
     iplugin_host_window.h

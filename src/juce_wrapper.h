@@ -26,9 +26,6 @@
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 #include "juce_dsp/juce_dsp.h"
-#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
-#include "juce_clap_hosting.h"
-#endif
 // clang-format on
 
 #ifdef __GNUC__

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -43,7 +43,7 @@
 
 #include "juce_wrapper.h"
 
-namespace zrythm::gui::old_dsp::plugins
+namespace zrythm::plugins::scanner
 {
 
 /**
@@ -99,4 +99,4 @@ private:
   std::chrono::steady_clock::time_point start_time_;
 };
 
-} // namespace zrythm::gui::old_dsp::plugins
+} // namespace zrythm::plugins::scanner

@@ -39,6 +39,7 @@
 #include <memory>
 #include <utility>
 
+#include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
 #include "plugins/clap_plugin_param.h"
 
@@ -927,21 +928,15 @@ ClapPlugin::load_plugin (const fs::path &path, int64_t plugin_unique_id)
     pimpl_->pluginEntry_->get_factory (CLAP_PLUGIN_FACTORY_ID));
 
   const auto * const desc = [&] () -> const clap_plugin_descriptor_t * {
-    // same hashing as CLAPPluginFormat.cpp
-    const auto hash_for_range = [] (auto &&range) -> int {
-      return static_cast<int> (std::ranges::fold_left (
-        range, uint32_t{ 0 }, [] (uint32_t acc, auto &&item) {
-          return (acc * 31) + static_cast<uint32_t> (item);
-        }));
-    };
-
     const auto count =
       pimpl_->pluginFactory_->get_plugin_count (pimpl_->pluginFactory_);
     for (const auto i : std::views::iota (0u, count))
       {
         const auto * cur_desc = pimpl_->pluginFactory_->get_plugin_descriptor (
           pimpl_->pluginFactory_, i);
-        if (hash_for_range (std::string (cur_desc->id)) == plugin_unique_id)
+        if (
+          CLAPPluginFormat::get_hash_for_range (std::string (cur_desc->id))
+          == plugin_unique_id)
           {
             return cur_desc;
           }
