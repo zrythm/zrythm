@@ -247,6 +247,7 @@ TEST_F (GraphNodeTest, LatencyPropagationInCollection)
   collection.graph_nodes_.push_back (std::move (node2));
 
   collection.finalize_nodes ();
+  collection.update_latencies ();
 
   EXPECT_EQ (collection.get_max_route_playback_latency (), 128);
 }

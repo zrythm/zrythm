@@ -276,6 +276,8 @@ GraphScheduler::prepare_nodes_for_processing ()
       node->get_processable ().prepare_for_processing (
         sample_rate_, max_block_length_);
     }
+
+  graph_nodes_.update_latencies ();
 }
 
 void

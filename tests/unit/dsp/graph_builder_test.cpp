@@ -107,6 +107,7 @@ TEST_F (GraphBuilderTest, LatenciesUpdated)
   Graph            graph;
 
   builder.build_graph (graph);
+  graph.get_nodes ().update_latencies ();
 
   EXPECT_EQ (graph.get_nodes ().get_max_route_playback_latency (), 128);
 }

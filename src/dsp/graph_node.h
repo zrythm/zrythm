@@ -284,7 +284,7 @@ public:
   /**
    * Returns the max playback latency of the trigger nodes.
    *
-   * @note Requires calling set_initial_and_terminal_nodes() first.
+   * @note Requires calling update_latencies() first.
    */
   nframes_t get_max_route_playback_latency () const;
 
@@ -299,15 +299,11 @@ public:
   void set_initial_and_terminal_nodes ();
 
   /**
-   * @brief Sets the initial/terminal nodes and updates latencies.
+   * @brief Sets the initial/terminal nodes.
    *
    * To be called when all nodes have been added.
    */
-  void finalize_nodes ()
-  {
-    set_initial_and_terminal_nodes ();
-    update_latencies ();
-  }
+  void finalize_nodes () { set_initial_and_terminal_nodes (); }
 
   GraphNode * find_node_for_processable (const IProcessable &processable) const;
 

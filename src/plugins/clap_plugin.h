@@ -51,9 +51,6 @@ public:
   Z_DISABLE_COPY_MOVE (ClapPlugin)
   ~ClapPlugin () override;
 
-  bool load_plugin (const fs::path &path, int plugin_index);
-  void unload_current_plugin ();
-
   // clap_host
   void requestRestart () noexcept override;
   void requestProcess () noexcept override;
@@ -144,8 +141,19 @@ private Q_SLOTS:
   void on_ui_visibility_changed ();
 
 private:
-  void create_ports_from_clap_plugin ();
+  /**
+   * @brief Loads the plugin with the given unique ID hash at the given path.
+   *
+   * This is done with a hash at the moment because CLAPPluginFormat only saves
+   * the hash in the juce descriptor (we don't have the full ID).
+   *
+   * @param path
+   * @param plugin_unique_id The hash of the CLAP plugin ID.
+   */
+  bool load_plugin (const fs::path &path, int64_t plugin_unique_id);
+  void unload_current_plugin ();
 
+  void create_ports_from_clap_plugin ();
   void scanParams ();
 
   void show_editor ();

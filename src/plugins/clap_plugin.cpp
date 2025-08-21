@@ -237,6 +237,8 @@ private:
 
   PluginHostWindowFactory            host_window_factory_;
   std::unique_ptr<IPluginHostWindow> editor_;
+
+  nframes_t latency_{};
 };
 
 ClapPlugin::ClapPlugin (
@@ -277,14 +279,15 @@ ClapPlugin::ClapPlugin (
   gain_id_ = gain_ref.id ();
 }
 
-ClapPlugin::~ClapPlugin () { }
+ClapPlugin::~ClapPlugin () = default;
 
 void
 ClapPlugin::on_configuration_changed ()
 {
   z_debug ("configuration changed");
   auto success = load_plugin (
-    std::get<fs::path> (configuration ()->descriptor ()->path_or_id_), 0);
+    std::get<fs::path> (configuration ()->descriptor ()->path_or_id_),
+    configuration ()->descriptor ()->unique_id_);
   Q_EMIT instantiationFinished (success, {});
 }
 
@@ -476,19 +479,14 @@ ClapPlugin::posixFdSupportRegisterFd (int fd, clap_posix_fd_flags_t flags) noexc
 {
   assert (is_main_thread);
 
-  if (!pimpl_->plugin_->canUsePosixFdSupport ())
-    throw std::logic_error (
-      "Called register_fd() without providing clap_plugin_fd_support to "
-      "receive the fd event.");
+  z_warn_if_fail (pimpl_->plugin_->canUsePosixFdSupport ())
 
-  auto it = pimpl_->fds_.find (fd);
-  if (it != pimpl_->fds_.end ())
-    throw std::logic_error (
-      "Called register_fd() for a fd that was already registered, use modify_fd() instead.");
+    [[maybe_unused]] auto it = pimpl_->fds_.find (fd);
+  assert (it == pimpl_->fds_.end ());
 
   pimpl_->fds_.insert_or_assign (
     fd, std::make_unique<ClapPluginImpl::Notifiers> ());
-  pimpl_->eventLoopSetFdNotifierFlags (fd, flags);
+  pimpl_->eventLoopSetFdNotifierFlags (fd, static_cast<int> (flags));
   return true;
 }
 
@@ -504,7 +502,7 @@ ClapPlugin::posixFdSupportModifyFd (int fd, clap_posix_fd_flags_t flags) noexcep
 
   pimpl_->fds_.insert_or_assign (
     fd, std::make_unique<ClapPluginImpl::Notifiers> ());
-  pimpl_->eventLoopSetFdNotifierFlags (fd, flags);
+  pimpl_->eventLoopSetFdNotifierFlags (fd, static_cast<int> (flags));
   return true;
 }
 
@@ -568,7 +566,7 @@ ClapPlugin::ClapPluginImpl::eventLoopSetFdNotifierFlags (int fd, int flags)
 }
 
 bool
-ClapPlugin::threadPoolRequestExec (uint32_t num_tasks) noexcept
+ClapPlugin::threadPoolRequestExec (uint32_t numTasks) noexcept
 {
   assert (threadCheckIsAudioThread ());
 
@@ -577,18 +575,18 @@ ClapPlugin::threadPoolRequestExec (uint32_t num_tasks) noexcept
   Q_ASSERT (!pimpl_->threadPoolStop_);
   Q_ASSERT (!pimpl_->threadPool_.empty ());
 
-  if (num_tasks == 0)
+  if (numTasks == 0)
     return true;
 
-  if (num_tasks == 1)
+  if (numTasks == 1)
     {
       pimpl_->plugin_->threadPoolExec (0);
       return true;
     }
 
   pimpl_->threadPoolTaskIndex_ = 0;
-  pimpl_->threadPoolSemaphoreProd_.release (static_cast<int> (num_tasks));
-  pimpl_->threadPoolSemaphoreDone_.acquire (static_cast<int> (num_tasks));
+  pimpl_->threadPoolSemaphoreProd_.release (static_cast<int> (numTasks));
+  pimpl_->threadPoolSemaphoreDone_.acquire (static_cast<int> (numTasks));
   return true;
 }
 
@@ -644,9 +642,9 @@ ClapPlugin::stateMarkDirty () noexcept
 void
 ClapPlugin::latencyChanged () noexcept
 {
-  // should this do anything?
   z_debug (
     "{} latency changed to {}", get_name (), pimpl_->plugin_->latencyGet ());
+  pimpl_->latency_ = pimpl_->plugin_->latencyGet ();
 }
 
 void
@@ -672,6 +670,10 @@ ClapPlugin::prepare_for_processing_impl (
 
   pimpl_->scheduleProcess_ = true;
   pimpl_->setPluginState (ClapPluginImpl::ActiveAndSleeping);
+  if (pimpl_->plugin_->canUseLatency ())
+    {
+      pimpl_->latency_ = pimpl_->plugin_->latencyGet ();
+    }
 }
 
 void
@@ -881,11 +883,11 @@ ClapPlugin::load_state (std::optional<fs::path> abs_state_dir)
 nframes_t
 ClapPlugin::get_single_playback_latency () const
 {
-  return pimpl_->plugin_->canUseLatency () ? pimpl_->plugin_->latencyGet () : 0;
+  return pimpl_->latency_;
 }
 
 bool
-ClapPlugin::load_plugin (const fs::path &path, int plugin_index)
+ClapPlugin::load_plugin (const fs::path &path, int64_t plugin_unique_id)
 {
   assert (is_main_thread);
 
@@ -924,17 +926,29 @@ ClapPlugin::load_plugin (const fs::path &path, int plugin_index)
   pimpl_->pluginFactory_ = static_cast<const clap_plugin_factory *> (
     pimpl_->pluginEntry_->get_factory (CLAP_PLUGIN_FACTORY_ID));
 
-  auto count = pimpl_->pluginFactory_->get_plugin_count (pimpl_->pluginFactory_);
-  if (plugin_index >= static_cast<int> (count))
-    {
-      z_warning (
-        "plugin index {} is invalid, expected at most {}", plugin_index,
-        count - 1);
-      return false;
-    }
+  const auto * const desc = [&] () -> const clap_plugin_descriptor_t * {
+    // same hashing as CLAPPluginFormat.cpp
+    const auto hash_for_range = [] (auto &&range) -> int {
+      return static_cast<int> (std::ranges::fold_left (
+        range, uint32_t{ 0 }, [] (uint32_t acc, auto &&item) {
+          return (acc * 31) + static_cast<uint32_t> (item);
+        }));
+    };
 
-  const auto * desc = pimpl_->pluginFactory_->get_plugin_descriptor (
-    pimpl_->pluginFactory_, plugin_index);
+    const auto count =
+      pimpl_->pluginFactory_->get_plugin_count (pimpl_->pluginFactory_);
+    for (const auto i : std::views::iota (0u, count))
+      {
+        const auto * cur_desc = pimpl_->pluginFactory_->get_plugin_descriptor (
+          pimpl_->pluginFactory_, i);
+        if (hash_for_range (std::string (cur_desc->id)) == plugin_unique_id)
+          {
+            return cur_desc;
+          }
+      }
+    return nullptr;
+  }();
+
   if (desc == nullptr)
     {
       z_warning ("no plugin descriptor");
@@ -951,7 +965,7 @@ ClapPlugin::load_plugin (const fs::path &path, int plugin_index)
       return false;
     }
 
-  z_info ("Loading plugin with id: {}, index: {}", desc->id, plugin_index);
+  z_info ("Loading plugin with id: {}", desc->id);
 
   const auto * const plugin = pimpl_->pluginFactory_->create_plugin (
     pimpl_->pluginFactory_, clapHost (), desc->id);
