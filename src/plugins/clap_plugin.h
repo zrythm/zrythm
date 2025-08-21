@@ -89,6 +89,18 @@ public:
   paramsClear (clap_id paramId, clap_param_clear_flags flags) noexcept override;
   void paramsRequestFlush () noexcept override;
 
+  // clap_host_posix_fd_support
+  bool implementsPosixFdSupport () const noexcept override { return true; }
+  bool posixFdSupportRegisterFd (int fd, clap_posix_fd_flags_t flags) noexcept
+    override;
+  bool
+  posixFdSupportModifyFd (int fd, clap_posix_fd_flags_t flags) noexcept override;
+  bool posixFdSupportUnregisterFd (int fd) noexcept override;
+
+  // clap_host_thread_pool
+  bool implementsThreadPool () const noexcept override { return true; }
+  bool threadPoolRequestExec (uint32_t numTasks) noexcept override;
+
   // ============================================================================
   // Plugin Interface Implementation
   // ============================================================================

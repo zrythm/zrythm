@@ -35,6 +35,7 @@
 
 #include "zrythm-config.h"
 
+#include <memory>
 #include <utility>
 
 #include "plugins/clap_plugin.h"
@@ -60,6 +61,16 @@ using ClapPluginProxy = clap::helpers::PluginProxy<
 class ClapPlugin::ClapPluginImpl
 {
   friend class ClapPlugin;
+
+public:
+  ClapPluginImpl (
+    ClapPlugin             &owner,
+    AudioThreadChecker      audio_thread_checker,
+    PluginHostWindowFactory host_window_factory)
+      : owner_ (owner), audio_thread_checker_ (std::move (audio_thread_checker)),
+        host_window_factory_ (std::move (host_window_factory))
+  {
+  }
 
   enum PluginState
   {
@@ -116,7 +127,10 @@ class ClapPlugin::ClapPluginImpl
 
   void setPluginWindowVisibility (bool isVisible);
 
+  void eventLoopSetFdNotifierFlags (int fd, int flags);
+
 private:
+  ClapPlugin        &owner_;
   AudioThreadChecker audio_thread_checker_;
 
   QLibrary library_;
@@ -136,6 +150,13 @@ private:
     std::unique_ptr<QSocketNotifier> wr;
   };
   std::unordered_map<int, std::unique_ptr<Notifiers>> fds_;
+
+  /* thread pool */
+  std::vector<std::unique_ptr<QThread>> threadPool_;
+  std::atomic<bool>                     threadPoolStop_ = { false };
+  std::atomic<int>                      threadPoolTaskIndex_ = { 0 };
+  QSemaphore                            threadPoolSemaphoreProd_;
+  QSemaphore                            threadPoolSemaphoreDone_;
 
   /* process stuff */
   clap_audio_buffer        audioIn_{};
@@ -226,12 +247,13 @@ ClapPlugin::ClapPlugin (
         "Alexandros Theodotou",
         "https://www.zrythm.org",
         PACKAGE_VERSION),
-      pimpl_ (std::make_unique<ClapPluginImpl> ())
+      pimpl_ (
+        std::make_unique<ClapPluginImpl> (
+          *this,
+          std::move (audio_thread_checker),
+          std::move (host_window_factory)))
 {
   is_main_thread = true;
-
-  pimpl_->audio_thread_checker_ = std::move (audio_thread_checker);
-  pimpl_->host_window_factory_ = std::move (host_window_factory);
 
   // Connect to configuration changes
   connect (
@@ -443,6 +465,140 @@ void
 ClapPlugin::guiClosed (bool wasDestroyed) noexcept
 {
   assert (is_main_thread);
+}
+
+bool
+ClapPlugin::posixFdSupportRegisterFd (int fd, clap_posix_fd_flags_t flags) noexcept
+{
+  assert (is_main_thread);
+
+  if (!pimpl_->plugin_->canUsePosixFdSupport ())
+    throw std::logic_error (
+      "Called register_fd() without providing clap_plugin_fd_support to "
+      "receive the fd event.");
+
+  auto it = pimpl_->fds_.find (fd);
+  if (it != pimpl_->fds_.end ())
+    throw std::logic_error (
+      "Called register_fd() for a fd that was already registered, use modify_fd() instead.");
+
+  pimpl_->fds_.insert_or_assign (
+    fd, std::make_unique<ClapPluginImpl::Notifiers> ());
+  pimpl_->eventLoopSetFdNotifierFlags (fd, flags);
+  return true;
+}
+
+bool
+ClapPlugin::posixFdSupportModifyFd (int fd, clap_posix_fd_flags_t flags) noexcept
+{
+  assert (is_main_thread);
+
+  if (!pimpl_->plugin_->canUsePosixFdSupport ())
+    throw std::logic_error (
+      "Called modify_fd() without providing clap_plugin_fd_support to "
+      "receive the fd event.");
+
+  auto it = pimpl_->fds_.find (fd);
+  if (it == pimpl_->fds_.end ())
+    throw std::logic_error (
+      "Called modify_fd() for a fd that was not registered, use register_fd() instead.");
+
+  pimpl_->fds_.insert_or_assign (
+    fd, std::make_unique<ClapPluginImpl::Notifiers> ());
+  pimpl_->eventLoopSetFdNotifierFlags (fd, flags);
+  return true;
+}
+
+bool
+ClapPlugin::posixFdSupportUnregisterFd (int fd) noexcept
+{
+  assert (is_main_thread);
+
+  if (!pimpl_->plugin_->canUsePosixFdSupport ())
+    throw std::logic_error (
+      "Called unregister_fd() without providing clap_plugin_fd_support to "
+      "receive the fd event.");
+
+  auto it = pimpl_->fds_.find (fd);
+  if (it == pimpl_->fds_.end ())
+    throw std::logic_error (
+      "Called unregister_fd() for a fd that was not registered.");
+
+  pimpl_->fds_.erase (it);
+  return true;
+}
+
+void
+ClapPlugin::ClapPluginImpl::eventLoopSetFdNotifierFlags (int fd, int flags)
+{
+  assert (is_main_thread);
+
+  auto it = fds_.find (fd);
+  Q_ASSERT (it != fds_.end ());
+
+  if ((flags & CLAP_POSIX_FD_READ) != 0)
+    {
+      if (!it->second->rd)
+        {
+          it->second->rd = std::make_unique<QSocketNotifier> (
+            (qintptr) fd, QSocketNotifier::Read);
+          QObject::connect (
+            it->second->rd.get (), &QSocketNotifier::activated, &owner_,
+            [this, fd] {
+              assert (is_main_thread);
+              plugin_->posixFdSupportOnFd (fd, CLAP_POSIX_FD_READ);
+            });
+        }
+      it->second->rd->setEnabled (true);
+    }
+  else if (it->second->rd)
+    it->second->rd->setEnabled (false);
+
+  if ((flags & CLAP_POSIX_FD_WRITE) != 0)
+    {
+      if (!it->second->wr)
+        {
+          it->second->wr = std::make_unique<QSocketNotifier> (
+            (qintptr) fd, QSocketNotifier::Write);
+          QObject::connect (
+            it->second->wr.get (), &QSocketNotifier::activated, &owner_,
+            [this, fd] {
+              assert (is_main_thread);
+              plugin_->posixFdSupportOnFd (fd, CLAP_POSIX_FD_WRITE);
+            });
+        }
+      it->second->wr->setEnabled (true);
+    }
+  else if (it->second->wr)
+    it->second->wr->setEnabled (false);
+}
+
+bool
+ClapPlugin::threadPoolRequestExec (uint32_t num_tasks) noexcept
+{
+  assert (threadCheckIsAudioThread ());
+
+  if (!pimpl_->plugin_->canUseThreadPool ())
+    throw std::logic_error (
+      "Called request_exec() without providing clap_plugin_thread_pool to "
+      "execute the job.");
+
+  Q_ASSERT (!pimpl_->threadPoolStop_);
+  Q_ASSERT (!pimpl_->threadPool_.empty ());
+
+  if (num_tasks == 0)
+    return true;
+
+  if (num_tasks == 1)
+    {
+      pimpl_->plugin_->threadPoolExec (0);
+      return true;
+    }
+
+  pimpl_->threadPoolTaskIndex_ = 0;
+  pimpl_->threadPoolSemaphoreProd_.release (static_cast<int> (num_tasks));
+  pimpl_->threadPoolSemaphoreDone_.acquire (static_cast<int> (num_tasks));
+  return true;
 }
 
 bool
