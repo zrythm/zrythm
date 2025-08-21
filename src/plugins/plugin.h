@@ -206,11 +206,11 @@ public:
     return !bypass->range ().is_toggled (bypass->currentValue ());
   }
 
-private:
   // ============================================================================
   // Implementation Interface
   // ============================================================================
 
+public:
   /**
    * Saves the state inside the standard state directory.
    *
@@ -229,6 +229,7 @@ private:
    */
   virtual void load_state (std::optional<fs::path> abs_state_dir) = 0;
 
+private:
   virtual void prepare_for_processing_impl (
     sample_rate_t sample_rate,
     nframes_t     max_block_length) { };

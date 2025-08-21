@@ -35,6 +35,7 @@
 
 #include "zrythm-config.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -210,6 +211,9 @@ private:
 
   PluginState state_{ Inactive };
   bool        stateIsDirty_ = false;
+
+  // temporary state data for writing/reading plugin states
+  QByteArray stateData_;
 
   bool scheduleRestart_ = false;
   bool scheduleDeactivate_ = false;
@@ -493,15 +497,10 @@ ClapPlugin::posixFdSupportModifyFd (int fd, clap_posix_fd_flags_t flags) noexcep
 {
   assert (is_main_thread);
 
-  if (!pimpl_->plugin_->canUsePosixFdSupport ())
-    throw std::logic_error (
-      "Called modify_fd() without providing clap_plugin_fd_support to "
-      "receive the fd event.");
+  z_warn_if_fail (pimpl_->plugin_->canUsePosixFdSupport ());
 
   auto it = pimpl_->fds_.find (fd);
-  if (it == pimpl_->fds_.end ())
-    throw std::logic_error (
-      "Called modify_fd() for a fd that was not registered, use register_fd() instead.");
+  assert (it != pimpl_->fds_.end ());
 
   pimpl_->fds_.insert_or_assign (
     fd, std::make_unique<ClapPluginImpl::Notifiers> ());
@@ -514,15 +513,10 @@ ClapPlugin::posixFdSupportUnregisterFd (int fd) noexcept
 {
   assert (is_main_thread);
 
-  if (!pimpl_->plugin_->canUsePosixFdSupport ())
-    throw std::logic_error (
-      "Called unregister_fd() without providing clap_plugin_fd_support to "
-      "receive the fd event.");
+  z_warn_if_fail (pimpl_->plugin_->canUsePosixFdSupport ());
 
   auto it = pimpl_->fds_.find (fd);
-  if (it == pimpl_->fds_.end ())
-    throw std::logic_error (
-      "Called unregister_fd() for a fd that was not registered.");
+  assert (it != pimpl_->fds_.end ());
 
   pimpl_->fds_.erase (it);
   return true;
@@ -578,10 +572,7 @@ ClapPlugin::threadPoolRequestExec (uint32_t num_tasks) noexcept
 {
   assert (threadCheckIsAudioThread ());
 
-  if (!pimpl_->plugin_->canUseThreadPool ())
-    throw std::logic_error (
-      "Called request_exec() without providing clap_plugin_thread_pool to "
-      "execute the job.");
+  z_warn_if_fail (pimpl_->plugin_->canUseThreadPool ());
 
   Q_ASSERT (!pimpl_->threadPoolStop_);
   Q_ASSERT (!pimpl_->threadPool_.empty ());
@@ -638,6 +629,24 @@ ClapPlugin::timerSupportUnregisterTimer (clap_id timerId) noexcept
 
   pimpl_->timers_.erase (it);
   return true;
+}
+
+void
+ClapPlugin::stateMarkDirty () noexcept
+{
+  assert (is_main_thread);
+
+  z_warn_if_fail (pimpl_->plugin_->canUseState ());
+
+  pimpl_->stateIsDirty_ = true;
+}
+
+void
+ClapPlugin::latencyChanged () noexcept
+{
+  // should this do anything?
+  z_debug (
+    "{} latency changed to {}", get_name (), pimpl_->plugin_->latencyGet ());
 }
 
 void
@@ -789,11 +798,90 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 void
 ClapPlugin::save_state (std::optional<fs::path> abs_state_dir)
 {
+  if (pimpl_->plugin_->canUseState ())
+    {
+      if (!abs_state_dir)
+        {
+          abs_state_dir = get_state_directory ();
+        }
+
+      const fs::path state_file = *abs_state_dir / "clap_state.dat";
+
+      clap_ostream_t stream{};
+      stream.ctx = this;
+      stream.write =
+        +[] (const clap_ostream * stream, const void * buffer, uint64_t size)
+        -> int64_t {
+        assert (is_main_thread);
+        auto * pl = static_cast<ClapPlugin *> (stream->ctx);
+        pl->pimpl_->stateData_.append (
+          static_cast<const char *> (buffer), static_cast<qsizetype> (size));
+        return static_cast<int64_t> (size);
+      };
+      pimpl_->stateData_.clear ();
+      z_debug ("writing {}'s state to {}", get_name (), state_file);
+      pimpl_->plugin_->stateSave (&stream);
+
+      // Create state directory if it doesn't exist
+      fs::create_directories (*abs_state_dir);
+
+      QFile file (state_file);
+      if (!file.open (QFile::OpenModeFlag::WriteOnly))
+        {
+          throw std::runtime_error (
+            fmt::format (
+              "Failed to open state file for writing at {}", state_file));
+        }
+      auto bytes_written = file.write (pimpl_->stateData_);
+      if (bytes_written == -1)
+        {
+          throw std::runtime_error (
+            fmt::format ("Failed to write state file at {}", state_file));
+        }
+    }
 }
 
 void
 ClapPlugin::load_state (std::optional<fs::path> abs_state_dir)
 {
+  if (pimpl_->plugin_->canUseState ())
+    {
+      if (!abs_state_dir)
+        {
+          abs_state_dir = get_state_directory ();
+        }
+
+      // Load CLAP plugin state
+      const fs::path state_file = *abs_state_dir / "clap_state.dat";
+      if (!fs::exists (state_file))
+        {
+          z_warning ("no state file found at {}", state_file);
+          return;
+        }
+
+      pimpl_->stateData_ = utils::io::read_file_contents (state_file);
+
+      clap_istream_t stream{};
+      stream.ctx = this;
+      stream.read =
+        +[] (const clap_istream * stream, void * buffer, uint64_t size)
+        -> int64_t {
+        assert (is_main_thread);
+        auto * pl = static_cast<ClapPlugin *> (stream->ctx);
+        size = std::min<uint64_t> (size, pl->pimpl_->stateData_.size ());
+        std::memcpy (buffer, pl->pimpl_->stateData_.constData (), size);
+        pl->pimpl_->stateData_.remove (0, static_cast<qsizetype> (size));
+        return static_cast<int64_t> (size);
+      };
+      z_debug ("loading {}'s state from {}", get_name (), state_file);
+      pimpl_->plugin_->stateLoad (&stream);
+    }
+}
+
+nframes_t
+ClapPlugin::get_single_playback_latency () const
+{
+  return pimpl_->plugin_->canUseLatency () ? pimpl_->plugin_->latencyGet () : 0;
 }
 
 bool

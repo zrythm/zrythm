@@ -78,6 +78,10 @@ public:
   void logLog (clap_log_severity severity, const char * message)
     const noexcept override;
 
+  // clap_host_latency
+  bool implementsLatency () const noexcept override { return false; }
+  void latencyChanged () noexcept override;
+
   // clap_host_thread_check
   bool threadCheckIsMainThread () const noexcept override;
   bool threadCheckIsAudioThread () const noexcept override;
@@ -101,9 +105,15 @@ public:
   bool implementsThreadPool () const noexcept override { return true; }
   bool threadPoolRequestExec (uint32_t numTasks) noexcept override;
 
+  // clap_host_state
+  bool implementsState () const noexcept override { return true; }
+  void stateMarkDirty () noexcept override;
+
   // ============================================================================
   // Plugin Interface Implementation
   // ============================================================================
+
+  nframes_t get_single_playback_latency () const override;
 
   void save_state (std::optional<fs::path> abs_state_dir) override;
   void load_state (std::optional<fs::path> abs_state_dir) override;

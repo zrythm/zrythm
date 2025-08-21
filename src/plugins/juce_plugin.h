@@ -57,6 +57,11 @@ public:
   void save_state (std::optional<fs::path> abs_state_dir) override;
   void load_state (std::optional<fs::path> abs_state_dir) override;
 
+  nframes_t get_single_playback_latency () const override
+  {
+    return juce_plugin_->getLatencySamples ();
+  }
+
 protected:
   void prepare_for_processing_impl (
     sample_rate_t sample_rate,

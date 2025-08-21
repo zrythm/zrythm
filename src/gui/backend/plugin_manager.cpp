@@ -101,6 +101,27 @@ PluginManager::createPluginInstance (
           AUDIO_ENGINE->resume (*state_ptr);
         },
       .handler_context_ = this });
+
+// below some test code for plugin states
+#if 0
+  QTimer::singleShot (10000, this, [] () {
+    engine::device_io::AudioEngine::State state{};
+    AUDIO_ENGINE->wait_for_pause (state, false, true);
+    auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
+      P_MASTER_TRACK->channel ()->inserts ()->plugins ().front ().get_object ());
+    pl->save_state ("/tmp/test_clap_state");
+    AUDIO_ENGINE->resume (state);
+  });
+
+  QTimer::singleShot (20000, this, [] () {
+    engine::device_io::AudioEngine::State state{};
+    AUDIO_ENGINE->wait_for_pause (state, false, true);
+    auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
+      P_MASTER_TRACK->channel ()->inserts ()->plugins ().front ().get_object ());
+    pl->load_state ("/tmp/test_clap_state");
+    AUDIO_ENGINE->resume (state);
+  });
+#endif
 }
 
 void
