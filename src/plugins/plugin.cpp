@@ -66,9 +66,9 @@ Plugin::set_configuration (const PluginConfiguration &setting)
 
   z_debug ("{} ({})", get_name (), ENUM_NAME (get_protocol ()));
 
-  Q_EMIT configurationChanged (configuration_.get ());
-
   set_name (get_name ());
+
+  Q_EMIT configurationChanged (configuration_.get ());
 }
 
 // ============================================================================

@@ -87,7 +87,7 @@ PluginManager::createPluginInstance (
   z_debug ("creating plugin instance for: {}", descr->getName ());
   auto juce_desc = descr->to_juce_description ();
   auto config = PluginConfiguration::create_new_for_descriptor (*descr);
-  auto plugin_ref = PROJECT->getPluginFactory ()->create_plugin_from_setting (
+  PROJECT->getPluginFactory ()->create_plugin_from_setting (
     *config,
     PluginFactory::InstantiationFinishOptions{
       .handler_ =

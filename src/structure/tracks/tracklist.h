@@ -399,7 +399,8 @@ public:
     std::optional<plugins::Plugin::Uuid> previous_plugin_id_at_destination,
     bool                                 confirm_overwrite);
 
-  Channel * get_channel_for_plugin (const plugins::Plugin::Uuid &plugin_id);
+  std::optional<TrackUuidReference>
+  get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const;
 
 #if 0
   /**

@@ -34,8 +34,17 @@ using namespace zrythm;
 static auto
 plugin_toplevel_window_provider (plugins::Plugin &plugin)
 {
+  auto track_ref = TRACKLIST->get_track_for_plugin (plugin.get_uuid ());
   auto ret = std::make_unique<plugins::JuceDocumentPluginHostWindow> (
-    plugin.get_node_name (), [&plugin] () {
+    utils::Utf8String::from_utf8_encoded_string (
+      fmt::format (
+        "{} - {} [{}]",
+        track_ref.has_value ()
+          ? structure::tracks::from_variant (track_ref->get_object ())->name ()
+          : QObject::tr ("<no track>"),
+        plugin.get_node_name (),
+        plugin.configuration ()->descriptor ()->getFormat ())),
+    [&plugin] () {
       z_debug (
         "close button pressed on '{}' plugin window", plugin.get_node_name ());
       plugin.setUiVisible (false);

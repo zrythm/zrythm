@@ -374,12 +374,28 @@ Tracklist::move_plugin_automation (
     pl_var, prev_track_var, track_var);
 }
 
-Channel *
-Tracklist::get_channel_for_plugin (const plugins::Plugin::Uuid &plugin_id)
+std::optional<TrackUuidReference>
+Tracklist::get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const
 {
-  // auto pl_var = plugin_registry_->find_by_id_or_throw (plugin_id);
-  // TODO
-  z_return_val_if_reached (nullptr);
+  for (const auto &tr_ref : tracks_)
+    {
+      auto * tr = tracks::from_variant (tr_ref.get_object ());
+      auto * channel = tr->channel ();
+      if (channel == nullptr)
+        continue;
+
+      std::vector<plugins::PluginPtrVariant> plugins;
+      channel->get_plugins (plugins);
+      if (
+        std::ranges::contains (
+          plugins | std::views::transform (&plugins::plugin_ptr_variant_to_base),
+          plugin_id, &plugins::Plugin::get_uuid))
+        {
+          return tr_ref;
+        }
+    }
+
+  return std::nullopt;
 }
 
 void

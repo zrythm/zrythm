@@ -360,6 +360,8 @@ ClapPlugin::show_editor ()
           z_warning ("could not get the size of the plugin gui");
           pimpl_->isGuiCreated_ = false;
           pimpl_->plugin_->guiDestroy ();
+          pimpl_->editor_->setVisible (false);
+          setUiVisible (false);
           return;
         }
 
@@ -368,9 +370,11 @@ ClapPlugin::show_editor ()
 
       if (!pimpl_->plugin_->guiSetParent (&w))
         {
-          z_warning ("could embbed the plugin gui");
+          z_warning ("could not embbed the plugin gui");
           pimpl_->isGuiCreated_ = false;
           pimpl_->plugin_->guiDestroy ();
+          pimpl_->editor_->setVisible (false);
+          setUiVisible (false);
           return;
         }
     }
