@@ -3,15 +3,15 @@
 
 #include <utility>
 
-#include "plugins/plugin_view_window.h"
+#include "gui/backend/plugin_host_window.h"
 
 namespace zrythm::plugins
 {
-PluginViewWindow::PluginViewWindow (
-  juce::String title,
-  CloseHandler close_handler)
+JuceDocumentPluginHostWindow::JuceDocumentPluginHostWindow (
+  const utils::Utf8String &title,
+  CloseHandler             close_handler)
     : juce::DocumentWindow (
-        title,
+        title.to_juce_string (),
         juce::Colours::cadetblue,
         juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton),
       close_handler_ (std::move (close_handler))
@@ -25,23 +25,28 @@ PluginViewWindow::PluginViewWindow (
 }
 
 void
-PluginViewWindow::setJuceComponentContentNonOwned (
+JuceDocumentPluginHostWindow::setJuceComponentContentNonOwned (
   juce::Component * content_non_owned)
 {
   setContentNonOwned (content_non_owned, true);
-  centreWithSize (
-    content_non_owned->getWidth (),
-    content_non_owned->getHeight ()); // Center on screen
+  setSizeAndCenter (
+    content_non_owned->getWidth (), content_non_owned->getHeight ());
 }
 
 void
-PluginViewWindow::closeButtonPressed ()
+JuceDocumentPluginHostWindow::setSizeAndCenter (int width, int height)
+{
+  centreWithSize (width, height);
+}
+
+void
+JuceDocumentPluginHostWindow::closeButtonPressed ()
 {
   close_handler_ ();
 }
 
 WId
-PluginViewWindow::getEmbedWindowId () const
+JuceDocumentPluginHostWindow::getEmbedWindowId () const
 {
   // Get the peer (native window wrapper)
   juce::ComponentPeer * peer = getPeer ();

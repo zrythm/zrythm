@@ -46,6 +46,7 @@ public:
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
     StateDirectoryParentPathProvider              state_path_provider,
     AudioThreadChecker                            audio_thread_checker,
+    PluginHostWindowFactory                       host_window_factory,
     QObject *                                     parent = nullptr);
   Z_DISABLE_COPY_MOVE (ClapPlugin)
   ~ClapPlugin () override;

@@ -65,12 +65,18 @@ public:
   MOCK_METHOD (void, setVisible, (bool), (override));
 };
 
-class MockTopLevelWindow : public juce::Component
+class MockTopLevelWindow : public plugins::IPluginHostWindow
 {
 public:
+  MOCK_METHOD (
+    void,
+    setJuceComponentContentNonOwned,
+    (juce::Component *),
+    (override));
+  MOCK_METHOD (void, setSizeAndCenter, (int, int), (override));
+  MOCK_METHOD (void, setSize, (int, int), (override));
   MOCK_METHOD (void, setVisible, (bool), (override));
-  MOCK_METHOD (void, addToDesktop, (int, void *), (override));
-  MOCK_METHOD (int, getDesktopWindowStyleFlags, (), (const override));
+  MOCK_METHOD (WId, getEmbedWindowId, (), (const override));
 };
 
 class JucePluginTest
@@ -96,14 +102,11 @@ protected:
       }
   }
 
-  JucePlugin::JucePluginTopLevelWindowProvider
-  createMockTopLevelWindowProvider ()
+  plugins::PluginHostWindowFactory createMockTopLevelWindowProvider ()
   {
-    return [] (juce::AudioProcessorEditor &editor, JucePlugin &) {
+    return [] (Plugin &) {
       auto mock_window = std::make_unique<MockTopLevelWindow> ();
       EXPECT_CALL (*mock_window, setVisible (::testing::_))
-        .Times (::testing::AnyNumber ());
-      EXPECT_CALL (*mock_window, addToDesktop (::testing::_, ::testing::_))
         .Times (::testing::AnyNumber ());
       return mock_window;
     };

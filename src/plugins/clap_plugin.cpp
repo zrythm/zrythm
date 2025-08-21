@@ -39,7 +39,6 @@
 
 #include "plugins/clap_plugin.h"
 #include "plugins/clap_plugin_param.h"
-#include "plugins/plugin_view_window.h"
 
 #include <QLibrary>
 
@@ -211,13 +210,15 @@ private:
   // audio thread for whatever reason
   std::atomic_bool force_audio_thread_check_{ false };
 
-  std::unique_ptr<PluginViewWindow> editor_;
+  PluginHostWindowFactory            host_window_factory_;
+  std::unique_ptr<IPluginHostWindow> editor_;
 };
 
 ClapPlugin::ClapPlugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
   StateDirectoryParentPathProvider              state_path_provider,
   AudioThreadChecker                            audio_thread_checker,
+  PluginHostWindowFactory                       host_window_factory,
   QObject *                                     parent)
     : Plugin (dependencies, std::move (state_path_provider), parent),
       ClapHostBase (
@@ -230,6 +231,7 @@ ClapPlugin::ClapPlugin (
   is_main_thread = true;
 
   pimpl_->audio_thread_checker_ = std::move (audio_thread_checker);
+  pimpl_->host_window_factory_ = std::move (host_window_factory);
 
   // Connect to configuration changes
   connect (
@@ -330,11 +332,7 @@ ClapPlugin::show_editor ()
       pimpl_->isGuiFloating_ = true;
     }
 
-  pimpl_->editor_ = std::make_unique<PluginViewWindow> (
-    get_name ().to_juce_string (), [this] () {
-      z_debug ("close button pressed on CLAP plugin window");
-      setUiVisible (false);
-    });
+  pimpl_->editor_ = pimpl_->host_window_factory_ (*this);
 
   const auto embed_id = pimpl_->editor_->getEmbedWindowId ();
   auto       w = makeClapWindow (embed_id);
@@ -365,10 +363,8 @@ ClapPlugin::show_editor ()
           return;
         }
 
-      pimpl_->editor_->setSize (
+      pimpl_->editor_->setSizeAndCenter (
         static_cast<int> (width), static_cast<int> (height));
-      pimpl_->editor_->centreWithSize (
-        static_cast<int> (width), static_cast<int> (height)); // Center on screen
 
       if (!pimpl_->plugin_->guiSetParent (&w))
         {
@@ -1105,7 +1101,7 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
   for (const auto i : std::views::iota (0u, count))
     {
       clap_param_info info{};
-      assert (pimpl_->plugin_->paramsGetInfo (i, &info));
+      z_return_if_fail (pimpl_->plugin_->paramsGetInfo (i, &info));
 
       assert (info.id != CLAP_INVALID_ID);
 

@@ -11,9 +11,9 @@
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/ui.h"
-#include "plugins/plugin_view_window.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
@@ -32,16 +32,14 @@
 using namespace zrythm;
 
 static auto
-juce_plugin_toplevel_window_provider (
-  juce::AudioProcessorEditor &editor,
-  plugins::JucePlugin        &plugin)
+plugin_toplevel_window_provider (plugins::Plugin &plugin)
 {
-  auto ret = std::make_unique<plugins::PluginViewWindow> (
-    editor.getAudioProcessor ()->getName (), [&plugin] () {
-      z_debug ("close button pressed on JUCE plugin window");
+  auto ret = std::make_unique<plugins::JuceDocumentPluginHostWindow> (
+    plugin.get_node_name (), [&plugin] () {
+      z_debug (
+        "close button pressed on '{}' plugin window", plugin.get_node_name ());
       plugin.setUiVisible (false);
     });
-  ret->setJuceComponentContentNonOwned (&editor);
   return ret;
 }
 
@@ -161,7 +159,7 @@ Project::Project (
             [this] () { return audio_engine_->get_sample_rate (); },
           .buffer_size_provider_ =
             [this] () { return audio_engine_->get_block_length (); },
-          .top_level_window_provider_ = juce_plugin_toplevel_window_provider,
+          .top_level_window_provider_ = plugin_toplevel_window_provider,
           .audio_thread_checker_ =
             [this] () { return audio_engine_->router_->is_processing_thread (); } },
         *gui::SettingsManager::get_instance (),
@@ -1442,7 +1440,8 @@ struct PluginBuilderForDeserialization
           },
           [this] () {
             return project_.audio_engine_->router_->is_processing_thread ();
-          });
+          },
+          plugin_toplevel_window_provider);
       }
     else
       {
@@ -1465,7 +1464,7 @@ struct PluginBuilderForDeserialization
           },
           [this] () { return project_.audio_engine_->get_sample_rate (); },
           [this] () { return project_.audio_engine_->get_block_length (); },
-          juce_plugin_toplevel_window_provider);
+          plugin_toplevel_window_provider);
       }
   }
 

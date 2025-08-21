@@ -10,6 +10,7 @@
 #include "dsp/port_all.h"
 #include "dsp/port_span.h"
 #include "dsp/processor_base.h"
+#include "plugins/iplugin_host_window.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_slot.h"
@@ -364,6 +365,9 @@ using PluginPtrVariant = to_pointer_variant<PluginVariant>;
 // ProcessorBase-derived classes
 using PluginRegistry = utils::OwningObjectRegistry<PluginPtrVariant, Plugin>;
 using PluginUuidReference = utils::UuidReference<PluginRegistry>;
+
+using PluginHostWindowFactory =
+  std::function<std::unique_ptr<plugins::IPluginHostWindow> (Plugin &)>;
 
 } // namespace zrythm::plugins
 

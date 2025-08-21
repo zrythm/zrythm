@@ -13,6 +13,7 @@ target_sources(zrythm_plugins_lib
     clap_plugin_param.cpp
     internal_plugin_base.h
     internal_plugin_base.cpp
+    iplugin_host_window.h
     juce_plugin.h
     juce_plugin.cpp
     out_of_process_scanner.h
@@ -31,8 +32,6 @@ target_sources(zrythm_plugins_lib
     plugin_slot.cpp
     plugin_descriptor_list.h
     plugin_descriptor_list.cpp
-    plugin_view_window.h
-    plugin_view_window.cpp
     plugin_scan_manager.h
     plugin_scan_manager.cpp
 )

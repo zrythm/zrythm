@@ -23,6 +23,8 @@ target_sources(zrythm_gui_lib
     meter.cpp
     plugin_collections.h
     plugin_collections.cpp
+    plugin_host_window.h
+    plugin_host_window.cpp
     plugin_manager.h
     plugin_manager.cpp
     plugin_protocol_paths.h
