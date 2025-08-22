@@ -10,9 +10,9 @@ Control {
   id: root
 
   property bool down: false
-  readonly property bool enabled: root.plugin && root.plugin.bypassParameter.baseValue < 0.5
   property bool openPluginInspectorOnClick: false
   required property Plugin plugin
+  readonly property bool pluginEnabled: root.plugin && root.plugin.bypassParameter.baseValue < 0.5
   property bool selected: false
   required property Track track
 
@@ -128,7 +128,7 @@ Control {
     id: bgRect
 
     readonly property color baseColor: {
-      let c = root.enabled ? palette.base : palette.window;
+      let c = root.pluginEnabled ? palette.base : palette.window;
       if (root.plugin.uiVisible) {
         c = Style.getColorBlendedTowardsContrast(c);
       }
@@ -155,12 +155,12 @@ Control {
       Layout.preferredHeight: 8
       Layout.preferredWidth: 8
       checkable: true
-      checked: root.enabled
+      checked: root.pluginEnabled
       radius: 16
 
       onClicked: {
         if (root.plugin) {
-          root.plugin.bypassParameter.baseValue = (root.enabled) ? 1.0 : 0.0;
+          root.plugin.bypassParameter.baseValue = (root.pluginEnabled) ? 1.0 : 0.0;
         }
       }
     }
@@ -173,11 +173,16 @@ Control {
       Layout.fillWidth: true
       Layout.rightMargin: 4
       color: {
+        let c;
         if (root.plugin && root.plugin.instantiationStatus === Plugin.Failed) {
-          return Style.dangerColor;
+          c = Style.dangerColor;
         } else {
-          return palette.text;
+          c = palette.text;
         }
+        if (!root.pluginEnabled) {
+          return Style.getColorBlendedTowardsContrast(c);
+        }
+        return c;
       }
       elide: Text.ElideRight
       text: {

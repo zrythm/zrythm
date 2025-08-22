@@ -14,6 +14,7 @@ ColumnLayout {
 
   ExpanderBox {
     Layout.fillWidth: true
+    icon.source: ResourceManager.getIconUrl("gnome-icon-library", "general-properties-genersymbolic.svg")
     title: "Track Properties"
 
     contentItem: ColumnLayout {
@@ -38,9 +39,11 @@ ColumnLayout {
     active: root.track.channel !== null && root.track.channel.inserts !== null
 
     sourceComponent: ExpanderBox {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
       title: "Inserts"
 
       contentItem: ListView {
+        implicitHeight: contentHeight
         model: root.track.channel.inserts
 
         delegate: PluginSlotView {
@@ -55,6 +58,7 @@ ColumnLayout {
     active: root.track.channel !== null
 
     sourceComponent: ExpanderBox {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "fader.svg")
       title: "Fader"
 
       contentItem: ColumnLayout {
