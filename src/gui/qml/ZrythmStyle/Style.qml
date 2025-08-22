@@ -38,7 +38,7 @@ QtObject {
   readonly property color celestialBlueColor: "#009DFF"
   readonly property Palette colorPalette: Palette {
     accent: root.primaryColor
-    alternateBase: root.buttonBackgroundColor // (no alternate)
+    alternateBase: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor)
     base: root.buttonBackgroundColor // background color for text editor controls and item views
     brightText: root.pageColor
     button: root.buttonBackgroundColor
@@ -109,7 +109,7 @@ QtObject {
 
   property color pageColor: darkMode ? "#161616" : "#E3E3E3"
   property color placeholderTextColor: darkMode ? Qt.rgba(1, 1, 1, 0.5) : Qt.rgba(0, 0, 0, 0.5)
-  property color primaryColor: celestialBlueColor
+  property color primaryColor: zrythmColor
   readonly property PropertyAnimation propertyAnimation: PropertyAnimation {
     duration: root.animationDuration
     easing.type: root.animationEasingType

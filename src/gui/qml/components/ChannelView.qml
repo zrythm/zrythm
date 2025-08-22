@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Zrythm
@@ -32,6 +34,7 @@ ColumnLayout {
     model: root.channel.midiFx
 
     delegate: PluginSlotView {
+      track: root.track
     }
     header: Label {
       text: "MIDI FX"
@@ -45,6 +48,7 @@ ColumnLayout {
     model: root.channel.inserts
 
     delegate: PluginSlotView {
+      track: root.track
     }
     header: Label {
       text: "Inserts"

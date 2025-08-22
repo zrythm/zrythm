@@ -44,6 +44,7 @@ ColumnLayout {
         model: root.track.channel.inserts
 
         delegate: PluginSlotView {
+          track: root.track
         }
       }
     }
