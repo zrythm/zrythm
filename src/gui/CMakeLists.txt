@@ -46,13 +46,20 @@ if(WIN32)
       $<TARGET_FILE:zrythm>
     COMMAND_EXPAND_LISTS
   )
-elseif(XCODE)
-  # Ad-hoc sign (error that these files are not signed otherwise)
+elseif(APPLE)
+  # Copy required executables for debugging
   add_custom_command(TARGET zrythm POST_BUILD
-    COMMAND codesign -f -s - "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS/zrythm_qt.part.conf"
-    COMMAND codesign -f -s - "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS/qt.conf"
-    COMMENT "Signing zrythm.app for Xcode POST_BUILD"
+    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS $<TARGET_FILE:plugin-scanner>
+    COMMAND_EXPAND_LISTS
   )
+  if(XCODE)
+    # Ad-hoc sign (error that these files are not signed otherwise)
+    add_custom_command(TARGET zrythm POST_BUILD
+      COMMAND codesign -f -s - "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS/zrythm_qt.part.conf"
+      COMMAND codesign -f -s - "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS/qt.conf"
+      COMMENT "Signing zrythm.app for Xcode POST_BUILD"
+    )
+  endif()
 endif()
 
 # add_subdirectory(resources)

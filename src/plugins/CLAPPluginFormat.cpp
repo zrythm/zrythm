@@ -219,11 +219,10 @@ CLAPPluginFormat::fileMightContainThisPluginType (const String &fileOrIdentifier
   auto f = File::createFileWithoutCheckingPath (fileOrIdentifier);
 
   return f.hasFileExtension (".clap")
-#ifdef Q_OS_UNIX
-         && f.exists ();
-#else
-         && f.existsAsFile ();
+#ifdef Q_OS_MACOS
+         || fileOrIdentifier.contains ("/Contents/MacOS")
 #endif
+    ;
 }
 
 String
