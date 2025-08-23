@@ -28,8 +28,6 @@ PCGRand::PCGRand ()
   u32 ();
 }
 
-JUCE_IMPLEMENT_SINGLETON (PCGRand)
-
 /* unsigned float [0..1] */
 float
 PCGRand::uf ()

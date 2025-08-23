@@ -5,6 +5,7 @@
 
 #include "dsp/position.h"
 #include "gui/dsp/snap_grid.h"
+#include "utils/pcg_rand.h"
 
 #define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
   (PROJECT->quantize_opts_editor_.get () == qo)
@@ -137,6 +138,8 @@ public:
 
   /** Number of ticks for randomization. */
   double randomization_ticks_ = 0.f;
+
+  PCGRand rand_;
 };
 
 }; // namespace zrythm::dsp

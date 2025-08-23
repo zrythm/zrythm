@@ -22,6 +22,11 @@
 #include <QQmlApplicationEngine>
 #include <QTranslator>
 
+namespace backward
+{
+class SignalHandling;
+}
+
 namespace zrythm::gui
 {
 
@@ -70,6 +75,7 @@ public:
   QCommandLineParser cmd_line_parser_;
 
 private:
+  std::unique_ptr<backward::SignalHandling> signal_handling_;
   std::unique_ptr<juce::ScopedJuceInitialiser_GUI>
     juce_message_handler_initializer_;
 

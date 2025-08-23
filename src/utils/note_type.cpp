@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 
+#include <QtGlobal>
 #include <QtTranslation>
 
 #include "./logger.h"
@@ -10,6 +11,10 @@
 
 namespace zrythm::utils
 {
+
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_CLANG ("-Wglobal-constructors")
+QT_WARNING_DISABLE_CLANG ("-Wexit-time-destructors")
 static const std::unordered_map<NoteLength, std::string_view> note_length_strings = {
   { NoteLength::Bar,        QT_TR_NOOP_UTF8 ("bar")  },
   { NoteLength::Beat,       QT_TR_NOOP_UTF8 ("beat") },
@@ -29,6 +34,7 @@ static const std::unordered_map<NoteType, std::string_view> note_type_strings = 
   { NoteType::Dotted,  QT_TR_NOOP_UTF8 ("dotted")  },
   { NoteType::Triplet, QT_TR_NOOP_UTF8 ("triplet") },
 };
+QT_WARNING_POP
 
 std::string_view
 note_length_to_str (NoteLength len)

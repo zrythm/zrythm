@@ -57,8 +57,9 @@ private Q_SLOTS:
 #endif
 
 private:
-  QLocalServer *                    server_ = nullptr;
-  QLocalSocket *                    client_connection_ = nullptr;
-  std::unique_ptr<QCoreApplication> qt_app_;
+  std::unique_ptr<backward::SignalHandling> signal_handling_;
+  QLocalServer *                            server_ = nullptr;
+  QLocalSocket *                            client_connection_ = nullptr;
+  std::unique_ptr<QCoreApplication>         qt_app_;
 };
 }

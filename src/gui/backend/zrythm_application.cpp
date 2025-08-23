@@ -21,6 +21,7 @@
 
 #include "engine-process/ipc_message.h"
 #include "zrythm_application.h"
+#include <backward.hpp>
 
 using namespace zrythm::gui;
 using namespace Qt::StringLiterals;
@@ -28,7 +29,8 @@ using namespace Qt::StringLiterals;
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     : QApplication (argc, argv), qt_thread_id_ (current_thread_id.get ())
 {
-  utils::Backtrace::init_signal_handlers ();
+  // install signal handlers
+  signal_handling_ = utils::Backtrace::init_signal_handlers ();
 
   /* app info */
   setApplicationName (u"Zrythm"_s);
@@ -438,8 +440,6 @@ ZrythmApplication::onAboutToQuit ()
       gZrythm->project_.reset ();
       gZrythm->deleteInstance ();
     }
-
-  PCGRand::deleteInstance ();
 }
 
 ZrythmApplication::~ZrythmApplication ()

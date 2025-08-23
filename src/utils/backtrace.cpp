@@ -14,13 +14,14 @@ namespace zrythm::utils
 
 Backtrace::Backtrace () = default;
 
-void
+std::unique_ptr<backward::SignalHandling>
 Backtrace::init_signal_handlers ()
 {
 #if defined(__has_feature) && __has_feature(thread_sanitizer)
+  return nullptr;
 #else
   // this attaches signal handlers automatically
-  static backward::SignalHandling sh;
+  return std::make_unique<backward::SignalHandling> ();
 #endif
 }
 

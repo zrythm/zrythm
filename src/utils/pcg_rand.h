@@ -1,18 +1,9 @@
-// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * PCGRandom float generator.
- */
-
-#ifndef __UTILS_PCG_RAND_H__
-#define __UTILS_PCG_RAND_H__
+#pragma once
 
 #include <cstdint>
-
-#include "juce_wrapper.h"
 
 /**
  * @brief Random number generator.
@@ -21,7 +12,6 @@ class PCGRand
 {
 public:
   PCGRand ();
-  ~PCGRand () { clearSingletonInstance (); }
 
   /* unsigned float [0..1] */
   float uf ();
@@ -34,9 +24,4 @@ public:
 private:
   uint64_t _state = 0;
   uint64_t _inc = 0;
-
-public:
-  JUCE_DECLARE_SINGLETON_SINGLETHREADED (PCGRand, true)
 };
-
-#endif

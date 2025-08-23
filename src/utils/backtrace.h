@@ -1,10 +1,14 @@
-// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_BACKTRACE_H__
-#define __UTILS_BACKTRACE_H__
+#pragma once
 
 #include <string>
+
+namespace backward
+{
+class SignalHandling;
+}
 
 namespace zrythm::utils
 {
@@ -18,7 +22,7 @@ public:
    * @brief To be called once at the beginning of the program to setup the
    * signal handlers.
    */
-  static void init_signal_handlers ();
+  static std::unique_ptr<backward::SignalHandling> init_signal_handlers ();
 
 public:
   /**
@@ -32,5 +36,3 @@ public:
 };
 
 }; // namespace zrythm::utils
-
-#endif

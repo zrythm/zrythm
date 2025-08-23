@@ -13,6 +13,7 @@
 #include <QDir>
 
 #include "engine-process/audio_engine_application.h"
+#include <backward.hpp>
 
 using namespace Qt::StringLiterals;
 
@@ -32,7 +33,7 @@ AudioEngineApplication::AudioEngineApplication ()
   qt_app_->setOrganizationName (u"Zrythm.org"_s);
   qt_app_->setOrganizationDomain (u"zrythm.org"_s);
 
-  utils::Backtrace::init_signal_handlers ();
+  signal_handling_ = utils::Backtrace::init_signal_handlers ();
 
   /* setup command line parser */
   // TODO

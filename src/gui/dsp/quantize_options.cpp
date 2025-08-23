@@ -131,8 +131,7 @@ QuantizeOptions::quantize_position (const Position &pos)
 
   const double upper = randomization_ticks_;
   const double lower = -randomization_ticks_;
-  auto         rand = PCGRand::getInstance ();
-  double       rand_double = (double) rand->u32 ();
+  double       rand_double = (double) rand_.u32 ();
   double       rand_ticks = fmod (rand_double, (upper - lower + 1.0)) + lower;
 
   /* if previous point is closer */
