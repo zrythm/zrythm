@@ -57,23 +57,18 @@ ApplicationWindow {
 
       LeftDock {
         SplitView.fillHeight: true
-        SplitView.minimumWidth: 30
+        SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
         tracklist: root.project.tracklist
         visible: GlobalState.settingsManager.leftPanelVisible
       }
 
       SplitView {
-        // Pane {
-        //     SplitView.fillWidth: true
-        //     SplitView.preferredHeight: 200
-        //     SplitView.minimumHeight: 30
-        // }
-
         id: centerSplitView
 
         SplitView.fillHeight: true
         SplitView.fillWidth: true
+        SplitView.minimumWidth: 120
         orientation: Qt.Vertical
 
         CenterDock {
@@ -89,7 +84,8 @@ ApplicationWindow {
           Layout.verticalStretchFactor: 1
           SplitView.fillHeight: true
           SplitView.fillWidth: true
-          SplitView.minimumHeight: 30
+          SplitView.minimumHeight: 40
+          SplitView.preferredHeight: 240
           project: root.project
           visible: GlobalState.settingsManager.bottomPanelVisible
         }

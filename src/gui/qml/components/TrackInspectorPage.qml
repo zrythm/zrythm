@@ -17,7 +17,7 @@ ColumnLayout {
     icon.source: ResourceManager.getIconUrl("gnome-icon-library", "general-properties-genersymbolic.svg")
     title: "Track Properties"
 
-    contentItem: ColumnLayout {
+    frameContentItem: ColumnLayout {
       Label {
         text: root.track.name
       }
@@ -42,7 +42,7 @@ ColumnLayout {
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
       title: "Inserts"
 
-      contentItem: ListView {
+      frameContentItem: ListView {
         implicitHeight: contentHeight
         model: root.track.channel.inserts
 
@@ -61,7 +61,7 @@ ColumnLayout {
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "fader.svg")
       title: "Fader"
 
-      contentItem: ColumnLayout {
+      frameContentItem: ColumnLayout {
         BalanceControl {
           Layout.fillWidth: true
           balanceParameter: root.track.channel.fader.balance
