@@ -38,7 +38,7 @@ Control {
       Layout.minimumWidth: control.minValueWidth
       color: control.palette.text
       font: Style.semiBoldTextFont
-      horizontalAlignment: Text.AlignCenter
+      horizontalAlignment: Text.AlignHCenter
       textFormat: Text.PlainText
 
       Behavior on text {

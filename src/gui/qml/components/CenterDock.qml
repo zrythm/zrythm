@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -41,6 +43,24 @@ ColumnLayout {
           tracklist: root.project.tracklist
         }
 
+        Loader {
+          id: tempoMapLegendLoader
+
+          Layout.fillWidth: true
+          Layout.preferredHeight: active ? item.implicitHeight : 0
+          active: tracklistHeader.tempoMapVisible
+          clip: true
+
+          Behavior on Layout.preferredHeight {
+            animation: Style.propertyAnimation
+          }
+          sourceComponent: TempoMapLegend {
+            id: tempoMapLegend
+
+            tempoMap: root.project.tempoMap
+          }
+        }
+
         TracklistView {
           id: pinnedTracklist
 
@@ -73,9 +93,9 @@ ColumnLayout {
           id: rulerScrollView
 
           Layout.fillWidth: true
+          Layout.preferredHeight: ruler.height
           ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
           ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-          Layout.preferredHeight: ruler.height
 
           Ruler {
             id: ruler
@@ -97,6 +117,31 @@ ColumnLayout {
             }
 
             target: rulerScrollView.contentItem
+          }
+        }
+
+        Loader {
+          id: tempoMapArrangerLoader
+
+          Layout.fillWidth: true
+          Layout.preferredHeight: active ? tempoMapLegendLoader.height : 0
+          active: tracklistHeader.tempoMapVisible
+          visible: active
+
+          Behavior on Layout.preferredHeight {
+            animation: Style.propertyAnimation
+          }
+          sourceComponent: Arranger {
+            id: tempoMapArranger
+
+            anchors.fill: parent
+            clipEditor: root.project.clipEditor
+            editorSettings: root.project.timeline.editorSettings
+            objectFactory: root.project.arrangerObjectFactory
+            ruler: ruler
+            tempoMap: root.project.tempoMap
+            tool: root.project.tool
+            transport: root.project.transport
           }
         }
 

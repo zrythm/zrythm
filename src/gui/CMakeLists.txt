@@ -208,6 +208,8 @@ set(rel_qml_file_paths
   components/RightDock.qml
   components/Ruler.qml
   components/SpectrumAnalyzer.qml
+  components/TempoMapLaneHeader.qml
+  components/TempoMapLegend.qml
   components/ToolBox.qml
   components/TracklistHeader.qml
   components/TracklistView.qml

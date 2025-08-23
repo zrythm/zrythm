@@ -57,7 +57,7 @@
           },
           {
             "name": "QT_QPA_PLATFORM",
-            "value": "xcb",
+            "value": "wayland",
           },
         ],
         "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",

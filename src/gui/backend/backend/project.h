@@ -93,7 +93,7 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::engine::session::Transport * transport READ getTransport CONSTANT
       FINAL)
-  Q_PROPERTY (gui::backend::Tool * tool READ getTool CONSTANT FINAL)
+  Q_PROPERTY (zrythm::gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT
