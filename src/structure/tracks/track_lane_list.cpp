@@ -176,7 +176,7 @@ TrackLaneList::remove_empty_last_lanes ()
   if (last_non_matching == lanes_.rend ())
     {
       // All elements match, keep only the first one
-      beginRemoveRows ({}, 1, static_cast<int> (lanes_.size ()));
+      beginRemoveRows ({}, 1, static_cast<int> (lanes_.size () - 1));
       lanes_.erase (lanes_.begin () + 1, lanes_.end ());
       endRemoveRows ();
       return;
