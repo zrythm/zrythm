@@ -13,6 +13,8 @@ ColumnLayout {
   id: root
 
   required property Project project
+  readonly property int tempoMapLaneHeight: 24
+  readonly property int tempoMapLaneSpacing: 1
 
   spacing: 0
 
@@ -56,6 +58,8 @@ ColumnLayout {
           }
           sourceComponent: TempoMapLegend {
             id: tempoMapLegend
+            labelHeights: root.tempoMapLaneHeight
+            spacing: root.tempoMapLaneSpacing
 
             tempoMap: root.project.tempoMap
           }
@@ -131,7 +135,7 @@ ColumnLayout {
           Behavior on Layout.preferredHeight {
             animation: Style.propertyAnimation
           }
-          sourceComponent: Arranger {
+          sourceComponent: TempoMapArranger {
             id: tempoMapArranger
 
             anchors.fill: parent
@@ -142,6 +146,8 @@ ColumnLayout {
             tempoMap: root.project.tempoMap
             tool: root.project.tool
             transport: root.project.transport
+            laneHeight: root.tempoMapLaneHeight
+            laneSpacing: root.tempoMapLaneSpacing
           }
         }
 

@@ -18,7 +18,7 @@ class TempoEventWrapper : public QObject
   Q_OBJECT
   Q_PROPERTY (qint64 tick READ tick CONSTANT)
   Q_PROPERTY (double bpm READ bpm CONSTANT)
-  Q_PROPERTY (TempoMap::CurveType curve READ curve CONSTANT)
+  Q_PROPERTY (CurveType curve READ curve CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -30,9 +30,16 @@ public:
   {
   }
 
-  qint64              tick () const { return event_.tick; }
-  double              bpm () const { return event_.bpm; }
-  TempoMap::CurveType curve () const { return event_.curve; }
+  enum class CurveType : std::uint_fast8_t
+  {
+    Constant, ///< Constant tempo
+    Linear    ///< Linear tempo ramp
+  };
+  Q_ENUM (CurveType)
+
+  qint64    tick () const { return event_.tick; }
+  double    bpm () const { return event_.bpm; }
+  CurveType curve () const { return static_cast<CurveType> (event_.curve); }
 
 private:
   TempoMap::TempoEvent event_;

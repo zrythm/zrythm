@@ -181,6 +181,7 @@ set(rel_qml_file_paths
   components/arranger/MidiRegionView.qml
   components/arranger/RegionBaseView.qml
   components/arranger/ScaleObjectView.qml
+  components/arranger/TempoMapArranger.qml
   components/arranger/Timeline.qml
   components/arranger/VelocityArranger.qml
   components/editors/AudioEditorPane.qml
