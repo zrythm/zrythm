@@ -544,7 +544,7 @@ if(ZRYTHM_STRICT)
       -Werror=cast-align
       -Werror=cast-qual
       -Werror=ctor-dtor-privacy
-      -Werror=deprecated-copy-dtor
+      -Werror=deprecated
       -Werror=format-signedness
       -Wframe-larger-than=65536 # 64 KiB
       -Werror=multichar
@@ -593,7 +593,6 @@ if(ZRYTHM_STRICT)
       -Werror=misleading-indentation
       -Werror=int-in-bool-context
       -Werror=type-limits
-      # -Werror=deprecated-declarations
       -Werror=endif-labels
       -Werror=logical-not-parentheses
       -Werror=parentheses

@@ -18,7 +18,7 @@ namespace zrythm::gui::actions
 class UndoStack : public QAbstractListModel
 {
   Q_OBJECT
-  QML_ELEMENT
+  // QML_ELEMENT
   Q_PROPERTY (int rowCount READ rowCount NOTIFY rowCountChanged FINAL)
 
 public:

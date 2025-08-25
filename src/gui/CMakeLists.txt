@@ -155,6 +155,7 @@ foreach(wav_filepath ${wav_filepaths})
 endforeach()
 
 set(rel_qml_file_paths
+  components/basic/EditableLabel.qml
   components/basic/EditableValueDisplay.qml
   components/basic/ExpanderBox.qml
   components/basic/LinkedButtons.qml
@@ -265,6 +266,9 @@ qt_add_qml_module(zrythm
     TARGET zrythm_arrangement_lib
     TARGET zrythm_plugins_lib
     TARGET zrythm_structure_tracks_lib
+    TARGET zrythm_commands_lib
+    TARGET zrythm_undo_lib
+    TARGET zrythm_actions_lib
     TARGET zrythm_gui_lib
     TARGET zrythm_style
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Zrythm

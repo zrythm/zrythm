@@ -18,7 +18,7 @@ TrackFilterProxyModel::addVisibilityFilter (bool visible)
 {
   use_visible_filter_ = true;
   visible_filter_ = visible;
-  invalidateFilter ();
+  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
 }
 
 void
@@ -26,7 +26,7 @@ TrackFilterProxyModel::addPinnedFilter (bool pinned)
 {
   use_pinned_filter_ = true;
   pinned_filter_ = pinned;
-  invalidateFilter ();
+  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
 }
 
 void
@@ -34,7 +34,7 @@ TrackFilterProxyModel::addChannelFilter (bool channel)
 {
   use_channel_filter_ = true;
   channel_filter_ = channel;
-  invalidateFilter ();
+  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
 }
 
 void
@@ -43,7 +43,7 @@ TrackFilterProxyModel::clearFilters ()
   use_visible_filter_ = false;
   use_pinned_filter_ = false;
   use_channel_filter_ = false;
-  invalidateFilter ();
+  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
 }
 
 bool

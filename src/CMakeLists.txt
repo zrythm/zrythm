@@ -8,6 +8,9 @@ add_subdirectory(utils)
 add_subdirectory(dsp)
 add_subdirectory(plugins)
 add_subdirectory(structure)
+add_subdirectory(commands)
+add_subdirectory(undo)
+add_subdirectory(actions)
 
 target_include_directories(zrythm_gui_lib
   PUBLIC
@@ -29,6 +32,9 @@ qt_add_qml_module(zrythm_gui_lib
     TARGET zrythm_arrangement_lib
     TARGET zrythm_structure_tracks_lib
     TARGET zrythm_plugins_lib
+    TARGET zrythm_commands_lib
+    TARGET zrythm_undo_lib
+    TARGET zrythm_actions_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmGui
 )
 
@@ -67,11 +73,7 @@ set_target_properties(zrythm_gui_lib PROPERTIES
 )
 target_link_libraries(zrythm_gui_lib
   PUBLIC
-    ${zrythm_link_libs}
-    zrythm_dsp_lib
-    zrythm_plugins_lib
-    zrythm_arrangement_lib
-    zrythm_structure_tracks_lib
+    zrythm_actions_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )

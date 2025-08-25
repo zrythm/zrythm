@@ -19,8 +19,8 @@ Control {
   readonly property real contentTopMargins: 1
   property bool isResizing: false
   required property Track track // connected automatically when used as a delegate for a Tracklist model
-
   required property Tracklist tracklist
+  required property UndoStack undoStack
 
   hoverEnabled: true
   implicitHeight: track.fullVisibleHeight

@@ -51,13 +51,13 @@ ZrythmToolBar {
       id: undoBtn
 
       isUndo: true
-      undoManager: root.project.undoManager
+      undoStack: root.project.undoStack
     },
     UndoSplitButton {
       id: redoBtn
 
       isUndo: false
-      undoManager: root.project.undoManager
+      undoStack: root.project.undoStack
     },
     ToolBox {
       id: toolBox

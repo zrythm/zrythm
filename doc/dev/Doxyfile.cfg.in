@@ -800,6 +800,7 @@ INPUT                  = \
   @CMAKE_SOURCE_DIR@/doc/dev/repo-management.md \
   @CMAKE_SOURCE_DIR@/doc/dev/release_checklist.h \
   @CMAKE_SOURCE_DIR@/doc/dev/weblate.h \
+  @CMAKE_SOURCE_DIR@/doc/dev/undo_system.md \
   @CMAKE_SOURCE_DIR@/doc/dev/versioning.md \
   @CMAKE_SOURCE_DIR@/CONTRIBUTING.md \
   @CMAKE_SOURCE_DIR@/HACKING.md \

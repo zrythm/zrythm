@@ -8,9 +8,10 @@ import Zrythm
 import ZrythmStyle
 
 ColumnLayout {
-
   id: root
+
   required property Tracklist tracklist
+  required property UndoStack undoStack
 
   TabBar {
     id: tabBar
@@ -41,6 +42,7 @@ ColumnLayout {
 
     TrackInspectorPage {
       track: root.tracklist.selectedTrack
+      undoStack: root.undoStack
     }
 
     Repeater {

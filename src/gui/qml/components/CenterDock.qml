@@ -58,9 +58,9 @@ ColumnLayout {
           }
           sourceComponent: TempoMapLegend {
             id: tempoMapLegend
+
             labelHeights: root.tempoMapLaneHeight
             spacing: root.tempoMapLaneSpacing
-
             tempoMap: root.project.tempoMap
           }
         }
@@ -72,6 +72,7 @@ ColumnLayout {
           Layout.preferredHeight: contentHeight
           pinned: true
           tracklist: root.project.tracklist
+          undoStack: root.project.undoStack
         }
 
         TracklistView {
@@ -82,6 +83,7 @@ ColumnLayout {
           Layout.minimumHeight: unpinnedTimelineArranger.height
           pinned: false
           tracklist: root.project.tracklist
+          undoStack: root.project.undoStack
         }
       }
 
@@ -141,13 +143,13 @@ ColumnLayout {
             anchors.fill: parent
             clipEditor: root.project.clipEditor
             editorSettings: root.project.timeline.editorSettings
+            laneHeight: root.tempoMapLaneHeight
+            laneSpacing: root.tempoMapLaneSpacing
             objectFactory: root.project.arrangerObjectFactory
             ruler: ruler
             tempoMap: root.project.tempoMap
             tool: root.project.tool
             transport: root.project.transport
-            laneHeight: root.tempoMapLaneHeight
-            laneSpacing: root.tempoMapLaneSpacing
           }
         }
 

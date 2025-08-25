@@ -118,6 +118,7 @@ Project::Project (
         *port_connections_manager_,
         get_tempo_map ())),
       undo_manager_ (new gui::actions::UndoManager (this)),
+      undo_stack_ (utils::make_qobject_unique<undo::UndoStack> (this)),
       arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
         get_tempo_map (),
         *arranger_object_registry_,
@@ -1309,6 +1310,12 @@ Project::getUndoManager () const
   return undo_manager_;
 }
 
+undo::UndoStack *
+Project::undoStack () const
+{
+  return undo_stack_.get ();
+}
+
 structure::arrangement::ArrangerObjectFactory *
 Project::getArrangerObjectFactory () const
 {
@@ -1387,6 +1394,7 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
   j[Project::kMidiMappingsKey] = project.midi_mappings_;
   j[Project::kUndoManagerKey] = project.undo_manager_;
+  j[Project::kUndoStackKey] = project.undo_stack_;
   j[Project::kLastSelectionKey] = project.last_selection_;
 }
 
@@ -1524,6 +1532,7 @@ from_json (const nlohmann::json &j, Project &project)
     .get_to (*project.port_connections_manager_);
   j.at (Project::kMidiMappingsKey).get_to (*project.midi_mappings_);
   j.at (Project::kUndoManagerKey).get_to (*project.undo_manager_);
+  j.at (Project::kUndoStackKey).get_to (*project.undo_stack_);
   j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
 
   project.tracklist_->get_chord_track ()->set_note_pitch_to_descriptor_func (

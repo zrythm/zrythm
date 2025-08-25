@@ -1,41 +1,46 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 SplitButton {
   id: undoBtn
 
+  readonly property var actions: undoBtn.isUndo ? undoBtn.undoStack.undoActions : undoBtn.undoStack.redoActions
   required property bool isUndo
-  required property var undoManager
-  property var undoStack: isUndo ? undoManager.undoStack : undoManager.redoStack
-  readonly property string undoString: isUndo ? qsTr("Undo") : qsTr("Redo")
+  required property UndoStack undoStack
+  readonly property string undoString: (isUndo ? qsTr("Undo") : qsTr("Redo"))
 
-  enabled: undoStack.rowCount > 0
+  enabled: isUndo ? undoStack.undoStack.canUndo : undoStack.undoStack.canRedo
   iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-" + (isUndo ? "undo" : "redo") + ".svg")
-  menuTooltipText: qsTr("Undo multiple")
-  tooltipText: undoStack.rowCount > 0 ? qsTr("%1 %2").arg(undoString).arg(undoStack.data(undoStack.index(0, 0), 257).getDescription()) : undoString
+  menuTooltipText: isUndo ? qsTr("Undo multiple") : qsTr("Redo multiple")
+  tooltipText: enabled ? "%1: %2".arg(undoString).arg(isUndo ? undoStack.undoStack.undoText : undoStack.undoStack.redoText) : undoString
 
   menuItems: Menu {
+    id: menu
+
     Repeater {
-      model: undoStack
+      model: undoBtn.actions
 
       delegate: MenuItem {
-        required property var undoableAction
+        required property int index
+        readonly property int indexToAdd: undoBtn.isUndo ? (-index - 1) : (index + 1)
+        required property string modelData
 
-        text: qsTr("%1 %2").arg(undoString).arg(undoableAction.getDescription())
+        text: modelData
 
         onTriggered: {
-          // TODO: implement properly
-          isUndo ? undoManager.undo() : undoManager.redo();
+          undoBtn.undoStack.index = undoBtn.undoStack.index + indexToAdd;
+          menu.close();
         }
       }
     }
   }
 
-  onClicked: isUndo ? undoManager.undo() : undoManager.redo()
+  onClicked: isUndo ? undoStack.undo() : undoStack.redo()
 }

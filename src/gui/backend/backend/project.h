@@ -18,6 +18,7 @@
 #include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/track_factory.h"
+#include "undo/undo_stack.h"
 #include "utils/progress_info.h"
 
 /**
@@ -98,6 +99,7 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT
       FINAL)
+  Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::structure::arrangement::ArrangerObjectFactory *
       arrangerObjectFactory READ getArrangerObjectFactory CONSTANT FINAL)
@@ -188,6 +190,7 @@ public:
   gui::backend::Tool *             getTool () const;
   ClipEditor *                     getClipEditor () const;
   gui::actions::UndoManager *      getUndoManager () const;
+  undo::UndoStack *                undoStack () const;
   structure::arrangement::ArrangerObjectFactory *
                                     getArrangerObjectFactory () const;
   PluginFactory *                   getPluginFactory () const;
@@ -484,6 +487,7 @@ private:
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
   static constexpr auto kMidiMappingsKey = "midiMappings"sv;
   static constexpr auto kUndoManagerKey = "undoManager"sv;
+  static constexpr auto kUndoStackKey = "undoStack"sv;
   static constexpr auto kLastSelectionKey = "lastSelection"sv;
   static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
   static constexpr auto FORMAT_MAJOR_VER = 2;
@@ -621,6 +625,8 @@ public:
   structure::tracks::Tracklist * tracklist_{};
 
   gui::actions::UndoManager * undo_manager_{};
+
+  utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
 
   structure::arrangement::ArrangerObjectFactory * arranger_object_factory_{};
   PluginFactory *                                 plugin_factory_{};

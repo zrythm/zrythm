@@ -11,6 +11,14 @@ ColumnLayout {
   id: root
 
   required property Track track
+  required property UndoStack undoStack
+
+  TrackOperator {
+    id: trackOperator
+
+    track: root.track
+    undoStack: root.undoStack
+  }
 
   ExpanderBox {
     Layout.fillWidth: true
@@ -18,8 +26,15 @@ ColumnLayout {
     title: "Track Properties"
 
     frameContentItem: ColumnLayout {
-      Label {
+      EditableLabel {
+        id: trackNameLabel
+
+        Layout.fillWidth: true
         text: root.track.name
+
+        onAccepted: function (newText) {
+          trackOperator.rename(newText);
+        }
       }
 
       Label {

@@ -60,6 +60,7 @@ ApplicationWindow {
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
         tracklist: root.project.tracklist
+        undoStack: root.project.undoStack
         visible: GlobalState.settingsManager.leftPanelVisible
       }
 

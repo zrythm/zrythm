@@ -13,9 +13,9 @@ void
 AutomationTracklistProxyModel::setSourceModel (QAbstractItemModel * sourceModel)
 {
   QSortFilterProxyModel::setSourceModel (sourceModel);
-  connect (
+  QT_IGNORE_DEPRECATIONS (connect (
     sourceModel, &QAbstractItemModel::dataChanged, this,
-    &AutomationTracklistProxyModel::invalidateFilter);
+    &AutomationTracklistProxyModel::invalidateFilter));
 }
 
 bool
@@ -30,7 +30,7 @@ AutomationTracklistProxyModel::setShowOnlyVisible (bool show)
   if (show != show_only_visible_)
     {
       show_only_visible_ = show;
-      invalidateFilter ();
+      QT_IGNORE_DEPRECATIONS (invalidateFilter ());
       Q_EMIT showOnlyVisibleChanged ();
     }
 }
@@ -47,7 +47,7 @@ AutomationTracklistProxyModel::setShowOnlyCreated (bool show)
   if (show != show_only_created_)
     {
       show_only_created_ = show;
-      invalidateFilter ();
+      QT_IGNORE_DEPRECATIONS (invalidateFilter ());
       Q_EMIT showOnlyCreatedChanged ();
     }
 }

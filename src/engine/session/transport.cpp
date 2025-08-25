@@ -622,7 +622,8 @@ Transport::move_playhead (double target_ticks, bool set_cue_point)
             lane->structure::arrangement::ArrangerObjectOwner<
               structure::arrangement::MidiRegion>::get_children_view ())
             {
-              const auto playhead_pos = get_playhead_position_in_gui_thread ();
+              const auto playhead_pos =
+                QT_IGNORE_DEPRECATIONS (get_playhead_position_in_gui_thread ());
               if (!region->regionMixin ()->bounds ()->is_hit (
                     playhead_pos.frames_, true))
                 continue;
