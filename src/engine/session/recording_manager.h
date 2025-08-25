@@ -21,6 +21,8 @@ class TrackProcessor;
 
 namespace zrythm::engine::session
 {
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 /**
  * @class RecordingManager
  *
@@ -287,5 +289,6 @@ private:
    */
   std::unique_ptr<juce::TimeSliceThread> time_slice_thread_;
 };
+QT_WARNING_POP
 
 } // namespace zrythm::engine::session
