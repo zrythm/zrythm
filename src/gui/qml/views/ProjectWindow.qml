@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import "../config.js" as Config
@@ -43,6 +43,48 @@ ApplicationWindow {
     project.activate();
   }
   onClosing: {}
+
+  Shortcut {
+    context: Qt.ApplicationShortcut
+    enabled: root.project.undoStack && root.project.undoStack.undoStack.canUndo
+    sequences: [StandardKey.Undo]
+
+    onActivated: root.project.undoStack.undo()
+  }
+
+  Shortcut {
+    context: Qt.ApplicationShortcut
+    enabled: root.project.undoStack && root.project.undoStack.undoStack.canRedo
+    sequences: [StandardKey.Redo]
+
+    onActivated: root.project.undoStack.redo()
+  }
+
+  // Global spacebar for play/pause
+  Shortcut {
+    context: Qt.ApplicationShortcut
+    sequence: "Space"
+
+    onActivated: {
+      // Toggle play/pause regardless of focus
+      if (root.project.transport.isRolling()) {
+        root.project.transport.requestPause(true);
+      } else {
+        root.project.transport.requestRoll(true);
+      }
+    }
+  }
+
+  Shortcut {
+    context: Qt.ApplicationShortcut
+    sequences: [StandardKey.Save]
+
+    onActivated: {
+      console.log("save requested");
+      // TODO
+      // root.project.save();
+    }
+  }
 
   ColumnLayout {
     anchors.fill: parent
