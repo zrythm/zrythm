@@ -39,7 +39,10 @@ public:
 
   qint64    tick () const { return event_.tick; }
   double    bpm () const { return event_.bpm; }
-  CurveType curve () const { return static_cast<CurveType> (event_.curve); }
+  CurveType curve () const
+  {
+    return static_cast<CurveType> (std::to_underlying (event_.curve));
+  }
 
 private:
   TempoMap::TempoEvent event_;

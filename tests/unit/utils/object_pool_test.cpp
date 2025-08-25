@@ -13,6 +13,8 @@ public:
   int value = 0;
 };
 
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 TEST (ObjectPoolTest, BasicOperations)
 {
   ObjectPool<TestObject> pool (4);
@@ -152,3 +154,4 @@ TEST (ObjectPoolTest, VariousSizes)
   test_with_size<TestStruct> (16, 31, 32);
   test_with_size<TestStruct> (16, 32, 32);
 }
+QT_WARNING_POP
