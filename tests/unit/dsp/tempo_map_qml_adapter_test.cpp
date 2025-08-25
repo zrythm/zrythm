@@ -75,7 +75,7 @@ TEST_F (TempoMapWrapperTest, TempoEventManagement)
   auto new_event = tempo_events.at (&tempo_events, 1);
   EXPECT_EQ (new_event->tick (), 1920);
   EXPECT_DOUBLE_EQ (new_event->bpm (), 140.0);
-  EXPECT_EQ (new_event->curve (), TempoMap::CurveType::Constant);
+  EXPECT_EQ (new_event->curve (), TempoEventWrapper::CurveType::Constant);
 }
 
 // Test time signature signals and wrappers
