@@ -594,6 +594,8 @@ Transport::get_playhead_position_in_gui_thread () const
   return { playhead_.position_ticks (), AUDIO_ENGINE->frames_per_tick_ };
 }
 
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 void
 Transport::move_playhead (double target_ticks, bool set_cue_point)
 {
@@ -622,8 +624,7 @@ Transport::move_playhead (double target_ticks, bool set_cue_point)
             lane->structure::arrangement::ArrangerObjectOwner<
               structure::arrangement::MidiRegion>::get_children_view ())
             {
-              const auto playhead_pos =
-                QT_IGNORE_DEPRECATIONS (get_playhead_position_in_gui_thread ());
+              const auto playhead_pos = get_playhead_position_in_gui_thread ();
               if (!region->regionMixin ()->bounds ()->is_hit (
                     playhead_pos.frames_, true))
                 continue;
@@ -652,6 +653,7 @@ Transport::move_playhead (double target_ticks, bool set_cue_point)
       cue_pos_->set_position_rtsafe (target);
     }
 }
+QT_WARNING_POP
 
 double
 Transport::get_ppqn () const

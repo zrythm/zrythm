@@ -9,13 +9,15 @@ AutomationTracklistProxyModel::AutomationTracklistProxyModel (QObject * parent)
 {
 }
 
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 void
 AutomationTracklistProxyModel::setSourceModel (QAbstractItemModel * sourceModel)
 {
   QSortFilterProxyModel::setSourceModel (sourceModel);
-  QT_IGNORE_DEPRECATIONS (connect (
+  connect (
     sourceModel, &QAbstractItemModel::dataChanged, this,
-    &AutomationTracklistProxyModel::invalidateFilter));
+    &AutomationTracklistProxyModel::invalidateFilter);
 }
 
 bool
@@ -30,7 +32,7 @@ AutomationTracklistProxyModel::setShowOnlyVisible (bool show)
   if (show != show_only_visible_)
     {
       show_only_visible_ = show;
-      QT_IGNORE_DEPRECATIONS (invalidateFilter ());
+      invalidateFilter ();
       Q_EMIT showOnlyVisibleChanged ();
     }
 }
@@ -47,10 +49,11 @@ AutomationTracklistProxyModel::setShowOnlyCreated (bool show)
   if (show != show_only_created_)
     {
       show_only_created_ = show;
-      QT_IGNORE_DEPRECATIONS (invalidateFilter ());
+      invalidateFilter ();
       Q_EMIT showOnlyCreatedChanged ();
     }
 }
+QT_WARNING_POP
 
 bool
 AutomationTracklistProxyModel::filterAcceptsRow (

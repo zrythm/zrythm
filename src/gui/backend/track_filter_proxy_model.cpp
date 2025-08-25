@@ -13,12 +13,14 @@ TrackFilterProxyModel::TrackFilterProxyModel (QObject * parent)
 {
 }
 
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 void
 TrackFilterProxyModel::addVisibilityFilter (bool visible)
 {
   use_visible_filter_ = true;
   visible_filter_ = visible;
-  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
+  invalidateFilter ();
 }
 
 void
@@ -26,7 +28,7 @@ TrackFilterProxyModel::addPinnedFilter (bool pinned)
 {
   use_pinned_filter_ = true;
   pinned_filter_ = pinned;
-  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
+  invalidateFilter ();
 }
 
 void
@@ -34,7 +36,7 @@ TrackFilterProxyModel::addChannelFilter (bool channel)
 {
   use_channel_filter_ = true;
   channel_filter_ = channel;
-  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
+  invalidateFilter ();
 }
 
 void
@@ -43,8 +45,9 @@ TrackFilterProxyModel::clearFilters ()
   use_visible_filter_ = false;
   use_pinned_filter_ = false;
   use_channel_filter_ = false;
-  QT_IGNORE_DEPRECATIONS (invalidateFilter ());
+  invalidateFilter ();
 }
+QT_WARNING_POP
 
 bool
 TrackFilterProxyModel::filterAcceptsRow (
