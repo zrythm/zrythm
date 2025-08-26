@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "commands/move_region_to_automation_track_command.h"
-#include "dsp/parameter.h"
-#include "structure/arrangement/arranger_object.h"
-#include "structure/arrangement/automation_region.h"
+#include "commands/relocate_arranger_object_command.h"
 #include "structure/tracks/automation_track.h"
 
 #include <gtest/gtest.h>
@@ -13,7 +10,7 @@ namespace zrythm::commands
 {
 using namespace zrythm::structure;
 
-class MoveRegionToAutomationTrackCommandTest : public ::testing::Test
+class RelocateArrangerObjectCommandTest : public ::testing::Test
 {
 protected:
   void SetUp () override
@@ -71,9 +68,9 @@ protected:
 };
 
 // Test initial state after construction
-TEST_F (MoveRegionToAutomationTrackCommandTest, InitialState)
+TEST_F (RelocateArrangerObjectCommandTest, InitialState)
 {
-  MoveRegionToAutomationTrackCommand command (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command (
     automation_region_ref_, *source_at_, *target_at_);
 
   // Verify region is still in source automation track
@@ -85,9 +82,9 @@ TEST_F (MoveRegionToAutomationTrackCommandTest, InitialState)
 }
 
 // Test redo operation (move automation region from source to target)
-TEST_F (MoveRegionToAutomationTrackCommandTest, RedoOperation)
+TEST_F (RelocateArrangerObjectCommandTest, RedoOperation)
 {
-  MoveRegionToAutomationTrackCommand command (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command (
     automation_region_ref_, *source_at_, *target_at_);
 
   // Initial state
@@ -106,9 +103,9 @@ TEST_F (MoveRegionToAutomationTrackCommandTest, RedoOperation)
 }
 
 // Test undo operation (move automation region back to source)
-TEST_F (MoveRegionToAutomationTrackCommandTest, UndoOperation)
+TEST_F (RelocateArrangerObjectCommandTest, UndoOperation)
 {
-  MoveRegionToAutomationTrackCommand command (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command (
     automation_region_ref_, *source_at_, *target_at_);
 
   // First execute redo to move the region
@@ -128,9 +125,9 @@ TEST_F (MoveRegionToAutomationTrackCommandTest, UndoOperation)
 }
 
 // Test undo/redo cycle
-TEST_F (MoveRegionToAutomationTrackCommandTest, UndoRedoCycle)
+TEST_F (RelocateArrangerObjectCommandTest, UndoRedoCycle)
 {
-  MoveRegionToAutomationTrackCommand command (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command (
     automation_region_ref_, *source_at_, *target_at_);
 
   // Initial state
@@ -159,7 +156,7 @@ TEST_F (MoveRegionToAutomationTrackCommandTest, UndoRedoCycle)
 }
 
 // Test move from empty source automation track (should fail gracefully)
-TEST_F (MoveRegionToAutomationTrackCommandTest, MoveFromEmptyTrack)
+TEST_F (RelocateArrangerObjectCommandTest, MoveFromEmptyTrack)
 {
   // Remove the test region first
   source_at_->remove_object (automation_region_ref_.id ());
@@ -167,15 +164,15 @@ TEST_F (MoveRegionToAutomationTrackCommandTest, MoveFromEmptyTrack)
   // This should throw an exception since the region is not in the source
   // automation track
   EXPECT_THROW (
-    MoveRegionToAutomationTrackCommand command (
+    RelocateArrangerObjectCommand<arrangement::AutomationRegion> command (
       automation_region_ref_, *source_at_, *target_at_),
     std::invalid_argument);
 }
 
 // Test move to same automation track (should be no-op)
-TEST_F (MoveRegionToAutomationTrackCommandTest, MoveToSameTrack)
+TEST_F (RelocateArrangerObjectCommandTest, MoveToSameTrack)
 {
-  MoveRegionToAutomationTrackCommand command (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command (
     automation_region_ref_, *source_at_, *source_at_);
 
   // Initial state
@@ -197,27 +194,27 @@ TEST_F (MoveRegionToAutomationTrackCommandTest, MoveToSameTrack)
 }
 
 // Test command text
-TEST_F (MoveRegionToAutomationTrackCommandTest, CommandText)
+TEST_F (RelocateArrangerObjectCommandTest, CommandText)
 {
-  MoveRegionToAutomationTrackCommand command (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command (
     automation_region_ref_, *source_at_, *target_at_);
 
-  // The command should have the text "Move Plugin" for display in undo stack
-  EXPECT_EQ (command.text (), QString ("Move Plugin"));
+  // The command should have the text "Relocate Object" for display in undo stack
+  EXPECT_EQ (command.text (), QString ("Relocate Object"));
 }
 
 // Test multiple move operations
-TEST_F (MoveRegionToAutomationTrackCommandTest, MultipleMoveOperations)
+TEST_F (RelocateArrangerObjectCommandTest, MultipleMoveOperations)
 {
   // First move automation region
-  MoveRegionToAutomationTrackCommand command1 (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command1 (
     automation_region_ref_, *source_at_, *target_at_);
   command1.redo ();
   EXPECT_EQ (source_at_->get_children_vector ().size (), 0);
   EXPECT_EQ (target_at_->get_children_vector ().size (), 1);
 
   // Move back to source
-  MoveRegionToAutomationTrackCommand command2 (
+  RelocateArrangerObjectCommand<arrangement::AutomationRegion> command2 (
     automation_region_ref_, *target_at_, *source_at_);
   command2.redo ();
   EXPECT_EQ (source_at_->get_children_vector ().size (), 1);

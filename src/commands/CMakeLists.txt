@@ -8,8 +8,7 @@ target_sources(zrythm_commands_lib
     change_parameter_value_command.h
     change_track_color_command.h
     move_plugin_command.h
-    move_region_to_automation_track_command.h
-    move_region_to_lane_command.h
+    relocate_arranger_object_command.h
     rename_track_command.h
 )
 
