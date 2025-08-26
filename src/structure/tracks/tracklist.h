@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "dsp/parameter.h"
-#include "dsp/port.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_routing.h"
@@ -89,11 +87,7 @@ public:
   };
 
 public:
-  explicit Tracklist (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    TrackRegistry                   &track_registry,
-    QObject *                        parent = nullptr);
+  explicit Tracklist (TrackRegistry &track_registry, QObject * parent = nullptr);
   Z_DISABLE_COPY_MOVE (Tracklist)
 
   // ========================================================================
@@ -185,22 +179,6 @@ public:
     const utils::Utf8String &name) const;
 
   /**
-   * @brief Returns the region at the given position, if any.
-   *
-   * Either @p at (for automation regions) or @p track (for other regions)
-   * must be passed.
-   *
-   * @param track
-   * @param at
-   * @param include_region_end
-   */
-  static std::optional<ArrangerObjectPtrVariant> get_region_at_pos (
-    signed_frame_t            pos_samples,
-    Track *                   track,
-    tracks::AutomationTrack * at,
-    bool                      include_region_end = false);
-
-  /**
    * Returns the first visible Track.
    *
    * @param pinned 1 to check the pinned tracklist,
@@ -268,29 +246,6 @@ public:
    */
   void
   clear_selections_for_object_siblings (const ArrangerObject::Uuid &object_id);
-
-  /**
-   * Moves the Region to the given Track, maintaining the selection
-   * status of the Region.
-   *
-   * Assumes that the Region is already in a TrackLane or
-   * AutomationTrack.
-   *
-   * @param lane_or_at_index If MIDI or audio, lane position.
-   *   If automation, automation track index in the automation
-   * tracklist. If -1, the track lane or automation track index will be
-   * inferred from the region.
-   * @param index If MIDI or audio, index in lane in the new track to
-   * insert the region to, or -1 to append. If automation, index in the
-   * automation track.
-   *
-   * @throw ZrythmException on error.
-   */
-  void move_region_to_track (
-    ArrangerObjectPtrVariant region,
-    const Track::Uuid       &to_track_id,
-    int                      lane_or_at_index,
-    int                      index);
 
   std::optional<TrackUuidReference>
   get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const;
@@ -477,9 +432,7 @@ private:
   auto &get_track_registry () { return track_registry_; }
 
 private:
-  TrackRegistry                   &track_registry_;
-  dsp::PortRegistry               &port_registry_;
-  dsp::ProcessorParameterRegistry &param_registry_;
+  TrackRegistry &track_registry_;
 
   /**
    * All tracks that exist.
