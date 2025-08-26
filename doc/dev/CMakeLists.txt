@@ -11,6 +11,7 @@ configure_file(
 
 set(extra_dev_docs
   "${CMAKE_SOURCE_DIR}/CONTRIBUTING.md"
+  "${CMAKE_CURRENT_SOURCE_DIR}/debugging.md"
   "${CMAKE_CURRENT_SOURCE_DIR}/mainpage.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/processing_cycle.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/release_checklist.h"

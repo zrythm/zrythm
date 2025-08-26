@@ -1,8 +1,0 @@
-control_port_set_val.* ==> track_set_muted
-control_port_set_val.* ==> track_set_muted
-.* ==> _backtrace_get
-.* ==> g_return_if_fail_warning
-mpmc_queue_push_back ==> g_log
-port_get_.*_index ==> g_log_structured_standard
-port_get_.*_index ==> g_log
-port_get_full_designation ==> g_log

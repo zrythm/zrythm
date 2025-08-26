@@ -1222,7 +1222,6 @@ if(APPLE)
 endif()
 
 file(COPY
-  HACKING.md
   AUTHORS
   TRANSLATORS
   THANKS

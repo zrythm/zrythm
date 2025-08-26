@@ -113,7 +113,7 @@ See the [user manual](http://manual.zrythm.org/).
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Hacking
-See [HACKING.md](HACKING.md) and the [developer docs](https://docs.zrythm.org/).
+See the [developer docs](https://docs.zrythm.org/).
 
 ## Forum
 See [our forum](https://forum.zrythm.org).

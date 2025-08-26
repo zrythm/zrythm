@@ -11,9 +11,8 @@ our best to guide you.
 
 Coding
 ------
-Please see the
-:download:`HACKING <../../../HACKING.md>` file
-in the source distribution.
+See ``CONTRIBUTING.md`` in the source code distribution and also our
+`developer documentation <https://docs.zrythm.org>`_.
 
 Web Design
 ----------
