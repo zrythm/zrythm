@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_commands_unit_tests
-  rename_track_command_test.cpp
+  change_parameter_value_command_test.cpp
   change_track_color_command_test.cpp
+  rename_track_command_test.cpp
 )
 
 set_target_properties(zrythm_commands_unit_tests PROPERTIES

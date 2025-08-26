@@ -12,10 +12,12 @@ Item {
   property real balanceAtStart: 0.0
   required property ProcessorParameter balanceParameter
   property real balanceValue: balanceParameter.baseValue
+  readonly property real defaultBalanceValue: 0.5
   property bool dragging: false
   property bool hovered: false
   property real lastX: 0
   property real lastY: 0
+  required property UndoStack undoStack
 
   signal bindMidiCC
   signal resetBalance
@@ -30,8 +32,7 @@ Item {
       text: qsTr("Reset")
 
       onTriggered: {
-        root.balanceParameter.baseValue = 0.5;
-        root.balanceValue = 0.5;
+        paramOp.setValue(root.defaultBalanceValue);
       }
     }
 
@@ -46,6 +47,17 @@ Item {
 
   Component.onCompleted: {
     mouseArea.acceptedButtons = Qt.LeftButton | Qt.RightButton;
+  }
+
+  ProcessorParameterOperator {
+    id: paramOp
+
+    Component.onCompleted: {
+      if (root.balanceParameter && root.undoStack) {
+        paramOp.processorParameter = root.balanceParameter;
+        paramOp.undoStack = root.undoStack;
+      }
+    }
   }
 
   Rectangle {
@@ -189,8 +201,7 @@ Item {
     hoverEnabled: true
 
     onDoubleClicked: {
-      root.balanceParameter.baseValue = 0.5; // Reset to center
-      root.balanceValue = 0.5;
+      paramOp.setValue(root.defaultBalanceValue);
     }
     onEntered: {
       root.hovered = true;
@@ -210,8 +221,7 @@ Item {
 
         var newValue = Math.max(0, Math.min(1, root.balanceAtStart + deltaX * sensitivity));
 
-        root.balanceParameter.baseValue = newValue;
-        root.balanceValue = newValue;
+        paramOp.setValue(newValue);
       }
     }
     onPressed: function (mouse) {
@@ -226,18 +236,8 @@ Item {
     onWheel: {
       var step = wheel.modifiers & Qt.ControlModifier ? 0.01 : 0.05;
       var newValue = Math.max(0, Math.min(1, root.balanceValue + (wheel.angleDelta.x > 0 ? step : -step)));
-      root.balanceParameter.baseValue = newValue;
-      root.balanceValue = newValue;
+      paramOp.setValue(newValue);
       wheel.accepted = true;
     }
-  }
-
-  // Update balanceValue when parameter changes
-  Connections {
-    function onBaseValueChanged(value) {
-      root.balanceValue = value;
-    }
-
-    target: root.balanceParameter
   }
 }

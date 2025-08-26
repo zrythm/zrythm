@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_actions_unit_tests
+  parameter_operator_test.cpp
   track_operator_test.cpp
 )
 

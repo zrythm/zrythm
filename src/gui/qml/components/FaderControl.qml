@@ -10,6 +10,7 @@ Item {
   id: root
 
   property real ampAtStart: 0.0
+  readonly property real defaultFaderValue: 0.8
   property bool dragging: false
   required property ProcessorParameter faderGain
   property real faderValue: faderGain.baseValue
@@ -17,6 +18,7 @@ Item {
   property bool hovered: false
   property real lastX: 0
   property real lastY: 0
+  required property UndoStack undoStack
 
   signal bindMidiCC
   signal resetFader
@@ -31,8 +33,7 @@ Item {
       text: qsTr("Reset")
 
       onTriggered: {
-        root.faderGain.baseValue = 0.8;
-        root.faderValue = 0.8;
+        paramOp.setValue(root.defaultFaderValue);
       }
     }
 
@@ -47,6 +48,17 @@ Item {
 
   Component.onCompleted: {
     mouseArea.acceptedButtons = Qt.LeftButton | Qt.RightButton;
+  }
+
+  ProcessorParameterOperator {
+    id: paramOp
+
+    Component.onCompleted: {
+      if (root.faderGain && root.undoStack) {
+        paramOp.processorParameter = root.faderGain;
+        paramOp.undoStack = root.undoStack;
+      }
+    }
   }
 
   Rectangle {
@@ -128,8 +140,7 @@ Item {
     hoverEnabled: true
 
     onDoubleClicked: {
-      root.faderGain.baseValue = 0.8; // Reset to 0 dB
-      root.faderValue = 0.8;
+      paramOp.setValue(root.defaultFaderValue);
     }
     onEntered: {
       root.hovered = true;
@@ -143,8 +154,7 @@ Item {
         var sensitivity = 0.005;
         var newValue = Math.max(0, Math.min(1, root.ampAtStart + deltaY * sensitivity));
 
-        root.faderGain.baseValue = newValue;
-        root.faderValue = newValue;
+        paramOp.setValue(newValue);
       }
     }
     onPressed: function (mouse) {
@@ -159,8 +169,7 @@ Item {
     onWheel: {
       var step = wheel.modifiers & Qt.ControlModifier ? 0.01 : 0.05;
       var newValue = Math.max(0, Math.min(1, root.faderValue + (wheel.angleDelta.y > 0 ? step : -step)));
-      root.faderGain.baseValue = newValue;
-      root.faderValue = newValue;
+      paramOp.setValue(newValue);
       wheel.accepted = true;
     }
   }

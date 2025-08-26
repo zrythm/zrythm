@@ -311,7 +311,7 @@ Control {
                 property: "baseValue"
                 target: control.track.channel.fader.mute
                 value: muteButton.checked ? 1.0 : 0.0
-                when: control.track.channel.fader.mute !== null
+                when: control.track.channel !== null && control.track.channel.fader.mute !== null
               }
             }
 

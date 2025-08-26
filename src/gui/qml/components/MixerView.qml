@@ -11,6 +11,7 @@ RowLayout {
   id: root
 
   required property Tracklist tracklist
+  required property UndoStack undoStack
 
   Repeater {
     id: allChannels
@@ -20,6 +21,7 @@ RowLayout {
     delegate: ChannelView {
       channel: track.channel
       tracklist: root.tracklist
+      undoStack: root.undoStack
     }
     model: TrackFilterProxyModel {
       sourceModel: root.tracklist

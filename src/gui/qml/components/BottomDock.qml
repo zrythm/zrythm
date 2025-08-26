@@ -52,6 +52,7 @@ ColumnLayout {
 
     MixerView {
       tracklist: root.project.tracklist
+      undoStack: root.project.undoStack
     }
 
     Repeater {

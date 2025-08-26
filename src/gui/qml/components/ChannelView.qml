@@ -13,6 +13,7 @@ ColumnLayout {
   required property Channel channel
   required property Track track
   required property Tracklist tracklist
+  required property UndoStack undoStack
 
   implicitWidth: 48
 
@@ -59,6 +60,7 @@ ColumnLayout {
     Layout.fillHeight: false
     Layout.fillWidth: true
     balanceParameter: root.channel.fader.balance
+    undoStack: root.undoStack
   }
 
   RowLayout {
@@ -76,6 +78,7 @@ ColumnLayout {
       Layout.fillHeight: true
       Layout.fillWidth: false
       faderGain: root.channel.fader.gain
+      undoStack: root.undoStack
     }
 
     TrackMeters {

@@ -24,7 +24,7 @@ UndoStack::UndoStack (QObject * parent)
 void
 UndoStack::push (QUndoCommand * cmd)
 {
-  z_info ("Performing action '{}'", cmd->text ());
+  z_debug ("Performing action '{}'", cmd->text ());
   stack_->push (cmd);
 }
 

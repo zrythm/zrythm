@@ -80,6 +80,7 @@ ColumnLayout {
         BalanceControl {
           Layout.fillWidth: true
           balanceParameter: root.track.channel.fader.balance
+          undoStack: root.undoStack
         }
 
         RowLayout {
@@ -92,6 +93,7 @@ ColumnLayout {
 
           FaderControl {
             faderGain: root.track.channel.fader.gain
+            undoStack: root.undoStack
           }
 
           TrackMeters {
