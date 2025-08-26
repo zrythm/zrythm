@@ -30,4 +30,5 @@ set(CTEST_CUSTOM_COVERAGE_EXCLUDE
     # these 2 give errors
     ".*/src/utils/format\\.h"
     ".*/src/utils/logger\\.h"
+    ".*/tests/.*"
 )
