@@ -75,7 +75,7 @@ Item {
 
     color: {
       var intensity = root.hovered || root.dragging ? 0.7 : 0.4;
-      return Qt.rgba(0.0, 0.5, 0.5, intensity);
+      return palette.accent.alpha(intensity);
     }
     height: parent.height
     visible: root.balanceValue < 0.5
@@ -97,7 +97,7 @@ Item {
 
     color: {
       var intensity = root.hovered || root.dragging ? 0.7 : 0.4;
-      return Qt.rgba(0.0, 0.5, 0.5, intensity);
+      return palette.accent.alpha(intensity);
     }
     height: parent.height
     visible: root.balanceValue > 0.5
@@ -119,7 +119,7 @@ Item {
 
     color: {
       var intensity = root.hovered || root.dragging ? 1.0 : 0.7;
-      return Qt.rgba(0.5, 0.5, 0.5, intensity);
+      return palette.text.alpha(intensity);
     }
     height: parent.height
     width: 1
@@ -128,6 +128,7 @@ Item {
       horizontalCenter: parent.horizontalCenter
       top: parent.top
     }
+    visible:false
   }
 
   // Current value indicator
@@ -136,7 +137,7 @@ Item {
 
     color: {
       var intensity = root.hovered || root.dragging ? 1.0 : 0.7;
-      return Qt.rgba(0.0, 1.0, 0.0, intensity);
+      return palette.accent.alpha(intensity);
     }
     height: parent.height
     width: 2
