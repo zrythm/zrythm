@@ -122,10 +122,7 @@ public:
   void handlePluginOutputEvents ();
   void generatePluginInputEvents ();
 
-  void setup_audio_ports_for_processing (
-    int       num_audio_ins,
-    int       num_audio_outs,
-    nframes_t block_size);
+  void setup_audio_ports_for_processing (nframes_t block_size);
 
   void setPluginWindowVisibility (bool isVisible);
 
@@ -161,12 +158,20 @@ private:
   QSemaphore                            threadPoolSemaphoreDone_;
 
   /* process stuff */
-  clap_audio_buffer        audioIn_{};
-  clap_audio_buffer        audioOut_{};
-  juce::AudioSampleBuffer  audio_in_buf_;
-  std::vector<float *>     audio_in_channel_ptrs_;
-  juce::AudioSampleBuffer  audio_out_buf_;
-  std::vector<float *>     audio_out_channel_ptrs_;
+  std::vector<clap_audio_buffer> audio_in_clap_bufs_;
+  std::vector<clap_audio_buffer> audio_out_clap_bufs_;
+
+  // each CLAP port can have multiple channels. there is 1 AudioSampleBuffer per
+  // CLAP port
+  std::vector<juce::AudioSampleBuffer> audio_in_bufs_;
+
+  // the juce buffers with all channels flattened into a single vector, for
+  // convenience
+  std::vector<float *> flat_audio_in_bufs_;
+
+  std::vector<juce::AudioSampleBuffer> audio_out_bufs_;
+  std::vector<float *>                 flat_audio_out_bufs_;
+
   clap::helpers::EventList evIn_;
   clap::helpers::EventList evOut_;
   clap_process             process_{};
@@ -658,9 +663,7 @@ ClapPlugin::prepare_for_processing_impl (
   if (!pimpl_->plugin_)
     return;
 
-  pimpl_->setup_audio_ports_for_processing (
-    static_cast<int> (audio_in_ports_.size ()),
-    static_cast<int> (audio_out_ports_.size ()), max_block_length);
+  pimpl_->setup_audio_ports_for_processing (max_block_length);
 
   assert (!pimpl_->isPluginActive ());
   if (!pimpl_->plugin_->activate (sample_rate, 1, max_block_length))
@@ -732,10 +735,10 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
   pimpl_->process_.in_events = pimpl_->evIn_.clapInputEvents ();
   pimpl_->process_.out_events = pimpl_->evOut_.clapOutputEvents ();
 
-  pimpl_->process_.audio_inputs = &pimpl_->audioIn_;
-  pimpl_->process_.audio_inputs_count = 1;
-  pimpl_->process_.audio_outputs = &pimpl_->audioOut_;
-  pimpl_->process_.audio_outputs_count = 1;
+  pimpl_->process_.audio_inputs = pimpl_->audio_in_clap_bufs_.data ();
+  pimpl_->process_.audio_inputs_count = pimpl_->audio_in_clap_bufs_.size ();
+  pimpl_->process_.audio_outputs = pimpl_->audio_out_clap_bufs_.data ();
+  pimpl_->process_.audio_outputs_count = pimpl_->audio_out_clap_bufs_.size ();
 
   pimpl_->evOut_.clear ();
   pimpl_->generatePluginInputEvents ();
@@ -766,12 +769,11 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 
       // Copy input audio to JUCE buffer
       for (
-        const auto &[i, channel_ptr] :
-        utils::views::enumerate (pimpl_->audio_in_channel_ptrs_))
+        const auto &[channel_ptr, port] :
+        std::views::zip (pimpl_->flat_audio_in_bufs_, audio_in_ports_))
         {
           utils::float_ranges::copy (
-            &channel_ptr[local_offset], &audio_in_ports_[i]->buf_[local_offset],
-            nframes);
+            &channel_ptr[local_offset], &port->buf_[local_offset], nframes);
         }
 
       // Run plugin processing
@@ -779,20 +781,19 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 
       // Copy output audio from JUCE buffer
       for (
-        const auto &[i, channel_ptr] :
-        utils::views::enumerate (pimpl_->audio_out_channel_ptrs_))
+        const auto &[channel_ptr, port] :
+        std::views::zip (pimpl_->flat_audio_out_bufs_, audio_out_ports_))
         {
           if (status == CLAP_PROCESS_ERROR) [[unlikely]]
             {
               utils::float_ranges::fill (
-                &audio_out_ports_[i]->buf_[local_offset], 0.f, nframes);
+                &port->buf_[local_offset], 0.f, nframes);
             }
           else
             {
               // TODO: handle other states
               utils::float_ranges::copy (
-                &audio_out_ports_[i]->buf_[local_offset],
-                &channel_ptr[local_offset], nframes);
+                &port->buf_[local_offset], &channel_ptr[local_offset], nframes);
             }
         }
     }
@@ -1160,7 +1161,6 @@ ClapPlugin::ClapPluginImpl::handlePluginOutputEvents ()
             break;
           }
         default:
-          z_debug ("unhandled plugin output event {}", h->type);
           break;
         }
     }
@@ -1290,39 +1290,39 @@ ClapPlugin::create_ports_from_clap_plugin ()
 
 void
 ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
-  int       num_audio_ins,
-  int       num_audio_outs,
   nframes_t block_size)
 {
-  // Resize audio buffers
-  audio_in_buf_.setSize (num_audio_ins, static_cast<int> (block_size));
-  audio_out_buf_.setSize (num_audio_outs, static_cast<int> (block_size));
+  const auto setup_for_direction = [&] (bool is_input) {
+    auto &audio_bufs = is_input ? audio_in_bufs_ : audio_out_bufs_;
+    auto &audio_clap_bufs =
+      is_input ? audio_in_clap_bufs_ : audio_out_clap_bufs_;
+    auto &flat_bufs = is_input ? flat_audio_in_bufs_ : flat_audio_out_bufs_;
+    audio_bufs.resize (plugin_->audioPortsCount (is_input));
+    audio_clap_bufs.resize (plugin_->audioPortsCount (is_input));
+    flat_bufs.clear ();
+    for (const auto &[i, juce_buf] : utils::views::enumerate (audio_bufs))
+      {
+        clap_audio_port_info_t nfo;
+        plugin_->audioPortsGet (i, is_input, &nfo);
+        juce_buf.setSize (
+          static_cast<int> (nfo.channel_count), static_cast<int> (block_size));
+        auto &clap_buf = audio_clap_bufs.at (i);
+        clap_buf.channel_count = nfo.channel_count;
+        clap_buf.data32 =
+          const_cast<float **> (juce_buf.getArrayOfWritePointers ());
+        clap_buf.data64 = nullptr;
+        clap_buf.constant_mask = 0;
+        clap_buf.latency = 0;
+        for (const auto j : std::views::iota (0u, nfo.channel_count))
+          {
+            flat_bufs.push_back (
+              juce_buf.getWritePointer (static_cast<int> (j)));
+          }
+      }
+  };
 
-  // Setup channel pointers
-  audio_in_channel_ptrs_.resize (num_audio_ins);
-  audio_out_channel_ptrs_.resize (num_audio_outs);
-
-  for (int i = 0; i < num_audio_ins; ++i)
-    {
-      audio_in_channel_ptrs_[i] = audio_in_buf_.getWritePointer (i);
-    }
-
-  for (int i = 0; i < num_audio_outs; ++i)
-    {
-      audio_out_channel_ptrs_[i] = audio_out_buf_.getWritePointer (i);
-    }
-
-  audioIn_.channel_count = num_audio_ins;
-  audioIn_.data32 = audio_in_channel_ptrs_.data ();
-  audioIn_.data64 = nullptr;
-  audioIn_.constant_mask = 0;
-  audioIn_.latency = 0;
-
-  audioOut_.channel_count = num_audio_outs;
-  audioOut_.data32 = audio_out_channel_ptrs_.data ();
-  audioOut_.data64 = nullptr;
-  audioOut_.constant_mask = 0;
-  audioOut_.latency = 0;
+  setup_for_direction (true);
+  setup_for_direction (false);
 }
 
 void
