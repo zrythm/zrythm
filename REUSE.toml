@@ -491,7 +491,7 @@ SPDX-FileCopyrightText = ["", "2009-2016 Albert Graef <aggraef@gmail.com>", "200
 SPDX-License-Identifier = "LGPL-3.0-or-later"
 
 [[annotations]]
-path = ["CONTRIBUTOR_CERTIFICATE_OF_ORIGIN", "data/samples/klick/README", "doc/user/scripting/api/**.rst", "ext/README", "git-packaging-hooks/README", "po/POTFILES", "**/resources/icons/font-awesome/README", "**/resources/icons/fork-awesome/README", "**/resources/icons/gnome-builder/README", "**/resources/icons/jam-icons/README", "subprojects/**.wrap", "tests/lv2plugins/eg-amp.lv2/README.txt", "tests/lv2plugins/eg-fifths.lv2/README.txt", "tests/lv2plugins/plumbing.lv2/README", "tests/lv2plugins/test-instrument.lv2/README.txt", "tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/**.ttl", "po/zrythm.pot", "tools/stoat_**.txt", "tools/vg.sup", "VERSION.txt"]
+path = ["data/samples/klick/README", "doc/user/scripting/api/**.rst", "ext/README", "git-packaging-hooks/README", "po/POTFILES", "**/resources/icons/font-awesome/README", "**/resources/icons/fork-awesome/README", "**/resources/icons/gnome-builder/README", "**/resources/icons/jam-icons/README", "subprojects/**.wrap", "tests/lv2plugins/eg-amp.lv2/README.txt", "tests/lv2plugins/eg-fifths.lv2/README.txt", "tests/lv2plugins/plumbing.lv2/README", "tests/lv2plugins/test-instrument.lv2/README.txt", "tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/**.ttl", "po/zrythm.pot", "tools/stoat_**.txt", "tools/vg.sup", "VERSION.txt"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
@@ -531,20 +531,6 @@ SPDX-License-Identifier = "AGPL-3.0-or-later"
 SPDX-FileComment = "\n  Adapted from https://github.com/flathub/org.zrythm.Zrythm."
 
 [[annotations]]
-path = ["ext/juce/modules/juce_audio_basics/**", "ext/juce/modules/juce_audio_devices/**", "ext/juce/modules/juce_core/**", "ext/juce/modules/juce_events/**"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Raw Material Software Limited"
-SPDX-License-Identifier = "ISC"
-SPDX-FileComment = "\n  JUCE"
-
-[[annotations]]
-path = "ext/juce/modules/juce_**/**"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Raw Material Software Limited"
-SPDX-License-Identifier = "GPL-3.0-only"
-SPDX-FileComment = "\n  JUCE"
-
-[[annotations]]
 path = ".vscode/**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Alexandros Theodotou"
@@ -581,3 +567,8 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2025 Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLogoLicense"
 SPDX-FileComment = "DMG background image"
+
+[[annotations]]
+path = ["DCO.txt" ]
+SPDX-FileCopyrightText = "Copyright (C) 2004, 2006 The Linux Foundation and its contributors."
+SPDX-License-Identifier = "LicenseRef-VerbatimCopyLicense"
