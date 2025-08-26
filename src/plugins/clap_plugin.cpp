@@ -758,7 +758,7 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
       pimpl_->setPluginState (ClapPluginImpl::ActiveAndProcessing);
     }
 
-  [[maybe_unused]] int32_t status = CLAP_PROCESS_SLEEP;
+  int32_t status = CLAP_PROCESS_SLEEP;
   if (pimpl_->isPluginProcessing ())
     {
       const auto local_offset = time_info.local_offset_;
@@ -782,9 +782,18 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
         const auto &[i, channel_ptr] :
         utils::views::enumerate (pimpl_->audio_out_channel_ptrs_))
         {
-          utils::float_ranges::copy (
-            &audio_out_ports_[i]->buf_[local_offset],
-            &channel_ptr[local_offset], nframes);
+          if (status == CLAP_PROCESS_ERROR) [[unlikely]]
+            {
+              utils::float_ranges::fill (
+                &audio_out_ports_[i]->buf_[local_offset], 0.f, nframes);
+            }
+          else
+            {
+              // TODO: handle other states
+              utils::float_ranges::copy (
+                &audio_out_ports_[i]->buf_[local_offset],
+                &channel_ptr[local_offset], nframes);
+            }
         }
     }
 
