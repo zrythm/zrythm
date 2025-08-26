@@ -25,6 +25,7 @@ set(CTEST_CUSTOM_COVERAGE_EXCLUDE
     ".*/_deps/.*"
     ".*/build_.*/.*_autogen/.*"
     ".*/qrc_.*\\.cpp"
+    ".*/.*_qmltyperegistrations\\.cpp"
     ".*/\\.rcc/.*"
     ".*/ext/.*"
     # these 2 give errors
