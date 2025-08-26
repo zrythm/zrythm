@@ -97,10 +97,10 @@ void
 SampleProcessor::init_common ()
 {
   tracklist_ = std::make_unique<Tracklist> (
-    *this, audio_engine_->get_port_registry (),
-    audio_engine_->get_param_registry (), audio_engine_->get_track_registry (),
+    audio_engine_->get_port_registry (), audio_engine_->get_param_registry (),
+    audio_engine_->get_track_registry (),
     *audio_engine_->port_connections_manager_,
-    audio_engine_->project_->get_tempo_map ());
+    audio_engine_->project_->get_tempo_map (), this);
   midi_events_ = std::make_unique<dsp::MidiEvents> ();
   current_samples_.reserve (256);
 }

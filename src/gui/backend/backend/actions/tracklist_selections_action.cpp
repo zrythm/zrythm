@@ -463,8 +463,7 @@ TracklistSelectionsAction::create_track (int idx)
       std::visit (
         [&] (auto &&track) {
           track->setName (label);
-          TRACKLIST->insert_track (
-            track_id_ref, pos, *AUDIO_ENGINE, false, false);
+          TRACKLIST->insert_track (track_id_ref, pos);
         },
         track_id_ref.get_object ());
     }
@@ -527,8 +526,7 @@ TracklistSelectionsAction::create_track (int idx)
 #endif
             }
 
-          TRACKLIST->insert_track (
-            added_track_ref, pos, *AUDIO_ENGINE, false, false);
+          TRACKLIST->insert_track (added_track_ref, pos);
 
 // TODO
 #if 0

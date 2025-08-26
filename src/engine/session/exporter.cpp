@@ -424,7 +424,7 @@ Exporter::Settings::set_bounce_defaults (
     {
     case Mode::Regions:
       {
-        auto tl_sel = TRACKLIST->get_timeline_objects_in_range ();
+        auto tl_sel = TRACKLIST->get_timeline_objects ();
         auto [start_obj, start_pos] =
           structure::arrangement::ArrangerObjectSpan{ tl_sel }
             .get_first_object_and_pos ();
@@ -660,7 +660,7 @@ Exporter::create_audio_track_after_bounce (double pos_ticks)
   /* find next track */
   std::optional<structure::tracks::TrackPtrVariant> last_track_var;
   std::optional<structure::tracks::TrackPtrVariant> track_to_disable_var;
-  auto tl_sel = TRACKLIST->get_timeline_objects_in_range ();
+  auto tl_sel = TRACKLIST->get_timeline_objects ();
   switch (settings_.mode_)
     {
     case Mode::Regions:

@@ -33,6 +33,7 @@ using namespace zrythm;
 #define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_.get ())
 #define AUDIO_POOL (PROJECT->audio_pool_.get ())
 
+#define TRACKLIST (PROJECT->tracklist_)
 #define P_CHORD_TRACK (TRACKLIST->chord_track_)
 #define P_MARKER_TRACK (TRACKLIST->marker_track_)
 #define P_MASTER_TRACK (TRACKLIST->master_track_)

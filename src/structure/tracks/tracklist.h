@@ -16,16 +16,6 @@
 
 struct FileImportInfo;
 
-#define TRACKLIST (PROJECT->tracklist_)
-
-namespace zrythm::engine::session
-{
-class DspGraphDispatcher;
-class SampleProcessor;
-}
-
-class Project;
-
 namespace zrythm::structure::tracks
 {
 class ChordTrack;
@@ -77,19 +67,12 @@ public:
 
 public:
   explicit Tracklist (
-    Project                         &project,
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry,
     TrackRegistry                   &track_registry,
     dsp::PortConnectionsManager     &port_connections_manager,
-    const dsp::TempoMap             &tempo_map);
-  explicit Tracklist (
-    engine::session::SampleProcessor &sample_processor,
-    dsp::PortRegistry                &port_registry,
-    dsp::ProcessorParameterRegistry  &param_registry,
-    TrackRegistry                    &track_registry,
-    dsp::PortConnectionsManager      &port_connections_manager,
-    const dsp::TempoMap              &tempo_map);
+    const dsp::TempoMap             &tempo_map,
+    QObject *                        parent = nullptr);
   Z_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
@@ -121,8 +104,6 @@ public:
 
   auto get_track_span () const { return TrackSpan{ tracks_ }; }
 
-  bool is_auditioner () const { return sample_processor_ != nullptr; }
-
   friend void init_from (
     Tracklist             &obj,
     const Tracklist       &other,
@@ -131,28 +112,16 @@ public:
   /**
    * Adds given track to given spot in tracklist.
    *
-   * @param publish_events Publish UI events.
-   * @param recalc_graph Recalculate routing graph.
    * @return Pointer to the newly added track.
    */
-  TrackPtrVariant insert_track (
-    const TrackUuidReference       &track_id,
-    int                             pos,
-    engine::device_io::AudioEngine &engine,
-    bool                            publish_events,
-    bool                            recalc_graph);
+  TrackPtrVariant insert_track (const TrackUuidReference &track_id, int pos);
 
   /**
    * Calls insert_track with the given options.
    */
-  TrackPtrVariant append_track (
-    auto                            track_id,
-    engine::device_io::AudioEngine &engine,
-    bool                            publish_events,
-    bool                            recalc_graph)
+  TrackPtrVariant append_track (const TrackUuidReference &track_id)
   {
-    return insert_track (
-      track_id, tracks_.size (), engine, publish_events, recalc_graph);
+    return insert_track (track_id, tracks_.size ());
   }
 
   /**
@@ -172,12 +141,7 @@ public:
    * track position will be @p pos - 1.
    * @param router If given, the processing graph will be soft-recalculated.
    */
-  void move_track (
-    TrackUuid track_id,
-    int       pos,
-    bool      always_before_pos,
-    std::optional<std::reference_wrapper<engine::session::DspGraphDispatcher>>
-      router);
+  void move_track (TrackUuid track_id, int pos, bool always_before_pos);
 
   std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
   {
@@ -195,34 +159,7 @@ public:
    */
   utils::Utf8String get_unique_name_for_track (
     const Track::Uuid       &track_to_skip,
-    const utils::Utf8String &name) const
-  {
-    auto new_name = name;
-    while (!track_name_is_unique (new_name, track_to_skip))
-      {
-        auto [ending_num, name_without_num] =
-          new_name.get_int_after_last_space ();
-        if (ending_num == -1)
-          {
-            new_name += u8" 1";
-          }
-        else
-          {
-            new_name = utils::Utf8String::from_utf8_encoded_string (
-              fmt::format ("{} {}", name_without_num, ending_num + 1));
-          }
-      }
-    return new_name;
-  }
-
-  /**
-   * Pins or unpins the Track.
-   */
-  void set_track_pinned (
-    TrackUuid track_id,
-    bool      pinned,
-    int       publish_events,
-    int       recalc_graph);
+    const utils::Utf8String &name) const;
 
   /**
    * @brief Returns the region at the given position, if any.
@@ -325,9 +262,7 @@ public:
    */
   void handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged);
 
-  std::vector<ArrangerObjectPtrVariant> get_timeline_objects_in_range (
-    std::optional<std::pair<dsp::Position, dsp::Position>> range = std::nullopt)
-    const;
+  std::vector<ArrangerObjectPtrVariant> get_timeline_objects () const;
 
   /**
    * @brief Clears either the timeline selections or the clip editor selections.
@@ -698,16 +633,7 @@ private:
    * beyond num_tracks. */
   std::atomic<bool> swapping_tracks_ = false;
 
-  /** Pointer to owner sample processor, if any. */
-  engine::session::SampleProcessor * sample_processor_ = nullptr;
-
 public:
-  /** Pointer to owner project, if any. */
-  Project * project_ = nullptr;
-
-  /** Width of track widgets. */
-  // int width_ = 0;
-
   QPointer<dsp::PortConnectionsManager> port_connections_manager_;
 };
 }

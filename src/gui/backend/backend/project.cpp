@@ -111,12 +111,12 @@ Project::Project (
       midi_mappings_ (
         std::make_unique<engine::session::MidiMappings> (*param_registry_)),
       tracklist_ (new structure::tracks::Tracklist (
-        *this,
         *port_registry_,
         *param_registry_,
         *track_registry_,
         *port_connections_manager_,
-        get_tempo_map ())),
+        get_tempo_map (),
+        this)),
       undo_manager_ (new gui::actions::UndoManager (this)),
       undo_stack_ (utils::make_qobject_unique<undo::UndoStack> (this)),
       arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
@@ -451,8 +451,7 @@ Project::add_default_tracks ()
     track->setName (name);
     tracklist_->append_track (
       structure::tracks::TrackUuidReference{
-        track->get_uuid (), get_track_registry () },
-      *audio_engine_, false, false);
+        track->get_uuid (), get_track_registry () });
 
     return track;
   };
@@ -1206,9 +1205,9 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     [&obj] (bool backup) { return obj.get_path (ProjectPath::POOL, backup); },
     [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
-    *other.tracklist_, &obj, clone_type, obj, *obj.port_registry_,
+    *other.tracklist_, &obj, clone_type, *obj.port_registry_,
     *obj.param_registry_, *obj.track_registry_, *obj.port_connections_manager_,
-    obj.get_tempo_map ());
+    obj.get_tempo_map (), &obj);
   obj.clip_editor_ = utils::clone_qobject (
     *other.clip_editor_, &obj, clone_type, *obj.arranger_object_registry_,
     [&] (const Project::TrackUuid &id) {

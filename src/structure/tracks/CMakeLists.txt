@@ -66,6 +66,8 @@ target_sources(zrythm_structure_tracks_lib
     track_routing.h
     track_routing.cpp
     track_span.h
+    tracklist.h
+    tracklist.cpp
 )
 set_target_properties(zrythm_structure_tracks_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
@@ -94,6 +96,4 @@ target_sources(zrythm_gui_lib
   PRIVATE
     track_factory.h
     track_factory.cpp
-    tracklist.h
-    tracklist.cpp
 )

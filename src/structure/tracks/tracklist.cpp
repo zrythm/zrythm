@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/actions/arranger_selections_action.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/backend/io/file_import.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/chord_track.h"
 #include "structure/tracks/foldable_track.h"
@@ -15,24 +9,20 @@
 #include "structure/tracks/modulator_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "utils/views.h"
 
 namespace zrythm::structure::tracks
 {
 
-// Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
-
 Tracklist::Tracklist (
-  Project                         &project,
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry,
   TrackRegistry                   &track_registry,
   dsp::PortConnectionsManager     &port_connections_manager,
-  const dsp::TempoMap             &tempo_map)
-    : QAbstractListModel (&project), tempo_map_ (tempo_map),
+  const dsp::TempoMap             &tempo_map,
+  QObject *                        parent)
+    : QAbstractListModel (parent), tempo_map_ (tempo_map),
       track_registry_ (track_registry), port_registry_ (port_registry),
       param_registry_ (param_registry),
       track_routing_ (
@@ -42,20 +32,6 @@ Tracklist::Tracklist (
           selected_tracks_,
           *track_registry_,
           [this] () { Q_EMIT selectedTracksChanged (); })),
-      project_ (&project), port_connections_manager_ (&port_connections_manager)
-{
-}
-
-Tracklist::Tracklist (
-  engine::session::SampleProcessor &sample_processor,
-  dsp::PortRegistry                &port_registry,
-  dsp::ProcessorParameterRegistry  &param_registry,
-  TrackRegistry                    &track_registry,
-  dsp::PortConnectionsManager      &port_connections_manager,
-  const dsp::TempoMap              &tempo_map)
-    : tempo_map_ (tempo_map), track_registry_ (track_registry),
-      port_registry_ (port_registry), param_registry_ (param_registry),
-      sample_processor_ (&sample_processor),
       port_connections_manager_ (&port_connections_manager)
 {
 }
@@ -625,12 +601,7 @@ Tracklist::get_region_at_pos (
 }
 
 TrackPtrVariant
-Tracklist::insert_track (
-  const TrackUuidReference       &track_id,
-  int                             pos,
-  engine::device_io::AudioEngine &engine,
-  bool                            publish_events,
-  bool                            recalc_graph)
+Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
 {
   auto track_var = track_id.get_object ();
 
@@ -689,13 +660,8 @@ Tracklist::insert_track (
 
       // track->set_index (pos);
 
-      if (
-        /* auditioner doesn't need automation */
-        !is_auditioner ())
-        {
-          /* make the track the only selected track */
-          get_selection_manager ().select_unique (track->get_uuid ());
-        }
+      /* make the track the only selected track */
+      get_selection_manager ().select_unique (track->get_uuid ());
 
       /* if audio output route to master */
       if constexpr (!std::is_same_v<TrackT, MasterTrack>)
@@ -707,16 +673,6 @@ Tracklist::insert_track (
               track_routing_->add_or_replace_route (
                 track->get_uuid (), master_track_->get_uuid ());
             }
-        }
-
-      if (recalc_graph)
-        {
-          ROUTER->recalc_graph (false);
-        }
-
-      if (publish_events)
-        {
-          // EVENTS_PUSH (EventType::ET_TRACK_ADDED, added_track);
         }
 
       z_debug (
@@ -1051,6 +1007,28 @@ Tracklist::get_next_visible_track (TrackUuid track_id) const
   return get_visible_track_after_delta (track_id, 1);
 }
 
+utils::Utf8String
+Tracklist::get_unique_name_for_track (
+  const Track::Uuid       &track_to_skip,
+  const utils::Utf8String &name) const
+{
+  auto new_name = name;
+  while (!track_name_is_unique (new_name, track_to_skip))
+    {
+      auto [ending_num, name_without_num] = new_name.get_int_after_last_space ();
+      if (ending_num == -1)
+        {
+          new_name += u8" 1";
+        }
+      else
+        {
+          new_name = utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("{} {}", name_without_num, ending_num + 1));
+        }
+    }
+  return new_name;
+}
+
 void
 Tracklist::remove_track (const TrackUuid &track_id)
 {
@@ -1069,17 +1047,14 @@ Tracklist::remove_track (const TrackUuid &track_id)
 
       std::optional<TrackPtrVariant> prev_visible = std::nullopt;
       std::optional<TrackPtrVariant> next_visible = std::nullopt;
-      if (!is_auditioner ())
-        {
-          prev_visible = get_prev_visible_track (track_id);
-          next_visible = get_next_visible_track (track_id);
-        }
+      prev_visible = get_prev_visible_track (track_id);
+      next_visible = get_next_visible_track (track_id);
 
       disconnect_track (*track);
 
       /* move track to the end */
       auto end_pos = std::ssize (tracks_) - 1;
-      move_track (track_id, end_pos, false, std::nullopt);
+      move_track (track_id, end_pos, false);
 
       get_selection_manager ().remove_from_selection (track->get_uuid ());
 
@@ -1155,18 +1130,8 @@ Tracklist::clear_selections_for_object_siblings (
 }
 
 std::vector<arrangement::ArrangerObjectPtrVariant>
-Tracklist::get_timeline_objects_in_range (
-  std::optional<std::pair<dsp::Position, dsp::Position>> range) const
+Tracklist::get_timeline_objects () const
 {
-  if (!range)
-    {
-      dsp::Position pos;
-      pos.set_to_bar (
-        dsp::Position::POSITION_MAX_BAR,
-        PROJECT->getTransport ()->ticks_per_bar_,
-        AUDIO_ENGINE->frames_per_tick_);
-      range.emplace (dsp::Position{}, pos);
-    }
   std::vector<ArrangerObjectPtrVariant> ret;
 // TODO
 #if 0
@@ -1208,12 +1173,7 @@ Tracklist::get_timeline_objects_in_range (
 }
 
 void
-Tracklist::move_track (
-  const TrackUuid track_id,
-  int             pos,
-  bool            always_before_pos,
-  std::optional<std::reference_wrapper<engine::session::DspGraphDispatcher>>
-    router)
+Tracklist::move_track (const TrackUuid track_id, int pos, bool always_before_pos)
 {
   auto       track_var = get_track (track_id);
   const auto track_index = get_track_index (track_id);
@@ -1233,26 +1193,24 @@ Tracklist::move_track (
       auto prev_visible = get_prev_visible_track (track_id);
       auto next_visible = get_next_visible_track (track_id);
 
-      if (!is_auditioner ())
-        {
-          /* clear the editor region if it exists and belongs to this track */
-          // CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
+      {
+        /* clear the editor region if it exists and belongs to this track */
+        // CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
 
-          /* deselect all objects */
-          // TODO
-          // track->Track::unselect_all ();
+        /* deselect all objects */
+        // TODO
+        // track->Track::unselect_all ();
 
-          get_selection_manager ().remove_from_selection (track->get_uuid ());
+        get_selection_manager ().remove_from_selection (track->get_uuid ());
 
-          /* if it was the only track selected, select the next one */
-          if (
-            get_selection_manager ().empty () && (prev_visible || next_visible))
-            {
-              auto track_to_add = next_visible ? *next_visible : *prev_visible;
-              get_selection_manager ().append_to_selection (
-                TrackSpan::uuid_projection (track_to_add));
-            }
-        }
+        /* if it was the only track selected, select the next one */
+        if (get_selection_manager ().empty () && (prev_visible || next_visible))
+          {
+            auto track_to_add = next_visible ? *next_visible : *prev_visible;
+            get_selection_manager ().append_to_selection (
+              TrackSpan::uuid_projection (track_to_add));
+          }
+      }
 
       /* the current implementation currently moves some tracks to tracks.size()
        * + 1 temporarily, so we expand the vector here and resize it back at the
@@ -1296,11 +1254,6 @@ Tracklist::move_track (
 
       /* make the track the only selected track */
       get_selection_manager ().select_unique (track_id);
-
-      if (router)
-        {
-          router->get ().recalc_graph (false);
-        }
 
       endMoveRows ();
 
