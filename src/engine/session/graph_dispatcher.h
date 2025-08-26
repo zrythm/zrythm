@@ -26,7 +26,8 @@
 
 #pragma once
 
-#include "zrythm-config.h"
+#include <atomic>
+#include <semaphore>
 
 #include "dsp/graph_scheduler.h"
 #include "engine/device_io/engine.h"
