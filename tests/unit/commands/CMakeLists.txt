@@ -4,6 +4,7 @@
 add_executable(zrythm_commands_unit_tests
   change_parameter_value_command_test.cpp
   change_track_color_command_test.cpp
+  move_plugin_command_test.cpp
   rename_track_command_test.cpp
 )
 

@@ -179,6 +179,9 @@ public:
   AutomationTrack *
   add_automation_track (utils::QObjectUniquePtr<AutomationTrack> &&at);
 
+  AutomationTrack *
+  add_automation_track (utils::QObjectUniquePtr<AutomationTrackHolder> &&ath);
+
   AutomationTrack * automation_track_at (size_t index) const
   {
     return automation_tracks_.at (index)->automationTrack ();

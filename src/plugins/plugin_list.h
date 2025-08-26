@@ -73,15 +73,18 @@ public:
 
   void insert_plugin (plugins::PluginUuidReference plugin_ref, int index = -1)
   {
-    beginInsertRows (
-      {}, static_cast<int> (plugins_.size ()),
-      static_cast<int> (plugins_.size ()));
+    index = std::clamp (index, -1, static_cast<int> (plugins_.size ()));
+
     if (index == -1)
       {
+        beginInsertRows (
+          {}, static_cast<int> (plugins_.size ()),
+          static_cast<int> (plugins_.size ()));
         plugins_.push_back (plugin_ref);
       }
     else
       {
+        beginInsertRows ({}, index, index);
         plugins_.insert (
           std::ranges::next (plugins_.begin (), index), plugin_ref);
       }

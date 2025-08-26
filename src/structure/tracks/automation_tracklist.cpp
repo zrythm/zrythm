@@ -117,6 +117,20 @@ AutomationTracklist::add_automation_track (
     utils::make_qobject_unique<AutomationTrackHolder> (
       dependencies_, std::move (at), this));
   auto &ath_ref = automation_track_holders ().back ();
+  endInsertRows ();
+
+  return ath_ref->automationTrack ();
+}
+
+AutomationTrack *
+AutomationTracklist::add_automation_track (
+  utils::QObjectUniquePtr<AutomationTrackHolder> &&ath)
+{
+  beginInsertRows (
+    {}, static_cast<int> (automation_track_holders ().size ()),
+    static_cast<int> (automation_track_holders ().size ()));
+  automation_track_holders ().emplace_back (std::move (ath));
+  auto &ath_ref = automation_track_holders ().back ();
   ath_ref->setParent (this);
   endInsertRows ();
 

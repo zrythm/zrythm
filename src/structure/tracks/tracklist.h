@@ -311,29 +311,6 @@ public:
     int                      lane_or_at_index,
     int                      index);
 
-  /**
-   * @brief Moves the Plugin's automation from one Channel to another.
-   */
-  void move_plugin_automation (
-    const plugins::Plugin::Uuid &plugin_id,
-    const Track::Uuid           &prev_track_id,
-    const Track::Uuid           &track_id_to_move_to,
-    zrythm::plugins::PluginSlot  new_slot);
-
-  /**
-   * Moves the plugin to the given slot in the given channel.
-   *
-   * If a plugin already exists, it deletes it and replaces it.
-   *
-   * @param confirm_overwrite Whether to show a dialog to confirm the
-   * overwrite when a plugin already exists.
-   */
-  void move_plugin (
-    const plugins::Plugin::Uuid         &plugin_id,
-    const Track::Uuid                   &target_track_id,
-    std::optional<plugins::Plugin::Uuid> previous_plugin_id_at_destination,
-    bool                                 confirm_overwrite);
-
   std::optional<TrackUuidReference>
   get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const;
 
