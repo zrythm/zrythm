@@ -110,13 +110,9 @@ Project::Project (
         this)),
       midi_mappings_ (
         std::make_unique<engine::session::MidiMappings> (*param_registry_)),
-      tracklist_ (new structure::tracks::Tracklist (
-        *port_registry_,
-        *param_registry_,
-        *track_registry_,
-        *port_connections_manager_,
-        get_tempo_map (),
-        this)),
+      tracklist_ (
+        new structure::tracks::
+          Tracklist (*port_registry_, *param_registry_, *track_registry_, this)),
       undo_manager_ (new gui::actions::UndoManager (this)),
       undo_stack_ (utils::make_qobject_unique<undo::UndoStack> (this)),
       arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
@@ -458,8 +454,9 @@ Project::add_default_tracks ()
 
   /* chord */
   add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
-  tracklist_->get_chord_track ()->set_note_pitch_to_descriptor_func (
-    [this] (midi_byte_t note_pitch) {
+  tracklist_->singletonTracks ()
+    ->chordTrack ()
+    ->set_note_pitch_to_descriptor_func ([this] (midi_byte_t note_pitch) {
       return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
         note_pitch);
     });
@@ -475,7 +472,7 @@ Project::add_default_tracks ()
 
   /* add a scale */
   arranger_object_factory_->add_scale_object (
-    *tracklist_->chord_track_,
+    *tracklist_->singletonTracks ()->chordTrack (),
     utils::make_qobject_unique<dsp::MusicalScale> (
       dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A),
     0);
@@ -1206,8 +1203,7 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
     *other.tracklist_, &obj, clone_type, *obj.port_registry_,
-    *obj.param_registry_, *obj.track_registry_, *obj.port_connections_manager_,
-    obj.get_tempo_map (), &obj);
+    *obj.param_registry_, *obj.track_registry_, &obj);
   obj.clip_editor_ = utils::clone_qobject (
     *other.clip_editor_, &obj, clone_type, *obj.arranger_object_registry_,
     [&] (const Project::TrackUuid &id) {
@@ -1534,8 +1530,9 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kUndoStackKey).get_to (*project.undo_stack_);
   j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
 
-  project.tracklist_->get_chord_track ()->set_note_pitch_to_descriptor_func (
-    [&project] (midi_byte_t note_pitch) {
+  project.tracklist_->singletonTracks ()
+    ->chordTrack ()
+    ->set_note_pitch_to_descriptor_func ([&project] (midi_byte_t note_pitch) {
       return project.getClipEditor ()
         ->getChordEditor ()
         ->get_chord_from_note_number (note_pitch);

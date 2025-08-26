@@ -1,16 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/tracks/channel.h"
-#include "structure/tracks/chord_track.h"
-#include "structure/tracks/foldable_track.h"
-#include "structure/tracks/marker_track.h"
-#include "structure/tracks/master_track.h"
-#include "structure/tracks/modulator_track.h"
-#include "structure/tracks/track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
-#include "utils/string.h"
-#include "utils/views.h"
 
 namespace zrythm::structure::tracks
 {
@@ -19,20 +11,17 @@ Tracklist::Tracklist (
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry,
   TrackRegistry                   &track_registry,
-  dsp::PortConnectionsManager     &port_connections_manager,
-  const dsp::TempoMap             &tempo_map,
   QObject *                        parent)
-    : QAbstractListModel (parent), tempo_map_ (tempo_map),
-      track_registry_ (track_registry), port_registry_ (port_registry),
-      param_registry_ (param_registry),
+    : QAbstractListModel (parent), track_registry_ (track_registry),
+      port_registry_ (port_registry), param_registry_ (param_registry),
       track_routing_ (
         utils::make_qobject_unique<TrackRouting> (track_registry, this)),
       track_selection_manager_ (
         std::make_unique<TrackSelectionManager> (
           selected_tracks_,
-          *track_registry_,
+          track_registry_,
           [this] () { Q_EMIT selectedTracksChanged (); })),
-      port_connections_manager_ (&port_connections_manager)
+      singleton_tracks_ (utils::make_qobject_unique<SingletonTracks> (this))
 {
 }
 
@@ -84,7 +73,7 @@ Tracklist::selectedTrack () const
   if (selected_tracks_.empty ())
     return {};
   return QVariant::fromStdVariant (
-    track_registry_->find_by_id_or_throw (*selected_tracks_.begin ()));
+    track_registry_.find_by_id_or_throw (*selected_tracks_.begin ()));
 }
 
 void
@@ -96,202 +85,6 @@ Tracklist::setExclusivelySelectedTrack (QVariant track)
 }
 
 // ========================================================================
-
-void
-Tracklist::disconnect_port (const dsp::Port::Uuid &port_id)
-{
-  port_connections_manager_->remove_all_connections (port_id);
-}
-
-void
-Tracklist::disconnect_plugin (const plugins::Plugin::Uuid &plugin_id)
-{
-// TODO
-#if 0
-  auto plugin_var = plugin_registry_->find_by_id_or_throw (plugin_id);
-  std::visit (
-    [&] (auto &&pl) {
-      z_info ("disconnecting plugin {}...", pl->get_name ());
-
-      pl->deleting_ = true;
-
-      if (pl->visible_)
-        pl->close_ui ();
-
-      /* disconnect all ports */
-      for (auto port : pl->get_input_port_span ().as_base_type ())
-        {
-          disconnect_port (port->get_uuid ());
-        }
-      for (auto port : pl->get_output_port_span ().as_base_type ())
-        {
-          disconnect_port (port->get_uuid ());
-        }
-      z_debug (
-        "disconnected all ports of {} in ports: {} out ports: {}",
-        pl->get_name (), pl->in_ports_.size (), pl->out_ports_.size ());
-
-      pl->close ();
-
-      z_debug ("finished disconnecting plugin {}", pl->get_name ());
-    },
-    plugin_var);
-#endif
-}
-
-void
-Tracklist::disconnect_channel (Channel &channel)
-{
-// TODO
-#if 0
-  z_debug ("disconnecting channel {}", channel.track_->get_name ());
-  {
-    std::vector<plugins::Plugin *> plugins;
-    channel.get_plugins (plugins);
-    for (const auto &pl : plugins)
-      {
-        const auto slot = channel.get_plugin_slot (pl->get_uuid ());
-        channel.track_->remove_plugin (slot, false, true);
-      }
-  }
-
-  /* disconnect from output */
-  if (channel.has_output ())
-    {
-      auto * out_track = channel.get_output_track ();
-      assert (out_track);
-      out_track->remove_child (channel.track_->get_uuid (), true, false, false);
-    }
-
-  /* disconnect fader/prefaders */
-
-  const auto disconnect = [&] (const dsp::Port &port) {
-    disconnect_port (port.get_uuid ());
-  };
-
-  const auto disconnect_fader = [&] (const Fader &fader) {
-    if (fader.is_audio ())
-      {
-        auto stereo_in = fader.get_stereo_in_ports ();
-        disconnect (stereo_in.first);
-        disconnect (stereo_in.second);
-        auto stereo_out = fader.get_stereo_out_ports ();
-        disconnect (stereo_out.first);
-        disconnect (stereo_out.second);
-      }
-    else if (fader.is_midi ())
-      {
-        auto &midi_in = fader.get_midi_in_port ();
-        disconnect (midi_in);
-        auto &midi_out = fader.get_midi_out_port ();
-        disconnect (midi_out);
-      }
-  };
-  disconnect_fader (*channel.fader_);
-
-  if (channel.midi_prefader_)
-    {
-      disconnect (channel.get_midi_pre_fader ().get_midi_in_port (0));
-      disconnect (channel.get_midi_pre_fader ().get_midi_out_port (0));
-    }
-  if (channel.audio_prefader_)
-    {
-      disconnect (channel.audio_prefader_->get_audio_in_port (0));
-      disconnect (channel.audio_prefader_->get_audio_in_port (1));
-      disconnect (channel.audio_prefader_->get_audio_out_port (0));
-      disconnect (channel.audio_prefader_->get_audio_out_port (1));
-    }
-
-  // TODO: disconnect all ports for channel
-
-#endif
-}
-
-void
-Tracklist::disconnect_track_processor (TrackProcessor &track_processor)
-{
-  const auto disconnect_port_id = [&] (const dsp::PortUuid &port_id) {
-    port_connections_manager_->remove_all_connections (port_id);
-  };
-
-  std::ranges::for_each (
-    track_processor.get_input_ports (), disconnect_port_id,
-    &dsp::PortUuidReference::id);
-  std::ranges::for_each (
-    track_processor.get_output_ports (), disconnect_port_id,
-    &dsp::PortUuidReference::id);
-}
-
-void
-Tracklist::disconnect_track (Track &track)
-{
-// TODO? or delete
-#if 0
-  z_debug ("disconnecting track '{}'...", track.get_name ());
-
-  track.disconnecting_ = true;
-
-  /* if this is a group track and has children, remove them */
-  if (track.can_be_group_target ())
-    {
-      auto * group_target = dynamic_cast<GroupTargetTrack *> (&track);
-      if (group_target != nullptr)
-        {
-          group_target->remove_all_children (true, false, false);
-        }
-    }
-
-      /* disconnect from folders */
-      track.remove_from_folder_parents ();
-
-  if (auto channel_track = dynamic_cast<ChannelTrack *> (&track))
-    {
-      disconnect_channel (*channel_track->channel ());
-    }
-
-  track.disconnecting_ = false;
-
-  z_debug ("done disconnecting");
-#endif
-}
-
-std::string
-Tracklist::print_port_connection (const dsp::PortConnection &conn) const
-{
-// TODO
-#if 0
-  auto src_var = port_registry_->find_by_id_or_throw (conn.src_id_);
-  auto dest_var = port_registry_->find_by_id_or_throw (conn.dest_id_);
-  return std::visit (
-    [&] (auto &&src, auto &&dest) {
-      auto is_send = src->id_->owner_type_ == dsp::PortIdentifier::OwnerType::ChannelSend;
-      const char * send_str = is_send ? " (send)" : "";
-      if (port_connections_manager_->contains_connection (conn))
-        {
-          auto src_track_var = get_track_registry ().find_by_id_or_throw (
-            src->id_->track_id_.value ());
-          auto dest_track_var = get_track_registry ().find_by_id_or_throw (
-            dest->id_->track_id_.value ());
-          return std::visit (
-            [&] (auto &&src_track, auto &&dest_track) {
-              return fmt::format (
-                "[{} ({})] {} => [{} ({})] {}{}",
-                (src_track != nullptr) ? src_track->get_name () : u8"(none)",
-                src->id_->track_id_, src->get_label (),
-                dest_track ? dest_track->get_name () : u8"(none)",
-                dest->id_->track_id_, dest->get_label (), send_str);
-            },
-            src_track_var, dest_track_var);
-        }
-
-      return fmt::format (
-        "[track {}] {} => [track {}] {}{}", src->id_->track_id_,
-        src->get_label (), dest->id_->track_id_, dest->get_label (), send_str);
-    },
-    src_var, dest_var);
-#endif
-  return {};
-}
 
 std::optional<TrackUuidReference>
 Tracklist::get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const
@@ -427,7 +220,7 @@ Tracklist::get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track
     });
 
   // Apply direction modifier
-  return sign * count;
+  return sign * static_cast<int> (count);
 }
 
 void
@@ -446,7 +239,9 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
       dest_track ? dest_track->get_name () : u8"(none)", index2);
   }
 
-  std::iter_swap (tracks_.begin () + index1, tracks_.begin () + index2);
+  std::iter_swap (
+    std::ranges::next (tracks_.begin (), static_cast<int> (index1)),
+    std::ranges::next (tracks_.begin (), static_cast<int> (index2)));
 
   {
     // auto        span = get_track_span ();
@@ -577,20 +372,20 @@ Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
       /* append the track at the end */
       tracks_.emplace_back (track_id);
       track->set_selection_status_getter ([&] (const TrackUuid &id) {
-        return TrackSelectionManager{ selected_tracks_, *track_registry_ }
+        return TrackSelectionManager{ selected_tracks_, track_registry_ }
           .is_selected (id);
       });
       // track->tracklist_ = this;
 
       /* remember important tracks */
       if constexpr (std::is_same_v<TrackT, MasterTrack>)
-        master_track_ = track;
+        singleton_tracks_->master_track_ = track;
       else if constexpr (std::is_same_v<TrackT, ChordTrack>)
-        chord_track_ = track;
+        singleton_tracks_->chord_track_ = track;
       else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
-        marker_track_ = track;
+        singleton_tracks_->marker_track_ = track;
       else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
-        modulator_track_ = track;
+        singleton_tracks_->modulator_track_ = track;
 
       /* if inserting it, swap until it reaches its position */
       if (static_cast<size_t> (pos) != tracks_.size () - 1)
@@ -611,10 +406,11 @@ Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
         {
           if (
             track->get_output_signal_type () == dsp::PortType::Audio
-            && master_track_)
+            && singleton_tracks_->masterTrack ())
             {
               track_routing_->add_or_replace_route (
-                track->get_uuid (), master_track_->get_uuid ());
+                track->get_uuid (),
+                singleton_tracks_->masterTrack ()->get_uuid ());
             }
         }
 
@@ -627,6 +423,7 @@ Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
   return track_var;
 }
 
+#if 0
 ChordTrack *
 Tracklist::get_chord_track () const
 {
@@ -634,6 +431,7 @@ Tracklist::get_chord_track () const
   return std::get<ChordTrack *> (
     *std::ranges::find_if (span, TrackSpan::type_projection<ChordTrack>));
 }
+#endif
 
 bool
 Tracklist::should_be_visible (const Track::Uuid &track_id) const
@@ -742,38 +540,6 @@ Tracklist::multiply_track_heights (
   return true;
 }
 
-int
-Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
-{
-  // TODO
-  return 0;
-#if 0
-  auto span =
-    std::views::filter (
-      get_track_span (),
-      [&] (const auto &track_var) {
-        const auto &tr = Track::from_variant (track_var);
-        const bool  is_pinned = is_track_pinned (index);
-        if (pin_opt == PinOption::PinnedOnly && !is_pinned)
-          return false;
-        if (pin_opt == PinOption::UnpinnedOnly && is_pinned)
-          return false;
-        if (visible_only && !tr->should_be_visible ())
-          return false;
-
-        return true;
-      })
-    | std::views::reverse | std::views::take (1);
-
-  /* no track with given options found, select the last */
-  if (span.empty ())
-    return static_cast<int> (tracks_.size ()) - 1;
-
-  return std::visit (
-    [&] (const auto &track) { return track->get_index (); }, span.front ());
-#endif
-}
-
 std::optional<TrackPtrVariant>
 Tracklist::get_visible_track_after_delta (Track::Uuid track_id, int delta) const
 {
@@ -857,17 +623,16 @@ Tracklist::remove_track (const TrackUuid &track_id)
         "removing [{}] {} - num tracks before deletion: {}", track_index,
         track->get_name (), tracks_.size ());
 
-      beginRemoveRows ({}, track_index, track_index);
+      beginRemoveRows (
+        {}, static_cast<int> (track_index), static_cast<int> (track_index));
 
       std::optional<TrackPtrVariant> prev_visible = std::nullopt;
       std::optional<TrackPtrVariant> next_visible = std::nullopt;
       prev_visible = get_prev_visible_track (track_id);
       next_visible = get_next_visible_track (track_id);
 
-      disconnect_track (*track);
-
       /* move track to the end */
-      auto end_pos = std::ssize (tracks_) - 1;
+      const auto end_pos = static_cast<int> (std::ssize (tracks_) - 1);
       move_track (track_id, end_pos, false);
 
       get_selection_manager ().remove_from_selection (track->get_uuid ());
@@ -1000,7 +765,9 @@ Tracklist::move_track (const TrackUuid track_id, int pos, bool always_before_pos
       if (pos == track_index)
         return;
 
-      beginMoveRows ({}, track_index, track_index, {}, pos);
+      beginMoveRows (
+        {}, static_cast<int> (track_index), static_cast<int> (track_index), {},
+        pos);
 
       bool move_higher = pos < track_index;
 
@@ -1032,7 +799,7 @@ Tracklist::move_track (const TrackUuid track_id, int pos, bool always_before_pos
       bool expanded = false;
       if (pos >= static_cast<int> (tracks_.size ()))
         {
-          tracks_.emplace_back (*track_registry_);
+          tracks_.emplace_back (track_registry_);
           // tracks_.resize (pos + 1);
           expanded = true;
         }
@@ -1085,99 +852,6 @@ Tracklist::track_name_is_unique (
     tracks_, [&] (const auto &id) { return id.id () != track_to_skip; }));
   return !TrackSpan{ track_ids_to_check }.contains_track_name (name);
 }
-
-// TODO
-#if 0
-void
-Tracklist::import_regions (
-  std::vector<std::vector<std::shared_ptr<Region>>> &region_arrays,
-  const FileImportInfo *                             import_info,
-  TracksReadyCallback                                ready_cb)
-{
-  z_debug ("Adding regions into the project...");
-
-  AudioEngine::State state{};
-  AUDIO_ENGINE->wait_for_pause (state, false, true);
-  int executed_actions = 0;
-  try
-    {
-      for (auto regions : region_arrays)
-        {
-          z_debug ("REGION ARRAY ({} elements)", regions.size ());
-          int i = 0;
-          while (!regions.empty ())
-            {
-              int iter = i++;
-              z_debug ("REGION {}", iter);
-              auto r = regions.back ();
-              regions.pop_back ();
-              Track::Type track_type = Track::Type::Audio;
-              bool        gen_name = true;
-              if (r->is_midi ())
-                {
-                  track_type = Track::Type::Midi;
-                  if (!r->name_.empty ())
-                    gen_name = false;
-                }
-              else if (!r->is_audio ())
-                {
-                  z_warning ("Unknown region type");
-                  continue;
-                }
-
-              Track * track = nullptr;
-              if (import_info->track_name_hash_)
-                {
-                  track =
-                    find_track_by_name_hash (import_info->track_name_hash_);
-                }
-              else
-                {
-                  int index = import_info->track_idx_ + iter;
-                  Track::create_empty_at_idx_with_action (track_type, index);
-                  auto tmp = get_track (index);
-                  std::visit ([&track] (auto * t) { track = t; }, tmp);
-                  executed_actions++;
-                }
-              z_return_if_fail (track);
-              track->add_region_plain (r, nullptr, 0, gen_name, false);
-              r->select (true, false, true);
-              UNDO_MANAGER->perform (
-                std::make_unique<CreateArrangerSelectionsAction> (
-                  *TL_SELECTIONS));
-              ++executed_actions;
-            }
-        }
-    }
-  catch (const ZrythmException &e)
-    {
-      z_warning ("Failed to import regions: {}", e.what ());
-
-      /* undo any performed actions */
-      while (executed_actions > 0)
-        {
-          UNDO_MANAGER->undo ();
-          --executed_actions;
-        }
-
-      /* rethrow the exception */
-      throw;
-    }
-
-  if (executed_actions > 0)
-    {
-      auto last_action = UNDO_MANAGER->get_last_action ();
-      last_action->num_actions_ = executed_actions;
-    }
-
-  AUDIO_ENGINE->resume (state);
-
-  if (ready_cb)
-    {
-      ready_cb (import_info);
-    }
-  }
-#endif
 
 void
 Tracklist::move_region_to_track (
@@ -1352,117 +1026,6 @@ Tracklist::move_region_to_track (
     *to_track_var, region_var);
 #endif
 }
-
-#if 0
-void
-Tracklist::import_files (
-  std::optional<std::vector<utils::Utf8String>> uri_list,
-  const FileDescriptor *                        orig_file,
-  const Track *                                 track,
-  const TrackLane *                             lane,
-  int                                           index,
-  const dsp::Position *                         pos,
-  TracksReadyCallback                           ready_cb)
-{
-  std::vector<FileDescriptor> file_arr;
-  if (orig_file)
-    {
-      file_arr.push_back (*orig_file);
-    }
-  else
-    {
-      for (const auto &uri : *uri_list)
-        {
-          if (!uri.contains_substr (u8"file://"))
-            continue;
-
-          auto file = FileDescriptor::new_from_uri (uri);
-          file_arr.push_back (*file);
-        }
-    }
-
-  if (file_arr.empty ())
-    {
-      throw ZrythmException (QObject::tr ("No file was found"));
-    }
-  else if (track && file_arr.size () > 1)
-    {
-      throw ZrythmException (
-        QObject::tr ("Can only drop 1 file at a time on existing tracks"));
-    }
-
-  for (const auto &file : file_arr)
-    {
-      if (file.is_supported () && file.is_audio ())
-        {
-          if (track && !track->is_audio ())
-            {
-              throw ZrythmException (
-                QObject::tr ("Can only drop audio files on audio tracks"));
-            }
-        }
-      else if (file.is_midi ())
-        {
-          if (track && !track->has_piano_roll ())
-            {
-              throw ZrythmException (
-                QObject::tr (
-                  "Can only drop MIDI files on MIDI/instrument tracks"));
-            }
-        }
-      else
-        {
-          auto descr = FileDescriptor::get_type_description (file.type_);
-          throw ZrythmException (
-            format_qstr (QObject::tr ("Unsupported file type {}"), descr));
-        }
-    }
-
-  std::vector<fs::path> filepaths;
-  for (const auto &file : file_arr)
-    {
-      filepaths.push_back (file.abs_path_);
-    }
-
-    // TODO
-#  if 0
-  auto nfo = FileImportInfo (
-    track ? track->name_hash_ : 0, lane ? lane->pos_ : 0,
-    pos ? *pos : Position (),
-    track ? track->pos_ : (index >= 0 ? index : TRACKLIST->tracks_.size ()));
-
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      for (const auto &filepath : filepaths)
-        {
-
-          auto     fi = file_import_new (filepath, &nfo);
-          GError * err = nullptr;
-          auto     regions = file_import_sync (fi, &err);
-          if (err != nullptr)
-            {
-              throw ZrythmException (format_str (
-                QObject::tr ("Failed to import file {}: {}"),
-                filepath, err->message));
-            }
-          std::vector<std::vector<std::shared_ptr<Region>>> region_arrays;
-          region_arrays.push_back (regions);
-          import_regions (region_arrays, &nfo, ready_cb);
-
-        }
-    }
-  else
-    {
-      auto filepaths_null_terminated = filepaths.getNullTerminated ();
-      FileImportProgressDialog * dialog = file_import_progress_dialog_new (
-        (const char **) filepaths_null_terminated, &nfo, ready_cb,
-        UI_ACTIVE_WINDOW_OR_NULL);
-      file_import_progress_dialog_run (dialog);
-      g_strfreev (filepaths_null_terminated);
-    }
-#  endif
-}
-#endif
 
 #if 0
 void
@@ -1727,7 +1290,6 @@ init_from (
   utils::ObjectCloneType clone_type)
 {
   obj.pinned_tracks_cutoff_ = other.pinned_tracks_cutoff_;
-  obj.track_registry_ = other.track_registry_;
 
   if (clone_type == utils::ObjectCloneType::Snapshot)
     {
@@ -1841,14 +1403,6 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
           get_selection_manager ().select_unique (track_id);
         }
     }
-}
-
-Tracklist::~Tracklist ()
-{
-  z_debug ("freeing tracklist...");
-
-  // Disconnect all signals to prevent access during destruction
-  QObject::disconnect ();
 }
 
 void

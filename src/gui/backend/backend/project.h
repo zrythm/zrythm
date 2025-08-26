@@ -34,10 +34,10 @@ using namespace zrythm;
 #define AUDIO_POOL (PROJECT->audio_pool_.get ())
 
 #define TRACKLIST (PROJECT->tracklist_)
-#define P_CHORD_TRACK (TRACKLIST->chord_track_)
-#define P_MARKER_TRACK (TRACKLIST->marker_track_)
-#define P_MASTER_TRACK (TRACKLIST->master_track_)
-#define P_MODULATOR_TRACK (TRACKLIST->modulator_track_)
+#define P_CHORD_TRACK (TRACKLIST->singletonTracks ()->chordTrack ())
+#define P_MARKER_TRACK (TRACKLIST->singletonTracks ()->markerTrack ())
+#define P_MASTER_TRACK (TRACKLIST->singletonTracks ()->masterTrack ())
+#define P_MODULATOR_TRACK (TRACKLIST->singletonTracks ()->modulatorTrack ())
 
 enum class ProjectPath
 {

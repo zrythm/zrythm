@@ -5,16 +5,12 @@
 
 #include "dsp/parameter.h"
 #include "dsp/port.h"
-#include "dsp/port_connections_manager.h"
-#include "dsp/tempo_map.h"
-#include "structure/arrangement/arranger_object_span.h"
+#include "structure/arrangement/arranger_object.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/track_span.h"
 
 #include <QtQmlIntegration>
-
-struct FileImportInfo;
 
 namespace zrythm::structure::tracks
 {
@@ -22,6 +18,43 @@ class ChordTrack;
 class ModulatorTrack;
 class MasterTrack;
 class MarkerTrack;
+
+/**
+ * @brief References to tracks that are singletons in the tracklist.
+ */
+class SingletonTracks : public QObject
+{
+  Q_OBJECT
+  Q_PROPERTY (
+    zrythm::structure::tracks::ChordTrack * chordTrack READ chordTrack CONSTANT)
+  Q_PROPERTY (
+    zrythm::structure::tracks::ModulatorTrack * modulatorTrack READ
+      modulatorTrack CONSTANT)
+  Q_PROPERTY (
+    zrythm::structure::tracks::MasterTrack * masterTrack READ masterTrack
+      CONSTANT)
+  Q_PROPERTY (
+    zrythm::structure::tracks::MarkerTrack * markerTrack READ markerTrack
+      CONSTANT)
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
+  friend class Tracklist;
+
+public:
+  SingletonTracks (QObject * parent = nullptr) : QObject (parent) { }
+
+  ChordTrack *     chordTrack () const { return chord_track_; }
+  ModulatorTrack * modulatorTrack () const { return modulator_track_; }
+  MasterTrack *    masterTrack () const { return master_track_; }
+  MarkerTrack *    markerTrack () const { return marker_track_; }
+
+private:
+  QPointer<ChordTrack>     chord_track_;
+  QPointer<ModulatorTrack> modulator_track_;
+  QPointer<MasterTrack>    master_track_;
+  QPointer<MarkerTrack>    marker_track_;
+};
 
 /**
  * The Tracklist contains all the tracks in the Project.
@@ -38,8 +71,8 @@ class Tracklist final : public QAbstractListModel
     zrythm::structure::tracks::TrackRouting * trackRouting READ trackRouting
       CONSTANT)
   Q_PROPERTY (
-    zrythm::structure::tracks::MasterTrack * masterTrack READ masterTrack
-      CONSTANT)
+    zrythm::structure::tracks::SingletonTracks * singletonTracks READ
+      singletonTracks CONSTANT)
   Q_PROPERTY (
     QVariant selectedTrack READ selectedTrack NOTIFY selectedTracksChanged)
   QML_UNCREATABLE ("")
@@ -48,16 +81,6 @@ public:
   using TrackUuid = Track::Uuid;
   using ArrangerObjectPtrVariant = arrangement::ArrangerObjectPtrVariant;
   using ArrangerObject = arrangement::ArrangerObject;
-
-  /**
-   * Used in track search functions.
-   */
-  enum class PinOption : basic_enum_base_type_t
-  {
-    PinnedOnly,
-    UnpinnedOnly,
-    Both,
-  };
 
   enum TrackRoles
   {
@@ -70,11 +93,8 @@ public:
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry,
     TrackRegistry                   &track_registry,
-    dsp::PortConnectionsManager     &port_connections_manager,
-    const dsp::TempoMap             &tempo_map,
     QObject *                        parent = nullptr);
   Z_DISABLE_COPY_MOVE (Tracklist)
-  ~Tracklist () override;
 
   // ========================================================================
   // QML Interface
@@ -84,7 +104,10 @@ public:
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-  MasterTrack * masterTrack () const { return master_track_; }
+  SingletonTracks * singletonTracks () const
+  {
+    return singleton_tracks_.get ();
+  }
 
   TrackRouting * trackRouting () const { return track_routing_.get (); }
 
@@ -177,8 +200,6 @@ public:
     tracks::AutomationTrack * at,
     bool                      include_region_end = false);
 
-  ChordTrack * get_chord_track () const;
-
   /**
    * Returns the first visible Track.
    *
@@ -200,30 +221,6 @@ public:
    */
   std::optional<TrackPtrVariant>
   get_next_visible_track (Track::Uuid track_id) const;
-
-  /**
-   * Returns the index of the last Track.
-   *
-   * @param pin_opt Pin option.
-   * @param visible_only Only consider visible
-   *   Track's.
-   */
-  int
-  get_last_pos (PinOption pin_opt = PinOption::Both, bool visible_only = false)
-    const;
-
-  /**
-   * Returns the last Track.
-   *
-   * @param pin_opt Pin option.
-   * @param visible_only Only consider visible  Track's.
-   */
-  std::optional<TrackPtrVariant>
-  get_last_track (PinOption pin_opt = PinOption::Both, bool visible_only = false)
-    const
-  {
-    return get_track_span ()[get_last_pos (pin_opt, visible_only)];
-  }
 
   /**
    * Returns the Track after delta visible Track's.
@@ -272,22 +269,6 @@ public:
   void
   clear_selections_for_object_siblings (const ArrangerObject::Uuid &object_id);
 
-// TODO
-#if 0
-  /**
-   * @brief Imports regions from a region array.
-   *
-   * @param region_arrays
-   * @param import_info
-   * @param ready_cb
-   * @throw ZrythmException on error.
-   */
-  void import_regions (
-    std::vector<std::vector<std::shared_ptr<Region>>> &region_arrays,
-    const FileImportInfo *                             import_info,
-    TracksReadyCallback                                ready_cb);
-#endif
-
   /**
    * Moves the Region to the given Track, maintaining the selection
    * status of the Region.
@@ -315,28 +296,6 @@ public:
   get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const;
 
 #if 0
-  /**
-   * Begins file import Handles a file drop inside the timeline or in empty
-   * space in the tracklist.
-   *
-   * @param uri_list URI list, if URI list was dropped.
-   * @param file File, if FileDescriptor was dropped.
-   * @param track Track, if any.
-   * @param lane TrackLane, if any.
-   * @param index Index to insert new tracks at, or -1 to insert at end.
-   * @param pos Position the file was dropped at, if inside track.
-   *
-   * @throw ZrythmException on error.
-   */
-  void import_files (
-    std::optional<std::vector<utils::Utf8String>> uri_list,
-    const FileDescriptor *                        orig_file,
-    const Track *                                 track,
-    const TrackLane *                             lane,
-    int                                           index,
-    const zrythm::dsp::Position *                 pos,
-    TracksReadyCallback                           ready_cb);
-
   /**
    * Handles a move or copy action based on a drag.
    *
@@ -497,10 +456,6 @@ public:
     bool            mark_children,
     bool            mark_parents);
 
-  void disconnect_plugin (const plugins::Plugin::Uuid &plugin_id);
-
-  std::string print_port_connection (const dsp::PortConnection &conn) const;
-
 private:
   static constexpr auto kPinnedTracksCutoffKey = "pinnedTracksCutoff"sv;
   static constexpr auto kTracksKey = "tracks"sv;
@@ -517,43 +472,14 @@ private:
 
   void swap_tracks (size_t index1, size_t index2);
 
-  /**
-   * @brief To be called internally when removing port owners like Fader's,
-   * Channel's, Plugin's etc., to break connections.
-   *
-   * @param port_id
-   */
-  void disconnect_port (const dsp::Port::Uuid &port_id);
-
-  /**
-   * Disconnects the channel from the processing chain and removes any plugins
-   * it contains.
-   *
-   * FIXME refactor.
-   */
-  void disconnect_channel (Channel &channel);
+private:
+  auto &get_track_registry () const { return track_registry_; }
+  auto &get_track_registry () { return track_registry_; }
 
 private:
-  /**
-   * Disconnects all ports connected to the TrackProcessor.
-   */
-  void disconnect_track_processor (TrackProcessor &track_processor);
-
-  /**
-   * @brief Disconnects all ports in the track (including channel, faders, etc.).
-   */
-  void disconnect_track (Track &track);
-
-  auto &get_track_registry () const { return *track_registry_; }
-  auto &get_track_registry () { return *track_registry_; }
-
-private:
-  const dsp::TempoMap &tempo_map_;
-
-  OptionalRef<TrackRegistry>                   track_registry_;
-  OptionalRef<dsp::PortRegistry>               port_registry_;
-  OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
-  OptionalRef<plugins::PluginRegistry>         plugin_registry_;
+  TrackRegistry                   &track_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
 
   /**
    * All tracks that exist.
@@ -585,20 +511,8 @@ private:
 
   std::unique_ptr<TrackSelectionManager> track_selection_manager_;
 
-public:
-  /** The chord track, for convenience. */
-  ChordTrack * chord_track_ = nullptr;
+  utils::QObjectUniquePtr<SingletonTracks> singleton_tracks_;
 
-  /** The marker track, for convenience. */
-  MarkerTrack * marker_track_ = nullptr;
-
-  /** The modulator track, for convenience. */
-  ModulatorTrack * modulator_track_ = nullptr;
-
-  /** The master track, for convenience. */
-  MasterTrack * master_track_ = nullptr;
-
-private:
   /**
    * Index starting from which tracks are unpinned.
    *
@@ -609,8 +523,5 @@ private:
   /** When this is true, some tracks may temporarily be moved
    * beyond num_tracks. */
   std::atomic<bool> swapping_tracks_ = false;
-
-public:
-  QPointer<dsp::PortConnectionsManager> port_connections_manager_;
 };
 }

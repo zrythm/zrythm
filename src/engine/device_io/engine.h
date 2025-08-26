@@ -7,6 +7,7 @@
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
 #include "dsp/panning.h"
+#include "dsp/port_connections_manager.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/session/control_room.h"
 #include "engine/session/graph_dispatcher.h"

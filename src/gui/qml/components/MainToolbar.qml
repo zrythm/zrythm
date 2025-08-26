@@ -67,15 +67,15 @@ ZrythmToolBar {
   ]
   rightItems: [
     SpectrumAnalyzer {
-      leftPort: root.project.tracklist.masterTrack.channel.leftAudioOut
+      leftPort: root.project.tracklist.singletonTracks.masterTrack.channel.leftAudioOut
       padding: 2
-      rightPort: root.project.tracklist.masterTrack.channel.rightAudioOut
+      rightPort: root.project.tracklist.singletonTracks.masterTrack.channel.rightAudioOut
       width: 120
     },
     WaveformViewer {
-      leftPort: root.project.tracklist.masterTrack.channel.leftAudioOut
+      leftPort: root.project.tracklist.singletonTracks.masterTrack.channel.leftAudioOut
       padding: 2
-      rightPort: root.project.tracklist.masterTrack.channel.rightAudioOut
+      rightPort: root.project.tracklist.singletonTracks.masterTrack.channel.rightAudioOut
       width: 120
     },
     DspLoadIndicator {
