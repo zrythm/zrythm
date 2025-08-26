@@ -95,6 +95,7 @@ MenuBar {
         title: qsTr("Theme Color")
 
         Action {
+          enabled: Style.darkMode
           text: qsTr("Zrythm Orange")
 
           onTriggered: {
@@ -111,10 +112,38 @@ MenuBar {
         }
 
         Action {
+          enabled: Style.darkMode
           text: qsTr("Jonquil Yellow")
 
           onTriggered: {
             Style.primaryColor = Style.jonquilYellowColor;
+          }
+        }
+
+        Action {
+          enabled: Style.darkMode
+          text: qsTr("Spring Green")
+
+          onTriggered: {
+            Style.primaryColor = Style.springGreen;
+          }
+        }
+
+        Action {
+          enabled: Style.darkMode
+          text: qsTr("Munsell Red")
+
+          onTriggered: {
+            Style.primaryColor = Style.munsellRed;
+          }
+        }
+
+        Action {
+          enabled: !Style.darkMode
+          text: qsTr("Gunmetal")
+
+          onTriggered: {
+            Style.primaryColor = Style.gunmetalColor;
           }
         }
       }

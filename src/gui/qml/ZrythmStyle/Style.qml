@@ -70,9 +70,11 @@ QtObject {
     })
   property string fontFamily: notoSansFont.name
   readonly property real fontPointSize: 10
+  readonly property color gunmetalColor: "#2E3138"
   readonly property real inactiveOpacityFactor: 0.85
   readonly property color jonquilYellowColor: "#FFD100"
   readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
+  readonly property color munsellRed: "#FF0040"
   readonly property font normalTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 12,
@@ -127,6 +129,7 @@ QtObject {
       "weight": Font.Normal
     })
   readonly property color soloGreenColor: "#009B86"
+  readonly property color springGreen: "#40FFA0"
   property color textColor: darkMode ? "#E3E3E3" : "#161616" // used in contrast with pageColor
   readonly property real textFieldRadius: 4
   readonly property real toolButtonRadius: 6
