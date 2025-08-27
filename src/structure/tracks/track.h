@@ -176,6 +176,12 @@ public:
       }
   }
 
+  static constexpr bool type_is_foldable (Type type)
+  {
+    return type == Type::Folder || type == Type::AudioGroup
+           || type == Type::MidiGroup;
+  }
+
   static constexpr bool type_is_copyable (Type type)
   {
     return type != Type::Master && type != Type::Chord
@@ -821,15 +827,16 @@ using TrackSelectionManager =
 struct FinalTrackDependencies : public BaseTrackDependencies
 {
   FinalTrackDependencies (
-    const dsp::TempoMap                 &tempo_map,
-    dsp::FileAudioSourceRegistry        &file_audio_source_registry,
-    plugins::PluginRegistry             &plugin_registry,
-    dsp::PortRegistry                   &port_registry,
-    dsp::ProcessorParameterRegistry     &param_registry,
-    arrangement::ArrangerObjectRegistry &obj_registry,
-    TrackRegistry                       &track_registry,
-    const dsp::ITransport               &transport,
-    SoloedTracksExistGetter              soloed_tracks_exist_getter)
+    const dsp::TempoMap                       &tempo_map,
+    dsp::FileAudioSourceRegistry              &file_audio_source_registry,
+    plugins::PluginRegistry                   &plugin_registry,
+    dsp::PortRegistry                         &port_registry,
+    dsp::ProcessorParameterRegistry           &param_registry,
+    arrangement::ArrangerObjectRegistry       &obj_registry,
+    TrackRegistry                             &track_registry,
+    const dsp::ITransport                     &transport,
+    SoloedTracksExistGetter                    soloed_tracks_exist_getter,
+    RecordableTrackMixin::AutoarmEnabledGetter autoarm_enabled_getter_)
       : BaseTrackDependencies (
           tempo_map,
           file_audio_source_registry,
@@ -838,7 +845,8 @@ struct FinalTrackDependencies : public BaseTrackDependencies
           param_registry,
           obj_registry,
           transport,
-          std::move (soloed_tracks_exist_getter)),
+          std::move (soloed_tracks_exist_getter),
+          std::move (autoarm_enabled_getter_)),
         track_registry_ (track_registry)
   {
   }

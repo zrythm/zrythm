@@ -26,7 +26,7 @@ Item {
       undoStack: root.undoStack
     }
     model: TrackFilterProxyModel {
-      sourceModel: root.tracklist
+      sourceModel: root.tracklist.collection
 
       Component.onCompleted: {
         addVisibilityFilter(true);

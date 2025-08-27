@@ -12,10 +12,7 @@ MidiGroupTrack::MidiGroupTrack (FinalTrackDependencies dependencies)
         PortType::Midi,
         PortType::Midi,
         TrackFeatures::Automation,
-        dependencies.to_base_dependencies ()),
-      foldable_track_mixin_ (
-        utils::make_qobject_unique<
-          FoldableTrackMixin> (dependencies.track_registry_, this))
+        dependencies.to_base_dependencies ())
 {
   color_ = Color (QColor ("#E66100"));
   icon_name_ = u8"signal-midi";

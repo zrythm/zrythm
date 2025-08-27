@@ -56,9 +56,9 @@ TrackFilterProxyModel::filterAcceptsRow (
 {
   if (
     auto * tracklist =
-      dynamic_cast<structure::tracks::Tracklist *> (sourceModel ()))
+      dynamic_cast<structure::tracks::Tracklist *> (sourceModel ()->parent ()))
     {
-      auto tr = tracklist->get_track_at_index (source_row);
+      auto tr = tracklist->collection ()->get_track_at_index (source_row);
       return std::visit (
         [&] (auto &&track) {
           z_return_val_if_fail (track, false);

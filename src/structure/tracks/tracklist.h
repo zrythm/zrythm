@@ -5,6 +5,7 @@
 
 #include "structure/arrangement/arranger_object.h"
 #include "structure/tracks/track.h"
+#include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/track_span.h"
 
@@ -61,7 +62,7 @@ private:
  * Tracklist should be concerned with Tracks in the arranger, and the Mixer
  * should be concerned with Channels, routing and Port connections.
  */
-class Tracklist final : public QAbstractListModel
+class Tracklist : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -72,7 +73,13 @@ class Tracklist final : public QAbstractListModel
     zrythm::structure::tracks::SingletonTracks * singletonTracks READ
       singletonTracks CONSTANT)
   Q_PROPERTY (
+    zrythm::structure::tracks::TrackCollection * collection READ collection
+      CONSTANT)
+  Q_PROPERTY (
     QVariant selectedTrack READ selectedTrack NOTIFY selectedTracksChanged)
+  Q_PROPERTY (
+    int pinnedTracksCutoff READ pinnedTracksCutoff WRITE setPinnedTracksCutoff
+      NOTIFY pinnedTracksCutoffChanged)
   QML_UNCREATABLE ("")
 
 public:
@@ -80,23 +87,16 @@ public:
   using ArrangerObjectPtrVariant = arrangement::ArrangerObjectPtrVariant;
   using ArrangerObject = arrangement::ArrangerObject;
 
-  enum TrackRoles
-  {
-    TrackPtrRole = Qt::UserRole + 1,
-    TrackNameRole,
-  };
-
 public:
   explicit Tracklist (TrackRegistry &track_registry, QObject * parent = nullptr);
   Z_DISABLE_COPY_MOVE (Tracklist)
+  ~Tracklist () override = default;
 
   // ========================================================================
   // QML Interface
   // ========================================================================
-  QHash<int, QByteArray> roleNames () const override;
-  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
-  QVariant
-  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  TrackCollection * collection () const { return track_collection_.get (); }
 
   SingletonTracks * singletonTracks () const
   {
@@ -110,6 +110,17 @@ public:
   QVariant      selectedTrack () const;
   Q_SIGNAL void selectedTracksChanged ();
 
+  int  pinnedTracksCutoff () const { return pinned_tracks_cutoff_; }
+  void setPinnedTracksCutoff (int index)
+  {
+    if (index == pinned_tracks_cutoff_)
+      return;
+
+    pinned_tracks_cutoff_ = index;
+    Q_EMIT pinnedTracksCutoffChanged (index);
+  }
+  Q_SIGNAL void pinnedTracksCutoffChanged (int index);
+
   // ========================================================================
 
   /**
@@ -119,7 +130,7 @@ public:
     Track::Type::Chord, Track::Type::Marker, Track::Type::Modulator
   };
 
-  auto get_track_span () const { return TrackSpan{ tracks_ }; }
+  auto get_track_span () const { return collection ()->get_track_span (); }
 
   friend void init_from (
     Tracklist             &obj,
@@ -138,7 +149,8 @@ public:
    */
   TrackPtrVariant append_track (const TrackUuidReference &track_id)
   {
-    return insert_track (track_id, tracks_.size ());
+    return insert_track (
+      track_id, static_cast<int> (collection ()->track_count ()));
   }
 
   /**
@@ -153,12 +165,8 @@ public:
    * Moves a track from its current position to the position given by @p pos.
    *
    * @param pos Position to insert at, or -1 to insert at the end.
-   * @param always_before_pos Whether the track should always be put before the
-   * track currently at @p pos. If this is true, when moving down, the resulting
-   * track position will be @p pos - 1.
-   * @param router If given, the processing graph will be soft-recalculated.
    */
-  void move_track (TrackUuid track_id, int pos, bool always_before_pos);
+  void move_track (TrackUuid track_id, int pos);
 
   std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
   {
@@ -250,54 +258,6 @@ public:
   std::optional<TrackUuidReference>
   get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const;
 
-#if 0
-  /**
-   * Handles a move or copy action based on a drag.
-   *
-   * @param this_track The track at the cursor (where the selection was
-   * dropped to.
-   * @param location Location relative to @p this_track.
-   */
-  void handle_move_or_copy (
-    Track               &this_track,
-    TrackWidgetHighlight location,
-    GdkDragAction        action);
-#endif
-
-// TODO
-#if 0
-  /**
-   * Adds the track's folder parents to the given vector.
-   *
-   * @param prepend Whether to prepend instead of append.
-   */
-  void add_folder_parents (
-    const Track::Uuid            &track_id,
-    std::vector<FoldableTrack *> &parents,
-    bool                          prepend) const;
-
-  /**
-   * Returns the closest foldable parent or NULL.
-   */
-  FoldableTrack * get_direct_folder_parent (const Track::Uuid &track_id) const
-  {
-    std::vector<FoldableTrack *> parents;
-    add_folder_parents (track_id, parents, true);
-    if (!parents.empty ())
-      {
-        return parents.front ();
-      }
-    return nullptr;
-  }
-
-  /**
-   * Remove the track from all folders.
-   *
-   * Used when deleting tracks.
-   */
-  void remove_from_folder_parents (const Track::Uuid &track_id);
-#endif
-
   /**
    * Returns whether the track should be visible.
    *
@@ -318,35 +278,15 @@ public:
   /**
    * @brief Returns whether the track at @p index is pinned.
    */
-  bool is_track_pinned (size_t index) const
+  bool is_track_pinned (int index) const
   {
     return index < pinned_tracks_cutoff_;
   }
 
-  auto get_track_index (const Track::Uuid &track_id) const
-  {
-    return std::distance (
-      tracks_.begin (),
-      std::ranges::find (tracks_, track_id, &TrackUuidReference::id));
-  }
-
-  auto get_track_at_index (size_t index) const
-  {
-    if (index >= tracks_.size ())
-      throw std::out_of_range ("Track index out of range");
-    return get_track_span ().at (index);
-  }
-
-  auto get_track_ref_at_index (size_t index) const
-  {
-    if (index >= tracks_.size ())
-      throw std::out_of_range ("Track index out of range");
-    return tracks_.at (index);
-  }
-
   bool is_track_pinned (Track::Uuid track_id) const
   {
-    return is_track_pinned (get_track_index (track_id));
+    return is_track_pinned (
+      static_cast<int> (collection ()->get_track_index (track_id)));
   }
 
   TrackSelectionManager get_selection_manager () const
@@ -354,47 +294,10 @@ public:
     return *track_selection_manager_;
   }
 
-#if 0
-  /**
-   * @brief Also selects the children of foldable tracks in the currently
-   * selected tracks.
-   */
-  void select_foldable_children_of_current_selections ()
-  {
-    auto      selected_vec = std::ranges::to<std::vector> (selected_tracks_);
-    TrackSpan span{ *track_registry_, selected_vec };
-    std::ranges::for_each (span, [&] (auto &&track_var) {
-      std::visit (
-        [&] (auto &&track_ref) {
-          using TrackT = base_type<decltype (track_ref)>;
-          if constexpr (std::derived_from<TrackT, FoldableTrack>)
-            {
-              for (int i = 1; i < track_ref->size_; ++i)
-                {
-                  const size_t child_pos =
-                    get_track_index (track_ref->get_uuid ()) + i;
-                  const auto &child_track_var = get_track_at_index (child_pos);
-                  get_selection_manager ().append_to_selection (
-                    TrackSpan::uuid_projection (child_track_var));
-                }
-            }
-        },
-        track_var);
-    });
-  }
-#endif
-
   auto get_track_route_target (const TrackUuid &source_track) const
   {
     return track_routing_->get_output_track (source_track);
   }
-
-  auto get_pinned_tracks_cutoff_index () const { return pinned_tracks_cutoff_; }
-  void set_pinned_tracks_cutoff_index (size_t index)
-  {
-    pinned_tracks_cutoff_ = index;
-  }
-  auto track_count () const { return tracks_.size (); }
 
   /**
    * Marks the track for bouncing.
@@ -419,13 +322,11 @@ private:
   {
     j = nlohmann::json{
       { kPinnedTracksCutoffKey, t.pinned_tracks_cutoff_ },
-      { kTracksKey,             t.tracks_               },
+      { kTracksKey,             t.track_collection_     },
       { kSelectedTracksKey,     t.selected_tracks_      },
     };
   }
   friend void from_json (const nlohmann::json &j, Tracklist &t);
-
-  void swap_tracks (size_t index1, size_t index2);
 
 private:
   auto &get_track_registry () const { return track_registry_; }
@@ -451,7 +352,7 @@ private:
    *   ...
    * }
    */
-  std::vector<TrackUuidReference> tracks_;
+  utils::QObjectUniquePtr<TrackCollection> track_collection_;
 
   utils::QObjectUniquePtr<TrackRouting> track_routing_;
 
@@ -471,7 +372,7 @@ private:
    *
    * Tracks before this position will be considered as pinned.
    */
-  size_t pinned_tracks_cutoff_ = 0;
+  int pinned_tracks_cutoff_ = 0;
 
   /** When this is true, some tracks may temporarily be moved
    * beyond num_tracks. */

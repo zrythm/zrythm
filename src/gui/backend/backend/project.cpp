@@ -196,7 +196,8 @@ Project::get_final_track_dependencies () const
     *transport_,
     [this] () {
       return tracklist_->get_track_span ().get_num_soloed_tracks () > 0;
-    }
+    },
+    [] () { return gui::SettingsManager::get_instance ()->get_trackAutoArm (); }
   };
 }
 
@@ -509,7 +510,7 @@ Project::add_default_tracks ()
     marker_track, arranger_object_factory_, transport_->ticks_per_bar_,
     audio_engine_->frames_per_tick_);
 
-  tracklist_->set_pinned_tracks_cutoff_index (tracklist_->track_count ());
+  tracklist_->setPinnedTracksCutoff (tracklist_->collection ()->track_count ());
 
   /* add master track */
   auto * master_track =

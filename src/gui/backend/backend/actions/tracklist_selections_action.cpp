@@ -234,11 +234,11 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     }
   if (type == Type::Pin)
     {
-      track_pos_ = TRACKLIST->get_pinned_tracks_cutoff_index ();
+      track_pos_ = TRACKLIST->pinnedTracksCutoff ();
     }
   else if (type == Type::Unpin)
     {
-      track_pos_ = TRACKLIST->track_count () - 1;
+      track_pos_ = TRACKLIST->collection ()->track_count () - 1;
     }
 
   if (pos != nullptr)
@@ -791,7 +791,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
         {
           for (int i : std::views::iota (0, num_tracks_) | std::views::reverse)
             {
-              auto tr = TRACKLIST->get_track_at_index (track_pos_ + i);
+              auto tr =
+                TRACKLIST->collection ()->get_track_at_index (track_pos_ + i);
               std::visit (
                 [&] (auto &&track) {
                   TRACKLIST->remove_track (track->get_uuid ());
@@ -803,8 +804,10 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
           if (ival_after_ > -1)
             {
               z_return_if_fail (
-                ival_after_ < static_cast<int> (TRACKLIST->track_count ()));
-              auto tr_to_enable = TRACKLIST->get_track_at_index (ival_after_);
+                ival_after_
+                < static_cast<int> (TRACKLIST->collection ()->track_count ()));
+              auto tr_to_enable =
+                TRACKLIST->collection ()->get_track_at_index (ival_after_);
               std::visit (
                 [&] (auto &&tr) { tr->setEnabled (true); }, tr_to_enable);
             }

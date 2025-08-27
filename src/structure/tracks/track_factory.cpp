@@ -20,7 +20,8 @@ TrackFactory::addEmptyTrackFromType (Track::Type tt)
   try
     {
       UNDO_MANAGER->perform (new gui::actions::CreateTracksAction (
-        tt, nullptr, nullptr, TRACKLIST->track_count (), nullptr, 1, -1));
+        tt, nullptr, nullptr, TRACKLIST->collection ()->track_count (), nullptr,
+        1, -1));
 
       return std::visit (
         [] (auto &&track) -> QVariant {

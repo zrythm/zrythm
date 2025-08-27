@@ -17,6 +17,9 @@ Control {
   readonly property real buttonPadding: 1
   readonly property real contentBottomMargins: 3
   readonly property real contentTopMargins: 1
+  required property int depth
+  required property bool expanded
+  required property bool foldable
   property bool isResizing: false
   required property Track track // connected automatically when used as a delegate for a Tracklist model
   required property Tracklist tracklist
@@ -65,12 +68,29 @@ Control {
       anchors.fill: parent
       spacing: 4
 
+      Item {
+        Layout.fillHeight: true
+        Layout.preferredWidth: control.depth * 8
+      }
+
       Rectangle {
         id: trackColor
 
         Layout.fillHeight: true
         Layout.preferredWidth: 6
         color: control.track.color
+
+        Button {
+          checkable: true
+          checked: control.expanded
+          text: control.expanded ? "−" : "+"
+          visible: control.foldable
+          onToggled: control.tracklist.collection.setTrackExpanded(control.track, !control.expanded)
+
+          anchors {
+            bottom: parent.bottom
+          }
+        }
       }
 
       ColumnLayout {

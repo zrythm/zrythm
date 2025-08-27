@@ -8,7 +8,9 @@ namespace zrythm::structure::tracks
 {
 
 Tracklist::Tracklist (TrackRegistry &track_registry, QObject * parent)
-    : QAbstractListModel (parent), track_registry_ (track_registry),
+    : QObject (parent), track_registry_ (track_registry),
+      track_collection_ (
+        utils::make_qobject_unique<TrackCollection> (track_registry, this)),
       track_routing_ (
         utils::make_qobject_unique<TrackRouting> (track_registry, this)),
       track_selection_manager_ (
@@ -23,44 +25,6 @@ Tracklist::Tracklist (TrackRegistry &track_registry, QObject * parent)
 // ========================================================================
 // QML Interface
 // ========================================================================
-
-QHash<int, QByteArray>
-Tracklist::roleNames () const
-{
-  QHash<int, QByteArray> roles;
-  roles[TrackPtrRole] = "track";
-  roles[TrackNameRole] = "trackName";
-  return roles;
-}
-
-int
-Tracklist::rowCount (const QModelIndex &parent) const
-{
-  return static_cast<int> (tracks_.size ());
-}
-
-QVariant
-Tracklist::data (const QModelIndex &index, int role) const
-{
-  if (!index.isValid ())
-    return {};
-
-  auto track_id = tracks_.at (index.row ());
-  auto track = track_id.get_object ();
-
-  z_trace (
-    "getting role {} for track {}", role, TrackSpan::name_projection (track));
-
-  switch (role)
-    {
-    case TrackPtrRole:
-      return QVariant::fromStdVariant (track);
-    case TrackNameRole:
-      return TrackSpan::name_projection (track).to_qstring ();
-    default:
-      return {};
-    }
-}
 
 QVariant
 Tracklist::selectedTrack () const
@@ -84,7 +48,7 @@ Tracklist::setExclusivelySelectedTrack (QVariant track)
 std::optional<TrackUuidReference>
 Tracklist::get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const
 {
-  for (const auto &tr_ref : tracks_)
+  for (const auto &tr_ref : collection ()->tracks ())
     {
       auto * tr = tracks::from_variant (tr_ref.get_object ());
       auto * channel = tr->channel ();
@@ -196,12 +160,13 @@ int
 Tracklist::get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track)
   const
 {
-  const auto src_track_index = std::distance (
-    tracks_.begin (),
-    std::ranges::find (tracks_, src_track, &TrackUuidReference::id));
+  const auto &tracks = collection ()->tracks ();
+  const auto  src_track_index = std::distance (
+    tracks.begin (),
+    std::ranges::find (tracks, src_track, &TrackUuidReference::id));
   const auto dest_track_index = std::distance (
-    tracks_.begin (),
-    std::ranges::find (tracks_, dest_track, &TrackUuidReference::id));
+    tracks.begin (),
+    std::ranges::find (tracks, dest_track, &TrackUuidReference::id));
 
   // Determine range boundaries and direction
   const auto [lower, upper] = std::minmax (src_track_index, dest_track_index);
@@ -218,46 +183,11 @@ Tracklist::get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track
   return sign * static_cast<int> (count);
 }
 
-void
-Tracklist::swap_tracks (const size_t index1, const size_t index2)
-{
-  z_return_if_fail (std::max (index1, index2) < tracks_.size ());
-  AtomicBoolRAII raii{ swapping_tracks_ };
-
-  {
-    auto        span = get_track_span ();
-    const auto &src_track = from_variant (span.at (index1));
-    const auto &dest_track = from_variant (span.at (index2));
-    z_debug (
-      "swapping tracks {} [{}] and {} [{}]...",
-      src_track ? src_track->get_name () : u8"(none)", index1,
-      dest_track ? dest_track->get_name () : u8"(none)", index2);
-  }
-
-  std::iter_swap (
-    std::ranges::next (tracks_.begin (), static_cast<int> (index1)),
-    std::ranges::next (tracks_.begin (), static_cast<int> (index2)));
-
-  {
-    // auto        span = get_track_span ();
-    // const auto &src_track = Track::from_variant (span.at (index1));
-    // const auto &dest_track = Track::from_variant (span.at (index2));
-
-    // if (src_track)
-    //   src_track->set_index (index1);
-    // if (dest_track)
-    //   dest_track->set_index (index2);
-  }
-
-  z_debug ("tracks swapped");
-}
-
 TrackPtrVariant
 Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
 {
   auto track_var = track_id.get_object ();
 
-  beginResetModel ();
   std::visit (
     [&] (auto &&track) {
       using TrackT = base_type<decltype (track)>;
@@ -282,13 +212,12 @@ Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
         get_unique_name_for_track (track->get_uuid (), track->get_name ())
           .to_qstring ());
 
-      /* append the track at the end */
-      tracks_.emplace_back (track_id);
+      /* insert the track */
+      track_collection_->insert_track (track_id, pos);
       track->set_selection_status_getter ([&] (const TrackUuid &id) {
         return TrackSelectionManager{ selected_tracks_, track_registry_ }
           .is_selected (id);
       });
-      // track->tracklist_ = this;
 
       /* remember important tracks */
       if constexpr (std::is_same_v<TrackT, MasterTrack>)
@@ -299,17 +228,6 @@ Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
         singleton_tracks_->marker_track_ = track;
       else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
         singleton_tracks_->modulator_track_ = track;
-
-      /* if inserting it, swap until it reaches its position */
-      if (static_cast<size_t> (pos) != tracks_.size () - 1)
-        {
-          for (int i = static_cast<int> (tracks_.size ()) - 1; i > pos; --i)
-            {
-              swap_tracks (i, i - 1);
-            }
-        }
-
-      // track->set_index (pos);
 
       /* make the track the only selected track */
       get_selection_manager ().select_unique (track->get_uuid ());
@@ -332,7 +250,6 @@ Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
         track->get_uuid (), pos);
     },
     track_var);
-  endResetModel ();
   return track_var;
 }
 
@@ -525,44 +442,32 @@ Tracklist::get_unique_name_for_track (
 void
 Tracklist::remove_track (const TrackUuid &track_id)
 {
-  auto track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
-  z_return_if_fail (track_it != tracks_.end ());
-  const auto track_index = std::distance (tracks_.begin (), track_it);
-  auto       span = get_track_span ();
-  auto       track_var = span.at (track_index);
+  auto track_index = track_collection_->get_track_index (track_id);
+  auto track_var = track_collection_->get_track_at_index (track_index);
   std::visit (
     [&] (auto &&track) {
       z_debug (
         "removing [{}] {} - num tracks before deletion: {}", track_index,
-        track->get_name (), tracks_.size ());
-
-      beginRemoveRows (
-        {}, static_cast<int> (track_index), static_cast<int> (track_index));
+        track->get_name (), track_collection_->track_count ());
 
       std::optional<TrackPtrVariant> prev_visible = std::nullopt;
       std::optional<TrackPtrVariant> next_visible = std::nullopt;
       prev_visible = get_prev_visible_track (track_id);
       next_visible = get_next_visible_track (track_id);
 
-      /* move track to the end */
-      const auto end_pos = static_cast<int> (std::ssize (tracks_) - 1);
-      move_track (track_id, end_pos, false);
-
       get_selection_manager ().remove_from_selection (track->get_uuid ());
 
-      track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
-      z_return_if_fail (track_it != tracks_.end ());
-      tracks_.erase (track_it);
+      track_collection_->remove_track (track_id);
       track->unset_selection_status_getter ();
 
       // recreate the span because underlying vector changed
-      span = get_track_span ();
+      auto span = get_track_span ();
 
       /* if it was the only track selected, select the next one */
       if (get_selection_manager ().empty ())
         {
           auto track_to_select = next_visible ? next_visible : prev_visible;
-          if (!track_to_select && !tracks_.empty ())
+          if (!track_to_select && track_collection_->track_count () > 0)
             {
               track_to_select = span.at (0);
             }
@@ -572,8 +477,6 @@ Tracklist::remove_track (const TrackUuid &track_id)
                 TrackSpan::uuid_projection (*track_to_select));
             }
         }
-
-      endRemoveRows ();
 
       z_debug ("done removing track {}", track->name ());
     },
@@ -665,10 +568,10 @@ Tracklist::get_timeline_objects () const
 }
 
 void
-Tracklist::move_track (const TrackUuid track_id, int pos, bool always_before_pos)
+Tracklist::move_track (const TrackUuid track_id, int pos)
 {
   auto       track_var = get_track (track_id);
-  const auto track_index = get_track_index (track_id);
+  const auto track_index = collection ()->get_track_index (track_id);
 
   std::visit (
     [&] (auto &&track) {
@@ -677,12 +580,6 @@ Tracklist::move_track (const TrackUuid track_id, int pos, bool always_before_pos
 
       if (pos == track_index)
         return;
-
-      beginMoveRows (
-        {}, static_cast<int> (track_index), static_cast<int> (track_index), {},
-        pos);
-
-      bool move_higher = pos < track_index;
 
       auto prev_visible = get_prev_visible_track (track_id);
       auto next_visible = get_next_visible_track (track_id);
@@ -706,50 +603,10 @@ Tracklist::move_track (const TrackUuid track_id, int pos, bool always_before_pos
           }
       }
 
-      /* the current implementation currently moves some tracks to tracks.size()
-       * + 1 temporarily, so we expand the vector here and resize it back at the
-       * end */
-      bool expanded = false;
-      if (pos >= static_cast<int> (tracks_.size ()))
-        {
-          tracks_.emplace_back (track_registry_);
-          // tracks_.resize (pos + 1);
-          expanded = true;
-        }
-
-      if (move_higher)
-        {
-          /* move all other tracks 1 track further */
-          for (int i = track_index; i > pos; i--)
-            {
-              swap_tracks (i, i - 1);
-            }
-        }
-      else
-        {
-          /* move all other tracks 1 track earlier */
-          for (int i = track_index; i < pos; i++)
-            {
-              swap_tracks (i, i + 1);
-            }
-
-          if (always_before_pos && pos > 0)
-            {
-              /* swap with previous track */
-              swap_tracks (pos, pos - 1);
-            }
-        }
-
-      if (expanded)
-        {
-          /* resize back */
-          tracks_.erase (tracks_.end () - 1);
-        }
+      collection ()->move_track (track_id, pos);
 
       /* make the track the only selected track */
       get_selection_manager ().select_unique (track_id);
-
-      endMoveRows ();
 
       z_debug ("finished moving track");
     },
@@ -761,266 +618,12 @@ Tracklist::track_name_is_unique (
   const utils::Utf8String &name,
   const TrackUuid          track_to_skip) const
 {
-  auto track_ids_to_check = std::ranges::to<std::vector> (std::views::filter (
-    tracks_, [&] (const auto &id) { return id.id () != track_to_skip; }));
+  auto track_ids_to_check = std::ranges::to<std::vector> (
+    std::views::filter (collection ()->tracks (), [&] (const auto &ref) {
+      return ref.id () != track_to_skip;
+    }));
   return !TrackSpan{ track_ids_to_check }.contains_track_name (name);
 }
-
-#if 0
-void
-Tracklist::handle_move_or_copy (
-  Track               &this_track,
-  TrackWidgetHighlight location,
-  GdkDragAction        action)
-{
-  z_debug (
-    "this track '{}' - location {} - action {}", this_track.name_,
-    track_widget_highlight_to_str (location),
-    action == GDK_ACTION_COPY ? "copy" : "move");
-
-  int pos = -1;
-  if (location == TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP)
-    {
-      pos = this_track.pos_;
-    }
-  else
-    {
-      auto next = get_next_visible_track (this_track);
-      if (next)
-        pos = next->pos_;
-      /* else if last track, move to end */
-      else if (this_track.pos_ == static_cast<int> (tracks_.size ()) - 1)
-        pos = tracks_.size ();
-      /* else if last visible track but not last track */
-      else
-        pos = this_track.pos_ + 1;
-    }
-
-  if (pos == -1)
-    return;
-
-  TRACKLIST_SELECTIONS->select_foldable_children ();
-
-  if (action == GDK_ACTION_COPY)
-    {
-      if (TRACKLIST_SELECTIONS->contains_uncopyable_track ())
-        {
-          z_warning ("cannot copy - track selection contains uncopyable track");
-          return;
-        }
-
-      if (location == TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE)
-        {
-          try
-            {
-              UNDO_MANAGER->perform (
-                std::make_unique<CopyTracksInsideFoldableTrackAction> (
-                  *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-                  *PORT_CONNECTIONS_MGR, this_track.pos_));
-            }
-          catch (const ZrythmException &e)
-            {
-              e.handle (QObject::tr ("Failed to copy tracks inside"));
-              return;
-            }
-        }
-      /* else if not highlighted inside */
-      else
-        {
-          auto                                &tls = *TRACKLIST_SELECTIONS;
-          int                                  num_tls = tls.get_num_tracks ();
-          std::unique_ptr<TracklistSelections> after_tls;
-          int  diff_between_track_below_and_parent = 0;
-          bool copied_inside = false;
-          if (static_cast<size_t> (pos) < tracks_.size ())
-            {
-              auto &track_below = *tracks_[pos];
-              auto track_below_parent = track_below.get_direct_folder_parent ();
-              tls.sort ();
-              auto cur_parent = find_track_by_name (tls.track_names_[0]);
-
-              if (track_below_parent)
-                {
-                  diff_between_track_below_and_parent =
-                    track_below.pos_ - track_below_parent->pos_;
-                }
-
-              /* first copy inside new parent */
-              if (track_below_parent && track_below_parent != cur_parent)
-                {
-                  try
-                    {
-                      UNDO_MANAGER->perform (
-                        std::make_unique<CopyTracksInsideFoldableTrackAction> (
-                          *tls.gen_tracklist_selections (),
-                          *PORT_CONNECTIONS_MGR, track_below_parent->pos_));
-                    }
-                  catch (const ZrythmException &e)
-                    {
-                      e.handle (QObject::tr ("Failed to copy track inside"));
-                      return;
-                    }
-
-                  after_tls = std::make_unique<TracklistSelections> ();
-                  for (int j = 1; j <= num_tls; j++)
-                    {
-                      try
-                        {
-                          after_tls->add_track (
-                            clone_unique_with_variant<TrackVariant> (
-                              tracks_[track_below_parent->pos_ + j].get ()));
-                        }
-                      catch (const ZrythmException &e)
-                        {
-                          e.handle (QObject::tr ("Failed to clone/add track"));
-                          return;
-                        }
-                    }
-
-                  copied_inside = true;
-                }
-            }
-
-          /* if not copied inside, copy normally */
-          if (!copied_inside)
-            {
-              try
-                {
-                  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-                    *tls.gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-                    pos));
-                }
-              catch (const ZrythmException &e)
-                {
-                  e.handle (QObject::tr ("Failed to copy tracks"));
-                  return;
-                }
-            }
-          /* else if copied inside and there is a track difference, also move */
-          else if (diff_between_track_below_and_parent != 0)
-            {
-              move_after_copying_or_moving_inside (
-                *after_tls, diff_between_track_below_and_parent);
-            }
-        }
-    }
-  else if (action == GDK_ACTION_MOVE)
-    {
-      if (location == TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE)
-        {
-          if (TRACKLIST_SELECTIONS->contains_track (this_track))
-            {
-              if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-                {
-                  ui_show_error_message (
-                    QObject::tr ("Error"), QObject::tr ("Cannot drag folder into itself"));
-                }
-              return;
-            }
-          /* else if selections do not contain the track dragged into */
-          else
-            {
-              try
-                {
-                  UNDO_MANAGER->perform (
-                    std::make_unique<MoveTracksInsideFoldableTrackAction> (
-                      *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-                      this_track.pos_));
-                }
-              catch (const ZrythmException &e)
-                {
-                  e.handle (QObject::tr ("Failed to move track inside folder"));
-                  return;
-                }
-            }
-        }
-      /* else if not highlighted inside */
-      else
-        {
-          auto                                &tls = *TRACKLIST_SELECTIONS;
-          int                                  num_tls = tls.get_num_tracks ();
-          std::unique_ptr<TracklistSelections> after_tls;
-          int  diff_between_track_below_and_parent = 0;
-          bool moved_inside = false;
-          if (static_cast<size_t> (pos) < tracks_.size ())
-            {
-              auto &track_below = *tracks_[pos];
-              auto track_below_parent = track_below.get_direct_folder_parent ();
-              tls.sort ();
-              auto cur_parent = find_track_by_name (tls.track_names_[0]);
-
-              if (track_below_parent)
-                {
-                  diff_between_track_below_and_parent =
-                    track_below.pos_ - track_below_parent->pos_;
-                }
-
-              /* first move inside new parent */
-              if (track_below_parent && track_below_parent != cur_parent)
-                {
-                  try
-                    {
-                      UNDO_MANAGER->perform (
-                        std::make_unique<MoveTracksInsideFoldableTrackAction> (
-                          *tls.gen_tracklist_selections (),
-                          track_below_parent->pos_));
-                    }
-                  catch (const ZrythmException &e)
-                    {
-                      e.handle (QObject::tr ("Failed to move track inside folder"));
-                      return;
-                    }
-
-                  after_tls = std::make_unique<TracklistSelections> ();
-                  for (int j = 1; j <= num_tls; j++)
-                    {
-                      try
-                        {
-                          const auto &cur_track =
-                            tracks_[track_below_parent->pos_ + j];
-                          std::visit (
-                            [&] (auto &&cur_track_casted) {
-                              after_tls->add_track (
-                                cur_track_casted->clone_unique ());
-                            },
-                            convert_to_variant<TrackPtrVariant> (
-                              cur_track.get ()));
-                        }
-                      catch (const ZrythmException &e)
-                        {
-                          e.handle (QObject::tr ("Failed to clone track"));
-                          return;
-                        }
-                    }
-
-                  moved_inside = true;
-                }
-            } /* endif moved to an existing track */
-
-          /* if not moved inside, move normally */
-          if (!moved_inside)
-            {
-              try
-                {
-                  UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
-                    *tls.gen_tracklist_selections (), pos));
-                }
-              catch (const ZrythmException &e)
-                {
-                  e.handle (QObject::tr ("Failed to move tracks"));
-                  return;
-                }
-            }
-          /* else if moved inside and there is a track difference, also move */
-          else if (diff_between_track_below_and_parent != 0)
-            {
-              move_after_copying_or_moving_inside (
-                *after_tls, diff_between_track_below_and_parent);
-            }
-        }
-    } /* endif action is MOVE */
-}
-#endif
 
 void
 init_from (
@@ -1032,30 +635,11 @@ init_from (
 
   if (clone_type == utils::ObjectCloneType::Snapshot)
     {
-      obj.tracks_ = other.tracks_;
+      // init_from(*obj.track_collection_, *other.track_collection_);
       obj.selected_tracks_ = other.selected_tracks_;
     }
   else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
-// TODO/delete
-#if 0
-      obj.tracks_.clear ();
-      obj.tracks_.reserve (other.tracks_.size ());
-      auto span = other.get_track_span ();
-      for (const auto &track_var : span)
-        {
-          std::visit (
-            [&] (auto &tr) {
-              auto id_ref = obj.track_registry_->clone_object (
-                *tr, PROJECT->get_file_audio_source_registry (),
-                *obj.track_registry_, PROJECT->get_plugin_registry (),
-                PROJECT->get_port_registry (), PROJECT->get_param_registry (),
-                PROJECT->get_arranger_object_registry (), true);
-              obj.tracks_.push_back (id_ref);
-            },
-            track_var);
-        }
-#endif
     }
 }
 
@@ -1151,5 +735,6 @@ from_json (const nlohmann::json &j, Tracklist &t)
   // TODO
   // j.at (Tracklist::kTracksKey).get_to (t.tracks_);
   j.at (Tracklist::kSelectedTracksKey).get_to (t.selected_tracks_);
+  j.at (Tracklist::kTracksKey).get_to (*t.track_collection_);
 }
 }

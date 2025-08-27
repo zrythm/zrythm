@@ -31,8 +31,6 @@ target_sources(zrythm_structure_tracks_lib
     chord_track.cpp
     fader.h
     fader.cpp
-    foldable_track.h
-    foldable_track.cpp
     folder_track.h
     folder_track.cpp
     instrument_track.h
@@ -56,6 +54,8 @@ target_sources(zrythm_structure_tracks_lib
     track.h
     track.cpp
     track_all.h
+    track_collection.h
+    track_collection.cpp
     track_lane.h
     track_lane.cpp
     track_lane_list.h
