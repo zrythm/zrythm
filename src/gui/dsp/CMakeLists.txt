@@ -8,6 +8,4 @@ target_sources(zrythm_gui_lib
     plugin_span.cpp
     quantize_options.h
     quantize_options.cpp
-    snap_grid.h
-    snap_grid.cpp
 )

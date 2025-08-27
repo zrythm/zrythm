@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/position.h"
+#include "dsp/snap_grid.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/quantize_options.h"
-#include "gui/dsp/snap_grid.h"
 #include "utils/algorithms.h"
 #include "utils/pcg_rand.h"
 
@@ -24,7 +24,7 @@ QuantizeOptions::update_quantize_points (
     audio_engine->frames_per_tick_);
   q_points_.clear ();
   q_points_.push_back (tmp);
-  double ticks = SnapGrid::get_ticks_from_length_and_type (
+  double ticks = dsp::SnapGrid::get_ticks_from_length_and_type (
     note_length_, note_type_, transport.ticks_per_bar_,
     transport.ticks_per_beat_);
   double swing_offset = (swing_ / 100.0) * ticks / 2.0;
@@ -94,7 +94,8 @@ QuantizeOptions::set_randomization (float randomization)
 utils::Utf8String
 QuantizeOptions::to_string (NoteLength note_length, NoteType note_type)
 {
-  return SnapGrid::stringize_length_and_type (note_length, note_type);
+  return utils::Utf8String::from_qstring (
+    dsp::SnapGrid::stringize_length_and_type (note_length, note_type));
 }
 
 const QuantizeOptions::Position *

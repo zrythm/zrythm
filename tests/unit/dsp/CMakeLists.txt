@@ -38,6 +38,7 @@ add_executable(zrythm_dsp_unit_tests
   port_test.cpp
   position_test.cpp
   processor_base_test.cpp
+  snap_grid_test.cpp
   stretcher_test.cpp
   tempo_map_test.cpp
   tempo_map_qml_adapter_test.cpp

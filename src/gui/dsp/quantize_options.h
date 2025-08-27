@@ -4,7 +4,7 @@
 #pragma once
 
 #include "dsp/position.h"
-#include "gui/dsp/snap_grid.h"
+#include "utils/note_type.h"
 #include "utils/pcg_rand.h"
 
 #define QUANTIZE_OPTIONS_IS_EDITOR(qo) \

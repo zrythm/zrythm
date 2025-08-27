@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include "dsp/snap_grid.h"
 #include "gui/backend/backend/settings_manager.h"
-#include "gui/dsp/snap_grid.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_all.h"
 
@@ -47,8 +47,8 @@ public:
     ArrangerObjectRegistry         &registry,
     dsp::FileAudioSourceRegistry   &file_audio_source_registry,
     gui::SettingsManager           &settings_mgr,
-    gui::SnapGrid                  &snap_grid_timeline,
-    gui::SnapGrid                  &snap_grid_editor,
+    dsp::SnapGrid                  &snap_grid_timeline,
+    dsp::SnapGrid                  &snap_grid_editor,
     std::function<sample_rate_t ()> sample_rate_provider,
     std::function<bpm_t ()>         bpm_provider,
     ArrangerObjectSelectionManager  audio_selections_manager,
@@ -751,8 +751,8 @@ private:
   ArrangerObjectRegistry         &object_registry_;
   dsp::FileAudioSourceRegistry   &file_audio_source_registry_;
   gui::SettingsManager           &settings_manager_;
-  gui::SnapGrid                  &snap_grid_timeline_;
-  gui::SnapGrid                  &snap_grid_editor_;
+  dsp::SnapGrid                  &snap_grid_timeline_;
+  dsp::SnapGrid                  &snap_grid_editor_;
   std::function<sample_rate_t ()> sample_rate_provider_;
   std::function<bpm_t ()>         bpm_provider_;
   ArrangerObjectSelectionManager  audio_selections_manager_;

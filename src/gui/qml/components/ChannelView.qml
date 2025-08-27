@@ -94,7 +94,7 @@ ColumnLayout {
     valueRole: "track"
 
     model: TrackFilterProxyModel {
-      sourceModel: root.tracklist
+      sourceModel: root.tracklist.collection
     }
 
     Component.onCompleted: currentIndex = indexOfValue(root.tracklist.trackRouting.getOutputTrack(root.track))

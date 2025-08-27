@@ -852,8 +852,9 @@ Transport::set_range (
 
   if (snap)
     {
-      *pos_to_set = SNAP_GRID_TIMELINE->snap (
-        *pos_to_set, start_pos, nullptr, std::nullopt);
+      // TODO
+      // *pos_to_set = SNAP_GRID_TIMELINE->snap (
+      // *pos_to_set, start_pos);
     }
 }
 
@@ -878,8 +879,9 @@ Transport::set_loop_range (
 
   if (snap)
     {
-      *static_cast<Position *> (pos_to_set) = SNAP_GRID_TIMELINE->snap (
-        *pos_to_set, start_pos, nullptr, std::nullopt);
+      // TODO
+      // *static_cast<Position *> (pos_to_set) = SNAP_GRID_TIMELINE->snap (
+      //   *pos_to_set, start_pos);
     }
 }
 
@@ -983,9 +985,9 @@ Transport::move_backward (bool with_wait)
     }
 
   Position pos;
-  bool     ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (
-    pos, playhead_.position_ticks (), true);
-  assert (ret);
+  pos.from_ticks (
+    SNAP_GRID_TIMELINE->prevSnapPoint (playhead_.position_ticks ()),
+    audio_engine_->frames_per_tick_);
   /* if prev snap point is exactly at the playhead or very close it, go back
    * more */
   Position playhead_pos{
@@ -997,8 +999,9 @@ Transport::move_backward (bool with_wait)
     {
       Position tmp = pos;
       tmp.add_ticks (-1, audio_engine_->frames_per_tick_);
-      ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, tmp.ticks_, true);
-      z_return_if_fail (ret);
+      pos.from_ticks (
+        SNAP_GRID_TIMELINE->prevSnapPoint (tmp.ticks_),
+        audio_engine_->frames_per_tick_);
     }
   move_playhead (pos.ticks_, true);
 }
@@ -1018,11 +1021,9 @@ Transport::move_forward (bool with_wait)
       sem.emplace (audio_engine_->port_operation_lock_);
     }
 
-  Position                    pos;
-  [[maybe_unused]] const bool ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (
-    pos, playhead_.position_ticks (), false);
-  assert (ret);
-  move_playhead (pos.ticks_, true);
+  double pos_ticks =
+    SNAP_GRID_TIMELINE->nextSnapPoint (playhead_.position_ticks ());
+  move_playhead (pos_ticks, true);
 }
 
 /**

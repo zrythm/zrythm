@@ -73,6 +73,8 @@ target_sources(zrythm_dsp_lib
     position.cpp
     processor_base.h
     processor_base.cpp
+    snap_grid.h
+    snap_grid.cpp
     stretcher.h
     stretcher.cpp
     tempo_map.h

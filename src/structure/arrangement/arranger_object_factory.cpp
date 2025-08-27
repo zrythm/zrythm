@@ -21,10 +21,12 @@ ArrangerObjectFactory::addMidiRegionFromChordDescriptor (
   double                      startTicks)
 {
   auto *     mr = addEmptyMidiRegion (track, lane, startTicks);
-  const auto r_len_ticks = snap_grid_timeline_.get_default_ticks ();
+  const auto r_len_ticks =
+    snap_grid_timeline_.defaultTicks (static_cast<int64_t> (startTicks));
   mr->regionMixin ()->bounds ()->length ()->setTicks (
     static_cast<double> (r_len_ticks));
-  const auto mn_len_ticks = snap_grid_editor_.get_default_ticks ();
+  const auto mn_len_ticks =
+    snap_grid_editor_.defaultTicks (static_cast<int64_t> (startTicks));
 
   /* create midi notes */
   for (const auto i : std::views::iota (0_zu, dsp::ChordDescriptor::MAX_NOTES))

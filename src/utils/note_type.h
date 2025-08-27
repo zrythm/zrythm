@@ -1,13 +1,13 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef COMMON_UTILS_NOTE_TYPE_H
-#define COMMON_UTILS_NOTE_TYPE_H
+#pragma once
 
 #include <string_view>
 
 namespace zrythm::utils
 {
+Q_NAMESPACE
 
 enum class NoteLength
 {
@@ -23,6 +23,7 @@ enum class NoteLength
   Note_1_64,
   Note_1_128
 };
+Q_ENUM_NS (NoteLength);
 
 enum class NoteType
 {
@@ -30,6 +31,7 @@ enum class NoteType
   Dotted, ///< 2/3 of its original size
   Triplet ///< 3/2 of its original size
 };
+Q_ENUM_NS (NoteType)
 
 std::string_view
 note_length_to_str (NoteLength len);
@@ -38,5 +40,3 @@ std::string_view
 note_type_to_str (NoteType type);
 
 }; // namespace zrythm::utils
-
-#endif // COMMON_UTILS_NOTE_TYPE_H

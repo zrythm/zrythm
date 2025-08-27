@@ -86,21 +86,21 @@ Project::Project (
       quantize_opts_timeline_ (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_1)),
       snap_grid_editor_ (
-        std::make_unique<SnapGrid> (
-          SnapGrid::Type::Editor,
+        utils::make_qobject_unique<dsp::SnapGrid> (
+          tempo_map_,
           utils::NoteLength::Note_1_8,
-          true,
-          [&] { return audio_engine_->frames_per_tick_; },
-          [&] { return transport_->ticks_per_bar_; },
-          [&] { return transport_->ticks_per_beat_; })),
+          [] {
+            return gui::SettingsManager::editorLastCreatedObjectLengthInTicks ();
+          },
+          this)),
       snap_grid_timeline_ (
-        std::make_unique<SnapGrid> (
-          SnapGrid::Type::Timeline,
+        utils::make_qobject_unique<dsp::SnapGrid> (
+          tempo_map_,
           utils::NoteLength::Bar,
-          true,
-          [&] { return audio_engine_->frames_per_tick_; },
-          [&] { return transport_->ticks_per_bar_; },
-          [&] { return transport_->ticks_per_beat_; })),
+          [] {
+            return gui::SettingsManager::timelineLastCreatedObjectLengthInTicks ();
+          },
+          this)),
       timeline_ (new Timeline (this)),
       clip_editor_ (new ClipEditor (
         *arranger_object_registry_,
@@ -1208,10 +1208,11 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
       return obj.get_track_registry ().find_by_id_or_throw (id);
     });
   obj.timeline_ = utils::clone_qobject (*other.timeline_, &obj);
-  obj.snap_grid_timeline_ =
-    std::make_unique<Project::SnapGrid> (*other.snap_grid_timeline_);
-  obj.snap_grid_editor_ =
-    std::make_unique<zrythm::gui::SnapGrid> (*other.snap_grid_editor_);
+  // TODO
+  // obj.snap_grid_timeline_ =
+  //   std::make_unique<Project::SnapGrid> (*other.snap_grid_timeline_);
+  // obj.snap_grid_editor_ =
+  //   std::make_unique<zrythm::gui::SnapGrid> (*other.snap_grid_editor_);
   obj.quantize_opts_timeline_ =
     std::make_unique<Project::QuantizeOptions> (*other.quantize_opts_timeline_);
   obj.quantize_opts_editor_ =
@@ -1331,6 +1332,18 @@ dsp::TempoMapWrapper *
 Project::getTempoMap () const
 {
   return tempo_map_wrapper_.get ();
+}
+
+dsp::SnapGrid *
+Project::snapGridTimeline () const
+{
+  return snap_grid_timeline_.get ();
+}
+
+dsp::SnapGrid *
+Project::snapGridEditor () const
+{
+  return snap_grid_editor_.get ();
 }
 
 Project *
@@ -1504,8 +1517,8 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kVersionKey).get_to (project.version_);
   j.at (Project::kClipEditorKey).get_to (*project.clip_editor_);
   j.at (Project::kTimelineKey).get_to (*project.timeline_);
-  j.at (Project::kSnapGridTimelineKey).get_to (project.snap_grid_timeline_);
-  j.at (Project::kSnapGridEditorKey).get_to (project.snap_grid_editor_);
+  j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
+  j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
   j.at (Project::kQuantizeOptsTimelineKey)
     .get_to (project.quantize_opts_timeline_);
   j.at (Project::kQuantizeOptsEditorKey).get_to (project.quantize_opts_editor_);

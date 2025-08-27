@@ -1,15 +1,24 @@
-// SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_ALGORITHMS_H__
-#define __UTILS_ALGORITHMS_H__
+#pragma once
 
+#include <algorithm>
 #include <span>
 
 #include "utils/types.h"
 
 namespace zrythm::utils::algorithms
 {
+
+template <typename Range, typename T>
+auto
+find_closest (const Range &range, const T &target)
+{
+  return std::ranges::min_element (range, [&] (const auto &a, const auto &b) {
+    return std::abs (a - target) < std::abs (b - target);
+  });
+}
 
 /**
  * Binary search with the option to find the closest member in a sorted array.
@@ -88,5 +97,3 @@ binary_search_nearby (
 }
 
 }; // namespace zrythm::utils
-
-#endif

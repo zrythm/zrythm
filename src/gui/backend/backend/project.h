@@ -4,8 +4,7 @@
 #pragma once
 
 #include "dsp/audio_pool.h"
-#include "dsp/port.h"
-#include "dsp/tempo_map.h"
+#include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/midi_mapping.h"
@@ -38,6 +37,8 @@ using namespace zrythm;
 #define P_MARKER_TRACK (TRACKLIST->singletonTracks ()->markerTrack ())
 #define P_MASTER_TRACK (TRACKLIST->singletonTracks ()->masterTrack ())
 #define P_MODULATOR_TRACK (TRACKLIST->singletonTracks ()->modulatorTrack ())
+#define SNAP_GRID_TIMELINE (PROJECT->snapGridTimeline ())
+#define SNAP_GRID_EDITOR (PROJECT->snapGridEditor ())
 
 enum class ProjectPath
 {
@@ -110,11 +111,14 @@ class Project final : public QObject
       CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::dsp::SnapGrid * snapGridTimeline READ snapGridTimeline CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
-  using SnapGrid = zrythm::gui::SnapGrid;
   using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = plugins::PluginPtrVariant;
   using PluginRegistry = plugins::PluginRegistry;
@@ -197,6 +201,8 @@ public:
   PluginFactory *                   getPluginFactory () const;
   structure::tracks::TrackFactory * getTrackFactory () const;
   dsp::TempoMapWrapper *            getTempoMap () const;
+  dsp::SnapGrid *                   snapGridTimeline () const;
+  dsp::SnapGrid *                   snapGridEditor () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -604,10 +610,10 @@ public:
   std::unique_ptr<QuantizeOptions> quantize_opts_timeline_;
 
   /** Snap/Grid info for the editor. */
-  std::shared_ptr<SnapGrid> snap_grid_editor_;
+  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
 
   /** Snap/Grid info for the timeline. */
-  std::shared_ptr<SnapGrid> snap_grid_timeline_;
+  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
 
   /** Timeline widget backend. */
   Timeline * timeline_ = nullptr;
