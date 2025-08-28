@@ -309,7 +309,7 @@ public:
 
   template <typename ObjT> auto get_builder () const
   {
-    return std::move (Builder<ObjT> (dependencies_));
+    return Builder<ObjT> (dependencies_);
   }
 
 public:

@@ -506,9 +506,8 @@ Project::add_default_tracks ()
         utils::make_qobject_unique<dsp::MusicalScale> (
           dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A))
       .build_in_registry ();
-  tracklist_->singletonTracks ()
-    ->chordTrack ()
-    ->ArrangerObjectOwner<structure::arrangement::ScaleObject>::add_object (
+  tracklist_->singletonTracks ()->chordTrack ()->structure::arrangement::
+    ArrangerObjectOwner<structure::arrangement::ScaleObject>::add_object (
       scale_ref);
 
   /* modulator */

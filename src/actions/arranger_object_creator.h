@@ -10,6 +10,7 @@
 #include "gui/backend/backend/clip_editor.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "structure/arrangement/arranger_object_owner.h"
 #include "structure/tracks/track_all.h"
 #include "undo/undo_stack.h"
 
@@ -100,8 +101,8 @@ public:
       cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
     chord_region->regionMixin ()->name ()->setName (
       track->generate_name_for_region (*chord_region));
-    track->ArrangerObjectOwner<structure::arrangement::ChordRegion>::add_object (
-      cr_ref);
+    track->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::ChordRegion>::add_object (cr_ref);
     undo_stack_.push (
       new commands::AddArrangerObjectCommand<
         structure::arrangement::ChordRegion> (*track, cr_ref));

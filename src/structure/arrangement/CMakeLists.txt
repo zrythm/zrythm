@@ -53,7 +53,7 @@ target_sources(zrythm_arrangement_lib
     scale_object.cpp
 )
 target_precompile_headers(zrythm_arrangement_lib PUBLIC
-  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/arranger_object_all.h>
+  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/arranger_object_factory.h>
 )
 
 # create a plugin so that types get exposed to QML
