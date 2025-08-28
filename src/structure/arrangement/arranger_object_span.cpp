@@ -43,7 +43,7 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
               if constexpr (std::is_same_v<RegionT, MidiRegion>)
                 {
                   new_r =
-                    ArrangerObjectFactory::get_instance ()
+                    PROJECT->getArrangerObjectFactory ()
                       ->get_builder<MidiRegion> ()
                       .with_start_ticks (pos)
                       .with_end_ticks (end_pos.ticks_)
@@ -58,7 +58,7 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
                       for (auto * mn : r->get_children_view ())
                         {
                           auto new_mn =
-                            ArrangerObjectFactory::get_instance ()
+                            PROJECT->getArrangerObjectFactory ()
                               ->clone_new_object_identity (*mn);
                           std::visit (
                             [&] (auto &&m) {

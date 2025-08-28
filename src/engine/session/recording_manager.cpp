@@ -58,7 +58,7 @@ RecordingManager::start_unended_note (
   const auto real_end_pos = end_pos ? *end_pos : start_pos + 1;
 
   auto mn_builder =
-    ArrangerObjectFactory::get_instance ()->get_builder<MidiNote> ();
+    PROJECT->getArrangerObjectFactory ()->get_builder<MidiNote> ();
   auto mn =
     mn_builder.with_start_ticks (start_pos)
       .with_end_ticks (real_end_pos)
@@ -133,6 +133,9 @@ RecordingManager::handle_stop_recording (bool is_automation)
   /* select all the recorded regions */
   // TODO: selection logic
   // TL_SELECTIONS->clear (false);
+
+// TODO
+#if 0
   for (
     const auto &region_var : ArrangerObjectSpan{
       PROJECT->get_arranger_object_registry (), recorded_ids_ })
@@ -146,7 +149,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
                 return;
 
               auto selection_mgr =
-                ArrangerObjectFactory::get_instance ()
+                PROJECT->getArrangerObjectFactory ()
                   ->get_selection_manager_for_object (*region);
               selection_mgr.append_to_selection (region->get_uuid ());
               if (is_automation)
@@ -160,6 +163,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
         },
         region_var);
     }
+#endif
 
   /* perform the create action */
   try
@@ -500,7 +504,7 @@ RecordingManager::delete_automation_points (
       Position adj_pos = pos;
       adj_pos.add_ticks (
         -region.get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
-      auto * ap = ArrangerObjectFactory::get_instance ()->addAutomationPoint (
+      auto * ap = PROJECT->getArrangerObjectFactory ()->addAutomationPoint (
         &region, adj_pos.ticks_, prev_fvalue);
       region.last_recorded_ap_ = ap;
     }
@@ -535,13 +539,12 @@ RecordingManager::create_automation_point (
     }
   else
     {
-      auto * ap = ArrangerObjectFactory::get_instance ()->addAutomationPoint (
+      auto * ap = PROJECT->arrangerObjectCreator ()->addAutomationPoint (
         &region,
         region.get_tempo_map ().samples_to_tick (static_cast<double> (adj_pos)),
         normalized_val);
       ap->curveOpts ()->setCurviness (1.0);
-      ap->curveOpts ()->setAlgorithm (
-        std::to_underlying (dsp::CurveOptions::Algorithm::Pulse));
+      ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Pulse);
       last_recorded_aps_per_region_.insert_or_assign (region.get_uuid (), ap);
       return ap;
     }
@@ -691,7 +694,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                         try
                           {
                             auto * added_region =
-                              ArrangerObjectFactory::get_instance ()
+                              PROJECT->getArrangerObjectFactory ()
                                 ->addEmptyChordRegion (tr, resume_pos.ticks_);
                             added_region->set_end_pos_full_size (
                               end_pos, AUDIO_ENGINE->frames_per_tick_);
@@ -721,7 +724,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                             if constexpr (std::is_same_v<RegionT, MidiRegion>)
                               {
                                 auto * new_region =
-                                  ArrangerObjectFactory::get_instance ()
+                                  PROJECT->getArrangerObjectFactory ()
                                     ->addEmptyMidiRegion (
                                       &lane, resume_pos.ticks_);
                                 new_region->set_end_pos_full_size (
@@ -734,7 +737,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                                 const auto name = gen_name_for_recording_clip (
                                   tr->get_name (), new_lane_pos);
                                 auto * new_region =
-                                  ArrangerObjectFactory::get_instance ()
+                                  PROJECT->getArrangerObjectFactory ()
                                     ->add_empty_audio_region_for_recording (
                                       lane, 2, name, resume_pos.ticks_);
                                 added_region_id = new_region->get_uuid ();
@@ -826,7 +829,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                       try
                         {
                           auto ret =
-                            ArrangerObjectFactory::get_instance ()
+                            PROJECT->getArrangerObjectFactory ()
                               ->addEmptyAutomationRegion (at, resume_pos.ticks_);
                           ret->set_end_pos_full_size (
                             end_pos, AUDIO_ENGINE->frames_per_tick_);
@@ -1040,7 +1043,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                           const int chord_idx =
                             CHORD_EDITOR->get_chord_index (*descr);
                           auto co =
-                            ArrangerObjectFactory::get_instance ()->addChordObject (
+                            PROJECT->getArrangerObjectFactory ()->addChordObject (
                               region, local_pos.ticks_, chord_idx);
                           co->set_position_unvalidated (local_pos);
                         }
@@ -1146,7 +1149,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
                   pos_to_end_new_r = end_pos;
                 }
               region =
-                ArrangerObjectFactory::get_instance ()
+                PROJECT->getArrangerObjectFactory ()
                   ->addEmptyAutomationRegion (at, start_pos.ticks_);
               region->set_end_pos_full_size (
                 pos_to_end_new_r, AUDIO_ENGINE->frames_per_tick_);
@@ -1232,7 +1235,7 @@ RecordingManager::handle_start_recording (
             objs
           } | std::views::filter (ArrangerObjectSpan::selected_projection);
           objects_before_start_ =
-            ArrangerObjectSpan{ obj_span }.create_snapshots (*ArrangerObjectFactory::get_instance(), this);
+            ArrangerObjectSpan{ obj_span }.create_snapshots (*PROJECT->getArrangerObjectFactory(), this);
 #  endif
         }
 
@@ -1302,7 +1305,7 @@ RecordingManager::handle_start_recording (
                 {
                   /* create region at last lane */
                   auto region =
-                    ArrangerObjectFactory::get_instance ()->addEmptyMidiRegion (
+                    PROJECT->getArrangerObjectFactory ()->addEmptyMidiRegion (
                       std::get<MidiLane *> (tr->lanes_.back ()),
                       start_pos.ticks_);
                   region->set_end_pos_full_size (
@@ -1314,7 +1317,7 @@ RecordingManager::handle_start_recording (
               else if constexpr (std::is_same_v<TrackT, ChordTrack>)
                 {
                   auto region =
-                    ArrangerObjectFactory::get_instance ()
+                    PROJECT->getArrangerObjectFactory ()
                       ->addEmptyChordRegion (tr, start_pos.ticks_);
                   region->set_end_pos_full_size (
                     end_pos, AUDIO_ENGINE->frames_per_tick_);
@@ -1329,7 +1332,7 @@ RecordingManager::handle_start_recording (
                   const auto name =
                     gen_name_for_recording_clip (tr->get_name (), new_lane_pos);
                   auto region =
-                    ArrangerObjectFactory::get_instance ()
+                    PROJECT->getArrangerObjectFactory ()
                       ->add_empty_audio_region_for_recording (
                         *std::get<AudioLane *> (tr->lanes_.back ()), 2, name,
                         start_pos.ticks_);

@@ -3,6 +3,7 @@
 
 add_executable(zrythm_structure_arrangement_unit_tests
   arranger_object_list_model_test.cpp
+  arranger_object_factory_test.cpp
   arranger_object_owner_test.h
   arranger_object_owner_test.cpp
   arranger_object_test.h

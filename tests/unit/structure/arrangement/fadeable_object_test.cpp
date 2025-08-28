@@ -40,11 +40,11 @@ TEST_F (ArrangerObjectFadeRangeTest, InitialState)
   EXPECT_DOUBLE_EQ (range->fadeInCurveOpts ()->curviness (), 0.0);
   EXPECT_EQ (
     range->fadeInCurveOpts ()->algorithm (),
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent));
+    dsp::CurveOptions::Algorithm::Exponent);
   EXPECT_DOUBLE_EQ (range->fadeOutCurveOpts ()->curviness (), 0.0);
   EXPECT_EQ (
     range->fadeOutCurveOpts ()->algorithm (),
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent));
+    dsp::CurveOptions::Algorithm::Exponent);
 }
 
 // Test setting offsets
@@ -63,21 +63,21 @@ TEST_F (ArrangerObjectFadeRangeTest, CurveOptions)
   // Set curve options
   range->fadeInCurveOpts ()->setCurviness (0.7);
   range->fadeInCurveOpts ()->setAlgorithm (
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent));
+    dsp::CurveOptions::Algorithm::Exponent);
 
   range->fadeOutCurveOpts ()->setCurviness (0.3);
   range->fadeOutCurveOpts ()->setAlgorithm (
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Logarithmic));
+    dsp::CurveOptions::Algorithm::Logarithmic);
 
   // Verify
   EXPECT_DOUBLE_EQ (range->fadeInCurveOpts ()->curviness (), 0.7);
   EXPECT_EQ (
     range->fadeInCurveOpts ()->algorithm (),
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent));
+    dsp::CurveOptions::Algorithm::Exponent);
   EXPECT_DOUBLE_EQ (range->fadeOutCurveOpts ()->curviness (), 0.3);
   EXPECT_EQ (
     range->fadeOutCurveOpts ()->algorithm (),
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Logarithmic));
+    dsp::CurveOptions::Algorithm::Logarithmic);
 }
 
 TEST_F (ArrangerObjectFadeRangeTest, NormalizedYForFade)
@@ -96,9 +96,11 @@ TEST_F (ArrangerObjectFadeRangeTest, CurveOptionsSignals)
 {
   // Setup signal watchers
   testing::MockFunction<void (double)> mockFadeInCurvinessChanged;
-  testing::MockFunction<void (int)>    mockFadeInAlgorithmChanged;
+  testing::MockFunction<void (dsp::CurveOptions::Algorithm)>
+                                       mockFadeInAlgorithmChanged;
   testing::MockFunction<void (double)> mockFadeOutCurvinessChanged;
-  testing::MockFunction<void (int)>    mockFadeOutAlgorithmChanged;
+  testing::MockFunction<void (dsp::CurveOptions::Algorithm)>
+    mockFadeOutAlgorithmChanged;
 
   QObject::connect (
     range->fadeInCurveOpts (), &dsp::CurveOptionsQmlAdapter::curvinessChanged,
@@ -116,22 +118,20 @@ TEST_F (ArrangerObjectFadeRangeTest, CurveOptionsSignals)
   // Test fade in signals
   EXPECT_CALL (mockFadeInCurvinessChanged, Call (0.8)).Times (1);
   EXPECT_CALL (
-    mockFadeInAlgorithmChanged,
-    Call (ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Vital)))
+    mockFadeInAlgorithmChanged, Call (dsp::CurveOptions::Algorithm::Vital))
     .Times (1);
   range->fadeInCurveOpts ()->setCurviness (0.8);
-  range->fadeInCurveOpts ()->setAlgorithm (
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Vital));
+  range->fadeInCurveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Vital);
 
   // Test fade out signals
   EXPECT_CALL (mockFadeOutCurvinessChanged, Call (0.4)).Times (1);
   EXPECT_CALL (
     mockFadeOutAlgorithmChanged,
-    Call (ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::SuperEllipse)))
+    Call (dsp::CurveOptions::Algorithm::SuperEllipse))
     .Times (1);
   range->fadeOutCurveOpts ()->setCurviness (0.4);
   range->fadeOutCurveOpts ()->setAlgorithm (
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::SuperEllipse));
+    dsp::CurveOptions::Algorithm::SuperEllipse);
 }
 
 // Test serialization/deserialization
@@ -144,10 +144,10 @@ TEST_F (ArrangerObjectFadeRangeTest, Serialization)
   // Set curve options
   range->fadeInCurveOpts ()->setCurviness (0.7);
   range->fadeInCurveOpts ()->setAlgorithm (
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent));
+    dsp::CurveOptions::Algorithm::Exponent);
   range->fadeOutCurveOpts ()->setCurviness (0.3);
   range->fadeOutCurveOpts ()->setAlgorithm (
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Logarithmic));
+    dsp::CurveOptions::Algorithm::Logarithmic);
 
   // Serialize
   nlohmann::json j;
@@ -164,11 +164,11 @@ TEST_F (ArrangerObjectFadeRangeTest, Serialization)
   EXPECT_DOUBLE_EQ (new_range->fadeInCurveOpts ()->curviness (), 0.7);
   EXPECT_EQ (
     new_range->fadeInCurveOpts ()->algorithm (),
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent));
+    dsp::CurveOptions::Algorithm::Exponent);
   EXPECT_DOUBLE_EQ (new_range->fadeOutCurveOpts ()->curviness (), 0.3);
   EXPECT_EQ (
     new_range->fadeOutCurveOpts ()->algorithm (),
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Logarithmic));
+    dsp::CurveOptions::Algorithm::Logarithmic);
 }
 
 } // namespace zrythm::structure::arrangement

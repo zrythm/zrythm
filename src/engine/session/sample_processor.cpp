@@ -370,7 +370,7 @@ SampleProcessor::queue_file_or_chord_preset (
 // TODO
 #  if 0
           auto * ar =
-            structure::arrangement::ArrangerObjectFactory::get_instance ()
+            PROJECT->getArrangerObjectFactory ()
               ->addAudioRegionFromFile (
                 &audio_track->get_lane_at (0),
                 utils::Utf8String::from_path (file->abs_path_).to_qstring (),
@@ -449,7 +449,7 @@ SampleProcessor::queue_file_or_chord_preset (
                   try
                     {
                       auto mr =
-                        structure::arrangement::ArrangerObjectFactory::get_instance ()
+                        PROJECT->getArrangerObjectFactory ()
                           ->addMidiRegionFromMidiFile (
                             &midi_track->get_lane_at (0),
                             utils::Utf8String::from_path (file->abs_path_)
@@ -508,7 +508,7 @@ SampleProcessor::queue_file_or_chord_preset (
                                 {
                                   auto * mn =
                                     structure::arrangement::
-                                      ArrangerObjectFactory::get_instance ()
+                                      PROJECT->getArrangerObjectFactory ()
                                         ->addMidiNote (
                                           mr, cur_pos.ticks_, (int) k + 36);
                                   mn->set_end_pos_full_size (

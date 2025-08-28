@@ -19,6 +19,8 @@ namespace zrythm::dsp
  */
 class CurveOptions final
 {
+  Q_GADGET
+
 public:
   /**
    * The algorithm to use for curves.
@@ -80,6 +82,7 @@ public:
      */
     Logarithmic,
   };
+  Q_ENUM (Algorithm)
 
   /** Bounds for each algorithm. */
   static constexpr double SUPERELLIPSE_CURVINESS_BOUND = 0.82;
@@ -123,7 +126,8 @@ class CurveOptionsQmlAdapter : public QObject
   Q_PROPERTY (
     double curviness READ curviness WRITE setCurviness NOTIFY curvinessChanged)
   Q_PROPERTY (
-    int algorithm READ algorithm WRITE setAlgorithm NOTIFY algorithmChanged)
+    zrythm::dsp::CurveOptions::Algorithm algorithm READ algorithm WRITE
+      setAlgorithm NOTIFY algorithmChanged)
   QML_NAMED_ELEMENT (CurveOptions)
   QML_UNCREATABLE ("")
 
@@ -149,18 +153,20 @@ public:
   }
   Q_SIGNAL void curvinessChanged (double curviness);
 
-  int  algorithm () const { return ENUM_VALUE_TO_INT (options_.algo_); }
-  void setAlgorithm (int algorithm)
+  zrythm::dsp::CurveOptions::Algorithm algorithm () const
   {
-    if (ENUM_VALUE_TO_INT (options_.algo_) == algorithm)
+    return options_.algo_;
+  }
+  void setAlgorithm (zrythm::dsp::CurveOptions::Algorithm algorithm)
+  {
+    if (options_.algo_ == algorithm)
       return;
 
-    algorithm = std::clamp (
-      algorithm, 0, static_cast<int> (ENUM_COUNT (CurveOptions::Algorithm) - 1));
-    options_.algo_ = ENUM_INT_TO_VALUE (CurveOptions::Algorithm, algorithm);
+    options_.algo_ = algorithm;
     Q_EMIT algorithmChanged (algorithm);
   }
-  Q_SIGNAL void algorithmChanged (int algorithm);
+  Q_SIGNAL void
+  algorithmChanged (zrythm::dsp::CurveOptions::Algorithm algorithm);
 
   Q_INVOKABLE double normalizedY (double x, bool startHigher) const
   {

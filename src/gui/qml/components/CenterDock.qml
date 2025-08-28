@@ -145,7 +145,7 @@ ColumnLayout {
             editorSettings: root.project.timeline.editorSettings
             laneHeight: root.tempoMapLaneHeight
             laneSpacing: root.tempoMapLaneSpacing
-            objectFactory: root.project.arrangerObjectFactory
+            objectCreator: root.project.arrangerObjectCreator
             ruler: ruler
             tempoMap: root.project.tempoMap
             tool: root.project.tool
@@ -160,7 +160,7 @@ ColumnLayout {
           Layout.maximumHeight: pinnedTracklist.height
           Layout.minimumHeight: pinnedTracklist.height
           clipEditor: root.project.clipEditor
-          objectFactory: root.project.arrangerObjectFactory
+          objectCreator: root.project.arrangerObjectCreator
           pinned: true
           ruler: ruler
           tempoMap: root.project.tempoMap
@@ -176,7 +176,7 @@ ColumnLayout {
           Layout.fillHeight: true
           Layout.fillWidth: true
           clipEditor: root.project.clipEditor
-          objectFactory: root.project.arrangerObjectFactory
+          objectCreator: root.project.arrangerObjectCreator
           pinned: false
           ruler: ruler
           tempoMap: root.project.tempoMap

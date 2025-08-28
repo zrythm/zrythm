@@ -113,31 +113,32 @@ Project::Project (
       tracklist_ (new structure::tracks::Tracklist (*track_registry_, this)),
       undo_manager_ (new gui::actions::UndoManager (this)),
       undo_stack_ (utils::make_qobject_unique<undo::UndoStack> (this)),
-      arranger_object_factory_ (new structure::arrangement::ArrangerObjectFactory (
-        get_tempo_map (),
-        *arranger_object_registry_,
-        *file_audio_source_registry_,
-        *gui::SettingsManager::get_instance (),
-        *snap_grid_timeline_,
-        *snap_grid_editor_,
-        [&] () { return audio_engine_->get_sample_rate (); },
-        [&] () { return get_tempo_map ().tempo_at_tick (0); },
-        structure::arrangement::ArrangerObjectSelectionManager{
-          clip_editor_->getAudioClipEditor ()->get_selected_object_ids (),
-          *arranger_object_registry_ },
-        structure::arrangement::ArrangerObjectSelectionManager{
-          timeline_->get_selected_object_ids (), *arranger_object_registry_ },
-        structure::arrangement::ArrangerObjectSelectionManager{
-          clip_editor_->getPianoRoll ()->get_selected_object_ids (),
-          *arranger_object_registry_ },
-        structure::arrangement::ArrangerObjectSelectionManager{
-          clip_editor_->getChordEditor ()->get_selected_object_ids (),
-          *arranger_object_registry_ },
-        structure::arrangement::ArrangerObjectSelectionManager{
-          clip_editor_->getAutomationEditor ()->get_selected_object_ids (),
-          *arranger_object_registry_ },
-        *clip_editor_,
-        this)),
+      arranger_object_factory_ (
+        std::make_unique<structure::arrangement::ArrangerObjectFactory> (
+          structure::arrangement::ArrangerObjectFactory::Dependencies{
+            .tempo_map_ = get_tempo_map (),
+            .object_registry_ = *arranger_object_registry_,
+            .file_audio_source_registry_ = *file_audio_source_registry_,
+            .musical_mode_getter_ =
+              [] () { return gui::SettingsManager::musicalMode (); },
+            .last_timeline_obj_len_provider_ =
+              [] () {
+                return gui::SettingsManager::
+                  timelineLastCreatedObjectLengthInTicks ();
+              },
+            .last_editor_obj_len_provider_ =
+              [] () {
+                return gui::SettingsManager::
+                  editorLastCreatedObjectLengthInTicks ();
+              },
+            .automation_curve_algorithm_provider_ =
+              [] () {
+                return ENUM_INT_TO_VALUE (
+                  dsp::CurveOptions::Algorithm,
+                  gui::SettingsManager::automationCurveAlgorithm ());
+              } },
+          [&] () { return audio_engine_->get_sample_rate (); },
+          [&] () { return get_tempo_map ().tempo_at_tick (0); })),
       plugin_factory_ (new PluginFactory (
         PluginFactory::CommonFactoryDependencies{
           .plugin_registry_ = *plugin_registry_,
@@ -172,6 +173,34 @@ Project::Project (
         get_final_track_dependencies (),
         *gui::SettingsManager::get_instance (),
         this)),
+      arranger_object_creator_ (
+        utils::make_qobject_unique<actions::ArrangerObjectCreator> (
+          *undo_stack_,
+          *clip_editor_,
+          *arranger_object_factory_,
+          actions::ArrangerObjectCreator::ArrangerObjectSelectionManagers{
+            .audio_selections_manager_ =
+              structure::arrangement::ArrangerObjectSelectionManager{
+                clip_editor_->getAudioClipEditor ()->get_selected_object_ids (),
+                *arranger_object_registry_ },
+            .timeline_selections_manager_ =
+              structure::arrangement::ArrangerObjectSelectionManager{
+                timeline_->get_selected_object_ids (), *arranger_object_registry_ },
+            .midi_selections_manager_ =
+              structure::arrangement::ArrangerObjectSelectionManager{
+                clip_editor_->getPianoRoll ()->get_selected_object_ids (),
+                *arranger_object_registry_ },
+            .chord_selections_manager_ =
+              structure::arrangement::ArrangerObjectSelectionManager{
+                clip_editor_->getChordEditor ()->get_selected_object_ids (),
+                *arranger_object_registry_ },
+            .automation_selections_manager_ =
+              structure::arrangement::ArrangerObjectSelectionManager{
+                clip_editor_->getAutomationEditor ()->get_selected_object_ids (),
+                *arranger_object_registry_ } },
+          *snap_grid_timeline_,
+          *snap_grid_editor_,
+          this)),
       device_manager_ (device_manager)
 {
   // audio_engine_ = std::make_unique<AudioEngine> (this);
@@ -470,11 +499,17 @@ Project::add_default_tracks ()
     audio_engine_->get_sample_rate (), true, true, false);
 
   /* add a scale */
-  arranger_object_factory_->add_scale_object (
-    *tracklist_->singletonTracks ()->chordTrack (),
-    utils::make_qobject_unique<dsp::MusicalScale> (
-      dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A),
-    0);
+  auto scale_ref =
+    arranger_object_factory_->get_builder<structure::arrangement::ScaleObject> ()
+      .with_start_ticks (0)
+      .with_scale (
+        utils::make_qobject_unique<dsp::MusicalScale> (
+          dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A))
+      .build_in_registry ();
+  tracklist_->singletonTracks ()
+    ->chordTrack ()
+    ->ArrangerObjectOwner<structure::arrangement::ScaleObject>::add_object (
+      scale_ref);
 
   /* modulator */
   add_track.operator()<ModulatorTrack> (QObject::tr ("Modulators"));
@@ -490,20 +525,30 @@ Project::add_default_tracks ()
         auto          marker_name = fmt::format ("[{}]", QObject::tr ("start"));
         dsp::Position pos;
         pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
-        factory->addMarker (
-          structure::arrangement::Marker::MarkerType::Start, marker_track_inner,
-          utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
-          pos.ticks_);
+        auto marker_ref =
+          factory->template get_builder<structure::arrangement::Marker> ()
+            .with_start_ticks (pos.ticks_)
+            .with_name (
+              utils::Utf8String::from_utf8_encoded_string (marker_name)
+                .to_qstring ())
+            .with_marker_type (structure::arrangement::Marker::MarkerType::Start)
+            .build_in_registry ();
+        marker_track_inner->add_object (marker_ref);
       }
 
       {
         auto          marker_name = fmt::format ("[{}]", QObject::tr ("end"));
         dsp::Position pos;
         pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
-        factory->addMarker (
-          structure::arrangement::Marker::MarkerType::End, marker_track_inner,
-          utils::Utf8String::from_utf8_encoded_string (marker_name).to_qstring (),
-          pos.ticks_);
+        auto marker_ref =
+          factory->template get_builder<structure::arrangement::Marker> ()
+            .with_start_ticks (pos.ticks_)
+            .with_name (
+              utils::Utf8String::from_utf8_encoded_string (marker_name)
+                .to_qstring ())
+            .with_marker_type (structure::arrangement::Marker::MarkerType::End)
+            .build_in_registry ();
+        marker_track_inner->add_object (marker_ref);
       }
     };
   add_default_markers (
@@ -1310,12 +1355,6 @@ Project::undoStack () const
   return undo_stack_.get ();
 }
 
-structure::arrangement::ArrangerObjectFactory *
-Project::getArrangerObjectFactory () const
-{
-  return arranger_object_factory_;
-}
-
 PluginFactory *
 Project::getPluginFactory () const
 {
@@ -1326,6 +1365,12 @@ structure::tracks::TrackFactory *
 Project::getTrackFactory () const
 {
   return track_factory_;
+}
+
+actions::ArrangerObjectCreator *
+Project::arrangerObjectCreator () const
+{
+  return arranger_object_creator_.get ();
 }
 
 dsp::TempoMapWrapper *

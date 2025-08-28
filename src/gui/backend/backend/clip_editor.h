@@ -7,8 +7,7 @@
 #include "gui/backend/backend/automation_editor.h"
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/backend/backend/piano_roll.h"
-#include "structure/arrangement/arranger_object_span.h"
-#include "structure/arrangement/region.h"
+#include "structure/tracks/track.h"
 
 class ArrangerSelections;
 

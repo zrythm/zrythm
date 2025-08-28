@@ -148,7 +148,7 @@ MidiFile::into_region (
               const auto note_off_time = get_msg_time_in_ticks (
                 track->getTimeOfMatchingKeyUp (static_cast<int> (event_index)));
               auto mn_builder = std::move (
-                structure::arrangement::ArrangerObjectFactory::get_instance ()
+                PROJECT->getArrangerObjectFactory ()
                   ->get_builder<structure::arrangement::MidiNote> ());
               auto mn =
                 mn_builder.with_start_ticks (note_on_time)

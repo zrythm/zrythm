@@ -499,7 +499,7 @@ Tracklist::clear_selections_for_object_siblings (
           for (auto * child : region->get_children_view ())
             {
               auto selection_mgr =
-                arrangement::ArrangerObjectFactory::get_instance ()
+                arrangement::PROJECT->getArrangerObjectFactory ()
                   ->get_selection_manager_for_object (*child);
               selection_mgr.remove_from_selection (child->get_uuid ());
             }
@@ -512,7 +512,7 @@ Tracklist::clear_selections_for_object_siblings (
               std::visit (
                 [&] (auto &&tl_obj) {
                   auto selection_mgr =
-                    arrangement::ArrangerObjectFactory::get_instance ()
+                    arrangement::PROJECT->getArrangerObjectFactory ()
                       ->get_selection_manager_for_object (*tl_obj);
                   selection_mgr.remove_from_selection (tl_obj->get_uuid ());
                 },

@@ -184,9 +184,7 @@ RangeAction::perform_impl ()
                           /* split at range start */
                           auto [part1, part2] =
                             ArrangerObjectSpan::split_bounded_object (
-                              *obj,
-                              *structure::arrangement::ArrangerObjectFactory::
-                                get_instance (),
+                              *obj, *PROJECT->getArrangerObjectFactory (),
                               start_pos_);
 
                           /* move part2 by the range amount */
@@ -257,9 +255,7 @@ RangeAction::perform_impl ()
                               /* split at range start */
                               auto [part1_ref, part2_ref] =
                                 ArrangerObjectSpan::split_bounded_object (
-                                  *obj,
-                                  *structure::arrangement::
-                                    ArrangerObjectFactory::get_instance (),
+                                  *obj, *PROJECT->getArrangerObjectFactory (),
                                   start_pos_);
 
                               auto part2_opt = std::make_optional (part2_ref);
@@ -275,8 +271,7 @@ RangeAction::perform_impl ()
                                   auto [part3, part4] =
                                     ArrangerObjectSpan::split_bounded_object (
                                       *std::get<ObjT *> (part2_ref.get_object ()),
-                                      *structure::arrangement::
-                                        ArrangerObjectFactory::get_instance (),
+                                      *PROJECT->getArrangerObjectFactory (),
                                       end_pos_);
 // TODO...
 #if 0
@@ -332,9 +327,7 @@ RangeAction::perform_impl ()
                               // part1 will be discarded
                               auto [part1, part2] =
                                 ArrangerObjectSpan::split_bounded_object (
-                                  *obj,
-                                  *structure::arrangement::
-                                    ArrangerObjectFactory::get_instance (),
+                                  *obj, *PROJECT->getArrangerObjectFactory (),
                                   end_pos_);
 // TODO
 #if 0
@@ -371,10 +364,12 @@ RangeAction::perform_impl ()
                           obj->position ()->addTicks (-range_size_ticks);
                           objects_moved_.push_back (obj->get_uuid ());
 
-                          structure::arrangement::ArrangerObjectFactory::
-                            get_instance ()
+// TODO
+#if 0
+                        PROJECT->arrangerObjectCreator()
                               ->get_selection_manager_for_object (*obj)
                               .append_to_selection (obj->get_uuid ());
+#endif
                         }
                     },
                     obj_var);

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "actions/arranger_object_creator.h"
 #include "dsp/audio_pool.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
@@ -102,13 +103,13 @@ class Project final : public QObject
     zrythm::gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT
       FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::structure::arrangement::ArrangerObjectFactory *
-      arrangerObjectFactory READ getArrangerObjectFactory CONSTANT FINAL)
   Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::structure::tracks::TrackFactory * trackFactory READ getTrackFactory
       CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
+      arrangerObjectCreator CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
   Q_PROPERTY (
@@ -184,22 +185,21 @@ public:
   // QML interface
   // =========================================================
 
-  QString                          getTitle () const;
-  void                             setTitle (const QString &title);
-  QString                          getDirectory () const;
-  void                             setDirectory (const QString &directory);
-  structure::tracks::Tracklist *   getTracklist () const;
-  Timeline *                       getTimeline () const;
-  engine::session::Transport *     getTransport () const;
-  engine::device_io::AudioEngine * engine () const;
-  gui::backend::Tool *             getTool () const;
-  ClipEditor *                     getClipEditor () const;
-  gui::actions::UndoManager *      getUndoManager () const;
-  undo::UndoStack *                undoStack () const;
-  structure::arrangement::ArrangerObjectFactory *
-                                    getArrangerObjectFactory () const;
+  QString                           getTitle () const;
+  void                              setTitle (const QString &title);
+  QString                           getDirectory () const;
+  void                              setDirectory (const QString &directory);
+  structure::tracks::Tracklist *    getTracklist () const;
+  Timeline *                        getTimeline () const;
+  engine::session::Transport *      getTransport () const;
+  engine::device_io::AudioEngine *  engine () const;
+  gui::backend::Tool *              getTool () const;
+  ClipEditor *                      getClipEditor () const;
+  gui::actions::UndoManager *       getUndoManager () const;
+  undo::UndoStack *                 undoStack () const;
   PluginFactory *                   getPluginFactory () const;
   structure::tracks::TrackFactory * getTrackFactory () const;
+  actions::ArrangerObjectCreator *  arrangerObjectCreator () const;
   dsp::TempoMapWrapper *            getTempoMap () const;
   dsp::SnapGrid *                   snapGridTimeline () const;
   dsp::SnapGrid *                   snapGridEditor () const;
@@ -219,6 +219,12 @@ public:
   fs::path get_path (ProjectPath path, bool backup) const;
 
   static Project * get_active_instance ();
+
+  // TODO: delete this getter, no one else should use factory directly
+  auto * getArrangerObjectFactory () const
+  {
+    return arranger_object_factory_.get ();
+  }
 
   /**
    * Saves the project to a project file in the given dir.
@@ -635,9 +641,13 @@ public:
 
   utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
 
-  structure::arrangement::ArrangerObjectFactory * arranger_object_factory_{};
-  PluginFactory *                                 plugin_factory_{};
-  zrythm::structure::tracks::TrackFactory *       track_factory_{};
+  std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
+                                            arranger_object_factory_;
+  PluginFactory *                           plugin_factory_{};
+  zrythm::structure::tracks::TrackFactory * track_factory_{};
+
+  utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
+    arranger_object_creator_;
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

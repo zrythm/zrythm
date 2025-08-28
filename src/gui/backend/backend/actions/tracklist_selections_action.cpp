@@ -550,11 +550,9 @@ TracklistSelectionsAction::create_track (int idx)
               if constexpr (std::is_same_v<TrackT, AudioTrack>)
                 {
                   /* create an audio region & add to track*/
-                  structure::arrangement::ArrangerObjectFactory::get_instance ()
-                    ->add_audio_region_with_clip (
-                      *added_track,
-                      *added_track->lanes ()->lanes_view ().front (), *pool_id_,
-                      start_pos.ticks_);
+                  PROJECT->arrangerObjectCreator ()->add_audio_region_with_clip (
+                    *added_track, *added_track->lanes ()->lanes_view ().front (),
+                    *pool_id_, start_pos.ticks_);
                 }
             }
           else if (
@@ -575,11 +573,10 @@ TracklistSelectionsAction::create_track (int idx)
                     full_path, data.constData (), data.size ());
 
                   /* create a MIDI region from the MIDI file & add to track */
-                  structure::arrangement::ArrangerObjectFactory::get_instance ()
-                    ->addMidiRegionFromMidiFile (
-                      added_track, added_track->lanes ()->lanes_view ().front (),
-                      utils::Utf8String::from_path (full_path).to_qstring (),
-                      pos_.ticks_, idx);
+                  PROJECT->arrangerObjectCreator ()->addMidiRegionFromMidiFile (
+                    added_track, added_track->lanes ()->lanes_view ().front (),
+                    utils::Utf8String::from_path (full_path).to_qstring (),
+                    pos_.ticks_, idx);
                 }
             }
 

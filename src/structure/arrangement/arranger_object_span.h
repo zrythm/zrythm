@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/position.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/debug.h"
 #include "utils/uuid_identifiable_object.h"

@@ -26,9 +26,6 @@ class TrackOperator : public QObject
 public:
   explicit TrackOperator (QObject * parent = nullptr) : QObject (parent) { }
 
-  Q_SIGNAL void trackChanged ();
-  Q_SIGNAL void undoStackChanged ();
-
   structure::tracks::Track * track () const { return track_; }
   void                       setTrack (structure::tracks::Track * track)
   {
@@ -42,6 +39,7 @@ public:
         Q_EMIT trackChanged ();
       }
   }
+  Q_SIGNAL void trackChanged ();
 
   undo::UndoStack * undoStack () const { return undo_stack_; }
   void              setUndoStack (undo::UndoStack * undoStack)
@@ -56,6 +54,7 @@ public:
         Q_EMIT undoStackChanged ();
       }
   }
+  Q_SIGNAL void undoStackChanged ();
 
   Q_INVOKABLE void rename (const QString &newName);
   Q_INVOKABLE void setColor (const QColor &color);

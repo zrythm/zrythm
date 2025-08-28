@@ -15,6 +15,7 @@ target_sources(zrythm_arrangement_lib
     arranger_object.h
     arranger_object.cpp
     arranger_object_all.h
+    arranger_object_factory.h
     arranger_object_fwd.h
     arranger_object_list_model.h
     arranger_object_owner.h
@@ -67,8 +68,6 @@ target_sources(zrythm_gui_lib
   PRIVATE
     audio_function.h
     audio_function.cpp
-    arranger_object_factory.h
-    arranger_object_factory.cpp
     arranger_object_span.h
     arranger_object_span.cpp
     automation_function.h

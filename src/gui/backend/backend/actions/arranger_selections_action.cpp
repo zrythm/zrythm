@@ -58,7 +58,7 @@ init_from (
               std::visit (
                 [&] (auto &&obj) {
                   auto * clone =
-                    ArrangerObjectFactory::get_instance ()
+                    PROJECT->getArrangerObjectFactory ()
                       ->clone_object_snapshot (*obj, *this);
                   our_collection->push_back (clone);
                 },
@@ -174,7 +174,7 @@ ArrangerSelectionsAction::set_before_selections (ArrangerObjectSpan src_var)
 {
 #if 0
   sel_ = src_var.create_snapshots (
-    *structure::arrangement::ArrangerObjectFactory::get_instance (), *this);
+    *PROJECT->getArrangerObjectFactory (), *this);
 #endif
 }
 
@@ -183,7 +183,7 @@ ArrangerSelectionsAction::set_after_selections (ArrangerObjectSpan src_var)
 {
 #if 0
   sel_after_ = src_var.create_snapshots (
-    *structure::arrangement::ArrangerObjectFactory::get_instance (), *this);
+    *PROJECT->getArrangerObjectFactory (), *this);
 #endif
 }
 
@@ -969,7 +969,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
               auto add_adjusted_clone_to_project = [] (const auto &obj_to_clone) {
                 /* create a temporary clone */
                 auto obj =
-                  ArrangerObjectFactory::get_instance ()
+                  PROJECT->getArrangerObjectFactory ()
                     ->clone_new_object_identity (*obj_to_clone);
 
                 /* if region, clear the remembered index so that the
@@ -1287,7 +1287,7 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                     }
 
                   /* select it */
-                  ArrangerObjectFactory::get_instance ()
+                  PROJECT->getArrangerObjectFactory ()
                     ->get_selection_manager_for_object (*prj_obj)
                     .append_to_selection (prj_obj->get_uuid ());
 
@@ -1393,6 +1393,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
       /* if do/redoing */
       if (do_it)
         {
+          // TODO
+#if 0
           /* create the newly recorded objects */
           for (auto &own_after_obj_var : *sel_after_)
             {
@@ -1406,18 +1408,21 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                     get_arranger_object_registry ().find_by_id_or_throw (
                       own_after_obj->get_uuid ()));
 
+
                   /* select it */
-                  ArrangerObjectFactory::get_instance ()
+                  PROJECT->arrangerObjectCreator ()
                     ->get_selection_manager_for_object (*prj_obj)
                     .append_to_selection (prj_obj->get_uuid ());
+
 
                   /* remember new info */
                   // own_after_obj->copy_identifier (*prj_obj);
                 },
                 own_after_obj_var);
             }
+#endif
 
-            /* delete the previous objects */
+          /* delete the previous objects */
 // TODO
 #if 0
           for (auto &own_before_obj_var : *sel_)
@@ -1479,7 +1484,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                     own_before_obj->add_clone_to_project (false));
 
                   /* select it */
-                  ArrangerObjectFactory::get_instance ()
+                  PROJECT->getArrangerObjectFactory ()
                     ->get_selection_manager_for_object (*prj_obj)
                     .append_to_selection (prj_obj->get_uuid ());
 
@@ -1753,7 +1758,7 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
           ->add_clone_to_project (false));
 
       /* select it */
-      ArrangerObjectFactory::get_instance ()
+      PROJECT->getArrangerObjectFactory ()
         ->get_selection_manager_for_object (*prj_obj)
         .append_to_selection (prj_obj->get_uuid ());
 
@@ -1793,7 +1798,7 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
                     {
                       /* split */
                       auto [r1, r2] = ArrangerObjectSpan::split_bounded_object (
-                        *obj, *ArrangerObjectFactory::get_instance (), pos_);
+                        *obj, *PROJECT->getArrangerObjectFactory (), pos_);
 
                       // TODO: re-add the additional logic that was removed from
                       // BoundedObject::split()
@@ -2020,7 +2025,7 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
                       ->insert_clone_to_project ());
 
                   /* select it */
-                  ArrangerObjectFactory::get_instance ()
+                  PROJECT->getArrangerObjectFactory ()
                     ->get_selection_manager_for_object (*new_obj)
                     .append_to_selection (new_obj->get_uuid ());
                 }

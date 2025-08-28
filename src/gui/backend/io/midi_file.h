@@ -12,9 +12,16 @@
 
 #include "juce_wrapper.h"
 
-namespace zrythm::structure::arrangement
+namespace zrythm::structure
+{
+namespace arrangement
 {
 class MidiRegion;
+}
+namespace tracks
+{
+class Tracklist;
+}
 }
 
 /**

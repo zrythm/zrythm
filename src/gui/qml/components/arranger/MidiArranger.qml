@@ -17,7 +17,7 @@ Arranger {
     const pitch = getPitchAtY(y);
     console.log("Midi Arranger: beginObjectCreation", x, y, pitch);
 
-    let midiNote = objectFactory.addMidiNote(root.clipEditor.region, x / root.ruler.pxPerTick, pitch);
+    let midiNote = objectCreator.addMidiNote(root.clipEditor.region, x / root.ruler.pxPerTick, pitch);
     root.currentAction = Arranger.CreatingResizingR;
     root.setObjectSnapshotsAtStart();
     CursorManager.setResizeEndCursor();

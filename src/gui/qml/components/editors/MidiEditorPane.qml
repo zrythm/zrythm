@@ -111,7 +111,7 @@ GridLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     clipEditor: root.clipEditor
-    objectFactory: root.project.arrangerObjectFactory
+    objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
     tempoMap: root.project.tempoMap
@@ -131,7 +131,7 @@ GridLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     clipEditor: root.clipEditor
-    objectFactory: root.project.arrangerObjectFactory
+    objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
     tempoMap: root.project.tempoMap

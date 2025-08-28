@@ -3,78 +3,45 @@
 
 #pragma once
 
-#include "dsp/snap_grid.h"
-#include "gui/backend/backend/settings_manager.h"
 #include "structure/arrangement/arranger_object_all.h"
-#include "structure/tracks/track_all.h"
 
 namespace zrythm::structure::arrangement
 {
 /**
  * @brief Factory for arranger objects.
- *
- * @note API that starts with `add` adds the object to the project and should be
- * used in most cases. API that starts with `create` only creates and registers
- * the object but does not add it to the project (this should only be used
- * internally).
  */
-class ArrangerObjectFactory : public QObject
+class ArrangerObjectFactory
 {
-  Q_OBJECT
-  QML_ELEMENT
-  QML_UNCREATABLE ("")
-
-  using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
-  using ArrangerObjectSelectionManager =
-    structure::arrangement::ArrangerObjectSelectionManager;
-  using MidiNote = structure::arrangement::MidiNote;
-  using ChordObject = structure::arrangement::ChordObject;
-  using ScaleObject = structure::arrangement::ScaleObject;
-  using AudioRegion = structure::arrangement::AudioRegion;
-  using MidiRegion = structure::arrangement::MidiRegion;
-  using AutomationRegion = structure::arrangement::AutomationRegion;
-  using AutomationPoint = structure::arrangement::AutomationPoint;
-  using ChordRegion = structure::arrangement::ChordRegion;
-  using Marker = structure::arrangement::Marker;
-  using ArrangerObject = structure::arrangement ::ArrangerObject;
-  using TrackLane = structure::tracks::TrackLane;
-  using Track = structure::tracks::Track;
-
 public:
-  ArrangerObjectFactory () = delete;
+  using SampleRateProvider = std::function<sample_rate_t ()>;
+  using BpmProvider = std::function<bpm_t ()>;
+
+  struct Dependencies
+  {
+    using MusicalModeGetter = std::function<bool ()>;
+    using LastTimelineObjectLengthProvider = std::function<double ()>;
+    using LastEditorObjectLengthProvider = std::function<double ()>;
+    using AutomationCurveAlgorithmProvider =
+      std::function<dsp::CurveOptions::Algorithm ()>;
+
+    const dsp::TempoMap             &tempo_map_;
+    ArrangerObjectRegistry          &object_registry_;
+    dsp::FileAudioSourceRegistry    &file_audio_source_registry_;
+    MusicalModeGetter                musical_mode_getter_;
+    LastTimelineObjectLengthProvider last_timeline_obj_len_provider_;
+    LastEditorObjectLengthProvider   last_editor_obj_len_provider_;
+    AutomationCurveAlgorithmProvider automation_curve_algorithm_provider_;
+  };
+
   ArrangerObjectFactory (
-    const dsp::TempoMap            &tempo_map,
-    ArrangerObjectRegistry         &registry,
-    dsp::FileAudioSourceRegistry   &file_audio_source_registry,
-    gui::SettingsManager           &settings_mgr,
-    dsp::SnapGrid                  &snap_grid_timeline,
-    dsp::SnapGrid                  &snap_grid_editor,
-    std::function<sample_rate_t ()> sample_rate_provider,
-    std::function<bpm_t ()>         bpm_provider,
-    ArrangerObjectSelectionManager  audio_selections_manager,
-    ArrangerObjectSelectionManager  timeline_selections_manager,
-    ArrangerObjectSelectionManager  midi_selections_manager,
-    ArrangerObjectSelectionManager  chord_selections_manager,
-    ArrangerObjectSelectionManager  automation_selections_manager,
-    ClipEditor                     &clip_editor,
-    QObject *                       parent = nullptr)
-      : QObject (parent), tempo_map_ (tempo_map), object_registry_ (registry),
-        file_audio_source_registry_ (file_audio_source_registry),
-        settings_manager_ (settings_mgr),
-        snap_grid_timeline_ (snap_grid_timeline),
-        snap_grid_editor_ (snap_grid_editor),
+    Dependencies       dependencies,
+    SampleRateProvider sample_rate_provider,
+    BpmProvider        bpm_provider)
+      : dependencies_ (std::move (dependencies)),
         sample_rate_provider_ (std::move (sample_rate_provider)),
-        bpm_provider_ (std::move (bpm_provider)),
-        audio_selections_manager_ (audio_selections_manager),
-        timeline_selections_manager_ (timeline_selections_manager),
-        midi_selections_manager_ (midi_selections_manager),
-        chord_selections_manager_ (chord_selections_manager),
-        automation_selections_manager_ (automation_selections_manager),
-        clip_editor_ (clip_editor)
+        bpm_provider_ (std::move (bpm_provider))
   {
   }
-
-  static ArrangerObjectFactory * get_instance ();
 
   template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
   class Builder
@@ -82,19 +49,9 @@ public:
     friend class ArrangerObjectFactory;
 
   private:
-    explicit Builder (
-      const dsp::TempoMap          &tempo_map,
-      ArrangerObjectRegistry       &registry,
-      dsp::FileAudioSourceRegistry &file_audio_source_registry)
-        : tempo_map_ (tempo_map), registry_ (registry),
-          file_audio_source_registry_ (file_audio_source_registry)
+    explicit Builder (Dependencies dependencies)
+        : dependencies_ (std::move (dependencies))
     {
-    }
-
-    Builder &with_settings_manager (gui::SettingsManager &settings_manager)
-    {
-      settings_manager_ = settings_manager;
-      return *this;
     }
 
     Builder &with_clip (dsp::FileAudioSourceUuidReference clip_id)
@@ -107,7 +64,6 @@ public:
   public:
     Builder &with_start_ticks (double start_ticks)
     {
-      assert (settings_manager_.has_value ());
       start_ticks_ = start_ticks;
 
       return *this;
@@ -178,27 +134,31 @@ public:
       if constexpr (std::is_same_v<ObjT, AudioRegion>)
         {
           ret = std::make_unique<ObjT> (
-            tempo_map_, registry_, file_audio_source_registry_,
-            [this] () { return settings_manager_->get_musicalMode (); });
+            dependencies_.tempo_map_, dependencies_.object_registry_,
+            dependencies_.file_audio_source_registry_,
+            dependencies_.musical_mode_getter_);
         }
       else if constexpr (RegionObject<ObjT>)
         {
           ret = std::make_unique<ObjT> (
-            tempo_map_, registry_, file_audio_source_registry_);
+            dependencies_.tempo_map_, dependencies_.object_registry_,
+            dependencies_.file_audio_source_registry_);
         }
       else if constexpr (std::is_same_v<ObjT, Marker>)
         {
-          ret = std::make_unique<ObjT> (tempo_map_, Marker::MarkerType::Custom);
+          ret = std::make_unique<ObjT> (
+            dependencies_.tempo_map_, Marker::MarkerType::Custom);
         }
       else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
         {
           ret = std::make_unique<ObjT> (
-            tempo_map_, file_audio_source_registry_,
-            dsp::FileAudioSourceUuidReference{ file_audio_source_registry_ });
+            dependencies_.tempo_map_, dependencies_.file_audio_source_registry_,
+            dsp::FileAudioSourceUuidReference{
+              dependencies_.file_audio_source_registry_ });
         }
       else
         {
-          ret = std::make_unique<ObjT> (tempo_map_);
+          ret = std::make_unique<ObjT> (dependencies_.tempo_map_);
         }
       return ret;
     }
@@ -207,9 +167,9 @@ public:
     {
       auto obj_ref = [&] () {
         auto obj_unique_ptr = build_empty ();
-        registry_.register_object (obj_unique_ptr.get ());
+        dependencies_.object_registry_.register_object (obj_unique_ptr.get ());
         structure::arrangement::ArrangerObjectUuidReference ret_ref{
-          obj_unique_ptr->get_uuid (), registry_
+          obj_unique_ptr->get_uuid (), dependencies_.object_registry_
         };
         obj_unique_ptr.release ();
         return ret_ref;
@@ -232,18 +192,13 @@ public:
                   if constexpr (TimelineObject<ObjT>)
                     {
                       len_ticks =
-                        settings_manager_
-                          ->get_timelineLastCreatedObjectLengthInTicks ();
+                        dependencies_.last_timeline_obj_len_provider_ ();
                     }
                   else
                     {
-                      len_ticks =
-                        settings_manager_
-                          ->get_editorLastCreatedObjectLengthInTicks ();
+                      len_ticks = dependencies_.last_editor_obj_len_provider_ ();
                     }
-                  ArrangerObjectSpan::bounds_projection (obj)
-                    ->length ()
-                    ->setTicks (len_ticks);
+                  get_object_bounds (*obj)->length ()->setTicks (len_ticks);
                 }
             }
           obj->position ()->setTicks (*start_ticks_);
@@ -253,8 +208,10 @@ public:
         {
           if constexpr (std::is_same_v<ObjT, AudioRegion>)
             {
-              auto source_object = registry_.create_object<AudioSourceObject> (
-                tempo_map_, file_audio_source_registry_, clip_id_.value ());
+              auto source_object = dependencies_.object_registry_.create_object<
+                AudioSourceObject> (
+                dependencies_.tempo_map_,
+                dependencies_.file_audio_source_registry_, clip_id_.value ());
               obj->set_source (source_object);
               obj->regionMixin ()->bounds ()->length ()->setSamples (
                 clip_id_.value ()
@@ -267,7 +224,7 @@ public:
         {
           if constexpr (BoundedObject<ObjT>)
             {
-              ArrangerObjectSpan::bounds_projection (obj)->length ()->setTicks (
+              get_object_bounds (*obj)->length ()->setTicks (
                 *end_ticks_ - obj->position ()->ticks ());
             }
         }
@@ -322,7 +279,7 @@ public:
       if constexpr (std::is_same_v<ObjT, AutomationPoint>)
         {
           obj->curveOpts ()->setAlgorithm (
-            gui::SettingsManager::automationCurveAlgorithm ());
+            dependencies_.automation_curve_algorithm_provider_ ());
         }
 
       if (chord_descriptor_index_)
@@ -337,10 +294,7 @@ public:
     }
 
   private:
-    const dsp::TempoMap              &tempo_map_;
-    ArrangerObjectRegistry           &registry_;
-    dsp::FileAudioSourceRegistry     &file_audio_source_registry_;
-    OptionalRef<gui::SettingsManager> settings_manager_;
+    Dependencies                                     dependencies_;
     std::optional<dsp::FileAudioSourceUuidReference> clip_id_;
     std::optional<double>                            start_ticks_;
     std::optional<double>                            end_ticks_;
@@ -355,40 +309,10 @@ public:
 
   template <typename ObjT> auto get_builder () const
   {
-    return std::move (
-      Builder<ObjT> (tempo_map_, object_registry_, file_audio_source_registry_)
-        .with_settings_manager (settings_manager_));
+    return std::move (Builder<ObjT> (dependencies_));
   }
 
-private:
-  /**
-   * @brief Used for MIDI/Audio regions.
-   */
-  void add_laned_object (
-    Track                      &track,
-    TrackLane                  &lane,
-    ArrangerObjectUuidReference obj_ref)
-  {
-    std::visit (
-      [&] (auto &&obj) {
-        using ObjectT = base_type<decltype (obj)>;
-        if constexpr (
-          std::is_same_v<ObjectT, MidiRegion>
-          || std::is_same_v<ObjectT, AudioRegion>)
-          {
-            obj->regionMixin ()->name ()->setName (
-              track.generate_name_for_region (*obj).to_qstring ());
-
-            lane.ArrangerObjectOwner<ObjectT>::add_object (obj_ref);
-            set_selection_handler_to_object (*obj);
-
-            timeline_selections_manager_.append_to_selection (obj->get_uuid ());
-            clip_editor_.set_region (obj->get_uuid (), track.get_uuid ());
-          }
-      },
-      obj_ref.get_object ());
-  }
-
+public:
   /**
    * @brief To be used by the backend.
    */
@@ -397,11 +321,31 @@ private:
     double                            startTicks) const
   {
     auto obj =
-      get_builder<AudioRegion> ()
+      get_builder<structure::arrangement::AudioRegion> ()
         .with_start_ticks (startTicks)
         .with_clip (std::move (clip_id))
         .build_in_registry ();
     return obj;
+  }
+
+  auto create_empty_audio_region_for_recording (
+    int                      num_channels,
+    const utils::Utf8String &clip_name,
+    double                   start_ticks)
+  {
+    auto clip = dependencies_.file_audio_source_registry_.create_object<
+      dsp::FileAudioSource> (
+      num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
+    return create_audio_region_with_clip (std::move (clip), start_ticks);
+  }
+
+  auto create_audio_region_from_file (const QString &absPath, double startTicks)
+  {
+    auto clip = dependencies_.file_audio_source_registry_.create_object<
+      dsp::FileAudioSource> (
+      utils::Utf8String::from_qstring (absPath), sample_rate_provider_ (),
+      bpm_provider_ ());
+    return create_audio_region_with_clip (std::move (clip), startTicks);
   }
 
   /**
@@ -416,27 +360,23 @@ private:
     const utils::Utf8String         &clip_name,
     double                           start_ticks) const
   {
-    auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
+    auto clip = dependencies_.file_audio_source_registry_.create_object<
+      dsp::FileAudioSource> (
       buf, bit_depth, sample_rate_provider_ (), bpm_provider_ (), clip_name);
-    auto region = create_audio_region_with_clip (std::move (clip), start_ticks);
-    return region;
+    return create_audio_region_with_clip (std::move (clip), start_ticks);
   }
 
   /**
    * @brief Used to create and add editor objects.
    *
-   * @param region_qvar Clip editor region.
    * @param startTicks Start position of the object in ticks.
    * @param value Either pitch (int), automation point value (double) or chord
    * ID.
    */
-template <RegionObject RegionT>
-auto add_editor_object (
-  RegionT                  &region,
-  double                    startTicks,
-  std::variant<int, double> value)
-  -> RegionT::ArrangerObjectChildType * requires (
-    !std::is_same_v<RegionT, AudioRegion>) {
+  template <structure::arrangement::RegionObject RegionT>
+  auto create_editor_object (double startTicks, std::variant<int, double> value)
+    requires (!std::is_same_v<RegionT, structure::arrangement::AudioRegion>)
+  {
     using ChildT = typename RegionT::ArrangerObjectChildType;
     auto builder =
       std::move (get_builder<ChildT> ().with_start_ticks (startTicks));
@@ -454,205 +394,7 @@ auto add_editor_object (
       {
         builder.with_chord_descriptor (std::get<int> (value));
       }
-    auto obj_ref = builder.build_in_registry ();
-    region.add_object (obj_ref);
-    auto obj = std::get<ChildT *> (obj_ref.get_object ());
-    {
-      auto sel_mgr = get_selection_manager_for_object (*obj);
-      set_selection_handler_to_object (*obj);
-      sel_mgr.append_to_selection (obj->get_uuid ());
-    }
-    return obj;
-  }
-
-public :
-    /**
-     * @brief
-     *
-     * @param lane
-     * @param clip_id
-     * @param start_ticks
-     * @return AudioRegion*
-     */
-    AudioRegion * add_audio_region_with_clip (
-      Track                            &track,
-      TrackLane                        &lane,
-      dsp::FileAudioSourceUuidReference clip_id,
-      double                            start_ticks)
-  {
-    auto obj_ref =
-      create_audio_region_with_clip (std::move (clip_id), start_ticks);
-    add_laned_object (track, lane, obj_ref);
-    return std::get<AudioRegion *> (obj_ref.get_object ());
-  }
-
-  ScaleObject * add_scale_object (
-    structure::tracks::ChordTrack             &chord_track,
-    utils::QObjectUniquePtr<dsp::MusicalScale> scale,
-    double                                     start_ticks)
-  {
-    auto obj_ref =
-      get_builder<ScaleObject> ()
-        .with_start_ticks (start_ticks)
-        .with_scale (std::move (scale))
-        .build_in_registry ();
-    chord_track.ArrangerObjectOwner<ScaleObject>::add_object (obj_ref);
-    return std::get<ScaleObject *> (obj_ref.get_object ());
-  }
-
-  Q_INVOKABLE Marker * addMarker (
-    Marker::MarkerType               markerType,
-    structure::tracks::MarkerTrack * markerTrack,
-    const QString                   &name,
-    double                           startTicks)
-
-  {
-    auto marker_ref =
-      get_builder<Marker> ()
-        .with_start_ticks (startTicks)
-        .with_name (name)
-        .build_in_registry ();
-    markerTrack->add_object (marker_ref);
-    return std::get<Marker *> (marker_ref.get_object ());
-  }
-
-  Q_INVOKABLE MidiRegion *
-  addEmptyMidiRegion (Track * track, TrackLane * lane, double startTicks)
-  {
-    auto mr_ref =
-      get_builder<MidiRegion> ()
-        .with_start_ticks (startTicks)
-        .build_in_registry ();
-    add_laned_object (*track, *lane, mr_ref);
-    return std::get<MidiRegion *> (mr_ref.get_object ());
-  }
-
-  Q_INVOKABLE ChordRegion *
-  addEmptyChordRegion (structure::tracks::ChordTrack * track, double startTicks)
-  {
-    auto cr_ref =
-      get_builder<ChordRegion> ()
-        .with_start_ticks (startTicks)
-        .build_in_registry ();
-    auto * chord_region = cr_ref.get_object_as<ChordRegion> ();
-    chord_region->regionMixin ()->name ()->setName (
-      track->generate_name_for_region (*chord_region));
-    track->ArrangerObjectOwner<ChordRegion>::add_object (cr_ref);
-    return cr_ref.get_object_as<ChordRegion> ();
-  }
-
-  Q_INVOKABLE AutomationRegion * addEmptyAutomationRegion (
-    tracks::AutomationTrack * automationTrack,
-    double                    startTicks)
-
-  {
-    // TODO
-    return nullptr;
-#if 0
-    auto ar_ref =
-      get_builder<AutomationRegion> ()
-        .with_start_ticks (startTicks)
-        .build_in_registry ();
-    auto track_var = automationTrack->get_track ();
-    std::visit (
-      [&] (auto &&track) {
-        track->structure::tracks::Track::template add_region<AutomationRegion> (
-          ar_ref, automationTrack, std::nullopt, true);
-      },
-      track_var);
-    return std::get<AutomationRegion *> (ar_ref.get_object ());
-#endif
-  }
-
-  AudioRegion * add_empty_audio_region_for_recording (
-    Track                   &track,
-    TrackLane               &lane,
-    int                      num_channels,
-    const utils::Utf8String &clip_name,
-    double                   start_ticks)
-  {
-    auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
-      num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
-    auto region_ref =
-      create_audio_region_with_clip (std::move (clip), start_ticks);
-    add_laned_object (track, lane, region_ref);
-    return std::get<AudioRegion *> (region_ref.get_object ());
-  }
-
-  Q_INVOKABLE AudioRegion * addAudioRegionFromFile (
-    Track *        track,
-    TrackLane *    lane,
-    const QString &absPath,
-    double         startTicks)
-  {
-    auto clip = file_audio_source_registry_.create_object<dsp::FileAudioSource> (
-      utils::Utf8String::from_qstring (absPath), sample_rate_provider_ (),
-      bpm_provider_ ());
-    auto ar_ref = create_audio_region_with_clip (std::move (clip), startTicks);
-    add_laned_object (*track, *lane, ar_ref);
-    return std::get<AudioRegion *> (ar_ref.get_object ());
-  }
-
-  /**
-   * @brief Creates a MIDI region at @p lane from the given @p descr
-   * starting at @p startTicks.
-   */
-  Q_INVOKABLE MidiRegion * addMidiRegionFromChordDescriptor (
-    Track *                     track,
-    TrackLane *                 lane,
-    const dsp::ChordDescriptor &descr,
-    double                      startTicks);
-
-  /**
-   * @brief Creates a MIDI region at @p lane from MIDI file path @p abs_path
-   * starting at @p startTicks.
-   *
-   * @param midi_track_idx The index of this track, starting from 0. This
-   * will be sequential, ie, if idx 1 is requested and the MIDI file only
-   * has tracks 5 and 7, it will use track 7.
-   */
-  Q_INVOKABLE MidiRegion * addMidiRegionFromMidiFile (
-    Track *        track,
-    TrackLane *    lane,
-    const QString &absolutePath,
-    double         startTicks,
-    int            midiTrackIndex);
-
-  Q_INVOKABLE MidiNote *
-  addMidiNote (MidiRegion * region, double startTicks, int pitch)
-  {
-    return add_editor_object (*region, startTicks, pitch);
-  }
-
-  Q_INVOKABLE AutomationPoint *
-  addAutomationPoint (AutomationRegion * region, double startTicks, double value)
-
-  {
-    return add_editor_object (*region, startTicks, value);
-  }
-
-  Q_INVOKABLE ChordObject *
-  addChordObject (ChordRegion * region, double startTicks, const int chordIndex)
-
-  {
-    return add_editor_object (*region, startTicks, chordIndex);
-  }
-
-  /**
-   * @brief Temporary solution for splitting regions.
-   *
-   * Eventually need a public method here that not only creates the region but
-   * also adds it to the project like the rest of the public API here.
-   */
-  auto create_audio_region_from_audio_buffer_FIXME (
-    TrackLane                       &lane,
-    const utils::audio::AudioBuffer &buf,
-    utils::audio::BitDepth           bit_depth,
-    const utils::Utf8String         &clip_name,
-    double                           start_ticks) const
-  {
-    return create_audio_region_from_audio_buffer (
-      buf, bit_depth, clip_name, start_ticks);
+    return builder.build_in_registry ();
   }
 
   template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
@@ -660,23 +402,26 @@ public :
   {
     if constexpr (std::is_same_v<ObjT, AudioRegion>)
       {
-        return object_registry_.clone_object (
-          other, tempo_map_, object_registry_, file_audio_source_registry_,
-          [this] () { return settings_manager_.get_musicalMode (); });
+        return dependencies_.object_registry_.clone_object (
+          other, dependencies_.tempo_map_, dependencies_.object_registry_,
+          dependencies_.file_audio_source_registry_,
+          dependencies_.musical_mode_getter_);
       }
     else if constexpr (RegionObject<ObjT>)
       {
-        return object_registry_.clone_object (
-          other, tempo_map_, object_registry_, file_audio_source_registry_);
+        return dependencies_.object_registry_.clone_object (
+          other, dependencies_.tempo_map_, dependencies_.object_registry_,
+          dependencies_.file_audio_source_registry_);
       }
     else if constexpr (std::is_same_v<ObjT, Marker>)
       {
-        return object_registry_.clone_object (
-          other, tempo_map_, other.markerType ());
+        return dependencies_.object_registry_.clone_object (
+          other, dependencies_.tempo_map_, other.markerType ());
       }
     else
       {
-        return object_registry_.clone_object (other, tempo_map_);
+        return dependencies_.object_registry_.clone_object (
+          other, dependencies_.tempo_map_);
       }
   }
 
@@ -708,58 +453,9 @@ public :
   }
 #endif
 
-  template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
-  auto get_selection_manager_for_object (const ObjT &obj) const
-  {
-    if constexpr (TimelineObject<ObjT>)
-      {
-        return timeline_selections_manager_;
-      }
-    else if constexpr (std::is_same_v<ObjT, MidiNote>)
-      {
-        return midi_selections_manager_;
-      }
-    else if constexpr (std::is_same_v<ObjT, AutomationPoint>)
-      {
-        return automation_selections_manager_;
-      }
-    else if constexpr (std::is_same_v<ObjT, ChordObject>)
-      {
-        return chord_selections_manager_;
-      }
-    else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
-      {
-        return audio_selections_manager_;
-      }
-    else
-      {
-        static_assert (false);
-      }
-  }
-
-  template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
-  void set_selection_handler_to_object (ObjT &obj)
-  {
-    auto sel_mgr = get_selection_manager_for_object (obj);
-    obj.set_selection_status_getter ([sel_mgr] (const ArrangerObject::Uuid &id) {
-      return sel_mgr.is_selected (id);
-    });
-  }
-
 private:
-  const dsp::TempoMap            &tempo_map_;
-  ArrangerObjectRegistry         &object_registry_;
-  dsp::FileAudioSourceRegistry   &file_audio_source_registry_;
-  gui::SettingsManager           &settings_manager_;
-  dsp::SnapGrid                  &snap_grid_timeline_;
-  dsp::SnapGrid                  &snap_grid_editor_;
-  std::function<sample_rate_t ()> sample_rate_provider_;
-  std::function<bpm_t ()>         bpm_provider_;
-  ArrangerObjectSelectionManager  audio_selections_manager_;
-  ArrangerObjectSelectionManager  timeline_selections_manager_;
-  ArrangerObjectSelectionManager  midi_selections_manager_;
-  ArrangerObjectSelectionManager  chord_selections_manager_;
-  ArrangerObjectSelectionManager  automation_selections_manager_;
-  ClipEditor                     &clip_editor_;
+  Dependencies       dependencies_;
+  SampleRateProvider sample_rate_provider_;
+  BpmProvider        bpm_provider_;
 };
 }

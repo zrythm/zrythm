@@ -33,7 +33,7 @@ Arranger {
       break;
     case Track.Marker:
       console.log("creating marker", Track.Marker, ArrangerObject.Marker);
-      let marker = objectFactory.addMarker(Marker.Custom, track, qsTr("Custom Marker"), x / root.ruler.pxPerTick);
+      let marker = objectCreator.addMarker(Marker.Custom, track, qsTr("Custom Marker"), x / root.ruler.pxPerTick);
       root.currentAction = Arranger.CreatingMoving;
       root.setObjectSnapshotsAtStart();
       CursorManager.setClosedHandCursor();
@@ -42,7 +42,7 @@ Arranger {
     case Track.Midi:
     case Track.Instrument:
       console.log("creating midi region", track.lanes.getFirstLane());
-      let region = objectFactory.addEmptyMidiRegion(track, trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
+      let region = objectCreator.addEmptyMidiRegion(track, trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
       root.currentAction = Arranger.CreatingResizingR;
       root.setObjectSnapshotsAtStart();
       CursorManager.setResizeEndCursor();
@@ -614,7 +614,7 @@ Arranger {
       }
     }
     model: TrackFilterProxyModel {
-      sourceModel: root.tracklist
+      sourceModel: root.tracklist.collection
 
       Component.onCompleted: {
         addVisibilityFilter(true);

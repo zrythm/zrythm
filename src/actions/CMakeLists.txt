@@ -41,3 +41,10 @@ qt_add_qml_module(zrythm_actions_lib
     TARGET zrythm_undo_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmActions
 )
+
+# TODO move to actions lib
+target_sources(zrythm_gui_lib
+  PRIVATE
+    arranger_object_creator.h
+    arranger_object_creator.cpp
+)

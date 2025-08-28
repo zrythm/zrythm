@@ -38,8 +38,7 @@ AutomationFunction::apply (ArrangerObjectSpan sel_var, Type type)
       {
 
         ap->curveOpts ()->setCurviness (1.0);
-        ap->curveOpts ()->setAlgorithm (
-          std::to_underlying (dsp::CurveOptions::Algorithm::Pulse));
+        ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Pulse);
       }
   };
 
