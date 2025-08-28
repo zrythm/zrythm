@@ -218,11 +218,10 @@ SnapGrid::get_prev_or_next_snap_point (
 
       // callback should only return points in the range but this is not a hard
       // requirement. enforce the range here
-      std::ranges::remove_if (
-        event_points, [allowable_event_range] (const auto &point) {
-          return point < allowable_event_range.first
-                 || point >= allowable_event_range.second;
-        });
+      std::erase_if (event_points, [allowable_event_range] (const auto &point) {
+        return point < allowable_event_range.first
+               || point >= allowable_event_range.second;
+      });
 
       auto it = utils::algorithms::find_closest (event_points, pivot_ticks);
       if (it != event_points.end ())
