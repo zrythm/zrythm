@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <mutex>
 #include <utility>
 
 #include "dsp/file_audio_source.h"
@@ -208,7 +209,13 @@ FileAudioSourceWriter::write_to_file ()
   assert (source_.get_samplerate () > 0);
   assert (frames_written_ < std::numeric_limits<size_t>::max ());
 
+  // Use a static mutex to protect JUCE object creation to avoid data races
+  // in LeakedObjectDetector counters during multi-threaded execution
+  static std::mutex juce_creation_mutex;
+
   auto create_writer_for_filepath = [&] () {
+    std::lock_guard lock (juce_creation_mutex);
+
     auto file = utils::Utf8String::from_path (writer_path_).to_juce_file ();
     auto out_stream = std::make_unique<juce::FileOutputStream> (file);
 
