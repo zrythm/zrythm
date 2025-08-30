@@ -34,6 +34,7 @@ public:
     bool                                is_main,
     GraphScheduler                     &scheduler,
     std::optional<juce::AudioWorkgroup> workgroup = std::nullopt);
+  ~GraphThread () override;
 
 public:
   /**
@@ -77,6 +78,13 @@ public:
    * @see juce::AudioDeviceManager::getDeviceAudioWorkgroup().
    */
   std::optional<juce::AudioWorkgroup> audio_workgroup_;
+
+private:
+  /**
+   * @brief Flag to indicate the thread has completely finished execution.
+   * Used to synchronize thread termination with object deletion.
+   */
+  std::atomic<bool> thread_finished_{ false };
 };
 
 } // namespace zrythm::dsp::graph

@@ -71,6 +71,8 @@
 
 #include "zrythm-config.h"
 
+#include <utility>
+
 #include "utils/dsp_context.h"
 #include "utils/logger.h"
 
@@ -318,6 +320,9 @@ GraphThread::run ()
     {
       z_info ("[{}]: terminating thread", id_);
     }
+
+  /* Mark that this thread has completely finished execution */
+  thread_finished_.store (true);
 }
 
 static size_t
@@ -366,8 +371,18 @@ GraphThread::GraphThread (
         is_main ? "GraphWorkerMain" : fmt::format ("GraphWorker{}", id),
         THREAD_STACK_SIZE + get_stack_size ()),
       id_ (id), is_main_ (is_main), scheduler_ (scheduler),
-      audio_workgroup_ (workgroup)
+      audio_workgroup_ (std::move (workgroup))
 {
+}
+
+GraphThread::~GraphThread ()
+{
+  /* Wait for the thread to completely finish before destruction */
+  if (!thread_finished_.load ())
+    {
+      /* If the thread is still running, wait for it to finish */
+      waitForThreadToExit (-1);
+    }
 }
 
 } // namespace zrythm::dsp::graph
