@@ -61,7 +61,7 @@ public:
     return obj_ref;
   }
 
-  auto create_empty_track (Track::Type type) const
+  TrackUuidReference create_empty_track (Track::Type type) const
   {
     switch (type)
       {
@@ -90,6 +90,8 @@ public:
       case Track::Type::AudioGroup:
         return create_empty_track<AudioGroupTrack> ();
       }
+
+    throw std::invalid_argument ("invalid track type");
   }
 
   template <typename TrackT>

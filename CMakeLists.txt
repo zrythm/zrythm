@@ -513,7 +513,13 @@ endif()
 if(WIN32)
   if(MSVC)
     add_compile_options(/utf-8)
-    target_compile_options(_zrythm_compile_options INTERFACE "/Zc:__cplusplus")
+
+    target_compile_options(_zrythm_compile_options INTERFACE
+      "/Zc:__cplusplus"
+      # Some files are too big causing compilation errors - this increases the section limit in object files.
+      # It requires slightly higher RAM but compilation time difference is negligible, so enable globally.
+      /bigobj
+    )
   else() # mingw
     add_compile_options(-fno-ms-extensions)
     target_compile_options(_zrythm_compile_options INTERFACE
