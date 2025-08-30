@@ -30,6 +30,7 @@
 #include "utils/mpmc_queue.h"
 #include "utils/rt_thread_id.h"
 
+#include <boost/unordered/concurrent_flat_set.hpp>
 #include <moodycamel/lightweightsemaphore.h>
 
 namespace zrythm::dsp::graph
@@ -155,8 +156,8 @@ private:
   void release_node_resources ();
 
 private:
-  std::vector<GraphThreadPtr> threads_;
-  GraphThreadPtr              main_thread_;
+  boost::concurrent_flat_set<GraphThreadPtr> threads_;
+  GraphThreadPtr                             main_thread_;
 
   /**
    * @brief Time info for the current process cycle.

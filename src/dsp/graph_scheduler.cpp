@@ -132,7 +132,7 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
       z_debug ("creating {} threads", num_threads.value ());
       for (int i = 0; i < num_threads.value (); ++i)
         {
-          threads_.emplace_back (
+          threads_.insert (
             std::make_unique<GraphThread> (i, false, *this, thread_workgroup_));
         }
 
@@ -171,17 +171,16 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
   };
 
   // start them sequentially
-  for (auto &thread : threads_)
-    {
-      start_thread (thread);
+  threads_.cvisit_all ([&] (auto &thread) {
+    start_thread (thread);
 
-      // wait for this thread to initialize before starting the next one
-      // this fixes an internal JUCE race condition on first thread construction
-      while (idle_thread_cnt_.load () < 1)
-        {
-          std::this_thread::sleep_for (std::chrono::microseconds (100));
-        }
-    }
+    // wait for this thread to initialize before starting the next one
+    // this fixes an internal JUCE race condition on first thread construction
+    while (idle_thread_cnt_.load () < 1)
+      {
+        std::this_thread::sleep_for (std::chrono::microseconds (100));
+      }
+  });
   start_thread (main_thread_);
 
   /* wait for all threads to go idle */
@@ -201,10 +200,9 @@ GraphScheduler::terminate_threads ()
   z_info ("terminating graph...");
 
   /* Flag threads to terminate */
-  for (auto &thread : threads_)
-    {
-      thread->signalThreadShouldExit ();
-    }
+  threads_.cvisit_all ([&] (auto &thread) {
+    thread->signalThreadShouldExit ();
+  });
   main_thread_->signalThreadShouldExit ();
 
   /* wait for all threads to go idle */
@@ -234,12 +232,13 @@ GraphScheduler::terminate_threads ()
   /* and the main thread */
   callback_start_sem_.signal ();
 
-  /* join threads */
-  for (auto &thread : threads_)
-    {
-      thread->waitForThreadToExit (50);
-    }
-  main_thread_->waitForThreadToExit (50);
+  /* join threads - wait indefinitely to ensure complete termination */
+  threads_.cvisit_all ([&] (auto &thread) {
+    thread->waitForThreadToExit (-1);
+  });
+  main_thread_->waitForThreadToExit (-1);
+
+  /* Clear threads only after all threads have been joined */
   threads_.clear ();
   main_thread_.reset ();
 
@@ -249,12 +248,20 @@ GraphScheduler::terminate_threads ()
 bool
 GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
 {
-  for (const auto &thread : threads_)
+  // this is not ideal performance-wise, but this method is called rarely and
+  // the result is cached in DspGraphDispatcher
+  bool found{};
+  threads_.cvisit_while ([&] (auto &thread) {
+    if (thread_id == thread->rt_thread_id_.load ())
+      {
+        found = true;
+        return false; // finish
+      }
+    return true; // keep on visiting
+  });
+  if (found)
     {
-      if (thread_id == thread->rt_thread_id_.load ())
-        {
-          return true;
-        }
+      return true;
     }
 
   return main_thread_ && thread_id == main_thread_->rt_thread_id_.load ();
