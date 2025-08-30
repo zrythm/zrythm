@@ -170,10 +170,17 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
       }
   };
 
-  /* start them */
+  // start them sequentially
   for (auto &thread : threads_)
     {
       start_thread (thread);
+
+      // wait for this thread to initialize before starting the next one
+      // this fixes an internal JUCE race condition on first thread construction
+      while (idle_thread_cnt_.load () < 1)
+        {
+          std::this_thread::sleep_for (std::chrono::microseconds (100));
+        }
     }
   start_thread (main_thread_);
 
