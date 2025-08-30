@@ -233,7 +233,7 @@ Project::Project (
   // auto-select tracks when added to the project
   QObject::connect (
     tracklist_->collection (), &structure::tracks::TrackCollection::rowsInserted,
-    this, [this] (const QModelIndex &parent, int first, int last) {
+    this, [this] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
           const auto track_id =
@@ -246,7 +246,7 @@ Project::Project (
   QObject::connect (
     tracklist_->collection (),
     &structure::tracks::TrackCollection::rowsAboutToBeRemoved, this,
-    [this] (const QModelIndex &parent, int first, int last) {
+    [this] (const QModelIndex &, int first, int last) {
       auto &selection_mgr = *track_selection_manager_;
       for (int i = first; i <= last; ++i)
         {
@@ -259,7 +259,7 @@ Project::Project (
   // ensure at least 1 track is always selected
   QObject::connect (
     tracklist_->collection (), &structure::tracks::TrackCollection::rowsRemoved,
-    this, [this] (const QModelIndex &parent, int first, int last) {
+    this, [this] (const QModelIndex &, int first, int last) {
       auto &selection_mgr = *track_selection_manager_;
       if (selection_mgr.empty ())
         {
