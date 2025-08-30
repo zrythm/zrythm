@@ -150,8 +150,8 @@ ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
   using ObjectView = utils::UuidIdentifiableObjectView<PortRegistry>;
 
-  const auto in_ports = processing_caches_->live_input_ports_;
-  const auto out_ports = processing_caches_->live_output_ports_;
+  const auto &in_ports = processing_caches_->live_input_ports_;
+  const auto &out_ports = processing_caches_->live_output_ports_;
 
   auto midi_in_ports =
     in_ports | std::views::filter (ObjectView::type_projection<MidiPort>)
