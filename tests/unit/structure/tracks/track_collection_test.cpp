@@ -33,7 +33,7 @@ protected:
       plugin_registry,      port_registry,
       param_registry,       obj_registry,
       *track_registry,      transport,
-      [] { return false; }, [] { return false; },
+      [] { return false; },
     };
 
     return track_registry->create_object<FolderTrack> (std::move (deps));
@@ -43,11 +43,11 @@ protected:
   TrackUuidReference create_audio_bus_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map,           file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, [] { return false; }
+      *tempo_map,          file_audio_source_registry,
+      plugin_registry,     port_registry,
+      param_registry,      obj_registry,
+      *track_registry,     transport,
+      [] { return false; }
     };
 
     return track_registry->create_object<AudioBusTrack> (std::move (deps));

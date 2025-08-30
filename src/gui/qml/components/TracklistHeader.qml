@@ -9,7 +9,7 @@ import ZrythmStyle
 ZrythmToolBar {
   id: root
 
-  required property TrackFactory trackFactory
+  required property TrackCreator trackCreator
   required property Tracklist tracklist
   property alias tempoMapVisible: tempoMeterButton.checked
 
@@ -31,13 +31,13 @@ ZrythmToolBar {
         MenuItem {
           text: qsTr("Add _MIDI Track")
 
-          onTriggered: root.trackFactory.addEmptyTrackFromType(Track.Midi)
+          onTriggered: root.trackCreator.addEmptyTrackFromType(Track.Midi)
         }
 
         MenuItem {
           text: qsTr("Add Audio Track")
 
-          onTriggered: root.trackFactory.addEmptyTrackFromType(Track.Audio)
+          onTriggered: root.trackCreator.addEmptyTrackFromType(Track.Audio)
         }
 
         MenuSeparator {
@@ -53,13 +53,13 @@ ZrythmToolBar {
         MenuItem {
           text: qsTr("Add Audio FX Track")
 
-          onTriggered: root.trackFactory.addEmptyTrackFromType(Track.AudioBus)
+          onTriggered: root.trackCreator.addEmptyTrackFromType(Track.AudioBus)
         }
 
         MenuItem {
           text: qsTr("Add MIDI FX Track")
 
-          onTriggered: root.trackFactory.addEmptyTrackFromType(Track.MidiBus)
+          onTriggered: root.trackCreator.addEmptyTrackFromType(Track.MidiBus)
         }
 
         MenuSeparator {
@@ -68,13 +68,13 @@ ZrythmToolBar {
         MenuItem {
           text: qsTr("Add Audio Group Track")
 
-          onTriggered: root.trackFactory.addEmptyTrackFromType(Track.AudioGroup)
+          onTriggered: root.trackCreator.addEmptyTrackFromType(Track.AudioGroup)
         }
 
         MenuItem {
           text: qsTr("Add MIDI Group Track")
 
-          onTriggered: root.trackFactory.addEmptyTrackFromType(Track.MidiGroup)
+          onTriggered: root.trackCreator.addEmptyTrackFromType(Track.MidiGroup)
         }
 
         MenuSeparator {
@@ -83,7 +83,7 @@ ZrythmToolBar {
         MenuItem {
           text: qsTr("Add Folder Track")
 
-          onTriggered: root.trackFactory.addEmptyTrackFromType(Track.Folder)
+          onTriggered: root.trackCreator.addEmptyTrackFromType(Track.Folder)
         }
       }
     }

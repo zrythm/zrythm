@@ -63,9 +63,13 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
 
   // fill live key-press events for the currently active piano roll
   {
-    auto &midi_events = audio_engine_->midi_editor_manual_press_;
+    [[maybe_unused]] auto &midi_events =
+      audio_engine_->midi_editor_manual_press_;
     if (time_nfo.local_offset_ == 0 && CLIP_EDITOR->has_region ())
       {
+// FIXME!!!! threading bug here. clip editor region & track may be
+// changed in the main (UI) thread while this is attempted
+#if 0
         auto clip_editor_track_var =
           CLIP_EDITOR->get_region_and_track ()->second;
         std::visit (
@@ -94,6 +98,7 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
               }
           },
           clip_editor_track_var);
+#endif
       }
   }
 }

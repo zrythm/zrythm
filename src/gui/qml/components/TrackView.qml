@@ -22,6 +22,8 @@ Control {
   required property bool foldable
   property bool isResizing: false
   required property Track track // connected automatically when used as a delegate for a Tracklist model
+  property bool trackSelected: control.trackSelectionManager.isSelected(control.track)
+  required property TrackSelectionManager trackSelectionManager
   required property Tracklist tracklist
   required property UndoStack undoStack
 
@@ -36,7 +38,7 @@ Control {
       if (control.hovered)
         c = Style.getColorBlendedTowardsContrast(c);
 
-      if (control.track.selected || bgTapHandler.pressed)
+      if (control.trackSelected || bgTapHandler.pressed)
         c = Style.getColorBlendedTowardsContrast(c);
 
       return c;
@@ -52,7 +54,7 @@ Control {
       acceptedButtons: Qt.LeftButton | Qt.RightButton
 
       onTapped: function (point) {
-        control.tracklist.setExclusivelySelectedTrack(control.track);
+        control.trackSelectionManager.selectUnique(control.track);
       }
     }
   }
@@ -85,6 +87,7 @@ Control {
           checked: control.expanded
           text: control.expanded ? "−" : "+"
           visible: control.foldable
+
           onToggled: control.tracklist.collection.setTrackExpanded(control.track, !control.expanded)
 
           anchors {
@@ -226,6 +229,14 @@ Control {
   }
 
   Connections {
+    function onSelectionChanged() {
+      control.trackSelected = control.trackSelectionManager.isSelected(control.track);
+    }
+
+    target: control.trackSelectionManager
+  }
+
+  Connections {
     function onAutomationVisibleChanged() {
       control.track.fullVisibleHeightChanged();
     }
@@ -305,7 +316,7 @@ Control {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
             Layout.fillWidth: true
             elide: Text.ElideRight
-            font: control.track.selected ? Style.buttonTextFont : Style.normalTextFont
+            font: control.trackSelected ? Style.buttonTextFont : Style.normalTextFont
             text: control.track.name
           }
 

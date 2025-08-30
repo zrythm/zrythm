@@ -63,27 +63,41 @@ void
 ModulatorMacroProcessor::custom_process_block (
   const EngineProcessTimeInfo time_nfo) noexcept
 {
-  auto &macro = get_macro_param ();
-  auto &cv_in = get_cv_in_port ();
-  auto &cv_out = get_cv_out_port ();
-
   /* if there are inputs, multiply by the knob value */
-  if (!cv_in.port_sources_.empty ())
+  if (!processing_caches_->cv_in_->port_sources_.empty ())
     {
       utils::float_ranges::copy (
-        &cv_out.buf_[time_nfo.local_offset_],
-        &cv_in.buf_[time_nfo.local_offset_], time_nfo.nframes_);
-      utils::float_ranges::mul_k2 (
-        &cv_out.buf_[time_nfo.local_offset_], macro.currentValue (),
+        &processing_caches_->cv_out_->buf_[time_nfo.local_offset_],
+        &processing_caches_->cv_in_->buf_[time_nfo.local_offset_],
         time_nfo.nframes_);
+      utils::float_ranges::mul_k2 (
+        &processing_caches_->cv_out_->buf_[time_nfo.local_offset_],
+        processing_caches_->macro_param_->currentValue (), time_nfo.nframes_);
     }
   /* else if there are no inputs, set the knob value as the output */
   else
     {
       utils::float_ranges::fill (
-        &cv_out.buf_[time_nfo.local_offset_], macro.currentValue (),
-        time_nfo.nframes_);
+        &processing_caches_->cv_out_->buf_[time_nfo.local_offset_],
+        processing_caches_->macro_param_->currentValue (), time_nfo.nframes_);
     }
+}
+
+void
+ModulatorMacroProcessor::custom_prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
+{
+  processing_caches_ = std::make_unique<ProcessingCaches> ();
+  processing_caches_->macro_param_ = &get_macro_param ();
+  processing_caches_->cv_in_ = &get_cv_in_port ();
+  processing_caches_->cv_out_ = &get_cv_out_port ();
+}
+
+void
+ModulatorMacroProcessor::custom_release_resources ()
+{
+  processing_caches_.reset ();
 }
 
 utils::Utf8String

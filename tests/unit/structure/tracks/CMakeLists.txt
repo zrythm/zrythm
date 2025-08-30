@@ -12,6 +12,7 @@ add_executable(zrythm_structure_tracks_unit_tests
   piano_roll_track_test.cpp
   recordable_track_test.cpp
   track_collection_test.cpp
+  track_factory_test.cpp
   track_lane_test.cpp
   track_lane_list_test.cpp
   track_test.cpp

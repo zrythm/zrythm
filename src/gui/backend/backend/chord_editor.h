@@ -11,6 +11,7 @@
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
+#include "gui/backend/arranger_object_selection_manager.h"
 #include "gui/backend/backend/editor_settings.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
@@ -38,6 +39,9 @@ class ChordEditor : public QObject
   Q_PROPERTY (
     gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
+      selectionManager CONSTANT)
   QML_ELEMENT
 
 public:
@@ -47,7 +51,15 @@ public:
   using MusicalScale = dsp::MusicalScale;
   using MusicalNote = dsp::MusicalNote;
 
-  ChordEditor (QObject * parent = nullptr) : QObject (parent) { }
+  ChordEditor (
+    const structure::arrangement::ArrangerObjectRegistry &registry,
+    QObject *                                             parent = nullptr)
+      : QObject (parent),
+        selection_manager_ (
+          utils::make_qobject_unique<
+            gui::backend::ArrangerObjectSelectionManager> (registry, this))
+  {
+  }
 
   // =========================================================
   // QML interface
@@ -56,6 +68,11 @@ public:
   gui::backend::EditorSettings * getEditorSettings () const
   {
     return editor_settings_.get ();
+  }
+
+  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
+  {
+    return selection_manager_.get ();
   }
 
   // =========================================================
@@ -98,7 +115,6 @@ public:
   {
     obj.editor_settings_ =
       utils::clone_unique_qobject (*other.editor_settings_, &obj);
-    obj.selected_objects_ = other.selected_objects_;
   }
 
   void add_chord_descriptor (ChordDescriptor &&chord_descr)
@@ -114,8 +130,6 @@ public:
     chords_.insert (chords_.begin () + index, std::move (chord_descr));
     get_chord_at_index (index).update_notes ();
   }
-
-  auto &get_selected_object_ids () { return selected_objects_; }
 
 private:
   static constexpr auto kEditorSettingsKey = "editorSettings"sv;
@@ -143,8 +157,8 @@ public:
 private:
   utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_;
 
-  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
-    selected_objects_;
+  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
+    selection_manager_;
 };
 
 /**

@@ -191,6 +191,19 @@ public:
   nframes_t nframes_ = 0;
 };
 
+// TODO: check if pausing/resuming can be done with RAII
+struct EngineState
+{
+  /** Engine running. */
+  bool running_;
+  /** Playback. */
+  bool playing_;
+  /** Transport loop. */
+  bool looping_;
+};
+using GraphStopRequester = std::function<void (EngineState &)>;
+using GraphResumeRequester = std::function<void (EngineState &)>;
+
 /**
  * Beat unit.
  */

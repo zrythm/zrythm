@@ -60,15 +60,12 @@ AudioPool::get_clip_path (const dsp::FileAudioSource::Uuid &id, bool is_backup)
 }
 
 void
-AudioPool::
-  write_clip (const FileAudioSource::Uuid &clip_id, bool parts, bool backup)
+AudioPool::write_clip (const FileAudioSource * clip, bool parts, bool backup)
 {
-  auto * clip = std::get<dsp::FileAudioSource *> (
-    clip_registry_.find_by_id_or_throw (clip_id));
-
   z_debug (
     "attempting to write clip {} ({}) to pool...", clip->get_name (),
     clip->get_uuid ());
+  const auto clip_id = clip->get_uuid ();
 
   /* generate a copy of the given filename in the project dir */
   auto path_in_main_project = get_clip_path (clip_id, false);
@@ -154,7 +151,8 @@ AudioPool::duplicate_clip (const FileAudioSource::Uuid &clip_id, bool write_file
 
   if (write_file)
     {
-      write_clip (new_clip_ref.id (), false, false);
+      write_clip (
+        new_clip_ref.get_object_as<dsp::FileAudioSource> (), false, false);
     }
 
   return new_clip_ref;
@@ -272,7 +270,7 @@ AudioPool::write_to_disk (bool is_backup)
 
             try
               {
-                write_clip (clip->get_uuid (), false, is_backup);
+                write_clip (clip, false, is_backup);
               }
             catch (const ZrythmException &e)
               {

@@ -456,6 +456,7 @@ TracklistSelectionsAction::create_track (int idx)
 
   if (is_empty_)
     {
+#if 0
       auto track_type_str = Track_Type_to_string (track_type_, true);
       auto label = format_qstr (QObject::tr ("{} Track"), track_type_str);
       auto track_id_ref =
@@ -466,6 +467,7 @@ TracklistSelectionsAction::create_track (int idx)
           TRACKLIST->insert_track (track_id_ref, pos);
         },
         track_id_ref.get_object ());
+#endif
     }
   else /* else if track is not empty */
     {
@@ -490,6 +492,8 @@ TracklistSelectionsAction::create_track (int idx)
       /* at this point we can assume it has a plugin */
       else
         {
+// TODO
+#if 0
           const auto &descr = pl_setting_->descr_;
 
           auto track_id_ref =
@@ -503,6 +507,7 @@ TracklistSelectionsAction::create_track (int idx)
           // track = track_id_ref.get_object ();
           has_plugin = true;
           name = descr->name_;
+#endif
         }
 
       std::visit (
@@ -526,7 +531,7 @@ TracklistSelectionsAction::create_track (int idx)
 #endif
             }
 
-          TRACKLIST->insert_track (added_track_ref, pos);
+          TRACKLIST->collection ()->insert_track (added_track_ref, pos);
 
 // TODO
 #if 0
@@ -792,7 +797,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                 TRACKLIST->collection ()->get_track_at_index (track_pos_ + i);
               std::visit (
                 [&] (auto &&track) {
-                  TRACKLIST->remove_track (track->get_uuid ());
+                  TRACKLIST->collection ()->remove_track (track->get_uuid ());
                 },
                 tr);
             }
@@ -871,7 +876,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 #endif
 
                   /* remove it */
-                  TRACKLIST->remove_track (prj_track->get_uuid ());
+                  TRACKLIST->collection ()->remove_track (
+                    prj_track->get_uuid ());
                 },
                 own_track_var);
             }

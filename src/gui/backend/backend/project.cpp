@@ -112,7 +112,16 @@ Project::Project (
         std::make_unique<engine::session::MidiMappings> (*param_registry_)),
       tracklist_ (new structure::tracks::Tracklist (*track_registry_, this)),
       undo_manager_ (new gui::actions::UndoManager (this)),
-      undo_stack_ (utils::make_qobject_unique<undo::UndoStack> (this)),
+      undo_stack_ (
+        utils::make_qobject_unique<undo::UndoStack> (
+          [&] (EngineState &state) {
+            audio_engine_->wait_for_pause (state, false, true);
+          },
+          [&] (EngineState &state) {
+            audio_engine_->router_->recalc_graph (false);
+            audio_engine_->resume (state);
+          },
+          this)),
       arranger_object_factory_ (
         std::make_unique<structure::arrangement::ArrangerObjectFactory> (
           structure::arrangement::ArrangerObjectFactory::Dependencies{
@@ -169,41 +178,106 @@ Project::Project (
             [this] () { return audio_engine_->router_->is_processing_thread (); } },
         *gui::SettingsManager::get_instance (),
         this)),
-      track_factory_ (new structure::tracks::TrackFactory (
-        get_final_track_dependencies (),
-        *gui::SettingsManager::get_instance (),
-        this)),
+      track_factory_ (
+        std::make_unique<structure::tracks::TrackFactory> (
+          get_final_track_dependencies ())),
       arranger_object_creator_ (
         utils::make_qobject_unique<actions::ArrangerObjectCreator> (
           *undo_stack_,
           *clip_editor_,
           *arranger_object_factory_,
-          actions::ArrangerObjectCreator::ArrangerObjectSelectionManagers{
-            .audio_selections_manager_ =
-              structure::arrangement::ArrangerObjectSelectionManager{
-                clip_editor_->getAudioClipEditor ()->get_selected_object_ids (),
-                *arranger_object_registry_ },
-            .timeline_selections_manager_ =
-              structure::arrangement::ArrangerObjectSelectionManager{
-                timeline_->get_selected_object_ids (), *arranger_object_registry_ },
-            .midi_selections_manager_ =
-              structure::arrangement::ArrangerObjectSelectionManager{
-                clip_editor_->getPianoRoll ()->get_selected_object_ids (),
-                *arranger_object_registry_ },
-            .chord_selections_manager_ =
-              structure::arrangement::ArrangerObjectSelectionManager{
-                clip_editor_->getChordEditor ()->get_selected_object_ids (),
-                *arranger_object_registry_ },
-            .automation_selections_manager_ =
-              structure::arrangement::ArrangerObjectSelectionManager{
-                clip_editor_->getAutomationEditor ()->get_selected_object_ids (),
-                *arranger_object_registry_ } },
           *snap_grid_timeline_,
           *snap_grid_editor_,
           this)),
+      track_creator_ (
+        utils::make_qobject_unique<actions::TrackCreator> (
+          *undo_stack_,
+          *track_factory_,
+          *tracklist_->collection (),
+          *tracklist_->trackRouting (),
+          *tracklist_->singletonTracks (),
+          this)),
+      track_selection_manager_ (
+        utils::make_qobject_unique<
+          gui::backend::TrackSelectionManager> (*track_registry_, this)),
+      plugin_selection_manager_ (
+        utils::make_qobject_unique<
+          gui::backend::PluginSelectionManager> (*plugin_registry_, this)),
       device_manager_ (device_manager)
 {
-  // audio_engine_ = std::make_unique<AudioEngine> (this);
+  // auto-arm management
+  QObject::connect (
+    track_selection_manager_.get (),
+    &gui::backend::TrackSelectionManager::objectSelectionStatusChanged, this,
+    [] (structure::tracks::Track * track, bool selected) {
+      if (gui::SettingsManager::get_instance ()->get_trackAutoArm ())
+        {
+          if (track->recordableTrackMixin () != nullptr)
+            {
+              auto * rec = track->recordableTrackMixin ();
+              if (selected && !rec->recording ())
+                {
+                  rec->get_recording_param ().setBaseValue (1.f);
+                  rec->record_set_automatically_ = true;
+                  Q_EMIT rec->recordingChanged (true);
+                }
+              else if (!selected && rec->record_set_automatically_)
+                {
+                  rec->get_recording_param ().setBaseValue (0.f);
+                  Q_EMIT rec->recordingChanged (false);
+                }
+            }
+        }
+    });
+
+  // auto-select tracks when added to the project
+  QObject::connect (
+    tracklist_->collection (), &structure::tracks::TrackCollection::rowsInserted,
+    this, [this] (const QModelIndex &parent, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          const auto track_id =
+            tracklist_->collection ()->tracks ().at (i).id ();
+          track_selection_manager_->select_unique (track_id);
+        }
+    });
+
+  // auto-deselect tracks when removed from the project
+  QObject::connect (
+    tracklist_->collection (),
+    &structure::tracks::TrackCollection::rowsAboutToBeRemoved, this,
+    [this] (const QModelIndex &parent, int first, int last) {
+      auto &selection_mgr = *track_selection_manager_;
+      for (int i = first; i <= last; ++i)
+        {
+          const auto track_id =
+            tracklist_->collection ()->tracks ().at (i).id ();
+          selection_mgr.remove_from_selection (track_id);
+        }
+    });
+
+  // ensure at least 1 track is always selected
+  QObject::connect (
+    tracklist_->collection (), &structure::tracks::TrackCollection::rowsRemoved,
+    this, [this] (const QModelIndex &parent, int first, int last) {
+      auto &selection_mgr = *track_selection_manager_;
+      if (selection_mgr.empty ())
+        {
+          const auto num_tracks =
+            static_cast<int> (tracklist_->collection ()->track_count ());
+
+          // select next track, or prev track if next doesn't exist
+          auto index_to_select = first;
+          if (num_tracks == first)
+            {
+              --index_to_select;
+            }
+          selection_mgr.append_to_selection (
+            tracklist_->collection ()
+              ->get_track_ref_at_index (index_to_select)
+              .id ());
+        }
+    });
 }
 
 Project::~Project ()
@@ -225,8 +299,7 @@ Project::get_final_track_dependencies () const
     *transport_,
     [this] () {
       return tracklist_->get_track_span ().get_num_soloed_tracks () > 0;
-    },
-    [] () { return gui::SettingsManager::get_instance ()->get_trackAutoArm (); }
+    }
   };
 }
 
@@ -436,7 +509,7 @@ Project::activate ()
   audio_engine_->activate (true);
 
   /* pause engine */
-  engine::device_io::AudioEngine::State state{};
+  EngineState state{};
   audio_engine_->wait_for_pause (state, true, false);
 
   /* connect channel inputs to hardware and re-expose ports to
@@ -464,30 +537,23 @@ Project::add_default_tracks ()
 
   /* init pinned tracks */
 
-  auto add_track = [&]<typename TrackT> (const auto &name) {
-    static_assert (
-      std::derived_from<TrackT, structure::tracks::Track>,
-      "T must be derived from Track");
+  auto add_track =
+    [&]<structure::tracks::FinalTrackSubclass TrackT> (const auto &name) {
+      z_info ("Adding '{}' track", name);
+      auto track_ref = track_factory_->create_empty_track<TrackT> ();
+      track_ref.template get_object_as<TrackT> ()->setName (name);
+      tracklist_->collection ()->add_track (track_ref);
 
-    z_debug ("adding {} track...", typeid (TrackT).name ());
-    auto * track = new TrackT (get_final_track_dependencies ());
-    get_track_registry ().register_object (track);
-    track->setName (name);
-    tracklist_->append_track (
-      structure::tracks::TrackUuidReference{
-        track->get_uuid (), get_track_registry () });
-
-    return track;
-  };
+      return track_ref.template get_object_as<TrackT> ();
+    };
 
   /* chord */
-  add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
-  tracklist_->singletonTracks ()
-    ->chordTrack ()
-    ->set_note_pitch_to_descriptor_func ([this] (midi_byte_t note_pitch) {
-      return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
-        note_pitch);
-    });
+  auto * chord_track = add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
+  tracklist_->singletonTracks ()->chord_track_ = chord_track;
+  chord_track->set_note_pitch_to_descriptor_func ([this] (midi_byte_t note_pitch) {
+    return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
+      note_pitch);
+  });
 
   /* tempo */
   transport_->update_caches (
@@ -506,16 +572,18 @@ Project::add_default_tracks ()
         utils::make_qobject_unique<dsp::MusicalScale> (
           dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A))
       .build_in_registry ();
-  tracklist_->singletonTracks ()->chordTrack ()->structure::arrangement::
-    ArrangerObjectOwner<structure::arrangement::ScaleObject>::add_object (
-      scale_ref);
+  chord_track->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::ScaleObject>::add_object (scale_ref);
 
   /* modulator */
-  add_track.operator()<ModulatorTrack> (QObject::tr ("Modulators"));
+  auto * modulator_track =
+    add_track.operator()<ModulatorTrack> (QObject::tr ("Modulators"));
+  tracklist_->singletonTracks ()->modulator_track_ = modulator_track;
 
   /* add marker track and default markers */
   auto * marker_track =
     add_track.operator()<MarkerTrack> (QObject::tr ("Markers"));
+  tracklist_->singletonTracks ()->marker_track_ = marker_track;
   const auto add_default_markers =
     [] (
       auto &marker_track_inner, const auto &factory, const int ticks_per_bar,
@@ -554,12 +622,14 @@ Project::add_default_tracks ()
     marker_track, arranger_object_factory_, transport_->ticks_per_bar_,
     audio_engine_->frames_per_tick_);
 
-  tracklist_->setPinnedTracksCutoff (tracklist_->collection ()->track_count ());
+  tracklist_->setPinnedTracksCutoff (
+    static_cast<int> (tracklist_->collection ()->track_count ()));
 
   /* add master track */
   auto * master_track =
     add_track.operator()<MasterTrack> (QObject::tr ("Master"));
-  tracklist_->get_selection_manager ().select_unique (master_track->get_uuid ());
+  tracklist_->singletonTracks ()->master_track_ = master_track;
+  track_selection_manager_->select_unique (master_track->get_uuid ());
 
   last_selection_ = SelectionType::Tracklist;
 }
@@ -1017,8 +1087,8 @@ Project::save (
     _dir, is_backup, show_notification, async);
 
   /* pause engine */
-  engine::device_io::AudioEngine::State state{};
-  bool                                  engine_paused = false;
+  EngineState state{};
+  bool        engine_paused = false;
   z_return_if_fail (audio_engine_);
   if (audio_engine_->activated_)
     {
@@ -1251,7 +1321,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     [&] (const Project::TrackUuid &id) {
       return obj.get_track_registry ().find_by_id_or_throw (id);
     });
-  obj.timeline_ = utils::clone_qobject (*other.timeline_, &obj);
+  obj.timeline_ = utils::clone_qobject (
+    *other.timeline_, &obj, clone_type, *obj.arranger_object_registry_);
   // TODO
   // obj.snap_grid_timeline_ =
   //   std::make_unique<Project::SnapGrid> (*other.snap_grid_timeline_);
@@ -1318,6 +1389,18 @@ Project::getTimeline () const
   return timeline_;
 }
 
+gui::backend::TrackSelectionManager *
+Project::trackSelectionManager () const
+{
+  return track_selection_manager_.get ();
+}
+
+gui::backend::PluginSelectionManager *
+Project::pluginSelectionManager () const
+{
+  return plugin_selection_manager_.get ();
+}
+
 engine::session::Transport *
 Project::getTransport () const
 {
@@ -1360,16 +1443,16 @@ Project::getPluginFactory () const
   return plugin_factory_;
 }
 
-structure::tracks::TrackFactory *
-Project::getTrackFactory () const
-{
-  return track_factory_;
-}
-
 actions::ArrangerObjectCreator *
 Project::arrangerObjectCreator () const
 {
   return arranger_object_creator_.get ();
+}
+
+actions::TrackCreator *
+Project::trackCreator () const
+{
+  return track_creator_.get ();
 }
 
 dsp::TempoMapWrapper *
@@ -1471,8 +1554,7 @@ struct TrackBuilderForDeserialization
 
   template <typename T> std::unique_ptr<T> build () const
   {
-    return project_.getTrackFactory ()
-      ->get_builder<T> ()
+    return project_.track_factory_->get_builder<T> ()
       .build_for_deserialization ();
   }
 

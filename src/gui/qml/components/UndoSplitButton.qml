@@ -16,10 +16,10 @@ SplitButton {
   required property UndoStack undoStack
   readonly property string undoString: (isUndo ? qsTr("Undo") : qsTr("Redo"))
 
-  enabled: isUndo ? undoStack.undoStack.canUndo : undoStack.undoStack.canRedo
+  enabled: isUndo ? undoStack.canUndo : undoStack.canRedo
   iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-" + (isUndo ? "undo" : "redo") + ".svg")
   menuTooltipText: isUndo ? qsTr("Undo multiple") : qsTr("Redo multiple")
-  tooltipText: enabled ? "%1: %2".arg(undoString).arg(isUndo ? undoStack.undoStack.undoText : undoStack.undoStack.redoText) : undoString
+  tooltipText: enabled ? "%1: %2".arg(undoString).arg(isUndo ? undoStack.undoActions[0] : undoStack.redoActions[0]) : undoString
 
   menuItems: Menu {
     id: menu

@@ -133,10 +133,18 @@ ProjectManager::create_default (
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
-  auto * prj = new Project (
-    dynamic_cast<ZrythmApplication *> (qApp)->get_device_manager ());
-  prj->setTitle (name.to_qstring ());
-  prj->add_default_tracks ();
+  Project * prj{};
+  QMetaObject::invokeMethod (
+    qApp,
+    [&prj, &name] {
+      // registries and registry objects must be created on the main thread
+      prj = new Project (
+        dynamic_cast<ZrythmApplication *> (qApp)->get_device_manager ());
+      prj->setTitle (name.to_qstring ());
+      prj->add_default_tracks ();
+    },
+    Qt::BlockingQueuedConnection);
+  prj->moveToThread (this->thread ());
 
   /* setup engine */
   auto * engine = prj->audio_engine_.get ();

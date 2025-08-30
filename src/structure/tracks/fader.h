@@ -35,6 +35,21 @@ class Fader : public QObject, public dsp::ProcessorBase
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
+  struct FaderProcessingCaches
+  {
+    dsp::ProcessorParameter *     amp_param_{};
+    dsp::ProcessorParameter *     balance_param_{};
+    dsp::ProcessorParameter *     mute_param_{};
+    dsp::ProcessorParameter *     solo_param_{};
+    dsp::ProcessorParameter *     listen_param_{};
+    dsp::ProcessorParameter *     mono_compat_enabled_param_{};
+    dsp::ProcessorParameter *     swap_phase_param_{};
+    std::vector<dsp::AudioPort *> audio_ins_rt_;
+    std::vector<dsp::AudioPort *> audio_outs_rt_;
+    dsp::MidiPort *               midi_in_rt_{};
+    dsp::MidiPort *               midi_out_rt_{};
+  };
+
 public:
   enum class MidiFaderMode : basic_enum_base_type_t
   {
@@ -222,6 +237,8 @@ public:
     sample_rate_t sample_rate,
     nframes_t     max_block_length) override;
 
+  void custom_release_resources () override;
+
   [[gnu::hot]] void
   custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
@@ -321,11 +338,25 @@ private:
    * @brief Calculates the gain based on the current gain parameter value and
    * the fader's mute/solo/etc. status.
    */
-  float calculate_target_gain () const;
+  float calculate_target_gain_rt () const;
 
   bool effectively_muted () const
   {
     return currently_muted () || should_be_muted_cb_ (currently_soloed ());
+  }
+
+  bool effectively_muted_rt () const
+  {
+    const auto currently_muted_rt = [this] () {
+      return processing_caches_->mute_param_->range ().is_toggled (
+        processing_caches_->mute_param_->currentValue ());
+    };
+    const auto currently_soloed_rt = [this] () {
+      return processing_caches_->solo_param_->range ().is_toggled (
+        processing_caches_->solo_param_->currentValue ());
+    };
+
+    return currently_muted_rt () || should_be_muted_cb_ (currently_soloed_rt ());
   }
 
 private:
@@ -384,5 +415,8 @@ private:
   std::optional<PreProcessAudioCallback> preprocess_audio_cb_;
 
   MuteGainCallback mute_gain_cb_ = [] () { return 0.f; };
+
+  // Processor caches
+  std::unique_ptr<FaderProcessingCaches> processing_caches_;
 };
 }

@@ -28,6 +28,13 @@ class ModulatorMacroProcessor final : public QObject, public dsp::ProcessorBase
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
+  struct ProcessingCaches
+  {
+    dsp::ProcessorParameter * macro_param_{};
+    dsp::CVPort *             cv_in_{};
+    dsp::CVPort *             cv_out_{};
+  };
+
 public:
   ModulatorMacroProcessor (
     ProcessorBaseDependencies dependencies,
@@ -48,7 +55,19 @@ public:
 
   // void set_name (const utils::Utf8String &name) { name_ = name; }
 
+  // ============================================================================
+  // ProcessorBase Interface
+  // ============================================================================
+
   void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+
+  void custom_prepare_for_processing (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length) override;
+
+  void custom_release_resources () override;
+
+  // ============================================================================
 
   friend void init_from (
     ModulatorMacroProcessor       &obj,
@@ -100,6 +119,9 @@ private:
    * processing.
    */
   utils::Utf8String name_;
+
+  // Processing caches
+  std::unique_ptr<ProcessingCaches> processing_caches_;
 
   BOOST_DESCRIBE_CLASS (ModulatorMacroProcessor, (), (), (), (name_))
 };

@@ -73,7 +73,7 @@ init_from (
 void
 UndoableAction::do_or_undo (bool perform)
 {
-  engine::device_io::AudioEngine::State state{};
+  EngineState state{};
   if (needs_pause ())
     {
       /* stop engine and give it some time to stop running */

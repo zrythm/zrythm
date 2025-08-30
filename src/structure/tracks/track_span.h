@@ -35,11 +35,6 @@ public:
     return std::visit (
       [] (const auto &track) { return track->get_name (); }, track_var);
   }
-  static auto selected_projection (const VariantType &track_var)
-  {
-    return std::visit (
-      [] (const auto &track) { return track->selected (); }, track_var);
-  }
   static auto foldable_projection (const VariantType &track_var)
   {
     return std::visit (
@@ -96,11 +91,6 @@ public:
   bool contains_track_name (const utils::Utf8String &name) const
   {
     return std::ranges::contains (*this, name, name_projection);
-  }
-
-  auto get_selected_tracks () const
-  {
-    return std::views::filter (*this, selected_projection);
   }
 
   MasterTrack &get_master_track () const

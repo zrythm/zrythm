@@ -25,6 +25,15 @@ class ChannelSend : public QObject, public dsp::ProcessorBase
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
+  struct ChannelSendProcessingCaches
+  {
+    dsp::ProcessorParameter *     amount_param_{};
+    std::vector<dsp::AudioPort *> audio_ins_rt_;
+    std::vector<dsp::AudioPort *> audio_outs_rt_;
+    dsp::MidiPort *               midi_in_rt_{};
+    dsp::MidiPort *               midi_out_rt_{};
+  };
+
 public:
   /**
    * @param slot Slot, used only in parameter/port names.
@@ -54,10 +63,16 @@ public:
   // ============================================================================
 
   // ============================================================================
-  // IProcessable Interface
+  // ProcessorBase Interface
   // ============================================================================
 
   void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+
+  void custom_prepare_for_processing (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length) override;
+
+  void custom_release_resources () override;
 
   // ============================================================================
 
@@ -113,6 +128,9 @@ private:
    * @brief Whether this is a prefader send (as opposed to post-fader).
    */
   bool is_prefader_{};
+
+  // Processing caches
+  std::unique_ptr<ChannelSendProcessingCaches> processing_caches_;
 };
 
 } // namespace zrythm::structure::tracks

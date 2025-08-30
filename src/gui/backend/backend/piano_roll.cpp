@@ -267,11 +267,12 @@ PianoRoll::init ()
 
   midi_modifier_ = MidiModifier::Velocity;
 
-  {
-    PianoRoll tmp;
-    editor_settings_ =
-      utils::clone_unique_qobject (*tmp.getEditorSettings (), this);
-  }
+  // ??? what was this code doing?
+  // {
+  //   PianoRoll tmp{ this };
+  //   editor_settings_ =
+  //     utils::clone_unique_qobject (*tmp.getEditorSettings (), this);
+  // }
 
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {

@@ -188,11 +188,7 @@ Track::make_recordable_track_mixin ()
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = get_port_registry (),
       .param_registry_ = get_param_registry () },
-    [this] () { return name_; }, base_dependencies_.autoarm_enabled_getter_,
-    this);
-  QObject::connect (
-    this, &Track::selectedChanged, recordable_track_mixin_.get (),
-    &RecordableTrackMixin::onRecordableTrackSelectedChanged);
+    [this] () { return name_; }, this);
 }
 
 utils::QObjectUniquePtr<PianoRollTrackMixin>

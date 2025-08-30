@@ -85,17 +85,6 @@ public:
     _4096,
   };
 
-  // TODO: check if pausing/resuming can be done with RAII
-  struct State
-  {
-    /** Engine running. */
-    bool running_;
-    /** Playback. */
-    bool playing_;
-    /** Transport loop. */
-    bool looping_;
-  };
-
   struct PositionInfo
   {
     /** Transport is rolling. */
@@ -169,7 +158,7 @@ public:
    *   pause, otherwise for engine to process and
    *   handle the pause request.
    */
-  void wait_for_pause (State &state, bool force_pause, bool with_fadeout);
+  void wait_for_pause (EngineState &state, bool force_pause, bool with_fadeout);
 
   void realloc_port_buffers (nframes_t buf_size);
 
@@ -181,7 +170,7 @@ public:
    */
   [[gnu::cold]] void init_loaded (Project * project);
 
-  void resume (State &state);
+  void resume (EngineState &state);
 
   /**
    * Waits for n processing cycles to finish.

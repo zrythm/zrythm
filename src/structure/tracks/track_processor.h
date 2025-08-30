@@ -26,6 +26,20 @@ class TrackProcessor final : public QObject, public dsp::ProcessorBase
   using PortType = dsp::PortType;
   using PortFlow = dsp::PortFlow;
 
+  struct TrackProcessorProcessingCaches
+  {
+
+    std::vector<dsp::AudioPort *> audio_ins_rt_;
+    std::vector<dsp::AudioPort *> audio_outs_rt_;
+    dsp::MidiPort *               midi_in_rt_{};
+    dsp::MidiPort *               midi_out_rt_{};
+    dsp::MidiPort *               piano_roll_rt_{};
+    dsp::ProcessorParameter *     mono_param_{};
+    dsp::ProcessorParameter *     input_gain_{};
+    dsp::ProcessorParameter *     output_gain_{};
+    dsp::ProcessorParameter *     monitor_audio_{};
+  };
+
 public:
   using StereoPortPair = std::pair<std::span<float>, std::span<float>>;
   using ConstStereoPortPair =
@@ -244,7 +258,7 @@ public:
   }
 
   // ============================================================================
-  // IProcessable Interface
+  // ProcessorBase Interface
   // ============================================================================
 
   /**
@@ -261,6 +275,12 @@ public:
    *   MIDI CC automation, based on the MIDI CC control ports)
    */
   void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+
+  void custom_prepare_for_processing (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length) override;
+
+  void custom_release_resources () override;
 
   // ============================================================================
 
@@ -505,6 +525,9 @@ private:
   };
 
   std::unique_ptr<MidiCcCaches> midi_cc_caches_;
+
+  // Processing caches
+  std::unique_ptr<TrackProcessorProcessingCaches> processing_caches_;
 };
 
 }

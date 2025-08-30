@@ -26,12 +26,10 @@ protected:
       ArrangerObject::Type::MidiNote, *tempo_map, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>            tempo_map;
-  std::unique_ptr<MockQObject>              parent;
-  std::unique_ptr<MockArrangerObject>       obj;
-  std::unique_ptr<MockArrangerObject>       obj2;
-  MockArrangerObject::SelectionStatusGetter getter =
-    [] (const MockArrangerObject::Uuid &) { return true; };
+  std::unique_ptr<dsp::TempoMap>      tempo_map;
+  std::unique_ptr<MockQObject>        parent;
+  std::unique_ptr<MockArrangerObject> obj;
+  std::unique_ptr<MockArrangerObject> obj2;
 };
 
 // Test initial state
@@ -39,7 +37,6 @@ TEST_F (ArrangerObjectTest, InitialState)
 {
   EXPECT_EQ (obj->type (), ArrangerObject::Type::Marker);
   EXPECT_EQ (obj->position ()->samples (), 0);
-  EXPECT_FALSE (obj->getSelected ());
   EXPECT_NE (obj->position (), nullptr);
 }
 
@@ -101,48 +98,6 @@ TEST_F (ArrangerObjectTest, IsStartHitByRange)
     static_cast<signed_frame_t> (1e9 + 100)));
 }
 
-// Test selection status
-TEST_F (ArrangerObjectTest, SelectionStatus)
-{
-  // Without getter
-  EXPECT_FALSE (obj->getSelected ());
-
-  // With getter
-  obj->set_selection_status_getter (getter);
-  EXPECT_TRUE (obj->getSelected ());
-
-  // Unset getter
-  obj->unset_selection_status_getter ();
-  EXPECT_FALSE (obj->getSelected ());
-}
-
-// Test QML property signals
-TEST_F (ArrangerObjectTest, QmlPropertySignals)
-{
-  testing::MockFunction<void (bool)> mockSelectedChanged;
-  testing::MockFunction<void ()>     mockAdded;
-  testing::MockFunction<void ()>     mockRemoved;
-
-  QObject::connect (
-    obj.get (), &MockArrangerObject::selectedChanged, parent.get (),
-    mockSelectedChanged.AsStdFunction ());
-  QObject::connect (
-    obj.get (), &MockArrangerObject::addedToProject, parent.get (),
-    mockAdded.AsStdFunction ());
-  QObject::connect (
-    obj.get (), &MockArrangerObject::removedFromProject, parent.get (),
-    mockRemoved.AsStdFunction ());
-
-  EXPECT_CALL (mockSelectedChanged, Call (true)).Times (1);
-  EXPECT_CALL (mockAdded, Call ()).Times (1);
-  EXPECT_CALL (mockRemoved, Call ()).Times (1);
-
-  // Emit signals directly for testing
-  Q_EMIT obj->selectedChanged (true);
-  Q_EMIT obj->addedToProject ();
-  Q_EMIT obj->removedFromProject ();
-}
-
 // Test UUID functionality
 TEST_F (ArrangerObjectTest, UuidFunctionality)
 {
@@ -162,7 +117,6 @@ TEST_F (ArrangerObjectTest, Serialization)
 {
   // Set initial state
   obj->position ()->setTicks (1920.0);
-  obj->set_selection_status_getter (getter);
 
   // Serialize
   nlohmann::json j;

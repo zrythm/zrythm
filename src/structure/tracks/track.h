@@ -22,15 +22,14 @@ using SoloedTracksExistGetter = GenericBoolGetter;
 
 struct BaseTrackDependencies
 {
-  const dsp::TempoMap                       &tempo_map_;
-  dsp::FileAudioSourceRegistry              &file_audio_source_registry_;
-  plugins::PluginRegistry                   &plugin_registry_;
-  dsp::PortRegistry                         &port_registry_;
-  dsp::ProcessorParameterRegistry           &param_registry_;
-  arrangement::ArrangerObjectRegistry       &obj_registry_;
-  const dsp::ITransport                     &transport_;
-  SoloedTracksExistGetter                    soloed_tracks_exist_getter_;
-  RecordableTrackMixin::AutoarmEnabledGetter autoarm_enabled_getter_;
+  const dsp::TempoMap                 &tempo_map_;
+  dsp::FileAudioSourceRegistry        &file_audio_source_registry_;
+  plugins::PluginRegistry             &plugin_registry_;
+  dsp::PortRegistry                   &port_registry_;
+  dsp::ProcessorParameterRegistry     &param_registry_;
+  arrangement::ArrangerObjectRegistry &obj_registry_;
+  const dsp::ITransport               &transport_;
+  SoloedTracksExistGetter              soloed_tracks_exist_getter_;
 };
 
 /**
@@ -58,7 +57,6 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
   Q_PROPERTY (QString icon READ icon WRITE setIcon NOTIFY iconChanged)
   Q_PROPERTY (bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
   Q_PROPERTY (bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-  Q_PROPERTY (bool selected READ selected NOTIFY selectedChanged)
   Q_PROPERTY (double height READ height WRITE setHeight NOTIFY heightChanged)
   Q_PROPERTY (
     double fullVisibleHeight READ fullVisibleHeight NOTIFY
@@ -86,7 +84,6 @@ public:
   using ArrangerObjectPtrVariant =
     structure::arrangement::ArrangerObjectPtrVariant;
   using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
-  using TrackSelectionStatusGetter = std::function<bool (const Track::Uuid &)>;
   using Color = utils::Color;
 
   enum class Type : basic_enum_base_type_t
@@ -397,16 +394,6 @@ public:
   }
   Q_SIGNAL void enabledChanged (bool enabled);
 
-  bool selected () const
-  {
-    if (track_selection_status_getter_)
-      {
-        return (*track_selection_status_getter_) (get_uuid ());
-      }
-    return false;
-  }
-  Q_SIGNAL void selectedChanged (bool selected);
-
   double height () const { return main_height_; }
   void   setHeight (double height)
   {
@@ -562,15 +549,6 @@ public:
   void set_caches (CacheType types);
 
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
-
-  void set_selection_status_getter (TrackSelectionStatusGetter getter)
-  {
-    track_selection_status_getter_ = getter;
-  }
-  void unset_selection_status_getter ()
-  {
-    track_selection_status_getter_.reset ();
-  }
 
   /**
    * @brief Adds basic automation tracks.
@@ -755,13 +733,6 @@ protected:
   std::optional<dsp::FileAudioSourceUuidReference> frozen_clip_id_;
 
   /**
-   * @brief Track selection status getter.
-   *
-   * To be set by the tracklist when a track gets added to it.
-   */
-  std::optional<TrackSelectionStatusGetter> track_selection_status_getter_;
-
-  /**
    * @brief Automation tracks, if track is automatable.
    */
   utils::QObjectUniquePtr<AutomationTracklist> automation_tracklist_;
@@ -821,22 +792,19 @@ protected:
 using TrackRegistry = utils::OwningObjectRegistry<TrackPtrVariant, Track>;
 using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;
 using TrackUuidReference = utils::UuidReference<TrackRegistry>;
-using TrackSelectionManager =
-  utils::UuidIdentifiableObjectSelectionManager<TrackRegistry>;
 
 struct FinalTrackDependencies : public BaseTrackDependencies
 {
   FinalTrackDependencies (
-    const dsp::TempoMap                       &tempo_map,
-    dsp::FileAudioSourceRegistry              &file_audio_source_registry,
-    plugins::PluginRegistry                   &plugin_registry,
-    dsp::PortRegistry                         &port_registry,
-    dsp::ProcessorParameterRegistry           &param_registry,
-    arrangement::ArrangerObjectRegistry       &obj_registry,
-    TrackRegistry                             &track_registry,
-    const dsp::ITransport                     &transport,
-    SoloedTracksExistGetter                    soloed_tracks_exist_getter,
-    RecordableTrackMixin::AutoarmEnabledGetter autoarm_enabled_getter_)
+    const dsp::TempoMap                 &tempo_map,
+    dsp::FileAudioSourceRegistry        &file_audio_source_registry,
+    plugins::PluginRegistry             &plugin_registry,
+    dsp::PortRegistry                   &port_registry,
+    dsp::ProcessorParameterRegistry     &param_registry,
+    arrangement::ArrangerObjectRegistry &obj_registry,
+    TrackRegistry                       &track_registry,
+    const dsp::ITransport               &transport,
+    SoloedTracksExistGetter              soloed_tracks_exist_getter)
       : BaseTrackDependencies (
           tempo_map,
           file_audio_source_registry,
@@ -845,8 +813,7 @@ struct FinalTrackDependencies : public BaseTrackDependencies
           param_registry,
           obj_registry,
           transport,
-          std::move (soloed_tracks_exist_getter),
-          std::move (autoarm_enabled_getter_)),
+          std::move (soloed_tracks_exist_getter)),
         track_registry_ (track_registry)
   {
   }

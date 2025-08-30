@@ -82,35 +82,62 @@ ChannelSend::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcep
   const auto nframes = time_nfo.nframes_;
   if (is_audio ())
     {
-      const auto &amount_param = amountParam ();
+      const auto &amount_param = processing_caches_->amount_param_;
       const auto  amount_val =
         amount_param->range ().convertFrom0To1 (amount_param->currentValue ());
-      const auto &stereo_in_ports = get_stereo_in_ports ();
-      const auto &stereo_out_ports = get_stereo_out_ports ();
-      if (utils::math::floats_near (amount_val, 1.f, 0.00001f))
+      for (
+        const auto &[out, in] : std::views::zip (
+          processing_caches_->audio_outs_rt_, processing_caches_->audio_ins_rt_))
         {
-          utils::float_ranges::copy (
-            &stereo_out_ports.first.buf_[local_offset],
-            &stereo_in_ports.first.buf_[local_offset], nframes);
-          utils::float_ranges::copy (
-            &stereo_out_ports.second.buf_[local_offset],
-            &stereo_in_ports.second.buf_[local_offset], nframes);
-        }
-      else
-        {
-          utils::float_ranges::product (
-            &stereo_out_ports.first.buf_[local_offset],
-            &stereo_in_ports.first.buf_[local_offset], amount_val, nframes);
-          utils::float_ranges::product (
-            &stereo_out_ports.second.buf_[local_offset],
-            &stereo_in_ports.second.buf_[local_offset], amount_val, nframes);
+          if (utils::math::floats_near (amount_val, 1.f, 0.00001f))
+            {
+              utils::float_ranges::copy (
+                &out->buf_[local_offset], &in->buf_[local_offset], nframes);
+            }
+          else
+            {
+              utils::float_ranges::product (
+                &out->buf_[local_offset], &in->buf_[local_offset], amount_val,
+                nframes);
+            }
         }
     }
   else if (is_midi ())
     {
-      get_midi_out_port ().midi_events_.queued_events_.append (
-        get_midi_in_port ().midi_events_.active_events_, local_offset, nframes);
+      processing_caches_->midi_out_rt_->midi_events_.queued_events_.append (
+        processing_caches_->midi_in_rt_->midi_events_.active_events_,
+        local_offset, nframes);
     }
+}
+
+void
+ChannelSend::custom_prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
+{
+  processing_caches_ = std::make_unique<ChannelSendProcessingCaches> ();
+
+  processing_caches_->amount_param_ = amountParam ();
+  if (is_midi ())
+    {
+      processing_caches_->midi_in_rt_ = &get_midi_in_port ();
+      processing_caches_->midi_out_rt_ = &get_midi_out_port ();
+    }
+  else if (is_audio ())
+    {
+      const auto stereo_in = get_stereo_in_ports ();
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in.first);
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in.second);
+      const auto stereo_out = get_stereo_out_ports ();
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out.first);
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out.second);
+    }
+}
+
+void
+ChannelSend::custom_release_resources ()
+{
+  processing_caches_.reset ();
 }
 
 void

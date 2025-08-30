@@ -7,6 +7,7 @@ target_sources(zrythm_gui_lib
     action_controller.cpp
     alert_manager.h
     alert_manager.cpp
+    arranger_object_selection_manager.h
     automation_tracklist_proxy_model.h
     automation_tracklist_proxy_model.cpp
     carla_discovery.h
@@ -29,6 +30,7 @@ target_sources(zrythm_gui_lib
     plugin_manager.cpp
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
+    plugin_selection_manager.h
     position_proxy.h
     position_proxy.cpp
     project_info.h
@@ -52,6 +54,7 @@ target_sources(zrythm_gui_lib
     tool.cpp
     track_filter_proxy_model.h
     track_filter_proxy_model.cpp
+    track_selection_manager.h
     translation_manager.h
     translation_manager.cpp
     ui.h

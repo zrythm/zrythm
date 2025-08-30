@@ -36,7 +36,6 @@ TEST_F (MidiNoteTest, InitialState)
   EXPECT_EQ (note->position ()->samples (), 0);
   EXPECT_EQ (note->pitch (), 60);    // Default pitch is C4
   EXPECT_EQ (note->velocity (), 90); // Default velocity
-  EXPECT_FALSE (note->getSelected ());
   EXPECT_NE (note->bounds (), nullptr);
   EXPECT_NE (note->mute (), nullptr);
 }

@@ -41,7 +41,7 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: ruler.height
           Layout.minimumHeight: ruler.height
-          trackFactory: root.project.trackFactory
+          trackCreator: root.project.trackCreator
           tracklist: root.project.tracklist
         }
 
@@ -71,6 +71,7 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.preferredHeight: contentHeight
           pinned: true
+          trackSelectionManager: root.project.trackSelectionManager
           tracklist: root.project.tracklist
           undoStack: root.project.undoStack
         }
@@ -82,6 +83,7 @@ ColumnLayout {
           Layout.maximumHeight: unpinnedTimelineArranger.height
           Layout.minimumHeight: unpinnedTimelineArranger.height
           pinned: false
+          trackSelectionManager: root.project.trackSelectionManager
           tracklist: root.project.tracklist
           undoStack: root.project.undoStack
         }

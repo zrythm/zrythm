@@ -80,7 +80,7 @@ PluginManager::createPluginInstance (
   // FIXME: this is temporary test code that adds the plugin to the master's
   // first index slot
 
-  auto state_ptr = new engine::device_io::AudioEngine::State ();
+  auto state_ptr = new EngineState ();
   AUDIO_ENGINE->wait_for_pause (*state_ptr, false, true);
 
   z_debug ("creating plugin instance for: {}", descr->getName ());
@@ -104,7 +104,7 @@ PluginManager::createPluginInstance (
 // below some test code for plugin states
 #if 0
   QTimer::singleShot (10000, this, [] () {
-    engine::device_io::AudioEngine::State state{};
+    EngineState state{};
     AUDIO_ENGINE->wait_for_pause (state, false, true);
     auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
       P_MASTER_TRACK->channel ()->inserts ()->plugins ().front ().get_object ());
@@ -113,7 +113,7 @@ PluginManager::createPluginInstance (
   });
 
   QTimer::singleShot (20000, this, [] () {
-    engine::device_io::AudioEngine::State state{};
+    EngineState state{};
     AUDIO_ENGINE->wait_for_pause (state, false, true);
     auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
       P_MASTER_TRACK->channel ()->inserts ()->plugins ().front ().get_object ());

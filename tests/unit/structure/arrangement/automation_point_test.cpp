@@ -38,7 +38,6 @@ TEST_F (AutomationPointTest, InitialState)
   EXPECT_EQ (point->type (), ArrangerObject::Type::AutomationPoint);
   EXPECT_EQ (point->position ()->samples (), 0);
   EXPECT_EQ (point->value (), 0.0f);
-  EXPECT_FALSE (point->getSelected ());
 }
 
 // Test value property
@@ -84,21 +83,6 @@ TEST_F (AutomationPointTest, PositionOperations)
 
   point->position ()->setTicks (1920.0);
   EXPECT_DOUBLE_EQ (point->position ()->ticks (), 1920.0);
-}
-
-// Test selection status
-TEST_F (AutomationPointTest, SelectionStatus)
-{
-  // Without getter
-  EXPECT_FALSE (point->getSelected ());
-
-  // With getter
-  point->set_selection_status_getter ([] (const auto &) { return true; });
-  EXPECT_TRUE (point->getSelected ());
-
-  // Unset getter
-  point->unset_selection_status_getter ();
-  EXPECT_FALSE (point->getSelected ());
 }
 
 // Test serialization/deserialization

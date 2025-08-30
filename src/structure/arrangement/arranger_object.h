@@ -27,7 +27,6 @@ class ArrangerObject
   QML_ELEMENT
   Q_PROPERTY (
     zrythm::structure::arrangement::ArrangerObject::Type type READ type CONSTANT)
-  Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged)
   Q_PROPERTY (
     zrythm::dsp::AtomicPositionQmlAdapter * position READ position CONSTANT)
   QML_UNCREATABLE ("")
@@ -35,8 +34,6 @@ class ArrangerObject
   Z_DISABLE_COPY_MOVE (ArrangerObject)
 
 public:
-  using SelectionStatusGetter = std::function<bool (const Uuid &)>;
-
   /**
    * The type of the object.
    */
@@ -54,10 +51,6 @@ public:
     AudioSourceObject,
   };
   Q_ENUM (Type)
-
-  Q_SIGNAL void selectedChanged (bool selected);
-  Q_SIGNAL void addedToProject ();
-  Q_SIGNAL void removedFromProject ();
 
 public:
   ~ArrangerObject () noexcept override = default;
@@ -78,26 +71,12 @@ public:
            && (range_end_inclusive ? (pos_samples <= frames_end) : (pos_samples < frames_end));
   }
 
-  void set_selection_status_getter (SelectionStatusGetter getter)
-  {
-    selection_status_getter_ = getter;
-  }
-  void unset_selection_status_getter () { selection_status_getter_.reset (); }
-
   // ========================================================================
   // QML Interface
   // ========================================================================
 
   auto type () const { return type_; }
 
-  bool getSelected () const
-  {
-    if (selection_status_getter_)
-      {
-        return (*selection_status_getter_) (get_uuid ());
-      }
-    return false;
-  }
   dsp::AtomicPositionQmlAdapter * position () const
   {
     return position_adapter_.get ();
@@ -145,9 +124,6 @@ private:
     new dsp::AtomicPositionQmlAdapter{ position_ }
   };
 
-protected:
-  std::optional<SelectionStatusGetter> selection_status_getter_;
-
   BOOST_DESCRIBE_CLASS (
     ArrangerObject,
     (UuidIdentifiableObject<ArrangerObject>),
@@ -159,8 +135,6 @@ protected:
 using ArrangerObjectRegistry =
   utils::OwningObjectRegistry<ArrangerObjectPtrVariant, ArrangerObject>;
 using ArrangerObjectUuidReference = utils::UuidReference<ArrangerObjectRegistry>;
-using ArrangerObjectSelectionManager =
-  utils::UuidIdentifiableObjectSelectionManager<ArrangerObjectRegistry>;
 
 template <typename T>
 concept FinalArrangerObjectSubclass =

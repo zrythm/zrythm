@@ -24,10 +24,6 @@ ArrangerObjectCreator::add_laned_object (
 
           undo_stack_.push (
             new commands::AddArrangerObjectCommand<ObjectT> (lane, obj_ref));
-          set_selection_handler_to_object (*obj);
-
-          get_selection_manager_for_object (*obj).append_to_selection (
-            obj->get_uuid ());
           clip_editor_.set_region (obj->get_uuid (), track.get_uuid ());
         }
     },

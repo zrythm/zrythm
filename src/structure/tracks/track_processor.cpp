@@ -385,19 +385,19 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
         {
           std::invoke (
             *handle_recording_cb_, cur_time_nfo,
-            &get_midi_in_port ().midi_events_.active_events_, std::nullopt);
+            &processing_caches_->midi_in_rt_->midi_events_.active_events_,
+            std::nullopt);
         }
       else if (is_audio ())
         {
           // assumed audio track (other audio-based tracks are not recordable)
           assert (mono_id_.has_value ());
-          const auto &mono_param = get_mono_param ();
-          const auto &stereo_ins = get_stereo_in_ports ();
-          const auto &l = stereo_ins.first;
+          const auto &l = *processing_caches_->audio_ins_rt_[0];
           const auto &r =
-            mono_param.range ().is_toggled (mono_param.currentValue ())
-              ? stereo_ins.first
-              : stereo_ins.second;
+            processing_caches_->mono_param_->range ().is_toggled (
+              processing_caches_->mono_param_->currentValue ())
+              ? *processing_caches_->audio_ins_rt_[0]
+              : *processing_caches_->audio_ins_rt_[1];
           std::invoke (
             *handle_recording_cb_, cur_time_nfo, nullptr,
             std::make_pair (std::span (l.buf_), std::span (r.buf_)));
@@ -635,12 +635,11 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
       // audio clips
       if (is_audio ())
         {
-          const auto stereo_ports = get_stereo_out_ports ();
           fill_audio_events (
             time_nfo,
             std::make_pair (
-              std::span (stereo_ports.first.buf_),
-              std::span (stereo_ports.second.buf_)));
+              std::span (processing_caches_->audio_outs_rt_[0]->buf_),
+              std::span (processing_caches_->audio_outs_rt_[1]->buf_)));
         }
       // MIDI clips
       else if (has_piano_roll_port_)
@@ -653,11 +652,11 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
   // dequeue piano roll contents into MIDI output port
   if (has_piano_roll_port_)
     {
-      auto &pr = get_piano_roll_port ();
+      auto &pr = *processing_caches_->piano_roll_rt_;
       pr.midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
 
       /* append the midi events from piano roll to MIDI out */
-      get_midi_out_port ().midi_events_.queued_events_.append (
+      processing_caches_->midi_out_rt_->midi_events_.queued_events_.append (
         pr.midi_events_.active_events_, time_nfo.local_offset_,
         time_nfo.nframes_);
     }
@@ -667,26 +666,30 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
       // append midi events from modwheel and pitchbend control ports to
       // MIDI out
       add_events_from_midi_cc_control_ports (
-        get_midi_out_port ().midi_events_.queued_events_,
+        processing_caches_->midi_out_rt_->midi_events_.queued_events_,
         time_nfo.local_offset_);
     }
 
   /* add inputs to outputs */
   if (is_audio ())
     {
-      const auto &stereo_in = get_stereo_in_ports ();
-      const auto &stereo_out = get_stereo_out_ports ();
-      const auto  input_gain = [this] () {
-        const auto &input_gain_param = get_input_gain_param ();
+      const auto &stereo_in = std::make_pair (
+        processing_caches_->audio_ins_rt_[0],
+        processing_caches_->audio_ins_rt_[1]);
+      const auto &stereo_out = std::make_pair (
+        processing_caches_->audio_outs_rt_[0],
+        processing_caches_->audio_outs_rt_[1]);
+      const auto input_gain = [this] () {
+        const auto &input_gain_param = *processing_caches_->input_gain_;
         return input_gain_param.range ().convertFrom0To1 (
           input_gain_param.currentValue ());
       };
       const auto mono = [this] () {
-        const auto &mono_param = get_mono_param ();
+        const auto &mono_param = *processing_caches_->mono_param_;
         return mono_param.range ().is_toggled (mono_param.currentValue ());
       };
       const auto monitor_audio = [this] () {
-        const auto &monitor_audio_param = get_monitor_audio_param ();
+        const auto &monitor_audio_param = *processing_caches_->monitor_audio_;
         return monitor_audio_param.range ().is_toggled (
           monitor_audio_param.currentValue ());
       };
@@ -697,14 +700,14 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
       if (!monitor_audio_id_.has_value () || monitor_audio ())
         {
           utils::float_ranges::product (
-            &stereo_out.first.buf_[time_nfo.local_offset_],
-            &stereo_in.first.buf_[time_nfo.local_offset_],
+            &stereo_out.first->buf_[time_nfo.local_offset_],
+            &stereo_in.first->buf_[time_nfo.local_offset_],
             input_gain_id_ ? input_gain () : 1.f, time_nfo.nframes_);
 
           const auto &src_right_buf =
-            (mono_id_ && mono ()) ? stereo_in.first.buf_ : stereo_in.second.buf_;
+            (mono_id_ && mono ()) ? stereo_in.first->buf_ : stereo_in.second->buf_;
           utils::float_ranges::product (
-            &stereo_out.second.buf_[time_nfo.local_offset_],
+            &stereo_out.second->buf_[time_nfo.local_offset_],
             &src_right_buf[time_nfo.local_offset_],
             input_gain_id_ ? input_gain () : 1.f, time_nfo.nframes_);
         }
@@ -716,7 +719,7 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
         {
           std::invoke (
             *transform_midi_inputs_func_,
-            get_midi_in_port ().midi_events_.active_events_);
+            processing_caches_->midi_in_rt_->midi_events_.active_events_);
         }
 
         /* process midi bindings */
@@ -725,14 +728,14 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
       if (cc_mappings_ && transport_.recording_enabled ())
         {
           cc_mappings_->apply_from_cc_events (
-            get_midi_in_port ().midi_events_.active_events_);
+            midi_in_rt_->midi_events_.active_events_);
         }
 #endif
 
       // append data from MIDI input -> MIDI output
       append_midi_inputs_to_outputs_func_ (
-        get_midi_out_port ().midi_events_.queued_events_,
-        get_midi_in_port ().midi_events_.active_events_, time_nfo);
+        processing_caches_->midi_out_rt_->midi_events_.queued_events_,
+        processing_caches_->midi_in_rt_->midi_events_.active_events_, time_nfo);
     }
 
   if (
@@ -749,18 +752,68 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
   /* apply output gain */
   if (output_gain_id_.has_value ())
     {
-      const auto &output_gain_param = get_output_gain_param ();
+      const auto &output_gain_param = *processing_caches_->output_gain_;
       const auto  output_gain = output_gain_param.range ().convertFrom0To1 (
         output_gain_param.currentValue ());
 
-      const auto stereo_out = get_stereo_out_ports ();
       utils::float_ranges::mul_k2 (
-        &stereo_out.first.buf_[time_nfo.local_offset_], output_gain,
-        time_nfo.nframes_);
+        &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
+        output_gain, time_nfo.nframes_);
       utils::float_ranges::mul_k2 (
-        &stereo_out.second.buf_[time_nfo.local_offset_], output_gain,
-        time_nfo.nframes_);
+        &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
+        output_gain, time_nfo.nframes_);
     }
+}
+
+void
+TrackProcessor::custom_prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
+{
+  processing_caches_ = std::make_unique<TrackProcessorProcessingCaches> ();
+
+  if (is_audio ())
+    {
+      const auto stereo_in = get_stereo_in_ports ();
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in.first);
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in.second);
+      const auto stereo_out = get_stereo_out_ports ();
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out.first);
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out.second);
+    }
+  else if (is_midi ())
+    {
+      processing_caches_->midi_in_rt_ = &get_midi_in_port ();
+      processing_caches_->midi_out_rt_ = &get_midi_out_port ();
+    }
+
+  if (has_piano_roll_port_)
+    {
+      processing_caches_->piano_roll_rt_ = &get_piano_roll_port ();
+    }
+
+  if (mono_id_.has_value ())
+    {
+      processing_caches_->mono_param_ = &get_mono_param ();
+    }
+  if (input_gain_id_.has_value ())
+    {
+      processing_caches_->input_gain_ = &get_input_gain_param ();
+    }
+  if (output_gain_id_.has_value ())
+    {
+      processing_caches_->output_gain_ = &get_output_gain_param ();
+    }
+  if (monitor_audio_id_.has_value ())
+    {
+      processing_caches_->monitor_audio_ = &get_monitor_audio_param ();
+    }
+}
+
+void
+TrackProcessor::custom_release_resources ()
+{
+  processing_caches_.reset ();
 }
 
 // ============================================================================

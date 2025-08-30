@@ -7,6 +7,8 @@ target_sources(zrythm_actions_lib
   PRIVATE
     parameter_operator.h
     parameter_operator.cpp
+    track_creator.h
+    track_creator.cpp
     track_operator.h
     track_operator.cpp
 )

@@ -56,6 +56,7 @@ target_sources(zrythm_structure_tracks_lib
     track_all.h
     track_collection.h
     track_collection.cpp
+    track_factory.h
     track_lane.h
     track_lane.cpp
     track_lane_list.h
@@ -90,10 +91,4 @@ qt_add_qml_module(zrythm_structure_tracks_lib
     TARGET zrythm_arrangement_lib
     TARGET zrythm_plugins_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmTracks
-)
-
-target_sources(zrythm_gui_lib
-  PRIVATE
-    track_factory.h
-    track_factory.cpp
 )

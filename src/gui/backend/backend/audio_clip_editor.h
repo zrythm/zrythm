@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "gui/backend/arranger_object_selection_manager.h"
 #include "gui/backend/backend/editor_settings.h"
 #include "utils/icloneable.h"
 
@@ -26,8 +27,11 @@ class AudioClipEditor : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+    zrythm::gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
+      selectionManager CONSTANT)
 
 public:
   AudioClipEditor (QObject * parent = nullptr) : QObject (parent) { }
@@ -41,9 +45,12 @@ public:
     return editor_settings_.get ();
   }
 
-  // =========================================================
+  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
+  {
+    return selection_manager_.get ();
+  }
 
-  auto &get_selected_object_ids () { return selected_objects_; }
+  // =========================================================
 
 public:
   friend void init_from (
@@ -72,8 +79,8 @@ private:
   };
 
   // unused? only added to satisfy ArrangerObjectFactory
-  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
-    selected_objects_;
+  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
+    selection_manager_;
 };
 
 /**

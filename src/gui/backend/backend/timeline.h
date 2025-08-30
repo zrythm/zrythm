@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
+
+#include "gui/backend/arranger_object_selection_manager.h"
 #include "gui/backend/backend/editor_settings.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
@@ -26,10 +28,15 @@ class Timeline : public QObject
   Q_PROPERTY (
     zrythm::gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
+      selectionManager CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
-  Timeline (QObject * parent = nullptr);
+  Timeline (
+    const structure::arrangement::ArrangerObjectRegistry &registry,
+    QObject *                                             parent = nullptr);
 
   // =========================================================
   // QML interface
@@ -40,11 +47,14 @@ public:
     return editor_settings_.get ();
   }
 
+  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
+  {
+    return selection_manager_.get ();
+  }
+
   // =========================================================
 
 public:
-  auto &get_selected_object_ids () { return selected_objects_; }
-
   friend void init_from (
     Timeline              &obj,
     const Timeline        &other,
@@ -73,6 +83,6 @@ private:
   /** Width of the left side of the timeline panel. */
   int tracks_width_ = 0;
 
-  zrythm::structure::arrangement::ArrangerObjectSelectionManager::UuidSet
-    selected_objects_;
+  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
+    selection_manager_;
 };

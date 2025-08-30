@@ -23,12 +23,10 @@ class RecordableTrackMixin : public QObject
 
 public:
   using NameProvider = std::function<utils::Utf8String ()>;
-  using AutoarmEnabledGetter = GenericBoolGetter;
 
   RecordableTrackMixin (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
     NameProvider                                  name_provider,
-    AutoarmEnabledGetter                          autoarm_enabled_checker,
     QObject *                                     parent = nullptr);
   ~RecordableTrackMixin () override = default;
   Z_DISABLE_COPY_MOVE (RecordableTrackMixin)
@@ -44,13 +42,6 @@ public:
   }
   void          setRecording (bool recording);
   Q_SIGNAL void recordingChanged (bool recording);
-
-  /**
-   * @brief To be fired when the track's selection status changes.
-   *
-   * @param selected Whether the track is now selected.
-   */
-  Q_SLOT void onRecordableTrackSelectedChanged (bool selected);
 
   // ========================================================================
 
@@ -86,24 +77,20 @@ private:
 private:
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;
 
-  /**
-   * @brief Returns whether autoarm is currently enabled.
-   *
-   * Used to auto-arm the track when selected.
-   */
-  GenericBoolGetter autoarm_enabled_checker_;
-
   // Used for debugging.
   NameProvider name_provider_;
 
   /** Recording or not. */
   dsp::ProcessorParameterUuidReference recording_id_;
 
+public:
   /**
    * Whether record was set automatically when the channel was selected.
    *
    * This is so that it can be unset when selecting another track. If we don't
    * do this all the tracks end up staying on record mode.
+   *
+   * FIXME: store on the UI side, not here (or maybe make it a QProperty).
    */
   bool record_set_automatically_ = false;
 };

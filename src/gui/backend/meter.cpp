@@ -138,6 +138,11 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
         std::derived_from<PortT, dsp::AudioPort>
         || std::derived_from<PortT, dsp::CVPort>)
         {
+          if (!port->audio_ring_)
+            {
+              z_debug ("no audio ring");
+              return;
+            }
           size_t       read_space_avail = port->audio_ring_->read_space ();
           const size_t block_length = AUDIO_ENGINE->get_block_length ();
           size_t       blocks_to_read =
@@ -194,6 +199,11 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
         {
           bool on = false;
           tmp_events_.clear ();
+          if (!port->midi_ring_)
+            {
+              z_debug ("no midi ring");
+              return;
+            }
           const auto events_read = port->midi_ring_->peek_multiple (
             tmp_events_.data (), decltype (tmp_events_)::capacity ());
           if (events_read > 0)

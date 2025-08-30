@@ -52,7 +52,7 @@ ProcessorParameter::process_block (const EngineProcessTimeInfo time_nfo) noexcep
     }
 
   /* whether this is the first CV processed on this control port */
-  const auto * cv_mod_in = modulation_input_uuid_.get_object_as<CVPort> ();
+  const auto * cv_mod_in = modulation_input_;
   for (const auto &[src_port, conn] : cv_mod_in->port_sources_)
     {
       if (!conn->enabled_) [[unlikely]]
@@ -72,6 +72,19 @@ ProcessorParameter::process_block (const EngineProcessTimeInfo time_nfo) noexcep
     }
 
   last_modulated_value_.store (current_val);
+}
+
+void
+ProcessorParameter::prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
+{
+  modulation_input_ = modulation_input_uuid_.get_object_as<dsp::CVPort> ();
+}
+void
+ProcessorParameter::release_resources ()
+{
+  modulation_input_ = nullptr;
 }
 
 utils::Utf8String

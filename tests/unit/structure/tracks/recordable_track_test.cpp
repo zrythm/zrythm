@@ -17,8 +17,9 @@ protected:
   void SetUp () override
   {
     // Create test track
-    track_ = std::make_unique<RecordableTrackMixin> (
-      deps_, [] { return u8"Test Track"; }, [] { return true; });
+    track_ = std::make_unique<RecordableTrackMixin> (deps_, [] {
+      return u8"Test Track";
+    });
   }
 
   void TearDown () override { track_.reset (); }
@@ -80,36 +81,6 @@ TEST_F (RecordableTrackTest, NoSignalOnSameValue)
   EXPECT_EQ (spy.count (), 0);
 }
 
-TEST_F (RecordableTrackTest, AutoArmEnabled)
-{
-  // Create track with auto-arm enabled
-  auto track = std::make_unique<RecordableTrackMixin> (
-    deps_, [] { return u8"Auto-arm Track"; }, [] { return true; });
-
-  // Test auto-arm when selected
-  track->onRecordableTrackSelectedChanged (true);
-  EXPECT_TRUE (track->recording ());
-
-  // Test auto-disarm when deselected
-  track->onRecordableTrackSelectedChanged (false);
-  EXPECT_FALSE (track->recording ());
-}
-
-TEST_F (RecordableTrackTest, AutoArmDisabled)
-{
-  // Create track with auto-arm disabled
-  auto track = std::make_unique<RecordableTrackMixin> (
-    deps_, [] { return u8"No Auto-arm Track"; }, [] { return false; });
-
-  // Test no auto-arm when selected
-  track->onRecordableTrackSelectedChanged (true);
-  EXPECT_FALSE (track->recording ());
-
-  // Test no change when deselected
-  track->onRecordableTrackSelectedChanged (false);
-  EXPECT_FALSE (track->recording ());
-}
-
 TEST_F (RecordableTrackTest, JsonSerializationRoundtrip)
 {
   // Set some state
@@ -119,8 +90,9 @@ TEST_F (RecordableTrackTest, JsonSerializationRoundtrip)
   nlohmann::json j = *track_;
 
   // Create new track from JSON
-  auto deserialized_track = std::make_unique<RecordableTrackMixin> (
-    deps_, [] { return u8"Deserialized Track"; }, [] { return true; });
+  auto deserialized_track = std::make_unique<RecordableTrackMixin> (deps_, [] {
+    return u8"Deserialized Track";
+  });
 
   // Deserialize from JSON
   from_json (j, *deserialized_track);
@@ -137,8 +109,9 @@ TEST_F (RecordableTrackTest, JsonSerializationDefaultState)
   nlohmann::json j = *track_;
 
   // Create new track from JSON
-  auto deserialized_track = std::make_unique<RecordableTrackMixin> (
-    deps_, [] { return u8"Default Track"; }, [] { return true; });
+  auto deserialized_track = std::make_unique<RecordableTrackMixin> (deps_, [] {
+    return u8"Default Track";
+  });
 
   from_json (j, *deserialized_track);
 
@@ -167,21 +140,6 @@ TEST_F (RecordableTrackTest, MultipleStateChanges)
   EXPECT_FALSE (spy.at (3).at (0).toBool ());
 }
 
-TEST_F (RecordableTrackTest, AutoArmWithManualOverride)
-{
-  // Create track with auto-arm enabled
-  auto track = std::make_unique<RecordableTrackMixin> (
-    deps_, [] { return u8"Auto-arm Manual Track"; }, [] { return true; });
-
-  // Manually set recording
-  track->setRecording (true);
-  EXPECT_TRUE (track->recording ());
-
-  // Select another track (should not auto-disarm since it was manually set)
-  track->onRecordableTrackSelectedChanged (false);
-  EXPECT_TRUE (track->recording ());
-}
-
 TEST_F (RecordableTrackTest, RecordingParameterAccess)
 {
   // Test that we can access the recording parameter
@@ -198,13 +156,11 @@ TEST_F (RecordableTrackTest, NameProviderFunctionality)
   bool name_provider_called = false;
 
   // Create track with name provider that tracks calls
-  auto track = std::make_unique<RecordableTrackMixin> (
-    deps_,
-    [&name_provider_called] {
+  auto track =
+    std::make_unique<RecordableTrackMixin> (deps_, [&name_provider_called] {
       name_provider_called = true;
       return u8"Custom Name Track";
-    },
-    [] { return true; });
+    });
 
   // Trigger an operation that should use the name provider
   track->setRecording (true);

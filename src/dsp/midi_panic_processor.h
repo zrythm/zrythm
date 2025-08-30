@@ -35,6 +35,10 @@ public:
    */
   void request_panic () { panic_.store (true); }
 
+  // ============================================================================
+  // ProcessorBase Interface
+  // ============================================================================
+
   void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override
   {
     const auto panic = panic_.exchange (false);
@@ -42,13 +46,25 @@ public:
       return;
 
     // queue panic event
-    auto * midi_out =
-      get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
-    midi_out->midi_events_.queued_events_.panic_without_lock (
+    midi_out_->midi_events_.queued_events_.panic_without_lock (
       time_nfo.local_offset_);
   }
 
+  void custom_prepare_for_processing (
+    sample_rate_t sample_rate,
+    nframes_t     max_block_length) override
+  {
+    midi_out_ = get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+  }
+
+  void custom_release_resources () override { midi_out_ = nullptr; }
+
+  // ============================================================================
+
 private:
   std::atomic_bool panic_;
+
+  // Processing caches
+  dsp::MidiPort * midi_out_{};
 };
 } // namespace zrythm::dsp

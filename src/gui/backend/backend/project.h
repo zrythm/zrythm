@@ -4,6 +4,7 @@
 #pragma once
 
 #include "actions/arranger_object_creator.h"
+#include "actions/track_creator.h"
 #include "dsp/audio_pool.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
@@ -12,7 +13,9 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/timeline.h"
+#include "gui/backend/plugin_selection_manager.h"
 #include "gui/backend/tool.h"
+#include "gui/backend/track_selection_manager.h"
 #include "gui/dsp/plugin_factory.h"
 #include "gui/dsp/quantize_options.h"
 #include "plugins/plugin.h"
@@ -91,6 +94,9 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::structure::tracks::Tracklist * tracklist READ getTracklist CONSTANT
       FINAL)
+  Q_PROPERTY (
+    zrythm::gui::backend::TrackSelectionManager * trackSelectionManager READ
+      trackSelectionManager CONSTANT)
   Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::engine::device_io::AudioEngine * engine READ engine CONSTANT FINAL)
@@ -105,11 +111,10 @@ class Project final : public QObject
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::structure::tracks::TrackFactory * trackFactory READ getTrackFactory
-      CONSTANT FINAL)
-  Q_PROPERTY (
     zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
       arrangerObjectCreator CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::actions::TrackCreator * trackCreator READ trackCreator CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
   Q_PROPERTY (
@@ -185,24 +190,26 @@ public:
   // QML interface
   // =========================================================
 
-  QString                           getTitle () const;
-  void                              setTitle (const QString &title);
-  QString                           getDirectory () const;
-  void                              setDirectory (const QString &directory);
-  structure::tracks::Tracklist *    getTracklist () const;
-  Timeline *                        getTimeline () const;
-  engine::session::Transport *      getTransport () const;
-  engine::device_io::AudioEngine *  engine () const;
-  gui::backend::Tool *              getTool () const;
-  ClipEditor *                      getClipEditor () const;
-  gui::actions::UndoManager *       getUndoManager () const;
-  undo::UndoStack *                 undoStack () const;
-  PluginFactory *                   getPluginFactory () const;
-  structure::tracks::TrackFactory * getTrackFactory () const;
-  actions::ArrangerObjectCreator *  arrangerObjectCreator () const;
-  dsp::TempoMapWrapper *            getTempoMap () const;
-  dsp::SnapGrid *                   snapGridTimeline () const;
-  dsp::SnapGrid *                   snapGridEditor () const;
+  QString                               getTitle () const;
+  void                                  setTitle (const QString &title);
+  QString                               getDirectory () const;
+  void                                  setDirectory (const QString &directory);
+  structure::tracks::Tracklist *        getTracklist () const;
+  gui::backend::TrackSelectionManager * trackSelectionManager () const;
+  gui::backend::PluginSelectionManager * pluginSelectionManager () const;
+  Timeline *                             getTimeline () const;
+  engine::session::Transport *           getTransport () const;
+  engine::device_io::AudioEngine *       engine () const;
+  gui::backend::Tool *                   getTool () const;
+  ClipEditor *                           getClipEditor () const;
+  gui::actions::UndoManager *            getUndoManager () const;
+  undo::UndoStack *                      undoStack () const;
+  PluginFactory *                        getPluginFactory () const;
+  actions::ArrangerObjectCreator *       arrangerObjectCreator () const;
+  actions::TrackCreator *                trackCreator () const;
+  dsp::TempoMapWrapper *                 getTempoMap () const;
+  dsp::SnapGrid *                        snapGridTimeline () const;
+  dsp::SnapGrid *                        snapGridEditor () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -224,6 +231,38 @@ public:
   auto * getArrangerObjectFactory () const
   {
     return arranger_object_factory_.get ();
+  }
+
+  template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
+  auto get_selection_manager_for_object (const ObjT &obj) const
+  {
+    if constexpr (structure ::arrangement::TimelineObject<ObjT>)
+      {
+        return timeline_->selectionManager ();
+      }
+    else if constexpr (std::is_same_v<ObjT, structure ::arrangement::MidiNote>)
+      {
+        return clip_editor_->getPianoRoll ()->selectionManager ();
+      }
+    else if constexpr (
+      std::is_same_v<ObjT, structure ::arrangement::AutomationPoint>)
+      {
+        return clip_editor_->getAutomationEditor ()->selectionManager ();
+      }
+    else if constexpr (
+      std::is_same_v<ObjT, structure ::arrangement::ChordObject>)
+      {
+        return clip_editor_->getChordEditor ()->selectionManager ();
+      }
+    else if constexpr (
+      std::is_same_v<ObjT, structure ::arrangement::AudioSourceObject>)
+      {
+        return clip_editor_->getAudioClipEditor ()->selectionManager ();
+      }
+    else
+      {
+        static_assert (false);
+      }
   }
 
   /**
@@ -642,12 +681,18 @@ public:
   utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
 
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
-                                            arranger_object_factory_;
-  PluginFactory *                           plugin_factory_{};
-  zrythm::structure::tracks::TrackFactory * track_factory_{};
+                                                   arranger_object_factory_;
+  PluginFactory *                                  plugin_factory_{};
+  std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
 
   utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
-    arranger_object_creator_;
+                                                 arranger_object_creator_;
+  utils::QObjectUniquePtr<actions::TrackCreator> track_creator_;
+
+  utils::QObjectUniquePtr<gui::backend::TrackSelectionManager>
+    track_selection_manager_;
+  utils::QObjectUniquePtr<gui::backend::PluginSelectionManager>
+    plugin_selection_manager_;
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

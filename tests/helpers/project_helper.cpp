@@ -11,7 +11,7 @@ BootstrapTimelineFixture::SetUp ()
   ZrythmFixture::SetUp ();
 
   /* pause engine */
-  AudioEngine::State state;
+  EngineState state;
   AUDIO_ENGINE->wait_for_pause (state, false, true);
 
   /* remove any previous work */

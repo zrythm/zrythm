@@ -8,6 +8,7 @@
 #include "utils/format.h"
 #include "utils/icloneable.h"
 #include "utils/logger.h"
+#include "utils/rt_thread_id.h"
 #include "utils/serialization.h"
 #include "utils/string.h"
 
@@ -236,6 +237,11 @@ public:
     return std::get<ObjectT *> (get_object ());
   }
 
+  RegistryT::BaseType * get_object_base () const
+  {
+    return get_registry ().find_by_id_as_base_or_throw (id ());
+  }
+
   template <typename... Args>
   UuidReference clone_new_identity (Args &&... args) const
   {
@@ -316,7 +322,8 @@ using UuidIdentifiablObjectResolver =
  *
  * Intended to be used with variants of pointers to QObjects.
  *
- * @note Object registration and deregistration must only be done from the main
+ * @note The registry API is not thread-safe. Registry construction, object
+ * registration and deregistration, etc., must only be done from the main
  * thread.
  *
  * @tparam VariantT A variant of raw pointers to QObject-derived classes.
@@ -330,7 +337,10 @@ public:
   using VariantType = VariantT;
   using BaseType = BaseT;
 
-  OwningObjectRegistry (QObject * parent = nullptr) : QObject (parent) { }
+  OwningObjectRegistry (QObject * parent = nullptr)
+      : QObject (parent), main_thread_id_ (current_thread_id)
+  {
+  }
 
   // ========================================================================
   // QML/QObject Interface
@@ -345,6 +355,8 @@ public:
   auto create_object (Args &&... args) -> UuidReference<OwningObjectRegistry>
     requires std::derived_from<CreateType, BaseT>
   {
+    assert (is_main_thread ());
+
     auto * obj = new CreateType (std::forward<Args> (args)...);
     z_trace (
       "created object of type {} with ID {}", typeid (CreateType).name (),
@@ -359,6 +371,8 @@ public:
     -> UuidReference<OwningObjectRegistry>
     requires std::derived_from<CreateType, BaseT>
   {
+    assert (is_main_thread ());
+
     CreateType * obj = clone_raw_ptr (
       other, ObjectCloneType::NewIdentity, std::forward<Args> (args)...);
     register_object (obj);
@@ -367,11 +381,16 @@ public:
 
   [[gnu::hot]] auto get_iterator_for_id (const UuidType &id) const
   {
+    // TODO: some failures left to fix
+    // assert (is_main_thread ());
+
     return objects_by_id_.find (id);
   }
 
   [[gnu::hot]] auto get_iterator_for_id (const UuidType &id)
   {
+    // assert (is_main_thread ());
+
     return objects_by_id_.find (id);
   }
 
@@ -402,8 +421,16 @@ public:
     return val.value ();
   }
 
+  BaseT * find_by_id_as_base_or_throw (const UuidType &id) const
+  {
+    auto var = find_by_id_or_throw (id);
+    return std::visit ([] (auto &&val) -> BaseT * { return val; }, var);
+  }
+
   bool contains (const UuidType &id) const
   {
+    // assert (is_main_thread ());
+
     return objects_by_id_.contains (id);
   }
 
@@ -414,6 +441,8 @@ public:
    */
   void register_object (VariantT obj_ptr)
   {
+    assert (is_main_thread ());
+
     std::visit (
       [&] (auto &&obj) {
         if (contains (obj->get_uuid ()))
@@ -442,13 +471,22 @@ public:
    */
   auto reference_count (const UuidType &id) const
   {
+    assert (is_main_thread ());
+
     return ref_counts_.at (id);
   }
 
-  void acquire_reference (const UuidType &id) { ref_counts_[id]++; }
+  void acquire_reference (const UuidType &id)
+  {
+    assert (is_main_thread ());
+
+    ref_counts_[id]++;
+  }
 
   void release_reference (const UuidType &id)
   {
+    assert (is_main_thread ());
+
     if (--ref_counts_[id] <= 0)
       {
         delete_object_by_id (id);
@@ -462,10 +500,17 @@ public:
    */
   auto get_uuids () const
   {
+    assert (is_main_thread ());
+
     return objects_by_id_ | std::views::keys | std::ranges::to<std::vector> ();
   }
 
-  size_t size () const { return objects_by_id_.size (); }
+  size_t size () const
+  {
+    assert (is_main_thread ());
+
+    return objects_by_id_.size ();
+  }
 
   friend void to_json (nlohmann::json &j, const OwningObjectRegistry &obj)
   {
@@ -525,6 +570,8 @@ private:
     std::visit ([&] (auto &&obj) { delete obj; }, obj_var);
   }
 
+  bool is_main_thread () const { return main_thread_id_ == current_thread_id; }
+
 private:
   /**
    * @brief Hash map of the objects.
@@ -539,45 +586,94 @@ private:
    * @note Only the main thread may read or write to this map.
    */
   boost::unordered::unordered_flat_map<UuidType, int> ref_counts_;
+
+  RTThreadId main_thread_id_;
 };
+
+#define DEFINE_UUID_IDENTIFIABLE_OBJECT_SELECTION_MANAGER_QML_PROPERTIES( \
+  ClassType, FullyQualifiedChildBaseType) \
+public: \
+  static_assert ( \
+    std::is_same_v<FullyQualifiedChildBaseType, RegistryType::BaseType>); \
+  Q_SIGNAL void selectionChanged (); \
+  Q_SIGNAL void objectSelectionStatusChanged ( \
+    RegistryType::BaseType * object, bool selected); \
+  Q_SIGNAL void lastSelectedObjectChanged (); \
+  Q_PROPERTY (/* NOLINTNEXTLINE */ \
+              FullyQualifiedChildBaseType * lastSelectedObject READ \
+                lastSelectedObject NOTIFY lastSelectedObjectChanged) \
+  Q_INVOKABLE bool isSelected (RegistryType::BaseType * object) \
+  { \
+    return is_selected (object->get_uuid ()); \
+  } \
+  Q_INVOKABLE void selectUnique (RegistryType::BaseType * object) \
+  { \
+    select_unique (object->get_uuid ()); \
+  } \
+  Q_INVOKABLE void addToSelection (RegistryType::BaseType * object) \
+  { \
+    append_to_selection (object->get_uuid ()); \
+  } \
+  Q_INVOKABLE void removeFromSelection (RegistryType::BaseType * object) \
+  { \
+    remove_from_selection (object->get_uuid ()); \
+  }
 
 template <typename RegistryT> class UuidIdentifiableObjectSelectionManager
 {
   using UuidType = typename RegistryT::UuidType;
 
 public:
+  using RegistryType = RegistryT;
   using UuidSet = std::unordered_set<UuidType>;
 
-  using SelectionChangedCallback = std::function<void ()>;
+  UuidIdentifiableObjectSelectionManager (const RegistryT &registry)
+      : registry_ (registry)
+  {
+  }
 
-  UuidIdentifiableObjectSelectionManager (
-    UuidSet                                &selected_objs,
-    const RegistryT                        &registry,
-    std::optional<SelectionChangedCallback> selection_changed_cb = std::nullopt)
-      : selected_objects_ (selected_objs), registry_ (registry),
-        selection_changed_cb_ (std::move (selection_changed_cb))
+  RegistryT::BaseType * lastSelectedObject () const
   {
+    if (last_selected_object_.has_value ())
+      return get_object_base (last_selected_object_.value ());
+
+    return nullptr;
   }
-  void append_to_selection (const UuidType &id)
+
+  void append_to_selection (this auto &&self, const UuidType &id)
   {
-    if (!is_selected (id))
+    if (!self.is_selected (id))
       {
-        selected_objects_.insert (id);
-        emit_selection_changed_for_object (id);
+        self.selected_objects_.insert (id);
+        self.last_selected_object_ = id;
+        Q_EMIT self.objectSelectionStatusChanged (
+          self.get_object_base (id), true);
+        Q_EMIT self.lastSelectedObjectChanged ();
+        Q_EMIT self.selectionChanged ();
       }
   }
-  void remove_from_selection (const UuidType &id)
+  void remove_from_selection (this auto &&self, const UuidType &id)
   {
-    if (is_selected (id))
+    if (self.is_selected (id))
       {
-        selected_objects_.erase (id);
-        emit_selection_changed_for_object (id);
+        self.selected_objects_.erase (id);
+        if (
+          self.last_selected_object_.has_value ()
+          && self.last_selected_object_.value () == id)
+          {
+            self.last_selected_object_.reset ();
+            Q_EMIT self.lastSelectedObjectChanged ();
+          }
+
+        Q_EMIT self.objectSelectionStatusChanged (
+          self.get_object_base (id), false);
+        Q_EMIT self.selectionChanged ();
       }
   }
-  void select_unique (const UuidType &id)
+  void select_unique (this auto &&self, const UuidType &id)
   {
-    clear_selection ();
-    append_to_selection (id);
+    self.clear_selection ();
+    self.append_to_selection (id);
   }
   bool is_selected (const UuidType &id) const
   {
@@ -590,46 +686,35 @@ public:
   bool empty () const { return selected_objects_.empty (); }
   auto size () const { return selected_objects_.size (); }
 
-  void clear_selection ()
+  void clear_selection (this auto &&self)
   { // Make a copy of the selected tracks to iterate over
-    auto selected_objs_copy = selected_objects_;
+    auto selected_objs_copy = self.selected_objects_;
     for (const auto &uuid : selected_objs_copy)
       {
-        selected_objects_.erase (uuid);
-        emit_selection_changed_for_object (uuid);
+        self.remove_from_selection (uuid);
       }
   }
 
   template <RangeOf<UuidType> UuidRange>
-  void select_only_these (const UuidRange &uuids)
+  void select_only_these (this auto &&self, const UuidRange &uuids)
   {
-    clear_selection ();
+    self.clear_selection ();
     for (const auto &uuid : uuids)
       {
-        append_to_selection (uuid);
+        self.append_to_selection (uuid);
       }
   }
 
 private:
-  auto get_object_for_id (const UuidType &id)
+  RegistryT::BaseType * get_object_base (const UuidType &id) const
   {
-    return registry_.find_by_id_or_throw (id);
-  }
-  void emit_selection_changed_for_object (const UuidType &id)
-  {
-    std::visit (
-      [&] (auto &&obj) { Q_EMIT obj->selectedChanged (is_selected (id)); },
-      get_object_for_id (id));
-    if (selection_changed_cb_.has_value ())
-      {
-        std::invoke (selection_changed_cb_.value ());
-      }
+    return registry_.find_by_id_as_base_or_throw (id);
   }
 
 private:
-  UuidSet                                &selected_objects_;
-  const RegistryT                        &registry_;
-  std::optional<SelectionChangedCallback> selection_changed_cb_;
+  UuidSet                 selected_objects_;
+  std::optional<UuidType> last_selected_object_;
+  const RegistryT        &registry_;
 };
 
 /**

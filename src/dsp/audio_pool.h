@@ -74,8 +74,7 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  void
-  write_clip (const FileAudioSource::Uuid &clip_id, bool parts, bool backup);
+  void write_clip (const FileAudioSource * clip, bool parts, bool backup);
 
   /**
    * Removes and frees (and removes the files for) all clips not used by the

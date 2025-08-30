@@ -56,7 +56,7 @@ TEST_F (AudioSampleProcessorTest, ConstructionAndBasicProperties)
   // Test port configuration
   EXPECT_EQ (processor_->get_output_ports ().size (), 2);
 
-  auto output_ports = processor_->get_output_audio_ports ();
+  auto output_ports = processor_->get_output_audio_ports_non_rt ();
   EXPECT_EQ (
     output_ports[0]->get_node_name (), u8"Audio Sample Processor/Stereo Out L");
   EXPECT_EQ (
@@ -68,7 +68,8 @@ TEST_F (AudioSampleProcessorTest, PortConfiguration)
   auto output_ports = processor_->get_output_ports ();
   EXPECT_EQ (output_ports.size (), 2);
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   EXPECT_NE (left_port, nullptr);
   EXPECT_NE (right_port, nullptr);
@@ -116,7 +117,8 @@ TEST_F (AudioSampleProcessorTest, BasicAudioProcessing)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   // Create a simple test sample
   std::vector<float> test_buffer = { 0.5f, 0.5f, 0.5f, 0.5f, 0.5f };
@@ -151,7 +153,8 @@ TEST_F (AudioSampleProcessorTest, VolumeScaling)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f };
 
@@ -184,7 +187,8 @@ TEST_F (AudioSampleProcessorTest, StartOffset)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -221,7 +225,8 @@ TEST_F (AudioSampleProcessorTest, MultipleSamples)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   // Add sample to left channel
   std::vector<float> left_buffer = { 0.3f, 0.3f, 0.3f };
@@ -265,7 +270,8 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   // Create a longer sample that spans multiple processing cycles
   std::vector<float> test_buffer (10, 0.8f); // 10 samples
@@ -316,7 +322,8 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f };
 
@@ -384,7 +391,8 @@ TEST_F (AudioSampleProcessorTest, ChannelIndexValidation)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f };
 
@@ -418,7 +426,8 @@ TEST_F (AudioSampleProcessorTest, EmptyBuffer)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   // Test with empty buffer
   std::vector<float> empty_buffer;
@@ -493,7 +502,8 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
 
   // After prepare, the queue should be empty
   // We can verify this by processing and checking no samples are played
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -515,7 +525,8 @@ TEST_F (AudioSampleProcessorTest, ConcurrentSampleProcessing)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   // Add multiple samples that overlap
   std::vector<float> buffer1 = { 0.5f, 0.5f, 0.5f };
@@ -558,7 +569,8 @@ TEST_F (AudioSampleProcessorTest, ResourceCleanup)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] = processor_->get_output_audio_ports ();
+  const auto &[left_port, right_port] =
+    processor_->get_output_audio_ports_non_rt ();
 
   // Verify ports are prepared
   EXPECT_GE (left_port->buf_.size (), max_block_length_);

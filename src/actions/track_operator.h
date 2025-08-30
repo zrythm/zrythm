@@ -29,10 +29,6 @@ public:
   structure::tracks::Track * track () const { return track_; }
   void                       setTrack (structure::tracks::Track * track)
   {
-    if (track == nullptr)
-      {
-        throw std::invalid_argument ("Track cannot be null");
-      }
     if (track_ != track)
       {
         track_ = track;

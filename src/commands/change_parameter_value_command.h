@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/parameter.h"
+#include "utils/monotonic_time_provider.h"
 
 #include <QUndoCommand>
 

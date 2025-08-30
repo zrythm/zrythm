@@ -259,7 +259,7 @@ private:
    * @brief Engine state when export was started so that it can be re-set after
    * exporting.
    */
-  std::unique_ptr<device_io::AudioEngine::State> state_;
+  std::unique_ptr<EngineState> state_;
 
   std::unique_ptr<ExportThread> thread_;
 };

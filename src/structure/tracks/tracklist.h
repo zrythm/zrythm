@@ -38,8 +38,6 @@ class SingletonTracks : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
-  friend class Tracklist;
-
 public:
   SingletonTracks (QObject * parent = nullptr) : QObject (parent) { }
 
@@ -48,7 +46,7 @@ public:
   MasterTrack *    masterTrack () const { return master_track_; }
   MarkerTrack *    markerTrack () const { return marker_track_; }
 
-private:
+public:
   QPointer<ChordTrack>     chord_track_;
   QPointer<ModulatorTrack> modulator_track_;
   QPointer<MasterTrack>    master_track_;
@@ -75,8 +73,6 @@ class Tracklist : public QObject
   Q_PROPERTY (
     zrythm::structure::tracks::TrackCollection * collection READ collection
       CONSTANT)
-  Q_PROPERTY (
-    QVariant selectedTrack READ selectedTrack NOTIFY selectedTracksChanged)
   Q_PROPERTY (
     int pinnedTracksCutoff READ pinnedTracksCutoff WRITE setPinnedTracksCutoff
       NOTIFY pinnedTracksCutoffChanged)
@@ -105,11 +101,6 @@ public:
 
   TrackRouting * trackRouting () const { return track_routing_.get (); }
 
-  Q_INVOKABLE void setExclusivelySelectedTrack (QVariant track);
-
-  QVariant      selectedTrack () const;
-  Q_SIGNAL void selectedTracksChanged ();
-
   int  pinnedTracksCutoff () const { return pinned_tracks_cutoff_; }
   void setPinnedTracksCutoff (int index)
   {
@@ -137,37 +128,6 @@ public:
     const Tracklist       &other,
     utils::ObjectCloneType clone_type);
 
-  /**
-   * Adds given track to given spot in tracklist.
-   *
-   * @return Pointer to the newly added track.
-   */
-  TrackPtrVariant insert_track (const TrackUuidReference &track_id, int pos);
-
-  /**
-   * Calls insert_track with the given options.
-   */
-  TrackPtrVariant append_track (const TrackUuidReference &track_id)
-  {
-    return insert_track (
-      track_id, static_cast<int> (collection ()->track_count ()));
-  }
-
-  /**
-   * Removes the given track from the tracklist.
-   *
-   * Also disconnects the channel (breaks its internal & external connections)
-   * and removes any plugins (if any).
-   */
-  void remove_track (const TrackUuid &track_id);
-
-  /**
-   * Moves a track from its current position to the position given by @p pos.
-   *
-   * @param pos Position to insert at, or -1 to insert at the end.
-   */
-  void move_track (TrackUuid track_id, int pos);
-
   std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
   {
     auto span = get_track_span ();
@@ -178,13 +138,6 @@ public:
       }
     return std::make_optional (*it);
   }
-
-  /**
-   * Returns a unique name for a new track based on the given name.
-   */
-  utils::Utf8String get_unique_name_for_track (
-    const Track::Uuid       &track_to_skip,
-    const utils::Utf8String &name) const;
 
   /**
    * Returns the first visible Track.
@@ -267,15 +220,6 @@ public:
   bool should_be_visible (const Track::Uuid &track_id) const;
 
   /**
-   * Returns whether the track name is not taken.
-   *
-   * @param track_to_skip Track to skip when searching.
-   */
-  bool
-  track_name_is_unique (const utils::Utf8String &name, TrackUuid track_to_skip)
-    const;
-
-  /**
    * @brief Returns whether the track at @p index is pinned.
    */
   bool is_track_pinned (int index) const
@@ -287,11 +231,6 @@ public:
   {
     return is_track_pinned (
       static_cast<int> (collection ()->get_track_index (track_id)));
-  }
-
-  TrackSelectionManager get_selection_manager () const
-  {
-    return *track_selection_manager_;
   }
 
   auto get_track_route_target (const TrackUuid &source_track) const
@@ -317,13 +256,11 @@ public:
 private:
   static constexpr auto kPinnedTracksCutoffKey = "pinnedTracksCutoff"sv;
   static constexpr auto kTracksKey = "tracks"sv;
-  static constexpr auto kSelectedTracksKey = "selectedTracks"sv;
   friend void           to_json (nlohmann::json &j, const Tracklist &t)
   {
     j = nlohmann::json{
       { kPinnedTracksCutoffKey, t.pinned_tracks_cutoff_ },
       { kTracksKey,             t.track_collection_     },
-      { kSelectedTracksKey,     t.selected_tracks_      },
     };
   }
   friend void from_json (const nlohmann::json &j, Tracklist &t);
@@ -355,15 +292,6 @@ private:
   utils::QObjectUniquePtr<TrackCollection> track_collection_;
 
   utils::QObjectUniquePtr<TrackRouting> track_routing_;
-
-  /**
-   * @brief A subset of tracks that are currently selected.
-   *
-   * There must always be at least 1 selected track.
-   */
-  TrackSelectionManager::UuidSet selected_tracks_;
-
-  std::unique_ptr<TrackSelectionManager> track_selection_manager_;
 
   utils::QObjectUniquePtr<SingletonTracks> singleton_tracks_;
 

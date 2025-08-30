@@ -323,7 +323,8 @@ AudioEngine::get_track_registry () const
 }
 
 void
-AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
+AudioEngine::
+  wait_for_pause (EngineState &state, bool force_pause, bool with_fadeout)
 {
   z_debug ("waiting for engine to pause...");
 
@@ -419,7 +420,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
 void
 
-AudioEngine::resume (State &state)
+AudioEngine::resume (EngineState &state)
 {
   z_debug ("resuming engine...");
   if (!state.running_)
@@ -480,7 +481,7 @@ AudioEngine::activate (bool activate)
           return;
         }
 
-      State state{};
+      EngineState state{};
       wait_for_pause (state, true, true);
       activated_ = false;
     }

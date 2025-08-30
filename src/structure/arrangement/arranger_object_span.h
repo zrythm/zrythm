@@ -386,11 +386,6 @@ public:
   {
     return !is_timeline_object_projection (obj_var);
   }
-  static auto selected_projection (const VariantType &obj_var)
-  {
-    return std::visit (
-      [&] (auto &&obj) { return obj->getSelected (); }, obj_var);
-  }
   static auto deletable_projection (const VariantType &obj_var)
   {
     return std::visit (

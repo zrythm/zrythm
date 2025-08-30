@@ -3,10 +3,6 @@
 
 #pragma once
 
-#include <utility>
-
-#include "gui/backend/backend/settings_manager.h"
-#include "plugins/plugin_all.h"
 #include "structure/tracks/track_all.h"
 
 namespace zrythm::structure::tracks
@@ -15,26 +11,13 @@ namespace zrythm::structure::tracks
 /**
  * @brief Factory for tracks.
  */
-class TrackFactory : public QObject
+class TrackFactory
 {
-  Q_OBJECT
-  QML_ELEMENT
-  QML_UNCREATABLE ("")
-
-  using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;
-
 public:
-  TrackFactory () = delete;
-  TrackFactory (
-    FinalTrackDependencies track_deps,
-    gui::SettingsManager  &settings_mgr,
-    QObject *              parent = nullptr)
-      : QObject (parent), track_deps_ (std::move (track_deps)),
-        settings_manager_ (settings_mgr)
+  TrackFactory (FinalTrackDependencies track_deps)
+      : track_deps_ (std::move (track_deps))
   {
   }
-
-  static TrackFactory * get_instance ();
 
   template <typename TrackT> class Builder
   {
@@ -46,12 +29,6 @@ public:
     {
     }
 
-    Builder &with_settings_manager (gui::SettingsManager &settings_manager)
-    {
-      settings_manager_ = settings_manager;
-      return *this;
-    }
-
   public:
     std::unique_ptr<TrackT> build_for_deserialization () const
     {
@@ -60,37 +37,29 @@ public:
 
     auto build ()
     {
-      auto obj_ref = [&] () {
-        return track_deps_.track_registry_.create_object<TrackT> (track_deps_);
-      }();
-
-      // auto * obj = std::get<PluginT *> (obj_ref.get_object ());
-
+      auto obj_ref =
+        track_deps_.track_registry_.create_object<TrackT> (track_deps_);
+      auto * track = obj_ref.template get_object_as<TrackT> ();
+      track->setName (format_qstr (QObject::tr ("{} Track"), track->type ()));
       return obj_ref;
     }
 
   private:
-    FinalTrackDependencies            track_deps_;
-    OptionalRef<gui::SettingsManager> settings_manager_;
+    FinalTrackDependencies track_deps_;
   };
 
   template <typename TrackT> auto get_builder () const
   {
-    auto builder =
-      Builder<TrackT> (track_deps_).with_settings_manager (settings_manager_);
+    auto builder = Builder<TrackT> (track_deps_);
     return builder;
   }
 
-private:
   template <FinalTrackSubclass TrackT>
   TrackUuidReference create_empty_track () const
   {
     auto obj_ref = get_builder<TrackT> ().build ();
     return obj_ref;
   }
-
-  // temporary hack to access create_empty_track()
-  friend class gui::actions::TracklistSelectionsAction;
 
   auto create_empty_track (Track::Type type) const
   {
@@ -123,22 +92,6 @@ private:
       }
   }
 
-public:
-  template <FinalTrackSubclass TrackT>
-  auto add_empty_track (Tracklist &tracklist)
-  {
-    auto track_ref = create_empty_track<TrackT> ();
-// TODO
-#if 0
-    tracklist.append_track (
-      track_ref,
-      *audio_engine_, false, false);
-#endif
-    return track_ref;
-  }
-
-  Q_INVOKABLE QVariant addEmptyTrackFromType (Track::Type tt);
-
   template <typename TrackT>
   auto clone_new_object_identity (const TrackT &other) const
   {
@@ -158,7 +111,6 @@ public:
 
 private:
   FinalTrackDependencies track_deps_;
-  gui::SettingsManager  &settings_manager_;
 };
 
 } // namespace zrythm::structure::tracks

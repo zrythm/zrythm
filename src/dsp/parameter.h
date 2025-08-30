@@ -343,6 +343,11 @@ public:
    */
   void process_block (EngineProcessTimeInfo time_nfo) noexcept override;
 
+  void
+  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
+    override;
+  void release_resources () override;
+
   // ========================================================================
 
   void set_automation_provider (AutomationValueProvider provider)
@@ -448,6 +453,9 @@ private:
    * value) are expected to connect to this.
    */
   PortUuidReference modulation_input_uuid_;
+
+  // Processing cache
+  dsp::CVPort * modulation_input_{};
 
   /**
    * @brief Automation value provider.

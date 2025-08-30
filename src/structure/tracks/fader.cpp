@@ -261,14 +261,14 @@ Fader::db_string_getter () const
 }
 
 float
-Fader::calculate_target_gain () const
+Fader::calculate_target_gain_rt () const
 {
-  if (effectively_muted ())
+  if (effectively_muted_rt ())
     return mute_gain_cb_ ();
 
-  const auto &amp_param = get_amp_param ();
-  const auto  gain_from_param =
-    amp_param.range ().convertFrom0To1 (amp_param.currentValue ());
+  const auto gain_from_param =
+    processing_caches_->amp_param_->range ().convertFrom0To1 (
+      processing_caches_->amp_param_->currentValue ());
   return gain_from_param;
 }
 
@@ -281,34 +281,77 @@ Fader::custom_prepare_for_processing (
   sample_rate_t sample_rate,
   nframes_t     max_block_length)
 {
+  processing_caches_ = std::make_unique<FaderProcessingCaches> ();
+
   current_gain_.reset (static_cast<double> (sample_rate), 0.01);
+
+  processing_caches_->amp_param_ =
+    amp_id_.has_value () ? &get_amp_param () : nullptr;
+  processing_caches_->balance_param_ =
+    balance_id_.has_value () ? &get_balance_param () : nullptr;
+  processing_caches_->mute_param_ =
+    mute_id_.has_value () ? &get_mute_param () : nullptr;
+  processing_caches_->solo_param_ =
+    solo_id_.has_value () ? &get_solo_param () : nullptr;
+  processing_caches_->listen_param_ =
+    listen_id_.has_value () ? &get_listen_param () : nullptr;
+  processing_caches_->mono_compat_enabled_param_ =
+    mono_compat_enabled_id_.has_value ()
+      ? &get_mono_compat_enabled_param ()
+      : nullptr;
+  processing_caches_->swap_phase_param_ =
+    swap_phase_id_.has_value () ? &get_swap_phase_param () : nullptr;
+
+  processing_caches_->audio_ins_rt_.clear ();
+  processing_caches_->audio_outs_rt_.clear ();
+  processing_caches_->midi_in_rt_ = {};
+  processing_caches_->midi_out_rt_ = {};
+  if (is_audio ())
+    {
+      const auto stereo_in = get_stereo_in_ports ();
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in.first);
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in.second);
+      const auto stereo_out = get_stereo_out_ports ();
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out.first);
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out.second);
+    }
+  else if (is_midi ())
+    {
+      processing_caches_->midi_in_rt_ = &get_midi_in_port ();
+      processing_caches_->midi_out_rt_ = &get_midi_out_port ();
+    }
+}
+
+void
+Fader::custom_release_resources ()
+{
+  processing_caches_.reset ();
 }
 
 void
 Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
-  current_gain_.setTargetValue (calculate_target_gain ());
+  current_gain_.setTargetValue (calculate_target_gain_rt ());
 
   if (is_audio ())
     {
-      auto stereo_in = get_stereo_in_ports ();
-      auto stereo_out = get_stereo_out_ports ();
-
       // First, copy the input to output
-      utils::float_ranges::copy (
-        &stereo_out.first.buf_[time_nfo.local_offset_],
-        &stereo_in.first.buf_[time_nfo.local_offset_], time_nfo.nframes_);
-      utils::float_ranges::copy (
-        &stereo_out.second.buf_[time_nfo.local_offset_],
-        &stereo_in.second.buf_[time_nfo.local_offset_], time_nfo.nframes_);
+      for (
+        const auto &[out, in] : std::views::zip (
+          processing_caches_->audio_outs_rt_, processing_caches_->audio_ins_rt_))
+        {
+          utils::float_ranges::copy (
+            &out->buf_[time_nfo.local_offset_],
+            &in->buf_[time_nfo.local_offset_], time_nfo.nframes_);
+        }
 
       if (preprocess_audio_cb_.has_value ())
         {
           std::invoke (
             preprocess_audio_cb_.value (),
             std::make_pair (
-              std::span (stereo_out.first.buf_),
-              std::span (stereo_out.second.buf_)),
+              std::span (processing_caches_->audio_outs_rt_[0]->buf_),
+              std::span (processing_caches_->audio_outs_rt_[1]->buf_)),
             time_nfo);
         }
 
@@ -325,10 +368,11 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
       // apply gain (TODO: use SIMD)
       for (size_t i = 0; i < time_nfo.nframes_; i++)
         {
-          stereo_out.first.buf_[time_nfo.local_offset_ + i] *=
-            current_gain_.getCurrentValue ();
-          stereo_out.second.buf_[time_nfo.local_offset_ + i] *=
-            current_gain_.getCurrentValue ();
+          for (const auto &out : processing_caches_->audio_outs_rt_)
+            {
+              out->buf_[time_nfo.local_offset_ + i] *=
+                current_gain_.getCurrentValue ();
+            }
           current_gain_.skip (1);
         }
 
@@ -337,53 +381,52 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
 
       // apply pan
       utils::float_ranges::mul_k2 (
-        &stereo_out.first.buf_[time_nfo.local_offset_], calc_l,
-        time_nfo.nframes_);
+        &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
+        calc_l, time_nfo.nframes_);
       utils::float_ranges::mul_k2 (
-        &stereo_out.second.buf_[time_nfo.local_offset_], calc_r,
-        time_nfo.nframes_);
+        &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
+        calc_r, time_nfo.nframes_);
 
       /* make mono if mono compat enabled */
       if (mono_compat_enabled)
         {
           utils::float_ranges::make_mono (
-            &stereo_out.first.buf_[time_nfo.local_offset_],
-            &stereo_out.second.buf_[time_nfo.local_offset_], time_nfo.nframes_,
-            false);
+            &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
+            &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
+            time_nfo.nframes_, false);
         }
 
       /* swap phase if need */
       if (swap_phase)
         {
           utils::float_ranges::mul_k2 (
-            &stereo_out.first.buf_[time_nfo.local_offset_], -1.f,
-            time_nfo.nframes_);
+            &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
+            -1.f, time_nfo.nframes_);
           utils::float_ranges::mul_k2 (
-            &stereo_out.second.buf_[time_nfo.local_offset_], -1.f,
-            time_nfo.nframes_);
+            &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
+            -1.f, time_nfo.nframes_);
         }
 
       // hard-limit output if requested
       if (hard_limit_output_)
         {
-          utils::float_ranges::clip (
-            &stereo_out.first.buf_[time_nfo.local_offset_], -2.f, 2.f,
-            time_nfo.nframes_);
-          utils::float_ranges::clip (
-            &stereo_out.second.buf_[time_nfo.local_offset_], -2.f, 2.f,
-            time_nfo.nframes_);
+          for (const auto &out : processing_caches_->audio_outs_rt_)
+            {
+              utils::float_ranges::clip (
+                &out->buf_[time_nfo.local_offset_], -2.f, 2.f,
+                time_nfo.nframes_);
+            }
         }
     } // endif is_audio()
   else if (is_midi ())
     {
       if (!effectively_muted ())
         {
-          auto &midi_in = get_midi_in_port ();
-          auto &midi_out = get_midi_out_port ();
-          auto &target_events = midi_out.midi_events_.queued_events_;
+          auto &target_events =
+            processing_caches_->midi_out_rt_->midi_events_.queued_events_;
           target_events.append (
-            midi_in.midi_events_.active_events_, time_nfo.local_offset_,
-            time_nfo.nframes_);
+            processing_caches_->midi_in_rt_->midi_events_.active_events_,
+            time_nfo.local_offset_, time_nfo.nframes_);
 
           // also apply volume changes
           for (auto &ev : target_events)

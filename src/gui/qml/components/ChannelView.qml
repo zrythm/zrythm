@@ -98,6 +98,8 @@ ColumnLayout {
     }
 
     Component.onCompleted: currentIndex = indexOfValue(root.tracklist.trackRouting.getOutputTrack(root.track))
+
+    // TODO: use an action class like TrackRoutingOperator
     onActivated: root.tracklist.trackRouting.setOutputTrack(root.track, currentValue)
   }
 }

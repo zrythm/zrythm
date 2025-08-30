@@ -10,6 +10,7 @@ import ZrythmStyle
 ColumnLayout {
   id: root
 
+  required property Project project
   required property Tracklist tracklist
   required property UndoStack undoStack
 
@@ -40,9 +41,27 @@ ColumnLayout {
     Layout.fillWidth: true
     currentIndex: tabBar.currentIndex
 
-    TrackInspectorPage {
-      track: root.tracklist.selectedTrack
-      undoStack: root.undoStack
+    Loader {
+      id: trackInspectorLoader
+
+      property Track track: root.project.trackSelectionManager.lastSelectedObject
+
+      active: track !== null
+      visible: active
+
+      Connections {
+        function onLastSelectedObjectChanged() {
+          trackInspectorLoader.track = root.project.trackSelectionManager.lastSelectedObject;
+        }
+
+        target: root.project.trackSelectionManager
+      }
+
+      TrackInspectorPage {
+        anchors.fill: parent
+        track: trackInspectorLoader.track
+        undoStack: root.undoStack
+      }
     }
 
     Repeater {

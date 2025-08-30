@@ -23,6 +23,16 @@ namespace zrythm::dsp
  */
 class ProcessorBase : public dsp::graph::IProcessable
 {
+  struct BaseProcessingCache
+  {
+    sample_rate_t sample_rate_{};
+    nframes_t     max_block_length_{};
+
+    std::vector<dsp::ProcessorParameter *> live_params_;
+    std::vector<dsp::PortPtrVariant>       live_input_ports_;
+    std::vector<dsp::PortPtrVariant>       live_output_ports_;
+  };
+
 public:
   struct ProcessorBaseDependencies
   {
@@ -141,8 +151,7 @@ private:
   std::vector<dsp::ProcessorParameterUuidReference> params_;
 
   // Caches
-  sample_rate_t sample_rate_{};
-  nframes_t     max_block_length_{};
+  std::unique_ptr<BaseProcessingCache> processing_caches_;
 
   BOOST_DESCRIBE_CLASS (ProcessorBase, (), (), (), (name_))
 };

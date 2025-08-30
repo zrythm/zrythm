@@ -160,7 +160,7 @@ PluginConfigurationManager::activate_plugin_configuration (
 
   /* stop the engine so it doesn't restart all the time until all the actions
    * are performed */
-  zrythm::engine::device_io::AudioEngine::State state{};
+  EngineState state{};
   AUDIO_ENGINE->wait_for_pause (state, false, true);
 
   try

@@ -243,7 +243,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     auto * monitor_r_in_node =
       graph.get_nodes ().find_node_for_processable (monitor_r_in);
     auto [metronome_l_out, metronome_r_out] =
-      metronome.get_output_audio_ports ();
+      metronome.get_output_audio_ports_non_rt ();
     auto * metronome_l_out_node =
       graph.get_nodes ().find_node_for_processable (*metronome_l_out);
     auto * metronome_r_out_node =

@@ -490,11 +490,13 @@ TEST_F (UuidIdentifiableObjectSelectionManagerTest, EmitsSelectionChanged)
   bool obj2_selected = false;
 
   QObject::connect (
-    obj1_, &DerivedTestObject::selectedChanged, this,
-    [&] (bool selected) { obj1_selected = selected; });
+    selection_manager_.get (),
+    &TestUuidIdentifiableObjectSelectionManager::selectionChanged, this,
+    [&] () { obj1_selected = selection_manager_->isSelected (obj1_); });
   QObject::connect (
-    obj2_, &DerivedTestObject::selectedChanged, this,
-    [&] (bool selected) { obj2_selected = selected; });
+    selection_manager_.get (),
+    &TestUuidIdentifiableObjectSelectionManager::selectionChanged, this,
+    [&] () { obj2_selected = selection_manager_->isSelected (obj2_); });
 
   selection_manager_->append_to_selection (obj1_->get_uuid ());
   EXPECT_TRUE (obj1_selected);

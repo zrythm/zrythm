@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "gui/backend/arranger_object_selection_manager.h"
 #include "gui/backend/backend/editor_settings.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
@@ -90,6 +91,9 @@ class PianoRoll : public QObject
   Q_PROPERTY (
     zrythm::gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
+      selectionManager CONSTANT)
   Q_PROPERTY (int keyHeight READ getKeyHeight NOTIFY keyHeightChanged)
 public:
   /**
@@ -103,7 +107,15 @@ public:
     Both,
   };
 
-  PianoRoll (QObject * parent = nullptr) : QObject (parent) { }
+  PianoRoll (
+    const structure::arrangement::ArrangerObjectRegistry &registry,
+    QObject *                                             parent = nullptr)
+      : QObject (parent),
+        selection_manager_ (
+          utils::make_qobject_unique<
+            gui::backend::ArrangerObjectSelectionManager> (registry, this))
+  {
+  }
 
 private:
   static constexpr std::array<bool, 12> BLACK_NOTES = {
@@ -119,6 +131,11 @@ public:
   gui::backend::EditorSettings * getEditorSettings () const
   {
     return editor_settings_.get ();
+  }
+
+  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
+  {
+    return selection_manager_.get ();
   }
 
   int getKeyHeight () const { return note_height_; }
@@ -228,8 +245,6 @@ public:
    */
   void init ();
 
-  auto &get_selected_object_ids () { return selected_objects_; }
-
   friend void init_from (
     PianoRoll             &obj,
     const PianoRoll       &other,
@@ -237,7 +252,6 @@ public:
   {
     obj.editor_settings_ =
       utils::clone_unique_qobject (*other.editor_settings_, &obj);
-    obj.selected_objects_ = other.selected_objects_;
   }
 
 private:
@@ -307,6 +321,6 @@ public:
   std::vector<MidiNoteDescriptor> drum_descriptors_ =
     std::vector<MidiNoteDescriptor> (128);
 
-  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
-    selected_objects_;
+  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
+    selection_manager_;
 };

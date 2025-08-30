@@ -36,7 +36,6 @@ TEST_F (MarkerTest, InitialState)
   EXPECT_EQ (marker->position ()->samples (), 0);
   EXPECT_EQ (marker->name ()->name (), "");
   EXPECT_EQ (marker->markerType (), Marker::MarkerType::Custom);
-  EXPECT_FALSE (marker->getSelected ());
 }
 
 // Test marker types

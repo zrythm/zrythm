@@ -60,7 +60,9 @@ TEST_F (AudioPoolTest, Construction)
 TEST_F (AudioPoolTest, LoadExistingClips)
 {
   // Write clip to disk first
-  ASSERT_NO_THROW (audio_pool->write_clip (clip_id, false, false));
+  auto * clip =
+    std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  ASSERT_NO_THROW (audio_pool->write_clip (clip, false, false));
 
   // Create a new pool to simulate loading
   AudioPool new_pool (registry, path_getter, sample_rate_getter);
@@ -94,7 +96,9 @@ TEST_F (AudioPoolTest, GetClipPath)
 // Test clip writing
 TEST_F (AudioPoolTest, WriteClip)
 {
-  ASSERT_NO_THROW (audio_pool->write_clip (clip_id, false, false));
+  auto * clip =
+    std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  ASSERT_NO_THROW (audio_pool->write_clip (clip, false, false));
 
   // Verify file was created
   auto path = audio_pool->get_clip_path (clip_id, false);
@@ -112,8 +116,11 @@ TEST_F (AudioPoolTest, RemoveUnused)
   auto unused_path = audio_pool->get_clip_path (unused_clip->id (), false);
 
   // Write both clips
-  audio_pool->write_clip (clip_id, false, false);
-  audio_pool->write_clip (unused_clip->id (), false, false);
+  auto * clip =
+    std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  audio_pool->write_clip (clip, false, false);
+  audio_pool->write_clip (
+    unused_clip->get_object_as<dsp::FileAudioSource> (), false, false);
 
   // No longer use the clip
   unused_clip.reset ();
@@ -131,11 +138,11 @@ TEST_F (AudioPoolTest, RemoveUnused)
 TEST_F (AudioPoolTest, ReloadClipFrameBufs)
 {
   // Write the clip
-  audio_pool->write_clip (clip_id, false, false);
-
-  // Initially clear frames
   auto * clip =
     std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  audio_pool->write_clip (clip, false, false);
+
+  // Initially clear frames
   clip->clear_frames ();
   EXPECT_EQ (clip->get_num_frames (), 0);
 

@@ -13,11 +13,6 @@ Tracklist::Tracklist (TrackRegistry &track_registry, QObject * parent)
         utils::make_qobject_unique<TrackCollection> (track_registry, this)),
       track_routing_ (
         utils::make_qobject_unique<TrackRouting> (track_registry, this)),
-      track_selection_manager_ (
-        std::make_unique<TrackSelectionManager> (
-          selected_tracks_,
-          track_registry_,
-          [this] () { Q_EMIT selectedTracksChanged (); })),
       singleton_tracks_ (utils::make_qobject_unique<SingletonTracks> (this))
 {
 }
@@ -25,23 +20,6 @@ Tracklist::Tracklist (TrackRegistry &track_registry, QObject * parent)
 // ========================================================================
 // QML Interface
 // ========================================================================
-
-QVariant
-Tracklist::selectedTrack () const
-{
-  if (selected_tracks_.empty ())
-    return {};
-  return QVariant::fromStdVariant (
-    track_registry_.find_by_id_or_throw (*selected_tracks_.begin ()));
-}
-
-void
-Tracklist::setExclusivelySelectedTrack (QVariant track)
-{
-  auto track_var = qvariantToStdVariant<TrackPtrVariant> (track);
-  get_selection_manager ().select_unique (
-    TrackSpan::uuid_projection (track_var));
-}
 
 // ========================================================================
 
@@ -182,86 +160,6 @@ Tracklist::get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track
   // Apply direction modifier
   return sign * static_cast<int> (count);
 }
-
-TrackPtrVariant
-Tracklist::insert_track (const TrackUuidReference &track_id, int pos)
-{
-  auto track_var = track_id.get_object ();
-
-  std::visit (
-    [&] (auto &&track) {
-      using TrackT = base_type<decltype (track)>;
-      z_info ("inserting {} at {}", track->get_name (), pos);
-
-      // throw if attempted to re-add a singleton track
-      if (
-        !Track::type_is_deletable (Track::get_type_for_class<TrackT> ())
-        && get_track_span ().contains_type<TrackT> ())
-        {
-          throw std::invalid_argument (
-            fmt::format (
-              "cannot re-add track of type {} when it already exists",
-              Track::get_type_for_class<TrackT> ()));
-        }
-
-      /* set to -1 so other logic knows it is a new track */
-      // track->set_index (-1);
-
-      /* this needs to be called before appending the track to the tracklist */
-      track->setName (
-        get_unique_name_for_track (track->get_uuid (), track->get_name ())
-          .to_qstring ());
-
-      /* insert the track */
-      track_collection_->insert_track (track_id, pos);
-      track->set_selection_status_getter ([&] (const TrackUuid &id) {
-        return TrackSelectionManager{ selected_tracks_, track_registry_ }
-          .is_selected (id);
-      });
-
-      /* remember important tracks */
-      if constexpr (std::is_same_v<TrackT, MasterTrack>)
-        singleton_tracks_->master_track_ = track;
-      else if constexpr (std::is_same_v<TrackT, ChordTrack>)
-        singleton_tracks_->chord_track_ = track;
-      else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
-        singleton_tracks_->marker_track_ = track;
-      else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
-        singleton_tracks_->modulator_track_ = track;
-
-      /* make the track the only selected track */
-      get_selection_manager ().select_unique (track->get_uuid ());
-
-      /* if audio output route to master */
-      if constexpr (!std::is_same_v<TrackT, MasterTrack>)
-        {
-          if (
-            track->get_output_signal_type () == dsp::PortType::Audio
-            && singleton_tracks_->masterTrack ())
-            {
-              track_routing_->add_or_replace_route (
-                track->get_uuid (),
-                singleton_tracks_->masterTrack ()->get_uuid ());
-            }
-        }
-
-      z_debug (
-        "done - inserted track '{}' ({}) at {}", track->get_name (),
-        track->get_uuid (), pos);
-    },
-    track_var);
-  return track_var;
-}
-
-#if 0
-ChordTrack *
-Tracklist::get_chord_track () const
-{
-  auto span = get_track_span ();
-  return std::get<ChordTrack *> (
-    *std::ranges::find_if (span, TrackSpan::type_projection<ChordTrack>));
-}
-#endif
 
 bool
 Tracklist::should_be_visible (const Track::Uuid &track_id) const
@@ -417,72 +315,6 @@ Tracklist::get_next_visible_track (TrackUuid track_id) const
   return get_visible_track_after_delta (track_id, 1);
 }
 
-utils::Utf8String
-Tracklist::get_unique_name_for_track (
-  const Track::Uuid       &track_to_skip,
-  const utils::Utf8String &name) const
-{
-  auto new_name = name;
-  while (!track_name_is_unique (new_name, track_to_skip))
-    {
-      auto [ending_num, name_without_num] = new_name.get_int_after_last_space ();
-      if (ending_num == -1)
-        {
-          new_name += u8" 1";
-        }
-      else
-        {
-          new_name = utils::Utf8String::from_utf8_encoded_string (
-            fmt::format ("{} {}", name_without_num, ending_num + 1));
-        }
-    }
-  return new_name;
-}
-
-void
-Tracklist::remove_track (const TrackUuid &track_id)
-{
-  auto track_index = track_collection_->get_track_index (track_id);
-  auto track_var = track_collection_->get_track_at_index (track_index);
-  std::visit (
-    [&] (auto &&track) {
-      z_debug (
-        "removing [{}] {} - num tracks before deletion: {}", track_index,
-        track->get_name (), track_collection_->track_count ());
-
-      std::optional<TrackPtrVariant> prev_visible = std::nullopt;
-      std::optional<TrackPtrVariant> next_visible = std::nullopt;
-      prev_visible = get_prev_visible_track (track_id);
-      next_visible = get_next_visible_track (track_id);
-
-      get_selection_manager ().remove_from_selection (track->get_uuid ());
-
-      track_collection_->remove_track (track_id);
-      track->unset_selection_status_getter ();
-
-      // recreate the span because underlying vector changed
-      auto span = get_track_span ();
-
-      /* if it was the only track selected, select the next one */
-      if (get_selection_manager ().empty ())
-        {
-          auto track_to_select = next_visible ? next_visible : prev_visible;
-          if (!track_to_select && track_collection_->track_count () > 0)
-            {
-              track_to_select = span.at (0);
-            }
-          if (track_to_select)
-            {
-              get_selection_manager ().append_to_selection (
-                TrackSpan::uuid_projection (*track_to_select));
-            }
-        }
-
-      z_debug ("done removing track {}", track->name ());
-    },
-    track_var);
-}
-
 void
 Tracklist::clear_selections_for_object_siblings (
   const ArrangerObject::Uuid &object_id)
@@ -568,64 +400,6 @@ Tracklist::get_timeline_objects () const
 }
 
 void
-Tracklist::move_track (const TrackUuid track_id, int pos)
-{
-  auto       track_var = get_track (track_id);
-  const auto track_index = collection ()->get_track_index (track_id);
-
-  std::visit (
-    [&] (auto &&track) {
-      z_debug (
-        "moving track: {} from {} to {}", track->get_name (), track_index, pos);
-
-      if (pos == track_index)
-        return;
-
-      auto prev_visible = get_prev_visible_track (track_id);
-      auto next_visible = get_next_visible_track (track_id);
-
-      {
-        /* clear the editor region if it exists and belongs to this track */
-        // CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
-
-        /* deselect all objects */
-        // TODO
-        // track->Track::unselect_all ();
-
-        get_selection_manager ().remove_from_selection (track->get_uuid ());
-
-        /* if it was the only track selected, select the next one */
-        if (get_selection_manager ().empty () && (prev_visible || next_visible))
-          {
-            auto track_to_add = next_visible ? *next_visible : *prev_visible;
-            get_selection_manager ().append_to_selection (
-              TrackSpan::uuid_projection (track_to_add));
-          }
-      }
-
-      collection ()->move_track (track_id, pos);
-
-      /* make the track the only selected track */
-      get_selection_manager ().select_unique (track_id);
-
-      z_debug ("finished moving track");
-    },
-    *track_var);
-}
-
-bool
-Tracklist::track_name_is_unique (
-  const utils::Utf8String &name,
-  const TrackUuid          track_to_skip) const
-{
-  auto track_ids_to_check = std::ranges::to<std::vector> (
-    std::views::filter (collection ()->tracks (), [&] (const auto &ref) {
-      return ref.id () != track_to_skip;
-    }));
-  return !TrackSpan{ track_ids_to_check }.contains_track_name (name);
-}
-
-void
 init_from (
   Tracklist             &obj,
   const Tracklist       &other,
@@ -636,7 +410,6 @@ init_from (
   if (clone_type == utils::ObjectCloneType::Snapshot)
     {
       // init_from(*obj.track_collection_, *other.track_collection_);
-      obj.selected_tracks_ = other.selected_tracks_;
     }
   else if (clone_type == utils::ObjectCloneType::NewIdentity)
     {
@@ -646,6 +419,8 @@ init_from (
 void
 Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged)
 {
+// TODO: move to UI module, this is not Tracklist's concern
+#if 0
   const auto track_var_opt = get_track (track_id);
   z_return_if_fail (track_var_opt.has_value ());
   auto span = get_track_span ();
@@ -674,7 +449,7 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
           if (!selected_tracks.empty ())
             {
 // TODO
-#if 0
+#  if 0
               TrackSpan selected_tracks_span{ selected_tracks };
               auto      highest_var = selected_tracks_span.get_first_track ();
               auto      lowest_var = selected_tracks_span.get_last_track ();
@@ -712,7 +487,7 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
                     }
                 },
                 highest_var, lowest_var);
-#endif
+#  endif
             }
         }
       else if (ctrl)
@@ -726,6 +501,7 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
           get_selection_manager ().select_unique (track_id);
         }
     }
+#endif
 }
 
 void
@@ -734,7 +510,6 @@ from_json (const nlohmann::json &j, Tracklist &t)
   j.at (Tracklist::kPinnedTracksCutoffKey).get_to (t.pinned_tracks_cutoff_);
   // TODO
   // j.at (Tracklist::kTracksKey).get_to (t.tracks_);
-  j.at (Tracklist::kSelectedTracksKey).get_to (t.selected_tracks_);
   j.at (Tracklist::kTracksKey).get_to (*t.track_collection_);
 }
 }

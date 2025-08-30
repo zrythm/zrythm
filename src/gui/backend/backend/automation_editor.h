@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "gui/backend/arranger_object_selection_manager.h"
 #include "gui/backend/backend/editor_settings.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/icloneable.h"
@@ -25,9 +26,20 @@ class AutomationEditor : public QObject
   Q_PROPERTY (
     gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
+      selectionManager CONSTANT)
 
 public:
-  AutomationEditor (QObject * parent = nullptr) : QObject (parent) { }
+  AutomationEditor (
+    const structure::arrangement::ArrangerObjectRegistry &registry,
+    QObject *                                             parent = nullptr)
+      : QObject (parent),
+        selection_manager_ (
+          utils::make_qobject_unique<
+            gui::backend::ArrangerObjectSelectionManager> (registry, this))
+  {
+  }
 
   // =========================================================
   // QML interface
@@ -36,6 +48,11 @@ public:
   gui::backend::EditorSettings * getEditorSettings () const
   {
     return editor_settings_.get ();
+  }
+
+  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
+  {
+    return selection_manager_.get ();
   }
 
   // =========================================================
@@ -49,10 +66,7 @@ public:
   {
     obj.editor_settings_ =
       utils::clone_unique_qobject (*other.editor_settings_, &obj);
-    obj.selected_objects_ = other.selected_objects_;
   }
-
-  auto &get_selected_object_ids () { return selected_objects_; }
 
 private:
   static constexpr auto kEditorSettingsKey = "editorSettings"sv;
@@ -70,8 +84,8 @@ private:
     new gui::backend::EditorSettings{ this }
   };
 
-  structure::arrangement::ArrangerObjectSelectionManager::UuidSet
-    selected_objects_;
+  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
+    selection_manager_;
 };
 
 /**

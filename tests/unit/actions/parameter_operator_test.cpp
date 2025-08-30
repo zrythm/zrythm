@@ -6,6 +6,8 @@
 #include "undo/undo_stack.h"
 #include "utils/gtest_wrapper.h"
 
+#include "unit/actions/mock_undo_stack.h"
+
 namespace zrythm::actions
 {
 
@@ -24,7 +26,7 @@ protected:
     ASSERT_NE (param_, nullptr);
 
     // Create undo stack
-    undo_stack_ = std::make_unique<undo::UndoStack> ();
+    undo_stack_ = create_mock_undo_stack ();
 
     // Set initial value
     param_->setBaseValue (0.5f);
@@ -70,12 +72,12 @@ TEST_F (ParameterOperatorTest, SetValue)
 {
   // Initial state
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 0);
+  EXPECT_EQ (undo_stack_->count (), 0);
 
   // Set new value
   operator_->setValue (0.75f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 
   // Undo
   undo_stack_->undo ();
@@ -91,7 +93,7 @@ TEST_F (ParameterOperatorTest, SetValueSameValue)
   // Set same value - should still create command
   operator_->setValue (0.5f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, SetValueBoundaryValues)
@@ -99,13 +101,13 @@ TEST_F (ParameterOperatorTest, SetValueBoundaryValues)
   // Test minimum boundary
   operator_->setValue (0.0f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 
   // Undo and test maximum boundary
   undo_stack_->undo ();
   operator_->setValue (1.0f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, SetValueNegative)
@@ -113,7 +115,7 @@ TEST_F (ParameterOperatorTest, SetValueNegative)
   // Parameter should clamp negative values to 0
   operator_->setValue (-0.5f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, SetValueGreaterThanOne)
@@ -121,7 +123,7 @@ TEST_F (ParameterOperatorTest, SetValueGreaterThanOne)
   // Parameter should clamp values > 1 to 1
   operator_->setValue (1.5f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 // This test requires making the mergeWith() threshold in the command class
@@ -153,28 +155,28 @@ TEST_F (ParameterOperatorTest, VerySmallValueChanges)
 {
   operator_->setValue (0.50001f);
   EXPECT_NEAR (param_->baseValue (), 0.50001f, 1e-5f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, LargeValueChanges)
 {
   operator_->setValue (0.99999f);
   EXPECT_NEAR (param_->baseValue (), 0.99999f, 1e-5f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, ZeroValueChange)
 {
   operator_->setValue (0.0f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, OneValueChange)
 {
   operator_->setValue (1.0f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, DifferentParameterTypes)
@@ -199,7 +201,7 @@ TEST_F (ParameterOperatorTest, DifferentParameterTypes)
   // Test with gain parameter
   operator2->setValue (1.0f);
   EXPECT_FLOAT_EQ (param2->baseValue (), 1.0f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 TEST_F (ParameterOperatorTest, SignalEmissions)
@@ -224,7 +226,7 @@ TEST_F (ParameterOperatorTest, SignalEmissions)
     operator_.get (), &ProcessorParameterOperator::undoStackChanged,
     operator_.get (), [&] () { stack_changed = true; });
 
-  auto new_stack = std::make_unique<undo::UndoStack> ();
+  auto new_stack = create_mock_undo_stack ();
   operator_->setUndoStack (new_stack.get ());
   EXPECT_TRUE (stack_changed);
 }
@@ -239,7 +241,7 @@ TEST_F (ParameterOperatorTest, RapidValueChanges)
 
   // Final value should be the last one set
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
 
   // After undo, we should return to the original value
   undo_stack_->undo ();

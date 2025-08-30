@@ -3,7 +3,15 @@
 
 #include "gui/backend/backend/timeline.h"
 
-Timeline::Timeline (QObject * parent) : QObject (parent) { }
+Timeline::Timeline (
+  const structure::arrangement::ArrangerObjectRegistry &registry,
+  QObject *                                             parent)
+    : QObject (parent),
+      selection_manager_ (
+        utils::make_qobject_unique<
+          gui::backend::ArrangerObjectSelectionManager> (registry, this))
+{
+}
 
 void
 init_from (Timeline &obj, const Timeline &other, utils::ObjectCloneType clone_type)
@@ -11,5 +19,4 @@ init_from (Timeline &obj, const Timeline &other, utils::ObjectCloneType clone_ty
   obj.editor_settings_ =
     utils::clone_unique_qobject (*other.editor_settings_, &obj);
   obj.tracks_width_ = other.tracks_width_;
-  obj.selected_objects_ = other.selected_objects_;
 }

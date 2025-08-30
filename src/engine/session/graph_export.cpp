@@ -380,7 +380,7 @@ void
 graph_export_as_simple (GraphExportType type, const char * export_path)
 {
   /* pause engine */
-  engine::device_io::AudioEngine::State state{};
+  EngineState state{};
   AUDIO_ENGINE->wait_for_pause (state, true, true);
 
   dsp::graph::Graph   graph;

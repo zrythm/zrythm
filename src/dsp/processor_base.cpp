@@ -52,8 +52,13 @@ ProcessorBase::prepare_for_processing (
   sample_rate_t sample_rate,
   nframes_t     max_block_length)
 {
-  sample_rate_ = sample_rate;
-  max_block_length_ = max_block_length;
+  processing_caches_ = std::make_unique<BaseProcessingCache> ();
+  processing_caches_->sample_rate_ = sample_rate;
+  processing_caches_->max_block_length_ = max_block_length;
+
+  processing_caches_->live_params_.clear ();
+  processing_caches_->live_input_ports_.clear ();
+  processing_caches_->live_output_ports_.clear ();
 
   const auto port_visitor = [&] (auto &&port) {
     port->prepare_for_processing (sample_rate, max_block_length);
@@ -61,10 +66,19 @@ ProcessorBase::prepare_for_processing (
   for (const auto &in_ref : input_ports_)
     {
       std::visit (port_visitor, in_ref.get_object ());
+      processing_caches_->live_input_ports_.push_back (in_ref.get_object ());
     }
   for (const auto &out_ref : output_ports_)
     {
       std::visit (port_visitor, out_ref.get_object ());
+      processing_caches_->live_output_ports_.push_back (out_ref.get_object ());
+    }
+  for (const auto &param_ref : params_)
+    {
+      processing_caches_->live_params_.push_back (
+        param_ref.get_object_as<dsp::ProcessorParameter> ());
+      processing_caches_->live_params_.back ()->prepare_for_processing (
+        sample_rate, max_block_length);
     }
 
   custom_prepare_for_processing (sample_rate, max_block_length);
@@ -85,26 +99,26 @@ ProcessorBase::release_resources ()
 
   custom_release_resources ();
 
-  sample_rate_ = 0;
-  max_block_length_ = 0;
+  processing_caches_.reset ();
 }
 
 void
 ProcessorBase::process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
   // correct invalid time info
-  if (time_nfo.local_offset_ + time_nfo.nframes_ > max_block_length_)
-    [[unlikely]]
+  if (
+    time_nfo.local_offset_ + time_nfo.nframes_
+    > processing_caches_->max_block_length_) [[unlikely]]
     {
       auto local_offset = time_nfo.local_offset_;
       auto nframes = time_nfo.nframes_;
-      if (local_offset >= max_block_length_)
+      if (local_offset >= processing_caches_->max_block_length_)
         {
           local_offset = 0;
           nframes = 0;
         }
       else
-        nframes = max_block_length_ - local_offset;
+        nframes = processing_caches_->max_block_length_ - local_offset;
 
       time_nfo.local_offset_ = local_offset;
       time_nfo.g_start_frame_w_offset_ = time_nfo.g_start_frame_ + local_offset;
@@ -112,23 +126,22 @@ ProcessorBase::process_block (EngineProcessTimeInfo time_nfo) noexcept
     }
 
   // process all parameters first
-  for (const auto &param_ref : params_)
+  for (const auto &param : processing_caches_->live_params_)
     {
-      param_ref.get_object_as<dsp::ProcessorParameter> ()->process_block (
-        time_nfo);
+      param->process_block (time_nfo);
     }
 
   // do processor logic
   custom_process_block (time_nfo);
 
   // clear input ports for next cycle
-  for (const auto &in_port_ref : input_ports_)
+  for (const auto &in_port_var : processing_caches_->live_input_ports_)
     {
       std::visit (
         [&] (auto &&in_port) {
           in_port->clear_buffer (time_nfo.local_offset_, time_nfo.nframes_);
         },
-        in_port_ref.get_object ());
+        in_port_var);
     }
 }
 
@@ -136,12 +149,9 @@ void
 ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
   using ObjectView = utils::UuidIdentifiableObjectView<PortRegistry>;
-  const auto object_getter = [] (auto &&port_ref) {
-    return port_ref.get_object ();
-  };
 
-  const auto in_ports = input_ports_ | std::views::transform (object_getter);
-  const auto out_ports = output_ports_ | std::views::transform (object_getter);
+  const auto in_ports = processing_caches_->live_input_ports_;
+  const auto out_ports = processing_caches_->live_output_ports_;
 
   auto midi_in_ports =
     in_ports | std::views::filter (ObjectView::type_projection<MidiPort>)

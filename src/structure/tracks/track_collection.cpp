@@ -116,7 +116,7 @@ TrackCollection::add_track (const TrackUuidReference &track_id)
 void
 TrackCollection::insert_track (const TrackUuidReference &track_id, int pos)
 {
-  beginResetModel ();
+  beginInsertRows ({}, pos, pos);
   tracks_.emplace_back (track_id);
 
   // Check if this track is foldable and initialize its expanded state
@@ -134,7 +134,7 @@ TrackCollection::insert_track (const TrackUuidReference &track_id, int pos)
           std::swap (tracks_[i], tracks_[i - 1]);
         }
     }
-  endResetModel ();
+  endInsertRows ();
 }
 
 void

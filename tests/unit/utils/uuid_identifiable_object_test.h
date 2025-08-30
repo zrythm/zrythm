@@ -66,8 +66,6 @@ public:
     obj.name_ = other.name_;
   }
 
-  Q_SIGNAL void selectedChanged (bool selected);
-
   NLOHMANN_DEFINE_DERIVED_TYPE_INTRUSIVE (DerivedTestObject, BaseTestObject, name_)
 
 private:
@@ -128,6 +126,23 @@ protected:
     std::move_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);
 };
 
+class TestUuidIdentifiableObjectSelectionManager
+    : public QObject,
+      public UuidIdentifiableObjectSelectionManager<
+        UuidIdentifiableObjectRegistryTest::TestRegistry>
+{
+  Q_OBJECT
+  DEFINE_UUID_IDENTIFIABLE_OBJECT_SELECTION_MANAGER_QML_PROPERTIES (
+    TestUuidIdentifiableObjectSelectionManager,
+    UuidIdentifiableObjectRegistryTest::TestRegistry::BaseType)
+
+public:
+  // inherit constructors
+  using UuidIdentifiableObjectSelectionManager<
+    UuidIdentifiableObjectRegistryTest::TestRegistry>::
+    UuidIdentifiableObjectSelectionManager;
+};
+
 class UuidIdentifiableObjectSelectionManagerTest
     : public QObject,
       public ::testing::Test
@@ -148,9 +163,8 @@ protected:
     registry_.register_object (obj1_);
     registry_.register_object (obj2_);
     registry_.register_object (obj3_);
-    selection_manager_ = std::make_unique<
-      utils::UuidIdentifiableObjectSelectionManager<TestRegistry>> (
-      selected_objects_, registry_);
+    selection_manager_ =
+      std::make_unique<TestUuidIdentifiableObjectSelectionManager> (registry_);
   }
 
   TestRegistry        registry_;
@@ -158,7 +172,5 @@ protected:
   DerivedTestObject * obj2_{};
   DerivedTestObject * obj3_{};
 
-  UuidIdentifiableObjectSelectionManager<TestRegistry>::UuidSet selected_objects_;
-  std::unique_ptr<utils::UuidIdentifiableObjectSelectionManager<TestRegistry>>
-    selection_manager_;
+  std::unique_ptr<TestUuidIdentifiableObjectSelectionManager> selection_manager_;
 };

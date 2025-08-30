@@ -11,6 +11,7 @@ Item {
 
   readonly property real contentHeight: listView.contentHeight + (pinned ? 0 : dropSpace.height)
   required property bool pinned
+  required property TrackSelectionManager trackSelectionManager
   required property Tracklist tracklist
   required property UndoStack undoStack
 
@@ -24,6 +25,7 @@ Item {
       width: ListView.view.width
       tracklist: root.tracklist
       undoStack: root.undoStack
+      trackSelectionManager: root.trackSelectionManager
     }
     model: TrackFilterProxyModel {
       sourceModel: root.tracklist.collection

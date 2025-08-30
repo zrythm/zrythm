@@ -46,7 +46,7 @@ ApplicationWindow {
 
   Shortcut {
     context: Qt.ApplicationShortcut
-    enabled: root.project.undoStack && root.project.undoStack.undoStack.canUndo
+    enabled: root.project.undoStack && root.project.undoStack.canUndo
     sequences: [StandardKey.Undo]
 
     onActivated: root.project.undoStack.undo()
@@ -54,7 +54,7 @@ ApplicationWindow {
 
   Shortcut {
     context: Qt.ApplicationShortcut
-    enabled: root.project.undoStack && root.project.undoStack.undoStack.canRedo
+    enabled: root.project.undoStack && root.project.undoStack.canRedo
     sequences: [StandardKey.Redo]
 
     onActivated: root.project.undoStack.redo()
@@ -101,6 +101,7 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
+        project: root.project
         tracklist: root.project.tracklist
         undoStack: root.project.undoStack
         visible: GlobalState.settingsManager.leftPanelVisible

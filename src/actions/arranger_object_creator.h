@@ -16,9 +16,6 @@
 
 namespace zrythm::actions
 {
-/**
- * @brief Actions that require project-wide involvement.
- */
 class ArrangerObjectCreator : public QObject
 {
   Q_OBJECT
@@ -26,32 +23,15 @@ class ArrangerObjectCreator : public QObject
   QML_UNCREATABLE ("One instance per project")
 
 public:
-  struct ArrangerObjectSelectionManagers
-  {
-    structure::arrangement::ArrangerObjectSelectionManager
-      audio_selections_manager_;
-    structure::arrangement::ArrangerObjectSelectionManager
-      timeline_selections_manager_;
-    structure::arrangement::ArrangerObjectSelectionManager
-      midi_selections_manager_;
-    structure::arrangement::ArrangerObjectSelectionManager
-      chord_selections_manager_;
-    structure::arrangement::ArrangerObjectSelectionManager
-      automation_selections_manager_;
-  };
-
   explicit ArrangerObjectCreator (
     undo::UndoStack                               &undo_stack,
     ClipEditor                                    &clip_editor,
     structure::arrangement::ArrangerObjectFactory &arranger_object_factory,
-    ArrangerObjectSelectionManagers arranger_object_selection_managers,
-    dsp::SnapGrid                  &snap_grid_timeline,
-    dsp::SnapGrid                  &snap_grid_editor,
-    QObject *                       parent = nullptr)
+    dsp::SnapGrid                                 &snap_grid_timeline,
+    dsp::SnapGrid                                 &snap_grid_editor,
+    QObject *                                      parent = nullptr)
       : QObject (parent), clip_editor_ (clip_editor),
         arranger_object_factory_ (arranger_object_factory),
-        arranger_object_selection_managers_ (
-          std::move (arranger_object_selection_managers)),
         snap_grid_timeline_ (snap_grid_timeline),
         snap_grid_editor_ (snap_grid_editor), undo_stack_ (undo_stack)
   {
@@ -257,48 +237,6 @@ private:
     structure::tracks::TrackLane                       &lane,
     structure::arrangement::ArrangerObjectUuidReference obj_ref);
 
-  template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
-  auto get_selection_manager_for_object (const ObjT &obj) const
-  {
-    if constexpr (structure ::arrangement::TimelineObject<ObjT>)
-      {
-        return arranger_object_selection_managers_.timeline_selections_manager_;
-      }
-    else if constexpr (std::is_same_v<ObjT, structure ::arrangement::MidiNote>)
-      {
-        return arranger_object_selection_managers_.midi_selections_manager_;
-      }
-    else if constexpr (
-      std::is_same_v<ObjT, structure ::arrangement::AutomationPoint>)
-      {
-        return arranger_object_selection_managers_.automation_selections_manager_;
-      }
-    else if constexpr (
-      std::is_same_v<ObjT, structure ::arrangement::ChordObject>)
-      {
-        return arranger_object_selection_managers_.chord_selections_manager_;
-      }
-    else if constexpr (
-      std::is_same_v<ObjT, structure ::arrangement::AudioSourceObject>)
-      {
-        return arranger_object_selection_managers_.audio_selections_manager_;
-      }
-    else
-      {
-        static_assert (false);
-      }
-  }
-
-  template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
-  void set_selection_handler_to_object (ObjT &obj)
-  {
-    auto sel_mgr = get_selection_manager_for_object (obj);
-    obj.set_selection_status_getter (
-      [sel_mgr] (const structure::arrangement::ArrangerObject::Uuid &id) {
-        return sel_mgr.is_selected (id);
-      });
-  }
-
   /**
    * @brief Used to create and add editor objects.
    *
@@ -320,19 +258,13 @@ auto add_editor_object (
     undo_stack_.push (
       new commands::AddArrangerObjectCommand<ChildT> (region, obj_ref));
     auto obj = obj_ref.template get_object_as<ChildT> ();
-    {
-      auto sel_mgr = get_selection_manager_for_object (*obj);
-      set_selection_handler_to_object (*obj);
-      sel_mgr.append_to_selection (obj->get_uuid ());
-    }
     return obj;
   }
 
 private : ClipEditor &clip_editor_;
   structure::arrangement::ArrangerObjectFactory &arranger_object_factory_;
-  ArrangerObjectSelectionManagers arranger_object_selection_managers_;
-  dsp::SnapGrid                  &snap_grid_timeline_;
-  dsp::SnapGrid                  &snap_grid_editor_;
-  undo::UndoStack                &undo_stack_;
+  dsp::SnapGrid                                 &snap_grid_timeline_;
+  dsp::SnapGrid                                 &snap_grid_editor_;
+  undo::UndoStack                               &undo_stack_;
 };
 } // namespace zrythm::actions

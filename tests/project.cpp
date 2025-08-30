@@ -128,7 +128,7 @@ TEST_F (BootstrapTimelineFixture, SaveAndLoadWithData)
   auto prj_file = PROJECT->dir_ / PROJECT_FILE;
 
   /* stop the engine */
-  AudioEngine::State state;
+  EngineState state;
   AUDIO_ENGINE->wait_for_pause (state, true, true);
 
   /* remove objects */

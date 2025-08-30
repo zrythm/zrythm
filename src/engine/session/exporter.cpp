@@ -488,7 +488,7 @@ Exporter::prepare_tracks_for_export (
   Transport                      &transport)
 {
   AUDIO_ENGINE->preparing_to_export_ = true;
-  state_ = std::make_unique<engine::device_io::AudioEngine::State> ();
+  state_ = std::make_unique<EngineState> ();
 
   AUDIO_ENGINE->wait_for_pause (*state_, false, true);
   z_info ("engine paused");

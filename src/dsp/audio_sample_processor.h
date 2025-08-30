@@ -100,7 +100,7 @@ public:
     queue_sample_cb_ = std::move (cb);
   }
 
-  auto get_output_audio_ports () const
+  auto get_output_audio_ports_non_rt () const
   {
     return std::array{
       get_output_ports ()[0].get_object_as<dsp::AudioPort> (),
@@ -108,12 +108,17 @@ public:
     };
   }
 
+  auto get_output_audio_ports_rt () const
+  {
+    return std::array{ left_audio_out_, right_audio_out_ };
+  }
+
   void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override
   {
     const auto cycle_offset = time_nfo.local_offset_;
     const auto nframes = time_nfo.nframes_;
 
-    const auto out_ports = get_output_audio_ports ();
+    const auto out_ports = get_output_audio_ports_rt ();
 
     // Clear output
     for (const auto &out_port : out_ports)
@@ -178,9 +183,16 @@ public:
     nframes_t     max_block_length) override
   {
     samples_to_play_.clear ();
+    left_audio_out_ = get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
+    right_audio_out_ = get_output_ports ()[1].get_object_as<dsp::AudioPort> ();
   }
 
-  void custom_release_resources () override { samples_to_play_.clear (); }
+  void custom_release_resources () override
+  {
+    samples_to_play_.clear ();
+    left_audio_out_ = nullptr;
+    right_audio_out_ = nullptr;
+  }
 
 private:
   /**
@@ -197,5 +209,8 @@ private:
    * Used for debugging.
    */
   std::optional<QueueSingleChannelSampleCallback> queue_sample_cb_;
+
+  AudioPort * left_audio_out_{};
+  AudioPort * right_audio_out_{};
 };
 } // namespace zrythm::dsp
