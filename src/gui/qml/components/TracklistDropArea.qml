@@ -34,7 +34,7 @@ Rectangle {
     // Accept both internal and external file drag formats
     keys: ["file", "text/plain", "text/uri-list", "application/x-file-path"]
 
-    onDropped: function (drop) {
+    onDropped: drop => {
       // Handle the dropped file(s)
       console.log("File dropped on tracklist");
 
@@ -44,8 +44,8 @@ Rectangle {
       // Handle text/plain (internal drags and some external apps)
       if (drop.hasText && drop.text) {
         console.log("Text drop:", drop.text);
-        let lines = drop.text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
-        for (let line of lines) {
+        const lines = QmlUtils.splitTextLines(drop.text);
+        for (const line of lines) {
           filePaths.push(line);
         }
       }
@@ -53,35 +53,32 @@ Rectangle {
       // Handle text/uri-list (standard for external file browsers)
       if (drop.hasUrls) {
         console.log("URLs dropped:", drop.urls.length);
-        for (var i = 0; i < drop.urls.length; i++) {
-          var url = drop.urls[i];
+        for (const url of drop.urls) {
           // Convert URLs to local file paths
-          var filePath = QmlUtils.toPathString(url);
-          filePaths.push(filePath);
+          filePaths.push(QmlUtils.toPathString(url));
         }
       }
 
       // Handle application/x-file-path (internal format)
       if (drop.formats.indexOf("application/x-file-path") !== -1) {
-        var filePathData = drop.getDataAsString("application/x-file-path");
+        const filePathData = drop.getDataAsString("application/x-file-path");
         if (filePathData) {
           console.log("Application file path:", filePathData);
           filePaths.push(filePathData);
         }
       }
 
-      // Remove duplicates using Set for deduplication
-      let uniqueFilePaths = Array.from(new Set(filePaths));
+      // Remove duplicates
+      let uniqueFilePaths = QmlUtils.removeDuplicates(filePaths);
 
       // Log if duplicates were found and removed
       if (filePaths.length !== uniqueFilePaths.length) {
         console.log("Removed duplicates:", filePaths.length - uniqueFilePaths.length);
       }
 
-      // Process the dropped files
+      // Emit a signal with the dropped files
       if (uniqueFilePaths.length > 0) {
         console.log("Processing dropped files:", uniqueFilePaths);
-        // Emit a signal or call a function to handle the files
         root.filesDropped(uniqueFilePaths);
       }
 
