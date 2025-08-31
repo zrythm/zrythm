@@ -4,65 +4,35 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Layouts
 import Zrythm
 
-Item {
+ListView {
   id: root
 
-  readonly property real contentHeight: listView.contentHeight + (pinned ? 0 : dropSpace.height)
   required property bool pinned
   required property TrackSelectionManager trackSelectionManager
   required property Tracklist tracklist
   required property UndoStack undoStack
 
-  ListView {
-    id: listView
+  Layout.fillWidth: true
+  boundsBehavior: Flickable.StopAtBounds
+  clip: true
+  implicitHeight: 200
+  implicitWidth: 200
 
-    boundsBehavior: Flickable.StopAtBounds
-    implicitHeight: 200
-    implicitWidth: 200
-
-    delegate: TrackView {
-      trackSelectionManager: root.trackSelectionManager
-      tracklist: root.tracklist
-      undoStack: root.undoStack
-      width: ListView.view.width
-    }
-    model: TrackFilterProxyModel {
-      sourceModel: root.tracklist.collection
-
-      Component.onCompleted: {
-        addVisibilityFilter(true);
-        addPinnedFilter(root.pinned);
-      }
-    }
-
-    anchors {
-      bottom: root.pinned ? parent.bottom : dropSpace.top
-      left: parent.left
-      right: parent.right
-      top: parent.top
-    }
+  delegate: TrackView {
+    trackSelectionManager: root.trackSelectionManager
+    tracklist: root.tracklist
+    undoStack: root.undoStack
+    width: ListView.view.width
   }
+  model: TrackFilterProxyModel {
+    sourceModel: root.tracklist.collection
 
-  Item {
-    id: dropSpace
-
-    height: 40
-    visible: !root.pinned
-
-    ContextMenu.menu: Menu {
-      MenuItem {
-        text: qsTr("Test")
-
-        onTriggered: console.log("Clicked")
-      }
-    }
-
-    anchors {
-      bottom: parent.bottom
-      left: parent.left
-      right: parent.right
+    Component.onCompleted: {
+      addVisibilityFilter(true);
+      addPinnedFilter(root.pinned);
     }
   }
 }

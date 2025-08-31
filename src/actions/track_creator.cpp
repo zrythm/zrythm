@@ -7,7 +7,8 @@
 namespace zrythm::actions
 {
 QVariant
-TrackCreator::addEmptyTrackFromType (structure::tracks::Track::Type trackType)
+TrackCreator::addEmptyTrackFromType (
+  structure::tracks::Track::Type trackType) const
 {
   // throw if attempted to re-add a singleton track
   if (!structure::tracks::Track::type_is_deletable (trackType))
@@ -44,6 +45,25 @@ TrackCreator::addEmptyTrackFromType (structure::tracks::Track::Type trackType)
   undo_stack_.endMacro ();
 
   return QVariant::fromStdVariant (track_ref.get_object ());
+}
+
+void
+TrackCreator::importFiles (
+  const QStringList         &filePaths,
+  double                     startTicks,
+  structure::tracks::Track * track) const
+{
+  z_debug ("Importing {} files: {}", filePaths.size (), filePaths);
+
+  if (filePaths.empty ())
+    {
+      return;
+    }
+}
+
+void
+TrackCreator::importPlugin (const plugins::PluginDescriptor * config) const
+{
 }
 
 utils::Utf8String

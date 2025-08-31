@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __IO_MIDI_FILE_H__
-#define __IO_MIDI_FILE_H__
-
-#include "zrythm-config.h"
+#pragma once
 
 #include <filesystem>
 
@@ -188,5 +185,3 @@ private:
 /**
  * @}
  */
-
-#endif

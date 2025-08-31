@@ -14,6 +14,8 @@ ColumnLayout {
 
   required property FileSystemModel fileSystemModel
 
+  signal fileActivated(string filePath)
+
   Item {
     id: filters
 
@@ -65,7 +67,9 @@ ColumnLayout {
 
         onTriggered: {
           console.log("activated", itemDelegate.filePath);
-          if (root.fileSystemModel.isDir(itemDelegate.fileInfo)) {}
+          if (root.fileSystemModel.isDir(itemDelegate.fileInfo)) {} else {
+            root.fileActivated(itemDelegate.filePath);
+          }
         }
       }
 
@@ -88,6 +92,7 @@ ColumnLayout {
           // Set the data to be transferred during drag
           onActiveChanged: {
             if (drag.active) {
+              fileListView.selectedFile = itemDelegate.filePath;
               parent.Drag.active = drag.active;
               parent.Drag.mimeData = {
                 "text/plain": itemDelegate.filePath,

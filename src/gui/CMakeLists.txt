@@ -214,6 +214,7 @@ set(rel_qml_file_paths
   components/TempoMapLaneHeader.qml
   components/TempoMapLegend.qml
   components/ToolBox.qml
+  components/TracklistDropArea.qml
   components/TracklistHeader.qml
   components/TracklistView.qml
   components/TrackInspectorPage.qml

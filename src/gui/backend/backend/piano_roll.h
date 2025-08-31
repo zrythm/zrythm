@@ -95,6 +95,8 @@ class PianoRoll : public QObject
     zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
       selectionManager CONSTANT)
   Q_PROPERTY (int keyHeight READ getKeyHeight NOTIFY keyHeightChanged)
+  QML_UNCREATABLE ("")
+
 public:
   /**
    * Highlighting for the piano roll.

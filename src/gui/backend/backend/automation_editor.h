@@ -29,6 +29,7 @@ class AutomationEditor : public QObject
   Q_PROPERTY (
     zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
       selectionManager CONSTANT)
+  QML_UNCREATABLE ("")
 
 public:
   AutomationEditor (

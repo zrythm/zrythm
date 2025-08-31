@@ -14,6 +14,10 @@ ColumnLayout {
 
   required property PluginManager pluginManager
 
+  signal pluginDescriptorActivated(PluginDescriptor descriptor)
+
+  onPluginDescriptorActivated: descriptor => pluginManager.createPluginInstance(descriptor)
+
   Item {
     id: filters
 
@@ -56,7 +60,7 @@ ColumnLayout {
 
         onTriggered: {
           console.log("activated", itemDelegate.descriptor, itemDelegate.descriptor.name);
-          root.pluginManager.createPluginInstance(itemDelegate.descriptor);
+          root.pluginDescriptorActivated(itemDelegate.descriptor);
         }
       }
 

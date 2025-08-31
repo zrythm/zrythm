@@ -82,10 +82,21 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: unpinnedTimelineArranger.height
           Layout.minimumHeight: unpinnedTimelineArranger.height
+          footerPositioning: ListView.PullBackFooter
           pinned: false
           trackSelectionManager: root.project.trackSelectionManager
           tracklist: root.project.tracklist
           undoStack: root.project.undoStack
+
+          footer: TracklistDropArea {
+            id: tracklistDropArea
+
+            width: unpinnedTracklist.width
+
+            onFilesDropped: filePaths => {
+              root.project.trackCreator.importFiles(filePaths, 0, null);
+            }
+          }
         }
       }
 

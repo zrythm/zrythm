@@ -43,6 +43,7 @@ class ChordEditor : public QObject
     zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
       selectionManager CONSTANT)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   using ChordDescriptor = dsp::ChordDescriptor;
