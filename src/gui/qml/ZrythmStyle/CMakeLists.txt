@@ -50,6 +50,7 @@ qt_add_qml_module(zrythm_style
     ToolButton.qml
     ToolSeparator.qml
     ToolTip.qml
+    TreeViewDelegate.qml
     Style.qml
 
   # compile qml files listed in QML_FILES to C++ using qmltc

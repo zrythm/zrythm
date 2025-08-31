@@ -10,6 +10,7 @@ ZrythmToolBar {
   id: root
 
   required property Project project
+  required property SettingsManager settingsManager
 
   centerItems: [
     TransportControls {
@@ -26,11 +27,11 @@ ZrythmToolBar {
       id: toggleLeftDock
 
       checkable: true
-      checked: GlobalState.settingsManager.leftPanelVisible
+      checked: root.settingsManager.leftPanelVisible
       icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-left-symbolic.svg")
 
       onCheckedChanged: {
-        GlobalState.settingsManager.leftPanelVisible = checked;
+          root.settingsManager.leftPanelVisible = checked;
       }
 
       ToolTip {
@@ -39,10 +40,10 @@ ZrythmToolBar {
 
       Connections {
         function onRightPanelVisibleChanged() {
-          toggleLeftDock.checked = GlobalState.settingsManager.leftPanelVisible;
+            toggleLeftDock.checked = root.settingsManager.leftPanelVisible;
         }
 
-        target: GlobalState.settingsManager
+        target: root.settingsManager
       }
     },
     ToolSeparator {
@@ -85,19 +86,19 @@ ZrythmToolBar {
       id: toggleRightDock
 
       checkable: true
-      checked: GlobalState.settingsManager.rightPanelVisible
+      checked: root.settingsManager.rightPanelVisible
       icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-right-symbolic.svg")
 
       onCheckedChanged: {
-        GlobalState.settingsManager.rightPanelVisible = checked;
+          root.settingsManager.rightPanelVisible = checked;
       }
 
       Connections {
         function onRightPanelVisibleChanged() {
-          toggleRightDock.checked = GlobalState.settingsManager.rightPanelVisible;
+            toggleRightDock.checked = root.settingsManager.rightPanelVisible;
         }
 
-        target: GlobalState.settingsManager
+        target: root.settingsManager
       }
 
       ToolTip {

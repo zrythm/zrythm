@@ -79,7 +79,7 @@ ProjectManager::init_templates ()
 ProjectManager *
 ProjectManager::get_instance ()
 {
-  return dynamic_cast<ZrythmApplication *> (qApp)->get_project_manager ();
+  return dynamic_cast<ZrythmApplication *> (qApp)->projectManager ();
 }
 
 ProjectManager::TemplateList

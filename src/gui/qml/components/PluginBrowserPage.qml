@@ -12,7 +12,7 @@ import ZrythmStyle
 ColumnLayout {
   id: root
 
-  required property var pluginManager
+  required property PluginManager pluginManager
 
   Item {
     id: filters
@@ -34,6 +34,7 @@ ColumnLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     activeFocusOnTab: true
+    boundsBehavior: Flickable.StopAtBounds
     clip: true
     focus: true
     model: root.pluginManager.pluginDescriptors
@@ -43,7 +44,7 @@ ColumnLayout {
     delegate: ItemDelegate {
       id: itemDelegate
 
-      required property var descriptor
+      required property PluginDescriptor descriptor
       required property int index
 
       highlighted: ListView.isCurrentItem
@@ -54,8 +55,8 @@ ColumnLayout {
         text: "Activate"
 
         onTriggered: {
-          console.log("activated", descriptor, descriptor.name);
-          root.pluginManager.createPluginInstance(descriptor);
+          console.log("activated", itemDelegate.descriptor, itemDelegate.descriptor.name);
+          root.pluginManager.createPluginInstance(itemDelegate.descriptor);
         }
       }
 
@@ -63,7 +64,9 @@ ColumnLayout {
       MouseArea {
         anchors.fill: parent
 
-        onClicked: pluginListView.currentIndex = itemDelegate.index
+        onClicked: {
+          pluginListView.currentIndex = itemDelegate.index;
+        }
         onDoubleClicked: itemDelegate.animateClick()
       }
     }

@@ -200,6 +200,7 @@ set(rel_qml_file_paths
   components/DspLoadIndicator.qml
   components/FaderButtons.qml
   components/FaderControl.qml
+  components/FileBrowserPage.qml
   components/LeftDock.qml
   components/MainMenuBar.qml
   components/Meter.qml

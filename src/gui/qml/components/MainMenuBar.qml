@@ -10,8 +10,8 @@ import ZrythmStyle 1.0
 MenuBar {
   id: root
 
-  required property var deviceManager
-  required property var project
+  required property DeviceManager deviceManager
+  required property Project project
 
   Menu {
     title: qsTr("&File")
@@ -43,11 +43,11 @@ MenuBar {
         id: systemLocaleMenuItem
 
         checkable: true
-        checked: GlobalState.settingsManager.uiLocale === ""
+        checked: GlobalState.application.settingsManager.uiLocale === ""
         text: qsTr("System")
 
         onTriggered: {
-          GlobalState.translationManager.loadTranslation("");
+            GlobalState.application.translationManager.loadTranslation("");
         }
       }
 
@@ -69,11 +69,11 @@ MenuBar {
           required property string name
 
           checkable: true
-          checked: GlobalState.settingsManager.uiLocale === code
+          checked: GlobalState.application.settingsManager.uiLocale === code
           text: name
 
           onTriggered: {
-            GlobalState.translationManager.loadTranslation(code);
+              GlobalState.application.translationManager.loadTranslation(code);
           }
         }
       }

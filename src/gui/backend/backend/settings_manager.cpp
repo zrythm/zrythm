@@ -18,5 +18,5 @@ SettingsManager::reset_and_sync ()
 SettingsManager *
 SettingsManager::get_instance ()
 {
-  return dynamic_cast<ZrythmApplication *> (qApp)->get_settings_manager ();
+  return dynamic_cast<ZrythmApplication *> (qApp)->settingsManager ();
 }

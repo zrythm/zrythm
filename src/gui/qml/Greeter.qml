@@ -13,18 +13,21 @@ import "config.js" as Config
 ApplicationWindow {
   id: root
 
+  readonly property ZrythmApplication app: GlobalState.application
+
   function alertManager() {
-    return GlobalState.alertManager;
+    return app.alertManager;
   }
 
   function deviceManager(): DeviceManager {
-    return GlobalState.deviceManager;
+    return app.deviceManager;
   }
 
   function openProjectWindow(project) {
     let newWindow = projectWindowComponent.createObject(project, {
       "project": project,
-      "deviceManager": deviceManager()
+      "deviceManager": deviceManager(),
+      "settingsManager": settingsManager()
     }) as ProjectWindow;
     newWindow.show();
     root.close();
@@ -39,11 +42,11 @@ ApplicationWindow {
   }
 
   function projectManager() {
-    return GlobalState.projectManager;
+    return app.projectManager;
   }
 
   function settingsManager() {
-    return GlobalState.settingsManager;
+    return app.settingsManager;
   }
 
   font.family: Style.fontFamily

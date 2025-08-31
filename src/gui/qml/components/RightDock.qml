@@ -59,8 +59,14 @@ ColumnLayout {
       pluginManager: GlobalState.zrythm.pluginManager
     }
 
+    FileBrowserPage {
+      id: fileBrowserPage
+
+      fileSystemModel: GlobalState.application.fileSystemModel
+    }
+
     Repeater {
-      model: 3
+      model: 2
 
       Rectangle {
         border.color: "black"

@@ -13,6 +13,7 @@ ApplicationWindow {
 
   required property DeviceManager deviceManager
   required property Project project
+  required property SettingsManager settingsManager
 
   function closeAndDestroy() {
     console.log("Closing and destroying project window");
@@ -29,6 +30,7 @@ ApplicationWindow {
     id: headerBar
 
     project: root.project
+    settingsManager: root.settingsManager
   }
   menuBar: MainMenuBar {
     id: mainMenuBar
@@ -104,7 +106,7 @@ ApplicationWindow {
         project: root.project
         tracklist: root.project.tracklist
         undoStack: root.project.undoStack
-        visible: GlobalState.settingsManager.leftPanelVisible
+        visible: root.settingsManager.leftPanelVisible
       }
 
       SplitView {
@@ -131,7 +133,7 @@ ApplicationWindow {
           SplitView.minimumHeight: 40
           SplitView.preferredHeight: 240
           project: root.project
-          visible: GlobalState.settingsManager.bottomPanelVisible
+          visible: root.settingsManager.bottomPanelVisible
         }
       }
 
@@ -141,7 +143,7 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 30
         SplitView.preferredWidth: 200
-        visible: GlobalState.settingsManager.rightPanelVisible
+        visible: root.settingsManager.rightPanelVisible
       }
     }
 

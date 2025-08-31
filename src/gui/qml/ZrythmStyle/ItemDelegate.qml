@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
-// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 T.ItemDelegate {
   id: control
@@ -19,14 +19,18 @@ T.ItemDelegate {
   padding: 4
   spacing: 4
 
+  HoverHandler {
+      id: hoverHandler
+  }
+
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? control.palette.highlight : control.palette.button
-    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, false, control.visualFocus, control.down) //control.hovered
+    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, hoverHandler.hovered && !control.highlighted, control.visualFocus, control.down)
 
     color: colorAdjustedForHoverOrFocusOrDown
     implicitHeight: Style.buttonHeight
     implicitWidth: 100
-    visible: control.down || control.highlighted || control.visualFocus
+    visible: control.down || control.highlighted || control.visualFocus || hoverHandler.hovered
 
     Behavior on color {
       animation: Style.propertyAnimation

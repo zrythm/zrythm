@@ -18,8 +18,9 @@ target_sources(zrythm_gui_lib
     curve_preset.cpp
     device_manager.h
     device_manager.cpp
+    file_system_model.h
+    file_system_model.cpp
     global_state.h
-    global_state.cpp
     meter.h
     meter.cpp
     plugin_collections.h

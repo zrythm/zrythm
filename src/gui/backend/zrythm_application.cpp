@@ -71,10 +71,11 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   juce_message_handler_initializer_ =
     std::make_unique<juce::ScopedJuceInitialiser_GUI> ();
 
-  alert_manager_ = new AlertManager (this);
-  theme_manager_ = new ThemeManager (this);
-  project_manager_ = new ProjectManager (this);
-  translation_manager_ = new TranslationManager (this);
+  alert_manager_ = utils::make_qobject_unique<AlertManager> (this);
+  theme_manager_ = utils::make_qobject_unique<ThemeManager> (this);
+  project_manager_ = utils::make_qobject_unique<ProjectManager> (this);
+  translation_manager_ = utils::make_qobject_unique<TranslationManager> (this);
+  file_system_model_ = utils::make_qobject_unique<FileSystemModel> (this);
   RealtimeUpdater::instance ();
 
   launch_engine_process ();
@@ -192,36 +193,6 @@ ZrythmApplication::setup_command_line_options ()
        u"dummy"_s, tr ("Use dummy audio/midi engine"),
        },
   });
-}
-
-SettingsManager *
-ZrythmApplication::get_settings_manager () const
-{
-  return settings_manager_.get ();
-}
-
-ThemeManager *
-ZrythmApplication::get_theme_manager () const
-{
-  return theme_manager_.get ();
-}
-
-ProjectManager *
-ZrythmApplication::get_project_manager () const
-{
-  return project_manager_.get ();
-}
-
-AlertManager *
-ZrythmApplication::get_alert_manager () const
-{
-  return alert_manager_.get ();
-}
-
-TranslationManager *
-ZrythmApplication::get_translation_manager () const
-{
-  return translation_manager_.get ();
 }
 
 void

@@ -9,6 +9,7 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/device_manager.h"
+#include "gui/backend/file_system_model.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
 #include "utils/directory_manager.h"
@@ -33,6 +34,27 @@ namespace zrythm::gui
 class ZrythmApplication final : public QApplication
 {
   Q_OBJECT
+  Q_PROPERTY (
+    zrythm::gui::ThemeManager * themeManager READ themeManager CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::SettingsManager * settingsManager READ settingsManager CONSTANT
+      FINAL)
+  Q_PROPERTY (
+    zrythm::gui::ProjectManager * projectManager READ projectManager CONSTANT
+      FINAL)
+  Q_PROPERTY (
+    zrythm::gui::AlertManager * alertManager READ alertManager CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::TranslationManager * translationManager READ translationManager
+      CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::backend::DeviceManager * deviceManager READ deviceManager
+      CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::FileSystemModel * fileSystemModel READ fileSystemModel CONSTANT
+      FINAL)
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   ZrythmApplication (int &argc, char ** argv);
@@ -43,12 +65,36 @@ public:
   void setup_ipc ();
   void launch_engine_process ();
 
-  DirectoryManager    &get_directory_manager () const { return *dir_manager_; }
-  AlertManager *       get_alert_manager () const;
-  SettingsManager *    get_settings_manager () const;
-  ThemeManager *       get_theme_manager () const;
-  ProjectManager *     get_project_manager () const;
-  TranslationManager * get_translation_manager () const;
+  zrythm::gui::ThemeManager * themeManager () const
+  {
+    return theme_manager_.get ();
+  }
+  zrythm::gui::SettingsManager * settingsManager () const
+  {
+    return settings_manager_.get ();
+  }
+  zrythm::gui::ProjectManager * projectManager () const
+  {
+    return project_manager_.get ();
+  }
+  zrythm::gui::AlertManager * alertManager () const
+  {
+    return alert_manager_.get ();
+  }
+  zrythm::gui::TranslationManager * translationManager () const
+  {
+    return translation_manager_.get ();
+  }
+  zrythm::gui::backend::DeviceManager * deviceManager () const
+  {
+    return device_manager_.get ();
+  }
+  zrythm::gui::FileSystemModel * fileSystemModel () const
+  {
+    return file_system_model_.get ();
+  }
+
+  DirectoryManager &get_directory_manager () const { return *dir_manager_; }
 
   QQmlApplicationEngine * get_qml_engine () const { return qml_engine_; }
 
@@ -90,6 +136,7 @@ private:
   utils::QObjectUniquePtr<ThemeManager>       theme_manager_;
   utils::QObjectUniquePtr<TranslationManager> translation_manager_;
   utils::QObjectUniquePtr<ProjectManager>     project_manager_;
+  utils::QObjectUniquePtr<FileSystemModel>    file_system_model_;
 
   /**
    * @brief Engine process handle.

@@ -18,14 +18,15 @@ Item {
   ListView {
     id: listView
 
+    boundsBehavior: Flickable.StopAtBounds
     implicitHeight: 200
     implicitWidth: 200
 
     delegate: TrackView {
-      width: ListView.view.width
+      trackSelectionManager: root.trackSelectionManager
       tracklist: root.tracklist
       undoStack: root.undoStack
-      trackSelectionManager: root.trackSelectionManager
+      width: ListView.view.width
     }
     model: TrackFilterProxyModel {
       sourceModel: root.tracklist.collection

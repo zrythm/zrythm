@@ -36,5 +36,5 @@ ThemeManager::ThemeManager (QObject * parent) : QObject (parent)
 ThemeManager *
 ThemeManager::get_instance ()
 {
-  return dynamic_cast<ZrythmApplication *> (qApp)->get_theme_manager ();
+  return dynamic_cast<ZrythmApplication *> (qApp)->themeManager ();
 }

@@ -20,7 +20,7 @@ TranslationManager::TranslationManager (QObject * parent) : QObject (parent)
 TranslationManager *
 TranslationManager::get_instance ()
 {
-  return dynamic_cast<ZrythmApplication *> (qApp)->get_translation_manager ();
+  return dynamic_cast<ZrythmApplication *> (qApp)->translationManager ();
 }
 
 QString
@@ -52,7 +52,7 @@ TranslationManager::loadTranslation (const QString &locale)
       translator_loaded_ = true;
       auto * engine =
         dynamic_cast<ZrythmApplication *> (qApp)->get_qml_engine ();
-      if (engine)
+      if (engine != nullptr)
         {
           z_debug ("Retranslating...");
           engine->retranslate ();
