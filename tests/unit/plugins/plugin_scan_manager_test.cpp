@@ -13,13 +13,12 @@
 
 #include <gmock/gmock.h>
 
-using namespace zrythm::plugins;
 using namespace zrythm::test_helpers;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-namespace
+namespace zrythm::plugins
 {
 
 class TestPathsProvider
@@ -78,8 +77,6 @@ public:
      const juce::String                        &fileOrIdentifier),
     (override));
 };
-
-} // namespace
 
 class PluginScannerTest
     : public ::testing::TestWithParam<bool>,
@@ -202,6 +199,7 @@ INSTANTIATE_TEST_SUITE_P (
   PluginScanTests,
   PluginScannerTest,
   ::testing::Values (false, true));
+}
 
 /*
  * TODO: Test Suite Improvements Needed:
