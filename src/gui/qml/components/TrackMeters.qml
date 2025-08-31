@@ -11,8 +11,8 @@ RowLayout {
   id: root
 
   required property Channel channel
-  readonly property real currentAmplitude: audioMetersLoader.active ? audioMetersLoader.item.currentAmplitude : midiMetersLoader.item.currentAmplitude
-  readonly property real currentPeak: audioMetersLoader.active ? audioMetersLoader.item.currentPeak : midiMetersLoader.item.currentPeak
+  readonly property real currentAmplitude: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentAmplitude : midiMetersLoader.item.currentAmplitude) : 0
+  readonly property real currentPeak: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentPeak : midiMetersLoader.item.currentPeak) : 0
 
   Loader {
     id: audioMetersLoader

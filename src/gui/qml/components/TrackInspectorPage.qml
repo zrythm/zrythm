@@ -52,6 +52,7 @@ ColumnLayout {
   Loader {
     Layout.fillWidth: true
     active: root.track.channel !== null && root.track.channel.inserts !== null
+    visible: active
 
     sourceComponent: ExpanderBox {
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
@@ -71,6 +72,7 @@ ColumnLayout {
   Loader {
     Layout.fillWidth: true
     active: root.track.channel !== null
+    visible: active
 
     sourceComponent: ExpanderBox {
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "fader.svg")

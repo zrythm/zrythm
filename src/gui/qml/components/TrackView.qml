@@ -215,10 +215,15 @@ Control {
         }
       }
 
-      TrackMeters {
-        Layout.fillHeight: true
-        Layout.fillWidth: false
-        channel: control.track.channel
+      Loader {
+        active: control.track.channel !== null
+        visible: active
+
+        sourceComponent: TrackMeters {
+          Layout.fillHeight: true
+          Layout.fillWidth: false
+          channel: control.track.channel
+        }
       }
     }
   }
@@ -340,9 +345,8 @@ Control {
 
               Binding {
                 property: "baseValue"
-                target: control.track.channel.fader.mute
+                target: control.track.channel ? control.track.channel.fader.mute : null
                 value: muteButton.checked ? 1.0 : 0.0
-                when: control.track.channel !== null && control.track.channel.fader.mute !== null
               }
             }
 
@@ -356,9 +360,8 @@ Control {
 
               Binding {
                 property: "baseValue"
-                target: control.track.channel.fader.solo
+                target: control.track.channel ? control.track.channel.fader.solo : null
                 value: trackSoloButton.checked ? 1.0 : 0.0
-                when: control.track.channel.fader.solo !== null
               }
             }
 

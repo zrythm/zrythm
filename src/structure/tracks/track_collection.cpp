@@ -245,9 +245,13 @@ TrackCollection::set_track_expanded (const Track::Uuid &track_id, bool expanded)
 {
   if (track_expanded_.contains (track_id))
     {
-      beginResetModel ();
       track_expanded_[track_id] = expanded;
-      endResetModel ();
+
+      const auto   track_index = static_cast<int> (get_track_index (track_id));
+      QModelIndex  model_index = createIndex (track_index, 0);
+      QVector<int> roles;
+      roles << TrackExpandedRole;
+      Q_EMIT dataChanged (model_index, model_index, roles);
     }
 }
 

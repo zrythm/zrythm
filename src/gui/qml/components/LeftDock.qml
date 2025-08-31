@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -46,8 +48,16 @@ ColumnLayout {
 
       property Track track: root.project.trackSelectionManager.lastSelectedObject
 
+      Layout.fillHeight: false
+      Layout.fillWidth: true
       active: track !== null
       visible: active
+
+      sourceComponent: TrackInspectorPage {
+        anchors.fill: parent
+        track: trackInspectorLoader.track
+        undoStack: root.undoStack
+      }
 
       Connections {
         function onLastSelectedObjectChanged() {
@@ -56,29 +66,19 @@ ColumnLayout {
 
         target: root.project.trackSelectionManager
       }
-
-      TrackInspectorPage {
-        anchors.fill: parent
-        track: trackInspectorLoader.track
-        undoStack: root.undoStack
-      }
     }
 
-    Repeater {
-      model: 1
+    Rectangle {
+      Layout.fillHeight: true
+      Layout.fillWidth: true
+      border.color: "black"
+      border.width: 2
+      color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
 
-      Rectangle {
-        border.color: "black"
-        border.width: 2
-        color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-        height: 50
-        width: 180
-
-        Text {
-          anchors.centerIn: parent
-          font.pixelSize: 16
-          text: "Item " + (index + 1)
-        }
+      Text {
+        anchors.centerIn: parent
+        font.pixelSize: 16
+        text: "Item "
       }
     }
   }
