@@ -51,12 +51,6 @@ using namespace zrythm::plugins::scanner_private;
 Worker::Worker (PluginScanManager &scanner) : scanner_ (scanner) { }
 
 void
-Worker::requestStop ()
-{
-  should_stop_ = true;
-}
-
-void
 Worker::process ()
 {
   z_info ("Scanning for plugins...");
@@ -64,12 +58,6 @@ Worker::process ()
   // Iterate through available formats
   for (auto * format : scanner_.format_manager_->getFormats ())
     {
-      if (should_stop_)
-        {
-          z_debug ("Scanning cancelled");
-          break;
-        }
-
       z_debug ("Scanning plugins for format {}", format->getName ());
       const auto protocol = Protocol::from_juce_format_name (format->getName ());
       const auto paths = scanner_.plugin_paths_provider_ (protocol);
@@ -78,12 +66,6 @@ Worker::process ()
         paths->get_as_juce_file_search_path (), true, true);
       for (const auto &identifier : identifiers)
         {
-          if (should_stop_)
-            {
-              z_debug ("Scanning cancelled");
-              break;
-            }
-
           scanner_.set_currently_scanning_plugin (
             utils::Utf8String::from_juce_string (identifier).to_qstring ());
           juce::OwnedArray<juce::PluginDescription> types;
@@ -100,12 +82,6 @@ Worker::process ()
               z_warning ("Blacklisting plugin: {}", identifier);
               scanner_.known_plugin_list_->addToBlacklist (identifier);
             }
-        }
-
-      if (should_stop_)
-        {
-          z_debug ("Scanning cancelled");
-          break;
         }
     }
   z_debug ("Scanning in thread finished");
@@ -127,15 +103,6 @@ PluginScanManager::PluginScanManager (
 }
 
 void
-PluginScanManager::requestStop ()
-{
-  if (worker_)
-    {
-      worker_->requestStop ();
-    }
-}
-
-void
 PluginScanManager::beginScan ()
 {
   scan_thread_ = utils::make_qobject_unique<QThread> ();
@@ -145,9 +112,13 @@ PluginScanManager::beginScan ()
     scan_thread_.get (), &QThread::started, worker_.get (), &Worker::process);
   QObject::connect (
     worker_.get (), &Worker::finished, scan_thread_.get (), &QThread::quit);
+  QObject::connect (scan_thread_.get (), &QThread::finished, this, [this] {
+    // Delete worker in main thread after thread finishes
+    worker_->deleteLater ();
+    scan_thread_->deleteLater ();
+  });
   QObject::connect (
-    worker_.get (), &Worker::finished, this, &PluginScanManager::scan_finished,
-    Qt::DirectConnection);
+    worker_.get (), &Worker::finished, this, &PluginScanManager::scan_finished);
   scan_thread_->start ();
 }
 
@@ -183,27 +154,6 @@ PluginScanManager::~PluginScanManager ()
 {
   if (scan_thread_)
     {
-      // Disconnect all signals from worker to prevent any queued connections
-      if (worker_)
-        {
-          worker_->disconnect ();
-          disconnect (worker_.get ());
-        }
-
-      // Disconnect all signals from thread
-      disconnect (scan_thread_.get ());
-
-      // Request worker to stop gracefully
-      requestStop ();
-
-      // Request thread to quit
-      scan_thread_->quit ();
-
-      // Wait for thread to finish
       scan_thread_->wait ();
-
-      // Clean up the worker and thread objects
-      worker_.reset ();
-      scan_thread_.reset ();
     }
 }
