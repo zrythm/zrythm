@@ -224,6 +224,40 @@ public:
       var);
   }
 
+  static bool soloed_projection (const VariantType &var)
+  {
+    return std::visit (
+      [] (auto &&track) {
+        if (!track->channel ())
+          return false;
+        const auto * solo = track->channel ()->fader ()->solo ();
+        return solo->range ().is_toggled (solo->baseValue ());
+      },
+      var);
+  }
+  static bool muted_projection (const VariantType &var)
+  {
+    return std::visit (
+      [] (auto &&track) {
+        if (!track->channel ())
+          return false;
+        const auto * mute = track->channel ()->fader ()->mute ();
+        return mute->range ().is_toggled (mute->baseValue ());
+      },
+      var);
+  }
+  static bool listened_projection (const VariantType &var)
+  {
+    return std::visit (
+      [] (auto &&track) {
+        if (!track->channel ())
+          return false;
+        const auto * listen = track->channel ()->fader ()->listen ();
+        return listen->range ().is_toggled (listen->baseValue ());
+      },
+      var);
+  }
+
   auto has_soloed () const
   {
     return std::ranges::any_of (*this, currently_soloed_projection);
@@ -236,17 +270,17 @@ public:
 
   auto get_num_muted_tracks () const
   {
-    return std::ranges::count_if (*this, currently_muted_projection);
+    return std::ranges::count_if (*this, muted_projection);
   }
 
   auto get_num_soloed_tracks () const
   {
-    return std::ranges::count_if (*this, currently_soloed_projection);
+    return std::ranges::count_if (*this, soloed_projection);
   }
 
   auto get_num_listened_tracks () const
   {
-    return std::ranges::count_if (*this, currently_listened_projection);
+    return std::ranges::count_if (*this, listened_projection);
   }
 
   /**

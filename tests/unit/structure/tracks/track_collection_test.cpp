@@ -313,4 +313,138 @@ TEST_F (TrackCollectionTest, Serialization)
   EXPECT_FALSE (new_collection->get_track_expanded (new_folder_track.id ()));
 }
 
+TEST_F (TrackCollectionTest, SoloMuteListenCounts)
+{
+  // Test initial state
+  EXPECT_EQ (track_collection->numSoloedTracks (), 0);
+  EXPECT_EQ (track_collection->numMutedTracks (), 0);
+  EXPECT_EQ (track_collection->numListenedTracks (), 0);
+
+  // Create tracks
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+
+  // Add tracks and verify counts remain 0 (no tracks are soloed/muted/listened
+  // initially)
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+
+  EXPECT_EQ (track_collection->numSoloedTracks (), 0);
+  EXPECT_EQ (track_collection->numMutedTracks (), 0);
+  EXPECT_EQ (track_collection->numListenedTracks (), 0);
+
+  // Get track objects to access their faders
+  auto track1_obj = track1.get_object_base ();
+  auto track2_obj = track2.get_object_base ();
+  auto track3_obj = track3.get_object_base ();
+
+  // Test solo counts
+  track1_obj->channel ()->fader ()->get_solo_param ().setBaseValue (
+    1.0f); // Solo track1
+  EXPECT_EQ (track_collection->numSoloedTracks (), 1);
+
+  track2_obj->channel ()->fader ()->get_solo_param ().setBaseValue (
+    1.0f); // Solo track2
+  EXPECT_EQ (track_collection->numSoloedTracks (), 2);
+
+  track1_obj->channel ()->fader ()->get_solo_param ().setBaseValue (
+    0.0f); // Unsolo track1
+  EXPECT_EQ (track_collection->numSoloedTracks (), 1);
+
+  // Test mute counts
+  track1_obj->channel ()->fader ()->get_mute_param ().setBaseValue (
+    1.0f); // Mute track1
+  EXPECT_EQ (track_collection->numMutedTracks (), 1);
+
+  track3_obj->channel ()->fader ()->get_mute_param ().setBaseValue (
+    1.0f); // Mute track3
+  EXPECT_EQ (track_collection->numMutedTracks (), 2);
+
+  track1_obj->channel ()->fader ()->get_mute_param ().setBaseValue (
+    0.0f); // Unmute track1
+  EXPECT_EQ (track_collection->numMutedTracks (), 1);
+
+  // Test listen counts
+  track2_obj->channel ()->fader ()->get_listen_param ().setBaseValue (
+    1.0f); // Listen track2
+  EXPECT_EQ (track_collection->numListenedTracks (), 1);
+
+  track3_obj->channel ()->fader ()->get_listen_param ().setBaseValue (
+    1.0f); // Listen track3
+  EXPECT_EQ (track_collection->numListenedTracks (), 2);
+
+  track2_obj->channel ()->fader ()->get_listen_param ().setBaseValue (
+    0.0f); // Unlisten track2
+  EXPECT_EQ (track_collection->numListenedTracks (), 1);
+
+  // Remove a track and verify counts update
+  track_collection->remove_track (track3.id ());
+  EXPECT_EQ (track_collection->numMutedTracks (), 0);    // track3 was muted
+  EXPECT_EQ (track_collection->numListenedTracks (), 0); // track3 was listened
+
+  // Clear all tracks and verify counts are 0
+  track_collection->clear ();
+  EXPECT_EQ (track_collection->numSoloedTracks (), 0);
+  EXPECT_EQ (track_collection->numMutedTracks (), 0);
+  EXPECT_EQ (track_collection->numListenedTracks (), 0);
+}
+
+TEST_F (TrackCollectionTest, SoloMuteListenSignals)
+{
+  // Test that signals are emitted when tracks are added/removed and when
+  // parameters change
+  auto track = create_audio_bus_track ();
+
+  // Count signal emissions
+  int soloed_signals = 0;
+  int muted_signals = 0;
+  int listened_signals = 0;
+
+  QObject::connect (
+    track_collection.get (), &TrackCollection::numSoloedTracksChanged,
+    track_collection.get (), [&soloed_signals] () { soloed_signals++; });
+  QObject::connect (
+    track_collection.get (), &TrackCollection::numMutedTracksChanged,
+    track_collection.get (), [&muted_signals] () { muted_signals++; });
+  QObject::connect (
+    track_collection.get (), &TrackCollection::numListenedTracksChanged,
+    track_collection.get (), [&listened_signals] () { listened_signals++; });
+
+  // Add track - should emit signals for all counts (even if 0)
+  track_collection->add_track (track);
+
+  // Signals should be emitted when track is added
+  EXPECT_GT (soloed_signals, 0);
+  EXPECT_GT (muted_signals, 0);
+  EXPECT_GT (listened_signals, 0);
+
+  // Reset counters
+  soloed_signals = 0;
+  muted_signals = 0;
+  listened_signals = 0;
+
+  // Change parameters and verify signals are emitted
+  auto track_obj = track.get_object_base ();
+  track_obj->channel ()->fader ()->get_solo_param ().setBaseValue (1.0f);
+  EXPECT_GT (soloed_signals, 0);
+
+  track_obj->channel ()->fader ()->get_mute_param ().setBaseValue (1.0f);
+  EXPECT_GT (muted_signals, 0);
+
+  track_obj->channel ()->fader ()->get_listen_param ().setBaseValue (1.0f);
+  EXPECT_GT (listened_signals, 0);
+
+  // Remove track - should emit signals
+  soloed_signals = 0;
+  muted_signals = 0;
+  listened_signals = 0;
+
+  track_collection->remove_track (track.id ());
+  EXPECT_GT (soloed_signals, 0);
+  EXPECT_GT (muted_signals, 0);
+  EXPECT_GT (listened_signals, 0);
+}
+
 } // namespace zrythm::structure::tracks

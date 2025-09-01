@@ -20,6 +20,12 @@ namespace zrythm::structure::tracks
 class TrackCollection : public QAbstractListModel
 {
   Q_OBJECT
+  Q_PROPERTY (
+    int numSoloedTracks READ numSoloedTracks NOTIFY numSoloedTracksChanged)
+  Q_PROPERTY (
+    int numMutedTracks READ numMutedTracks NOTIFY numMutedTracksChanged)
+  Q_PROPERTY (
+    int numListenedTracks READ numListenedTracks NOTIFY numListenedTracksChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -54,6 +60,13 @@ public:
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
   Q_INVOKABLE void setTrackExpanded (const Track * track, bool expanded);
+
+  int           numSoloedTracks () const;
+  Q_SIGNAL void numSoloedTracksChanged ();
+  int           numMutedTracks () const;
+  Q_SIGNAL void numMutedTracksChanged ();
+  int           numListenedTracks () const;
+  Q_SIGNAL void numListenedTracksChanged ();
 
   // ========================================================================
   // Track Management

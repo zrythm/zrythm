@@ -12,6 +12,63 @@ TrackCollection::TrackCollection (
   QObject *      parent) noexcept
     : QAbstractListModel (parent), track_registry_ (track_registry)
 {
+  // connect signals to track muted/soloed/listened counts
+  QObject::connect (
+    this, &TrackCollection::rowsInserted, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          const auto  &track_ref = tracks ().at (i);
+          const auto * track = track_ref.get_object_base ();
+          if (auto * channel = track->channel ())
+            {
+              QObject::connect (
+                &channel->fader ()->get_solo_param (),
+                &dsp::ProcessorParameter::baseValueChanged, this,
+                &TrackCollection::numSoloedTracksChanged);
+              QObject::connect (
+                &channel->fader ()->get_mute_param (),
+                &dsp::ProcessorParameter::baseValueChanged, this,
+                &TrackCollection::numMutedTracksChanged);
+              QObject::connect (
+                &channel->fader ()->get_listen_param (),
+                &dsp::ProcessorParameter::baseValueChanged, this,
+                &TrackCollection::numListenedTracksChanged);
+            }
+        }
+      Q_EMIT numSoloedTracksChanged ();
+      Q_EMIT numMutedTracksChanged ();
+      Q_EMIT numListenedTracksChanged ();
+    });
+  QObject::connect (
+    this, &TrackCollection::rowsAboutToBeRemoved, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          const auto  &track_ref = tracks ().at (i);
+          const auto * track = track_ref.get_object_base ();
+          if (auto * channel = track->channel ())
+            {
+              QObject::disconnect (
+                &channel->fader ()->get_solo_param (),
+                &dsp::ProcessorParameter::baseValueChanged, this,
+                &TrackCollection::numSoloedTracksChanged);
+              QObject::disconnect (
+                &channel->fader ()->get_mute_param (),
+                &dsp::ProcessorParameter::baseValueChanged, this,
+                &TrackCollection::numMutedTracksChanged);
+              QObject::disconnect (
+                &channel->fader ()->get_listen_param (),
+                &dsp::ProcessorParameter::baseValueChanged, this,
+                &TrackCollection::numListenedTracksChanged);
+            }
+        }
+    });
+  QObject::connect (this, &TrackCollection::rowsRemoved, this, [this] () {
+    Q_EMIT numSoloedTracksChanged ();
+    Q_EMIT numMutedTracksChanged ();
+    Q_EMIT numListenedTracksChanged ();
+  });
 }
 
 // ========================================================================
@@ -78,6 +135,22 @@ void
 TrackCollection::setTrackExpanded (const Track * track, bool expanded)
 {
   set_track_expanded (track->get_uuid (), expanded);
+}
+
+int
+TrackCollection::numSoloedTracks () const
+{
+  return static_cast<int> (get_track_span ().get_num_soloed_tracks ());
+}
+int
+TrackCollection::numMutedTracks () const
+{
+  return static_cast<int> (get_track_span ().get_num_muted_tracks ());
+}
+int
+TrackCollection::numListenedTracks () const
+{
+  return static_cast<int> (get_track_span ().get_num_listened_tracks ());
 }
 
 // ========================================================================
@@ -209,31 +282,6 @@ TrackCollection::clear ()
   track_expanded_.clear ();
   folder_parent_.clear ();
   endResetModel ();
-}
-
-// ========================================================================
-// Serialization
-// ========================================================================
-
-void
-to_json (nlohmann::json &j, const TrackCollection &collection)
-{
-  j[TrackCollection::kTracksKey] = collection.tracks_;
-  j[TrackCollection::kFolderParentMapKey] = collection.folder_parent_;
-  j[TrackCollection::kExpandedMapKey] = collection.track_expanded_;
-}
-
-void
-from_json (const nlohmann::json &j, TrackCollection &collection)
-{
-  for (const auto &child_j : j.at (TrackCollection::kTracksKey))
-    {
-      TrackUuidReference ref{ collection.track_registry_ };
-      from_json (child_j, ref);
-      collection.tracks_.push_back (ref);
-    }
-  j.at (TrackCollection::kFolderParentMapKey).get_to (collection.folder_parent_);
-  j.at (TrackCollection::kExpandedMapKey).get_to (collection.track_expanded_);
 }
 
 // ========================================================================
@@ -384,6 +432,31 @@ TrackCollection::get_last_child_index (const Track::Uuid &parent_id) const
   auto child_count = get_child_count (parent_id);
 
   return parent_index + child_count;
+}
+
+// ========================================================================
+// Serialization
+// ========================================================================
+
+void
+to_json (nlohmann::json &j, const TrackCollection &collection)
+{
+  j[TrackCollection::kTracksKey] = collection.tracks_;
+  j[TrackCollection::kFolderParentMapKey] = collection.folder_parent_;
+  j[TrackCollection::kExpandedMapKey] = collection.track_expanded_;
+}
+
+void
+from_json (const nlohmann::json &j, TrackCollection &collection)
+{
+  for (const auto &child_j : j.at (TrackCollection::kTracksKey))
+    {
+      TrackUuidReference ref{ collection.track_registry_ };
+      from_json (child_j, ref);
+      collection.add_track (ref);
+    }
+  j.at (TrackCollection::kFolderParentMapKey).get_to (collection.folder_parent_);
+  j.at (TrackCollection::kExpandedMapKey).get_to (collection.track_expanded_);
 }
 
 } // namespace zrythm::structure::tracks
