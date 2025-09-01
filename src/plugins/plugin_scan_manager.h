@@ -87,6 +87,11 @@ public:
   Q_SLOT void process ();
 
   /**
+   * @brief Request the worker to stop gracefully.
+   */
+  void requestStop ();
+
+  /**
    * @brief Emitted when the scanning process has finished.
    *
    * This signal is connected to the PluginScanManager class to notify it
@@ -96,6 +101,7 @@ public:
 
 private:
   PluginScanManager &scanner_;
+  std::atomic<bool>  should_stop_{ false };
 };
 } // namespace scanner_private
 
@@ -148,6 +154,11 @@ public:
     QObject *                                       parent = nullptr);
 
   ~PluginScanManager () override;
+
+  /**
+   * @brief Request the worker thread to stop gracefully.
+   */
+  Q_INVOKABLE void requestStop ();
 
   friend class scanner_private::Worker;
 
