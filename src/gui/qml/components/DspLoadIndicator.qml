@@ -19,6 +19,7 @@ Control {
     return load < 50 ? lowLoadColor : load < 75 ? mediumLoadColor : load < 90 ? highLoadColor : criticalLoadColor;
   }
 
+  ToolTip.text: qsTr("DSP Load:") + " " + Math.round(root.loadValue) + '%\n' + qsTr("XRun Count:") + " " + root.xRuns
   implicitHeight: 24
   implicitWidth: 8
 
@@ -45,9 +46,5 @@ Control {
         }
       }
     }
-  }
-
-  ToolTip {
-    text: qsTr("DSP Load:") + " " + Math.round(root.loadValue) + '%\n' + qsTr("XRun Count:") + " " + root.xRuns
   }
 }

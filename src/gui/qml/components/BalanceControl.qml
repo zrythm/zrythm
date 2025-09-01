@@ -64,9 +64,9 @@ Item {
     id: background
 
     anchors.fill: parent
-    color: Style.backgroundColor
+    color: Style.getColorBlendedTowardsContrast(palette.window)
     opacity: root.hovered ? 0.8 : 0.6
-    radius: 2
+    radius: Style.textFieldRadius
   }
 
   // Left channel indicator

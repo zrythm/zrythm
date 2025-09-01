@@ -19,6 +19,7 @@ Item {
   property real lastX: 0
   property real lastY: 0
   required property UndoStack undoStack
+  readonly property int bgRadius: Style.toolButtonRadius
 
   signal bindMidiCC
   signal resetFader
@@ -65,18 +66,19 @@ Item {
     id: background
 
     anchors.fill: parent
-    color: Style.backgroundColor
+    color: Style.getColorBlendedTowardsContrast(palette.window)
     opacity: root.hovered ? 0.8 : 0.6
-    radius: 2
+    radius: root.bgRadius
   }
 
   Rectangle {
     id: fillRect
 
+    readonly property color endColor: Style.getColorBlendedTowardsContrast(palette.accent)
+
     color: {
       var intensity = root.faderValue;
       var fgColor = palette.accent;
-      var endColor = Qt.rgba(0.2, 0.2, 0.8, 1.0);
 
       var r = (1.0 - intensity) * endColor.r + intensity * fgColor.r;
       var g = (1.0 - intensity) * endColor.g + intensity * fgColor.g;
@@ -90,7 +92,10 @@ Item {
       return Qt.rgba(r, g, b, a);
     }
     height: parent.height * root.faderValue
-    radius: 2
+    topLeftRadius: 2
+    topRightRadius: 2
+    bottomLeftRadius: root.bgRadius
+    bottomRightRadius: root.bgRadius
 
     anchors {
       bottom: parent.bottom
