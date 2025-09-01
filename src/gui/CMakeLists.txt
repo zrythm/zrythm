@@ -206,6 +206,7 @@ set(rel_qml_file_paths
   components/MainMenuBar.qml
   components/Meter.qml
   components/MixerView.qml
+  components/MonitorSection.qml
   components/PlayheadTriangle.qml
   components/PluginBrowserPage.qml
   components/PluginSlotView.qml

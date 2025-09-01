@@ -10,6 +10,8 @@ import ZrythmStyle 1.0
 ColumnLayout {
   id: root
 
+  required property Project project
+
   TabBar {
     id: tabBar
 
@@ -65,8 +67,13 @@ ColumnLayout {
       fileSystemModel: GlobalState.application.fileSystemModel
     }
 
+    MonitorSection {
+      id: monitorSection
+      trackCollection: root.project.tracklist.collection
+    }
+
     Repeater {
-      model: 2
+      model: 1
 
       Rectangle {
         border.color: "black"
