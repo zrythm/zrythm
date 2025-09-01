@@ -42,6 +42,9 @@ public:
 
   Q_INVOKABLE void unsetCursor ();
 
+  Q_INVOKABLE static QPoint cursorPosition ();
+  Q_INVOKABLE static void   warpCursor (QPoint point);
+
 private:
   void set_cursor (const QString &cache_key, const QCursor &cursor);
 

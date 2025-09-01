@@ -158,6 +158,7 @@ set(rel_qml_file_paths
   components/basic/EditableLabel.qml
   components/basic/EditableValueDisplay.qml
   components/basic/ExpanderBox.qml
+  components/basic/Knob.qml
   components/basic/LinkedButtons.qml
   components/basic/MuteButton.qml
   components/basic/PlaceholderPage.qml

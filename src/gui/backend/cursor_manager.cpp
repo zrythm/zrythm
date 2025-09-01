@@ -217,3 +217,15 @@ CursorManager::unsetCursor ()
   popped_cursor_count_ = 0;
   last_cursor_cache_key_ = u""_s;
 }
+
+void
+CursorManager::warpCursor (QPoint point)
+{
+  QCursor::setPos (point);
+}
+
+QPoint
+CursorManager::cursorPosition ()
+{
+  return QCursor::pos ();
+}
