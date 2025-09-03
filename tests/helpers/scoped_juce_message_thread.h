@@ -24,20 +24,8 @@ public:
 
   ~ScopedJuceMessageThread () override
   {
-    // First signal the thread to exit
-    signalThreadShouldExit ();
-
-    // Post a custom exit message to wake up the message thread without causing
-    // data races This avoids using stopDispatchLoop() which modifies atomic
-    // state from the wrong thread
-    juce::MessageManager::callAsync ([this] {
-      // This will be executed in the message thread context
-      if (!threadShouldExit ())
-        {
-          // If we're still running, exit gracefully
-          juce::MessageManager::getInstance ()->stopDispatchLoop ();
-        }
-    });
+    // Ensure we properly exit the dispatch loop before thread exits
+    juce::MessageManager::getInstance ()->stopDispatchLoop ();
 
     // Wait for the thread to exit completely to avoid data races
     // with JUCE's InternalMessageQueue file descriptors and atomic state
@@ -63,20 +51,7 @@ private:
     }
     semaphore_.signal ();
 
-    // Run the dispatch loop but check for thread exit signal frequently
-    // Use a custom implementation to allow more frequent exit checks
-    while (!threadShouldExit ())
-      {
-        // Use a shorter timeout to allow frequent exit checks
-        // This prevents the thread from getting stuck in long poll() calls
-        juce::MessageManager::callAsync ([] {
-          // Empty callback just to wake up the message loop
-        });
-        juce::Thread::sleep (10); // Short sleep to allow exit check
-      }
-
-    // Ensure we properly exit the dispatch loop before thread exits
-    juce::MessageManager::getInstance ()->stopDispatchLoop ();
+    juce::MessageManager::getInstance ()->runDispatchLoop ();
 
     // Destroy the JUCE infrastructure from within the thread itself
     // to avoid race conditions with file descriptor cleanup
