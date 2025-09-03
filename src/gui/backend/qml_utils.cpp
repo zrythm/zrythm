@@ -68,3 +68,14 @@ QmlUtils::splitTextLines (const QString &text)
 
   return lines;
 }
+
+QString
+QmlUtils::readTextFileContent (const QString &filePath)
+{
+  QFile f (filePath);
+  if (!f.open (QFile::ReadOnly | QFile::Text))
+    {
+      return format_qstr ("Failed to open file at {}", f.fileName ());
+    }
+  return f.readAll ();
+}

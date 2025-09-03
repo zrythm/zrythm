@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import "../config.js" as Config
@@ -12,6 +12,7 @@ MenuBar {
 
   required property DeviceManager deviceManager
   required property Project project
+  required property AboutDialog aboutDialog
 
   Menu {
     title: qsTr("&File")
@@ -47,7 +48,7 @@ MenuBar {
         text: qsTr("System")
 
         onTriggered: {
-            GlobalState.application.translationManager.loadTranslation("");
+          GlobalState.application.translationManager.loadTranslation("");
         }
       }
 
@@ -73,7 +74,7 @@ MenuBar {
           text: name
 
           onTriggered: {
-              GlobalState.application.translationManager.loadTranslation(code);
+            GlobalState.application.translationManager.loadTranslation(code);
           }
         }
       }
@@ -168,7 +169,7 @@ MenuBar {
     Action {
       text: qsTr("About Zrythm")
 
-      onTriggered: {}
+      onTriggered: aboutDialog.open()
     }
   }
 }

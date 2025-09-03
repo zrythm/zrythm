@@ -9,13 +9,15 @@ function is_true(val) {
     return val == "ON" || val == "TRUE" || val == "1";
 }
 
-var VERSION = "@ZRYTHM_VERSION@";
-var USER_MANUAL_URL = "@user_manual_url@";
-var DONATION_URL = "@donation_url@";
-var PURCHASE_URL = "@purchase_url@";
-var IS_INSTALLER_VER = is_true("@ZRYTHM_IS_INSTALLER_VER@");
-var IS_TRIAL_VER = is_true("@ZRYTHM_IS_TRIAL_VER@");
-var FLATPAK_BUILD = is_true("@FLATPAK_BUILD@");
+const VERSION = "@ZRYTHM_VERSION@";
+const COPYRIGHT_NAME = "@copyright_name@"
+const COPYRIGHT_YEARS = "@copyright_years@"
+const USER_MANUAL_URL = "@user_manual_url@";
+const DONATION_URL = "@donation_url@";
+const PURCHASE_URL = "@purchase_url@";
+const IS_INSTALLER_VER = is_true("@ZRYTHM_IS_INSTALLER_VER@");
+const IS_TRIAL_VER = is_true("@ZRYTHM_IS_TRIAL_VER@");
+const FLATPAK_BUILD = is_true("@FLATPAK_BUILD@");
 
 const languageMap = {
 @LANGUAGE_MAP_STRING@

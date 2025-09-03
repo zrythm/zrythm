@@ -35,6 +35,7 @@ ApplicationWindow {
   menuBar: MainMenuBar {
     id: mainMenuBar
 
+    aboutDialog: aboutDialog
     deviceManager: root.deviceManager
     project: root.project
   }
@@ -45,6 +46,11 @@ ApplicationWindow {
     project.activate();
   }
   onClosing: {}
+
+  AboutDialog {
+    id: aboutDialog
+
+  }
 
   Shortcut {
     context: Qt.ApplicationShortcut

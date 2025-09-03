@@ -57,6 +57,11 @@ ApplicationWindow {
   visible: true
   width: 640
 
+  AboutDialog {
+    id: aboutDialog
+
+  }
+
   Component {
     id: projectWindowComponent
 
@@ -386,7 +391,7 @@ ApplicationWindow {
 
                   text: qsTr("About Zrythm")
 
-                  onTriggered: {}
+                  onTriggered: aboutDialog.open()
                 }
               }
             }

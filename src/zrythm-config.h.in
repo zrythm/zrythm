@@ -62,8 +62,6 @@
 
 #define DONATION_URL "@donation_url@"
 
-#define GSCHEMAS_DIR "@gschemas_dir@"
-
 #cmakedefine01 HAVE_CARLA
 
 #cmakedefine01 HAVE_CARLA_BRIDGE_LV2_GTK2

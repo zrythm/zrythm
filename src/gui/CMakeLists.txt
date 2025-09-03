@@ -83,6 +83,10 @@ set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/js/config.js"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "config.js"
   )
+set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/js/licenses.js"
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  PROPERTIES QT_RESOURCE_ALIAS "licenses.js"
+  )
 set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf"
@@ -139,6 +143,24 @@ foreach(font_filepath ${font_filepaths})
   list(APPEND font_files ${font_filepath})
 endforeach()
 
+# License files
+set(license_files)
+file(GLOB_RECURSE licenses "${CMAKE_SOURCE_DIR}/LICENSES/*.txt")
+foreach(license ${licenses})
+  get_filename_component(license_name ${license} NAME)
+  set(license_alias "licenses/${license_name}")
+  set_source_files_properties(${license}
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTIES QT_RESOURCE_ALIAS ${license_alias}
+    )
+  list(APPEND license_files ${license})
+endforeach()
+set_source_files_properties("${CMAKE_SOURCE_DIR}/TRADEMARKS.md"
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  PROPERTIES QT_RESOURCE_ALIAS "licenses/TRADEMARKS.md"
+  )
+list(APPEND license_files "${CMAKE_SOURCE_DIR}/TRADEMARKS.md")
+
 # WAV files
 set(wav_filepaths
   ${CMAKE_SOURCE_DIR}/data/samples/klick/square_emphasis.wav
@@ -192,6 +214,7 @@ set(rel_qml_file_paths
   components/editors/MidiEditorPane.qml
   components/editors/ChordEditorPane.qml
   components/editors/PianoRollKeys.qml
+  components/AboutDialog.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BalanceControl.qml
@@ -279,11 +302,13 @@ qt_add_qml_module(zrythm
   QML_FILES
     ${qml_file_paths}
     ${CMAKE_CURRENT_BINARY_DIR}/js/config.js
+    ${CMAKE_CURRENT_SOURCE_DIR}/js/licenses.js
   RESOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf
     ${icon_files}
     ${font_files}
     ${wav_files}
+    ${license_files}
 
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)
