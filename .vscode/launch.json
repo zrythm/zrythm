@@ -27,8 +27,11 @@
       "program": "${command:cmake.launchTargetPath}",
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      // note: this required creating a symlink from qt6.natvis to qtopt.natvis
-      "visualizerFile": "${command:qt-cpp.natvis}",
+      "visualizerFile": [
+        // note: this required creating a symlink from qt6.natvis to qtopt.natvis
+        "${command:qt-cpp.natvis}",
+        "${workspaceFolder}/.vscode/juce.natvis",
+      ],
       "showDisplayString": true,
       "args": [
         "-qmljsdebugger=host:localhost,port:${command:qt-qml.debugPort},block,services:DebugMessages,QmlDebugger,V8Debugger",

@@ -21,15 +21,21 @@ protected:
     test_wav = temp_dir / "test.wav";
 
     // Create minimal WAV file
-    juce::WavAudioFormat format;
-    juce::File           file (test_wav.string ());
-    auto out_stream = std::make_unique<juce::FileOutputStream> (file);
-    if (out_stream->openedOk ())
+    juce::WavAudioFormat                format;
+    juce::File                          file (test_wav.string ());
+    std::unique_ptr<juce::OutputStream> out_stream =
+      std::make_unique<juce::FileOutputStream> (file);
+    if (dynamic_cast<juce::FileOutputStream &> (*out_stream).openedOk ())
       {
         out_stream->setPosition (0);
-        out_stream->truncate ();
-        std::unique_ptr<juce::AudioFormatWriter> writer (
-          format.createWriterFor (out_stream.release (), 44100, 2, 16, {}, 0));
+        dynamic_cast<juce::FileOutputStream &> (*out_stream).truncate ();
+        juce::AudioFormatWriterOptions options;
+        options =
+          options.withSampleRate (44100)
+            .withNumChannels (2)
+            .withBitsPerSample (16)
+            .withQualityOptionIndex (0);
+        auto writer = format.createWriterFor (out_stream, options);
         if (writer)
           {
             juce::AudioBuffer<float> buffer (2, 44100);

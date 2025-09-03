@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JUCE Debugging Visualizers - Jim Credland : jim@credland.net -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2014 bazrush -->
+<!-- SPDX-License-Identifier: MIT -->
+<!--
+
+Install into
+
+    %VSINSTALLDIR%\Common7\Packages\Debugger\Visualizers (requires admin access)
+OR  %USERPROFILE%\Documents\Visual Studio 2022\Visualizers\
+
+One rainy day I'll make this into a Visual Studio Extension for easy installation.
+
+Please submit any suggested changes on github.
+
+See http://github.com/jcredland/juce-toys
+
+-->
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+
+<Type Name="juce::Array&lt;*&gt;">
+    <DisplayString Condition="values.numUsed == 0">{{ EMPTY numAllocated={values.numAllocated} }}</DisplayString>
+    <DisplayString>{{ numUsed={values.numUsed} numAllocated={values.numAllocated} }}</DisplayString>
+    <Expand>
+        <Item Name="[numUsed]">values.numUsed</Item>
+        <ArrayItems>
+            <Size>values.numUsed</Size>
+            <ValuePointer>values.elements.data</ValuePointer>
+        </ArrayItems>
+    </Expand>
+</Type>
+
+<Type Name="juce::OwnedArray&lt;*&gt;">
+    <DisplayString Condition="values.numUsed == 0">{{ EMPTY numAllocated={values.numAllocated} }}</DisplayString>
+    <DisplayString>{{ numUsed={values.numUsed} numAllocated={values.numAllocated} }}</DisplayString>
+    <Expand>
+        <Item Name="[numUsed]">values.numUsed</Item>
+        <ArrayItems>
+            <Size>values.numUsed</Size>
+            <ValuePointer>values.elements.data</ValuePointer>
+        </ArrayItems>
+    </Expand>
+</Type>
+
+<Type Name="juce::ReferenceCountedArray&lt;*&gt;">
+    <DisplayString Condition="values.numUsed == 0">{{ EMPTY numAllocated={values.numAllocated} }}</DisplayString>
+    <DisplayString>{{ numUsed={values.numUsed} numAllocated={values.numAllocated} }}</DisplayString>
+    <Expand>
+        <Item Name="[numUsed]">values.numUsed</Item>
+        <ArrayItems>
+            <Size>values.numUsed</Size>
+            <ValuePointer>values.elements.data</ValuePointer>
+        </ArrayItems>
+    </Expand>
+</Type>
+
+
+<Type Name="juce::ValueTree::SharedObject">
+    <DisplayString>{{ (ValueTree) type={type, sb} }}</DisplayString>
+    <Expand>
+        <Synthetic Name="[properties]">
+			<DisplayString>numProperties={properties.values.values.numUsed}</DisplayString>
+			<Expand>
+				<ArrayItems>
+					<Size>properties.values.values.numUsed</Size>
+					<ValuePointer>properties.values.values.elements.data</ValuePointer>
+				</ArrayItems>
+			</Expand>
+		</Synthetic>
+        <Synthetic Name="[children]">
+			<DisplayString>numChildren={children.values.numUsed}</DisplayString>
+			<Expand>
+				<ArrayItems>
+					<Size>children.values.numUsed</Size>
+					<ValuePointer>children.values.elements.data</ValuePointer>
+				</ArrayItems>
+			</Expand>
+		</Synthetic>
+    </Expand>
+</Type>
+
+<Type Name="juce::ValueTree">
+    <DisplayString Condition="object.referencedObject == 0">ValueTree::invalid</DisplayString>
+    <DisplayString>{{ (ValueTree) type={object.referencedObject->type,sb} }}</DisplayString>
+    <Expand>
+        <Synthetic Name="[properties]">
+			<DisplayString>numProperties={object.referencedObject->properties.values.values.numUsed}</DisplayString>
+			<Expand>
+				<ArrayItems>
+					<Size>object.referencedObject->properties.values.values.numUsed</Size>
+					<ValuePointer>object.referencedObject->properties.values.values.elements.data</ValuePointer>
+				</ArrayItems>
+			</Expand>
+		</Synthetic>
+        <Synthetic Name="[children]">
+			<DisplayString>numChildren={object.referencedObject->children.values.numUsed}</DisplayString>
+			<Expand>
+				<ArrayItems>
+					<Size>object.referencedObject->children.values.numUsed</Size>
+					<ValuePointer>object.referencedObject->children.values.elements.data</ValuePointer>
+				</ArrayItems>
+			</Expand>
+		</Synthetic>
+    </Expand>
+</Type>
+
+<Type Name="juce::Component">
+    <DisplayString>{{ {componentName} }}</DisplayString>
+    <Expand>
+        <Synthetic Name="[children]">
+			<DisplayString>numChildren={childComponentList.values.numUsed}</DisplayString>
+			<Expand>
+				<ArrayItems>
+					<Size>childComponentList.values.numUsed</Size>
+					<ValuePointer>childComponentList.values.elements.data</ValuePointer>
+				</ArrayItems>
+			</Expand>
+		</Synthetic>
+    </Expand>
+</Type>
+
+<Type Name="juce::Colour">
+    <DisplayString>r: {argb.components.r}, g: {argb.components.g}, b: {argb.components.b}, a: {argb.components.a}</DisplayString>
+</Type>
+
+<Type Name="juce::String">
+    <DisplayString>{text.data,s}</DisplayString>
+</Type>
+
+<Type Name="juce::Rectangle&lt;*&gt;">
+    <DisplayString>{pos.x}, {pos.y}, {w}, {h}</DisplayString>
+</Type>
+
+
+<Type Name="juce::Identifier">
+    <DisplayString>{{ identifier={name.text.data} }}</DisplayString>
+</Type>
+<!-- Types of var objects:
+    class VariantType;            friend class VariantType;
+
+    class VariantType_Void;       friend class VariantType_Void;
+    class VariantType_Undefined;  friend class VariantType_Undefined;
+    class VariantType_Int;        friend class VariantType_Int;
+
+    class VariantType_Int64;      friend class VariantType_Int64;
+    class VariantType_Double;     friend class VariantType_Double;
+    class VariantType_Bool;       friend class VariantType_Bool;
+
+    class VariantType_String;     friend class VariantType_String;
+    class VariantType_Object;     friend class VariantType_Object;
+    class VariantType_Array;      friend class VariantType_Array;
+
+    class VariantType_Binary;     friend class VariantType_Binary;
+    class VariantType_Method;     friend class VariantType_Method;
+    -->
+<Type Name="juce::var">
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesVoid">{{ intValue={value.intValue} }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesUndefined">{{ intValue={value.intValue} }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesInt">{{ intValue={value.intValue} }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesInt64">{{ int64Value={value.int64Value} }}</DisplayString>
+	<DisplayString Condition="type == &amp;juce::var::Instance::attributesBool">{{ boolValue={value.boolValue} }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesDouble">{{ doubleValue={value.doubleValue} }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesString">{{ stringValue={reinterpret_cast&lt;String*&gt;(value.stringValue)->text.data,sb} }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesObject">{{ VariantType_Object }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesArray">{{ VariantType_Array }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesBinary">{{ VariantType_Binary }}</DisplayString>
+    <DisplayString Condition="type == &amp;juce::var::Instance::attributesMethod">{{ VariantType_Method }}</DisplayString>
+</Type>
+
+<Type Name="juce::NamedValueSet::NamedValue">
+    <DisplayString>{{ {name,sb} {value}}}</DisplayString>
+</Type>
+</AutoVisualizer>

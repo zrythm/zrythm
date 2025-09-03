@@ -84,7 +84,7 @@ const ThirdPartyLicenses = [
   },
   {
     name : "type_safe",
-    copyright : "Jonathan Müller",
+    copyright : "2016-2020 Jonathan Müller",
     license : "MIT",
   },
 ];

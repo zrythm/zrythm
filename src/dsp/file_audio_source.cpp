@@ -56,7 +56,7 @@ FileAudioSource::FileAudioSource (
   QObject *                parent)
     : QObject (parent)
 {
-  ch_frames_.setSize (channels, nframes, false, true, false);
+  ch_frames_.setSize (channels, static_cast<int> (nframes), false, true, false);
   name_ = name;
   bpm_ = current_bpm;
   samplerate_ = project_sample_rate;
@@ -130,7 +130,8 @@ FileAudioSource::replace_frames_from_interleaved (
   unsigned_frame_t num_frames_per_channel,
   channels_t       channels)
 {
-  utils::audio::AudioBuffer buf (1, num_frames_per_channel * channels);
+  utils::audio::AudioBuffer buf (
+    1, static_cast<int> (num_frames_per_channel) * static_cast<int> (channels));
   buf.deinterleave_samples (channels);
   replace_frames (buf, start_frame);
 }
@@ -217,22 +218,28 @@ FileAudioSourceWriter::write_to_file ()
     std::lock_guard lock (juce_creation_mutex);
 
     auto file = utils::Utf8String::from_path (writer_path_).to_juce_file ();
-    auto out_stream = std::make_unique<juce::FileOutputStream> (file);
+    std::unique_ptr<juce::OutputStream> out_stream =
+      std::make_unique<juce::FileOutputStream> (file);
 
-    if (!out_stream || !out_stream->openedOk ())
+    if (
+      !out_stream
+      || !dynamic_cast<juce::FileOutputStream &> (*out_stream).openedOk ())
       {
         throw ZrythmException (
           fmt::format ("Failed to open file '{}' for writing", writer_path_));
       }
 
-    auto format = std::unique_ptr<juce::AudioFormat> (
-      static_cast<juce::AudioFormat *> (new juce::WavAudioFormat ()));
+    auto format = std::make_unique<juce::WavAudioFormat> ();
 
-    auto writer = std::unique_ptr<
-      juce::AudioFormatWriter> (format->createWriterFor (
-      out_stream.release (), source_.get_samplerate (),
-      source_.get_num_channels (),
-      utils::audio::bit_depth_enum_to_int (source_.get_bit_depth ()), {}, 0));
+    juce::AudioFormatWriterOptions options;
+    options =
+      options.withSampleRate (source_.get_samplerate ())
+        .withNumChannels (source_.get_num_channels ())
+        .withBitsPerSample (
+          utils::audio::bit_depth_enum_to_int (source_.get_bit_depth ()))
+        .withQualityOptionIndex (0);
+
+    auto writer = format->createWriterFor (out_stream, options);
 
     if (writer == nullptr)
       {

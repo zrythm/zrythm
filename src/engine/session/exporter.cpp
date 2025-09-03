@@ -149,33 +149,35 @@ Exporter::export_audio (Settings &info)
       throw ZrythmException ("Failed to create parent directories");
     }
 
-  auto file_output_stream =
+  std::unique_ptr<juce::OutputStream> file_output_stream =
     std::make_unique<juce::FileOutputStream> (outputFile);
-  if (!file_output_stream->openedOk ())
+  if (!dynamic_cast<juce::FileOutputStream &> (*file_output_stream).openedOk ())
     {
       throw ZrythmException ("Failed to open output file");
     }
 
-  juce::StringPairArray metadata;
-  metadata.set (
-    "title",
+  std::unordered_map<juce::String, juce::String> metadata;
+  metadata.emplace (
+    juce::String ("title"),
     (info.title_.empty () ? PROJECT->title_ : info.title_).to_juce_string ());
   if (!info.artist_.empty ())
-    metadata.set ("artist", info.artist_.to_juce_string ());
+    metadata.emplace (juce::String ("artist"), info.artist_.to_juce_string ());
   if (!info.genre_.empty ())
-    metadata.set ("genre", info.genre_.to_juce_string ());
-  metadata.set ("software", PROGRAM_NAME);
+    metadata.emplace (juce::String ("genre"), info.genre_.to_juce_string ());
+  metadata.emplace (juce::String ("software"), juce::String (PROGRAM_NAME));
 
-  juce::AudioFormatWriter * writer = format->createWriterFor (
-    file_output_stream.release (), AUDIO_ENGINE->get_sample_rate (),
-    EXPORT_CHANNELS, utils::audio::bit_depth_enum_to_int (info.depth_),
-    metadata, 0);
+  juce::AudioFormatWriterOptions options;
+  options =
+    options.withSampleRate (AUDIO_ENGINE->get_sample_rate ())
+      .withNumChannels (EXPORT_CHANNELS)
+      .withBitsPerSample (utils::audio::bit_depth_enum_to_int (info.depth_))
+      .withMetadataValues (metadata)
+      .withQualityOptionIndex (0);
+  auto writer = format->createWriterFor (file_output_stream, options);
   if (writer == nullptr)
     {
       throw ZrythmException ("Failed to create audio writer");
     }
-
-  std::unique_ptr<juce::AudioFormatWriter> writer_ptr (writer);
 
   auto [start_pos_ticks, end_pos_ticks] = info.get_export_time_range ();
   const auto &tempo_map = PROJECT->get_tempo_map ();
@@ -285,7 +287,7 @@ Exporter::export_audio (Settings &info)
       TRANSPORT->get_playhead_position_in_audio_thread () < end_pos_frames
       && !progress_info_->pending_cancellation ());
 
-    writer_ptr.reset ();
+    writer.reset ();
 
     if (!progress_info_->pending_cancellation ())
       {
