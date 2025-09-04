@@ -55,36 +55,6 @@ class AudioEngine : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
-  /**
-   * Samplerates to be used in comboboxes.
-   */
-  enum class SampleRate : basic_enum_base_type_t
-  {
-    SR_22050,
-    SR_32000,
-    SR_44100,
-    SR_48000,
-    SR_88200,
-    SR_96000,
-    SR_192000,
-  };
-
-  /**
-   * Buffer sizes to be used in combo boxes.
-   */
-  enum class BufferSize : basic_enum_base_type_t
-  {
-    _16,
-    _32,
-    _64,
-    _128,
-    _256,
-    _512,
-    _1024,
-    _2048,
-    _4096,
-  };
-
   struct PositionInfo
   {
     /** Transport is rolling. */
