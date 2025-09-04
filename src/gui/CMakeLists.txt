@@ -83,10 +83,6 @@ set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/js/config.js"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "config.js"
   )
-set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/js/licenses.js"
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  PROPERTIES QT_RESOURCE_ALIAS "licenses.js"
-  )
 set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf"
@@ -302,7 +298,6 @@ qt_add_qml_module(zrythm
   QML_FILES
     ${qml_file_paths}
     ${CMAKE_CURRENT_BINARY_DIR}/js/config.js
-    ${CMAKE_CURRENT_SOURCE_DIR}/js/licenses.js
   RESOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf
     ${icon_files}

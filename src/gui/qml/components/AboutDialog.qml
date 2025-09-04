@@ -8,17 +8,16 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
 import "../config.js" as Config
-import "../licenses.js" as Licenses
 
 Dialog {
   id: root
 
   implicitHeight: 500
+  implicitWidth: 700
   modal: true
   popupType: Popup.Window
   standardButtons: Dialog.Ok
   title: stackView.currentItem ? stackView.currentItem.title : qsTr("About Zrythm")
-  implicitWidth: 700
   x: (parent.width - width) / 2
   y: (parent.height - height) / 2
 
@@ -218,7 +217,8 @@ Dialog {
 
           // License entries
           Repeater {
-            model: Licenses.ThirdPartyLicenses
+            model: ThirdPartyLicensesModel {
+            }
 
             RowLayout {
               id: thirdPartyRow
@@ -247,32 +247,18 @@ Dialog {
                 Layout.fillWidth: true
                 spacing: 4
 
-                Repeater {
-                  model: {
-                    var licenses = [];
-                    var parts = thirdPartyRow.license.split(/\s+/);
-                    for (var i = 0; i < parts.length; i++) {
-                      var part = parts[i].trim();
-                      if (part && part !== "OR") {
-                        licenses.push(part);
-                      }
-                    }
-                    return licenses;
-                  }
+                Button {
+                  readonly property string licenseName: thirdPartyRow.license
 
-                  Button {
-                    required property string modelData
+                  flat: true
+                  text: licenseName
 
-                    flat: true
-                    text: modelData
-
-                    onClicked: {
-                      var licenseFile = ":/qt/qml/Zrythm/licenses/" + modelData + ".txt";
-                      stackView.push(licensePage, {
-                        licenseTitle: thirdPartyRow.name + " - " + modelData,
-                        licenseText: QmlUtils.readTextFileContent(licenseFile)
-                      });
-                    }
+                  onClicked: {
+                    var licenseFile = ":/qt/qml/Zrythm/licenses/" + licenseName + ".txt";
+                    stackView.push(licensePage, {
+                      licenseTitle: thirdPartyRow.name + " - " + licenseName,
+                      licenseText: QmlUtils.readTextFileContent(licenseFile)
+                    });
                   }
                 }
               }

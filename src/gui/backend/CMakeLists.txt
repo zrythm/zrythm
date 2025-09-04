@@ -51,6 +51,8 @@ target_sources(zrythm_gui_lib
     resource_manager.cpp
     spectrum_analyzer.h
     spectrum_analyzer.cpp
+    third_party_licenses_model.h
+    third_party_licenses_model.cpp
     tool.h
     tool.cpp
     track_filter_proxy_model.h

@@ -61,8 +61,6 @@ constexpr const char * UI_DELETE_ICON_NAME = "z-edit-delete";
 
 using Color = zrythm::utils::Color;
 
-static const Color UI_COLOR_BLACK = { 0, 0, 0, 1 };
-
 enum class UiDetail
 {
   High,
@@ -200,21 +198,6 @@ static constexpr const char * TARGET_ENTRY_CHORD_DESCR = "CHORD_DESCR";
 
 /* */
 static constexpr const char * TARGET_ENTRY_TL_SELECTIONS = "TL_SELECTIONS";
-
-// TODO
-#if 0
-/**
- * Shows the notification when idle.
- *
- * This should be called from threads other than GTK main thread.
- */
-#  define ui_show_notification_idle_printf(fmt, ...) \
-    char * text = g_strdup_printf (fmt, __VA_ARGS__); \
-    g_idle_add ((GSourceFunc) ui_show_notification_idle_func, (void *) text)
-
-#  define ui_show_notification_idle(msg) \
-    ui_show_notification_idle_printf ("%s", msg)
-#endif
 
 /**
  * Various cursor states to be shared.
