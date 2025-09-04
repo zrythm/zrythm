@@ -1432,7 +1432,7 @@ elseif(APPLE)
     # the .app too
     execute_process(
       COMMAND codesign
-        --deep --force --verbose $<$<CONFIG:Release>:--options;runtime> --timestamp
+        --deep --force --verbose $<$<CONFIG:Release>:--options;runtime> $<$<CONFIG:Release>:--timestamp>
         --entitlements \"${CMAKE_SOURCE_DIR}/data/platform/macos/Zrythm.entitlements\"
         --sign \"${APPLE_APP_CODESIGN_IDENTITY}\"
         \"\$\{ZRYTHM_APP_BUNDLE_DIR\}\"
