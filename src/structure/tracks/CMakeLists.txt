@@ -51,6 +51,7 @@ target_sources(zrythm_structure_tracks_lib
     piano_roll_track.cpp
     recordable_track.h
     recordable_track.cpp
+    singleton_tracks.h
     track.h
     track.cpp
     track_all.h

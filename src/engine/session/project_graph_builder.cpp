@@ -169,7 +169,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // add_node_for_processable (*hw_in_processor);
 
   /* add each track */
-  for (const auto &cur_tr : tracklist->get_track_span ())
+  for (const auto &cur_tr : tracklist->collection ()->get_track_span ())
     {
       std::visit (
         [&] (auto &&tr) {
@@ -341,7 +341,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   }
 
   /* connect tracks */
-  for (const auto &cur_tr : tracklist->get_track_span ())
+  for (const auto &cur_tr : tracklist->collection ()->get_track_span ())
     {
       std::visit (
         [&] (auto &tr) {

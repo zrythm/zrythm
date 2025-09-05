@@ -324,13 +324,13 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                 PROJECT->get_arranger_object_registry ());
 #endif
             }
-          // TrackCollections::sort_by_position (*tls_before_);
+            // TrackCollections::sort_by_position (*tls_before_);
 
-          // FIXME: need new identities?
+            // FIXME: need new identities?
+#if 0
           const auto foldable_tracks = std::ranges::to<std::vector> (
             TRACKLIST->get_track_span ()
             | std::views::filter (TrackSpan::foldable_projection));
-#if 0
           foldable_tls_before_ = TrackSpan{ foldable_tracks }.create_snapshots (
             *this, PROJECT->get_track_registry (),
             PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
@@ -890,7 +890,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
   /* restore connections */
   save_or_load_port_connections (_do);
 
-  TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
+  TRACKLIST->collection ()->get_track_span ().set_caches (ALL_CACHE_TYPES);
 
   ROUTER->recalc_graph (false);
 }

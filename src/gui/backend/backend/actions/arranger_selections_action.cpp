@@ -2182,7 +2182,8 @@ ArrangerSelectionsAction::do_or_undo (bool do_it)
     }
 
   /* update playback caches */
-  TRACKLIST->get_track_span ().set_caches (CacheType::PlaybackSnapshots);
+  TRACKLIST->collection ()->get_track_span ().set_caches (
+    CacheType::PlaybackSnapshots);
 
   /* reset new_lane_created */
 // TODO/delete

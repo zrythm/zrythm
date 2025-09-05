@@ -191,7 +191,9 @@ DspGraphDispatcher::recalc_graph (bool soft)
       }
 
     // set appropriate callbacks
-    for (const auto &cur_tr : PROJECT->getTracklist ()->get_track_span ())
+    for (
+      const auto &cur_tr :
+      PROJECT->getTracklist ()->collection ()->get_track_span ())
       {
         std::visit (
           [&] (auto &&tr) {
@@ -230,7 +232,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
 
     // TODO
     // PROJECT->clip_editor_->set_caches ();
-    TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
+    TRACKLIST->collection ()->get_track_span ().set_caches (ALL_CACHE_TYPES);
     scheduler_->rechain_from_node_collection (
       graph.steal_nodes (), sample_rate, buffer_size);
 

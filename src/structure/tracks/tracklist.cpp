@@ -134,33 +134,6 @@ Tracklist::mark_track_for_bounce (
 #endif
 }
 
-int
-Tracklist::get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track)
-  const
-{
-  const auto &tracks = collection ()->tracks ();
-  const auto  src_track_index = std::distance (
-    tracks.begin (),
-    std::ranges::find (tracks, src_track, &TrackUuidReference::id));
-  const auto dest_track_index = std::distance (
-    tracks.begin (),
-    std::ranges::find (tracks, dest_track, &TrackUuidReference::id));
-
-  // Determine range boundaries and direction
-  const auto [lower, upper] = std::minmax (src_track_index, dest_track_index);
-  const int sign = src_track_index < dest_track_index ? 1 : -1;
-
-  // Count visible tracks in the range (exclusive upper bound)
-  auto       span = get_track_span ();
-  const auto count = std::ranges::count_if (
-    span.begin () + lower, span.begin () + upper, [this] (const auto &track_var) {
-      return should_be_visible (TrackSpan::uuid_projection (track_var));
-    });
-
-  // Apply direction modifier
-  return sign * static_cast<int> (count);
-}
-
 bool
 Tracklist::should_be_visible (const Track::Uuid &track_id) const
 {
@@ -237,7 +210,7 @@ Tracklist::multiply_track_heights (
   bool   check_only,
   bool   fire_events)
 {
-  auto span = get_track_span ();
+  auto span = collection ()->get_track_span ();
   for (const auto &track_var : span)
     {
       bool ret = std::visit (
@@ -283,36 +256,6 @@ Tracklist::get_visible_track_after_delta (Track::Uuid track_id, int delta) const
     return std::nullopt;
   return *(found);
 #endif
-}
-
-std::optional<TrackPtrVariant>
-Tracklist::get_first_visible_track (const bool pinned) const
-{
-  // TODO
-  return std::nullopt;
-#if 0
-  auto span = get_track_span ().get_visible_tracks ();
-  auto it = std::ranges::find_if (span, [&] (const auto &track_var) {
-    return std::visit (
-      [&] (auto &&track) {
-        return is_track_pinned (track->get_uuid ()) == pinned;
-      },
-      track_var);
-  });
-  return it != span.end () ? std::make_optional (*it) : std::nullopt;
-#endif
-}
-
-std::optional<TrackPtrVariant>
-Tracklist::get_prev_visible_track (TrackUuid track_id) const
-{
-  return get_visible_track_after_delta (track_id, -1);
-}
-
-std::optional<TrackPtrVariant>
-Tracklist::get_next_visible_track (TrackUuid track_id) const
-{
-  return get_visible_track_after_delta (track_id, 1);
 }
 
 void

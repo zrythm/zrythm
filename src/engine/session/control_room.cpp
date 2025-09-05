@@ -30,7 +30,7 @@ ControlRoom::ControlRoom (
       const float dim_amp = dim_volume_->baseValue ();
 
       /* if have listened tracks */
-      if (TRACKLIST->get_track_span ().has_listened ())
+      if (TRACKLIST->collection ()->get_track_span ().has_listened ())
         {
           /* dim signal */
           utils::float_ranges::mul_k2 (
@@ -44,7 +44,7 @@ ControlRoom::ControlRoom (
           /* TODO add "listen" buffer on fader struct and add listened
            * tracks to it during processing instead of looping here */
           const float listen_amp = listen_volume_->baseValue ();
-          for (const auto &cur_t : TRACKLIST->get_track_span ())
+          for (const auto &cur_t : TRACKLIST->collection ()->get_track_span ())
             {
               std::visit (
                 [&] (auto &&t) {

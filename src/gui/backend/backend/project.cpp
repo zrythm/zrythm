@@ -298,7 +298,8 @@ Project::get_final_track_dependencies () const
     *track_registry_,
     *transport_,
     [this] () {
-      return tracklist_->get_track_span ().get_num_soloed_tracks () > 0;
+      return tracklist_->collection ()->get_track_span ().get_num_soloed_tracks ()
+             > 0;
     }
   };
 }
@@ -549,7 +550,7 @@ Project::add_default_tracks ()
 
   /* chord */
   auto * chord_track = add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
-  tracklist_->singletonTracks ()->chord_track_ = chord_track;
+  tracklist_->singletonTracks ()->setChordTrack (chord_track);
   chord_track->set_note_pitch_to_descriptor_func ([this] (midi_byte_t note_pitch) {
     return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
       note_pitch);
@@ -578,12 +579,12 @@ Project::add_default_tracks ()
   /* modulator */
   auto * modulator_track =
     add_track.operator()<ModulatorTrack> (QObject::tr ("Modulators"));
-  tracklist_->singletonTracks ()->modulator_track_ = modulator_track;
+  tracklist_->singletonTracks ()->setModulatorTrack (modulator_track);
 
   /* add marker track and default markers */
   auto * marker_track =
     add_track.operator()<MarkerTrack> (QObject::tr ("Markers"));
-  tracklist_->singletonTracks ()->marker_track_ = marker_track;
+  tracklist_->singletonTracks ()->setMarkerTrack (marker_track);
   const auto add_default_markers =
     [] (
       auto &marker_track_inner, const auto &factory, const int ticks_per_bar,
@@ -628,7 +629,7 @@ Project::add_default_tracks ()
   /* add master track */
   auto * master_track =
     add_track.operator()<MasterTrack> (QObject::tr ("Master"));
-  tracklist_->singletonTracks ()->master_track_ = master_track;
+  tracklist_->singletonTracks ()->setMasterTrack (master_track);
   track_selection_manager_->select_unique (master_track->get_uuid ());
 
   last_selection_ = SelectionType::Tracklist;

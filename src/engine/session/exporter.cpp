@@ -563,7 +563,8 @@ Exporter::prepare_tracks_for_export (
     }
 
   z_debug ("preparing playback snapshots...");
-  TRACKLIST->get_track_span ().set_caches (CacheType::PlaybackSnapshots);
+  TRACKLIST->collection ()->get_track_span ().set_caches (
+    CacheType::PlaybackSnapshots);
 }
 
 void

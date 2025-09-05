@@ -207,7 +207,9 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
   if (roll_)
     {
       midi_events_->active_events_.clear ();
-      for (auto track_var : tracklist_->get_track_span () | std::views::reverse)
+      for (
+        auto track_var :
+        tracklist_->collection ()->get_track_span () | std::views::reverse)
         {
           std::visit (
             [&] (auto &&track) {

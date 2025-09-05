@@ -609,7 +609,7 @@ Transport::move_playhead (double target_ticks, bool set_cue_point)
   /* send MIDI note off on currently playing timeline objects */
   for (
     auto * track :
-    TRACKLIST->get_track_span ()
+    TRACKLIST->collection ()->get_track_span ()
       | std::views::transform ([] (const auto &track_var) {
           return structure::tracks::from_variant (track_var);
         }))

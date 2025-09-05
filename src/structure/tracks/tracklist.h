@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object.h"
+#include "structure/tracks/singleton_tracks.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_routing.h"
@@ -13,45 +14,6 @@
 
 namespace zrythm::structure::tracks
 {
-class ChordTrack;
-class ModulatorTrack;
-class MasterTrack;
-class MarkerTrack;
-
-/**
- * @brief References to tracks that are singletons in the tracklist.
- */
-class SingletonTracks : public QObject
-{
-  Q_OBJECT
-  Q_PROPERTY (
-    zrythm::structure::tracks::ChordTrack * chordTrack READ chordTrack CONSTANT)
-  Q_PROPERTY (
-    zrythm::structure::tracks::ModulatorTrack * modulatorTrack READ
-      modulatorTrack CONSTANT)
-  Q_PROPERTY (
-    zrythm::structure::tracks::MasterTrack * masterTrack READ masterTrack
-      CONSTANT)
-  Q_PROPERTY (
-    zrythm::structure::tracks::MarkerTrack * markerTrack READ markerTrack
-      CONSTANT)
-  QML_ELEMENT
-  QML_UNCREATABLE ("")
-
-public:
-  SingletonTracks (QObject * parent = nullptr) : QObject (parent) { }
-
-  ChordTrack *     chordTrack () const { return chord_track_; }
-  ModulatorTrack * modulatorTrack () const { return modulator_track_; }
-  MasterTrack *    masterTrack () const { return master_track_; }
-  MarkerTrack *    markerTrack () const { return marker_track_; }
-
-public:
-  QPointer<ChordTrack>     chord_track_;
-  QPointer<ModulatorTrack> modulator_track_;
-  QPointer<MasterTrack>    master_track_;
-  QPointer<MarkerTrack>    marker_track_;
-};
 
 /**
  * The Tracklist contains all the tracks in the Project.
@@ -114,15 +76,6 @@ public:
 
   // ========================================================================
 
-  /**
-   * @brief A list of track types that must be unique in the tracklist.
-   */
-  static constexpr std::array<Track::Type, 4> unique_track_types_ = {
-    Track::Type::Chord, Track::Type::Marker, Track::Type::Modulator
-  };
-
-  auto get_track_span () const { return collection ()->get_track_span (); }
-
   friend void init_from (
     Tracklist             &obj,
     const Tracklist       &other,
@@ -130,7 +83,7 @@ public:
 
   std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
   {
-    auto span = get_track_span ();
+    auto span = collection ()->get_track_span ();
     auto it = std::ranges::find (span, id, TrackSpan::uuid_projection);
     if (it == span.end ()) [[unlikely]]
       {
@@ -138,28 +91,6 @@ public:
       }
     return std::make_optional (*it);
   }
-
-  /**
-   * Returns the first visible Track.
-   *
-   * @param pinned 1 to check the pinned tracklist,
-   *   0 to check the non-pinned tracklist.
-   */
-  std::optional<TrackPtrVariant> get_first_visible_track (bool pinned) const;
-
-  /**
-   * Returns the previous visible Track in the same
-   * Tracklist as the given one (ie, pinned or not).
-   */
-  std::optional<TrackPtrVariant>
-  get_prev_visible_track (Track::Uuid track_id) const;
-
-  /**
-   * Returns the next visible Track in the same
-   * Tracklist as the given one (ie, pinned or not).
-   */
-  std::optional<TrackPtrVariant>
-  get_next_visible_track (Track::Uuid track_id) const;
 
   /**
    * Returns the Track after delta visible Track's.
@@ -171,16 +102,6 @@ public:
    */
   std::optional<TrackPtrVariant>
   get_visible_track_after_delta (Track::Uuid track_id, int delta) const;
-
-  /**
-   * Returns the number of visible Tracks between src and dest (negative if
-   * dest is before src).
-   *
-   * The caller is responsible for checking that both tracks are in the same
-   * tracklist (ie, pinned or not).
-   */
-  int
-  get_visible_track_diff (Track::Uuid src_track, Track::Uuid dest_track) const;
 
   /**
    * Multiplies all tracks' heights and returns if the operation was valid.
@@ -301,9 +222,5 @@ private:
    * Tracks before this position will be considered as pinned.
    */
   int pinned_tracks_cutoff_ = 0;
-
-  /** When this is true, some tracks may temporarily be moved
-   * beyond num_tracks. */
-  std::atomic<bool> swapping_tracks_ = false;
 };
 }

@@ -11,6 +11,7 @@ add_executable(zrythm_structure_tracks_unit_tests
   mock_track.h
   piano_roll_track_test.cpp
   recordable_track_test.cpp
+  singleton_tracks_test.cpp
   track_collection_test.cpp
   track_factory_test.cpp
   track_lane_test.cpp
