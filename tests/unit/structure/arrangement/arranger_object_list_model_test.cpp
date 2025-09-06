@@ -48,9 +48,11 @@ protected:
 TEST_F (ArrangerObjectListModelTest, InitialState)
 {
   EXPECT_EQ (model_->rowCount (), 5);
-  EXPECT_EQ (model_->roleNames ().size (), 1);
+  EXPECT_EQ (model_->roleNames ().size (), 2);
   EXPECT_TRUE (model_->roleNames ().contains (
     ArrangerObjectListModel::ArrangerObjectPtrRole));
+  EXPECT_TRUE (model_->roleNames ().contains (
+    ArrangerObjectListModel::ArrangerObjectUuidReferenceRole));
 }
 
 // Test data access
@@ -65,6 +67,15 @@ TEST_F (ArrangerObjectListModelTest, DataAccess)
   auto obj = data.value<MidiNote *> ();
   ASSERT_NE (obj, nullptr);
   EXPECT_EQ (obj->pitch (), 60);
+
+  // Test UUID reference role
+  QVariant uuid_data = model_->data (
+    idx, ArrangerObjectListModel::ArrangerObjectUuidReferenceRole);
+  ASSERT_TRUE (uuid_data.isValid ());
+
+  auto uuid_ref = uuid_data.value<ArrangerObjectUuidReference *> ();
+  ASSERT_NE (uuid_ref, nullptr);
+  EXPECT_EQ (uuid_ref->get_object_as<MidiNote> ()->pitch (), 60);
 
   // Invalid index
   QModelIndex invalid_idx = model_->index (10, 0);
@@ -125,10 +136,13 @@ TEST_F (ArrangerObjectListModelTest, ResetModel)
 TEST_F (ArrangerObjectListModelTest, RoleNames)
 {
   auto roles = model_->roleNames ();
-  EXPECT_EQ (roles.size (), 1);
+  EXPECT_EQ (roles.size (), 2);
   EXPECT_EQ (
     roles[ArrangerObjectListModel::ArrangerObjectPtrRole],
     QByteArray ("arrangerObject"));
+  EXPECT_EQ (
+    roles[ArrangerObjectListModel::ArrangerObjectUuidReferenceRole],
+    QByteArray ("arrangerObjectReference"));
 }
 
 // Test empty model
