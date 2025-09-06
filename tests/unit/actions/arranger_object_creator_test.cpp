@@ -170,7 +170,7 @@ TEST_F (ArrangerObjectCreatorTest, AddEmptyChordRegion)
   EXPECT_DOUBLE_EQ (region->position ()->ticks (), start_ticks);
 
   // Verify region was added to track
-  auto regions = chord_track->ArrangerObjectOwner<
+  auto regions = chord_track->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::ChordRegion>::get_children_view ();
   EXPECT_TRUE (std::ranges::any_of (regions, [&] (auto * r) {
     return r == region;
