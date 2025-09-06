@@ -265,6 +265,7 @@ Arranger {
                 id: scaleLoader
 
                 required property var arrangerObject
+                required property int index
                 property var scaleObject: arrangerObject
                 readonly property real scaleX: scaleObject.position.ticks * root.ruler.pxPerTick
 
@@ -277,10 +278,28 @@ Arranger {
                     id: scaleItem
 
                     arrangerObject: scaleLoader.scaleObject
+                    isSelected: scaleSelelectionTracker.isSelected
                     pxPerTick: root.ruler.pxPerTick
                     track: trackDelegate.track
                     x: scaleLoader.scaleX
+
+                    onHoveredChanged: {
+                      root.handleObjectHover(scaleItem.hovered, scaleItem);
+                    }
+                    onSelectionRequested: function (mouse) {
+                      root.handleObjectSelection(scalesRepeater.model, scaleLoader.index, mouse);
+                    }
                   }
+                }
+
+                SelectionTracker {
+                  id: scaleSelelectionTracker
+
+                  modelIndex: {
+                    root.unifiedObjectsModel.addSourceModel(scalesRepeater.model);
+                    return root.unifiedObjectsModel.mapFromSource(scalesRepeater.model.index(scaleLoader.index, 0));
+                  }
+                  selectionModel: root.arrangerSelectionModel
                 }
               }
             }
@@ -306,6 +325,7 @@ Arranger {
                 id: markerLoader
 
                 required property var arrangerObject
+                required property int index
                 property var marker: arrangerObject
                 readonly property real markerX: marker.position.ticks * root.ruler.pxPerTick
 
@@ -318,10 +338,28 @@ Arranger {
                     id: markerItem
 
                     arrangerObject: markerLoader.marker
+                    isSelected: markerSelelectionTracker.isSelected
                     pxPerTick: root.ruler.pxPerTick
                     track: trackDelegate.track
                     x: markerLoader.markerX
+
+                    onHoveredChanged: {
+                      root.handleObjectHover(markerItem.hovered, markerItem);
+                    }
+                    onSelectionRequested: function (mouse) {
+                      root.handleObjectSelection(markersRepeater.model, markerLoader.index, mouse);
+                    }
                   }
+                }
+
+                SelectionTracker {
+                  id: markerSelelectionTracker
+
+                  modelIndex: {
+                    root.unifiedObjectsModel.addSourceModel(markersRepeater.model);
+                    return root.unifiedObjectsModel.mapFromSource(markersRepeater.model.index(markerLoader.index, 0));
+                  }
+                  selectionModel: root.arrangerSelectionModel
                 }
               }
             }
@@ -349,6 +387,7 @@ Arranger {
                 readonly property real chordRegionEndX: region.endPosition.ticks * root.ruler.pxPerTick
                 readonly property real chordRegionWidth: chordRegionEndX - chordRegionX
                 readonly property real chordRegionX: region.position.ticks * root.ruler.pxPerTick
+                required property int index
                 required property var region
 
                 active: chordRegionEndX + Style.scrollLoaderBufferPx >= root.scrollX && chordRegionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
@@ -357,14 +396,34 @@ Arranger {
 
                 sourceComponent: Component {
                   ChordRegionView {
+                    id: chordRegionItem
+
                     arrangerObject: chordRegionLoader.region
                     clipEditor: root.clipEditor
                     height: chordRegionsRepeater.height
+                    isSelected: chordRegionSelectionTracker.isSelected
                     pxPerTick: root.ruler.pxPerTick
                     track: trackDelegate.track
                     width: chordRegionLoader.chordRegionWidth
                     x: chordRegionLoader.chordRegionX
+
+                    onHoveredChanged: {
+                      root.handleObjectHover(hovered, chordRegionItem);
+                    }
+                    onSelectionRequested: function (mouse) {
+                      root.handleObjectSelection(chordRegionsRepeater.model, chordRegionLoader.index, mouse);
+                    }
                   }
+                }
+
+                SelectionTracker {
+                  id: chordRegionSelectionTracker
+
+                  modelIndex: {
+                    root.unifiedObjectsModel.addSourceModel(chordRegionsRepeater.model);
+                    return root.unifiedObjectsModel.mapFromSource(chordRegionsRepeater.model.index(chordRegionLoader.index, 0));
+                  }
+                  selectionModel: root.arrangerSelectionModel
                 }
               }
             }
@@ -393,6 +452,7 @@ Arranger {
                   id: mainTrackRegionLoader
 
                   required property var arrangerObject
+                  required property int index
                   property var region: arrangerObject
                   readonly property real regionEndX: regionX + regionWidth
                   readonly property real regionHeight: mainTrackLanedRegionsLoader.height
@@ -406,18 +466,38 @@ Arranger {
                   sourceComponent: region.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
                   visible: status === Loader.Ready
 
+                  SelectionTracker {
+                    id: mainTrackRegionSelectionTracker
+
+                    modelIndex: {
+                      root.unifiedObjectsModel.addSourceModel(mainTrackLaneRegionsRepeater.model);
+                      return root.unifiedObjectsModel.mapFromSource(mainTrackLaneRegionsRepeater.model.index(mainTrackRegionLoader.index, 0));
+                    }
+                    selectionModel: root.arrangerSelectionModel
+                  }
+
                   Component {
                     id: midiRegionComponent
 
                     MidiRegionView {
+                      id: mainMidiRegionItem
+
                       arrangerObject: mainTrackRegionLoader.region
                       clipEditor: root.clipEditor
                       height: mainTrackRegionLoader.regionHeight
+                      isSelected: mainTrackRegionSelectionTracker.isSelected
                       lane: mainTrackLaneRegionsRepeater.trackLane
                       pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
                       width: mainTrackRegionLoader.regionWidth
                       x: mainTrackRegionLoader.regionX
+
+                      onHoveredChanged: {
+                        root.handleObjectHover(hovered, mainMidiRegionItem);
+                      }
+                      onSelectionRequested: function (mouse) {
+                        root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
+                      }
                     }
                   }
 
@@ -425,14 +505,24 @@ Arranger {
                     id: audioRegionComponent
 
                     AudioRegionView {
+                      id: mainAudioRegionItem
+
                       arrangerObject: mainTrackRegionLoader.region
                       clipEditor: root.clipEditor
                       height: mainTrackRegionLoader.regionHeight
+                      isSelected: mainTrackRegionSelectionTracker.isSelected
                       lane: mainTrackLaneRegionsRepeater.trackLane
                       pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
                       width: mainTrackRegionLoader.regionWidth
                       x: mainTrackRegionLoader.regionX
+
+                      onHoveredChanged: {
+                        root.handleObjectHover(hovered, mainAudioRegionItem);
+                      }
+                      onSelectionRequested: function (mouse) {
+                        root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
+                      }
                     }
                   }
                 }
@@ -476,6 +566,7 @@ Arranger {
                   id: laneRegionLoader
 
                   required property var arrangerObject
+                  required property int index
                   property var region: arrangerObject
                   readonly property real regionEndX: regionX + regionWidth
                   readonly property real regionHeight: trackLane.height
@@ -489,18 +580,38 @@ Arranger {
                   sourceComponent: region.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
                   visible: status === Loader.Ready
 
+                  SelectionTracker {
+                    id: laneRegionSelectionTracker
+
+                    modelIndex: {
+                      root.unifiedObjectsModel.addSourceModel(laneMidiRegionsRepeater.model);
+                      return root.unifiedObjectsModel.mapFromSource(laneMidiRegionsRepeater.model.index(laneRegionLoader.index, 0));
+                    }
+                    selectionModel: root.arrangerSelectionModel
+                  }
+
                   Component {
                     id: laneMidiRegionComponent
 
                     MidiRegionView {
+                      id: laneMidiRegionItem
+
                       arrangerObject: laneRegionLoader.region
                       clipEditor: root.clipEditor
                       height: laneItem.trackLane.height
+                      isSelected: laneRegionSelectionTracker.isSelected
                       lane: laneItem.trackLane
                       pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
                       width: laneRegionLoader.regionWidth
                       x: laneRegionLoader.regionX
+
+                      onHoveredChanged: {
+                        root.handleObjectHover(hovered, laneMidiRegionItem);
+                      }
+                      onSelectionRequested: function (mouse) {
+                        root.handleObjectSelection(laneMidiRegionsRepeater.model, laneRegionLoader.index, mouse);
+                      }
                     }
                   }
 
@@ -508,14 +619,24 @@ Arranger {
                     id: laneAudioRegionComponent
 
                     AudioRegionView {
+                      id: laneAudioRegionItem
+
                       arrangerObject: laneRegionLoader.region
                       clipEditor: root.clipEditor
                       height: laneItem.trackLane.height
+                      isSelected: laneRegionSelectionTracker.isSelected
                       lane: laneItem.trackLane
                       pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
                       width: laneRegionLoader.regionWidth
                       x: laneRegionLoader.regionX
+
+                      onHoveredChanged: {
+                        root.handleObjectHover(hovered, laneAudioRegionItem);
+                      }
+                      onSelectionRequested: function (mouse) {
+                        root.handleObjectSelection(laneAudioRegionsRepeater.model, laneRegionLoader.index, mouse);
+                      }
                     }
                   }
                 }
@@ -580,6 +701,7 @@ Arranger {
                   id: automationRegionLoader
 
                   readonly property var automationTrack: automationTrackItem.automationTrack
+                  required property int index
                   required property var region
                   readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
                   readonly property real regionHeight: parent.height
@@ -592,14 +714,34 @@ Arranger {
                   visible: status === Loader.Ready
 
                   sourceComponent: AutomationRegionView {
+                    id: automationRegionItem
+
                     arrangerObject: automationRegionLoader.region
                     automationTrack: automationRegionLoader.automationTrack
                     clipEditor: root.clipEditor
                     height: automationTrackItem.automationTrackHolder.height
+                    isSelected: automationRegionSelectionTracker.isSelected
                     pxPerTick: root.ruler.pxPerTick
                     track: trackDelegate.track
                     width: automationRegionLoader.regionWidth
                     x: automationRegionLoader.regionX
+
+                    onHoveredChanged: {
+                      root.handleObjectHover(hovered, automationRegionItem);
+                    }
+                    onSelectionRequested: function (mouse) {
+                      root.handleObjectSelection(automationRegionsRepeater.model, automationRegionLoader.index, mouse);
+                    }
+                  }
+
+                  SelectionTracker {
+                    id: automationRegionSelectionTracker
+
+                    modelIndex: {
+                      root.unifiedObjectsModel.addSourceModel(automationRegionsRepeater.model);
+                      return root.unifiedObjectsModel.mapFromSource(automationRegionsRepeater.model.index(automationRegionLoader.index, 0));
+                    }
+                    selectionModel: root.arrangerSelectionModel
                   }
                 }
               }

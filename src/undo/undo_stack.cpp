@@ -32,12 +32,6 @@ UndoStack::UndoStack (
     Q_EMIT canUndoChanged ();
     Q_EMIT canRedoChanged ();
   });
-  connect (stack_.get (), &QUndoStack::canUndo, this, [this] () {
-    Q_EMIT canUndoChanged ();
-  });
-  connect (stack_.get (), &QUndoStack::canRedo, this, [this] () {
-    Q_EMIT canRedoChanged ();
-  });
 }
 
 bool

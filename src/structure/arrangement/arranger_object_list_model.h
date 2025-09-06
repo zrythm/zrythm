@@ -24,7 +24,9 @@ public:
   enum ArrangerObjectListModelRoles
   {
     ArrangerObjectPtrRole = Qt::UserRole + 1,
+    ArrangerObjectUuidReferenceRole
   };
+  Q_ENUM (ArrangerObjectListModelRoles)
 
   ArrangerObjectListModel (
     std::vector<ArrangerObjectUuidReference> &objects,
@@ -37,6 +39,7 @@ public:
   {
     QHash<int, QByteArray> roles;
     roles[ArrangerObjectPtrRole] = "arrangerObject";
+    roles[ArrangerObjectUuidReferenceRole] = "arrangerObjectReference";
     return roles;
   }
 
@@ -57,6 +60,11 @@ public:
       {
         return QVariant::fromStdVariant (
           objects_[static_cast<size_t> (index.row ())].get_object ());
+      }
+    if (role == ArrangerObjectUuidReferenceRole)
+      {
+        return QVariant::fromValue (
+          &objects_[static_cast<size_t> (index.row ())]);
       }
 
     return {};

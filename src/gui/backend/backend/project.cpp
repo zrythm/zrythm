@@ -184,7 +184,6 @@ Project::Project (
       arranger_object_creator_ (
         utils::make_qobject_unique<actions::ArrangerObjectCreator> (
           *undo_stack_,
-          *clip_editor_,
           *arranger_object_factory_,
           *snap_grid_timeline_,
           *snap_grid_editor_,

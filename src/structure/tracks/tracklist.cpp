@@ -21,6 +21,169 @@ Tracklist::Tracklist (TrackRegistry &track_registry, QObject * parent)
 // QML Interface
 // ========================================================================
 
+Track *
+Tracklist::getTrackForTimelineObject (
+  const arrangement::ArrangerObject * arrangerObject) const
+{
+  switch (arrangerObject->type ())
+    {
+    case arrangement::ArrangerObject::Type::ChordRegion:
+      {
+        // Search through chord track for this chord region
+        auto * chord_track = singleton_tracks_->chordTrack ();
+        if (chord_track != nullptr)
+          {
+            for (
+              auto * chord_region :
+              chord_track->arrangement::ArrangerObjectOwner<
+                arrangement::ChordRegion>::get_children_view ())
+              {
+                if (chord_region->get_uuid () == arrangerObject->get_uuid ())
+                  {
+                    return chord_track;
+                  }
+              }
+          }
+        break;
+      }
+    case arrangement::ArrangerObject::Type::ScaleObject:
+      {
+        // Search through chord track for this scale object
+        auto * chord_track = singleton_tracks_->chordTrack ();
+        if (chord_track != nullptr)
+          {
+            for (
+              auto * scale_object :
+              chord_track->arrangement::ArrangerObjectOwner<
+                arrangement::ScaleObject>::get_children_view ())
+              {
+                if (scale_object->get_uuid () == arrangerObject->get_uuid ())
+                  {
+                    return chord_track;
+                  }
+              }
+          }
+        break;
+      }
+    case arrangement::ArrangerObject::Type::Marker:
+      {
+        // Search through marker track for this marker
+        auto * marker_track = singleton_tracks_->markerTrack ();
+        if (marker_track != nullptr)
+          {
+            for (auto * marker : marker_track->get_children_view ())
+              {
+                if (marker->get_uuid () == arrangerObject->get_uuid ())
+                  {
+                    return marker_track;
+                  }
+              }
+          }
+        break;
+      }
+    case arrangement::ArrangerObject::Type::MidiRegion:
+    case arrangement::ArrangerObject::Type::AudioRegion:
+      {
+        // Search through all tracks with lanes for this region
+        for (const auto &track_var : collection ()->get_track_span ())
+          {
+            auto * track = tracks::from_variant (track_var);
+            if (track->lanes () != nullptr)
+              {
+                for (auto * lane : track->lanes ()->lanes_view ())
+                  {
+                    // Check MIDI regions
+                    for (
+                      auto * midi_region :
+                      lane->arrangement::ArrangerObjectOwner<
+                        arrangement::MidiRegion>::get_children_view ())
+                      {
+                        if (
+                          midi_region->get_uuid ()
+                          == arrangerObject->get_uuid ())
+                          {
+                            return track;
+                          }
+                      }
+                    // Check Audio regions
+                    for (
+                      auto * audio_region :
+                      lane->arrangement::ArrangerObjectOwner<
+                        arrangement::AudioRegion>::get_children_view ())
+                      {
+                        if (
+                          audio_region->get_uuid ()
+                          == arrangerObject->get_uuid ())
+                          {
+                            return track;
+                          }
+                      }
+                  }
+              }
+          }
+        break;
+      }
+    case arrangement::ArrangerObject::Type::AutomationRegion:
+      {
+        // Search through all tracks with automation tracklists for this region
+        for (const auto &track_var : collection ()->get_track_span ())
+          {
+            auto * track = tracks::from_variant (track_var);
+            if (track->automationTracklist () != nullptr)
+              {
+                for (
+                  auto * automation_track :
+                  track->automationTracklist ()->automation_tracks ())
+                  {
+                    for (
+                      auto * automation_region :
+                      automation_track->arrangement::ArrangerObjectOwner<
+                        arrangement::AutomationRegion>::get_children_view ())
+                      {
+                        if (
+                          automation_region->get_uuid ()
+                          == arrangerObject->get_uuid ())
+                          {
+                            return track;
+                          }
+                      }
+                  }
+              }
+          }
+        break;
+      }
+    case arrangement::ArrangerObject::Type::MidiNote:
+      {
+        // Midi notes are contained within MIDI regions, so we need to find
+        // the parent region first, then find the track that contains that
+        // region This is more complex and may require additional infrastructure
+        break;
+      }
+    case arrangement::ArrangerObject::Type::ChordObject:
+      {
+        // Chord objects are contained within chord regions, so we need to find
+        // the parent region first, then find the chord track that contains that
+        // region This is more complex and may require additional infrastructure
+        break;
+      }
+    case arrangement::ArrangerObject::Type::AutomationPoint:
+      {
+        // Automation points are contained within automation regions, so we need
+        // to find the parent region first, then find the track that contains
+        // that region This is more complex and may require additional
+        // infrastructure
+        break;
+      }
+    case arrangement::ArrangerObject::Type::AudioSourceObject:
+      {
+        // Audio source objects are special and may not be directly owned by a
+        // track
+        break;
+      }
+    }
+  return nullptr;
+}
+
 // ========================================================================
 
 std::optional<TrackUuidReference>

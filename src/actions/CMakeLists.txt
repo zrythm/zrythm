@@ -5,6 +5,9 @@ qt_add_library(zrythm_actions_lib STATIC)
 
 target_sources(zrythm_actions_lib
   PRIVATE
+    arranger_object_creator.h
+    arranger_object_creator.cpp
+    arranger_object_selection_operator.h
     parameter_operator.h
     parameter_operator.cpp
     track_creator.h
@@ -42,11 +45,4 @@ qt_add_qml_module(zrythm_actions_lib
     TARGET zrythm_structure_tracks_lib
     TARGET zrythm_undo_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmActions
-)
-
-# TODO move to actions lib
-target_sources(zrythm_gui_lib
-  PRIVATE
-    arranger_object_creator.h
-    arranger_object_creator.cpp
 )

@@ -105,18 +105,52 @@ GridLayout {
     }
   }
 
+  UnifiedArrangerObjectsModel {
+    id: unifiedObjectsModel
+
+  }
+
+  ItemSelectionModel {
+    id: arrangerSelectionModel
+
+    function getObjectFromUnifiedIndex(unifiedIndex: var): ArrangerObject {
+      const sourceIndex = unifiedObjectsModel.mapToSource(unifiedIndex);
+      return sourceIndex.data(ArrangerObjectListModel.ArrangerObjectPtrRole);
+    }
+
+    model: unifiedObjectsModel
+
+    onSelectionChanged: (selected, deselected) => {
+      console.log("Selection changed:", selectedIndexes.length, "items selected");
+      if (selectedIndexes.length > 0) {
+        const firstObject = selectedIndexes[0].data(ArrangerObjectListModel.ArrangerObjectPtrRole) as ArrangerObject;
+        console.log("first selected object:", firstObject);
+      }
+    }
+  }
+
+  ArrangerObjectSelectionOperator {
+    id: selectionOperator
+
+    selectionModel: arrangerSelectionModel
+    undoStack: root.project.undoStack
+  }
+
   MidiArranger {
     id: midiArranger
 
     Layout.fillHeight: true
     Layout.fillWidth: true
+    arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
     objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
+    selectionOperator: selectionOperator
     tempoMap: root.project.tempoMap
     tool: root.project.tool
     transport: root.project.transport
+    unifiedObjectsModel: unifiedObjectsModel
   }
 
   Rectangle {
@@ -130,12 +164,15 @@ GridLayout {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
+    arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
     objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
+    selectionOperator: selectionOperator
     tempoMap: root.project.tempoMap
     tool: root.project.tool
     transport: root.project.transport
+    unifiedObjectsModel: unifiedObjectsModel
   }
 }

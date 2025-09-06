@@ -62,14 +62,14 @@ protected:
       track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
 
     // Set singleton track pointers
-    singleton_tracks_->master_track_ =
-      master_track_ref.get_object_as<structure::tracks::MasterTrack> ();
-    singleton_tracks_->chord_track_ =
-      chord_track_ref.get_object_as<structure::tracks::ChordTrack> ();
-    singleton_tracks_->modulator_track_ =
-      modulator_track_ref.get_object_as<structure::tracks::ModulatorTrack> ();
-    singleton_tracks_->marker_track_ =
-      marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ();
+    singleton_tracks_->setMasterTrack (
+      master_track_ref.get_object_as<structure::tracks::MasterTrack> ());
+    singleton_tracks_->setChordTrack (
+      chord_track_ref.get_object_as<structure::tracks::ChordTrack> ());
+    singleton_tracks_->setModulatorTrack (
+      modulator_track_ref.get_object_as<structure::tracks::ModulatorTrack> ());
+    singleton_tracks_->setMarkerTrack (
+      marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ());
 
     // Add singleton tracks to collection
     track_collection_->add_track (master_track_ref);

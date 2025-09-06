@@ -172,15 +172,68 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: pinnedTracklist.height
           Layout.minimumHeight: pinnedTracklist.height
+          arrangerSelectionModel: arrangerSelectionModel
           clipEditor: root.project.clipEditor
           objectCreator: root.project.arrangerObjectCreator
           pinned: true
           ruler: ruler
+          selectionOperator: selectionOperator
           tempoMap: root.project.tempoMap
           timeline: root.project.timeline
           tool: root.project.tool
           tracklist: root.project.tracklist
           transport: root.project.transport
+          unifiedObjectsModel: unifiedObjectsModel
+        }
+
+        UnifiedArrangerObjectsModel {
+          id: unifiedObjectsModel
+
+        }
+
+        ItemSelectionModel {
+          id: arrangerSelectionModel
+
+          function getObjectFromUnifiedIndex(unifiedIndex: var): ArrangerObject {
+            const sourceIndex = unifiedObjectsModel.mapToSource(unifiedIndex);
+            return sourceIndex.data(ArrangerObjectListModel.ArrangerObjectPtrRole);
+          }
+
+          model: unifiedObjectsModel
+
+          onCurrentChanged: (current, previous) => {
+            if (current) {
+              const arrangerObject = getObjectFromUnifiedIndex(current);
+              if (arrangerObject && arrangerObject.regionMixin) {
+                console.log("current region changed, setting clip editor region to ", arrangerObject.regionMixin.name.name);
+                root.project.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
+              }
+            }
+          }
+          onSelectionChanged: (selected, deselected) => {
+            console.log("Selection changed:", selectedIndexes.length, "items selected");
+            if (selectedIndexes.length > 0) {
+              const firstObject = selectedIndexes[0].data(ArrangerObjectListModel.ArrangerObjectPtrRole) as ArrangerObject;
+              console.log("first selected object:", firstObject);
+            }
+
+            if (deselected.length > 0) {
+              deselected.forEach(deselectedRange => {
+                const arrangerObject = getObjectFromUnifiedIndex(deselectedRange.topLeft);
+                if (arrangerObject && arrangerObject.regionMixin) {
+                  console.log("previous region changed, unsetting clip editor region");
+                  root.project.clipEditor.unsetRegion();
+                }
+              });
+            }
+          }
+        }
+
+        ArrangerObjectSelectionOperator {
+          id: selectionOperator
+
+          selectionModel: arrangerSelectionModel
+          undoStack: root.project.undoStack
         }
 
         Timeline {
@@ -188,15 +241,18 @@ ColumnLayout {
 
           Layout.fillHeight: true
           Layout.fillWidth: true
+          arrangerSelectionModel: arrangerSelectionModel
           clipEditor: root.project.clipEditor
           objectCreator: root.project.arrangerObjectCreator
           pinned: false
           ruler: ruler
+          selectionOperator: selectionOperator
           tempoMap: root.project.tempoMap
           timeline: root.project.timeline
           tool: root.project.tool
           tracklist: root.project.tracklist
           transport: root.project.transport
+          unifiedObjectsModel: unifiedObjectsModel
         }
       }
     }

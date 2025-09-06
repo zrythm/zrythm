@@ -4,26 +4,32 @@
 import QtQuick
 import QtQuick.Controls
 import ZrythmStyle
+import Zrythm
 
 Control {
   id: root
 
-  required property var arrangerObject
-  readonly property alias down: dragArea.pressed
+  required property ArrangerObject arrangerObject
+  required property bool isSelected
+  // readonly property alias down: dragArea.pressed
   readonly property color objectColor: {
     let c = arrangerObject.hasColor ? arrangerObject.color : track.color;
-    if (arrangerObject.selected)
+    if (root.isSelected)
       c = Style.getColorBlendedTowardsContrastByFactor(c, 1.1);
 
     return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
   }
   required property real pxPerTick
-  required property var track
+  required property Track track
 
-  signal arrangerObjectClicked
+  signal selectionRequested(var mouse)
+
+  function requestSelection(mouse: var) {
+    selectionRequested(mouse);
+  }
 
   focusPolicy: Qt.StrongFocus
-  font: arrangerObject.selected ? Style.arrangerObjectBoldTextFont : Style.arrangerObjectTextFont
+  font: root.isSelected ? Style.arrangerObjectBoldTextFont : Style.arrangerObjectTextFont
   height: track.height
   hoverEnabled: true
   width: 100
@@ -45,27 +51,13 @@ Control {
     acceptedButtons: Qt.AllButtons
     anchors.fill: parent
     cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-    drag.axis: Drag.XAxis
-    drag.target: parent
-    drag.threshold: 0
+    propagateComposedEvents: true
 
     onPositionChanged: mouse => {
-      if (drag.active) {
-        if (mouse.button == Qt.LeftButton) {
-          let newTicks = root.x / root.pxPerTick;
-          let arrangerObject = root.arrangerObject;
-          let ticksDiff = newTicks - arrangerObject.position.ticks;
-          arrangerObject.position.ticks = newTicks;
-          if (arrangerObject.hasLength)
-            arrangerObject.endPosition.ticks += ticksDiff;
-        }
-      }
+      mouse.accepted = false;
     }
     onPressed: mouse => {
-      startX = root.x;
-      root.forceActiveFocus();
-      root.arrangerObjectClicked();
+      mouse.accepted = false;
     }
-    onReleased: {}
   }
 }

@@ -61,6 +61,9 @@ public:
     return singleton_tracks_.get ();
   }
 
+  Q_INVOKABLE Track * getTrackForTimelineObject (
+    const arrangement::ArrangerObject * timelineObject) const;
+
   TrackRouting * trackRouting () const { return track_routing_.get (); }
 
   int  pinnedTracksCutoff () const { return pinned_tracks_cutoff_; }

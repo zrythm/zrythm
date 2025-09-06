@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import ZrythmArrangement 1.0
+import Zrythm
 
 ArrangerObjectBaseView {
   id: root
 
-  property MidiNote midiNote: root.arrangerObject
+  property MidiNote midiNote: root.arrangerObject as MidiNote
 
   Rectangle {
     anchors.fill: parent

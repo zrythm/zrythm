@@ -52,12 +52,14 @@ Item {
   }
 
   property var actionObject: null // the object that is being acted upon (reference)
-  required property var clipEditor
+  required property ItemSelectionModel arrangerSelectionModel
+  required property ClipEditor clipEditor
   default property alias content: extraContent.data
   property int currentAction: Arranger.CurrentAction.None
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
   required property var editorSettings
   property bool enableYScroll: false
+  property ArrangerObjectBaseView hoveredObject: null
   required property ArrangerObjectCreator objectCreator
   property var objectSnapshotsAtStart: null // snapshots of objects at the start
   required property Ruler ruler
@@ -68,9 +70,40 @@ Item {
   readonly property real scrollXPlusWidth: scrollX + scrollViewWidth
   readonly property real scrollY: root.editorSettings.y
   readonly property real scrollYPlusHeight: scrollY + scrollViewHeight
-  required property var tempoMap
+  required property ArrangerObjectSelectionOperator selectionOperator
+  required property TempoMap tempoMap
   required property var tool
   required property var transport
+  required property UnifiedArrangerObjectsModel unifiedObjectsModel
+
+  function handleObjectHover(hovered: bool, arrangerObject: ArrangerObjectBaseView) {
+    if (root.hoveredObject == arrangerObject && !hovered) {
+      root.hoveredObject = null;
+    } else if (hovered) {
+      root.hoveredObject = arrangerObject;
+    }
+  }
+
+  function handleObjectSelection(sourceModel: var, index: int, mouse: var) {
+    const unifiedIndex = root.unifiedObjectsModel.mapFromSource(sourceModel.index(index, 0));
+
+    if (mouse.modifiers & Qt.ControlModifier) {
+      console.log("toggled");
+      root.arrangerSelectionModel.select(unifiedIndex, ItemSelectionModel.Toggle);
+    } else if (mouse.modifiers & Qt.ShiftModifier)
+    // Range selection (TODO)
+    // if (arrangerSelectionModel.currentIndex.isValid()) {
+    // const range = ItemSelectionRange(arrangerSelectionModel.currentIndex, unifiedIndex);
+    // arrangerSelectionModel.select(range, ItemSelectionModel.SelectCurrent);
+    // } else {
+    // arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
+    // }
+    {} else {
+      console.log("selected");
+      root.arrangerSelectionModel.clear();
+      root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
+    }
+  }
 
   function setActionObject(obj) {
     root.actionObject = obj;
@@ -87,6 +120,10 @@ Item {
 
   height: 100
   width: ruler.width
+
+  onHoveredObjectChanged: {
+    console.log("hovered object changed:", hoveredObject);
+  }
 
   // Arranger background
   Rectangle {
@@ -285,11 +322,22 @@ Item {
         property bool hovered: false
         property point startCoordinates
 
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        function moveSelectionsX(ticksDiff: real) {
+          console.log("moving selections by", ticksDiff, "ticks");
+          if (root.selectionOperator) {
+            const success = root.selectionOperator.moveByTicks(ticksDiff);
+            if (!success) {
+              console.warn("Failed to move selections - validation failed");
+            }
+          } else {
+            console.warn("Selection operator not available for moving objects");
+          }
+        }
+
+        acceptedButtons: Qt.AllButtons
         anchors.fill: parent
         hoverEnabled: true
         preventStealing: true
-        propagateComposedEvents: true
         z: 1
 
         onDoubleClicked: mouse => {
@@ -311,13 +359,34 @@ Item {
           currentCoordinates = Qt.point(mouse.x, mouse.y);
           const dx = mouse.x - prevCoordinates.x;
           const dy = mouse.y - prevCoordinates.y;
-          let ticks = mouse.x / root.ruler.pxPerTick;
+          const ticks = mouse.x / root.ruler.pxPerTick;
+          const ticksDiff = dx / root.ruler.pxPerTick;
           if (pressed) {
+            console.log("dragging inside arranger", currentCoordinates)
+            // handle action transitions
             if (action === Arranger.StartingSelection)
               action = Arranger.Selecting;
             else if (action === Arranger.StartingPanning)
               action = Arranger.Panning;
-            // ----------------------------------------------
+            else if (action === Arranger.StartingMoving) {
+              if (mouse.modifiers & Qt.AltModifier) {
+                action = Arranger.MovingLink;
+              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/      {
+                action = Arranger.MovingCopy;
+              } else {
+                action = Arranger.Moving;
+              }
+            } else if (action === Arranger.Moving && mouse.modifiers & Qt.AltModifier) {
+              action = Arranger.MovingLink;
+            } else if (action === Arranger.Moving && mouse.modifiers & Qt.ControlModifier) {
+              action = Arranger.MovingCopy;
+            } else if (action === Arranger.MovingLink && !(mouse.modifiers & Qt.AltModifier)) {
+              action = (mouse.modifiers & Qt.ControlModifier) ? Arranger.MovingCopy : Arranger.Moving;
+            } else if (action === Arranger.MovingCopy && !(mouse.modifiers & Qt.ControlModifier)) {
+              action = Arranger.Moving;
+            }
+
+            // process current action
             if (action === Arranger.Selecting) {} else if (action === Arranger.Panning) {
               currentCoordinates.x -= dx;
               root.editorSettings.x -= dx;
@@ -325,6 +394,8 @@ Item {
                 currentCoordinates.y -= dy;
                 root.editorSettings.y -= dy;
               }
+            } else if (action === Arranger.Moving) {
+              moveSelectionsX(ticksDiff);
             } else if (action === Arranger.CreatingResizingR) {
               let bounds = ArrangerObjectHelpers.getObjectBounds(root.actionObject);
               if (bounds) {
@@ -337,13 +408,19 @@ Item {
         }
         // This must push a cursor via the CursorManager
         onPressed: mouse => {
-          console.log("press inside arranger");
           startCoordinates = Qt.point(mouse.x, mouse.y);
+          currentCoordinates = startCoordinates;
+          console.log("press inside arranger", startCoordinates);
           if (action === Arranger.None) {
             if (mouse.button === Qt.MiddleButton) {
               action = Arranger.StartingPanning;
             } else if (mouse.button === Qt.LeftButton) {
-              action = Arranger.StartingSelection;
+              if (root.hoveredObject) {
+                root.hoveredObject.requestSelection(mouse);
+                action = Arranger.StartingMoving;
+              } else {
+                action = Arranger.StartingSelection;
+              }
             }
           }
           updateCursor();

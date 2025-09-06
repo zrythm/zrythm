@@ -144,6 +144,7 @@ Arranger {
       id: midiNoteLoader
 
       required property var arrangerObject
+      required property int index
       property MidiNote midiNote: arrangerObject
       readonly property real midiNoteEndX: midiNoteX + midiNoteWidth
       readonly property real midiNoteHeight: root.pianoRoll.keyHeight
@@ -159,14 +160,34 @@ Arranger {
 
       sourceComponent: Component {
         MidiNoteView {
+          id: midiNoteView
+
           arrangerObject: midiNoteLoader.midiNote
           height: midiNoteLoader.midiNoteHeight
+          isSelected: midiNoteSelelectionTracker.isSelected
           pxPerTick: root.ruler.pxPerTick
           track: root.clipEditor.track
           width: midiNoteLoader.midiNoteWidth
           x: midiNoteLoader.midiNoteX
           y: midiNoteLoader.midiNoteY
+
+          onHoveredChanged: {
+            root.handleObjectHover(midiNoteView.hovered, midiNoteView);
+          }
+          onSelectionRequested: function (mouse) {
+            root.handleObjectSelection(midiNotesRepeater.model, midiNoteLoader.index, mouse);
+          }
         }
+      }
+
+      SelectionTracker {
+        id: midiNoteSelelectionTracker
+
+        modelIndex: {
+          root.unifiedObjectsModel.addSourceModel(midiNotesRepeater.model);
+          return root.unifiedObjectsModel.mapFromSource(midiNotesRepeater.model.index(midiNoteLoader.index, 0));
+        }
+        selectionModel: root.arrangerSelectionModel
       }
     }
   }

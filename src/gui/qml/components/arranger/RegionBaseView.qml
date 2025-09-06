@@ -14,11 +14,6 @@ ArrangerObjectBaseView {
   implicitHeight: 10
   implicitWidth: 10
 
-  onArrangerObjectClicked: {
-    console.log("region clicked, setting clip editor region to ", regionName);
-    clipEditor.setRegion(arrangerObject, root.track);
-  }
-
   Rectangle {
     id: backgroundRect
 

@@ -18,6 +18,7 @@ TrackCreator::addEmptyTrackFromType (
           "cannot re-add track of type {} when it already exists", trackType));
     }
 
+  // FIXME: need to pause the graph
   auto track_ref = track_factory_.create_empty_track (trackType);
 
   {

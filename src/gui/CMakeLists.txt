@@ -247,6 +247,7 @@ set(rel_qml_file_paths
   Greeter.qml
   DemoView.qml
   utils/ArrangerObjectHelpers.qml
+  utils/SelectionTracker.qml
   views/ProjectWindow.qml
 )
 set(qml_file_paths)

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_object_creator.h"
-#include "gui/backend/io/midi_file.h"
 
 namespace zrythm::actions
 {
@@ -24,7 +23,6 @@ ArrangerObjectCreator::add_laned_object (
 
           undo_stack_.push (
             new commands::AddArrangerObjectCommand<ObjectT> (lane, obj_ref));
-          clip_editor_.set_region (obj->get_uuid (), track.get_uuid ());
         }
     },
     obj_ref.get_object ());
@@ -75,6 +73,7 @@ ArrangerObjectCreator::addMidiRegionFromMidiFile (
 {
   auto * mr = addEmptyMidiRegion (track, lane, startTicks);
 
+#if 0
   try
     {
       MidiFile mf{ utils::Utf8String::from_qstring (abs_path) };
@@ -84,6 +83,7 @@ ArrangerObjectCreator::addMidiRegionFromMidiFile (
     {
       z_warning ("Failed to create region from MIDI file: {}", e.what ());
     }
+#endif
 
   return mr;
 }

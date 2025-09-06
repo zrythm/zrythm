@@ -7,7 +7,6 @@
 
 #include "commands/add_arranger_object_command.h"
 #include "dsp/snap_grid.h"
-#include "gui/backend/backend/clip_editor.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_owner.h"
@@ -25,13 +24,11 @@ class ArrangerObjectCreator : public QObject
 public:
   explicit ArrangerObjectCreator (
     undo::UndoStack                               &undo_stack,
-    ClipEditor                                    &clip_editor,
     structure::arrangement::ArrangerObjectFactory &arranger_object_factory,
     dsp::SnapGrid                                 &snap_grid_timeline,
     dsp::SnapGrid                                 &snap_grid_editor,
     QObject *                                      parent = nullptr)
-      : QObject (parent), clip_editor_ (clip_editor),
-        arranger_object_factory_ (arranger_object_factory),
+      : QObject (parent), arranger_object_factory_ (arranger_object_factory),
         snap_grid_timeline_ (snap_grid_timeline),
         snap_grid_editor_ (snap_grid_editor), undo_stack_ (undo_stack)
   {
@@ -261,10 +258,9 @@ auto add_editor_object (
     return obj;
   }
 
-private : ClipEditor &clip_editor_;
-  structure::arrangement::ArrangerObjectFactory &arranger_object_factory_;
-  dsp::SnapGrid                                 &snap_grid_timeline_;
-  dsp::SnapGrid                                 &snap_grid_editor_;
-  undo::UndoStack                               &undo_stack_;
+private : structure::arrangement::ArrangerObjectFactory &arranger_object_factory_;
+  dsp::SnapGrid   &snap_grid_timeline_;
+  dsp::SnapGrid   &snap_grid_editor_;
+  undo::UndoStack &undo_stack_;
 };
 } // namespace zrythm::actions

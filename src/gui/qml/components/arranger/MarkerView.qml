@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import ZrythmArrangement 1.0
-import ZrythmStyle 1.0
+import ZrythmStyle
+import Zrythm
 
 ArrangerObjectBaseView {
   id: root
@@ -24,7 +24,7 @@ ArrangerObjectBaseView {
     color: root.palette.text
     font: root.font
     padding: Style.buttonPadding
-    text: arrangerObject.name.name
+    text: root.arrangerObject.name.name
   }
 
   TextMetrics {
