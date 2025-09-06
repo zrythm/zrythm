@@ -6,6 +6,30 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2024-11-21
+### Changed
+- Desktop file: use Zrythm instead of Zrythm RC
+
+## [1.0.0-rc.2] - 2024-10-03
+### Added
+- Remember main window width and height
+- Re-add AU detection
+
+### Changed
+- Update colors on bottom bar widgets
+- Stop using some deprecated GTK API
+- Add more error checking for plugin protocol
+- Appdata: add branding colors and VCS URL
+- Desktop file: use Zrythm RC instead of Zrythm beta
+
+### Fixed
+- Fix taking address of temporary array error
+- Fix incorrect use of `ui_show_error_message()`
+- Fix spacebar intervening with dialog input
+
+### Removed
+- Remove unused "fruity" theme
+
 ## [1.0.0-rc.1] - 2024-04-26
 ### Added
 - New Windows UWP (RtMidi) MIDI backend
