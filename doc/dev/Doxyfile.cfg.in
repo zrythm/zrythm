@@ -797,6 +797,7 @@ INPUT                  = \
   @CMAKE_SOURCE_DIR@/tests \
   @CMAKE_SOURCE_DIR@/doc/dev/mainpage.h \
   @CMAKE_SOURCE_DIR@/doc/dev/debugging.md \
+  @CMAKE_SOURCE_DIR@/doc/dev/object_selection_system.md \
   @CMAKE_SOURCE_DIR@/doc/dev/processing_cycle.h \
   @CMAKE_SOURCE_DIR@/doc/dev/repo-management.md \
   @CMAKE_SOURCE_DIR@/doc/dev/release_checklist.h \
