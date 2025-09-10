@@ -15,6 +15,7 @@ Rectangle {
   color: dropArea.containsDrag ? "#3a3a3a" : "transparent"
   implicitHeight: 60
   implicitWidth: 60
+  opacity: dropArea.containsDrag ? 0.7 : 1.0
   radius: 4
 
   ContextMenu.menu: Menu {
@@ -32,7 +33,7 @@ Rectangle {
     anchors.fill: parent
 
     // Accept both internal and external file drag formats
-    keys: ["file", "text/plain", "text/uri-list", "application/x-file-path"]
+    // keys: ["file", "text/plain", "text/uri-list", "application/x-file-path"]
 
     onDropped: drop => {
       // Handle the dropped file(s)
@@ -81,19 +82,6 @@ Rectangle {
         console.log("Processing dropped files:", uniqueFilePaths);
         root.filesDropped(uniqueFilePaths);
       }
-
-      // Reset visual state
-      parent.opacity = 1.0;
-    }
-    onEntered: {
-      // Visual feedback - change background color when drag enters
-      console.log("Drop area entered");
-      parent.opacity = 0.7;
-    }
-    onExited: {
-      // Restore normal appearance when drag exits
-      console.log("Drop area exited");
-      parent.opacity = 1.0;
     }
   }
 

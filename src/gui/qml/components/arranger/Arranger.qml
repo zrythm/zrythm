@@ -199,6 +199,51 @@ Item {
         }
       }
 
+      Image {
+        id: dropRectImage
+
+        height: 25
+        opacity: arrangerDropArea.containsDrag ? 0.8 : 0.0
+        source: ResourceManager.getIconUrl("zrythm-dark", "zrythm.svg")
+        width: 25
+        x: arrangerDropArea.drag.x
+        y: arrangerDropArea.drag.y
+        z: 2
+      }
+
+      Rectangle {
+        id: arrangerDropRect
+
+        anchors.fill: parent
+        color: "grey"
+        opacity: arrangerDropArea.containsDrag ? 0.1 : 0.0
+
+        DropArea {
+          id: arrangerDropArea
+
+          anchors.fill: parent
+
+          onContainsDragChanged: {
+            if (containsDrag) {
+              let item = arrangerDropArea.drag.source as Item;
+              let size = Qt.size(item.width, item.height);
+              dropRectImage.width = item.width;
+              dropRectImage.height = item.height;
+              item.grabToImage(function (result) {
+                dropRectImage.source = result.url;
+              }, size);
+            }
+          }
+          onDropped: drop => {
+            // Handle the dropped file(s)
+            console.log("Drop on arranger at coordinates", drop.x, drop.y);
+          }
+          onPositionChanged:
+          // TODO: Show drop positions, etc.
+          {}
+        }
+      }
+
       // Vertical grid lines
       // FIXME: logic is copy-pasted from Ruler. find a way to have a common base
       Item {
@@ -362,7 +407,7 @@ Item {
           const ticks = mouse.x / root.ruler.pxPerTick;
           const ticksDiff = dx / root.ruler.pxPerTick;
           if (pressed) {
-            console.log("dragging inside arranger", currentCoordinates)
+            console.log("dragging inside arranger", currentCoordinates, "action:", action);
             // handle action transitions
             if (action === Arranger.StartingSelection)
               action = Arranger.Selecting;
@@ -371,7 +416,7 @@ Item {
             else if (action === Arranger.StartingMoving) {
               if (mouse.modifiers & Qt.AltModifier) {
                 action = Arranger.MovingLink;
-              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/      {
+              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/       {
                 action = Arranger.MovingCopy;
               } else {
                 action = Arranger.Moving;
@@ -396,7 +441,7 @@ Item {
               }
             } else if (action === Arranger.Moving) {
               moveSelectionsX(ticksDiff);
-            } else if (action === Arranger.CreatingResizingR) {
+            } else if (action === Arranger.MovingCopy) {} else if (action === Arranger.MovingLink) {} else if (action === Arranger.CreatingResizingR) {
               let bounds = ArrangerObjectHelpers.getObjectBounds(root.actionObject);
               if (bounds) {
                 bounds.setEndPositionTicks(ticks);
