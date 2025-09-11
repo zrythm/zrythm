@@ -33,9 +33,10 @@ Arranger {
       break;
     case Track.Marker:
       console.log("creating marker", Track.Marker, ArrangerObject.Marker);
+      root.undoStack.beginMacro("Create Marker");
       let marker = objectCreator.addMarker(Marker.Custom, track, qsTr("Custom Marker"), x / root.ruler.pxPerTick);
       root.currentAction = Arranger.CreatingMoving;
-      root.setObjectSnapshotsAtStart();
+      root.selectSingleObject(track.markers, track.markers.rowCount() - 1);
       CursorManager.setClosedHandCursor();
       root.actionObject = marker;
       return marker;

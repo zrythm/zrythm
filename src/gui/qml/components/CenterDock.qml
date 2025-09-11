@@ -183,6 +183,7 @@ ColumnLayout {
           tool: root.project.tool
           tracklist: root.project.tracklist
           transport: root.project.transport
+          undoStack: root.project.undoStack
           unifiedObjectsModel: unifiedObjectsModel
         }
 
@@ -252,6 +253,7 @@ ColumnLayout {
           tool: root.project.tool
           tracklist: root.project.tracklist
           transport: root.project.transport
+          undoStack: root.project.undoStack
           unifiedObjectsModel: unifiedObjectsModel
         }
       }

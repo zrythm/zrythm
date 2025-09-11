@@ -150,6 +150,7 @@ GridLayout {
     tempoMap: root.project.tempoMap
     tool: root.project.tool
     transport: root.project.transport
+    undoStack: root.project.undoStack
     unifiedObjectsModel: unifiedObjectsModel
   }
 
@@ -173,6 +174,7 @@ GridLayout {
     tempoMap: root.project.tempoMap
     tool: root.project.tool
     transport: root.project.transport
+    undoStack: root.project.undoStack
     unifiedObjectsModel: unifiedObjectsModel
   }
 }

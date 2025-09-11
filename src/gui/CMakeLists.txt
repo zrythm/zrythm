@@ -194,6 +194,7 @@ set(rel_qml_file_paths
   components/arranger/AutomationRegionView.qml
   components/arranger/Arranger.qml
   components/arranger/ArrangerObjectBaseView.qml
+  components/arranger/ArrangerObjectTemporaryView.qml
   components/arranger/ChordRegionView.qml
   components/arranger/MarkerView.qml
   components/arranger/MidiArranger.qml

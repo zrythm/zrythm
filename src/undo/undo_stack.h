@@ -42,8 +42,11 @@ public:
   bool canUndo () const { return stack_->canUndo (); }
   bool canRedo () const { return stack_->canRedo (); }
 
-  void beginMacro (const QString &text) { stack_->beginMacro (text); }
-  void endMacro () { stack_->endMacro (); }
+  Q_INVOKABLE void beginMacro (const QString &text)
+  {
+    stack_->beginMacro (text);
+  }
+  Q_INVOKABLE void endMacro () { stack_->endMacro (); }
 
   QStringList undoActions ();
   QStringList redoActions ();

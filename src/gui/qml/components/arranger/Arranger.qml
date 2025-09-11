@@ -71,10 +71,23 @@ Item {
   readonly property real scrollY: root.editorSettings.y
   readonly property real scrollYPlusHeight: scrollY + scrollViewHeight
   required property ArrangerObjectSelectionOperator selectionOperator
+  property var tempQmlArrangerObjects: []
   required property TempoMap tempoMap
   required property var tool
   required property var transport
+  required property UndoStack undoStack
   required property UnifiedArrangerObjectsModel unifiedObjectsModel
+
+  function clearTempQmlArrangerObjects() {
+    // Destroy existing temporary views before clearing the array
+    for (let i = 0; i < root.tempQmlArrangerObjects.length; i++) {
+      const tempView = root.tempQmlArrangerObjects[i];
+      tempView.destroy();
+    }
+
+    // Clear the current array
+    root.tempQmlArrangerObjects = [];
+  }
 
   function handleObjectHover(hovered: bool, arrangerObject: ArrangerObjectBaseView) {
     if (root.hoveredObject == arrangerObject && !hovered) {
@@ -105,6 +118,12 @@ Item {
     }
   }
 
+  function selectSingleObject(sourceModel: var, index: int) {
+    const unifiedIndex = root.unifiedObjectsModel.mapFromSource(sourceModel.index(index, 0));
+    root.arrangerSelectionModel.clear();
+    root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
+  }
+
   function setActionObject(obj) {
     root.actionObject = obj;
   }
@@ -118,11 +137,53 @@ Item {
   // root.objectSnapshotsAtStart = selectionsClone;
   }
 
+  function updateTempQmlArrangerObjects() {
+    clearTempQmlArrangerObjects();
+
+    // Get all selected indexes from the selection model
+    const selectedIndexes = root.arrangerSelectionModel.selectedIndexes;
+
+    // Add each selected object to the array
+    for (let i = 0; i < selectedIndexes.length; i++) {
+      const unifiedIndex = selectedIndexes[i];
+      // Map back to source model to get the actual object
+      const sourceIndex = root.unifiedObjectsModel.mapToSource(unifiedIndex);
+      // Get the source model
+      const sourceModel = sourceIndex.model;
+      if (sourceModel) {
+        // Get the object from the source model using the arrangerObject role
+        const object = sourceModel.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
+        if (object) {
+          // Create a temporary view that wraps the arranger object
+          const tempView = tempViewComponent.createObject(root, {
+            "arrangerObject": object,
+            "x": object.position.ticks * root.ruler.pxPerTick,
+            "xOnConstruction": object.position.ticks * root.ruler.pxPerTick
+          });
+
+          if (tempView) {
+            root.tempQmlArrangerObjects.push(tempView);
+          }
+        }
+      }
+    }
+
+    console.log("Updated temporary QML arranger objects with", root.tempQmlArrangerObjects.length, "objects");
+  // console.log(tempQmlArrangerObjects);
+  }
+
   height: 100
   width: ruler.width
 
   onHoveredObjectChanged: {
     console.log("hovered object changed:", hoveredObject);
+  }
+
+  Component {
+    id: tempViewComponent
+
+    ArrangerObjectTemporaryView {
+    }
   }
 
   // Arranger background
@@ -379,6 +440,12 @@ Item {
           }
         }
 
+        function moveTemporaryObjectsX(dx: real) {
+          root.tempQmlArrangerObjects.forEach(qmlObj => {
+            qmlObj.x += dx;
+          });
+        }
+
         acceptedButtons: Qt.AllButtons
         anchors.fill: parent
         hoverEnabled: true
@@ -416,11 +483,14 @@ Item {
             else if (action === Arranger.StartingMoving) {
               if (mouse.modifiers & Qt.AltModifier) {
                 action = Arranger.MovingLink;
-              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/       {
+              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/                    {
                 action = Arranger.MovingCopy;
               } else {
                 action = Arranger.Moving;
               }
+
+              // Update qmlObjectsBeingMoved based on current selection
+              root.updateTempQmlArrangerObjects();
             } else if (action === Arranger.Moving && mouse.modifiers & Qt.AltModifier) {
               action = Arranger.MovingLink;
             } else if (action === Arranger.Moving && mouse.modifiers & Qt.ControlModifier) {
@@ -439,9 +509,11 @@ Item {
                 currentCoordinates.y -= dy;
                 root.editorSettings.y -= dy;
               }
-            } else if (action === Arranger.Moving) {
+            } else if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
+              moveTemporaryObjectsX(dx);
+            } else if (action == Arranger.CreatingMoving) {
               moveSelectionsX(ticksDiff);
-            } else if (action === Arranger.MovingCopy) {} else if (action === Arranger.MovingLink) {} else if (action === Arranger.CreatingResizingR) {
+            } else if (action === Arranger.CreatingResizingR) {
               let bounds = ArrangerObjectHelpers.getObjectBounds(root.actionObject);
               if (bounds) {
                 bounds.setEndPositionTicks(ticks);
@@ -472,11 +544,20 @@ Item {
         }
         onReleased: {
           if (action != Arranger.None) {
+            if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
+              if (root.tempQmlArrangerObjects.length > 0) {
+                const firstTempObj = root.tempQmlArrangerObjects[0];
+                moveSelectionsX((firstTempObj.x - firstTempObj.xOnConstruction) / root.ruler.pxPerTick);
+              }
+            } else if (action === Arranger.CreatingMoving) {
+              root.undoStack.endMacro();
+            }
             console.log("released: clearing action");
             action = Arranger.None;
           } else {
             console.log("released without action");
           }
+          root.clearTempQmlArrangerObjects();
           root.actionObject = null;
           updateCursor();
         }
