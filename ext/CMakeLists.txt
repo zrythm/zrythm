@@ -22,7 +22,9 @@ CPMFindPackage(
   NAME juce
   GITHUB_REPOSITORY juce-framework/JUCE
   VERSION 8.0.9
-  GIT_TAG f72bad64d29715216226685810c5196bd0d79d77
+  # This is from the develop branch and includes a critical fix:
+  # https://github.com/juce-framework/JUCE/issues/1569
+  GIT_TAG 47d441787c9af0bbf5ba0a0694fe4f516be78be9
   EXCLUDE_FROM_ALL YES
   SYSTEM YES
 )
