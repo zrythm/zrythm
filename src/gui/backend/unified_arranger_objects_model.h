@@ -21,12 +21,5 @@ public:
   Q_INVOKABLE void        removeSourceModel (QAbstractItemModel * model);
   Q_INVOKABLE QModelIndex mapFromSource (const QModelIndex &sourceIndex) const;
   Q_INVOKABLE QModelIndex mapToSource (const QModelIndex &proxyIndex) const;
-
-  // Custom roles for object type identification
-  enum UnifiedRoles
-  {
-    ObjectTypeRole = Qt::UserRole + 1,
-    SourceObjectRole,
-  };
 };
 }
