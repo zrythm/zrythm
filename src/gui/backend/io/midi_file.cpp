@@ -4,6 +4,7 @@
 #include "gui/backend/io/midi_file.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
+#include "structure/arrangement/midi_region_serializer.h"
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
@@ -215,10 +216,8 @@ MidiFile::export_midi_region_to_midi_file (
     juce::MidiMessage::tempoMetaEvent (
       60'000'000 / static_cast<int> (tempo_map.tempo_at_tick (0))));
 
-  dsp::MidiEventVector events;
-  region.add_midi_region_events (
-    events, std::nullopt, std::nullopt, false, export_full);
-  events.write_to_midi_sequence (sequence, true);
+  structure::arrangement::MidiRegionSerializer::serialize_to_sequence (
+    region, sequence, std::nullopt, std::nullopt, false, export_full);
 
   juce::MidiFile mf;
   mf.setTicksPerQuarterNote (dsp::TempoMap::get_ppq ());

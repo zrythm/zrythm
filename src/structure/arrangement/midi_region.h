@@ -42,29 +42,6 @@ public:
 
   // ========================================================================
 
-  /**
-   * Adds the contents of the region converted into events.
-   *
-   * @note Event timings will be set in ticks.
-   *
-   * @param add_region_start Add the region start offset to the positions, so
-   * that the event timings would be as they would be played from the start of
-   * the whole timeline.
-   * @param full Traverse loops and export the MIDI file as it would be played
-   * inside Zrythm. If this is false, only the original region (from true start
-   * to true end) is exported.
-   * @param start Optional global start position in ticks to start adding events
-   * from. Events before this position will be skipped.
-   * @param end Optional global end position in ticks to stop adding events
-   * from. Events after this position will be skipped.
-   */
-  void add_midi_region_events (
-    dsp::MidiEventVector &events,
-    std::optional<double> start,
-    std::optional<double> end,
-    bool                  add_region_start,
-    bool                  full) const;
-
   std::string get_field_name_for_serialization (const MidiNote *) const override
   {
     return "midiNotes";
@@ -103,18 +80,4 @@ private:
     (),
     (region_mixin_))
 };
-
-/**
- * @brief Generates a filename for the given MIDI region.
- *
- * @param track The track that owns the region.
- * @param mr The MIDI region.
- */
-constexpr auto
-generate_filename_for_midi_region (const auto &track, const MidiRegion &mr)
-{
-  return fmt::format (
-    "{}_{}.mid", track.get_name (), mr.regionMixin ()->name ()->get_name ());
-}
-
 }

@@ -44,6 +44,7 @@ target_sources(zrythm_arrangement_lib
     midi_note.cpp
     midi_region.h
     midi_region.cpp
+    midi_region_serializer.h
     muteable_object.h
     named_object.h
     named_object.cpp

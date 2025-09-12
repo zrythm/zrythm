@@ -21,6 +21,7 @@ add_executable(zrythm_structure_arrangement_unit_tests
   marker_test.cpp
   midi_note_test.cpp
   midi_region_test.cpp
+  midi_region_serializer_test.cpp
   muteable_object_test.cpp
   named_object_test.cpp
   region_test.cpp
