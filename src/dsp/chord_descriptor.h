@@ -8,7 +8,7 @@
 namespace zrythm::dsp
 {
 
-enum class MusicalNote : std::uint_fast8_t
+enum class MusicalNote : std::uint8_t
 {
   C = 0,
   CSharp,
@@ -27,7 +27,7 @@ enum class MusicalNote : std::uint_fast8_t
 /**
  * Chord type.
  */
-enum class ChordType : std::uint_fast8_t
+enum class ChordType : std::uint8_t
 {
   None,
   Major,
@@ -42,7 +42,7 @@ enum class ChordType : std::uint_fast8_t
 /**
  * Chord accents.
  */
-enum class ChordAccent : std::uint_fast8_t
+enum class ChordAccent : std::uint8_t
 {
   None,
   /** b7 is 10 semitones from chord root, or 9

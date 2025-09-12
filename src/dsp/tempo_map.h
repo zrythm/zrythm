@@ -17,7 +17,7 @@ using namespace std::literals;
 namespace zrythm::dsp
 {
 
-enum class TimeFormat : std::uint_fast8_t
+enum class TimeFormat : std::uint8_t
 {
   /// Musical time (ticks)
   Musical,
@@ -53,7 +53,7 @@ template <int PPQ> class FixedPpqTempoMap
 
 public:
   /// Tempo curve type (constant or linear ramp)
-  enum class CurveType : std::uint_fast8_t
+  enum class CurveType : std::uint8_t
   {
     Constant, ///< Constant tempo
     Linear    ///< Linear tempo ramp

@@ -24,7 +24,7 @@ namespace zrythm::plugins
 /**
  * Plugin category.
  */
-enum class PluginCategory : std::uint_fast8_t
+enum class PluginCategory : std::uint8_t
 {
   /** None specified. */
   None,
@@ -72,7 +72,7 @@ enum class PluginCategory : std::uint_fast8_t
 /**
  * 32 or 64 bit.
  */
-enum class PluginArchitecture : std::uint_fast8_t
+enum class PluginArchitecture : std::uint8_t
 {
   ARCH_32_BIT,
   ARCH_64_BIT
@@ -81,7 +81,7 @@ enum class PluginArchitecture : std::uint_fast8_t
 /**
  * Plugin bridge mode.
  */
-enum class BridgeMode : std::uint_fast8_t
+enum class BridgeMode : std::uint8_t
 {
   None,
   UI,

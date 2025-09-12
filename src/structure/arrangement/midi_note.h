@@ -36,7 +36,7 @@ public:
 
   static constexpr midi_byte_t DEFAULT_VELOCITY = 90;
 
-  enum class Notation : std::uint_fast8_t
+  enum class Notation : std::uint8_t
   {
     Musical,
     Pitch,

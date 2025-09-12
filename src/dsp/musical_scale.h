@@ -28,7 +28,7 @@ public:
   /**
    * Scale type (name) eg Aeolian.
    */
-  enum class ScaleType : std::uint_fast8_t
+  enum class ScaleType : std::uint8_t
   {
     /** All keys. */
     Chromatic,

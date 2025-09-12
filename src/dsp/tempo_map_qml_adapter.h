@@ -30,7 +30,7 @@ public:
   {
   }
 
-  enum class CurveType : std::uint_fast8_t
+  enum class CurveType : std::uint8_t
   {
     Constant, ///< Constant tempo
     Linear    ///< Linear tempo ramp

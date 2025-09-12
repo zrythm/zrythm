@@ -13,7 +13,7 @@ class Port;
 /**
  * Direction of the signal.
  */
-enum class PortFlow : std::uint_fast8_t
+enum class PortFlow : std::uint8_t
 {
   Unknown,
   Input,
@@ -23,7 +23,7 @@ enum class PortFlow : std::uint_fast8_t
 /**
  * Type of signals the Port handles.
  */
-enum class PortType : std::uint_fast8_t
+enum class PortType : std::uint8_t
 {
   Unknown,
   Audio,

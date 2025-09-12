@@ -18,7 +18,7 @@ namespace zrythm::dsp
  *
  * See libs/ardour/midi_buffer.cc for more.
  */
-enum class MidiEventType : std::uint_fast8_t
+enum class MidiEventType : std::uint8_t
 {
   MIDI_EVENT_TYPE_NOTE_ON,
   MIDI_EVENT_TYPE_NOTE_OFF,

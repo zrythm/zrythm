@@ -41,7 +41,7 @@ public:
   /**
    * Musical mode setting for audio regions.
    */
-  enum class MusicalMode : std::uint_fast8_t
+  enum class MusicalMode : std::uint8_t
   {
     /** Inherit from global musical mode setting. */
     Inherit,

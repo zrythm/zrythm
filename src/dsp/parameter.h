@@ -18,7 +18,7 @@ class ParameterRange
   Q_GADGET
 
 public:
-  enum class Type : std::uint_fast8_t
+  enum class Type : std::uint8_t
   {
     /**
      * @brief Linearly-scaled float parameter.
@@ -61,7 +61,7 @@ public:
   /**
    * Unit to be displayed in the UI.
    */
-  enum class Unit : std::uint_fast8_t
+  enum class Unit : std::uint8_t
   {
     None,
     Hz,

@@ -56,7 +56,7 @@ public:
    */
   using StateDirectoryParentPathProvider = std::function<fs::path ()>;
 
-  enum class InstantiationStatus : std::uint_fast8_t
+  enum class InstantiationStatus : std::uint8_t
   {
     Pending,    ///< Instantiation underway
     Successful, ///< Instantiation successful

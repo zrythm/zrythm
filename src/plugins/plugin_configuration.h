@@ -39,7 +39,7 @@ public:
   static std::unique_ptr<PluginConfiguration>
   create_new_for_descriptor (const zrythm::plugins::PluginDescriptor &descr);
 
-  enum class HostingType : std::uint_fast8_t
+  enum class HostingType : std::uint8_t
   {
     /**
      * @brief Plugin hosted via JUCE.
