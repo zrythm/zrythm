@@ -26,6 +26,9 @@ def get_releases():
     for release_info in changelog_list:
         lines = release_info.split("\n")
         ver = lines[0].split("]")[0]
+        # Skip development and pre-v1 releases
+        if ('-' in ver) or ver.startswith("0."):
+            continue
         date_str = lines[0].split("] - ")[1].strip()
         changelog_nfo = "\n".join(lines[1:])
         description = []
@@ -37,7 +40,7 @@ def get_releases():
                 description.extend(get_list_for_changelog_group(changelog_nfo, title))
                 description.append("</ul>")
         releases_list.append(
-            f"""<release date="{date_str}" version="{ver}" type="development">
+            f"""<release date="{date_str}" version="{ver}">
                 <url>@release_tag_base_url@/v{ver}</url>
                 <description>
                     {"".join(description)}
