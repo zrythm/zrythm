@@ -17,12 +17,16 @@ if(APPLE)
   message(STATUS "Using SDK: ${CMAKE_OSX_SYSROOT}")
 
   # universal build
-  if ("${CMAKE_OSX_ARCHITECTURES}" STREQUAL "")
+  if (NOT DEFINED CMAKE_OSX_ARCHITECTURES)
     set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
   endif()
 
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
   set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")
+
+  # Getting ICEs on Apple Clang 17.0.0 (clang-1700.0.13.3) otherwise
+  set(CMAKE_UNITY_BUILD_BATCH_SIZE 4)
+
 elseif(MSVC)
   # Note: only DLL is allowed, and it must not be redistributed
   # See https://opensource.stackexchange.com/a/7187
