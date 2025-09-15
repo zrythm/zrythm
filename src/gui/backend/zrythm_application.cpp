@@ -45,6 +45,9 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   // # https://github.com/FFTW/fftw3/issues/16
   ThreadSafeFFTW ();
 
+  // Register meta-types
+  qRegisterMetaType<utils::ExpandableTickRange> ();
+
   settings_manager_ = new SettingsManager (this);
   dir_manager_ = std::make_unique<DirectoryManager> (
     [&] () {

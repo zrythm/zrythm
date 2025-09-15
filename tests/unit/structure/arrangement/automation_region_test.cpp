@@ -19,7 +19,7 @@ protected:
 
     // Set up region properties
     region->position ()->setTicks (100);
-    region->regionMixin ()->bounds ()->length ()->setTicks (200);
+    region->bounds ()->length ()->setTicks (200);
   }
 
   auto create_automation_point (double value)
@@ -50,7 +50,11 @@ TEST_F (AutomationRegionTest, InitialState)
 {
   EXPECT_EQ (region->type (), ArrangerObject::Type::AutomationRegion);
   EXPECT_EQ (region->position ()->ticks (), 100);
-  EXPECT_NE (region->regionMixin (), nullptr);
+  EXPECT_NE (region->bounds (), nullptr);
+  EXPECT_NE (region->loopRange (), nullptr);
+  EXPECT_NE (region->name (), nullptr);
+  EXPECT_NE (region->color (), nullptr);
+  EXPECT_NE (region->mute (), nullptr);
   EXPECT_EQ (region->get_children_vector ().size (), 0);
 }
 

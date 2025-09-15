@@ -5,6 +5,7 @@
 
 #include "structure/tracks/track_lane.h"
 #include "structure/tracks/track_processor.h"
+#include "utils/expandable_tick_range.h"
 
 namespace zrythm::structure::tracks
 {
@@ -63,6 +64,9 @@ public:
   Q_INVOKABLE void        removeLane (size_t index);
 
   Q_INVOKABLE void moveLane (size_t from_index, size_t to_index);
+
+  Q_SIGNAL void
+  laneObjectsNeedRecache (utils::ExpandableTickRange affectedRange);
 
   // ========================================================================
 

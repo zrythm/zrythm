@@ -29,6 +29,7 @@
       "cwd": "${workspaceFolder}",
       "visualizerFile": [
         // note: this required creating a symlink from qt6.natvis to qtopt.natvis
+        // See https://bugreports.qt.io/browse/VSCODEEXT-222
         "${command:qt-cpp.natvis}",
         "${workspaceFolder}/.vscode/juce.natvis",
       ],

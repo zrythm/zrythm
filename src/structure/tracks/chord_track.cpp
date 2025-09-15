@@ -124,8 +124,7 @@ ChordTrack::get_chord_at_ticks (double timeline_ticks) const -> ChordObject *
     arrangement::ChordRegion>::get_children_view ();
   auto region_var = std::ranges::find_if (
     chord_regions_view, [timeline_frames] (const auto &chord_region) {
-      return chord_region->regionMixin ()->bounds ()->is_hit (
-        timeline_frames, false);
+      return chord_region->bounds ()->is_hit (timeline_frames, false);
     });
   if (region_var == chord_regions_view.end ())
     return nullptr;

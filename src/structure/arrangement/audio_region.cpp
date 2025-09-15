@@ -18,12 +18,13 @@ AudioRegion::AudioRegion (
   dsp::FileAudioSourceRegistry &file_audio_source_registry,
   GlobalMusicalModeGetter       musical_mode_getter,
   QObject *                     parent) noexcept
-    : ArrangerObject (Type::AudioRegion, tempo_map, parent),
+    : ArrangerObject (
+        Type::AudioRegion,
+        tempo_map,
+        ArrangerObjectFeatures::Region | ArrangerObjectFeatures::Fading,
+        parent),
       ArrangerObjectOwner (object_registry, file_audio_source_registry, *this),
       file_audio_source_registry_ (file_audio_source_registry),
-      region_mixin_ (utils::make_qobject_unique<RegionMixin> (*position ())),
-      fade_range_ (
-        utils::make_qobject_unique<ArrangerObjectFadeRange> (tempo_map, this)),
       global_musical_mode_getter_ (std::move (musical_mode_getter))
 {
 }
@@ -214,14 +215,13 @@ AudioRegion::fill_stereo_ports (
 
   /* apply fades */
   const auto region_position_in_frames = position ()->samples ();
-  const auto region_length_in_frames =
-    region_mixin_->bounds ()->length ()->samples ();
-  const auto fade_in_pos_in_frames = fade_range_->startOffset ()->samples ();
+  const auto region_length_in_frames = bounds ()->length ()->samples ();
+  const auto fade_in_pos_in_frames = fadeRange ()->startOffset ()->samples ();
   const auto fade_out_pos_in_frames =
-    region_length_in_frames - fade_range_->endOffset ()->samples ();
+    region_length_in_frames - fadeRange ()->endOffset ()->samples ();
   const signed_frame_t num_frames_in_fade_in_area = fade_in_pos_in_frames;
   const signed_frame_t num_frames_in_fade_out_area =
-    fade_range_->endOffset ()->samples ();
+    fadeRange ()->endOffset ()->samples ();
   const signed_frame_t local_builtin_fade_out_start_frames =
     region_length_in_frames - BUILTIN_FADE_FRAMES;
   for (nframes_t j = 0; j < time_nfo.nframes_; j++)
@@ -256,7 +256,7 @@ AudioRegion::fill_stereo_ports (
         current_local_frame >= 0
         && current_local_frame < num_frames_in_fade_in_area)
         {
-          auto fade_in = (float) fade_range_->get_normalized_y_for_fade (
+          auto fade_in = (float) fadeRange ()->get_normalized_y_for_fade (
             (double) current_local_frame / (double) num_frames_in_fade_in_area,
             true);
 
@@ -271,7 +271,7 @@ AudioRegion::fill_stereo_ports (
             current_local_frame - fade_out_pos_in_frames;
           z_return_if_fail_cmp (
             num_frames_from_fade_out_start, <=, num_frames_in_fade_out_area);
-          auto fade_out = (float) fade_range_->get_normalized_y_for_fade (
+          auto fade_out = (float) fadeRange ()->get_normalized_y_for_fade (
             (double) num_frames_from_fade_out_start
               / (double) num_frames_in_fade_out_area,
             false);
@@ -335,8 +335,6 @@ init_from (
     static_cast<ArrangerObjectOwner<AudioSourceObject> &> (obj),
     static_cast<const ArrangerObjectOwner<AudioSourceObject> &> (other),
     clone_type);
-  init_from (*obj.region_mixin_, *other.region_mixin_, clone_type);
-  init_from (*obj.fade_range_, *other.fade_range_, clone_type);
 }
 
 juce::PositionableAudioSource &

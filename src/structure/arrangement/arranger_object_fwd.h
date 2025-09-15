@@ -84,17 +84,15 @@ timeline_frames_to_local (
           signed_frame_t diff_frames = timeline_frames - object_position_frames;
 
           /* special case: timeline frames is exactly at the end of the region */
-          if (
-            timeline_frames
-            == obj.regionMixin ()->bounds ()->get_end_position_samples (true))
+          if (timeline_frames == obj.bounds ()->get_end_position_samples (true))
             return diff_frames;
 
           const signed_frame_t loop_end_frames =
-            obj.regionMixin ()->loopRange ()->loopEndPosition ()->samples ();
+            obj.loopRange ()->loopEndPosition ()->samples ();
           const signed_frame_t clip_start_frames =
-            obj.regionMixin ()->loopRange ()->clipStartPosition ()->samples ();
+            obj.loopRange ()->clipStartPosition ()->samples ();
           const signed_frame_t loop_size =
-            obj.regionMixin ()->loopRange ()->get_loop_length_in_frames ();
+            obj.loopRange ()->get_loop_length_in_frames ();
           z_return_val_if_fail_cmp (loop_size, >, 0, 0);
 
           diff_frames += clip_start_frames;
@@ -115,14 +113,7 @@ template <BoundedObject ObjectT>
 inline auto *
 get_object_bounds (const ObjectT &obj)
 {
-  if constexpr (RegionObject<ObjectT>)
-    {
-      return obj.regionMixin ()->bounds ();
-    }
-  else
-    {
-      return obj.bounds ();
-    }
+  return obj.bounds ();
 }
 } // namespace zrythm::structure::arrangement
 

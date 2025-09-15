@@ -313,7 +313,7 @@ public:
           {
             if constexpr (RegionObject<ObjT>)
               {
-                return obj->regionMixin ()->name ()->get_name ();
+                return obj->name ()->get_name ();
               }
             else if constexpr (std::is_same_v<ObjT, Marker>)
               {
@@ -344,7 +344,7 @@ public:
           {
             if constexpr (RegionObject<ObjT>)
               {
-                return ticks + obj->regionMixin ()->bounds ()->length ()->ticks ();
+                return ticks + obj->bounds ()->length ()->ticks ();
               }
             else
               {
@@ -369,7 +369,7 @@ public:
         using ObjT = base_type<decltype (obj)>;
         if constexpr (RegionObject<ObjT>)
           {
-            return obj->regionMixin ()->loopRange ()->is_looped ();
+            return obj->loopRange ()->is_looped ();
           }
         else
           return false;
@@ -672,7 +672,7 @@ public:
       {
         /* if original object was not looped, make the new object unlooped
          * also */
-        if (!self.regionMixin ()->loopRange ()->is_looped ())
+        if (!self.loopRange ()->is_looped ())
           {
             if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)
               {
@@ -731,7 +731,6 @@ public:
     if constexpr (RegionObject<BoundedObjectT>)
       {
         get_derived_object (new_object2_ref)
-          ->regionMixin ()
           ->loopRange ()
           ->clipStartPosition ()
           ->setSamples (local_pos);
@@ -746,10 +745,9 @@ public:
     /* if original object was not looped, make the new object unlooped also */
     if constexpr (RegionObject<BoundedObjectT>)
       {
-        if (!self.regionMixin ()->loopRange ()->is_looped ())
+        if (!self.loopRange ()->is_looped ())
           {
             get_derived_object (new_object2_ref)
-              ->regionMixin ()
               ->loopRange ()
               ->setTrackLength (true);
 

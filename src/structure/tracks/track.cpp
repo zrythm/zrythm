@@ -3,6 +3,7 @@
 
 #include <utility>
 
+#include "structure/arrangement/playback_cache_builder.h"
 #include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
@@ -178,6 +179,18 @@ Track::make_lanes ()
     base_dependencies_.obj_registry_,
     base_dependencies_.file_audio_source_registry_, this);
   ret->create_missing_lanes (0);
+
+  playable_content_cache_request_debouncer_ =
+    utils::make_qobject_unique<utils::PlaybackCacheScheduler> (this);
+  QObject::connect (
+    ret.get (), &TrackLaneList::laneObjectsNeedRecache,
+    playable_content_cache_request_debouncer_.get (),
+    &utils::PlaybackCacheScheduler::queueCacheRequest);
+  QObject::connect (
+    playable_content_cache_request_debouncer_.get (),
+    &utils::PlaybackCacheScheduler::cacheRequested, this,
+    &Track::regeneratePlaybackCaches);
+
   return ret;
 }
 
@@ -358,6 +371,24 @@ Track::set_caches (CacheType types)
         }
 #endif
     }
+}
+
+void
+Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
+{
+  auto lanes_view =
+    lanes_->lanes ()
+    | std::views::transform ([] (auto &uptr) -> const TrackLane * {
+        return uptr.get ();
+      });
+  z_debug (
+    "Arranger object contents changed - regenerating caches for range [{}]",
+    affectedRange);
+  arrangement::PlaybackCacheBuilder::
+    generate_midi_cache_for_midi_region_collections (
+      midi_playback_cache_, lanes_view, base_dependencies_.tempo_map_,
+      affectedRange);
+  processor_->set_midi_events (midi_playback_cache_.cached_events ());
 }
 
 void

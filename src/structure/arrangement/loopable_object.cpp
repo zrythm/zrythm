@@ -44,6 +44,19 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
     });
 
   Q_EMIT trackLengthChanged (track_length_);
+
+  QObject::connect (
+    this, &ArrangerObjectLoopRange::trackLengthChanged, this,
+    &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
+  QObject::connect (
+    loopStartPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
+  QObject::connect (
+    loopEndPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
+  QObject::connect (
+    clipStartPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
 }
 
 int

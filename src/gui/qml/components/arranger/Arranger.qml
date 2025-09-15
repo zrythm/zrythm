@@ -435,8 +435,6 @@ Item {
             if (!success) {
               console.warn("Failed to move selections - validation failed");
             }
-          } else {
-            console.warn("Selection operator not available for moving objects");
           }
         }
 

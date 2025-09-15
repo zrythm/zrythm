@@ -6,9 +6,12 @@
 namespace zrythm::structure::arrangement
 {
 ScaleObject::ScaleObject (const dsp::TempoMap &tempo_map, QObject * parent)
-    : ArrangerObject (ArrangerObject::Type::ScaleObject, tempo_map, parent),
-      scale_ (utils::make_qobject_unique<MusicalScale> (this)),
-      mute_ (utils::make_qobject_unique<ArrangerObjectMuteFunctionality> (this))
+    : ArrangerObject (
+        ArrangerObject::Type::ScaleObject,
+        tempo_map,
+        ArrangerObjectFeatures::Mute,
+        parent),
+      scale_ (utils::make_qobject_unique<MusicalScale> (this))
 {
 }
 
@@ -19,7 +22,6 @@ init_from (
   utils::ObjectCloneType clone_type)
 {
   init_from (*obj.scale_, *other.scale_, clone_type);
-  init_from (*obj.mute_, *other.mute_, clone_type);
   init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);

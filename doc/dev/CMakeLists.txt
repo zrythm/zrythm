@@ -14,6 +14,7 @@ set(extra_dev_docs
   "${CMAKE_CURRENT_SOURCE_DIR}/debugging.md"
   "${CMAKE_CURRENT_SOURCE_DIR}/mainpage.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/object_selection_system.md"
+  "${CMAKE_CURRENT_SOURCE_DIR}/playback_cache_architecture.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/processing_cycle.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/release_checklist.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/undo_system.md"

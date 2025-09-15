@@ -205,8 +205,8 @@ ColumnLayout {
           onCurrentChanged: (current, previous) => {
             if (current) {
               const arrangerObject = getObjectFromUnifiedIndex(current);
-              if (arrangerObject && arrangerObject.regionMixin) {
-                console.log("current region changed, setting clip editor region to ", arrangerObject.regionMixin.name.name);
+              if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
+                console.log("current region changed, setting clip editor region to ", arrangerObject.name.name);
                 root.project.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
               }
             }
@@ -221,7 +221,7 @@ ColumnLayout {
             if (deselected.length > 0) {
               deselected.forEach(deselectedRange => {
                 const arrangerObject = getObjectFromUnifiedIndex(deselectedRange.topLeft);
-                if (arrangerObject && arrangerObject.regionMixin) {
+                if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
                   console.log("previous region changed, unsetting clip editor region");
                   root.project.clipEditor.unsetRegion();
                 }

@@ -6,9 +6,12 @@
 namespace zrythm::structure::arrangement
 {
 Marker::Marker (const dsp::TempoMap &tempo_map, MarkerType type, QObject * parent)
-    : ArrangerObject (ArrangerObject::Type::Marker, tempo_map, parent),
-      marker_type_ (type),
-      name_ (utils::make_qobject_unique<ArrangerObjectName> (this))
+    : ArrangerObject (
+        ArrangerObject::Type::Marker,
+        tempo_map,
+        ArrangerObjectFeatures::Name,
+        parent),
+      marker_type_ (type)
 {
 }
 
@@ -17,7 +20,6 @@ init_from (Marker &obj, const Marker &other, utils::ObjectCloneType clone_type)
 
 {
   obj.marker_type_ = other.marker_type_;
-  init_from (*obj.name_, *other.name_, clone_type);
   init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);

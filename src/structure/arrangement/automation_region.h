@@ -5,7 +5,6 @@
 
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/automation_point.h"
-#include "structure/arrangement/region.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -19,7 +18,6 @@ class AutomationRegion final
       public ArrangerObjectOwner<AutomationPoint>
 {
   Q_OBJECT
-  Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     AutomationRegion,
     automationPoints,
@@ -37,8 +35,6 @@ public:
   // ========================================================================
   // QML Interface
   // ========================================================================
-
-  RegionMixin * regionMixin () const { return region_mixin_.get (); }
 
   // ========================================================================
 
@@ -90,28 +86,23 @@ private:
     const AutomationRegion &other,
     utils::ObjectCloneType  clone_type);
 
-  static constexpr auto kRegionMixinKey = "regionMixin"sv;
   friend void to_json (nlohmann::json &j, const AutomationRegion &region)
   {
     to_json (j, static_cast<const ArrangerObject &> (region));
-    j[kRegionMixinKey] = region.region_mixin_;
     to_json (j, static_cast<const ArrangerObjectOwner &> (region));
   }
   friend void from_json (const nlohmann::json &j, AutomationRegion &region)
   {
     from_json (j, static_cast<ArrangerObject &> (region));
-    j.at (kRegionMixinKey).get_to (*region.region_mixin_);
     from_json (j, static_cast<ArrangerObjectOwner &> (region));
   }
 
 private:
-  utils::QObjectUniquePtr<RegionMixin> region_mixin_;
-
   BOOST_DESCRIBE_CLASS (
     AutomationRegion,
     (ArrangerObject, ArrangerObjectOwner<AutomationPoint>),
     (),
     (),
-    (region_mixin_))
+    ())
 };
 }

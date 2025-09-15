@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/midi_playback_cache.h"
 #include "dsp/modulator_macro_processor.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
@@ -12,6 +13,7 @@
 #include "structure/tracks/track_lane_list.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/format.h"
+#include "utils/playback_cache_scheduler.h"
 
 #include <QColor>
 #include <QtQmlIntegration>
@@ -438,6 +440,15 @@ public:
     return piano_roll_track_mixin_.get ();
   }
 
+  /**
+   * @brief To be connected to to notify of any changes to the playable content,
+   * like MIDI or audio events.
+   *
+   * This will request new caches to be generated for the track processor.
+   */
+  Q_INVOKABLE void
+  regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange);
+
   // ========================================================================
 
   // bool has_lanes () const { return type_has_lanes (type_); }
@@ -764,6 +775,11 @@ protected:
   utils::QObjectUniquePtr<RecordableTrackMixin> recordable_track_mixin_;
 
   utils::QObjectUniquePtr<PianoRollTrackMixin> piano_roll_track_mixin_;
+
+  utils::QObjectUniquePtr<utils::PlaybackCacheScheduler>
+    playable_content_cache_request_debouncer_;
+
+  dsp::MidiPlaybackCache midi_playback_cache_;
 
   BOOST_DESCRIBE_CLASS (
     Track,

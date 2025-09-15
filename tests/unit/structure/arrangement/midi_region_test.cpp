@@ -19,10 +19,10 @@ protected:
 
     // Set up region properties
     region->position ()->setTicks (100);
-    region->regionMixin ()->bounds ()->length ()->setTicks (200);
-    region->regionMixin ()->loopRange ()->loopStartPosition ()->setTicks (50);
-    region->regionMixin ()->loopRange ()->loopEndPosition ()->setTicks (150);
-    region->regionMixin ()->loopRange ()->clipStartPosition ()->setTicks (0);
+    region->bounds ()->length ()->setTicks (200);
+    region->loopRange ()->loopStartPosition ()->setTicks (50);
+    region->loopRange ()->loopEndPosition ()->setTicks (150);
+    region->loopRange ()->clipStartPosition ()->setTicks (0);
   }
 
   void add_midi_note (
@@ -53,7 +53,11 @@ TEST_F (MidiRegionTest, InitialState)
 {
   EXPECT_EQ (region->type (), ArrangerObject::Type::MidiRegion);
   EXPECT_EQ (region->position ()->ticks (), 100);
-  EXPECT_NE (region->regionMixin (), nullptr);
+  EXPECT_NE (region->bounds (), nullptr);
+  EXPECT_NE (region->loopRange (), nullptr);
+  EXPECT_NE (region->name (), nullptr);
+  EXPECT_NE (region->color (), nullptr);
+  EXPECT_NE (region->mute (), nullptr);
   EXPECT_EQ (region->get_children_vector ().size (), 0);
 }
 

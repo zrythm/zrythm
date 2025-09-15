@@ -1128,6 +1128,15 @@ if(ZRYTHM_TESTS)
   )
 endif()
 
+CPMFindPackage(
+  NAME farbot
+  GITHUB_REPOSITORY "zrythm/farbot"
+  VERSION 0.1
+  GIT_TAG 2a2bd99eefada6c78dff04bc0692912366952a86
+  EXCLUDE_FROM_ALL YES
+  SYSTEM YES
+)
+
 find_package(Qt6
   COMPONENTS
     Core
@@ -1203,6 +1212,7 @@ list(APPEND zrythm_link_libs
   gsl-lite::gsl-lite
   clap-helpers
   TBB::tbb
+  farbot::farbot
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers

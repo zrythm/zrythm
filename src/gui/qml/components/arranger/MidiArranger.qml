@@ -12,16 +12,20 @@ Arranger {
   id: root
 
   required property PianoRoll pianoRoll
+  readonly property MidiRegion region: clipEditor.region
+  readonly property Track track: clipEditor.track
 
   function beginObjectCreation(x: real, y: real): var {
     const pitch = getPitchAtY(y);
     console.log("Midi Arranger: beginObjectCreation", x, y, pitch);
+    const tickPosition = x / root.ruler.pxPerTick;
 
-    let midiNote = objectCreator.addMidiNote(root.clipEditor.region, x / root.ruler.pxPerTick, pitch);
+    let midiNote = objectCreator.addMidiNote(region, tickPosition, pitch);
     root.currentAction = Arranger.CreatingResizingR;
     root.setObjectSnapshotsAtStart();
     CursorManager.setResizeEndCursor();
     root.actionObject = midiNote;
+
     return midiNote;
   }
 

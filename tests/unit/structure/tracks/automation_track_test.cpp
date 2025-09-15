@@ -39,7 +39,6 @@ protected:
       ->position ()
       ->setSamples (static_cast<double> (timeline_pos_samples));
     region_ref.get_object_as<arrangement::AutomationRegion> ()
-      ->regionMixin ()
       ->bounds ()
       ->length ()
       ->setSamples (static_cast<double> (length));
@@ -309,8 +308,7 @@ TEST_F (AutomationTrackTest, Serialization)
   auto * dummy_region =
     std::get<arrangement::AutomationRegion *> (dummy_regions[0].get_object ());
   EXPECT_EQ (dummy_region->position ()->samples (), 100);
-  EXPECT_EQ (
-    dummy_region->regionMixin ()->bounds ()->length ()->samples (), 200);
+  EXPECT_EQ (dummy_region->bounds ()->length ()->samples (), 200);
 
   auto dummy_points = dummy_region->get_children_vector ();
   EXPECT_EQ (dummy_points.size (), 1);

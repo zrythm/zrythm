@@ -22,6 +22,7 @@ add_executable(zrythm_dsp_unit_tests
   metronome_test.cpp
   midi_event_test.cpp
   midi_panic_processor_test.cpp
+  midi_playback_cache_test.cpp
   midi_port_test.cpp
   modulator_macro_processor_test.cpp
   musical_scale_test.cpp

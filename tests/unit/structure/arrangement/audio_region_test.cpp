@@ -50,7 +50,7 @@ protected:
 
     // Set region position and length
     region->position ()->setSamples (1000);
-    region->regionMixin ()->bounds ()->length ()->setSamples (500);
+    region->bounds ()->length ()->setSamples (500);
   }
 
   std::unique_ptr<dsp::TempoMap>       tempo_map;
@@ -70,7 +70,11 @@ TEST_F (AudioRegionTest, InitialState)
   EXPECT_EQ (region->gain (), 1.0f);
   EXPECT_EQ (region->musicalMode (), AudioRegion::MusicalMode::Inherit);
   EXPECT_TRUE (region->effectivelyInMusicalMode ());
-  EXPECT_NE (region->regionMixin (), nullptr);
+  EXPECT_NE (region->bounds (), nullptr);
+  EXPECT_NE (region->loopRange (), nullptr);
+  EXPECT_NE (region->name (), nullptr);
+  EXPECT_NE (region->color (), nullptr);
+  EXPECT_NE (region->mute (), nullptr);
   EXPECT_NE (region->fadeRange (), nullptr);
 }
 
@@ -202,8 +206,7 @@ TEST_F (AudioRegionTest, FillStereoPorts)
   std::ranges::fill (right_buffer, 0.0f);
 
   // Set position to near end of region to enable built-in fade in
-  const auto end_pos_frames =
-    region->regionMixin ()->bounds ()->get_end_position_samples (true);
+  const auto end_pos_frames = region->bounds ()->get_end_position_samples (true);
   time_nfo.g_start_frame_ = end_pos_frames - nframes;
   time_nfo.g_start_frame_w_offset_ = end_pos_frames - nframes;
 
@@ -232,7 +235,7 @@ TEST_F (AudioRegionTest, Serialization)
   region->position ()->setSamples (1000);
   region->setGain (0.8f);
   region->setMusicalMode (AudioRegion::MusicalMode::On);
-  region->regionMixin ()->bounds ()->length ()->setSamples (5000);
+  region->bounds ()->length ()->setSamples (5000);
 
   // Serialize
   nlohmann::json j;
@@ -248,7 +251,7 @@ TEST_F (AudioRegionTest, Serialization)
   EXPECT_EQ (new_region->position ()->samples (), 1000);
   EXPECT_FLOAT_EQ (new_region->gain (), 0.8f);
   EXPECT_EQ (new_region->musicalMode (), AudioRegion::MusicalMode::On);
-  EXPECT_EQ (new_region->regionMixin ()->bounds ()->length ()->samples (), 5000);
+  EXPECT_EQ (new_region->bounds ()->length ()->samples (), 5000);
 }
 
 // Test copying
@@ -258,7 +261,7 @@ TEST_F (AudioRegionTest, Copying)
   region->position ()->setSamples (2000);
   region->setGain (1.2f);
   region->setMusicalMode (AudioRegion::MusicalMode::Off);
-  region->regionMixin ()->bounds ()->length ()->setSamples (3000);
+  region->bounds ()->length ()->setSamples (3000);
 
   // Create target
   auto target = std::make_unique<AudioRegion> (
@@ -272,7 +275,7 @@ TEST_F (AudioRegionTest, Copying)
   EXPECT_EQ (target->position ()->samples (), 2000);
   EXPECT_FLOAT_EQ (target->gain (), 1.2f);
   EXPECT_EQ (target->musicalMode (), AudioRegion::MusicalMode::Off);
-  EXPECT_EQ (target->regionMixin ()->bounds ()->length ()->samples (), 3000);
+  EXPECT_EQ (target->bounds ()->length ()->samples (), 3000);
 }
 
 } // namespace zrythm::structure::arrangement

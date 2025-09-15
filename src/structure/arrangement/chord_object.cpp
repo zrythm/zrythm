@@ -8,17 +8,19 @@
 namespace zrythm::structure::arrangement
 {
 ChordObject::ChordObject (const dsp::TempoMap &tempo_map, QObject * parent)
-    : ArrangerObject (Type::ChordObject, tempo_map, parent),
-      mute_ (utils::make_qobject_unique<ArrangerObjectMuteFunctionality> (this))
+    : ArrangerObject (Type::ChordObject, tempo_map, ArrangerObjectFeatures::Mute, parent)
 {
+  QObject::connect (
+    this, &ChordObject::chordDescriptorIndexChanged, this,
+    &ArrangerObject::propertiesChanged);
 }
+
 void
 init_from (
   ChordObject           &obj,
   const ChordObject     &other,
   utils::ObjectCloneType clone_type)
 {
-  init_from (*obj.mute_, *other.mute_, clone_type);
   init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);

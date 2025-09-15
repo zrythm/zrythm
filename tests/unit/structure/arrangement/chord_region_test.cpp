@@ -19,7 +19,7 @@ protected:
 
     // Set up region properties
     region->position ()->setTicks (100);
-    region->regionMixin ()->bounds ()->length ()->setTicks (200);
+    region->bounds ()->length ()->setTicks (200);
   }
 
   auto create_chord_object (int chord_index)
@@ -51,7 +51,11 @@ TEST_F (ChordRegionTest, InitialState)
 {
   EXPECT_EQ (region->type (), ArrangerObject::Type::ChordRegion);
   EXPECT_EQ (region->position ()->ticks (), 100);
-  EXPECT_NE (region->regionMixin (), nullptr);
+  EXPECT_NE (region->bounds (), nullptr);
+  EXPECT_NE (region->loopRange (), nullptr);
+  EXPECT_NE (region->name (), nullptr);
+  EXPECT_NE (region->color (), nullptr);
+  EXPECT_NE (region->mute (), nullptr);
   EXPECT_EQ (region->get_children_vector ().size (), 0);
 }
 

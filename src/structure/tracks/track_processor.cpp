@@ -246,6 +246,15 @@ init_from (
 }
 
 void
+TrackProcessor::set_midi_events (const juce::MidiMessageSequence &events)
+{
+  decltype (active_midi_playback_sequence_)::ScopedAccess<
+    farbot::ThreadType::nonRealtime>
+    rt_events{ active_midi_playback_sequence_ };
+  *rt_events = events;
+}
+
+void
 TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 {
   assert (handle_recording_cb_.has_value ());
@@ -613,6 +622,50 @@ TrackProcessor::set_midi_mappings ()
 }
 #endif
 
+void
+TrackProcessor::fill_midi_events (
+  const EngineProcessTimeInfo &time_nfo,
+  dsp::MidiEventVector        &midi_events)
+{
+  decltype (active_midi_playback_sequence_)::ScopedAccess<
+    farbot::ThreadType::realtime>
+             midi_seq{ active_midi_playback_sequence_ };
+  const auto first_idx = midi_seq->getNextIndexAtTime (
+    static_cast<double> (time_nfo.g_start_frame_w_offset_));
+  for (int i = first_idx; i < midi_seq->getNumEvents (); ++i)
+    {
+      const auto * event = midi_seq->getEventPointer (i);
+      const auto   timestamp_dbl = event->message.getTimeStamp ();
+      if (
+        timestamp_dbl >= static_cast<double> (
+          time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_))
+        {
+          break;
+        }
+
+      const auto local_timestamp =
+        static_cast<decltype (time_nfo.g_start_frame_)> (timestamp_dbl)
+        - time_nfo.g_start_frame_;
+      midi_events.add_raw (
+        event->message.getRawData (), event->message.getRawDataSize (),
+        static_cast<midi_time_t> (local_timestamp));
+    }
+
+  // midi_events.print (); // debug
+}
+
+void
+TrackProcessor::fill_audio_events (
+  const EngineProcessTimeInfo &time_nfo,
+  StereoPortPair               stereo_ports)
+{
+  if (fill_events_cb_.has_value ())
+    {
+      std::invoke (
+        *fill_events_cb_, transport_, time_nfo, nullptr, stereo_ports);
+    }
+}
+
 // ============================================================================
 // IProcessable Interface
 // ============================================================================
@@ -626,11 +679,10 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
     }
 
   const bool should_fill_events =
-    fill_events_cb_.has_value ()
-    && (transport_.get_play_state () == dsp::ITransport::PlayState::Rolling);
+    transport_.get_play_state () == dsp::ITransport::PlayState::Rolling;
 
   // fill ports based on arrangement (clip) contents
-  if (fill_events_cb_.has_value () && should_fill_events)
+  if (should_fill_events)
     {
       // audio clips
       if (is_audio ())

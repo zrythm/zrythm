@@ -18,6 +18,7 @@ target_sources(zrythm_arrangement_lib
     arranger_object_factory.h
     arranger_object_fwd.h
     arranger_object_list_model.h
+    arranger_object_list_model.cpp
     arranger_object_owner.h
     audio_region.h
     audio_region.cpp
@@ -48,8 +49,7 @@ target_sources(zrythm_arrangement_lib
     muteable_object.h
     named_object.h
     named_object.cpp
-    region.h
-    region.cpp
+    playback_cache_builder.h
     scale_object.h
     scale_object.cpp
 )

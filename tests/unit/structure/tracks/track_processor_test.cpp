@@ -30,8 +30,7 @@ protected:
       *tempo_map_, obj_registry_, file_audio_source_registry_, nullptr);
     auto * region = region_ref.template get_object_as<RegionT> ();
     region->position ()->setSamples (static_cast<double> (timeline_pos_samples));
-    region->regionMixin ()->bounds ()->length ()->setSamples (
-      static_cast<double> (length));
+    region->bounds ()->length ()->setSamples (static_cast<double> (length));
 
     if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
       {
@@ -718,7 +717,7 @@ TEST_F (TrackProcessorTest, FillEventsFromMutedRegion)
   // Create muted MIDI region
   auto   region = create_region<arrangement::MidiRegion> (100, 200);
   auto * region_ptr = region.get_object_as<arrangement::MidiRegion> ();
-  region_ptr->regionMixin ()->mute ()->setMuted (true);
+  region_ptr->mute ()->setMuted (true);
   add_midi_note (region_ptr, 60, 80, 0, 100);
 
   dsp::MidiEventVector                          midi_events;
@@ -1204,6 +1203,217 @@ TEST_F (TrackProcessorTest, FillEventsFromRegionWithOffset)
 
   // Should have events since region overlaps processing range
   EXPECT_GT (midi_events.size (), 0);
+}
+
+TEST_F (TrackProcessorTest, MidiTrackProcessingWithSetMidiEvents)
+{
+  TrackProcessor processor (
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Set Events"; },
+    [] { return true; }, true, false, false, dependencies_);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  processor.prepare_for_processing (sample_rate_, block_length_);
+
+  // Create a MIDI sequence with note events
+  juce::MidiMessageSequence midi_sequence;
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (100)), 0.0);
+  midi_sequence.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOn (1, 64, static_cast<uint8_t> (80)), 25.0);
+  midi_sequence.addEvent (juce::MidiMessage::noteOff (1, 64), 75.0);
+  midi_sequence.updateMatchedPairs ();
+
+  // Set the MIDI events using the new setter
+  processor.set_midi_events (midi_sequence);
+
+  // Enable rolling so that events are taken into account
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  processor.process_block (time_nfo);
+
+  // Verify events were processed and output
+  auto &midi_out = processor.get_midi_out_port ();
+  EXPECT_GT (midi_out.midi_events_.queued_events_.size (), 0);
+
+  // Check that the expected events were produced
+  const auto &events = midi_out.midi_events_.queued_events_;
+  bool        found_note_60_on = false;
+  bool        found_note_60_off = false;
+  bool        found_note_64_on = false;
+  bool        found_note_64_off = false;
+
+  for (const auto &event : events)
+    {
+      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+        {
+          if (event.raw_buffer_[1] == 60 && event.raw_buffer_[2] == 100)
+            {
+              found_note_60_on = true;
+            }
+          else if (event.raw_buffer_[1] == 64 && event.raw_buffer_[2] == 80)
+            {
+              found_note_64_on = true;
+            }
+        }
+      else if ((event.raw_buffer_[0] & 0xF0) == 0x80) // Note off
+        {
+          if (event.raw_buffer_[1] == 60)
+            {
+              found_note_60_off = true;
+            }
+          else if (event.raw_buffer_[1] == 64)
+            {
+              found_note_64_off = true;
+            }
+        }
+    }
+
+  EXPECT_TRUE (found_note_60_on);
+  EXPECT_TRUE (found_note_60_off);
+  EXPECT_TRUE (found_note_64_on);
+  EXPECT_TRUE (found_note_64_off);
+}
+
+TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptySetMidiEvents)
+{
+  TrackProcessor processor (
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Empty Events"; },
+    [] { return true; }, true, false, false, dependencies_);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  processor.prepare_for_processing (sample_rate_, block_length_);
+
+  // Set empty MIDI sequence
+  juce::MidiMessageSequence empty_sequence;
+  processor.set_midi_events (empty_sequence);
+
+  // Enable rolling so that events would be processed if they existed
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  processor.process_block (time_nfo);
+
+  // Verify no events were produced from empty sequence
+  auto &midi_out = processor.get_midi_out_port ();
+  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 0);
+}
+
+TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleSetMidiEvents)
+{
+  TrackProcessor processor (
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Multiple Events"; },
+    [] { return true; }, true, false, false, dependencies_);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  processor.prepare_for_processing (sample_rate_, 512);
+
+  // Create a MIDI sequence with multiple events
+  juce::MidiMessageSequence midi_sequence;
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (100)), 0.0);
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOn (1, 64, static_cast<uint8_t> (90)), 10.0);
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOn (1, 67, static_cast<uint8_t> (80)), 20.0);
+  midi_sequence.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
+  midi_sequence.addEvent (juce::MidiMessage::noteOff (1, 64), 60.0);
+  midi_sequence.addEvent (juce::MidiMessage::noteOff (1, 67), 70.0);
+  midi_sequence.updateMatchedPairs ();
+
+  processor.set_midi_events (midi_sequence);
+
+  // Enable rolling
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  processor.process_block (time_nfo);
+
+  // Verify multiple events were processed
+  auto &midi_out = processor.get_midi_out_port ();
+  EXPECT_GE (midi_out.midi_events_.queued_events_.size (), 6);
+}
+
+TEST_F (TrackProcessorTest, MidiTrackProcessingWithOverlappingSetMidiEvents)
+{
+  TrackProcessor processor (
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Overlapping Events"; },
+    [] { return true; }, true, false, false, dependencies_);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  processor.prepare_for_processing (sample_rate_, block_length_);
+
+  // Create MIDI sequence with overlapping events - note on before previous note
+  // off
+  juce::MidiMessageSequence midi_sequence;
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (100)), 0.0);
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (80)),
+    20.0); // Note on before previous note off (overlap)
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOff (1, 60), 25.0); // First note off
+  midi_sequence.addEvent (
+    juce::MidiMessage::noteOff (1, 60), 75.0); // Second note off
+  midi_sequence.updateMatchedPairs ();
+
+  processor.set_midi_events (midi_sequence);
+
+  // Enable rolling
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  processor.process_block (time_nfo);
+
+  // Verify overlapping events were processed correctly
+  auto &midi_out = processor.get_midi_out_port ();
+  EXPECT_GT (midi_out.midi_events_.queued_events_.size (), 0);
+
+  // Count note on/off events for note 60
+  int note_60_on_count = 0;
+  int note_60_off_count = 0;
+
+  for (const auto &event : midi_out.midi_events_.queued_events_)
+    {
+      if ((event.raw_buffer_[0] & 0xF0) == 0x90 && event.raw_buffer_[1] == 60)
+        {
+          note_60_on_count++;
+        }
+      else if (
+        (event.raw_buffer_[0] & 0xF0) == 0x80 && event.raw_buffer_[1] == 60)
+        {
+          note_60_off_count++;
+        }
+    }
+
+  // Should have multiple note on/off events for the same note
+  EXPECT_GE (note_60_on_count, 2);
+  EXPECT_GE (note_60_off_count, 2);
 }
 
 } // namespace zrythm::structure::tracks

@@ -119,7 +119,7 @@ MidiFile::into_region (
         }
 
       // set a temp name
-      region.regionMixin ()->name ()->setName (
+      region.name ()->setName (
         format_qstr (QObject::tr ("Untitled Track {}"), i));
 
       const auto * track = midi_file_.getTrack (i);
@@ -163,7 +163,7 @@ MidiFile::into_region (
               auto name = msg.getTextFromTextMetaEvent ();
               if (!name.isEmpty ())
                 {
-                  region.regionMixin ()->name ()->setName (
+                  region.name ()->setName (
                     utils::Utf8String::from_juce_string (name).to_qstring ());
                 }
             }
@@ -178,7 +178,7 @@ MidiFile::into_region (
 // rest TODO
 #  if 0
   // set end position to last event
-  region.regionMixin ()->bounds ()->length ()->setTicks (
+  region.bounds ()->length ()->setTicks (
     structure::arrangement::get_last_midi_note (region.get_children_view ())
       ->get_end_position_ticks ());
 
@@ -309,7 +309,7 @@ MidiFile::export_midi_lane_to_sequence (
         {
           if (
             (region->position ()->ticks ()
-             + region->regionMixin ()->bounds ()->length ()->ticks ())
+             + region->bounds ()->length ()->ticks ())
             < *start)
             continue;
         }

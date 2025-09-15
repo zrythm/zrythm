@@ -1,9 +1,14 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/tempo_map.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_lane_list.h"
 
 #include <QObject>
+#include <QSignalSpy>
+
+#include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -16,6 +21,9 @@ class TrackLaneListTest : public ::testing::Test
 protected:
   void SetUp () override
   {
+    scoped_qapplication_ =
+      std::make_unique<test_helpers::ScopedQCoreApplication> ();
+
     obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
     file_audio_source_registry_ =
       std::make_unique<dsp::FileAudioSourceRegistry> ();
@@ -36,6 +44,7 @@ protected:
   std::unique_ptr<dsp::FileAudioSourceRegistry> file_audio_source_registry_;
   bool                                          soloed_lanes_exist_ = false;
   std::unique_ptr<TrackLaneList>                lane_list_;
+  std::unique_ptr<test_helpers::ScopedQCoreApplication> scoped_qapplication_;
 };
 
 TEST_F (TrackLaneListTest, ConstructionAndBasicProperties)
@@ -280,6 +289,7 @@ TEST_F (TrackLaneListTest, LargeNumberOfLanes)
   const int                num_lanes = 100;
   std::vector<TrackLane *> lanes;
 
+  lanes.reserve (num_lanes);
   for (int i = 0; i < num_lanes; ++i)
     {
       lanes.push_back (lane_list_->addLane ());
@@ -491,6 +501,159 @@ TEST_F (TrackLaneListTest, FillEventsCallback)
     lane_list_->fill_events_callback (
       transport, time_nfo, &midi_events, stereo_ports);
   });
+}
+
+// Test laneObjectsNeedRecache signal emission on lane object changes
+TEST_F (TrackLaneListTest, LaneObjectsNeedRecacheSignal)
+{
+  // Add a lane
+  auto * lane = lane_list_->addLane ();
+
+  QSignalSpy recacheSpy (
+    lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
+
+  // Create a MIDI region and add it to the lane
+  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
+    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+
+  // Add the region to the lane - this should trigger the signal
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+    region_ref);
+
+  // Wait for queued connections to process
+  QCoreApplication::processEvents ();
+
+  // Verify the signal was emitted
+  EXPECT_GT (recacheSpy.count (), 0);
+}
+
+// Test signal connections when lanes are added/removed
+TEST_F (TrackLaneListTest, SignalConnectionsOnLaneOperations)
+{
+  QSignalSpy recacheSpy (
+    lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
+
+  // Add a lane
+  auto * lane = lane_list_->addLane ();
+
+  // Clear any signals from lane addition
+  recacheSpy.clear ();
+
+  // Create and add a MIDI region to the lane
+  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
+    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+    region_ref);
+
+  // Wait for queued connections to process
+  QCoreApplication::processEvents ();
+
+  // Verify signal was emitted
+  EXPECT_GT (recacheSpy.count (), 0);
+
+  // Remove the lane - this should disconnect signals
+  recacheSpy.clear ();
+  lane_list_->removeLane (0);
+
+  // The signal connections should be disconnected, so no more signals
+  // should be emitted even if we try to trigger them
+  EXPECT_EQ (recacheSpy.count (), 0);
+}
+
+// Test ExpandableTickRange calculation in lane context
+TEST_F (TrackLaneListTest, ExpandableTickRangeInLaneContext)
+{
+  // Add a lane
+  auto * lane = lane_list_->addLane ();
+
+  QSignalSpy recacheSpy (
+    lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
+
+  // Create a MIDI region with specific position and bounds
+  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
+    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+  auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
+  region->position ()->setTicks (100.0);
+  region->bounds ()->setLengthTicks (50.0);
+
+  // Add the region to the lane
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+    region_ref);
+
+  // Wait for queued connections to process
+  QCoreApplication::processEvents ();
+
+  // Verify the signal was emitted with correct range
+  EXPECT_GT (recacheSpy.count (), 0);
+
+  // Check that the signal contains the expected range
+  if (recacheSpy.count () > 0)
+    {
+      auto firstSignal = recacheSpy.takeFirst ();
+      auto range = firstSignal.at (0).value<utils::ExpandableTickRange> ();
+      auto rangeOpt = range.range ();
+
+      if (rangeOpt.has_value ())
+        {
+          EXPECT_EQ (rangeOpt->first, 100.0);
+          EXPECT_EQ (rangeOpt->second, 150.0);
+        }
+    }
+}
+
+// Test signal connections and disconnections work correctly
+TEST_F (TrackLaneListTest, SignalConnectionManagement)
+{
+  QSignalSpy recacheSpy (
+    lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
+
+  // Add multiple lanes
+  auto * lane1 = lane_list_->addLane ();
+  auto * lane2 = lane_list_->addLane ();
+
+  // Clear any initial signals
+  recacheSpy.clear ();
+
+  // Add objects to both lanes
+  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+
+  // Add to first lane
+  auto region1_ref = obj_registry_->create_object<arrangement::MidiRegion> (
+    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane1);
+  lane1->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+    region1_ref);
+
+  // Add to second lane
+  auto region2_ref = obj_registry_->create_object<arrangement::MidiRegion> (
+    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane2);
+  lane2->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+    region2_ref);
+
+  // Wait for queued connections to process
+  QCoreApplication::processEvents ();
+
+  // Should have signals from both lanes
+  EXPECT_GE (recacheSpy.count (), 2);
+
+  // Remove one lane
+  recacheSpy.clear ();
+  lane_list_->removeLane (0);
+
+  // Only the remaining lane should trigger signals
+  auto region3_ref = obj_registry_->create_object<arrangement::MidiRegion> (
+    *tempo_map, *obj_registry_, *file_audio_source_registry_,
+    lane_list_->at (0));
+  lane_list_->at (0)->arrangement::
+    ArrangerObjectOwner<arrangement::MidiRegion>::add_object (region3_ref);
+
+  QCoreApplication::processEvents ();
+
+  // Should get signal from remaining lane only
+  EXPECT_EQ (recacheSpy.count (), 1);
 }
 
 } // namespace zrythm::structure::tracks

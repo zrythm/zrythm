@@ -10,6 +10,7 @@ add_executable(zrythm_utils_unit_tests
   datetime_test.cpp
   directory_manager_test.cpp
   dsp_test.cpp
+  expandable_tick_range_test.cpp
   hash_test.cpp
   icloneable_test.cpp
   io_test.cpp
@@ -20,6 +21,7 @@ add_executable(zrythm_utils_unit_tests
   mpmc_queue_test.cpp
   networking_test.cpp
   object_pool_test.cpp
+  playback_cache_scheduler_test.cpp
   qt_test.cpp
   ring_buffer_test.cpp
   string_test.cpp
@@ -38,6 +40,7 @@ target_link_libraries(zrythm_utils_unit_tests PRIVATE
   zrythm::gtest_for_tests
   zrythm::utils_lib
   httplib::httplib
+  zrythm_test_helpers_lib
 )
 target_compile_definitions(zrythm_utils_unit_tests PRIVATE
   TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"

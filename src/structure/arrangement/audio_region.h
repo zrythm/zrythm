@@ -7,7 +7,6 @@
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/fadeable_object.h"
-#include "structure/arrangement/region.h"
 
 #include <juce_wrapper.h>
 
@@ -22,8 +21,6 @@ class AudioRegion final
       public ArrangerObjectOwner<AudioSourceObject>
 {
   Q_OBJECT
-  Q_PROPERTY (RegionMixin * regionMixin READ regionMixin CONSTANT)
-  Q_PROPERTY (ArrangerObjectFadeRange * fadeRange READ fadeRange CONSTANT)
   Q_PROPERTY (
     AudioRegion::MusicalMode musicalMode READ musicalMode WRITE setMusicalMode
       NOTIFY musicalModeChanged)
@@ -69,9 +66,6 @@ public:
   // ========================================================================
   // QML Interface
   // ========================================================================
-
-  RegionMixin * regionMixin () const { return region_mixin_.get (); }
-  ArrangerObjectFadeRange * fadeRange () const { return fade_range_.get (); }
 
   MusicalMode      musicalMode () const { return musical_mode_; }
   Q_INVOKABLE bool effectivelyInMusicalMode () const;
@@ -137,15 +131,11 @@ private:
     utils::ObjectCloneType clone_type);
 
   static constexpr auto kGainKey = "gain"sv;
-  static constexpr auto kRegionMixinKey = "regionMixin"sv;
-  static constexpr auto kFadeRangeKey = "fadeRange"sv;
   static constexpr auto kMusicalModeKey = "musicalMode"sv;
   friend void           to_json (nlohmann::json &j, const AudioRegion &region)
   {
     to_json (j, static_cast<const ArrangerObject &> (region));
     to_json (j, static_cast<const ArrangerObjectOwner &> (region));
-    j[kRegionMixinKey] = region.region_mixin_;
-    j[kFadeRangeKey] = region.fade_range_;
     j[kGainKey] = region.gain_.load ();
     j[kMusicalModeKey] = region.musical_mode_;
   }
@@ -153,8 +143,6 @@ private:
   {
     from_json (j, static_cast<ArrangerObject &> (region));
     from_json (j, static_cast<ArrangerObjectOwner &> (region));
-    j.at (kRegionMixinKey).get_to (*region.region_mixin_);
-    j.at (kFadeRangeKey).get_to (*region.fade_range_);
     float gain{};
     j.at (kGainKey).get_to (gain);
     region.gain_.store (gain);
@@ -165,9 +153,6 @@ private:
 
 private:
   dsp::FileAudioSourceRegistry &file_audio_source_registry_;
-
-  utils::QObjectUniquePtr<RegionMixin>             region_mixin_;
-  utils::QObjectUniquePtr<ArrangerObjectFadeRange> fade_range_;
 
   /** Gain to apply to the audio (amplitude 0.0-2.0). */
   std::atomic<float> gain_ = 1.0f;
@@ -196,7 +181,7 @@ private:
     (ArrangerObject),
     (),
     (),
-    (region_mixin_, fade_range_, gain_, musical_mode_))
+    (gain_, musical_mode_))
 };
 }
 

@@ -11,9 +11,12 @@ MidiRegion::MidiRegion (
   ArrangerObjectRegistry       &object_registry,
   dsp::FileAudioSourceRegistry &file_audio_source_registry,
   QObject *                     parent)
-    : ArrangerObject (Type::MidiRegion, tempo_map, parent),
-      ArrangerObjectOwner (object_registry, file_audio_source_registry, *this),
-      region_mixin_ (utils::make_qobject_unique<RegionMixin> (*position ()))
+    : ArrangerObject (
+        Type::MidiRegion,
+        tempo_map,
+        ArrangerObjectFeatures::Region,
+        parent),
+      ArrangerObjectOwner (object_registry, file_audio_source_registry, *this)
 {
 }
 
@@ -26,7 +29,6 @@ init_from (
   init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);
-  init_from (*obj.region_mixin_, *other.region_mixin_, clone_type);
   init_from (
     static_cast<ArrangerObjectOwner<MidiNote> &> (obj),
     static_cast<const ArrangerObjectOwner<MidiNote> &> (other), clone_type);

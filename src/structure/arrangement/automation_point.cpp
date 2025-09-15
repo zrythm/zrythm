@@ -8,10 +8,19 @@ namespace zrythm::structure::arrangement
 AutomationPoint::AutomationPoint (
   const dsp::TempoMap &tempo_map,
   QObject *            parent)
-    : ArrangerObject (Type::AutomationPoint, tempo_map, parent),
+    : ArrangerObject (Type::AutomationPoint, tempo_map, {}, parent),
       curve_opts_adapter_ (
         utils::make_qobject_unique<dsp::CurveOptionsQmlAdapter> (curve_opts_, this))
 {
+  QObject::connect (
+    this, &AutomationPoint::valueChanged, this,
+    &ArrangerObject::propertiesChanged);
+  QObject::connect (
+    curveOpts (), &dsp::CurveOptionsQmlAdapter::algorithmChanged, this,
+    &ArrangerObject::propertiesChanged);
+  QObject::connect (
+    curveOpts (), &dsp::CurveOptionsQmlAdapter::curvinessChanged, this,
+    &ArrangerObject::propertiesChanged);
 }
 
 void

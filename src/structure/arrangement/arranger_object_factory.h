@@ -179,7 +179,7 @@ public:
 
       if constexpr (RegionObject<ObjT>)
         {
-          obj->regionMixin ()->loopRange ()->setTrackLength (true);
+          obj->loopRange ()->setTrackLength (true);
         }
 
       if (start_ticks_)
@@ -213,7 +213,7 @@ public:
                 dependencies_.tempo_map_,
                 dependencies_.file_audio_source_registry_, clip_id_.value ());
               obj->set_source (source_object);
-              obj->regionMixin ()->bounds ()->length ()->setSamples (
+              obj->bounds ()->length ()->setSamples (
                 clip_id_.value ()
                   .template get_object_as<dsp::FileAudioSource> ()
                   ->get_num_frames ());
@@ -235,7 +235,7 @@ public:
             {
               if constexpr (RegionObject<ObjT>)
                 {
-                  obj->regionMixin ()->name ()->setName (*name_);
+                  obj->name ()->setName (*name_);
                 }
               else
                 {

@@ -8,6 +8,7 @@ target_sources(zrythm_actions_lib
     arranger_object_creator.h
     arranger_object_creator.cpp
     arranger_object_selection_operator.h
+    arranger_object_selection_operator.cpp
     parameter_operator.h
     parameter_operator.cpp
     track_creator.h

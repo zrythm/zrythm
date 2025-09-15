@@ -18,10 +18,10 @@ protected:
 
     // Set up region properties
     region->position ()->setTicks (100);
-    region->regionMixin ()->bounds ()->length ()->setTicks (200);
-    region->regionMixin ()->loopRange ()->loopStartPosition ()->setTicks (50);
-    region->regionMixin ()->loopRange ()->loopEndPosition ()->setTicks (150);
-    region->regionMixin ()->loopRange ()->clipStartPosition ()->setTicks (0);
+    region->bounds ()->length ()->setTicks (200);
+    region->loopRange ()->loopStartPosition ()->setTicks (50);
+    region->loopRange ()->loopEndPosition ()->setTicks (150);
+    region->loopRange ()->clipStartPosition ()->setTicks (0);
   }
 
   void add_midi_note (
@@ -147,7 +147,7 @@ TEST_F (MidiRegionSerializerTest, MutedNoteNotSerialized)
 TEST_F (MidiRegionSerializerTest, NoteOutsideLoopRangeNotSerialized)
 {
   // Adjust clip start
-  region->regionMixin ()->loopRange ()->clipStartPosition ()->setTicks (50);
+  region->loopRange ()->clipStartPosition ()->setTicks (50);
 
   // Add note before clip start and loop range
   add_midi_note (60, 90, 40, 10); // At 40-50 ticks, loop starts at 50

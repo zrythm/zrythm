@@ -45,6 +45,12 @@ public:
    */
   Q_INVOKABLE void setEndPositionTicks (double ticks);
 
+  // Convenience method
+  Q_INVOKABLE void setLengthTicks (double ticks)
+  {
+    length ()->setTicks (ticks);
+  }
+
   // ========================================================================
 
   auto get_end_position_samples (bool end_position_inclusive) const

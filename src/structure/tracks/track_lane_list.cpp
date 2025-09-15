@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <utility>
-
 #include "structure/tracks/track_lane_list.h"
 
 #include <scn/scan.h>
@@ -22,11 +20,48 @@ TrackLaneList::TrackLaneList (
             return std::ranges::any_of (lanes_view (), &TrackLane::soloed);
           } })
 {
+  QObject::connect (
+    this, &TrackLaneList::rowsInserted, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          const auto &lane = lanes ().at (i);
+          QObject::connect (
+            lane->arrangement::ArrangerObjectOwner<
+              arrangement::MidiRegion>::get_model (),
+            &arrangement::ArrangerObjectListModel::contentChanged, this,
+            &TrackLaneList::laneObjectsNeedRecache, Qt::QueuedConnection);
+          QObject::connect (
+            lane->arrangement::ArrangerObjectOwner<
+              arrangement::AudioRegion>::get_model (),
+            &arrangement::ArrangerObjectListModel::contentChanged, this,
+            &TrackLaneList::laneObjectsNeedRecache, Qt::QueuedConnection);
+        }
+    });
+  QObject::connect (
+    this, &TrackLaneList::rowsAboutToBeRemoved, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          const auto &lane = lanes ().at (i);
+          QObject::disconnect (
+            lane->arrangement::ArrangerObjectOwner<
+              arrangement::MidiRegion>::get_model (),
+            &arrangement::ArrangerObjectListModel::contentChanged, this,
+            &TrackLaneList::laneObjectsNeedRecache);
+          QObject::disconnect (
+            lane->arrangement::ArrangerObjectOwner<
+              arrangement::AudioRegion>::get_model (),
+            &arrangement::ArrangerObjectListModel::contentChanged, this,
+            &TrackLaneList::laneObjectsNeedRecache);
+        }
+    });
 }
 
 // ========================================================================
 // QML Interface
 // ========================================================================
+
 QHash<int, QByteArray>
 TrackLaneList::roleNames () const
 {
@@ -132,14 +167,6 @@ TrackLaneList::fill_events_callback (
 {
   for (const auto &lane : lanes ())
     {
-      for (
-        const auto * r :
-        lane->arrangement::ArrangerObjectOwner<
-          arrangement::MidiRegion>::get_children_view ())
-        {
-          TrackProcessor::fill_events_from_region_rt (
-            transport, time_nfo, midi_events, stereo_ports, *r);
-        }
       for (
         const auto * r :
         lane->arrangement::ArrangerObjectOwner<

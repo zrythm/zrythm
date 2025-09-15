@@ -70,6 +70,8 @@ public:
   }
   Q_SIGNAL void trackLengthChanged (bool track);
 
+  Q_SIGNAL void loopableObjectPropertiesChanged ();
+
   // ========================================================================
 
   /**

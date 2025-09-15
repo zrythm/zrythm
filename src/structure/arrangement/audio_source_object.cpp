@@ -10,7 +10,7 @@ AudioSourceObject::AudioSourceObject (
   dsp::FileAudioSourceRegistry     &registry,
   dsp::FileAudioSourceUuidReference source,
   QObject *                         parent)
-    : ArrangerObject (Type::AudioSourceObject, tempo_map, parent),
+    : ArrangerObject (Type::AudioSourceObject, tempo_map, {}, parent),
       registry_ (registry), source_id_ (std::move (source))
 {
   generate_audio_source ();

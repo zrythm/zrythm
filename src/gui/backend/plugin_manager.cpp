@@ -84,15 +84,16 @@ PluginManager::createPluginInstance (
   AUDIO_ENGINE->wait_for_pause (*state_ptr, false, true);
 
   z_debug ("creating plugin instance for: {}", descr->getName ());
-  auto juce_desc = descr->to_juce_description ();
-  auto config = PluginConfiguration::create_new_for_descriptor (*descr);
+  const auto * track = P_MASTER_TRACK;
+  auto         juce_desc = descr->to_juce_description ();
+  auto         config = PluginConfiguration::create_new_for_descriptor (*descr);
   PROJECT->getPluginFactory ()->create_plugin_from_setting (
     *config,
     PluginFactory::InstantiationFinishOptions{
       .handler_ =
-        [state_ptr] (::zrythm::plugins::PluginUuidReference plugin_ref) {
+        [state_ptr, track] (::zrythm::plugins::PluginUuidReference plugin_ref) {
           z_debug ("instantiation done");
-          P_MASTER_TRACK->channel ()->inserts ()->append_plugin (plugin_ref);
+          track->channel ()->inserts ()->append_plugin (plugin_ref);
           ROUTER->recalc_graph (false);
           zrythm::plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ())
             ->setUiVisible (true);
@@ -107,7 +108,7 @@ PluginManager::createPluginInstance (
     EngineState state{};
     AUDIO_ENGINE->wait_for_pause (state, false, true);
     auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
-      P_MASTER_TRACK->channel ()->inserts ()->plugins ().front ().get_object ());
+      track->channel ()->inserts ()->plugins ().front ().get_object ());
     pl->save_state ("/tmp/test_clap_state");
     AUDIO_ENGINE->resume (state);
   });
@@ -116,7 +117,7 @@ PluginManager::createPluginInstance (
     EngineState state{};
     AUDIO_ENGINE->wait_for_pause (state, false, true);
     auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
-      P_MASTER_TRACK->channel ()->inserts ()->plugins ().front ().get_object ());
+      track->channel ()->inserts ()->plugins ().front ().get_object ());
     pl->load_state ("/tmp/test_clap_state");
     AUDIO_ENGINE->resume (state);
   });

@@ -27,7 +27,7 @@ GridLayout {
 
     Rectangle {
       Layout.fillHeight: true
-      color: root.region.regionMixin.color.useColor ? root.region.regionMixin.color.color : root.track.color
+      color: root.region.color.useColor ? root.region.color.color : root.track.color
       Layout.preferredWidth: 5
     }
 
@@ -36,7 +36,7 @@ GridLayout {
 
       Layout.fillHeight: true
       font: Style.normalTextFont
-      text: root.region.regionMixin.name.name
+      text: root.region.name.name
     }
   }
 

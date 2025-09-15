@@ -43,17 +43,18 @@ public:
       region_start = region.position ()->ticks ();
 
     const double loop_length_in_ticks =
-      region.regionMixin ()->loopRange ()->get_loop_length_in_ticks ();
-    const auto &length = region.regionMixin ()->bounds ()->length ();
-    const auto &loop_start_pos =
-      region.regionMixin ()->loopRange ()->loopStartPosition ();
-    const auto &loop_end_pos =
-      region.regionMixin ()->loopRange ()->loopEndPosition ();
-    const auto &clip_start_pos =
-      region.regionMixin ()->loopRange ()->clipStartPosition ();
-    int number_of_loop_repeats = (int) std::ceil (
-      (length->ticks () - loop_start_pos->ticks () + clip_start_pos->ticks ())
-      / loop_length_in_ticks);
+      region.loopRange ()->get_loop_length_in_ticks ();
+    const auto &length = region.bounds ()->length ();
+    const auto &loop_start_pos = region.loopRange ()->loopStartPosition ();
+    const auto &loop_end_pos = region.loopRange ()->loopEndPosition ();
+    const auto &clip_start_pos = region.loopRange ()->clipStartPosition ();
+    int         number_of_loop_repeats =
+      loop_length_in_ticks > 0
+                ? (int) std::ceil (
+            (length->ticks () - loop_start_pos->ticks ()
+             + clip_start_pos->ticks ())
+            / loop_length_in_ticks)
+                : 0;
 
     for (const auto * mn : region.get_children_view ())
       {
@@ -120,11 +121,10 @@ public:
                 const auto get_note_positions_in_export =
                   [&region, loop_length_in_ticks] (
                     double &start_pos, double &end_pos, int repeat_index) {
-                    const auto * loop_range =
-                      region.regionMixin ()->loopRange ();
-                    double export_start_pos{};
-                    double export_end_pos{
-                      region.regionMixin ()->bounds ()->length ()->ticks ()
+                    const auto * loop_range = region.loopRange ();
+                    double       export_start_pos{};
+                    double       export_end_pos{
+                      region.bounds ()->length ()->ticks ()
                     };
 
                     end_pos = std::min (
@@ -152,8 +152,7 @@ public:
                 // skip
                 if (
                   mn_pos_ticks < 0.0
-                  || mn_pos_ticks
-                       >= region.regionMixin ()->bounds ()->length ()->ticks ())
+                  || mn_pos_ticks >= region.bounds ()->length ()->ticks ())
                   {
                     continue;
                   }

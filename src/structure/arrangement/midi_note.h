@@ -6,8 +6,6 @@
 #include <cstdint>
 
 #include "structure/arrangement/arranger_object.h"
-#include "structure/arrangement/bounded_object.h"
-#include "structure/arrangement/muteable_object.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -21,8 +19,6 @@ concept RangeOfMidiNotePointers = RangeOf<T, MidiNote *>;
 class MidiNote : public ArrangerObject
 {
   Q_OBJECT
-  Q_PROPERTY (ArrangerObjectBounds * bounds READ bounds CONSTANT)
-  Q_PROPERTY (ArrangerObjectMuteFunctionality * mute READ mute CONSTANT)
   Q_PROPERTY (int pitch READ pitch WRITE setPitch NOTIFY pitchChanged)
   Q_PROPERTY (
     int velocity READ velocity WRITE setVelocity NOTIFY velocityChanged)
@@ -45,9 +41,6 @@ public:
   // ========================================================================
   // QML Interface
   // ========================================================================
-
-  ArrangerObjectBounds *            bounds () const { return bounds_.get (); }
-  ArrangerObjectMuteFunctionality * mute () const { return mute_.get (); }
 
   int  pitch () const { return static_cast<int> (pitch_); }
   void setPitch (int ipitch)
@@ -147,38 +140,29 @@ private:
     const MidiNote        &other,
     utils::ObjectCloneType clone_type);
 
-  static constexpr auto kBoundsKey = "bounds"sv;
-  static constexpr auto kMuteKey = "mute"sv;
   static constexpr auto kVelocityKey = "velocity"sv;
   static constexpr auto kPitchKey = "pitch"sv;
   friend void           to_json (nlohmann::json &j, const MidiNote &note)
   {
     to_json (j, static_cast<const ArrangerObject &> (note));
-    j[kBoundsKey] = note.bounds_;
-    j[kMuteKey] = note.mute_;
     j[kVelocityKey] = note.velocity_;
     j[kPitchKey] = note.pitch_;
   }
   friend void from_json (const nlohmann::json &j, MidiNote &note)
   {
     from_json (j, static_cast<ArrangerObject &> (note));
-    j.at (kBoundsKey).get_to (*note.bounds_);
-    j.at (kMuteKey).get_to (*note.mute_);
     j.at (kVelocityKey).get_to (note.velocity_);
     j.at (kPitchKey).get_to (note.pitch_);
   }
 
 private:
-  utils::QObjectUniquePtr<ArrangerObjectBounds>            bounds_;
-  utils::QObjectUniquePtr<ArrangerObjectMuteFunctionality> mute_;
-
   /** Velocity. */
   std::uint8_t velocity_{ DEFAULT_VELOCITY };
 
   /** The note/pitch, (0-127). */
   std::uint8_t pitch_{ 60 };
 
-  BOOST_DESCRIBE_CLASS (MidiNote, (), (), (), (bounds_, mute_, velocity_, pitch_))
+  BOOST_DESCRIBE_CLASS (MidiNote, (ArrangerObject), (), (), (velocity_, pitch_))
 };
 
 }

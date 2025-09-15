@@ -17,15 +17,8 @@ InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
   color_ = Color (QColor ("#FF9616"));
   icon_name_ = u8"instrument";
 
-  processor_ = make_track_processor (
-    [this] (
-      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
-      dsp::MidiEventVector *                        midi_events,
-      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
-      lanes ()->fill_events_callback (
-        transport, time_nfo, midi_events, stereo_ports);
-    },
-    [this] (dsp::MidiEventVector &events) {
+  processor_ =
+    make_track_processor (std::nullopt, [this] (dsp::MidiEventVector &events) {
       pianoRollTrackMixin ()->transform_midi_inputs_func (events);
     });
 }

@@ -67,48 +67,12 @@ public:
   }
 
   Q_INVOKABLE structure::arrangement::ChordRegion *
-  addEmptyChordRegion (structure::tracks::ChordTrack * track, double startTicks)
-  {
-    auto cr_ref =
-      arranger_object_factory_
-        .get_builder<structure::arrangement::ChordRegion> ()
-        .with_start_ticks (startTicks)
-        .build_in_registry ();
-    auto * chord_region =
-      cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
-    chord_region->regionMixin ()->name ()->setName (
-      track->generate_name_for_region (*chord_region));
-    track->structure::arrangement::ArrangerObjectOwner<
-      structure::arrangement::ChordRegion>::add_object (cr_ref);
-    undo_stack_.push (
-      new commands::AddArrangerObjectCommand<
-        structure::arrangement::ChordRegion> (*track, cr_ref));
-    return cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
-  }
+  addEmptyChordRegion (structure::tracks::ChordTrack * track, double startTicks);
 
   Q_INVOKABLE structure::arrangement::AutomationRegion *
               addEmptyAutomationRegion (
                 structure::tracks::AutomationTrack * automationTrack,
-                double                               startTicks)
-
-  {
-    // TODO
-    return nullptr;
-#if 0
-    auto ar_ref =
-      get_builder<AutomationRegion> ()
-        .with_start_ticks (startTicks)
-        .build_in_registry ();
-    auto track_var = automationTrack->get_track ();
-    std::visit (
-      [&] (auto &&track) {
-        track->structure::tracks::Track::template add_region<AutomationRegion> (
-          ar_ref, automationTrack, std::nullopt, true);
-      },
-      track_var);
-    return std::get<AutomationRegion *> (ar_ref.get_object ());
-#endif
-  }
+                double                               startTicks);
 
   /**
    * @brief
@@ -202,10 +166,7 @@ public:
   Q_INVOKABLE structure::arrangement::MidiNote * addMidiNote (
     structure::arrangement::MidiRegion * region,
     double                               startTicks,
-    int                                  pitch)
-  {
-    return add_editor_object (*region, startTicks, pitch);
-  }
+    int                                  pitch);
 
   Q_INVOKABLE structure::arrangement::AutomationPoint * addAutomationPoint (
     structure::arrangement::AutomationRegion * region,

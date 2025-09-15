@@ -27,6 +27,8 @@ Arranger {
     if (!trackLane) {}
     console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
 
+    const tickPosition = x / root.ruler.pxPerTick;
+
     switch (track.type) {
     case Track.Chord:
       console.log("creating chord");
@@ -34,7 +36,7 @@ Arranger {
     case Track.Marker:
       console.log("creating marker", Track.Marker, ArrangerObject.Marker);
       root.undoStack.beginMacro("Create Marker");
-      let marker = objectCreator.addMarker(Marker.Custom, track, qsTr("Custom Marker"), x / root.ruler.pxPerTick);
+      let marker = objectCreator.addMarker(Marker.Custom, track, qsTr("Custom Marker"), tickPosition);
       root.currentAction = Arranger.CreatingMoving;
       root.selectSingleObject(track.markers, track.markers.rowCount() - 1);
       CursorManager.setClosedHandCursor();
@@ -43,7 +45,7 @@ Arranger {
     case Track.Midi:
     case Track.Instrument:
       console.log("creating midi region", track.lanes.getFirstLane());
-      let region = objectCreator.addEmptyMidiRegion(track, trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
+      let region = objectCreator.addEmptyMidiRegion(track, trackLane ? trackLane : track.lanes.getFirstLane(), tickPosition);
       root.currentAction = Arranger.CreatingResizingR;
       root.setObjectSnapshotsAtStart();
       CursorManager.setResizeEndCursor();
@@ -78,12 +80,12 @@ Arranger {
     return automationItem?.automationTrack ?? null;
   }
 
-  function getTrackAtY(y: real): var {
+  function getTrackAtY(y: real): Track {
     const item = tracksListView.itemAt(0, y + tracksListView.contentY);
     return item?.track ?? null;
   }
 
-  function getTrackLaneAtY(y: real): var {
+  function getTrackLaneAtY(y: real): TrackLane {
     // Get the track delegate
     const trackItem = tracksListView.itemAt(0, y + tracksListView.contentY);
     if (!trackItem?.track?.hasLanes || !trackItem?.track?.lanesVisible) {
@@ -457,7 +459,7 @@ Arranger {
                   property var region: arrangerObject
                   readonly property real regionEndX: regionX + regionWidth
                   readonly property real regionHeight: mainTrackLanedRegionsLoader.height
-                  readonly property real regionWidth: region.regionMixin.bounds.length.ticks * root.ruler.pxPerTick
+                  readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
                   readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
                   readonly property var trackLane: mainTrackLaneRegionsRepeater.trackLane
 
@@ -571,7 +573,7 @@ Arranger {
                   property var region: arrangerObject
                   readonly property real regionEndX: regionX + regionWidth
                   readonly property real regionHeight: trackLane.height
-                  readonly property real regionWidth: region.regionMixin.bounds.length.ticks * root.ruler.pxPerTick
+                  readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
                   readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
                   readonly property var trackLane: laneItem.trackLane
 

@@ -681,7 +681,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                         [&] (auto &&r) {
                           if constexpr (RegionObject<base_type<decltype (r)>>)
                             {
-                              r->regionMixin ()->mute ()->setMuted (true);
+                              r->mute ()->setMuted (true);
                             }
                         },
                         *recording_region_optvar);

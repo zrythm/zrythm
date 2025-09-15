@@ -222,7 +222,10 @@ static_assert (!DerivedFromCRTPBase<OtherNonDerived, CRTPBase>);
 
 template <typename R, typename T>
 concept RangeOf =
-  std::ranges::range<R> && std::same_as<std::ranges::range_value_t<R>, T>;
+  std::ranges::range<R>
+  && (std::derived_from<std::ranges::range_value_t<R>, T> ||
+    // handle pointers too
+  (IsRawPointer<std::ranges::range_value_t<R>> && IsRawPointer<T> && std::derived_from<std::remove_pointer_t<std::ranges::range_value_t<R>>, std::remove_pointer_t<T>>) );
 
 namespace detail
 {

@@ -625,8 +625,7 @@ Transport::move_playhead (double target_ticks, bool set_cue_point)
               structure::arrangement::MidiRegion>::get_children_view ())
             {
               const auto playhead_pos = get_playhead_position_in_gui_thread ();
-              if (!region->regionMixin ()->bounds ()->is_hit (
-                    playhead_pos.frames_, true))
+              if (!region->bounds ()->is_hit (playhead_pos.frames_, true))
                 continue;
 
               for (auto * midi_note : region->get_children_view ())

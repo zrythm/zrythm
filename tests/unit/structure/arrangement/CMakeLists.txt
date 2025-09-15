@@ -23,8 +23,8 @@ add_executable(zrythm_structure_arrangement_unit_tests
   midi_region_test.cpp
   midi_region_serializer_test.cpp
   muteable_object_test.cpp
+  playback_cache_builder_test.cpp
   named_object_test.cpp
-  region_test.cpp
   scale_object_test.cpp
 )
 

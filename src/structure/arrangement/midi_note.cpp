@@ -9,10 +9,16 @@
 namespace zrythm::structure::arrangement
 {
 MidiNote::MidiNote (const dsp::TempoMap &tempo_map, QObject * parent)
-    : ArrangerObject (Type::MidiNote, tempo_map, parent),
-      bounds_ (utils::make_qobject_unique<ArrangerObjectBounds> (*position ())),
-      mute_ (utils::make_qobject_unique<ArrangerObjectMuteFunctionality> (this))
+    : ArrangerObject (
+        Type::MidiNote,
+        tempo_map,
+        ArrangerObjectFeatures::Bounds | ArrangerObjectFeatures::Mute,
+        parent)
 {
+  QObject::connect (
+    this, &MidiNote::pitchChanged, this, &ArrangerObject::propertiesChanged);
+  QObject::connect (
+    this, &MidiNote::velocityChanged, this, &ArrangerObject::propertiesChanged);
 }
 
 #if 0
@@ -143,8 +149,6 @@ init_from (MidiNote &obj, const MidiNote &other, utils::ObjectCloneType clone_ty
 {
   obj.pitch_ = other.pitch_;
   obj.setVelocity (other.velocity ());
-  init_from (*obj.bounds_, *other.bounds_, clone_type);
-  init_from (*obj.mute_, *other.mute_, clone_type);
   init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);

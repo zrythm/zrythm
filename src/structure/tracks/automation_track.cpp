@@ -95,13 +95,12 @@ AutomationTrack::get_automation_point_before (
 {
   auto * r = get_region_before (timeline_position, search_only_backwards);
 
-  if ((r == nullptr) || r->regionMixin ()->mute ()->muted ())
+  if ((r == nullptr) || r->mute ()->muted ())
     {
       return nullptr;
     }
 
-  const auto region_end_frames =
-    r->regionMixin ()->bounds ()->get_end_position_samples (true);
+  const auto region_end_frames = r->bounds ()->get_end_position_samples (true);
 
   /* if region ends before pos, assume pos is the region's end pos */
   signed_frame_t local_pos = timeline_frames_to_local (
@@ -219,7 +218,7 @@ AutomationTrack::get_normalized_value (
 
   /* if region ends before pos, assume pos is the region's end pos */
   const auto region_end_position =
-    region->regionMixin ()->bounds ()->get_end_position_samples (true);
+    region->bounds ()->get_end_position_samples (true);
   signed_frame_t localp = timeline_frames_to_local (
     *region,
     !search_only_regions_enclosing_position

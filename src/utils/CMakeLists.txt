@@ -35,6 +35,7 @@ target_sources(zrythm_utils_lib
     env.cpp
     exceptions.h
     exceptions.cpp
+    expandable_tick_range.h
     file_path_list.h
     file_path_list.cpp
     gtest_wrapper.h
@@ -64,6 +65,7 @@ target_sources(zrythm_utils_lib
     objects.cpp
     pcg_rand.h
     pcg_rand.cpp
+    playback_cache_scheduler.h
     progress_info.h
     progress_info.cpp
     qt.h

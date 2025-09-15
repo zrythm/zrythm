@@ -9,6 +9,8 @@
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
 
+#include <farbot/RealtimeObject.hpp>
+
 namespace zrythm::structure::tracks
 {
 /**
@@ -28,7 +30,6 @@ class TrackProcessor final : public QObject, public dsp::ProcessorBase
 
   struct TrackProcessorProcessingCaches
   {
-
     std::vector<dsp::AudioPort *> audio_ins_rt_;
     std::vector<dsp::AudioPort *> audio_outs_rt_;
     dsp::MidiPort *               midi_in_rt_{};
@@ -122,6 +123,15 @@ public:
               append_midi_inputs_to_outputs_func = std::nullopt,
     QObject * parent = nullptr);
 
+  /**
+   * @brief Sets the MIDI event sequence to be used during realtime processing.
+   *
+   * To be called as needed when a new cache is ready.
+   *
+   * @param events
+   */
+  void set_midi_events (const juce::MidiMessageSequence &events);
+
   // note: this should eventually be passed from the constructor
   void set_handle_recording_callback (HandleRecordingCallback handle_rec_cb)
   {
@@ -159,7 +169,7 @@ public:
       time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_;
 
     // skip region if muted (TODO: check parents)
-    if (region.regionMixin ()->mute ()->muted ())
+    if (region.mute ()->muted ())
       {
         return;
       }
@@ -177,7 +187,7 @@ public:
 
     /* skip if region is not hit (inclusive of its last point) */
     if (
-      !region.regionMixin ()->bounds ()->is_hit_by_range (
+      !region.bounds ()->is_hit_by_range (
         std::make_pair (
           (signed_frame_t) time_nfo.g_start_frame_w_offset_,
           (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1))),
@@ -187,7 +197,7 @@ public:
       }
 
     signed_frame_t num_frames_to_process = std::min (
-      region.regionMixin ()->bounds ()->get_end_position_samples (true)
+      region.bounds ()->get_end_position_samples (true)
         - (signed_frame_t) time_nfo.g_start_frame_w_offset_,
       (signed_frame_t) time_nfo.nframes_);
     nframes_t frames_processed = 0;
@@ -207,7 +217,7 @@ public:
 
         const bool is_region_end =
           (signed_frame_t) time_nfo.g_start_frame_w_offset_ + num_frames_to_process
-          == region.regionMixin ()->bounds ()->get_end_position_samples (true);
+          == region.bounds ()->get_end_position_samples (true);
 
         const bool is_transport_end =
           transport.loop_enabled ()
@@ -380,13 +390,7 @@ public:
    */
   void fill_midi_events (
     const EngineProcessTimeInfo &time_nfo,
-    dsp::MidiEventVector        &midi_events)
-  {
-    std::invoke (
-      *fill_events_cb_, transport_, time_nfo, &midi_events, std::nullopt);
-    midi_events.clear_duplicates ();
-    midi_events.sort ();
-  }
+    dsp::MidiEventVector        &midi_events);
 
   /**
    * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
@@ -398,10 +402,7 @@ public:
    */
   void fill_audio_events (
     const EngineProcessTimeInfo &time_nfo,
-    StereoPortPair               stereo_ports)
-  {
-    std::invoke (*fill_events_cb_, transport_, time_nfo, nullptr, stereo_ports);
-  }
+    StereoPortPair               stereo_ports);
 
 private:
   friend void to_json (nlohmann::json &j, const TrackProcessor &tp)
@@ -528,6 +529,11 @@ private:
 
   // Processing caches
   std::unique_ptr<TrackProcessorProcessingCaches> processing_caches_;
+
+  farbot::RealtimeObject<
+    juce::MidiMessageSequence,
+    farbot::RealtimeObjectOptions::nonRealtimeMutatable>
+    active_midi_playback_sequence_;
 };
 
 }

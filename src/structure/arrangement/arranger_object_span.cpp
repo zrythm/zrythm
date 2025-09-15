@@ -151,8 +151,7 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
 #endif
                 }
 
-              get_new_r (new_r)->regionMixin ()->name ()->setName (
-                first_r->regionMixin ()->name ()->name ());
+              get_new_r (new_r)->name ()->setName (first_r->name ()->name ());
               return *new_r;
             }
           else

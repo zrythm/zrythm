@@ -9,7 +9,7 @@ ArrangerObjectBaseView {
   id: root
 
   required property ClipEditor clipEditor
-  property string regionName: arrangerObject.regionMixin.name.name
+  property string regionName: arrangerObject.name.name
 
   implicitHeight: 10
   implicitWidth: 10
@@ -45,7 +45,7 @@ ArrangerObjectBaseView {
       font: root.font
       horizontalAlignment: Text.AlignLeft
       padding: Style.buttonPadding
-      text: root.arrangerObject.regionMixin.name.name
+      text: root.arrangerObject.name.name
       verticalAlignment: Text.AlignVCenter
     }
 
@@ -127,7 +127,7 @@ ArrangerObjectBaseView {
       onPositionChanged: mouse => {
         if (drag.active) {
           let ticksDiff = (mouse.x - startX) / root.pxPerTick;
-          root.arrangerObject.regionMixin.bounds.length.ticks += ticksDiff;
+          root.arrangerObject.bounds.length.ticks += ticksDiff;
         }
       }
       onPressed: mouse => {

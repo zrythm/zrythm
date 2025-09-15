@@ -22,23 +22,7 @@ class ArrangerObjectFadeRange : public QObject
 public:
   ArrangerObjectFadeRange (
     const dsp::TempoMap &tempo_map,
-    QObject *            parent = nullptr)
-      : QObject (parent), start_offset_ (tempo_map),
-        start_offset_adapter_ (
-          utils::make_qobject_unique<
-            dsp::AtomicPositionQmlAdapter> (start_offset_, this)),
-        end_offset_ (tempo_map),
-        end_offset_adapter_ (
-          utils::make_qobject_unique<
-            dsp::AtomicPositionQmlAdapter> (end_offset_, this)),
-        fade_in_opts_adapter_ (
-          utils::make_qobject_unique<
-            dsp::CurveOptionsQmlAdapter> (fade_in_opts_, this)),
-        fade_out_opts_adapter_ (
-          utils::make_qobject_unique<
-            dsp::CurveOptionsQmlAdapter> (fade_out_opts_, this))
-  {
-  }
+    QObject *            parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -60,6 +44,8 @@ public:
   {
     return fade_out_opts_adapter_.get ();
   }
+
+  Q_SIGNAL void fadePropertiesChanged ();
 
   // ========================================================================
 

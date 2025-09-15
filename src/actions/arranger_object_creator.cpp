@@ -18,7 +18,7 @@ ArrangerObjectCreator::add_laned_object (
         std::is_same_v<ObjectT, structure::arrangement::MidiRegion>
         || std::is_same_v<ObjectT, structure::arrangement::AudioRegion>)
         {
-          obj->regionMixin ()->name ()->setName (
+          obj->name ()->setName (
             track.generate_name_for_region (*obj).to_qstring ());
 
           undo_stack_.push (
@@ -26,6 +26,51 @@ ArrangerObjectCreator::add_laned_object (
         }
     },
     obj_ref.get_object ());
+}
+
+structure::arrangement::ChordRegion *
+ArrangerObjectCreator::addEmptyChordRegion (
+  structure::tracks::ChordTrack * track,
+  double                          startTicks)
+{
+  auto cr_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::ChordRegion> ()
+      .with_start_ticks (startTicks)
+      .build_in_registry ();
+  auto * chord_region =
+    cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
+  chord_region->name ()->setName (
+    track->generate_name_for_region (*chord_region));
+  track->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::ChordRegion>::add_object (cr_ref);
+  undo_stack_.push (
+    new commands::AddArrangerObjectCommand<structure::arrangement::ChordRegion> (
+      *track, cr_ref));
+  return cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
+}
+
+structure::arrangement::AutomationRegion *
+ArrangerObjectCreator::addEmptyAutomationRegion (
+  structure::tracks::AutomationTrack * automationTrack,
+  double                               startTicks)
+
+{
+  // TODO
+  return nullptr;
+#if 0
+    auto ar_ref =
+      get_builder<AutomationRegion> ()
+        .with_start_ticks (startTicks)
+        .build_in_registry ();
+    auto track_var = automationTrack->get_track ();
+    std::visit (
+      [&] (auto &&track) {
+        track->structure::tracks::Track::template add_region<AutomationRegion> (
+          ar_ref, automationTrack, std::nullopt, true);
+      },
+      track_var);
+    return std::get<AutomationRegion *> (ar_ref.get_object ());
+#endif
 }
 
 structure::arrangement::MidiRegion *
@@ -38,8 +83,7 @@ ArrangerObjectCreator::addMidiRegionFromChordDescriptor (
   auto *     mr = addEmptyMidiRegion (track, lane, startTicks);
   const auto r_len_ticks =
     snap_grid_timeline_.defaultTicks (static_cast<int64_t> (startTicks));
-  mr->regionMixin ()->bounds ()->length ()->setTicks (
-    static_cast<double> (r_len_ticks));
+  mr->bounds ()->length ()->setTicks (static_cast<double> (r_len_ticks));
   const auto mn_len_ticks =
     snap_grid_editor_.defaultTicks (static_cast<int64_t> (startTicks));
 
@@ -87,4 +131,14 @@ ArrangerObjectCreator::addMidiRegionFromMidiFile (
 
   return mr;
 }
+
+structure::arrangement::MidiNote *
+ArrangerObjectCreator::addMidiNote (
+  structure::arrangement::MidiRegion * region,
+  double                               startTicks,
+  int                                  pitch)
+{
+  return add_editor_object (*region, startTicks, pitch);
+}
+
 } // namespace zrythm::actions

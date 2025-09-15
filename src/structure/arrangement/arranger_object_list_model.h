@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object.h"
+#include "utils/expandable_tick_range.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -30,18 +31,9 @@ public:
 
   ArrangerObjectListModel (
     std::vector<ArrangerObjectUuidReference> &objects,
-    QObject *                                 parent = nullptr)
-      : QAbstractListModel (parent), objects_ (objects)
-  {
-  }
+    QObject *                                 parent = nullptr);
 
-  QHash<int, QByteArray> roleNames () const override
-  {
-    QHash<int, QByteArray> roles;
-    roles[ArrangerObjectPtrRole] = "arrangerObject";
-    roles[ArrangerObjectUuidReferenceRole] = "arrangerObjectReference";
-    return roles;
-  }
+  QHash<int, QByteArray> roleNames () const override;
 
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override
   {
@@ -51,57 +43,22 @@ public:
   }
 
   QVariant
-  data (const QModelIndex &index, int role = Qt::DisplayRole) const override
-  {
-    if (!index.isValid () || index.row () >= static_cast<int> (objects_.size ()))
-      return {};
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-    if (role == ArrangerObjectPtrRole)
-      {
-        return QVariant::fromStdVariant (
-          objects_[static_cast<size_t> (index.row ())].get_object ());
-      }
-    if (role == ArrangerObjectUuidReferenceRole)
-      {
-        return QVariant::fromValue (
-          &objects_[static_cast<size_t> (index.row ())]);
-      }
+  void clear ();
 
-    return {};
-  }
-
-  void clear ()
-  {
-    beginResetModel ();
-    objects_.clear ();
-    endResetModel ();
-  }
-
-  bool insertObject (const ArrangerObjectUuidReference &object, int index)
-  {
-    if (index < 0 || index > static_cast<int> (objects_.size ()))
-      return false;
-
-    beginInsertRows (QModelIndex (), index, index);
-    objects_.insert (objects_.begin () + index, object);
-    endInsertRows ();
-    return true;
-  }
+  bool insertObject (const ArrangerObjectUuidReference &object, int index);
 
   bool
   removeRows (int row, int count, const QModelIndex &parent = QModelIndex ())
-    override
-  {
-    if (parent.isValid ())
-      return false;
-    if (row < 0 || row + count > static_cast<int> (objects_.size ()))
-      return false;
+    override;
 
-    beginRemoveRows (parent, row, row + count - 1);
-    objects_.erase (objects_.begin () + row, objects_.begin () + row + count);
-    endRemoveRows ();
-    return true;
-  }
+  Q_SIGNAL void contentChanged (utils::ExpandableTickRange affectedRange);
+  Q_SIGNAL void contentChangedForObject (const ArrangerObject * object);
+
+private:
+  void connect_object_signals (int index);
+  void disconnect_object_signals (int index);
 
 private:
   std::vector<ArrangerObjectUuidReference> &objects_;
