@@ -16,6 +16,7 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     // Create processor parameter registry and add a test parameter
     param_id = processor_param_registry.create_object<dsp::ProcessorParameter> (
@@ -25,7 +26,7 @@ protected:
 
     // Create automation track
     automation_track = std::make_unique<AutomationTrack> (
-      *tempo_map, file_audio_source_registry, obj_registry,
+      *tempo_map_wrapper, file_audio_source_registry, obj_registry,
       std::move (param_id));
   }
 
@@ -60,8 +61,9 @@ protected:
     region->add_object (point_ref);
   }
 
-  std::unique_ptr<dsp::TempoMap>  tempo_map;
-  dsp::PortRegistry               port_registry;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  dsp::PortRegistry                     port_registry;
   dsp::ProcessorParameterRegistry processor_param_registry{ port_registry };
   dsp::ProcessorParameterUuidReference param_id{ processor_param_registry };
   arrangement::ArrangerObjectRegistry  obj_registry;
@@ -260,7 +262,8 @@ TEST_F (AutomationTrackTest, GenerateAutomationTracks)
   };
   std::vector<utils::QObjectUniquePtr<AutomationTrack>> tracks;
   generate_automation_tracks_for_processor (
-    tracks, processor, *tempo_map, file_audio_source_registry, obj_registry);
+    tracks, processor, *tempo_map_wrapper, file_audio_source_registry,
+    obj_registry);
 
   // Should create tracks for automatable parameters only (2 of 3)
   EXPECT_EQ (tracks.size (), 2);
@@ -287,7 +290,7 @@ TEST_F (AutomationTrackTest, Serialization)
 
   // Create dummy track with same parameters
   auto dummy_track = std::make_unique<AutomationTrack> (
-    *tempo_map, file_audio_source_registry, obj_registry,
+    *tempo_map_wrapper, file_audio_source_registry, obj_registry,
     dsp::ProcessorParameterUuidReference (
       automation_track->parameter ()->get_uuid (), processor_param_registry));
 

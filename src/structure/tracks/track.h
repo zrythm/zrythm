@@ -5,6 +5,7 @@
 
 #include "dsp/midi_playback_cache.h"
 #include "dsp/modulator_macro_processor.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/piano_roll_track.h"
@@ -24,7 +25,7 @@ using SoloedTracksExistGetter = GenericBoolGetter;
 
 struct BaseTrackDependencies
 {
-  const dsp::TempoMap                 &tempo_map_;
+  const dsp::TempoMapWrapper          &tempo_map_;
   dsp::FileAudioSourceRegistry        &file_audio_source_registry_;
   plugins::PluginRegistry             &plugin_registry_;
   dsp::PortRegistry                   &port_registry_;
@@ -812,7 +813,7 @@ using TrackUuidReference = utils::UuidReference<TrackRegistry>;
 struct FinalTrackDependencies : public BaseTrackDependencies
 {
   FinalTrackDependencies (
-    const dsp::TempoMap                 &tempo_map,
+    const dsp::TempoMapWrapper          &tempo_map,
     dsp::FileAudioSourceRegistry        &file_audio_source_registry,
     plugins::PluginRegistry             &plugin_registry,
     dsp::PortRegistry                   &port_registry,

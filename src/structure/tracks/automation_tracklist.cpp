@@ -30,7 +30,7 @@ init_from (
 QHash<int, QByteArray>
 AutomationTracklist::roleNames () const
 {
-  static QHash<int, QByteArray> roles = {
+  QHash<int, QByteArray> roles = {
     { AutomationTrackHolderRole, "automationTrackHolder" },
     { AutomationTrackRole,       "automationTrack"       },
   };

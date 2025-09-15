@@ -6,7 +6,7 @@
 namespace zrythm::structure::tracks
 {
 AutomationTrack::AutomationTrack (
-  const dsp::TempoMap                 &tempo_map,
+  const dsp::TempoMapWrapper          &tempo_map,
   dsp::FileAudioSourceRegistry        &file_audio_source_registry,
   ArrangerObjectRegistry              &obj_registry,
   dsp::ProcessorParameterUuidReference param_id,
@@ -63,7 +63,8 @@ AutomationTrack::get_automation_point_around (
   bool         search_only_backwards)
 {
   const auto &tempo_map = tempo_map_;
-  auto        pos_frames = tempo_map.tick_to_samples_rounded (position_ticks);
+  auto        pos_frames =
+    tempo_map.get_tempo_map ().tick_to_samples_rounded (position_ticks);
   AutomationPoint * ap = get_automation_point_before (pos_frames, true);
   if (
     (ap != nullptr) && position_ticks - ap->position ()->ticks () <= delta_ticks)
@@ -76,7 +77,8 @@ AutomationTrack::get_automation_point_around (
       return nullptr;
     }
 
-  pos_frames = tempo_map.tick_to_samples_rounded (position_ticks + delta_ticks);
+  pos_frames = tempo_map.get_tempo_map ().tick_to_samples_rounded (
+    position_ticks + delta_ticks);
   ap = get_automation_point_before (pos_frames, true);
   if (ap != nullptr)
     {

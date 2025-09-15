@@ -7,6 +7,7 @@
 
 #include "dsp/parameter.h"
 #include "dsp/processor_base.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/automation_region.h"
 
@@ -59,7 +60,7 @@ public:
 public:
   /** Creates an automation track for the given parameter. */
   AutomationTrack (
-    const dsp::TempoMap                 &tempo_map,
+    const dsp::TempoMapWrapper          &tempo_map,
     dsp::FileAudioSourceRegistry        &file_audio_source_registry,
     ArrangerObjectRegistry              &obj_registry,
     dsp::ProcessorParameterUuidReference param_id,
@@ -235,8 +236,8 @@ private:
     utils::ObjectCloneType clone_type);
 
 private:
-  const dsp::TempoMap    &tempo_map_;
-  ArrangerObjectRegistry &object_registry_;
+  const dsp::TempoMapWrapper &tempo_map_;
+  ArrangerObjectRegistry     &object_registry_;
 
   /** Parameter this AutomationTrack is for. */
   dsp::ProcessorParameterUuidReference param_id_;
@@ -255,7 +256,7 @@ inline void
 generate_automation_tracks_for_processor (
   std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ret,
   const dsp::ProcessorBase                              &processor,
-  const dsp::TempoMap                                   &tempo_map,
+  const dsp::TempoMapWrapper                            &tempo_map,
   dsp::FileAudioSourceRegistry        &file_audio_source_registry,
   arrangement::ArrangerObjectRegistry &object_registry)
 {

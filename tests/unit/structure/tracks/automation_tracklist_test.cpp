@@ -16,6 +16,7 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     // Create test parameters
     param_id1 = processor_param_registry.create_object<dsp::ProcessorParameter> (
@@ -31,7 +32,7 @@ protected:
     // Create automation tracklist
     automation_tracklist = std::make_unique<
       AutomationTracklist> (AutomationTrackHolder::Dependencies{
-      .tempo_map_ = *tempo_map,
+      .tempo_map_ = *tempo_map_wrapper,
       .file_audio_source_registry_ = file_audio_source_registry,
       .port_registry_ = port_registry,
       .param_registry_ = processor_param_registry,
@@ -43,12 +44,13 @@ protected:
   create_automation_track (dsp::ProcessorParameterUuidReference param_id)
   {
     return utils::make_qobject_unique<AutomationTrack> (
-      *tempo_map, file_audio_source_registry, obj_registry,
+      *tempo_map_wrapper, file_audio_source_registry, obj_registry,
       std::move (param_id));
   }
 
-  std::unique_ptr<dsp::TempoMap>  tempo_map;
-  dsp::PortRegistry               port_registry;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  dsp::PortRegistry                     port_registry;
   dsp::ProcessorParameterRegistry processor_param_registry{ port_registry };
   dsp::ProcessorParameterUuidReference param_id1{ processor_param_registry };
   dsp::ProcessorParameterUuidReference param_id2{ processor_param_registry };
@@ -345,7 +347,7 @@ TEST_F (AutomationTracklistTest, Serialization)
   // Create dummy tracklist with same dependencies
   auto dummy_tracklist = std::make_unique<
     AutomationTracklist> (AutomationTrackHolder::Dependencies{
-    .tempo_map_ = *tempo_map,
+    .tempo_map_ = *tempo_map_wrapper,
     .file_audio_source_registry_ = file_audio_source_registry,
     .port_registry_ = port_registry,
     .param_registry_ = processor_param_registry,

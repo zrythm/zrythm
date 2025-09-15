@@ -182,10 +182,17 @@ Track::make_lanes ()
 
   playable_content_cache_request_debouncer_ =
     utils::make_qobject_unique<utils::PlaybackCacheScheduler> (this);
+
   QObject::connect (
     ret.get (), &TrackLaneList::laneObjectsNeedRecache,
     playable_content_cache_request_debouncer_.get (),
     &utils::PlaybackCacheScheduler::queueCacheRequest);
+  QObject::connect (
+    &base_dependencies_.tempo_map_, &dsp::TempoMapWrapper::tempoEventsChanged,
+    playable_content_cache_request_debouncer_.get (), [this] () {
+      playable_content_cache_request_debouncer_->queueCacheRequest ({});
+    });
+
   QObject::connect (
     playable_content_cache_request_debouncer_.get (),
     &utils::PlaybackCacheScheduler::cacheRequested, this,
@@ -382,12 +389,12 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
         return uptr.get ();
       });
   z_debug (
-    "Arranger object contents changed - regenerating caches for range [{}]",
-    affectedRange);
+    "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
+    name (), affectedRange);
   arrangement::PlaybackCacheBuilder::
     generate_midi_cache_for_midi_region_collections (
-      midi_playback_cache_, lanes_view, base_dependencies_.tempo_map_,
-      affectedRange);
+      midi_playback_cache_, lanes_view,
+      base_dependencies_.tempo_map_.get_tempo_map (), affectedRange);
   processor_->set_midi_events (midi_playback_cache_.cached_events ());
 }
 

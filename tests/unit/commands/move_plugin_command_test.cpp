@@ -72,11 +72,12 @@ protected:
   std::unique_ptr<plugins::PluginList> target_plugin_list_;
 
   // Automation tracklist dependencies
-  dsp::TempoMap                                  tempo_map_{ 44100 };
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry_;
+  dsp::TempoMap                tempo_map_{ 44100 };
+  dsp::TempoMapWrapper         tempo_map_wrapper_{ tempo_map_ };
+  dsp::FileAudioSourceRegistry file_audio_source_registry_;
   structure::arrangement::ArrangerObjectRegistry object_registry_;
   structure::tracks::AutomationTrackHolder::Dependencies automation_tracklist_deps_{
-    .tempo_map_ = tempo_map_,
+    .tempo_map_ = tempo_map_wrapper_,
     .file_audio_source_registry_ = file_audio_source_registry_,
     .port_registry_ = port_registry_,
     .param_registry_ = param_registry_,

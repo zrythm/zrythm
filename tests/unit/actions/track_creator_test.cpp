@@ -35,7 +35,7 @@ protected:
 
     // Create track factory with dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_,
+      tempo_map_wrapper_,
       file_audio_source_registry_,
       plugin_registry_,
       port_registry_,
@@ -85,6 +85,7 @@ protected:
 
   // Create minimal dependencies for track creation
   dsp::TempoMap                   tempo_map_{ 44100.0 };
+  dsp::TempoMapWrapper            tempo_map_wrapper_{ tempo_map_ };
   dsp::FileAudioSourceRegistry    file_audio_source_registry_;
   plugins::PluginRegistry         plugin_registry_;
   dsp::PortRegistry               port_registry_;

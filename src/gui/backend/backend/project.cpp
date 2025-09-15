@@ -288,7 +288,7 @@ structure::tracks::FinalTrackDependencies
 Project::get_final_track_dependencies () const
 {
   return structure::tracks::FinalTrackDependencies{
-    tempo_map_,
+    *tempo_map_wrapper_,
     *file_audio_source_registry_,
     *plugin_registry_,
     *port_registry_,

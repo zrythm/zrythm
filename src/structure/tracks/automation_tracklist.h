@@ -29,7 +29,7 @@ class AutomationTrackHolder : public QObject
 public:
   struct Dependencies
   {
-    const dsp::TempoMap                            &tempo_map_;
+    const dsp::TempoMapWrapper                     &tempo_map_;
     dsp::FileAudioSourceRegistry                   &file_audio_source_registry_;
     dsp::PortRegistry                              &port_registry_;
     dsp::ProcessorParameterRegistry                &param_registry_;

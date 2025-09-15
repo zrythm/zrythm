@@ -22,14 +22,11 @@ protected:
         dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
       utils::Utf8String::from_utf8_encoded_string ("Test Parameter"));
 
-    // Create dependencies for AutomationTrack
-    dsp::TempoMap tempo_map{ 44100 };
-
     // Create source and target automation tracks
     source_at_ = std::make_unique<tracks::AutomationTrack> (
-      tempo_map, file_audio_source_registry_, obj_registry_, param_ref);
+      tempo_map_wrapper_, file_audio_source_registry_, obj_registry_, param_ref);
     target_at_ = std::make_unique<tracks::AutomationTrack> (
-      tempo_map, file_audio_source_registry_, obj_registry_, param_ref);
+      tempo_map_wrapper_, file_audio_source_registry_, obj_registry_, param_ref);
 
     // Create test automation region
     create_test_region ();
@@ -48,12 +45,14 @@ protected:
     dsp::TempoMap tempo_map{ 44100 };
     automation_region_ref_ =
       obj_registry_.create_object<arrangement::AutomationRegion> (
-        tempo_map, obj_registry_, file_audio_source_registry_);
+        tempo_map_, obj_registry_, file_audio_source_registry_);
 
     // Add region to source automation track
     source_at_->add_object (automation_region_ref_);
   }
 
+  dsp::TempoMap                       tempo_map_{ 44100 };
+  dsp::TempoMapWrapper                tempo_map_wrapper_{ tempo_map_ };
   arrangement::ArrangerObjectRegistry obj_registry_;
   dsp::FileAudioSourceRegistry        file_audio_source_registry_;
   dsp::PortRegistry                   port_registry_;

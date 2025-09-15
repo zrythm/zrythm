@@ -19,10 +19,11 @@ protected:
 
     // Create test dependencies
     tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     // Create factory dependencies
     FinalTrackDependencies deps{
-      *tempo_map,           file_audio_source_registry,
+      *tempo_map_wrapper,   file_audio_source_registry,
       plugin_registry,      port_registry,
       param_registry,       obj_registry,
       *track_registry,      transport,
@@ -33,9 +34,10 @@ protected:
     factory = std::make_unique<TrackFactory> (std::move (deps));
   }
 
-  std::unique_ptr<dsp::TempoMap>  tempo_map;
-  dsp::PortRegistry               port_registry;
-  dsp::ProcessorParameterRegistry param_registry{ port_registry };
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  dsp::PortRegistry                     port_registry;
+  dsp::ProcessorParameterRegistry       param_registry{ port_registry };
   structure::arrangement::ArrangerObjectRegistry obj_registry;
   dsp::FileAudioSourceRegistry                   file_audio_source_registry;
   plugins::PluginRegistry                        plugin_registry;
