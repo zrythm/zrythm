@@ -24,7 +24,7 @@ protected:
     app_ = std::make_unique<ScopedQCoreApplication> ();
     scheduler = new PlaybackCacheScheduler ();
     // Use a smaller delay for faster tests, but not too small to be unreliable
-    scheduler->setDelay (20ms);
+    scheduler->setDelay (40ms);
   }
 
   void TearDown () override { delete scheduler; }
@@ -40,7 +40,7 @@ TEST_F (PlaybackCacheSchedulerTest, QueueRangeRequest)
   scheduler->queueCacheRequestForRange (10.0, 20.0);
 
   // Process events to trigger the timer
-  QTest::qWait (30); // Wait slightly longer than 20ms delay
+  QTest::qWait (70ms); // Wait slightly longer than 40ms delay
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -58,7 +58,7 @@ TEST_F (PlaybackCacheSchedulerTest, QueueFullCacheRequest)
 
   scheduler->queueFullCacheRequest ();
 
-  QTest::qWait (30);
+  QTest::qWait (70ms);
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -76,7 +76,7 @@ TEST_F (PlaybackCacheSchedulerTest, DebouncingMultipleRequests)
   scheduler->queueCacheRequestForRange (15.0, 25.0);
   scheduler->queueCacheRequestForRange (5.0, 30.0);
 
-  QTest::qWait (30);
+  QTest::qWait (70ms);
 
   // Should only emit once due to debouncing
   EXPECT_EQ (spy.count (), 1);
@@ -111,7 +111,7 @@ TEST_F (PlaybackCacheSchedulerTest, MixedRangeAndFullRequests)
   scheduler->queueCacheRequestForRange (10.0, 20.0);
   scheduler->queueFullCacheRequest ();
 
-  QTest::qWait (30);
+  QTest::qWait (70ms);
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -125,12 +125,12 @@ TEST_F (PlaybackCacheSchedulerTest, MultipleSeparateRequests)
 
   // First request
   scheduler->queueCacheRequestForRange (10.0, 20.0);
-  QTest::qWait (30);
+  QTest::qWait (70ms);
   EXPECT_EQ (spy.count (), 1);
 
   // Second request after first completed
   scheduler->queueCacheRequestForRange (30.0, 40.0);
-  QTest::qWait (30);
+  QTest::qWait (70ms);
   EXPECT_EQ (spy.count (), 2);
 }
 
@@ -145,7 +145,7 @@ TEST_F (PlaybackCacheSchedulerTest, ExpandableTickRangeIntegration)
   scheduler->queueCacheRequest (range1);
   scheduler->queueCacheRequest (range2);
 
-  QTest::qWait (30);
+  QTest::qWait (70ms);
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -190,14 +190,14 @@ TEST_F (PlaybackCacheSchedulerTest, NoPendingCallAfterExecution)
   QSignalSpy spy (scheduler, &PlaybackCacheScheduler::cacheRequested);
 
   scheduler->queueCacheRequestForRange (10.0, 20.0);
-  QTest::qWait (30);
+  QTest::qWait (70ms);
 
   EXPECT_EQ (spy.count (), 1);
 
   // Internal state should be reset
   // This is testing implementation details, but useful for coverage
   scheduler->queueCacheRequestForRange (30.0, 40.0);
-  QTest::qWait (30);
+  QTest::qWait (70ms);
 
   EXPECT_EQ (spy.count (), 2);
 }
@@ -207,7 +207,7 @@ TEST_F (PlaybackCacheSchedulerTest, EdgeCaseZeroRange)
   QSignalSpy spy (scheduler, &PlaybackCacheScheduler::cacheRequested);
 
   scheduler->queueCacheRequestForRange (0.0, 0.0);
-  QTest::qWait (30);
+  QTest::qWait (70ms);
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
