@@ -42,7 +42,11 @@ PluginDescriptor::from_juce_description (
   if (juce_desc.isInstrument)
     {
       descr->category_ = PluginCategory::Instrument;
+      descr->num_midi_ins_ = 1;
     }
+
+  descr->num_audio_ins_ = juce_desc.numInputChannels;
+  descr->num_audio_outs_ = juce_desc.numOutputChannels;
 
   return descr;
 }
