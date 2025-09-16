@@ -21,10 +21,8 @@ target_sources(juce_lib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp")
 CPMFindPackage(
   NAME juce
   GITHUB_REPOSITORY juce-framework/JUCE
-  VERSION 8.0.9
-  # This is from the develop branch and includes a critical fix:
-  # https://github.com/juce-framework/JUCE/issues/1569
-  GIT_TAG 47d441787c9af0bbf5ba0a0694fe4f516be78be9
+  VERSION 8.0.10
+  GIT_TAG 3af3ce009f6a02f6fa651008fffb5b41743a9fab
   EXCLUDE_FROM_ALL YES
   SYSTEM YES
 )
