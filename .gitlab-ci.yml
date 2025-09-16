@@ -175,7 +175,7 @@ configure-for-tools:gnu/linux:
     expire_in: 1 day
 
 # Memo - Qt configured with (unity build fails):
-# configure -skip qtgrpc -release -prefix /opt/Qt6.10-beta1-Release
+# ../configure -skip qtgrpc -release -prefix /opt/Qt6.10.0-beta4-Release
 # -pch -no-gtk -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre
 # -qt-harfbuzz -opensource -confirm-license -skip qtdoc -skip qtwebengine
 # -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport
@@ -193,7 +193,7 @@ configure:mac-arm:
       cmake -B ${BUILDDIR}-${BUILD_TYPE} ${COMMON_CMAKE_OPTIONS}
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -G "Xcode"
-      "-DCMAKE_PREFIX_PATH=/opt/Qt6.10-beta1-Release"
+      "-DCMAKE_PREFIX_PATH=/opt/Qt6.10.0-beta4-Release"
       -DZRYTHM_UNITY_BUILD=ON
       -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
