@@ -43,8 +43,49 @@ ColumnLayout {
 
       Rectangle {
         Layout.fillWidth: true
-        Layout.preferredHeight: 50
+        Layout.preferredHeight: 40
         color: root.track.color
+      }
+    }
+  }
+
+  Loader {
+    Layout.fillWidth: true
+    active: (root.track.type === Track.Instrument || root.track.type === Track.Midi) && root.track.channel !== null && root.track.channel.midiFx !== null
+    visible: active
+
+    sourceComponent: ExpanderBox {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
+      title: "MIDI FX"
+
+      frameContentItem: ListView {
+        implicitHeight: contentHeight
+        model: root.track.channel.midiFx
+
+        delegate: PluginSlotView {
+          track: root.track
+        }
+      }
+    }
+  }
+
+  Loader {
+    Layout.fillWidth: true
+    active: root.track.type === Track.Instrument
+    visible: active
+
+    sourceComponent: ExpanderBox {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
+      title: qsTr("Instrument")
+
+      frameContentItem: Loader {
+        active: root.track.channel !== null && root.track.channel.instrument !== null
+        visible: active
+
+        sourceComponent: PluginSlotView {
+          plugin: root.track.channel.instrument
+          track: root.track
+        }
       }
     }
   }
@@ -56,7 +97,7 @@ ColumnLayout {
 
     sourceComponent: ExpanderBox {
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
-      title: "Inserts"
+      title: qsTr("Inserts")
 
       frameContentItem: ListView {
         implicitHeight: contentHeight

@@ -84,16 +84,31 @@ PluginManager::createPluginInstance (
   AUDIO_ENGINE->wait_for_pause (*state_ptr, false, true);
 
   z_debug ("creating plugin instance for: {}", descr->getName ());
-  const auto * track = P_MASTER_TRACK;
-  auto         juce_desc = descr->to_juce_description ();
-  auto         config = PluginConfiguration::create_new_for_descriptor (*descr);
+  const auto * track = [&] () -> structure::tracks::Track * {
+    if (descr->is_instrument ())
+      {
+        return PROJECT->trackCreator ()
+          ->addEmptyTrackFromType (structure::tracks::Track::Type::Instrument)
+          .value<structure::tracks::InstrumentTrack *> ();
+      }
+    return P_MASTER_TRACK;
+  }();
+  auto juce_desc = descr->to_juce_description ();
+  auto config = PluginConfiguration::create_new_for_descriptor (*descr);
   PROJECT->getPluginFactory ()->create_plugin_from_setting (
     *config,
     PluginFactory::InstantiationFinishOptions{
       .handler_ =
         [state_ptr, track] (::zrythm::plugins::PluginUuidReference plugin_ref) {
           z_debug ("instantiation done");
-          track->channel ()->inserts ()->append_plugin (plugin_ref);
+          if (track->is_instrument ())
+            {
+              track->channel ()->set_instrument (plugin_ref);
+            }
+          else
+            {
+              track->channel ()->inserts ()->append_plugin (plugin_ref);
+            }
           ROUTER->recalc_graph (false);
           zrythm::plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ())
             ->setUiVisible (true);
