@@ -203,28 +203,26 @@ Dialog {
             }
 
             Label {
-              Layout.fillWidth: true
+              Layout.preferredWidth: 200
               font.bold: true
-              text: qsTr("Copyright")
+              text: qsTr("License Notice")
             }
 
             Label {
               Layout.fillWidth: true
               font.bold: true
-              text: qsTr("License")
+              text: qsTr("Legal Text")
             }
           }
 
           // License entries
           Repeater {
-            model: ThirdPartyLicensesModel {
-            }
-
-            RowLayout {
+            delegate: RowLayout {
               id: thirdPartyRow
 
-              required property string copyright
-              required property string license
+              required property string licenseIdentifier
+              required property string licenseNotice
+              required property string licenseText
               required property string name
 
               Layout.fillWidth: true
@@ -236,32 +234,36 @@ Dialog {
                 // wrapMode: Text.Wrap
               }
 
-              Label {
-                Layout.fillWidth: true
-                text: "© " + thirdPartyRow.copyright
-                // wrapMode: Text.Wrap
-              }
+              Button {
+                Layout.preferredWidth: 200
+                flat: true
+                text: qsTr("View License Notice")
 
-              // License buttons - handle "OR" expressions
-              Flow {
-                Layout.fillWidth: true
-                spacing: 4
-
-                Button {
-                  readonly property string licenseName: thirdPartyRow.license
-
-                  flat: true
-                  text: licenseName
-
-                  onClicked: {
-                    var licenseFile = ":/qt/qml/Zrythm/licenses/" + licenseName + ".txt";
-                    stackView.push(licensePage, {
-                      licenseTitle: thirdPartyRow.name + " - " + licenseName,
-                      licenseText: QmlUtils.readTextFileContent(licenseFile)
-                    });
-                  }
+                onClicked: {
+                  stackView.push(licensePage, {
+                    licenseTitle: thirdPartyRow.name + " - License Notice",
+                    licenseText: thirdPartyRow.licenseNotice
+                  });
                 }
               }
+
+              // License button
+              Button {
+                readonly property string licenseName: thirdPartyRow.licenseIdentifier
+
+                Layout.fillWidth: true
+                flat: true
+                text: licenseName
+
+                onClicked: {
+                  stackView.push(licensePage, {
+                    licenseTitle: thirdPartyRow.name + " - " + licenseName,
+                    licenseText: thirdPartyRow.licenseText
+                  });
+                }
+              }
+            }
+            model: ThirdPartyLicensesModel {
             }
           }
         }

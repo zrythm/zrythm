@@ -21,8 +21,9 @@ public:
   enum ThirdPartyLicenseRoles
   {
     NameRole = Qt::UserRole + 1,
-    CopyrightRole,
-    LicenseRole,
+    LicenseIdentifierRole,
+    LicenseNoticeRole,
+    FullLicenseTextRole,
   };
 
   explicit ThirdPartyLicensesModel (QObject * parent = nullptr);
@@ -35,9 +36,31 @@ public:
 private:
   struct LicenseInfo
   {
-    QString name;
-    QString copyright;
-    QString license;
+    /**
+     * @brief Name of the module this license is for.
+     *
+     * Eg, "JUCE".
+     */
+    QString module_name;
+
+    /**
+     * @brief Identifier of the license (SPDX or plain text).
+     *
+     * Eg, "MIT or Qt proprietary license".
+     */
+    QString license_identifier;
+
+    /**
+     * @brief Brief license notice.
+     *
+     * Eg, the text at the top of JUCE source code files.
+     */
+    QString license_notice;
+
+    /**
+     * @brief A full copy of the license legal text.
+     */
+    QString full_license_text;
   };
 
   static std::vector<LicenseInfo> get_licenses ();
