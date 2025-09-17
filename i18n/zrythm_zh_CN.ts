@@ -342,12 +342,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="440"/>
         <source>Create New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>新建工程</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="450"/>
         <source>Project Name</source>
-        <translation type="unfinished"></translation>
+        <translation>工程名称</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="451"/>
@@ -393,12 +393,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>开关左侧面板</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>开关右侧面板</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
@@ -438,7 +438,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>全屏</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="170"/>
@@ -448,7 +448,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="178"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>键盘快捷键</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="186"/>
@@ -2646,7 +2646,7 @@ Use the newer backup?</source>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
         <location filename="../src/common/utils/exceptions.cpp" line="41"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>错误</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
@@ -2850,7 +2850,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="701"/>
         <source>Experimental Feature</source>
-        <translation type="unfinished"></translation>
+        <translation>实验性功能</translation>
     </message>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="702"/>
@@ -2909,7 +2909,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/RightDock.qml" line="46"/>
         <source>Chord Preset Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>和弦预设浏览器</translation>
     </message>
 </context>
 <context>
@@ -2934,7 +2934,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="53"/>
         <source>More Options...</source>
-        <translation type="unfinished"></translation>
+        <translation>更多选项</translation>
     </message>
 </context>
 <context>
@@ -2942,12 +2942,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="34"/>
         <source>Select tool</source>
-        <translation type="unfinished"></translation>
+        <translation>选择工具</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="49"/>
         <source>Pencil tool</source>
-        <translation type="unfinished"></translation>
+        <translation>铅笔工具</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="64"/>
@@ -2993,7 +2993,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/Tracklist.qml" line="65"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>测试</translation>
     </message>
 </context>
 <context>
@@ -3065,7 +3065,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="19"/>
         <source>Undo multiple</source>
-        <translation>撤销多个操作</translation>
+        <translation>撤销多次</translation>
     </message>
 </context>
 <context>
