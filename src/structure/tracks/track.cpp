@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <utility>
-
+#include "dsp/midi_playback_cache.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/playback_cache_builder.h"
 #include "structure/tracks/track.h"
 
@@ -391,11 +391,58 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
   z_debug (
     "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
     name (), affectedRange);
+  if (!midi_playback_cache_)
+    {
+      midi_playback_cache_ = std::make_unique<dsp::MidiPlaybackCache> ();
+    }
   arrangement::PlaybackCacheBuilder::
     generate_midi_cache_for_midi_region_collections (
-      midi_playback_cache_, lanes_view,
+      *midi_playback_cache_, lanes_view,
       base_dependencies_.tempo_map_.get_tempo_map (), affectedRange);
-  processor_->set_midi_events (midi_playback_cache_.cached_events ());
+  processor_->set_midi_events (midi_playback_cache_->cached_events ());
+}
+
+void
+Track::collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
+{
+  if (channel_)
+    {
+      channel_->get_plugins (plugins);
+    }
+
+  std::ranges::copy (
+    modulators_->plugins ()
+      | std::views::transform (&plugins::PluginUuidReference::get_object),
+    std::back_inserter (plugins));
+}
+
+bool
+Track::is_plugin_descriptor_valid_for_slot_type (
+  const plugins::PluginDescriptor &descr,
+  zrythm::plugins::PluginSlotType  slot_type,
+  Track::Type                      track_type)
+{
+  switch (slot_type)
+    {
+    case zrythm::plugins::PluginSlotType::Insert:
+      if (track_type == Track::Type::Midi)
+        {
+          return descr.num_midi_outs_ > 0;
+        }
+      else
+        {
+          return descr.num_audio_outs_ > 0;
+        }
+    case zrythm::plugins::PluginSlotType::MidiFx:
+      return descr.num_midi_outs_ > 0;
+      break;
+    case zrythm::plugins::PluginSlotType::Instrument:
+      return track_type == Track::Type::Instrument && descr.is_instrument ();
+    default:
+      break;
+    }
+
+  z_return_val_if_reached (false);
 }
 
 void

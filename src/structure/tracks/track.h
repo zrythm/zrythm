@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include "dsp/midi_playback_cache.h"
 #include "dsp/modulator_macro_processor.h"
-#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/piano_roll_track.h"
@@ -18,6 +16,12 @@
 
 #include <QColor>
 #include <QtQmlIntegration>
+
+namespace zrythm::dsp
+{
+class MidiPlaybackCache;
+class TempoMapWrapper;
+}
 
 namespace zrythm::structure::tracks
 {
@@ -509,18 +513,7 @@ public:
   /**
    * Fills in the given array with all plugins in the track.
    */
-  void collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
-  {
-    if (channel_)
-      {
-        channel_->get_plugins (plugins);
-      }
-
-    std::ranges::copy (
-      modulators_->plugins ()
-        | std::views::transform (&plugins::PluginUuidReference::get_object),
-      std::back_inserter (plugins));
-  }
+  void collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const;
 
   /**
    * Returns if @p descr can be dropped at @p slot_type in a track of type @p
@@ -529,30 +522,7 @@ public:
   static bool is_plugin_descriptor_valid_for_slot_type (
     const plugins::PluginDescriptor &descr,
     zrythm::plugins::PluginSlotType  slot_type,
-    Track::Type                      track_type)
-  {
-    switch (slot_type)
-      {
-      case zrythm::plugins::PluginSlotType::Insert:
-        if (track_type == Track::Type::Midi)
-          {
-            return descr.num_midi_outs_ > 0;
-          }
-        else
-          {
-            return descr.num_audio_outs_ > 0;
-          }
-      case zrythm::plugins::PluginSlotType::MidiFx:
-        return descr.num_midi_outs_ > 0;
-        break;
-      case zrythm::plugins::PluginSlotType::Instrument:
-        return track_type == Track::Type::Instrument && descr.is_instrument ();
-      default:
-        break;
-      }
-
-    z_return_val_if_reached (false);
-  }
+    Track::Type                      track_type);
 
   /**
    * Set various caches (snapshots, track name hash, plugin input/output
@@ -780,7 +750,7 @@ protected:
   utils::QObjectUniquePtr<utils::PlaybackCacheScheduler>
     playable_content_cache_request_debouncer_;
 
-  dsp::MidiPlaybackCache midi_playback_cache_;
+  std::unique_ptr<dsp::MidiPlaybackCache> midi_playback_cache_;
 
   BOOST_DESCRIBE_CLASS (
     Track,
