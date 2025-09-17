@@ -101,19 +101,20 @@ Item {
     const unifiedIndex = root.unifiedObjectsModel.mapFromSource(sourceModel.index(index, 0));
 
     if (mouse.modifiers & Qt.ControlModifier) {
-      console.log("toggled");
       root.arrangerSelectionModel.select(unifiedIndex, ItemSelectionModel.Toggle);
     } else if (mouse.modifiers & Qt.ShiftModifier)
-    // Range selection (TODO)
-    // if (arrangerSelectionModel.currentIndex.isValid()) {
-    // const range = ItemSelectionRange(arrangerSelectionModel.currentIndex, unifiedIndex);
-    // arrangerSelectionModel.select(range, ItemSelectionModel.SelectCurrent);
-    // } else {
-    // arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
-    // }
-    {} else {
-      console.log("selected");
-      root.arrangerSelectionModel.clear();
+      if (arrangerSelectionModel.currentIndex.valid) {
+        // Range selection (TODO)
+        // const range = ItemSelectionRange(arrangerSelectionModel.currentIndex, unifiedIndex);
+        // arrangerSelectionModel.select(range, ItemSelectionModel.SelectCurrent);
+        console.log("Range selection unimplemented");
+      } else {
+        arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
+      }
+    else {
+      if (!root.arrangerSelectionModel.isSelected(unifiedIndex)) {
+        root.arrangerSelectionModel.clear();
+      }
       root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
     }
   }
@@ -481,7 +482,7 @@ Item {
             else if (action === Arranger.StartingMoving) {
               if (mouse.modifiers & Qt.AltModifier) {
                 action = Arranger.MovingLink;
-              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/                    {
+              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/                      {
                 action = Arranger.MovingCopy;
               } else {
                 action = Arranger.Moving;
