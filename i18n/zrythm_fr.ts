@@ -808,7 +808,7 @@
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="118"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation>Nouveau Long Long Long Long Long Long Long Long Long Long Nom</translation>
+        <translation>Nouveau long long long long long long long long long long nom</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="122"/>
