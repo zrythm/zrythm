@@ -100,12 +100,12 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="182"/>
         <source>Track Inspector</source>
-        <translation type="unfinished">Инспектор треков</translation>
+        <translation>Инспектор дорожек</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="187"/>
         <source>Plugin Inspector</source>
-        <translation type="unfinished">Инспектор плагинов</translation>
+        <translation>Инспектор плагинов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="199"/>
@@ -115,12 +115,12 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="208"/>
         <source>File Browser</source>
-        <translation type="unfinished">Поисковик файлов</translation>
+        <translation type="unfinished">Браузер файлов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="217"/>
         <source>Monitor Section</source>
-        <translation type="unfinished">Мониторинг секции</translation>
+        <translation type="unfinished">Секция мониторинга</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="226"/>
@@ -131,7 +131,7 @@
         <location filename="../src/gui/qml/DemoView.qml" line="305"/>
         <location filename="../src/gui/qml/DemoView.qml" line="358"/>
         <source>Undo</source>
-        <translation type="unfinished">Откатить действие</translation>
+        <translation>Отменить действие</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="306"/>
@@ -244,7 +244,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="73"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
-        <translation type="unfinished">Zrythm существует благодаря пожертвованиям и покупкам. Если вам нравится приложение и вы бы хотели помочь проекту, вы можете %1пожертвовать%2 или %3купить установщик%2.</translation>
+        <translation>Для поддержания развития Zrythm полагается на пожертвования и покупки. Если вам нравится приложение и вы бы хотели помочь проекту, вы можете %1пожертвовать%2 или %3купить установщик%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="82"/>
