@@ -72,7 +72,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="161"/>
         <source>Port Connections</source>
-        <translation type="unfinished">Подключения к портам</translation>
+        <translation>Портовые соединения</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
@@ -115,12 +115,12 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="208"/>
         <source>File Browser</source>
-        <translation type="unfinished">Браузер файлов</translation>
+        <translation>Обзор файлов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="217"/>
         <source>Monitor Section</source>
-        <translation type="unfinished">Секция мониторинга</translation>
+        <translation>Секция монитора</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="226"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="326"/>
         <source>Redo</source>
-        <translation type="unfinished">Повторить (Redo)</translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="327"/>
@@ -254,7 +254,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="85"/>
         <source>Proceed to Configuration</source>
-        <translation type="unfinished">Перейти к настройкам</translation>
+        <translation>Перейдите к конфигурации</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="103"/>
@@ -265,7 +265,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="124"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
-        <translation type="unfinished">Добро пожаловать в Zrythm - программу для работы с аудио. Перейдите к следующей странице, чтобы начать.</translation>
+        <translation>Добро пожаловать на цифровую звуковую рабочую станцию Zrythm. Перейдите на следующую страницу, чтобы начать работу.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="132"/>
@@ -275,7 +275,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="133"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation type="unfinished">Если вы впервые в Zrythm, мы предлагаем вам ознакомиться с секцией &apos;Начать работу&apos; в %1мануале%2.</translation>
+        <translation>Если вы впервые используете Zrythm, мы рекомендуем изучить раздел &quot;Начало работы&quot; в руководстве пользователя %1%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="189"/>
