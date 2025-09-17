@@ -47,21 +47,6 @@ if(MSVC)
   target_compile_options(zrythm_gui_lib PRIVATE /bigobj)
 endif()
 
-if(0) # TODO
-  # Add the translators C string header to the sources
-  add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/translators.h
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-translators-list.py
-            ${CMAKE_CURRENT_BINARY_DIR}/translators.h about
-            ${CMAKE_SOURCE_DIR}/TRANSLATORS
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gen-translators-list.py
-            ${CMAKE_SOURCE_DIR}/TRANSLATORS
-  )
-  target_sources(zrythm_gui_lib
-    PRIVATE
-      ${CMAKE_CURRENT_BINARY_DIR}/translators.h)
-endif()
-
 if(WIN32)
   # There are problems if added to zrythm_srcs directly
   target_sources(zrythm_gui_lib PRIVATE ${win_res})

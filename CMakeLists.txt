@@ -1238,12 +1238,6 @@ if(APPLE)
   list(APPEND zrythm_link_libs zrythm_apple_libs)
 endif()
 
-file(COPY
-  AUTHORS
-  TRANSLATORS
-  THANKS
-  DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 configure_file(
   src/zrythm-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/zrythm-config.h)
 
