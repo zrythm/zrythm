@@ -183,7 +183,11 @@ public:
   void remove_if (std::function<bool (const MidiEvent &)> predicate)
   {
     const std::lock_guard<crill::spin_mutex> lock (lock_);
-    std::erase_if (events_, std::move (predicate));
+    // std::erase_if (events_, std::move (predicate)); // fails to build on
+    // Xcode 26
+    auto it =
+      std::remove_if (events_.begin (), events_.end (), std::move (predicate));
+    events_.erase (it, events_.end ());
   }
 
   /**
