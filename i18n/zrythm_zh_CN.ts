@@ -234,7 +234,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="62"/>
         <source>Only audio plugins installed via Flatpak are supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>仅支持通过Flatpak安装的音频插件。</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="72"/>
@@ -270,23 +270,23 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="132"/>
         <source>Read the Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>阅读手册</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="133"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>如果您是首次使用Zrythm，我们建议您过一遍 %1user manual%2 的 ‘准备开始’ 一节。</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="189"/>
         <location filename="../src/gui/qml/Greeter.qml" line="226"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>配置</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="192"/>
         <source>Initial Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>初始配置</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="221"/>
@@ -301,7 +301,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="268"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>进度</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="284"/>
@@ -311,7 +311,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="297"/>
         <source>Scanning:</source>
-        <translation type="unfinished"></translation>
+        <translation>扫描中：</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="323"/>
