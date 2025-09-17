@@ -194,7 +194,7 @@ configure:mac-arm:
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/Qt6.10.0-beta4-Release"
-      -DZRYTHM_UNITY_BUILD=ON
+      -DZRYTHM_UNITY_BUILD=OFF
       -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
     matrix:
