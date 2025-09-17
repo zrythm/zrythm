@@ -11,7 +11,7 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="126"/>
         <source>On</source>
-        <translation type="unfinished">开</translation>
+        <translation>开</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
@@ -21,12 +21,12 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
         <source>Latch</source>
-        <translation type="unfinished">锁存器</translation>
+        <translation>锁存</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="155"/>
         <source>Off</source>
-        <translation type="unfinished">关闭</translation>
+        <translation>关闭</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="194"/>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="73"/>
         <source>Modulators</source>
-        <translation type="unfinished">调制器</translation>
+        <translation>调制器</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="78"/>
@@ -95,7 +95,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="165"/>
         <source>Modulators</source>
-        <translation type="unfinished">调制器</translation>
+        <translation>调制器</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="182"/>
@@ -136,12 +136,12 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="306"/>
         <source>Undo Multiple</source>
-        <translation>撤销多次</translation>
+        <translation>撤销多步操作</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="312"/>
         <source>Undo Move</source>
-        <translation>撤销移动</translation>
+        <translation type="unfinished">撤销移动</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="316"/>
@@ -151,12 +151,12 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="326"/>
         <source>Redo</source>
-        <translation type="unfinished">重做</translation>
+        <translation>重做</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="327"/>
         <source>Redo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>重做多步操作</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="342"/>
@@ -171,7 +171,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="349"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>打开</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="355"/>
@@ -186,7 +186,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="367"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>外观</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="370"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="61"/>
         <source>About Flatpak</source>
-        <translation type="unfinished"></translation>
+        <translation>关于 Flatpak</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="62"/>
@@ -239,33 +239,33 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="72"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>捐赠</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="73"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm 依靠捐赠和购买来维持开发。如果你喜欢这款软件，请考虑 %1捐赠%2 或 %3购买安装包%2。</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="82"/>
         <source>All Ready!</source>
-        <translation type="unfinished"></translation>
+        <translation>一切就绪!</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="85"/>
         <source>Proceed to Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">开始配置</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="103"/>
         <location filename="../src/gui/qml/Greeter.qml" line="123"/>
         <source>Welcome</source>
-        <translation type="unfinished">欢迎</translation>
+        <translation>欢迎</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="124"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
-        <translation type="unfinished"></translation>
+        <translation>欢迎使用 Zrythm 数字音频工作站。点击下一页开始使用。</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="132"/>
@@ -296,7 +296,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="246"/>
         <source>Continue</source>
-        <translation type="unfinished"></translation>
+        <translation>继续</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="268"/>
@@ -317,7 +317,7 @@
         <location filename="../src/gui/qml/Greeter.qml" line="323"/>
         <location filename="../src/gui/qml/Greeter.qml" line="380"/>
         <source>Open a Project</source>
-        <translation type="unfinished">打开项目</translation>
+        <translation>打开工程</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="397"/>
@@ -327,17 +327,17 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="405"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>关于 Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="423"/>
         <source>Create New Project...</source>
-        <translation type="unfinished"></translation>
+        <translation>新建工程...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="427"/>
         <source>Open From Path...</source>
-        <translation type="unfinished"></translation>
+        <translation>从路径打开工程...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="440"/>
@@ -352,27 +352,27 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="451"/>
         <source>Untitled Project</source>
-        <translation type="unfinished">无标题项目</translation>
+        <translation>未命名工程</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="482"/>
         <source>Create Project</source>
-        <translation type="unfinished"></translation>
+        <translation>新建工程</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Creating Project</source>
-        <translation type="unfinished"></translation>
+        <translation>正在创建工程</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="512"/>
         <source>Creating Project...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在创建工程...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="539"/>
         <source>Project Loading Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>工程加载失败</translation>
     </message>
 </context>
 <context>
@@ -403,32 +403,32 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>菜单</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="105"/>
         <source>Open a Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>打开工程…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="111"/>
         <source>Create New Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>新建工程…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="122"/>
         <source>Save</source>
-        <translation type="unfinished">保存</translation>
+        <translation>保存</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Save As…</source>
-        <translation type="unfinished"></translation>
+        <translation>另存为…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Export As…</source>
-        <translation type="unfinished"></translation>
+        <translation>导出为…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
@@ -443,7 +443,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="170"/>
         <source>Preferences</source>
-        <translation type="unfinished">首选项</translation>
+        <translation>首选项</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="178"/>
@@ -461,7 +461,7 @@
     <message>
         <location filename="../src/common/dsp/marker_track.cpp" line="14"/>
         <source>Markers</source>
-        <translation type="unfinished">标记</translation>
+        <translation>标记</translation>
     </message>
 </context>
 <context>
@@ -612,7 +612,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="424"/>
         <source>Diminished</source>
-        <translation type="unfinished">减弱</translation>
+        <translation>减音阶</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="425"/>
@@ -622,17 +622,17 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="426"/>
         <source>Egyptian</source>
-        <translation type="unfinished"></translation>
+        <translation>埃及音阶</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="427"/>
         <source>Eight Tone Spanish</source>
-        <translation type="unfinished"></translation>
+        <translation>西班牙八音音阶</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="428"/>
         <source>Enigmatic</source>
-        <translation type="unfinished"></translation>
+        <translation>神秘音阶</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="429"/>
@@ -647,7 +647,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="431"/>
         <source>Hirajoshi</source>
-        <translation type="unfinished"></translation>
+        <translation>日本平调式(Hirajoshi)</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="432"/>
@@ -697,17 +697,17 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="441"/>
         <source>Bebop Locrian</source>
-        <translation type="unfinished"></translation>
+        <translation>波普洛克利亚音阶(Bebop Locrian)</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="442"/>
         <source>Bebop Dominant</source>
-        <translation type="unfinished"></translation>
+        <translation>波普属音阶(Bebop Dominant)</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="443"/>
         <source>Bebop Major</source>
-        <translation type="unfinished"></translation>
+        <translation>波普大调音阶(Bebop Major)</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="444"/>
@@ -717,7 +717,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="445"/>
         <source>Enigmatic Minor</source>
-        <translation type="unfinished">神秘小调音阶</translation>
+        <translation>神秘小调音阶(Enigmatic Minor)</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="446"/>
@@ -876,7 +876,7 @@
     <message>
         <location filename="../src/gui/backend/action_controller.cpp" line="28"/>
         <source>Failed to create track</source>
-        <translation type="unfinished">未能创建音轨</translation>
+        <translation>无法创建轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="283"/>
@@ -886,7 +886,7 @@
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="285"/>
         <source>Exponential</source>
-        <translation type="unfinished">指数的</translation>
+        <translation>指数</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="288"/>
@@ -896,7 +896,7 @@
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="291"/>
         <source>Logarithmic</source>
-        <translation type="unfinished"></translation>
+        <translation>对数</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/curve.cpp" line="294"/>
@@ -906,7 +906,7 @@
     <message>
         <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="755"/>
         <source>Failed to add region</source>
-        <translation type="unfinished">未能重做</translation>
+        <translation>无法添加区域</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="799"/>
@@ -937,37 +937,37 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="294"/>
         <source>Failed to create backup directory {}</source>
-        <translation type="unfinished"></translation>
+        <translation>无法创建备份目录{}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
         <source>Unable to read file at {}: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>无法在 {}: {} 读取文件</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="573"/>
         <source>Unable to decompress project file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>无法在 {} 解压工程文件</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="676"/>
         <source>Failed to save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>无法保存工程</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="779"/>
         <source>Failed to compress project file</source>
-        <translation type="unfinished">未能解压缩工程文件</translation>
+        <translation>无法解压缩工程文件</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="959"/>
         <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
+        <translation>无法创建备份目录</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1029"/>
         <source>Failed to copy plugin states</source>
-        <translation type="unfinished"></translation>
+        <translation>无法复制插件状态</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="140"/>
@@ -1042,7 +1042,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="780"/>
         <source>Project Upgraded</source>
-        <translation type="unfinished">项目已更新</translation>
+        <translation>工程已更新</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="781"/>
@@ -1052,7 +1052,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="848"/>
         <source>Open Backup?</source>
-        <translation type="unfinished"></translation>
+        <translation>是否打开备份？</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="850"/>
@@ -1066,17 +1066,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="853"/>
         <source>Open Backup</source>
-        <translation type="unfinished"></translation>
+        <translation>打开备份</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="854"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>忽略</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/tracklist_selections.cpp" line="575"/>
         <source>Failed to paste tracks</source>
-        <translation type="unfinished">粘贴音轨失败</translation>
+        <translation>无法粘贴轨道</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="42"/>
@@ -1366,12 +1366,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="181"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation type="unfinished"></translation>
+        <translation>无法复制轨道：选中了不可复制的轨道</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
         <source>Cannot delete tracks: selection contains an undeletable track</source>
-        <translation type="unfinished"></translation>
+        <translation>无法删除音轨：选中了不可删除的音轨</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="290"/>
@@ -1426,12 +1426,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1532"/>
         <source>Solo Track</source>
-        <translation type="unfinished">独奏曲目</translation>
+        <translation>轨道独奏</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1534"/>
         <source>Unsolo Track</source>
-        <translation type="unfinished">非独奏曲目</translation>
+        <translation>取消轨道独奏</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1537"/>
@@ -1604,7 +1604,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1636"/>
         <source>Edit tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>编辑轨道</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1645"/>
@@ -1682,7 +1682,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="58"/>
         <source>Euro Pop</source>
-        <translation type="unfinished"></translation>
+        <translation>欧洲流行</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="61"/>
@@ -1697,7 +1697,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="87"/>
         <source>Love Progression</source>
-        <translation type="unfinished">Love Progression</translation>
+        <translation>收藏和弦进行</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="95"/>
@@ -1712,7 +1712,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="122"/>
         <source>Eastern Pop</source>
-        <translation type="unfinished"></translation>
+        <translation>东方流行</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="125"/>
@@ -1732,7 +1732,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="170"/>
         <source>Dance</source>
-        <translation type="unfinished">舞蹈</translation>
+        <translation>舞曲</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="174"/>
@@ -1742,7 +1742,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="185"/>
         <source>Ballad</source>
-        <translation type="unfinished"></translation>
+        <translation>芭乐</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="189"/>
@@ -1762,7 +1762,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="238"/>
         <source>Eurodance</source>
-        <translation type="unfinished"></translation>
+        <translation>欧陆舞曲</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="242"/>
@@ -1777,7 +1777,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="268"/>
         <source>Eurobeat</source>
-        <translation type="unfinished"></translation>
+        <translation>欧陆节拍</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="271"/>
@@ -1822,7 +1822,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="378"/>
         <source>Rock</source>
-        <translation type="unfinished"></translation>
+        <translation>摇滚</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="381"/>
@@ -1863,12 +1863,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
         <source>Stereo?</source>
-        <translation type="unfinished">立体声？</translation>
+        <translation>是否为立体声？</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
         <source>Are the outputs stereo?</source>
-        <translation type="unfinished"></translation>
+        <translation>输出是否为立体声？</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
@@ -1885,7 +1885,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="393"/>
         <source>Auto-route?</source>
-        <translation type="unfinished"></translation>
+        <translation>是否自动路由？</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
@@ -1937,12 +1937,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1491"/>
         <source>Failed to move or copy plugins</source>
-        <translation type="unfinished">未能移动或复制插件</translation>
+        <translation>无法移动或复制插件</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1517"/>
         <source>Failed to create plugin {}</source>
-        <translation type="unfinished"></translation>
+        <translation>无法创建插件 {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1538"/>
@@ -1952,7 +1952,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1540"/>
         <source>Failed to add plugin</source>
-        <translation type="unfinished">未能应用插件</translation>
+        <translation>无法添加插件</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="42"/>
@@ -2004,12 +2004,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="526"/>
         <source>Pre-fader send</source>
-        <translation type="unfinished">前推子发送</translation>
+        <translation>推子前发送</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="528"/>
         <source>Post-fader send</source>
-        <translation type="unfinished">后推子发送</translation>
+        <translation>推子后发送</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="556"/>
@@ -2019,17 +2019,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="209"/>
         <source>New direct out</source>
-        <translation type="unfinished">新的直接输出</translation>
+        <translation>新直通输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="234"/>
         <source>Route Target</source>
-        <translation type="unfinished"></translation>
+        <translation>路由目标</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_track.cpp" line="240"/>
         <source>Direct Output</source>
-        <translation type="unfinished">直接输出</translation>
+        <translation>直通输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/clip.cpp" line="495"/>
@@ -2224,347 +2224,347 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/engine_pulse.cpp" line="417"/>
         <source>Pulseaudio Backend Test Failed</source>
-        <translation type="unfinished">要使用的音频后端</translation>
+        <translation>Pulseaudio 后端测试失败</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="337"/>
         <source>The exported audio contains segments louder than 0 dB (max detected %.1f dB).</source>
-        <translation type="unfinished"></translation>
+        <translation>导出的音频包含超过 0 dB 的片段 (检测到最大电平为 %.1f dB).</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="664"/>
         <source>Failed to create audio track</source>
-        <translation type="unfinished">未能创建音轨</translation>
+        <translation>无法创建音轨</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="690"/>
         <source>Invalid time range</source>
-        <translation type="unfinished">无效时间范围</translation>
+        <translation>无效时间范围</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="711"/>
         <source>Failed to export</source>
-        <translation type="unfinished"></translation>
+        <translation>无法导出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="86"/>
         <source>Prefader Swap Phase</source>
-        <translation type="unfinished">前推子平衡</translation>
+        <translation>推子前相位交换</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="87"/>
         <source>Fader Swap Phase</source>
-        <translation type="unfinished">音量控制器平衡</translation>
+        <translation>推子后相位交换</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="109"/>
         <source>Prefader Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>推子前音量</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="110"/>
         <source>Fader Volume</source>
-        <translation type="unfinished">音量控制器音量</translation>
+        <translation>推子后音量</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="129"/>
         <source>Prefader Balance</source>
-        <translation type="unfinished">前推子平衡</translation>
+        <translation>推子前平衡</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="130"/>
         <source>Fader Balance</source>
-        <translation type="unfinished">音量控制器平衡</translation>
+        <translation>推子后平衡</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="143"/>
         <source>Prefader Mute</source>
-        <translation type="unfinished">前推子静音</translation>
+        <translation>推子前静音</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="144"/>
         <source>Fader Mute</source>
-        <translation type="unfinished">音量控制器静音</translation>
+        <translation>推子后静音</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="158"/>
         <source>Prefader Solo</source>
-        <translation type="unfinished">前推子 Solo</translation>
+        <translation>推子前独奏</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="159"/>
         <source>Fader Solo</source>
-        <translation type="unfinished"></translation>
+        <translation>推子后独奏</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="169"/>
         <source>Prefader Listen</source>
-        <translation type="unfinished">前推子侦听</translation>
+        <translation>推子前监听</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="170"/>
         <source>Fader Listen</source>
-        <translation type="unfinished">音量控制器聆听</translation>
+        <translation>推子后监听</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="180"/>
         <source>Prefader Mono Compat</source>
-        <translation type="unfinished">前推子 Mono 兼容</translation>
+        <translation>推子前单声道兼容</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="181"/>
         <source>Fader Mono Compat</source>
-        <translation type="unfinished"></translation>
+        <translation>推子后单声道兼容</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="204"/>
         <source>Ch Pre-Fader in</source>
-        <translation type="unfinished">Ch预推子输入</translation>
+        <translation>通道推子前输入</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="209"/>
         <source>Ch Fader in</source>
-        <translation type="unfinished">Ch推子输入</translation>
+        <translation>通道推子后输入</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="215"/>
         <source>Sample Processor Fader in</source>
-        <translation type="unfinished"></translation>
+        <translation>采样处理器推子后输入</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="220"/>
         <source>Monitor Fader in</source>
-        <translation type="unfinished">监视器推子输入</translation>
+        <translation>监听推子后输入</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="234"/>
         <source>Ch Pre-Fader out</source>
-        <translation type="unfinished">Ch预推子输出</translation>
+        <translation>通道推子前输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="239"/>
         <source>Ch Fader out</source>
-        <translation type="unfinished">Ch推子输出</translation>
+        <translation>通道推子后输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="245"/>
         <source>Sample Processor Fader out</source>
-        <translation type="unfinished"></translation>
+        <translation>采样处理器推子后输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="250"/>
         <source>Monitor Fader out</source>
-        <translation type="unfinished">监视器推子输出</translation>
+        <translation>监听推子后输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="268"/>
         <source>Ch MIDI Pre-Fader in</source>
-        <translation type="unfinished">Ch MIDI预推子输入</translation>
+        <translation>通道 MIDI 推子前输入</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="273"/>
         <source>Ch MIDI Fader in</source>
-        <translation type="unfinished">Ch MIDI推子输入</translation>
+        <translation>通道 MIDI 推子后输入</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="283"/>
         <source>Ch MIDI Pre-Fader out</source>
-        <translation type="unfinished">Ch MIDI预推子输入</translation>
+        <translation>通道 MIDI 推子前输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="288"/>
         <source>Ch MIDI Fader out</source>
-        <translation type="unfinished">Ch MIDI推子输出</translation>
+        <translation>通道 MIDI 推子后输出</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="487"/>
         <source>Failed to change volume</source>
-        <translation type="unfinished">未能更改音量</translation>
+        <translation>无法更改音量</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="517"/>
         <source>Failed to set MIDI mode</source>
-        <translation type="unfinished">未能设置 MIDI 模式</translation>
+        <translation>无法设置 MIDI 模式</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/foldable_track.cpp" line="146"/>
         <source>Cannot set track folded</source>
-        <translation type="unfinished">无法折叠音轨</translation>
+        <translation>无法折叠轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/marker_track.cpp" line="28"/>
         <source>start</source>
-        <translation type="unfinished">开始</translation>
+        <translation>开始</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/marker_track.cpp" line="36"/>
         <source>end</source>
-        <translation type="unfinished">结束</translation>
+        <translation>结束</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/master_track.cpp" line="11"/>
         <source>Master</source>
-        <translation type="unfinished">控制</translation>
+        <translation>总轨</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="66"/>
         <source>Macro {}</source>
-        <translation type="unfinished"></translation>
+        <translation>宏控制 {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="79"/>
         <source>Macro CV In {}</source>
-        <translation type="unfinished"></translation>
+        <translation>宏控制 CV 输入 {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="87"/>
         <source>Macro CV Out {}</source>
-        <translation type="unfinished"></translation>
+        <translation>宏控制 CV 输出 {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/modulator_track.cpp" line="19"/>
         <source>Modulators</source>
-        <translation type="unfinished">调制器</translation>
+        <translation>调制器</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="52"/>
         <source>Invalid object name %s</source>
-        <translation type="unfinished">无效的对象名称 %s</translation>
+        <translation>无效的对象名称 %s</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="53"/>
         <source>Invalid Name</source>
-        <translation type="unfinished">无效名称</translation>
+        <translation>无效名称</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="75"/>
         <source>Failed to rename object</source>
-        <translation type="unfinished">未能重命名</translation>
+        <translation>无法重命名</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/recordable_track.cpp" line="15"/>
         <source>Track record</source>
-        <translation type="unfinished">音轨录制</translation>
+        <translation>轨道录制</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/snap_grid.cpp" line="239"/>
         <source>Adaptive</source>
-        <translation type="unfinished">适应性</translation>
+        <translation>自适应</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="21"/>
         <source>Tempo</source>
-        <translation type="unfinished">节奏</translation>
+        <translation>速度</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="47"/>
         <source>BPM</source>
-        <translation type="unfinished">BPM</translation>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="59"/>
         <source>Beats per bar</source>
-        <translation type="unfinished"></translation>
+        <translation>每小节拍数</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="72"/>
         <source>Beat unit</source>
-        <translation type="unfinished"></translation>
+        <translation>拍长</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="165"/>
         <source>Failed to change BPM</source>
-        <translation type="unfinished">未能更改 BPM</translation>
+        <translation>无法更改 BPM</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="195"/>
         <source>Invalid BPM Value</source>
-        <translation type="unfinished">无效值</translation>
+        <translation>无效 BPM 值</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="196"/>
         <source>Please enter a positive decimal number</source>
-        <translation type="unfinished">请输入值</translation>
+        <translation>请输入正的小数数值</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="549"/>
         <source>Failed creating audio clip from file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>无法在 {} 创建音频片段</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="901"/>
         <source>Failed to rename track</source>
-        <translation type="unfinished">未能重命名音轨</translation>
+        <translation>无法重命名轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1099"/>
         <source>Failed to set track comment</source>
-        <translation type="unfinished"></translation>
+        <translation>无法设置轨道注释</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1123"/>
         <source>Failed to set track color</source>
-        <translation type="unfinished"></translation>
+        <translation>无法设置轨道颜色</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1152"/>
         <source>Cannot set track icon</source>
-        <translation type="unfinished">无法设置音轨图标</translation>
+        <translation>无法设置轨道图标</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1351"/>
         <source>Cannot set track enabled status</source>
-        <translation type="unfinished"></translation>
+        <translation>无法设置轨道启用状态</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1532"/>
         <source>_Delete Track</source>
-        <translation type="unfinished">删除音道</translation>
+        <translation>_删除轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1534"/>
         <source>_Delete Tracks</source>
-        <translation type="unfinished">删除音道</translation>
+        <translation>_删除轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1544"/>
         <source>Duplicate Track</source>
-        <translation type="unfinished">重复音轨</translation>
+        <translation type="unfinished">重复轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1546"/>
         <source>Duplicate Tracks</source>
-        <translation type="unfinished">重复音轨</translation>
+        <translation type="unfinished">重复轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Track</source>
-        <translation type="unfinished">隐藏音轨</translation>
+        <translation>隐藏轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Tracks</source>
-        <translation type="unfinished">隐藏音轨</translation>
+        <translation>隐藏轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Track</source>
-        <translation type="unfinished">Pin/Unpin音轨</translation>
+        <translation>固定 / 取消固定轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Tracks</source>
-        <translation type="unfinished">Pin/Unpin音轨</translation>
+        <translation>固定 / 取消固定轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1579"/>
         <source>Change Color...</source>
-        <translation type="unfinished">修改颜色…</translation>
+        <translation>更改颜色…</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1586"/>
         <source>Rename...</source>
-        <translation type="unfinished">重命名…</translation>
+        <translation>重命名…</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
@@ -2589,22 +2589,22 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1112"/>
         <source>No file was found</source>
-        <translation type="unfinished">未找到文件</translation>
+        <translation>未找到文件</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1117"/>
         <source>Can only drop 1 file at a time on existing tracks</source>
-        <translation type="unfinished">一次只能在现有轨道上放置 1 个文件</translation>
+        <translation>一次只能在现有轨道上放置 1 个文件</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1127"/>
         <source>Can only drop audio files on audio tracks</source>
-        <translation type="unfinished">只能将音频文件拖放到音频轨道上</translation>
+        <translation>只能将音频文件拖放到音频轨道上</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1134"/>
         <source>Can only drop MIDI files on MIDI/instrument tracks</source>
-        <translation type="unfinished">只能在 MIDI/乐器轨道上放下 MIDI 文件</translation>
+        <translation>只能在 MIDI/乐器轨道上拖放 MIDI 文件</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1142"/>
@@ -2651,23 +2651,23 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
         <source>Cannot drag folder into itself</source>
-        <translation type="unfinished"></translation>
+        <translation>无法将文件夹拖放到其自身上</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1382"/>
         <location filename="../src/common/dsp/tracklist.cpp" line="1420"/>
         <source>Failed to move track inside folder</source>
-        <translation type="unfinished">未能将音轨移入文件夹</translation>
+        <translation>无法将轨道移入文件夹</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1441"/>
         <source>Failed to clone track</source>
-        <translation type="unfinished">未能克隆音轨</translation>
+        <translation>无法复制轨道</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1460"/>
         <source>Failed to move tracks</source>
-        <translation type="unfinished">未能移动音轨</translation>
+        <translation>无法移动轨道</translation>
     </message>
     <message>
         <location filename="../src/common/io/file_descriptor.cpp" line="187"/>
@@ -2716,17 +2716,17 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/io/midi_file.cpp" line="121"/>
         <source>Untitled Track {}</source>
-        <translation type="unfinished"></translation>
+        <translation>未命名轨道 {}</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="504"/>
         <source>Default bank</source>
-        <translation type="unfinished">默认bank</translation>
+        <translation type="unfinished">默认音色库</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="508"/>
         <source>Init</source>
-        <translation type="unfinished">初始化</translation>
+        <translation>初始化</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="521"/>
@@ -2736,17 +2736,17 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="867"/>
         <source>Audio in</source>
-        <translation type="unfinished">音频输入</translation>
+        <translation>音频输入</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="920"/>
         <source>Audio out</source>
-        <translation type="unfinished">音频输出</translation>
+        <translation>音频输出</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="927"/>
         <source>MIDI in</source>
-        <translation type="unfinished">MIDI In</translation>
+        <translation>MIDI 输入</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/carla_native_plugin.cpp" line="943"/>
@@ -2771,7 +2771,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/collections.cpp" line="60"/>
         <source>Rename</source>
-        <translation type="unfinished">重命名</translation>
+        <translation>重命名</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="194"/>
@@ -2781,17 +2781,17 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="222"/>
         <source>Enabled</source>
-        <translation type="unfinished">已启用</translation>
+        <translation>已启用</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="225"/>
         <source>Enables or disables the plugin</source>
-        <translation type="unfinished">启用/禁用插件</translation>
+        <translation>启用/禁用插件</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="241"/>
         <source>Gain</source>
-        <translation type="unfinished">增益</translation>
+        <translation>增益</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="243"/>
@@ -2801,27 +2801,27 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="375"/>
         <source>Add to project</source>
-        <translation type="unfinished">添加到项目</translation>
+        <translation>添加到工程</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="390"/>
         <source>Add to project (bridged UI)</source>
-        <translation type="unfinished">添加到项目（桥接UI）</translation>
+        <translation type="unfinished">添加到工程（桥接UI）</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="400"/>
         <source>Add to project (bridged full)</source>
-        <translation type="unfinished">添加到项目（桥接完整）</translation>
+        <translation type="unfinished">添加到工程（桥接完整）</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="436"/>
         <source>Add to collection</source>
-        <translation type="unfinished">添加到集锦</translation>
+        <translation>添加到收藏夹</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin_descriptor.cpp" line="462"/>
         <source>Remove from collection</source>
-        <translation type="unfinished">从合集中移除</translation>
+        <translation>从收藏夹中移除</translation>
     </message>
     <message>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
@@ -2837,7 +2837,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="669"/>
         <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
-        <translation type="unfinished"></translation>
+        <translation>您选择的语言 ({}) 的区域设置不可用。请先安装该语言的区域设置，然后重新启动 {}</translation>
     </message>
     <message>
         <location filename="../src/common/utils/ui.cpp" line="675"/>
@@ -2878,7 +2878,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../tests/helpers/zrythm_helper.cpp" line="96"/>
         <source>Pipes are not supported in this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>当前平台不支持管道功能</translation>
     </message>
 </context>
 <context>
@@ -2926,7 +2926,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="17"/>
         <source>Solo</source>
-        <translation type="unfinished">独奏</translation>
+        <translation>独奏</translation>
     </message>
 </context>
 <context>
@@ -2934,7 +2934,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="53"/>
         <source>More Options...</source>
-        <translation>更多选项</translation>
+        <translation>更多选项...</translation>
     </message>
 </context>
 <context>
@@ -2952,22 +2952,22 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="64"/>
         <source>Scissors tool</source>
-        <translation type="unfinished"></translation>
+        <translation>剪刀工具</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="79"/>
         <source>Eraser tool</source>
-        <translation type="unfinished"></translation>
+        <translation>橡皮擦工具</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="94"/>
         <source>Ramp tool</source>
-        <translation type="unfinished"></translation>
+        <translation>渐变工具</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ToolBox.qml" line="109"/>
         <source>Audition tool</source>
-        <translation type="unfinished"></translation>
+        <translation>试听工具</translation>
     </message>
 </context>
 <context>
@@ -2975,17 +2975,17 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="152"/>
         <source>Scales</source>
-        <translation type="unfinished">音阶</translation>
+        <translation>音阶</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="184"/>
         <source>Show lanes</source>
-        <translation type="unfinished">显示音轨</translation>
+        <translation>显示轨道通道</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="201"/>
         <source>Show automation</source>
-        <translation type="unfinished">显示自动化</translation>
+        <translation>显示自动化</translation>
     </message>
 </context>
 <context>
@@ -3026,22 +3026,22 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
         <source>Add MIDI FX Track</source>
-        <translation>添加MIDI效果器轨道</translation>
+        <translation>添加 MIDI 效果器轨道</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
         <source>Add Audio Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>添加音频组轨道</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="67"/>
         <source>Add MIDI Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>添加 MIDI 组轨道</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="75"/>
         <source>Add Folder Track</source>
-        <translation type="unfinished">添加文件夹轨道</translation>
+        <translation>添加文件夹轨道</translation>
     </message>
 </context>
 <context>
@@ -3049,12 +3049,12 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Undo</source>
-        <translation type="unfinished">撤销</translation>
+        <translation>撤销</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
         <source>Redo</source>
-        <translation type="unfinished">重做</translation>
+        <translation>重做</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="18"/>
@@ -3065,7 +3065,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="19"/>
         <source>Undo multiple</source>
-        <translation>撤销多次</translation>
+        <translation>撤销多步操作</translation>
     </message>
 </context>
 <context>
@@ -15504,7 +15504,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="259"/>
         <source>Failed to load project</source>
-        <translation type="unfinished"></translation>
+        <translation>无法加载工程</translation>
     </message>
 </context>
 <context>
