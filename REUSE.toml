@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: FSFAP
 
 version = 1
@@ -280,18 +280,6 @@ SPDX-FileCopyrightText = "1998-2010 Steven Goodwin <StevenGoodwin@gmail.com>"
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
-path = ["ext/typesafe**"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2016-2020 Jonathan Müller"
-SPDX-License-Identifier = "MIT"
-
-[[annotations]]
-path = ["ext/juce_clap_hosting/**"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2022 Jatin Chowdhury"
-SPDX-License-Identifier = "MIT"
-
-[[annotations]]
 path = "data/org.zrythm.Zrythm-mime.xml"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2019 Alexandros Theodotou <alex@zrythm.org>"
@@ -303,13 +291,6 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2007-2013  Dominic Sacré  <dominic.sacre@gmx.de>"
 SPDX-License-Identifier = "GPL-3.0-only"
 SPDX-FileComment = "These files were taken from the klick project\n  (http://das.nasophon.de/klick/) under the GPL3. Its\n  README says the following.\n  Some of the audio samples used by klick have been\n  borrowed (under the terms of the GPL) from:\n  * Ardour [http://ardour.org/], sounds by Nick Mainsbridge\n  * GTick [http://www.antcom.de/gtick/], sounds by Roland Stigge\n  * Freepats [http://freepats.zenvoid.org/]"
-
-[[annotations]]
-path = "data/scripts/**.scm"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Alexandros Theodotou <alex@zrythm.org>"
-SPDX-License-Identifier = "CC0-1.0"
-SPDX-FileComment = "Example Guile scripts"
 
 [[annotations]]
 path = "requirements.txt"
@@ -412,28 +393,10 @@ SPDX-FileCopyrightText = "2020-2022 Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-VerbatimCopyLicense"
 
 [[annotations]]
-path = ["resources/theme/Matcha-dark-sea/**.css", "resources/theme/Matcha-dark-sea/assets/**.png"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Vince Liuice <vinceliuice@hotmail.com>"
-SPDX-License-Identifier = "GPL-3.0-or-later"
-
-[[annotations]]
 path = ["ext/weakjack/**.c", "ext/weakjack/**.def", "ext/weakjack/**.h", "ext/weakjack/README.md"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2014 Robin Gareus <robin@gareus.org> and others"
 SPDX-License-Identifier = "GPL-2.0-or-later"
-
-[[annotations]]
-path = "ext/nanovg/stb_truetype.h"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2009-2020 Sean Barrett / RAD Game Tools"
-SPDX-License-Identifier = "Unlicense"
-
-[[annotations]]
-path = ["ext/whereami/whereami.c", "ext/whereami/whereami.h"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Gregory Pakosz <https://github.com/gpakosz>"
-SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = "**/resources/icons/arena/**.svg"
