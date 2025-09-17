@@ -156,7 +156,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="327"/>
         <source>Redo Multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторить несколько раз</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="342"/>
