@@ -131,7 +131,7 @@
         <location filename="../src/gui/qml/DemoView.qml" line="305"/>
         <location filename="../src/gui/qml/DemoView.qml" line="358"/>
         <source>Undo</source>
-        <translation type="unfinished">Отменить (Undo)</translation>
+        <translation type="unfinished">Откатить действие</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="306"/>
@@ -937,7 +937,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="294"/>
         <source>Failed to create backup directory {}</source>
-        <translation>Не удалось создать резервную копию каталога {}</translation>
+        <translation>Не удалось создать папку для резервной копии {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
@@ -962,7 +962,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="959"/>
         <source>Failed to create backup directory</source>
-        <translation>Не удалось создать резервную копию каталога</translation>
+        <translation>Не удалось создать папку для резервной копии</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1029"/>
@@ -977,7 +977,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="150"/>
         <source>Failed to serialize v1 project file</source>
-        <translation type="unfinished">Не удалось изменить размер объектов</translation>
+        <translation>Не удалось сериализовать файл v1 проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="173"/>
@@ -987,7 +987,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="209"/>
         <source>Failed to serialize v3 project file</source>
-        <translation type="unfinished">Не удалось изменить размер объектов</translation>
+        <translation>Не удалось сериализовать файл v3 проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="238"/>
@@ -997,7 +997,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="258"/>
         <source>Failed to serialize v4 project file</source>
-        <translation type="unfinished">Не удалось изменить размер объектов</translation>
+        <translation>Не удалось сериализовать файл v4 проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="286"/>
@@ -1042,12 +1042,12 @@
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="780"/>
         <source>Project Upgraded</source>
-        <translation type="unfinished">Проект сохранен.</translation>
+        <translation type="unfinished">Проект обновлен</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="781"/>
         <source>This project has been automatically upgraded to v{}.{}. Saving this project will overwrite the old one. If you would like to keep both, please use &apos;Save As...&apos;.</source>
-        <translation>Этот проект был автоматически обновлен до версии {}.{}. Сохранение этого проекта перезапишет предыдущее. Если вы хотите сохранить оба, используйте «Сохранить как...».</translation>
+        <translation>Этот проект был автоматически обновлен до версии v{}.{}. Сохранение этого проекта перезапишет предыдущий. Если вы хотите сохранить оба, используйте «Сохранить как...».</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="848"/>
@@ -1059,7 +1059,7 @@
         <source>Newer backup found:
   %s.
 Use the newer backup?</source>
-        <translation type="unfinished">Найдена более новая резервная копия:
+        <translation>Найдена более новая резервная копия:
   %s.
 Использовать более новую резервную копию?</translation>
     </message>
@@ -1076,47 +1076,47 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/tracklist_selections.cpp" line="575"/>
         <source>Failed to paste tracks</source>
-        <translation type="unfinished">Не удалось прослушать треки</translation>
+        <translation type="unfinished">Не удалось вставить треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="42"/>
         <source>Arranger selections contain an undeletable object</source>
-        <translation type="unfinished">Выделения в аранжировщике содержат не удаляемые объекты</translation>
+        <translation>Выделения в аранжировщике содержат неудаляемый объект</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="251"/>
         <source>Arranger selections contain an object that cannot be duplicated</source>
-        <translation type="unfinished">Выделения в аранжировщике содержат не удаляемые объекты</translation>
+        <translation>Выделения в аранжировщике содержат недублируемый объект</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="307"/>
         <source>Cannot rename selected object(s)</source>
-        <translation type="unfinished">Невозможно переименовать выбранный объект(ы)</translation>
+        <translation type="unfinished">Невозможно переименовать выбранные объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="430"/>
         <source>Attempted to resize unresizable objects</source>
-        <translation type="unfinished">Предпринята попытка изменить размер не изменяемых по размеру объектов</translation>
+        <translation type="unfinished">Предпринята попытка изменить размер неизменяемых по размеру объектов</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="440"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation>Невозможно выполнить {} изменение размера — выделенное содержит зацикленные объекты</translation>
+        <translation>Невозможно {} изменить размер — выделены зацикленные объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="451"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation>Невозможно выполнить {} изменение размера — выделенное содержит нециклические объекты</translation>
+        <translation>Невозможно {} изменить размер — выделены нециклические объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2279"/>
         <source>Create timeline selections</source>
-        <translation type="unfinished">Убрать выделение на таймлайне</translation>
+        <translation type="unfinished">Создать выделения на таймлайне</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2283"/>
         <source>Create audio selections</source>
-        <translation type="unfinished">Создать аудио выделения</translation>
+        <translation type="unfinished">Создать выделения аудио</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2287"/>
@@ -1251,12 +1251,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="577"/>
         <source>Project Reload Needed</source>
-        <translation type="unfinished">Проект сохранен.</translation>
+        <translation>Требуется перезагрузка проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="578"/>
         <source>Plugin load behavior changes will only take effect after you save and re-load the project</source>
-        <translation type="unfinished">Некоторые изменения вступят в силу только после перезапуска %s</translation>
+        <translation>Изменения настроек загрузки глагинов вступят в силу после сохранения и перезагрузки проекта</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="937"/>
@@ -1271,7 +1271,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="947"/>
         <source>Delete Plugin</source>
-        <translation type="unfinished">Удалить плагин</translation>
+        <translation>Удалить плагин</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="952"/>
@@ -1331,12 +1331,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="122"/>
         <source>Connect ports</source>
-        <translation type="unfinished">Подключить порты</translation>
+        <translation>Подключить порты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="124"/>
         <source>Disconnect ports</source>
-        <translation type="unfinished">Отключить порты</translation>
+        <translation>Отключить порты</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="126"/>
@@ -1346,22 +1346,22 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="128"/>
         <source>Disable port connection</source>
-        <translation type="unfinished">Деактивировать портовое соединение</translation>
+        <translation type="unfinished">Отключить портовое соединение</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="130"/>
         <source>Change port connection</source>
-        <translation type="unfinished">Изменить портовое соединение</translation>
+        <translation>Изменить портовое соединение</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="492"/>
         <source>Insert silence</source>
-        <translation type="unfinished">Вставить тишину</translation>
+        <translation>Вставить тишину</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="494"/>
         <source>Delete range</source>
-        <translation type="unfinished">Удалить диапазон</translation>
+        <translation>Удалить диапазон</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="181"/>
@@ -1579,7 +1579,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1618"/>
         <source>Disable {} Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключить {} треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1621"/>
@@ -1702,17 +1702,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="95"/>
         <source>Pop Chords 1</source>
-        <translation type="unfinished">Аккорды (Chords)</translation>
+        <translation type="unfinished">Поп-аккорды 1</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="107"/>
         <source>Most Often Used Chords</source>
-        <translation type="unfinished"></translation>
+        <translation>Самые часто используемые аккорды</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="122"/>
         <source>Eastern Pop</source>
-        <translation type="unfinished"></translation>
+        <translation>Восточный поп</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="125"/>
@@ -1732,12 +1732,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="170"/>
         <source>Dance</source>
-        <translation type="unfinished">Отмена (Cancel)</translation>
+        <translation type="unfinished">Танцы</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="174"/>
         <source>Idol 2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Идол 2</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="185"/>
@@ -1896,12 +1896,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/arranger_object.cpp" line="781"/>
         <source>Failed to edit object</source>
-        <translation type="unfinished">Не удалось создать объекты</translation>
+        <translation>Не удалось редактировать объект</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/audio_function.cpp" line="105"/>
         <source>Failed to create plugin</source>
-        <translation type="unfinished">Не удалось создать плагин</translation>
+        <translation>Не удалось создать плагин</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/audio_function.cpp" line="306"/>
@@ -1911,17 +1911,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/audio_function.cpp" line="546"/>
         <source>Failed to apply plugin</source>
-        <translation type="unfinished">Не удалось применить плагин</translation>
+        <translation>Не удалось применить плагин</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/audio_region.cpp" line="166"/>
         <source>Failed to duplicate audio clip</source>
-        <translation type="unfinished">Не удалось дублировать аудиоклип</translation>
+        <translation>Не удалось дублировать аудиоклип</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
         <source>Invalid Value</source>
-        <translation type="unfinished">Неверное значение</translation>
+        <translation>Неверное значение</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
@@ -1947,17 +1947,17 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1538"/>
         <source>zrythm::plugins::Plugin {} cannot be added to this slot</source>
-        <translation>zrythm::plugins::Плагин {} не может быть добавлен в этот слот</translation>
+        <translation type="unfinished">zrythm::plugins::Plugin {} не может быть добавлен в этот слот</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel.cpp" line="1540"/>
         <source>Failed to add plugin</source>
-        <translation type="unfinished">Не удалось применить плагин</translation>
+        <translation>Не удалось добавить плагин</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="42"/>
         <source>None</source>
-        <translation type="unfinished">Нет (None)</translation>
+        <translation type="unfinished">Нет</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/channel_send.cpp" line="56"/>
@@ -2056,7 +2056,7 @@ Use the newer backup?</source>
         <location filename="../src/common/dsp/engine.cpp" line="413"/>
         <location filename="../src/common/dsp/engine.cpp" line="475"/>
         <source>Backend Initialization Failed</source>
-        <translation type="unfinished">Не удалось записать аудиофайл</translation>
+        <translation type="unfinished">Не удалось инициализировать бэкенд</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="414"/>
@@ -2081,7 +2081,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="511"/>
         <source>Invalid Backend Combination</source>
-        <translation type="unfinished">начальная позиция</translation>
+        <translation type="unfinished">Недопустимое сочетание бэкендов</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="512"/>
@@ -2091,7 +2091,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="654"/>
         <source>Selected Backend Not Found</source>
-        <translation type="unfinished">Выбранные бэкeнды функционируют</translation>
+        <translation>Выбранный бэкeнд не найден</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine.cpp" line="655"/>
@@ -2102,7 +2102,7 @@ Use the newer backup?</source>
         <location filename="../src/common/dsp/engine_jack.cpp" line="474"/>
         <location filename="../src/common/dsp/engine_jack.cpp" line="513"/>
         <source>JACK Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation type="unfinished">Ошибка JACK</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="569"/>
@@ -2117,7 +2117,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="578"/>
         <source>The desired client name was not unique</source>
-        <translation type="unfinished">Желаемое имя клиента оказалось не уникальным</translation>
+        <translation>Желаемое имя клиента не уникально</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="582"/>
@@ -2142,7 +2142,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="598"/>
         <source>Unable to initialize client</source>
-        <translation type="unfinished">Не удается инициализировать клиент</translation>
+        <translation>Не удается инициализировать клиент</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/engine_jack.cpp" line="602"/>
@@ -2239,7 +2239,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="690"/>
         <source>Invalid time range</source>
-        <translation type="unfinished">Неверное значение (Invalid)</translation>
+        <translation>Недопустимый временной интервал</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/exporter.cpp" line="711"/>
@@ -2424,7 +2424,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/modulator_track.cpp" line="19"/>
         <source>Modulators</source>
-        <translation type="unfinished">Модуляторы (Modulators)</translation>
+        <translation>Модуляторы</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="52"/>
@@ -2434,12 +2434,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="53"/>
         <source>Invalid Name</source>
-        <translation type="unfinished">Неверное значение (Invalid)</translation>
+        <translation>Недопустимое имя</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/nameable_object.cpp" line="75"/>
         <source>Failed to rename object</source>
-        <translation type="unfinished">Не удалось переименовать объект</translation>
+        <translation>Не удалось переименовать объект</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/recordable_track.cpp" line="15"/>
@@ -2449,7 +2449,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/snap_grid.cpp" line="239"/>
         <source>Adaptive</source>
-        <translation type="unfinished">Адаптивный</translation>
+        <translation>Адаптивный</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tempo_track.cpp" line="21"/>
@@ -2529,12 +2529,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1544"/>
         <source>Duplicate Track</source>
-        <translation type="unfinished">_Дублировать Трек</translation>
+        <translation>Дублировать Трек</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1546"/>
         <source>Duplicate Tracks</source>
-        <translation type="unfinished">_Дублировать Треки</translation>
+        <translation>Дублировать Треки</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1566"/>
@@ -2549,22 +2549,22 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Track</source>
-        <translation type="unfinished">За/Открепить Трек</translation>
+        <translation type="unfinished">Закрепить/Открепить Трек</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Tracks</source>
-        <translation type="unfinished">За/Открепить Треки</translation>
+        <translation type="unfinished">Закрепить/Открепить Треки</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1579"/>
         <source>Change Color...</source>
-        <translation type="unfinished">Изменить цвет...</translation>
+        <translation>Изменить цвет...</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track.cpp" line="1586"/>
         <source>Rename...</source>
-        <translation type="unfinished">Переименовать...</translation>
+        <translation>Переименовать...</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
@@ -2646,23 +2646,23 @@ Use the newer backup?</source>
         <location filename="../src/common/utils/exceptions.cpp" line="30"/>
         <location filename="../src/common/utils/exceptions.cpp" line="41"/>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
         <source>Cannot drag folder into itself</source>
-        <translation type="unfinished">Невозможно поместить папку внутрь самой себя</translation>
+        <translation>Невозможно поместить папку внутрь самой себя</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1382"/>
         <location filename="../src/common/dsp/tracklist.cpp" line="1420"/>
         <source>Failed to move track inside folder</source>
-        <translation type="unfinished">Не удалось переместить трек внутрь папки</translation>
+        <translation>Не удалось переместить трек внутрь папки</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1441"/>
         <source>Failed to clone track</source>
-        <translation type="unfinished">Не удалось клонировать трек</translation>
+        <translation>Не удалось клонировать трек</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/tracklist.cpp" line="1460"/>
