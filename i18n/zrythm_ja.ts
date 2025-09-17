@@ -6,7 +6,7 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="94"/>
         <source>Change automatable</source>
-        <translation type="unfinished">名称を変更</translation>
+        <translation>オートメーション可能に変更</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="126"/>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
         <source>Midi CC Bindings</source>
-        <translation type="unfinished">MIDI CC 割り当て</translation>
+        <translation>MIDI CC 割り当て</translation>
     </message>
 </context>
 <context>
