@@ -44,7 +44,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="63"/>
         <source>Editor</source>
-        <translation>редактор</translation>
+        <translation>Редактор</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="68"/>
@@ -85,7 +85,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="153"/>
         <source>Editor</source>
-        <translation>редактор</translation>
+        <translation>Редактор</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="159"/>
@@ -221,7 +221,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="407"/>
         <source>Something</source>
-        <translation>щось</translation>
+        <translation>Щось</translation>
     </message>
 </context>
 <context>
@@ -418,7 +418,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="122"/>
         <source>Save</source>
-        <translation>зберегти</translation>
+        <translation>Зберегти</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
@@ -517,7 +517,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="405"/>
         <source>Lydian</source>
-        <translation>лідійський</translation>
+        <translation>Лідійський</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="406"/>
@@ -527,7 +527,7 @@
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="407"/>
         <source>Aeolian</source>
-        <translation>еоловий</translation>
+        <translation>Еоловий</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/scale.cpp" line="408"/>
@@ -916,7 +916,7 @@
     <message>
         <location filename="../src/gui/backend/backend/file_manager.cpp" line="75"/>
         <source>Home</source>
-        <translation>додому</translation>
+        <translation>Додому</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/file_manager.cpp" line="84"/>
@@ -1476,7 +1476,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1557"/>
         <source>Enable Track</source>
-        <translation>увімкнути трек</translation>
+        <translation>Увімкнути трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1559"/>
@@ -1665,7 +1665,7 @@ Use the newer backup?</source>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="28"/>
         <location filename="../src/common/dsp/chord_track.cpp" line="15"/>
         <source>Chords</source>
-        <translation>акорди</translation>
+        <translation>Акорди</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="81"/>
@@ -1682,7 +1682,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="58"/>
         <source>Euro Pop</source>
-        <translation>євро поп</translation>
+        <translation>Євро-поп</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="61"/>
@@ -1722,7 +1722,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="137"/>
         <source>Gee</source>
-        <translation>ну</translation>
+        <translation>Ну</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="154"/>
@@ -2289,12 +2289,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="158"/>
         <source>Prefader Solo</source>
-        <translation>Соло Prefader</translation>
+        <translation>Соло передфейдера</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="159"/>
         <source>Fader Solo</source>
-        <translation>Соло Fader</translation>
+        <translation>Фейдер Соло</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="169"/>
@@ -2319,7 +2319,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="204"/>
         <source>Ch Pre-Fader in</source>
-        <translation>Ch Pre-Fader In</translation>
+        <translation>Вхід передфейдера каналу</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="209"/>
@@ -2334,12 +2334,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="220"/>
         <source>Monitor Fader in</source>
-        <translation>Монітор Fader in</translation>
+        <translation>Вхід фейдера монітора</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="234"/>
         <source>Ch Pre-Fader out</source>
-        <translation>Х Pre-Fader з</translation>
+        <translation>Вихід передфейдера каналу</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/fader.cpp" line="239"/>
@@ -2569,7 +2569,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
         <source>Lane {}</source>
-        <translation>пров {}</translation>
+        <translation>Пров {}</translation>
     </message>
     <message>
         <location filename="../src/common/dsp/track_lane.cpp" line="74"/>
@@ -2785,7 +2785,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="222"/>
         <source>Enabled</source>
-        <translation>увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="225"/>
@@ -2795,7 +2795,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="241"/>
         <source>Gain</source>
-        <translation>посилення</translation>
+        <translation>Посилення</translation>
     </message>
     <message>
         <location filename="../src/common/plugins/plugin.cpp" line="243"/>
@@ -2895,7 +2895,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="18"/>
         <source>Record</source>
-        <translation>запис</translation>
+        <translation>Запис</translation>
     </message>
 </context>
 <context>
