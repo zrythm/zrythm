@@ -1,7 +1,9 @@
 # SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-add_library(qm_dsp_lib STATIC
+add_library(qm_dsp_lib STATIC EXCLUDE_FROM_ALL)
+
+target_sources(qm_dsp_lib PRIVATE
   dsp/onsets/DetectionFunction.cpp
   dsp/onsets/PeakPicking.cpp
   dsp/phasevocoder/PhaseVocoder.cpp
@@ -18,7 +20,7 @@ add_library(qm_dsp_lib STATIC
   maths/MathUtilities.cpp
 )
 
-target_include_directories(qm_dsp_lib 
+target_include_directories(qm_dsp_lib
   INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE
