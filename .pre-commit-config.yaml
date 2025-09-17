@@ -20,3 +20,7 @@ repos:
     language: system
     pass_filenames: false
     always_run: true
+- repo: https://github.com/fsfe/reuse-tool
+  rev: v5.1.1
+  hooks:
+  - id: reuse-lint-file
