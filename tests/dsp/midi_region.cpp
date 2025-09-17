@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics@gmail.com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+// Test logic for exporting looped regions contributed by Robert Panovics
+
 #include "zrythm-test-config.h"
 
 #include "engine/session/transport.h"

@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+// Functionality contributed by Robert Panovics: Looped MIDI file export
+
 #pragma once
 
 #include "structure/arrangement/midi_region.h"
