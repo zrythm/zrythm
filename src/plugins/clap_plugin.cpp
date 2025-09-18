@@ -1375,7 +1375,9 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
     return;
 
   // 1. it is forbidden to use CLAP_PARAM_RESCAN_ALL if the plugin is active
-  assert (!pimpl_->isPluginActive () || !(flags & CLAP_PARAM_RESCAN_ALL));
+  // Note: not an assertion because some plugins fail this check
+  z_warn_if_fail (
+    !pimpl_->isPluginActive () || !(flags & CLAP_PARAM_RESCAN_ALL));
 
   // 2. scan the params.
   auto                        count = pimpl_->plugin_->paramsCount ();
