@@ -122,15 +122,31 @@ def create_sbom_packages(dependencies):
 
     return sbom_packages
 
-def create_sbom_relationships(packages):
-    """Create SBOM relationships between document and packages"""
+def create_sbom_relationships(packages, qt_packages=None):
+    """Create SBOM relationships between document, zrythm, and other packages"""
     relationships = []
+    qt_packages = qt_packages or {}
 
-    # Create relationship: Document DESCRIBES each package
+    # Create relationship: Document DESCRIBES zrythm package
+    zrythm_package_id = "SPDXRef-Package-Zrythm"
+    relationship_obj = SBOMRelationship()
+    relationship_obj.set_relationship('SPDXRef-DOCUMENT', 'DESCRIBES', zrythm_package_id)
+    relationships.append(relationship_obj.get_relationship())
+
+    # Create relationships: zrythm DEPENDS_ON all CPM packages
     for package_info in packages.values():
-        if 'id' in package_info:
+        if 'id' in package_info and package_info['id'] != zrythm_package_id:
             relationship_obj = SBOMRelationship()
-            relationship_obj.set_relationship('SPDXRef-DOCUMENT', 'DESCRIBES', package_info['id'])
+            relationship_obj.set_relationship(zrythm_package_id, 'DEPENDS_ON', package_info['id'])
+            relationships.append(relationship_obj.get_relationship())
+
+    # Create relationships: zrythm DEPENDS_ON Qt packages (qtbase and qtdeclarative specifically)
+    qt_package_ids_to_depend_on = ['SPDXRef-Package-qtbase', 'SPDXRef-Package-qtdeclarative']
+
+    for qt_package_id in qt_package_ids_to_depend_on:
+        if qt_package_id in qt_packages:
+            relationship_obj = SBOMRelationship()
+            relationship_obj.set_relationship(zrythm_package_id, 'DEPENDS_ON', qt_package_id)
             relationships.append(relationship_obj.get_relationship())
 
     return relationships
@@ -194,7 +210,38 @@ def parse_qt_sbom(qt_sbom_paths):
     print(f"Total parsed {total_packages_parsed} packages from {len(qt_sbom_paths)} Qt SBOM file(s)")
     return all_qt_packages, all_qt_relationships
 
-def generate_sbom(project_name, lock_path, output_file=None, qt_sbom_paths=None):
+def create_zrythm_package(commit_hash='master'):
+    """Create SBOM package for the Zrythm project itself"""
+    package = SBOMPackage()
+
+    # Set basic package information
+    package.set_name('Zrythm')
+    package.set_type('application')
+    package.set_version('2.0.0-DEV')
+
+    # Set download location and supplier
+    repo_url = "https://github.com/zrythm/zrythm"
+    package.set_downloadlocation(repo_url)
+    package.set_supplier('Organization', 'Zrythm')
+
+    # Create PURL identifier with git tag/commit
+    purl = f"pkg:github/zrythm/zrythm@{commit_hash}"
+    package.set_externalreference('PACKAGE-MANAGER', 'purl', purl)
+
+    # Set license information (from REUSE.toml or similar)
+    package.set_licenseconcluded('AGPL-3.0-only')
+    package.set_licensedeclared('AGPL-3.0-only')
+
+    # Set copyright text
+    package.set_copyrighttext('© 2025 Alexandros Theodotou <alex@zrythm.org>')
+
+    # Generate package ID
+    package_id = "SPDXRef-Package-Zrythm"
+    package.set_id(package_id)
+
+    return package.get_package()
+
+def generate_sbom(project_name, lock_path, output_file=None, qt_sbom_paths=None, zrythm_commit='master'):
     """Generate SBOM from CPM package lock dependencies and optionally include Qt SBOM(s)"""
 
     # Parse package lock file for dependencies
@@ -209,11 +256,15 @@ def generate_sbom(project_name, lock_path, output_file=None, qt_sbom_paths=None)
     # Create SBOM packages
     packages = create_sbom_packages(dependencies)
 
-    # Create SBOM relationships
-    relationships = create_sbom_relationships(packages)
+    # Add zrythm project itself as a package
+    zrythm_package = create_zrythm_package(zrythm_commit)
+    packages[('Zrythm', '2.0.0-DEV')] = zrythm_package
 
     # Parse Qt SBOM if provided
     qt_packages, qt_relationships = parse_qt_sbom(qt_sbom_paths)
+
+    # Create SBOM relationships (pass qt_packages for dependency relationships)
+    relationships = create_sbom_relationships(packages, qt_packages)
 
     # Create SBOM object and add packages/relationships
     sbom = SBOM()
@@ -232,11 +283,7 @@ def generate_sbom(project_name, lock_path, output_file=None, qt_sbom_paths=None)
     if qt_relationships:
         sbom.add_relationships(qt_relationships)
 
-    # Create relationship between project and Qt if Qt is included
-    if qt_packages and 'SPDXRef-Package-qtbase' in qt_packages:
-        qt_relationship = SBOMRelationship()
-        qt_relationship.set_relationship('SPDXRef-DOCUMENT', 'DEPENDS_ON', 'SPDXRef-Package-qtbase')
-        sbom.add_relationships([qt_relationship.get_relationship()])
+    # Note: Qt dependencies are now handled in create_sbom_relationships function
 
     # Create SBOM generator
     generator = SBOMGenerator(
@@ -269,16 +316,18 @@ def main():
                        help='Path to package-lock.cmake file')
     parser.add_argument('--output', type=str, default=str(output_file),
                        help='Output file path for SBOM')
-    parser.add_argument('--project', type=str, default="zrythm",
+    parser.add_argument('--project', type=str, default="Zrythm",
                         help='Project name for SBOM')
     parser.add_argument('--qt-sbom', type=str, default=None, nargs='+',
                        help='Path to Qt SBOM file(s) (SPDX tag-value format). Can specify multiple files.')
+    parser.add_argument('--zrythm-commit', type=str, default='master',
+                       help='Zrythm commit hash or tag to use in PURL (default: master)')
 
     args = parser.parse_args()
 
     # Generate SBOM
     try:
-        generate_sbom(args.project, args.lock, args.output, args.qt_sbom)
+        generate_sbom(args.project, args.lock, args.output, args.qt_sbom, args.zrythm_commit)
     except Exception as e:
         print(f"Error generating SBOM: {e}")
         sys.exit(1)
