@@ -106,7 +106,7 @@ Dialog {
 
         Button {
           flat: true
-          text: qsTr("View Trademark Policy")
+          text: qsTr("Trademark Policy")
 
           onClicked: stackView.push(licensePage, {
             licenseTitle: "Zrythm Trademark Policy",
@@ -116,9 +116,12 @@ Dialog {
 
         Button {
           flat: true
-          text: qsTr("Third-party Licenses")
+          text: qsTr("Third Party Notices")
 
-          onClicked: stackView.push(otherLicensesPage)
+          onClicked: stackView.push(licensePage, {
+            licenseTitle: "Third Party Notices",
+            licenseText: QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/attributions_sbom.txt")
+          })
         }
       }
 
@@ -151,120 +154,30 @@ Dialog {
 
           font.family: "Monospace"
           font.pointSize: 9
+          persistentSelection: true
           readOnly: true
           selectByMouse: true
           text: licensePageColLayout.licenseText
           wrapMode: Text.Wrap
-        }
-      }
 
-      Button {
-        Layout.alignment: Qt.AlignHCenter
-        text: qsTr("Back")
+          Action {
+            id: copyAction
 
-        onClicked: stackView.pop()
-      }
-    }
-  }
+            enabled: licenseTextArea.selectedText
+            shortcut: StandardKey.Copy
+            text: qsTr("&Copy")
 
-  Component {
-    id: otherLicensesPage
-
-    ColumnLayout {
-      property string title: qsTr("Third-party License Notices")
-
-      Label {
-        Layout.alignment: Qt.AlignHCenter
-        Layout.bottomMargin: 10
-        font.bold: true
-        font.pointSize: 14
-        text: qsTr("Third-Party Library Licenses")
-      }
-
-      ScrollView {
-        Layout.fillHeight: true
-        Layout.fillWidth: true
-        contentWidth: availableWidth
-
-        ColumnLayout {
-          spacing: 2
-          width: parent.width
-
-          // Header row
-          RowLayout {
-            Layout.bottomMargin: 10
-            Layout.fillWidth: true
-            spacing: 10
-
-            Label {
-              Layout.preferredWidth: 200
-              font.bold: true
-              text: qsTr("Library")
-            }
-
-            Label {
-              Layout.preferredWidth: 200
-              font.bold: true
-              text: qsTr("License Notice")
-            }
-
-            Label {
-              Layout.fillWidth: true
-              font.bold: true
-              text: qsTr("Legal Text")
-            }
+            onTriggered: licenseTextArea.copy()
           }
 
-          // License entries
-          Repeater {
-            delegate: RowLayout {
-              id: thirdPartyRow
+          Action {
+            id: selectAllAction
 
-              required property string licenseIdentifier
-              required property string licenseNotice
-              required property string licenseText
-              required property string name
+            enabled: true
+            shortcut: StandardKey.SelectAll
+            text: qsTr("Select All")
 
-              Layout.fillWidth: true
-              spacing: 10
-
-              Label {
-                Layout.preferredWidth: 200
-                text: thirdPartyRow.name
-                // wrapMode: Text.Wrap
-              }
-
-              Button {
-                Layout.preferredWidth: 200
-                flat: true
-                text: qsTr("View License Notice")
-
-                onClicked: {
-                  stackView.push(licensePage, {
-                    licenseTitle: thirdPartyRow.name + " - License Notice",
-                    licenseText: thirdPartyRow.licenseNotice
-                  });
-                }
-              }
-
-              // License button
-              Button {
-                readonly property string licenseName: thirdPartyRow.licenseIdentifier
-
-                Layout.fillWidth: true
-                flat: true
-                text: licenseName
-
-                onClicked: {
-                  stackView.push(licensePage, {
-                    licenseTitle: thirdPartyRow.name + " - " + licenseName,
-                    licenseText: thirdPartyRow.licenseText
-                  });
-                }
-              }
-            }
-            model: ThirdPartyLicensesModel {
-            }
+            onTriggered: licenseTextArea.selectAll()
           }
         }
       }

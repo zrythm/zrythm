@@ -156,6 +156,11 @@ set_source_files_properties("${CMAKE_SOURCE_DIR}/TRADEMARKS.md"
   PROPERTIES QT_RESOURCE_ALIAS "licenses/TRADEMARKS.md"
   )
 list(APPEND license_files "${CMAKE_SOURCE_DIR}/TRADEMARKS.md")
+set_source_files_properties("${attributions_sbom_filepath}"
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  PROPERTIES QT_RESOURCE_ALIAS "licenses/attributions_sbom.txt"
+  )
+list(APPEND license_files "${attributions_sbom_filepath}")
 
 # WAV files
 set(wav_filepaths
