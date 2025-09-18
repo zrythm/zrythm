@@ -162,10 +162,18 @@ def parse_qt_sbom(qt_sbom_paths):
             qt_packages = sbom_data.get('packages', {})
             qt_relationships = sbom_data.get('relationships', [])
 
-            # Filter out packages with IDs containing "-system-3rdparty-"
+            # Filter out packages with IDs containing "-system-3rdparty-",
+            # "qt-3rdparty-sources-Test", "-qt-tool-", "-qtdeclarative-qt-app-",
+            # and "SPDXRef-compiler"
             filtered_qt_packages = {}
             for package_id, package_info in qt_packages.items():
                 if "-system-3rdparty-" in package_id[2]:
+                    pass
+                elif "qt-3rdparty-sources-Test" in package_id[2]:
+                    pass
+                elif "-qt-tool-" in package_id[2]:
+                    pass
+                elif "-qt-app-" in package_id[2]:
                     pass
                 elif package_id[2] == "SPDXRef-compiler":
                     pass
