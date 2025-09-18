@@ -744,54 +744,16 @@ add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 # More dependencies
 ##############################################################
 
-CPMFindPackage(
-  NAME nlohmann_json
-  GITHUB_REPOSITORY nlohmann/json
-  VERSION 3.12.1
-  # 3.12.0 + some commits later
-  GIT_TAG 230bfd15a2bb7f01ebb3fcd3cf898b697ef43c48
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "JSON_ImplicitConversions OFF"
-    "JSON_SystemInclude ON"
-)
+CPMUsePackageLock(package-lock.cmake)
 
-CPMFindPackage(
-  NAME clap
-  GITHUB_REPOSITORY free-audio/clap
-  VERSION 1.2.6
-  GIT_TAG 69a69252fdd6ac1d06e246d9a04c0a89d9607a17
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
-CPMFindPackage(
-  NAME clap-helpers
-  GITHUB_REPOSITORY free-audio/clap-helpers
-  VERSION 0
-  GIT_TAG 4d8c96fd7da2a7a67a91cf87b008643d6ad2c9ba
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
+CPMGetPackage(nlohmann_json)
+
+CPMGetPackage(clap)
+CPMGetPackage(clap-helpers)
 
 add_subdirectory(ext)
 
-CPMFindPackage(
-  NAME SndFile
-  GITHUB_REPOSITORY libsndfile/libsndfile
-  VERSION 1.2.2
-  GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "BUILD_EXAMPLES OFF"
-    "BUILD_TESTING OFF"
-    "ENABLE_EXTERNAL_LIBS ON"
-    "ENABLE_CPACK OFF"
-    "ENABLE_PACKAGE_CONFIG OFF"
-    "INSTALL_PKGCONFIG_MODULE OFF"
-    "INSTALL_MANPAGES OFF"
-)
+CPMGetPackage(SndFile)
 set(HAVE_OPUS TRUE)
 
 # add_library(lv2_lib INTERFACE)
@@ -856,37 +818,12 @@ if(false)
 endif()
 set(HAVE_CARLA FALSE)
 
-CPMFindPackage(
-  NAME zstd
-  GITHUB_REPOSITORY facebook/zstd
-  VERSION 1.5.7
-  GIT_TAG f8745da6ff1ad1e7bab384bd1f9d742439278e99
-  SOURCE_SUBDIR build/cmake
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "ZSTD_BUILD_STATIC ON"
-    "ZSTD_BUILD_SHARED OFF"
-    "ZSTD_LEGACY_SUPPORT OFF"
-    "ZSTD_BUILD_PROGRAMS OFF"
-    "ZSTD_BUILD_CONTRIB OFF"
-    "ZSTD_BUILD_TESTS OFF"
-)
+CPMGetPackage(zstd)
 add_library(_zstd_lib INTERFACE)
 target_link_libraries(_zstd_lib INTERFACE libzstd_static)
 add_library(zrythm::zstd ALIAS _zstd_lib)
 
-CPMFindPackage(
-  NAME xxHash
-  GITHUB_REPOSITORY Cyan4973/xxHash
-  VERSION 0.8.2
-  GIT_TAG bbb27a5efb85b92a0486cf361a8635715a53f6ba
-  SOURCE_SUBDIR cmake_unofficial
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "XXHASH_BUILD_XXHSUM OFF"
-)
+CPMGetPackage(xxHash)
 
 # not used, might use in the future
 if(0)
@@ -909,49 +846,12 @@ if(0)
   endif()
 endif()
 
-# magic_enum
-CPMFindPackage(
-  NAME magic_enum
-  GITHUB_REPOSITORY Neargye/magic_enum
-  VERSION 0.9.6
-  GIT_TAG dd6a39d0ba1852cf06907e0f0573a2a10d23c2ad
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
-
-# fmt
-CPMFindPackage(
-  NAME fmt
-  GITHUB_REPOSITORY fmtlib/fmt
-  VERSION 11.2.0
-  GIT_TAG 40626af88bd7df9a5fb80be7b25ac85b122d6c21
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "FMT_INSTALL OFF"
-)
-
-# scnlib
-CPMFindPackage(
-  NAME scnlib
-  GITHUB_REPOSITORY eliaskosunen/scnlib
-  VERSION 4.0.1
-  GIT_TAG e937be1a52588621b406d58ce8614f96bb5de747
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
+CPMGetPackage(magic_enum)
+CPMGetPackage(fmt)
+CPMGetPackage(scnlib)
 
 # spdlog
-CPMFindPackage(
-  NAME spdlog
-  GITHUB_REPOSITORY gabime/spdlog
-  VERSION 1.15.3
-  GIT_TAG 6fa36017cfd5731d617e1a934f0e5ea9c4445b13
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "SPDLOG_INSTALL OFF"
-)
+CPMGetPackage(spdlog)
 add_library(_spdlog_lib INTERFACE)
 target_link_libraries(_spdlog_lib INTERFACE spdlog::spdlog)
 target_compile_definitions(_spdlog_lib INTERFACE
@@ -1009,14 +909,7 @@ set(BOOST_INCLUDE_LIBRARIES
 )
 FetchContent_MakeAvailable(Boost)
 
-CPMFindPackage(
-  NAME type_safe
-  GITHUB_REPOSITORY foonathan/type_safe
-  VERSION 0.2.4
-  GIT_TAG 1dbea7936a1e389caa692d01bb3f5ba4b6da7d82
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
+CPMGetPackage(type_safe)
 
 if(0)
   # getting compiler errors so unused for now
@@ -1042,16 +935,7 @@ endif()
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-CPMFindPackage(
-  NAME GTest
-  GITHUB_REPOSITORY google/googletest
-  VERSION 1.16.0
-  GIT_TAG 6910c9d9165801d8827d628cb72eb7ea9dd538c5
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "INSTALL_GTEST OFF"
-)
+CPMGetPackage(GTest)
 add_library(_gtest_libs INTERFACE)
 target_link_libraries(_gtest_libs INTERFACE gtest)
 add_library(_gtest_main_libs INTERFACE)
@@ -1059,19 +943,7 @@ target_link_libraries(_gtest_main_libs INTERFACE gtest_main gmock_main)
 add_library(zrythm::gtest ALIAS _gtest_libs)
 add_library(zrythm::gtest_for_tests ALIAS _gtest_main_libs)
 
-CPMFindPackage(
-  NAME benchmark
-  GITHUB_REPOSITORY google/benchmark
-  VERSION 1.9.2
-  GIT_TAG afa23b7699c17f1e26c88cbf95257b20d78d6247
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS
-    "BENCHMARK_ENABLE_TESTING OFF"
-    "BENCHMARK_ENABLE_INSTALL OFF"
-    "BENCHMARK_INSTALL_DOCS OFF"
-    "CMAKE_BUILD_TYPE Release"
-)
+CPMGetPackage(benchmark)
 add_library(_benchmark_libs INTERFACE)
 target_link_libraries(_benchmark_libs INTERFACE benchmark::benchmark_main gmock)
 if(MSVC)
@@ -1081,61 +953,12 @@ elseif(compiler_gnulike)
 endif()
 add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
-CPMFindPackage(
-  NAME gsl-lite
-  GITHUB_REPOSITORY gsl-lite/gsl-lite
-  VERSION 1.0.1
-  GIT_TAG 56dab5ce071c4ca17d3e0dbbda9a94bd5a1cbca1
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
-
-set(tbb_opts "")
-list(APPEND tbb_opts "TBB_STRICT OFF")
-list(APPEND tbb_opts "TBB_TEST OFF")
-list(APPEND tbb_opts "TBB_INSTALL OFF")
-list(APPEND tbb_opts "TBBMALLOC_BUILD OFF")
-list(APPEND tbb_opts "TBBMALLOC_PROXY_BUILD OFF")
-if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
-  list(APPEND tbb_opts "TBB_SANITIZE address")
-elseif(ZRYTHM_ENABLE_SANITIZER_THREAD)
-  list(APPEND tbb_opts "TBB_SANITIZE thread")
-elseif(ZRYTHM_ENABLE_SANITIZER_MEMORY)
-  list(APPEND tbb_opts "TBB_SANITIZE memory")
-endif()
-CPMFindPackage(
-  NAME tbb
-  GITHUB_REPOSITORY "zrythm/oneTBB"
-  VERSION 2022.2.0
-  GIT_TAG fe153f04aebb223d500f27bc3f93374a012273ec
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-  OPTIONS ${tbb_opts}
-)
-
+CPMGetPackage(gsl-lite)
+CPMGetPackage(tbb)
+CPMGetPackage(farbot)
 if(ZRYTHM_TESTS)
-  CPMFindPackage(
-    NAME cpp_httplib
-    GITHUB_REPOSITORY yhirose/cpp-httplib
-    VERSION 0.20.1
-    GIT_TAG 3af7f2c16147f3fbc6e4d717032daf505dc1652c
-    OPTIONS
-      "HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF"
-      "HTTPLIB_USE_ZSTD_IF_AVAILABLE OFF"
-      "HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF"
-      "HTTPLIB_USE_ZLIB_IF_AVAILABLE OFF"
-      "HTTPLIB_INSTALL OFF"
-  )
+  CPMGetPackage(cpp_httplib)
 endif()
-
-CPMFindPackage(
-  NAME farbot
-  GITHUB_REPOSITORY "zrythm/farbot"
-  VERSION 0.1
-  GIT_TAG 2a2bd99eefada6c78dff04bc0692912366952a86
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
 
 find_package(Qt6
   COMPONENTS

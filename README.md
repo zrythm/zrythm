@@ -98,7 +98,7 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 
 #### Windows
 
-1. Install Visual Studio 2022 (CMake ships with Visual Studio) and Qt 6.9.0 or later.
+1. Install Visual Studio 2022 (CMake ships with Visual Studio, but you have to install the "Desktop development with C++" package), and Qt 6.9.0 or later.
 2. Open Developer Powershell for Visual Studio 2022 and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
 4. Open the Visual Studio solution inside `builddir` and build it.

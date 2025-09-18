@@ -18,14 +18,7 @@ add_library(juce_lib STATIC)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp" "// Empty file\n")
 target_sources(juce_lib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp")
 
-CPMFindPackage(
-  NAME juce
-  GITHUB_REPOSITORY juce-framework/JUCE
-  VERSION 8.0.10
-  GIT_TAG 3af3ce009f6a02f6fa651008fffb5b41743a9fab
-  EXCLUDE_FROM_ALL YES
-  SYSTEM YES
-)
+CPMGetPackage(juce)
 
 target_link_libraries(juce_lib
   PRIVATE
@@ -75,52 +68,11 @@ target_compile_definitions(juce_lib
     $<IF:$<CONFIG:Debug>,JUCE_DEBUG=1;_DEBUG=1;DEBUG=1,JUCE_DEBUG=0;_NDEBUG=1;NDEBUG=1>
 )
 if(OS_GNU)
-  CPMFindPackage(
-    NAME MbedTLS
-    GITHUB_REPOSITORY Mbed-TLS/mbedtls
-    VERSION 3.6.3
-    GIT_TAG 22098d41c6620ce07cf8a0134d37302355e1e5ef
-    EXCLUDE_FROM_ALL YES
-    SYSTEM YES
-    OPTIONS
-      "ENABLE_TESTING OFF"
-      "ENABLE_PROGRAMS OFF"
-      "DISABLE_PACKAGE_CONFIG_AND_INSTALL OFF"
-      "USE_SHARED_MBEDTLS_LIBRARY OFF"
-      "USE_STATIC_MBEDTLS_LIBRARY ON"
-      "MBEDTLS_FATAL_WARNINGS OFF"
-      "CMAKE_BUILD_TYPE Release"
-  )
+  CPMGetPackage(MbedTLS)
   set(MBEDTLS_LIBRARIES MbedTLS::mbedtls)
   get_target_property(MBEDTLS_INCLUDE_DIRS MbedTLS::mbedtls INTERFACE_INCLUDE_DIRECTORIES)
 
-  CPMFindPackage(
-    NAME curl
-    GITHUB_REPOSITORY curl/curl
-    VERSION 8.13.0
-    GIT_TAG 1c3149881769e7bd79b072e48374e4c2b3678b2f
-    EXCLUDE_FROM_ALL YES
-    SYSTEM YES
-    OPTIONS
-      "HTTP_ONLY ON"
-      "BUILD_LIBCURL_DOCS OFF"
-      "BUILD_MIS_DOCS OFF"
-      "BUILD_TESTING OFF"
-      "ENABLE_CURL_MANUAL OFF"
-      "CURL_USE_MBEDTLS ON"
-      "CURL_USE_PKGCONFIG OFF"
-      "CURL_USE_LIBPSL OFF"
-      "CURL_USE_LIBSSH2 OFF"
-      # TODO: eventually enable https://github.com/nghttp2/nghttp2 to support HTTP/2
-      "USE_NGHTTP2 OFF"
-      "USE_LIBIDN2 OFF"
-      "CURL_BROTLI OFF"
-      "CURL_ZLIB OFF"
-      "CURL_ZSTD OFF"
-      "BUILD_CURL_EXE OFF"
-      "BUILD_SHARED_LIBS OFF"
-      "CMAKE_BUILD_TYPE Release"
-  )
+  CPMGetPackage(curl)
 
   find_package(Freetype REQUIRED)
   find_package(Fontconfig REQUIRED)
