@@ -1108,17 +1108,20 @@ ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
     });
 
   // fill MIDI events from the MIDI input port
-  for (const auto &ev : owner_.midi_in_port_->midi_events_.active_events_)
+  if (owner_.get_descriptor ().num_midi_ins_ > 0)
     {
-      clap_event_midi clap_ev{};
-      clap_ev.header.time = ev.time_;
-      clap_ev.header.type = CLAP_EVENT_MIDI;
-      clap_ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-      clap_ev.header.flags = 0;
-      clap_ev.header.size = sizeof (clap_ev);
-      clap_ev.port_index = 0;
-      std::ranges::copy (ev.raw_buffer_, clap_ev.data);
-      evIn_.push (&clap_ev.header);
+      for (const auto &ev : owner_.midi_in_port_->midi_events_.active_events_)
+        {
+          clap_event_midi clap_ev{};
+          clap_ev.header.time = ev.time_;
+          clap_ev.header.type = CLAP_EVENT_MIDI;
+          clap_ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+          clap_ev.header.flags = 0;
+          clap_ev.header.size = sizeof (clap_ev);
+          clap_ev.port_index = 0;
+          std::ranges::copy (ev.raw_buffer_, clap_ev.data);
+          evIn_.push (&clap_ev.header);
+        }
     }
 }
 
