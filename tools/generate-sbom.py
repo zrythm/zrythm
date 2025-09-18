@@ -50,6 +50,11 @@ def parse_package_lock_file(lock_path):
         if git_tag_match:
             dep_info['git_tag'] = git_tag_match.group(1)
 
+        # Extract SBOM_LICENSE_CONCLUDED if available (capture quoted string)
+        license_match = re.search(r'SBOM_LICENSE_CONCLUDED\s+\"([^\"]+)\"', match)
+        if license_match:
+            dep_info['license_concluded'] = license_match.group(1)
+
         # Check if package should be skipped from SBOM
         sbom_skip_match = re.search(r'SBOM_SKIP\s+([^\s]+)', match)
         if sbom_skip_match and sbom_skip_match.group(1).upper() == 'YES':
@@ -94,10 +99,20 @@ def create_sbom_packages(dependencies):
 
             package.set_externalreference('PACKAGE-MANAGER', 'purl', purl)
 
-        # Set license information (default to NOASSERTION since we don't have this info)
-        package.set_licenseconcluded('NOASSERTION')
-        package.set_licensedeclared('NOASSERTION')
-        package.set_copyrighttext('NOASSERTION')
+        # Set license information
+        if 'license_concluded' in dep:
+            package.set_licenseconcluded(dep['license_concluded'])
+            package.set_licensedeclared(dep['license_concluded'])
+        else:
+            # Default to NOASSERTION since we don't have this info
+            package.set_licenseconcluded('NOASSERTION')
+            package.set_licensedeclared('NOASSERTION')
+
+        # Set copyright text
+        if 'copyright_text' in dep:
+            package.set_copyrighttext(dep['copyright_text'])
+        else:
+            package.set_copyrighttext('NOASSERTION')
 
         # Generate package ID
         package_id = f"SPDXRef-Package-{dep['name']}"

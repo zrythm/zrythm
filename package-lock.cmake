@@ -43,6 +43,7 @@ CPMDeclarePackage(juce
   GITHUB_REPOSITORY juce-framework/JUCE
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
+  SBOM_LICENSE_CONCLUDED "LicenseRef-JUCE-Commercial OR AGPL-3.0-only"
 )
 # MbedTLS
 CPMDeclarePackage(MbedTLS
