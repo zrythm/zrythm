@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/atomic_position_qml_adapter.h"
+#include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_fwd.h"
 #include "structure/arrangement/bounded_object.h"
 #include "structure/arrangement/colored_object.h"
@@ -31,6 +32,9 @@ class ArrangerObject
 {
   Q_OBJECT
   QML_ELEMENT
+  Q_PROPERTY (
+    zrythm::structure::arrangement::ArrangerObject * parentObject READ
+      parentObject WRITE setParentObject NOTIFY parentObjectChanged)
   Q_PROPERTY (
     zrythm::structure::arrangement::ArrangerObject::Type type READ type CONSTANT)
   Q_PROPERTY (
@@ -116,13 +120,14 @@ public:
    */
   Q_SIGNAL void propertiesChanged ();
 
+  ArrangerObject * parentObject () const { return parent_object_; }
+  void             setParentObject (ArrangerObject * object);
+  Q_SIGNAL void    parentObjectChanged (QObject * parentObject);
+
   // ========================================================================
 
   // Convenience getter
-  auto &get_tempo_map () const
-  {
-    return position ()->position ().get_tempo_map ();
-  }
+  auto &get_tempo_map () const { return tempo_map_; }
 
 protected:
   enum class ArrangerObjectFeatures : std::uint8_t
@@ -174,11 +179,21 @@ private:
 private:
   Type type_;
 
+  const dsp::TempoMap &tempo_map_;
+
+  /**
+   * @brief Time conversion functions to be used by positions.
+   *
+   * @note The functions may be re-set (by the main thread) when (un)parenting
+   * objects, so make sure no one is calling them simultaneously from another
+   * thread during reparenting.
+   */
+  std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
+    time_conversion_funcs_;
+
   /// Start position (always in Musical mode (ticks)).
   dsp::AtomicPosition                                    position_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> position_adapter_{
-    new dsp::AtomicPositionQmlAdapter{ position_ }
-  };
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> position_adapter_;
 
   utils::QObjectUniquePtr<ArrangerObjectBounds>            bounds_;
   utils::QObjectUniquePtr<ArrangerObjectLoopRange>         loop_range_;
@@ -186,6 +201,15 @@ private:
   utils::QObjectUniquePtr<ArrangerObjectColor>             color_;
   utils::QObjectUniquePtr<ArrangerObjectMuteFunctionality> mute_;
   utils::QObjectUniquePtr<ArrangerObjectFadeRange>         fade_range_;
+
+  /**
+   * @brief Parent object, if any (for example the owning clip).
+   *
+   * This is only used at runtime.
+   *
+   * @note Only one level of parent-child relationships is supported.
+   */
+  QPointer<ArrangerObject> parent_object_;
 
   BOOST_DESCRIBE_CLASS (
     ArrangerObject,

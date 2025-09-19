@@ -10,23 +10,14 @@
 #include <stdexcept>
 #include <vector>
 
+#include "utils/types.h"
+
 #include <nlohmann/json.hpp>
 
 using namespace std::literals;
 
 namespace zrythm::dsp
 {
-
-enum class TimeFormat : std::uint8_t
-{
-  /// Musical time (ticks)
-  Musical,
-  /**
-   * @brief Absolute time (seconds)
-   * @note Not samples so that sample rate changes don't require repositioning.
-   */
-  Absolute,
-};
 
 /**
  * @class FixedPpqTempoMap

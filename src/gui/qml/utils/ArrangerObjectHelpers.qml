@@ -35,4 +35,18 @@ QtObject {
   function isRegion(obj: ArrangerObject): bool {
     return obj && (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion || obj.type === ArrangerObject.ChordRegion || obj.type === ArrangerObject.AutomationRegion);
   }
+
+  function setObjectEndFromTimelineTicks(obj: ArrangerObject, timelineTicks: real) {
+    const bounds = getObjectBounds(obj);
+    if (!bounds) {
+      return;
+    }
+
+    if (obj.parentObject) {
+      const localTicks = timelineTicks - obj.parentObject.position.ticks;
+      bounds.length.ticks = localTicks - obj.position.ticks;
+    } else {
+      bounds.length.ticks = timelineTicks - obj.position.ticks;
+    }
+  }
 }

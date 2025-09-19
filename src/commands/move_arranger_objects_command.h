@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <algorithm>
+#include <ranges>
 #include <vector>
 
 #include "structure/arrangement/arranger_object.h"
@@ -31,11 +33,6 @@ public:
           {
             original_positions_.push_back (obj->position ()->ticks ());
           }
-        else
-          {
-            // Object not found, store invalid position
-            original_positions_.push_back (-1.0);
-          }
       }
   }
 
@@ -62,10 +59,13 @@ public:
     if (objects_.size () != other_cmd->objects_.size ())
       return false;
 
-    for (size_t i = 0; i < objects_.size (); ++i)
+    if (
+      !std::ranges::equal (
+        objects_, other_cmd->objects_, {},
+        &structure::arrangement::ArrangerObjectUuidReference::id,
+        &structure::arrangement::ArrangerObjectUuidReference::id))
       {
-        if (objects_[i].id () != other_cmd->objects_[i].id ())
-          return false;
+        return false;
       }
 
     last_redo_timestamp_ = cur_time;
@@ -75,29 +75,26 @@ public:
 
   void undo () override
   {
-    for (size_t i = 0; i < objects_.size (); ++i)
+    for (
+      const auto &[obj_ref, original_pos] :
+      std::views::zip (objects_, original_positions_))
       {
-        if (auto * obj = objects_[i].get_object_base ())
+        if (auto * obj = obj_ref.get_object_base ())
           {
-            if (original_positions_[i] >= 0.0)
-              {
-                obj->position ()->setTicks (original_positions_[i]);
-              }
+            obj->position ()->setTicks (original_pos);
           }
       }
   }
 
   void redo () override
   {
-    for (size_t i = 0; i < objects_.size (); ++i)
+    for (
+      const auto &[obj_ref, original_pos] :
+      std::views::zip (objects_, original_positions_))
       {
-        if (auto * obj = objects_[i].get_object_base ())
+        if (auto * obj = obj_ref.get_object_base ())
           {
-            if (original_positions_[i] >= 0.0)
-              {
-                obj->position ()->setTicks (
-                  original_positions_[i] + tick_delta_);
-              }
+            obj->position ()->setTicks (original_pos + tick_delta_);
           }
       }
     last_redo_timestamp_ = std::chrono::steady_clock::now ();

@@ -3,7 +3,6 @@
 
 #include "dsp/atomic_position.h"
 #include "dsp/atomic_position_qml_adapter.h"
-#include "dsp/tempo_map.h"
 
 #include <QSignalSpy>
 
@@ -16,12 +15,23 @@ class AtomicPositionQmlAdapterTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<TempoMap> (44100.0);
-    atomic_pos = std::make_unique<AtomicPosition> (*tempo_map);
-    qml_pos = std::make_unique<AtomicPositionQmlAdapter> (*atomic_pos);
+    // Use custom conversion providers that support negative positions
+    // 120 BPM = 960 ticks per beat, 0.5 seconds per beat
+    time_conversion_funcs = std::make_unique<
+      AtomicPosition::
+        TimeConversionFunctions> (AtomicPosition::TimeConversionFunctions{
+      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
+      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
+      .tick_to_samples =
+        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
+      .samples_to_tick =
+        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
+    });
+    atomic_pos = std::make_unique<AtomicPosition> (*time_conversion_funcs);
+    qml_pos = std::make_unique<AtomicPositionQmlAdapter> (*atomic_pos, true);
   }
 
-  std::unique_ptr<TempoMap>                 tempo_map;
+  std::unique_ptr<AtomicPosition::TimeConversionFunctions> time_conversion_funcs;
   std::unique_ptr<AtomicPosition>           atomic_pos;
   std::unique_ptr<AtomicPositionQmlAdapter> qml_pos;
 };
@@ -89,18 +99,6 @@ TEST_F (AtomicPositionQmlAdapterTest, SamplesProperty)
   EXPECT_EQ (qml_pos->samples (), 11025);
 }
 
-// Test string display
-TEST_F (AtomicPositionQmlAdapterTest, StringDisplay)
-{
-  qml_pos->setTicks (241); // 1.1.2.1
-  EXPECT_EQ (qml_pos->getStringDisplay ().toStdString (), "1.1.2.001");
-
-  // Test with time signature change
-  tempo_map->add_time_signature_event (0, 3, 4);
-  qml_pos->setTicks (960); // 1.2.1.0 in 3/4
-  EXPECT_EQ (qml_pos->getStringDisplay ().toStdString (), "1.2.1.000");
-}
-
 // Test thread safety through signals
 TEST_F (AtomicPositionQmlAdapterTest, ThreadSafetySignals)
 {
@@ -118,28 +116,18 @@ TEST_F (AtomicPositionQmlAdapterTest, ThreadSafetySignals)
 // Test edge cases
 TEST_F (AtomicPositionQmlAdapterTest, EdgeCases)
 {
-  // Negative values (clamped)
+  // Negative values
   qml_pos->setTicks (-100.0);
-  EXPECT_DOUBLE_EQ (qml_pos->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (qml_pos->ticks (), -100.0);
+  EXPECT_DOUBLE_EQ (qml_pos->seconds (), -100.0 / 960.0 * 0.5);
 
   qml_pos->setSeconds (-1.0);
-  EXPECT_DOUBLE_EQ (qml_pos->seconds (), 0.0);
+  EXPECT_DOUBLE_EQ (qml_pos->seconds (), -1.0);
+  EXPECT_DOUBLE_EQ (qml_pos->ticks (), -1.0 / 0.5 * 960.0);
 
   // Large values
   qml_pos->setTicks (1e9);
   EXPECT_GT (qml_pos->seconds (), 0.0);
-}
-
-// Test tempo map changes
-TEST_F (AtomicPositionQmlAdapterTest, TempoMapChanges)
-{
-  qml_pos->setTicks (960.0);
-
-  // Change tempo (120 -> 140 BPM)
-  tempo_map->add_tempo_event (0, 140.0, TempoMap::CurveType::Constant);
-
-  // Verify seconds updated
-  EXPECT_DOUBLE_EQ (qml_pos->seconds (), 60.0 / 140.0);
 }
 
 // Test QML property bindings
@@ -155,4 +143,33 @@ TEST_F (AtomicPositionQmlAdapterTest, QmlPropertyBindings)
   qml_pos->setTicks (960.0);
   EXPECT_DOUBLE_EQ (qml_pos->property ("ticks").toDouble (), 960.0);
 }
+// Test allowNegative = false functionality
+TEST_F (AtomicPositionQmlAdapterTest, AllowNegativeFalse)
+{
+  // Create a new adapter with allowNegative = false
+  AtomicPositionQmlAdapter qml_pos_no_negative (*atomic_pos, false);
+
+  // Test that negative values are clamped to 0
+  qml_pos_no_negative.setTicks (-100.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 0.0);
+  EXPECT_EQ (qml_pos_no_negative.samples (), 0);
+
+  qml_pos_no_negative.setSeconds (-1.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 0.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 0.0);
+  EXPECT_EQ (qml_pos_no_negative.samples (), 0);
+
+  // Test that positive values work normally
+  qml_pos_no_negative.setTicks (960.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 960.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 0.5);
+  EXPECT_EQ (qml_pos_no_negative.samples (), 22050);
+
+  qml_pos_no_negative.setSeconds (1.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 1.0);
+  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 1920.0);
+  EXPECT_EQ (qml_pos_no_negative.samples (), 44100);
+}
+
 } // namespace zrythm::dsp

@@ -17,10 +17,10 @@ public:
   {
     if (range.has_value ())
       {
-        assert (range->first >= 0);
         assert (range->second >= range->first);
         start_ = range->first;
         end_ = range->second;
+        is_full_content_ = false;
       }
   }
 
@@ -28,7 +28,7 @@ public:
    * @brief Returns whether the range is the full content (ie, there is no
    * range).
    */
-  bool is_full_content () const { return end_ < 0.0; }
+  bool is_full_content () const { return is_full_content_; }
 
   /**
    * @brief Expands to the given range.
@@ -39,7 +39,6 @@ public:
     if (is_full_content ())
       return;
 
-    assert (range_to_add.first >= 0);
     assert (range_to_add.second >= range_to_add.first);
     start_ = std::min (start_, range_to_add.first);
     end_ = std::max (end_, range_to_add.second);
@@ -47,8 +46,9 @@ public:
 
   void expand_to_full ()
   {
+    is_full_content_ = true;
     start_ = 0;
-    end_ = -1;
+    end_ = 0;
   }
 
   void expand (const ExpandableTickRange &range_to_add)
@@ -78,7 +78,8 @@ public:
 
 private:
   double start_{};
-  double end_{ -1 };
+  double end_{};
+  bool   is_full_content_{ true };
 };
 
 inline auto

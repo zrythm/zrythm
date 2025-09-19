@@ -21,11 +21,21 @@ class ArrangerObjectLoopRangeTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
-    start_position = std::make_unique<dsp::AtomicPosition> (*tempo_map);
+    time_conversion_funcs = std::make_unique<
+      dsp::AtomicPosition::
+        TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
+      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
+      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
+      .tick_to_samples =
+        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
+      .samples_to_tick =
+        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
+    });
+    start_position =
+      std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
     start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
-      *start_position, parent.get ());
+      *start_position, true, parent.get ());
 
     // Create bounded object for loop range
     bounds = std::make_unique<ArrangerObjectBounds> (*start_position_adapter);
@@ -38,7 +48,8 @@ protected:
     bounds->length ()->setSamples (5000); // Object spans 1000-6000 samples
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
+  std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
+                                                 time_conversion_funcs;
   std::unique_ptr<dsp::AtomicPosition>           start_position;
   std::unique_ptr<MockQObject>                   parent;
   std::unique_ptr<dsp::AtomicPositionQmlAdapter> start_position_adapter;
@@ -129,7 +140,8 @@ TEST_F (ArrangerObjectLoopRangeTest, LengthCalculations)
   loop_range->loopEndPosition ()->setSamples (3000);
 
   EXPECT_DOUBLE_EQ (
-    loop_range->get_loop_length_in_ticks (), tempo_map->samples_to_tick (2000));
+    loop_range->get_loop_length_in_ticks (),
+    time_conversion_funcs->samples_to_tick (2000));
   EXPECT_EQ (loop_range->get_loop_length_in_frames (), 2000);
 }
 
@@ -186,8 +198,9 @@ TEST_F (ArrangerObjectLoopRangeTest, Serialization)
   to_json (j, *loop_range);
 
   // Create new object from serialized data
-  dsp::AtomicPosition new_start_pos (*tempo_map);
-  dsp::AtomicPositionQmlAdapter new_start_adapter (new_start_pos, parent.get ());
+  dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
+  dsp::AtomicPositionQmlAdapter new_start_adapter (
+    new_start_pos, true, parent.get ());
   ArrangerObjectBounds    new_bounds (new_start_adapter);
   ArrangerObjectLoopRange new_loop_range (new_bounds);
   from_json (j, new_loop_range);

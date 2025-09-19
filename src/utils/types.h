@@ -204,6 +204,17 @@ struct EngineState
 using GraphStopRequester = std::function<void (EngineState &)>;
 using GraphResumeRequester = std::function<void (EngineState &)>;
 
+enum class TimeFormat : std::uint8_t
+{
+  /// Musical time (ticks)
+  Musical,
+  /**
+   * @brief Absolute time (seconds)
+   * @note Not samples so that sample rate changes don't require repositioning.
+   */
+  Absolute,
+};
+
 /**
  * Beat unit.
  */

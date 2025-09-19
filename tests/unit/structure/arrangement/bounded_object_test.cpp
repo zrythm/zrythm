@@ -5,7 +5,6 @@
 
 #include "dsp/atomic_position.h"
 #include "dsp/atomic_position_qml_adapter.h"
-#include "dsp/tempo_map.h"
 #include "structure/arrangement/bounded_object.h"
 
 #include "helpers/mock_qobject.h"
@@ -20,11 +19,21 @@ class ArrangerObjectBoundsTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
-    start_position = std::make_unique<dsp::AtomicPosition> (*tempo_map);
+    time_conversion_funcs = std::make_unique<
+      dsp::AtomicPosition::
+        TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
+      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
+      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
+      .tick_to_samples =
+        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
+      .samples_to_tick =
+        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
+    });
+    start_position =
+      std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
     start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
-      *start_position, parent.get ());
+      *start_position, true, parent.get ());
 
     // Create bounded object with proper parenting
     obj = std::make_unique<ArrangerObjectBounds> (*start_position_adapter);
@@ -34,7 +43,8 @@ protected:
     obj->length ()->setSamples (2000); // Object spans 1000-3000 samples
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
+  std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
+                                                 time_conversion_funcs;
   std::unique_ptr<dsp::AtomicPosition>           start_position;
   std::unique_ptr<MockQObject>                   parent;
   std::unique_ptr<dsp::AtomicPositionQmlAdapter> start_position_adapter;
@@ -126,7 +136,7 @@ TEST_F (ArrangerObjectBoundsTest, Serialization)
   to_json (j, *obj);
 
   // Create new object from serialized data
-  dsp::AtomicPosition new_start_pos (*tempo_map);
+  dsp::AtomicPosition new_start_pos (*time_conversion_funcs);
   dsp::AtomicPositionQmlAdapter new_start_adapter (new_start_pos, parent.get ());
   ArrangerObjectBounds new_obj (new_start_adapter);
   from_json (j, new_obj);

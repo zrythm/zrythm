@@ -27,15 +27,25 @@ public:
   using ArrangerObjectListModel =
     structure::arrangement::ArrangerObjectListModel;
 
+  template <typename T>
   ArrangerObjectOwner (
     ArrangerObjectRegistry       &registry,
     dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    QObject                      &derived)
+    T                            &derived)
+    requires std::derived_from<T, QObject>
       : registry_ (registry),
-        file_audio_source_registry_ (file_audio_source_registry),
-        list_model_ (
-          utils::make_qobject_unique<ArrangerObjectListModel> (children_, &derived))
+        file_audio_source_registry_ (file_audio_source_registry)
   {
+    if constexpr (std::derived_from<T, ArrangerObject>)
+      {
+        list_model_ = utils::make_qobject_unique<ArrangerObjectListModel> (
+          children_, derived);
+      }
+    else
+      {
+        list_model_ = utils::make_qobject_unique<ArrangerObjectListModel> (
+          children_, &derived);
+      }
   }
   virtual ~ArrangerObjectOwner () = default;
   Z_DISABLE_COPY_MOVE (ArrangerObjectOwner)

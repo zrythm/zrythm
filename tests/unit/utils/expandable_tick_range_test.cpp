@@ -171,4 +171,62 @@ TEST (ExpandableTickRangeTest, MultipleExpansions)
   EXPECT_EQ (result_range->first, 0.0);   // min start from all expansions
   EXPECT_EQ (result_range->second, 35.0); // max end from all expansions
 }
+
+TEST (ExpandableTickRangeTest, NegativeRange)
+{
+  ExpandableTickRange range{ std::make_optional (std::make_pair (-10.0, -5.0)) };
+
+  // Should not be full content
+  EXPECT_FALSE (range.is_full_content ());
+
+  // Should have the provided negative range
+  auto result_range = range.range ();
+  EXPECT_TRUE (result_range.has_value ());
+  EXPECT_EQ (result_range->first, -10.0);
+  EXPECT_EQ (result_range->second, -5.0);
+}
+
+TEST (ExpandableTickRangeTest, ExpandWithNegativeRange)
+{
+  ExpandableTickRange range{ std::make_optional (std::make_pair (-5.0, 5.0)) };
+
+  // Expand with a negative range
+  range.expand ({ -10.0, -2.0 });
+
+  auto result_range = range.range ();
+  EXPECT_TRUE (result_range.has_value ());
+  EXPECT_EQ (result_range->first, -10.0); // min start (most negative)
+  EXPECT_EQ (result_range->second, 5.0);  // max end
+}
+
+TEST (ExpandableTickRangeTest, ExpandWithMixedNegativePositiveRange)
+{
+  ExpandableTickRange range{ std::make_optional (std::make_pair (-15.0, -5.0)) };
+
+  // Expand with a range that spans negative and positive
+  range.expand ({ -10.0, 10.0 });
+
+  auto result_range = range.range ();
+  EXPECT_TRUE (result_range.has_value ());
+  EXPECT_EQ (result_range->first, -15.0); // min start
+  EXPECT_EQ (result_range->second, 10.0); // max end
+}
+
+TEST (ExpandableTickRangeTest, NegativeRangeExpansion)
+{
+  ExpandableTickRange range{
+    std::make_optional (std::make_pair (-20.0, -10.0))
+  };
+
+  // Multiple expansions with negative values
+  range.expand ({ -25.0, -15.0 });
+  range.expand ({ -30.0, -5.0 });
+  range.expand ({ -18.0, -12.0 });
+
+  auto result_range = range.range ();
+  EXPECT_TRUE (result_range.has_value ());
+  EXPECT_EQ (result_range->first, -30.0); // min start from all expansions
+  EXPECT_EQ (result_range->second, -5.0); // max end from all expansions
+}
+
 }

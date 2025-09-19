@@ -19,13 +19,23 @@ class ArrangerObjectFadeRangeTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    time_conversion_funcs = std::make_unique<
+      dsp::AtomicPosition::
+        TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
+      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
+      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
+      .tick_to_samples =
+        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
+      .samples_to_tick =
+        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
+    });
     parent = std::make_unique<MockQObject> ();
-    range =
-      std::make_unique<ArrangerObjectFadeRange> (*tempo_map, parent.get ());
+    range = std::make_unique<ArrangerObjectFadeRange> (
+      *time_conversion_funcs, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>           tempo_map;
+  std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
+                                           time_conversion_funcs;
   std::unique_ptr<MockQObject>             parent;
   std::unique_ptr<ArrangerObjectFadeRange> range;
 };
@@ -154,8 +164,8 @@ TEST_F (ArrangerObjectFadeRangeTest, Serialization)
   to_json (j, *range);
 
   // Create new range
-  auto new_range =
-    std::make_unique<ArrangerObjectFadeRange> (*tempo_map, parent.get ());
+  auto new_range = std::make_unique<ArrangerObjectFadeRange> (
+    *time_conversion_funcs, parent.get ());
   from_json (j, *new_range);
 
   // Verify state

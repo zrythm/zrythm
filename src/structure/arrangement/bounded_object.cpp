@@ -9,16 +9,11 @@ ArrangerObjectBounds::ArrangerObjectBounds (
   const dsp::AtomicPositionQmlAdapter &start_position,
   QObject *                            parent)
     : QObject (parent), position_ (start_position),
-      length_ (start_position.position ().get_tempo_map ()),
+      length_ (start_position.position ().time_conversion_functions ()),
       length_adapter_ (
-        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (length_, this))
+        utils::make_qobject_unique<
+          dsp::AtomicPositionQmlAdapter> (length_, false, this))
 {
-}
-
-void
-ArrangerObjectBounds::setEndPositionTicks (double ticks)
-{
-  length ()->setTicks (ticks - position ()->ticks ());
 }
 
 void

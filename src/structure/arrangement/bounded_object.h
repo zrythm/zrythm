@@ -40,11 +40,6 @@ public:
     return length_adapter_.get ();
   }
 
-  /**
-   * @brief Helper to set the length based on an end position
-   */
-  Q_INVOKABLE void setEndPositionTicks (double ticks);
-
   // Convenience method
   Q_INVOKABLE void setLengthTicks (double ticks)
   {
@@ -56,7 +51,7 @@ public:
   auto get_end_position_samples (bool end_position_inclusive) const
   {
     return static_cast<signed_frame_t> (
-             std::round (length_.get_tempo_map ().tick_to_samples (
+             std::round (length_.time_conversion_functions ().tick_to_samples (
                position ()->ticks () + length_.get_ticks ())))
            + (end_position_inclusive ? 0 : -1);
   }

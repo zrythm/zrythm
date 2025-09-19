@@ -318,4 +318,78 @@ TEST_F (ArrangerObjectListModelTest, SignalConnectionsAndDisconnections)
   EXPECT_EQ (contentChangedForObjectSpy.count (), 0);
 }
 
+// Test parent object functionality with ArrangerObjectListModel
+TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
+{
+  // Create a parent object (MIDI region)
+  auto parent_region_ref = registry_.create_object<MidiRegion> (
+    *tempo_map, registry_, file_audio_source_registry_, parent.get ());
+  auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
+
+  // Create a new model with the parent arranger object
+  std::vector<ArrangerObjectUuidReference> child_objects;
+  ArrangerObjectListModel parent_model (child_objects, *parent_region);
+
+  // Create a child note
+  auto child_note_ref =
+    registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto * child_note = child_note_ref.get_object_as<MidiNote> ();
+  child_note->setPitch (60);
+
+  // Insert the child into the parent model
+  parent_model.insertObject (
+    ArrangerObjectUuidReference (child_note->get_uuid (), registry_), 0);
+
+  // Verify that the child's parent object is set to the parent region
+  EXPECT_EQ (child_note->parentObject (), parent_region);
+
+  // Remove the child from the parent model
+  parent_model.removeRows (0, 1);
+
+  // Verify that the child's parent object is cleared
+  EXPECT_EQ (child_note->parentObject (), nullptr);
+}
+
+// Test parent object signal emissions
+TEST_F (ArrangerObjectListModelTest, ParentObjectSignalEmissions)
+{
+  // Create a parent object (MIDI region)
+  auto parent_region_ref = registry_.create_object<MidiRegion> (
+    *tempo_map, registry_, file_audio_source_registry_, parent.get ());
+  auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
+
+  // Create a new model with the parent arranger object
+  std::vector<ArrangerObjectUuidReference> child_objects;
+  ArrangerObjectListModel parent_model (child_objects, *parent_region);
+
+  // Create a child note
+  auto child_note_ref =
+    registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto * child_note = child_note_ref.get_object_as<MidiNote> ();
+  child_note->setPitch (60);
+
+  // Setup signal spy for parent object changes
+  QSignalSpy parentObjectChangedSpy (child_note, &MidiNote::parentObjectChanged);
+  QSignalSpy propertiesChangedSpy (child_note, &MidiNote::propertiesChanged);
+
+  // Insert the child into the parent model
+  parent_model.insertObject (
+    ArrangerObjectUuidReference (child_note->get_uuid (), registry_), 0);
+
+  // Verify that signals were emitted
+  EXPECT_EQ (parentObjectChangedSpy.count (), 1);
+  EXPECT_EQ (propertiesChangedSpy.count (), 1);
+
+  // Clear spies
+  parentObjectChangedSpy.clear ();
+  propertiesChangedSpy.clear ();
+
+  // Remove the child from the parent model
+  parent_model.removeRows (0, 1);
+
+  // Verify that signals were emitted again
+  EXPECT_EQ (parentObjectChangedSpy.count (), 1);
+  EXPECT_EQ (propertiesChangedSpy.count (), 1);
+}
+
 } // namespace zrythm::structure::arrangement

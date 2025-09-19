@@ -13,12 +13,23 @@ class AtomicPositionTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<TempoMap> (44100.0);
-    pos = std::make_unique<AtomicPosition> (*tempo_map);
+    // Use custom conversion providers that support negative positions
+    // 120 BPM = 960 ticks per beat, 0.5 seconds per beat
+    conversion_providers = std::make_unique<
+      AtomicPosition::
+        TimeConversionFunctions> (AtomicPosition::TimeConversionFunctions{
+      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
+      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
+      .tick_to_samples =
+        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
+      .samples_to_tick =
+        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
+    });
+    pos = std::make_unique<AtomicPosition> (*conversion_providers);
   }
 
-  std::unique_ptr<TempoMap>       tempo_map;
-  std::unique_ptr<AtomicPosition> pos;
+  std::unique_ptr<AtomicPosition::TimeConversionFunctions> conversion_providers;
+  std::unique_ptr<AtomicPosition>                          pos;
 };
 
 // Test initial state
@@ -117,46 +128,6 @@ TEST_F (AtomicPositionTest, FractionalPositions)
   EXPECT_DOUBLE_EQ (pos->get_ticks (), 0.25 / 0.5 * 960.0);
 }
 
-// Test with tempo changes
-TEST_F (AtomicPositionTest, WithTempoChanges)
-{
-  // Add tempo change at 1920 ticks (140 BPM)
-  tempo_map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
-
-  // Set position after tempo change
-  pos->set_ticks (2880.0); // 1920 + 960 ticks
-  EXPECT_DOUBLE_EQ (pos->get_seconds (), 1.0 + (60.0 / 140.0));
-
-  // Switch to Absolute mode and set position
-  pos->set_mode (TimeFormat::Absolute);
-  pos->set_seconds (2.0);
-
-  // Verify tick position (1s @120BPM + 1s @140BPM)
-  const double expectedTicks = 1920.0 + (2.0 - 1.0) * (140.0 / 60.0) * 960.0;
-  EXPECT_DOUBLE_EQ (pos->get_ticks (), expectedTicks);
-}
-
-// Test with time signature changes
-TEST_F (AtomicPositionTest, WithTimeSignatureChanges)
-{
-  // Add time signature change (3/4 time at bar 5)
-  const int64_t bar5Start = 4 * 4 * 960;
-  tempo_map->add_time_signature_event (bar5Start, 3, 4);
-
-  // Set musical position in bar 5
-  pos->set_ticks (bar5Start + 960.0); // Beat 2 of bar 5
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Musical);
-
-  // Convert to Absolute mode
-  pos->set_mode (TimeFormat::Absolute);
-  const double secondsAtBar5 = pos->get_seconds ();
-  EXPECT_DOUBLE_EQ (secondsAtBar5, 8.5);
-
-  // Convert back
-  pos->set_mode (TimeFormat::Musical);
-  EXPECT_DOUBLE_EQ (pos->get_ticks (), bar5Start + 960.0);
-}
-
 // Test get_samples() in Musical mode
 TEST_F (AtomicPositionTest, GetSetSamplesInMusicalMode)
 {
@@ -209,24 +180,6 @@ TEST_F (AtomicPositionTest, GetSetSamplesFractional)
   EXPECT_DOUBLE_EQ (pos->get_seconds (), 0.25);
 }
 
-// Test get_samples() with tempo changes
-TEST_F (AtomicPositionTest, GetSetSamplesWithTempoChanges)
-{
-  // Add tempo change
-  tempo_map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
-
-  // Set position after tempo change
-  pos->set_ticks (2880.0); // 1920 + 960 ticks
-  const double expectedSeconds = 1.0 + (60.0 / 140.0);
-  EXPECT_EQ (
-    pos->get_samples (), static_cast<int64_t> (expectedSeconds * 44100.0));
-
-  // Roundtrip
-  pos->set_ticks (0);
-  pos->set_samples (expectedSeconds * 44100.0);
-  EXPECT_DOUBLE_EQ (pos->get_ticks (), 2880.0);
-}
-
 // Test thread safety (simulated with concurrent access)
 TEST_F (AtomicPositionTest, ThreadSafety)
 {
@@ -262,9 +215,15 @@ TEST_F (AtomicPositionTest, EdgeCases)
   EXPECT_DOUBLE_EQ (pos->get_ticks (), 0.0);
   EXPECT_DOUBLE_EQ (pos->get_seconds (), 0.0);
 
-  // Negative position (clamped to 0)
+  // Negative position
   pos->set_ticks (-100.0);
-  EXPECT_DOUBLE_EQ (pos->get_ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (pos->get_ticks (), -100.0);
+  EXPECT_DOUBLE_EQ (pos->get_seconds (), -100.0 / 960.0 * 0.5);
+
+  // Test negative seconds as well
+  pos->set_seconds (-0.5);
+  EXPECT_DOUBLE_EQ (pos->get_seconds (), -0.5);
+  EXPECT_DOUBLE_EQ (pos->get_ticks (), -0.5 / 0.5 * 960.0);
 
   // Large position
   pos->set_ticks (1e9);
@@ -286,7 +245,7 @@ TEST_F (AtomicPositionTest, SerializationMusicalMode)
   j = *pos;
 
   // Create new position with same tempo map
-  AtomicPosition new_pos (*tempo_map);
+  AtomicPosition new_pos (*conversion_providers);
   j.get_to (new_pos);
 
   // Verify state
@@ -307,7 +266,7 @@ TEST_F (AtomicPositionTest, SerializationAbsoluteMode)
   j = *pos;
 
   // Create new position with same tempo map
-  AtomicPosition new_pos (*tempo_map);
+  AtomicPosition new_pos (*conversion_providers);
   j.get_to (new_pos);
 
   // Verify state
@@ -328,7 +287,7 @@ TEST_F (AtomicPositionTest, SerializationAfterModeConversion)
   j = *pos;
 
   // Create new position with same tempo map
-  AtomicPosition new_pos (*tempo_map);
+  AtomicPosition new_pos (*conversion_providers);
   j.get_to (new_pos);
 
   // Verify state

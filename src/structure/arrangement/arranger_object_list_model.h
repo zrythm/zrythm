@@ -33,6 +33,16 @@ public:
     std::vector<ArrangerObjectUuidReference> &objects,
     QObject *                                 parent = nullptr);
 
+  /**
+   * @brief To be used when the parent is also an arranger object.
+   *
+   * This will set up additional connections to call setParentObject() at
+   * appropriate times.
+   */
+  ArrangerObjectListModel (
+    std::vector<ArrangerObjectUuidReference> &objects,
+    ArrangerObject                           &parent_arranger_object);
+
   QHash<int, QByteArray> roleNames () const override;
 
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override
@@ -59,6 +69,7 @@ public:
 private:
   void connect_object_signals (int index);
   void disconnect_object_signals (int index);
+  void setup_signals (bool is_parent_arranger_object);
 
 private:
   std::vector<ArrangerObjectUuidReference> &objects_;

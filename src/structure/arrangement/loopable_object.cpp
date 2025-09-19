@@ -9,18 +9,18 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
   const ArrangerObjectBounds &bounds,
   QObject *                   parent)
     : QObject (parent), bounds_ (bounds),
-      clip_start_pos_ (bounds.length ()->position ().get_tempo_map ()),
+      clip_start_pos_ (bounds.length ()->position ().time_conversion_functions ()),
       clip_start_pos_adapter_ (
         utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (clip_start_pos_, this)),
-      loop_start_pos_ (bounds.length ()->position ().get_tempo_map ()),
+          dsp::AtomicPositionQmlAdapter> (clip_start_pos_, false, this)),
+      loop_start_pos_ (bounds.length ()->position ().time_conversion_functions ()),
       loop_start_pos_adapter_ (
         utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (loop_start_pos_, this)),
-      loop_end_pos_ (bounds.length ()->position ().get_tempo_map ()),
+          dsp::AtomicPositionQmlAdapter> (loop_start_pos_, false, this)),
+      loop_end_pos_ (bounds.length ()->position ().time_conversion_functions ()),
       loop_end_pos_adapter_ (
         utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (loop_end_pos_, this))
+          dsp::AtomicPositionQmlAdapter> (loop_end_pos_, false, this))
 {
   QObject::connect (
     this, &ArrangerObjectLoopRange::trackLengthChanged, this,

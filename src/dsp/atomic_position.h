@@ -4,9 +4,11 @@
 #pragma once
 
 #include <atomic>
+#include <cstdint>
+#include <functional>
 #include <limits>
 
-#include "dsp/tempo_map.h"
+#include "utils/types.h"
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
@@ -70,14 +72,22 @@ public:
  */
 class AtomicPosition
 {
-
 public:
+  struct TimeConversionFunctions
+  {
+    std::function<double (double)> tick_to_seconds;
+    std::function<double (double)> seconds_to_tick;
+    std::function<double (double)> tick_to_samples;
+    std::function<double (double)> samples_to_tick;
+  };
+
   /**
    * @brief Construct a new AtomicPosition object.
    * @param tempo_map Reference to tempo map for time conversions.
    */
-  AtomicPosition (const TempoMap &tempo_map) noexcept
-      : tempo_map_ (tempo_map), value_ (0, format_to_bool (TimeFormat::Musical))
+  AtomicPosition (const TimeConversionFunctions &conversion_funcs) noexcept
+      : conversion_funcs_ (conversion_funcs),
+        value_ (0, format_to_bool (TimeFormat::Musical))
   {
   }
 
@@ -119,9 +129,6 @@ public:
    */
   void set_ticks (double ticks)
   {
-    // clamp
-    ticks = std::max (ticks, 0.0);
-
     const auto cur_mode = get_current_mode ();
     if (cur_mode == TimeFormat::Musical)
       {
@@ -129,7 +136,7 @@ public:
       }
     else if (cur_mode == TimeFormat::Absolute)
       {
-        set_seconds (tempo_map_.tick_to_seconds (ticks));
+        set_seconds (conversion_funcs_.tick_to_seconds (ticks));
       }
   }
 
@@ -140,9 +147,6 @@ public:
    */
   void set_seconds (double seconds)
   {
-    // clamp
-    seconds = std::max (seconds, 0.0);
-
     const auto cur_mode = get_current_mode ();
     if (cur_mode == TimeFormat::Absolute)
       {
@@ -150,7 +154,7 @@ public:
       }
     else if (cur_mode == TimeFormat::Musical)
       {
-        set_ticks (tempo_map_.seconds_to_tick (seconds));
+        set_ticks (conversion_funcs_.seconds_to_tick (seconds));
       }
   }
 
@@ -162,7 +166,7 @@ public:
       {
         return d;
       }
-    return tempo_map_.seconds_to_tick (d);
+    return conversion_funcs_.seconds_to_tick (d);
   }
 
   /// @brief Get position in absolute seconds (converts if necessary).
@@ -173,7 +177,7 @@ public:
       {
         return d;
       }
-    return tempo_map_.tick_to_seconds (d);
+    return conversion_funcs_.tick_to_seconds (d);
   }
 
   /// @brief Helper method to get the position as samples
@@ -183,20 +187,17 @@ public:
     auto tick =
       bool_to_format (b) == TimeFormat::Musical
         ? d
-        : tempo_map_.seconds_to_tick (d);
+        : conversion_funcs_.seconds_to_tick (d);
     return static_cast<std::int64_t> (
-      std::round (tempo_map_.tick_to_samples (tick)));
+      std::round (conversion_funcs_.tick_to_samples (tick)));
   }
 
   void set_samples (double samples)
   {
-    // clamp
-    samples = std::max (samples, 0.0);
-
-    set_ticks (tempo_map_.samples_to_tick (samples));
+    set_ticks (conversion_funcs_.samples_to_tick (samples));
   }
 
-  const auto &get_tempo_map () const { return tempo_map_; }
+  const auto &time_conversion_functions () const { return conversion_funcs_; }
 
 private:
   static constexpr bool format_to_bool (TimeFormat format) noexcept
@@ -226,7 +227,7 @@ private:
   }
 
 private:
-  const TempoMap                &tempo_map_;
+  const TimeConversionFunctions &conversion_funcs_;
   internal::AtomicDoubleWithBool value_;
 };
 

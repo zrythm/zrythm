@@ -12,6 +12,20 @@ ArrangerObjectListModel::ArrangerObjectListModel (
   QObject *                                 parent)
     : QAbstractListModel (parent), objects_ (objects)
 {
+  setup_signals (false);
+}
+
+ArrangerObjectListModel::ArrangerObjectListModel (
+  std::vector<ArrangerObjectUuidReference> &objects,
+  ArrangerObject                           &parent_arranger_object)
+    : QAbstractListModel (&parent_arranger_object), objects_ (objects)
+{
+  setup_signals (true);
+}
+
+void
+ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
+{
   QObject::connect (
     this, &ArrangerObjectListModel::contentChangedForObject, this,
     [this] (const ArrangerObject * object) {
@@ -26,18 +40,31 @@ ArrangerObjectListModel::ArrangerObjectListModel (
 
   QObject::connect (
     this, &ArrangerObjectListModel::rowsInserted, this,
-    [this] (const QModelIndex &, int first, int last) {
+    [this, is_parent_arranger_object] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
+          if (is_parent_arranger_object)
+            {
+              auto * obj_base = objects_.at (i).get_object_base ();
+              obj_base->setParentObject (
+                qobject_cast<ArrangerObject *> (parent ()));
+            }
+
           connect_object_signals (i);
         }
     });
 
   QObject::connect (
     this, &ArrangerObjectListModel::rowsAboutToBeRemoved, this,
-    [this] (const QModelIndex &, int first, int last) {
+    [this, is_parent_arranger_object] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
+          if (is_parent_arranger_object)
+            {
+              auto * obj_base = objects_.at (i).get_object_base ();
+              obj_base->setParentObject (nullptr);
+            }
+
           disconnect_object_signals (i);
         }
     });

@@ -19,8 +19,9 @@ Arranger {
     const pitch = getPitchAtY(y);
     console.log("Midi Arranger: beginObjectCreation", x, y, pitch);
     const tickPosition = x / root.ruler.pxPerTick;
+    const localTickPosition = tickPosition - region.position.ticks;
 
-    let midiNote = objectCreator.addMidiNote(region, tickPosition, pitch);
+    let midiNote = objectCreator.addMidiNote(region, localTickPosition, pitch);
     root.currentAction = Arranger.CreatingResizingR;
     root.setObjectSnapshotsAtStart();
     CursorManager.setResizeEndCursor();
@@ -153,7 +154,7 @@ Arranger {
       readonly property real midiNoteEndX: midiNoteX + midiNoteWidth
       readonly property real midiNoteHeight: root.pianoRoll.keyHeight
       readonly property real midiNoteWidth: midiNote.bounds.length.ticks * root.ruler.pxPerTick
-      readonly property real midiNoteX: midiNote.position.ticks * root.ruler.pxPerTick
+      readonly property real midiNoteX: (midiNote.position.ticks + midiNote.parentObject.position.ticks) * root.ruler.pxPerTick
       readonly property real midiNoteY: (127 - midiNote.pitch) * root.pianoRoll.keyHeight
 
       active: midiNoteEndX + Style.scrollLoaderBufferPx >= root.scrollX && midiNoteX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)

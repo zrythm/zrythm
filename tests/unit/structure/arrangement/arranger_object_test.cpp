@@ -42,6 +42,7 @@ TEST_F (ArrangerObjectTest, InitialState)
   EXPECT_EQ (obj->type (), ArrangerObject::Type::Marker);
   EXPECT_EQ (obj->position ()->samples (), 0);
   EXPECT_NE (obj->position (), nullptr);
+  EXPECT_EQ (obj->parentObject (), nullptr);
 }
 
 // Test type property
@@ -59,6 +60,32 @@ TEST_F (ArrangerObjectTest, PositionOperations)
 
   obj->position ()->setSeconds (1.5);
   EXPECT_DOUBLE_EQ (obj->position ()->seconds (), 1.5);
+}
+
+// Test parent object operations
+TEST_F (ArrangerObjectTest, ParentObjectOperations)
+{
+  // Initially no parent
+  EXPECT_EQ (obj->parentObject (), nullptr);
+  EXPECT_EQ (obj2->parentObject (), nullptr);
+
+  // Set parent
+  obj->setParentObject (obj2.get ());
+  EXPECT_EQ (obj->parentObject (), obj2.get ());
+
+  // Set to null parent
+  obj->setParentObject (nullptr);
+  EXPECT_EQ (obj->parentObject (), nullptr);
+
+  // Set parent again
+  obj->setParentObject (obj2.get ());
+  EXPECT_EQ (obj->parentObject (), obj2.get ());
+
+  // Setting same parent should be no-op
+  QSignalSpy parentChangedSpy (
+    obj.get (), &MockArrangerObject::parentObjectChanged);
+  obj->setParentObject (obj2.get ());
+  EXPECT_EQ (parentChangedSpy.count (), 0); // No signal for same parent
 }
 
 TEST_F (ArrangerObjectTest, IsStartHitByRange)
@@ -139,12 +166,69 @@ TEST_F (ArrangerObjectTest, Serialization)
   EXPECT_DOUBLE_EQ (new_obj.position ()->ticks (), 1920.0);
 }
 
+// Test time conversion with parent object
+TEST_F (ArrangerObjectTest, TimeConversionWithParent)
+{
+  // Set up parent object at position 1920 ticks
+  obj2->position ()->setTicks (1920.0);
+  const double parent_ticks = obj2->position ()->ticks ();
+  const double parent_seconds = obj2->position ()->seconds ();
+  const double parent_samples = tempo_map->tick_to_samples (parent_ticks);
+
+  // Set child object with parent
+  obj->setParentObject (obj2.get ());
+
+  // Test time conversions relative to parent
+  const double relative_ticks = 480.0;
+  const double expected_seconds =
+    tempo_map->tick_to_seconds (parent_ticks + relative_ticks) - parent_seconds;
+  const double expected_samples =
+    tempo_map->tick_to_samples (parent_ticks + relative_ticks) - parent_samples;
+
+  // Test tick to seconds conversion
+  EXPECT_DOUBLE_EQ (
+    obj->position ()->position ().time_conversion_functions ().tick_to_seconds (
+      relative_ticks),
+    expected_seconds);
+
+  // Test seconds to tick conversion
+  EXPECT_DOUBLE_EQ (
+    obj->position ()->position ().time_conversion_functions ().seconds_to_tick (
+      expected_seconds),
+    relative_ticks);
+
+  // Test tick to samples conversion
+  EXPECT_DOUBLE_EQ (
+    obj->position ()->position ().time_conversion_functions ().tick_to_samples (
+      relative_ticks),
+    expected_samples);
+
+  // Test samples to tick conversion
+  EXPECT_DOUBLE_EQ (
+    obj->position ()->position ().time_conversion_functions ().samples_to_tick (
+      expected_samples),
+    relative_ticks);
+
+  // Remove parent and test global time conversion
+  obj->setParentObject (nullptr);
+
+  EXPECT_DOUBLE_EQ (
+    obj->position ()->position ().time_conversion_functions ().tick_to_seconds (
+      relative_ticks),
+    tempo_map->tick_to_seconds (relative_ticks));
+
+  EXPECT_DOUBLE_EQ (
+    obj->position ()->position ().time_conversion_functions ().seconds_to_tick (
+      expected_seconds),
+    tempo_map->seconds_to_tick (expected_seconds));
+}
+
 // Test edge cases
 TEST_F (ArrangerObjectTest, EdgeCases)
 {
   // Negative position
   obj->position ()->setTicks (-100.0);
-  EXPECT_GE (obj->position ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (obj->position ()->ticks (), -100.0);
 
   // Large position
   obj->position ()->setTicks (1e9);
@@ -237,6 +321,40 @@ TEST_F (ArrangerObjectTest, SignalConnections)
   EXPECT_EQ (propertiesChangedSpy.count (), 1);
 }
 
+// Test parent object signal emissions
+TEST_F (ArrangerObjectTest, ParentObjectSignals)
+{
+  // Create object with all features to test signal connections
+  auto signal_obj = std::make_unique<MockArrangerObject> (
+    ArrangerObject::Type::Marker, *tempo_map,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
+
+  // Setup signal spies
+  QSignalSpy parentObjectChangedSpy (
+    signal_obj.get (), &MockArrangerObject::parentObjectChanged);
+  QSignalSpy propertiesChangedSpy (
+    signal_obj.get (), &MockArrangerObject::propertiesChanged);
+
+  // Set parent object - should emit both signals
+  signal_obj->setParentObject (obj2.get ());
+  EXPECT_EQ (parentObjectChangedSpy.count (), 1);
+  EXPECT_EQ (propertiesChangedSpy.count (), 1);
+  parentObjectChangedSpy.clear ();
+  propertiesChangedSpy.clear ();
+
+  // Set to null parent - should emit both signals
+  signal_obj->setParentObject (nullptr);
+  EXPECT_EQ (parentObjectChangedSpy.count (), 1);
+  EXPECT_EQ (propertiesChangedSpy.count (), 1);
+  parentObjectChangedSpy.clear ();
+  propertiesChangedSpy.clear ();
+
+  // Set same parent (no change) - should not emit signals
+  signal_obj->setParentObject (nullptr);
+  EXPECT_EQ (parentObjectChangedSpy.count (), 0);
+  EXPECT_EQ (propertiesChangedSpy.count (), 0);
+}
+
 // Test serialization/deserialization with subcomponents
 TEST_F (ArrangerObjectTest, SerializationWithSubcomponents)
 {
@@ -280,6 +398,32 @@ TEST_F (ArrangerObjectTest, SerializationWithSubcomponents)
   EXPECT_DOUBLE_EQ (new_obj.fadeRange ()->startOffset ()->ticks (), 240.0);
 }
 
+// Test serialization/deserialization with parent object
+TEST_F (ArrangerObjectTest, SerializationWithParentObject)
+{
+  // Set up parent-child relationship
+  obj2->position ()->setTicks (1920.0);
+  obj->setParentObject (obj2.get ());
+  obj->position ()->setTicks (480.0); // Relative to parent
+
+  // Serialize
+  nlohmann::json j;
+  to_json (j, *obj);
+
+  // Create new object from serialized data
+  MockArrangerObject new_obj (
+    ArrangerObject::Type::Marker, *tempo_map,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
+  from_json (j, new_obj);
+
+  // Verify state - parent object should not be serialized (runtime only)
+  EXPECT_EQ (new_obj.get_uuid (), obj->get_uuid ());
+  EXPECT_EQ (new_obj.type (), obj->type ());
+  EXPECT_DOUBLE_EQ (new_obj.position ()->ticks (), 480.0);
+  EXPECT_EQ (new_obj.parentObject (), nullptr); // Parent should not be restored
+                                                // from serialization
+}
+
 // Test copying with subcomponents
 TEST_F (ArrangerObjectTest, CopyingWithSubcomponents)
 {
@@ -319,6 +463,29 @@ TEST_F (ArrangerObjectTest, CopyingWithSubcomponents)
   EXPECT_EQ (target_obj->color ()->color (), QColor (64, 128, 192));
   EXPECT_FALSE (target_obj->mute ()->muted ());
   EXPECT_DOUBLE_EQ (target_obj->fadeRange ()->startOffset ()->ticks (), 480.0);
+}
+
+// Test copying with parent object
+TEST_F (ArrangerObjectTest, CopyingWithParentObject)
+{
+  // Set up parent-child relationship
+  obj2->position ()->setTicks (3840.0);
+  obj->setParentObject (obj2.get ());
+  obj->position ()->setTicks (960.0); // Relative to parent
+
+  // Create target object
+  auto target_obj = std::make_unique<MockArrangerObject> (
+    ArrangerObject::Type::Marker, *tempo_map,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
+
+  // Copy - parent object should not be copied (runtime only)
+  init_from (*target_obj, *obj, utils::ObjectCloneType::Snapshot);
+
+  // Verify state
+  EXPECT_EQ (target_obj->get_uuid (), obj->get_uuid ());
+  EXPECT_DOUBLE_EQ (target_obj->position ()->ticks (), 960.0);
+  EXPECT_EQ (
+    target_obj->parentObject (), nullptr); // Parent should not be copied
 }
 
 } // namespace zrythm::structure::arrangement

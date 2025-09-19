@@ -154,12 +154,13 @@ Item {
       if (sourceModel) {
         // Get the object from the source model using the arrangerObject role
         const object = sourceModel.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
+        const objectTimelineTicks = object.position.ticks + (object.parentObject ? object.parentObject.position.ticks : 0);
         if (object) {
           // Create a temporary view that wraps the arranger object
           const tempView = tempViewComponent.createObject(root, {
             "arrangerObject": object,
-            "x": object.position.ticks * root.ruler.pxPerTick,
-            "xOnConstruction": object.position.ticks * root.ruler.pxPerTick
+            "x": objectTimelineTicks * root.ruler.pxPerTick,
+            "xOnConstruction": objectTimelineTicks * root.ruler.pxPerTick
           });
 
           if (tempView) {
@@ -470,7 +471,7 @@ Item {
           currentCoordinates = Qt.point(mouse.x, mouse.y);
           const dx = mouse.x - prevCoordinates.x;
           const dy = mouse.y - prevCoordinates.y;
-          const ticks = mouse.x / root.ruler.pxPerTick;
+          const timelineTicks = mouse.x / root.ruler.pxPerTick;
           const ticksDiff = dx / root.ruler.pxPerTick;
           if (pressed) {
             console.log("dragging inside arranger", currentCoordinates, "action:", action);
@@ -482,7 +483,7 @@ Item {
             else if (action === Arranger.StartingMoving) {
               if (mouse.modifiers & Qt.AltModifier) {
                 action = Arranger.MovingLink;
-              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/                      {
+              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/                       {
                 action = Arranger.MovingCopy;
               } else {
                 action = Arranger.Moving;
@@ -513,10 +514,7 @@ Item {
             } else if (action == Arranger.CreatingMoving) {
               moveSelectionsX(ticksDiff);
             } else if (action === Arranger.CreatingResizingR) {
-              let bounds = ArrangerObjectHelpers.getObjectBounds(root.actionObject);
-              if (bounds) {
-                bounds.setEndPositionTicks(ticks);
-              }
+              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.actionObject, timelineTicks);
             }
           }
 

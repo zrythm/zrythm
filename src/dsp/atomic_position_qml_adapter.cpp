@@ -7,8 +7,9 @@ namespace zrythm::dsp
 {
 AtomicPositionQmlAdapter::AtomicPositionQmlAdapter (
   AtomicPosition &atomicPos,
+  bool            allowNegative,
   QObject *       parent)
-    : QObject (parent), atomic_pos_ (atomicPos)
+    : QObject (parent), atomic_pos_ (atomicPos), allow_negative_ (allowNegative)
 {
 }
 
@@ -21,6 +22,11 @@ AtomicPositionQmlAdapter::ticks () const
 void
 AtomicPositionQmlAdapter::setTicks (double ticks)
 {
+  if (!allow_negative_ && ticks < 0.0)
+    {
+      ticks = 0.0;
+    }
+
   atomic_pos_.set_ticks (ticks);
   Q_EMIT positionChanged ();
 }
@@ -34,6 +40,11 @@ AtomicPositionQmlAdapter::seconds () const
 void
 AtomicPositionQmlAdapter::setSeconds (double seconds)
 {
+  if (!allow_negative_ && seconds < 0.0)
+    {
+      seconds = 0.0;
+    }
+
   atomic_pos_.set_seconds (seconds);
   Q_EMIT positionChanged ();
 }
@@ -47,6 +58,11 @@ AtomicPositionQmlAdapter::samples () const
 void
 AtomicPositionQmlAdapter::setSamples (double samples)
 {
+  if (!allow_negative_ && samples < 0.0)
+    {
+      samples = 0.0;
+    }
+
   atomic_pos_.set_samples (samples);
   Q_EMIT positionChanged ();
 }
@@ -62,17 +78,6 @@ AtomicPositionQmlAdapter::setMode (TimeFormat format)
 {
   atomic_pos_.set_mode (format);
   Q_EMIT positionChanged ();
-}
-
-QString
-AtomicPositionQmlAdapter::getStringDisplay () const
-{
-  const auto musical_pos = atomic_pos_.get_tempo_map ().tick_to_musical_position (
-    static_cast<int64_t> (atomic_pos_.get_ticks ()));
-  return QString::fromStdString (
-    fmt::format (
-      "{}.{}.{}.{:03}", musical_pos.bar, musical_pos.beat,
-      musical_pos.sixteenth, musical_pos.tick));
 }
 
 } // namespace zrythm::dsp

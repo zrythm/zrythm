@@ -11,9 +11,24 @@ ArrangerObject::ArrangerObject (
   const dsp::TempoMap   &tempo_map,
   ArrangerObjectFeatures features,
   QObject *              parent) noexcept
-    : QObject (parent), type_ (type), position_ (tempo_map),
+    : QObject (parent), type_ (type), tempo_map_ (tempo_map),
+      time_conversion_funcs_ (
+        std::make_unique<
+          dsp::AtomicPosition::
+            TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
+          .tick_to_seconds =
+            [&] (double ticks) { return tempo_map_.tick_to_seconds (ticks); },
+          .seconds_to_tick =
+            [&] (double seconds) { return tempo_map_.seconds_to_tick (seconds); },
+          .tick_to_samples =
+            [&] (double ticks) { return tempo_map_.tick_to_samples (ticks); },
+          .samples_to_tick =
+            [&] (double samples) { return tempo_map_.samples_to_tick (samples); },
+        })),
+      position_ (*time_conversion_funcs_),
       position_adapter_ (
-        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (position_, this))
+        utils::make_qobject_unique<
+          dsp::AtomicPositionQmlAdapter> (position_, true, this))
 {
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Bounds))
     {
@@ -57,8 +72,8 @@ ArrangerObject::ArrangerObject (
     }
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Fading))
     {
-      fade_range_ =
-        utils::make_qobject_unique<ArrangerObjectFadeRange> (tempo_map, this);
+      fade_range_ = utils::make_qobject_unique<ArrangerObjectFadeRange> (
+        *time_conversion_funcs_, this);
       QObject::connect (
         fadeRange (), &ArrangerObjectFadeRange::fadePropertiesChanged, this,
         &ArrangerObject::propertiesChanged);
@@ -67,7 +82,71 @@ ArrangerObject::ArrangerObject (
   QObject::connect (
     position (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
     &ArrangerObject::propertiesChanged);
+  QObject::connect (
+    this, &ArrangerObject::parentObjectChanged, this,
+    &ArrangerObject::propertiesChanged);
 }
+
+// ========================================================================
+// QML Interface
+// ========================================================================
+
+void
+ArrangerObject::setParentObject (ArrangerObject * object)
+{
+  if (parent_object_.get () == object)
+    return;
+
+  parent_object_ = object;
+
+  if (parent_object_)
+    {
+      // if there is a parent object, use the tempo map with the child object's
+      // timeline position when making time conversions
+      time_conversion_funcs_->tick_to_seconds = [&] (double ticks) {
+        return tempo_map_.tick_to_seconds (
+                 parent_object_->position ()->ticks () + ticks)
+               - parent_object_->position ()->seconds ();
+      };
+      time_conversion_funcs_->seconds_to_tick = [&] (double seconds) {
+        return tempo_map_.seconds_to_tick (
+                 parent_object_->position ()->seconds () + seconds)
+               - parent_object_->position ()->ticks ();
+      };
+      time_conversion_funcs_->tick_to_samples = [&] (double ticks) {
+        return tempo_map_.tick_to_samples (
+                 parent_object_->position ()->ticks () + ticks)
+               - tempo_map_.tick_to_samples (
+                 parent_object_->position ()->ticks ());
+      };
+      time_conversion_funcs_->samples_to_tick = [&] (double samples) {
+        return tempo_map_.samples_to_tick (
+                 tempo_map_.tick_to_samples (parent_object_->position ()->ticks ())
+                 + samples)
+               - parent_object_->position ()->ticks ();
+      };
+    }
+  else
+    {
+      // otherwise use tempo map as-is (this is a timeline object)
+      time_conversion_funcs_->tick_to_seconds = [&] (double ticks) {
+        return tempo_map_.tick_to_seconds (ticks);
+      };
+      time_conversion_funcs_->seconds_to_tick = [&] (double seconds) {
+        return tempo_map_.seconds_to_tick (seconds);
+      };
+      time_conversion_funcs_->tick_to_samples = [&] (double ticks) {
+        return tempo_map_.tick_to_samples (ticks);
+      };
+      time_conversion_funcs_->samples_to_tick = [&] (double samples) {
+        return tempo_map_.samples_to_tick (samples);
+      };
+    }
+
+  Q_EMIT parentObjectChanged (parent_object_);
+}
+
+// ========================================================================
 
 void
 init_from (

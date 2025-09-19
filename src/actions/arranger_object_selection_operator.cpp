@@ -99,7 +99,15 @@ ArrangerObjectSelectionOperator::validateMovement (
     if (auto * obj = obj_ref.get_object_base ())
       {
         const double new_position = obj->position ()->ticks () + tick_delta;
-        return new_position >= 0.0;
+        const auto   timeline_position = [&] () {
+          const auto * parent_obj = obj->parentObject ();
+          if (parent_obj != nullptr)
+            {
+              return new_position + parent_obj->position ()->ticks ();
+            }
+          return new_position;
+        }();
+        return timeline_position >= 0.0;
       }
     return true; // Skip objects that can't be accessed
   });

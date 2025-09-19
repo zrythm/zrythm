@@ -24,6 +24,7 @@ class AtomicPositionQmlAdapter : public QObject
 public:
   explicit AtomicPositionQmlAdapter (
     AtomicPosition &atomicPos,
+    bool            allowNegative,
     QObject *       parent = nullptr);
 
   double           ticks () const;
@@ -50,12 +51,17 @@ public:
   /// signals.
   const AtomicPosition &position () const { return atomic_pos_; }
 
-  Q_INVOKABLE QString getStringDisplay () const;
-
 Q_SIGNALS:
   void positionChanged ();
 
 private:
   AtomicPosition &atomic_pos_; // Reference to existing DSP object
+
+  /**
+   * @brief Whether to allow negative positions.
+   *
+   * If this is false, negative values will be clamped to 0.
+   */
+  bool allow_negative_;
 };
 } // namespace zrythm::dsp
