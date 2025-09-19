@@ -317,7 +317,7 @@ makeClapWindow (WId window)
 #ifdef Q_OS_LINUX
   w.api = CLAP_WINDOW_API_X11;
   w.x11 = window;
-#elifdef Q_OS_MACX
+#elifdef Q_OS_MACOS
   w.api = CLAP_WINDOW_API_COCOA;
   w.cocoa = reinterpret_cast<clap_nsview> (window);
 #elifdef Q_OS_WIN
