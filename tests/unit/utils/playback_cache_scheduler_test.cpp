@@ -5,6 +5,7 @@
 
 #include <QSignalSpy>
 #include <QTest>
+#include <QtSystemDetection>
 
 #include "helpers/scoped_qcoreapplication.h"
 
@@ -18,13 +19,31 @@ namespace zrythm::utils
 class PlaybackCacheSchedulerTest : public ::testing::Test
 {
 protected:
+// On Mac there are some issues...
+#ifdef Q_OS_MACOS
+  static constexpr auto DEFAULT_DELAY = 1000ms;
+#else
+  static constexpr auto DEFAULT_DELAY = 100ms;
+#endif
+
+  // Gets a reasonable time after the given delay so that we can be sure the
+  // signal has been fired after the returned time
+  static auto get_reasonable_time_after_delay (const auto &delay)
+  {
+    return (delay * 3) / 2;
+  }
+  static auto get_reasonable_time_after_default_delay ()
+  {
+    return get_reasonable_time_after_delay (DEFAULT_DELAY);
+  }
+
   void SetUp () override
   {
     // Set up QCoreApplication for Qt event handling
     app_ = std::make_unique<ScopedQCoreApplication> ();
     scheduler = new PlaybackCacheScheduler ();
     // Use a smaller delay for faster tests, but not too small to be unreliable
-    scheduler->setDelay (100ms);
+    scheduler->setDelay (DEFAULT_DELAY);
   }
 
   void TearDown () override { delete scheduler; }
@@ -40,7 +59,7 @@ TEST_F (PlaybackCacheSchedulerTest, QueueRangeRequest)
   scheduler->queueCacheRequestForRange (10.0, 20.0);
 
   // Process events to trigger the timer
-  QTest::qWait (150ms); // Wait slightly longer than 100ms delay
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -58,7 +77,7 @@ TEST_F (PlaybackCacheSchedulerTest, QueueFullCacheRequest)
 
   scheduler->queueFullCacheRequest ();
 
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -76,7 +95,7 @@ TEST_F (PlaybackCacheSchedulerTest, DebouncingMultipleRequests)
   scheduler->queueCacheRequestForRange (15.0, 25.0);
   scheduler->queueCacheRequestForRange (5.0, 30.0);
 
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   // Should only emit once due to debouncing
   EXPECT_EQ (spy.count (), 1);
@@ -93,13 +112,14 @@ TEST_F (PlaybackCacheSchedulerTest, CustomDelay)
 {
   QSignalSpy spy (scheduler, &PlaybackCacheScheduler::cacheRequested);
 
-  scheduler->setDelay (200ms);
+  scheduler->setDelay (DEFAULT_DELAY * 2);
   scheduler->queueCacheRequestForRange (10.0, 20.0);
 
-  QTest::qWait (100);
+  QTest::qWait (DEFAULT_DELAY);
   EXPECT_EQ (spy.count (), 0); // Should not have fired yet
 
-  QTest::qWait (200); // Total wait 300ms, should be enough
+  QTest::qWait (get_reasonable_time_after_delay (
+    DEFAULT_DELAY * 2)); // Total wait should be enough
   EXPECT_EQ (spy.count (), 1);
 }
 
@@ -111,7 +131,7 @@ TEST_F (PlaybackCacheSchedulerTest, MixedRangeAndFullRequests)
   scheduler->queueCacheRequestForRange (10.0, 20.0);
   scheduler->queueFullCacheRequest ();
 
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -125,12 +145,12 @@ TEST_F (PlaybackCacheSchedulerTest, MultipleSeparateRequests)
 
   // First request
   scheduler->queueCacheRequestForRange (10.0, 20.0);
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
   EXPECT_EQ (spy.count (), 1);
 
   // Second request after first completed
   scheduler->queueCacheRequestForRange (30.0, 40.0);
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
   EXPECT_EQ (spy.count (), 2);
 }
 
@@ -145,7 +165,7 @@ TEST_F (PlaybackCacheSchedulerTest, ExpandableTickRangeIntegration)
   scheduler->queueCacheRequest (range1);
   scheduler->queueCacheRequest (range2);
 
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
@@ -160,21 +180,22 @@ TEST_F (PlaybackCacheSchedulerTest, TimerResetOnNewRequest)
 {
   QSignalSpy spy (scheduler, &PlaybackCacheScheduler::cacheRequested);
 
-  scheduler->setDelay (200ms);
+  const auto custom_delay = DEFAULT_DELAY * 2;
+  scheduler->setDelay (custom_delay);
 
   // First request
   scheduler->queueCacheRequestForRange (10.0, 20.0);
 
   // Second request before timer expires - should reset timer
-  QTest::qWait (150);
+  QTest::qWait (get_reasonable_time_after_delay (DEFAULT_DELAY));
   scheduler->queueCacheRequestForRange (15.0, 25.0);
 
   // Check that timer was reset - should not fire at original time
-  QTest::qWait (100);          // Total 250ms from start
-  EXPECT_EQ (spy.count (), 0); // Only 100ms since reset, so not fired yet
+  QTest::qWait (DEFAULT_DELAY);
+  EXPECT_EQ (spy.count (), 0);
 
   // Enough time has passed - should fire
-  QTest::qWait (150);          // Total 250ms from reset
+  QTest::qWait (get_reasonable_time_after_delay (DEFAULT_DELAY));
   EXPECT_EQ (spy.count (), 1); // Should have fired once
 
   auto signalArgs = spy.takeFirst ();
@@ -190,14 +211,14 @@ TEST_F (PlaybackCacheSchedulerTest, NoPendingCallAfterExecution)
   QSignalSpy spy (scheduler, &PlaybackCacheScheduler::cacheRequested);
 
   scheduler->queueCacheRequestForRange (10.0, 20.0);
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   EXPECT_EQ (spy.count (), 1);
 
   // Internal state should be reset
   // This is testing implementation details, but useful for coverage
   scheduler->queueCacheRequestForRange (30.0, 40.0);
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   EXPECT_EQ (spy.count (), 2);
 }
@@ -207,7 +228,7 @@ TEST_F (PlaybackCacheSchedulerTest, EdgeCaseZeroRange)
   QSignalSpy spy (scheduler, &PlaybackCacheScheduler::cacheRequested);
 
   scheduler->queueCacheRequestForRange (0.0, 0.0);
-  QTest::qWait (150ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   EXPECT_EQ (spy.count (), 1);
   auto signalArgs = spy.takeFirst ();
