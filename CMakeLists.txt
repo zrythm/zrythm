@@ -3,6 +3,9 @@
 
 cmake_minimum_required(VERSION 3.24)
 
+# We don't use modules (yet)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 if(APPLE)
   # 10.15 -> std::filesystem::path
   # 11.0 -> semaphore.try_acquire
