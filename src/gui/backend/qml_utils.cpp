@@ -79,3 +79,19 @@ QmlUtils::readTextFileContent (const QString &filePath)
     }
   return f.readAll ();
 }
+
+QColor
+QmlUtils::saturate (const QColor &color, float perc)
+{
+  float h, s, v;
+  color.getHslF (&h, &s, &v);
+  return QColor::fromHslF (h, std::clamp (s * perc, 0.f, 1.f), v);
+}
+
+QColor
+QmlUtils::makeBrighter (const QColor &color, float perc)
+{
+  float h, s, v;
+  color.getHslF (&h, &s, &v);
+  return QColor::fromHslF (h, s, std::clamp (v * perc, 0.f, 1.f));
+}

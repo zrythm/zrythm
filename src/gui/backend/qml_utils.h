@@ -20,4 +20,7 @@ public:
   Q_INVOKABLE static QStringList splitTextLines (const QString &text);
   Q_INVOKABLE static QStringList removeDuplicates (const QStringList &list);
   Q_INVOKABLE static QString     readTextFileContent (const QString &filePath);
+
+  Q_INVOKABLE static QColor saturate (const QColor &color, float perc);
+  Q_INVOKABLE static QColor makeBrighter (const QColor &color, float perc);
 };
