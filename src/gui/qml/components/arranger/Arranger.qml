@@ -540,7 +540,7 @@ Item {
           updateCursor();
         }
         onReleased: {
-          if (action != Arranger.None) {
+            if (action != Arranger.None && action != Arranger.StartingSelection) {
             if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
               if (root.tempQmlArrangerObjects.length > 0) {
                 const firstTempObj = root.tempQmlArrangerObjects[0];
@@ -549,11 +549,14 @@ Item {
             } else if (action === Arranger.CreatingMoving) {
               root.undoStack.endMacro();
             }
-            console.log("released: clearing action");
-            action = Arranger.None;
+            console.log("released after action");
           } else {
             console.log("released without action");
+            if (root.hoveredObject === null) {
+              root.arrangerSelectionModel.clear();
+            }
           }
+          action = Arranger.None;
           root.clearTempQmlArrangerObjects();
           root.actionObject = null;
           updateCursor();
