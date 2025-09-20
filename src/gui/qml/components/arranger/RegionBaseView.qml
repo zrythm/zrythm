@@ -8,28 +8,56 @@ import ZrythmStyle
 ArrangerObjectBaseView {
   id: root
 
-  required property ClipEditor clipEditor
+  required property ClipEditor clipEditor   // FIXME: is this needed?
+  property alias regionContent: regionContent.data
+  property alias regionContentContainer: regionContent
   property string regionName: arrangerObject.name.name
+  readonly property real regionTicks: arrangerObject.bounds.length.ticks
 
   implicitHeight: 10
   implicitWidth: 10
 
   Rectangle {
-    id: backgroundRect
+    id: topBackgroundRect
 
-    anchors.fill: parent
-    color: root.objectColor
-    radius: Style.toolButtonRadius
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    color: QmlUtils.makeBrighter(root.objectColor, Style.darkMode ? 0.6 : 1.4)
+    height: nameRect.height
+    topLeftRadius: Style.toolButtonRadius
+    topRightRadius: Style.toolButtonRadius
+    z: 3
+  }
+
+  Rectangle {
+    id: bottomBackgroundRect
+
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    bottomLeftRadius: Style.toolButtonRadius
+    bottomRightRadius: Style.toolButtonRadius
+    color: root.objectColor, 1.0
+    height: parent.height - topBackgroundRect.height
+    z: 1
+
+    Item {
+      id: regionContent
+
+      anchors.fill: parent
+    }
   }
 
   Rectangle {
     id: nameRect
 
     bottomRightRadius: Style.toolButtonRadius
-    color: root.palette.button
-    height: Math.min(textMetrics.height + 2 * Style.buttonPadding, root.height - Style.toolButtonRadius)
+    color: "transparent" // palette.button
+    height: Math.min(textMetrics.height + 2 * (Style.buttonPadding / 2), root.height - Style.toolButtonRadius)
     topLeftRadius: Style.toolButtonRadius
     width: Math.min(textMetrics.width + 2 * Style.buttonPadding, root.width - Style.toolButtonRadius)
+    z: 5
 
     anchors {
       left: parent.left
@@ -40,12 +68,15 @@ ArrangerObjectBaseView {
       id: nameText
 
       anchors.fill: parent
+      bottomPadding: Style.buttonPadding / 2
       color: root.palette.buttonText
       elide: Text.ElideRight
       font: root.font
       horizontalAlignment: Text.AlignLeft
-      padding: Style.buttonPadding
+      leftPadding: Style.buttonPadding
+      rightPadding: Style.buttonPadding
       text: root.arrangerObject.name.name
+      topPadding: Style.buttonPadding / 2
       verticalAlignment: Text.AlignVCenter
     }
 
