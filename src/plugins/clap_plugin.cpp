@@ -1410,7 +1410,7 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
           // update param info
           if (!it->second->isInfoEqualTo (info))
             {
-              assert (pimpl_->clapParamsRescanMayInfoChange (flags));
+              z_warn_if_fail (pimpl_->clapParamsRescanMayInfoChange (flags));
               assert (
                 ((flags & CLAP_PARAM_RESCAN_ALL) != 0u)
                 || it->second->isInfoCriticallyDifferentTo (info));
