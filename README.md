@@ -86,7 +86,7 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 1. Install [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/) and [Qt](https://www.qt.io/) 6.9.0 or later.
 2. Open a terminal and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
-4. Run `cmake --build build --config Release`.
+4. Run `cmake --build builddir --config Release`.
 5. Zrythm is now built at `builddir/src/gui/zrythm`.
 
 #### macOS
