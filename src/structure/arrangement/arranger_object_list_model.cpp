@@ -8,16 +8,16 @@ namespace zrythm::structure::arrangement
 {
 
 ArrangerObjectListModel::ArrangerObjectListModel (
-  std::vector<ArrangerObjectUuidReference> &objects,
-  QObject *                                 parent)
+  ArrangerObjectRefMultiIndexContainer &objects,
+  QObject *                             parent)
     : QAbstractListModel (parent), objects_ (objects)
 {
   setup_signals (false);
 }
 
 ArrangerObjectListModel::ArrangerObjectListModel (
-  std::vector<ArrangerObjectUuidReference> &objects,
-  ArrangerObject                           &parent_arranger_object)
+  ArrangerObjectRefMultiIndexContainer &objects,
+  ArrangerObject                       &parent_arranger_object)
     : QAbstractListModel (&parent_arranger_object), objects_ (objects)
 {
   setup_signals (true);
@@ -29,6 +29,12 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
   QObject::connect (
     this, &ArrangerObjectListModel::contentChangedForObject, this,
     [this] (const ArrangerObject * object) {
+      // Update the boost container
+      objects_.modify (
+        objects_.get<uuid_hash_index> ().find (object->get_uuid ()),
+        [] (ArrangerObjectUuidReference &) { });
+
+      // Emit contentChanged with the object's range
       Q_EMIT contentChanged ({ get_object_tick_range (object) });
     });
 
@@ -45,7 +51,8 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
         {
           if (is_parent_arranger_object)
             {
-              auto * obj_base = objects_.at (i).get_object_base ();
+              auto * obj_base =
+                objects_.get<random_access_index> ().at (i).get_object_base ();
               obj_base->setParentObject (
                 qobject_cast<ArrangerObject *> (parent ()));
             }
@@ -61,7 +68,8 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
         {
           if (is_parent_arranger_object)
             {
-              auto * obj_base = objects_.at (i).get_object_base ();
+              auto * obj_base =
+                objects_.get<random_access_index> ().at (i).get_object_base ();
               obj_base->setParentObject (nullptr);
             }
 
@@ -73,7 +81,8 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
 void
 ArrangerObjectListModel::connect_object_signals (int index)
 {
-  const auto * obj_base = objects_.at (index).get_object_base ();
+  const auto * obj_base =
+    objects_.get<random_access_index> ().at (index).get_object_base ();
 
   // Emit once for the fact that we've added this object
   Q_EMIT contentChangedForObject (obj_base);
@@ -85,7 +94,8 @@ ArrangerObjectListModel::connect_object_signals (int index)
 
   // For objects that contain other objects, also emit on children
   // content changes
-  const auto obj_var = objects_.at (index).get_object ();
+  const auto obj_var =
+    objects_.get<random_access_index> ().at (index).get_object ();
   std::visit (
     [&] (auto &&obj) {
       using ObjectT = base_type<decltype (obj)>;
@@ -106,7 +116,8 @@ ArrangerObjectListModel::connect_object_signals (int index)
 void
 ArrangerObjectListModel::disconnect_object_signals (int index)
 {
-  const auto * obj_base = objects_.at (index).get_object_base ();
+  const auto * obj_base =
+    objects_.get<random_access_index> ().at (index).get_object_base ();
 
   // Emit content changed for the object being removed
   Q_EMIT contentChangedForObject (obj_base);
@@ -116,7 +127,8 @@ ArrangerObjectListModel::disconnect_object_signals (int index)
     obj_base, &ArrangerObject::propertiesChanged, this, nullptr);
 
   // Disconnect from children's contentChanged for ArrangerObjectOwner types
-  const auto obj_var = objects_.at (index).get_object ();
+  const auto obj_var =
+    objects_.get<random_access_index> ().at (index).get_object ();
   std::visit (
     [&] (auto &&obj) {
       using ObjectT = base_type<decltype (obj)>;
@@ -142,17 +154,21 @@ ArrangerObjectListModel::roleNames () const
 QVariant
 ArrangerObjectListModel::data (const QModelIndex &index, int role) const
 {
-  if (!index.isValid () || index.row () >= static_cast<int> (objects_.size ()))
+  const auto index_int = index.row ();
+  if (!index.isValid () || index_int >= static_cast<int> (objects_.size ()))
     return {};
 
   if (role == ArrangerObjectPtrRole)
     {
       return QVariant::fromStdVariant (
-        objects_[static_cast<size_t> (index.row ())].get_object ());
+        objects_.get<random_access_index> ()[static_cast<size_t> (index_int)]
+          .get_object ());
     }
   if (role == ArrangerObjectUuidReferenceRole)
     {
-      return QVariant::fromValue (&objects_[static_cast<size_t> (index.row ())]);
+      return QVariant::fromValue (
+        const_cast<ArrangerObjectUuidReference *> (
+          &objects_.get<random_access_index> ()[static_cast<size_t> (index_int)]));
     }
 
   return {};
@@ -178,7 +194,8 @@ ArrangerObjectListModel::insertObject (
     return false;
 
   beginInsertRows (QModelIndex (), index, index);
-  objects_.insert (objects_.begin () + index, object);
+  objects_.get<random_access_index> ().insert (
+    std::next (objects_.get<random_access_index> ().begin (), index), object);
   endInsertRows ();
   return true;
 }
@@ -192,7 +209,10 @@ ArrangerObjectListModel::removeRows (int row, int count, const QModelIndex &pare
     return false;
 
   beginRemoveRows ({}, row, row + count - 1);
-  objects_.erase (objects_.begin () + row, objects_.begin () + row + count);
+  auto &container = objects_.get<random_access_index> ();
+  auto  first = std::next (container.begin (), row);
+  auto  last = std::next (first, count);
+  container.erase (first, last);
   endRemoveRows ();
   return true;
 }

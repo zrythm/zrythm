@@ -341,7 +341,7 @@ juce::PositionableAudioSource &
 AudioRegion::get_audio_source () const
 {
   assert (get_children_vector ().size () == 1);
-  auto * audio_source_obj = get_children_view ()[0];
+  auto * audio_source_obj = get_children_view ().front ();
   return audio_source_obj->get_audio_source ();
 }
 

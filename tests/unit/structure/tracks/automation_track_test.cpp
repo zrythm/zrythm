@@ -305,7 +305,7 @@ TEST_F (AutomationTrackTest, Serialization)
 
   // Verify regions and points
   EXPECT_TRUE (dummy_track->contains_automation ());
-  auto dummy_regions = dummy_track->get_children_vector ();
+  const auto &dummy_regions = dummy_track->get_children_vector ();
   EXPECT_EQ (dummy_regions.size (), 1);
 
   auto * dummy_region =
@@ -313,7 +313,7 @@ TEST_F (AutomationTrackTest, Serialization)
   EXPECT_EQ (dummy_region->position ()->samples (), 100);
   EXPECT_EQ (dummy_region->bounds ()->length ()->samples (), 200);
 
-  auto dummy_points = dummy_region->get_children_vector ();
+  const auto &dummy_points = dummy_region->get_children_vector ();
   EXPECT_EQ (dummy_points.size (), 1);
   auto * dummy_point =
     std::get<arrangement::AutomationPoint *> (dummy_points[0].get_object ());

@@ -96,22 +96,6 @@ TEST_F (AutomationRegionTest, ValueChange)
   EXPECT_FLOAT_EQ (region->get_children_view ()[0]->value (), 0.7f);
 }
 
-TEST_F (AutomationRegionTest, ForceSort)
-{
-  // Add points in reverse order
-  add_automation_point (0.5, 200);
-  add_automation_point (0.3, 100);
-
-  // Force sort
-  region->force_sort ();
-
-  // Verify order
-  auto points = region->get_children_view ();
-  EXPECT_EQ (points.size (), 2);
-  EXPECT_EQ (points[0]->position ()->ticks (), 100);
-  EXPECT_EQ (points[1]->position ()->ticks (), 200);
-}
-
 TEST_F (AutomationRegionTest, GetPrevNextPoint)
 {
   // Add points

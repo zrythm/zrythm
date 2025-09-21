@@ -204,7 +204,7 @@ public:
 
   ~UuidReference () { release_ref (); }
 
-  const UuidType &id () const { return *id_; }
+  auto id () const -> UuidType { return *id_; }
 
   /**
    * @brief To be used when using the Registry-only constructor.

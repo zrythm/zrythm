@@ -16,11 +16,8 @@ namespace zrythm::structure::tracks
 {
 
 /**
- * The Tracklist contains all the tracks in the Project.
- *
- * There should be a clear separation between the Tracklist and the Mixer. The
- * Tracklist should be concerned with Tracks in the arranger, and the Mixer
- * should be concerned with Channels, routing and Port connections.
+ * @brief A higher level wrapper over a track collection that serves as the
+ * project's only tracklist.
  */
 class Tracklist : public QObject
 {
@@ -41,7 +38,6 @@ class Tracklist : public QObject
   QML_UNCREATABLE ("")
 
 public:
-  using TrackUuid = Track::Uuid;
   using ArrangerObjectPtrVariant = arrangement::ArrangerObjectPtrVariant;
   using ArrangerObject = arrangement::ArrangerObject;
 

@@ -39,11 +39,6 @@ public:
   // ========================================================================
 
   /**
-   * Forces sort of the automation points.
-   */
-  void force_sort ();
-
-  /**
    * Returns the AutomationPoint before the given one.
    */
   AutomationPoint * get_prev_ap (const AutomationPoint &ap) const;

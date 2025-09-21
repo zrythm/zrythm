@@ -50,16 +50,17 @@ public:
   virtual ~ArrangerObjectOwner () = default;
   Z_DISABLE_COPY_MOVE (ArrangerObjectOwner)
 
-  auto &get_children_vector () { return children_; }
-
-  auto &get_children_vector () const { return children_; }
+  auto &get_children_vector () const
+  {
+    return children_.get<random_access_index> ();
+  }
 
   auto get_children_view () const
   {
-    const auto &vec_ref = get_children_vector ();
-    return vec_ref | std::views::transform ([&] (const auto &id) {
-             return std::get<ChildT *> (id.get_object ());
-           });
+    const auto &vec_ref = children_.get<random_access_index> ();
+    return vec_ref
+           | std::views::transform (
+             &ArrangerObjectUuidReference::get_object_as<ChildT>);
   }
 
   void add_ticks_to_children (double ticks)
@@ -146,7 +147,8 @@ public:
                 clone_ref = obj.registry_.clone_object (
                   *child, child->get_tempo_map (),
                   obj.file_audio_source_registry_, dummy_file_source_ref);
-                obj.children_.emplace_back (std::move (*clone_ref));
+                obj.children_.get<sequenced_index> ().emplace_back (
+                  std::move (*clone_ref));
               }
             else if constexpr (RegionObject<ChildT>)
               {
@@ -156,13 +158,15 @@ public:
               {
                 clone_ref = obj.registry_.clone_object (
                   *child, child->get_tempo_map (), child->markerType ());
-                obj.children_.emplace_back (std::move (*clone_ref));
+                obj.children_.get<sequenced_index> ().emplace_back (
+                  std::move (*clone_ref));
               }
             else
               {
                 clone_ref =
                   obj.registry_.clone_object (*child, child->get_tempo_map ());
-                obj.children_.emplace_back (std::move (*clone_ref));
+                obj.children_.get<sequenced_index> ().emplace_back (
+                  std::move (*clone_ref));
               }
           }
       }
@@ -185,14 +189,14 @@ private:
           child_json.at (ArrangerObjectUuidReference::kIdKey)
             .template get<ArrangerObjectUuid> ();
         ArrangerObjectUuidReference obj_ref{ uuid, obj.registry_ };
-        obj.children_.emplace_back (std::move (obj_ref));
+        obj.children_.get<sequenced_index> ().emplace_back (std::move (obj_ref));
       }
   }
 
 private:
   ArrangerObjectRegistry                          &registry_;
   dsp::FileAudioSourceRegistry                    &file_audio_source_registry_;
-  std::vector<ArrangerObjectUuidReference>         children_;
+  ArrangerObjectRefMultiIndexContainer             children_;
   utils::QObjectUniquePtr<ArrangerObjectListModel> list_model_;
 
   BOOST_DESCRIBE_CLASS (ArrangerObjectOwner<ChildT>, (), (), (), (children_))

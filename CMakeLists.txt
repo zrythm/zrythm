@@ -905,6 +905,7 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   GIT_SUBMODULES
     libs/assert
+    libs/bind
     libs/circular_buffer
     libs/concept_check
     libs/config
@@ -912,16 +913,31 @@ FetchContent_Declare(
     libs/container_hash
     libs/core
     libs/describe
+    libs/detail
+    libs/fusion
+    libs/function
+    libs/functional
+    libs/function_types
     libs/intrusive
+    libs/io
+    libs/integer
+    libs/iterator
     libs/move
     libs/mp11
+    libs/mpl
+    libs/multi_index
+    libs/optional
     libs/predef
     libs/preprocessor
+    libs/smart_ptr
     libs/static_assert
     libs/stl_interfaces
     libs/throw_exception
+    libs/tuple
+    libs/typeof
     libs/type_traits
     libs/unordered
+    libs/utility
     tools/cmake
   EXCLUDE_FROM_ALL
   SYSTEM
@@ -930,6 +946,7 @@ set(BOOST_INCLUDE_LIBRARIES
   circular_buffer
   container
   describe
+  multi_index
   stl_interfaces
   unordered
 )
@@ -1058,6 +1075,7 @@ list(APPEND zrythm_link_libs
   Boost::stl_interfaces
   Boost::container
   Boost::unordered
+  Boost::multi_index
   gsl-lite::gsl-lite
   clap-helpers
   TBB::tbb

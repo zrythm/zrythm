@@ -55,17 +55,6 @@ AutomationRegion::curves_up (const AutomationPoint &ap) const
   return next_ap->value () > ap.value ();
 }
 
-void
-AutomationRegion::force_sort ()
-{
-  std::ranges::sort (
-    get_children_vector (), [&] (const auto &a_id, const auto &b_id) {
-      const auto a = std::get<AutomationPoint *> (a_id.get_object ());
-      const auto b = std::get<AutomationPoint *> (b_id.get_object ());
-      return a->position ()->ticks () < b->position ()->ticks ();
-    });
-}
-
 AutomationPoint *
 AutomationRegion::get_prev_ap (const AutomationPoint &ap) const
 {
@@ -136,6 +125,5 @@ init_from (
     static_cast<ArrangerObjectOwner<AutomationPoint> &> (obj),
     static_cast<const ArrangerObjectOwner<AutomationPoint> &> (other),
     clone_type);
-  obj.force_sort ();
 }
 }

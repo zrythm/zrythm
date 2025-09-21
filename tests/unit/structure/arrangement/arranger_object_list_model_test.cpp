@@ -33,7 +33,7 @@ protected:
         auto * note = note_ref.get_object_as<MidiNote> ();
         note->setPitch (60 + i);
         note->setVelocity (90 + i);
-        objects_.emplace_back (std::move (note_ref));
+        objects_.get<random_access_index> ().emplace_back (std::move (note_ref));
       }
 
     // Create model
@@ -44,7 +44,7 @@ protected:
   std::unique_ptr<MockQObject>             parent;
   ArrangerObjectRegistry                   registry_;
   dsp::FileAudioSourceRegistry             file_audio_source_registry_;
-  std::vector<ArrangerObjectUuidReference> objects_;
+  ArrangerObjectRefMultiIndexContainer     objects_;
   std::unique_ptr<ArrangerObjectListModel> model_;
 };
 
@@ -152,7 +152,7 @@ TEST_F (ArrangerObjectListModelTest, RoleNames)
 // Test empty model
 TEST_F (ArrangerObjectListModelTest, EmptyModel)
 {
-  std::vector<ArrangerObjectUuidReference> empty_objects;
+  ArrangerObjectRefMultiIndexContainer empty_objects;
   ArrangerObjectListModel empty_model (empty_objects, parent.get ());
 
   EXPECT_EQ (empty_model.rowCount (), 0);
@@ -206,7 +206,8 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnRemove)
     model_.get (), &ArrangerObjectListModel::contentChangedForObject);
 
   // Get the object to be removed
-  auto * obj_to_remove = objects_[1].get_object_as<MidiNote> ();
+  auto * obj_to_remove =
+    objects_.get<random_access_index> ()[1].get_object_as<MidiNote> ();
 
   // Remove the object
   model_->removeRows (1, 1);
@@ -229,7 +230,8 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedForObjectOnPropertyChange)
     model_.get (), &ArrangerObjectListModel::contentChangedForObject);
 
   // Get an existing object
-  auto * obj = objects_[0].get_object_as<MidiNote> ();
+  auto * obj =
+    objects_.get<random_access_index> ()[0].get_object_as<MidiNote> ();
 
   // Change a property - this should trigger the signal
   obj->setPitch (65);
@@ -270,8 +272,8 @@ TEST_F (ArrangerObjectListModelTest, NestedObjectSignalPropagation)
   auto * region = region_ref.get_object_as<MidiRegion> ();
 
   // Create a vector with the region
-  std::vector<ArrangerObjectUuidReference> region_objects;
-  region_objects.emplace_back (std::move (region_ref));
+  ArrangerObjectRefMultiIndexContainer region_objects;
+  region_objects.get<sequenced_index> ().emplace_back (std::move (region_ref));
 
   // Create model with the region
   ArrangerObjectListModel region_model (region_objects, parent.get ());
@@ -302,7 +304,7 @@ TEST_F (ArrangerObjectListModelTest, SignalConnectionsAndDisconnections)
     model_.get (), &ArrangerObjectListModel::contentChangedForObject);
 
   // Get an object that will be removed
-  auto obj_to_remove = objects_[2];
+  auto obj_to_remove = objects_.get<random_access_index> ()[2];
 
   // Remove the object
   model_->removeRows (2, 1);
@@ -327,7 +329,7 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
   auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
 
   // Create a new model with the parent arranger object
-  std::vector<ArrangerObjectUuidReference> child_objects;
+  ArrangerObjectRefMultiIndexContainer child_objects;
   ArrangerObjectListModel parent_model (child_objects, *parent_region);
 
   // Create a child note
@@ -359,7 +361,7 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectSignalEmissions)
   auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
 
   // Create a new model with the parent arranger object
-  std::vector<ArrangerObjectUuidReference> child_objects;
+  ArrangerObjectRefMultiIndexContainer child_objects;
   ArrangerObjectListModel parent_model (child_objects, *parent_region);
 
   // Create a child note
@@ -390,6 +392,96 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectSignalEmissions)
   // Verify that signals were emitted again
   EXPECT_EQ (parentObjectChangedSpy.count (), 1);
   EXPECT_EQ (propertiesChangedSpy.count (), 1);
+}
+
+// Test sorted index functionality - auto-updating when object positions change
+TEST_F (ArrangerObjectListModelTest, SortedIndexAutoUpdate)
+{
+  // Create objects with different positions
+  auto note1_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto * note1 = note1_ref.get_object_as<MidiNote> ();
+  note1->position ()->setTicks (100.0);
+  note1->setPitch (60);
+
+  auto note2_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto * note2 = note2_ref.get_object_as<MidiNote> ();
+  note2->position ()->setTicks (50.0);
+  note2->setPitch (62);
+
+  auto note3_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto * note3 = note3_ref.get_object_as<MidiNote> ();
+  note3->position ()->setTicks (150.0);
+  note3->setPitch (64);
+
+  // Add objects to a new container and model
+  ArrangerObjectRefMultiIndexContainer sorted_objects;
+  sorted_objects.get<sequenced_index> ().emplace_back (std::move (note1_ref));
+  sorted_objects.get<sequenced_index> ().emplace_back (std::move (note2_ref));
+  sorted_objects.get<sequenced_index> ().emplace_back (std::move (note3_ref));
+
+  ArrangerObjectListModel sorted_model (sorted_objects, parent.get ());
+
+  // Verify initial sorted order: note2 (50), note1 (100), note3 (150)
+  const auto &sorted_view = sorted_objects.get<sorted_index> ();
+  EXPECT_EQ (sorted_view.size (), 3);
+
+  auto it = sorted_view.begin ();
+  EXPECT_DOUBLE_EQ (get_ticks_from_arranger_object_uuid_ref (*it), 50.0);
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 62);
+
+  ++it;
+  EXPECT_DOUBLE_EQ (get_ticks_from_arranger_object_uuid_ref (*it), 100.0);
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 60);
+
+  ++it;
+  EXPECT_DOUBLE_EQ (get_ticks_from_arranger_object_uuid_ref (*it), 150.0);
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 64);
+
+  // Change note1's position to be after note3 - should trigger auto-resort
+  note1->position ()->setTicks (200.0);
+
+  // Verify new sorted order: note2 (50), note3 (150), note1 (200)
+  it = sorted_view.begin ();
+  EXPECT_DOUBLE_EQ (get_ticks_from_arranger_object_uuid_ref (*it), 50.0);
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 62);
+
+  ++it;
+  EXPECT_DOUBLE_EQ (get_ticks_from_arranger_object_uuid_ref (*it), 150.0);
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 64);
+
+  ++it;
+  EXPECT_DOUBLE_EQ (get_ticks_from_arranger_object_uuid_ref (*it), 200.0);
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 60);
+}
+
+// Test sorted index with multiple objects at same position
+TEST_F (ArrangerObjectListModelTest, SortedIndexSamePosition)
+{
+  // Create objects with same position but different creation order
+  auto note1_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto * note1 = note1_ref.get_object_as<MidiNote> ();
+  note1->position ()->setTicks (100.0);
+  note1->setPitch (60);
+
+  auto note2_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto * note2 = note2_ref.get_object_as<MidiNote> ();
+  note2->position ()->setTicks (100.0);
+  note2->setPitch (62);
+
+  // Add objects to container
+  ArrangerObjectRefMultiIndexContainer same_pos_objects;
+  same_pos_objects.get<sequenced_index> ().emplace_back (std::move (note1_ref));
+  same_pos_objects.get<sequenced_index> ().emplace_back (std::move (note2_ref));
+
+  // Verify sorted index maintains insertion order for same-position objects
+  const auto &sorted_view = same_pos_objects.get<sorted_index> ();
+  EXPECT_EQ (sorted_view.size (), 2);
+
+  auto it = sorted_view.begin ();
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 60); // First inserted
+
+  ++it;
+  EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 62); // Second inserted
 }
 
 } // namespace zrythm::structure::arrangement
