@@ -41,8 +41,6 @@ ArrangerObjectCreator::addEmptyChordRegion (
     cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
   chord_region->name ()->setName (
     track->generate_name_for_region (*chord_region));
-  track->structure::arrangement::ArrangerObjectOwner<
-    structure::arrangement::ChordRegion>::add_object (cr_ref);
   undo_stack_.push (
     new commands::AddArrangerObjectCommand<structure::arrangement::ChordRegion> (
       *track, cr_ref));

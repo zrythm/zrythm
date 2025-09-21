@@ -25,8 +25,10 @@ protected:
     auto note_ref = object_registry.create_object<
       structure::arrangement::MidiNote> (*tempo_map);
 
-    test_objects_.push_back (marker_ref);
-    test_objects_.push_back (note_ref);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (marker_ref);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (note_ref);
 
     // Store original positions
     original_positions_.push_back (
@@ -52,9 +54,9 @@ protected:
       list_model_.index (1, 0), QItemSelectionModel::Select);
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
-  structure::arrangement::ArrangerObjectRegistry object_registry;
-  std::vector<structure::arrangement::ArrangerObjectUuidReference> test_objects_;
+  std::unique_ptr<dsp::TempoMap>                               tempo_map;
+  structure::arrangement::ArrangerObjectRegistry               object_registry;
+  structure::arrangement::ArrangerObjectRefMultiIndexContainer test_objects_;
   std::vector<double>                              original_positions_;
   std::unique_ptr<undo::UndoStack>                 undo_stack_;
   std::unique_ptr<ArrangerObjectSelectionOperator> operator_;
@@ -81,7 +83,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
   // Objects should be moved by tick_delta
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (
+        auto * obj =
+          test_objects_.get<structure::arrangement::random_access_index> ()[i]
+            .get_object_base ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (), original_positions_[i] + tick_delta);
@@ -125,7 +130,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
   // Objects should remain at original positions
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (
+        auto * obj =
+          test_objects_.get<structure::arrangement::random_access_index> ()[i]
+            .get_object_base ())
         {
           EXPECT_DOUBLE_EQ (obj->position ()->ticks (), original_positions_[i]);
         }
@@ -191,7 +199,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   // Verify objects moved
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (
+        auto * obj =
+          test_objects_.get<structure::arrangement::random_access_index> ()[i]
+            .get_object_base ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (), original_positions_[i] + tick_delta);
@@ -202,7 +213,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   undo_stack_->undo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (
+        auto * obj =
+          test_objects_.get<structure::arrangement::random_access_index> ()[i]
+            .get_object_base ())
         {
           EXPECT_DOUBLE_EQ (obj->position ()->ticks (), original_positions_[i]);
         }
@@ -212,7 +226,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   undo_stack_->redo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (
+        auto * obj =
+          test_objects_.get<structure::arrangement::random_access_index> ()[i]
+            .get_object_base ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (), original_positions_[i] + tick_delta);
