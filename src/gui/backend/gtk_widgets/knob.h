@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense OR GPL-2.0-or-later
 
 #ifndef __GUI_WIDGETS_KNOB_H__
 #define __GUI_WIDGETS_KNOB_H__
