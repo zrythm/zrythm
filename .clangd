@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou
 # SPDX-License-Identifier: FSFAP
 ---
 Diagnostics:
@@ -7,3 +7,10 @@ Diagnostics:
     Remove: [modernize-use-trailing-return-type, performance-unnecessary-value-param, modernize-use-nodiscard]
 CompileFlags:
   Add: [-ferror-limit=20]
+  # Not useful for LSP functions and some may be problematic"
+  # https://old.reddit.com/r/emacs/comments/yv0hj9/help_wanted_can_i_use_g_with_clangd/
+  Remove: [-f*]
+If:
+  PathMatch: .*/qmlcache/.*
+Index:
+  Background: Skip

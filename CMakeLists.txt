@@ -953,28 +953,7 @@ set(BOOST_INCLUDE_LIBRARIES
 FetchContent_MakeAvailable(Boost)
 
 CPMGetPackage(type_safe)
-
-if(0)
-  # getting compiler errors so unused for now
-  FetchContent_Declare(
-    mpunits
-    GIT_REPOSITORY https://github.com/mpusz/mp-units
-    # master 2025/05/30
-    GIT_TAG 514abd2140bcd3ba310c4295cbf247874d838673
-    GIT_SHALLOW TRUE
-    SOURCE_SUBDIR src
-    EXCLUDE_FROM_ALL
-    SYSTEM
-  )
-  set(MP_UNITS_BUILD_AS_SYSTEM_HEADERS ON)
-  set(MP_UNITS_API_STD_FORMAT OFF)
-  set(MP_UNITS_API_NO_CRTP OFF)
-  set(MP_UNITS_API_FREESTANDING ON)
-  set(MP_UNITS_API_CONTRACTS NONE)
-  set(MP_UNITS_BUILD_CXX_MODULES OFF)
-  FetchContent_MakeAvailable(mpunits)
-  # mp-units::mp-units
-endif()
+CPMGetPackage(mp-units)
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -1080,6 +1059,7 @@ list(APPEND zrythm_link_libs
   clap-helpers
   TBB::tbb
   farbot::farbot
+  mp-units::mp-units
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers
