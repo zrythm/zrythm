@@ -24,8 +24,14 @@ public:
 
   ~ScopedJuceMessageThread () override
   {
-    // Ensure we properly exit the dispatch loop before thread exits
-    juce::MessageManager::getInstance ()->stopDispatchLoop ();
+    {
+      std::lock_guard<std::mutex> lock (initializer_mutex_);
+      // Signal the thread to exit first
+      if (juce::MessageManager::getInstanceWithoutCreating () != nullptr)
+        {
+          juce::MessageManager::getInstance ()->stopDispatchLoop ();
+        }
+    }
 
     // Wait for the thread to exit completely to avoid data races
     // with JUCE's InternalMessageQueue file descriptors and atomic state
