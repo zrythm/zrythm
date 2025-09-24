@@ -10,7 +10,7 @@ namespace zrythm::dsp
 class TempoMapTest : public ::testing::Test
 {
 protected:
-  static constexpr auto SAMPLE_RATE = 44100.0;
+  static constexpr auto SAMPLE_RATE = 44100.0 * mp_units::si::hertz;
 
   void SetUp () override { map = std::make_unique<TempoMap> (SAMPLE_RATE); }
 
@@ -20,62 +20,64 @@ protected:
 // Test initial state
 TEST_F (TempoMapTest, InitialState)
 {
-  EXPECT_DOUBLE_EQ (map->tempo_at_tick (0), 120.0);
-  EXPECT_EQ (map->time_signature_at_tick (0).numerator, 4);
-  EXPECT_EQ (map->time_signature_at_tick (0).denominator, 4);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (0 * units::tick), 120.0);
+  EXPECT_EQ (map->time_signature_at_tick (0 * units::tick).numerator, 4);
+  EXPECT_EQ (map->time_signature_at_tick (0 * units::tick).denominator, 4);
 }
 
 // Test tempo event management
 TEST_F (TempoMapTest, TempoEventManagement)
 {
   // Add constant tempo event
-  map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
-  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1920), 140.0);
-  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1919), 120.0); // before the event
+  map->add_tempo_event (
+    1920 * units::tick, 140.0, TempoMap::CurveType::Constant);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1920 * units::tick), 140.0);
+  EXPECT_DOUBLE_EQ (
+    map->tempo_at_tick (1919 * units::tick), 120.0); // before the event
 
   // Add linear tempo event at 3840
-  map->add_tempo_event (3840, 160.0, TempoMap::CurveType::Linear);
-  EXPECT_DOUBLE_EQ (map->tempo_at_tick (3840), 160.0);
+  map->add_tempo_event (3840 * units::tick, 160.0, TempoMap::CurveType::Linear);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (3840 * units::tick), 160.0);
 
   // Update existing event at 1920
-  map->add_tempo_event (1920, 150.0, TempoMap::CurveType::Linear);
-  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1920), 150.0);
+  map->add_tempo_event (1920 * units::tick, 150.0, TempoMap::CurveType::Linear);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (1920 * units::tick), 150.0);
   // Check the linear ramp: at the midpoint between 1920 and 3840, tempo should
   // be 155.0
-  EXPECT_NEAR (map->tempo_at_tick (2880), 155.0, 1e-8);
+  EXPECT_NEAR (map->tempo_at_tick (2880 * units::tick), 155.0, 1e-8);
 
   // Remove event at 3840
-  map->remove_tempo_event (3840);
+  map->remove_tempo_event (3840 * units::tick);
   // Now the tempo at 3840 should be the same as the previous event (150.0)
   // because the event was removed
-  EXPECT_DOUBLE_EQ (map->tempo_at_tick (3840), 150.0);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (3840 * units::tick), 150.0);
   // Also, the segment from 1920 onward should be constant, so at 2880 it should
   // be 150.0 (not ramping)
-  EXPECT_DOUBLE_EQ (map->tempo_at_tick (2880), 150.0);
+  EXPECT_DOUBLE_EQ (map->tempo_at_tick (2880 * units::tick), 150.0);
 }
 
 // Test time signature management
 TEST_F (TempoMapTest, TimeSignatureManagement)
 {
   // Add time signature
-  map->add_time_signature_event (1920, 3, 4);
-  auto ts = map->time_signature_at_tick (1920);
+  map->add_time_signature_event (1920 * units::tick, 3, 4);
+  auto ts = map->time_signature_at_tick (1920 * units::tick);
   EXPECT_EQ (ts.numerator, 3);
   EXPECT_EQ (ts.denominator, 4);
   // Before the event, it should be 4/4
-  ts = map->time_signature_at_tick (1919);
+  ts = map->time_signature_at_tick (1919 * units::tick);
   EXPECT_EQ (ts.numerator, 4);
   EXPECT_EQ (ts.denominator, 4);
 
   // Update existing
-  map->add_time_signature_event (1920, 5, 8);
-  ts = map->time_signature_at_tick (1920);
+  map->add_time_signature_event (1920 * units::tick, 5, 8);
+  ts = map->time_signature_at_tick (1920 * units::tick);
   EXPECT_EQ (ts.numerator, 5);
   EXPECT_EQ (ts.denominator, 8);
 
   // Remove
-  map->remove_time_signature_event (1920);
-  ts = map->time_signature_at_tick (1920);
+  map->remove_time_signature_event (1920 * units::tick);
+  ts = map->time_signature_at_tick (1920 * units::tick);
   EXPECT_EQ (ts.numerator, 4);
   EXPECT_EQ (ts.denominator, 4);
 }
@@ -87,9 +89,9 @@ TEST_F (TempoMapTest, ConstantTempoConversions)
   // 1 beat = 960 ticks -> 1 tick = 0.5/960 seconds
 
   // Test tick to seconds
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (0), 0.0);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960), 0.5);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1920), 1.0);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (0 * units::tick), 0.0);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960 * units::tick), 0.5);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1920 * units::tick), 1.0);
 
   // Test seconds to tick
   EXPECT_DOUBLE_EQ (map->seconds_to_tick (0.0), 0.0);
@@ -97,7 +99,7 @@ TEST_F (TempoMapTest, ConstantTempoConversions)
   EXPECT_DOUBLE_EQ (map->seconds_to_tick (1.0), 1920.0);
 
   // Test samples conversion
-  EXPECT_DOUBLE_EQ (map->tick_to_samples (960), 0.5 * 44100.0);
+  EXPECT_DOUBLE_EQ (map->tick_to_samples (960 * units::tick), 0.5 * 44100.0);
   EXPECT_DOUBLE_EQ (map->samples_to_tick (0.5 * 44100.0), 960.0);
 }
 
@@ -166,9 +168,9 @@ TEST_F (TempoMapTest, MusicalPositionConversion)
 TEST_F (TempoMapTest, TimeSignatureChanges)
 {
   // Add time signatures
-  map->add_time_signature_event (0, 4, 4);         // Bar 1: 4/4
-  const int64_t bar5Start = 4 * 4 * 960;           // Bar 5 start
-  map->add_time_signature_event (bar5Start, 3, 4); // Bar 5: 3/4
+  map->add_time_signature_event (0 * units::tick, 4, 4); // Bar 1: 4/4
+  const int64_t bar5Start = 4 * 4 * 960;                 // Bar 5 start
+  map->add_time_signature_event (bar5Start, 3, 4);       // Bar 5: 3/4
   const int64_t bar8Start =
     bar5Start + 3 * 3 * 960; // Bar 8 start (3 bars of 3/4)
   map->add_time_signature_event (bar8Start, 7, 8); // Bar 8: 7/8
@@ -235,61 +237,63 @@ TEST_F (TempoMapTest, TimeSignatureChanges)
 TEST_F (TempoMapTest, MultiSegmentLinearRamp)
 {
   // Setup tempo events
-  map->add_tempo_event (960, 120.0, TempoMap::CurveType::Linear);
-  map->add_tempo_event (1920, 180.0, TempoMap::CurveType::Constant);
+  map->add_tempo_event (960 * units::tick, 120.0, TempoMap::CurveType::Linear);
+  map->add_tempo_event (
+    1920 * units::tick, 180.0, TempoMap::CurveType::Constant);
 
   // Test before ramp
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (480), 0.25);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (480 * units::tick), 0.25);
 
   // Test start of ramp
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960), 0.5);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960 * units::tick), 0.5);
 
   // Test midpoint of ramp (150 BPM)
-  const double midTime = map->tick_to_seconds (1440);
+  const double midTime = map->tick_to_seconds (1440 * units::tick);
   const double expectedMidTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (150.0 / 120.0);
   EXPECT_NEAR (midTime, expectedMidTime, 1e-8);
 
   // Test end of ramp
-  const double endTime = map->tick_to_seconds (1920);
+  const double endTime = map->tick_to_seconds (1920 * units::tick);
   const double expectedEndTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (180.0 / 120.0);
   EXPECT_NEAR (endTime, expectedEndTime, 1e-8);
 
   // Test after ramp (480 ticks at 180 BPM)
   const double afterRampTime = endTime + (480.0 / 960.0) * (60.0 / 180.0);
-  EXPECT_NEAR (map->tick_to_seconds (2400), afterRampTime, 1e-8);
+  EXPECT_NEAR (map->tick_to_seconds (2400 * units::tick), afterRampTime, 1e-8);
 }
 
 // Test tempo lookups
 TEST_F (TempoMapTest, TempoLookup)
 {
   // Setup linear ramp from 120 to 180 BPM over 4 beats (3840 ticks)
-  map->add_tempo_event (0, 120.0, TempoMap::CurveType::Linear);
-  map->add_tempo_event (3840, 180.0, TempoMap::CurveType::Constant);
+  map->add_tempo_event (0 * units::tick, 120.0, TempoMap::CurveType::Linear);
+  map->add_tempo_event (
+    3840 * units::tick, 180.0, TempoMap::CurveType::Constant);
 
   // Test start of ramp
-  auto tempo = map->tempo_at_tick (0);
+  auto tempo = map->tempo_at_tick (0 * units::tick);
   EXPECT_DOUBLE_EQ (tempo, 120.0);
 
   // Test 1/4 through ramp
-  tempo = map->tempo_at_tick (960);
+  tempo = map->tempo_at_tick (960 * units::tick);
   EXPECT_NEAR (tempo, 135.0, 1e-8);
 
   // Test midpoint of ramp
-  tempo = map->tempo_at_tick (1920);
+  tempo = map->tempo_at_tick (1920 * units::tick);
   EXPECT_NEAR (tempo, 150.0, 1e-8);
 
   // Test 3/4 through ramp
-  tempo = map->tempo_at_tick (2880);
+  tempo = map->tempo_at_tick (2880 * units::tick);
   EXPECT_NEAR (tempo, 165.0, 1e-8);
 
   // Test end of ramp
-  tempo = map->tempo_at_tick (3840);
+  tempo = map->tempo_at_tick (3840 * units::tick);
   EXPECT_DOUBLE_EQ (tempo, 180.0);
 
   // Test after ramp
-  tempo = map->tempo_at_tick (4800);
+  tempo = map->tempo_at_tick (4800 * units::tick);
   EXPECT_DOUBLE_EQ (tempo, 180.0);
 }
 
@@ -299,12 +303,12 @@ TEST_F (TempoMapTest, LinearRampLastEvent)
   // Setup:
   // [0, 960): Constant 120 BPM
   // [960, ∞): Linear ramp 120 → ? BPM (should be constant 120 since no end point)
-  map->add_tempo_event (960, 120.0, TempoMap::CurveType::Linear);
+  map->add_tempo_event (960 * units::tick, 120.0, TempoMap::CurveType::Linear);
 
   // Should be constant after 960 because no endpoint for ramp
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960), 0.5);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1440), 0.5 + 0.25);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1920), 0.5 + 0.5);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960 * units::tick), 0.5);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1440 * units::tick), 0.5 + 0.25);
+  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1920 * units::tick), 0.5 + 0.5);
 }
 
 // Test edge cases
@@ -317,12 +321,13 @@ TEST_F (TempoMapTest, EdgeCases)
   // Empty tempo map - default value active
   TempoMap emptyMap (960);
   emptyMap.remove_tempo_event (0);
-  EXPECT_DOUBLE_EQ (emptyMap.tick_to_seconds (960), 0.5);
+  EXPECT_DOUBLE_EQ (emptyMap.tick_to_seconds (960 * units::tick), 0.5);
 
   // Near-constant ramp
-  map->add_tempo_event (960, 120.001, TempoMap::CurveType::Linear);
-  map->add_tempo_event (1920, 120.002, TempoMap::CurveType::Constant);
-  EXPECT_NEAR (map->tick_to_seconds (1440), 0.5 + 0.25, 1e-5);
+  map->add_tempo_event (960 * units::tick, 120.001, TempoMap::CurveType::Linear);
+  map->add_tempo_event (
+    1920 * units::tick, 120.002, TempoMap::CurveType::Constant);
+  EXPECT_NEAR (map->tick_to_seconds (1440 * units::tick), 0.5 + 0.25, 1e-5);
 
   // Invalid positions
   EXPECT_THROW (
@@ -355,14 +360,14 @@ TEST_F (TempoMapTest, SampleRateChanges)
   const double newRate = 48000.0;
   map->set_sample_rate (newRate);
 
-  EXPECT_DOUBLE_EQ (map->tick_to_samples (960), 0.5 * newRate);
+  EXPECT_DOUBLE_EQ (map->tick_to_samples (960 * units::tick), 0.5 * newRate);
   EXPECT_DOUBLE_EQ (map->samples_to_tick (0.5 * newRate), 960.0);
 }
 
 // Test complex time signature with different beat units
 TEST_F (TempoMapTest, ComplexTimeSignatures)
 {
-  map->add_time_signature_event (0, 6, 8); // 6/8 time
+  map->add_time_signature_event (0 * units::tick, 6, 8); // 6/8 time
 
   // end at 6 beats
   const auto bar1Ticks = static_cast<int64_t> (6 * (TempoMap::get_ppq () / 2));
@@ -397,43 +402,44 @@ TEST_F (TempoMapTest, ComplexTimeSignatures)
 TEST_F (TempoMapTest, TimeSignatureLookup)
 {
   // Default 4/4
-  auto ts = map->time_signature_at_tick (0);
+  auto ts = map->time_signature_at_tick (0 * units::tick);
   EXPECT_EQ (ts.numerator, 4);
   EXPECT_EQ (ts.denominator, 4);
 
   // Add time signatures
-  map->add_time_signature_event (1920, 3, 4); // Bar 3 (assuming 4/4)
-  map->add_time_signature_event (3840, 5, 8); // Bar 5 (3/4)
+  map->add_time_signature_event (
+    1920 * units::tick, 3, 4); // Bar 3 (assuming 4/4)
+  map->add_time_signature_event (3840 * units::tick, 5, 8); // Bar 5 (3/4)
 
   // Test before first change
-  ts = map->time_signature_at_tick (0);
+  ts = map->time_signature_at_tick (0 * units::tick);
   EXPECT_EQ (ts.numerator, 4);
   EXPECT_EQ (ts.denominator, 4);
 
   // Test at first change point
-  ts = map->time_signature_at_tick (1920);
+  ts = map->time_signature_at_tick (1920 * units::tick);
   EXPECT_EQ (ts.numerator, 3);
   EXPECT_EQ (ts.denominator, 4);
 
   // Test between changes
-  ts = map->time_signature_at_tick (2000);
+  ts = map->time_signature_at_tick (2000 * units::tick);
   EXPECT_EQ (ts.numerator, 3);
   EXPECT_EQ (ts.denominator, 4);
 
   // Test at second change point
-  ts = map->time_signature_at_tick (3840);
+  ts = map->time_signature_at_tick (3840 * units::tick);
   EXPECT_EQ (ts.numerator, 5);
   EXPECT_EQ (ts.denominator, 8);
 
   // Test after last change
-  ts = map->time_signature_at_tick (10000);
+  ts = map->time_signature_at_tick (10000 * units::tick);
   EXPECT_EQ (ts.numerator, 5);
   EXPECT_EQ (ts.denominator, 8);
 
   // Test with empty map
   TempoMap emptyMap (SAMPLE_RATE);
   emptyMap.remove_time_signature_event (0);
-  ts = emptyMap.time_signature_at_tick (0);
+  ts = emptyMap.time_signature_at_tick (0 * units::tick);
   EXPECT_EQ (ts.numerator, 4); // Default
   EXPECT_EQ (ts.denominator, 4);
 }
@@ -468,10 +474,11 @@ TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
 TEST_F (TempoMapTest, Serialization)
 {
   // Add tempo and time signature events
-  map->add_time_signature_event (1920, 3, 4);
-  map->add_time_signature_event (3840, 5, 8);
-  map->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
-  map->add_tempo_event (3840, 160.0, TempoMap::CurveType::Linear);
+  map->add_time_signature_event (1920 * units::tick, 3, 4);
+  map->add_time_signature_event (3840 * units::tick, 5, 8);
+  map->add_tempo_event (
+    1920 * units::tick, 140.0, TempoMap::CurveType::Constant);
+  map->add_tempo_event (3840 * units::tick, 160.0, TempoMap::CurveType::Linear);
 
   // Serialize to JSON
   nlohmann::json j;
@@ -495,7 +502,8 @@ TEST_F (TempoMapTest, Serialization)
 
   // Also test a conversion to be sure
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (2880), deserialized_map.tick_to_seconds (2880));
+    map->tick_to_seconds (2880 * units::tick),
+    deserialized_map.tick_to_seconds (2880 * units::tick));
   EXPECT_DOUBLE_EQ (
     map->seconds_to_tick (1.5), deserialized_map.seconds_to_tick (1.5));
 }
@@ -514,8 +522,8 @@ TEST_F (TempoMapTest, EmptySerialization)
   j.get_to (deserialized_map);
 
   // Verify empty by checking default tempo and time signature
-  EXPECT_DOUBLE_EQ (deserialized_map.tempo_at_tick (0), 120.0);
-  auto ts = deserialized_map.time_signature_at_tick (0);
+  EXPECT_DOUBLE_EQ (deserialized_map.tempo_at_tick (0 * units::tick), 120.0);
+  auto ts = deserialized_map.time_signature_at_tick (0 * units::tick);
   EXPECT_EQ (ts.numerator, 4);
   EXPECT_EQ (ts.denominator, 4);
 }

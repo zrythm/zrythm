@@ -46,7 +46,8 @@ public:
     file_audio_source_registry_ =
       std::make_unique<dsp::FileAudioSourceRegistry> ();
     obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
+    tempo_map_ =
+      std::make_unique<dsp::TempoMap> (sample_rate_ * mp_units::si::hertz);
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 

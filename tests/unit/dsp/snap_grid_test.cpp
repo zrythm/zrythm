@@ -12,7 +12,7 @@ namespace zrythm::dsp
 class SnapGridTest : public ::testing::Test
 {
 protected:
-  static constexpr auto SAMPLE_RATE = 44100.0;
+  static constexpr auto SAMPLE_RATE = 44100.0 * mp_units::si::hertz;
 
   void SetUp () override
   {
@@ -246,7 +246,7 @@ TEST_F (SnapGridTest, DefaultTicks)
 TEST_F (SnapGridTest, TimeSignatureChanges)
 {
   // Change to 3/4 time signature
-  tempo_map->add_time_signature_event (0, 3, 4);
+  tempo_map->add_time_signature_event (0 * units::tick, 3, 4);
 
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapNoteLength (utils::NoteLength::Bar);

@@ -18,7 +18,7 @@ class MarkerTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
     parent = std::make_unique<MockQObject> ();
     marker = std::make_unique<Marker> (
       *tempo_map, Marker::MarkerType::Custom, parent.get ());

@@ -8,7 +8,8 @@ namespace zrythm::dsp
 QString
 TempoMapWrapper::getMusicalPositionString (int64_t tick) const
 {
-  const auto musical_pos = tempo_map_.tick_to_musical_position (tick);
+  const auto musical_pos =
+    tempo_map_.tick_to_musical_position (tick * units::tick);
   return QString::fromStdString (
     fmt::format (
       "{}.{}.{}.{:03}", musical_pos.bar, musical_pos.beat,
@@ -18,21 +19,21 @@ TempoMapWrapper::getMusicalPositionString (int64_t tick) const
 int
 TempoMapWrapper::timeSignatureNumeratorAtTick (int64_t tick) const
 {
-  const auto time_sig = tempo_map_.time_signature_at_tick (tick);
+  const auto time_sig = tempo_map_.time_signature_at_tick (tick * units::tick);
   return time_sig.numerator;
 }
 
 int
 TempoMapWrapper::timeSignatureDenominatorAtTick (int64_t tick) const
 {
-  const auto time_sig = tempo_map_.time_signature_at_tick (tick);
+  const auto time_sig = tempo_map_.time_signature_at_tick (tick * units::tick);
   return time_sig.denominator;
 }
 
 double
 TempoMapWrapper::tempoAtTick (int64_t tick) const
 {
-  return tempo_map_.tempo_at_tick (tick);
+  return tempo_map_.tempo_at_tick (tick * units::tick);
 }
 
 } // namespace zrythm::dsp

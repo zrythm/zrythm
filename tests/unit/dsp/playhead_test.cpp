@@ -14,7 +14,7 @@ namespace zrythm::dsp
 class PlayheadTest : public ::testing::Test
 {
 protected:
-  static constexpr auto SAMPLE_RATE = 44100.0;
+  static constexpr auto SAMPLE_RATE = 44100.0 * mp_units::si::hertz;
 
   void SetUp () override
   {
@@ -54,7 +54,9 @@ TEST_F (PlayheadTest, InitialState)
 TEST_F (PlayheadTest, SetPositionFromGUI)
 {
   const double testTicks = 1920.0; // 2 beats at 120 BPM
-  const double expectedStartSamples = tempo_map_->tick_to_samples (testTicks);
+  const double expectedStartSamples =
+    tempo_map_->tick_to_samples (testTicks * units::tick)
+      .numerical_value_in (units::sample);
   playhead_->set_position_ticks (testTicks);
 
   // Verify GUI thread access
@@ -74,8 +76,10 @@ TEST_F (PlayheadTest, SetPositionFromGUI)
 TEST_F (PlayheadTest, AudioProcessingAdvance)
 {
   const uint32_t blockSize = 512;
-  const double   startPos = tempo_map_->tick_to_samples (0);
-  double         lastPos = -1.0;
+  const double   startPos =
+    tempo_map_->tick_to_samples (0 * units::tick)
+      .numerical_value_in (units::sample);
+  double lastPos = -1.0;
 
   simulateAudioProcessing (blockSize, [&] (uint32_t frame, double pos) {
     // Position should increment by 1 sample each frame
@@ -99,7 +103,9 @@ TEST_F (PlayheadTest, AudioProcessingAdvance)
 TEST_F (PlayheadTest, UpdateTicksFromSamples)
 {
   const double testSamples = 22050.0; // 0.5 seconds at 44.1kHz
-  playhead_->set_position_ticks (tempo_map_->samples_to_tick (testSamples));
+  playhead_->set_position_ticks (
+    tempo_map_->samples_to_tick (testSamples * units::sample)
+      .numerical_value_in (units::tick));
 
   // Modify samples directly (simulate audio thread advance)
   simulateAudioProcessing (100);
@@ -108,7 +114,10 @@ TEST_F (PlayheadTest, UpdateTicksFromSamples)
   playhead_->update_ticks_from_samples ();
 
   const double expectedTicks =
-    tempo_map_->samples_to_tick (playhead_->position_samples_FOR_TESTING ());
+    tempo_map_
+      ->samples_to_tick (
+        playhead_->position_samples_FOR_TESTING () * units::sample)
+      .numerical_value_in (units::tick);
   EXPECT_NEAR (playhead_->position_ticks (), expectedTicks, 1e-6);
 }
 

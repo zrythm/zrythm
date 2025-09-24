@@ -82,6 +82,7 @@ target_sources(zrythm_utils_lib
     thread_safe_fftw.h
     traits.h
     types.h
+    units.h
     utils.h
     uuid_identifiable_object.h
     uuid_identifiable_object.cpp

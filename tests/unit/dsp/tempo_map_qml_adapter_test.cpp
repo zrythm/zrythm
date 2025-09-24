@@ -20,7 +20,7 @@ protected:
   void SetUp () override
   {
     // Create core tempo map and wrapper
-    tempo_map_ = std::make_unique<TempoMap> (44100.0);
+    tempo_map_ = std::make_unique<TempoMap> (44100.0 * mp_units::si::hertz);
     wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
   }
 
@@ -146,8 +146,9 @@ TEST_F (TempoMapWrapperTest, ListPropertyAccess)
 TEST_F (TempoMapWrapperTest, UnderlyingChanges)
 {
   // Directly modify underlying map
-  tempo_map_->add_time_signature_event (1920, 3, 4);
-  tempo_map_->add_tempo_event (1920, 140.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (1920 * units::tick, 3, 4);
+  tempo_map_->add_tempo_event (
+    1920 * units::tick, 140.0, TempoMap::CurveType::Constant);
 
   // Manually trigger rebuild (normally done via signals in real app)
   wrapper_->rebuildWrappers ();
@@ -164,13 +165,14 @@ TEST_F (TempoMapWrapperTest, UnderlyingChanges)
 TEST_F (TempoMapWrapperTest, MusicalPositionConversion)
 {
   // Add test data to underlying map
-  tempo_map_->add_time_signature_event (1920, 3, 4);
+  tempo_map_->add_time_signature_event (1920 * units::tick, 3, 4);
   wrapper_->rebuildWrappers ();
 
   // Test tick to musical position
   const int64_t testTick1 = 960;
   auto          posWrapper = wrapper_->getMusicalPosition (testTick1);
-  auto          posDirect = tempo_map_->tick_to_musical_position (testTick1);
+  auto          posDirect =
+    tempo_map_->tick_to_musical_position (testTick1 * units::tick);
   EXPECT_EQ (posWrapper->bar (), posDirect.bar);
   EXPECT_EQ (posWrapper->beat (), posDirect.beat);
   EXPECT_EQ (posWrapper->sixteenth (), posDirect.sixteenth);
@@ -180,7 +182,7 @@ TEST_F (TempoMapWrapperTest, MusicalPositionConversion)
   // Test position after time signature change
   const int64_t testTick2 = 1920;
   posWrapper = wrapper_->getMusicalPosition (testTick2);
-  posDirect = tempo_map_->tick_to_musical_position (testTick2);
+  posDirect = tempo_map_->tick_to_musical_position (testTick2 * units::tick);
   EXPECT_EQ (posWrapper->bar (), posDirect.bar);
   EXPECT_EQ (posWrapper->beat (), posDirect.beat);
   EXPECT_EQ (posWrapper->sixteenth (), posDirect.sixteenth);
@@ -194,15 +196,16 @@ TEST_F (TempoMapWrapperTest, MusicalPositionString)
   // Test basic position
   const int64_t testTick1 = 0;
   auto          strWrapper = wrapper_->getMusicalPositionString (testTick1);
-  auto          posDirect = tempo_map_->tick_to_musical_position (testTick1);
-  auto          expectedStr = fmt::format (
+  auto          posDirect =
+    tempo_map_->tick_to_musical_position (testTick1 * units::tick);
+  auto expectedStr = fmt::format (
     "{}.{}.{}.000", posDirect.bar, posDirect.beat, posDirect.sixteenth);
   EXPECT_EQ (strWrapper.toStdString (), expectedStr);
 
   // Test position after some ticks
   const int64_t testTick2 = 481;
   strWrapper = wrapper_->getMusicalPositionString (testTick2);
-  posDirect = tempo_map_->tick_to_musical_position (testTick2);
+  posDirect = tempo_map_->tick_to_musical_position (testTick2 * units::tick);
   expectedStr = fmt::format (
     "{}.{}.{}.001", posDirect.bar, posDirect.beat, posDirect.sixteenth);
   EXPECT_EQ (strWrapper.toStdString (), expectedStr);
@@ -216,22 +219,22 @@ TEST_F (TempoMapWrapperTest, TickFromMusicalPosition)
   auto                      tickWrapper = wrapper_->getTickFromMusicalPosition (
     pos1.bar, pos1.beat, pos1.sixteenth, pos1.tick);
   auto tickDirect = tempo_map_->musical_position_to_tick (pos1);
-  EXPECT_EQ (tickWrapper, tickDirect);
+  EXPECT_EQ (tickWrapper, tickDirect.numerical_value_in (units::tick));
 
   // Test beat position
   TempoMap::MusicalPosition pos2{ 1, 2, 1, 0 };
   tickWrapper = wrapper_->getTickFromMusicalPosition (
     pos2.bar, pos2.beat, pos2.sixteenth, pos2.tick);
   tickDirect = tempo_map_->musical_position_to_tick (pos2);
-  EXPECT_EQ (tickWrapper, tickDirect);
+  EXPECT_EQ (tickWrapper, tickDirect.numerical_value_in (units::tick));
 
   // Add time signature change and test
-  tempo_map_->add_time_signature_event (1920, 3, 4);
+  tempo_map_->add_time_signature_event (1920 * units::tick, 3, 4);
   TempoMap::MusicalPosition pos3{ 2, 1, 1, 0 };
   tickWrapper = wrapper_->getTickFromMusicalPosition (
     pos3.bar, pos3.beat, pos3.sixteenth, pos3.tick);
   tickDirect = tempo_map_->musical_position_to_tick (pos3);
-  EXPECT_EQ (tickWrapper, tickDirect);
+  EXPECT_EQ (tickWrapper, tickDirect.numerical_value_in (units::tick));
 }
 
 } // namespace zrythm::dsp

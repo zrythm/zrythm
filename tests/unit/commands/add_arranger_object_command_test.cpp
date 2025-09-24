@@ -45,7 +45,7 @@ class AddArrangerObjectCommandTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
 
     // Create a test MidiNote
     auto note_ref = object_registry.create_object<

@@ -786,7 +786,8 @@ public:
               {
                 /* move all objects backwards */
                 const double ticks_to_subtract =
-                  tempo_map.samples_to_tick (local_pos);
+                  tempo_map.samples_to_tick (local_pos * units::sample)
+                    .numerical_value_in (units::tick);
                 get_derived_object (new_object2_ref)
                   ->add_ticks_to_children (-ticks_to_subtract);
 

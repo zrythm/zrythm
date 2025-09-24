@@ -13,7 +13,7 @@ class ChordRegionTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
     region = std::make_unique<ChordRegion> (
       *tempo_map, registry, file_audio_source_registry, nullptr);
 

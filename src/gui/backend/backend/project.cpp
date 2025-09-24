@@ -57,7 +57,8 @@ Project::Project (
   QObject *                                 parent)
     : QObject (parent),
       tempo_map_ (
-        device_manager->getCurrentAudioDevice ()->getCurrentSampleRate ()),
+        device_manager->getCurrentAudioDevice ()->getCurrentSampleRate ()
+        * mp_units::si::hertz),
       tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
       file_audio_source_registry_ (new dsp::FileAudioSourceRegistry (this)),
       port_registry_ (new dsp::PortRegistry (this)),
@@ -147,7 +148,7 @@ Project::Project (
                   gui::SettingsManager::automationCurveAlgorithm ());
               } },
           [&] () { return audio_engine_->get_sample_rate (); },
-          [&] () { return get_tempo_map ().tempo_at_tick (0); })),
+          [&] () { return get_tempo_map ().tempo_at_tick (0 * units::tick); })),
       plugin_factory_ (new PluginFactory (
         PluginFactory::CommonFactoryDependencies{
           .plugin_registry_ = *plugin_registry_,
@@ -557,11 +558,11 @@ Project::add_default_tracks ()
 
   /* tempo */
   transport_->update_caches (
-    get_tempo_map ().time_signature_at_tick (0).numerator,
-    get_tempo_map ().time_signature_at_tick (0).denominator);
+    get_tempo_map ().time_signature_at_tick (0 * units::tick).numerator,
+    get_tempo_map ().time_signature_at_tick (0 * units::tick).denominator);
   audio_engine_->update_frames_per_tick (
-    get_tempo_map ().time_signature_at_tick (0).numerator,
-    static_cast<bpm_t> (get_tempo_map ().tempo_at_tick (0)),
+    get_tempo_map ().time_signature_at_tick (0 * units::tick).numerator,
+    static_cast<bpm_t> (get_tempo_map ().tempo_at_tick (0 * units::tick)),
     audio_engine_->get_sample_rate (), true, true, false);
 
   /* add a scale */

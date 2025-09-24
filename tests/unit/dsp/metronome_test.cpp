@@ -19,7 +19,7 @@ protected:
     port_registry_ = std::make_unique<dsp::PortRegistry> ();
     param_registry_ =
       std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
-    tempo_map_ = std::make_unique<TempoMap> (44100.0);
+    tempo_map_ = std::make_unique<TempoMap> (44100.0 * mp_units::si::hertz);
     transport_ = std::make_unique<graph_test::MockTransport> ();
 
     // Create test samples
@@ -223,8 +223,9 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (0, 4, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -264,8 +265,9 @@ TEST_F (MetronomeTest, LoopCrossing)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (0, 4, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport with loop (0-1 seconds)
   EXPECT_CALL (*transport_, get_play_state ())
@@ -307,8 +309,9 @@ TEST_F (MetronomeTest, CountinTicks)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (0, 4, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport for countin
   EXPECT_CALL (*transport_, get_play_state ())
@@ -341,8 +344,9 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
   auto metronome = create_metronome (0.5f); // 50% volume
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (0, 4, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -393,8 +397,9 @@ TEST_F (MetronomeTest, DifferentTimeSignatures)
   auto metronome = create_metronome ();
 
   // Setup 3/4 time signature
-  tempo_map_->add_time_signature_event (0, 3, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 3, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -421,9 +426,9 @@ TEST_F (MetronomeTest, HighTempo)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature with high tempo
-  tempo_map_->add_time_signature_event (0, 4, 4);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
   tempo_map_->add_tempo_event (
-    0, 240.0, TempoMap::CurveType::Constant); // 240 BPM
+    0 * units::tick, 240.0, TempoMap::CurveType::Constant); // 240 BPM
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -461,8 +466,9 @@ TEST_F (MetronomeTest, EnabledFalsePreventsTicks)
   metronome->setEnabled (false);
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (0, 4, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -492,8 +498,9 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
   metronome->setEnabled (true);
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (0, 4, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -522,8 +529,9 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (0, 4, 4);
-  tempo_map_->add_tempo_event (0, 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_time_signature_event (0 * units::tick, 4, 4);
+  tempo_map_->add_tempo_event (
+    0 * units::tick, 120.0, TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())

@@ -541,7 +541,9 @@ RecordingManager::create_automation_point (
     {
       auto * ap = PROJECT->arrangerObjectCreator ()->addAutomationPoint (
         &region,
-        region.get_tempo_map ().samples_to_tick (static_cast<double> (adj_pos)),
+        region.get_tempo_map ()
+          .samples_to_tick (static_cast<double> (adj_pos) * units::sample)
+          .numerical_value_in (units::tick),
         normalized_val);
       ap->curveOpts ()->setCurviness (1.0);
       ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Pulse);

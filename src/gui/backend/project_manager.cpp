@@ -151,8 +151,10 @@ ProjectManager::create_default (
   assert (engine != nullptr);
   const auto * tempo_map = &prj->get_tempo_map ();
   engine->setup (
-    [tempo_map] () { return tempo_map->time_signature_at_tick (0).numerator; },
-    [tempo_map] () { return tempo_map->tempo_at_tick (0); });
+    [tempo_map] () {
+      return tempo_map->time_signature_at_tick (0 * units::tick).numerator;
+    },
+    [tempo_map] () { return tempo_map->tempo_at_tick (0 * units::tick); });
 
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;

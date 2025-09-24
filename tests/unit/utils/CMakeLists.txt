@@ -25,6 +25,7 @@ add_executable(zrythm_utils_unit_tests
   qt_test.cpp
   ring_buffer_test.cpp
   string_test.cpp
+  units_test.cpp
   uuid_identifiable_object_test.h
   uuid_identifiable_object_test.cpp
   variant_helpers_test.cpp

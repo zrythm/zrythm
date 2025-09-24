@@ -12,7 +12,7 @@ class ArrangerObjectFactoryTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
 
     // Setup providers
     sample_rate_provider = [] () { return 44100.0; };

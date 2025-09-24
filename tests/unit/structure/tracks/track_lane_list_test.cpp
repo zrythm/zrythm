@@ -513,7 +513,8 @@ TEST_F (TrackLaneListTest, LaneObjectsNeedRecacheSignal)
     lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
 
   // Create a MIDI region and add it to the lane
-  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+  auto tempo_map =
+    std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
   auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
     *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
 
@@ -541,7 +542,8 @@ TEST_F (TrackLaneListTest, SignalConnectionsOnLaneOperations)
   recacheSpy.clear ();
 
   // Create and add a MIDI region to the lane
-  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+  auto tempo_map =
+    std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
   auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
     *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
 
@@ -573,7 +575,8 @@ TEST_F (TrackLaneListTest, ExpandableTickRangeInLaneContext)
     lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
 
   // Create a MIDI region with specific position and bounds
-  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+  auto tempo_map =
+    std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
   auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
     *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
   auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
@@ -619,7 +622,8 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
   recacheSpy.clear ();
 
   // Add objects to both lanes
-  auto tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+  auto tempo_map =
+    std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
 
   // Add to first lane
   auto region1_ref = obj_registry_->create_object<arrangement::MidiRegion> (

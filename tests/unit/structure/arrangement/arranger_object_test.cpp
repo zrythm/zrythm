@@ -18,7 +18,7 @@ class ArrangerObjectTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
     parent = std::make_unique<MockQObject> ();
 
     // Create objects with proper parenting
@@ -173,7 +173,9 @@ TEST_F (ArrangerObjectTest, TimeConversionWithParent)
   obj2->position ()->setTicks (1920.0);
   const double parent_ticks = obj2->position ()->ticks ();
   const double parent_seconds = obj2->position ()->seconds ();
-  const double parent_samples = tempo_map->tick_to_samples (parent_ticks);
+  const double parent_samples =
+    tempo_map->tick_to_samples (parent_ticks * units::tick)
+      .numerical_value_in (units::sample);
 
   // Set child object with parent
   obj->setParentObject (obj2.get ());
@@ -181,9 +183,13 @@ TEST_F (ArrangerObjectTest, TimeConversionWithParent)
   // Test time conversions relative to parent
   const double relative_ticks = 480.0;
   const double expected_seconds =
-    tempo_map->tick_to_seconds (parent_ticks + relative_ticks) - parent_seconds;
+    tempo_map->tick_to_seconds ((parent_ticks + relative_ticks) * units::tick)
+      .numerical_value_in (mp_units::si::second)
+    - parent_seconds;
   const double expected_samples =
-    tempo_map->tick_to_samples (parent_ticks + relative_ticks) - parent_samples;
+    tempo_map->tick_to_samples ((parent_ticks + relative_ticks) * units::tick)
+      .numerical_value_in (units::sample)
+    - parent_samples;
 
   // Test tick to seconds conversion
   EXPECT_DOUBLE_EQ (
@@ -215,12 +221,14 @@ TEST_F (ArrangerObjectTest, TimeConversionWithParent)
   EXPECT_DOUBLE_EQ (
     obj->position ()->position ().time_conversion_functions ().tick_to_seconds (
       relative_ticks),
-    tempo_map->tick_to_seconds (relative_ticks));
+    tempo_map->tick_to_seconds (relative_ticks * units::tick)
+      .numerical_value_in (mp_units::si::second));
 
   EXPECT_DOUBLE_EQ (
     obj->position ()->position ().time_conversion_functions ().seconds_to_tick (
       expected_seconds),
-    tempo_map->seconds_to_tick (expected_seconds));
+    tempo_map->seconds_to_tick (expected_seconds * mp_units::si::second)
+      .numerical_value_in (units::tick));
 }
 
 // Test edge cases

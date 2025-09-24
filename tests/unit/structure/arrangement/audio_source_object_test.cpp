@@ -15,7 +15,7 @@ class AudioSourceObjectTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
 
     // Create & register a dummy audio source
     source_ref = registry.create_object<dsp::FileAudioSource> (

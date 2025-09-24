@@ -20,7 +20,7 @@ class AutomationPointTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
     parent = std::make_unique<MockQObject> ();
 
     // Create automation point

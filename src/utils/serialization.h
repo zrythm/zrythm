@@ -14,6 +14,7 @@
 #include <QUuid>
 
 #include <boost/unordered/concurrent_flat_map_fwd.hpp>
+#include <mp-units/framework/quantity.h>
 #include <nlohmann/json.hpp>
 
 using zrythm::utils::exceptions::ZrythmException;
@@ -240,4 +241,22 @@ struct adl_serializer<boost::unordered::concurrent_flat_map<Key, T>>
       }
   }
 };
+
+/// mp_units::quantity specialization
+template <auto Unit, typename Rep>
+struct adl_serializer<mp_units::quantity<Unit, Rep>>
+{
+  static void to_json (json &j, const mp_units::quantity<Unit, Rep> &quantity)
+  {
+    j = quantity.numerical_value_in (Unit);
+  }
+
+  static void from_json (const json &j, mp_units::quantity<Unit, Rep> &quantity)
+  {
+    Rep raw_value;
+    j.get_to (raw_value);
+    quantity = raw_value * Unit;
+  }
+};
+
 } // namespace nlohmann

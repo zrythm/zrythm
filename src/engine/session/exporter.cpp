@@ -181,8 +181,12 @@ Exporter::export_audio (Settings &info)
 
   auto [start_pos_ticks, end_pos_ticks] = info.get_export_time_range ();
   const auto &tempo_map = PROJECT->get_tempo_map ();
-  auto start_pos_frames = tempo_map.tick_to_samples_rounded (start_pos_ticks);
-  auto end_pos_frames = tempo_map.tick_to_samples_rounded (end_pos_ticks);
+  auto        start_pos_frames =
+    tempo_map.tick_to_samples_rounded (start_pos_ticks * units::tick)
+      .numerical_value_in (units::sample);
+  auto end_pos_frames =
+    tempo_map.tick_to_samples_rounded (end_pos_ticks * units::tick)
+      .numerical_value_in (units::sample);
 
   bool  clipped = false;
   float clip_amp = 0.f;
@@ -453,10 +457,14 @@ Exporter::Settings::set_bounce_defaults (
       break;
     }
   const auto &tempo_map = PROJECT->get_tempo_map ();
-  const auto  custom_end_sec = tempo_map.tick_to_seconds (custom_end_);
-  custom_end_ = tempo_map.seconds_to_tick (
-    custom_end_sec
-    + ((ZRYTHM_TESTING || ZRYTHM_BENCHMARKING) ? 0.1 : static_cast<double> (gui::SettingsManager::bounceTailLength ()) / 1000.0));
+  const auto  custom_end_sec =
+    tempo_map.tick_to_seconds (custom_end_ * units::tick);
+  custom_end_ =
+    tempo_map
+      .seconds_to_tick (
+        custom_end_sec
+        + ((ZRYTHM_TESTING || ZRYTHM_BENCHMARKING) ? 0.1 * mp_units::si::second : (static_cast<double> (gui::SettingsManager::bounceTailLength ()) * mp_units::si::second) / 1000.0))
+      .numerical_value_in (units::tick);
 
   bounce_step_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
@@ -614,9 +622,9 @@ Exporter::Settings::print () const
     {
       const auto &tempo_map = PROJECT->get_tempo_map ();
       const auto  start_musical = tempo_map.tick_to_musical_position (
-        static_cast<int64_t> (std::round (custom_start_)));
+        static_cast<int64_t> (std::round (custom_start_)) * units::tick);
       const auto end_musical = tempo_map.tick_to_musical_position (
-        static_cast<int64_t> (std::round (custom_end_)));
+        static_cast<int64_t> (std::round (custom_end_)) * units::tick);
       time_range = utils::Utf8String::from_utf8_encoded_string (
         fmt::format (
           "Custom: {}.{}.{}.{} ~ {}.{}.{}.{}", start_musical.bar,

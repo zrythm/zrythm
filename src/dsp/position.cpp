@@ -196,8 +196,8 @@ Position::to_string (
   if (ZRYTHM_TESTING)
     {
       snprintf (
-        buf, 100, "%d.%d.%d.%03.*f (%" SIGNED_FRAME_FORMAT ")", bars,
-        abs (beats), abs (sixteenths), decimal_places, fabs (ticks), frames_);
+        buf, 100, "%d.%d.%d.%03.*f (%" PRId64 ")", bars, abs (beats),
+        abs (sixteenths), decimal_places, fabs (ticks), frames_);
     }
   else
     {

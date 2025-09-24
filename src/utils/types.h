@@ -77,12 +77,8 @@ using curviness_t = double;
 /** Signed type for frame index. */
 using signed_frame_t = int_fast64_t;
 
-#define SIGNED_FRAME_FORMAT PRId64
-
 /** Unsigned type for frame index. */
 using unsigned_frame_t = uint_fast64_t;
-
-#define UNSIGNED_FRAME_FORMAT PRIu64
 
 /** Signed millisecond index. */
 using signed_ms_t = signed_frame_t;
@@ -119,38 +115,6 @@ using GenericStringSetter = std::function<void (const std::string &)>;
 using GenericCallback = std::function<void ()>;
 
 using GenericBoolGetter = std::function<bool ()>;
-
-/**
- * Generic comparator.
- */
-typedef int (*GenericCmpFunc) (const void * a, const void * b);
-
-/**
- * Function to call to free objects.
- */
-typedef void (*ObjectFreeFunc) (void *);
-
-// For non-const member functions
-template <typename Class, typename Ret, typename... Args, typename ActualClass>
-auto
-bind_member_function (ActualClass &obj, Ret (Class::*func) (Args...))
-  requires std::is_base_of_v<Class, ActualClass>
-{
-  return [&obj, func] (Args... args) {
-    return (obj.*func) (std::forward<Args> (args)...);
-  };
-}
-
-// For const member functions
-template <typename Class, typename Ret, typename... Args, typename ActualClass>
-auto
-bind_member_function (ActualClass &obj, Ret (Class::*func) (Args...) const)
-  requires std::is_base_of_v<Class, ActualClass>
-{
-  return [&obj, func] (Args... args) {
-    return (obj.*func) (std::forward<Args> (args)...);
-  };
-}
 
 enum class AudioValueFormat
 {
@@ -252,27 +216,6 @@ enum class BeatUnit
 #define ENUM_NAME_FROM_INT(_enum, _int) \
   ENUM_NAME (ENUM_INT_TO_VALUE (_enum, _int))
 
-#ifdef __clang__
-#  define ASSUME(expr) __builtin_assume (expr)
-#elifdef __GNUC__
-#  define ASSUME(expr) \
-    do \
-      { \
-        if (!(expr)) \
-          __builtin_unreachable (); \
-      } \
-    while (0)
-#elifdef _MSC_VER
-#  define ASSUME(expr) __assume (expr)
-#else
-#  define ASSUME(expr) \
-    do \
-      { \
-        static_cast<void> (expr); \
-      } \
-    while (0)
-#endif
-
 enum class CacheType
 {
   // TrackNameHashes = 1 << 0,
@@ -294,12 +237,6 @@ using SteadyTimePoint = SteadyClock::time_point;
 using SteadyDuration = SteadyClock::duration;
 
 namespace fs = std::filesystem;
-
-#if __has_attribute(noipa)
-#  define KEEP __attribute__ ((used, retain, noipa))
-#else
-#  define KEEP __attribute__ ((used, retain, noinline))
-#endif
 
 #define ZRYTHM_IS_QT_THREAD (QThread::currentThread () == qApp->thread ())
 

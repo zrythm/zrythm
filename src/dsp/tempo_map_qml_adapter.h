@@ -37,8 +37,8 @@ public:
   };
   Q_ENUM (CurveType)
 
-  qint64    tick () const { return event_.tick; }
-  double    bpm () const { return event_.bpm; }
+  qint64 tick () const { return event_.tick.numerical_value_in (units::tick); }
+  double bpm () const { return event_.bpm; }
   CurveType curve () const
   {
     return static_cast<CurveType> (std::to_underlying (event_.curve));
@@ -65,7 +65,7 @@ public:
   {
   }
 
-  qint64 tick () const { return event_.tick; }
+  qint64 tick () const { return event_.tick.numerical_value_in (units::tick); }
   int    numerator () const { return event_.numerator; }
   int    denominator () const { return event_.denominator; }
 
@@ -148,14 +148,14 @@ public:
   {
     if (qFuzzyCompare (sampleRate, tempo_map_.get_sample_rate ()))
       return;
-    tempo_map_.set_sample_rate (sampleRate);
+    tempo_map_.set_sample_rate (sampleRate * mp_units::si::hertz);
     Q_EMIT sampleRateChanged ();
   }
 
   Q_INVOKABLE void addTempoEvent (qint64 tick, double bpm, int curveType)
   {
     tempo_map_.add_tempo_event (
-      tick, bpm, static_cast<TempoMap::CurveType> (curveType));
+      tick * units::tick, bpm, static_cast<TempoMap::CurveType> (curveType));
     Q_EMIT tempoEventsChanged ();
     rebuildTempoWrappers ();
   }
@@ -163,7 +163,8 @@ public:
   Q_INVOKABLE void
   addTimeSignatureEvent (qint64 tick, int numerator, int denominator)
   {
-    tempo_map_.add_time_signature_event (tick, numerator, denominator);
+    tempo_map_.add_time_signature_event (
+      tick * units::tick, numerator, denominator);
     Q_EMIT timeSignatureEventsChanged ();
     rebuildTimeSigWrappers ();
   }
@@ -171,7 +172,7 @@ public:
   Q_INVOKABLE MusicalPositionWrapper * getMusicalPosition (int64_t tick) const
   {
     return new MusicalPositionWrapper (
-      tempo_map_.tick_to_musical_position (tick));
+      tempo_map_.tick_to_musical_position (tick * units::tick));
   }
 
   Q_INVOKABLE QString getMusicalPositionString (int64_t tick) const;
@@ -179,28 +180,30 @@ public:
   Q_INVOKABLE int64_t
   getTickFromMusicalPosition (int bar, int beat, int sixteenth, int tick) const
   {
-    return tempo_map_.musical_position_to_tick (
-      TempoMap::MusicalPosition{
-        .bar = bar, .beat = beat, .sixteenth = sixteenth, .tick = tick });
+    return tempo_map_
+      .musical_position_to_tick (
+        TempoMap::MusicalPosition{
+          .bar = bar, .beat = beat, .sixteenth = sixteenth, .tick = tick })
+      .numerical_value_in (units::tick);
   }
 
   // additional API when we want to avoid allocations and we only need 1 part
 
   Q_INVOKABLE int getMusicalPositionBar (int64_t tick) const
   {
-    return tempo_map_.tick_to_musical_position (tick).bar;
+    return tempo_map_.tick_to_musical_position (tick * units::tick).bar;
   }
   Q_INVOKABLE int getMusicalPositionBeat (int64_t tick) const
   {
-    return tempo_map_.tick_to_musical_position (tick).beat;
+    return tempo_map_.tick_to_musical_position (tick * units::tick).beat;
   }
   Q_INVOKABLE int getMusicalPositionSixteenth (int64_t tick) const
   {
-    return tempo_map_.tick_to_musical_position (tick).sixteenth;
+    return tempo_map_.tick_to_musical_position (tick * units::tick).sixteenth;
   }
   Q_INVOKABLE int getMusicalPositionTick (int64_t tick) const
   {
-    return tempo_map_.tick_to_musical_position (tick).tick;
+    return tempo_map_.tick_to_musical_position (tick * units::tick).tick;
   }
 
   /**

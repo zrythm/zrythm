@@ -16,7 +16,7 @@ class ArrangerObjectSelectionOperatorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
 
     // Create test objects
     auto marker_ref =

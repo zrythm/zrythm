@@ -13,7 +13,7 @@ class ArrangerObjectOwnerTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
     owner = std::make_unique<MockArrangerObjectOwner> (
       registry, file_audio_source_registry);
   }

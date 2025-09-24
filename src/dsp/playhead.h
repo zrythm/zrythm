@@ -150,7 +150,9 @@ public:
     std::lock_guard lock (position_mutex_);
     position_ticks_ = ticks;
     position_samples_.store (
-      tempo_map_.tick_to_samples (ticks), std::memory_order_release);
+      tempo_map_.tick_to_samples (ticks * units::tick)
+        .numerical_value_in (units::sample),
+      std::memory_order_release);
   }
 
   /**
@@ -174,8 +176,11 @@ public:
   void update_ticks_from_samples () [[clang::blocking]]
   {
     std::lock_guard lock (position_mutex_);
-    position_ticks_ = tempo_map_.samples_to_tick (
-      position_samples_.load (std::memory_order_acquire));
+    position_ticks_ =
+      tempo_map_
+        .samples_to_tick (
+          position_samples_.load (std::memory_order_acquire) * units::sample)
+        .numerical_value_in (units::tick);
   }
 
   const auto &get_tempo_map () const { return tempo_map_; }

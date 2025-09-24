@@ -42,7 +42,7 @@ protected:
   void create_test_region ()
   {
     // Create an automation region
-    dsp::TempoMap tempo_map{ 44100 };
+    dsp::TempoMap tempo_map{ 44100 * mp_units::si::hertz };
     automation_region_ref_ =
       obj_registry_.create_object<arrangement::AutomationRegion> (
         tempo_map_, obj_registry_, file_audio_source_registry_);
@@ -51,7 +51,7 @@ protected:
     source_at_->add_object (automation_region_ref_);
   }
 
-  dsp::TempoMap                       tempo_map_{ 44100 };
+  dsp::TempoMap                       tempo_map_{ 44100 * mp_units::si::hertz };
   dsp::TempoMapWrapper                tempo_map_wrapper_{ tempo_map_ };
   arrangement::ArrangerObjectRegistry obj_registry_;
   dsp::FileAudioSourceRegistry        file_audio_source_registry_;

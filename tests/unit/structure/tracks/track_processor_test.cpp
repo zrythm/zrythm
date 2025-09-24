@@ -18,7 +18,7 @@ class TrackProcessorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map_ = std::make_unique<dsp::TempoMap> (44100.0);
+    tempo_map_ = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
     transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
   }
 

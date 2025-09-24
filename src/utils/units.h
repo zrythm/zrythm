@@ -8,6 +8,7 @@
 #include <mp-units/framework/unit.h>
 #include <mp-units/systems/isq.h>
 #include <mp-units/systems/si.h>
+#include <mp-units/systems/si/units.h>
 
 namespace zrythm::units
 {
@@ -19,7 +20,7 @@ inline constexpr struct sample_count
 {
 } sample_count;
 inline constexpr struct sample_rate final
-    : mp_units ::
+    : mp_units::
         quantity_spec<mp_units::isq::frequency, sample_count / mp_units::isq::time>
 {
 } sample_rate;
@@ -30,6 +31,9 @@ inline constexpr struct tick_count
 
 } // namespace quantity_specs
 
+using precise_sample_rate_t =
+  mp_units::quantity<quantity_specs::sample_rate[mp_units::si::hertz], double>;
+
 inline constexpr struct sample final
     : mp_units::named_unit<
         "sample",
@@ -37,6 +41,9 @@ inline constexpr struct sample final
         mp_units::kind_of<quantity_specs::sample_count>>
 {
 } sample;
+
+using sample_t = mp_units::quantity<sample, int64_t>;
+using precise_sample_t = mp_units::quantity<sample, double>;
 
 inline constexpr struct tick final
     : mp_units::named_unit<
