@@ -15,19 +15,12 @@ namespace zrythm::units
 
 namespace quantity_specs
 {
-inline constexpr struct sample_count
-  final : mp_units::quantity_spec<mp_units::dimensionless, mp_units::is_kind>
-{
-} sample_count;
-inline constexpr struct sample_rate final
-    : mp_units::
-        quantity_spec<mp_units::isq::frequency, sample_count / mp_units::isq::time>
-{
-} sample_rate;
-inline constexpr struct tick_count
-  final : mp_units::quantity_spec<mp_units::dimensionless, mp_units::is_kind>
-{
-} tick_count;
+QUANTITY_SPEC (sample_count, mp_units::dimensionless, mp_units::is_kind);
+QUANTITY_SPEC (
+  sample_rate,
+  mp_units::isq::frequency,
+  sample_count / mp_units::isq::time);
+QUANTITY_SPEC (tick_count, mp_units::dimensionless, mp_units::is_kind);
 
 } // namespace quantity_specs
 
