@@ -89,79 +89,114 @@ TEST_F (TempoMapTest, ConstantTempoConversions)
   // 1 beat = 960 ticks -> 1 tick = 0.5/960 seconds
 
   // Test tick to seconds
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (0 * units::tick), 0.0);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960 * units::tick), 0.5);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1920 * units::tick), 1.0);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (0 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.0);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (960 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.5);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (1920 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    1.0);
 
   // Test seconds to tick
-  EXPECT_DOUBLE_EQ (map->seconds_to_tick (0.0), 0.0);
-  EXPECT_DOUBLE_EQ (map->seconds_to_tick (0.5), 960.0);
-  EXPECT_DOUBLE_EQ (map->seconds_to_tick (1.0), 1920.0);
+  EXPECT_DOUBLE_EQ (
+    map->seconds_to_tick (0.0s).numerical_value_in (units::tick), 0.0);
+  EXPECT_DOUBLE_EQ (
+    map->seconds_to_tick (0.5s).numerical_value_in (units::tick), 960.0);
+  EXPECT_DOUBLE_EQ (
+    map->seconds_to_tick (1.0s).numerical_value_in (units::tick), 1920.0);
 
   // Test samples conversion
-  EXPECT_DOUBLE_EQ (map->tick_to_samples (960 * units::tick), 0.5 * 44100.0);
-  EXPECT_DOUBLE_EQ (map->samples_to_tick (0.5 * 44100.0), 960.0);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_samples (960 * units::tick).numerical_value_in (units::sample),
+    0.5 * 44100.0);
+  EXPECT_DOUBLE_EQ (
+    map->samples_to_tick (0.5 * 44100.0 * units::sample)
+      .numerical_value_in (units::tick),
+    960.0);
 }
 
 // Test linear tempo ramp conversions
 TEST_F (TempoMapTest, LinearTempoRamp)
 {
   // Create a linear ramp segment from 120 to 180 BPM over 4 beats
-  const int64_t startRamp = 0;
-  const int64_t endRamp = 4 * 960; // 4 beats
+  const auto startRamp = 0 * units::tick;
+  const auto endRamp = 4 * 960 * units::tick; // 4 beats
   map->add_tempo_event (startRamp, 120.0, TempoMap::CurveType::Linear);
   map->add_tempo_event (endRamp, 180.0, TempoMap::CurveType::Constant);
 
   // Test midpoint (2 beats in) should be 150 BPM
-  const int64_t midTick = endRamp / 2;
+  const auto midTick = endRamp / 2;
 
   // Calculate expected time using integral formula
-  const double segmentTicks = static_cast<double> (endRamp - startRamp);
+  const auto segmentTicks =
+    static_cast<units::precise_tick_t> (endRamp - startRamp);
   const double fraction = 0.5;
   const double currentBpm = 120.0 + fraction * (180.0 - 120.0);
   const double expectedTime =
-    (60.0 * segmentTicks) / (960.0 * (180.0 - 120.0))
-    * std::log (currentBpm / 120.0);
+    (60.0 * segmentTicks.numerical_value_in (units::tick))
+    / (960.0 * (180.0 - 120.0)) * std::log (currentBpm / 120.0);
 
-  EXPECT_NEAR (map->tick_to_seconds (midTick), expectedTime, 1e-8);
+  EXPECT_NEAR (
+    map->tick_to_seconds (midTick).numerical_value_in (mp_units::si::second),
+    expectedTime, 1e-8);
 
   // Test reverse conversion
-  EXPECT_NEAR (map->seconds_to_tick (expectedTime), midTick, 1e-6);
+  EXPECT_NEAR (
+    map->seconds_to_tick (expectedTime * mp_units::si::second)
+      .numerical_value_in (units::tick),
+    midTick.numerical_value_in (units::tick), 1e-6);
 }
 
 // Test musical position conversions
 TEST_F (TempoMapTest, MusicalPositionConversion)
 {
   // Test default 4/4 time
-  auto pos = map->tick_to_musical_position (0);
+  auto pos = map->tick_to_musical_position (0 * units::tick);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 1);
   EXPECT_EQ (pos.sixteenth, 1);
   EXPECT_EQ (pos.tick, 0);
 
-  pos = map->tick_to_musical_position (960); // Quarter note
+  pos = map->tick_to_musical_position (960 * units::tick); // Quarter note
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 2);
   EXPECT_EQ (pos.sixteenth, 1);
   EXPECT_EQ (pos.tick, 0);
 
-  pos = map->tick_to_musical_position (240); // Sixteenth note
+  pos = map->tick_to_musical_position (240 * units::tick); // Sixteenth note
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 1);
   EXPECT_EQ (pos.sixteenth, 2);
   EXPECT_EQ (pos.tick, 0);
 
-  pos = map->tick_to_musical_position (241); // Sixteenth +1 tick
+  pos = map->tick_to_musical_position (241 * units::tick); // Sixteenth +1 tick
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 1);
   EXPECT_EQ (pos.sixteenth, 2);
   EXPECT_EQ (pos.tick, 1);
 
   // Test reverse conversion
-  EXPECT_EQ (map->musical_position_to_tick ({ 1, 1, 1, 0 }), 0);
-  EXPECT_EQ (map->musical_position_to_tick ({ 1, 2, 1, 0 }), 960);
-  EXPECT_EQ (map->musical_position_to_tick ({ 1, 1, 2, 0 }), 240);
-  EXPECT_EQ (map->musical_position_to_tick ({ 1, 1, 2, 1 }), 241);
+  EXPECT_EQ (
+    map->musical_position_to_tick ({ 1, 1, 1, 0 })
+      .numerical_value_in (units::tick),
+    0);
+  EXPECT_EQ (
+    map->musical_position_to_tick ({ 1, 2, 1, 0 })
+      .numerical_value_in (units::tick),
+    960);
+  EXPECT_EQ (
+    map->musical_position_to_tick ({ 1, 1, 2, 0 })
+      .numerical_value_in (units::tick),
+    240);
+  EXPECT_EQ (
+    map->musical_position_to_tick ({ 1, 1, 2, 1 })
+      .numerical_value_in (units::tick),
+    241);
 }
 
 // Test time signature changes
@@ -169,20 +204,20 @@ TEST_F (TempoMapTest, TimeSignatureChanges)
 {
   // Add time signatures
   map->add_time_signature_event (0 * units::tick, 4, 4); // Bar 1: 4/4
-  const int64_t bar5Start = 4 * 4 * 960;                 // Bar 5 start
+  const auto bar5Start = 4 * 4 * 960 * units::tick;      // Bar 5 start
   map->add_time_signature_event (bar5Start, 3, 4);       // Bar 5: 3/4
-  const int64_t bar8Start =
-    bar5Start + 3 * 3 * 960; // Bar 8 start (3 bars of 3/4)
+  const auto bar8Start =
+    bar5Start + 3 * 3 * 960 * units::tick; // Bar 8 start (3 bars of 3/4)
   map->add_time_signature_event (bar8Start, 7, 8); // Bar 8: 7/8
 
   // Test positions
-  auto pos = map->tick_to_musical_position (0);
+  auto pos = map->tick_to_musical_position (0 * units::tick);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 1);
   EXPECT_EQ (pos.sixteenth, 1);
   EXPECT_EQ (pos.tick, 0);
 
-  pos = map->tick_to_musical_position (bar5Start - 1);
+  pos = map->tick_to_musical_position (bar5Start - 1 * units::tick);
   EXPECT_EQ (pos.bar, 4);
   EXPECT_EQ (pos.beat, 4);
   EXPECT_EQ (pos.sixteenth, 4);
@@ -195,14 +230,14 @@ TEST_F (TempoMapTest, TimeSignatureChanges)
   EXPECT_EQ (pos.sixteenth, 1);
   EXPECT_EQ (pos.tick, 0);
 
-  pos = map->tick_to_musical_position (bar5Start + 2 * 960);
+  pos = map->tick_to_musical_position (bar5Start + 2 * 960 * units::tick);
   EXPECT_EQ (pos.bar, 5);
   EXPECT_EQ (pos.beat, 3);
   EXPECT_EQ (pos.sixteenth, 1);
   EXPECT_EQ (pos.tick, 0);
 
   // beats per bar (numerator) is 3, so we should move to a new bar
-  pos = map->tick_to_musical_position (bar5Start + 3 * 960);
+  pos = map->tick_to_musical_position (bar5Start + 3 * 960 * units::tick);
   EXPECT_EQ (pos.bar, 6);
   EXPECT_EQ (pos.beat, 1);
   EXPECT_EQ (pos.sixteenth, 1);
@@ -217,7 +252,8 @@ TEST_F (TempoMapTest, TimeSignatureChanges)
 
   // Test non-quarter-note beat unit
   // Bar 8 + 1/4 note (2 beat units) + 1/16th note (1 sixteenth) + 1 tick
-  pos = map->tick_to_musical_position (bar8Start + 960 + 960 / 4 + 1);
+  pos = map->tick_to_musical_position (
+    bar8Start + 960 * units::tick + 960 * units::tick / 4 + 1 * units::tick);
   EXPECT_EQ (pos.bar, 8);
   EXPECT_EQ (pos.beat, 3);
   EXPECT_EQ (pos.sixteenth, 2);
@@ -226,11 +262,12 @@ TEST_F (TempoMapTest, TimeSignatureChanges)
   // Test reverse conversions
   EXPECT_EQ (map->musical_position_to_tick ({ 5, 1, 1, 0 }), bar5Start);
   EXPECT_EQ (
-    map->musical_position_to_tick ({ 5, 3, 1, 0 }), bar5Start + 2 * 960);
+    map->musical_position_to_tick ({ 5, 3, 1, 0 }),
+    bar5Start + 2 * 960 * units::tick);
   EXPECT_EQ (map->musical_position_to_tick ({ 8, 1, 1, 0 }), bar8Start);
   EXPECT_EQ (
     map->musical_position_to_tick ({ 8, 3, 2, 1 }),
-    bar8Start + 960 + 960 / 4 + 1);
+    bar8Start + 960 * units::tick + 960 * units::tick / 4 + 1 * units::tick);
 }
 
 // MultiSegmentLinearRamp test
@@ -242,26 +279,39 @@ TEST_F (TempoMapTest, MultiSegmentLinearRamp)
     1920 * units::tick, 180.0, TempoMap::CurveType::Constant);
 
   // Test before ramp
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (480 * units::tick), 0.25);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (480 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.25);
 
   // Test start of ramp
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960 * units::tick), 0.5);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (960 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.5);
 
   // Test midpoint of ramp (150 BPM)
-  const double midTime = map->tick_to_seconds (1440 * units::tick);
+  const auto   midTime = map->tick_to_seconds (1440 * units::tick);
   const double expectedMidTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (150.0 / 120.0);
-  EXPECT_NEAR (midTime, expectedMidTime, 1e-8);
+  EXPECT_NEAR (
+    midTime.numerical_value_in (mp_units::si::second), expectedMidTime, 1e-8);
 
   // Test end of ramp
-  const double endTime = map->tick_to_seconds (1920 * units::tick);
+  const auto   endTime = map->tick_to_seconds (1920 * units::tick);
   const double expectedEndTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (180.0 / 120.0);
-  EXPECT_NEAR (endTime, expectedEndTime, 1e-8);
+  EXPECT_NEAR (
+    endTime.numerical_value_in (mp_units::si::second), expectedEndTime, 1e-8);
 
   // Test after ramp (480 ticks at 180 BPM)
-  const double afterRampTime = endTime + (480.0 / 960.0) * (60.0 / 180.0);
-  EXPECT_NEAR (map->tick_to_seconds (2400 * units::tick), afterRampTime, 1e-8);
+  const double afterRampTime =
+    endTime.numerical_value_in (mp_units::si::second)
+    + (480.0 / 960.0) * (60.0 / 180.0);
+  EXPECT_NEAR (
+    map->tick_to_seconds (2400 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    afterRampTime, 1e-8);
 }
 
 // Test tempo lookups
@@ -306,28 +356,45 @@ TEST_F (TempoMapTest, LinearRampLastEvent)
   map->add_tempo_event (960 * units::tick, 120.0, TempoMap::CurveType::Linear);
 
   // Should be constant after 960 because no endpoint for ramp
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (960 * units::tick), 0.5);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1440 * units::tick), 0.5 + 0.25);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (1920 * units::tick), 0.5 + 0.5);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (960 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.5);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (1440 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.5 + 0.25);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (1920 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.5 + 0.5);
 }
 
 // Test edge cases
 TEST_F (TempoMapTest, EdgeCases)
 {
   // Zero and negative time
-  EXPECT_DOUBLE_EQ (map->seconds_to_tick (0.0), 0.0);
-  EXPECT_DOUBLE_EQ (map->seconds_to_tick (-1.0), 0.0);
+  EXPECT_DOUBLE_EQ (
+    map->seconds_to_tick (0.0s).numerical_value_in (units::tick), 0.0);
+  EXPECT_DOUBLE_EQ (
+    map->seconds_to_tick (-1.0s).numerical_value_in (units::tick), 0.0);
 
   // Empty tempo map - default value active
-  TempoMap emptyMap (960);
-  emptyMap.remove_tempo_event (0);
-  EXPECT_DOUBLE_EQ (emptyMap.tick_to_seconds (960 * units::tick), 0.5);
+  TempoMap emptyMap (960 * mp_units::si::hertz);
+  emptyMap.remove_tempo_event (0 * units::tick);
+  EXPECT_DOUBLE_EQ (
+    emptyMap.tick_to_seconds (960 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.5);
 
   // Near-constant ramp
   map->add_tempo_event (960 * units::tick, 120.001, TempoMap::CurveType::Linear);
   map->add_tempo_event (
     1920 * units::tick, 120.002, TempoMap::CurveType::Constant);
-  EXPECT_NEAR (map->tick_to_seconds (1440 * units::tick), 0.5 + 0.25, 1e-5);
+  EXPECT_NEAR (
+    map->tick_to_seconds (1440 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    0.5 + 0.25, 1e-5);
 
   // Invalid positions
   EXPECT_THROW (
@@ -340,28 +407,41 @@ TEST_F (TempoMapTest, EdgeCases)
     map->musical_position_to_tick ({ 1, 1, 1, -1 }), std::invalid_argument);
 
   // Position beyond last time signature
-  EXPECT_GT (map->musical_position_to_tick ({ 100, 1, 1, 0 }), 0);
+  EXPECT_GT (
+    map->musical_position_to_tick ({ 100, 1, 1, 0 })
+      .numerical_value_in (units::tick),
+    0);
 }
 
 // Test fractional ticks
 TEST_F (TempoMapTest, FractionalTicks)
 {
   // Test constant tempo
-  const double expectedTime = 480.5 * (0.5 / 960.0);
-  EXPECT_DOUBLE_EQ (map->tick_to_seconds (480.5), expectedTime);
+  const auto expectedTime = 480.5s * (0.5 / 960.0);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_seconds (480.5 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    expectedTime.count ());
 
   // Test reverse conversion
-  EXPECT_NEAR (map->seconds_to_tick (expectedTime), 480.5, 1e-6);
+  EXPECT_NEAR (
+    map->seconds_to_tick (expectedTime).numerical_value_in (units::tick), 480.5,
+    1e-6);
 }
 
 // Test sample rate changes
 TEST_F (TempoMapTest, SampleRateChanges)
 {
   const double newRate = 48000.0;
-  map->set_sample_rate (newRate);
+  map->set_sample_rate (newRate * mp_units::si::hertz);
 
-  EXPECT_DOUBLE_EQ (map->tick_to_samples (960 * units::tick), 0.5 * newRate);
-  EXPECT_DOUBLE_EQ (map->samples_to_tick (0.5 * newRate), 960.0);
+  EXPECT_DOUBLE_EQ (
+    map->tick_to_samples (960 * units::tick).numerical_value_in (units::sample),
+    0.5 * newRate);
+  EXPECT_DOUBLE_EQ (
+    map->samples_to_tick (0.5 * newRate * units::sample)
+      .numerical_value_in (units::tick),
+    960.0);
 }
 
 // Test complex time signature with different beat units
@@ -370,10 +450,11 @@ TEST_F (TempoMapTest, ComplexTimeSignatures)
   map->add_time_signature_event (0 * units::tick, 6, 8); // 6/8 time
 
   // end at 6 beats
-  const auto bar1Ticks = static_cast<int64_t> (6 * (TempoMap::get_ppq () / 2));
-  const int64_t bar1End = bar1Ticks - 1;
+  const auto bar1Ticks =
+    static_cast<units::tick_t> (6 * units::tick * (TempoMap::get_ppq () / 2));
+  const auto bar1End = bar1Ticks - (1 * units::tick);
 
-  auto pos = map->tick_to_musical_position (0);
+  auto pos = map->tick_to_musical_position (0 * units::tick);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 1);
 
@@ -385,9 +466,10 @@ TEST_F (TempoMapTest, ComplexTimeSignatures)
   map->add_time_signature_event (bar1Ticks, 7, 16);
 
   // end at 7 beats
-  const auto bar2Ticks = static_cast<int64_t> (7 * (TempoMap::get_ppq () / 4));
-  const int64_t bar2Start = bar1Ticks;
-  const int64_t bar2End = bar2Start + bar2Ticks - 1;
+  const auto bar2Ticks =
+    static_cast<units::tick_t> (7 * units::tick * (TempoMap::get_ppq () / 4));
+  const auto bar2Start = bar1Ticks;
+  const auto bar2End = bar2Start + bar2Ticks - 1 * units::tick;
 
   pos = map->tick_to_musical_position (bar2Start);
   EXPECT_EQ (pos.bar, 2);
@@ -438,7 +520,7 @@ TEST_F (TempoMapTest, TimeSignatureLookup)
 
   // Test with empty map
   TempoMap emptyMap (SAMPLE_RATE);
-  emptyMap.remove_time_signature_event (0);
+  emptyMap.remove_time_signature_event (0 * units::tick);
   ts = emptyMap.time_signature_at_tick (0 * units::tick);
   EXPECT_EQ (ts.numerator, 4); // Default
   EXPECT_EQ (ts.denominator, 4);
@@ -448,11 +530,11 @@ TEST_F (TempoMapTest, TimeSignatureLookup)
 TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
 {
   // Add time signature change at bar 5
-  const int64_t bar5Start = 4 * 4 * 960; // Bar 5 start
+  const auto bar5Start = 4 * 4 * 960 * units::tick; // Bar 5 start
   map->add_time_signature_event (bar5Start, 3, 4);
 
   // Add tempo change at bar 3
-  const int64_t bar3Start = 2 * 4 * 960; // Bar 3 start
+  const auto bar3Start = 2 * 4 * 960 * units::tick; // Bar 3 start
   map->add_tempo_event (bar3Start, 140.0, TempoMap::CurveType::Constant);
 
   // Test position at bar 5
@@ -467,7 +549,9 @@ TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
   const double time3_4 = bars3_4 * (60.0 / 140.0); // ~3.42857 seconds
   const double expectedTime = time1_2 + time3_4;
 
-  EXPECT_NEAR (map->tick_to_seconds (bar5Start), expectedTime, 1e-5);
+  EXPECT_NEAR (
+    map->tick_to_seconds (bar5Start).numerical_value_in (mp_units::si::second),
+    expectedTime, 1e-5);
 }
 
 // Test serialization/deserialization
@@ -489,7 +573,10 @@ TEST_F (TempoMapTest, Serialization)
   j.get_to (deserialized_map);
 
   // Verify by checking at various ticks
-  std::vector<int64_t> test_ticks = { 0, 960, 1920, 2880, 3840, 4800 };
+  std::vector<units::tick_t> test_ticks = {
+    0 * units::tick,    960 * units::tick,  1920 * units::tick,
+    2880 * units::tick, 3840 * units::tick, 4800 * units::tick
+  };
   for (auto tick : test_ticks)
     {
       EXPECT_DOUBLE_EQ (
@@ -502,18 +589,21 @@ TEST_F (TempoMapTest, Serialization)
 
   // Also test a conversion to be sure
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (2880 * units::tick),
-    deserialized_map.tick_to_seconds (2880 * units::tick));
+    map->tick_to_seconds (2880 * units::tick)
+      .numerical_value_in (mp_units::si::second),
+    deserialized_map.tick_to_seconds (2880 * units::tick)
+      .numerical_value_in (mp_units::si::second));
   EXPECT_DOUBLE_EQ (
-    map->seconds_to_tick (1.5), deserialized_map.seconds_to_tick (1.5));
+    map->seconds_to_tick (1.5s).numerical_value_in (units::tick),
+    deserialized_map.seconds_to_tick (1.5s).numerical_value_in (units::tick));
 }
 
 // Test empty serialization
 TEST_F (TempoMapTest, EmptySerialization)
 {
   // Remove default events
-  map->remove_tempo_event (0);
-  map->remove_time_signature_event (0);
+  map->remove_tempo_event (0 * units::tick);
+  map->remove_time_signature_event (0 * units::tick);
 
   // Serialize and deserialize
   nlohmann::json j;
@@ -532,14 +622,15 @@ TEST_F (TempoMapTest, EmptySerialization)
 TEST_F (TempoMapTest, SamplesToMusicalPosition)
 {
   // Test basic conversion with default 120 BPM, 4/4 time
-  auto pos = map->samples_to_musical_position (0);
+  auto pos = map->samples_to_musical_position (0 * units::sample);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 1);
   EXPECT_EQ (pos.sixteenth, 1);
   EXPECT_EQ (pos.tick, 0);
 
   // Test quarter note at 120 BPM (0.5 seconds = 22050 samples at 44.1kHz)
-  const int64_t quarterNoteSamples = static_cast<int64_t> (0.5 * SAMPLE_RATE);
+  const auto quarterNoteSamples = mp_units::value_cast<units::sample_t> (
+    0.5 * units::sample * SAMPLE_RATE.numerical_value_in (mp_units::si::hertz));
   pos = map->samples_to_musical_position (quarterNoteSamples);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 2);
@@ -547,7 +638,8 @@ TEST_F (TempoMapTest, SamplesToMusicalPosition)
   EXPECT_EQ (pos.tick, 0);
 
   // Test half note (1 second = 44100 samples)
-  const int64_t halfNoteSamples = static_cast<int64_t> (1.0 * SAMPLE_RATE);
+  const auto halfNoteSamples = mp_units::value_cast<units::sample_t> (
+    1.0 * units::sample * SAMPLE_RATE.numerical_value_in (mp_units::si::hertz));
   pos = map->samples_to_musical_position (halfNoteSamples);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 3);
@@ -555,7 +647,8 @@ TEST_F (TempoMapTest, SamplesToMusicalPosition)
   EXPECT_EQ (pos.tick, 0);
 
   // Test full bar (2 seconds = 88200 samples)
-  const int64_t fullBarSamples = static_cast<int64_t> (2.0 * SAMPLE_RATE);
+  const auto fullBarSamples = mp_units::value_cast<units::sample_t> (
+    2.0 * units::sample * SAMPLE_RATE.numerical_value_in (mp_units::si::hertz));
   pos = map->samples_to_musical_position (fullBarSamples);
   EXPECT_EQ (pos.bar, 2);
   EXPECT_EQ (pos.beat, 1);
@@ -563,13 +656,15 @@ TEST_F (TempoMapTest, SamplesToMusicalPosition)
   EXPECT_EQ (pos.tick, 0);
 
   // Test fractional samples (should use floor rounding)
-  pos = map->samples_to_musical_position (quarterNoteSamples - 1);
+  pos =
+    map->samples_to_musical_position (quarterNoteSamples - 1 * units::sample);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 1);
   EXPECT_EQ (pos.sixteenth, 4); // Last sixteenth of beat 1
   EXPECT_EQ (pos.tick, 239);    // 240 ticks per sixteenth - 1
 
-  pos = map->samples_to_musical_position (quarterNoteSamples + 1);
+  pos =
+    map->samples_to_musical_position (quarterNoteSamples + 1 * units::sample);
   EXPECT_EQ (pos.bar, 1);
   EXPECT_EQ (pos.beat, 2);
   EXPECT_EQ (pos.sixteenth, 1);
