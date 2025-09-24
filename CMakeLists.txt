@@ -544,8 +544,9 @@ if(WIN32)
       # Some files are too big causing compilation errors - this increases the section limit in object files.
       # It requires slightly higher RAM but compilation time difference is negligible, so enable globally.
       /bigobj
-      # error C2131: expression did not evaluate to a constant
+      # Since incorporating mp-units, I've started getting error C2131: expression did not evaluate to a constant
       # failure was caused by evaluation exceeding step limit of 1048576 (/constexpr:steps<NUMBER>)
+      # Increasing the step limit as below fixed the issue
       /constexpr:steps10000000
     )
   else() # mingw
@@ -559,8 +560,8 @@ if(WIN32)
   endif()
 elseif(APPLE)
   target_compile_options(_zrythm_compile_options INTERFACE
-    # std::jthread
-    -fexperimental-library
+    # For std::jthread (not needed anymore since Xcode 26)
+    # -fexperimental-library
   )
 endif()
 
