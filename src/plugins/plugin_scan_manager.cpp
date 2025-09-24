@@ -144,10 +144,11 @@ PluginScanManager::beginScan ()
   QObject::connect (
     scan_thread_.get (), &QThread::started, worker_.get (), &Worker::process);
   QObject::connect (
-    worker_.get (), &Worker::finished, scan_thread_.get (), &QThread::quit);
+    worker_.get (), &Worker::finished, scan_thread_.get (), &QThread::quit,
+    Qt::DirectConnection);
   QObject::connect (
     worker_.get (), &Worker::finished, this, &PluginScanManager::scan_finished,
-    Qt::DirectConnection);
+    Qt::BlockingQueuedConnection);
   scan_thread_->start ();
 }
 
