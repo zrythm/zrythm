@@ -153,6 +153,11 @@ protected:
   TestPathsProvider                               pathsProvider_;
 };
 
+// There is a thread leak reported here but I can't make sense of it.
+// PluginScanManager's scan_thread_ is wait()'ed, quit()'ed and destroyed but
+// its thread is reported as leaked.
+// Just skip this test entirely for now...
+#if !defined(__has_feature) || !__has_feature(thread_sanitizer)
 TEST_P (PluginScannerTest, SinglePluginScan)
 {
   PluginScanManager scanner (
@@ -196,11 +201,6 @@ TEST_P (PluginScannerTest, SinglePluginScan)
     }
 }
 
-// There is a thread leak reported here but I can't make sense of it.
-// PluginScanManager's scan_thread_ is wait()'ed, quit()'ed and destroyed but
-// its thread is reported as leaked.
-// Just skip this test entirely for now...
-#if !defined(__has_feature) || !__has_feature(thread_sanitizer)
 INSTANTIATE_TEST_SUITE_P (
   PluginScanTests,
   PluginScannerTest,
