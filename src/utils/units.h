@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <chrono>
+
 #include <mp-units/framework/quantity.h>
+#include <mp-units/framework/quantity_point.h>
 #include <mp-units/framework/quantity_spec.h>
 #include <mp-units/framework/unit.h>
 #include <mp-units/systems/isq.h>

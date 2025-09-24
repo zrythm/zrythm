@@ -421,7 +421,7 @@ TEST_F (TempoMapTest, FractionalTicks)
   EXPECT_DOUBLE_EQ (
     map->tick_to_seconds (480.5 * units::tick)
       .numerical_value_in (mp_units::si::second),
-    expectedTime.count ());
+    static_cast<double> (expectedTime.count ()));
 
   // Test reverse conversion
   EXPECT_NEAR (
