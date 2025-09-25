@@ -165,6 +165,12 @@ CPMDeclarePackage(scnlib
   GITHUB_REPOSITORY eliaskosunen/scnlib
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
+  OPTIONS
+    "SCN_TESTS OFF"
+    "SCN_DOCS OFF"
+    "SCN_EXAMPLES OFF"
+    "SCN_INSTALL OFF"
+    "SCN_DISABLE_FAST_FLOAT ON"
 )
 # spdlog
 CPMDeclarePackage(spdlog
