@@ -15,7 +15,7 @@ class AutomationTrackTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
+    tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     // Create processor parameter registry and add a test parameter
@@ -160,9 +160,9 @@ TEST_F (AutomationTrackTest, AutomationPointBefore)
   add_automation_point (region_ptr, 0.2, 0.0); // Timeline position 100 samples
   add_automation_point (
     region_ptr, 0.4,
-    tempo_map->samples_to_tick (100 * units::sample)
-      .numerical_value_in (units::tick)); // Timeline position 200
-                                          // samples
+    tempo_map->samples_to_tick (units::samples (100))
+      .in (units::ticks)); // Timeline position 200
+                           // samples
 
   // Find point before 150 frames (should be first point)
   auto * point = automation_track->get_automation_point_before (150, true);
@@ -181,14 +181,12 @@ TEST_F (AutomationTrackTest, AutomationPointAround)
 
   add_automation_point (
     region_ptr, 0.3,
-    tempo_map->samples_to_tick (50 * units::sample)
-      .numerical_value_in (units::tick));
+    tempo_map->samples_to_tick (units::samples (50)).in (units::ticks));
 
   // Find point near 160 ticks within 20-tick radius
   auto * point = automation_track->get_automation_point_around (
-    tempo_map->samples_to_tick (160 * units::sample)
-      .numerical_value_in (units::tick),
-    20, false);
+    tempo_map->samples_to_tick (units::samples (160)).in (units::ticks), 20,
+    false);
   EXPECT_EQ (point->position ()->samples (), 50);
 
   // Test with position before any points
@@ -205,8 +203,7 @@ TEST_F (AutomationTrackTest, NormalizedValueCalculation)
   add_automation_point (region_ptr, 0.0, 0);
   add_automation_point (
     region_ptr, 1.0,
-    tempo_map->samples_to_tick (200 * units::sample)
-      .numerical_value_in (units::tick));
+    tempo_map->samples_to_tick (units::samples (200)).in (units::ticks));
 
   // Get value at midpoint (should be 0.5)
   auto value = automation_track->get_normalized_value (200, true);
@@ -291,8 +288,7 @@ TEST_F (AutomationTrackTest, Serialization)
   auto * region_ptr = region.get_object_as<arrangement::AutomationRegion> ();
   add_automation_point (
     region_ptr, 0.5,
-    tempo_map->samples_to_tick (150 * units::sample)
-      .numerical_value_in (units::tick));
+    tempo_map->samples_to_tick (units::samples (150)).in (units::ticks));
 
   automation_track->setAutomationMode (AutomationTrack::AutomationMode::Record);
   automation_track->setRecordMode (AutomationTrack::AutomationRecordMode::Latch);
@@ -333,8 +329,7 @@ TEST_F (AutomationTrackTest, Serialization)
   EXPECT_FLOAT_EQ (dummy_point->value (), 0.5f);
   EXPECT_EQ (
     dummy_point->position ()->ticks (),
-    tempo_map->samples_to_tick (150 * units::sample)
-      .numerical_value_in (units::tick));
+    tempo_map->samples_to_tick (units::samples (150)).in (units::ticks));
 }
 
 } // namespace zrythm::structure::tracks

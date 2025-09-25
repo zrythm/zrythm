@@ -23,8 +23,7 @@ namespace zrythm::engine::session
 
 /** Millisec to allow moving further backward when very close to the calculated
  * backward position. */
-constexpr auto REPEATED_BACKWARD_MS =
-  240 * mp_units::si::milli<mp_units::si::second>;
+constexpr auto REPEATED_BACKWARD_MS = au::milli (units::seconds) (240);
 
 void
 Transport::init_common ()
@@ -57,9 +56,9 @@ Transport::init_loaded (Project * project)
   init_common ();
 
   int beats_per_bar =
-    project->get_tempo_map ().time_signature_at_tick (0 * units::tick).numerator;
+    project->get_tempo_map ().time_signature_at_tick (units::ticks (0)).numerator;
   int beat_unit =
-    project->get_tempo_map ().time_signature_at_tick (0 * units::tick).denominator;
+    project->get_tempo_map ().time_signature_at_tick (units::ticks (0)).denominator;
   update_caches (beats_per_bar, beat_unit);
 }
 
@@ -549,21 +548,21 @@ Transport::requestRoll (bool with_wait)
           auto       pos_tick = playhead_.position_ticks ();
           const auto pos_musical =
             playhead_.get_tempo_map ().tick_to_musical_position (
-              static_cast<int64_t> (pos_tick) * units::tick);
+              units::ticks (static_cast<int64_t> (pos_tick)));
           auto new_pos_musical = pos_musical;
           new_pos_musical.bar = std::max (new_pos_musical.bar - num_bars, 1);
           pos_tick = static_cast<double> (
             playhead_.get_tempo_map ()
               .musical_position_to_tick (new_pos_musical)
-              .numerical_value_in (units::tick));
-          auto pos_frame =
-            playhead_.get_tempo_map ().tick_to_samples (pos_tick * units::tick);
-          recording_preroll_frames_remaining_ = static_cast<signed_frame_t> (
-            mp_units::round<units::sample> (
-              playhead_.get_tempo_map ().tick_to_samples (
-                playhead_.position_ticks () * units::tick)
-              - pos_frame)
-              .numerical_value_in (units::sample));
+              .in (units::ticks));
+          auto pos_frame = playhead_.get_tempo_map ().tick_to_samples (
+            units::ticks (pos_tick));
+          recording_preroll_frames_remaining_ = static_cast<
+            signed_frame_t> (au::round_in (
+            units::samples,
+            playhead_.get_tempo_map ().tick_to_samples (
+              units::ticks (playhead_.position_ticks ()))
+              - pos_frame));
           playhead_adapter_->setTicks (pos_tick);
         }
     }
@@ -749,10 +748,10 @@ Transport::goto_prev_marker ()
       if (
         isRolling () && i > 0
         && (playhead_.get_tempo_map ().tick_to_seconds (
-              playhead_.position_ticks () * units::tick)
+              units::ticks (playhead_.position_ticks ()))
               / 1000.0
             - PROJECT->get_tempo_map ().tick_to_seconds (
-                marker_ticks[i] * units::tick)
+                units::ticks (marker_ticks[i]))
                 / 1000.0)
              < REPEATED_BACKWARD_MS)
         {
@@ -1000,7 +999,7 @@ Transport::move_backward (bool with_wait)
   };
   if (
     pos.frames_ > 0
-    && (pos.frames_ == playhead_pos.frames_ || (isRolling () && (playhead_pos.to_ms (audio_engine_->get_sample_rate()) - pos.to_ms (audio_engine_->get_sample_rate())) < REPEATED_BACKWARD_MS.numerical_value_in(mp_units::si::milli<mp_units::si::second>))))
+    && (pos.frames_ == playhead_pos.frames_ || (isRolling () && (playhead_pos.to_ms (audio_engine_->get_sample_rate()) - pos.to_ms (audio_engine_->get_sample_rate())) < REPEATED_BACKWARD_MS.in(au::milli(units::seconds)))))
     {
       Position tmp = pos;
       tmp.add_ticks (-1, audio_engine_->frames_per_tick_);

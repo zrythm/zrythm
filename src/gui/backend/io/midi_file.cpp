@@ -210,11 +210,12 @@ MidiFile::export_midi_region_to_midi_file (
   // FIXME: doesn't take into account tempo/time signature changes
   sequence.addEvent (
     juce::MidiMessage::timeSignatureMetaEvent (
-      tempo_map.time_signature_at_tick (0 * units::tick).numerator,
-      tempo_map.time_signature_at_tick (0 * units::tick).denominator));
+      tempo_map.time_signature_at_tick (units::ticks (0)).numerator,
+      tempo_map.time_signature_at_tick (units::ticks (0)).denominator));
   sequence.addEvent (
     juce::MidiMessage::tempoMetaEvent (
-      60'000'000 / static_cast<int> (tempo_map.tempo_at_tick (0 * units::tick))));
+      60'000'000
+      / static_cast<int> (tempo_map.tempo_at_tick (units::ticks (0)))));
 
   structure::arrangement::MidiRegionSerializer::serialize_to_sequence (
     region, sequence, std::nullopt, std::nullopt, false, export_full);

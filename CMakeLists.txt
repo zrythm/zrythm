@@ -956,8 +956,10 @@ set(BOOST_INCLUDE_LIBRARIES
 )
 FetchContent_MakeAvailable(Boost)
 
+CPMGetPackage(gsl-lite)
 CPMGetPackage(type_safe)
-CPMGetPackage(mp-units)
+# mp-units fails to compile on AppleClang and also Au seems more ergonomic
+CPMGetPackage(au)
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -979,7 +981,6 @@ elseif(compiler_gnulike)
 endif()
 add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
-CPMGetPackage(gsl-lite)
 CPMGetPackage(tbb)
 CPMGetPackage(farbot)
 if(ZRYTHM_TESTS)
@@ -1063,7 +1064,7 @@ list(APPEND zrythm_link_libs
   clap-helpers
   TBB::tbb
   farbot::farbot
-  mp-units::mp-units
+  Au::au
   zrythm::qt_libs
   zrythm::gtest
   zrythm::sanitizers

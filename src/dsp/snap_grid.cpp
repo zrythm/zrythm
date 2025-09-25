@@ -112,7 +112,7 @@ SnapGrid::snapTicks (int64_t ticks) const
         TempoMap::get_ppq ());
     }
 
-  auto time_sig = tempo_map_.time_signature_at_tick (ticks * units::tick);
+  auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
   int  ticks_per_bar =
     (time_sig.numerator * TempoMap::get_ppq () * 4) / time_sig.denominator;
   int ticks_per_beat = ticks_per_bar / time_sig.numerator;
@@ -133,7 +133,7 @@ SnapGrid::defaultTicks (int64_t ticks) const
       return last_object_length_callback_ ();
     }
 
-  auto time_sig = tempo_map_.time_signature_at_tick (ticks * units::tick);
+  auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
   int  ticks_per_bar =
     (time_sig.numerator * TempoMap::get_ppq () * 4) / time_sig.denominator;
   int ticks_per_beat = ticks_per_bar / time_sig.numerator;

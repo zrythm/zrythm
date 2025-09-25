@@ -34,7 +34,7 @@ class PlaybackCacheBuilderTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
+    tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     obj_registry = std::make_unique<arrangement::ArrangerObjectRegistry> ();
     file_audio_source_registry =
       std::make_unique<dsp::FileAudioSourceRegistry> ();
@@ -140,9 +140,9 @@ TEST_F (PlaybackCacheBuilderTest, GenerateCacheWithAffectedRange)
 
   // Convert affected range to samples for verification
   const auto sample_start =
-    tempo_map->tick_to_samples_rounded (affected_start * units::tick);
+    tempo_map->tick_to_samples_rounded (units::ticks (affected_start));
   const auto sample_end =
-    tempo_map->tick_to_samples_rounded (affected_end * units::tick);
+    tempo_map->tick_to_samples_rounded (units::ticks (affected_end));
 
   // All events should be within the sample interval
   for (int i = 0; i < events.getNumEvents (); ++i)
@@ -150,11 +150,9 @@ TEST_F (PlaybackCacheBuilderTest, GenerateCacheWithAffectedRange)
       const auto * event = events.getEventPointer (i);
       const double event_time = event->message.getTimeStamp ();
       EXPECT_GE (
-        event_time,
-        static_cast<double> (sample_start.numerical_value_in (units::sample)));
+        event_time, static_cast<double> (sample_start.in (units::sample)));
       EXPECT_LE (
-        event_time,
-        static_cast<double> (sample_end.numerical_value_in (units::sample)));
+        event_time, static_cast<double> (sample_end.in (units::sample)));
     }
 }
 

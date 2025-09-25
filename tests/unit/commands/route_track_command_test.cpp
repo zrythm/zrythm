@@ -39,7 +39,7 @@ protected:
   }
 
   // Create minimal dependencies for track creation
-  dsp::TempoMap                   tempo_map_{ 44100.0 * mp_units::si::hertz };
+  dsp::TempoMap                   tempo_map_{ units::sample_rate (44100.0) };
   dsp::TempoMapWrapper            tempo_map_wrapper_{ tempo_map_ };
   dsp::FileAudioSourceRegistry    file_audio_source_registry_;
   plugins::PluginRegistry         plugin_registry_;

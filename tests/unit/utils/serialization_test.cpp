@@ -187,33 +187,33 @@ TEST (SerializationTest, StrongTypedef)
   EXPECT_FLOAT_EQ (type_safe::get (deserialized), 5.5f);
 }
 
-TEST (SerializationTest, MpUnitsQuantity)
+TEST (SerializationTest, AuQuantity)
 {
   using namespace zrythm::units;
 
   // Test tick_t (int64_t quantity)
-  tick_t         tick_quantity = 100 * tick;
+  tick_t         tick_quantity = ticks (100);
   nlohmann::json json1 = tick_quantity;
 
   auto deserialized_tick = json1.get<tick_t> ();
   EXPECT_EQ (deserialized_tick, tick_quantity);
-  EXPECT_EQ (deserialized_tick.numerical_value_in (tick), 100);
+  EXPECT_EQ (deserialized_tick.in (ticks), 100);
 
   // Test precise_tick_t (double quantity)
-  precise_tick_t precise_quantity = 123.45 * tick;
+  precise_tick_t precise_quantity = ticks (123.45);
   nlohmann::json json2 = precise_quantity;
 
   auto deserialized_precise = json2.get<precise_tick_t> ();
-  EXPECT_DOUBLE_EQ (deserialized_precise.numerical_value_in (tick), 123.45);
+  EXPECT_DOUBLE_EQ (deserialized_precise.in (ticks), 123.45);
   EXPECT_EQ (deserialized_precise, precise_quantity);
 
   // Test quarter_note quantity
-  auto           quarter_quantity = 2 * quarter_note;
+  auto           quarter_quantity = quarter_notes (2);
   nlohmann::json json3 = quarter_quantity;
 
   auto deserialized_quarter = json3.get<decltype (quarter_quantity)> ();
   EXPECT_EQ (deserialized_quarter, quarter_quantity);
-  EXPECT_EQ (deserialized_quarter.numerical_value_in (quarter_note), 2);
+  EXPECT_EQ (deserialized_quarter.in (quarter_notes), 2);
 
   // Test arithmetic operations preserve serialization
   auto           complex_quantity = (tick_quantity + precise_quantity) * 2;
@@ -221,6 +221,5 @@ TEST (SerializationTest, MpUnitsQuantity)
 
   auto deserialized_complex = json4.get<decltype (complex_quantity)> ();
   EXPECT_DOUBLE_EQ (
-    deserialized_complex.numerical_value_in (tick),
-    complex_quantity.numerical_value_in (tick));
+    deserialized_complex.in (ticks), complex_quantity.in (ticks));
 }

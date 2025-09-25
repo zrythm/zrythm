@@ -19,7 +19,7 @@ class MidiNoteTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    tempo_map = std::make_unique<dsp::TempoMap> (44100.0 * mp_units::si::hertz);
+    tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     parent = std::make_unique<MockQObject> ();
     note = std::make_unique<MidiNote> (*tempo_map, parent.get ());
   }

@@ -119,8 +119,8 @@ ChordTrack::get_chord_at_ticks (double timeline_ticks) const -> ChordObject *
 {
   const auto timeline_frames = static_cast<signed_frame_t> (std::round (
     base_dependencies_.tempo_map_.get_tempo_map ()
-      .tick_to_samples (timeline_ticks * units::tick)
-      .numerical_value_in (units::sample)));
+      .tick_to_samples (units::ticks (timeline_ticks))
+      .in (units::sample)));
 
   auto chord_regions_view = arrangement::ArrangerObjectOwner<
     arrangement::ChordRegion>::get_children_view ();

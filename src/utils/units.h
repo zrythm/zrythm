@@ -3,62 +3,61 @@
 
 #pragma once
 
-#include <chrono>
-
-#include <mp-units/framework/quantity.h>
-#include <mp-units/framework/quantity_point.h>
-#include <mp-units/framework/quantity_spec.h>
-#include <mp-units/framework/unit.h>
-#include <mp-units/systems/isq.h>
-#include <mp-units/systems/si.h>
-#include <mp-units/systems/si/units.h>
+#include <au/au.hh>
 
 namespace zrythm::units
 {
 
-namespace quantity_specs
+// Define base dimensions for sample and tick
+// Using unique indices based on Unix epoch timestamps for uniqueness
+struct SampleBaseDim : au::base_dim::BaseDimension<1737814550>
 {
-QUANTITY_SPEC (sample_count, mp_units::dimensionless, mp_units::is_kind);
-QUANTITY_SPEC (
-  sample_rate,
-  mp_units::isq::frequency,
-  sample_count / mp_units::isq::time);
-QUANTITY_SPEC (tick_count, mp_units::dimensionless, mp_units::is_kind);
-
-} // namespace quantity_specs
-
-using precise_sample_rate_t =
-  mp_units::quantity<quantity_specs::sample_rate[mp_units::si::hertz], double>;
-
-inline constexpr struct sample final
-    : mp_units::named_unit<
-        "sample",
-        mp_units::one,
-        mp_units::kind_of<quantity_specs::sample_count>>
+}; // 2025-01-25 13:05:50 UTC
+struct TickBaseDim : au::base_dim::BaseDimension<1737814551>
 {
-} sample;
+}; // 2025-01-25 13:05:51 UTC
 
-using sample_t = mp_units::quantity<sample, int64_t>;
-using precise_sample_t = mp_units::quantity<sample, double>;
-
-inline constexpr struct tick final
-    : mp_units::named_unit<
-        "tick",
-        mp_units::one,
-        mp_units::kind_of<quantity_specs::tick_count>>
+// Define sample unit with its own dimension
+struct Sample : au::UnitImpl<au::Dimension<SampleBaseDim>>
 {
-} tick;
-
-using tick_t = mp_units::quantity<tick, int64_t>;
-using precise_tick_t = mp_units::quantity<tick, double>;
-
-constexpr tick_t                     PPQ = 960 * tick;
-inline constexpr struct quarter_note final
-    : mp_units::named_unit<
-        "quarterNote",
-        mp_units::mag<PPQ.numerical_value_in (tick)> * tick>
-{
-} quarter_note;
-
-using precise_second_t = mp_units::quantity<mp_units::si::second, double>;
+  static constexpr const char label[] = "sample";
 };
+constexpr auto sample = au::SingularNameFor<Sample>{};
+constexpr auto samples = au::QuantityMaker<Sample>{};
+
+// Define sample quantity types
+using sample_t = au::QuantityI64<Sample>;
+using precise_sample_t = au::QuantityD<Sample>;
+
+// Define tick unit with its own dimension
+struct Tick : au::UnitImpl<au::Dimension<TickBaseDim>>
+{
+  static constexpr const char label[] = "tick";
+};
+constexpr auto tick = au::SingularNameFor<Tick>{};
+constexpr auto ticks = au::QuantityMaker<Tick>{};
+
+// Define tick quantity types
+using tick_t = au::QuantityI64<Tick>;
+using precise_tick_t = au::QuantityD<Tick>;
+
+// Define PPQ constant (960 ticks per quarter note)
+constexpr tick_t PPQ = ticks (960);
+
+// Define quarter_note unit as 960 ticks using unit expression
+struct QuarterNote : decltype (Tick{} * au::mag<960> ())
+{
+  static constexpr const char label[] = "quarterNote";
+};
+constexpr auto quarter_note = au::SingularNameFor<QuarterNote>{};
+constexpr auto quarter_notes = au::QuantityMaker<QuarterNote>{};
+
+// Define sample rate as a compound unit (samples per second)
+using SampleRate = decltype (Sample{} / au::Seconds{});
+constexpr auto sample_rate = samples / au::second;
+using precise_sample_rate_t = au::QuantityD<SampleRate>;
+
+// Define precise second using Au's built-in seconds
+constexpr auto seconds = au::seconds;
+using precise_second_t = au::QuantityD<au::Seconds>;
+}

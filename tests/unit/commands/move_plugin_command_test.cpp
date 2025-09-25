@@ -72,7 +72,7 @@ protected:
   std::unique_ptr<plugins::PluginList> target_plugin_list_;
 
   // Automation tracklist dependencies
-  dsp::TempoMap                tempo_map_{ 44100 * mp_units::si::hertz };
+  dsp::TempoMap                tempo_map_{ units::sample_rate (44100) };
   dsp::TempoMapWrapper         tempo_map_wrapper_{ tempo_map_ };
   dsp::FileAudioSourceRegistry file_audio_source_registry_;
   structure::arrangement::ArrangerObjectRegistry object_registry_;

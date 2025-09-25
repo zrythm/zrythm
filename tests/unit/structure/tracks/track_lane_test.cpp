@@ -197,7 +197,7 @@ TEST_F (TrackLaneTest, MidiRegionManagement)
   EXPECT_EQ (midi_lane_->midiRegions ()->rowCount (), 0);
 
   // Create a MIDI region
-  dsp::TempoMap tempo_map{ 44100 * mp_units::si::hertz };
+  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
   auto midi_region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
     tempo_map, *obj_registry_, *file_audio_source_registry_);
 
@@ -226,7 +226,7 @@ TEST_F (TrackLaneTest, AudioRegionManagement)
 
   // Create an audio region
   auto          musical_mode_getter = [] { return false; };
-  dsp::TempoMap tempo_map{ 44100 * mp_units::si::hertz };
+  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
   auto audio_region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
     tempo_map, *obj_registry_, *file_audio_source_registry_,
     musical_mode_getter);
@@ -258,7 +258,7 @@ TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
   midi_lane_->setSoloed (false);
 
   // Add a MIDI region
-  dsp::TempoMap tempo_map{ 44100 * mp_units::si::hertz };
+  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
   auto midi_region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
     tempo_map, *obj_registry_, *file_audio_source_registry_);
   midi_lane_->arrangement::ArrangerObjectOwner<
@@ -303,7 +303,7 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
 
   // Add an audio region
   auto          musical_mode_getter = [] { return false; };
-  dsp::TempoMap tempo_map{ 44100 * mp_units::si::hertz };
+  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
   auto audio_region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
     tempo_map, *obj_registry_, *file_audio_source_registry_,
     musical_mode_getter);
@@ -430,7 +430,7 @@ TEST_F (TrackLaneTest, PropertyChangeNotifications)
 TEST_F (TrackLaneTest, RegionTypeSeparation)
 {
   // Verify that MIDI and audio regions are managed separately
-  dsp::TempoMap tempo_map{ 44100 * mp_units::si::hertz };
+  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
 
   // Add MIDI region to MIDI lane
   auto midi_region_ref = obj_registry_->create_object<arrangement::MidiRegion> (

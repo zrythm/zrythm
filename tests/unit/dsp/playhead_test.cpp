@@ -14,7 +14,7 @@ namespace zrythm::dsp
 class PlayheadTest : public ::testing::Test
 {
 protected:
-  static constexpr auto SAMPLE_RATE = 44100.0 * mp_units::si::hertz;
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100.0);
 
   void SetUp () override
   {
@@ -55,8 +55,7 @@ TEST_F (PlayheadTest, SetPositionFromGUI)
 {
   const double testTicks = 1920.0; // 2 beats at 120 BPM
   const double expectedStartSamples =
-    tempo_map_->tick_to_samples (testTicks * units::tick)
-      .numerical_value_in (units::sample);
+    tempo_map_->tick_to_samples (units::ticks (testTicks)).in (units::sample);
   playhead_->set_position_ticks (testTicks);
 
   // Verify GUI thread access
@@ -77,8 +76,7 @@ TEST_F (PlayheadTest, AudioProcessingAdvance)
 {
   const uint32_t blockSize = 512;
   const double   startPos =
-    tempo_map_->tick_to_samples (0 * units::tick)
-      .numerical_value_in (units::sample);
+    tempo_map_->tick_to_samples (units::ticks (0)).in (units::sample);
   double lastPos = -1.0;
 
   simulateAudioProcessing (blockSize, [&] (uint32_t frame, double pos) {
@@ -104,8 +102,7 @@ TEST_F (PlayheadTest, UpdateTicksFromSamples)
 {
   const double testSamples = 22050.0; // 0.5 seconds at 44.1kHz
   playhead_->set_position_ticks (
-    tempo_map_->samples_to_tick (testSamples * units::sample)
-      .numerical_value_in (units::tick));
+    tempo_map_->samples_to_tick (units::samples (testSamples)).in (units::tick));
 
   // Modify samples directly (simulate audio thread advance)
   simulateAudioProcessing (100);
@@ -116,8 +113,8 @@ TEST_F (PlayheadTest, UpdateTicksFromSamples)
   const double expectedTicks =
     tempo_map_
       ->samples_to_tick (
-        playhead_->position_samples_FOR_TESTING () * units::sample)
-      .numerical_value_in (units::tick);
+        units::samples (playhead_->position_samples_FOR_TESTING ()))
+      .in (units::tick);
   EXPECT_NEAR (playhead_->position_ticks (), expectedTicks, 1e-6);
 }
 

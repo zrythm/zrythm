@@ -36,7 +36,7 @@ Metronome::find_and_queue_metronome_samples (
     return;
 
   const auto frame_to_musical_position = [this] (const signed_frame_t frame) {
-    return tempo_map_.samples_to_musical_position (frame * units::sample);
+    return tempo_map_.samples_to_musical_position (units::samples (frame));
   };
 
   if (
@@ -180,20 +180,20 @@ Metronome::queue_metronome_countin (const EngineProcessTimeInfo &time_nfo)
 
   const auto frame_to_tick = [this] (const auto frame) {
     return static_cast<signed_frame_t> (std::round (
-      tempo_map_.samples_to_tick (static_cast<double> (frame) * units::sample)
-        .numerical_value_in (units::tick)));
+      tempo_map_.samples_to_tick (units::samples (static_cast<double> (frame)))
+        .in (units::tick)));
   };
   const auto tick_to_frame = [this] (const units::tick_t tick) {
     const units::sample_t s = tempo_map_.tick_to_samples_rounded (
       static_cast<units::precise_tick_t> (tick));
-    return static_cast<signed_frame_t> (s.numerical_value_in (units::sample));
+    return static_cast<signed_frame_t> (s.in (units::samples));
   };
 
   signed_frame_t frames_per_beat{};
   signed_frame_t frames_per_bar{};
   {
     const auto current_musical_pos = tempo_map_.tick_to_musical_position (
-      frame_to_tick (time_nfo.g_start_frame_) * units::tick);
+      units::ticks (frame_to_tick (time_nfo.g_start_frame_)));
     const auto tick_at_bar_start = tempo_map_.musical_position_to_tick (
       TempoMap::MusicalPosition{
         .bar = current_musical_pos.bar, .beat = 1, .sixteenth = 1, .tick = 0 });

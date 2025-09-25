@@ -20,7 +20,7 @@ class PlayheadQmlWrapperTest
       public test_helpers::ScopedQCoreApplication
 {
 protected:
-  static constexpr auto SAMPLE_RATE = 44100.0 * mp_units::si::hertz;
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100.0);
 
   void SetUp () override
   {

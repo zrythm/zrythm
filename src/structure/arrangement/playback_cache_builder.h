@@ -31,10 +31,10 @@ public:
         {
           const auto tick_range = affected_range.range ().value ();
           return std::make_pair (
-            tempo_map.tick_to_samples_rounded (tick_range.first * units::tick)
-              .numerical_value_in (units::sample),
-            tempo_map.tick_to_samples_rounded (tick_range.second * units::tick)
-              .numerical_value_in (units::sample));
+            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.first))
+              .in (units::samples),
+            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.second))
+              .in (units::samples));
         }
       return std::make_pair (
         static_cast<int64_t> (0), std::numeric_limits<int64_t>::max ());
@@ -74,8 +74,8 @@ public:
               static_cast<double> (
                 tempo_map
                   .tick_to_samples_rounded (
-                    event->message.getTimeStamp () * units::tick)
-                  .numerical_value_in (units::sample)));
+                    units::ticks (event->message.getTimeStamp ()))
+                  .in (units::samples)));
           }
 
         // Add to cache
