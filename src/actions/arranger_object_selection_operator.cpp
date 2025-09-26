@@ -44,7 +44,7 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
     }
 
   // Validate object bounds (don't move objects before timeline start)
-  if (!validateMovement (selected_objects, tick_delta))
+  if (!validateHorizontalMovement (selected_objects, tick_delta))
     {
       qWarning ()
         << "Movement validation failed - objects would be moved before timeline start";
@@ -53,7 +53,60 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
 
   // Create and push command
   auto * command = new commands::MoveArrangerObjectsCommand (
-    std::move (selected_objects), tick_delta);
+    std::move (selected_objects), units::ticks (tick_delta));
+  undo_stack_->push (command);
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::moveNotesByPitch (int tick_delta)
+{
+  return process_vertical_move (tick_delta);
+}
+
+bool
+ArrangerObjectSelectionOperator::process_vertical_move (int delta)
+{
+  // Validation checks
+  if (undo_stack_ == nullptr)
+    {
+      qWarning () << "UndoStack not set for ArrangerObjectSelectionOperator";
+      return false;
+    }
+
+  if (selection_model_ == nullptr)
+    {
+      qWarning ()
+        << "SelectionModel not set for ArrangerObjectSelectionOperator";
+      return false;
+    }
+
+  if (delta == 0)
+    {
+      // No movement needed
+      return true;
+    }
+
+  // Extract selected objects from selection model
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      qWarning () << "No objects selected for movement";
+      return false;
+    }
+
+  // Validate object vertical bounds
+  if (!validateVerticalMovement (selected_objects, delta))
+    {
+      qWarning ()
+        << "Movement validation failed - objects would be moved outside bounds";
+      return false;
+    }
+
+  // Create and push command
+  auto * command = new commands::MoveArrangerObjectsCommand (
+    std::move (selected_objects), units::ticks (0), delta);
   undo_stack_->push (command);
 
   return true;
@@ -91,7 +144,7 @@ ArrangerObjectSelectionOperator::extractSelectedObjects () const
 }
 
 bool
-ArrangerObjectSelectionOperator::validateMovement (
+ArrangerObjectSelectionOperator::validateHorizontalMovement (
   const SelectedObjectsVector &objects,
   double                       tick_delta)
 {
@@ -109,6 +162,28 @@ ArrangerObjectSelectionOperator::validateMovement (
         }();
         return timeline_position >= 0.0;
       }
+    return true; // Skip objects that can't be accessed
+  });
+}
+
+bool
+ArrangerObjectSelectionOperator::validateVerticalMovement (
+  const SelectedObjectsVector &objects,
+  int                          delta)
+{
+  return std::ranges::all_of (objects, [delta] (const auto &obj_ref) {
+    std::visit (
+      [&] (auto &&obj) {
+        using ObjectT = base_type<decltype (obj)>;
+        if constexpr (std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+          {
+            const auto new_pitch = obj->pitch () + delta;
+            return new_pitch >= 0 && new_pitch < 128;
+          }
+        return false;
+      },
+      obj_ref.get_object ());
+
     return true; // Skip objects that can't be accessed
   });
 }

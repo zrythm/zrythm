@@ -80,6 +80,7 @@ Arranger {
       CursorManager.setStretchEndCursor();
       return;
     case Arranger.CreatingResizingR:
+    case Arranger.CreatingResizingMovingR:
     case Arranger.ResizingR:
       CursorManager.setResizeEndCursor();
       return;

@@ -81,6 +81,7 @@ Arranger {
       CursorManager.setStretchEndCursor();
       return;
     case Arranger.CreatingResizingR:
+    case Arranger.CreatingResizingMovingR:
     case Arranger.ResizingR:
       CursorManager.setResizeEndCursor();
       return;
@@ -162,9 +163,10 @@ Arranger {
                 id: scaleItem
 
                 property var tempoEvent: scaleLoader.model
-                x: scaleLoader.tempoEventX
-                text: tempoEvent.bpm + " (" + (tempoEvent.curve === 0 ? "constant" : "linear") + ")"
+
                 font.bold: true
+                text: tempoEvent.bpm + " (" + (tempoEvent.curve === 0 ? "constant" : "linear") + ")"
+                x: scaleLoader.tempoEventX
               }
             }
           }

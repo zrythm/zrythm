@@ -14,6 +14,7 @@ Item {
   enum CurrentAction {
     None,
     CreatingResizingR,
+    CreatingResizingMovingR,
     CreatingMoving,
     ResizingL,
     ResizingLLoop,
@@ -155,12 +156,15 @@ Item {
         // Get the object from the source model using the arrangerObject role
         const object = sourceModel.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
         const objectTimelineTicks = object.position.ticks + (object.parentObject ? object.parentObject.position.ticks : 0);
+        const objectTimelineEndTicks = ArrangerObjectHelpers.getObjectEndTicks(object) + (object.parentObject ? object.parentObject.position.ticks : 0);
         if (object) {
           // Create a temporary view that wraps the arranger object
           const tempView = tempViewComponent.createObject(root, {
             "arrangerObject": object,
             "x": objectTimelineTicks * root.ruler.pxPerTick,
-            "xOnConstruction": objectTimelineTicks * root.ruler.pxPerTick
+            "width": Math.max((objectTimelineEndTicks - objectTimelineTicks) * root.ruler.pxPerTick, 20),
+            "y": root.getObjectY(object),
+            "coordinatesOnConstruction": Qt.point(objectTimelineTicks * root.ruler.pxPerTick, root.getObjectY(object))
           });
 
           if (tempView) {
@@ -483,7 +487,8 @@ Item {
             else if (action === Arranger.StartingMoving) {
               if (mouse.modifiers & Qt.AltModifier) {
                 action = Arranger.MovingLink;
-              } else if (mouse.modifiers & Qt.ControlModifier) /* && !selection contains unclonable object*/                       {
+              } else if (mouse.modifiers & Qt.ControlModifier) {
+                // TODO: also check that selection does not contain unclonable objects before entering this block
                 action = Arranger.MovingCopy;
               } else {
                 action = Arranger.Moving;
@@ -511,9 +516,13 @@ Item {
               }
             } else if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
               moveTemporaryObjectsX(dx);
+              moveTemporaryObjectsY(dy, prevCoordinates.y);
             } else if (action == Arranger.CreatingMoving) {
               moveSelectionsX(ticksDiff);
             } else if (action === Arranger.CreatingResizingR) {
+              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.actionObject, timelineTicks);
+            } else if (action === Arranger.CreatingResizingMovingR) {
+              moveSelectionsY(dy, prevCoordinates.y);
               ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.actionObject, timelineTicks);
             }
           }
@@ -540,11 +549,12 @@ Item {
           updateCursor();
         }
         onReleased: {
-            if (action != Arranger.None && action != Arranger.StartingSelection) {
+          if (action != Arranger.None && action != Arranger.StartingSelection) {
             if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
               if (root.tempQmlArrangerObjects.length > 0) {
                 const firstTempObj = root.tempQmlArrangerObjects[0];
-                moveSelectionsX((firstTempObj.x - firstTempObj.xOnConstruction) / root.ruler.pxPerTick);
+                moveSelectionsX((firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick);
+                moveSelectionsY(firstTempObj.y - firstTempObj.coordinatesOnConstruction.y, firstTempObj.coordinatesOnConstruction.y);
               }
             } else if (action === Arranger.CreatingMoving) {
               root.undoStack.endMacro();

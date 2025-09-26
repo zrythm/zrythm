@@ -47,6 +47,7 @@ Zrythm uses CPM (CMake Package Manager) for dependency management. Key dependenc
 - **rubberband**: Audio time-stretching
 - **googletest**: Testing framework
 - **googlebenchmark**: Benchmarking framework
+- **au**: Type-safe units
 
 Dependencies are defined in [`package-lock.cmake`](package-lock.cmake).
 

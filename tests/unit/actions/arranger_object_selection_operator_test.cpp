@@ -237,6 +237,80 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
     }
 }
 
+// Test moveNotesByPitch functionality
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
+{
+  const int pitch_delta = 5;
+
+  // Store original pitch for MIDI note
+  int original_pitch = 0;
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              original_pitch = obj->pitch ();
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  bool result = operator_->moveNotesByPitch (pitch_delta);
+  EXPECT_TRUE (result);
+
+  // MIDI notes should be moved by pitch_delta
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->pitch (), original_pitch + pitch_delta);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Command should be pushed to undo stack
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  // Test undo/redo
+  undo_stack_->undo ();
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->pitch (), original_pitch);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  undo_stack_->redo ();
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->pitch (), original_pitch + pitch_delta);
+            }
+        },
+        obj_ref.get_object ());
+    }
+}
+
 // Test setUndoStack with null (should throw)
 TEST_F (ArrangerObjectSelectionOperatorTest, SetNullUndoStackThrows)
 {

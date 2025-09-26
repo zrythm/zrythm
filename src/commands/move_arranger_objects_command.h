@@ -7,7 +7,7 @@
 #include <ranges>
 #include <vector>
 
-#include "structure/arrangement/arranger_object.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/monotonic_time_provider.h"
 
 #include <QUndoCommand>
@@ -21,18 +21,32 @@ class MoveArrangerObjectsCommand
 public:
   MoveArrangerObjectsCommand (
     std::vector<structure::arrangement::ArrangerObjectUuidReference> objects,
-    double                                                           tick_delta)
+    units::precise_tick_t                                            tick_delta,
+    int vertical_delta = 0)
       : QUndoCommand (QObject::tr ("Move Objects")),
-        objects_ (std::move (objects)), tick_delta_ (tick_delta)
+        objects_ (std::move (objects)), tick_delta_ (tick_delta),
+        vertical_delta_ (vertical_delta)
   {
     // Store original positions for undo
     original_positions_.reserve (objects_.size ());
     for (const auto &obj_ref : objects_)
       {
-        if (auto * obj = obj_ref.get_object_base ())
-          {
-            original_positions_.push_back (obj->position ()->ticks ());
-          }
+        std::visit (
+          [&] (auto &&obj) {
+            using ObjectT = base_type<decltype (obj)>;
+            original_positions_.push_back (
+              units::ticks (obj->position ()->ticks ()));
+            if constexpr (
+              std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+              {
+                original_vertical_positions_.push_back (obj->pitch ());
+              }
+            else
+              {
+                original_vertical_positions_.push_back (0);
+              }
+          },
+          obj_ref.get_object ());
       }
   }
 
@@ -76,34 +90,59 @@ public:
   void undo () override
   {
     for (
-      const auto &[obj_ref, original_pos] :
-      std::views::zip (objects_, original_positions_))
+      const auto &[obj_ref, original_pos, original_vertical_pos] :
+      std::views::zip (
+        objects_, original_positions_, original_vertical_positions_))
       {
-        if (auto * obj = obj_ref.get_object_base ())
-          {
-            obj->position ()->setTicks (original_pos);
-          }
+        std::visit (
+          [&] (auto &&obj) {
+            using ObjectT = base_type<decltype (obj)>;
+            obj->position ()->setTicks (original_pos.in (units::ticks));
+            if (vertical_delta_ != 0)
+              {
+                if constexpr (
+                  std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+                  {
+                    obj->setPitch (original_vertical_pos);
+                  }
+              }
+          },
+          obj_ref.get_object ());
       }
   }
 
   void redo () override
   {
     for (
-      const auto &[obj_ref, original_pos] :
-      std::views::zip (objects_, original_positions_))
+      const auto &[obj_ref, original_pos, original_vertical_pos] :
+      std::views::zip (
+        objects_, original_positions_, original_vertical_positions_))
       {
-        if (auto * obj = obj_ref.get_object_base ())
-          {
-            obj->position ()->setTicks (original_pos + tick_delta_);
-          }
+        std::visit (
+          [&] (auto &&obj) {
+            using ObjectT = base_type<decltype (obj)>;
+            obj->position ()->setTicks (
+              (original_pos + tick_delta_).in (units::ticks));
+            if (vertical_delta_ != 0)
+              {
+                if constexpr (
+                  std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+                  {
+                    obj->setPitch (original_vertical_pos + vertical_delta_);
+                  }
+              }
+          },
+          obj_ref.get_object ());
       }
     last_redo_timestamp_ = std::chrono::steady_clock::now ();
   }
 
 private:
   std::vector<structure::arrangement::ArrangerObjectUuidReference> objects_;
-  std::vector<double>                                original_positions_;
-  double                                             tick_delta_;
+  std::vector<units::precise_tick_t> original_positions_;
+  std::vector<int>                   original_vertical_positions_;
+  units::precise_tick_t              tick_delta_;
+  int                                vertical_delta_{};
   std::chrono::time_point<std::chrono::steady_clock> last_redo_timestamp_;
 };
 

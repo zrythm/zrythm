@@ -153,7 +153,6 @@ int
 PianoRoll::getKeyAtY (double y) const
 {
   auto key = 127 - (static_cast<int> (y) / note_height_);
-  z_debug ("key: {}", key);
   return key;
 }
 

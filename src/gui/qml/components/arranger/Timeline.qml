@@ -38,7 +38,8 @@ Arranger {
       root.undoStack.beginMacro("Create Marker");
       let marker = objectCreator.addMarker(Marker.Custom, track, qsTr("Custom Marker"), tickPosition);
       root.currentAction = Arranger.CreatingMoving;
-      root.selectSingleObject(track.markers, track.markers.rowCount() - 1);
+      const markerTrack = track as MarkerTrack;
+      root.selectSingleObject(markerTrack.markers, markerTrack.markers.rowCount() - 1);
       CursorManager.setClosedHandCursor();
       root.actionObject = marker;
       return marker;
@@ -80,6 +81,10 @@ Arranger {
     return automationItem?.automationTrack ?? null;
   }
 
+  function getObjectY(obj: ArrangerObject): real {
+    return 0;
+  }
+
   function getTrackAtY(y: real): Track {
     const item = tracksListView.itemAt(0, y + tracksListView.contentY);
     return item?.track ?? null;
@@ -107,6 +112,12 @@ Arranger {
     const laneItem = laneLoader.item.itemAt(0, laneListY);
     console.log("Timeline: getTrackLaneAtY", relativeY, trackItem, laneLoader, laneListY, laneItem);
     return laneItem?.trackLane ?? null;
+  }
+
+  function moveSelectionsY(dy: real, prevY: real) {
+  }
+
+  function moveTemporaryObjectsY(dy: real, prevY: real) {
   }
 
   function updateCursor() {
@@ -174,6 +185,7 @@ Arranger {
       CursorManager.setStretchEndCursor();
       return;
     case Arranger.CreatingResizingR:
+    case Arranger.CreatingResizingMovingR:
     case Arranger.ResizingR:
       CursorManager.setResizeEndCursor();
       return;

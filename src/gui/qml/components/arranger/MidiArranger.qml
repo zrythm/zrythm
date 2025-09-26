@@ -22,7 +22,8 @@ Arranger {
     const localTickPosition = tickPosition - region.position.ticks;
 
     let midiNote = objectCreator.addMidiNote(region, localTickPosition, pitch);
-    root.currentAction = Arranger.CreatingResizingR;
+    root.currentAction = Arranger.CreatingResizingMovingR;
+    root.selectSingleObject(region.midiNotes, region.midiNotes.rowCount() - 1);
     root.setObjectSnapshotsAtStart();
     CursorManager.setResizeEndCursor();
     root.actionObject = midiNote;
@@ -30,8 +31,41 @@ Arranger {
     return midiNote;
   }
 
-  function getPitchAtY(y: real): var {
+  function getObjectY(obj: MidiNote): real {
+    return getYAtPitch(obj.pitch);
+  }
+
+  function getPitchAtY(y: real): int {
     return pianoRoll.getKeyAtY(y);
+  }
+
+  function getYAtPitch(pitch: int): real {
+    return pianoRoll.keyHeight * (127 - pitch);
+  }
+
+  function moveSelectionsY(dy: real, prevY: real) {
+    const prevPitch = getPitchAtY(prevY);
+    const currentPitch = getPitchAtY(prevY + dy);
+    if (currentPitch == prevPitch) {
+      return;
+    }
+    const delta = currentPitch - prevPitch;
+    console.log("moving selections by", delta, "pitch");
+    if (root.selectionOperator) {
+      const success = root.selectionOperator.moveNotesByPitch(delta);
+      if (!success) {
+        console.warn("Failed to move selections - validation failed");
+      }
+    }
+  }
+
+  function moveTemporaryObjectsY(dy: real, prevY: real) {
+    const prevPitch = getPitchAtY(prevY);
+    const currentPitch = getPitchAtY(prevY + dy);
+    const delta = currentPitch - prevPitch;
+    root.tempQmlArrangerObjects.forEach(qmlObj => {
+      qmlObj.y -= delta * pianoRoll.keyHeight;
+    });
   }
 
   function updateCursor() {
@@ -99,6 +133,7 @@ Arranger {
       CursorManager.setStretchEndCursor();
       return;
     case Arranger.CreatingResizingR:
+    case Arranger.CreatingResizingMovingR:
     case Arranger.ResizingR:
       CursorManager.setResizeEndCursor();
       return;
