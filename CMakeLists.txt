@@ -878,6 +878,7 @@ endif()
 
 CPMGetPackage(magic_enum)
 CPMGetPackage(fmt)
+CPMGetPackage(fast_float) # dependency of scnlib
 CPMGetPackage(scnlib)
 
 # spdlog

@@ -157,6 +157,19 @@ CPMDeclarePackage(fmt
   OPTIONS
     "FMT_INSTALL OFF"
 )
+# fast_float
+CPMDeclarePackage(fast_float
+  NAME fast_float
+  VERSION 6.1.6
+  GIT_TAG 00c8c7b0d5c722d2212568d915a39ea73b08b973
+  GITHUB_REPOSITORY fastfloat/fast_float
+  SYSTEM YES
+  EXCLUDE_FROM_ALL YES
+  OPTIONS
+    "FASTFLOAT_CXX_STANDARD 17"
+    "FASTFLOAT_TEST OFF"
+    "FASTFLOAT_INSTALL OFF"
+)
 # scnlib
 CPMDeclarePackage(scnlib
   NAME scnlib
@@ -170,7 +183,7 @@ CPMDeclarePackage(scnlib
     "SCN_DOCS OFF"
     "SCN_EXAMPLES OFF"
     "SCN_INSTALL OFF"
-    "SCN_DISABLE_FAST_FLOAT ON"
+    "SCN_USE_EXTERNAL_FAST_FLOAT ON"
 )
 # spdlog
 CPMDeclarePackage(spdlog
