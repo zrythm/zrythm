@@ -30,6 +30,26 @@ AudioPort::clear_buffer (std::size_t offset, std::size_t nframes)
 }
 
 void
+AudioPort::prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
+{
+  size_t max = std::max (max_block_length, 1u);
+  buf_.resize (max);
+
+  // 8 cycles
+  audio_ring_ = std::make_unique<RingBuffer<float>> (max * 8);
+}
+
+void
+AudioPort::release_resources ()
+{
+
+  buf_.clear ();
+  audio_ring_.reset ();
+}
+
+void
 AudioPort::process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   for (const auto &[_src_port, conn] : port_sources_)

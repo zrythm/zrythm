@@ -74,7 +74,7 @@ TEST_F (CVPortTest, SignalProcessing)
 
   // Verify signal was processed
   EXPECT_NE (output_port->buf_[0], 0.0f);
-  EXPECT_NE (output_port->audio_ring_, nullptr);
+  EXPECT_NE (output_port->cv_ring_, nullptr);
 }
 
 TEST_F (CVPortTest, RingBufferWriting)
@@ -92,18 +92,18 @@ TEST_F (CVPortTest, RingBufferWriting)
 
   // Check ring buffer contents
   float sample = 0.0f;
-  EXPECT_TRUE (output_port->audio_ring_->read (sample) > 0);
+  EXPECT_TRUE (output_port->cv_ring_->read (sample) > 0);
   EXPECT_NE (sample, 0.0f);
 }
 
 TEST_F (CVPortTest, ResourceManagement)
 {
-  EXPECT_NE (output_port->audio_ring_, nullptr);
+  EXPECT_NE (output_port->cv_ring_, nullptr);
   EXPECT_FALSE (output_port->buf_.empty ());
 
   output_port->release_resources ();
 
-  EXPECT_EQ (output_port->audio_ring_, nullptr);
+  EXPECT_EQ (output_port->cv_ring_, nullptr);
   EXPECT_TRUE (output_port->buf_.empty ());
 }
 

@@ -18,6 +18,25 @@ CVPort::clear_buffer (std::size_t offset, std::size_t nframes)
 }
 
 void
+CVPort::prepare_for_processing (
+  sample_rate_t sample_rate,
+  nframes_t     max_block_length)
+{
+  size_t max = std::max (max_block_length, 1u);
+  buf_.resize (max);
+
+  // 8 cycles
+  cv_ring_ = std::make_unique<RingBuffer<float>> (max * 8);
+}
+
+void
+CVPort::release_resources ()
+{
+  buf_.clear ();
+  cv_ring_.reset ();
+}
+
+void
 CVPort::process_block (const EngineProcessTimeInfo time_nfo) noexcept
 {
   for (const auto &[src_port, conn] : port_sources_)
@@ -45,7 +64,7 @@ CVPort::process_block (const EngineProcessTimeInfo time_nfo) noexcept
 
   if (num_ring_buffer_readers_ > 0)
     {
-      audio_ring_->force_write_multiple (
+      cv_ring_->force_write_multiple (
         &buf_[time_nfo.local_offset_], time_nfo.nframes_);
     }
 }

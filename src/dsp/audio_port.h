@@ -6,6 +6,7 @@
 #include "dsp/port.h"
 #include "utils/icloneable.h"
 #include "utils/monotonic_time_provider.h"
+#include "utils/ring_buffer.h"
 
 #include <nlohmann/json.hpp>
 
@@ -18,15 +19,13 @@ namespace zrythm::dsp
 class AudioPort final
     : public QObject,
       public Port,
-      public AudioAndCVPortMixin,
+      public RingBufferOwningPortMixin,
       public PortConnectionsCacheMixin<AudioPort>,
       private utils::QElapsedTimeProvider
 {
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
-
-  static constexpr int TIME_TO_RESET_PEAK = 4800000;
 
 public:
   AudioPort (utils::Utf8String label, PortFlow flow, bool is_stereo = false);
@@ -51,11 +50,8 @@ public:
 
   void
   prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
-    override
-  {
-    prepare_for_processing_impl (sample_rate, max_block_length);
-  }
-  void release_resources () override { release_resources_impl (); }
+    override;
+  void release_resources () override;
 
 private:
   static constexpr auto kIsStereoId = "isStereo"sv;
@@ -91,6 +87,22 @@ private:
    */
   bool requires_limiting_{};
 
+public:
+  /**
+   * Audio-like data buffer.
+   */
+  std::vector<float> buf_;
+
+  /**
+   * Ring buffer for saving the contents of the audio buffer to be used in the
+   * UI instead of directly accessing the buffer.
+   *
+   * This should contain blocks of block_length samples and should maintain at
+   * least 10 cycles' worth of buffers.
+   */
+  std::unique_ptr<RingBuffer<float>> audio_ring_;
+
+private:
   BOOST_DESCRIBE_CLASS (
     AudioPort,
     (Port),

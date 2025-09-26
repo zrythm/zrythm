@@ -6,7 +6,6 @@
 #include "dsp/graph_node.h"
 #include "dsp/port_connection.h"
 #include "dsp/port_fwd.h"
-#include "utils/ring_buffer.h"
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
 
@@ -212,46 +211,6 @@ public:
    */
   std::vector<ElementType> port_sources_;
   // std::vector<ElementType> port_destinations_;
-};
-
-class AudioAndCVPortMixin : public RingBufferOwningPortMixin
-{
-public:
-  ~AudioAndCVPortMixin () override = default;
-
-  void prepare_for_processing_impl (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length)
-  {
-    size_t max = std::max (max_block_length, 1u);
-    buf_.resize (max);
-
-    // 8 cycles
-    audio_ring_ = std::make_unique<RingBuffer<float>> (max * 8);
-  }
-
-  void release_resources_impl ()
-  {
-    buf_.clear ();
-    audio_ring_.reset ();
-  }
-
-public:
-  /**
-   * Audio-like data buffer.
-   */
-  std::vector<float> buf_;
-
-  /**
-   * Ring buffer for saving the contents of the audio buffer to be used in the
-   * UI instead of directly accessing the buffer.
-   *
-   * This should contain blocks of block_length samples and should maintain at
-   * least 10 cycles' worth of buffers.
-   *
-   * This is also used for CV.
-   */
-  std::unique_ptr<RingBuffer<float>> audio_ring_;
 };
 
 using PortRegistry = utils::OwningObjectRegistry<PortPtrVariant, Port>;
