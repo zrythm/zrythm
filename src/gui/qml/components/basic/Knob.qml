@@ -42,8 +42,7 @@ Control {
   // Interaction properties
   property bool dragging: false
   property bool flat: true
-  property real lastX: 0
-  property real lastY: 0
+  property point lastCoordinates: Qt.point(0, 0)
   property real maxValue: 1.0
   property real minValue: 0.0
   property point cursorPosAtDragStart: Qt.point(0, 0)
@@ -327,8 +326,8 @@ Control {
     }
     onPositionChanged: function (mouse) {
       if (root.dragging) {
-        var deltaX = mouse.x - root.lastX;
-        var deltaY = root.lastY - mouse.y; // Invert Y for natural dragging
+        var deltaX = mouse.x - root.lastCoordinates.x;
+        var deltaY = root.lastCoordinates.y - mouse.y; // Invert Y for natural dragging
         var useY = Math.abs(deltaY) > Math.abs(deltaX);
         var delta = useY ? deltaY : deltaX;
 
@@ -338,6 +337,8 @@ Control {
         root.value = newValue;
         knobCanvas.requestPaint();
 
+        // FIXME: warping doesn't change the value as expected
+        // root.lastCoordinates = root.cursorPosAtDragStart
         CursorManager.warpCursor(root.cursorPosAtDragStart);
       }
     }
@@ -345,8 +346,7 @@ Control {
       if (mouse.button === Qt.LeftButton) {
         root.dragging = true;
         root.valueAtStart = root.value;
-        root.lastX = mouse.x;
-        root.lastY = mouse.y;
+        root.lastCoordinates = Qt.point(mouse.x, mouse.y);
         root.cursorPosAtDragStart = CursorManager.cursorPosition()
         mouse.accepted = true;
       }
