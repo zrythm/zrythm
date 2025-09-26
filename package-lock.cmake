@@ -319,3 +319,57 @@ CPMDeclarePackage(au
   OPTIONS
     "AU_EXCLUDE_GTEST_DEPENDENCY ON"
 )
+# Boost
+CPMDeclarePackage(Boost
+  NAME Boost
+  VERSION 1.88.0
+  GIT_TAG 199ef13d6034c85232431130142159af3adfce22
+  GITHUB_REPOSITORY boostorg/boost
+  GIT_SHALLOW TRUE
+  GIT_SUBMODULES
+    libs/assert
+    libs/bind
+    libs/circular_buffer
+    libs/concept_check
+    libs/config
+    libs/container
+    libs/container_hash
+    libs/core
+    libs/describe
+    libs/detail
+    libs/fusion
+    libs/function
+    libs/functional
+    libs/function_types
+    libs/intrusive
+    libs/io
+    libs/integer
+    libs/iterator
+    libs/move
+    libs/mp11
+    libs/mpl
+    libs/multi_index
+    libs/optional
+    libs/predef
+    libs/preprocessor
+    libs/smart_ptr
+    libs/static_assert
+    libs/stl_interfaces
+    libs/throw_exception
+    libs/tuple
+    libs/typeof
+    libs/type_traits
+    libs/unordered
+    libs/utility
+    tools/cmake
+  SYSTEM YES
+  EXCLUDE_FROM_ALL YES
+  OPTIONS
+    "BOOST_INCLUDE_LIBRARIES
+      circular_buffer
+      container
+      describe
+      multi_index
+      stl_interfaces
+      unordered"
+)
