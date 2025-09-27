@@ -1250,7 +1250,7 @@ ClapPlugin::create_ports_from_clap_plugin ()
           auto port_ref =
             dependencies ().port_registry_.create_object<dsp::MidiPort> (
               utils::Utf8String::from_utf8_encoded_string (
-                fmt::format ("midi_in_{}", i + 1)),
+                fmt::format ("MIDI Input {}", i + 1)),
               dsp::PortFlow::Input);
           add_input_port (port_ref);
         }
@@ -1259,7 +1259,7 @@ ClapPlugin::create_ports_from_clap_plugin ()
           auto port_ref =
             dependencies ().port_registry_.create_object<dsp::MidiPort> (
               utils::Utf8String::from_utf8_encoded_string (
-                fmt::format ("midi_out_{}", i + 1)),
+                fmt::format ("MIDI Output {}", i + 1)),
               dsp::PortFlow::Output);
           add_output_port (port_ref);
         }
