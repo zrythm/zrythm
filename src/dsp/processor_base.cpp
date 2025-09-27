@@ -184,9 +184,7 @@ ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
     const auto &[in_port, out_port] :
     std::views::zip (audio_in_ports, audio_out_ports))
     {
-      utils::float_ranges::copy (
-        &out_port->buf_[time_nfo.local_offset_],
-        &in_port->buf_[time_nfo.local_offset_], time_nfo.nframes_);
+      out_port->copy_source_rt (*in_port, time_nfo);
     }
   for (
     const auto &[in_port, out_port] :

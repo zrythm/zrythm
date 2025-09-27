@@ -80,24 +80,20 @@ public:
   bool is_audio () const { return signal_type_ == dsp::PortType::Audio; }
   bool is_midi () const { return signal_type_ == dsp::PortType::Midi; }
 
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
+  dsp::AudioPort &get_stereo_in_port () const
   {
     assert (is_audio ());
-    auto * l = get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
-    auto * r = get_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
-    return { *l, *r };
+    return *get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
   }
   dsp::MidiPort &get_midi_in_port () const
   {
     assert (is_midi ());
     return *get_input_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
+  dsp::AudioPort &get_stereo_out_port () const
   {
     assert (is_audio ());
-    auto * l = get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
-    auto * r = get_output_ports ().at (1).get_object_as<dsp::AudioPort> ();
-    return { *l, *r };
+    return *get_output_ports ().front ().get_object_as<dsp::AudioPort> ();
   }
   dsp::MidiPort &get_midi_out_port () const
   {

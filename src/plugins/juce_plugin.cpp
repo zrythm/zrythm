@@ -157,26 +157,46 @@ JucePlugin::create_ports_from_juce_plugin ()
 
   const auto &processor = *juce_plugin_;
 
-  // Create audio input ports
-  const int num_input_channels = processor.getTotalNumInputChannels ();
-  for (int i = 0; i < num_input_channels; ++i)
+  for (bool isInput : { true, false })
     {
-      auto port_ref = dependencies ().port_registry_.create_object<dsp::AudioPort> (
-        utils::Utf8String::from_utf8_encoded_string (
-          fmt::format ("audio_in_{}", i + 1)),
-        dsp::PortFlow::Input);
-      add_input_port (port_ref);
-    }
+      const int n = processor.getBusCount (isInput);
+      for (int i = 0; i < n; ++i)
+        {
+          auto * bus = processor.getBus (isInput, i);
+          if (!bus->isEnabled ())
+            continue;
 
-  // Create audio output ports
-  const int num_output_channels = processor.getTotalNumOutputChannels ();
-  for (int i = 0; i < num_output_channels; ++i)
-    {
-      auto port_ref = dependencies ().port_registry_.create_object<dsp::AudioPort> (
-        utils::Utf8String::from_utf8_encoded_string (
-          fmt::format ("audio_out_{}", i + 1)),
-        dsp::PortFlow::Output);
-      add_output_port (port_ref);
+          const auto chSet = bus->getCurrentLayout ();
+          const auto nCh = static_cast<uint8_t> (chSet.size ());
+
+          dsp::AudioPort::Purpose purpose =
+            bus->isMain ()
+              ? dsp::AudioPort::Purpose::Main
+              : dsp::AudioPort::Purpose::Sidechain;
+          dsp::AudioPort::BusLayout layout = [chSet] {
+            if (chSet == juce::AudioChannelSet::mono ())
+              return dsp::AudioPort::BusLayout::Mono;
+            if (chSet == juce::AudioChannelSet::stereo ())
+              return dsp::AudioPort::BusLayout::Stereo;
+            return dsp::AudioPort::BusLayout::Unknown;
+          }();
+
+          auto name = bus->getName ();
+
+          auto port = dependencies ().port_registry_.create_object<dsp::AudioPort> (
+            utils::Utf8String::from_juce_string (name),
+            isInput ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout, nCh,
+            purpose);
+
+          if (isInput)
+            {
+              add_input_port (port);
+            }
+          else
+            {
+              add_output_port (port);
+            }
+        }
     }
 
   // Create MIDI input port if plugin accepts MIDI
@@ -313,23 +333,35 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 
   const int num_juce_plugin_inputs = juce_plugin_->getTotalNumInputChannels ();
   const int num_juce_plugin_outputs = juce_plugin_->getTotalNumOutputChannels ();
-  const int num_audio_in_ports = static_cast<int> (audio_in_ports_.size ());
-  const int num_audio_out_ports = static_cast<int> (audio_out_ports_.size ());
 
   const auto local_offset = time_info.local_offset_;
   const auto nframes = time_info.nframes_;
 
   // Copy input audio to JUCE buffer
-  for (int ch = 0; ch < num_juce_plugin_inputs && ch < num_audio_in_ports; ++ch)
+  for (int ch = 0; ch < num_juce_plugin_inputs; ++ch)
     {
-      utils::float_ranges::copy (
-        &input_channels_[ch][local_offset],
-        &audio_in_ports_[ch]->buf_[local_offset], nframes);
+      int total_port_chs = 0;
+      for (const auto &port : audio_in_ports_)
+        {
+          for (int i = 0; i < static_cast<int> (port->num_channels ()); ++i)
+            {
+              if (total_port_chs + i == ch)
+                {
+                  utils::float_ranges::copy (
+                    &input_channels_[ch][local_offset],
+                    port->buffers ()->getReadPointer (
+                      i, static_cast<int> (local_offset)),
+                    nframes);
+                }
+            }
+          total_port_chs += port->num_channels ();
+        }
     }
 
   // Clear remaining JUCE buffers
   for (
-    int ch = num_audio_in_ports; ch < juce_audio_buffer_.getNumChannels (); ++ch)
+    int ch = num_juce_plugin_inputs; ch < juce_audio_buffer_.getNumChannels ();
+    ++ch)
     {
       utils::float_ranges::fill (
         &juce_audio_buffer_.getWritePointer (ch)[local_offset], 0.0f, nframes);
@@ -364,12 +396,23 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
   juce_plugin_->processBlock (temp_buffer_with_offset, juce_midi_buffer_);
 
   // Copy output audio from JUCE buffer
-  for (
-    int ch = 0; ch < num_juce_plugin_outputs && ch < num_audio_out_ports; ++ch)
+  for (int ch = 0; ch < num_juce_plugin_outputs; ++ch)
     {
-      utils::float_ranges::copy (
-        &audio_out_ports_[ch]->buf_[local_offset],
-        &output_channels_[ch][local_offset], nframes);
+      int total_port_chs = 0;
+      for (const auto &port : audio_out_ports_)
+        {
+          for (int i = 0; i < static_cast<int> (port->num_channels ()); ++i)
+            {
+              if (total_port_chs + i == ch)
+                {
+                  utils::float_ranges::copy (
+                    port->buffers ()->getWritePointer (
+                      i, static_cast<int> (local_offset)),
+                    &output_channels_[ch][local_offset], nframes);
+                }
+            }
+          total_port_chs += port->num_channels ();
+        }
     }
 
   // Process MIDI output if available

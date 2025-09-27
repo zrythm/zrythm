@@ -139,9 +139,8 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
       return;
     }
 
-  auto  fader_stereo_out_ports = fader_->get_stereo_out_ports ();
-  auto &l = fader_stereo_out_ports.first.buf_;
-  auto &r = fader_stereo_out_ports.second.buf_;
+  auto       &fader_stereo_out_port = fader_->get_stereo_out_port ();
+  const auto &fader_out_buf = fader_stereo_out_port.buffers ();
 
   // Process the samples in the queue
   for (auto it = current_samples_.begin (); it != current_samples_.end ();)
@@ -166,9 +165,12 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
           z_return_if_fail_cmp (
             sp.offset_ + len, <=, (unsigned_frame_t) sp.buf_->getNumSamples ());
           utils::float_ranges::mix_product (
-            &l[fader_buf_offset], sp.buf_->getReadPointer (0), sp.volume_, len);
+            fader_out_buf->getWritePointer (
+              0, static_cast<int> (fader_buf_offset)),
+            sp.buf_->getReadPointer (0), sp.volume_, len);
           utils::float_ranges::mix_product (
-            &r[fader_buf_offset],
+            fader_out_buf->getWritePointer (
+              1, static_cast<int> (fader_buf_offset)),
             sp.buf_->getReadPointer (sp.buf_->getNumChannels () > 1 ? 1 : 0),
             sp.volume_, len);
           sp.offset_ += len;
@@ -232,10 +234,12 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                     {
                       track->get_track_processor ()->process_block (
                         inner_time_nfo);
-                      auto processor_stereo_outs =
-                        track->get_track_processor ()->get_stereo_out_ports ();
-                      audio_data_l = processor_stereo_outs.first.buf_.data ();
-                      audio_data_r = processor_stereo_outs.second.buf_.data ();
+                      auto &processor_stereo_out =
+                        track->get_track_processor ()->get_stereo_out_port ();
+                      audio_data_l =
+                        processor_stereo_out.buffers ()->getReadPointer (0);
+                      audio_data_r =
+                        processor_stereo_out.buffers ()->getReadPointer (1);
                     }
                   else if constexpr (std::is_same_v<TrackT, MidiTrack>)
                     {
@@ -271,11 +275,15 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                   if (audio_data_l && audio_data_r)
                     {
                       utils::float_ranges::mix_product (
-                        &l[cycle_offset], &audio_data_l[cycle_offset],
-                        fader_->get_current_amp (), nframes);
+                        fader_out_buf->getWritePointer (
+                          0, static_cast<int> (cycle_offset)),
+                        &audio_data_l[cycle_offset], fader_->get_current_amp (),
+                        nframes);
                       utils::float_ranges::mix_product (
-                        &r[cycle_offset], &audio_data_r[cycle_offset],
-                        fader_->get_current_amp (), nframes);
+                        fader_out_buf->getWritePointer (
+                          1, static_cast<int> (cycle_offset)),
+                        &audio_data_r[cycle_offset], fader_->get_current_amp (),
+                        nframes);
                     }
                 }
             },

@@ -59,10 +59,7 @@ class Channel : public QObject
   QML_ELEMENT
   Q_PROPERTY (zrythm::structure::tracks::Fader * fader READ fader CONSTANT)
   Q_PROPERTY (QVariant preFader READ preFader CONSTANT)
-  Q_PROPERTY (
-    zrythm::dsp::AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
-  Q_PROPERTY (
-    zrythm::dsp::AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
+  Q_PROPERTY (zrythm::dsp::AudioPort * audioOutPort READ audioOutPort CONSTANT)
   Q_PROPERTY (zrythm::dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
   Q_PROPERTY (zrythm::plugins::PluginList * inserts READ inserts CONSTANT)
   Q_PROPERTY (zrythm::plugins::PluginList * midiFx READ midiFx CONSTANT)
@@ -99,16 +96,10 @@ public:
     return is_midi () ? QVariant::fromValue (midi_prefader_.get ())
                       : QVariant::fromValue (audio_prefader_.get ());
   }
-  dsp::AudioPort * getLeftAudioOut () const
+  dsp::AudioPort * audioOutPort () const
   {
     return is_audio ()
-             ? std::addressof (audio_postfader_->get_audio_out_port (0))
-             : nullptr;
-  }
-  dsp::AudioPort * getRightAudioOut () const
-  {
-    return is_audio ()
-             ? std::addressof ((audio_postfader_->get_audio_out_port (1)))
+             ? std::addressof (audio_postfader_->get_audio_out_port ())
              : nullptr;
   }
   dsp::MidiPort * getMidiOut () const

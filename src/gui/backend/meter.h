@@ -51,12 +51,11 @@ class MeterProcessor : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (QVariant port READ getPort WRITE setPort REQUIRED)
+  Q_PROPERTY (QVariant port READ port WRITE setPort REQUIRED)
+  Q_PROPERTY (int channel READ channel WRITE setChannel)
   Q_PROPERTY (
-    float currentAmplitude READ getCurrentAmplitude NOTIFY
-      currentAmplitudeChanged)
-  Q_PROPERTY (
-    float peakAmplitude READ getPeakAmplitude NOTIFY peakAmplitudeChanged)
+    float currentAmplitude READ currentAmplitude NOTIFY currentAmplitudeChanged)
+  Q_PROPERTY (float peakAmplitude READ peakAmplitude NOTIFY peakAmplitudeChanged)
 
 public:
   using MeterPortVariant = std::variant<dsp::MidiPort, dsp::AudioPort>;
@@ -68,16 +67,19 @@ public:
   // QML Interface
   // ================================================================
 
-  QVariant getPort () const { return QVariant::fromValue (port_obj_); }
+  QVariant port () const { return QVariant::fromValue (port_obj_); }
   void     setPort (QVariant port_var);
 
-  float getCurrentAmplitude () const
+  int  channel () const { return channel_; }
+  void setChannel (int channel);
+
+  float currentAmplitude () const
   {
     return current_amp_.load (std::memory_order_relaxed);
   }
   Q_SIGNAL void currentAmplitudeChanged (float value);
 
-  float getPeakAmplitude () const
+  float peakAmplitude () const
   {
     return peak_amp_.load (std::memory_order_relaxed);
   }
@@ -141,6 +143,9 @@ private:
 
   std::atomic<float> current_amp_ = 0.f;
   std::atomic<float> peak_amp_ = 0.f;
+
+  // Audio port channel, if audio meter.
+  int channel_{};
 
   boost::container::static_vector<dsp::MidiEvent, 256> tmp_events_;
 };

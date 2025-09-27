@@ -440,9 +440,9 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
 
   // Create ports for passthrough
   auto audio_in = port_registry_->create_object<dsp::AudioPort> (
-    u8"Audio In", dsp::PortFlow::Input);
+    u8"Audio In", dsp::PortFlow::Input, dsp::AudioPort::BusLayout::Mono, 1);
   auto audio_out = port_registry_->create_object<dsp::AudioPort> (
-    u8"Audio Out", dsp::PortFlow::Output);
+    u8"Audio Out", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Mono, 1);
 
   plugin_->add_input_port (audio_in);
   plugin_->add_output_port (audio_out);
@@ -455,7 +455,7 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
   auto * out_port = audio_out.get_object_as<dsp::AudioPort> ();
   for (size_t i = 0; i < 512; i++)
     {
-      in_port->buf_[i] = static_cast<float> (i) * 0.01f;
+      in_port->buffers ()->setSample (0, i, static_cast<float> (i) * 0.01f);
     }
 
   // Process with bypass enabled
@@ -473,7 +473,7 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
   // Verify passthrough
   for (size_t i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (out_port->buf_[i], i * 0.01f);
+      EXPECT_FLOAT_EQ (out_port->buffers ()->getSample (0, i), i * 0.01f);
     }
 }
 

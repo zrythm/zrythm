@@ -29,15 +29,14 @@ WaveformViewerProcessor::~WaveformViewerProcessor ()
 void
 WaveformViewerProcessor::process_audio ()
 {
-  if (!left_port_obj_ || !right_port_obj_)
+  if (!port_obj_)
     {
       return;
     }
 
-  auto &left_reader = left_ring_reader_;
-  auto &right_reader = right_ring_reader_;
+  auto &ring_reader = ring_reader_;
 
-  if (!left_reader || !right_reader)
+  if (!ring_reader)
     {
       return;
     }
@@ -45,7 +44,7 @@ WaveformViewerProcessor::process_audio ()
   // Read audio data
   size_t frames_read = 0;
 
-  frames_read = left_port_obj_->audio_ring_->peek_multiple (
+  frames_read = port_obj_->audio_ring_buffers ().at (0).peek_multiple (
     left_buffer_.data (), buffer_size_);
   if (frames_read < buffer_size_)
     {
@@ -53,7 +52,7 @@ WaveformViewerProcessor::process_audio ()
         &left_buffer_[frames_read], 0.f, buffer_size_ - frames_read);
     }
 
-  frames_read = right_port_obj_->audio_ring_->peek_multiple (
+  frames_read = port_obj_->audio_ring_buffers ().at (1).peek_multiple (
     right_buffer_.data (), buffer_size_);
   if (frames_read < buffer_size_)
     {
@@ -89,37 +88,20 @@ WaveformViewerProcessor::process_audio ()
 }
 
 void
-WaveformViewerProcessor::setLeftPort (dsp::AudioPort * port_var)
+WaveformViewerProcessor::setStereoPort (dsp::AudioPort * port_var)
 {
-  if (left_port_obj_ == port_var)
+  if (port_obj_ == port_var)
     return;
 
-  left_port_obj_ = port_var;
-  left_ring_reader_.emplace (*left_port_obj_);
+  port_obj_ = port_var;
+  ring_reader_.emplace (*port_obj_);
 
-  QObject::connect (left_port_obj_, &QObject::destroyed, this, [this] () {
-    left_ring_reader_.reset ();
-    left_port_obj_.clear ();
+  QObject::connect (port_obj_, &QObject::destroyed, this, [this] () {
+    ring_reader_.reset ();
+    port_obj_.clear ();
   });
 
-  Q_EMIT leftPortChanged ();
-}
-
-void
-WaveformViewerProcessor::setRightPort (dsp::AudioPort * port_var)
-{
-  if (right_port_obj_ == port_var)
-    return;
-
-  right_port_obj_ = port_var;
-  right_ring_reader_.emplace (*right_port_obj_);
-
-  QObject::connect (right_port_obj_, &QObject::destroyed, this, [this] () {
-    right_ring_reader_.reset ();
-    right_port_obj_.clear ();
-  });
-
-  Q_EMIT rightPortChanged ();
+  Q_EMIT stereoPortChanged ();
 }
 
 void

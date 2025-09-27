@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense OR GPL-2.0-or-later
 /*
  * This file incorporates work covered by the following copyright and
  * permission notice:
@@ -21,8 +21,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ZRYTHM_DSP_TRUE_PEAK_DSP
-#define ZRYTHM_DSP_TRUE_PEAK_DSP
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -83,5 +82,3 @@ private:
 };
 
 } // namespace zrythm::dsp
-
-#endif

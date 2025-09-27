@@ -9,22 +9,16 @@ import ZrythmStyle
 Control {
   id: root
 
-  required property AudioPort leftPort
-  required property AudioPort rightPort
+  required property AudioPort stereoPort
   readonly property color waveformColor: root.palette.text
   property real zoomLevel: 1.0
 
   implicitHeight: 24
   implicitWidth: 60
 
-  onLeftPortChanged: {
-    if (leftPort) {
-      processor.leftPort = leftPort;
-    }
-  }
-  onRightPortChanged: {
-    if (rightPort) {
-      processor.rightPort = rightPort;
+  onStereoPortChanged: {
+    if (stereoPort) {
+      processor.stereoPort = stereoPort;
     }
   }
   onWidthChanged: {
@@ -36,8 +30,7 @@ Control {
 
     bufferSize: 2048
     displayPoints: Math.max(64, Math.floor(root.width / 2))
-    leftPort: root.leftPort
-    rightPort: root.rightPort
+    stereoPort: root.stereoPort
 
     onWaveformDataChanged: canvas.requestPaint()
   }

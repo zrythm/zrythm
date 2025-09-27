@@ -18,6 +18,12 @@
 MeterProcessor::MeterProcessor (QObject * parent) : QObject (parent) { }
 
 void
+MeterProcessor::setChannel (int channel)
+{
+  channel_ = channel;
+}
+
+void
 MeterProcessor::setPort (QVariant port_var)
 {
   if (port_obj_)
@@ -42,9 +48,7 @@ MeterProcessor::setPort (QVariant port_var)
             {
               bool is_master_fader =
                 port_->get_uuid ()
-                  == P_MASTER_TRACK->channel ()->getLeftAudioOut ()->get_uuid ()
-                || port_->get_uuid ()
-                     == P_MASTER_TRACK->channel ()->getRightAudioOut ()->get_uuid ();
+                == P_MASTER_TRACK->channel ()->audioOutPort ()->get_uuid ();
 
               if (is_master_fader)
                 {
@@ -134,16 +138,19 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
       /* get amplitude */
       float amp = -1.f;
       float max_amp = -1.f;
-      if constexpr (
-        std::derived_from<PortT, dsp::AudioPort>
-        || std::derived_from<PortT, dsp::CVPort>)
+      if constexpr (std::derived_from<PortT, dsp::AudioPort>)
         {
-          if (!port->audio_ring_)
+          const RingBuffer<float> * ring{};
+          if constexpr (std::derived_from<PortT, dsp::AudioPort>)
             {
-              z_debug ("no audio ring");
-              return;
+              ring = &port->audio_ring_buffers ().at (channel_);
             }
-          size_t       read_space_avail = port->audio_ring_->read_space ();
+          else if constexpr (std::derived_from<PortT, dsp::CVPort>)
+            {
+              ring = port->cv_ring_.get ();
+            }
+
+          size_t       read_space_avail = ring->read_space ();
           const size_t block_length = AUDIO_ENGINE->get_block_length ();
           size_t       blocks_to_read =
             block_length == 0 ? 0 : read_space_avail / block_length;
@@ -158,8 +165,8 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
 
           z_return_if_fail (tmp_buf_.capacity () >= read_space_avail);
           tmp_buf_.resize (read_space_avail);
-          auto samples_read = port->audio_ring_->peek_multiple (
-            tmp_buf_.data (), read_space_avail);
+          auto samples_read =
+            ring->peek_multiple (tmp_buf_.data (), read_space_avail);
           auto   blocks_read = samples_read / block_length;
           auto   num_cycles = std::min (static_cast<size_t> (4), blocks_read);
           size_t start_index = (blocks_read - num_cycles) * block_length;
@@ -171,24 +178,26 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
               return;
             }
 
+          // const float * port_buf = port->buffers()->getReadPointer(channel_);
+          const float * buf = &tmp_buf_[start_index];
+          const auto    buf_sz = static_cast<int> (num_cycles * block_length);
           switch (algorithm_)
             {
             case MeterAlgorithm::METER_ALGORITHM_RMS:
               /* not used */
               z_warn_if_reached ();
-              amp = utils::math::calculate_rms_amp (
-                &tmp_buf_[start_index], (size_t) num_cycles * block_length);
+              amp = utils::math::calculate_rms_amp (buf, buf_sz);
               break;
             case MeterAlgorithm::METER_ALGORITHM_TRUE_PEAK:
-              true_peak_processor_->process (port->buf_.data (), block_length);
+              true_peak_processor_->process (const_cast<float *> (buf), buf_sz);
               amp = true_peak_processor_->read_f ();
               break;
             case MeterAlgorithm::METER_ALGORITHM_K:
-              kmeter_processor_->process (port->buf_.data (), block_length);
+              kmeter_processor_->process (buf, buf_sz);
               std::tie (amp, max_amp) = kmeter_processor_->read ();
               break;
             case MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK:
-              peak_processor_->process (port->buf_.data (), block_length);
+              peak_processor_->process (const_cast<float *> (buf), buf_sz);
               std::tie (amp, max_amp) = peak_processor_->read ();
               break;
             default:

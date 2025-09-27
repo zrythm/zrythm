@@ -54,26 +54,21 @@ TEST_F (AudioSampleProcessorTest, ConstructionAndBasicProperties)
   EXPECT_NE (processor_, nullptr);
 
   // Test port configuration
-  EXPECT_EQ (processor_->get_output_ports ().size (), 2);
+  EXPECT_EQ (processor_->get_output_ports ().size (), 1);
 
-  auto output_ports = processor_->get_output_audio_ports_non_rt ();
+  auto output_port = processor_->get_output_audio_port_non_rt ();
   EXPECT_EQ (
-    output_ports[0]->get_node_name (), u8"Audio Sample Processor/Stereo Out L");
-  EXPECT_EQ (
-    output_ports[1]->get_node_name (), u8"Audio Sample Processor/Stereo Out R");
+    output_port->get_node_name (), u8"Audio Sample Processor/Stereo Out");
 }
 
 TEST_F (AudioSampleProcessorTest, PortConfiguration)
 {
   auto output_ports = processor_->get_output_ports ();
-  EXPECT_EQ (output_ports.size (), 2);
+  EXPECT_EQ (output_ports.size (), 1);
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  const auto port = processor_->get_output_audio_port_non_rt ();
 
-  EXPECT_NE (left_port, nullptr);
-  EXPECT_NE (right_port, nullptr);
-  EXPECT_NE (left_port, right_port);
+  EXPECT_NE (port, nullptr);
 }
 
 TEST_F (AudioSampleProcessorTest, PlayableSampleSingleChannelConstruction)
@@ -117,8 +112,7 @@ TEST_F (AudioSampleProcessorTest, BasicAudioProcessing)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   // Create a simple test sample
   std::vector<float> test_buffer = { 0.5f, 0.5f, 0.5f, 0.5f, 0.5f };
@@ -144,8 +138,8 @@ TEST_F (AudioSampleProcessorTest, BasicAudioProcessing)
   // Check that the sample was processed
   for (size_t i = 0; i < 5; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.5f, 0.001f);
-      EXPECT_NEAR (right_port->buf_[i], 0.0f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.5f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (1, i), 0.0f, 0.001f);
     }
 }
 
@@ -153,8 +147,7 @@ TEST_F (AudioSampleProcessorTest, VolumeScaling)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f };
 
@@ -179,7 +172,7 @@ TEST_F (AudioSampleProcessorTest, VolumeScaling)
 
   for (size_t i = 0; i < 3; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.5f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.5f, 0.001f);
     }
 }
 
@@ -187,8 +180,7 @@ TEST_F (AudioSampleProcessorTest, StartOffset)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -212,21 +204,20 @@ TEST_F (AudioSampleProcessorTest, StartOffset)
   processor_->process_block (time_nfo);
 
   // First 2 frames should be 0 (due to start offset)
-  EXPECT_NEAR (left_port->buf_[0], 0.0f, 0.001f);
-  EXPECT_NEAR (left_port->buf_[1], 0.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 0), 0.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 1), 0.0f, 0.001f);
 
   // Next 3 frames should have the sample data
-  EXPECT_NEAR (left_port->buf_[2], 1.0f, 0.001f);
-  EXPECT_NEAR (left_port->buf_[3], 1.0f, 0.001f);
-  EXPECT_NEAR (left_port->buf_[4], 1.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 2), 1.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 3), 1.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 4), 1.0f, 0.001f);
 }
 
 TEST_F (AudioSampleProcessorTest, MultipleSamples)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   // Add sample to left channel
   std::vector<float> left_buffer = { 0.3f, 0.3f, 0.3f };
@@ -261,8 +252,8 @@ TEST_F (AudioSampleProcessorTest, MultipleSamples)
   // Check both channels
   for (size_t i = 0; i < 3; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.3f, 0.001f);
-      EXPECT_NEAR (right_port->buf_[i], 0.7f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.3f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (1, i), 0.7f, 0.001f);
     }
 }
 
@@ -270,8 +261,7 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   // Create a longer sample that spans multiple processing cycles
   std::vector<float> test_buffer (10, 0.8f); // 10 samples
@@ -298,7 +288,7 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
   // Check first 5 frames
   for (size_t i = 0; i < 5; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.8f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.8f, 0.001f);
     }
 
   // Second cycle - process remaining 5 frames
@@ -314,7 +304,7 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
   // Check next 5 frames
   for (size_t i = 0; i < 5; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.8f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.8f, 0.001f);
     }
 }
 
@@ -322,8 +312,7 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f };
 
@@ -349,7 +338,7 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
   // All frames should be 0 (sample hasn't started yet)
   for (size_t i = 0; i < 5; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.0f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.0f, 0.001f);
     }
 
   // Process another cycle - frames 5-9, sample still hasn't started (starts at
@@ -366,7 +355,7 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
   // All frames should still be 0 (sample starts at frame 10)
   for (size_t i = 0; i < 5; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.0f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.0f, 0.001f);
     }
 
   // Process a third cycle - frames 10-14, sample should start here
@@ -380,19 +369,18 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
   processor_->process_block (time_nfo3);
 
   // Now we should have sample data starting from frame 10
-  EXPECT_NEAR (left_port->buf_[0], 1.0f, 0.001f);
-  EXPECT_NEAR (left_port->buf_[1], 1.0f, 0.001f);
-  EXPECT_NEAR (left_port->buf_[2], 1.0f, 0.001f);
-  EXPECT_NEAR (left_port->buf_[3], 0.0f, 0.001f);
-  EXPECT_NEAR (left_port->buf_[4], 0.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 0), 1.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 1), 1.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 2), 1.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 3), 0.0f, 0.001f);
+  EXPECT_NEAR (port->buffers ()->getSample (0, 4), 0.0f, 0.001f);
 }
 
 TEST_F (AudioSampleProcessorTest, ChannelIndexValidation)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   std::vector<float> test_buffer = { 1.0f, 1.0f, 1.0f };
 
@@ -418,7 +406,7 @@ TEST_F (AudioSampleProcessorTest, ChannelIndexValidation)
   // Should not crash and should not modify output
   for (size_t i = 0; i < 3; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.0f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.0f, 0.001f);
     }
 }
 
@@ -426,8 +414,7 @@ TEST_F (AudioSampleProcessorTest, EmptyBuffer)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   // Test with empty buffer
   std::vector<float> empty_buffer;
@@ -453,7 +440,7 @@ TEST_F (AudioSampleProcessorTest, EmptyBuffer)
   // Should not crash and should not modify output
   for (size_t i = 0; i < 5; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.0f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.0f, 0.001f);
     }
 }
 
@@ -502,8 +489,7 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
 
   // After prepare, the queue should be empty
   // We can verify this by processing and checking no samples are played
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  const auto * port = processor_->get_output_audio_port_non_rt ();
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -517,7 +503,7 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
   // Should not have any sample data
   for (size_t i = 0; i < 5; ++i)
     {
-      EXPECT_NEAR (left_port->buf_[i], 0.0f, 0.001f);
+      EXPECT_NEAR (port->buffers ()->getSample (0, i), 0.0f, 0.001f);
     }
 }
 
@@ -525,8 +511,7 @@ TEST_F (AudioSampleProcessorTest, ConcurrentSampleProcessing)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   // Add multiple samples that overlap
   std::vector<float> buffer1 = { 0.5f, 0.5f, 0.5f };
@@ -559,27 +544,28 @@ TEST_F (AudioSampleProcessorTest, ConcurrentSampleProcessing)
   processor_->process_block (time_nfo);
 
   // Check mixed results
-  EXPECT_NEAR (left_port->buf_[0], 0.5f, 0.001f); // Only sample1
-  EXPECT_NEAR (left_port->buf_[1], 0.8f, 0.001f); // sample1 + sample2
-  EXPECT_NEAR (left_port->buf_[2], 0.8f, 0.001f); // sample1 + sample2
-  EXPECT_NEAR (left_port->buf_[3], 0.3f, 0.001f); // Only sample2
+  EXPECT_NEAR (port->buffers ()->getSample (0, 0), 0.5f, 0.001f); // Only sample1
+  EXPECT_NEAR (
+    port->buffers ()->getSample (0, 1), 0.8f, 0.001f); // sample1 + sample2
+  EXPECT_NEAR (
+    port->buffers ()->getSample (0, 2), 0.8f, 0.001f); // sample1 + sample2
+  EXPECT_NEAR (port->buffers ()->getSample (0, 3), 0.3f, 0.001f); // Only sample2
 }
 
 TEST_F (AudioSampleProcessorTest, ResourceCleanup)
 {
   prepare_processor ();
 
-  const auto &[left_port, right_port] =
-    processor_->get_output_audio_ports_non_rt ();
+  auto * const port = processor_->get_output_audio_port_non_rt ();
 
   // Verify ports are prepared
-  EXPECT_GE (left_port->buf_.size (), max_block_length_);
+  EXPECT_GE (port->buffers ()->getNumSamples (), max_block_length_);
 
   // Release resources
   processor_->release_resources ();
 
   // Verify buffers are cleared
-  EXPECT_EQ (left_port->buf_.size (), 0);
+  EXPECT_EQ (port->buffers (), nullptr);
 }
 
 } // namespace zrythm::dsp

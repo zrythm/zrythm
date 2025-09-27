@@ -148,10 +148,10 @@ Fader::Fader (
         sym = u8"fader_in";
 
         /* stereo in */
-        auto stereo_in_ports = dsp::StereoPorts::create_stereo_ports (
-          dependencies.port_registry_, true, name, sym);
-        add_input_port (stereo_in_ports.first);
-        add_input_port (stereo_in_ports.second);
+        auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
+          name, dsp::PortFlow::Input, dsp::AudioPort::BusLayout::Stereo, 2);
+        port.get_object_as<dsp::AudioPort> ()->set_symbol (sym);
+        add_input_port (port);
       }
 
       {
@@ -162,10 +162,10 @@ Fader::Fader (
 
         {
           /* stereo out */
-          auto stereo_out_ports = dsp::StereoPorts::create_stereo_ports (
-            dependencies.port_registry_, false, name, sym);
-          add_output_port (stereo_out_ports.first);
-          add_output_port (stereo_out_ports.second);
+          auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
+            name, dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo, 2);
+          port.get_object_as<dsp::AudioPort> ()->set_symbol (sym);
+          add_output_port (port);
         }
       }
     }
@@ -308,12 +308,10 @@ Fader::custom_prepare_for_processing (
   processing_caches_->midi_out_rt_ = {};
   if (is_audio ())
     {
-      const auto stereo_in = get_stereo_in_ports ();
-      processing_caches_->audio_ins_rt_.push_back (&stereo_in.first);
-      processing_caches_->audio_ins_rt_.push_back (&stereo_in.second);
-      const auto stereo_out = get_stereo_out_ports ();
-      processing_caches_->audio_outs_rt_.push_back (&stereo_out.first);
-      processing_caches_->audio_outs_rt_.push_back (&stereo_out.second);
+      auto &stereo_in = get_stereo_in_port ();
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in);
+      auto &stereo_out = get_stereo_out_port ();
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out);
     }
   else if (is_midi ())
     {
@@ -340,18 +338,18 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
         const auto &[out, in] : std::views::zip (
           processing_caches_->audio_outs_rt_, processing_caches_->audio_ins_rt_))
         {
-          utils::float_ranges::copy (
-            &out->buf_[time_nfo.local_offset_],
-            &in->buf_[time_nfo.local_offset_], time_nfo.nframes_);
+          out->copy_source_rt (*in, time_nfo);
         }
 
       if (preprocess_audio_cb_.has_value ())
         {
+          const auto &out_buf =
+            processing_caches_->audio_outs_rt_.front ()->buffers ();
           std::invoke (
             preprocess_audio_cb_.value (),
             std::make_pair (
-              std::span (processing_caches_->audio_outs_rt_[0]->buf_),
-              std::span (processing_caches_->audio_outs_rt_[1]->buf_)),
+              std::span (out_buf->getWritePointer (0), out_buf->getNumSamples ()),
+              std::span (out_buf->getWritePointer (1), out_buf->getNumSamples ())),
             time_nfo);
         }
 
@@ -365,34 +363,43 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
       const bool swap_phase =
         swap_phase_param.range ().is_toggled (swap_phase_param.currentValue ());
 
-      // apply gain (TODO: use SIMD)
-      for (size_t i = 0; i < time_nfo.nframes_; i++)
-        {
-          for (const auto &out : processing_caches_->audio_outs_rt_)
-            {
-              out->buf_[time_nfo.local_offset_ + i] *=
-                current_gain_.getCurrentValue ();
-            }
-          current_gain_.skip (1);
-        }
-
-      auto [calc_l, calc_r] = dsp::calculate_balance_control (
-        dsp::BalanceControlAlgorithm::Linear, pan);
+      // apply gain
+      const auto &out_buf =
+        processing_caches_->audio_outs_rt_.front ()->buffers ();
+      {
+        for (const auto i : std::views::iota (0, out_buf->getNumSamples ()))
+          {
+            const auto gain = current_gain_.getCurrentValue ();
+            for (
+              const auto ch : std::views::iota (0, out_buf->getNumChannels ()))
+              {
+                out_buf->applyGain (
+                  ch, static_cast<int> (time_nfo.local_offset_) + i, 1, gain);
+              }
+            current_gain_.skip (1);
+          }
+      }
 
       // apply pan
-      utils::float_ranges::mul_k2 (
-        &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
-        calc_l, time_nfo.nframes_);
-      utils::float_ranges::mul_k2 (
-        &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
-        calc_r, time_nfo.nframes_);
+      {
+        auto [calc_l, calc_r] = dsp::calculate_balance_control (
+          dsp::BalanceControlAlgorithm::Linear, pan);
+        out_buf->applyGain (
+          0, static_cast<int> (time_nfo.local_offset_),
+          static_cast<int> (time_nfo.nframes_), calc_l);
+        out_buf->applyGain (
+          1, static_cast<int> (time_nfo.local_offset_),
+          static_cast<int> (time_nfo.nframes_), calc_r);
+      }
 
       /* make mono if mono compat enabled */
       if (mono_compat_enabled)
         {
           utils::float_ranges::make_mono (
-            &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
-            &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
+            out_buf->getWritePointer (
+              0, static_cast<int> (time_nfo.local_offset_)),
+            out_buf->getWritePointer (
+              1, static_cast<int> (time_nfo.local_offset_)),
             time_nfo.nframes_, false);
         }
 
@@ -400,21 +407,24 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
       if (swap_phase)
         {
           utils::float_ranges::mul_k2 (
-            &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
+            out_buf->getWritePointer (
+              0, static_cast<int> (time_nfo.local_offset_)),
             -1.f, time_nfo.nframes_);
           utils::float_ranges::mul_k2 (
-            &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
+            out_buf->getWritePointer (
+              1, static_cast<int> (time_nfo.local_offset_)),
             -1.f, time_nfo.nframes_);
         }
 
       // hard-limit output if requested
       if (hard_limit_output_)
         {
-          for (const auto &out : processing_caches_->audio_outs_rt_)
+          for (const auto ch : std::views::iota (0, out_buf->getNumChannels ()))
             {
               utils::float_ranges::clip (
-                &out->buf_[time_nfo.local_offset_], -2.f, 2.f,
-                time_nfo.nframes_);
+                out_buf->getWritePointer (
+                  ch, static_cast<int> (time_nfo.local_offset_)),
+                -2.f, 2.f, time_nfo.nframes_);
             }
         }
     } // endif is_audio()

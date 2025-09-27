@@ -24,18 +24,18 @@ public:
    *
    * This requires add_nodes() to be called beforehand.
    *
-   * @note @p track_processor_outputs must be added to the graph before calling
+   * @note @p track_processor_output must be added to the graph before calling
    * this.
    *
    * @param graph
    * @param ch
-   * @param track_processor_outputs Track processor outputs to connect to the
+   * @param track_processor_output Track processor output to connect to the
    * channel's input (or the first plugin).
    */
   static void add_connections (
-    dsp::graph::Graph                      &graph,
-    dsp::PortRegistry                      &port_registry,
-    Channel                                &ch,
-    std::span<const dsp::PortUuidReference> track_processor_outputs);
+    dsp::graph::Graph     &graph,
+    dsp::PortRegistry     &port_registry,
+    Channel               &ch,
+    dsp::PortUuidReference track_processor_output);
 };
 } // namespace zrythm::structure::tracks

@@ -19,7 +19,7 @@ RowLayout {
 
     Layout.fillHeight: true
     Layout.fillWidth: false
-    active: root.channel && root.channel.leftAudioOut
+    active: root.channel && root.channel.audioOutPort
     visible: active
 
     sourceComponent: RowLayout {
@@ -36,7 +36,8 @@ RowLayout {
 
         Layout.fillHeight: true
         Layout.preferredWidth: width
-        port: root.channel.leftAudioOut
+        channel: 0
+        port: root.channel.audioOutPort
       }
 
       Meter {
@@ -44,7 +45,8 @@ RowLayout {
 
         Layout.fillHeight: true
         Layout.preferredWidth: width
-        port: root.channel.rightAudioOut
+        channel: 1
+        port: root.channel.audioOutPort
       }
     }
   }

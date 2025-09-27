@@ -21,10 +21,11 @@ public:
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies)
       : dsp::ProcessorBase (dependencies)
   {
-    const auto &[l, r] = dsp::StereoPorts::create_stereo_ports (
-      dependencies.port_registry_, false, u8"Stereo Out", u8"stereo_out");
-    add_output_port (l);
-    add_output_port (r);
+
+    auto out_ref = dependencies.port_registry_.create_object<dsp::AudioPort> (
+      u8"Stereo Out", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+    out_ref.get_object_as<dsp::AudioPort> ()->set_symbol (u8"stereo_out");
+    add_output_port (out_ref);
     set_name (u8"Audio Sample Processor");
   }
 
@@ -100,31 +101,22 @@ public:
     queue_sample_cb_ = std::move (cb);
   }
 
-  auto get_output_audio_ports_non_rt () const
+  auto get_output_audio_port_non_rt () const
   {
-    return std::array{
-      get_output_ports ()[0].get_object_as<dsp::AudioPort> (),
-      get_output_ports ()[1].get_object_as<dsp::AudioPort> ()
-    };
+    return get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
   }
 
-  auto get_output_audio_ports_rt () const
-  {
-    return std::array{ left_audio_out_, right_audio_out_ };
-  }
+  auto get_output_audio_port_rt () const { return audio_out_; }
 
   void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override
   {
     const auto cycle_offset = time_nfo.local_offset_;
     const auto nframes = time_nfo.nframes_;
 
-    const auto out_ports = get_output_audio_ports_rt ();
+    auto * out_port = get_output_audio_port_rt ();
 
     // Clear output
-    for (const auto &out_port : out_ports)
-      {
-        out_port->clear_buffer (cycle_offset, nframes);
-      }
+    out_port->clear_buffer (cycle_offset, nframes);
 
     // Process the samples in the queue
     for (auto it = samples_to_play_.begin (); it != samples_to_play_.end ();)
@@ -143,9 +135,9 @@ public:
           [&] (nframes_t fader_buf_offset, nframes_t len) {
             if (sp.channel_index_ < 2) [[likely]]
               {
-                utils::float_ranges::mix_product (
-                  &out_ports[sp.channel_index_]->buf_[fader_buf_offset],
-                  &sp.buf_[sp.offset_], sp.volume_, len);
+                out_port->buffers ()->addFrom (
+                  sp.channel_index_, static_cast<int> (fader_buf_offset),
+                  &sp.buf_[sp.offset_], static_cast<int> (len), sp.volume_);
               }
             sp.offset_ += len;
           };
@@ -183,15 +175,13 @@ public:
     nframes_t     max_block_length) override
   {
     samples_to_play_.clear ();
-    left_audio_out_ = get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
-    right_audio_out_ = get_output_ports ()[1].get_object_as<dsp::AudioPort> ();
+    audio_out_ = get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
   }
 
   void custom_release_resources () override
   {
     samples_to_play_.clear ();
-    left_audio_out_ = nullptr;
-    right_audio_out_ = nullptr;
+    audio_out_ = nullptr;
   }
 
 private:
@@ -210,7 +200,6 @@ private:
    */
   std::optional<QueueSingleChannelSampleCallback> queue_sample_cb_;
 
-  AudioPort * left_audio_out_{};
-  AudioPort * right_audio_out_{};
+  AudioPort * audio_out_{};
 };
 } // namespace zrythm::dsp

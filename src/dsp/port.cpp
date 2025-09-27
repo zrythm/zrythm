@@ -26,7 +26,17 @@ struct PortRegistryBuilder
 {
   template <typename T> std::unique_ptr<T> build () const
   {
-    return std::make_unique<T> (u8"", zrythm::dsp::PortFlow::Unknown);
+    if constexpr (std::is_same_v<T, zrythm::dsp::AudioPort>)
+      {
+        return std::make_unique<T> (
+          u8"", zrythm::dsp::PortFlow::Unknown,
+          zrythm::dsp::AudioPort::BusLayout::Unknown, 0,
+          zrythm::dsp::AudioPort::Purpose::Main);
+      }
+    else
+      {
+        return std::make_unique<T> (u8"", zrythm::dsp::PortFlow::Unknown);
+      }
   }
 };
 void

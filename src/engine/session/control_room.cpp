@@ -57,13 +57,13 @@ ControlRoom::ControlRoom (
                           auto * f = t->channel ()->fader ();
                           utils::float_ranges::product (
                             &stereo_bufs.first[time_nfo.local_offset_],
-                            &f->get_stereo_out_ports ()
-                               .first.buf_[time_nfo.local_offset_],
+                            f->get_stereo_out_port ().buffers ()->getReadPointer (
+                              0, time_nfo.local_offset_),
                             listen_amp, time_nfo.nframes_);
                           utils::float_ranges::product (
                             &stereo_bufs.second[time_nfo.local_offset_],
-                            &f->get_stereo_out_ports ()
-                               .second.buf_[time_nfo.local_offset_],
+                            f->get_stereo_out_port ().buffers ()->getReadPointer (
+                              1, time_nfo.local_offset_),
                             listen_amp, time_nfo.nframes_);
                         }
                     }

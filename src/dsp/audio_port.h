@@ -28,7 +28,39 @@ class AudioPort final
   QML_UNCREATABLE ("")
 
 public:
-  AudioPort (utils::Utf8String label, PortFlow flow, bool is_stereo = false);
+  /**
+   * @brief Description of the channel layout of this port.
+   */
+  enum class BusLayout : uint8_t
+  {
+    Unknown,
+
+    // Implies a single channel
+    Mono,
+
+    // Implies 2 channels: L + R
+    Stereo,
+
+    // Unimplemented
+    Surround,
+    Ambisonic,
+  };
+
+  /**
+   * @brief Purpose of this port.
+   */
+  enum class Purpose : uint8_t
+  {
+    Main,
+    Sidechain,
+  };
+
+  AudioPort (
+    utils::Utf8String label,
+    PortFlow          flow,
+    BusLayout         layout,
+    uint8_t           num_channels,
+    Purpose           purpose = Purpose::Main);
 
   static constexpr size_t AUDIO_RING_SIZE = 65536;
 
@@ -37,11 +69,27 @@ public:
 
   void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
-  bool is_stereo_port () const { return is_stereo_; }
+  [[nodiscard]] auto  layout () const { return layout_; }
+  [[nodiscard]] auto  purpose () const { return purpose_; }
+  [[nodiscard]] auto &buffers () const { return buf_; }
+  [[nodiscard]] auto &audio_ring_buffers () const { return audio_ring_; }
+  auto                num_channels () const { return num_channels_; }
 
-  void mark_as_stereo () { is_stereo_ = true; }
-  void mark_as_sidechain () { is_sidechain_ = true; }
   void mark_as_requires_limiting () { requires_limiting_ = true; }
+  auto requires_limiting () const { return requires_limiting_; }
+
+  /**
+   * @brief Adds the contents of @p src to this port.
+   */
+  void add_source_rt (
+    const AudioPort      &src,
+    EngineProcessTimeInfo time_nfo,
+    float                 multiplier = 1.f);
+
+  void copy_source_rt (
+    const AudioPort      &src,
+    EngineProcessTimeInfo time_nfo,
+    float                 multiplier = 1.f);
 
   friend void init_from (
     AudioPort             &obj,
@@ -54,30 +102,29 @@ public:
   void release_resources () override;
 
 private:
-  static constexpr auto kIsStereoId = "isStereo"sv;
-  static constexpr auto kIsSidechainId = "isSidechain"sv;
+  static constexpr auto kBusLayoutId = "busLayout"sv;
+  static constexpr auto kPurposeId = "purpose"sv;
   static constexpr auto kRequiresLimitingId = "requiresLimiting"sv;
   friend void           to_json (nlohmann::json &j, const AudioPort &port)
   {
     to_json (j, static_cast<const Port &> (port));
-    j[kIsStereoId] = port.is_stereo_;
-    j[kIsSidechainId] = port.is_sidechain_;
+    j[kBusLayoutId] = port.layout_;
+    j[kPurposeId] = port.purpose_;
     j[kRequiresLimitingId] = port.requires_limiting_;
   }
   friend void from_json (const nlohmann::json &j, AudioPort &port)
   {
     from_json (j, static_cast<Port &> (port));
-    j.at (kIsStereoId).get_to (port.is_stereo_);
-    j.at (kIsSidechainId).get_to (port.is_sidechain_);
+    j.at (kBusLayoutId).get_to (port.layout_);
+    j.at (kPurposeId).get_to (port.purpose_);
     j.at (kRequiresLimitingId).get_to (port.requires_limiting_);
   }
 
 private:
-  // Whether this is part of a stereo port group.
-  bool is_stereo_{};
+  BusLayout layout_{};
+  Purpose   purpose_{};
 
-  /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#sideChainOf. */
-  bool is_sidechain_{};
+  uint8_t num_channels_{};
 
   /**
    * @brief Whether to clip the port's data to the range [-2, 2] (3dB).
@@ -87,28 +134,28 @@ private:
    */
   bool requires_limiting_{};
 
-public:
   /**
-   * Audio-like data buffer.
+   * Audio data buffer(s).
    */
-  std::vector<float> buf_;
+  std::unique_ptr<juce::AudioSampleBuffer> buf_;
 
   /**
-   * Ring buffer for saving the contents of the audio buffer to be used in the
-   * UI instead of directly accessing the buffer.
+   * Ring buffer(s) for saving the contents of the audio buffer to be used in
+   * the UI instead of directly accessing the buffer.
+   *
+   * 1 ring buffer per channel.
    *
    * This should contain blocks of block_length samples and should maintain at
    * least 10 cycles' worth of buffers.
    */
-  std::unique_ptr<RingBuffer<float>> audio_ring_;
+  std::vector<RingBuffer<float>> audio_ring_;
 
-private:
   BOOST_DESCRIBE_CLASS (
     AudioPort,
     (Port),
     (),
     (),
-    (is_stereo_, is_sidechain_, requires_limiting_))
+    (layout_, purpose_, requires_limiting_))
 };
 
 /**
@@ -128,12 +175,6 @@ public:
       utils::Utf8String::from_utf8_encoded_string (
         fmt::format ("{}_{}", symbol, left ? "l" : "r")));
   }
-
-  static std::pair<PortUuidReference, PortUuidReference> create_stereo_ports (
-    PortRegistry     &port_registry,
-    bool              input,
-    utils::Utf8String name,
-    utils::Utf8String symbol);
 };
 
 } // namespace zrythm::dsp

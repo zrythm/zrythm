@@ -13,11 +13,8 @@ class WaveformViewerProcessor : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    zrythm::dsp::AudioPort * leftPort READ leftPort WRITE setLeftPort NOTIFY
-      leftPortChanged REQUIRED)
-  Q_PROPERTY (
-    zrythm::dsp::AudioPort * rightPort READ rightPort WRITE setRightPort NOTIFY
-      rightPortChanged REQUIRED)
+    zrythm::dsp::AudioPort * stereoPort READ stereoPort WRITE setStereoPort
+      NOTIFY stereoPortChanged REQUIRED)
   Q_PROPERTY (
     QVector<float> waveformData READ waveformData NOTIFY waveformDataChanged)
   Q_PROPERTY (
@@ -34,14 +31,12 @@ public:
   // ================================================================
   // QML Interface
   // ================================================================
-  dsp::AudioPort * leftPort () const { return left_port_obj_; }
-  dsp::AudioPort * rightPort () const { return right_port_obj_; }
+  dsp::AudioPort * stereoPort () const { return port_obj_; }
   QVector<float>   waveformData () const { return waveform_data_; }
   int bufferSize () const { return static_cast<int> (buffer_size_); }
   int displayPoints () const { return static_cast<int> (display_points_); }
 
-  void setLeftPort (dsp::AudioPort * port_var);
-  void setRightPort (dsp::AudioPort * port_var);
+  void setStereoPort (dsp::AudioPort * port_var);
   void setBufferSize (int size);
   void setDisplayPoints (int points);
 
@@ -49,8 +44,7 @@ Q_SIGNALS:
   void waveformDataChanged ();
   void bufferSizeChanged ();
   void displayPointsChanged ();
-  void leftPortChanged ();
-  void rightPortChanged ();
+  void stereoPortChanged ();
 
   // ================================================================
 
@@ -63,12 +57,8 @@ private:
   size_t buffer_size_{};
   size_t display_points_{};
 
-  QPointer<dsp::AudioPort> left_port_obj_;
-  QPointer<dsp::AudioPort> right_port_obj_;
-  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader>
-    left_ring_reader_;
-  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader>
-    right_ring_reader_;
+  QPointer<dsp::AudioPort>                                        port_obj_;
+  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader> ring_reader_;
 
   QVector<float>     waveform_data_;
   std::vector<float> mono_buffer_;

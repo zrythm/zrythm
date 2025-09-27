@@ -89,23 +89,24 @@ AudioEngine::AudioEngine (
             if (numOutputChannels > 0)
               {
                 utils::float_ranges::copy (
-                  outputChannelData[0], monitor_out_left_port_->buf_.data (),
-                  numSamples);
+                  outputChannelData[0],
+                  monitor_out_port_->buffers ()->getReadPointer (0), numSamples);
               }
             if (numOutputChannels > 1)
               {
                 utils::float_ranges::copy (
-                  outputChannelData[1], monitor_out_right_port_->buf_.data (),
-                  numSamples);
+                  outputChannelData[1],
+                  monitor_out_port_->buffers ()->getReadPointer (1), numSamples);
               }
           },
-          [this] (juce::AudioIODevice * _) {
-            const auto &[monitor_left, monitor_right] = get_monitor_out_ports ();
-            monitor_out_left_port_ = &monitor_left;
-            monitor_out_right_port_ = &monitor_right;
+          [this] (juce::AudioIODevice * dev) {
+            monitor_out_port_ = &get_monitor_out_port ();
             router_->recalc_graph (false);
+            monitor_out_port_->prepare_for_processing (
+              static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
+              dev->getCurrentBufferSizeSamples ());
           },
-          [] () {}))
+          [this] () { monitor_out_port_->release_resources (); }))
 {
   z_debug ("Creating audio engine...");
 
@@ -113,10 +114,10 @@ AudioEngine::AudioEngine (
   midi_in_->set_symbol (u8"midi_in");
 
   {
-    auto monitor_out = dsp::StereoPorts::create_stereo_ports (
-      project_->get_port_registry (), false, u8"Monitor Out", u8"monitor_out");
-    monitor_out_left_ = monitor_out.first;
-    monitor_out_right_ = monitor_out.second;
+    monitor_out_ = project->get_port_registry ().create_object<dsp::AudioPort> (
+      u8"Monitor Out", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo,
+      2);
+    monitor_out_->get_object_as<dsp::AudioPort> ()->set_symbol (u8"monitor_out");
   }
 
   init_common ();
@@ -131,8 +132,7 @@ init_from (
   utils::ObjectCloneType clone_type)
 {
   obj.frames_per_tick_ = other.frames_per_tick_;
-  obj.monitor_out_left_ = other.monitor_out_left_;
-  obj.monitor_out_right_ = other.monitor_out_right_;
+  obj.monitor_out_ = other.monitor_out_;
 // TODO
 #if 0
   obj.midi_in_ = utils::clone_unique (*other.midi_in_);
@@ -143,28 +143,24 @@ init_from (
 #endif
 }
 
-std::pair<dsp::AudioPort &, dsp::AudioPort &>
-AudioEngine::get_monitor_out_ports ()
+dsp::AudioPort &
+AudioEngine::get_monitor_out_port ()
 {
-  if (!monitor_out_left_)
+  if (!monitor_out_)
     {
       throw std::runtime_error ("No monitor outputs");
     }
-  auto * l = std::get<dsp::AudioPort *> (monitor_out_left_->get_object ());
-  auto * r = std::get<dsp::AudioPort *> (monitor_out_right_->get_object ());
-  return { *l, *r };
+  return *monitor_out_->get_object_as<dsp::AudioPort> ();
 }
 
-std::pair<dsp::AudioPort &, dsp::AudioPort &>
-AudioEngine::get_dummy_input_ports ()
+dsp::AudioPort &
+AudioEngine::get_dummy_input_port ()
 {
-  if (!dummy_left_input_)
+  if (!dummy_audio_input_)
     {
       throw std::runtime_error ("No dummy inputs");
     }
-  auto * l = dummy_left_input_->get_object_as<dsp::AudioPort> ();
-  auto * r = dummy_right_input_->get_object_as<dsp::AudioPort> ();
-  return { *l, *r };
+  return *dummy_audio_input_->get_object_as<dsp::AudioPort> ();
 }
 
 void
@@ -530,9 +526,8 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
     return;
 
   /* clear the monitor output (used by rtaudio) */
-  iterate_tuple (
-    [&] (auto &port) { port.clear_buffer (0, get_block_length ()); },
-    get_monitor_out_ports ());
+
+  get_monitor_out_port ().clear_buffer (0, get_block_length ());
   // midi_clock_out_->clear_buffer (get_block_length ());
 
   /* if not running, do not attempt to access any possibly deleted ports */

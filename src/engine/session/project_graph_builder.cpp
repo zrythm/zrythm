@@ -137,9 +137,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   // add engine monitor output
   {
-    const auto &monitor_outs = engine->get_monitor_out_ports ();
-    add_node_for_processable (monitor_outs.first);
-    add_node_for_processable (monitor_outs.second);
+    auto &monitor_out = engine->get_monitor_out_port ();
+    add_node_for_processable (monitor_out);
   }
 
   /* add the sample processor */
@@ -236,20 +235,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // connect metronome processor
   {
     dsp::ProcessorGraphBuilder::add_connections (graph, metronome);
-    const auto &[monitor_l_in, monitor_r_in] =
-      monitor_fader->get_stereo_in_ports ();
-    auto * monitor_l_in_node =
-      graph.get_nodes ().find_node_for_processable (monitor_l_in);
-    auto * monitor_r_in_node =
-      graph.get_nodes ().find_node_for_processable (monitor_r_in);
-    auto [metronome_l_out, metronome_r_out] =
-      metronome.get_output_audio_ports_non_rt ();
-    auto * metronome_l_out_node =
-      graph.get_nodes ().find_node_for_processable (*metronome_l_out);
-    auto * metronome_r_out_node =
-      graph.get_nodes ().find_node_for_processable (*metronome_r_out);
-    metronome_l_out_node->connect_to (*monitor_l_in_node);
-    metronome_r_out_node->connect_to (*monitor_r_in_node);
+    auto  &monitor_in = monitor_fader->get_stereo_in_port ();
+    auto * monitor_in_node =
+      graph.get_nodes ().find_node_for_processable (monitor_in);
+    auto * metronome_out = metronome.get_output_audio_port_non_rt ();
+    auto * metronome_out_node =
+      graph.get_nodes ().find_node_for_processable (*metronome_out);
+    metronome_out_node->connect_to (*monitor_in_node);
   }
 
   // connect midi panic processor
@@ -286,20 +278,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   // connect monitor fader output to engine monitor output
   {
-    const auto &mf_outs = monitor_fader->get_output_ports ();
-    const std::array<dsp::PortUuidReference, 2> monitor_outs = {
-      engine->monitor_out_left_.value (), engine->monitor_out_right_.value ()
-    };
-    for (
-      const auto &[mf_out, monitor_out] :
-      std::views::zip (mf_outs, monitor_outs))
-      {
-        auto * mf_out_node = graph.get_nodes ().find_node_for_processable (
-          *mf_out.get_object_as<dsp::AudioPort> ());
-        auto * monitor_out_node = graph.get_nodes ().find_node_for_processable (
-          *monitor_out.get_object_as<dsp::AudioPort> ());
-        mf_out_node->connect_to (*monitor_out_node);
-      }
+    const auto &mf_out = monitor_fader->get_output_ports ().front ();
+    const auto  monitor_out = engine->monitor_out_.value ();
+    auto *      mf_out_node = graph.get_nodes ().find_node_for_processable (
+      *mf_out.get_object_as<dsp::AudioPort> ());
+    auto * monitor_out_node = graph.get_nodes ().find_node_for_processable (
+      *monitor_out.get_object_as<dsp::AudioPort> ());
+    mf_out_node->connect_to (*monitor_out_node);
   }
 
   /* connect the HW input processor */
@@ -362,7 +347,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 {
                   structure::tracks::ChannelSubgraphBuilder::add_connections (
                     graph, tr->get_port_registry (), *ch,
-                    std::span (tr->get_track_processor ()->get_output_ports ()));
+                    tr->get_track_processor ()->get_output_ports ().front ());
 
                   // connect to target track
                   auto route_target =
@@ -377,18 +362,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                             {
                               connect_ports (
                                 ch->get_audio_post_fader ()
-                                  .get_audio_out_port (0)
+                                  .get_audio_out_port ()
                                   .get_uuid (),
                                 output_track->get_track_processor ()
-                                  ->get_stereo_in_ports ()
-                                  .first.get_uuid ());
-                              connect_ports (
-                                ch->get_audio_post_fader ()
-                                  .get_audio_out_port (1)
-                                  .get_uuid (),
-                                output_track->get_track_processor ()
-                                  ->get_stereo_in_ports ()
-                                  .second.get_uuid ());
+                                  ->get_stereo_in_port ()
+                                  .get_uuid ());
                             }
                           else if (
                             output_track->get_input_signal_type ()
@@ -410,18 +388,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                   if constexpr (
                     std::is_same_v<TrackT, structure::tracks::MasterTrack>)
                     {
-                      const auto &monitor_fader_ins =
-                        monitor_fader->get_stereo_in_ports ();
+                      auto &monitor_fader_in =
+                        monitor_fader->get_stereo_in_port ();
                       connect_ports (
                         ch->get_audio_post_fader ()
-                          .get_audio_out_port (0)
+                          .get_audio_out_port ()
                           .get_uuid (),
-                        monitor_fader_ins.first.get_uuid ());
-                      connect_ports (
-                        ch->get_audio_post_fader ()
-                          .get_audio_out_port (1)
-                          .get_uuid (),
-                        monitor_fader_ins.second.get_uuid ());
+                        monitor_fader_in.get_uuid ());
                     }
                 }
             }

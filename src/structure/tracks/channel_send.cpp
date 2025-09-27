@@ -31,23 +31,23 @@ ChannelSend::ChannelSend (
   if (is_audio ())
     {
       {
-        auto stereo_in_ports = dsp::StereoPorts::create_stereo_ports (
-          dependencies.port_registry_, true,
-          utils::Utf8String::from_qstring (QObject::tr ("Audio input")),
+        auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
+          u8"Audio Input", dsp::PortFlow::Input,
+          dsp::AudioPort::BusLayout::Stereo, 2);
+        port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
             fmt::format ("channel_send_{}_audio_in", slot + 1)));
-        add_input_port (stereo_in_ports.first);
-        add_input_port (stereo_in_ports.second);
+        add_input_port (port);
       }
 
       {
-        auto stereo_out_ports = dsp::StereoPorts::create_stereo_ports (
-          dependencies.port_registry_, false,
-          utils::Utf8String::from_qstring (QObject::tr ("Audio output")),
+        auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
+          u8"Audio Output", dsp::PortFlow::Output,
+          dsp::AudioPort::BusLayout::Stereo, 2);
+        port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
             fmt::format ("channel_send_{}_audio_out", slot + 1)));
-        add_output_port (stereo_out_ports.first);
-        add_output_port (stereo_out_ports.second);
+        add_output_port (port);
       }
     }
   else if (is_midi ())
@@ -89,17 +89,7 @@ ChannelSend::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcep
         const auto &[out, in] : std::views::zip (
           processing_caches_->audio_outs_rt_, processing_caches_->audio_ins_rt_))
         {
-          if (utils::math::floats_near (amount_val, 1.f, 0.00001f))
-            {
-              utils::float_ranges::copy (
-                &out->buf_[local_offset], &in->buf_[local_offset], nframes);
-            }
-          else
-            {
-              utils::float_ranges::product (
-                &out->buf_[local_offset], &in->buf_[local_offset], amount_val,
-                nframes);
-            }
+          out->copy_source_rt (*in, time_nfo, amount_val);
         }
     }
   else if (is_midi ())
@@ -125,12 +115,8 @@ ChannelSend::custom_prepare_for_processing (
     }
   else if (is_audio ())
     {
-      const auto stereo_in = get_stereo_in_ports ();
-      processing_caches_->audio_ins_rt_.push_back (&stereo_in.first);
-      processing_caches_->audio_ins_rt_.push_back (&stereo_in.second);
-      const auto stereo_out = get_stereo_out_ports ();
-      processing_caches_->audio_outs_rt_.push_back (&stereo_out.first);
-      processing_caches_->audio_outs_rt_.push_back (&stereo_out.second);
+      processing_caches_->audio_ins_rt_.push_back (&get_stereo_in_port ());
+      processing_caches_->audio_outs_rt_.push_back (&get_stereo_out_port ());
     }
 }
 

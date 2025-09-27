@@ -38,6 +38,16 @@ public:
 
   void set_bipolar (bool bipolar) { bipolar_ = bipolar; }
 
+  void set_channel_mapping (uint8_t source_channel, uint8_t destination_channel)
+  {
+    source_ch_to_destination_ch_mapping_ =
+      std::make_pair (source_channel, destination_channel);
+  }
+  void unset_channel_mapping ()
+  {
+    source_ch_to_destination_ch_mapping_.reset ();
+  }
+
 private:
   static constexpr std::string_view kSourceIdKey = "srcId";
   static constexpr std::string_view kDestIdKey = "destId";
@@ -45,6 +55,8 @@ private:
   static constexpr std::string_view kLockedKey = "locked";
   static constexpr std::string_view kEnabledKey = "enabled";
   static constexpr std::string_view kBipolarKey = "bipolar";
+  static constexpr std::string_view kSourceDestMappingKey =
+    "sourceChannelToDestinationChannelMapping";
   friend void to_json (nlohmann::json &j, const PortConnection &port_connection)
   {
     j[kSourceIdKey] = port_connection.src_id_;
@@ -53,6 +65,8 @@ private:
     j[kLockedKey] = port_connection.locked_;
     j[kEnabledKey] = port_connection.enabled_;
     j[kBipolarKey] = port_connection.bipolar_;
+    j[kSourceDestMappingKey] =
+      port_connection.source_ch_to_destination_ch_mapping_;
   }
   friend void
   from_json (const nlohmann::json &j, PortConnection &port_connection)
@@ -63,6 +77,8 @@ private:
     j.at (kLockedKey).get_to (port_connection.locked_);
     j.at (kEnabledKey).get_to (port_connection.enabled_);
     j.at (kBipolarKey).get_to (port_connection.bipolar_);
+    j.at (kSourceDestMappingKey)
+      .get_to (port_connection.source_ch_to_destination_ch_mapping_);
   }
 
   friend void init_from (
@@ -114,10 +130,25 @@ public:
    */
   bool bipolar_{};
 
+  /**
+   * @brief Optional source channel to destination channel mapping.
+   *
+   * Used for audio ports. If this is nullopt for an audio port connection then
+   * the destination port is expected to use a reasonable approach to merge the
+   * source channels into the destination channels.
+   */
+  std::optional<std::pair<uint8_t, uint8_t>> source_ch_to_destination_ch_mapping_;
+
   BOOST_DESCRIBE_CLASS (
     PortConnection,
     (),
-    (src_id_, dest_id_, multiplier_, locked_, enabled_, bipolar_),
+    (src_id_,
+     dest_id_,
+     multiplier_,
+     locked_,
+     enabled_,
+     bipolar_,
+     source_ch_to_destination_ch_mapping_),
     (),
     ())
 };

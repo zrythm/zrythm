@@ -29,16 +29,15 @@ SpectrumAnalyzerProcessor::~SpectrumAnalyzerProcessor ()
 void
 SpectrumAnalyzerProcessor::process_audio ()
 {
-  if (!left_port_obj_ || !right_port_obj_)
+  if (!port_obj_)
     {
       return;
     }
 
   // Get ring buffer readers
-  auto &left_reader = left_ring_reader_;
-  auto &right_reader = right_ring_reader_;
+  auto &ring_reader = ring_reader_;
 
-  if (!left_reader || !right_reader)
+  if (!ring_reader)
     {
       return;
     }
@@ -49,8 +48,8 @@ SpectrumAnalyzerProcessor::process_audio ()
   auto * left_buffer = buffer_.getWritePointer (0);
   auto * right_buffer = buffer_.getWritePointer (1);
 
-  frames_read =
-    left_port_obj_->audio_ring_->peek_multiple (left_buffer, fft_size_);
+  frames_read = port_obj_->audio_ring_buffers ().at (0).peek_multiple (
+    left_buffer, fft_size_);
   if (frames_read < fft_size_)
     {
       // Not enough data, pad with zeros
@@ -58,8 +57,8 @@ SpectrumAnalyzerProcessor::process_audio ()
         &left_buffer[frames_read], 0.f, fft_size_ - frames_read);
     }
 
-  frames_read =
-    right_port_obj_->audio_ring_->peek_multiple (right_buffer, fft_size_);
+  frames_read = port_obj_->audio_ring_buffers ().at (1).peek_multiple (
+    right_buffer, fft_size_);
   if (frames_read < fft_size_)
     {
       utils::float_ranges::fill (
@@ -117,37 +116,20 @@ SpectrumAnalyzerProcessor::process_audio ()
 }
 
 void
-SpectrumAnalyzerProcessor::setLeftPort (dsp::AudioPort * port_var)
+SpectrumAnalyzerProcessor::setStereoPort (dsp::AudioPort * port_var)
 {
-  if (left_port_obj_ == port_var)
+  if (port_obj_ == port_var)
     return;
 
-  left_port_obj_ = port_var;
-  left_ring_reader_.emplace (*left_port_obj_);
+  port_obj_ = port_var;
+  ring_reader_.emplace (*port_obj_);
 
-  QObject::connect (left_port_obj_, &QObject::destroyed, this, [this] () {
-    left_ring_reader_.reset ();
-    left_port_obj_.clear ();
+  QObject::connect (port_obj_, &QObject::destroyed, this, [this] () {
+    ring_reader_.reset ();
+    port_obj_.clear ();
   });
 
-  Q_EMIT leftPortChanged ();
-}
-
-void
-SpectrumAnalyzerProcessor::setRightPort (dsp::AudioPort * port_var)
-{
-  if (right_port_obj_ == port_var)
-    return;
-
-  right_port_obj_ = port_var;
-  right_ring_reader_.emplace (*right_port_obj_);
-
-  QObject::connect (right_port_obj_, &QObject::destroyed, this, [this] () {
-    right_ring_reader_.reset ();
-    right_port_obj_.clear ();
-  });
-
-  Q_EMIT rightPortChanged ();
+  Q_EMIT stereoPortChanged ();
 }
 
 void

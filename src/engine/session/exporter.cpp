@@ -243,17 +243,19 @@ Exporter::export_audio (Settings &info)
          * filled - pass its buffers to the output */
         for (int i = 0; i < EXPORT_CHANNELS; ++i)
           {
-            auto &ch_data =
+            const auto * ch_data =
               i == 0
                 ? P_MASTER_TRACK->channel ()
                     ->get_audio_post_fader ()
-                    .get_audio_out_port (0)
-                    .buf_
+                    .get_audio_out_port ()
+                    .buffers ()
+                    ->getReadPointer (0)
                 : P_MASTER_TRACK->channel ()
                     ->get_audio_post_fader ()
-                    .get_audio_out_port (1)
-                    .buf_;
-            buffer.copyFrom (i, 0, ch_data.data (), (int) nframes);
+                    .get_audio_out_port ()
+                    .buffers ()
+                    ->getReadPointer (1);
+            buffer.copyFrom (i, 0, ch_data, (int) nframes);
           }
 
         /* clipping detection */

@@ -31,7 +31,7 @@ ZrythmToolBar {
       icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-left-symbolic.svg")
 
       onCheckedChanged: {
-          root.settingsManager.leftPanelVisible = checked;
+        root.settingsManager.leftPanelVisible = checked;
       }
 
       ToolTip {
@@ -40,7 +40,7 @@ ZrythmToolBar {
 
       Connections {
         function onRightPanelVisibleChanged() {
-            toggleLeftDock.checked = root.settingsManager.leftPanelVisible;
+          toggleLeftDock.checked = root.settingsManager.leftPanelVisible;
         }
 
         target: root.settingsManager
@@ -68,19 +68,18 @@ ZrythmToolBar {
   ]
   rightItems: [
     SpectrumAnalyzer {
-      leftPort: root.project.tracklist.singletonTracks.masterTrack.channel.leftAudioOut
       padding: 2
-      rightPort: root.project.tracklist.singletonTracks.masterTrack.channel.rightAudioOut
+      stereoPort: root.project.tracklist.singletonTracks.masterTrack.channel.audioOutPort
       width: 120
     },
     WaveformViewer {
-      leftPort: root.project.tracklist.singletonTracks.masterTrack.channel.leftAudioOut
       padding: 2
-      rightPort: root.project.tracklist.singletonTracks.masterTrack.channel.rightAudioOut
+      stereoPort: root.project.tracklist.singletonTracks.masterTrack.channel.audioOutPort
       width: 120
     },
     DspLoadIndicator {
       id: dspLoadIndicator
+
     },
     ToolButton {
       id: toggleRightDock
@@ -90,12 +89,12 @@ ZrythmToolBar {
       icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-right-symbolic.svg")
 
       onCheckedChanged: {
-          root.settingsManager.rightPanelVisible = checked;
+        root.settingsManager.rightPanelVisible = checked;
       }
 
       Connections {
         function onRightPanelVisibleChanged() {
-            toggleRightDock.checked = root.settingsManager.rightPanelVisible;
+          toggleRightDock.checked = root.settingsManager.rightPanelVisible;
         }
 
         target: root.settingsManager

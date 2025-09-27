@@ -288,25 +288,21 @@ public:
     return *std::get<dsp::ProcessorParameter *> (
       dependencies ().param_registry_.find_by_id_or_throw (*swap_phase_id_));
   }
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
+  dsp::AudioPort &get_stereo_in_port () const
   {
     if (!is_audio ())
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    auto * l = get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
-    auto * r = get_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
-    return { *l, *r };
+    return *get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
   }
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
+  dsp::AudioPort &get_stereo_out_port () const
   {
     if (!is_audio ())
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    auto * l = get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
-    auto * r = get_output_ports ().at (1).get_object_as<dsp::AudioPort> ();
-    return { *l, *r };
+    return *get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
   }
   dsp::MidiPort &get_midi_in_port () const
   {

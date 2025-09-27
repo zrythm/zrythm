@@ -37,7 +37,8 @@
       "args": [
         "-qmljsdebugger=host:localhost,port:${command:qt-qml.debugPort},block,services:DebugMessages,QmlDebugger,V8Debugger",
         // note: Removing all breakpoints fixes occasional segfaults on gdb launch
-        // "--gtest_filter='*MetronomeTest.PrerollTicks*'",
+        // "--gtest_filter='*PassthroughProc*'",
+        // "--gtest_break_on_failure"
       ],
       "linux": {
         "MIMode": "gdb",

@@ -119,16 +119,14 @@ TEST_F (ChannelTest, QmlInterfaceProperties)
 
   // Test audio channel QML properties
   EXPECT_NE (audio_channel_->fader (), nullptr);
-  EXPECT_NE (audio_channel_->getLeftAudioOut (), nullptr);
-  EXPECT_NE (audio_channel_->getRightAudioOut (), nullptr);
+  EXPECT_NE (audio_channel_->audioOutPort (), nullptr);
   EXPECT_EQ (audio_channel_->getMidiOut (), nullptr);
   EXPECT_NE (audio_channel_->inserts (), nullptr);
   EXPECT_NE (audio_channel_->midiFx (), nullptr);
 
   // Test MIDI channel QML properties
   EXPECT_NE (midi_channel_->fader (), nullptr);
-  EXPECT_EQ (midi_channel_->getLeftAudioOut (), nullptr);
-  EXPECT_EQ (midi_channel_->getRightAudioOut (), nullptr);
+  EXPECT_EQ (midi_channel_->audioOutPort (), nullptr);
   EXPECT_NE (midi_channel_->getMidiOut (), nullptr);
   EXPECT_NE (midi_channel_->inserts (), nullptr);
   EXPECT_NE (midi_channel_->midiFx (), nullptr);

@@ -226,8 +226,8 @@ public:
     const AudioEngine     &other,
     utils::ObjectCloneType clone_type);
 
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_monitor_out_ports ();
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_dummy_input_ports ();
+  dsp::AudioPort &get_monitor_out_port ();
+  dsp::AudioPort &get_dummy_input_port ();
 
   /**
    * Queues MIDI note off to event queues.
@@ -259,8 +259,7 @@ public:
 
 private:
   static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
-  static constexpr auto kMonitorOutLKey = "monitorOutL"sv;
-  static constexpr auto kMonitorOutRKey = "monitorOutR"sv;
+  static constexpr auto kMonitorOutKey = "monitorOut"sv;
   static constexpr auto kMidiInKey = "midiIn"sv;
   static constexpr auto kControlRoomKey = "controlRoom"sv;
   static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
@@ -269,12 +268,11 @@ private:
   friend void           to_json (nlohmann::json &j, const AudioEngine &engine)
   {
     j = nlohmann::json{
-      { kFramesPerTickKey,   engine.frames_per_tick_   },
-      { kMonitorOutLKey,     engine.monitor_out_left_  },
-      { kMonitorOutRKey,     engine.monitor_out_right_ },
-      { kMidiInKey,          engine.midi_in_           },
-      { kControlRoomKey,     engine.control_room_      },
-      { kSampleProcessorKey, engine.sample_processor_  },
+      { kFramesPerTickKey,   engine.frames_per_tick_  },
+      { kMonitorOutKey,      engine.monitor_out_      },
+      { kMidiInKey,          engine.midi_in_          },
+      { kControlRoomKey,     engine.control_room_     },
+      { kSampleProcessorKey, engine.sample_processor_ },
     };
   }
   friend void from_json (const nlohmann::json &j, AudioEngine &engine);
@@ -341,8 +339,7 @@ public:
    *
    * Will be ignored if NULL.
    */
-  std::optional<dsp::PortUuidReference> dummy_left_input_;
-  std::optional<dsp::PortUuidReference> dummy_right_input_;
+  std::optional<dsp::PortUuidReference> dummy_audio_input_;
 
   /**
    * Monitor - these should be the last ports in the signal
@@ -350,12 +347,10 @@ public:
    *
    * The L/R ports are exposed to the backend.
    */
-  std::optional<dsp::PortUuidReference> monitor_out_left_;
-  std::optional<dsp::PortUuidReference> monitor_out_right_;
+  std::optional<dsp::PortUuidReference> monitor_out_;
 
   // Realtime caches
-  dsp::AudioPort * monitor_out_left_port_{};
-  dsp::AudioPort * monitor_out_right_port_{};
+  dsp::AudioPort * monitor_out_port_{};
 
   /**
    * Manual note press events from the piano roll.

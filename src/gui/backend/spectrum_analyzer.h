@@ -23,11 +23,8 @@ class SpectrumAnalyzerProcessor : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    zrythm::dsp::AudioPort * leftPort READ leftPort WRITE setLeftPort NOTIFY
-      leftPortChanged REQUIRED)
-  Q_PROPERTY (
-    zrythm::dsp::AudioPort * rightPort READ rightPort WRITE setRightPort NOTIFY
-      rightPortChanged REQUIRED)
+    zrythm::dsp::AudioPort * stereoPort READ stereoPort WRITE setStereoPort
+      NOTIFY stereoPortChanged REQUIRED)
   Q_PROPERTY (
     QVector<float> spectrumData READ spectrumData NOTIFY spectrumDataChanged)
   Q_PROPERTY (int fftSize READ fftSize WRITE setFftSize NOTIFY fftSizeChanged)
@@ -63,11 +60,8 @@ public:
   // QML Interface
   // ================================================================
 
-  dsp::AudioPort * leftPort () const { return left_port_obj_; }
-  void             setLeftPort (dsp::AudioPort * port_var);
-
-  dsp::AudioPort * rightPort () const { return right_port_obj_; }
-  void             setRightPort (dsp::AudioPort * port_var);
+  dsp::AudioPort * stereoPort () const { return port_obj_; }
+  void             setStereoPort (dsp::AudioPort * port_var);
 
   QVector<float> spectrumData () const { return spectrum_data_; }
   int            fftSize () const { return static_cast<int> (fft_size_); }
@@ -88,8 +82,7 @@ Q_SIGNALS:
   void spectrumDataChanged ();
   void fftSizeChanged ();
   void sampleRateChanged ();
-  void leftPortChanged ();
-  void rightPortChanged ();
+  void stereoPortChanged ();
 
   // ================================================================
 
@@ -97,12 +90,8 @@ private:
   void process_audio ();
 
   // Port handling
-  QPointer<dsp::AudioPort> left_port_obj_;
-  QPointer<dsp::AudioPort> right_port_obj_;
-  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader>
-    left_ring_reader_;
-  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader>
-    right_ring_reader_;
+  QPointer<dsp::AudioPort>                                        port_obj_;
+  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader> ring_reader_;
 
   // FFT processing
   QVector<float>     spectrum_data_;

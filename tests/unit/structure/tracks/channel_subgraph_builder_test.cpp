@@ -150,7 +150,7 @@ protected:
     if (type == dsp::PortType::Audio)
       {
         return port_registry_->create_object<dsp::AudioPort> (
-          name, dsp::PortFlow::Output);
+          name, dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Mono, 1);
       }
     else if (type == dsp::PortType::Midi)
       {
@@ -199,7 +199,7 @@ protected:
   size_t countNodes () { return graph_.get_nodes ().graph_nodes_.size (); }
 
   std::unique_ptr<MockTrackProcessor>
-  createMockTrackProcessor (dsp::PortType type, int num_outputs = 2)
+  createMockTrackProcessor (dsp::PortType type, int num_channels = 2)
   {
     auto processor = std::make_unique<
       MockTrackProcessor> (dsp::ProcessorBase::ProcessorBaseDependencies{
@@ -208,14 +208,13 @@ protected:
     // Add appropriate output ports
     if (type == dsp::PortType::Audio)
       {
-        for (int i = 0; i < num_outputs; ++i)
-          {
-            auto port_ref = port_registry_->create_object<dsp::AudioPort> (
-              utils::Utf8String::from_utf8_encoded_string (
-                fmt::format ("Track Out {}", i + 1)),
-              dsp::PortFlow::Output);
-            processor->add_output_port (port_ref);
-          }
+        auto port_ref = port_registry_->create_object<dsp::AudioPort> (
+          u8"Track Out", dsp::PortFlow::Output,
+          num_channels == 1
+            ? dsp::AudioPort::BusLayout::Mono
+            : dsp::AudioPort::BusLayout::Stereo,
+          num_channels);
+        processor->add_output_port (port_ref);
       }
     else if (type == dsp::PortType::Midi)
       {
@@ -227,10 +226,10 @@ protected:
     return processor;
   }
 
-  std::vector<dsp::PortUuidReference>
-  getProcessorOutputPorts (const dsp::ProcessorBase &processor)
+  dsp::PortUuidReference
+  getProcessorOutputPort (const dsp::ProcessorBase &processor)
   {
-    return processor.get_output_ports ();
+    return processor.get_output_ports ().front ();
   }
 
   void addTrackProcessorToGraph (
@@ -347,10 +346,10 @@ protected:
       midi_channel_->get_fader (), midi_channel_->get_midi_post_fader ());
   }
 
-  void verifyChannelToTrackConnections (
-    const std::vector<dsp::PortUuidReference> &track_outputs)
+  void
+  verifyChannelToTrackConnections (const dsp::PortUuidReference &track_output)
   {
-    // Verify post-fader connects to track outputs
+    // Verify post-fader connects to track output
     auto * postfader_node =
       findNodeForProcessable (audio_channel_->get_audio_post_fader ());
     ASSERT_NE (postfader_node, nullptr);
@@ -456,7 +455,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyAudioChannel)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
@@ -466,7 +465,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyAudioChannel)
   });
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 
   verifyBasicAudioChannelConnections (*track_processor);
@@ -479,7 +478,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyMidiChannel)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
@@ -489,7 +488,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyMidiChannel)
   });
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *midi_channel_, track_outputs);
+      graph_, *port_registry_, *midi_channel_, track_output);
   });
 
   verifyBasicMidiChannelConnections (*track_processor);
@@ -514,14 +513,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAudioPlugins)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -562,14 +561,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithMidiPlugins)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *midi_channel_, track_outputs);
+      graph_, *port_registry_, *midi_channel_, track_output);
   });
 
   // Get plugin objects
@@ -601,14 +600,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 
   // Verify basic connections
@@ -630,14 +629,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 
   // Verify basic connections
@@ -663,14 +662,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 1);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -710,14 +709,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAsymmetricAudioPlugins)
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -763,14 +762,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithInstrumentPlugin)
 
   // Create mock track processor (MIDI)
   auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -801,7 +800,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithEmptyTrackProcessorOutputs
 
   // Create mock track processor with no outputs
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 0);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
 
   // Add track processor outputs to the graph
   addTrackProcessorToGraph (*track_processor);
@@ -809,7 +808,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithEmptyTrackProcessorOutputs
   // This should not crash, though it won't make useful connections
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_outputs);
+      graph_, *port_registry_, *audio_channel_, track_output);
   });
 }
 
@@ -823,14 +822,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsThrowsWhenOutputsNotInGraph)
 
   // Create mock track processor but DON'T add its outputs to the graph
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
-  auto track_outputs = getProcessorOutputPorts (*track_processor);
+  auto track_output = getProcessorOutputPort (*track_processor);
   // Note: NOT adding the ports to the graph
 
   // This should throw std::invalid_argument
   EXPECT_THROW (
     {
       ChannelSubgraphBuilder::add_connections (
-        graph_, *port_registry_, *audio_channel_, track_outputs);
+        graph_, *port_registry_, *audio_channel_, track_output);
     },
     std::invalid_argument);
 }

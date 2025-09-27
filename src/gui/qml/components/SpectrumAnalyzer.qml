@@ -10,25 +10,22 @@ Control {
   id: root
 
   property int fft_size: 512
-  required property AudioPort leftPort
+  required property AudioPort stereoPort
   readonly property real max_frequency: sampleRate / 2
   property real min_frequency: 40.0
-  required property AudioPort rightPort
   property int sampleRate: 44100 // TODO: get from engine
   readonly property color spectrumColor: root.palette.text
 
   implicitHeight: 24
   implicitWidth: 60
 
-  onLeftPortChanged: canvas.requestPaint()
-  onRightPortChanged: canvas.requestPaint()
+  onStereoPortChanged: canvas.requestPaint()
 
   SpectrumAnalyzerProcessor {
     id: spectrumAnalyzer
 
     fftSize: root.fft_size
-    leftPort: root.leftPort
-    rightPort: root.rightPort
+    stereoPort: root.stereoPort
     sampleRate: root.sampleRate
 
     onSpectrumDataChanged: canvas.requestPaint()

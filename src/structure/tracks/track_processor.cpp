@@ -153,31 +153,27 @@ TrackProcessor::TrackProcessor (
   else if (is_audio ())
     {
       const auto init_stereo_out_ports = [&] (bool in) {
-        auto stereo_ports = dsp::StereoPorts::create_stereo_ports (
-          dependencies.port_registry_, in,
+        auto port_ref = dependencies.port_registry_.create_object<dsp::AudioPort> (
           in ? u8"TP Stereo in" : u8"TP Stereo out",
+          in ? dsp::PortFlow::Input : dsp::PortFlow::Output,
+          dsp::AudioPort::BusLayout::Stereo, 2);
+        auto * port = std::get<dsp::AudioPort *> (port_ref.get_object ());
+        port->set_full_designation_provider (this);
+        port->set_symbol (
           utils::Utf8String (u8"track_processor_stereo_")
-            + (in ? u8"in" : u8"out"));
-        iterate_tuple (
-          [&] (const auto &port_ref) {
-            auto * port = std::get<dsp::AudioPort *> (port_ref.get_object ());
-            port->set_full_designation_provider (this);
-          },
-          stereo_ports);
+          + (in ? u8"in" : u8"out"));
 
         if (in)
           {
-            add_input_port (stereo_ports.first);
-            add_input_port (stereo_ports.second);
+            add_input_port (port_ref);
           }
         else
           {
-            add_output_port (stereo_ports.first);
-            add_output_port (stereo_ports.second);
+            add_output_port (port_ref);
           }
       };
-      init_stereo_out_ports (false);
       init_stereo_out_ports (true);
+      init_stereo_out_ports (false);
     }
 
   if (is_audio_track)
@@ -401,15 +397,19 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
         {
           // assumed audio track (other audio-based tracks are not recordable)
           assert (mono_id_.has_value ());
-          const auto &l = *processing_caches_->audio_ins_rt_[0];
-          const auto &r =
+          const auto &out_buf =
+            processing_caches_->audio_ins_rt_.front ()->buffers ();
+          auto * l = out_buf->getWritePointer (0);
+          auto * r =
             processing_caches_->mono_param_->range ().is_toggled (
               processing_caches_->mono_param_->currentValue ())
-              ? *processing_caches_->audio_ins_rt_[0]
-              : *processing_caches_->audio_ins_rt_[1];
+              ? l
+              : out_buf->getWritePointer (1);
           std::invoke (
             *handle_recording_cb_, cur_time_nfo, nullptr,
-            std::make_pair (std::span (l.buf_), std::span (r.buf_)));
+            std::make_pair (
+              std::span (l, out_buf->getNumSamples ()),
+              std::span (r, out_buf->getNumSamples ())));
         }
     }
 }
@@ -687,11 +687,14 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
       // audio clips
       if (is_audio ())
         {
+          const auto &out_buf =
+            processing_caches_->audio_outs_rt_.front ()->buffers ();
           fill_audio_events (
             time_nfo,
             std::make_pair (
-              std::span (processing_caches_->audio_outs_rt_[0]->buf_),
-              std::span (processing_caches_->audio_outs_rt_[1]->buf_)));
+              std::span (out_buf->getWritePointer (0), out_buf->getNumSamples ()),
+              std::span (
+                out_buf->getWritePointer (1), out_buf->getNumSamples ())));
         }
       // MIDI clips
       else if (has_piano_roll_port_)
@@ -725,13 +728,9 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
   /* add inputs to outputs */
   if (is_audio ())
     {
-      const auto &stereo_in = std::make_pair (
-        processing_caches_->audio_ins_rt_[0],
-        processing_caches_->audio_ins_rt_[1]);
-      const auto &stereo_out = std::make_pair (
-        processing_caches_->audio_outs_rt_[0],
-        processing_caches_->audio_outs_rt_[1]);
-      const auto input_gain = [this] () {
+      const auto &stereo_in = processing_caches_->audio_ins_rt_[0];
+      const auto &stereo_out = processing_caches_->audio_outs_rt_[0];
+      const auto  input_gain = [this] () {
         const auto &input_gain_param = *processing_caches_->input_gain_;
         return input_gain_param.range ().convertFrom0To1 (
           input_gain_param.currentValue ());
@@ -751,17 +750,26 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
       // "monitor" param (in which case inputs are always taken into account)
       if (!monitor_audio_id_.has_value () || monitor_audio ())
         {
+          const auto &in_buf = stereo_in->buffers ();
+          const auto &out_buf = stereo_out->buffers ();
+
           utils::float_ranges::product (
-            &stereo_out.first->buf_[time_nfo.local_offset_],
-            &stereo_in.first->buf_[time_nfo.local_offset_],
+            out_buf->getWritePointer (
+              0, static_cast<int> (time_nfo.local_offset_)),
+            in_buf->getReadPointer (0, static_cast<int> (time_nfo.local_offset_)),
             input_gain_id_ ? input_gain () : 1.f, time_nfo.nframes_);
 
           const auto &src_right_buf =
-            (mono_id_ && mono ()) ? stereo_in.first->buf_ : stereo_in.second->buf_;
+            (mono_id_ && mono ())
+              ? in_buf->getWritePointer (
+                  0, static_cast<int> (time_nfo.local_offset_))
+              : in_buf->getWritePointer (
+                  1, static_cast<int> (time_nfo.local_offset_));
           utils::float_ranges::product (
-            &stereo_out.second->buf_[time_nfo.local_offset_],
-            &src_right_buf[time_nfo.local_offset_],
-            input_gain_id_ ? input_gain () : 1.f, time_nfo.nframes_);
+            out_buf->getWritePointer (
+              1, static_cast<int> (time_nfo.local_offset_)),
+            src_right_buf, input_gain_id_ ? input_gain () : 1.f,
+            time_nfo.nframes_);
         }
     }
   else if (is_midi ())
@@ -808,12 +816,9 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
       const auto  output_gain = output_gain_param.range ().convertFrom0To1 (
         output_gain_param.currentValue ());
 
-      utils::float_ranges::mul_k2 (
-        &processing_caches_->audio_outs_rt_[0]->buf_[time_nfo.local_offset_],
-        output_gain, time_nfo.nframes_);
-      utils::float_ranges::mul_k2 (
-        &processing_caches_->audio_outs_rt_[1]->buf_[time_nfo.local_offset_],
-        output_gain, time_nfo.nframes_);
+      processing_caches_->audio_outs_rt_.front ()->buffers ()->applyGain (
+        static_cast<int> (time_nfo.local_offset_),
+        static_cast<int> (time_nfo.nframes_), output_gain);
     }
 }
 
@@ -826,12 +831,10 @@ TrackProcessor::custom_prepare_for_processing (
 
   if (is_audio ())
     {
-      const auto stereo_in = get_stereo_in_ports ();
-      processing_caches_->audio_ins_rt_.push_back (&stereo_in.first);
-      processing_caches_->audio_ins_rt_.push_back (&stereo_in.second);
-      const auto stereo_out = get_stereo_out_ports ();
-      processing_caches_->audio_outs_rt_.push_back (&stereo_out.first);
-      processing_caches_->audio_outs_rt_.push_back (&stereo_out.second);
+      auto &stereo_in = get_stereo_in_port ();
+      processing_caches_->audio_ins_rt_.push_back (&stereo_in);
+      auto &stereo_out = get_stereo_out_port ();
+      processing_caches_->audio_outs_rt_.push_back (&stereo_out);
     }
   else if (is_midi ())
     {

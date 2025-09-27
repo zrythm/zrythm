@@ -104,8 +104,8 @@ TEST_F (TrackProcessorTest, AudioTrackInitialState)
   EXPECT_EQ (processor.get_node_name (), u8"Test Audio Track Processor");
 
   // Check audio ports
-  EXPECT_EQ (processor.get_input_ports ().size (), 2);
-  EXPECT_EQ (processor.get_output_ports ().size (), 2);
+  EXPECT_EQ (processor.get_input_ports ().size (), 1);
+  EXPECT_EQ (processor.get_output_ports ().size (), 1);
 
   // Check audio-specific parameters
   EXPECT_EQ (processor.get_parameters ().size (), 4);
@@ -163,19 +163,22 @@ TEST_F (TrackProcessorTest, DisabledTrackProcessing)
   processor.prepare_for_processing (sample_rate_, block_length_);
 
   // Fill inputs with test data
-  const auto stereo_in = processor.get_stereo_in_ports ();
-  std::ranges::fill (stereo_in.first.buf_, 0.5f);
-  std::ranges::fill (stereo_in.second.buf_, 0.5f);
+  auto &stereo_in = processor.get_stereo_in_port ();
+  for (int i = 0; i < stereo_in.buffers ()->getNumSamples (); ++i)
+    {
+      stereo_in.buffers ()->setSample (0, i, 0.5f);
+      stereo_in.buffers ()->setSample (1, i, 0.5f);
+    }
 
   // Should not process when disabled
   processor.process_block (time_nfo);
 
   // Verify output buffers are cleared (no processing occurred)
-  const auto stereo_out = processor.get_stereo_out_ports ();
+  auto &stereo_out = processor.get_stereo_out_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      EXPECT_EQ (stereo_out.first.buf_[i], 0.0f);
-      EXPECT_EQ (stereo_out.second.buf_[i], 0.0f);
+      EXPECT_EQ (stereo_out.buffers ()->getSample (0, i), 0.0f);
+      EXPECT_EQ (stereo_out.buffers ()->getSample (1, i), 0.0f);
     }
 }
 
@@ -198,21 +201,25 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMonitoringOff)
   processor.get_monitor_audio_param ().setBaseValue (0.f);
 
   // Fill input buffers with test data
-  const auto stereo_in = processor.get_stereo_in_ports ();
+  auto &stereo_in = processor.get_stereo_in_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      stereo_in.first.buf_[i] = 0.8f;
-      stereo_in.second.buf_[i] = 0.5f;
+      stereo_in.buffers ()->setSample (0, i, 0.8f);
+      stereo_in.buffers ()->setSample (1, i, 0.5f);
     }
 
   processor.process_block (time_nfo);
 
   // Verify output is empty
-  const auto stereo_out = processor.get_stereo_out_ports ();
+  auto &stereo_out = processor.get_stereo_out_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      EXPECT_NEAR (stereo_out.first.buf_[i], 0.f, AUDIO_BUFFER_DIFF_TOLERANCE);
-      EXPECT_NEAR (stereo_out.second.buf_[i], 0.f, AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (0, i), 0.f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (1, i), 0.f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
     }
 }
 
@@ -242,21 +249,25 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithInputGain)
   processor.get_mono_param ().setBaseValue (0.f);
 
   // Fill input buffers with test data
-  const auto stereo_in = processor.get_stereo_in_ports ();
+  auto &stereo_in = processor.get_stereo_in_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      stereo_in.first.buf_[i] = 1.0f;
-      stereo_in.second.buf_[i] = 0.5f;
+      stereo_in.buffers ()->setSample (0, i, 1.0f);
+      stereo_in.buffers ()->setSample (1, i, 0.5f);
     }
 
   processor.process_block (time_nfo);
 
   // Verify output is scaled by input gain
-  const auto stereo_out = processor.get_stereo_out_ports ();
+  auto &stereo_out = processor.get_stereo_out_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      EXPECT_NEAR (stereo_out.first.buf_[i], 2.0f, AUDIO_BUFFER_DIFF_TOLERANCE);
-      EXPECT_NEAR (stereo_out.second.buf_[i], 1.0f, AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (0, i), 2.0f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (1, i), 1.0f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
     }
 }
 
@@ -283,21 +294,25 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMono)
   mono_param.setBaseValue (1.f);
 
   // Fill input buffers with different data
-  const auto stereo_in = processor.get_stereo_in_ports ();
+  auto &stereo_in = processor.get_stereo_in_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      stereo_in.first.buf_[i] = 0.8f;
-      stereo_in.second.buf_[i] = 0.5f;
+      stereo_in.buffers ()->setSample (0, i, 0.8f);
+      stereo_in.buffers ()->setSample (1, i, 0.5f);
     }
 
   processor.process_block (time_nfo);
 
   // Verify both outputs use left channel data
-  const auto stereo_out = processor.get_stereo_out_ports ();
+  auto &stereo_out = processor.get_stereo_out_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      EXPECT_NEAR (stereo_out.first.buf_[i], 0.8f, AUDIO_BUFFER_DIFF_TOLERANCE);
-      EXPECT_NEAR (stereo_out.second.buf_[i], 0.8f, AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (0, i), 0.8f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (1, i), 0.8f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
     }
 }
 
@@ -339,11 +354,15 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithOutputGain)
   processor.process_block (time_nfo);
 
   // Verify output is scaled by output gain
-  const auto stereo_out = processor.get_stereo_out_ports ();
+  auto &stereo_out = processor.get_stereo_out_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      EXPECT_NEAR (stereo_out.first.buf_[i], 0.4f, AUDIO_BUFFER_DIFF_TOLERANCE);
-      EXPECT_NEAR (stereo_out.second.buf_[i], 0.4f, AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (0, i), 0.4f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (1, i), 0.4f,
+        AUDIO_BUFFER_DIFF_TOLERANCE);
     }
 }
 
@@ -929,13 +948,13 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
   processor.prepare_for_processing (sample_rate_, 512);
 
   // Fill input buffers with test pattern
-  const auto stereo_in = processor.get_stereo_in_ports ();
+  auto &stereo_in = processor.get_stereo_in_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      stereo_in.first.buf_[i] =
-        0.8f + 0.2f * std::sin (static_cast<float> (i) * 0.1f);
-      stereo_in.second.buf_[i] =
-        0.6f + 0.3f * std::cos (static_cast<float> (i) * 0.1f);
+      stereo_in.buffers ()->setSample (
+        0, i, 0.8f + 0.2f * std::sin (static_cast<float> (i) * 0.1f));
+      stereo_in.buffers ()->setSample (
+        1, i, 0.6f + 0.3f * std::cos (static_cast<float> (i) * 0.1f));
     }
 
   processor.process_block (time_nfo);
@@ -1014,19 +1033,21 @@ TEST_F (TrackProcessorTest, AudioBusTrackProcessingWithLargeBuffer)
 
   processor.prepare_for_processing (sample_rate_, 1024);
 
-  const auto stereo_in = processor.get_stereo_in_ports ();
+  auto &stereo_in = processor.get_stereo_in_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
     {
-      stereo_in.first.buf_[i] = 0.5f;
-      stereo_in.second.buf_[i] = 0.3f;
+      stereo_in.buffers ()->setSample (0, i, 0.5f);
+      stereo_in.buffers ()->setSample (1, i, 0.3f);
     }
 
   processor.process_block (time_nfo);
 
   // Verify processing completed
-  const auto stereo_out = processor.get_stereo_out_ports ();
-  EXPECT_NEAR (stereo_out.first.buf_[0], 0.5f, AUDIO_BUFFER_DIFF_TOLERANCE);
-  EXPECT_NEAR (stereo_out.second.buf_[0], 0.3f, AUDIO_BUFFER_DIFF_TOLERANCE);
+  auto &stereo_out = processor.get_stereo_out_port ();
+  EXPECT_NEAR (
+    stereo_out.buffers ()->getSample (0, 0), 0.5f, AUDIO_BUFFER_DIFF_TOLERANCE);
+  EXPECT_NEAR (
+    stereo_out.buffers ()->getSample (1, 0), 0.3f, AUDIO_BUFFER_DIFF_TOLERANCE);
 }
 
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)

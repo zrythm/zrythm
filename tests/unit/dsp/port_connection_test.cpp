@@ -32,6 +32,7 @@ TEST_F (PortConnectionTest, DefaultConstruction)
   EXPECT_FALSE (conn.locked_);
   EXPECT_TRUE (conn.enabled_);
   EXPECT_FALSE (conn.bipolar_);
+  EXPECT_FALSE (conn.source_ch_to_destination_ch_mapping_.has_value ());
 }
 
 TEST_F (PortConnectionTest, ParameterizedConstruction)
@@ -46,6 +47,7 @@ TEST_F (PortConnectionTest, ParameterizedConstruction)
   EXPECT_TRUE (conn.locked_);
   EXPECT_FALSE (conn.enabled_);
   EXPECT_FALSE (conn.bipolar_);
+  EXPECT_FALSE (conn.source_ch_to_destination_ch_mapping_.has_value ());
 }
 
 TEST_F (PortConnectionTest, UpdateMethod)
@@ -88,6 +90,24 @@ TEST_F (PortConnectionTest, JsonSerialization)
   EXPECT_FALSE (deserialized.locked_);
   EXPECT_TRUE (deserialized.enabled_);
   EXPECT_TRUE (deserialized.bipolar_);
+  EXPECT_FALSE (deserialized.source_ch_to_destination_ch_mapping_.has_value ());
+}
+
+TEST_F (PortConnectionTest, ChannelMapping)
+{
+  // Test setting channel mapping
+  default_connection_->set_channel_mapping (2, 1);
+  EXPECT_TRUE (
+    default_connection_->source_ch_to_destination_ch_mapping_.has_value ());
+  EXPECT_EQ (
+    default_connection_->source_ch_to_destination_ch_mapping_->first, 2);
+  EXPECT_EQ (
+    default_connection_->source_ch_to_destination_ch_mapping_->second, 1);
+
+  // Test unsetting channel mapping
+  default_connection_->unset_channel_mapping ();
+  EXPECT_FALSE (
+    default_connection_->source_ch_to_destination_ch_mapping_.has_value ());
 }
 
 TEST_F (PortConnectionTest, CloneBehavior)
@@ -105,6 +125,9 @@ TEST_F (PortConnectionTest, CloneBehavior)
   EXPECT_EQ (clone->locked_, original.locked_);
   EXPECT_EQ (clone->enabled_, original.enabled_);
   EXPECT_EQ (clone->bipolar_, original.bipolar_);
+  EXPECT_EQ (
+    clone->source_ch_to_destination_ch_mapping_,
+    original.source_ch_to_destination_ch_mapping_);
 }
 
 } // namespace zrythm::dsp

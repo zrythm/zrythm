@@ -294,19 +294,15 @@ public:
 
   // ============================================================================
 
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_in_ports () const
+  dsp::AudioPort &get_stereo_in_port () const
   {
     assert (is_audio ());
-    auto * l = get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
-    auto * r = get_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
-    return { *l, *r };
+    return *get_input_ports ().front ().get_object_as<dsp::AudioPort> ();
   }
-  std::pair<dsp::AudioPort &, dsp::AudioPort &> get_stereo_out_ports () const
+  dsp::AudioPort &get_stereo_out_port () const
   {
     assert (is_audio ());
-    auto * l = get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
-    auto * r = get_output_ports ().at (1).get_object_as<dsp::AudioPort> ();
-    return { *l, *r };
+    return *get_output_ports ().front ().get_object_as<dsp::AudioPort> ();
   }
 
   dsp::ProcessorParameter &get_mono_param () const

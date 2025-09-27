@@ -163,14 +163,11 @@ private:
 
   // each CLAP port can have multiple channels. there is 1 AudioSampleBuffer per
   // CLAP port
+  // FIXME: these temporary buffers can be removed - use audio port buffers
+  // directly to avoid unnecessary copies
   std::vector<juce::AudioSampleBuffer> audio_in_bufs_;
 
-  // the juce buffers with all channels flattened into a single vector, for
-  // convenience
-  std::vector<float *> flat_audio_in_bufs_;
-
   std::vector<juce::AudioSampleBuffer> audio_out_bufs_;
-  std::vector<float *>                 flat_audio_out_bufs_;
 
   clap::helpers::EventList evIn_;
   clap::helpers::EventList evOut_;
@@ -769,11 +766,15 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 
       // Copy input audio to JUCE buffer
       for (
-        const auto &[channel_ptr, port] :
-        std::views::zip (pimpl_->flat_audio_in_bufs_, audio_in_ports_))
+        const auto &[in_buf, port] :
+        std::views::zip (pimpl_->audio_in_bufs_, audio_in_ports_))
         {
-          utils::float_ranges::copy (
-            &channel_ptr[local_offset], &port->buf_[local_offset], nframes);
+          for (const auto ch : std::views::iota (0, in_buf.getNumChannels ()))
+            {
+              in_buf.copyFrom (
+                ch, static_cast<int> (local_offset), *port->buffers (), ch,
+                static_cast<int> (local_offset), static_cast<int> (nframes));
+            }
         }
 
       // Run plugin processing
@@ -781,19 +782,23 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 
       // Copy output audio from JUCE buffer
       for (
-        const auto &[channel_ptr, port] :
-        std::views::zip (pimpl_->flat_audio_out_bufs_, audio_out_ports_))
+        const auto &[buf, port] :
+        std::views::zip (pimpl_->audio_out_bufs_, audio_out_ports_))
         {
           if (status == CLAP_PROCESS_ERROR) [[unlikely]]
             {
-              utils::float_ranges::fill (
-                &port->buf_[local_offset], 0.f, nframes);
+              port->buffers ()->clear (
+                static_cast<int> (local_offset), static_cast<int> (nframes));
             }
           else
             {
               // TODO: handle other states
-              utils::float_ranges::copy (
-                &port->buf_[local_offset], &channel_ptr[local_offset], nframes);
+              for (const auto ch : std::views::iota (0, buf.getNumChannels ()))
+                {
+                  port->buffers ()->copyFrom (
+                    ch, static_cast<int> (local_offset), buf, ch,
+                    static_cast<int> (local_offset), static_cast<int> (nframes));
+                }
             }
         }
     }
@@ -1262,45 +1267,47 @@ ClapPlugin::create_ports_from_clap_plugin ()
 
   if (pimpl_->plugin_->canUseAudioPorts ())
     {
+      const auto create_port = [&] (bool is_input, auto index) {
+        clap_audio_port_info_t nfo{};
+        pimpl_->plugin_->audioPortsGet (index, is_input, &nfo);
+        const dsp::AudioPort::BusLayout layout = [nfo] () {
+          if (std::string (nfo.port_type) == std::string (CLAP_PORT_STEREO))
+            {
+              return dsp::AudioPort::BusLayout::Stereo;
+            }
+          if (std::string (nfo.port_type) == std::string (CLAP_PORT_MONO))
+            {
+              return dsp::AudioPort::BusLayout::Mono;
+            }
+          return dsp::AudioPort::BusLayout::Unknown;
+        }();
+        auto port_ref =
+          dependencies ().port_registry_.create_object<dsp::AudioPort> (
+            utils::Utf8String::from_utf8_encoded_string (nfo.name),
+            is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout,
+            nfo.channel_count,
+            index == 0
+              ? dsp::AudioPort::Purpose::Main
+              : dsp::AudioPort::Purpose::Sidechain);
+        if (is_input)
+          {
+            add_input_port (port_ref);
+          }
+        else
+          {
+            add_output_port (port_ref);
+          }
+      };
+
       const auto audio_in_ports = pimpl_->plugin_->audioPortsCount (true);
       const auto audio_out_ports = pimpl_->plugin_->audioPortsCount (false);
       for (const auto i : std::views::iota (0u, audio_in_ports))
         {
-          clap_audio_port_info_t nfo{};
-          pimpl_->plugin_->audioPortsGet (i, true, &nfo);
-          for (const auto ch : std::views::iota (0u, nfo.channel_count))
-            {
-              auto port_ref =
-                dependencies ().port_registry_.create_object<dsp::AudioPort> (
-                  utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format (
-                      "{}_ch_{}",
-                      std::strlen (nfo.name) > 0
-                        ? nfo.name
-                        : fmt::format ("audio_in_{}", i + 1),
-                      ch + 1)),
-                  dsp::PortFlow::Input);
-              add_input_port (port_ref);
-            }
+          create_port (true, i);
         }
       for (const auto i : std::views::iota (0u, audio_out_ports))
         {
-          clap_audio_port_info_t nfo{};
-          pimpl_->plugin_->audioPortsGet (i, false, &nfo);
-          for (const auto ch : std::views::iota (0u, nfo.channel_count))
-            {
-              auto port_ref =
-                dependencies ().port_registry_.create_object<dsp::AudioPort> (
-                  utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format (
-                      "{}_ch_{}",
-                      std::strlen (nfo.name) > 0
-                        ? nfo.name
-                        : fmt::format ("audio_out_{}", i + 1),
-                      ch + 1)),
-                  dsp::PortFlow::Output);
-              add_output_port (port_ref);
-            }
+          create_port (false, i);
         }
     }
 }
@@ -1313,10 +1320,8 @@ ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
     auto &audio_bufs = is_input ? audio_in_bufs_ : audio_out_bufs_;
     auto &audio_clap_bufs =
       is_input ? audio_in_clap_bufs_ : audio_out_clap_bufs_;
-    auto &flat_bufs = is_input ? flat_audio_in_bufs_ : flat_audio_out_bufs_;
     audio_bufs.resize (plugin_->audioPortsCount (is_input));
     audio_clap_bufs.resize (plugin_->audioPortsCount (is_input));
-    flat_bufs.clear ();
     for (const auto &[i, juce_buf] : utils::views::enumerate (audio_bufs))
       {
         clap_audio_port_info_t nfo;
@@ -1330,11 +1335,6 @@ ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
         clap_buf.data64 = nullptr;
         clap_buf.constant_mask = 0;
         clap_buf.latency = 0;
-        for (const auto j : std::views::iota (0u, nfo.channel_count))
-          {
-            flat_bufs.push_back (
-              juce_buf.getWritePointer (static_cast<int> (j)));
-          }
       }
   };
 

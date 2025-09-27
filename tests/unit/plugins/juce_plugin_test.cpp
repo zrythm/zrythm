@@ -227,22 +227,18 @@ TEST_F (JucePluginTest, AsyncInstantiationSuccess)
   EXPECT_TRUE (successful);
 
   const auto &in_ports = plugin_->get_input_ports ();
-  EXPECT_EQ (in_ports.size (), 3);
+  EXPECT_EQ (in_ports.size (), 2);
   EXPECT_TRUE (
     std::holds_alternative<dsp::AudioPort *> (in_ports.at (0).get_object ()));
   EXPECT_TRUE (
-    std::holds_alternative<dsp::AudioPort *> (in_ports.at (1).get_object ()));
-  EXPECT_TRUE (
-    std::holds_alternative<dsp::MidiPort *> (in_ports.at (2).get_object ()));
+    std::holds_alternative<dsp::MidiPort *> (in_ports.at (1).get_object ()));
 
   const auto &out_ports = plugin_->get_output_ports ();
-  EXPECT_EQ (out_ports.size (), 3);
+  EXPECT_EQ (out_ports.size (), 2);
   EXPECT_TRUE (
     std::holds_alternative<dsp::AudioPort *> (out_ports.at (0).get_object ()));
   EXPECT_TRUE (
-    std::holds_alternative<dsp::AudioPort *> (out_ports.at (1).get_object ()));
-  EXPECT_TRUE (
-    std::holds_alternative<dsp::MidiPort *> (out_ports.at (2).get_object ()));
+    std::holds_alternative<dsp::MidiPort *> (out_ports.at (1).get_object ()));
 }
 
 TEST_F (JucePluginTest, AsyncInstantiationFailure)
@@ -488,7 +484,7 @@ TEST_F (JucePluginTest, MidiProcessing)
   plugin_->process_block (time_nfo);
 
   const auto &midi_out =
-    plugin_->get_output_ports ().at (2).get_object_as<dsp::MidiPort> ();
+    plugin_->get_output_ports ().at (1).get_object_as<dsp::MidiPort> ();
   EXPECT_EQ (midi_out->midi_events_.queued_events_.size (), 1);
   const auto &ev = midi_out->midi_events_.queued_events_.front ();
   EXPECT_TRUE (utils::midi::midi_is_note_on (ev.raw_buffer_));
@@ -785,16 +781,14 @@ TEST_F (JucePluginTest, SerializationPreservesState)
 
   // Verify ports were preserved
   const auto &in_ports = deserialized_plugin->get_input_ports ();
-  EXPECT_EQ (in_ports.size (), 3);
+  EXPECT_EQ (in_ports.size (), 2);
   EXPECT_TRUE (
     std::holds_alternative<dsp::AudioPort *> (in_ports.at (0).get_object ()));
   EXPECT_TRUE (
-    std::holds_alternative<dsp::AudioPort *> (in_ports.at (1).get_object ()));
-  EXPECT_TRUE (
-    std::holds_alternative<dsp::MidiPort *> (in_ports.at (2).get_object ()));
+    std::holds_alternative<dsp::MidiPort *> (in_ports.at (1).get_object ()));
 
   const auto &out_ports = deserialized_plugin->get_output_ports ();
-  EXPECT_EQ (out_ports.size (), 3);
+  EXPECT_EQ (out_ports.size (), 2);
 
   // Verify parameters were preserved
   auto params = deserialized_plugin->get_parameters ();
@@ -1004,9 +998,8 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
   plugin_->prepare_for_processing (sample_rate_, buffer_size_);
 
   // Create test audio signals
-  const size_t       test_buffer_size = buffer_size_;
-  std::vector<float> left_input (test_buffer_size);
-  std::vector<float> right_input (test_buffer_size);
+  const size_t            test_buffer_size = buffer_size_;
+  juce::AudioSampleBuffer stereo_input (2, test_buffer_size);
 
   // Fill with test pattern (sine wave on left, cosine on right)
   for (size_t i = 0; i < test_buffer_size; ++i)
@@ -1014,55 +1007,52 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
       float phase =
         2.0f * std::numbers::pi_v<float>
         * static_cast<float> (i) / static_cast<float> (test_buffer_size);
-      left_input[i] = std::sin (phase);
-      right_input[i] = std::cos (phase);
+      stereo_input.setSample (0, i, std::sin (phase));
+      stereo_input.setSample (1, i, std::cos (phase));
     }
 
   // Get audio ports
   const auto &in_ports = plugin_->get_input_ports ();
   const auto &out_ports = plugin_->get_output_ports ();
 
-  auto * left_in = in_ports.at (0).get_object_as<dsp::AudioPort> ();
-  auto * right_in = in_ports.at (1).get_object_as<dsp::AudioPort> ();
-  auto * left_out = out_ports.at (0).get_object_as<dsp::AudioPort> ();
-  auto * right_out = out_ports.at (1).get_object_as<dsp::AudioPort> ();
+  auto * stereo_in = in_ports.at (0).get_object_as<dsp::AudioPort> ();
+  auto * stereo_out = out_ports.at (0).get_object_as<dsp::AudioPort> ();
 
   // Copy input signals to ports
-  std::ranges::copy (left_input, left_in->buf_.begin ());
-  std::ranges::copy (right_input, right_in->buf_.begin ());
+  stereo_in->buffers ()->copyFrom (0, 0, stereo_input, 0, 0, test_buffer_size);
+  stereo_in->buffers ()->copyFrom (1, 0, stereo_input, 1, 0, test_buffer_size);
 
   // Setup mock to verify input and simulate pass-through
   EXPECT_CALL (*mock_plugin, processBlock (::testing::_, ::testing::_))
-    .WillOnce (
-      [&left_input, &right_input, test_buffer_size] (
-        juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midi) {
-        // Verify input signals are correctly passed
-        EXPECT_EQ (buffer.getNumChannels (), 2);
-        EXPECT_EQ (buffer.getNumSamples (), static_cast<int> (test_buffer_size));
+    .WillOnce ([&stereo_input, test_buffer_size] (
+                 juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midi) {
+      // Verify input signals are correctly passed
+      EXPECT_EQ (buffer.getNumChannels (), 2);
+      EXPECT_EQ (buffer.getNumSamples (), static_cast<int> (test_buffer_size));
 
-        // Check left channel
-        const float * left_channel = buffer.getReadPointer (0);
-        for (size_t i = 0; i < test_buffer_size; ++i)
-          {
-            EXPECT_NEAR (left_channel[i], left_input[i], 1e-6f);
-          }
+      // Check left channel
+      const float * left_channel = buffer.getReadPointer (0);
+      for (size_t i = 0; i < test_buffer_size; ++i)
+        {
+          EXPECT_NEAR (left_channel[i], stereo_input.getSample (0, i), 1e-6f);
+        }
 
-        // Check right channel
-        const float * right_channel = buffer.getReadPointer (1);
-        for (size_t i = 0; i < test_buffer_size; ++i)
-          {
-            EXPECT_NEAR (right_channel[i], right_input[i], 1e-6f);
-          }
+      // Check right channel
+      const float * right_channel = buffer.getReadPointer (1);
+      for (size_t i = 0; i < test_buffer_size; ++i)
+        {
+          EXPECT_NEAR (right_channel[i], stereo_input.getSample (1, i), 1e-6f);
+        }
 
-        // Simulate unity gain pass-through
-        float * inner_left_out = buffer.getWritePointer (0);
-        float * inner_right_out = buffer.getWritePointer (1);
-        for (size_t i = 0; i < test_buffer_size; ++i)
-          {
-            inner_left_out[i] = left_channel[i];
-            inner_right_out[i] = right_channel[i];
-          }
-      });
+      // Simulate unity gain pass-through
+      float * inner_left_out = buffer.getWritePointer (0);
+      float * inner_right_out = buffer.getWritePointer (1);
+      for (size_t i = 0; i < test_buffer_size; ++i)
+        {
+          inner_left_out[i] = left_channel[i];
+          inner_right_out[i] = right_channel[i];
+        }
+    });
 
   // Process the block
   EngineProcessTimeInfo time_nfo{
@@ -1077,8 +1067,12 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
   // Verify output signals match input (unity gain pass-through)
   for (size_t i = 0; i < test_buffer_size; ++i)
     {
-      EXPECT_NEAR (left_out->buf_[i], left_input[i], 1e-6f);
-      EXPECT_NEAR (right_out->buf_[i], right_input[i], 1e-6f);
+      EXPECT_NEAR (
+        stereo_out->buffers ()->getSample (0, i), stereo_input.getSample (0, i),
+        1e-6f);
+      EXPECT_NEAR (
+        stereo_out->buffers ()->getSample (1, i), stereo_input.getSample (1, i),
+        1e-6f);
     }
 }
 
@@ -1108,9 +1102,8 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
   plugin_->prepare_for_processing (sample_rate_, buffer_size_);
 
   // Create test audio signals for the full buffer
-  const size_t       full_buffer_size = buffer_size_;
-  std::vector<float> left_input (full_buffer_size);
-  std::vector<float> right_input (full_buffer_size);
+  const size_t            full_buffer_size = buffer_size_;
+  juce::AudioSampleBuffer stereo_input (2, full_buffer_size);
 
   // Test split cycle processing with offset and smaller frame count
   constexpr size_t split_offset = 256;
@@ -1122,28 +1115,25 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
       float phase =
         2.0f * std::numbers::pi_v<float>
         * static_cast<float> (i) / static_cast<float> (full_buffer_size);
-      left_input[i] = std::sin (phase);
-      right_input[i] = std::cos (phase);
+      stereo_input.setSample (0, i, std::sin (phase));
+      stereo_input.setSample (1, i, std::cos (phase));
     }
 
   // Get audio ports
   const auto &in_ports = plugin_->get_input_ports ();
   const auto &out_ports = plugin_->get_output_ports ();
 
-  auto * left_in = in_ports.at (0).get_object_as<dsp::AudioPort> ();
-  auto * right_in = in_ports.at (1).get_object_as<dsp::AudioPort> ();
-  auto * left_out = out_ports.at (0).get_object_as<dsp::AudioPort> ();
-  auto * right_out = out_ports.at (1).get_object_as<dsp::AudioPort> ();
+  auto * stereo_in = in_ports.at (0).get_object_as<dsp::AudioPort> ();
+  auto * stereo_out = out_ports.at (0).get_object_as<dsp::AudioPort> ();
 
   // Copy input signals to ports
-  std::ranges::copy (left_input, left_in->buf_.begin ());
-  std::ranges::copy (right_input, right_in->buf_.begin ());
+  stereo_in->buffers ()->copyFrom (0, 0, stereo_input, 0, 0, full_buffer_size);
+  stereo_in->buffers ()->copyFrom (1, 0, stereo_input, 1, 0, full_buffer_size);
 
   // Setup mock to verify split cycle processing
   EXPECT_CALL (*mock_plugin, processBlock (::testing::_, ::testing::_))
     .WillOnce (
-      [&left_input,
-       &right_input] (juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midi) {
+      [&stereo_input] (juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midi) {
         // Verify the buffer contains the correct subset of samples
         EXPECT_EQ (buffer.getNumChannels (), 2);
         EXPECT_EQ (buffer.getNumSamples (), static_cast<int> (split_frames));
@@ -1155,8 +1145,10 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
         for (size_t i = 0; i < split_frames; ++i)
           {
             size_t input_index = split_offset + i;
-            EXPECT_NEAR (left_channel[i], left_input[input_index], 1e-6f);
-            EXPECT_NEAR (right_channel[i], right_input[input_index], 1e-6f);
+            EXPECT_NEAR (
+              left_channel[i], stereo_input.getSample (0, input_index), 1e-6f);
+            EXPECT_NEAR (
+              right_channel[i], stereo_input.getSample (1, input_index), 1e-6f);
           }
 
         // Simulate processing with unity gain
@@ -1184,25 +1176,27 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
     {
       size_t output_index = split_offset + i;
       EXPECT_NEAR (
-        left_out->buf_[output_index], left_input[output_index], 1e-6f);
+        stereo_out->buffers ()->getSample (0, output_index),
+        stereo_input.getSample (0, output_index), 1e-6f);
       EXPECT_NEAR (
-        right_out->buf_[output_index], right_input[output_index], 1e-6f);
+        stereo_out->buffers ()->getSample (1, output_index),
+        stereo_input.getSample (1, output_index), 1e-6f);
     }
 
   // Verify that unprocessed regions remain unchanged (or zeroed, depending on
-  // implementation) The regions before and after the split should not be modified
+  // implementation). The regions before and after the split should not be
+  // modified
   for (size_t i = 0; i < split_offset; ++i)
     {
-      // These should remain as they were (input values)
-      EXPECT_NEAR (left_out->buf_[i], left_input[i], 1e-6f);
-      EXPECT_NEAR (right_out->buf_[i], right_input[i], 1e-6f);
+      EXPECT_NEAR (stereo_out->buffers ()->getSample (0, i), 0.f, 1e-6f);
+      EXPECT_NEAR (stereo_out->buffers ()->getSample (1, i), 0.f, 1e-6f);
     }
 
   for (size_t i = split_offset + split_frames; i < full_buffer_size; ++i)
     {
       // These should remain as they were (input values)
-      EXPECT_NEAR (left_out->buf_[i], left_input[i], 1e-6f);
-      EXPECT_NEAR (right_out->buf_[i], right_input[i], 1e-6f);
+      EXPECT_NEAR (stereo_out->buffers ()->getSample (0, i), 0.f, 1e-6f);
+      EXPECT_NEAR (stereo_out->buffers ()->getSample (1, i), 0.f, 1e-6f);
     }
 }
 

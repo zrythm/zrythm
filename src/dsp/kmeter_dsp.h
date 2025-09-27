@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense OR GPL-2.0-or-later
 /*
  * This file incorporates work covered by the following copyright and
  * permission notice:
@@ -27,8 +27,7 @@
  * ---
  */
 
-#ifndef ZRYTHM_DSP_KMETER_DSP
-#define ZRYTHM_DSP_KMETER_DSP
+#pragma once
 
 #include <utility>
 
@@ -93,5 +92,3 @@ private:
 };
 
 } // namespace zrythm::dsp
-
-#endif

@@ -88,16 +88,14 @@ TEST_F (FaderTest, ConstructionAndBasicProperties)
 TEST_F (FaderTest, PortConfiguration)
 {
   // Test audio fader ports
-  EXPECT_EQ (audio_fader_->get_input_ports ().size (), 2);
-  EXPECT_EQ (audio_fader_->get_output_ports ().size (), 2);
+  EXPECT_EQ (audio_fader_->get_input_ports ().size (), 1);
+  EXPECT_EQ (audio_fader_->get_output_ports ().size (), 1);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
-  EXPECT_EQ (left_in.get_node_name (), u8"Test Track Fader/Fader input L");
-  EXPECT_EQ (right_in.get_node_name (), u8"Test Track Fader/Fader input R");
-  EXPECT_EQ (left_out.get_node_name (), u8"Test Track Fader/Fader output L");
-  EXPECT_EQ (right_out.get_node_name (), u8"Test Track Fader/Fader output R");
+  EXPECT_EQ (stereo_in.get_node_name (), u8"Test Track Fader/Fader input");
+  EXPECT_EQ (stereo_out.get_node_name (), u8"Test Track Fader/Fader output");
 
   // Test MIDI fader ports
   EXPECT_EQ (midi_fader_->get_input_ports ().size (), 1);
@@ -154,35 +152,31 @@ TEST_F (FaderTest, PrepareAndReleaseResources)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
-  EXPECT_GE (left_in.buf_.size (), max_block_length_);
-  EXPECT_GE (right_in.buf_.size (), max_block_length_);
-  EXPECT_GE (left_out.buf_.size (), max_block_length_);
-  EXPECT_GE (right_out.buf_.size (), max_block_length_);
+  EXPECT_GE (stereo_in.buffers ()->getNumSamples (), max_block_length_);
+  EXPECT_GE (stereo_out.buffers ()->getNumSamples (), max_block_length_);
 
   audio_fader_->release_resources ();
 
-  EXPECT_EQ (left_in.buf_.size (), 0);
-  EXPECT_EQ (right_in.buf_.size (), 0);
-  EXPECT_EQ (left_out.buf_.size (), 0);
-  EXPECT_EQ (right_out.buf_.size (), 0);
+  EXPECT_EQ (stereo_in.buffers (), nullptr);
+  EXPECT_EQ (stereo_out.buffers (), nullptr);
 }
 
 TEST_F (FaderTest, AudioProcessing)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -207,8 +201,8 @@ TEST_F (FaderTest, AudioProcessing)
   // After smoothing, should be close to target
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 2.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 2.0f, 0.05f);
     }
 
   // Test gain reduction (0.5) - account for smoothing
@@ -224,8 +218,8 @@ TEST_F (FaderTest, AudioProcessing)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.5f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.5f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 0.05f);
     }
 
   // Test boost (2.0) - account for smoothing (no hard limiting)
@@ -241,8 +235,8 @@ TEST_F (FaderTest, AudioProcessing)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 2.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 4.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 2.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 4.0f, 0.05f);
     }
 }
 
@@ -277,15 +271,15 @@ TEST_F (FaderTest, MuteFunctionality)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -310,8 +304,8 @@ TEST_F (FaderTest, MuteFunctionality)
   // After smoothing, should be close to target
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 0.05f);
     }
 
   // Test muted - account for smoothing
@@ -327,8 +321,8 @@ TEST_F (FaderTest, MuteFunctionality)
   // After smoothing, should be close to 0
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 0.05f);
     }
 }
 
@@ -336,15 +330,15 @@ TEST_F (FaderTest, BalanceFunctionality)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers with equal values
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -378,8 +372,8 @@ TEST_F (FaderTest, BalanceFunctionality)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 0.05f);
     }
 
   // Test hard left (0.0)
@@ -394,8 +388,8 @@ TEST_F (FaderTest, BalanceFunctionality)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 0.05f);
     }
 
   // Test hard right (1.0)
@@ -410,8 +404,8 @@ TEST_F (FaderTest, BalanceFunctionality)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 0.05f);
     }
 }
 
@@ -443,15 +437,15 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers with different values
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -477,8 +471,8 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 1e-5);
-      EXPECT_NEAR (right_out.buf_[i], 0.5f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.5f, 1e-5);
     }
 
   // Test mono mode
@@ -494,8 +488,10 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
   for (int i = 0; i < 512; i++)
     {
       float expected_mono = (1.0f + 0.5f) * 0.5f;
-      EXPECT_NEAR (left_out.buf_[i], expected_mono, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], expected_mono, 0.05f);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (0, i), expected_mono, 0.05f);
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (1, i), expected_mono, 0.05f);
     }
 }
 
@@ -503,15 +499,15 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -537,8 +533,8 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 1e-5);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 1e-5);
     }
 
   // Test phase swap
@@ -553,8 +549,8 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], -1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], -1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), -1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), -1.0f, 0.05f);
     }
 }
 
@@ -676,15 +672,15 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
 
   fader_with_callback->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = fader_with_callback->get_stereo_in_ports ();
-  auto [left_out, right_out] = fader_with_callback->get_stereo_out_ports ();
+  auto &stereo_in = fader_with_callback->get_stereo_in_port ();
+  auto &stereo_out = fader_with_callback->get_stereo_out_port ();
 
   // Fill input buffers
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -707,8 +703,8 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
     }
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 0.05f);
     }
 
   // Test mute callback - wait for smoothing
@@ -721,8 +717,8 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 0.05f);
     }
 }
 
@@ -748,15 +744,15 @@ TEST_F (FaderTest, PreProcessAudioCallback)
   audio_fader_->set_preprocess_audio_callback (pre_process_cb);
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -779,8 +775,8 @@ TEST_F (FaderTest, PreProcessAudioCallback)
   EXPECT_TRUE (callback_called);
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 2.0f, 1e-5);
-      EXPECT_NEAR (right_out.buf_[i], 0.5f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 2.0f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.5f, 1e-5);
     }
 }
 
@@ -795,15 +791,15 @@ TEST_F (FaderTest, MuteGainCallback)
   audio_fader_->set_mute_gain_callback (mute_gain_cb);
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -836,8 +832,8 @@ TEST_F (FaderTest, MuteGainCallback)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.25f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 0.25f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.25f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.25f, 0.05f);
     }
 }
 
@@ -861,14 +857,14 @@ TEST_F (FaderTest, EdgeCases)
   // Test with zero gain (silence)
   audio_fader_->gain ()->setBaseValue (0.0f);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 10; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -881,13 +877,13 @@ TEST_F (FaderTest, EdgeCases)
 
   for (int i = 0; i < 10; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.0f, 1e-6);
-      EXPECT_NEAR (right_out.buf_[i], 0.0f, 1e-6);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 1e-6);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 1e-6);
     }
 
   // Test exception for non-audio fader trying to get stereo ports
-  EXPECT_THROW (midi_fader_->get_stereo_in_ports (), std::runtime_error);
-  EXPECT_THROW (midi_fader_->get_stereo_out_ports (), std::runtime_error);
+  EXPECT_THROW (midi_fader_->get_stereo_in_port (), std::runtime_error);
+  EXPECT_THROW (midi_fader_->get_stereo_out_port (), std::runtime_error);
 }
 
 TEST_F (FaderTest, DbStringGetter)
@@ -933,15 +929,15 @@ TEST_F (FaderTest, HardLimitingFunctionality)
 
   hard_limit_fader->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = hard_limit_fader->get_stereo_in_ports ();
-  auto [left_out, right_out] = hard_limit_fader->get_stereo_out_ports ();
+  auto &stereo_in = hard_limit_fader->get_stereo_in_port ();
+  auto &stereo_out = hard_limit_fader->get_stereo_out_port ();
 
   // Fill input buffers with values that would exceed the limits
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -966,10 +962,10 @@ TEST_F (FaderTest, HardLimitingFunctionality)
   // Verify hard limiting is applied
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_LE (left_out.buf_[i], 2.0f);
-      EXPECT_GE (left_out.buf_[i], -2.0f);
-      EXPECT_LE (right_out.buf_[i], 2.0f);
-      EXPECT_GE (right_out.buf_[i], -2.0f);
+      EXPECT_LE (stereo_out.buffers ()->getSample (0, i), 2.0f);
+      EXPECT_GE (stereo_out.buffers ()->getSample (0, i), -2.0f);
+      EXPECT_LE (stereo_out.buffers ()->getSample (1, i), 2.0f);
+      EXPECT_GE (stereo_out.buffers ()->getSample (1, i), -2.0f);
     }
 
   // Test that values within limits are not affected
@@ -985,8 +981,8 @@ TEST_F (FaderTest, HardLimitingFunctionality)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], -1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), -1.0f, 0.05f);
     }
 }
 
@@ -994,15 +990,15 @@ TEST_F (FaderTest, GainSmoothing)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Fill input buffers
   const auto fill_inputs = [&] (float left_val, float right_val) {
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -1027,8 +1023,8 @@ TEST_F (FaderTest, GainSmoothing)
   // Verify we're at 0
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.0f, 0.01f);
-      EXPECT_NEAR (right_out.buf_[i], 0.0f, 0.01f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 0.01f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 0.01f);
     }
 
   // Now set to 1.0 and test gradual increase
@@ -1041,7 +1037,7 @@ TEST_F (FaderTest, GainSmoothing)
   audio_fader_->process_block (time_nfo);
   for (int i = 0; i < 512; i++)
     {
-      first_block_values.push_back (left_out.buf_[i]);
+      first_block_values.push_back (stereo_out.buffers ()->getSample (0, i));
     }
 
   // After first block, should be between 0 and 1 due to smoothing
@@ -1058,8 +1054,8 @@ TEST_F (FaderTest, GainSmoothing)
   // After sufficient blocks, should be close to target
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 0.05f);
     }
 
   // Test rapid changes
@@ -1067,14 +1063,18 @@ TEST_F (FaderTest, GainSmoothing)
     audio_fader_->gain ()->range ().convertTo0To1 (0.5f));
 
   // Should not immediately jump to new values
-  auto prev_values = left_out.buf_;
+  std::vector<float> prev_values;
+  for (int i = 0; i < 512; i++)
+    {
+      prev_values.push_back (stereo_out.buffers ()->getSample (0, i));
+    }
   fill_inputs (1.f, 1.f);
   audio_fader_->process_block (time_nfo);
-  EXPECT_FLOAT_EQ (left_out.buf_.front (), prev_values.front ());
+  EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (0, 0), prev_values[0]);
   for (int i = 1; i < 10; ++i)
     {
-      EXPECT_NE (left_out.buf_[i], 0.5f);
-      EXPECT_LT (left_out.buf_[i], prev_values[i]);
+      EXPECT_NE (stereo_out.buffers ()->getSample (0, i), 0.5f);
+      EXPECT_LT (stereo_out.buffers ()->getSample (0, i), prev_values[i]);
     }
 }
 
@@ -1082,8 +1082,8 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
 {
   audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_fader_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_fader_->get_stereo_out_ports ();
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
   // Set gain to 1.0 for direct pass-through
   audio_fader_->gain ()->setBaseValue (
@@ -1100,8 +1100,8 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
     // Fill with test data
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -1115,8 +1115,8 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
   // Verify first cycle processed correctly
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 1.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 2.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 2.0f, 0.05f);
     }
 
   // Process second cycle
@@ -1129,8 +1129,8 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
   // Verify second cycle processed correctly
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 3.0f, 0.05f);
-      EXPECT_NEAR (right_out.buf_[i], 4.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 3.0f, 0.05f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 4.0f, 0.05f);
     }
 
   // Third processing cycle - verify no accumulation from previous cycles
@@ -1146,17 +1146,17 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
   // Verify third cycle processed correctly (should be silent)
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.1f, 1e-6f);
-      EXPECT_NEAR (right_out.buf_[i], 0.1f, 1e-6f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.1f, 1e-6f);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.1f, 1e-6f);
     }
 
   // Verify input buffers are cleared after processing
   // This tests the buffer clearing behavior between process calls
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_in.buf_[i], 0.0f, 1e-6f)
+      EXPECT_NEAR (stereo_in.buffers ()->getSample (0, i), 0.0f, 1e-6f)
         << "Input buffer not cleared at left channel index " << i;
-      EXPECT_NEAR (right_in.buf_[i], 0.0f, 1e-6f)
+      EXPECT_NEAR (stereo_in.buffers ()->getSample (1, i), 0.0f, 1e-6f)
         << "Input buffer not cleared at right channel index " << i;
     }
 }

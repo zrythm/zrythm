@@ -73,16 +73,14 @@ TEST_F (ChannelSendTest, ConstructionAndBasicProperties)
 TEST_F (ChannelSendTest, PortConfiguration)
 {
   // Test audio send ports
-  EXPECT_EQ (audio_send_->get_input_ports ().size (), 2);
-  EXPECT_EQ (audio_send_->get_output_ports ().size (), 2);
+  EXPECT_EQ (audio_send_->get_input_ports ().size (), 1);
+  EXPECT_EQ (audio_send_->get_output_ports ().size (), 1);
 
-  auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
+  auto &stereo_in = audio_send_->get_stereo_in_port ();
+  auto &stereo_out = audio_send_->get_stereo_out_port ();
 
-  EXPECT_EQ (left_in.get_node_name (), u8"Pre-Fader Send 1/Audio input L");
-  EXPECT_EQ (right_in.get_node_name (), u8"Pre-Fader Send 1/Audio input R");
-  EXPECT_EQ (left_out.get_node_name (), u8"Pre-Fader Send 1/Audio output L");
-  EXPECT_EQ (right_out.get_node_name (), u8"Pre-Fader Send 1/Audio output R");
+  EXPECT_EQ (stereo_in.get_node_name (), u8"Pre-Fader Send 1/Audio Input");
+  EXPECT_EQ (stereo_out.get_node_name (), u8"Pre-Fader Send 1/Audio Output");
 
   // Test MIDI send ports
   EXPECT_EQ (midi_send_->get_input_ports ().size (), 1);
@@ -118,35 +116,31 @@ TEST_F (ChannelSendTest, PrepareAndReleaseResources)
 {
   audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
+  auto &stereo_in = audio_send_->get_stereo_in_port ();
+  auto &stereo_out = audio_send_->get_stereo_out_port ();
 
-  EXPECT_GE (left_in.buf_.size (), max_block_length_);
-  EXPECT_GE (right_in.buf_.size (), max_block_length_);
-  EXPECT_GE (left_out.buf_.size (), max_block_length_);
-  EXPECT_GE (right_out.buf_.size (), max_block_length_);
+  EXPECT_GE (stereo_in.buffers ()->getNumSamples (), max_block_length_);
+  EXPECT_GE (stereo_out.buffers ()->getNumSamples (), max_block_length_);
 
   audio_send_->release_resources ();
 
-  EXPECT_EQ (left_in.buf_.size (), 0);
-  EXPECT_EQ (right_in.buf_.size (), 0);
-  EXPECT_EQ (left_out.buf_.size (), 0);
-  EXPECT_EQ (right_out.buf_.size (), 0);
+  EXPECT_EQ (stereo_in.buffers (), nullptr);
+  EXPECT_EQ (stereo_out.buffers (), nullptr);
 }
 
 TEST_F (ChannelSendTest, AudioProcessing)
 {
   audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
+  auto &stereo_in = audio_send_->get_stereo_in_port ();
+  auto &stereo_out = audio_send_->get_stereo_out_port ();
 
   const auto fill_input_bufs = [&] () {
     // Fill input buffers
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = 1.0f;
-        right_in.buf_[i] = 2.0f;
+        stereo_in.buffers ()->setSample (0, i, 1.0f);
+        stereo_in.buffers ()->setSample (1, i, 2.0f);
       }
   };
 
@@ -164,8 +158,8 @@ TEST_F (ChannelSendTest, AudioProcessing)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (left_out.buf_[i], 1.0f);
-      EXPECT_FLOAT_EQ (right_out.buf_[i], 2.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (0, i), 1.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (1, i), 2.0f);
     }
 
   // Test gain reduction (gain = 0.5)
@@ -176,8 +170,8 @@ TEST_F (ChannelSendTest, AudioProcessing)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.5f, 1e-5);
-      EXPECT_NEAR (right_out.buf_[i], 1.0f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.5f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 1.0f, 1e-5);
     }
 
   // Test boost (gain = 2.0)
@@ -188,8 +182,8 @@ TEST_F (ChannelSendTest, AudioProcessing)
 
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 2.0f, 1e-5);
-      EXPECT_NEAR (right_out.buf_[i], 4.0f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 2.0f, 1e-5);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 4.0f, 1e-5);
     }
 }
 
@@ -243,8 +237,8 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
 
   // Verify ports & params
   EXPECT_EQ (
-    audio_send_->get_stereo_in_ports ().first.get_uuid (),
-    deserialized.get_stereo_in_ports ().first.get_uuid ());
+    audio_send_->get_stereo_in_port ().get_uuid (),
+    deserialized.get_stereo_in_port ().get_uuid ());
   EXPECT_EQ (
     audio_send_->amountParam ()->get_uuid (),
     deserialized.amountParam ()->get_uuid ());
@@ -336,13 +330,13 @@ TEST_F (ChannelSendTest, EdgeCases)
   // Test with zero amount (silence)
   audio_send_->amountParam ()->setBaseValue (0.0f);
 
-  auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
+  auto &stereo_in = audio_send_->get_stereo_in_port ();
+  auto &stereo_out = audio_send_->get_stereo_out_port ();
 
   for (int i = 0; i < 10; i++)
     {
-      left_in.buf_[i] = 1.0f;
-      right_in.buf_[i] = 1.0f;
+      stereo_in.buffers ()->setSample (0, i, 1.0f);
+      stereo_in.buffers ()->setSample (1, i, 1.0f);
     }
 
   time_nfo.nframes_ = 10;
@@ -350,8 +344,8 @@ TEST_F (ChannelSendTest, EdgeCases)
 
   for (int i = 0; i < 10; i++)
     {
-      EXPECT_NEAR (left_out.buf_[i], 0.0f, 1e-6);
-      EXPECT_NEAR (right_out.buf_[i], 0.0f, 1e-6);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 1e-6);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 1e-6);
     }
 }
 
@@ -359,8 +353,8 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
 {
   audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  auto [left_in, right_in] = audio_send_->get_stereo_in_ports ();
-  auto [left_out, right_out] = audio_send_->get_stereo_out_ports ();
+  auto &stereo_in = audio_send_->get_stereo_in_port ();
+  auto &stereo_out = audio_send_->get_stereo_out_port ();
 
   // Set amount to 1.0 (unity gain)
   audio_send_->amountParam ()->setBaseValue (
@@ -377,8 +371,8 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
     // Fill with test data
     for (int i = 0; i < 512; i++)
       {
-        left_in.buf_[i] = left_val;
-        right_in.buf_[i] = right_val;
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
       }
   };
 
@@ -389,8 +383,8 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
   // Verify output contains expected values
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (left_out.buf_[i], 1.0f);
-      EXPECT_FLOAT_EQ (right_out.buf_[i], 2.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (0, i), 1.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (1, i), 2.0f);
     }
 
   // Second process call with same input data
@@ -400,8 +394,8 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
   // Verify output still contains expected values (no accumulation)
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (left_out.buf_[i], 1.0f);
-      EXPECT_FLOAT_EQ (right_out.buf_[i], 2.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (0, i), 1.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (1, i), 2.0f);
     }
 
   // Third process call with different input data
@@ -411,8 +405,8 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
   // Verify output contains new expected values
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (left_out.buf_[i], 0.5f);
-      EXPECT_FLOAT_EQ (right_out.buf_[i], 1.5f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (0, i), 0.5f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (1, i), 1.5f);
     }
 
   // Fourth process call with zero input
@@ -422,8 +416,8 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
   // Verify output is zero (no residual from previous calls)
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (left_out.buf_[i], 0.0f);
-      EXPECT_FLOAT_EQ (right_out.buf_[i], 0.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (0, i), 0.0f);
+      EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (1, i), 0.0f);
     }
 }
 

@@ -27,10 +27,14 @@ public:
           u8"TestProcessor"),
         input_port_ (port_registry.create_object<dsp::AudioPort> (
           u8"Input",
-          PortFlow::Input)),
+          PortFlow::Input,
+          AudioPort::BusLayout::Mono,
+          1)),
         output_port_ (port_registry.create_object<dsp::AudioPort> (
           u8"Output",
-          PortFlow::Output))
+          PortFlow::Output,
+          AudioPort::BusLayout::Mono,
+          1))
   {
     add_input_port (input_port_);
     add_output_port (output_port_);
@@ -69,16 +73,19 @@ protected:
           processor_->get_input_ports ()
             .front ()
             .get_object_as<dsp::AudioPort> ()
-            ->buf_;
+            ->buffers ();
         auto &out =
           processor_->get_output_ports ()
             .front ()
             .get_object_as<dsp::AudioPort> ()
-            ->buf_;
+            ->buffers ();
 
         for (size_t i = 0; i < time_nfo.nframes_; i++)
           {
-            out[i] = in[i] * 0.5f; // Process at half volume
+            out->setSample (
+              0, static_cast<int> (i),
+              in->getSample (0, static_cast<int> (i)) * 0.5f); // Process at
+                                                               // half volume
           }
       });
   }
@@ -113,10 +120,10 @@ TEST_F (ProcessorBaseTest, PrepareAndReleaseResources)
   // Verify ports are prepared
   auto input_port =
     processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();
-  EXPECT_GE (input_port->buf_.size (), max_block_length_);
+  EXPECT_GE (input_port->buffers ()->getNumSamples (), max_block_length_);
 
   processor_->release_resources ();
-  EXPECT_EQ (input_port->buf_.size (), 0);
+  EXPECT_EQ (input_port->buffers ().get (), nullptr);
 }
 
 TEST_F (ProcessorBaseTest, Processing)
@@ -131,7 +138,7 @@ TEST_F (ProcessorBaseTest, Processing)
   // Fill input buffer
   for (int i = 0; i < 512; i++)
     {
-      input_port->buf_[i] = static_cast<float> (i) * 0.01f;
+      input_port->buffers ()->setSample (0, i, static_cast<float> (i) * 0.01f);
     }
 
   // Set expectations
@@ -148,7 +155,9 @@ TEST_F (ProcessorBaseTest, Processing)
   // Verify processing (half volume)
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (output_port->buf_[i], i * 0.005f);
+      EXPECT_FLOAT_EQ (
+        output_port->buffers ()->getSample (0, i),
+        static_cast<float> (i) * 0.005f);
     }
 }
 
@@ -164,7 +173,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   // Fill input buffer with test data
   for (int i = 0; i < 512; i++)
     {
-      input_port->buf_[i] = 1.0f;
+      input_port->buffers ()->setSample (0, i, 1.0f);
     }
 
   // Set expectations
@@ -183,14 +192,14 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   // Verify first processing (should be 0.5 due to half volume)
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (output_port->buf_[i], 0.5f);
+      EXPECT_FLOAT_EQ (output_port->buffers ()->getSample (0, i), 0.5f);
     }
 
   // Check that input buffer is cleared after first process call
   // This is the key test - input should be zeroed after processing
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (input_port->buf_[i], 0.0f)
+      EXPECT_FLOAT_EQ (input_port->buffers ()->getSample (0, i), 0.0f)
         << "Input buffer not cleared at index " << i
         << " after first process_block() call";
     }
@@ -198,7 +207,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   // Reset output buffer to verify second processing
   for (int i = 0; i < 512; i++)
     {
-      output_port->buf_[i] = 0.0f;
+      output_port->buffers ()->setSample (0, i, 0.0f);
     }
 
   // Second process call - should produce zeros since input was cleared
@@ -207,7 +216,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   // Verify second processing produces zeros (no accumulation)
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (output_port->buf_[i], 0.0f)
+      EXPECT_FLOAT_EQ (output_port->buffers ()->getSample (0, i), 0.0f)
         << "Output not zero at index " << i
         << " during second process_block() call - indicates buffer accumulation";
     }
@@ -215,7 +224,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   // Test with new input data to ensure it still processes correctly
   for (int i = 0; i < 512; i++)
     {
-      input_port->buf_[i] = 0.8f;
+      input_port->buffers ()->setSample (0, i, 0.8f);
     }
 
   // Third process call
@@ -224,7 +233,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   // Verify third processing (should be 0.4 due to half volume)
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (output_port->buf_[i], 0.4f);
+      EXPECT_FLOAT_EQ (output_port->buffers ()->getSample (0, i), 0.4f);
     }
 }
 
@@ -286,7 +295,7 @@ TEST_F (ProcessorBaseTest, EdgeCases)
   // Fill input buffer with test data
   for (nframes_t i = 0; i < max_block_length_; i++)
     {
-      input_port->buf_[i] = 1.0f;
+      input_port->buffers ()->setSample (0, static_cast<int> (i), 1.0f);
     }
 
   // Test Case 1: nframes exceeds max_block_length_

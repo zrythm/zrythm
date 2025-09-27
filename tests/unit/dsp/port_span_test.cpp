@@ -18,14 +18,14 @@ protected:
   void SetUp () override
   {
     // Create test ports in the registry
-    audio_in1_ =
-      registry_.create_object<AudioPort> (u8"AudioIn1", PortFlow::Input);
-    audio_out1_ =
-      registry_.create_object<AudioPort> (u8"AudioOut1", PortFlow::Output);
+    audio_in1_ = registry_.create_object<AudioPort> (
+      u8"AudioIn1", PortFlow::Input, AudioPort::BusLayout::Mono, 1);
+    audio_out1_ = registry_.create_object<AudioPort> (
+      u8"AudioOut1", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
     midi_in1_ = registry_.create_object<MidiPort> (u8"MIDIIn1", PortFlow::Input);
     cv_out1_ = registry_.create_object<CVPort> (u8"CVOut1", PortFlow::Output);
-    audio_in2_ =
-      registry_.create_object<AudioPort> (u8"AudioIn2", PortFlow::Input);
+    audio_in2_ = registry_.create_object<AudioPort> (
+      u8"AudioIn2", PortFlow::Input, AudioPort::BusLayout::Mono, 1);
   }
 
   void TearDown () override
