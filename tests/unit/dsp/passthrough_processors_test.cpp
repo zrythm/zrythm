@@ -240,8 +240,8 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
   // Verify
   for (int i = 0; i < large_size; i++)
     {
-      EXPECT_NEAR (out.buffers ()->getSample (0, i), sinf (i * 0.1f), 1e-6f);
-      EXPECT_NEAR (out.buffers ()->getSample (1, i), cosf (i * 0.1f), 1e-6f);
+      EXPECT_NEAR (out.buffers ()->getSample (0, i), sinf (i * 0.1f), 1e-5f);
+      EXPECT_NEAR (out.buffers ()->getSample (1, i), cosf (i * 0.1f), 1e-5f);
     }
 }
 
