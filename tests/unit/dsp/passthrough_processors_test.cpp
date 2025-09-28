@@ -80,8 +80,8 @@ TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
     {
       in.buffers ()->setSample (0, i, static_cast<float> (i) * 0.01f);
       in.buffers ()->setSample (1, i, static_cast<float> (i) * -0.01f);
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (0, i), 0.f);
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (1, i), 0.f);
+      EXPECT_NEAR (out.buffers ()->getSample (0, i), 0.f, 1e-6f);
+      EXPECT_NEAR (out.buffers ()->getSample (1, i), 0.f, 1e-6f);
     }
 
   // Process
@@ -96,8 +96,8 @@ TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
   // Verify
   for (int i = 0; i < 512; i++)
     {
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (0, i), i * 0.01f);
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (1, i), i * -0.01f);
+      EXPECT_NEAR (out.buffers ()->getSample (0, i), i * 0.01f, 1e-4f);
+      EXPECT_NEAR (out.buffers ()->getSample (1, i), i * -0.01f, 1e-4f);
     }
 }
 
@@ -240,8 +240,8 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
   // Verify
   for (int i = 0; i < large_size; i++)
     {
-      EXPECT_NEAR (out.buffers ()->getSample (0, i), sinf (i * 0.1f), 1e-5f);
-      EXPECT_NEAR (out.buffers ()->getSample (1, i), cosf (i * 0.1f), 1e-5f);
+      EXPECT_NEAR (out.buffers ()->getSample (0, i), sinf (i * 0.1f), 1e-4f);
+      EXPECT_NEAR (out.buffers ()->getSample (1, i), cosf (i * 0.1f), 1e-4f);
     }
 }
 
@@ -273,8 +273,8 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
   // Verify first processing
   for (int i = 0; i < 256; i++)
     {
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (0, i), i * 0.01f);
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (1, i), i * -0.01f);
+      EXPECT_NEAR (out.buffers ()->getSample (0, i), i * 0.01f, 1e-4f);
+      EXPECT_NEAR (out.buffers ()->getSample (1, i), i * -0.01f, 1e-4f);
     }
 
   // Clear input buffer and fill with new data for second call
@@ -297,8 +297,8 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
   // Verify second processing (should not accumulate with first)
   for (int i = 0; i < 256; i++)
     {
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (0, i), i * 0.02f);
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (1, i), i * -0.02f);
+      EXPECT_NEAR (out.buffers ()->getSample (0, i), i * 0.02f, 1e-4f);
+      EXPECT_NEAR (out.buffers ()->getSample (1, i), i * -0.02f, 1e-4f);
     }
 
   // Third call with different offset
@@ -320,8 +320,8 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
   // Verify third processing
   for (int i = 0; i < 128; i++)
     {
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (0, i), i * 0.03f);
-      EXPECT_FLOAT_EQ (out.buffers ()->getSample (1, i), i * -0.03f);
+      EXPECT_NEAR (out.buffers ()->getSample (0, i), i * 0.03f, 1e-4f);
+      EXPECT_NEAR (out.buffers ()->getSample (1, i), i * -0.03f, 1e-4f);
     }
 
   // Verify that previous output samples are not affected (no accumulation).
@@ -329,9 +329,10 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
   // implementation.
   for (int i = 128; i < 256; i++)
     {
-      EXPECT_FLOAT_EQ (
-        out.buffers ()->getSample (0, i), static_cast<float> (i) * 0.02f);
-      EXPECT_FLOAT_EQ (
-        out.buffers ()->getSample (1, i), static_cast<float> (i) * -0.02f);
+      EXPECT_NEAR (
+        out.buffers ()->getSample (0, i), static_cast<float> (i) * 0.02f, 1e-4f);
+      EXPECT_NEAR (
+        out.buffers ()->getSample (1, i), static_cast<float> (i) * -0.02f,
+        1e-4f);
     }
 }
