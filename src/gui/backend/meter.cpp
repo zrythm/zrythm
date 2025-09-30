@@ -143,10 +143,23 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
           const RingBuffer<float> * ring{};
           if constexpr (std::derived_from<PortT, dsp::AudioPort>)
             {
+              if (port->audio_ring_buffers ().empty ())
+                {
+                  z_debug ("no audio ring buffers available");
+                  return;
+                }
               ring = &port->audio_ring_buffers ().at (channel_);
             }
           else if constexpr (std::derived_from<PortT, dsp::CVPort>)
             {
+              if (port->cv_ring_ == nullptr)
+                {
+                  if (port->audio_ring_buffers ().empty ())
+                    {
+                      z_debug ("no CV ring buffer available");
+                      return;
+                    }
+                }
               ring = port->cv_ring_.get ();
             }
 
