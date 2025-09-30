@@ -1271,13 +1271,16 @@ ClapPlugin::create_ports_from_clap_plugin ()
         clap_audio_port_info_t nfo{};
         pimpl_->plugin_->audioPortsGet (index, is_input, &nfo);
         const dsp::AudioPort::BusLayout layout = [nfo] () {
-          if (std::string (nfo.port_type) == std::string (CLAP_PORT_STEREO))
+          if (nfo.port_type != nullptr)
             {
-              return dsp::AudioPort::BusLayout::Stereo;
-            }
-          if (std::string (nfo.port_type) == std::string (CLAP_PORT_MONO))
-            {
-              return dsp::AudioPort::BusLayout::Mono;
+              if (std::string (nfo.port_type) == std::string (CLAP_PORT_STEREO))
+                {
+                  return dsp::AudioPort::BusLayout::Stereo;
+                }
+              if (std::string (nfo.port_type) == std::string (CLAP_PORT_MONO))
+                {
+                  return dsp::AudioPort::BusLayout::Mono;
+                }
             }
           return dsp::AudioPort::BusLayout::Unknown;
         }();
