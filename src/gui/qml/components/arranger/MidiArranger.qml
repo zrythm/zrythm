@@ -24,9 +24,7 @@ Arranger {
     let midiNote = objectCreator.addMidiNote(region, localTickPosition, pitch);
     root.currentAction = Arranger.CreatingResizingMovingR;
     root.selectSingleObject(region.midiNotes, region.midiNotes.rowCount() - 1);
-    root.setObjectSnapshotsAtStart();
     CursorManager.setResizeEndCursor();
-    root.actionObject = midiNote;
 
     return midiNote;
   }

@@ -147,6 +147,7 @@ GridLayout {
     pianoRoll: root.pianoRoll
     ruler: ruler
     selectionOperator: selectionOperator
+    snapGrid: root.project.snapGridEditor
     tempoMap: root.project.tempoMap
     tool: root.project.tool
     transport: root.project.transport
@@ -169,6 +170,7 @@ GridLayout {
     clipEditor: root.clipEditor
     objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
+    snapGrid: root.project.snapGridEditor
     ruler: ruler
     selectionOperator: selectionOperator
     tempoMap: root.project.tempoMap

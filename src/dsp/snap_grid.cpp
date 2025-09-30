@@ -13,11 +13,11 @@ namespace zrythm::dsp
 SnapGrid::SnapGrid (
   const TempoMap          &tempo_map,
   utils::NoteLength        default_note_length,
-  LastObjectLengthCallback last_object_length_callback,
+  LastObjectLengthProvider last_object_length_provider,
   QObject *                parent)
     : QObject (parent), default_note_length_ (default_note_length),
       tempo_map_ (tempo_map),
-      last_object_length_callback_ (std::move (last_object_length_callback))
+      last_object_length_provider_ (std::move (last_object_length_provider))
 {
 }
 
@@ -130,7 +130,7 @@ SnapGrid::defaultTicks (int64_t ticks) const
     }
   if (length_type_ == NoteLengthType::LastObject)
     {
-      return last_object_length_callback_ ();
+      return last_object_length_provider_ ();
     }
 
   auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
@@ -423,7 +423,7 @@ void
 SnapGrid::clear_callbacks ()
 {
   event_callback_.reset ();
-  last_object_length_callback_ = [] () { return 0.0; };
+  last_object_length_provider_ = [] () { return 0.0; };
 }
 
 } // namespace zrythm::dsp

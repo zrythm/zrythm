@@ -41,16 +41,15 @@ Arranger {
       const markerTrack = track as MarkerTrack;
       root.selectSingleObject(markerTrack.markers, markerTrack.markers.rowCount() - 1);
       CursorManager.setClosedHandCursor();
-      root.actionObject = marker;
       return marker;
     case Track.Midi:
     case Track.Instrument:
       console.log("creating midi region", track.lanes.getFirstLane());
       let region = objectCreator.addEmptyMidiRegion(track, trackLane ? trackLane : track.lanes.getFirstLane(), tickPosition);
       root.currentAction = Arranger.CreatingResizingR;
-      root.setObjectSnapshotsAtStart();
+      const regionOwner = trackLane ? trackLane.midiRegions : track.lanes.getFirstLane().midiRegions;
+      root.selectSingleObject(regionOwner, regionOwner.rowCount() - 1);
       CursorManager.setResizeEndCursor();
-      root.actionObject = region;
       return region;
     default:
       return null;

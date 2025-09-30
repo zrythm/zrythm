@@ -66,12 +66,12 @@ public:
 
   using SnapEventCallback =
     std::function<std::vector<double> (double start_ticks, double end_ticks)>;
-  using LastObjectLengthCallback = std::function<double ()>;
+  using LastObjectLengthProvider = std::function<double ()>;
 
   SnapGrid (
     const TempoMap          &tempo_map,
     utils::NoteLength        default_note_length,
-    LastObjectLengthCallback last_object_length_callback,
+    LastObjectLengthProvider last_object_length_provider,
     QObject *                parent = nullptr);
 
   // QML Properties
@@ -105,19 +105,33 @@ public:
   QString snapString () const;
 
   // QML Invokable Methods
-  Q_INVOKABLE double
-  snap (double ticks, std::optional<double> start_ticks = std::nullopt);
+  Q_INVOKABLE double snapWithoutStartTicks (double ticks)
+  {
+    return snap (ticks);
+  }
+  Q_INVOKABLE double snapWithStartTicks (double ticks, double startTicks)
+  {
+    return snap (ticks, startTicks);
+  }
   Q_INVOKABLE double nextSnapPoint (double ticks);
   Q_INVOKABLE double prevSnapPoint (double ticks);
   Q_INVOKABLE double closestSnapPoint (double ticks);
   Q_INVOKABLE double snapTicks (int64_t ticks) const;
   Q_INVOKABLE double defaultTicks (int64_t ticks) const;
 
+  /**
+   * @brief
+   *
+   * @param ticks
+   * @param start_ticks Used when "keep offset" is enabled.
+   */
+  double snap (double ticks, std::optional<double> start_ticks = std::nullopt);
+
   // Callback configuration
   void set_event_callback (SnapEventCallback callback);
-  void set_last_object_length_callback (LastObjectLengthCallback callback)
+  void set_last_object_length_callback (LastObjectLengthProvider callback)
   {
-    last_object_length_callback_ = callback;
+    last_object_length_provider_ = callback;
   }
   void clear_callbacks ();
 
@@ -215,7 +229,7 @@ private:
 
   const TempoMap                  &tempo_map_;
   std::optional<SnapEventCallback> event_callback_;
-  LastObjectLengthCallback         last_object_length_callback_;
+  LastObjectLengthProvider         last_object_length_provider_;
 };
 
 } // namespace zrythm::dsp

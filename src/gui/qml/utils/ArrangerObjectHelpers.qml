@@ -32,6 +32,14 @@ QtObject {
     }
   }
 
+  function getObjectTimelinePositionInTicks(obj: ArrangerObject): real {
+    if (obj.parentObject) {
+      return obj.parentObject.position.ticks + obj.position.ticks;
+    } else {
+      return obj.position.ticks;
+    }
+  }
+
   function isRegion(obj: ArrangerObject): bool {
     return obj && (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion || obj.type === ArrangerObject.ChordRegion || obj.type === ArrangerObject.AutomationRegion);
   }

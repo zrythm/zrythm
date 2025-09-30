@@ -64,6 +64,9 @@ ZrythmToolBar {
       id: toolBox
 
       tool: root.project.tool
+    },
+    SnapGridButton {
+      snapGrid: root.project.snapGridTimeline
     }
   ]
   rightItems: [

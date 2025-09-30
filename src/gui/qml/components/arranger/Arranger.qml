@@ -52,17 +52,17 @@ Item {
     Panning
   }
 
-  property var actionObject: null // the object that is being acted upon (reference)
+  property bool altHeld
   required property ItemSelectionModel arrangerSelectionModel
   required property ClipEditor clipEditor
   default property alias content: extraContent.data
+  property bool ctrlHeld
   property int currentAction: Arranger.CurrentAction.None
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
   required property var editorSettings
   property bool enableYScroll: false
   property ArrangerObjectBaseView hoveredObject: null
   required property ArrangerObjectCreator objectCreator
-  property var objectSnapshotsAtStart: null // snapshots of objects at the start
   required property Ruler ruler
   property alias scrollView: scrollView
   readonly property real scrollViewHeight: scrollView.height
@@ -72,12 +72,19 @@ Item {
   readonly property real scrollY: root.editorSettings.y
   readonly property real scrollYPlusHeight: scrollY + scrollViewHeight
   required property ArrangerObjectSelectionOperator selectionOperator
+  property bool shiftHeld
+  readonly property bool shouldSnap: !root.shiftHeld && (root.snapGrid.snapToGrid || root.snapGrid.snapToEvents)
+  required property SnapGrid snapGrid
   property var tempQmlArrangerObjects: []
   required property TempoMap tempoMap
   required property var tool
   required property var transport
   required property UndoStack undoStack
   required property UnifiedArrangerObjectsModel unifiedObjectsModel
+
+  function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
+    return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
+  }
 
   function clearTempQmlArrangerObjects() {
     // Destroy existing temporary views before clearing the array
@@ -88,6 +95,12 @@ Item {
 
     // Clear the current array
     root.tempQmlArrangerObjects = [];
+  }
+
+  function getObjectAtCurrentIndex(): ArrangerObject {
+    const unifiedIndex = root.arrangerSelectionModel.currentIndex;
+    const sourceIndex = root.unifiedObjectsModel.mapToSource(unifiedIndex);
+    return sourceIndex.model.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
   }
 
   function handleObjectHover(hovered: bool, arrangerObject: ArrangerObjectBaseView) {
@@ -126,19 +139,6 @@ Item {
     root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
   }
 
-  function setActionObject(obj) {
-    root.actionObject = obj;
-  }
-
-  // creates snapshots of currently selected objects
-  // FIXME this is pseudocode for now
-  function setObjectSnapshotsAtStart() {
-    if (root.objectSnapshotsAtStart) {
-      root.objectSnapshotsAtStart.destroy();
-    }
-  // root.objectSnapshotsAtStart = selectionsClone;
-  }
-
   function updateTempQmlArrangerObjects() {
     clearTempQmlArrangerObjects();
 
@@ -154,17 +154,18 @@ Item {
       const sourceModel = sourceIndex.model;
       if (sourceModel) {
         // Get the object from the source model using the arrangerObject role
-        const object = sourceModel.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
+        const object = sourceModel.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole) as ArrangerObject;
         const objectTimelineTicks = object.position.ticks + (object.parentObject ? object.parentObject.position.ticks : 0);
         const objectTimelineEndTicks = ArrangerObjectHelpers.getObjectEndTicks(object) + (object.parentObject ? object.parentObject.position.ticks : 0);
         if (object) {
           // Create a temporary view that wraps the arranger object
-          const tempView = tempViewComponent.createObject(root, {
+          const tempView = tempViewComponent.createObject(arrangerContent, {
             "arrangerObject": object,
             "x": objectTimelineTicks * root.ruler.pxPerTick,
             "width": Math.max((objectTimelineEndTicks - objectTimelineTicks) * root.ruler.pxPerTick, 20),
             "y": root.getObjectY(object),
-            "coordinatesOnConstruction": Qt.point(objectTimelineTicks * root.ruler.pxPerTick, root.getObjectY(object))
+            "coordinatesOnConstruction": Qt.point(objectTimelineTicks * root.ruler.pxPerTick, root.getObjectY(object)),
+            "z": 100
           });
 
           if (tempView) {
@@ -431,23 +432,54 @@ Item {
 
         property alias action: scrollView.currentAction
         property point currentCoordinates
+        readonly property real currentTimelineTicks: currentCoordinates.x / root.ruler.pxPerTick
         property bool hovered: false
         property point startCoordinates
+        readonly property real startTimelineTicks: startCoordinates.x / root.ruler.pxPerTick
 
-        function moveSelectionsX(ticksDiff: real) {
-          console.log("moving selections by", ticksDiff, "ticks");
+        function calculateObjectMovementTicks() {
+          const obj = root.getObjectAtCurrentIndex();
+          const objTimelineTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
+          const ticksAlreadyMoved = objTimelineTicks - startTimelineTicks;
+          const ticksToMove = calculateSnappedMovementTicks(startTimelineTicks) - ticksAlreadyMoved;
+          return ticksToMove;
+        }
+
+        // Returns the number of ticks that the curent selection should be moved during a drag, taking grid snapping options into account.
+        // Parameter: The object (at the current selection index)'s position in ticks when the drag started
+        function calculateSnappedMovementTicks(objectTicksAtDragStart: real): real {
+          const unsnappedTicksSinceStart = currentTimelineTicks - startTimelineTicks;
+          if (root.shouldSnap) {
+            const unsnappedObjectTicks = objectTicksAtDragStart + unsnappedTicksSinceStart;
+            const snappedObjectTicks = root.calculateSnappedPosition(unsnappedObjectTicks, objectTicksAtDragStart);
+            return snappedObjectTicks - objectTicksAtDragStart;
+          } else {
+            return unsnappedTicksSinceStart;
+          }
+        }
+
+        // Moves the selected objects by the given amount of ticks.
+        function moveSelectionsX(ticksToMove: real) {
           if (root.selectionOperator) {
-            const success = root.selectionOperator.moveByTicks(ticksDiff);
+            const success = root.selectionOperator.moveByTicks(ticksToMove);
             if (!success) {
               console.warn("Failed to move selections - validation failed");
             }
           }
         }
 
-        function moveTemporaryObjectsX(dx: real) {
+        function moveTemporaryObjectsX() {
+          const obj = root.getObjectAtCurrentIndex();
+          const xToMoveSinceStart = calculateSnappedMovementTicks(ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj)) * root.ruler.pxPerTick;
           root.tempQmlArrangerObjects.forEach(qmlObj => {
-            qmlObj.x += dx;
+            qmlObj.x = qmlObj.coordinatesOnConstruction.x + xToMoveSinceStart;
           });
+        }
+
+        // Snaps the selected objects' positions (if snap is on).
+        function snapNewlyCreatedObjects() {
+          const ticksToMove = calculateObjectMovementTicks();
+          moveSelectionsX(ticksToMove);
         }
 
         acceptedButtons: Qt.AllButtons
@@ -461,6 +493,9 @@ Item {
           // create an object at the mouse position
           if (mouse.button === Qt.LeftButton) {
             let obj = beginObjectCreation(mouse.x, mouse.y);
+            if (obj) {
+              snapNewlyCreatedObjects();
+            }
           }
         }
         onEntered: () => {
@@ -475,8 +510,10 @@ Item {
           currentCoordinates = Qt.point(mouse.x, mouse.y);
           const dx = mouse.x - prevCoordinates.x;
           const dy = mouse.y - prevCoordinates.y;
-          const timelineTicks = mouse.x / root.ruler.pxPerTick;
           const ticksDiff = dx / root.ruler.pxPerTick;
+          root.shiftHeld = mouse.modifiers & Qt.ShiftModifier;
+          root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
+          root.altHeld = mouse.modifiers & Qt.AltModifier;
           if (pressed) {
             console.log("dragging inside arranger", currentCoordinates, "action:", action);
             // handle action transitions
@@ -485,9 +522,9 @@ Item {
             else if (action === Arranger.StartingPanning)
               action = Arranger.Panning;
             else if (action === Arranger.StartingMoving) {
-              if (mouse.modifiers & Qt.AltModifier) {
+              if (root.altHeld) {
                 action = Arranger.MovingLink;
-              } else if (mouse.modifiers & Qt.ControlModifier) {
+              } else if (root.ctrlHeld) {
                 // TODO: also check that selection does not contain unclonable objects before entering this block
                 action = Arranger.MovingCopy;
               } else {
@@ -496,13 +533,13 @@ Item {
 
               // Update qmlObjectsBeingMoved based on current selection
               root.updateTempQmlArrangerObjects();
-            } else if (action === Arranger.Moving && mouse.modifiers & Qt.AltModifier) {
+            } else if (action === Arranger.Moving && root.altHeld) {
               action = Arranger.MovingLink;
-            } else if (action === Arranger.Moving && mouse.modifiers & Qt.ControlModifier) {
+            } else if (action === Arranger.Moving && root.ctrlHeld) {
               action = Arranger.MovingCopy;
-            } else if (action === Arranger.MovingLink && !(mouse.modifiers & Qt.AltModifier)) {
-              action = (mouse.modifiers & Qt.ControlModifier) ? Arranger.MovingCopy : Arranger.Moving;
-            } else if (action === Arranger.MovingCopy && !(mouse.modifiers & Qt.ControlModifier)) {
+            } else if (action === Arranger.MovingLink && !root.altHeld) {
+              action = (root.ctrlHeld) ? Arranger.MovingCopy : Arranger.Moving;
+            } else if (action === Arranger.MovingCopy && !root.ctrlHeld) {
               action = Arranger.Moving;
             }
 
@@ -515,15 +552,20 @@ Item {
                 root.editorSettings.y -= dy;
               }
             } else if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
-              moveTemporaryObjectsX(dx);
+              moveTemporaryObjectsX();
               moveTemporaryObjectsY(dy, prevCoordinates.y);
             } else if (action == Arranger.CreatingMoving) {
-              moveSelectionsX(ticksDiff);
+              const ticksToMove = calculateObjectMovementTicks();
+              moveSelectionsX(ticksToMove);
             } else if (action === Arranger.CreatingResizingR) {
-              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.actionObject, timelineTicks);
+              // Apply snapping to resize endpoint
+              const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.getObjectAtCurrentIndex(), endTicks);
             } else if (action === Arranger.CreatingResizingMovingR) {
               moveSelectionsY(dy, prevCoordinates.y);
-              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.actionObject, timelineTicks);
+              // Apply snapping to resize endpoint
+              const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.getObjectAtCurrentIndex(), endTicks);
             }
           }
 
@@ -533,7 +575,7 @@ Item {
         onPressed: mouse => {
           startCoordinates = Qt.point(mouse.x, mouse.y);
           currentCoordinates = startCoordinates;
-          console.log("press inside arranger", startCoordinates);
+          console.log("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
           if (action === Arranger.None) {
             if (mouse.button === Qt.MiddleButton) {
               action = Arranger.StartingPanning;
@@ -553,7 +595,9 @@ Item {
             if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
               if (root.tempQmlArrangerObjects.length > 0) {
                 const firstTempObj = root.tempQmlArrangerObjects[0];
-                moveSelectionsX((firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick);
+                // Calculate the final snapped position difference
+                const finalTicksDiff = (firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick;
+                moveSelectionsX(finalTicksDiff);
                 moveSelectionsY(firstTempObj.y - firstTempObj.coordinatesOnConstruction.y, firstTempObj.coordinatesOnConstruction.y);
               }
             } else if (action === Arranger.CreatingMoving) {
@@ -568,7 +612,6 @@ Item {
           }
           action = Arranger.None;
           root.clearTempQmlArrangerObjects();
-          root.actionObject = null;
           updateCursor();
         }
 

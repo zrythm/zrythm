@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
-// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 T.Popup {
   id: control
@@ -15,10 +16,16 @@ T.Popup {
   popupType: Popup.Native
 
   T.Overlay.modal: Rectangle {
-    color: Color.transparent(control.palette.shadow, 0.5)
+    color: {
+      const c = control.palette.shadow;
+      return Qt.rgba(c.r, c.g, c.b, 0.5);
+    }
   }
   T.Overlay.modeless: Rectangle {
-    color: Color.transparent(control.palette.shadow, 0.12)
+    color: {
+      const c = control.palette.shadow;
+      return Qt.rgba(c.r, c.g, c.b, 0.12);
+    }
   }
   background: PopupBackgroundRect {
   }

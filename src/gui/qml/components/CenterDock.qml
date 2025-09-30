@@ -178,6 +178,7 @@ ColumnLayout {
           pinned: true
           ruler: ruler
           selectionOperator: selectionOperator
+          snapGrid: root.project.snapGridTimeline
           tempoMap: root.project.tempoMap
           timeline: root.project.timeline
           tool: root.project.tool
@@ -248,6 +249,7 @@ ColumnLayout {
           pinned: false
           ruler: ruler
           selectionOperator: selectionOperator
+          snapGrid: root.project.snapGridTimeline
           tempoMap: root.project.tempoMap
           timeline: root.project.timeline
           tool: root.project.tool

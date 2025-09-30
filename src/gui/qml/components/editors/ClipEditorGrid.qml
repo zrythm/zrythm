@@ -11,8 +11,8 @@ import Zrythm
 GridLayout {
   id: root
 
-  required property var clipEditor
-  required property var project
+  required property ClipEditor clipEditor
+  required property Project project
   readonly property var region: clipEditor.region
   readonly property var track: clipEditor.track
 
@@ -27,8 +27,8 @@ GridLayout {
 
     Rectangle {
       Layout.fillHeight: true
-      color: root.region.color.useColor ? root.region.color.color : root.track.color
       Layout.preferredWidth: 5
+      color: root.region.color.useColor ? root.region.color.color : root.track.color
     }
 
     RotatedLabel {
@@ -52,8 +52,8 @@ GridLayout {
       }
     ]
     leftItems: [
-      ToolButton {
-        text: "left"
+      SnapGridButton {
+        snapGrid: root.project.snapGridEditor
       }
     ]
     rightItems: [
