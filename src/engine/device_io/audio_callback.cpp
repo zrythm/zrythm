@@ -27,6 +27,8 @@ AudioCallback::audioDeviceIOCallbackWithContext (
   const juce::AudioIODeviceCallbackContext &context)
 {
   juce::ScopedNoDenormals no_denormals;
+
+  // Clear buffers
   for (const auto ch : std::views::iota (0, numOutputChannels))
     {
       auto * ch_data = outputChannelData[ch];

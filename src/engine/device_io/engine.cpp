@@ -85,18 +85,26 @@ AudioEngine::AudioEngine (
               this->project_->transport_->playhead_
             };
 
-            this->process (numSamples);
-            if (numOutputChannels > 0)
+            const auto process_status = this->process (numSamples);
+            if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
-                utils::float_ranges::copy (
-                  outputChannelData[0],
-                  monitor_out_port_->buffers ()->getReadPointer (0), numSamples);
-              }
-            if (numOutputChannels > 1)
-              {
-                utils::float_ranges::copy (
-                  outputChannelData[1],
-                  monitor_out_port_->buffers ()->getReadPointer (1), numSamples);
+                // Note: the monitor output ports below require the processing
+                // graph to be operational. We are guarding against other cases
+                // by checking the process() return status
+                if (numOutputChannels > 0)
+                  {
+                    utils::float_ranges::copy (
+                      outputChannelData[0],
+                      monitor_out_port_->buffers ()->getReadPointer (0),
+                      numSamples);
+                  }
+                if (numOutputChannels > 1)
+                  {
+                    utils::float_ranges::copy (
+                      outputChannelData[1],
+                      monitor_out_port_->buffers ()->getReadPointer (1),
+                      numSamples);
+                  }
               }
           },
           [this] (juce::AudioIODevice * dev) {
@@ -659,14 +667,16 @@ AudioEngine::receive_midi_events (uint32_t nframes)
 #endif
 }
 
-int
+auto
 AudioEngine::process (const nframes_t total_frames_to_process)
+  -> ProcessReturnStatus
 {
   /* RAIIs */
   AtomicBoolRAII cycle_running (cycle_running_);
   SemaphoreRAII  port_operation_sem (port_operation_lock_);
 
-  z_return_val_if_fail (total_frames_to_process > 0, -1);
+  z_return_val_if_fail (
+    total_frames_to_process > 0, ProcessReturnStatus::ProcessFailed);
 
   /* calculate timestamps (used for synchronizing external events like Windows
    * MME MIDI) */
@@ -678,7 +688,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     {
       // z_info ("skipping processing...");
       clear_output_buffers (total_frames_to_process);
-      return 0;
+      return ProcessReturnStatus::ProcessSkipped;
     }
 
   /* run pre-process code */
@@ -689,7 +699,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     {
       // z_info ("skip cycle");
       clear_output_buffers (total_frames_to_process);
-      return 0;
+      return ProcessReturnStatus::ProcessSkipped;
     }
 
   /* puts MIDI in events in the MIDI in port */
@@ -855,7 +865,7 @@ finalize_processing:
   /*
    * processing finished, return 0 (OK)
    */
-  return 0;
+  return ProcessReturnStatus::ProcessCompleted;
 }
 
 void

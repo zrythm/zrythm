@@ -200,12 +200,23 @@ public:
     nframes_t                                         nframes,
     SemaphoreRAII<moodycamel::LightweightSemaphore> * sem = nullptr);
 
+  enum class ProcessReturnStatus
+  {
+    // Process completed normally
+    ProcessCompleted,
+    // Process skipped (e.g., when recalculating the graph)
+    ProcessSkipped,
+    // Process failed for some reason
+    ProcessFailed,
+  };
+
   /**
    * Processes current cycle.
    *
    * To be called by each implementation in its callback.
    */
-  [[gnu::hot]] int process (nframes_t total_frames_to_process);
+  [[gnu::hot]] auto
+  process (nframes_t total_frames_to_process) -> ProcessReturnStatus;
 
   /**
    * To be called after processing for common logic.
