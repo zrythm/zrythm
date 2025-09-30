@@ -13,6 +13,7 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/timeline.h"
+#include "gui/backend/file_importer.h"
 #include "gui/backend/plugin_selection_manager.h"
 #include "gui/backend/tool.h"
 #include "gui/backend/track_selection_manager.h"
@@ -116,6 +117,9 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::actions::TrackCreator * trackCreator READ trackCreator CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::gui::backend::FileImporter * fileImporter READ fileImporter CONSTANT
+      FINAL)
+  Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::SnapGrid * snapGridTimeline READ snapGridTimeline CONSTANT FINAL)
@@ -207,6 +211,7 @@ public:
   PluginFactory *                        getPluginFactory () const;
   actions::ArrangerObjectCreator *       arrangerObjectCreator () const;
   actions::TrackCreator *                trackCreator () const;
+  gui::backend::FileImporter *           fileImporter () const;
   dsp::TempoMapWrapper *                 getTempoMap () const;
   dsp::SnapGrid *                        snapGridTimeline () const;
   dsp::SnapGrid *                        snapGridEditor () const;
@@ -688,6 +693,8 @@ public:
   utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
                                                  arranger_object_creator_;
   utils::QObjectUniquePtr<actions::TrackCreator> track_creator_;
+
+  utils::QObjectUniquePtr<gui::backend::FileImporter> file_importer_;
 
   utils::QObjectUniquePtr<gui::backend::TrackSelectionManager>
     track_selection_manager_;

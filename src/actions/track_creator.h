@@ -35,18 +35,6 @@ public:
   Q_INVOKABLE QVariant
   addEmptyTrackFromType (structure::tracks::Track::Type trackType) const;
 
-  /**
-   * @brief Imports the given file.
-   *
-   * @param path File to import.
-   * @param startTicks Start ticks to place file contents at, or 0.
-   * @param track Track to import in (optional).
-   */
-  Q_INVOKABLE void importFiles (
-    const QStringList         &filePaths,
-    double                     startTicks,
-    structure::tracks::Track * track) const;
-
   Q_INVOKABLE void
   importPlugin (const plugins::PluginDescriptor * descriptor) const;
 

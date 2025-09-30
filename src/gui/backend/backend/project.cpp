@@ -197,6 +197,12 @@ Project::Project (
           *tracklist_->trackRouting (),
           *tracklist_->singletonTracks (),
           this)),
+      file_importer_ (
+        utils::make_qobject_unique<gui::backend::FileImporter> (
+          *undo_stack_,
+          *arranger_object_creator_,
+          *track_creator_,
+          this)),
       track_selection_manager_ (
         utils::make_qobject_unique<
           gui::backend::TrackSelectionManager> (*track_registry_, this)),
@@ -1454,6 +1460,12 @@ actions::TrackCreator *
 Project::trackCreator () const
 {
   return track_creator_.get ();
+}
+
+gui::backend::FileImporter *
+Project::fileImporter () const
+{
+  return file_importer_.get ();
 }
 
 dsp::TempoMapWrapper *

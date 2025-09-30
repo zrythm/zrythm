@@ -40,10 +40,6 @@ public:
   undo::UndoStack * undoStack () const { return undo_stack_; }
   void              setUndoStack (undo::UndoStack * undoStack)
   {
-    if (undoStack == nullptr)
-      {
-        throw std::invalid_argument ("UndoStack cannot be null");
-      }
     if (undo_stack_ != undoStack)
       {
         undo_stack_ = undoStack;

@@ -130,13 +130,13 @@ TEST_F (TrackOperatorTest, NullTrackThrowsException)
 {
   EXPECT_THROW (track_operator->setTrack (nullptr), std::invalid_argument);
 }
-#endif
 
 // Test track operator with null undo stack (should throw exception)
 TEST_F (TrackOperatorTest, NullUndoStackThrowsException)
 {
   EXPECT_THROW (track_operator->setUndoStack (nullptr), std::invalid_argument);
 }
+#endif
 
 // Test command text in undo stack
 TEST_F (TrackOperatorTest, CommandTextInUndoStack)

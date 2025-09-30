@@ -49,20 +49,6 @@ TrackCreator::addEmptyTrackFromType (
 }
 
 void
-TrackCreator::importFiles (
-  const QStringList         &filePaths,
-  double                     startTicks,
-  structure::tracks::Track * track) const
-{
-  z_debug ("Importing {} files: {}", filePaths.size (), filePaths);
-
-  if (filePaths.empty ())
-    {
-      return;
-    }
-}
-
-void
 TrackCreator::importPlugin (const plugins::PluginDescriptor * config) const
 {
 }

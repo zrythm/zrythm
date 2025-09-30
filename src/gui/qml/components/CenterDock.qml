@@ -94,7 +94,7 @@ ColumnLayout {
             width: unpinnedTracklist.width
 
             onFilesDropped: filePaths => {
-              root.project.trackCreator.importFiles(filePaths, 0, null);
+              root.project.fileImporter.importFiles(filePaths, 0, null);
             }
           }
         }

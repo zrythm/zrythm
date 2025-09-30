@@ -40,9 +40,9 @@ public:
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-  Q_INVOKABLE QVariant getFirstLane () const
+  Q_INVOKABLE TrackLane * getFirstLane () const
   {
-    return data (index (0, 0), TrackLanePtrRole);
+    return lanes_.front ().get ();
   }
 
   bool lanesVisible () const { return lanes_visible_; }
