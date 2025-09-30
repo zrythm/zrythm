@@ -20,7 +20,8 @@ Control {
   signal pluginDragStarted(var plugin)
   signal pluginSelected(var plugin, bool ctrlPressed)
 
-  height: 20
+  implicitHeight: 20
+  implicitWidth: 48
   width: parent ? parent.width : 200
 
   // Context menu
