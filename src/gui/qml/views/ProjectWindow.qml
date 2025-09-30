@@ -96,6 +96,55 @@ ApplicationWindow {
     }
   }
 
+  // Tools
+  Shortcut {
+    sequence: "1"
+
+    onActivated: {
+      root.project.tool.toolValue = Tool.Select;
+    }
+  }
+
+  Shortcut {
+    sequence: "2"
+
+    onActivated: {
+      root.project.tool.toolValue = Tool.Edit;
+    }
+  }
+
+  Shortcut {
+    sequence: "3"
+
+    onActivated: {
+      root.project.tool.toolValue = Tool.Cut;
+    }
+  }
+
+  Shortcut {
+    sequence: "4"
+
+    onActivated: {
+      root.project.tool.toolValue = Tool.Eraser;
+    }
+  }
+
+  Shortcut {
+    sequence: "5"
+
+    onActivated: {
+      root.project.tool.toolValue = Tool.Ramp;
+    }
+  }
+
+  Shortcut {
+    sequence: "6"
+
+    onActivated: {
+      root.project.tool.toolValue = Tool.Audition;
+    }
+  }
+
   ColumnLayout {
     anchors.fill: parent
     spacing: 0
