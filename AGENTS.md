@@ -86,6 +86,10 @@ Zrythm has comprehensive architecture documentation in the [`doc/dev/`](doc/dev/
 - **Key Components**: PlaybackCacheScheduler, MidiPlaybackCache, PlaybackCacheBuilder
 - **Real-time Safety**: Uses farbot::RealtimeObject for atomic cache swapping
 
+### Writing Documentation
+
+When editing or creating [developer documentation](doc/dev/), focus on high level concepts, utilizing mermaid diagrams where possible, instead of concrete code. Only include actual code where you think it's appropriate.
+
 ## Key Code Patterns
 
 ### C++23 Features
@@ -93,6 +97,9 @@ Zrythm has comprehensive architecture documentation in the [`doc/dev/`](doc/dev/
 Zrythm makes extensive use of modern C++ features:
 - Concepts and constraints
 - Ranges and views
+
+**C++ Code Guidelines:**
+- Use standard algorithms (for example, `std::ranges::any_of`) instead of manual implementations
 
 ### Audio Processing
 
@@ -109,6 +116,55 @@ Zrythm makes extensive use of modern C++ features:
 - Follow Qt coding conventions
 - Use Qt's signal/slot system for event handling
 - Implement proper model/view separation
+
+## Key Classes
+
+### UUID-Identifiable Objects
+
+See `UuidIdentifiableObject` in `src/utils/uuid_identifiable_object`.
+
+### QObject-derived Objects
+
+See [QObjectUniquePtr](src/utils/qt.h) for a unique pointer type for QObject-derived objects that takes into account parent ownership and does the right thing automatically. Prefer this over raw pointers when the object owner is the unique parent of the object.
+
+### DSP Graph
+
+See `graph.h`, `graph_node.h` under `src/dsp/`. [`EngineProcessTimeInfo`](src/utils/types.h) holds timing information that is passed to processing callbacks and is used throughout the code. [`ITransport`](src/dsp/itransport.h) abstracts some common transport functionality needed by the graph.
+
+### Audio Processors & Parameters
+
+See `src/dsp/processor_base.h` for the base processor class and `src/dsp/passthrough_processors.h` for example implementation. See `src/dsp/parameter.h` for processor parameters.
+
+### Tempo Map
+
+The [tempo map](src/dsp/tempo_map.h) is responsible for mapping/converting timeline positions between samples, ticks and seconds.
+We are using 960 PPQN.
+
+See also `src/dsp/tempo_map_qml_adapter.h` for a QML wrapper of it.
+
+### Arrangement
+
+[ArrangerObject](src/structure/arrangement/arranger_object.h) is the base class of all arranger object types.
+
+### Tracks
+
+[Track](src/structure/tracks/track.h) is the base class of all track types.
+
+## Unit Tests
+
+- Use gtest
+- Use gmock where mocking is needed
+- Unit tests go under `tests/unit/` with a structure corresponding to the source file path (example: `tests/unit/dsp/tempo_map_test.cpp`)
+- Test filenames end in `_test.cpp`
+- If a header is needed (to make qmoc happy for example when defining test QObjects), put it in `_test.h`
+- Enclose the unit test classes and functions inside the namespace of the class being tested (avoid `using namespace`)
+
+### Reusable Utilities
+
+- [ScopedQCoreApplication](tests/helpers/scoped_qcoreapplication.h)
+- [ScopedJuceMessageThread](tests/helpers/scoped_juce_message_thread.h)
+- [MockProcessable, MockTransport](tests/unit/dsp/graph_helpers.h)
+- [MockTrack](tests/unit/structure/tracks/mock_track.h)
 
 ## Common Tasks for AI Agents
 
@@ -147,4 +203,4 @@ Zrythm makes extensive use of modern C++ features:
 
 ---
 
-*This document is maintained by the Zrythm development team. Last updated: 2025-09-26*
+*This document is maintained by the Zrythm development team. Last updated: 2025-10-05*
