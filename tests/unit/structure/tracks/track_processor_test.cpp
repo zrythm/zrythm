@@ -79,6 +79,42 @@ protected:
     region->add_object (note_ref);
   }
 
+  // Helper function to create a MIDI event provider from a MIDI sequence
+  TrackProcessor::MidiEventProviderProcessFunc
+  create_midi_event_provider_from_sequence (const juce::MidiMessageSequence &seq)
+  {
+    return
+      [seq] (
+        const EngineProcessTimeInfo &time_nfo,
+        dsp::MidiEventVector        &output_buffer) {
+        // Convert juce MIDI sequence to output buffer
+        for (int i = 0; i < seq.getNumEvents (); ++i)
+          {
+            const auto * event = seq.getEventPointer (i);
+            if (event == nullptr)
+              continue;
+
+            // Convert juce MIDI message to our format
+            const auto &msg = event->message;
+            if (msg.getRawDataSize () <= 3)
+              {
+                dsp::MidiEvent new_event;
+                new_event.time_ =
+                  static_cast<unsigned_frame_t> (msg.getTimeStamp ());
+                std::copy_n (
+                  msg.getRawData (), msg.getRawDataSize (),
+                  new_event.raw_buffer_.begin ());
+
+                // Only add events that are within the time range
+                if (new_event.time_ < time_nfo.nframes_)
+                  {
+                    output_buffer.push_back (new_event);
+                  }
+              }
+          }
+      };
+  }
+
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
   std::unique_ptr<dsp::graph_test::MockTransport> transport_;
   dsp::PortRegistry                               port_registry_;
@@ -1226,20 +1262,11 @@ TEST_F (TrackProcessorTest, FillEventsFromRegionWithOffset)
   EXPECT_GT (midi_events.size (), 0);
 }
 
-TEST_F (TrackProcessorTest, MidiTrackProcessingWithSetMidiEvents)
+TEST_F (TrackProcessorTest, MidiTrackProcessingWithCustomMidiEventProvider)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Set Events"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Custom Provider"; },
     [] { return true; }, true, false, false, dependencies_);
-
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
-  };
-
-  processor.prepare_for_processing (sample_rate_, block_length_);
 
   // Create a MIDI sequence with note events
   juce::MidiMessageSequence midi_sequence;
@@ -1251,8 +1278,22 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithSetMidiEvents)
   midi_sequence.addEvent (juce::MidiMessage::noteOff (1, 64), 75.0);
   midi_sequence.updateMatchedPairs ();
 
-  // Set the MIDI events using the new setter
-  processor.set_midi_events (midi_sequence);
+  // Set the custom MIDI event provider
+  processor.set_custom_midi_event_provider (
+    create_midi_event_provider_from_sequence (midi_sequence));
+
+  // Activate the custom event provider
+  processor.set_midi_providers_active (
+    TrackProcessor::ActiveMidiEventProviders::Custom, true);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  processor.prepare_for_processing (sample_rate_, block_length_);
 
   // Enable rolling so that events are taken into account
   EXPECT_CALL (*transport_, get_play_state ())
@@ -1303,11 +1344,20 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithSetMidiEvents)
   EXPECT_TRUE (found_note_64_off);
 }
 
-TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptySetMidiEvents)
+TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyCustomMidiEventProvider)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Empty Events"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Empty Provider"; },
     [] { return true; }, true, false, false, dependencies_);
+
+  // Set empty MIDI sequence
+  juce::MidiMessageSequence empty_sequence;
+  processor.set_custom_midi_event_provider (
+    create_midi_event_provider_from_sequence (empty_sequence));
+
+  // Activate the custom event provider
+  processor.set_midi_providers_active (
+    TrackProcessor::ActiveMidiEventProviders::Custom, true);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -1317,10 +1367,6 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptySetMidiEvents)
   };
 
   processor.prepare_for_processing (sample_rate_, block_length_);
-
-  // Set empty MIDI sequence
-  juce::MidiMessageSequence empty_sequence;
-  processor.set_midi_events (empty_sequence);
 
   // Enable rolling so that events would be processed if they existed
   EXPECT_CALL (*transport_, get_play_state ())
@@ -1333,20 +1379,13 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptySetMidiEvents)
   EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 0);
 }
 
-TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleSetMidiEvents)
+TEST_F (
+  TrackProcessorTest,
+  MidiTrackProcessingWithMultipleCustomMidiEventProviders)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Multiple Events"; },
+    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Multiple Provider"; },
     [] { return true; }, true, false, false, dependencies_);
-
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
-  };
-
-  processor.prepare_for_processing (sample_rate_, 512);
 
   // Create a MIDI sequence with multiple events
   juce::MidiMessageSequence midi_sequence;
@@ -1361,7 +1400,21 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleSetMidiEvents)
   midi_sequence.addEvent (juce::MidiMessage::noteOff (1, 67), 70.0);
   midi_sequence.updateMatchedPairs ();
 
-  processor.set_midi_events (midi_sequence);
+  processor.set_custom_midi_event_provider (
+    create_midi_event_provider_from_sequence (midi_sequence));
+
+  // Activate the custom event provider
+  processor.set_midi_providers_active (
+    TrackProcessor::ActiveMidiEventProviders::Custom, true);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+
+  processor.prepare_for_processing (sample_rate_, 512);
 
   // Enable rolling
   EXPECT_CALL (*transport_, get_play_state ())
@@ -1374,20 +1427,14 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleSetMidiEvents)
   EXPECT_GE (midi_out.midi_events_.queued_events_.size (), 6);
 }
 
-TEST_F (TrackProcessorTest, MidiTrackProcessingWithOverlappingSetMidiEvents)
+TEST_F (
+  TrackProcessorTest,
+  MidiTrackProcessingWithOverlappingCustomMidiEventProviders)
 {
   TrackProcessor processor (
-    *transport_, dsp::PortType::Midi, [] { return u8"MIDI Overlapping Events"; },
-    [] { return true; }, true, false, false, dependencies_);
-
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
-  };
-
-  processor.prepare_for_processing (sample_rate_, block_length_);
+    *transport_, dsp::PortType::Midi,
+    [] { return u8"MIDI Overlapping Provider"; }, [] { return true; }, true,
+    false, false, dependencies_);
 
   // Create MIDI sequence with overlapping events - note on before previous note
   // off
@@ -1403,7 +1450,21 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithOverlappingSetMidiEvents)
     juce::MidiMessage::noteOff (1, 60), 75.0); // Second note off
   midi_sequence.updateMatchedPairs ();
 
-  processor.set_midi_events (midi_sequence);
+  processor.set_custom_midi_event_provider (
+    create_midi_event_provider_from_sequence (midi_sequence));
+
+  // Activate the custom event provider
+  processor.set_midi_providers_active (
+    TrackProcessor::ActiveMidiEventProviders::Custom, true);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  processor.prepare_for_processing (sample_rate_, block_length_);
 
   // Enable rolling
   EXPECT_CALL (*transport_, get_play_state ())

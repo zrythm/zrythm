@@ -84,16 +84,28 @@ classDiagram
     }
 ```
 
-### 4. PlaybackCacheBuilder
+### 4. TimelineMidiEventProvider
 
-Located in [`src/structure/tracks/playback_cache_builder.h`](src/structure/tracks/playback_cache_builder.h)
+Located in [`src/structure/tracks/timeline_midi_event_provider.h`](src/structure/tracks/timeline_midi_event_provider.h)
 
-**Purpose**: Generates and updates playback caches from arrangement objects.
+**Purpose**: Bridge between the playback cache system and track processors, providing MIDI events for real-time playback.
 
 **Key Features:**
-- Processes MIDI regions and converts to sample-based timing
-- Handles range-based updates for efficiency
-- Integrates with tempo map for accurate timing
+- Generates MIDI event sequences from timeline regions
+- Manages thread-safe access to cached events using `farbot::RealtimeObject`
+- Processes events for specific time ranges during audio processing
+- Handles range-based cache updates for efficiency
+
+```mermaid
+classDiagram
+    class TimelineMidiEventProvider {
+        +generate_events(tempo_map, midi_regions, affected_range)
+        +process_events(time_info, output_buffer)
+        -set_midi_events(events)
+        -farbot::RealtimeObject active_midi_playback_sequence_
+        -MidiPlaybackCache midi_playback_cache_
+    }
+```
 
 ### 5. Track and TrackProcessor Integration
 
@@ -103,9 +115,9 @@ Located in [`src/structure/tracks/playback_cache_builder.h`](src/structure/track
 - Connects to arrangement object changes
 
 **TrackProcessor** ([`src/structure/tracks/track_processor.h`](src/structure/tracks/track_processor.h)):
-- Uses `farbot::RealtimeObject` for thread-safe cache swapping
-- Provides the `active_midi_playback_sequence_` for real-time access
+- Uses `TimelineMidiEventProvider` for MIDI event access
 - Implements the playback interface using cached events
+- Integrates with the track's event provider system
 
 ## Signal Flow
 
@@ -117,7 +129,7 @@ sequenceDiagram
     participant AOLM as ArrangerObjectListModel
     participant Scheduler as PlaybackCacheScheduler
     participant Track as Track
-    participant Builder as PlaybackCacheBuilder
+    participant Provider as TimelineMidiEventProvider
     participant Cache as MidiPlaybackCache
     participant Processor as TrackProcessor
 
@@ -125,28 +137,31 @@ sequenceDiagram
     AOLM->>Scheduler: contentChanged(affectedRange)
     Scheduler->>Scheduler: Debounce and expand range
     Scheduler->>Track: cacheRequested(finalRange)
-    Track->>Builder: generate_midi_cache_for_midi_region_collections(cache, regions, range)
-    Builder->>Cache: remove_sequences_matching_interval(range)
-    Builder->>Builder: Process regions in range
-    Builder->>Cache: add_sequence(interval, sequence)
-    Builder->>Cache: finalize_changes()
-    Track->>Processor: set_midi_events(cached_events())
-    Processor->>Processor: Swap realtime cache (thread-safe)
+    Track->>Provider: generate_events(tempo_map, regions, range)
+    Provider->>Cache: remove_sequences_matching_interval(range)
+    Provider->>Provider: Process regions in range
+    Provider->>Cache: add_sequence(interval, sequence)
+    Provider->>Cache: finalize_changes()
+    Provider->>Provider: set_midi_events(cached_events())
+    Provider->>Provider: Swap realtime cache (thread-safe)
+    Processor->>Provider: process_events(time_info, output_buffer)
+    Provider->>Processor: Return events for playback
 ```
 
 ## Real-time Safety
 
 The architecture ensures real-time safety through:
 
-1. **RealtimeObject**: Uses `farbot::RealtimeObject` for atomic cache swapping
+1. **RealtimeObject**: Uses `farbot::RealtimeObject` for atomic cache swapping in `TimelineMidiEventProvider`
 2. **Debouncing**: Prevents cache thrashing during rapid UI changes
 3. **Range-based Updates**: Only processes affected portions of the timeline
 4. **Separation of Concerns**: UI thread manages cache generation, audio thread uses cached data
+5. **Event Provider Pattern**: `TimelineMidiEventProvider` abstracts the cache access pattern
 
 ## Event Types Support
 
 ### Currently Implemented
-- **MIDI Events**: Fully implemented with region-based caching
+- **MIDI Events**: Fully implemented with region-based caching via `TimelineMidiEventProvider`
 - **Audio Events**: Planned similar to MIDI implementation
 - **Automation Events**: Will be handled in AutomationTracks
 
@@ -156,6 +171,7 @@ The architecture is designed to support additional event types:
 - Template-based cache system for different event types
 - Unified interface for all playback event caches
 - Configurable caching strategies per event type
+- Event provider pattern for different event types
 
 ## Performance Considerations
 
@@ -163,22 +179,23 @@ The architecture is designed to support additional event types:
 - **Range Optimization**: Only processes changed regions, not entire timeline
 - **Memory Efficiency**: Caches are stored in optimal formats for playback
 - **CPU Usage**: Cache generation happens off the real-time thread
+- **Event Provider Efficiency**: `TimelineMidiEventProvider` optimizes event access patterns
 
 ## Error Handling
 
 - **Validation**: Events are validated to ensure they fit within specified intervals
 - **Note Completeness**: Ensures all note-on events have corresponding note-offs
 - **Tempo Awareness**: Properly handles tempo changes through tempo map integration
+- **Provider Safety**: `TimelineMidiEventProvider` handles edge cases in event processing
 
 ## Usage Examples
 
 ### MIDI Cache Generation
 ```cpp
 // In Track::regeneratePlaybackCaches
-PlaybackCacheBuilder::generate_midi_cache_for_midi_region_collections(
-    midi_playback_cache_,
-    lanes_view(),
+timeline_midi_event_provider_->generate_events(
     base_dependencies_.tempo_map_,
+    lanes_view(),
     affectedRange
 );
 ```
@@ -186,9 +203,10 @@ PlaybackCacheBuilder::generate_midi_cache_for_midi_region_collections(
 ### Real-time Cache Access
 ```cpp
 // In TrackProcessor::fill_midi_events
-decltype(active_midi_playback_sequence_)::ScopedAccess<farbot::ThreadType::realtime>
-    midi_seq{ active_midi_playback_sequence_ };
-// Use midi_seq for real-time playback
+timeline_midi_event_provider_->process_events(
+    time_info,
+    output_buffer
+);
 ```
 
 ## Related Components
@@ -197,7 +215,8 @@ decltype(active_midi_playback_sequence_)::ScopedAccess<farbot::ThreadType::realt
 - **TrackLaneList**: Contains MIDI regions and triggers cache updates
 - **MidiRegionSerializer**: Converts MIDI regions to message sequences
 - **TempoMap**: Provides timing conversion between ticks and samples
+- **TimelineMidiEventProvider**: Bridge between cache system and track processors
 
 ## Conclusion
 
-This caching architecture provides a robust solution for thread-safe playback. It balances performance, flexibility, and real-time safety while providing a foundation for future expansion to support audio and automation event caching.
+This caching architecture provides a robust solution for thread-safe playback. The addition of `TimelineMidiEventProvider` creates a clean separation between cache management and real-time event processing, improving maintainability and extensibility. The system balances performance, flexibility, and real-time safety while providing a foundation for future expansion to support audio and automation event caching.

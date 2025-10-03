@@ -5,6 +5,7 @@
 
 #include "dsp/port.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/timeline_midi_event_provider.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
@@ -100,6 +101,19 @@ public:
 
   using TrackNameProvider = std::function<utils::Utf8String ()>;
 
+  using MidiEventProviderProcessFunc = std::function<void (
+    const EngineProcessTimeInfo &time_nfo,
+    dsp::MidiEventVector        &output_buffer)>;
+
+  enum class ActiveMidiEventProviders : uint8_t
+  {
+    Timeline = 1 << 0,
+    ClipLauncher = 1 << 1,
+    PianoRoll = 1 << 2,
+    Recording = 1 << 3,
+    Custom = 1 << 4,
+  };
+
   /**
    * Creates a new track processor for the given track.
    *
@@ -122,15 +136,6 @@ public:
     std::optional<AppendMidiInputsToOutputsFunc>
               append_midi_inputs_to_outputs_func = std::nullopt,
     QObject * parent = nullptr);
-
-  /**
-   * @brief Sets the MIDI event sequence to be used during realtime processing.
-   *
-   * To be called as needed when a new cache is ready.
-   *
-   * @param events
-   */
-  void set_midi_events (const juce::MidiMessageSequence &events);
 
   // note: this should eventually be passed from the constructor
   void set_handle_recording_callback (HandleRecordingCallback handle_rec_cb)
@@ -375,6 +380,30 @@ public:
     return *get_input_ports ().at (1).get_object_as<dsp::MidiPort> ();
   }
 
+  auto &timeline_midi_event_provider ()
+  {
+    assert (is_midi ());
+    return *timeline_midi_event_provider_;
+  }
+
+  /**
+   * @brief Used to enable or disable MIDI event providers.
+   *
+   * For example, when a clip is launched this should be called once to disable
+   * the timeline and once more to enable the clip provider.
+   *
+   * @note Changes will take effect during the next processing cycle.
+   */
+  void set_midi_providers_active (
+    ActiveMidiEventProviders event_providers,
+    bool                     active);
+
+  /**
+   * @brief Replaces the "Custom" MIDI event provider.
+   */
+  void
+  set_custom_midi_event_provider (MidiEventProviderProcessFunc process_func);
+
   /**
    * Wrapper for MIDI/instrument/chord tracks to fill in MidiEvents from the
    * timeline data.
@@ -526,10 +555,23 @@ private:
   // Processing caches
   std::unique_ptr<TrackProcessorProcessingCaches> processing_caches_;
 
-  farbot::RealtimeObject<
-    juce::MidiMessageSequence,
-    farbot::RealtimeObjectOptions::nonRealtimeMutatable>
-    active_midi_playback_sequence_;
-};
+  /**
+   * @brief MIDI event provider from the timeline.
+   */
+  std::unique_ptr<arrangement::TimelineMidiEventProvider>
+    timeline_midi_event_provider_;
 
+  // TODO: clip launcher, piano roll, recording
+
+  farbot::RealtimeObject<
+    std::optional<MidiEventProviderProcessFunc>,
+    farbot::RealtimeObjectOptions::nonRealtimeMutatable>
+    custom_midi_event_provider_;
+
+  std::atomic<ActiveMidiEventProviders> active_midi_event_providers_;
+  static_assert (decltype (active_midi_event_providers_)::is_always_lock_free);
+};
 }
+
+ENUM_ENABLE_BITSET (
+  zrythm::structure::tracks::TrackProcessor::ActiveMidiEventProviders);

@@ -67,6 +67,10 @@ TrackProcessor::TrackProcessor (
 {
   if (is_midi ())
     {
+      timeline_midi_event_provider_ =
+        std::make_unique<arrangement::TimelineMidiEventProvider> ();
+      set_midi_providers_active (ActiveMidiEventProviders::Timeline, true);
+
       {
         add_input_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
           u8"TP MIDI in", dsp::PortFlow::Input));
@@ -242,12 +246,34 @@ init_from (
 }
 
 void
-TrackProcessor::set_midi_events (const juce::MidiMessageSequence &events)
+TrackProcessor::set_midi_providers_active (
+  ActiveMidiEventProviders event_providers,
+  bool                     active)
 {
-  decltype (active_midi_playback_sequence_)::ScopedAccess<
+  auto current = active_midi_event_providers_.load ();
+  if (active)
+    {
+      current = current | event_providers;
+    }
+  else
+    {
+      current = current & ~event_providers;
+    }
+  // Use a local string to avoid the stack-use-after-return issue
+  z_debug (
+    "Currently active MIDI event providers for {}: {}", get_node_name (),
+    magic_enum::enum_flags_name (current));
+  active_midi_event_providers_.store (current);
+}
+
+void
+TrackProcessor::set_custom_midi_event_provider (
+  MidiEventProviderProcessFunc process_func)
+{
+  decltype (custom_midi_event_provider_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
-    rt_events{ active_midi_playback_sequence_ };
-  *rt_events = events;
+    custom_event_provider{ custom_midi_event_provider_ };
+  *custom_event_provider = process_func;
 }
 
 void
@@ -627,31 +653,22 @@ TrackProcessor::fill_midi_events (
   const EngineProcessTimeInfo &time_nfo,
   dsp::MidiEventVector        &midi_events)
 {
-  decltype (active_midi_playback_sequence_)::ScopedAccess<
-    farbot::ThreadType::realtime>
-             midi_seq{ active_midi_playback_sequence_ };
-  const auto first_idx = midi_seq->getNextIndexAtTime (
-    static_cast<double> (time_nfo.g_start_frame_w_offset_));
-  for (int i = first_idx; i < midi_seq->getNumEvents (); ++i)
+  const auto active_providers = active_midi_event_providers_.load ();
+
+  if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Timeline))
     {
-      const auto * event = midi_seq->getEventPointer (i);
-      const auto   timestamp_dbl = event->message.getTimeStamp ();
-      if (
-        timestamp_dbl >= static_cast<double> (
-          time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_))
-        {
-          break;
-        }
-
-      const auto local_timestamp =
-        static_cast<decltype (time_nfo.g_start_frame_)> (timestamp_dbl)
-        - time_nfo.g_start_frame_;
-      midi_events.add_raw (
-        event->message.getRawData (), event->message.getRawDataSize (),
-        static_cast<midi_time_t> (local_timestamp));
+      timeline_midi_event_provider_->process_events (time_nfo, midi_events);
     }
-
-  // midi_events.print (); // debug
+  if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Custom))
+    {
+      decltype (custom_midi_event_provider_)::ScopedAccess<
+        farbot::ThreadType::realtime>
+        custom_event_provider{ custom_midi_event_provider_ };
+      if (custom_event_provider->has_value ())
+        {
+          std::invoke (custom_event_provider->value (), time_nfo, midi_events);
+        }
+    }
 }
 
 void

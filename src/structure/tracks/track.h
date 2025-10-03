@@ -750,8 +750,6 @@ protected:
   utils::QObjectUniquePtr<utils::PlaybackCacheScheduler>
     playable_content_cache_request_debouncer_;
 
-  std::unique_ptr<dsp::MidiPlaybackCache> midi_playback_cache_;
-
   BOOST_DESCRIBE_CLASS (
     Track,
     (utils::UuidIdentifiableObject<Track>),

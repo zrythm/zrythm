@@ -49,7 +49,8 @@ target_sources(zrythm_arrangement_lib
     muteable_object.h
     named_object.h
     named_object.cpp
-    playback_cache_builder.h
+    timeline_midi_event_provider.h
+    timeline_midi_event_provider.cpp
     scale_object.h
     scale_object.cpp
 )

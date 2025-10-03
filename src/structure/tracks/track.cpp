@@ -3,7 +3,6 @@
 
 #include "dsp/midi_playback_cache.h"
 #include "dsp/tempo_map_qml_adapter.h"
-#include "structure/arrangement/playback_cache_builder.h"
 #include "structure/tracks/track.h"
 
 namespace zrythm::structure::tracks
@@ -383,23 +382,21 @@ Track::set_caches (CacheType types)
 void
 Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
 {
-  auto lanes_view =
+  auto all_regions =
     lanes_->lanes ()
     | std::views::transform ([] (auto &uptr) -> const TrackLane * {
         return uptr.get ();
-      });
+      })
+    | std::views::transform ([] (const TrackLane * lane) {
+        return lane->arrangement::ArrangerObjectOwner<
+          arrangement::MidiRegion>::get_children_view ();
+      })
+    | std::views::join;
   z_debug (
     "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
     name (), affectedRange);
-  if (!midi_playback_cache_)
-    {
-      midi_playback_cache_ = std::make_unique<dsp::MidiPlaybackCache> ();
-    }
-  arrangement::PlaybackCacheBuilder::
-    generate_midi_cache_for_midi_region_collections (
-      *midi_playback_cache_, lanes_view,
-      base_dependencies_.tempo_map_.get_tempo_map (), affectedRange);
-  processor_->set_midi_events (midi_playback_cache_->cached_events ());
+  processor_->timeline_midi_event_provider ().generate_events (
+    base_dependencies_.tempo_map_.get_tempo_map (), all_regions, affectedRange);
 }
 
 void

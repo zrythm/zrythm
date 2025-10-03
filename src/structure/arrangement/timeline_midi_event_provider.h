@@ -4,27 +4,43 @@
 #pragma once
 
 #include "dsp/midi_playback_cache.h"
-#include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/midi_region_serializer.h"
 #include "utils/expandable_tick_range.h"
+#include "utils/types.h"
+
+#include <farbot/RealtimeObject.hpp>
+
+namespace juce
+{
+class MidiMessageSequence;
+}
 
 namespace zrythm::structure::arrangement
 {
 
 /**
- * @brief A track processor cache generator/updater task.
+ * @brief Event provider for timeline-based MIDI events.
+ *
+ * This provider extracts MIDI events from the timeline arrangement,
+ * using the existing playback cache system.
  */
-class PlaybackCacheBuilder
+class TimelineMidiEventProvider final
 {
 public:
-  using MidiRegionOwner =
-    arrangement::ArrangerObjectOwner<arrangement::MidiRegion>;
-
-  static void generate_midi_cache_for_midi_region_collections (
-    dsp::MidiPlaybackCache               &cache_to_modify,
-    RangeOf<const MidiRegionOwner *> auto midi_region_owners,
-    const dsp::TempoMap                  &tempo_map,
-    const utils::ExpandableTickRange     &affected_range)
+  /**
+   * @brief Generate the MIDI event sequence to be used during realtime
+   * processing.
+   *
+   * To be called as needed from the UI thread when a new cache is requested.
+   *
+   * @param tempo_map The tempo map for timing conversion.
+   * @param midi_regions The MIDI regions to process.
+   * @param affected_range The range of ticks to process.
+   */
+  void generate_events (
+    const dsp::TempoMap                          &tempo_map,
+    RangeOf<const arrangement::MidiRegion *> auto midi_regions,
+    utils::ExpandableTickRange                    affected_range)
   {
     const auto sample_interval = [&affected_range, &tempo_map] () {
       if (!affected_range.is_full_content ())
@@ -44,11 +60,12 @@ public:
     // given)
     if (affected_range.is_full_content ())
       {
-        cache_to_modify.clear ();
+        midi_playback_cache_.clear ();
       }
     else
       {
-        cache_to_modify.remove_sequences_matching_interval (sample_interval);
+        midi_playback_cache_.remove_sequences_matching_interval (
+          sample_interval);
       }
 
     const auto regions_inside_interval_filter_func =
@@ -60,7 +77,7 @@ public:
       };
 
     const auto cache_region =
-      [&cache_to_modify, &tempo_map] (const arrangement::MidiRegion * r) {
+      [this, &tempo_map] (const arrangement::MidiRegion * r) {
         juce::MidiMessageSequence region_seq;
 
         // Serialize region (timings in ticks)
@@ -79,7 +96,7 @@ public:
           }
 
         // Add to cache
-        cache_to_modify.add_sequence (
+        midi_playback_cache_.add_sequence (
           std::make_pair (
             r->position ()->samples (),
             r->bounds ()->get_end_position_samples (true)),
@@ -87,18 +104,36 @@ public:
       };
 
     // Go through each MIDI region and add a cache
-    for (const auto &midi_region_collection : midi_region_owners)
-      {
-        std::ranges::for_each (
-          std::views::filter (
-            midi_region_collection->MidiRegionOwner::get_children_view (),
-            regions_inside_interval_filter_func),
-          cache_region);
-      }
+    std::ranges::for_each (
+      std::views::filter (midi_regions, regions_inside_interval_filter_func),
+      cache_region);
 
     // Finalize
-    cache_to_modify.finalize_changes ();
+    midi_playback_cache_.finalize_changes ();
+    set_midi_events (midi_playback_cache_.cached_events ());
   }
+
+  // TrackEventProvider interface
+  void process_events (
+    const EngineProcessTimeInfo &time_nfo,
+    dsp::MidiEventVector        &output_buffer);
+
+private:
+  /**
+   * @brief Set the MIDI events for realtime access.
+   *
+   * @param events The MIDI events sequence.
+   */
+  void set_midi_events (const juce::MidiMessageSequence &events);
+
+private:
+  /** Active MIDI playback sequence for realtime access. */
+  farbot::RealtimeObject<
+    juce::MidiMessageSequence,
+    farbot::RealtimeObjectOptions::nonRealtimeMutatable>
+    active_midi_playback_sequence_;
+
+  dsp::MidiPlaybackCache midi_playback_cache_;
 };
 
-}
+} // namespace zrythm::structure::tracks

@@ -23,9 +23,9 @@ add_executable(zrythm_structure_arrangement_unit_tests
   midi_region_test.cpp
   midi_region_serializer_test.cpp
   muteable_object_test.cpp
-  playback_cache_builder_test.cpp
   named_object_test.cpp
   scale_object_test.cpp
+  timeline_midi_event_provider_test.cpp
 )
 
 set_target_properties(zrythm_structure_arrangement_unit_tests PROPERTIES
