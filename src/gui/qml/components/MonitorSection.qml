@@ -9,9 +9,9 @@ import Zrythm
 ColumnLayout {
   id: root
 
-  required property TrackCollection trackCollection
   property int levelKnobSize: 48
   property int monitorKnobSize: 78
+  required property TrackCollection trackCollection
 
   Layout.fillWidth: true
   spacing: 8
@@ -31,19 +31,25 @@ ColumnLayout {
       Label {
         id: soloedTracksLbl
 
-        ToolTip.text: qsTr("Currently soloed tracks")
         horizontalAlignment: Text.AlignHCenter
         text: "<small>" + qsTr("%1 soloed").arg(root.trackCollection.numSoloedTracks) + "</small>"
         textFormat: Text.RichText
+
+        ToolTip {
+          text: qsTr("Currently soloed tracks")
+        }
       }
 
       Button {
         id: soloingBtn
 
-        ToolTip.text: qsTr("Unsolo all tracks")
         ToolTip.visible: hovered
         enabled: false
         icon.name: "unsolo"
+
+        ToolTip {
+          text: qsTr("Unsolo all tracks")
+        }
       }
     }
 
@@ -55,18 +61,24 @@ ColumnLayout {
       Label {
         id: mutedTracksLbl
 
-        ToolTip.text: qsTr("Currently muted tracks")
         horizontalAlignment: Text.AlignHCenter
         text: "<small>" + qsTr("%1 muted").arg(root.trackCollection.numMutedTracks) + "</small>"
         textFormat: Text.RichText
+
+        ToolTip {
+          text: qsTr("Currently muted tracks")
+        }
       }
 
       Button {
         id: mutingBtn
 
-        ToolTip.text: qsTr("Unmute all tracks")
         enabled: false
         icon.name: "unmute"
+
+        ToolTip {
+          text: qsTr("Unmute all tracks")
+        }
       }
     }
 
@@ -78,18 +90,24 @@ ColumnLayout {
       Label {
         id: listenedTracksLbl
 
-        ToolTip.text: qsTr("Currently listened tracks")
         horizontalAlignment: Text.AlignHCenter
         text: "<small>" + qsTr("%1 listened").arg(root.trackCollection.numListenedTracks) + "</small>"
         textFormat: Text.RichText
+
+        ToolTip {
+          text: qsTr("Currently listened tracks")
+        }
       }
 
       Button {
         id: listeningBtn
 
-        ToolTip.text: qsTr("Unlisten all tracks")
         enabled: false
         icon.name: "unlisten"
+
+        ToolTip {
+          text: qsTr("Unlisten all tracks")
+        }
       }
     }
   }
@@ -132,10 +150,9 @@ ColumnLayout {
         text: qsTr("Listen")
       }
 
-
       Knob {
-          Layout.alignment: Qt.AlignHCenter
-          size: root.levelKnobSize
+        Layout.alignment: Qt.AlignHCenter
+        size: root.levelKnobSize
       }
     }
 
@@ -152,8 +169,8 @@ ColumnLayout {
       }
 
       Knob {
-          Layout.alignment: Qt.AlignHCenter
-          size: root.levelKnobSize
+        Layout.alignment: Qt.AlignHCenter
+        size: root.levelKnobSize
       }
     }
   }
@@ -170,25 +187,34 @@ ColumnLayout {
     CheckBox {
       id: monoToggle
 
-      ToolTip.text: qsTr("Sum to mono")
       font.pointSize: 9
       text: qsTr("Mono")
+
+      ToolTip {
+        text: qsTr("Sum to mono")
+      }
     }
 
     CheckBox {
       id: dimToggle
 
-      ToolTip.text: qsTr("Dim output")
       font.pointSize: 9
       text: qsTr("Dim")
+
+      ToolTip {
+        text: qsTr("Dim output")
+      }
     }
 
     CheckBox {
       id: muteToggle
 
-      ToolTip.text: qsTr("Mute output")
       font.pointSize: 9
       text: qsTr("Mute")
+
+      ToolTip {
+        text: qsTr("Mute output")
+      }
     }
   }
 
@@ -205,10 +231,9 @@ ColumnLayout {
       text: qsTr("Monitor")
     }
 
-
     Knob {
-        Layout.alignment: Qt.AlignHCenter
-        size: root.monitorKnobSize
+      Layout.alignment: Qt.AlignHCenter
+      size: root.monitorKnobSize
     }
   }
 

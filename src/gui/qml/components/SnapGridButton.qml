@@ -18,8 +18,6 @@ Button {
   // Required property: the SnapGrid model
   required property SnapGrid snapGrid
 
-  // Tooltip text
-  ToolTip.text: qsTr("Snap/Grid Settings")
   display: AbstractButton.TextBesideIcon
 
   // Button appearance
@@ -48,6 +46,11 @@ Button {
 
   // Popup dialog for snap settings
   onClicked: snapDialog.open()
+
+  // Tooltip text
+  ToolTip {
+    text: qsTr("Snap/Grid Settings")
+  }
 
   Popup {
     id: snapDialog
@@ -159,12 +162,12 @@ Button {
 
             ComboBox {
               currentIndex: {
-                switch (snapGrid.snapNoteType) {
-                case SnapGrid.NoteType.Normal:
+                switch (root.snapGrid.snapNoteType) {
+                case SnapGrid.Normal:
                   return 0;
-                case SnapGrid.NoteType.Triplet:
+                case SnapGrid.Triplet:
                   return 1;
-                case SnapGrid.NoteType.Dotted:
+                case SnapGrid.Dotted:
                   return 2;
                 default:
                   return 0;
@@ -230,7 +233,7 @@ Button {
 
             ComboBox {
               currentIndex: {
-                switch (snapGrid.lengthType) {
+                switch (root.snapGrid.lengthType) {
                 case SnapGrid.NoteLengthType.Link:
                   return 0;
                 case SnapGrid.NoteLengthType.LastObject:

@@ -49,6 +49,7 @@ class SnapGrid : public QObject
   Q_PROPERTY (QString snapString READ snapString NOTIFY snapChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
+  QML_EXTENDED_NAMESPACE (zrythm::utils)
 
 public:
   enum class NoteLengthType
