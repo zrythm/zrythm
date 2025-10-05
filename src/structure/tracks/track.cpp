@@ -123,7 +123,8 @@ Track::make_track_processor (
     append_midi_inputs_to_outputs_func)
 {
   return utils::make_qobject_unique<TrackProcessor> (
-    base_dependencies_.transport_, in_signal_type_,
+    base_dependencies_.transport_,
+    base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_,
     [this] () { return get_name (); }, [this] () { return enabled (); },
     has_piano_roll () || is_chord (), has_piano_roll (), is_audio (),
     TrackProcessor::ProcessorBaseDependencies{
@@ -259,6 +260,11 @@ Track::generate_basic_automation_tracks ()
 double
 Track::get_full_visible_height () const
 {
+  if (!visible_)
+    {
+      return 0.0;
+    }
+
   double height = main_height_;
 
   if (lanes_)
@@ -377,6 +383,24 @@ Track::set_caches (CacheType types)
         }
 #endif
     }
+}
+
+void
+Track::setClipLauncherMode (bool mode)
+{
+  if (mode == clip_launcher_mode_)
+    return;
+
+  auto * processor = get_track_processor ();
+  if (processor == nullptr)
+    return;
+
+  processor->set_midi_providers_active (
+    tracks::TrackProcessor::ActiveMidiEventProviders::Timeline, !mode);
+  processor->set_midi_providers_active (
+    tracks::TrackProcessor::ActiveMidiEventProviders::ClipLauncher, mode);
+  clip_launcher_mode_ = mode;
+  Q_EMIT clipLauncherModeChanged (mode);
 }
 
 void

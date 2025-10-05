@@ -78,6 +78,9 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
   Q_PROPERTY (
     zrythm::structure::tracks::PianoRollTrackMixin * pianoRollTrackMixin READ
       pianoRollTrackMixin CONSTANT)
+  Q_PROPERTY (
+    bool clipLauncherMode READ clipLauncherMode WRITE setClipLauncherMode NOTIFY
+      clipLauncherModeChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
@@ -445,6 +448,10 @@ public:
     return piano_roll_track_mixin_.get ();
   }
 
+  bool          clipLauncherMode () const { return clip_launcher_mode_; }
+  void          setClipLauncherMode (bool mode);
+  Q_SIGNAL void clipLauncherModeChanged (bool mode);
+
   /**
    * @brief To be connected to to notify of any changes to the playable content,
    * like MIDI or audio events.
@@ -750,6 +757,8 @@ protected:
   utils::QObjectUniquePtr<utils::PlaybackCacheScheduler>
     playable_content_cache_request_debouncer_;
 
+  bool clip_launcher_mode_{};
+
   BOOST_DESCRIBE_CLASS (
     Track,
     (utils::UuidIdentifiableObject<Track>),
@@ -770,7 +779,8 @@ protected:
      modulator_macro_processors_,
      lanes_,
      recordable_track_mixin_,
-     piano_roll_track_mixin_),
+     piano_roll_track_mixin_,
+     clip_launcher_mode_),
     ())
 };
 

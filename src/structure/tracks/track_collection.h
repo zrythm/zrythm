@@ -92,6 +92,11 @@ public:
       std::ranges::find (tracks_, track_id, &TrackUuidReference::id));
   }
 
+  TrackUuidReference track_ref_at_id (const Track::Uuid &track_id) const
+  {
+    return tracks ().at (get_track_index (track_id));
+  }
+
   /**
    * @brief Get the number of tracks in the collection.
    */

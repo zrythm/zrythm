@@ -8,6 +8,7 @@
 
 namespace zrythm::structure::tracks
 {
+Q_NAMESPACE
 
 class Track;
 class MarkerTrack;
@@ -87,6 +88,18 @@ concept AutomatableTrack =
 template <typename TrackT>
 concept PianoRollTrack =
   std::is_same_v<TrackT, InstrumentTrack> || std::is_same_v<TrackT, MidiTrack>;
+
+enum class ClipQuantizeOption : uint8_t
+{
+  Immediate,
+  NextBar,
+  NextBeat,
+  NextQuarterBeat,
+  NextEighthBeat,
+  NextSixteenthBeat,
+  NextThirtySecondBeat
+};
+Q_ENUM_NS (ClipQuantizeOption)
 }
 
 DEFINE_UUID_HASH_SPECIALIZATION (zrythm::structure::tracks::TrackUuid);

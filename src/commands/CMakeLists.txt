@@ -35,5 +35,9 @@ target_link_libraries(zrythm_commands_lib
 qt_add_qml_module(zrythm_commands_lib
   URI ZrythmCommands
   VERSION 1.0
+  IMPORTS
+    TARGET zrythm_dsp_lib
+    TARGET zrythm_arrangement_lib
+    TARGET zrythm_structure_tracks_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmCommands
 )

@@ -31,6 +31,7 @@ static constexpr auto monitor_audio_param_id = "track_processor_monitor_audio"sv
 
 TrackProcessor::TrackProcessor (
   const dsp::ITransport                 &transport,
+  const dsp::TempoMap& tempo_map,
   PortType signal_type,
     TrackNameProvider track_name_provider,
     EnabledProvider enabled_provider,
@@ -69,6 +70,8 @@ TrackProcessor::TrackProcessor (
     {
       timeline_midi_event_provider_ =
         std::make_unique<arrangement::TimelineMidiEventProvider> ();
+      clip_launcher_midi_event_provider_ =
+        std::make_unique<ClipLauncherMidiEventProvider> (tempo_map);
       set_midi_providers_active (ActiveMidiEventProviders::Timeline, true);
 
       {
@@ -658,6 +661,11 @@ TrackProcessor::fill_midi_events (
   if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Timeline))
     {
       timeline_midi_event_provider_->process_events (time_nfo, midi_events);
+    }
+  if (
+    ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::ClipLauncher))
+    {
+      clip_launcher_midi_event_provider_->process_events (time_nfo, midi_events);
     }
   if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Custom))
     {

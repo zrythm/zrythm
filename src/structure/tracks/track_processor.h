@@ -6,6 +6,7 @@
 #include "dsp/port.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/timeline_midi_event_provider.h"
+#include "structure/tracks/clip_launcher_event_provider.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
@@ -123,6 +124,7 @@ public:
    */
   TrackProcessor (
     const dsp::ITransport                 &transport,
+    const dsp::TempoMap                   &tempo_map,
     PortType                               signal_type,
     TrackNameProvider                      track_name_provider,
     EnabledProvider                        enabled_provider,
@@ -386,6 +388,12 @@ public:
     return *timeline_midi_event_provider_;
   }
 
+  auto &clip_launcher_midi_event_provider ()
+  {
+    assert (is_midi ());
+    return *clip_launcher_midi_event_provider_;
+  }
+
   /**
    * @brief Used to enable or disable MIDI event providers.
    *
@@ -560,6 +568,9 @@ private:
    */
   std::unique_ptr<arrangement::TimelineMidiEventProvider>
     timeline_midi_event_provider_;
+
+  std::unique_ptr<ClipLauncherMidiEventProvider>
+    clip_launcher_midi_event_provider_;
 
   // TODO: clip launcher, piano roll, recording
 
