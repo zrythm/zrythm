@@ -21,6 +21,8 @@
 #include "gui/dsp/quantize_options.h"
 #include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "structure/scenes/clip_launcher.h"
+#include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
 #include "undo/undo_stack.h"
 #include "utils/progress_info.h"
@@ -93,8 +95,14 @@ class Project final : public QObject
     QString directory READ getDirectory WRITE setDirectory NOTIFY
       directoryChanged FINAL)
   Q_PROPERTY (
-    zrythm::structure::tracks::Tracklist * tracklist READ getTracklist CONSTANT
+    zrythm::structure::tracks::Tracklist * tracklist READ tracklist CONSTANT
       FINAL)
+  Q_PROPERTY (
+    zrythm::structure::scenes::ClipLauncher * clipLauncher READ clipLauncher
+      CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::scenes::ClipPlaybackService * clipPlaybackService READ
+      clipPlaybackService CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::backend::TrackSelectionManager * trackSelectionManager READ
       trackSelectionManager CONSTANT)
@@ -194,27 +202,29 @@ public:
   // QML interface
   // =========================================================
 
-  QString                               getTitle () const;
-  void                                  setTitle (const QString &title);
-  QString                               getDirectory () const;
-  void                                  setDirectory (const QString &directory);
-  structure::tracks::Tracklist *        getTracklist () const;
-  gui::backend::TrackSelectionManager * trackSelectionManager () const;
-  gui::backend::PluginSelectionManager * pluginSelectionManager () const;
-  Timeline *                             getTimeline () const;
-  engine::session::Transport *           getTransport () const;
-  engine::device_io::AudioEngine *       engine () const;
-  gui::backend::Tool *                   getTool () const;
-  ClipEditor *                           getClipEditor () const;
-  gui::actions::UndoManager *            getUndoManager () const;
-  undo::UndoStack *                      undoStack () const;
-  PluginFactory *                        getPluginFactory () const;
-  actions::ArrangerObjectCreator *       arrangerObjectCreator () const;
-  actions::TrackCreator *                trackCreator () const;
-  gui::backend::FileImporter *           fileImporter () const;
-  dsp::TempoMapWrapper *                 getTempoMap () const;
-  dsp::SnapGrid *                        snapGridTimeline () const;
-  dsp::SnapGrid *                        snapGridEditor () const;
+  QString                           getTitle () const;
+  void                              setTitle (const QString &title);
+  QString                           getDirectory () const;
+  void                              setDirectory (const QString &directory);
+  structure::tracks::Tracklist *    tracklist () const;
+  structure::scenes::ClipLauncher * clipLauncher () const;
+  structure::scenes::ClipPlaybackService * clipPlaybackService () const;
+  gui::backend::TrackSelectionManager *    trackSelectionManager () const;
+  gui::backend::PluginSelectionManager *   pluginSelectionManager () const;
+  Timeline *                               getTimeline () const;
+  engine::session::Transport *             getTransport () const;
+  engine::device_io::AudioEngine *         engine () const;
+  gui::backend::Tool *                     getTool () const;
+  ClipEditor *                             getClipEditor () const;
+  gui::actions::UndoManager *              getUndoManager () const;
+  undo::UndoStack *                        undoStack () const;
+  PluginFactory *                          getPluginFactory () const;
+  actions::ArrangerObjectCreator *         arrangerObjectCreator () const;
+  actions::TrackCreator *                  trackCreator () const;
+  gui::backend::FileImporter *             fileImporter () const;
+  dsp::TempoMapWrapper *                   getTempoMap () const;
+  dsp::SnapGrid *                          snapGridTimeline () const;
+  dsp::SnapGrid *                          snapGridEditor () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -679,7 +689,11 @@ public:
    *
    * Must be free'd before engine and port connection manager.
    */
-  structure::tracks::Tracklist * tracklist_{};
+  utils::QObjectUniquePtr<structure::tracks::Tracklist> tracklist_;
+
+  utils::QObjectUniquePtr<structure::scenes::ClipLauncher> clip_launcher_;
+  utils::QObjectUniquePtr<structure::scenes::ClipPlaybackService>
+    clip_playback_service_;
 
   gui::actions::UndoManager * undo_manager_{};
 

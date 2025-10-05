@@ -59,6 +59,20 @@ static constexpr std::array<const char *, 47> drum_labels = {
   "Open Triangle"
 };
 
+PianoRoll::PianoRoll (
+  const structure::arrangement::ArrangerObjectRegistry &registry,
+  QObject *                                             parent)
+    : QObject (parent),
+      editor_settings_ (
+        utils::make_qobject_unique<gui::backend::EditorSettings> (this)),
+      selection_manager_ (
+        utils::make_qobject_unique<
+          gui::backend::ArrangerObjectSelectionManager> (registry, this))
+{
+  // Center in middle
+  editor_settings_->setY (note_height_ * 64.0);
+}
+
 void
 PianoRoll::init_descriptors ()
 {

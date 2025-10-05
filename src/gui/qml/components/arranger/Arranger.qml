@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Controls
 import ZrythmStyle
 import Zrythm
+import Qt.labs.synchronizer
 
 Item {
   id: root
@@ -81,6 +82,7 @@ Item {
   required property var transport
   required property UndoStack undoStack
   required property UnifiedArrangerObjectsModel unifiedObjectsModel
+  property alias arrangerContentHeight: arrangerContent.height
 
   function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
@@ -210,18 +212,11 @@ Item {
     contentHeight: root.enableYScroll ? arrangerContent.height : scrollView.height
     contentWidth: arrangerContent.width
 
-    Binding {
-      property: "contentX"
-      target: scrollView.contentItem
-      value: root.editorSettings.x
-    }
-
-    Connections {
-      function onContentXChanged() {
-        root.editorSettings.x = scrollView.contentItem.contentX;
-      }
-
-      target: scrollView.contentItem
+    Synchronizer {
+      sourceObject: root.editorSettings
+      sourceProperty: "x"
+      targetObject: scrollView.contentItem
+      targetProperty: "contentX"
     }
 
     Binding {

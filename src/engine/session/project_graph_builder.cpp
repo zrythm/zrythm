@@ -118,7 +118,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   const auto &project = project_;
   const auto &engine = project_.audio_engine_;
   // auto *      sample_processor = engine->sample_processor_.get ();
-  auto * tracklist = project_.tracklist_;
+  auto * tracklist = project_.tracklist ();
   auto * monitor_fader = engine->control_room_->monitor_fader_.get ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project.transport_;

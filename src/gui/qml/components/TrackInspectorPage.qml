@@ -22,7 +22,7 @@ ColumnLayout {
 
   ExpanderBox {
     Layout.fillWidth: true
-    icon.source: ResourceManager.getIconUrl("gnome-icon-library", "general-properties-genersymbolic.svg")
+    icon.source: ResourceManager.getIconUrl("gnome-icon-library", "general-properties-symbolic.svg")
     title: "Track Properties"
 
     frameContentItem: ColumnLayout {

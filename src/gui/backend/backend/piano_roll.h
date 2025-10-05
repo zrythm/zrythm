@@ -111,13 +111,7 @@ public:
 
   PianoRoll (
     const structure::arrangement::ArrangerObjectRegistry &registry,
-    QObject *                                             parent = nullptr)
-      : QObject (parent),
-        selection_manager_ (
-          utils::make_qobject_unique<
-            gui::backend::ArrangerObjectSelectionManager> (registry, this))
-  {
-  }
+    QObject *                                             parent = nullptr);
 
 private:
   static constexpr std::array<bool, 12> BLACK_NOTES = {
@@ -282,9 +276,7 @@ private:
   void init_descriptors ();
 
 public:
-  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_{
-    new gui::backend::EditorSettings{ this }
-  };
+  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_;
 
   /** Notes zoom level. */
   float notes_zoom_ = 1.0f;

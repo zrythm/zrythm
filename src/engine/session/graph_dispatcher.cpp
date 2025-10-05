@@ -193,7 +193,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
     // set appropriate callbacks
     for (
       const auto &cur_tr :
-      PROJECT->getTracklist ()->collection ()->get_track_span ())
+      PROJECT->tracklist ()->collection ()->get_track_span ())
       {
         std::visit (
           [&] (auto &&tr) {

@@ -26,7 +26,6 @@ Control {
   readonly property real pxPerBeat: pxPerSixteenth * 4
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
   readonly property real pxPerTick: defaultPxPerTick * editorSettings.horizontalZoomLevel
-  readonly property int rulerHeight: 24
   readonly property real sixteenthLineOpacity: 0.4
   readonly property int startBar: tempoMap.getMusicalPosition(visibleStartTick).bar
   required property TempoMap tempoMap
@@ -37,7 +36,7 @@ Control {
   readonly property real visibleStartTick: editorSettings.x / pxPerTick
 
   clip: true
-  height: rulerHeight
+  implicitHeight: 24
   width: maxBars * pxPerBar
 
   // Grid lines and time markers

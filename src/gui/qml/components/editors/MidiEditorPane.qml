@@ -7,6 +7,8 @@ import QtQuick.Layouts
 import ZrythmGui
 import ZrythmStyle
 
+import Qt.labs.synchronizer
+
 GridLayout {
   id: root
 
@@ -88,20 +90,14 @@ GridLayout {
       id: pianoRollKeys
 
       pianoRoll: root.pianoRoll
+      height: implicitHeight
     }
 
-    Binding {
-      property: "contentY"
-      target: pianoRollKeysScrollView.contentItem
-      value: root.pianoRoll.y
-    }
-
-    Connections {
-      function onContentYChanged() {
-        root.pianoRoll.y = pianoRollKeysScrollView.contentItem.contentY;
-      }
-
-      target: pianoRollKeysScrollView.contentItem
+    Synchronizer {
+      sourceObject: root.pianoRoll.editorSettings
+      sourceProperty: "y"
+      targetObject: pianoRollKeysScrollView.contentItem
+      targetProperty: "contentY"
     }
   }
 
@@ -153,6 +149,7 @@ GridLayout {
     transport: root.project.transport
     undoStack: root.project.undoStack
     unifiedObjectsModel: unifiedObjectsModel
+    arrangerContentHeight: pianoRollKeys.height
   }
 
   Rectangle {
@@ -170,9 +167,9 @@ GridLayout {
     clipEditor: root.clipEditor
     objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
-    snapGrid: root.project.snapGridEditor
     ruler: ruler
     selectionOperator: selectionOperator
+    snapGrid: root.project.snapGridEditor
     tempoMap: root.project.tempoMap
     tool: root.project.tool
     transport: root.project.transport

@@ -223,6 +223,9 @@ set(rel_qml_file_paths
   components/BottomDock.qml
   components/CenterDock.qml
   components/ChannelView.qml
+  components/ClipLaunchButton.qml
+  components/ClipLauncherView.qml
+  components/ClipSlotView.qml
   components/DspLoadIndicator.qml
   components/FaderButtons.qml
   components/FaderControl.qml
@@ -297,6 +300,7 @@ qt_add_qml_module(zrythm
     TARGET zrythm_arrangement_lib
     TARGET zrythm_plugins_lib
     TARGET zrythm_structure_tracks_lib
+    TARGET zrythm_structure_scenes_lib
     TARGET zrythm_commands_lib
     TARGET zrythm_undo_lib
     TARGET zrythm_actions_lib

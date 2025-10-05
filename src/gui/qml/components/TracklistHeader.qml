@@ -9,9 +9,11 @@ import ZrythmStyle
 ZrythmToolBar {
   id: root
 
+  property alias clipLauncherVisible: clipLauncherVisibleButton.checked
+  property alias tempoMapVisible: tempoMeterButton.checked
+  property alias timelineVisible: timelineVisibleButton.checked
   required property TrackCreator trackCreator
   required property Tracklist tracklist
-  property alias tempoMapVisible: tempoMeterButton.checked
 
   leftItems: [
     ToolButton {
@@ -86,6 +88,28 @@ ZrythmToolBar {
           onTriggered: root.trackCreator.addEmptyTrackFromType(Track.Folder)
         }
       }
+    },
+    ToolButton {
+      id: clipLauncherVisibleButton
+
+      checkable: true
+      checked: false
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "mouse-keys-symbolic.svg")
+
+      ToolTip {
+        text: qsTr("Clip Launcher")
+      }
+    },
+    ToolButton {
+      id: timelineVisibleButton
+
+      checkable: true
+      checked: true
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "ruler-angled-symbolic.svg")
+
+      ToolTip {
+        text: qsTr("Timeline")
+      }
     }
   ]
   rightItems: [
@@ -94,7 +118,11 @@ ZrythmToolBar {
 
       checkable: true
       checked: false
-      text: qsTr("BPM/Time Sig")
+      ToolTip {
+      text: qsTr("BPM & Time Signature")
+      }
+
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "bpm-time-signature.svg")
     }
   ]
 }

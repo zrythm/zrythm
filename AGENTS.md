@@ -100,6 +100,7 @@ Zrythm makes extensive use of modern C++ features:
 
 **C++ Code Guidelines:**
 - Use standard algorithms (for example, `std::ranges::any_of`) instead of manual implementations
+- Prefer `std::jthread` over `std::thread`
 
 ### Audio Processing
 
@@ -116,6 +117,7 @@ Zrythm makes extensive use of modern C++ features:
 - Follow Qt coding conventions
 - Use Qt's signal/slot system for event handling
 - Implement proper model/view separation
+- Use the following naming pattern for property declarations: `Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)`
 
 ## Key Classes
 

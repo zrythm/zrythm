@@ -111,7 +111,19 @@ Project::Project (
         this)),
       midi_mappings_ (
         std::make_unique<engine::session::MidiMappings> (*param_registry_)),
-      tracklist_ (new structure::tracks::Tracklist (*track_registry_, this)),
+      tracklist_ (
+        utils::make_qobject_unique<
+          structure::tracks::Tracklist> (*track_registry_, this)),
+      clip_launcher_ (
+        utils::make_qobject_unique<structure::scenes::ClipLauncher> (
+          *arranger_object_registry_,
+          *tracklist_->collection (),
+          this)),
+      clip_playback_service_ (
+        utils::make_qobject_unique<structure::scenes::ClipPlaybackService> (
+          *arranger_object_registry_,
+          *tracklist_->collection (),
+          this)),
       undo_manager_ (new gui::actions::UndoManager (this)),
       undo_stack_ (
         utils::make_qobject_unique<undo::UndoStack> (
@@ -1385,9 +1397,21 @@ Project::setDirectory (const QString &directory)
 }
 
 structure::tracks::Tracklist *
-Project::getTracklist () const
+Project::tracklist () const
 {
-  return tracklist_;
+  return tracklist_.get ();
+}
+
+structure::scenes::ClipLauncher *
+Project::clipLauncher () const
+{
+  return clip_launcher_.get ();
+}
+
+structure::scenes::ClipPlaybackService *
+Project::clipPlaybackService () const
+{
+  return clip_playback_service_.get ();
 }
 
 Timeline *

@@ -10,6 +10,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_all.h"
 #include "undo/undo_stack.h"
 
@@ -63,6 +64,20 @@ public:
         .with_start_ticks (startTicks)
         .build_in_registry ();
     add_laned_object (*track, *lane, mr_ref);
+    return mr_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  }
+
+  Q_INVOKABLE structure::arrangement::MidiRegion * addEmptyMidiRegionToClip (
+    structure::tracks::Track *    track,
+    structure::scenes::ClipSlot * clipSlot)
+  {
+    auto mr_ref =
+      arranger_object_factory_
+        .get_builder<structure::arrangement::MidiRegion> ()
+        .with_start_ticks (0)
+        .build_in_registry ();
+    clipSlot->setRegion (
+      mr_ref.get_object_as<structure::arrangement::MidiRegion> ());
     return mr_ref.get_object_as<structure::arrangement::MidiRegion> ();
   }
 

@@ -27,6 +27,7 @@ target_link_libraries(zrythm_commands_lib
   PUBLIC
     ${zrythm_link_libs}
     zrythm_structure_tracks_lib
+    zrythm_structure_scenes_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )
