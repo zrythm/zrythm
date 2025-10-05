@@ -83,7 +83,7 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 
 #### GNU/Linux
 
-1. Install [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/) and [Qt](https://www.qt.io/) 6.9.0 or later.
+1. Install [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/) and [Qt](https://www.qt.io/) 6.10.0 or later.
 2. Open a terminal and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
 4. Run `cmake --build builddir --config Release`.
@@ -91,14 +91,14 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 
 #### macOS
 
-1. Install Xcode, CMake and Qt 6.9.0 or later.
+1. Install Xcode, CMake and Qt 6.10.0 or later.
 2. Open a terminal and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G Xcode -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
 4. Open the Xcode project inside `builddir` and build it.
 
 #### Windows
 
-1. Install Visual Studio 2022 (CMake ships with Visual Studio, but you have to install the "Desktop development with C++" package), and Qt 6.9.0 or later.
+1. Install Visual Studio 2022 (CMake ships with Visual Studio, but you have to install the "Desktop development with C++" package), and Qt 6.10.0 or later.
 2. Open Developer Powershell for Visual Studio 2022 and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
 4. Open the Visual Studio solution inside `builddir` and build it.

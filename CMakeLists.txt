@@ -935,7 +935,7 @@ if(ZRYTHM_TESTS)
   CPMGetPackage(cpp_httplib)
 endif()
 
-find_package(Qt6
+find_package(Qt6 6.10
   COMPONENTS
     Core
     Gui
