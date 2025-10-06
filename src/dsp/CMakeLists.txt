@@ -43,7 +43,6 @@ target_sources(zrythm_dsp_lib
     midi_event.h
     midi_event.cpp
     midi_panic_processor.h
-    midi_playback_cache.h
     midi_port.h
     midi_port.cpp
     modulator_macro_processor.h
@@ -81,6 +80,8 @@ target_sources(zrythm_dsp_lib
     tempo_map.h
     tempo_map_qml_adapter.h
     tempo_map_qml_adapter.cpp
+    timeline_data_cache.h
+    timeline_data_cache.cpp
     true_peak_dsp.h
     true_peak_dsp.cpp
 )

@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/midi_playback_cache.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track.h"
 

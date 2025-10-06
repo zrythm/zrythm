@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "dsp/midi_playback_cache.h"
+#include "dsp/timeline_data_cache.h"
 #include "structure/arrangement/midi_region_serializer.h"
 #include "utils/expandable_tick_range.h"
 #include "utils/types.h"
@@ -96,7 +96,7 @@ public:
           }
 
         // Add to cache
-        midi_playback_cache_.add_sequence (
+        midi_playback_cache_.add_midi_sequence (
           std::make_pair (
             r->position ()->samples (),
             r->bounds ()->get_end_position_samples (true)),
@@ -110,7 +110,7 @@ public:
 
     // Finalize
     midi_playback_cache_.finalize_changes ();
-    set_midi_events (midi_playback_cache_.cached_events ());
+    set_midi_events (midi_playback_cache_.get_midi_events ());
   }
 
   // TrackEventProvider interface
@@ -133,7 +133,7 @@ private:
     farbot::RealtimeObjectOptions::nonRealtimeMutatable>
     active_midi_playback_sequence_;
 
-  dsp::MidiPlaybackCache midi_playback_cache_;
+  dsp::TimelineDataCache midi_playback_cache_;
 };
 
 } // namespace zrythm::structure::tracks
