@@ -19,14 +19,7 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
   /* signal-audio also works */
   icon_name_ = u8"view-media-visualization";
 
-  processor_ = make_track_processor (
-    [this] (
-      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
-      dsp::MidiEventVector *                        midi_events,
-      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
-      lanes ()->fill_events_callback (
-        transport, time_nfo, midi_events, stereo_ports);
-    });
+  processor_ = make_track_processor ();
 
   // TODO
   // samplerate_ = samplerate;

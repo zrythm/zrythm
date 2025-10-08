@@ -101,6 +101,10 @@ Zrythm makes extensive use of modern C++ features:
 **C++ Code Guidelines:**
 - Use standard algorithms (for example, `std::ranges::any_of`) instead of manual implementations
 - Prefer `std::jthread` over `std::thread`
+- Use `ptr == nullptr` instead of `!ptr` when doing null checks
+- Use `std::numbers` instead of macros for number constants like `M_PI`
+- Use ranges (including `std::views::iota`) instead of C-style for-loops
+- Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 
 ### Audio Processing
 
@@ -148,6 +152,10 @@ See also `src/dsp/tempo_map_qml_adapter.h` for a QML wrapper of it.
 
 [ArrangerObject](src/structure/arrangement/arranger_object.h) is the base class of all arranger object types.
 
+#### Looping Behavior
+
+Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h). Loopable objects always start playback from their "clip start position", then loop indefinitely at their "loop end position" back to the "loop start position" until the object's end position is reached.
+
 ### Tracks
 
 [Track](src/structure/tracks/track.h) is the base class of all track types.
@@ -184,6 +192,7 @@ See also `src/dsp/tempo_map_qml_adapter.h` for a QML wrapper of it.
 2. **Update tests** to reflect changes
 3. **Run formatting** before committing
 4. **Verify build** on all supported platforms
+5. **Always read the current state of a file** before attempting changes
 
 ### Bug Fixes
 

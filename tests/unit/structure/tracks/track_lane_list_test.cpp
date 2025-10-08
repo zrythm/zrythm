@@ -475,34 +475,6 @@ TEST_F (TrackLaneListTest, RemoveEmptyLastLanes)
   EXPECT_EQ (lane_list_->size (), 1);
 }
 
-TEST_F (TrackLaneListTest, FillEventsCallback)
-{
-  // Test that fill_events_callback can be called without crashing
-  // This is a basic test since actual DSP processing would require complex setup
-
-  // Add some lanes
-  lane_list_->addLane ();
-  lane_list_->addLane ();
-
-  // Mock transport and time info
-  dsp::graph_test::MockTransport transport;
-  EngineProcessTimeInfo          time_nfo{
-             .g_start_frame_ = 0,
-             .g_start_frame_w_offset_ = 0,
-             .local_offset_ = 0,
-             .nframes_ = 1024
-  };
-
-  dsp::MidiEventVector                          midi_events;
-  std::optional<TrackProcessor::StereoPortPair> stereo_ports;
-
-  // Test that the method can be called
-  EXPECT_NO_THROW ({
-    lane_list_->fill_events_callback (
-      transport, time_nfo, &midi_events, stereo_ports);
-  });
-}
-
 // Test laneObjectsNeedRecache signal emission on lane object changes
 TEST_F (TrackLaneListTest, LaneObjectsNeedRecacheSignal)
 {

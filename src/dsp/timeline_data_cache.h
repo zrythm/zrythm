@@ -32,7 +32,7 @@ public:
   struct AudioRegionEntry
   {
     /** Copy of the audio sample buffer. */
-    std::unique_ptr<juce::AudioSampleBuffer> audio_buffer;
+    juce::AudioSampleBuffer audio_buffer;
 
     /** Start position in samples. */
     int64_t start_sample = 0;

@@ -24,9 +24,9 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon-x11-dev python3.8-venv ccache libc6-dbg
 
 # GCC
-RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.1.0/gcc-15.1.0.tar.xz && \
-    tar -xf gcc-15.1.0.tar.xz && \
-    cd gcc-15.1.0 && \
+RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.2.0/gcc-15.2.0.tar.xz && \
+    tar -xf gcc-15.2.0.tar.xz && \
+    cd gcc-15.2.0 && \
     ./contrib/download_prerequisites && \
     mkdir gcc-build && cd gcc-build && \
     ../configure CFLAGS_FOR_TARGET='-O2 -fPIC -mtune=generic -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
@@ -44,7 +44,7 @@ RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.1.0/gcc-15.1.0.tar.xz && \
     make -j$(nproc) && \
     make install && \
     cd .. && \
-    rm -rf gcc-15.1.0.tar.xz gcc-15.1.0 && \
+    rm -rf gcc-15.2.0.tar.xz gcc-15.2.0 && \
     gcc --version && g++ --version
 
 
@@ -70,27 +70,27 @@ RUN echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgco
     chmod +x /etc/profile.d/zrythm_env.sh
 
 # Valgrind
-RUN wget https://sourceware.org/pub/valgrind/valgrind-3.25.0.tar.bz2 && \
-    tar -xf valgrind-3.25.0.tar.bz2 && \
-    cd valgrind-3.25.0 && \
+RUN wget https://sourceware.org/pub/valgrind/valgrind-3.25.1.tar.bz2 && \
+    tar -xf valgrind-3.25.1.tar.bz2 && \
+    cd valgrind-3.25.1 && \
     ./configure --prefix=/usr/local --enable-lto && \
     make -j$(nproc) && \
     make install && \
     cd .. && \
-    rm -rf valgrind-3.25.0.tar.bz2 valgrind-3.25.0 && \
+    rm -rf valgrind-3.25.1.tar.bz2 valgrind-3.25.1 && \
     valgrind --version
 
 # Build tools
 RUN pip3 install meson cmake ninja reuse
 
 # Boost
-RUN wget https://archives.boost.io/release/1.88.0/source/boost_1_88_0.tar.gz && \
-    tar -xf boost_1_88_0.tar.gz && \
-    cd boost_1_88_0 && \
+RUN wget https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.gz && \
+    tar -xf boost_1_89_0.tar.gz && \
+    cd boost_1_89_0 && \
     ./bootstrap.sh && \
     ./b2 && ./b2 install --prefix=/usr/local && \
     cd .. && \
-    rm -rf boost_1_88_0.tar.gz boost_1_88_0
+    rm -rf boost_1_89_0.tar.gz boost_1_89_0
 
 # LV2
 RUN wget https://lv2plug.in/spec/lv2-1.18.10.tar.xz && \
@@ -102,10 +102,10 @@ RUN wget https://lv2plug.in/spec/lv2-1.18.10.tar.xz && \
     cd .. && \
     rm -rf lv2-1.18.10.tar.xz lv2-1.18.10
 
-# Qt
-RUN wget https://download.qt.io/official_releases/qt/6.9/6.9.0/single/qt-everywhere-src-6.9.0.tar.xz && \
-    tar -xf qt-everywhere-src-6.9.0.tar.xz && \
-    cd qt-everywhere-src-6.9.0 && \
+# Qt (`-unity-build` removed due to compilation error)
+RUN wget https://download.qt.io/official_releases/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.tar.xz && \
+    tar -xf qt-everywhere-src-6.10.0.tar.xz && \
+    cd qt-everywhere-src-6.10.0 && \
     mkdir build-qt-release && cd build-qt-release && \
     ../configure -prefix /usr/local -release -no-gtk -qt-zlib -qt-libjpeg \
     -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -opensource \
@@ -113,11 +113,11 @@ RUN wget https://download.qt.io/official_releases/qt/6.9/6.9.0/single/qt-everywh
     -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport \
     -skip qtlocation -skip qtpositioning -skip qtmqtt -skip qtremoteobjects \
     -skip qtopcua \
-    -xcb -unity-build -pch -force-bundled-libs && \
+    -xcb -pch -force-bundled-libs && \
     cmake --build . --parallel && \
     cmake --install . && \
     cd ../.. && \
-    rm -rf qt-everywhere-src-6.9.0.tar.xz qt-everywhere-src-6.9.0 && \
+    rm -rf qt-everywhere-src-6.10.0.tar.xz qt-everywhere-src-6.10.0 && \
     qmllint --version
 
 # Install various utilities

@@ -54,7 +54,7 @@ stages:
   variables:
     BUILDDIR: "build_gnu_linux"
     QT_QPA_PLATFORM: "offscreen"
-    INSTALLED_QT_PREFIX: "/opt/Qt6.9-Release"
+    INSTALLED_QT_PREFIX: "/opt/Qt-6.10.0/Release"
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - *unix-activate-venv
@@ -194,7 +194,7 @@ configure:mac-arm:
       cmake -B ${BUILDDIR}-${BUILD_TYPE} ${COMMON_CMAKE_OPTIONS}
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -G "Xcode"
-      "-DCMAKE_PREFIX_PATH=/opt/Qt6.10.0-beta4-Release"
+      "-DCMAKE_PREFIX_PATH=/opt/Qt-6.10.0/${BUILD_TYPE}"
       -DZRYTHM_UNITY_BUILD=ON
       -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
@@ -213,7 +213,7 @@ configure:mac-arm:
 # -qt-harfbuzz -opensource -confirm-license -skip qtdoc -skip qtwebengine
 # -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport
 # -skip qtlocation -skip qtpositioning -skip qtmqtt -skip qtremoteobjects
-# -skip qtopcua
+# -skip qtopcua -- -DCMAKE_OBJECT_PATH_MAX=1000
 configure:windows:
   extends: .windows-template
   stage: setup
@@ -231,7 +231,7 @@ configure:windows:
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
       -DCPM_DOWNLOAD_ALL=ON
       -DZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS=ON
-      "-DCMAKE_PREFIX_PATH=C:\Qt-Zrythm\Qt-6.9.0-${env:BUILD_TYPE}"
+      "-DCMAKE_PREFIX_PATH=C:\Qt\Qt-6.10.0\${env:BUILD_TYPE}"
       -G "Visual Studio 17 2022"
       "-DCMAKE_BUILD_TYPE=${env:BUILD_TYPE}"
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"

@@ -66,12 +66,13 @@ TrackProcessor::TrackProcessor (
         }),
       transform_midi_inputs_func_(std::move(transform_midi_inputs_func ))
 {
+  timeline_data_provider_ =
+    std::make_unique<arrangement::TimelineDataProvider> ();
+  clip_playback_data_provider_ =
+    std::make_unique<ClipPlaybackDataProvider> (tempo_map);
+
   if (is_midi ())
     {
-      timeline_midi_event_provider_ =
-        std::make_unique<arrangement::TimelineMidiEventProvider> ();
-      clip_launcher_midi_event_provider_ =
-        std::make_unique<ClipLauncherMidiEventProvider> (tempo_map);
       set_midi_providers_active (ActiveMidiEventProviders::Timeline, true);
 
       {
@@ -181,6 +182,9 @@ TrackProcessor::TrackProcessor (
       };
       init_stereo_out_ports (true);
       init_stereo_out_ports (false);
+
+      // Initialize audio providers with timeline active by default
+      set_audio_providers_active (ActiveAudioProviders::Timeline, true);
     }
 
   if (is_audio_track)
@@ -267,6 +271,27 @@ TrackProcessor::set_midi_providers_active (
     "Currently active MIDI event providers for {}: {}", get_node_name (),
     magic_enum::enum_flags_name (current));
   active_midi_event_providers_.store (current);
+}
+
+void
+TrackProcessor::set_audio_providers_active (
+  ActiveAudioProviders audio_providers,
+  bool                 active)
+{
+  auto current = active_audio_providers_.load ();
+  if (active)
+    {
+      current = current | audio_providers;
+    }
+  else
+    {
+      current = current & ~audio_providers;
+    }
+  // Use a local string to avoid the stack-use-after-return issue
+  z_debug (
+    "Currently active audio providers for {}: {}", get_node_name (),
+    magic_enum::enum_flags_name (current));
+  active_audio_providers_.store (current);
 }
 
 void
@@ -660,12 +685,12 @@ TrackProcessor::fill_midi_events (
 
   if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Timeline))
     {
-      timeline_midi_event_provider_->process_events (time_nfo, midi_events);
+      timeline_data_provider_->process_midi_events (time_nfo, midi_events);
     }
   if (
     ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::ClipLauncher))
     {
-      clip_launcher_midi_event_provider_->process_events (time_nfo, midi_events);
+      clip_playback_data_provider_->process_midi_events (time_nfo, midi_events);
     }
   if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Custom))
     {
@@ -684,6 +709,20 @@ TrackProcessor::fill_audio_events (
   const EngineProcessTimeInfo &time_nfo,
   StereoPortPair               stereo_ports)
 {
+  const auto active_providers = active_audio_providers_.load ();
+
+  if (ENUM_BITSET_TEST (active_providers, ActiveAudioProviders::Timeline))
+    {
+      timeline_data_provider_->process_audio_events (
+        time_nfo, stereo_ports.first, stereo_ports.second);
+    }
+  if (ENUM_BITSET_TEST (active_providers, ActiveAudioProviders::ClipLauncher))
+    {
+      clip_playback_data_provider_->process_audio_events (
+        time_nfo, stereo_ports.first, stereo_ports.second);
+    }
+
+  // TODO: remove this and implement other audio providers (Recording, Custom)
   if (fill_events_cb_.has_value ())
     {
       std::invoke (

@@ -45,12 +45,13 @@ target_sources(zrythm_arrangement_lib
     midi_note.cpp
     midi_region.h
     midi_region.cpp
-    midi_region_serializer.h
     muteable_object.h
     named_object.h
     named_object.cpp
-    timeline_midi_event_provider.h
-    timeline_midi_event_provider.cpp
+    region_serializer.h
+    region_serializer.cpp
+    timeline_data_provider.h
+    timeline_data_provider.cpp
     scale_object.h
     scale_object.cpp
 )

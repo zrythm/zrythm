@@ -191,12 +191,33 @@ private:
     structure::tracks::ClipQuantizeOption quantize);
 
   /**
-   * @brief Generate MIDI events for a clip region.
+   * @brief Generate events for a clip (region).
    */
+  template <arrangement::RegionObject RegionT>
   void generateClipEvents (
     tracks::Track *                       track,
-    const arrangement::MidiRegion        &midi_region,
-    structure::tracks::ClipQuantizeOption quantize);
+    const RegionT                        &region,
+    structure::tracks::ClipQuantizeOption quantize)
+  {
+    if (track == nullptr)
+      return;
+
+    auto * processor = track->get_track_processor ();
+    if (processor == nullptr)
+      return;
+
+    // Generate events using the clip launcher event provider
+    if constexpr (std::is_same_v<RegionT, arrangement::MidiRegion>)
+      {
+        processor->clip_playback_data_provider ().generate_midi_events (
+          region, quantize);
+      }
+    else if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
+      {
+        processor->clip_playback_data_provider ().generate_audio_events (
+          region, quantize);
+      }
+  }
 
   /**
    * @brief Clear MIDI events for a track's clip launcher.

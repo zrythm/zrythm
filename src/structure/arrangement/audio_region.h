@@ -99,6 +99,8 @@ public:
    */
   void set_source (const ArrangerObjectUuidReference &source);
 
+  juce::PositionableAudioSource &get_audio_source () const;
+
   /**
    * Fills audio data from the region.
    *
@@ -148,8 +150,6 @@ private:
     region.gain_.store (gain);
     j.at (kMusicalModeKey).get_to (region.musical_mode_);
   }
-
-  juce::PositionableAudioSource &get_audio_source () const;
 
 private:
   dsp::FileAudioSourceRegistry &file_audio_source_registry_;

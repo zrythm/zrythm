@@ -96,9 +96,8 @@ TEST_F (TimelineDataCacheTest, AddAudioRegionAndFinalize)
   const auto &regions = cache->get_audio_regions ();
   EXPECT_EQ (regions[0].start_sample, 0);
   EXPECT_EQ (regions[0].end_sample, 256);
-  EXPECT_NE (regions[0].audio_buffer, nullptr);
-  EXPECT_EQ (regions[0].audio_buffer->getNumChannels (), 2);
-  EXPECT_EQ (regions[0].audio_buffer->getNumSamples (), 256);
+  EXPECT_EQ (regions[0].audio_buffer.getNumChannels (), 2);
+  EXPECT_EQ (regions[0].audio_buffer.getNumSamples (), 256);
 }
 
 TEST_F (TimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
@@ -328,8 +327,8 @@ TEST_F (TimelineDataCacheTest, AddMultipleAudioRegions)
   EXPECT_EQ (regions[1].start_sample, 256);
 
   // Verify the buffers are independent copies
-  EXPECT_EQ (regions[0].audio_buffer->getReadPointer (0)[0], 1.0f);
-  EXPECT_EQ (regions[1].audio_buffer->getReadPointer (0)[0], 2.0f);
+  EXPECT_EQ (regions[0].audio_buffer.getReadPointer (0)[0], 1.0f);
+  EXPECT_EQ (regions[1].audio_buffer.getReadPointer (0)[0], 2.0f);
 }
 
 TEST_F (TimelineDataCacheTest, RemoveAudioRegionsMatchingInterval)
@@ -425,10 +424,10 @@ TEST_F (TimelineDataCacheTest, AudioBufferIndependence)
 
   // Verify the cached buffer is unaffected (independent copy)
   const auto &regions = cache->get_audio_regions ();
-  EXPECT_FLOAT_EQ (regions[0].audio_buffer->getReadPointer (0)[0], 0.5f);
+  EXPECT_FLOAT_EQ (regions[0].audio_buffer.getReadPointer (0)[0], 0.5f);
 
   // Modify the cached buffer
-  regions[0].audio_buffer->clear ();
+  const_cast<juce::AudioSampleBuffer &> (regions[0].audio_buffer).clear ();
 
   // Verify the original buffer is still unaffected
   EXPECT_FLOAT_EQ (audio_buffer.getReadPointer (0)[0], 0.2f);

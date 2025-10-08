@@ -151,7 +151,7 @@ public:
    */
   void remove_empty_last_lanes ();
 
-  void fill_events_callback (
+  [[deprecated]] void fill_events_callback (
     const dsp::ITransport                        &transport,
     const EngineProcessTimeInfo                  &time_nfo,
     dsp::MidiEventVector *                        midi_events,

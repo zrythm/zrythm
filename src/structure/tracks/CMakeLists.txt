@@ -29,8 +29,8 @@ target_sources(zrythm_structure_tracks_lib
     channel_subgraph_builder.cpp
     chord_track.h
     chord_track.cpp
-    clip_launcher_event_provider.h
-    clip_launcher_event_provider.cpp
+    clip_playback_data_provider.h
+    clip_playback_data_provider.cpp
     fader.h
     fader.cpp
     folder_track.h

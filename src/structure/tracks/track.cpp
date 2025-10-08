@@ -405,21 +405,27 @@ Track::setClipLauncherMode (bool mode)
 void
 Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
 {
-  auto all_regions =
-    lanes_->lanes ()
-    | std::views::transform ([] (auto &uptr) -> const TrackLane * {
-        return uptr.get ();
-      })
-    | std::views::transform ([] (const TrackLane * lane) {
-        return lane->arrangement::ArrangerObjectOwner<
-          arrangement::MidiRegion>::get_children_view ();
-      })
-    | std::views::join;
-  z_debug (
-    "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
-    name (), affectedRange);
-  processor_->timeline_midi_event_provider ().generate_events (
-    base_dependencies_.tempo_map_.get_tempo_map (), all_regions, affectedRange);
+  const auto generate_events_for_region_type =
+    [&]<arrangement::RegionObject RegionT> () {
+      auto all_regions =
+        lanes_->lanes ()
+        | std::views::transform ([] (auto &uptr) -> const TrackLane * {
+            return uptr.get ();
+          })
+        | std::views::transform ([] (const TrackLane * lane) {
+            return lane
+              ->arrangement::ArrangerObjectOwner<RegionT>::get_children_view ();
+          })
+        | std::views::join;
+      z_debug (
+        "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
+        name (), affectedRange);
+      processor_->timeline_data_provider ().generate_events<RegionT> (
+        base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
+        affectedRange);
+    };
+  generate_events_for_region_type.operator()<arrangement::MidiRegion> ();
+  generate_events_for_region_type.operator()<arrangement::AudioRegion> ();
 }
 
 void

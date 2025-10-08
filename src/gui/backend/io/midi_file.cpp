@@ -4,7 +4,7 @@
 #include "gui/backend/io/midi_file.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
-#include "structure/arrangement/midi_region_serializer.h"
+#include "structure/arrangement/region_serializer.h"
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
@@ -217,7 +217,7 @@ MidiFile::export_midi_region_to_midi_file (
       60'000'000
       / static_cast<int> (tempo_map.tempo_at_tick (units::ticks (0)))));
 
-  structure::arrangement::MidiRegionSerializer::serialize_to_sequence (
+  structure::arrangement::RegionSerializer::serialize_to_sequence (
     region, sequence, std::nullopt, std::nullopt, false, export_full);
 
   juce::MidiFile mf;

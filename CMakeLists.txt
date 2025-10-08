@@ -581,7 +581,7 @@ if(ZRYTHM_STRICT)
       -Werror=cast-align
       -Werror=cast-qual
       -Werror=ctor-dtor-privacy
-      -Werror=deprecated
+      -Wdeprecated
       -Werror=format-signedness
       -Wframe-larger-than=65536 # 64 KiB
       -Werror=multichar

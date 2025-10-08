@@ -33,8 +33,8 @@ graph TB
 4. **Scene**: Represents a vertical column of clips
 5. **ClipSlot**: Contains a region and manages clip state
 6. **TrackProcessor**: Manages playback modes and event providers
-7. **ClipLauncherEventProvider**: Handles clip-specific MIDI event processing
-8. **TimelineEventProvider**: Handles timeline-specific MIDI event processing
+7. **ClipLauncherEventProvider**: Handles clip-specific MIDI and audio event processing
+8. **TimelineEventProvider**: Handles timeline-specific MIDI and audio event processing
 
 ## Service-Based Architecture
 
@@ -148,8 +148,10 @@ graph TB
         TLEP --> TimelineCache[Timeline Cache]
         CLEP --> ClipCache[Clip Cache]
 
-        TimelineCache --> Output[MIDI Output]
-        ClipCache --> Output
+        TimelineCache --> MidiOutput[MIDI Output]
+        TimelineCache --> AudioOutput[Audio Output]
+        ClipCache --> MidiOutput
+        ClipCache --> AudioOutput
     end
 ```
 
@@ -249,8 +251,10 @@ The system uses position-independent caching to allow clips to start at any posi
 ```mermaid
 graph TB
     subgraph "Clip Caching Process"
-        Region[MIDI Region] --> Cache[Position-Independent Cache]
-        Cache --> Launch[Launch at Any Position]
+        MidiRegion[MIDI Region] --> MidiCache[MIDI Cache]
+        AudioRegion[Audio Region] --> AudioCache[Audio Cache]
+        MidiCache --> Launch[Launch at Any Position]
+        AudioCache --> Launch
         Launch --> Loop[Continuous Looping]
         Transport[Transport Change] --> Recalc[Recalculate Position]
         Recalc --> Loop
@@ -274,6 +278,7 @@ sequenceDiagram
     Note over Audio: Audio processing loop
     Audio->>Provider: Process events from cache
     Provider->>Audio: Output MIDI events
+    Provider->>Audio: Output audio samples
 
     Note over Audio: Transport position change
     Audio->>Provider: Detect position change
@@ -283,7 +288,7 @@ sequenceDiagram
 
 ### Transport Position Handling
 
-The ClipLauncherMidiEventProvider tracks timeline position changes and recalculates the internal buffer position accordingly:
+The ClipLauncherEventProvider tracks timeline position changes and recalculates the internal buffer position accordingly for both MIDI and audio:
 
 ```mermaid
 stateDiagram-v2
@@ -296,6 +301,7 @@ stateDiagram-v2
         Calculate time since launch
         Apply modulo for looping
         Update internal buffer position
+        Handle both MIDI and audio events
     end note
 ```
 
@@ -336,6 +342,7 @@ The system ensures realtime safety by:
 3. **Cache Swapping**: Using thread-safe cache swapping mechanisms
 4. **Non-blocking Operations**: All operations that might block are performed outside the audio thread
 5. **Transport Position Tracking**: Efficient tracking of timeline position changes without blocking
+6. **Unified Event Processing**: Both MIDI and audio events use the same thread-safe caching mechanisms
 
 ## Data Serialization
 
@@ -372,6 +379,7 @@ graph TB
 4. **MIDI Mapping**: MIDI controls for clip launching
 5. **Clip Recording**: Record clips directly into the clip launcher
 6. **Playback Position Visualization**: Enhanced visual feedback for clip playback
+7. **Audio Clip Warping**: Time-stretching and pitch-shifting for audio clips
 
 ### Architecture Extensibility
 
@@ -398,7 +406,9 @@ graph TB
 4. **Flexibility**: Multiple providers can be active simultaneously
 5. **Maintainability**: Clear boundaries between components
 6. **Extensibility**: Easy to add new features without affecting existing code
-7. **Performance**: Efficient caching and event processing
+7. **Performance**: Efficient caching and event processing for both MIDI and audio
 8. **User Experience**: Professional-grade clip launching with quantization
+9. **Unified Processing**: Consistent handling of MIDI and audio events across the system
+10. **Audio Quality**: High-fidelity audio playback with proper caching and real-time processing
 
-This architecture provides a solid foundation for a professional-grade scenes system that integrates seamlessly with Zrythm's existing architecture while providing the flexibility and power users expect from modern DAWs.
+This architecture provides a solid foundation for a professional-grade scenes system that integrates seamlessly with Zrythm's existing architecture while providing the flexibility and power users expect from modern DAWs. The unified approach to MIDI and audio event processing ensures consistent behavior and high performance across all clip types.

@@ -5,8 +5,8 @@
 
 #include "dsp/port.h"
 #include "structure/arrangement/arranger_object_all.h"
-#include "structure/arrangement/timeline_midi_event_provider.h"
-#include "structure/tracks/clip_launcher_event_provider.h"
+#include "structure/arrangement/timeline_data_provider.h"
+#include "structure/tracks/clip_playback_data_provider.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
@@ -115,6 +115,14 @@ public:
     Custom = 1 << 4,
   };
 
+  enum class ActiveAudioProviders : uint8_t
+  {
+    Timeline = 1 << 0,
+    ClipLauncher = 1 << 1,
+    Recording = 1 << 2,
+    Custom = 1 << 3,
+  };
+
   /**
    * Creates a new track processor for the given track.
    *
@@ -162,7 +170,7 @@ public:
    * @param r
    */
   template <arrangement::RegionObject RegionT>
-  static void fill_events_from_region_rt (
+  [[deprecated]] static void fill_events_from_region_rt (
     const dsp::ITransport        &transport,
     const EngineProcessTimeInfo  &time_nfo,
     dsp::MidiEventVector *        midi_events,
@@ -382,16 +390,12 @@ public:
     return *get_input_ports ().at (1).get_object_as<dsp::MidiPort> ();
   }
 
-  auto &timeline_midi_event_provider ()
-  {
-    assert (is_midi ());
-    return *timeline_midi_event_provider_;
-  }
+  auto &timeline_data_provider () { return *timeline_data_provider_; }
 
-  auto &clip_launcher_midi_event_provider ()
+  auto &clip_playback_data_provider ()
   {
     assert (is_midi ());
-    return *clip_launcher_midi_event_provider_;
+    return *clip_playback_data_provider_;
   }
 
   /**
@@ -405,6 +409,17 @@ public:
   void set_midi_providers_active (
     ActiveMidiEventProviders event_providers,
     bool                     active);
+
+  /**
+   * @brief Used to enable or disable audio providers.
+   *
+   * For example, when a clip is launched this should be called once to disable
+   * the timeline and once more to enable the clip provider.
+   *
+   * @note Changes will take effect during the next processing cycle.
+   */
+  void
+  set_audio_providers_active (ActiveAudioProviders audio_providers, bool active);
 
   /**
    * @brief Replaces the "Custom" MIDI event provider.
@@ -564,13 +579,11 @@ private:
   std::unique_ptr<TrackProcessorProcessingCaches> processing_caches_;
 
   /**
-   * @brief MIDI event provider from the timeline.
+   * @brief Data provider from the timeline.
    */
-  std::unique_ptr<arrangement::TimelineMidiEventProvider>
-    timeline_midi_event_provider_;
+  std::unique_ptr<arrangement::TimelineDataProvider> timeline_data_provider_;
 
-  std::unique_ptr<ClipLauncherMidiEventProvider>
-    clip_launcher_midi_event_provider_;
+  std::unique_ptr<ClipPlaybackDataProvider> clip_playback_data_provider_;
 
   // TODO: clip launcher, piano roll, recording
 
@@ -580,6 +593,8 @@ private:
     custom_midi_event_provider_;
 
   std::atomic<ActiveMidiEventProviders> active_midi_event_providers_;
+  std::atomic<ActiveAudioProviders>     active_audio_providers_;
+
   static_assert (decltype (active_midi_event_providers_)::is_always_lock_free);
 };
 }

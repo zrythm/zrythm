@@ -72,6 +72,7 @@ Located in [`src/dsp/timeline_data_cache.h`](src/dsp/timeline_data_cache.h)
 - Merges sequences for final playback
 - Creates independent copies of audio data for thread safety
 - Removes both MIDI and audio data that overlaps with specified intervals
+- Handles both MIDI note events and audio sample data with equal priority
 
 ```mermaid
 classDiagram
@@ -101,6 +102,7 @@ Located in [`src/structure/arrangement/timeline_data_provider.h`](src/structure/
 - Manages thread-safe access to cached events using `farbot::RealtimeObject`
 - Processes events for specific time ranges during audio processing
 - Handles range-based cache updates for efficiency
+- Provides consistent interface for both MIDI and audio event processing
 
 ```mermaid
 classDiagram
@@ -128,6 +130,7 @@ classDiagram
 - Uses `TimelineDataProvider` for MIDI and audio event access
 - Implements the playback interface using cached events
 - Integrates with the track's event provider system
+- Provides unified processing for both MIDI and audio events
 
 ## Signal Flow
 
@@ -172,6 +175,7 @@ The architecture ensures real-time safety through:
 4. **Separation of Concerns**: UI thread manages cache generation, audio thread uses cached data
 5. **Event Provider Pattern**: `TimelineDataProvider` abstracts the cache access pattern
 6. **Independent Copies**: Audio data is copied into the cache to prevent threading issues
+7. **Unified Processing**: Both MIDI and audio use the same threading and caching patterns
 
 ## Event Types Support
 
@@ -186,6 +190,7 @@ The architecture is designed to support additional event types:
 - Unified cache system for different event types
 - Configurable caching strategies per event type
 - Event provider pattern for different event types
+- Consistent threading patterns across all event types
 
 ## Performance Considerations
 
@@ -194,6 +199,8 @@ The architecture is designed to support additional event types:
 - **Memory Efficiency**: Caches are stored in optimal formats for playback
 - **CPU Usage**: Cache generation happens off the real-time thread
 - **Event Provider Efficiency**: `TimelineDataProvider` optimizes event access patterns
+- **Audio Buffer Management**: Efficient copying and management of audio sample data
+- **Unified Processing**: Both MIDI and audio benefit from the same performance optimizations
 
 ## Error Handling
 
@@ -202,6 +209,7 @@ The architecture is designed to support additional event types:
 - **Tempo Awareness**: Properly handles tempo changes through tempo map integration
 - **Provider Safety**: `TimelineDataProvider` handles edge cases in event processing
 - **Audio Buffer Independence**: Ensures cached audio buffers are independent copies
+- **Cross-Type Validation**: Consistent error handling across MIDI and audio event types
 
 ## Usage Examples
 
@@ -249,9 +257,14 @@ timeline_data_provider_->process_audio_events(
 - **ArrangerObjectListModel**: Propagates change notifications
 - **TrackLaneList**: Contains MIDI regions and triggers cache updates
 - **MidiRegionSerializer**: Converts MIDI regions to message sequences
+- **AudioRegionSerializer**: Converts audio regions to sample buffers
 - **TempoMap**: Provides timing conversion between ticks and samples
 - **TimelineDataProvider**: Bridge between cache system and track processors
+- **ClipLauncherEventProvider**: Handles clip-based MIDI and audio event processing
+- **ClipPlaybackDataProvider**: Provides unified MIDI and audio processing for clip launcher
 
 ## Conclusion
 
 This caching architecture provides a robust solution for thread-safe playback. The addition of `TimelineDataProvider` with unified `TimelineDataCache` creates a clean separation between cache management and real-time event processing, improving maintainability and extensibility. The system balances performance, flexibility, and real-time safety while providing comprehensive support for MIDI and audio event caching, with a foundation for future expansion to support automation event caching.
+
+The unified approach to handling both MIDI and audio events ensures consistent behavior, performance characteristics, and threading safety across all event types. This architecture provides a solid foundation for professional-grade audio production with real-time clip launching and timeline playback capabilities.

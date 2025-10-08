@@ -171,7 +171,7 @@ ClipPlaybackService::getClipPlaybackPosition (ClipSlot * clipSlot) const
 
           // Get the internal buffer position from the event provider
           auto internal_position =
-            processor->clip_launcher_midi_event_provider ()
+            processor->clip_playback_data_provider ()
               .current_playback_position_in_clip ();
 
           // Get the region to determine its length
@@ -263,12 +263,16 @@ ClipPlaybackService::scheduleClipLaunch (
   // Ensure track is in clip launcher mode
   setTrackToClipLauncherMode (track);
 
-  // Handle MIDI regions
+  // Generate events using the clip launcher event provider
+  // The provider handles quantization internally
   if (auto * midi_region = dynamic_cast<arrangement::MidiRegion *> (region))
     {
-      // Generate events using the clip launcher event provider
-      // The provider handles quantization internally
       generateClipEvents (track, *midi_region, quantize);
+    }
+  else if (
+    auto * audio_region = dynamic_cast<arrangement::AudioRegion *> (region))
+    {
+      generateClipEvents (track, *audio_region, quantize);
     }
 
   // Track the playing clip
@@ -299,31 +303,13 @@ ClipPlaybackService::scheduleClipStop (
 
   // Queue stop playback with quantization in the clip launcher event
   // provider Assuming this method exists as mentioned in the feedback
-  processor->clip_launcher_midi_event_provider ().queue_stop_playback (quantize);
+  processor->clip_playback_data_provider ().queue_stop_playback (quantize);
 
   // Start monitoring for the actual playback state change
   startPlaybackStateMonitor (track, clipSlot, ClipSlot::ClipState::Stopped);
 
   // Emit signal
   Q_EMIT clipStopped (track, clipSlot);
-}
-
-void
-ClipPlaybackService::generateClipEvents (
-  tracks::Track *                       track,
-  const arrangement::MidiRegion        &midi_region,
-  structure::tracks::ClipQuantizeOption quantize)
-{
-  if (track == nullptr)
-    return;
-
-  auto * processor = track->get_track_processor ();
-  if (processor == nullptr)
-    return;
-
-  // Generate events using the clip launcher event provider
-  processor->clip_launcher_midi_event_provider ().generate_events (
-    midi_region, quantize);
 }
 
 void
@@ -337,7 +323,7 @@ ClipPlaybackService::clearClipEvents (tracks::Track * track)
     return;
 
   // Clear events using the clip launcher event provider
-  processor->clip_launcher_midi_event_provider ().clear_events ();
+  processor->clip_playback_data_provider ().clear_events ();
 }
 
 void
@@ -373,8 +359,7 @@ ClipPlaybackService::startPlaybackStateMonitor (
         return;
 
       // Check if the track processor has reached the target state
-      bool isPlaying =
-        processor->clip_launcher_midi_event_provider ().playing ();
+      bool isPlaying = processor->clip_playback_data_provider ().playing ();
 
       if (
         (targetState == ClipSlot::ClipState::Playing && isPlaying)

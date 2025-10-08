@@ -81,5 +81,15 @@ Control {
         root.objectCreator.addMidiNote(midiRegion, 120, 68);
       }
     }
+
+    DropArea {
+      id: dropArea
+
+      anchors.fill: parent
+
+      onDropped: drop => {
+        console.log("Drop on clip slot");
+      }
+    }
   }
 }

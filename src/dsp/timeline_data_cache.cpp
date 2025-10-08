@@ -97,11 +97,11 @@ TimelineDataCache::add_audio_region (
 
   AudioRegionEntry entry;
   // Create a copy of the audio buffer
-  entry.audio_buffer = std::make_unique<juce::AudioSampleBuffer> (audio_buffer);
+  entry.audio_buffer = audio_buffer;
   entry.start_sample = start_sample;
   entry.end_sample = end_sample;
 
-  audio_regions_.push_back (std::move (entry));
+  audio_regions_.push_back (entry);
 }
 
 /**
