@@ -193,6 +193,8 @@ public:
       {
         return QVariant::fromValue (clip_slots_.at (index_int).get ());
       }
+
+    return {};
   }
 
   // ========================================================================

@@ -101,6 +101,8 @@ public:
       {
         return QVariant::fromValue (scenes_.at (index_int).get ());
       }
+
+    return {};
   }
   // ========================================================================
 
