@@ -379,7 +379,8 @@ build:mac-arm:
     - job: configure:mac-arm
       artifacts: true
   script:
-    - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel
+    # Limit parallel jobs because xcode clang forces a whole system restart when building debug builds
+    - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel 4
     - *unix_test_cmd
     - cpack -G "DragNDrop" -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
     - >-
