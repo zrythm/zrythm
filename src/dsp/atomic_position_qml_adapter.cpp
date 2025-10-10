@@ -16,7 +16,7 @@ AtomicPositionQmlAdapter::AtomicPositionQmlAdapter (
 double
 AtomicPositionQmlAdapter::ticks () const
 {
-  return atomic_pos_.get_ticks ();
+  return atomic_pos_.get_ticks ().in (units::ticks);
 }
 
 void
@@ -27,14 +27,14 @@ AtomicPositionQmlAdapter::setTicks (double ticks)
       ticks = 0.0;
     }
 
-  atomic_pos_.set_ticks (ticks);
+  atomic_pos_.set_ticks (units::ticks (ticks));
   Q_EMIT positionChanged ();
 }
 
 double
 AtomicPositionQmlAdapter::seconds () const
 {
-  return atomic_pos_.get_seconds ();
+  return atomic_pos_.get_seconds ().in (units::seconds);
 }
 
 void
@@ -45,14 +45,14 @@ AtomicPositionQmlAdapter::setSeconds (double seconds)
       seconds = 0.0;
     }
 
-  atomic_pos_.set_seconds (seconds);
+  atomic_pos_.set_seconds (units::seconds (seconds));
   Q_EMIT positionChanged ();
 }
 
 qint64
 AtomicPositionQmlAdapter::samples () const
 {
-  return atomic_pos_.get_samples ();
+  return atomic_pos_.get_samples ().in (units::samples);
 }
 
 void
@@ -63,7 +63,7 @@ AtomicPositionQmlAdapter::setSamples (double samples)
       samples = 0.0;
     }
 
-  atomic_pos_.set_samples (samples);
+  atomic_pos_.set_samples (units::samples (samples));
   Q_EMIT positionChanged ();
 }
 

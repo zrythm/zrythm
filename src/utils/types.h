@@ -67,7 +67,7 @@ using midi_time_t = uint32_t;
 using channels_t = uint_fast8_t;
 
 /** The sample type. */
-using sample_t = float;
+using audio_sample_type_t = float;
 
 /** The BPM type. */
 using bpm_t = float;

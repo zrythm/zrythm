@@ -8,6 +8,7 @@
 #include "utils/format.h"
 #include "utils/math.h"
 #include "utils/serialization.h"
+#include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::dsp
@@ -270,7 +271,7 @@ public:
    * position, or std::nullopt if no automation is available.
    */
   using AutomationValueProvider =
-    std::function<std::optional<float> (unsigned_frame_t sample_position)>;
+    std::function<std::optional<float> (units::sample_t sample_position)>;
 
   // ========================================================================
   // QML Interface

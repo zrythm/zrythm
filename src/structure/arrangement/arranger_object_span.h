@@ -584,8 +584,8 @@ public:
    * calculation.
    */
   std::optional<VariantType> get_bounded_object_at_position (
-    signed_frame_t pos_samples,
-    bool           include_region_end = false) const
+    units::sample_t pos_samples,
+    bool            include_region_end = false) const
   {
     auto view = *this | std::views::filter (bounded_projection);
     auto it = std::ranges::find_if (view, [&] (const auto &r_var) {

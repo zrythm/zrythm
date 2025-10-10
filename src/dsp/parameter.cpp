@@ -39,7 +39,8 @@ ProcessorParameter::process_block (const EngineProcessTimeInfo time_nfo) noexcep
   if (automation_value_provider_)
     {
       const auto val = std::invoke (
-        automation_value_provider_.value (), time_nfo.g_start_frame_w_offset_);
+        automation_value_provider_.value (),
+        units::samples (time_nfo.g_start_frame_w_offset_));
       if (val)
         {
           current_val = std::clamp (val.value (), 0.f, 1.f);

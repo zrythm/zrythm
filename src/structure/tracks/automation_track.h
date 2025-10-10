@@ -10,6 +10,7 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/automation_region.h"
+#include "utils/units.h"
 
 #include <QtQmlIntegration>
 
@@ -124,9 +125,9 @@ public:
    * @param search_only_backwards Only check previous automation points.
    */
   AutomationPoint * get_automation_point_around (
-    double position_ticks,
-    double delta_ticks,
-    bool   search_only_backwards = false);
+    units::precise_tick_t position_ticks,
+    units::precise_tick_t delta_ticks,
+    bool                  search_only_backwards = false);
 
   /**
    * Returns the last automation point before the given timeline position.
@@ -138,8 +139,8 @@ public:
    * @see get_region_before().
    */
   AutomationPoint * get_automation_point_before (
-    signed_frame_t timeline_position,
-    bool           search_only_regions_enclosing_position) const;
+    units::sample_t timeline_position,
+    bool            search_only_regions_enclosing_position) const;
 
   /**
    * Returns the active region at a given position, if any.
@@ -151,43 +152,8 @@ public:
    * region could be picked.
    */
   auto get_region_before (
-    signed_frame_t pos_samples,
-    bool search_only_regions_enclosing_position) const -> AutomationRegion *
-  {
-    auto process_regions = [=] (const auto &regions) {
-      if (search_only_regions_enclosing_position)
-        {
-          for (const auto &region : std::views::reverse (regions))
-            {
-              if (get_object_bounds (*region)->is_hit (pos_samples))
-                return region;
-            }
-        }
-      else
-        {
-          AutomationRegion * latest_r{};
-          signed_frame_t     latest_distance =
-            std::numeric_limits<signed_frame_t>::min ();
-          for (const auto &region : std::views::reverse (regions))
-            {
-              signed_frame_t distance_from_r_end =
-                get_object_bounds (*region)->get_end_position_samples (true)
-                - pos_samples;
-              if (
-                region->position ()->samples () <= pos_samples
-                && distance_from_r_end > latest_distance)
-                {
-                  latest_distance = distance_from_r_end;
-                  latest_r = region;
-                }
-            }
-          return latest_r;
-        }
-      return static_cast<AutomationRegion *> (nullptr);
-    };
-
-    return process_regions (get_children_view ());
-  }
+    units::sample_t pos_samples,
+    bool search_only_regions_enclosing_position) const -> AutomationRegion *;
 
   /**
    * Returns the normalized parameter value at the given timeline position.
@@ -198,8 +164,8 @@ public:
    * automation point/curve at the position.
    */
   std::optional<float> get_normalized_value (
-    signed_frame_t timeline_frames,
-    bool           search_only_regions_enclosing_position) const;
+    units::sample_t timeline_frames,
+    bool            search_only_regions_enclosing_position) const;
 
   bool contains_automation () const { return !get_children_vector ().empty (); }
 

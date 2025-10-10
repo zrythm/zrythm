@@ -1374,4 +1374,275 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
     }
 }
 
+// ========== Chord Region Tests ==========
+
+TEST_F (TimelineDataProviderTest, ChordRegionInitialState)
+{
+  // Provider should start with no chord events
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (time_info, output_buffer);
+  EXPECT_EQ (output_buffer.size (), 0);
+}
+
+TEST_F (TimelineDataProviderTest, ProcessChordRegion)
+{
+  // Create a chord region at tick 0
+  auto chord_region_ref = obj_registry_->create_object<arrangement::ChordRegion> (
+    *tempo_map_, *obj_registry_, *file_audio_source_registry_);
+  auto chord_region =
+    chord_region_ref.get_object_as<arrangement::ChordRegion> ();
+  chord_region->position ()->setTicks (0.0);
+  chord_region->bounds ()->length ()->setTicks (200.0);
+
+  // Keep a reference to the chord region
+  region_refs.push_back (std::move (chord_region_ref));
+
+  // Create a vector of chord regions
+  std::vector<const arrangement::ChordRegion *> chord_regions;
+  chord_regions.push_back (chord_region);
+
+  // Generate events for the chord regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+
+  // Test processing events that should include chord events
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (time_info, output_buffer);
+
+  // Should have some events from the chord region
+  EXPECT_GE (output_buffer.size (), 0);
+
+  // Verify events are valid MIDI events
+  for (const auto &event : output_buffer)
+    {
+      EXPECT_GE (event.time_, 0);
+      EXPECT_LT (event.time_, time_info.nframes_);
+      // Check that it's a valid MIDI message
+      EXPECT_GE (event.raw_buffer_[0], 0x80);
+      EXPECT_LE (event.raw_buffer_[0], 0xEF);
+    }
+}
+
+TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
+{
+  // Create a chord region at tick 500
+  auto chord_region_ref = obj_registry_->create_object<arrangement::ChordRegion> (
+    *tempo_map_, *obj_registry_, *file_audio_source_registry_);
+  auto chord_region =
+    chord_region_ref.get_object_as<arrangement::ChordRegion> ();
+  chord_region->position ()->setTicks (500.0);
+  chord_region->bounds ()->length ()->setTicks (200.0);
+
+  // Keep a reference to the chord region
+  region_refs.push_back (std::move (chord_region_ref));
+
+  // Create a vector of chord regions
+  std::vector<const arrangement::ChordRegion *> chord_regions;
+  chord_regions.push_back (chord_region);
+
+  // Generate events for the chord regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+
+  // Test processing events that should NOT include the chord
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (time_info, output_buffer);
+
+  // Should have no events since the chord region is outside the time range
+  EXPECT_EQ (output_buffer.size (), 0);
+}
+
+// ========== Muted Region Tests ==========
+
+TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
+{
+  // Create a MIDI region at tick 0
+  auto region = create_midi_region (0.0, 200.0);
+
+  // Mute the entire region
+  region->mute ()->setMuted (true);
+
+  // Create a vector of regions
+  std::vector<const MidiRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, regions, range);
+
+  // Test processing events
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (time_info, output_buffer);
+
+  // Should have no events since the entire region is muted
+  EXPECT_EQ (output_buffer.size (), 0);
+}
+
+TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
+{
+  // Create an audio region at tick 0
+  auto region = create_audio_region (0.0, 200.0);
+
+  // Mute the entire region
+  region->mute ()->setMuted (true);
+
+  // Create a vector of regions
+  std::vector<const AudioRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_audio_events (*tempo_map_, regions, range);
+
+  // Test processing audio
+  std::vector<float>    output_left (256, 0.0f);
+  std::vector<float>    output_right (256, 0.0f);
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_audio_events (time_info, output_left, output_right);
+
+  // Should have no audio since the entire region is muted
+  for (size_t i = 0; i < output_left.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (output_left[i], 0.0f);
+      EXPECT_FLOAT_EQ (output_right[i], 0.0f);
+    }
+}
+
+TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
+{
+  // Create a chord region at tick 0
+  auto chord_region_ref = obj_registry_->create_object<arrangement::ChordRegion> (
+    *tempo_map_, *obj_registry_, *file_audio_source_registry_);
+  auto chord_region =
+    chord_region_ref.get_object_as<arrangement::ChordRegion> ();
+  chord_region->position ()->setTicks (0.0);
+  chord_region->bounds ()->length ()->setTicks (200.0);
+
+  // Mute the entire chord region
+  chord_region->mute ()->setMuted (true);
+
+  // Keep a reference to the chord region
+  region_refs.push_back (std::move (chord_region_ref));
+
+  // Create a vector of chord regions
+  std::vector<const arrangement::ChordRegion *> chord_regions;
+  chord_regions.push_back (chord_region);
+
+  // Generate events for the chord regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+
+  // Test processing events
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (time_info, output_buffer);
+
+  // Should have no events since the entire chord region is muted
+  EXPECT_EQ (output_buffer.size (), 0);
+}
+
+TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
+{
+  // Create a MIDI region at tick 0 with multiple notes
+  auto region = create_midi_region (0.0, 200.0, 60);
+
+  // Add another note to the region
+  auto note_ref = obj_registry_->create_object<MidiNote> (*tempo_map_);
+  auto midi_note = note_ref.get_object_as<MidiNote> ();
+  midi_note->setPitch (64);
+  midi_note->setVelocity (80);
+  midi_note->position ()->setSamples (25);
+  midi_note->bounds ()->length ()->setSamples (50);
+  region->add_object (note_ref);
+
+  // Mute only the first note (pitch 60), not the entire region
+  auto note_view = region->get_children_view ();
+  note_view[0]->mute ()->setMuted (true);
+
+  // Create a vector of regions
+  std::vector<const MidiRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, regions, range);
+
+  // Test processing events
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (time_info, output_buffer);
+
+  // Should have events from the unmuted note (pitch 64) but not from the muted
+  // note (pitch 60)
+  EXPECT_GT (output_buffer.size (), 0);
+
+  // Check that only the unmuted note is present
+  bool found_muted_note = false;
+  bool found_unmuted_note = false;
+
+  for (const auto &event : output_buffer)
+    {
+      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+        {
+          if (event.raw_buffer_[1] == 60)
+            {
+              found_muted_note = true;
+            }
+          else if (event.raw_buffer_[1] == 64)
+            {
+              found_unmuted_note = true;
+            }
+        }
+    }
+
+  EXPECT_FALSE (found_muted_note) << "Muted note (60) should not be present";
+  EXPECT_TRUE (found_unmuted_note) << "Unmuted note (64) should be present";
+}
+
 } // namespace zrythm::structure::arrangement

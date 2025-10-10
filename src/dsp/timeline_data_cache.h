@@ -20,7 +20,7 @@ namespace zrythm::dsp
 class TimelineDataCache
 {
 public:
-  using IntervalType = std::pair<int64_t, int64_t>;
+  using IntervalType = std::pair<units::sample_t, units::sample_t>;
 
   /**
    * @brief Audio region entry for caching.
@@ -35,10 +35,10 @@ public:
     juce::AudioSampleBuffer audio_buffer;
 
     /** Start position in samples. */
-    int64_t start_sample = 0;
+    units::sample_t start_sample;
 
     /** End position in samples. */
-    int64_t end_sample = 0;
+    units::sample_t end_sample;
   };
 
 public:

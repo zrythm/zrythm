@@ -136,17 +136,20 @@ TEST_F (AutomationTrackTest, RegionBeforePosition)
   automation_track->add_object (region2);
 
   // Test with enclosing position
-  auto * found_region = automation_track->get_region_before (150, true);
+  auto * found_region =
+    automation_track->get_region_before (units::samples (150), true);
   EXPECT_EQ (
     found_region, region1.get_object_as<arrangement::AutomationRegion> ());
 
   // Test without requiring enclosing position
-  found_region = automation_track->get_region_before (250, false);
+  found_region =
+    automation_track->get_region_before (units::samples (250), false);
   EXPECT_EQ (
     found_region, region1.get_object_as<arrangement::AutomationRegion> ());
 
   // Test position after all regions
-  found_region = automation_track->get_region_before (500, false);
+  found_region =
+    automation_track->get_region_before (units::samples (500), false);
   EXPECT_EQ (
     found_region, region2.get_object_as<arrangement::AutomationRegion> ());
 }
@@ -165,11 +168,13 @@ TEST_F (AutomationTrackTest, AutomationPointBefore)
                            // samples
 
   // Find point before 150 frames (should be first point)
-  auto * point = automation_track->get_automation_point_before (150, true);
+  auto * point =
+    automation_track->get_automation_point_before (units::samples (150), true);
   EXPECT_EQ (point->position ()->samples (), 0);
 
   // Test position after all points
-  point = automation_track->get_automation_point_before (250, true);
+  point =
+    automation_track->get_automation_point_before (units::samples (250), true);
   EXPECT_EQ (point->position ()->samples (), 100);
 }
 
@@ -185,12 +190,12 @@ TEST_F (AutomationTrackTest, AutomationPointAround)
 
   // Find point near 160 ticks within 20-tick radius
   auto * point = automation_track->get_automation_point_around (
-    tempo_map->samples_to_tick (units::samples (160)).in (units::ticks), 20,
-    false);
+    tempo_map->samples_to_tick (units::samples (160)), units::ticks (20), false);
   EXPECT_EQ (point->position ()->samples (), 50);
 
   // Test with position before any points
-  point = automation_track->get_automation_point_around (50, 20, true);
+  point = automation_track->get_automation_point_around (
+    units::ticks (50), units::ticks (20), true);
   EXPECT_EQ (point, nullptr);
 }
 
@@ -206,12 +211,13 @@ TEST_F (AutomationTrackTest, NormalizedValueCalculation)
     tempo_map->samples_to_tick (units::samples (200)).in (units::ticks));
 
   // Get value at midpoint (should be 0.5)
-  auto value = automation_track->get_normalized_value (200, true);
+  auto value =
+    automation_track->get_normalized_value (units::samples (200), true);
   EXPECT_TRUE (value.has_value ());
   EXPECT_FLOAT_EQ (*value, 0.5f);
 
   // Test position before any regions
-  value = automation_track->get_normalized_value (50, true);
+  value = automation_track->get_normalized_value (units::samples (50), true);
   EXPECT_FALSE (value.has_value ());
 }
 

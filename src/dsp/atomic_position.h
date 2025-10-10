@@ -8,7 +8,9 @@
 #include <functional>
 #include <limits>
 
+#include "utils/format.h"
 #include "utils/types.h"
+#include "utils/units.h"
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
@@ -75,10 +77,14 @@ class AtomicPosition
 public:
   struct TimeConversionFunctions
   {
-    std::function<double (double)> tick_to_seconds;
-    std::function<double (double)> seconds_to_tick;
-    std::function<double (double)> tick_to_samples;
-    std::function<double (double)> samples_to_tick;
+    std::function<units::precise_second_t (units::precise_tick_t)>
+      tick_to_seconds;
+    std::function<units::precise_tick_t (units::precise_second_t)>
+      seconds_to_tick;
+    std::function<units::precise_sample_t (units::precise_tick_t)>
+      tick_to_samples;
+    std::function<units::precise_tick_t (units::precise_sample_t)>
+      samples_to_tick;
   };
 
   /**
@@ -114,11 +120,14 @@ public:
     const auto cur_mode = get_current_mode ();
     if (cur_mode == TimeFormat::Absolute && format == TimeFormat::Musical)
       {
-        value_.store (get_ticks (), format_to_bool (TimeFormat::Musical));
+        value_.store (
+          get_ticks ().in (units::ticks), format_to_bool (TimeFormat::Musical));
       }
     else if (cur_mode == TimeFormat::Musical && format == TimeFormat::Absolute)
       {
-        value_.store (get_seconds (), format_to_bool (TimeFormat::Absolute));
+        value_.store (
+          get_seconds ().in (units::seconds),
+          format_to_bool (TimeFormat::Absolute));
       }
   }
 
@@ -127,12 +136,13 @@ public:
    *
    * Converts to seconds if currently in Absolute mode.
    */
-  void set_ticks (double ticks)
+  void set_ticks (units::precise_tick_t ticks)
   {
     const auto cur_mode = get_current_mode ();
     if (cur_mode == TimeFormat::Musical)
       {
-        value_.store (ticks, format_to_bool (TimeFormat::Musical));
+        value_.store (
+          ticks.in (units::ticks), format_to_bool (TimeFormat::Musical));
       }
     else if (cur_mode == TimeFormat::Absolute)
       {
@@ -145,12 +155,13 @@ public:
    *
    * Converts to ticks if currently in Musical mode.
    */
-  void set_seconds (double seconds)
+  void set_seconds (units::precise_second_t seconds)
   {
     const auto cur_mode = get_current_mode ();
     if (cur_mode == TimeFormat::Absolute)
       {
-        value_.store (seconds, format_to_bool (TimeFormat::Absolute));
+        value_.store (
+          seconds.in (units::seconds), format_to_bool (TimeFormat::Absolute));
       }
     else if (cur_mode == TimeFormat::Musical)
       {
@@ -159,40 +170,40 @@ public:
   }
 
   /// @brief Get position in musical ticks (converts if necessary).
-  double get_ticks () const
+  units::precise_tick_t get_ticks () const
   {
     const auto &[d, b] = value_.load ();
     if (bool_to_format (b) == TimeFormat::Musical)
       {
-        return d;
+        return units::ticks (d);
       }
-    return conversion_funcs_.seconds_to_tick (d);
+    return conversion_funcs_.seconds_to_tick (units::seconds (d));
   }
 
   /// @brief Get position in absolute seconds (converts if necessary).
-  double get_seconds () const
+  units::precise_second_t get_seconds () const
   {
     const auto &[d, b] = value_.load ();
     if (bool_to_format (b) == TimeFormat::Absolute)
       {
-        return d;
+        return units::seconds (d);
       }
-    return conversion_funcs_.tick_to_seconds (d);
+    return conversion_funcs_.tick_to_seconds (units::ticks (d));
   }
 
   /// @brief Helper method to get the position as samples
-  std::int64_t get_samples () const
+  units::sample_t get_samples () const
   {
     const auto &[d, b] = value_.load ();
     auto tick =
       bool_to_format (b) == TimeFormat::Musical
-        ? d
-        : conversion_funcs_.seconds_to_tick (d);
-    return static_cast<std::int64_t> (
-      std::round (conversion_funcs_.tick_to_samples (tick)));
+        ? units::ticks (d)
+        : conversion_funcs_.seconds_to_tick (units::seconds (d));
+    return au::round_as<std::int64_t> (
+      units::samples, conversion_funcs_.tick_to_samples (tick));
   }
 
-  void set_samples (double samples)
+  void set_samples (units::precise_sample_t samples)
   {
     set_ticks (conversion_funcs_.samples_to_tick (samples));
   }

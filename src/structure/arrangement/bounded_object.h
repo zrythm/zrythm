@@ -48,13 +48,7 @@ public:
 
   // ========================================================================
 
-  auto get_end_position_samples (bool end_position_inclusive) const
-  {
-    return static_cast<signed_frame_t> (
-             std::round (length_.time_conversion_functions ().tick_to_samples (
-               position ()->ticks () + length_.get_ticks ())))
-           + (end_position_inclusive ? 0 : -1);
-  }
+  units::sample_t get_end_position_samples (bool end_position_inclusive) const;
 
   /**
    * @brief Returns whether the object is hit by the given position (local
@@ -65,14 +59,8 @@ public:
    * of the object. This is probably always false.
    */
   [[nodicard]] bool
-  is_hit (const signed_frame_t frames, bool object_end_pos_inclusive = false) const
-  {
-    const signed_frame_t obj_start = position ()->samples ();
-    const signed_frame_t obj_end =
-      get_end_position_samples (object_end_pos_inclusive);
-
-    return obj_start <= frames && obj_end >= frames;
-  }
+  is_hit (const units::sample_t frames, bool object_end_pos_inclusive = false)
+    const;
 
   /**
    * @brief Whether the object is hit by the given range.
@@ -86,60 +74,10 @@ public:
    * considered as part of the object (this is probably always false).
    */
   bool is_hit_by_range (
-    std::pair<signed_frame_t, signed_frame_t> global_frames,
-    bool                                      range_start_inclusive = true,
-    bool                                      range_end_inclusive = true,
-    bool object_end_pos_inclusive = false) const
-  {
-    /*
-     * Case 1: Object start is inside range
-     *        |----- Range -----|
-     *                |-- Object --|
-     *          |-- Object --|           // also covers whole object inside
-     * range
-     *
-     * Case 2: Object end is inside range
-     *        |----- Range -----|
-     *     |-- Object --|
-     *
-     * Case 3: Range start is inside object
-     *       |-- Object --|
-     *          |---- Range ----|
-     *        |- Range -|              // also covers whole range inside object
-     *
-     * Case 4: Range end is inside object
-     *            |-- Object --|
-     *       |---- Range ----|
-     */
-
-    /* get adjusted values */
-    const signed_frame_t range_start =
-      range_start_inclusive ? global_frames.first : global_frames.first + 1;
-    const signed_frame_t range_end =
-      range_end_inclusive ? global_frames.second : global_frames.second - 1;
-    const signed_frame_t obj_start = position ()->samples ();
-    const signed_frame_t obj_end =
-      get_end_position_samples (object_end_pos_inclusive);
-
-    // invalid range
-    if (range_start > range_end)
-      return false;
-
-    /* 1. object start is inside range */
-    if (obj_start >= range_start && obj_start <= range_end)
-      return true;
-
-    /* 2. object end is inside range */
-    if (obj_end >= range_start && obj_end <= range_end)
-      return true;
-
-    /* 3. range start is inside object */
-    if (range_start >= obj_start && range_start <= obj_end)
-      return true;
-
-    /* 4. range end is inside object */
-    return (range_end >= obj_start && range_end <= obj_end);
-  }
+    std::pair<units::sample_t, units::sample_t> global_frames,
+    bool                                        range_start_inclusive = true,
+    bool                                        range_end_inclusive = true,
+    bool object_end_pos_inclusive = false) const;
 
 private:
   friend void init_from (

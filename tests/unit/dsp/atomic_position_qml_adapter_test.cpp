@@ -6,6 +6,7 @@
 
 #include <QSignalSpy>
 
+#include "unit/dsp/atomic_position_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -17,16 +18,7 @@ protected:
   {
     // Use custom conversion providers that support negative positions
     // 120 BPM = 960 ticks per beat, 0.5 seconds per beat
-    time_conversion_funcs = std::make_unique<
-      AtomicPosition::
-        TimeConversionFunctions> (AtomicPosition::TimeConversionFunctions{
-      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
-      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
-      .tick_to_samples =
-        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
-      .samples_to_tick =
-        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
-    });
+    time_conversion_funcs = basic_conversion_providers ();
     atomic_pos = std::make_unique<AtomicPosition> (*time_conversion_funcs);
     qml_pos = std::make_unique<AtomicPositionQmlAdapter> (*atomic_pos, true);
   }
@@ -105,7 +97,7 @@ TEST_F (AtomicPositionQmlAdapterTest, ThreadSafetySignals)
   QSignalSpy posSpy (qml_pos.get (), &AtomicPositionQmlAdapter::positionChanged);
 
   // Simulate DSP thread update
-  atomic_pos->set_ticks (960.0);
+  atomic_pos->set_ticks (units::ticks (960.0));
 
   // Should trigger signal emission
   Q_EMIT qml_pos->positionChanged ();

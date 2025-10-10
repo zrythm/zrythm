@@ -27,19 +27,7 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
   icon_name_ = u8"gnome-icon-library-library-music-symbolic";
 
   processor_ = make_track_processor (
-    [this] (
-      const dsp::ITransport &transport, const EngineProcessTimeInfo &time_nfo,
-      dsp::MidiEventVector *                        midi_events,
-      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
-      for (
-        const auto * r : structure::arrangement::template ArrangerObjectOwner<
-          structure::arrangement::ChordRegion>::get_children_view ())
-        {
-          TrackProcessor::fill_events_from_region_rt (
-            transport, time_nfo, midi_events, stereo_ports, *r);
-        }
-    },
-    std::nullopt,
+    std::nullopt, std::nullopt,
     [this] (
       dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
       const EngineProcessTimeInfo &time_nfo) {
@@ -103,24 +91,25 @@ ChordTrack::get_scale_at (size_t index) const -> ScaleObject *
 }
 
 auto
-ChordTrack::get_scale_at_ticks (double timeline_ticks) const -> ScaleObject *
+ChordTrack::get_scale_at_ticks (units::precise_tick_t timeline_ticks) const
+  -> ScaleObject *
 {
   auto view = std::ranges::reverse_view (
     ArrangerObjectOwner<ScaleObject>::get_children_view ());
   auto it = std::ranges::find_if (view, [timeline_ticks] (const auto &scale) {
-    return scale->position ()->ticks () <= timeline_ticks;
+    return units::ticks (scale->position ()->ticks ()) <= timeline_ticks;
   });
 
   return it != view.end () ? (*it) : nullptr;
 }
 
 auto
-ChordTrack::get_chord_at_ticks (double timeline_ticks) const -> ChordObject *
+ChordTrack::get_chord_at_ticks (units::precise_tick_t timeline_ticks) const
+  -> ChordObject *
 {
-  const auto timeline_frames = static_cast<signed_frame_t> (std::round (
-    base_dependencies_.tempo_map_.get_tempo_map ()
-      .tick_to_samples (units::ticks (timeline_ticks))
-      .in (units::sample)));
+  const auto timeline_frames =
+    base_dependencies_.tempo_map_.get_tempo_map ().tick_to_samples_rounded (
+      timeline_ticks);
 
   auto chord_regions_view = arrangement::ArrangerObjectOwner<
     arrangement::ChordRegion>::get_children_view ();
@@ -139,7 +128,7 @@ ChordTrack::get_chord_at_ticks (double timeline_ticks) const -> ChordObject *
   auto chord_objects_view = region->get_children_view () | std::views::reverse;
   auto it =
     std::ranges::find_if (chord_objects_view, [local_frames] (const auto &co) {
-      return co->position ()->samples () <= local_frames;
+      return units::samples (co->position ()->samples ()) <= local_frames;
     });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;

@@ -210,7 +210,8 @@ TEST_F (MidiNoteTest, FriendFunctions)
   // Test get_last_midi_note
   MidiNote * last = get_last_midi_note (notes);
   EXPECT_EQ (last, note2.get ());
-  EXPECT_EQ (last->bounds ()->get_end_position_samples (false), 2299);
+  EXPECT_EQ (
+    last->bounds ()->get_end_position_samples (false), units::samples (2299));
 
   // Test get_pitch_range
   auto pitch_range = get_pitch_range (notes);

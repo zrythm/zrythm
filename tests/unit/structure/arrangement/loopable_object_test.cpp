@@ -11,6 +11,7 @@
 
 #include "helpers/mock_qobject.h"
 
+#include "unit/dsp/atomic_position_helpers.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -21,16 +22,7 @@ class ArrangerObjectLoopRangeTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    time_conversion_funcs = std::make_unique<
-      dsp::AtomicPosition::
-        TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
-      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
-      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
-      .tick_to_samples =
-        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
-      .samples_to_tick =
-        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
-    });
+    time_conversion_funcs = dsp::basic_conversion_providers ();
     start_position =
       std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
@@ -140,9 +132,10 @@ TEST_F (ArrangerObjectLoopRangeTest, LengthCalculations)
   loop_range->loopEndPosition ()->setSamples (3000);
 
   EXPECT_DOUBLE_EQ (
-    loop_range->get_loop_length_in_ticks (),
-    time_conversion_funcs->samples_to_tick (2000));
-  EXPECT_EQ (loop_range->get_loop_length_in_frames (), 2000);
+    loop_range->get_loop_length_in_ticks ().in (units::ticks),
+    time_conversion_funcs->samples_to_tick (units::samples (2000))
+      .in (units::ticks));
+  EXPECT_EQ (loop_range->get_loop_length_in_frames (), units::samples (2000));
 }
 
 // Test position operations
@@ -235,7 +228,9 @@ TEST_F (ArrangerObjectLoopRangeTest, EdgeCases)
   loop_range->setTrackLength (false);
   loop_range->loopStartPosition ()->setSamples (0);
   loop_range->loopEndPosition ()->setSamples (0);
-  EXPECT_EQ (loop_range->get_loop_length_in_frames (), 0);
+  EXPECT_EQ (
+    loop_range->get_loop_length_in_frames (),
+    units::samples (static_cast<int64_t> (0)));
   EXPECT_EQ (loop_range->get_num_loops (false), 0);
 
   // Negative positions (should be clamped to 0)
@@ -249,7 +244,7 @@ TEST_F (ArrangerObjectLoopRangeTest, EdgeCases)
   // Loop start > loop end
   loop_range->loopStartPosition ()->setSamples (3000);
   loop_range->loopEndPosition ()->setSamples (1000);
-  EXPECT_EQ (loop_range->get_loop_length_in_frames (), 0);
+  EXPECT_EQ (loop_range->get_loop_length_in_frames (), units::samples (0));
 
   // Enabling tracking with invalid bounds
   bounds->length ()->setSamples (-100);

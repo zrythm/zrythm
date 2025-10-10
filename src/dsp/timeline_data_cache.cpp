@@ -53,8 +53,8 @@ TimelineDataCache::add_midi_sequence (
     {
       const double event_time = event->message.getTimeStamp ();
       if (
-        event_time < static_cast<double> (start_time)
-        || event_time > static_cast<double> (end_time))
+        event_time < start_time.in<double> (units::samples)
+        || event_time > end_time.in<double> (units::samples))
         {
           throw std::invalid_argument (
             "MIDI sequence contains events outside the specified interval");
@@ -74,7 +74,7 @@ TimelineDataCache::add_midi_sequence (
           validated_sequence.addEvent (
             juce::MidiMessage::noteOff (
               event->message.getChannel (), event->message.getNoteNumber ()),
-            static_cast<double> (end_time));
+            end_time.in<double> (units::samples));
         }
     }
 

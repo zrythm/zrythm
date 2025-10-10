@@ -13,6 +13,7 @@
 #include "structure/arrangement/muteable_object.h"
 #include "structure/arrangement/named_object.h"
 #include "utils/types.h"
+#include "utils/units.h"
 
 #include <QtQmlIntegration>
 
@@ -85,10 +86,10 @@ public:
    * @brief @see @ref is_start_hit_by_range().
    */
   bool is_start_hit_by_range (
-    const signed_frame_t frames_start,
-    const signed_frame_t frames_end,
-    bool                 range_start_inclusive = true,
-    bool                 range_end_inclusive = false) const
+    const units::sample_t frames_start,
+    const units::sample_t frames_end,
+    bool                  range_start_inclusive = true,
+    bool                  range_end_inclusive = false) const
   {
     const auto pos_samples = position_.get_samples ();
     return (range_start_inclusive

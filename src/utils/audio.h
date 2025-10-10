@@ -115,12 +115,12 @@ audio_file_is_silent (const fs::path &filepath);
 int
 get_num_cores ();
 
-class AudioBuffer : public juce::AudioBuffer<sample_t>
+class AudioBuffer : public juce::AudioBuffer<audio_sample_type_t>
 {
 public:
   AudioBuffer () = default;
   AudioBuffer (int num_channels, int num_frames_per_channel)
-      : juce::AudioBuffer<sample_t> (num_channels, num_frames_per_channel)
+      : juce::AudioBuffer<audio_sample_type_t> (num_channels, num_frames_per_channel)
   {
   }
 

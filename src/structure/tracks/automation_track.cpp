@@ -20,13 +20,12 @@ AutomationTrack::AutomationTrack (
       param_id_ (std::move (param_id))
 {
   parameter ()->set_automation_provider (
-    [this] (unsigned_frame_t sample_position) -> std::optional<float> {
+    [this] (auto sample_position) -> std::optional<float> {
       if (get_children_vector ().empty ())
         {
           return std::nullopt;
         }
-      return get_normalized_value (
-        static_cast<signed_frame_t> (sample_position), false);
+      return get_normalized_value (sample_position, false);
     });
 }
 
@@ -56,20 +55,59 @@ AutomationTrack::setRecordMode (AutomationRecordMode record_mode)
 
 // ========================================================================
 
+auto
+AutomationTrack::get_region_before (
+  units::sample_t pos_samples,
+  bool search_only_regions_enclosing_position) const -> AutomationRegion *
+{
+  auto process_regions = [=] (const auto &regions) {
+    if (search_only_regions_enclosing_position)
+      {
+        for (const auto &region : std::views::reverse (regions))
+          {
+            if (get_object_bounds (*region)->is_hit (pos_samples))
+              return region;
+          }
+      }
+    else
+      {
+        AutomationRegion * latest_r{};
+        auto               latest_distance =
+          units::samples (std::numeric_limits<signed_frame_t>::min ());
+        for (const auto &region : std::views::reverse (regions))
+          {
+            auto distance_from_r_end =
+              get_object_bounds (*region)->get_end_position_samples (true)
+              - pos_samples;
+            if (
+              units::samples (region->position ()->samples ()) <= pos_samples
+              && distance_from_r_end > latest_distance)
+              {
+                latest_distance = distance_from_r_end;
+                latest_r = region;
+              }
+          }
+        return latest_r;
+      }
+    return static_cast<AutomationRegion *> (nullptr);
+  };
+
+  return process_regions (get_children_view ());
+}
+
 structure::arrangement::AutomationPoint *
 AutomationTrack::get_automation_point_around (
-  const double position_ticks,
-  double       delta_ticks,
-  bool         search_only_backwards)
+  const units::precise_tick_t position_ticks,
+  units::precise_tick_t       delta_ticks,
+  bool                        search_only_backwards)
 {
   const auto &tempo_map = tempo_map_;
   auto        pos_frames =
-    tempo_map.get_tempo_map ()
-      .tick_to_samples_rounded (units::ticks (position_ticks))
-      .in (units::samples);
+    tempo_map.get_tempo_map ().tick_to_samples_rounded (position_ticks);
   AutomationPoint * ap = get_automation_point_before (pos_frames, true);
   if (
-    (ap != nullptr) && position_ticks - ap->position ()->ticks () <= delta_ticks)
+    (ap != nullptr)
+    && position_ticks - units::ticks (ap->position ()->ticks ()) <= delta_ticks)
     {
       return ap;
     }
@@ -79,15 +117,14 @@ AutomationTrack::get_automation_point_around (
       return nullptr;
     }
 
-  pos_frames =
-    tempo_map.get_tempo_map ()
-      .tick_to_samples_rounded (units::ticks (position_ticks + delta_ticks))
-      .in (units::samples);
+  pos_frames = tempo_map.get_tempo_map ().tick_to_samples_rounded (
+    position_ticks + delta_ticks);
   ap = get_automation_point_before (pos_frames, true);
   if (ap != nullptr)
     {
-      double diff = ap->position ()->ticks () - position_ticks;
-      if (diff >= 0.0)
+      const auto diff =
+        units::ticks (ap->position ()->ticks ()) - position_ticks;
+      if (diff >= units::ticks (0.0))
         return ap;
     }
 
@@ -96,8 +133,8 @@ AutomationTrack::get_automation_point_around (
 
 auto
 AutomationTrack::get_automation_point_before (
-  signed_frame_t timeline_position,
-  bool           search_only_backwards) const -> AutomationPoint *
+  units::sample_t timeline_position,
+  bool            search_only_backwards) const -> AutomationPoint *
 {
   auto * r = get_region_before (timeline_position, search_only_backwards);
 
@@ -109,16 +146,16 @@ AutomationTrack::get_automation_point_before (
   const auto region_end_frames = r->bounds ()->get_end_position_samples (true);
 
   /* if region ends before pos, assume pos is the region's end pos */
-  signed_frame_t local_pos = timeline_frames_to_local (
+  auto local_pos = timeline_frames_to_local (
     *r,
     !search_only_backwards && (region_end_frames < timeline_position)
-      ? region_end_frames - 1
+      ? region_end_frames - units::samples (1)
       : timeline_position,
     true);
 
   for (auto * ap : std::ranges::reverse_view (r->get_children_view ()))
     {
-      if (ap->position ()->samples () <= local_pos)
+      if (units::samples (ap->position ()->samples ()) <= local_pos)
         {
           return ap;
         }
@@ -206,8 +243,8 @@ AutomationTrack::should_be_recording (bool record_aps) const
 
 std::optional<float>
 AutomationTrack::get_normalized_value (
-  signed_frame_t timeline_frames,
-  bool           search_only_regions_enclosing_position) const
+  units::sample_t timeline_frames,
+  bool            search_only_regions_enclosing_position) const
 {
   auto ap = get_automation_point_before (
     timeline_frames, search_only_regions_enclosing_position);
@@ -225,11 +262,11 @@ AutomationTrack::get_normalized_value (
   /* if region ends before pos, assume pos is the region's end pos */
   const auto region_end_position =
     region->bounds ()->get_end_position_samples (true);
-  signed_frame_t localp = timeline_frames_to_local (
+  auto localp = timeline_frames_to_local (
     *region,
     !search_only_regions_enclosing_position
         && (region_end_position < timeline_frames)
-      ? region_end_position - 1
+      ? region_end_position - units::samples (1)
       : timeline_frames,
     true);
 
@@ -245,23 +282,25 @@ AutomationTrack::get_normalized_value (
   float cur_next_diff = std::abs (ap->value () - next_ap->value ());
 
   /* ratio of how far in we are in the curve */
-  signed_frame_t ap_frames = ap->position ()->samples ();
-  signed_frame_t next_ap_frames = next_ap->position ()->samples ();
-  double         ratio = 1.0;
-  signed_frame_t numerator = localp - ap_frames;
-  signed_frame_t denominator = next_ap_frames - ap_frames;
-  if (numerator == 0)
+  auto   ap_frames = units::samples (ap->position ()->samples ());
+  auto   next_ap_frames = units::samples (next_ap->position ()->samples ());
+  double ratio = 1.0;
+  auto   numerator = localp - ap_frames;
+  auto   denominator = next_ap_frames - ap_frames;
+  if (numerator == units::samples (0))
     {
       ratio = 0.0;
     }
-  else if (denominator == 0) [[unlikely]]
+  else if (denominator == units::samples (0)) [[unlikely]]
     {
       z_warning ("denominator is 0. this should never happen");
       ratio = 1.0;
     }
   else
     {
-      ratio = (double) numerator / (double) denominator;
+      ratio =
+        numerator.in<double> (units::samples)
+        / denominator.in<double> (units::samples);
     }
   z_return_val_if_fail (ratio >= 0, 0.f);
 

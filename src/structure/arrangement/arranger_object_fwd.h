@@ -70,30 +70,30 @@ using ArrangerObjectUuid = utils::UuidIdentifiableObject<ArrangerObject>::Uuid;
  * @return The local frames.
  */
 template <TimelineObject ObjectT>
-[[gnu::hot]] signed_frame_t
+[[gnu::hot]] units::sample_t
 timeline_frames_to_local (
-  const ObjectT &obj,
-  signed_frame_t timeline_frames,
-  bool           normalize)
+  const ObjectT  &obj,
+  units::sample_t timeline_frames,
+  bool            normalize)
 {
-  const auto object_position_frames = obj.position ()->samples ();
+  const auto object_position_frames =
+    units::samples (obj.position ()->samples ());
   if constexpr (RegionObject<ObjectT>)
     {
       if (normalize)
         {
-          signed_frame_t diff_frames = timeline_frames - object_position_frames;
+          auto diff_frames = timeline_frames - object_position_frames;
 
           /* special case: timeline frames is exactly at the end of the region */
           if (timeline_frames == obj.bounds ()->get_end_position_samples (true))
             return diff_frames;
 
-          const signed_frame_t loop_end_frames =
-            obj.loopRange ()->loopEndPosition ()->samples ();
-          const signed_frame_t clip_start_frames =
-            obj.loopRange ()->clipStartPosition ()->samples ();
-          const signed_frame_t loop_size =
-            obj.loopRange ()->get_loop_length_in_frames ();
-          z_return_val_if_fail_cmp (loop_size, >, 0, 0);
+          const auto loop_end_frames =
+            units::samples (obj.loopRange ()->loopEndPosition ()->samples ());
+          const auto clip_start_frames =
+            units::samples (obj.loopRange ()->clipStartPosition ()->samples ());
+          const auto loop_size = obj.loopRange ()->get_loop_length_in_frames ();
+          assert (loop_size > units::samples (0));
 
           diff_frames += clip_start_frames;
 

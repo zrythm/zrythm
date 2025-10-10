@@ -56,8 +56,10 @@ TEST_F (TimelineDataCacheTest, InitialState)
 TEST_F (TimelineDataCacheTest, ClearMethod)
 {
   // Add a MIDI sequence first
-  cache->add_midi_sequence ({ 0, 100 }, sequence);
-  cache->add_audio_region ({ 0, 256 }, audio_buffer);
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, sequence);
+  cache->add_audio_region (
+    { units::samples (0), units::samples (256) }, audio_buffer);
   cache->finalize_changes ();
 
   // Verify sequences were added
@@ -75,7 +77,8 @@ TEST_F (TimelineDataCacheTest, ClearMethod)
 TEST_F (TimelineDataCacheTest, AddSequenceAndFinalize)
 {
   // Add MIDI sequence and finalize
-  cache->add_midi_sequence ({ 0, 100 }, sequence);
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, sequence);
   cache->finalize_changes ();
 
   // Should have 4 events (2 note-ons + 2 note-offs)
@@ -85,7 +88,8 @@ TEST_F (TimelineDataCacheTest, AddSequenceAndFinalize)
 TEST_F (TimelineDataCacheTest, AddAudioRegionAndFinalize)
 {
   // Add audio region and finalize
-  cache->add_audio_region ({ 0, 256 }, audio_buffer);
+  cache->add_audio_region (
+    { units::samples (0), units::samples (256) }, audio_buffer);
   cache->finalize_changes ();
 
   // Should have one audio region
@@ -94,8 +98,8 @@ TEST_F (TimelineDataCacheTest, AddAudioRegionAndFinalize)
 
   // Verify the audio region properties
   const auto &regions = cache->get_audio_regions ();
-  EXPECT_EQ (regions[0].start_sample, 0);
-  EXPECT_EQ (regions[0].end_sample, 256);
+  EXPECT_EQ (regions[0].start_sample, units::samples (0));
+  EXPECT_EQ (regions[0].end_sample, units::samples (256));
   EXPECT_EQ (regions[0].audio_buffer.getNumChannels (), 2);
   EXPECT_EQ (regions[0].audio_buffer.getNumSamples (), 256);
 }
@@ -112,14 +116,19 @@ TEST_F (TimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
   seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 175.0);
 
   // Add sequences that don't overlap with removal interval
-  cache->add_midi_sequence ({ 0, 50 }, seq1);    // Before removal interval
-  cache->add_midi_sequence ({ 150, 200 }, seq2); // After removal interval
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (50) },
+    seq1); // Before removal interval
+  cache->add_midi_sequence (
+    { units::samples (150), units::samples (200) },
+    seq2); // After removal interval
   cache->finalize_changes ();
 
   EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
 
   // Remove sequences overlapping with [60, 140] - should remove nothing
-  cache->remove_sequences_matching_interval ({ 60, 140 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (60), units::samples (140) });
   cache->finalize_changes ();
 
   // Both sequences should remain
@@ -147,18 +156,23 @@ TEST_F (TimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverlap)
 
   // Add sequences with various overlaps
   cache->add_midi_sequence (
-    { 0, 100 }, seq1); // Overlaps start of removal interval
+    { units::samples (0), units::samples (100) },
+    seq1); // Overlaps start of removal interval
   cache->add_midi_sequence (
-    { 80, 180 }, seq2); // Overlaps middle of removal interval
+    { units::samples (80), units::samples (180) },
+    seq2); // Overlaps middle of removal interval
   cache->add_midi_sequence (
-    { 150, 250 }, seq3); // Overlaps end of removal interval
-  cache->add_midi_sequence ({ 200, 300 }, seq4); // No overlap
+    { units::samples (150), units::samples (250) },
+    seq3); // Overlaps end of removal interval
+  cache->add_midi_sequence (
+    { units::samples (200), units::samples (300) }, seq4); // No overlap
   cache->finalize_changes ();
 
   EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 8);
 
   // Remove sequences overlapping with [90, 160]
-  cache->remove_sequences_matching_interval ({ 90, 160 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (90), units::samples (160) });
   cache->finalize_changes ();
 
   // Only the non-overlapping sequence should remain
@@ -181,15 +195,19 @@ TEST_F (TimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContained)
   seq3.addEvent (juce::MidiMessage::noteOff (1, 67), 140.0);
 
   // Add sequences where one is fully contained within removal interval
-  cache->add_midi_sequence ({ 0, 50 }, seq1);    // Before removal
-  cache->add_midi_sequence ({ 60, 90 }, seq2);   // Fully within removal
-  cache->add_midi_sequence ({ 100, 150 }, seq3); // After removal
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (50) }, seq1); // Before removal
+  cache->add_midi_sequence (
+    { units::samples (60), units::samples (90) }, seq2); // Fully within removal
+  cache->add_midi_sequence (
+    { units::samples (100), units::samples (150) }, seq3); // After removal
   cache->finalize_changes ();
 
   EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 6);
 
   // Remove sequences overlapping with [60, 99] - avoid boundary conflicts
-  cache->remove_sequences_matching_interval ({ 60, 99 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (60), units::samples (99) });
   cache->finalize_changes ();
 
   // Only sequences before and after should remain (sequence at {60,90} is
@@ -208,7 +226,8 @@ TEST_F (TimelineDataCacheTest, EventsOutsideIntervalValidation)
 
   // Should throw exception when adding sequence with events outside interval
   EXPECT_THROW (
-    cache->add_midi_sequence ({ 0, 100 }, out_of_bounds_sequence),
+    cache->add_midi_sequence (
+      { units::samples (0), units::samples (100) }, out_of_bounds_sequence),
     std::invalid_argument);
 }
 
@@ -221,7 +240,8 @@ TEST_F (TimelineDataCacheTest, UnendedNotesValidation)
   // Intentionally missing note-off events
 
   // Add sequence with interval [0, 100]
-  cache->add_midi_sequence ({ 0, 100 }, unended_sequence);
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, unended_sequence);
   cache->finalize_changes ();
 
   const auto &merged = cache->get_midi_events ();
@@ -259,15 +279,17 @@ TEST_F (TimelineDataCacheTest, MultipleAddRemoveOperations)
   seq3.addEvent (juce::MidiMessage::noteOff (1, 67), 190.0);
 
   // Add multiple overlapping sequences
-  cache->add_midi_sequence ({ 0, 100 }, seq1);
-  cache->add_midi_sequence ({ 50, 150 }, seq2);
-  cache->add_midi_sequence ({ 100, 200 }, seq3);
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
+  cache->add_midi_sequence ({ units::samples (50), units::samples (150) }, seq2);
+  cache->add_midi_sequence (
+    { units::samples (100), units::samples (200) }, seq3);
   cache->finalize_changes ();
 
   EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 6);
 
   // Remove middle sequence by targeting its interval
-  cache->remove_sequences_matching_interval ({ 50, 149 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (50), units::samples (149) });
   cache->finalize_changes ();
 
   // All sequences should be removed (all touch boundaries)
@@ -278,7 +300,8 @@ TEST_F (TimelineDataCacheTest, EmptyCacheOperations)
 {
   // Operations on empty cache should not crash
   cache->clear ();
-  cache->remove_sequences_matching_interval ({ 0, 100 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (0), units::samples (100) });
   cache->finalize_changes ();
 
   EXPECT_TRUE (cache->get_midi_events ().getNumEvents () == 0);
@@ -286,7 +309,8 @@ TEST_F (TimelineDataCacheTest, EmptyCacheOperations)
 
 TEST_F (TimelineDataCacheTest, ConstCorrectness)
 {
-  cache->add_midi_sequence ({ 0, 100 }, sequence);
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, sequence);
   cache->finalize_changes ();
 
   // cached_events() should return const reference
@@ -316,15 +340,17 @@ TEST_F (TimelineDataCacheTest, AddMultipleAudioRegions)
   buffer2.getWritePointer (0)[0] = 2.0f; // Mark buffer2
 
   // Add regions at different positions
-  cache->add_audio_region ({ 0, 128 }, buffer1);
-  cache->add_audio_region ({ 256, 512 }, buffer2);
+  cache->add_audio_region (
+    { units::samples (0), units::samples (128) }, buffer1);
+  cache->add_audio_region (
+    { units::samples (256), units::samples (512) }, buffer2);
   cache->finalize_changes ();
 
   // Should have two regions sorted by start position
   const auto &regions = cache->get_audio_regions ();
   EXPECT_EQ (regions.size (), 2);
-  EXPECT_EQ (regions[0].start_sample, 0);
-  EXPECT_EQ (regions[1].start_sample, 256);
+  EXPECT_EQ (regions[0].start_sample, units::samples (0));
+  EXPECT_EQ (regions[1].start_sample, units::samples (256));
 
   // Verify the buffers are independent copies
   EXPECT_EQ (regions[0].audio_buffer.getReadPointer (0)[0], 1.0f);
@@ -343,29 +369,38 @@ TEST_F (TimelineDataCacheTest, RemoveAudioRegionsMatchingInterval)
   buffer3.clear ();
 
   // Add regions at different positions
-  cache->add_audio_region ({ 0, 128 }, buffer1);   // Before removal interval
-  cache->add_audio_region ({ 200, 328 }, buffer2); // Inside removal interval
-  cache->add_audio_region ({ 400, 528 }, buffer3); // After removal interval
+  cache->add_audio_region (
+    { units::samples (0), units::samples (128) },
+    buffer1); // Before removal interval
+  cache->add_audio_region (
+    { units::samples (200), units::samples (328) },
+    buffer2); // Inside removal interval
+  cache->add_audio_region (
+    { units::samples (400), units::samples (528) },
+    buffer3); // After removal interval
   cache->finalize_changes ();
 
   EXPECT_EQ (cache->get_audio_regions ().size (), 3);
 
   // Remove regions overlapping with [150, 350]
-  cache->remove_sequences_matching_interval ({ 150, 350 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (150), units::samples (350) });
   cache->finalize_changes ();
 
   // Should have 2 regions remaining (before and after)
   const auto &regions = cache->get_audio_regions ();
   EXPECT_EQ (regions.size (), 2);
-  EXPECT_EQ (regions[0].start_sample, 0);
-  EXPECT_EQ (regions[1].start_sample, 400);
+  EXPECT_EQ (regions[0].start_sample, units::samples (0));
+  EXPECT_EQ (regions[1].start_sample, units::samples (400));
 }
 
 TEST_F (TimelineDataCacheTest, MixedMidiAndAudioOperations)
 {
   // Add both MIDI and audio data at non-overlapping intervals
-  cache->add_midi_sequence ({ 0, 100 }, sequence);
-  cache->add_audio_region ({ 200, 456 }, audio_buffer);
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, sequence);
+  cache->add_audio_region (
+    { units::samples (200), units::samples (456) }, audio_buffer);
   cache->finalize_changes ();
 
   // Verify both types are present
@@ -375,7 +410,8 @@ TEST_F (TimelineDataCacheTest, MixedMidiAndAudioOperations)
   EXPECT_EQ (cache->get_audio_regions ().size (), 1);
 
   // Remove only the audio region (interval doesn't overlap MIDI)
-  cache->remove_sequences_matching_interval ({ 200, 456 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (200), units::samples (456) });
   cache->finalize_changes ();
 
   // MIDI should remain, audio should be gone
@@ -383,7 +419,8 @@ TEST_F (TimelineDataCacheTest, MixedMidiAndAudioOperations)
   EXPECT_FALSE (cache->has_audio_regions ());
 
   // Remove only the MIDI sequence (interval doesn't overlap remaining audio)
-  cache->remove_sequences_matching_interval ({ 0, 100 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (0), units::samples (100) });
   cache->finalize_changes ();
 
   // Both should be gone
@@ -394,8 +431,10 @@ TEST_F (TimelineDataCacheTest, MixedMidiAndAudioOperations)
 TEST_F (TimelineDataCacheTest, MixedMidiAndAudioOperations_OverlappingRemoval)
 {
   // Add both MIDI and audio data
-  cache->add_midi_sequence ({ 0, 100 }, sequence);
-  cache->add_audio_region ({ 50, 306 }, audio_buffer);
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, sequence);
+  cache->add_audio_region (
+    { units::samples (50), units::samples (306) }, audio_buffer);
   cache->finalize_changes ();
 
   // Verify both types are present
@@ -405,7 +444,8 @@ TEST_F (TimelineDataCacheTest, MixedMidiAndAudioOperations_OverlappingRemoval)
   EXPECT_EQ (cache->get_audio_regions ().size (), 1);
 
   // Remove both MIDI and audio with overlapping interval
-  cache->remove_sequences_matching_interval ({ 25, 200 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (25), units::samples (200) });
   cache->finalize_changes ();
 
   // Both should be gone because the interval overlaps both
@@ -416,7 +456,8 @@ TEST_F (TimelineDataCacheTest, MixedMidiAndAudioOperations_OverlappingRemoval)
 TEST_F (TimelineDataCacheTest, AudioBufferIndependence)
 {
   // Add an audio buffer
-  cache->add_audio_region ({ 0, 256 }, audio_buffer);
+  cache->add_audio_region (
+    { units::samples (0), units::samples (256) }, audio_buffer);
   cache->finalize_changes ();
 
   // Modify the original buffer
@@ -445,17 +486,20 @@ TEST_F (TimelineDataCacheTest, AudioRegionSorting)
   buffer3.clear ();
 
   // Add regions in non-sequential order
-  cache->add_audio_region ({ 300, 428 }, buffer1); // Last
-  cache->add_audio_region ({ 100, 228 }, buffer2); // First
-  cache->add_audio_region ({ 200, 328 }, buffer3); // Middle
+  cache->add_audio_region (
+    { units::samples (300), units::samples (428) }, buffer1); // Last
+  cache->add_audio_region (
+    { units::samples (100), units::samples (228) }, buffer2); // First
+  cache->add_audio_region (
+    { units::samples (200), units::samples (328) }, buffer3); // Middle
   cache->finalize_changes ();
 
   // Verify regions are sorted by start position
   const auto &regions = cache->get_audio_regions ();
   EXPECT_EQ (regions.size (), 3);
-  EXPECT_EQ (regions[0].start_sample, 100);
-  EXPECT_EQ (regions[1].start_sample, 200);
-  EXPECT_EQ (regions[2].start_sample, 300);
+  EXPECT_EQ (regions[0].start_sample, units::samples (100));
+  EXPECT_EQ (regions[1].start_sample, units::samples (200));
+  EXPECT_EQ (regions[2].start_sample, units::samples (300));
 }
 
 TEST_F (TimelineDataCacheTest, EmptyAudioOperations)
@@ -464,7 +508,8 @@ TEST_F (TimelineDataCacheTest, EmptyAudioOperations)
   EXPECT_FALSE (cache->has_audio_regions ());
   EXPECT_EQ (cache->get_audio_regions ().size (), 0);
 
-  cache->remove_sequences_matching_interval ({ 0, 100 });
+  cache->remove_sequences_matching_interval (
+    { units::samples (0), units::samples (100) });
   cache->finalize_changes ();
 
   EXPECT_FALSE (cache->has_audio_regions ());

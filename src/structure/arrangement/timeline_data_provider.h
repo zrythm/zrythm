@@ -37,19 +37,22 @@ public:
     const dsp::TempoMap             &tempo_map,
     RangeOf<const RegionType *> auto regions,
     utils::ExpandableTickRange       affected_range)
+    requires std::is_same_v<RegionType, arrangement::MidiRegion>
+             || std::is_same_v<RegionType, arrangement::AudioRegion>
+             || std::is_same_v<RegionType, arrangement::ChordRegion>
   {
-    const auto sample_interval = [&affected_range, &tempo_map] () {
+    const auto sample_interval = [&affected_range, &tempo_map] ()
+      -> std::pair<units::sample_t, units::sample_t> {
       if (!affected_range.is_full_content ())
         {
           const auto tick_range = affected_range.range ().value ();
           return std::make_pair (
-            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.first))
-              .in (units::samples),
-            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.second))
-              .in (units::samples));
+            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.first)),
+            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.second)));
         }
       return std::make_pair (
-        static_cast<int64_t> (0), std::numeric_limits<int64_t>::max ());
+        units::samples (static_cast<int64_t> (0)),
+        units::samples (std::numeric_limits<int64_t>::max ()));
     }();
 
     // Remove existing caches at given interval (or all caches if no interval
@@ -72,51 +75,20 @@ public:
         return region->bounds ()->is_hit_by_range (sample_interval);
       };
 
-    const auto cache_region = [this, &tempo_map] (const auto * r) {
-      if constexpr (std::is_same_v<RegionType, arrangement::MidiRegion>)
+    const auto cache_region = [&] (const auto * r) {
+      // Skip muted regions
+      if (r->mute ()->muted ())
+        return;
+
+      if constexpr (
+        std::is_same_v<RegionType, arrangement::MidiRegion>
+        || std::is_same_v<RegionType, arrangement::ChordRegion>)
         {
-          // MIDI region processing
-          juce::MidiMessageSequence region_seq;
-
-          // Serialize region (timings in ticks)
-          arrangement::RegionSerializer::serialize_to_sequence (
-            *r, region_seq, std::nullopt, std::nullopt, true, true);
-
-          // Convert timings to samples
-          for (auto &event : region_seq)
-            {
-              event->message.setTimeStamp (
-                static_cast<double> (
-                  tempo_map
-                    .tick_to_samples_rounded (
-                      units::ticks (event->message.getTimeStamp ()))
-                    .in (units::samples)));
-            }
-
-          // Add to cache
-          unified_playback_cache_.add_midi_sequence (
-            std::make_pair (
-              r->position ()->samples (),
-              r->bounds ()->get_end_position_samples (true)),
-            region_seq);
+          cache_midi_region (*r, tempo_map);
         }
       else if constexpr (std::is_same_v<RegionType, arrangement::AudioRegion>)
         {
-          // Avoid unused warnings...
-          (void) tempo_map;
-
-          // Audio region processing
-          auto audio_buffer = std::make_unique<juce::AudioSampleBuffer> ();
-
-          // Serialize the audio region
-          arrangement::RegionSerializer::serialize_to_buffer (*r, *audio_buffer);
-
-          // Add to cache with proper timing
-          unified_playback_cache_.add_audio_region (
-            std::make_pair (
-              r->position ()->samples (),
-              r->bounds ()->get_end_position_samples (true)),
-            *audio_buffer);
+          cache_audio_region (*r);
         }
     };
 
@@ -128,7 +100,9 @@ public:
     // Finalize
     unified_playback_cache_.finalize_changes ();
 
-    if constexpr (std::is_same_v<RegionType, arrangement::MidiRegion>)
+    if constexpr (
+      std::is_same_v<RegionType, arrangement::MidiRegion>
+      || std::is_same_v<RegionType, arrangement::ChordRegion>)
       {
         set_midi_events (unified_playback_cache_.get_midi_events ());
       }
@@ -155,6 +129,25 @@ public:
   {
     generate_events<arrangement::MidiRegion> (
       tempo_map, midi_regions, affected_range);
+  }
+
+  /**
+   * @brief Generate the MIDI event sequence to be used during realtime
+   * processing.
+   *
+   * To be called as needed from the UI thread when a new cache is requested.
+   *
+   * @param tempo_map The tempo map for timing conversion.
+   * @param chord_regions The Chord regions to process.
+   * @param affected_range The range of ticks to process.
+   */
+  void generate_midi_events (
+    const dsp::TempoMap                           &tempo_map,
+    RangeOf<const arrangement::ChordRegion *> auto chord_regions,
+    utils::ExpandableTickRange                     affected_range)
+  {
+    generate_events<arrangement::ChordRegion> (
+      tempo_map, chord_regions, affected_range);
   }
 
   /**
@@ -199,6 +192,58 @@ public:
     std::span<float>             output_right);
 
 private:
+  /**
+   * Caches a MIDI-like region (MidiRegion or ChordRegion) to the unified cache.
+   */
+  template <typename MidiRegionType>
+  void
+  cache_midi_region (const MidiRegionType &region, const dsp::TempoMap &tempo_map)
+  {
+    // MIDI region processing
+    juce::MidiMessageSequence region_seq;
+
+    // Serialize region (timings in ticks)
+    arrangement::RegionSerializer::serialize_to_sequence (
+      region, region_seq, std::nullopt, std::nullopt, true, true);
+
+    // Convert timings to samples
+    for (auto &event : region_seq)
+      {
+        event->message.setTimeStamp (
+          static_cast<double> (
+            tempo_map
+              .tick_to_samples_rounded (
+                units::ticks (event->message.getTimeStamp ()))
+              .in (units::samples)));
+      }
+
+    // Add to cache
+    unified_playback_cache_.add_midi_sequence (
+      std::make_pair (
+        units::samples (region.position ()->samples ()),
+        region.bounds ()->get_end_position_samples (true)),
+      region_seq);
+  }
+
+  /**
+   * Caches an AudioRegion to the unified cache.
+   */
+  void cache_audio_region (const arrangement::AudioRegion &region)
+  {
+    // Audio region processing
+    auto audio_buffer = std::make_unique<juce::AudioSampleBuffer> ();
+
+    // Serialize the audio region
+    arrangement::RegionSerializer::serialize_to_buffer (region, *audio_buffer);
+
+    // Add to cache with proper timing
+    unified_playback_cache_.add_audio_region (
+      std::make_pair (
+        units::samples (region.position ()->samples ()),
+        region.bounds ()->get_end_position_samples (true)),
+      *audio_buffer);
+  }
+
   /**
    * @brief Set the MIDI events for realtime access.
    *

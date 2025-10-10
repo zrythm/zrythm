@@ -62,13 +62,13 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
 int
 ArrangerObjectLoopRange::get_num_loops (bool count_incomplete) const
 {
-  const auto full_size = length ()->samples ();
-  const auto loop_start =
-    loopStartPosition ()->samples () - clipStartPosition ()->samples ();
+  const auto full_size = units::samples (length ()->samples ());
+  const auto loop_start = units::samples (
+    loopStartPosition ()->samples () - clipStartPosition ()->samples ());
   const auto loop_size = get_loop_length_in_frames ();
 
   // Special case
-  if (loop_size == 0) [[unlikely]]
+  if (loop_size == units::samples (0)) [[unlikely]]
     {
       return 0;
     }
@@ -78,7 +78,8 @@ ArrangerObjectLoopRange::get_num_loops (bool count_incomplete) const
 
   // Add 1 if we want to count incomplete loops
   const auto add_one =
-    (count_incomplete && (full_size - loop_start) % loop_size != 0);
+    (count_incomplete
+     && (full_size - loop_start) % loop_size != units::samples (0));
   return static_cast<int> (full_loops) + (add_one ? 1 : 0);
 }
 }

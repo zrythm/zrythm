@@ -63,8 +63,8 @@ TEST (MathTest, DbConversion)
 
 TEST (MathTest, RmsCalculation)
 {
-  const nframes_t nframes = 4;
-  sample_t        buf[nframes] = { 0.5f, -0.5f, 0.5f, -0.5f };
+  const nframes_t     nframes = 4;
+  audio_sample_type_t buf[nframes] = { 0.5f, -0.5f, 0.5f, -0.5f };
 
   float rms_amp = calculate_rms_amp (buf, nframes);
   EXPECT_NEAR (rms_amp, 0.5f, 0.001f);

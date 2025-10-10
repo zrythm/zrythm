@@ -159,26 +159,6 @@ TrackLaneList::moveLane (size_t from_index, size_t to_index)
 // ========================================================================
 
 void
-TrackLaneList::fill_events_callback (
-  const dsp::ITransport                        &transport,
-  const EngineProcessTimeInfo                  &time_nfo,
-  dsp::MidiEventVector *                        midi_events,
-  std::optional<TrackProcessor::StereoPortPair> stereo_ports)
-{
-  for (const auto &lane : lanes ())
-    {
-      for (
-        const auto * r :
-        lane->arrangement::ArrangerObjectOwner<
-          arrangement::AudioRegion>::get_children_view ())
-        {
-          TrackProcessor::fill_events_from_region_rt (
-            transport, time_nfo, midi_events, stereo_ports, *r);
-        }
-    }
-}
-
-void
 TrackLaneList::create_missing_lanes (size_t index)
 {
   while ((index + 2) > lanes_.size ())

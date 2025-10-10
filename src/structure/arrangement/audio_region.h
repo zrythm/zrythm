@@ -101,18 +101,6 @@ public:
 
   juce::PositionableAudioSource &get_audio_source () const;
 
-  /**
-   * Fills audio data from the region.
-   *
-   * @note The caller already splits calls to this function at each sub-loop
-   * inside the region, so region loop related logic is not needed.
-   *
-   * @param stereo_output Buffers to fill.
-   */
-  [[gnu::hot]] void fill_stereo_ports (
-    const EngineProcessTimeInfo                  &time_nfo,
-    std::pair<std::span<float>, std::span<float>> stereo_output) const;
-
   // ==========================================================================
   // Playback caches
   // ==========================================================================

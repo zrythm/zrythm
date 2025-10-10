@@ -106,12 +106,17 @@ Zrythm makes extensive use of modern C++ features:
 - Use ranges (including `std::views::iota`) instead of C-style for-loops
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 
+### Unit Safety
+
+**Strong Unit Type Usage Guidelines:**
+- Prefer `au::max`, `au::min`, etc., over the `std` alternatives when the arguments are unit types
+
 ### Audio Processing
 
 **DSP Code Guidelines:**
-- Use SIMD optimizations where possible
-- Prefer real-time safe operations
-- Use JUCE audio buffers and processing chains
+- Use SIMD-optimized float range operations from [here](src/utils/dsp.h) where possible
+- Prefer real-time safe operations (avoid allocations, mutexes or other blocking code in audio thread hot paths)
+- Use JUCE audio and MIDI buffer classes where it makes sense
 - Implement proper thread safety
 
 ### Qt/QML Integration
@@ -177,6 +182,10 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
 
 ## Common Tasks for AI Agents
+
+### Searching Issues
+
+1. **Use the Gitlab MCP server tools** with project ID 26
 
 ### Adding New Features
 

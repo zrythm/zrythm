@@ -11,6 +11,7 @@ namespace zrythm::structure::arrangement
 {
 class MidiRegion;
 class AudioRegion;
+class ChordRegion;
 
 /**
  * @brief A class that converts region data to serialized formats.
@@ -43,6 +44,31 @@ public:
     bool                       as_played = true)
   {
     serialize_midi_region (
+      region, events, start, end, add_region_start, as_played);
+  }
+
+  /**
+   * Serializes a Chord region to a MIDI message sequence.
+   *
+   * @note Event timings will be set in ticks.
+   *
+   * @param region The Chord region to serialize
+   * @param events Output MIDI message sequence
+   * @param start Optional timeline start position in ticks
+   * @param end Optional timeline end position in ticks
+   * @param add_region_start Add region start offset to positions
+   * @param as_played Serialize as it would be played in the timeline (with
+   * loops and clip start)
+   */
+  static void serialize_to_sequence (
+    const ChordRegion         &region,
+    juce::MidiMessageSequence &events,
+    std::optional<double>      start = std::nullopt,
+    std::optional<double>      end = std::nullopt,
+    bool                       add_region_start = true,
+    bool                       as_played = true)
+  {
+    serialize_chord_region (
       region, events, start, end, add_region_start, as_played);
   }
 
@@ -110,6 +136,24 @@ private:
     int                      builtin_fade_frames);
 
   /**
+   * Serializes a Chord region to a MIDI message sequence.
+   *
+   * @param region The Chord region to serialize
+   * @param events Output MIDI message sequence
+   * @param start Optional timeline start position in ticks
+   * @param end Optional timeline end position in ticks
+   * @param add_region_start Add region start offset to positions
+   * @param as_played Serialize as it would be played in the timeline
+   */
+  static void serialize_chord_region (
+    const ChordRegion         &region,
+    juce::MidiMessageSequence &events,
+    std::optional<double>      start,
+    std::optional<double>      end,
+    bool                       add_region_start,
+    bool                       as_played);
+
+  /**
    * Processes a single MIDI note across all loop iterations.
    */
   static void process_midi_note (
@@ -120,6 +164,43 @@ private:
     std::optional<units::precise_tick_t> end,
     bool                                 as_played,
     juce::MidiMessageSequence           &events);
+
+  /**
+   * Processes a single chord object across all loop iterations.
+   */
+  static void process_chord_object (
+    const arrangement::ChordObject      &chord_obj,
+    const LoopParameters                &loop_params,
+    units::precise_tick_t                region_start_offset,
+    std::optional<units::precise_tick_t> start,
+    std::optional<units::precise_tick_t> end,
+    bool                                 as_played,
+    juce::MidiMessageSequence           &events);
+
+  /**
+   * Processes a single arranger object across all loop iterations.
+   *
+   * @tparam ObjectType The type of arranger object (MidiNote or ChordObject)
+   * @tparam EventGenerator Function that generates MIDI events for the object
+   * @param obj The arranger object to process
+   * @param loop_params Loop parameters for the region
+   * @param region_start_offset Offset to add to positions for global timeline
+   * @param start Optional start position constraint
+   * @param end Optional end position constraint
+   * @param as_played Whether to process as played (with loops)
+   * @param events Output MIDI message sequence
+   * @param event_generator Function that generates events for the object
+   */
+  template <typename ObjectType, typename EventGenerator>
+  static void process_arranger_object (
+    const ObjectType                    &obj,
+    const LoopParameters                &loop_params,
+    units::precise_tick_t                region_start_offset,
+    std::optional<units::precise_tick_t> start,
+    std::optional<units::precise_tick_t> end,
+    bool                                 as_played,
+    juce::MidiMessageSequence           &events,
+    EventGenerator                       event_generator);
 
   /**
    * Processes a single audio loop iteration.

@@ -67,13 +67,13 @@ public:
    * Returns the ChordObject at the given Position
    * in the TimelineArranger.
    */
-  ChordObject * get_chord_at_ticks (double timeline_ticks) const;
+  ChordObject * get_chord_at_ticks (units::precise_tick_t timeline_ticks) const;
 
   /**
    * Returns the ScaleObject at the given Position
    * in the TimelineArranger.
    */
-  ScaleObject * get_scale_at_ticks (double timeline_ticks) const;
+  ScaleObject * get_scale_at_ticks (units::precise_tick_t timeline_ticks) const;
 
   friend void init_from (
     ChordTrack            &obj,

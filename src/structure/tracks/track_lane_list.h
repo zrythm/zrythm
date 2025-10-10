@@ -151,12 +151,6 @@ public:
    */
   void remove_empty_last_lanes ();
 
-  [[deprecated]] void fill_events_callback (
-    const dsp::ITransport                        &transport,
-    const EngineProcessTimeInfo                  &time_nfo,
-    dsp::MidiEventVector *                        midi_events,
-    std::optional<TrackProcessor::StereoPortPair> stereo_ports);
-
 private:
   static constexpr auto             kLanesKey = "lanes"sv;
   static constexpr std::string_view kLanesVisibleKey = "lanesVisible";

@@ -94,39 +94,51 @@ TEST_F (ArrangerObjectTest, IsStartHitByRange)
   obj->position ()->setSamples (1000);
 
   // Test inclusive start, exclusive end (default)
-  EXPECT_TRUE (obj->is_start_hit_by_range (1000, 2000));  // exact start
-  EXPECT_TRUE (obj->is_start_hit_by_range (500, 1500));   // within range
-  EXPECT_FALSE (obj->is_start_hit_by_range (1001, 2000)); // just after start
-  EXPECT_FALSE (obj->is_start_hit_by_range (2000, 3000)); // after range
-  EXPECT_FALSE (obj->is_start_hit_by_range (0, 999));     // before range
+  EXPECT_TRUE (obj->is_start_hit_by_range (
+    units::samples (1000), units::samples (2000))); // exact start
+  EXPECT_TRUE (obj->is_start_hit_by_range (
+    units::samples (500), units::samples (1500))); // within range
+  EXPECT_FALSE (obj->is_start_hit_by_range (
+    units::samples (1001), units::samples (2000))); // just after start
+  EXPECT_FALSE (obj->is_start_hit_by_range (
+    units::samples (2000), units::samples (3000))); // after range
+  EXPECT_FALSE (obj->is_start_hit_by_range (
+    units::samples (0), units::samples (999))); // before range
 
   // Test exclusive start
-  EXPECT_FALSE (
-    obj->is_start_hit_by_range (1000, 2000, false)); // exact start (excluded)
-  EXPECT_TRUE (
-    obj->is_start_hit_by_range (999, 2000, false)); // after exclusive start
+  EXPECT_FALSE (obj->is_start_hit_by_range (
+    units::samples (1000), units::samples (2000),
+    false)); // exact start (excluded)
+  EXPECT_TRUE (obj->is_start_hit_by_range (
+    units::samples (999), units::samples (2000),
+    false)); // after exclusive start
 
   // Test inclusive end
-  EXPECT_TRUE (
-    obj->is_start_hit_by_range (0, 1000, true, true)); // exact end (included)
-  EXPECT_FALSE (
-    obj->is_start_hit_by_range (0, 1000, true, false)); // exact end (excluded)
+  EXPECT_TRUE (obj->is_start_hit_by_range (
+    units::samples (0), units::samples (1000), true,
+    true)); // exact end (included)
+  EXPECT_FALSE (obj->is_start_hit_by_range (
+    units::samples (0), units::samples (1000), true,
+    false)); // exact end (excluded)
 
   // Test exact position at both boundaries
-  EXPECT_TRUE (obj->is_start_hit_by_range (1000, 1000, true, true)); // included
-  EXPECT_FALSE (
-    obj->is_start_hit_by_range (1000, 1000, false, false)); // excluded
+  EXPECT_TRUE (obj->is_start_hit_by_range (
+    units::samples (1000), units::samples (1000), true, true)); // included
+  EXPECT_FALSE (obj->is_start_hit_by_range (
+    units::samples (1000), units::samples (1000), false, false)); // excluded
 
   // Test negative values (clamped to zero currently)
   obj->position ()->setSamples (-500);
-  EXPECT_FALSE (obj->is_start_hit_by_range (-1000, 0)); // within negative range
-  EXPECT_TRUE (obj->is_start_hit_by_range (0, 1));      // including 0
+  EXPECT_FALSE (obj->is_start_hit_by_range (
+    units::samples (-1000), units::samples (0))); // within negative range
+  EXPECT_TRUE (obj->is_start_hit_by_range (
+    units::samples (0), units::samples (1))); // including 0
 
   // Test large values
   obj->position ()->setSamples (1e9);
   EXPECT_TRUE (obj->is_start_hit_by_range (
-    static_cast<signed_frame_t> (1e9 - 100),
-    static_cast<signed_frame_t> (1e9 + 100)));
+    units::samples (static_cast<int64_t> (1e9 - 100)),
+    units::samples (static_cast<int64_t> (1e9 + 100))));
 }
 
 // Test UUID functionality
@@ -171,61 +183,74 @@ TEST_F (ArrangerObjectTest, TimeConversionWithParent)
 {
   // Set up parent object at position 1920 ticks
   obj2->position ()->setTicks (1920.0);
-  const double parent_ticks = obj2->position ()->ticks ();
-  const double parent_seconds = obj2->position ()->seconds ();
-  const double parent_samples =
-    tempo_map->tick_to_samples (units::ticks (parent_ticks)).in (units::samples);
+  const auto parent_ticks = units::ticks (obj2->position ()->ticks ());
+  const auto parent_seconds = units::seconds (obj2->position ()->seconds ());
+  const auto parent_samples = tempo_map->tick_to_samples (parent_ticks);
 
   // Set child object with parent
   obj->setParentObject (obj2.get ());
 
   // Test time conversions relative to parent
-  const double relative_ticks = 480.0;
-  const double expected_seconds =
-    tempo_map->tick_to_seconds (units::ticks (parent_ticks + relative_ticks))
-      .in (units::seconds) -parent_seconds;
-  const double expected_samples =
-    tempo_map->tick_to_samples (units::ticks (parent_ticks + relative_ticks))
-      .in (units::samples) -parent_samples;
+  const auto relative_ticks = units::ticks (480.0);
+  const auto expected_seconds =
+    tempo_map->tick_to_seconds (parent_ticks + relative_ticks) - parent_seconds;
+  const auto expected_samples =
+    tempo_map->tick_to_samples (parent_ticks + relative_ticks) - parent_samples;
 
   // Test tick to seconds conversion
   EXPECT_DOUBLE_EQ (
-    obj->position ()->position ().time_conversion_functions ().tick_to_seconds (
-      relative_ticks),
-    expected_seconds);
+    obj->position ()
+      ->position ()
+      .time_conversion_functions ()
+      .tick_to_seconds (relative_ticks)
+      .in (units::seconds),
+    expected_seconds.in (units::seconds));
 
   // Test seconds to tick conversion
   EXPECT_DOUBLE_EQ (
-    obj->position ()->position ().time_conversion_functions ().seconds_to_tick (
-      expected_seconds),
-    relative_ticks);
+    obj->position ()
+      ->position ()
+      .time_conversion_functions ()
+      .seconds_to_tick (expected_seconds)
+      .in (units::ticks),
+    relative_ticks.in (units::ticks));
 
   // Test tick to samples conversion
   EXPECT_DOUBLE_EQ (
-    obj->position ()->position ().time_conversion_functions ().tick_to_samples (
-      relative_ticks),
-    expected_samples);
+    obj->position ()
+      ->position ()
+      .time_conversion_functions ()
+      .tick_to_samples (relative_ticks)
+      .in (units::samples),
+    expected_samples.in (units::samples));
 
   // Test samples to tick conversion
   EXPECT_DOUBLE_EQ (
-    obj->position ()->position ().time_conversion_functions ().samples_to_tick (
-      expected_samples),
-    relative_ticks);
+    obj->position ()
+      ->position ()
+      .time_conversion_functions ()
+      .samples_to_tick (expected_samples)
+      .in (units::ticks),
+    relative_ticks.in (units::ticks));
 
   // Remove parent and test global time conversion
   obj->setParentObject (nullptr);
 
   EXPECT_DOUBLE_EQ (
-    obj->position ()->position ().time_conversion_functions ().tick_to_seconds (
-      relative_ticks),
-    tempo_map->tick_to_seconds (units::ticks (relative_ticks))
-      .in (units::seconds));
+    obj->position ()
+      ->position ()
+      .time_conversion_functions ()
+      .tick_to_seconds (relative_ticks)
+      .in (units::seconds),
+    tempo_map->tick_to_seconds (relative_ticks).in (units::seconds));
 
   EXPECT_DOUBLE_EQ (
-    obj->position ()->position ().time_conversion_functions ().seconds_to_tick (
-      expected_seconds),
-    tempo_map->seconds_to_tick (units::seconds (expected_seconds))
-      .in (units::ticks));
+    obj->position ()
+      ->position ()
+      .time_conversion_functions ()
+      .seconds_to_tick (expected_seconds)
+      .in (units::ticks),
+    tempo_map->seconds_to_tick (expected_seconds).in (units::ticks));
 }
 
 // Test edge cases

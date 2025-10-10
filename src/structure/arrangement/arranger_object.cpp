@@ -16,24 +16,20 @@ ArrangerObject::ArrangerObject (
         std::make_unique<dsp::AtomicPosition::TimeConversionFunctions> (
           dsp::AtomicPosition::TimeConversionFunctions{
             .tick_to_seconds =
-              [&] (double ticks) {
-                return tempo_map_.tick_to_seconds (units::ticks (ticks))
-                  .in (units::seconds);
+              [&] (units::precise_tick_t ticks) {
+                return tempo_map_.tick_to_seconds (ticks);
               },
             .seconds_to_tick =
-              [&] (double seconds) {
-                return tempo_map_.seconds_to_tick (units::seconds (seconds))
-                  .in (units::ticks);
+              [&] (units::precise_second_t seconds) {
+                return tempo_map_.seconds_to_tick (seconds);
               },
             .tick_to_samples =
-              [&] (double ticks) {
-                return tempo_map_.tick_to_samples (units::ticks (ticks))
-                  .in (units::samples);
+              [&] (units::precise_tick_t ticks) {
+                return tempo_map_.tick_to_samples (ticks);
               },
             .samples_to_tick =
-              [&] (double samples) {
-                return tempo_map_.samples_to_tick (units::samples (samples))
-                  .in (units::ticks);
+              [&] (units::precise_sample_t samples) {
+                return tempo_map_.samples_to_tick (samples);
               },
           })),
       position_ (*time_conversion_funcs_),
@@ -114,55 +110,52 @@ ArrangerObject::setParentObject (ArrangerObject * object)
     {
       // if there is a parent object, use the tempo map with the child object's
       // timeline position when making time conversions
-      time_conversion_funcs_->tick_to_seconds = [&] (double ticks) {
-        return tempo_map_
-          .tick_to_seconds (
-            units::ticks (parent_object_->position ()->ticks () + ticks))
-          .in (units::seconds) -parent_object_->position ()
-          ->seconds ();
+      time_conversion_funcs_
+        ->tick_to_seconds = [&] (units::precise_tick_t ticks) {
+        return tempo_map_.tick_to_seconds (
+                 units::ticks (parent_object_->position ()->ticks ()) + ticks)
+               - units::seconds (parent_object_->position ()->seconds ());
       };
-      time_conversion_funcs_->seconds_to_tick = [&] (double seconds) {
-        return tempo_map_
-          .seconds_to_tick (
-            units::seconds (parent_object_->position ()->seconds () + seconds))
-          .in (units::ticks) -parent_object_->position ()
-          ->ticks ();
+      time_conversion_funcs_
+        ->seconds_to_tick = [&] (units::precise_second_t seconds) {
+        return tempo_map_.seconds_to_tick (
+                 units::seconds (parent_object_->position ()->seconds ()) + seconds)
+               - units::ticks (parent_object_->position ()->ticks ());
       };
-      time_conversion_funcs_->tick_to_samples = [&] (double ticks) {
-        return (tempo_map_.tick_to_samples (
-                  units::ticks (parent_object_->position ()->ticks () + ticks))
-                - tempo_map_.tick_to_samples (
-                  units::ticks (parent_object_->position ()->ticks ())))
-          .in (units::samples);
+      time_conversion_funcs_
+        ->tick_to_samples = [&] (units::precise_tick_t ticks) {
+        return tempo_map_.tick_to_samples (
+                 units::ticks (parent_object_->position ()->ticks ()) + ticks)
+               - tempo_map_.tick_to_samples (
+                 units::ticks (parent_object_->position ()->ticks ()));
       };
-      time_conversion_funcs_->samples_to_tick = [&] (double samples) {
-        return tempo_map_
-          .samples_to_tick (
-            tempo_map_.tick_to_samples (
-              units::ticks (parent_object_->position ()->ticks ()))
-            + units::samples (samples))
-          .in (units::ticks) -parent_object_->position ()
-          ->ticks ();
+      time_conversion_funcs_
+        ->samples_to_tick = [&] (units::precise_sample_t samples) {
+        return tempo_map_.samples_to_tick (
+                 tempo_map_.tick_to_samples (
+                   units::ticks (parent_object_->position ()->ticks ()))
+                 + samples)
+               - units::ticks (parent_object_->position ()->ticks ());
       };
     }
   else
     {
       // otherwise use tempo map as-is (this is a timeline object)
-      time_conversion_funcs_->tick_to_seconds = [&] (double ticks) {
-        return tempo_map_.tick_to_seconds (units::ticks (ticks))
-          .in (units::seconds);
+      time_conversion_funcs_
+        ->tick_to_seconds = [&] (units::precise_tick_t ticks) {
+        return tempo_map_.tick_to_seconds (ticks);
       };
-      time_conversion_funcs_->seconds_to_tick = [&] (double seconds) {
-        return tempo_map_.seconds_to_tick (units::seconds (seconds))
-          .in (units::ticks);
+      time_conversion_funcs_
+        ->seconds_to_tick = [&] (units::precise_second_t seconds) {
+        return tempo_map_.seconds_to_tick (seconds);
       };
-      time_conversion_funcs_->tick_to_samples = [&] (double ticks) {
-        return tempo_map_.tick_to_samples (units::ticks (ticks))
-          .in (units::samples);
+      time_conversion_funcs_
+        ->tick_to_samples = [&] (units::precise_tick_t ticks) {
+        return tempo_map_.tick_to_samples (ticks);
       };
-      time_conversion_funcs_->samples_to_tick = [&] (double samples) {
-        return tempo_map_.samples_to_tick (units::samples (samples))
-          .in (units::ticks);
+      time_conversion_funcs_
+        ->samples_to_tick = [&] (units::precise_sample_t samples) {
+        return tempo_map_.samples_to_tick (samples);
       };
     }
 

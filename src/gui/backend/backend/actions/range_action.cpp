@@ -127,6 +127,7 @@ constexpr auto UNMOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
 void
 RangeAction::perform_impl ()
 {
+#if 0
   /* sort the selections in ascending order FIXME: needed? */
   // sel_before_->sort_by_indices (false);
   // sel_after_->sort_by_indices (false);
@@ -274,22 +275,22 @@ RangeAction::perform_impl ()
                                       *PROJECT->getArrangerObjectFactory (),
                                       end_pos_);
 // TODO...
-#if 0
+#  if 0
                                       PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part3->get_uuid ());
                                   PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part2->get_uuid ());
-#endif
+#  endif
                                   part2_ref = part4;
                                 }
                               /* otherwise remove the whole part2 */
                               else
                                 {
 // TODO
-#if 0
+#  if 0
                                   PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part2->get_uuid ());
-#endif
+#  endif
                                   part2_opt.reset ();
                                 }
 
@@ -330,10 +331,10 @@ RangeAction::perform_impl ()
                                   *obj, *PROJECT->getArrangerObjectFactory (),
                                   end_pos_);
 // TODO
-#if 0
+#  if 0
                                   PROJECT->get_arranger_object_registry ()
                                 .delete_object_by_id (part1->get_uuid ());
-#endif
+#  endif
 
                               // move part2 by the range amount and add to
                               // project
@@ -365,11 +366,11 @@ RangeAction::perform_impl ()
                           objects_moved_.push_back (obj->get_uuid ());
 
 // TODO
-#if 0
+#  if 0
                         PROJECT->arrangerObjectCreator()
                               ->get_selection_manager_for_object (*obj)
                               .append_to_selection (obj->get_uuid ());
-#endif
+#  endif
                         }
                     },
                     obj_var);
@@ -394,6 +395,7 @@ RangeAction::perform_impl ()
   first_run_ = false;
   /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, nullptr); */
   /* EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr); */
+#endif
 }
 
 void

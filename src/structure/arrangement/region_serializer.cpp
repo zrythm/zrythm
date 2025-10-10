@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/chord_descriptor.h"
 #include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region_serializer.h"
 
@@ -59,6 +61,38 @@ RegionSerializer::serialize_midi_region (
       process_midi_note (
         *note, loop_params, region_start_offset, start_opt, end_opt, as_played,
         events);
+    }
+}
+
+void
+RegionSerializer::serialize_chord_region (
+  const ChordRegion         &region,
+  juce::MidiMessageSequence &events,
+  std::optional<double>      start,
+  std::optional<double>      end,
+  bool                       add_region_start,
+  bool                       as_played)
+{
+  const auto region_start_offset =
+    add_region_start
+      ? units::ticks (region.position ()->ticks ())
+      : units::ticks (0.0);
+  const auto start_opt =
+    start ? std::make_optional (units::ticks (*start)) : std::nullopt;
+  const auto end_opt =
+    end ? std::make_optional (units::ticks (*end)) : std::nullopt;
+  const LoopParameters loop_params (region);
+
+  // Process each chord object in the region
+  for (const auto * chord_obj : region.get_children_view ())
+    {
+      // Skip muted chord objects when processing full playback
+      if (as_played && chord_obj->mute ()->muted ())
+        continue;
+
+      process_chord_object (
+        *chord_obj, loop_params, region_start_offset, start_opt, end_opt,
+        as_played, events);
     }
 }
 
@@ -223,6 +257,87 @@ RegionSerializer::serialize_audio_region (
 }
 
 /**
+ * Processes a single arranger object across all loop iterations.
+ *
+ * @tparam ObjectType The type of arranger object (MidiNote or ChordObject)
+ * @tparam EventGenerator Function that generates MIDI events for the object
+ * @param obj The arranger object to process
+ * @param loop_params Loop parameters for the region
+ * @param region_start_offset Offset to add to positions for global timeline
+ * @param start Optional start position constraint
+ * @param end Optional end position constraint
+ * @param as_played Whether to process as played (with loops)
+ * @param events Output MIDI message sequence
+ * @param event_generator Function that generates events for the object
+ */
+template <typename ObjectType, typename EventGenerator>
+void
+RegionSerializer::process_arranger_object (
+  const ObjectType                    &obj,
+  const LoopParameters                &loop_params,
+  units::precise_tick_t                region_start_offset,
+  std::optional<units::precise_tick_t> start,
+  std::optional<units::precise_tick_t> end,
+  bool                                 as_played,
+  juce::MidiMessageSequence           &events,
+  EventGenerator                       event_generator)
+{
+  const auto obj_pos = units::ticks (obj.position ()->ticks ());
+  const auto obj_length = units::ticks (obj.bounds ()->length ()->ticks ());
+  const auto obj_end = obj_pos + obj_length;
+
+  // Determine if object should be written once or looped
+  bool write_once = true;
+  if (
+    as_played && obj_pos >= loop_params.loop_start
+    && obj_pos < loop_params.loop_end)
+    write_once = false;
+
+  // Generate events for each loop iteration
+  const int max_loops = as_played ? loop_params.num_loops : 0;
+  for (int loop_idx = 0; loop_idx <= max_loops; ++loop_idx)
+    {
+      // For non-looped objects, only process first iteration
+      if (write_once && loop_idx > 0)
+        break;
+
+      // Calculate object positions for this loop iteration
+      auto looped_obj_pos = obj_pos;
+      auto looped_obj_end = obj_end;
+
+      if (as_played)
+        {
+          // Adjust positions for looped playback
+          looped_obj_pos = get_looped_position (obj_pos, loop_params, loop_idx);
+          looped_obj_end = get_looped_position (obj_end, loop_params, loop_idx);
+
+          // Skip if object is outside region bounds after adjustment
+          if (
+            looped_obj_pos < units::ticks (0.0)
+            || looped_obj_pos >= loop_params.region_length)
+            continue;
+        }
+
+      // Convert to global timeline positions
+      const auto global_start_pos = looped_obj_pos + region_start_offset;
+      const auto global_end_pos = looped_obj_end + region_start_offset;
+
+      // Check if object is within the requested time range
+      if (is_position_in_range (global_start_pos, global_end_pos, start, end))
+        {
+          // Adjust for start constraint
+          const auto adjusted_start =
+            start ? (global_start_pos - *start) : global_start_pos;
+          const auto adjusted_end =
+            start ? (global_end_pos - *start) : global_end_pos;
+
+          // Generate events using the provided generator function
+          event_generator (obj, adjusted_start, adjusted_end, events);
+        }
+    }
+}
+
+/**
  * Processes a single MIDI note across all loop iterations.
  */
 void
@@ -235,68 +350,64 @@ RegionSerializer::process_midi_note (
   bool                                 as_played,
   juce::MidiMessageSequence           &events)
 {
-  const auto note_pos = units::ticks (note.position ()->ticks ());
-  const auto note_length = units::ticks (note.bounds ()->length ()->ticks ());
-  const auto note_end = note_pos + note_length;
+  process_arranger_object (
+    note, loop_params, region_start_offset, start, end, as_played, events,
+    [] (
+      const MidiNote &note, units::precise_tick_t start_pos,
+      units::precise_tick_t end_pos, juce::MidiMessageSequence &events) {
+      // Add note on and note off events
+      events.addEvent (
+        juce::MidiMessage::noteOn (
+          1, note.pitch (), static_cast<std::uint8_t> (note.velocity ())),
+        start_pos.in (units::ticks));
+      events.addEvent (
+        juce::MidiMessage::noteOff (
+          1, note.pitch (), static_cast<std::uint8_t> (note.velocity ())),
+        end_pos.in (units::ticks));
+    });
+}
 
-  // Determine if note should be written once or looped
-  bool write_once = true;
-  if (
-    as_played && note_pos >= loop_params.loop_start
-    && note_pos < loop_params.loop_end)
-    write_once = false;
+void
+RegionSerializer::process_chord_object (
+  const arrangement::ChordObject      &chord_obj,
+  const LoopParameters                &loop_params,
+  units::precise_tick_t                region_start_offset,
+  std::optional<units::precise_tick_t> start,
+  std::optional<units::precise_tick_t> end,
+  bool                                 as_played,
+  juce::MidiMessageSequence           &events)
+{
+  // For chord objects, we need to override the length since they don't have
+  // a meaningful bounds length. Use a default duration of 1 beat.
+  process_arranger_object (
+    chord_obj, loop_params, region_start_offset, start, end, as_played, events,
+    [] (
+      const arrangement::ChordObject &chord_obj, units::precise_tick_t start_pos,
+      units::precise_tick_t end_pos, juce::MidiMessageSequence &events) {
+      // Get the chord descriptor from the chord object
+      // TODO: Implement a proper way to get the chord descriptor
+      // For now, create a simple C major chord as an example
+      dsp::ChordDescriptor chord_descr (
+        dsp::MusicalNote::C, false, dsp::MusicalNote::C, dsp::ChordType::Major,
+        dsp::ChordAccent::None, 0);
+      chord_descr.update_notes ();
 
-  // Generate events for each loop iteration
-  const int max_loops = as_played ? loop_params.num_loops : 0;
-  for (int loop_idx = 0; loop_idx <= max_loops; ++loop_idx)
-    {
-      // For non-looped notes, only process first iteration
-      if (write_once && loop_idx > 0)
-        break;
-
-      // Calculate note positions for this loop iteration
-      auto looped_note_pos = note_pos;
-      auto looped_note_end = note_end;
-
-      if (as_played)
+      // Add note on events for all notes in the chord
+      for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
         {
-          // Adjust positions for looped playback
-          looped_note_pos =
-            get_looped_position (note_pos, loop_params, loop_idx);
-          looped_note_end =
-            get_looped_position (note_end, loop_params, loop_idx);
-
-          // Skip if note is outside region bounds after adjustment
-          if (
-            looped_note_pos < units::ticks (0.0)
-            || looped_note_pos >= loop_params.region_length)
-            continue;
+          if (chord_descr.notes_[i])
+            {
+              const midi_byte_t note =
+                static_cast<midi_byte_t> (36 + i); // C2 + offset
+              events.addEvent (
+                juce::MidiMessage::noteOn (1, note, MidiNote::DEFAULT_VELOCITY),
+                start_pos.in (units::ticks));
+              events.addEvent (
+                juce::MidiMessage::noteOff (1, note, MidiNote::DEFAULT_VELOCITY),
+                end_pos.in (units::ticks));
+            }
         }
-
-      // Convert to global timeline positions
-      const auto global_start_pos = looped_note_pos + region_start_offset;
-      const auto global_end_pos = looped_note_end + region_start_offset;
-
-      // Check if note is within the requested time range
-      if (is_position_in_range (global_start_pos, global_end_pos, start, end))
-        {
-          // Adjust for start constraint
-          const auto adjusted_start =
-            start ? (global_start_pos - *start) : global_start_pos;
-          const auto adjusted_end =
-            start ? (global_end_pos - *start) : global_end_pos;
-
-          // Add note on and note off events
-          events.addEvent (
-            juce::MidiMessage::noteOn (
-              1, note.pitch (), static_cast<std::uint8_t> (note.velocity ())),
-            adjusted_start.in (units::ticks));
-          events.addEvent (
-            juce::MidiMessage::noteOff (
-              1, note.pitch (), static_cast<std::uint8_t> (note.velocity ())),
-            adjusted_end.in (units::ticks));
-        }
-    }
+    });
 }
 
 /**

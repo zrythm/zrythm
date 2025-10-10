@@ -80,7 +80,7 @@ TEST_F (ProcessorParameterTest, AutomationValueApplication)
   param_mod_input->port_sources_.front ().second->enabled_ = false;
 
   const float auto_value = 0.8f;
-  param->set_automation_provider ([&] (unsigned_frame_t) {
+  param->set_automation_provider ([&] (auto) {
     return std::optional{ auto_value };
   });
 
@@ -162,7 +162,7 @@ TEST_F (ProcessorParameterTest, BipolarModulation)
 TEST_F (ProcessorParameterTest, ModulationWithAutomation)
 {
   // Enable both automation and modulation
-  param->set_automation_provider ([&] (unsigned_frame_t) {
+  param->set_automation_provider ([&] (auto) {
     return 0.7f; // Automation value
   });
   param_mod_input->port_sources_.front ().second->enabled_ = true;

@@ -11,16 +11,17 @@
 namespace zrythm::utils::math
 {
 
-sample_t
-calculate_rms_amp (const sample_t * buf, const nframes_t nframes)
+audio_sample_type_t
+calculate_rms_amp (const audio_sample_type_t * buf, const nframes_t nframes)
 {
-  sample_t sum = 0, sample = 0;
+  audio_sample_type_t sum = 0, sample = 0;
   for (unsigned int i = 0; i < nframes; i += RMS_FRAMES)
     {
       sample = buf[i];
       sum += (sample * sample);
     }
-  return std::sqrtf (sum / ((sample_t) nframes / (sample_t) RMS_FRAMES));
+  return std::sqrtf (
+    sum / ((audio_sample_type_t) nframes / (audio_sample_type_t) RMS_FRAMES));
 }
 
 /**

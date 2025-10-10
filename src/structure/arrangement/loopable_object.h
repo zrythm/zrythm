@@ -77,19 +77,20 @@ public:
   /**
    * Returns the length of the loop in ticks.
    */
-  double get_loop_length_in_ticks () const
+  units::precise_tick_t get_loop_length_in_ticks () const
   {
     return std::max (
-      0.0, loop_end_pos_.get_ticks () - loop_start_pos_.get_ticks ());
+      units::ticks (0.0),
+      loop_end_pos_.get_ticks () - loop_start_pos_.get_ticks ());
   }
 
   /**
    * Returns the length of the loop in frames.
    */
-  [[gnu::hot]] auto get_loop_length_in_frames () const
+  units::sample_t get_loop_length_in_frames () const
   {
     return std::max (
-      static_cast<int64_t> (0),
+      units::sample_t (units::samples (0)),
       loop_end_pos_.get_samples () - loop_start_pos_.get_samples ());
   }
 

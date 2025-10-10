@@ -168,8 +168,8 @@ fast_log10 (const float val)
  * 0.0 to 2.0 (+6 dbFS).
  */
 [[gnu::const]]
-static inline sample_t
-get_fader_val_from_amp (sample_t amp)
+static inline audio_sample_type_t
+get_fader_val_from_amp (audio_sample_type_t amp)
 {
   constexpr float fader_coefficient1 =
     /*192.f * logf (2.f);*/
@@ -189,7 +189,7 @@ get_fader_val_from_amp (sample_t amp)
     {
       amp = 1.f + 1e-20f;
     }
-  sample_t fader =
+  audio_sample_type_t fader =
     std::powf (
       /* note: don't use fast_log here - it causes
        * weirdness in faders */
@@ -202,8 +202,8 @@ get_fader_val_from_amp (sample_t amp)
  * Returns amp value 0.0 to 2.0 (+6 dbFS) from fader value 0.0 to 1.0.
  */
 [[gnu::const]]
-static inline sample_t
-get_amp_val_from_fader (sample_t fader)
+static inline audio_sample_type_t
+get_amp_val_from_fader (audio_sample_type_t fader)
 {
   constexpr float val1 = 1.f / 6.f;
   return std::powf (
@@ -214,8 +214,8 @@ get_amp_val_from_fader (sample_t fader)
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
 [[gnu::const]]
-static inline sample_t
-amp_to_dbfs (sample_t amp)
+static inline audio_sample_type_t
+amp_to_dbfs (audio_sample_type_t amp)
 {
   return 20.f * std::log10f (amp);
 }
@@ -224,8 +224,8 @@ amp_to_dbfs (sample_t amp)
  * Gets the RMS of the given signal as amplitude
  * (0-2).
  */
-sample_t
-calculate_rms_amp (const sample_t * buf, nframes_t nframes);
+audio_sample_type_t
+calculate_rms_amp (const audio_sample_type_t * buf, nframes_t nframes);
 
 /**
  * Calculate db using RMS method.
@@ -233,8 +233,8 @@ calculate_rms_amp (const sample_t * buf, nframes_t nframes);
  * @param buf Buffer containing the samples.
  * @param nframes Number of samples.
  */
-static inline sample_t
-calculate_rms_db (const sample_t * buf, nframes_t nframes)
+static inline audio_sample_type_t
+calculate_rms_db (const audio_sample_type_t * buf, nframes_t nframes)
 {
   return amp_to_dbfs (calculate_rms_amp (buf, nframes));
 }
@@ -243,8 +243,8 @@ calculate_rms_db (const sample_t * buf, nframes_t nframes)
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
 [[gnu::const]]
-static inline sample_t
-dbfs_to_amp (sample_t dbfs)
+static inline audio_sample_type_t
+dbfs_to_amp (audio_sample_type_t dbfs)
 {
   return std::powf (10.f, (dbfs / 20.f));
 }
@@ -253,8 +253,8 @@ dbfs_to_amp (sample_t dbfs)
  * Convert form dbFS to fader val 0.0 to 1.0.
  */
 [[gnu::const]]
-static inline sample_t
-dbfs_to_fader_val (sample_t dbfs)
+static inline audio_sample_type_t
+dbfs_to_fader_val (audio_sample_type_t dbfs)
 {
   return get_fader_val_from_amp (dbfs_to_amp (dbfs));
 }

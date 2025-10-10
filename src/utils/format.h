@@ -16,6 +16,7 @@
 #include <QString>
 #include <QUuid>
 
+#include <au/au.hh>
 #include <juce_wrapper.h>
 
 #if defined(__clang__)
@@ -302,6 +303,13 @@ struct fmt::formatter<T> : fmt::formatter<std::string_view>
     return fmt::formatter<std::string_view>::format (
       fmt::format ("{}", ENUM_NAME (val)), ctx);
   }
+};
+
+// Formatter for Au quantities
+template <typename U, typename R>
+struct fmt::formatter<::au::Quantity<U, R>>
+    : ::au::QuantityFormatter<U, R, ::fmt::formatter>
+{
 };
 
 // Universal formatter for all types described by BOOST_DESCRIBE_STRUCT or

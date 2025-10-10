@@ -63,7 +63,7 @@ TimelineDataProvider::process_audio_events (
   std::span<float>             output_left,
   std::span<float>             output_right)
 {
-  // Define to enable debug logging for timeline data provider
+  // Set to true to enable debug logging for timeline data provider
   static constexpr bool TIMELINE_DATA_PROVIDER_DEBUG = false;
 
   // Clear output buffers first
@@ -74,8 +74,9 @@ TimelineDataProvider::process_audio_events (
     audio_regions{ active_audio_regions_ };
 
   const auto start_frame =
-    static_cast<int64_t> (time_nfo.g_start_frame_w_offset_);
-  const auto end_frame = static_cast<int64_t> (start_frame + time_nfo.nframes_);
+    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
+  const auto end_frame =
+    start_frame + units::samples (static_cast<int64_t> (time_nfo.nframes_));
 
   if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
     {
@@ -116,7 +117,7 @@ TimelineDataProvider::process_audio_events (
             overlap_start, overlap_end, overlap_length);
         }
 
-      if (overlap_length <= 0)
+      if (overlap_length <= units::samples (0))
         {
           if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
             z_debug ("Non-positive overlap length, skipping");
@@ -146,7 +147,8 @@ TimelineDataProvider::process_audio_events (
       // Mix the audio into the output buffers
       const auto num_channels =
         std::min (audio_buffer.getNumChannels (), 2); // Max 2 channels
-      const auto buffer_samples = audio_buffer.getNumSamples ();
+      const auto buffer_samples =
+        units::samples (static_cast<int64_t> (audio_buffer.getNumSamples ()));
 
       if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
         {
@@ -165,18 +167,27 @@ TimelineDataProvider::process_audio_events (
           // Ensure we don't exceed either the input buffer or output buffer
           // bounds
           const auto input_buffer_limit =
-            static_cast<int64_t> (buffer_samples - buffer_offset);
-          const auto output_buffer_limit =
-            static_cast<int64_t> (time_nfo.nframes_ - output_offset);
+            au::max (buffer_samples - buffer_offset, units::samples (0));
+          const auto output_buffer_limit = au::max (
+            units::samples (time_nfo.nframes_) - output_offset,
+            units::samples (0));
 
           // Also ensure we don't exceed the actual span size
           const auto actual_output_span_size =
-            static_cast<int64_t> (output_data.size ());
-          const auto span_based_limit = actual_output_span_size - output_offset;
+            units::samples (static_cast<int64_t> (output_data.size ()));
+          const auto span_based_limit = au::max (
+            actual_output_span_size - output_offset, units::samples (0));
 
           const auto actual_overlap_length = std::min (
             { overlap_length, input_buffer_limit, output_buffer_limit,
               span_based_limit });
+
+          if (actual_overlap_length <= units::samples (0))
+            {
+              if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
+                z_debug ("Non-positive actual overlap length, skipping");
+              continue;
+            }
 
           if (TIMELINE_DATA_PROVIDER_DEBUG)
             {
@@ -192,7 +203,7 @@ TimelineDataProvider::process_audio_events (
               // Check if output access would exceed buffer bounds
               if (
                 output_offset + actual_overlap_length
-                > static_cast<int64_t> (time_nfo.nframes_))
+                > units::samples (static_cast<int64_t> (time_nfo.nframes_)))
                 {
                   z_debug (
                     "WARNING: Output access would exceed buffer bounds! {} + {} > {}",
@@ -209,10 +220,13 @@ TimelineDataProvider::process_audio_events (
                 }
             }
 
-          for (int64_t i = 0; i < actual_overlap_length; ++i)
+          for (
+            const auto i :
+            std::views::iota (0, actual_overlap_length.in (units::samples)))
             {
-              const auto buffer_idx = buffer_offset + i;
-              const auto output_idx = output_offset + i;
+              const auto i_samples = units::samples (i);
+              const auto buffer_idx = buffer_offset + i_samples;
+              const auto output_idx = output_offset + i_samples;
 
               if (TIMELINE_DATA_PROVIDER_DEBUG && i < 5)
                 {
@@ -224,10 +238,13 @@ TimelineDataProvider::process_audio_events (
 
               // Ensure we're within both buffer bounds
               if (
-                buffer_idx >= 0 && buffer_idx < buffer_samples && output_idx >= 0
-                && output_idx < static_cast<int64_t> (time_nfo.nframes_))
+                buffer_idx >= units::samples (0) && buffer_idx < buffer_samples
+                && output_idx >= units::samples (0)
+                && output_idx < units::samples (
+                     static_cast<int64_t> (time_nfo.nframes_)))
                 {
-                  output_data[output_idx] += channel_data[buffer_idx];
+                  output_data[output_idx.in (units::samples)] +=
+                    channel_data[buffer_idx.in (units::samples)];
                 }
               else
                 {

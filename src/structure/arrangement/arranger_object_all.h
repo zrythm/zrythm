@@ -35,7 +35,7 @@ namespace zrythm::structure::arrangement
  * Port for example).
  */
 template <typename RegionT>
-void
+[[deprecated]] void
 fill_midi_events (
   const RegionT               &r,
   const EngineProcessTimeInfo &time_nfo,

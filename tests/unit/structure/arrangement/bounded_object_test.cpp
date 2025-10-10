@@ -9,6 +9,7 @@
 
 #include "helpers/mock_qobject.h"
 
+#include "unit/dsp/atomic_position_helpers.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -19,16 +20,7 @@ class ArrangerObjectBoundsTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    time_conversion_funcs = std::make_unique<
-      dsp::AtomicPosition::
-        TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
-      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
-      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
-      .tick_to_samples =
-        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
-      .samples_to_tick =
-        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
-    });
+    time_conversion_funcs = dsp::basic_conversion_providers ();
     start_position =
       std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
@@ -63,60 +55,72 @@ TEST_F (ArrangerObjectBoundsTest, LengthOperations)
 {
   obj->length ()->setSamples (3000);
   EXPECT_EQ (obj->length ()->samples (), 3000);
-  EXPECT_EQ (obj->get_end_position_samples (false), 3999);
-  EXPECT_EQ (obj->get_end_position_samples (true), 4000);
+  EXPECT_EQ (obj->get_end_position_samples (false), units::samples (3999));
+  EXPECT_EQ (obj->get_end_position_samples (true), units::samples (4000));
 }
 
 // Test is_hit method
 TEST_F (ArrangerObjectBoundsTest, IsHit)
 {
   // Within object
-  EXPECT_TRUE (obj->is_hit (1500));
-  EXPECT_TRUE (obj->is_hit (1000)); // Start inclusive
-  EXPECT_TRUE (obj->is_hit (2999)); // End exclusive by default
+  EXPECT_TRUE (obj->is_hit (units::samples (1500)));
+  EXPECT_TRUE (obj->is_hit (units::samples (1000))); // Start inclusive
+  EXPECT_TRUE (obj->is_hit (units::samples (2999))); // End exclusive by default
 
   // Outside object
-  EXPECT_FALSE (obj->is_hit (999));
-  EXPECT_FALSE (obj->is_hit (3000));
+  EXPECT_FALSE (obj->is_hit (units::samples (999)));
+  EXPECT_FALSE (obj->is_hit (units::samples (3000)));
 
   // Test inclusive end
-  EXPECT_TRUE (obj->is_hit (3000, true)); // End inclusive
+  EXPECT_TRUE (obj->is_hit (units::samples (3000), true)); // End inclusive
 }
 
 // Test is_hit_by_range method
 TEST_F (ArrangerObjectBoundsTest, IsHitByRange)
 {
   // Range completely within object
-  EXPECT_TRUE (obj->is_hit_by_range ({ 1200, 1800 }));
+  EXPECT_TRUE (
+    obj->is_hit_by_range ({ units::samples (1200), units::samples (1800) }));
 
   // Range overlapping start
-  EXPECT_TRUE (obj->is_hit_by_range ({ 500, 1500 }));
+  EXPECT_TRUE (
+    obj->is_hit_by_range ({ units::samples (500), units::samples (1500) }));
 
   // Range overlapping end
-  EXPECT_TRUE (obj->is_hit_by_range ({ 2500, 3500 }));
+  EXPECT_TRUE (
+    obj->is_hit_by_range ({ units::samples (2500), units::samples (3500) }));
 
   // Range covering object
-  EXPECT_TRUE (obj->is_hit_by_range ({ 500, 3500 }));
+  EXPECT_TRUE (
+    obj->is_hit_by_range ({ units::samples (500), units::samples (3500) }));
 
   // Range before object
-  EXPECT_FALSE (obj->is_hit_by_range ({ 500, 999 }));
+  EXPECT_FALSE (
+    obj->is_hit_by_range ({ units::samples (500), units::samples (999) }));
 
   // Range after object
-  EXPECT_FALSE (obj->is_hit_by_range ({ 3000, 3500 }));
+  EXPECT_FALSE (
+    obj->is_hit_by_range ({ units::samples (3000), units::samples (3500) }));
 
   // Range exactly at boundaries
-  EXPECT_TRUE (obj->is_hit_by_range ({ 1000, 1000 }));
-  EXPECT_TRUE (obj->is_hit_by_range ({ 2999, 2999 }));
+  EXPECT_TRUE (
+    obj->is_hit_by_range ({ units::samples (1000), units::samples (1000) }));
+  EXPECT_TRUE (
+    obj->is_hit_by_range ({ units::samples (2999), units::samples (2999) }));
 
   // Test exclusive boundaries
-  EXPECT_FALSE (obj->is_hit_by_range ({ 1000, 1000 }, false, false, false));
-  EXPECT_TRUE (obj->is_hit_by_range ({ 999, 1000 }, false, true, false));
+  EXPECT_FALSE (obj->is_hit_by_range (
+    { units::samples (1000), units::samples (1000) }, false, false, false));
+  EXPECT_TRUE (obj->is_hit_by_range (
+    { units::samples (999), units::samples (1000) }, false, true, false));
 
   // Test different boundary combinations
-  EXPECT_TRUE (
-    obj->is_hit_by_range ({ 1000, 1000 }, true, true, false)); // All inclusive
+  EXPECT_TRUE (obj->is_hit_by_range (
+    { units::samples (1000), units::samples (1000) }, true, true,
+    false)); // All inclusive
   EXPECT_FALSE (obj->is_hit_by_range (
-    { 1000, 1000 }, false, false, false)); // All exclusive
+    { units::samples (1000), units::samples (1000) }, false, false,
+    false)); // All exclusive
 }
 
 // Test QML properties
@@ -136,8 +140,9 @@ TEST_F (ArrangerObjectBoundsTest, Serialization)
   to_json (j, *obj);
 
   // Create new object from serialized data
-  dsp::AtomicPosition new_start_pos (*time_conversion_funcs);
-  dsp::AtomicPositionQmlAdapter new_start_adapter (new_start_pos, parent.get ());
+  dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
+  dsp::AtomicPositionQmlAdapter new_start_adapter (
+    new_start_pos, false, parent.get ());
   ArrangerObjectBounds new_obj (new_start_adapter);
   from_json (j, new_obj);
 
@@ -150,22 +155,23 @@ TEST_F (ArrangerObjectBoundsTest, EdgeCases)
 {
   // Zero-length object
   obj->length ()->setSamples (0);
-  EXPECT_FALSE (obj->is_hit (1000));
-  EXPECT_TRUE (obj->is_hit (1000, true));
-  EXPECT_FALSE (obj->is_hit (1001, true));
+  EXPECT_FALSE (obj->is_hit (units::samples (1000)));
+  EXPECT_TRUE (obj->is_hit (units::samples (1000), true));
+  EXPECT_FALSE (obj->is_hit (units::samples (1001), true));
 
   // Negative length (should clamp to 0)
   obj->length ()->setSamples (-100);
   EXPECT_EQ (obj->length ()->samples (), 0);
   EXPECT_EQ (
-    obj->get_end_position_samples (false), 999); // Start position remains
-  EXPECT_EQ (obj->get_end_position_samples (true), 1000);
+    obj->get_end_position_samples (false),
+    units::samples (999)); // Start position remains
+  EXPECT_EQ (obj->get_end_position_samples (true), units::samples (1000));
 
   // Large values
   obj->length ()->setSamples (1e9);
   EXPECT_EQ (
     obj->get_end_position_samples (false),
-    static_cast<signed_frame_t> (1e9 + 1000 - 1));
+    units::samples (static_cast<int64_t> (1e9 + 1000 - 1)));
 }
 
 } // namespace zrythm::structure::arrangement

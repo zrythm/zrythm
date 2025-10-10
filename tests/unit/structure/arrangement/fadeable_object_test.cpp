@@ -9,6 +9,7 @@
 
 #include "helpers/mock_qobject.h"
 
+#include "unit/dsp/atomic_position_helpers.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -19,16 +20,7 @@ class ArrangerObjectFadeRangeTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    time_conversion_funcs = std::make_unique<
-      dsp::AtomicPosition::
-        TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
-      .tick_to_seconds = [] (double ticks) { return ticks / 960.0 * 0.5; },
-      .seconds_to_tick = [] (double seconds) { return seconds / 0.5 * 960.0; },
-      .tick_to_samples =
-        [] (double ticks) { return ticks / 960.0 * 0.5 * 44100.0; },
-      .samples_to_tick =
-        [] (double samples) { return samples / 44100.0 / 0.5 * 960.0; },
-    });
+    time_conversion_funcs = dsp::basic_conversion_providers ();
     parent = std::make_unique<MockQObject> ();
     range = std::make_unique<ArrangerObjectFadeRange> (
       *time_conversion_funcs, parent.get ());
