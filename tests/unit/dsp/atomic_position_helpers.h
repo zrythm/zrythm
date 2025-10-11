@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#pragma once
+
 #include "dsp/atomic_position.h"
 #include "dsp/tempo_map.h"
 
