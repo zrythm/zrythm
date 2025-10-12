@@ -33,8 +33,6 @@ class AudioRegion final
   QML_UNCREATABLE ("")
 
 public:
-  using BitDepth = dsp::FileAudioSource::BitDepth;
-
   /**
    * Musical mode setting for audio regions.
    */
@@ -101,13 +99,6 @@ public:
 
   juce::PositionableAudioSource &get_audio_source () const;
 
-  // ==========================================================================
-  // Playback caches
-  // ==========================================================================
-  void prepare_to_play (size_t max_expected_samples, double sample_rate);
-  void release_resources ();
-  // ==========================================================================
-
   std::string
   get_field_name_for_serialization (const AudioSourceObject *) const override
   {
@@ -149,20 +140,6 @@ private:
   MusicalMode musical_mode_{};
 
   GlobalMusicalModeGetter global_musical_mode_getter_;
-
-  // ==========================================================================
-  // Temporary buffers
-  // ==========================================================================
-
-  /**
-   * @brief Buffer for obtaining samples from the audio source.
-   */
-  std::unique_ptr<juce::AudioSampleBuffer> audio_source_buffer_;
-
-  /**
-   * @brief Buffer used for stretching-related logic.
-   */
-  std::unique_ptr<juce::AudioSampleBuffer> tmp_buf_;
 
   BOOST_DESCRIBE_CLASS (
     AudioRegion,

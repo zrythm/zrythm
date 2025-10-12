@@ -74,22 +74,4 @@ AudioRegion::get_audio_source () const
   auto * audio_source_obj = get_children_view ().front ();
   return audio_source_obj->get_audio_source ();
 }
-
-void
-AudioRegion::prepare_to_play (size_t max_expected_samples, double sample_rate)
-{
-  tmp_buf_ = std::make_unique<juce::AudioSampleBuffer> (2, max_expected_samples);
-  audio_source_buffer_ =
-    std::make_unique<juce::AudioSampleBuffer> (2, max_expected_samples);
-  get_audio_source ().prepareToPlay (
-    static_cast<int> (max_expected_samples), sample_rate);
-}
-
-void
-AudioRegion::release_resources ()
-{
-  tmp_buf_.reset ();
-  audio_source_buffer_.reset ();
-  get_audio_source ().releaseResources ();
-}
 }
