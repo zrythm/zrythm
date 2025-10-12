@@ -64,9 +64,6 @@ protected:
     audio_region->loopRange ()->loopStartPosition ()->setSamples (250);
     audio_region->loopRange ()->loopEndPosition ()->setSamples (750);
     audio_region->loopRange ()->clipStartPosition ()->setSamples (0);
-
-    // Prepare for playback
-    audio_region->prepare_to_play (1024, 44100.0);
   }
 
   // Helper function to create a sine wave audio source
@@ -717,7 +714,6 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeIn)
   // Set small region length (less than built-in fade frames)
   small_region->position ()->setTicks (0);
   small_region->bounds ()->length ()->setTicks (100);
-  small_region->prepare_to_play (1024, 44100.0);
 
   juce::AudioSampleBuffer buffer;
   RegionSerializer::serialize_to_buffer (
@@ -751,7 +747,6 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeOut)
   // Set region length to be just a bit more than built-in fade frames
   fade_out_region->position ()->setTicks (0);
   fade_out_region->bounds ()->length ()->setTicks (200);
-  fade_out_region->prepare_to_play (1024, 44100.0);
 
   juce::AudioSampleBuffer buffer;
   RegionSerializer::serialize_to_buffer (
@@ -921,7 +916,6 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionBeyondSourceLength)
   large_region->position ()->setSamples (0);
   large_region->bounds ()->length ()->setSamples (
     200); // 200 samples > 100 source
-  large_region->prepare_to_play (1024, 44100.0);
 
   juce::AudioSampleBuffer buffer;
   RegionSerializer::serialize_to_buffer (
