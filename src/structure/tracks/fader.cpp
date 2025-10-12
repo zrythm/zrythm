@@ -367,14 +367,15 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
       const auto &out_buf =
         processing_caches_->audio_outs_rt_.front ()->buffers ();
       {
-        for (const auto i : std::views::iota (0, out_buf->getNumSamples ()))
+        for (
+          const auto i : std::views::iota (
+            static_cast<int> (time_nfo.local_offset_), out_buf->getNumSamples ()))
           {
             const auto gain = current_gain_.getCurrentValue ();
             for (
               const auto ch : std::views::iota (0, out_buf->getNumChannels ()))
               {
-                out_buf->applyGain (
-                  ch, static_cast<int> (time_nfo.local_offset_) + i, 1, gain);
+                out_buf->applyGain (ch, i, 1, gain);
               }
             current_gain_.skip (1);
           }

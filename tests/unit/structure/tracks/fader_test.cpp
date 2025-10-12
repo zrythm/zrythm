@@ -1161,4 +1161,78 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
     }
 }
 
+TEST_F (FaderTest, BufferOverflowWithNonZeroOffset)
+{
+  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
+
+  // Fill input buffers with known values
+  const auto fill_inputs = [&] (float left_val, float right_val) {
+    for (int i = 0; i < static_cast<int> (max_block_length_); i++)
+      {
+        stereo_in.buffers ()->setSample (0, i, left_val);
+        stereo_in.buffers ()->setSample (1, i, right_val);
+      }
+  };
+
+  // Set gain to 1.0 for direct pass-through
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+
+  // Test with non-zero offset that would cause buffer overflow
+  const nframes_t offset = 256;  // Non-zero offset
+  const nframes_t nframes = 256; // Process half buffer
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = offset,
+    .local_offset_ = offset,
+    .nframes_ = nframes
+  };
+
+  // Clear output buffer first
+  for (int i = 0; i < static_cast<int> (max_block_length_); i++)
+    {
+      stereo_out.buffers ()->setSample (0, i, 0.0f);
+      stereo_out.buffers ()->setSample (1, i, 0.0f);
+    }
+
+  // Process multiple blocks to allow smoothing to reach target
+  for (int block = 0; block < 10; block++)
+    {
+      // Fill entire input buffer with test pattern
+      fill_inputs (1.0f, 2.0f);
+
+      audio_fader_->process_block (time_nfo);
+    }
+
+  // Verify that only the intended range (offset to offset + nframes) is
+  // processed and no buffer overflow occurred
+  for (int i = 0; i < static_cast<int> (max_block_length_); i++)
+    {
+      if (
+        i >= static_cast<int> (offset)
+        && i < static_cast<int> (offset + nframes))
+        {
+          // This range should be processed
+          EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f)
+            << "Left channel not processed correctly at index " << i;
+          EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 2.0f, 0.05f)
+            << "Right channel not processed correctly at index " << i;
+        }
+      else
+        {
+          // This range should remain 0 (no processing should occur here)
+          EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 1e-6f)
+            << "Left channel unexpectedly modified at index " << i
+            << " (possible buffer overflow)";
+          EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 1e-6f)
+            << "Right channel unexpectedly modified at index " << i
+            << " (possible buffer overflow)";
+        }
+    }
+}
+
 } // namespace zrythm::structure::tracks
