@@ -6,6 +6,7 @@ qt_add_library(zrythm_commands_lib STATIC)
 target_sources(zrythm_commands_lib
   PRIVATE
     add_arranger_object_command.h
+    add_region_to_clip_slot_command.h
     add_track_command.h
     route_track_command.h
     change_parameter_value_command.h
