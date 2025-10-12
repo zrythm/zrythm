@@ -127,6 +127,11 @@ Zrythm makes extensive use of modern C++ features:
 - Use Qt's signal/slot system for event handling
 - Implement proper model/view separation
 - Use the following naming pattern for property declarations: `Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)`
+- When connecting signals, use the overload that takes:
+  1. The source object instance
+  2. The source object signal
+  3. The target object instance (as a context that lets Qt auto-remove this signal if the target is deleted - this is always required)
+  4. The target object slot, or a lambda
 
 ## Key Classes
 

@@ -120,6 +120,7 @@ ColumnLayout {
         sourceComponent: ClipLauncherView {
           clipLauncher: root.project.clipLauncher
           clipPlaybackService: root.project.clipPlaybackService
+          fileImporter: root.project.fileImporter
           objectCreator: root.project.arrangerObjectCreator
           rulerHeight: root.rulerHeight
           timeline: root.project.timeline

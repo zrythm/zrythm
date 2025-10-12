@@ -15,6 +15,7 @@ Control {
   required property Scene scene
   required property Track track
 
+  signal filesDropped(var filePaths)
   signal slotLaunched
 
   hoverEnabled: true
@@ -89,6 +90,8 @@ Control {
 
       onDropped: drop => {
         console.log("Drop on clip slot");
+        let uniqueFilePaths = DragUtils.getUniqueFilePaths(drop);
+        root.filesDropped(uniqueFilePaths);
       }
     }
   }

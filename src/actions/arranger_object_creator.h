@@ -152,6 +152,17 @@ public:
     return ar_ref.get_object_as<structure::arrangement::AudioRegion> ();
   }
 
+  Q_INVOKABLE structure::arrangement::AudioRegion *
+              addAudioRegionToClipSlotFromFile (
+                structure::tracks::Track *    track,
+                structure::scenes::ClipSlot * clipSlot,
+                const QString                &absPath);
+  Q_INVOKABLE structure::arrangement::AudioRegion *
+              addMidiRegionToClipSlotFromFile (
+                structure::tracks::Track *    track,
+                structure::scenes::ClipSlot * clipSlot,
+                const QString                &absPath);
+
   /**
    * @brief Creates a MIDI region at @p lane from the given @p descr
    * starting at @p startTicks.
@@ -208,6 +219,11 @@ private:
   void add_laned_object (
     structure::tracks::Track                           &track,
     structure::tracks::TrackLane                       &lane,
+    structure::arrangement::ArrangerObjectUuidReference obj_ref);
+
+  void add_object_to_clip_slot (
+    structure::tracks::Track                           &track,
+    structure::scenes::ClipSlot                        &clip_slot,
     structure::arrangement::ArrangerObjectUuidReference obj_ref);
 
   /**

@@ -269,11 +269,7 @@ public:
 
   auto &timeline_data_provider () { return *timeline_data_provider_; }
 
-  auto &clip_playback_data_provider ()
-  {
-    assert (is_midi ());
-    return *clip_playback_data_provider_;
-  }
+  auto &clip_playback_data_provider () { return *clip_playback_data_provider_; }
 
   /**
    * @brief Used to enable or disable MIDI event providers.

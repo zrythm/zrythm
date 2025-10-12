@@ -395,10 +395,9 @@ RegionSerializer::process_chord_object (
       // Add note on events for all notes in the chord
       for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
         {
-          if (chord_descr.notes_[i])
+          if (chord_descr.notes_.at (i))
             {
-              const midi_byte_t note =
-                static_cast<midi_byte_t> (36 + i); // C2 + offset
+              const auto note = static_cast<midi_byte_t> (36 + i); // C2 + offset
               evs.addEvent (
                 juce::MidiMessage::noteOn (1, note, MidiNote::DEFAULT_VELOCITY),
                 start_pos.in (units::ticks));

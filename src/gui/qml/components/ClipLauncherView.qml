@@ -17,6 +17,7 @@ Item {
   required property ClipLauncher clipLauncher
   required property ClipPlaybackService clipPlaybackService
   readonly property EditorSettings editorSettings: timeline.editorSettings
+  required property FileImporter fileImporter
 
   // Synchronize horizontal scrolling
   property real horizontalScrollPosition: 0
@@ -236,6 +237,12 @@ Item {
       objectCreator: root.objectCreator
       scene: clipSlotsListView.scene
       width: root.sceneWidth
+
+      onFilesDropped: files => {
+        if (files.length > 0) {
+          root.fileImporter.importFileToClipSlot(files[0], track, scene, clipSlot);
+        }
+      }
     }
   }
   component TrackStopButtonListView: ListView {

@@ -5,6 +5,18 @@
 
 namespace zrythm::gui::backend
 {
+FileImporter::FileImporter (
+  undo::UndoStack                          &undo_stack,
+  ::zrythm::actions::ArrangerObjectCreator &arranger_object_creator,
+  ::zrythm::actions::TrackCreator          &track_creator,
+  QObject *                                 parent)
+    : QObject (parent), track_creator_ (track_creator),
+      arranger_object_creator_ (arranger_object_creator), undo_stack_ (undo_stack)
+{
+  // Initialize the audio format manager with basic formats
+  audio_format_manager_.registerBasicFormats ();
+}
+
 void
 FileImporter::importFiles (
   const QStringList         &filePaths,
@@ -21,15 +33,98 @@ FileImporter::importFiles (
   undo_stack_.beginMacro (QString::fromUtf8 ("Import Files"));
   for (const auto &filepath : filePaths)
     {
-      auto track_qvar = track_creator_.addEmptyTrackFromType (
-        structure::tracks::Track::Type::Audio);
-      auto * audio_track = track_qvar.value<structure::tracks::AudioTrack *> ();
-      auto * audio_region = arranger_object_creator_.addAudioRegionFromFile (
-        audio_track, audio_track->lanes ()->getFirstLane (), filepath, 0);
-
-      // FIXME!!!! temporary test code
-      audio_region->prepare_to_play (2048, 44100);
+      if (isAudioFile (filepath))
+        {
+          auto track_qvar = track_creator_.addEmptyTrackFromType (
+            structure::tracks::Track::Type::Audio);
+          auto * audio_track =
+            track_qvar.value<structure::tracks::AudioTrack *> ();
+          arranger_object_creator_.addAudioRegionFromFile (
+            audio_track, audio_track->lanes ()->getFirstLane (), filepath, 0);
+        }
+      else if (isMidiFile (filepath))
+        {
+          auto track_qvar = track_creator_.addEmptyTrackFromType (
+            structure::tracks::Track::Type::Midi);
+          auto * midi_track =
+            track_qvar.value<structure::tracks::MidiTrack *> ();
+          arranger_object_creator_.addMidiRegionFromMidiFile (
+            midi_track, midi_track->lanes ()->getFirstLane (), filepath, 0, 0);
+        }
     }
   undo_stack_.endMacro ();
+}
+
+void
+FileImporter::importFileToClipSlot (
+  const QString                &filePath,
+  structure::tracks::Track *    track,
+  structure::scenes::Scene *    scene,
+  structure::scenes::ClipSlot * clipSlot) const
+{
+  if (isAudioFile (filePath))
+    {
+      arranger_object_creator_.addAudioRegionToClipSlotFromFile (
+        track, clipSlot, filePath);
+    }
+  else if (isMidiFile (filePath))
+    {
+      arranger_object_creator_.addMidiRegionToClipSlotFromFile (
+        track, clipSlot, filePath);
+    }
+}
+
+FileImporter::FileType
+FileImporter::getFileType (const QString &filePath) const
+{
+  if (isMidiFile (filePath))
+    {
+      return FileType::Midi;
+    }
+
+  if (isAudioFile (filePath))
+    {
+      return FileType::Audio;
+    }
+
+  return FileType::Unsupported;
+}
+
+bool
+FileImporter::isAudioFile (const QString &filePath) const
+{
+  auto file = utils::Utf8String::from_qstring (filePath).to_juce_file ();
+
+  if (!file.existsAsFile ())
+    {
+      return false;
+    }
+
+  // Try to create an audio reader for the file
+  const auto reader = std::unique_ptr<juce::AudioFormatReader> (
+    audio_format_manager_.createReaderFor (file));
+
+  return reader != nullptr;
+}
+
+bool
+FileImporter::isMidiFile (const QString &filePath) const
+{
+  auto file = utils::Utf8String::from_qstring (filePath).to_juce_file ();
+
+  if (!file.existsAsFile ())
+    {
+      return false;
+    }
+
+  // Try to read the file as a MIDI file
+  juce::FileInputStream stream (file);
+  if (!stream.openedOk ())
+    {
+      return false;
+    }
+
+  juce::MidiFile midiFile;
+  return midiFile.readFrom (stream);
 }
 }

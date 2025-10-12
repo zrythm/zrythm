@@ -396,8 +396,12 @@ Track::setClipLauncherMode (bool mode)
 
   processor->set_midi_providers_active (
     tracks::TrackProcessor::ActiveMidiEventProviders::Timeline, !mode);
+  processor->set_audio_providers_active (
+    tracks::TrackProcessor::ActiveAudioProviders::Timeline, !mode);
   processor->set_midi_providers_active (
     tracks::TrackProcessor::ActiveMidiEventProviders::ClipLauncher, mode);
+  processor->set_audio_providers_active (
+    tracks::TrackProcessor::ActiveAudioProviders::ClipLauncher, mode);
   clip_launcher_mode_ = mode;
   Q_EMIT clipLauncherModeChanged (mode);
 }

@@ -39,49 +39,9 @@ Rectangle {
       // Handle the dropped file(s)
       console.log("File dropped on tracklist");
 
-      // Extract file paths from different MIME types
-      var filePaths = [];
-
-      // Handle text/plain (internal drags and some external apps)
-      if (drop.hasText && drop.text) {
-        console.log("Text drop:", drop.text);
-        const lines = QmlUtils.splitTextLines(drop.text);
-        for (const line of lines) {
-          filePaths.push(line);
-        }
-      }
-
-      // Handle text/uri-list (standard for external file browsers)
-      if (drop.hasUrls) {
-        console.log("URLs dropped:", drop.urls.length);
-        for (const url of drop.urls) {
-          // Convert URLs to local file paths
-          filePaths.push(QmlUtils.toPathString(url));
-        }
-      }
-
-      // Handle application/x-file-path (internal format)
-      if (drop.formats.indexOf("application/x-file-path") !== -1) {
-        const filePathData = drop.getDataAsString("application/x-file-path");
-        if (filePathData) {
-          console.log("Application file path:", filePathData);
-          filePaths.push(filePathData);
-        }
-      }
-
-      // Remove duplicates
-      let uniqueFilePaths = QmlUtils.removeDuplicates(filePaths);
-
-      // Log if duplicates were found and removed
-      if (filePaths.length !== uniqueFilePaths.length) {
-        console.log("Removed duplicates:", filePaths.length - uniqueFilePaths.length);
-      }
-
       // Emit a signal with the dropped files
-      if (uniqueFilePaths.length > 0) {
-        console.log("Processing dropped files:", uniqueFilePaths);
-        root.filesDropped(uniqueFilePaths);
-      }
+      let uniqueFilePaths = DragUtils.getUniqueFilePaths(drop);
+      root.filesDropped(uniqueFilePaths);
     }
   }
 

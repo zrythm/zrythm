@@ -257,6 +257,7 @@ set(rel_qml_file_paths
   Greeter.qml
   DemoView.qml
   utils/ArrangerObjectHelpers.qml
+  utils/DragUtils.qml
   utils/SelectionTracker.qml
   views/ProjectWindow.qml
 )
@@ -274,6 +275,7 @@ endforeach()
 # see https://doc.qt.io/qt-6/cmake-source-file-property-qt-qml-singleton-type.html
 set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/ArrangerObjectHelpers.qml
+  ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/DragUtils.qml
   PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )
 

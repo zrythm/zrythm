@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_object_creator.h"
+#include "commands/add_region_to_clip_slot_command.h"
 
 namespace zrythm::actions
 {
@@ -23,6 +24,29 @@ ArrangerObjectCreator::add_laned_object (
 
           undo_stack_.push (
             new commands::AddArrangerObjectCommand<ObjectT> (lane, obj_ref));
+        }
+    },
+    obj_ref.get_object ());
+}
+
+void
+ArrangerObjectCreator::add_object_to_clip_slot (
+  structure::tracks::Track                           &track,
+  structure::scenes::ClipSlot                        &slot,
+  structure::arrangement::ArrangerObjectUuidReference obj_ref)
+{
+  std::visit (
+    [&] (auto &&obj) {
+      using ObjectT = base_type<decltype (obj)>;
+      if constexpr (
+        std::is_same_v<ObjectT, structure::arrangement::MidiRegion>
+        || std::is_same_v<ObjectT, structure::arrangement::AudioRegion>)
+        {
+          obj->name ()->setName (
+            track.generate_name_for_region (*obj).to_qstring ());
+
+          undo_stack_.push (
+            new commands::AddRegionToClipSlotCommand (slot, obj_ref));
         }
     },
     obj_ref.get_object ());
@@ -137,6 +161,28 @@ ArrangerObjectCreator::addMidiNote (
   int                                  pitch)
 {
   return add_editor_object (*region, startTicks, pitch);
+}
+
+structure::arrangement::AudioRegion *
+ArrangerObjectCreator::addAudioRegionToClipSlotFromFile (
+  structure::tracks::Track *    track,
+  structure::scenes::ClipSlot * clipSlot,
+  const QString                &absPath)
+{
+  auto ar_ref =
+    arranger_object_factory_.create_audio_region_from_file (absPath, 0.0);
+  add_object_to_clip_slot (*track, *clipSlot, ar_ref);
+  return ar_ref.get_object_as<structure::arrangement::AudioRegion> ();
+}
+
+structure::arrangement::AudioRegion *
+ArrangerObjectCreator::addMidiRegionToClipSlotFromFile (
+  structure::tracks::Track *    track,
+  structure::scenes::ClipSlot * clipSlot,
+  const QString                &absPath)
+{
+  // TODO
+  return nullptr;
 }
 
 } // namespace zrythm::actions
