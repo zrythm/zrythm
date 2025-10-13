@@ -353,16 +353,18 @@ RegionSerializer::process_midi_note (
   process_arranger_object (
     note, loop_params, region_start_offset, start, end, as_played, events,
     [] (
-      const MidiNote &note, units::precise_tick_t start_pos,
+      const MidiNote &midi_note, units::precise_tick_t start_pos,
       units::precise_tick_t end_pos, juce::MidiMessageSequence &evs) {
       // Add note on and note off events
       evs.addEvent (
         juce::MidiMessage::noteOn (
-          1, note.pitch (), static_cast<std::uint8_t> (note.velocity ())),
+          1, midi_note.pitch (),
+          static_cast<std::uint8_t> (midi_note.velocity ())),
         start_pos.in (units::ticks));
       evs.addEvent (
         juce::MidiMessage::noteOff (
-          1, note.pitch (), static_cast<std::uint8_t> (note.velocity ())),
+          1, midi_note.pitch (),
+          static_cast<std::uint8_t> (midi_note.velocity ())),
         end_pos.in (units::ticks));
     });
 }
@@ -382,8 +384,9 @@ RegionSerializer::process_chord_object (
   process_arranger_object (
     chord_obj, loop_params, region_start_offset, start, end, as_played, events,
     [] (
-      const arrangement::ChordObject &chord_obj, units::precise_tick_t start_pos,
-      units::precise_tick_t end_pos, juce::MidiMessageSequence &evs) {
+      const arrangement::ChordObject &chord_object,
+      units::precise_tick_t start_pos, units::precise_tick_t end_pos,
+      juce::MidiMessageSequence &evs) {
       // Get the chord descriptor from the chord object
       // TODO: Implement a proper way to get the chord descriptor
       // For now, create a simple C major chord as an example
