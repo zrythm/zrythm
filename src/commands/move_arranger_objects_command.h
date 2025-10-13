@@ -8,15 +8,12 @@
 #include <vector>
 
 #include "structure/arrangement/arranger_object_all.h"
-#include "utils/monotonic_time_provider.h"
 
 #include <QUndoCommand>
 
 namespace zrythm::commands
 {
-class MoveArrangerObjectsCommand
-    : public QUndoCommand,
-      public utils::QElapsedTimeProvider
+class MoveArrangerObjectsCommand : public QUndoCommand
 {
 public:
   MoveArrangerObjectsCommand (
