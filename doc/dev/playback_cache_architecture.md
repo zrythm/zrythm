@@ -147,7 +147,13 @@ sequenceDiagram
     participant Processor as TrackProcessor
 
     UI->>AOLM: Object changed (position, content, etc.)
-    AOLM->>Scheduler: contentChanged(affectedRange)
+    Note over AOLM: Track previous position<br/>Compare with current
+    alt Object moved or resized
+        AOLM->>AOLM: Create expanded range covering both positions
+    else Other property change
+        AOLM->>AOLM: Use current range only
+    end
+    AOLM->>Scheduler: contentChanged(expandedRange)
     Scheduler->>Scheduler: Debounce and expand range
     Scheduler->>Track: cacheRequested(finalRange)
     Track->>Provider: generate_midi_events(tempo_map, midi_regions, range)
@@ -252,9 +258,30 @@ timeline_data_provider_->process_audio_events(
 );
 ```
 
+## Cache Invalidation for Object Movement
+
+A key feature of the playback cache architecture is intelligent cache invalidation when objects are moved or resized. The `ArrangerObjectListModel` tracks previous positions of objects and ensures cache is invalidated at both previous and current positions.
+
+### Implementation Details
+
+1. **Previous Position Tracking**: The `ArrangerObjectListModel` maintains a cache of previous positions for all objects using their UUIDs as keys.
+
+2. **Change Detection**: When an object's properties change, the model compares the previous and current positions to detect movement or resizing.
+
+3. **Range Expansion**: If movement is detected, the cache invalidation range is expanded to cover both the previous and current positions, preventing stale cache at the old location.
+
+4. **Lifecycle Management**: The previous position cache is properly maintained during object addition, removal, and property changes.
+
+### Benefits
+
+- **Complete Cache Invalidation**: Ensures no stale cached data remains at previous positions
+- **Efficient Processing**: Only expands ranges when necessary (on actual movement)
+- **Thread Safety**: Maintains existing thread-safety guarantees
+- **Minimal Overhead**: Uses efficient data structures and only tracks necessary information
+
 ## Related Components
 
-- **ArrangerObjectListModel**: Propagates change notifications
+- **ArrangerObjectListModel**: Propagates change notifications with intelligent cache invalidation
 - **TrackLaneList**: Contains MIDI regions and triggers cache updates
 - **MidiRegionSerializer**: Converts MIDI regions to message sequences
 - **AudioRegionSerializer**: Converts audio regions to sample buffers

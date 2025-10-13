@@ -164,8 +164,6 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnInsert)
 {
   QSignalSpy contentChangedSpy (
     model_.get (), &ArrangerObjectListModel::contentChanged);
-  QSignalSpy contentChangedForObjectSpy (
-    model_.get (), &ArrangerObjectListModel::contentChangedForObject);
 
   // Create new note
   auto new_note_ref =
@@ -179,9 +177,8 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnInsert)
   model_->insertObject (
     ArrangerObjectUuidReference (note_ptr->get_uuid (), registry_), 2);
 
-  // Check that signals were emitted
+  // Check that signal was emitted
   EXPECT_EQ (contentChangedSpy.count (), 1);
-  EXPECT_EQ (contentChangedForObjectSpy.count (), 1);
 
   // Verify contentChanged signal contains correct range
   auto rangeArg =
@@ -190,44 +187,13 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnInsert)
   ASSERT_TRUE (range.has_value ());
   EXPECT_EQ (range->first, 100.0);
   EXPECT_EQ (range->second, 150.0);
-
-  // Verify contentChangedForObject signal contains correct object
-  auto objectArg =
-    contentChangedForObjectSpy.takeFirst ()
-      .at (0)
-      .value<const ArrangerObject *> ();
-  EXPECT_EQ (objectArg, note_ptr);
 }
 
-// Test contentChanged signal on object removal
-TEST_F (ArrangerObjectListModelTest, ContentChangedOnRemove)
+// Test contentChanged signal on property changes
+TEST_F (ArrangerObjectListModelTest, ContentChangedOnPropertyChange)
 {
-  QSignalSpy contentChangedForObjectSpy (
-    model_.get (), &ArrangerObjectListModel::contentChangedForObject);
-
-  // Get the object to be removed
-  auto * obj_to_remove =
-    objects_.get<random_access_index> ()[1].get_object_as<MidiNote> ();
-
-  // Remove the object
-  model_->removeRows (1, 1);
-
-  // Check that contentChangedForObject signal was emitted
-  EXPECT_EQ (contentChangedForObjectSpy.count (), 1);
-
-  // Verify signal contains correct object
-  auto objectArg =
-    contentChangedForObjectSpy.takeFirst ()
-      .at (0)
-      .value<const ArrangerObject *> ();
-  EXPECT_EQ (objectArg, obj_to_remove);
-}
-
-// Test contentChangedForObject signal on property changes
-TEST_F (ArrangerObjectListModelTest, ContentChangedForObjectOnPropertyChange)
-{
-  QSignalSpy contentChangedForObjectSpy (
-    model_.get (), &ArrangerObjectListModel::contentChangedForObject);
+  QSignalSpy contentChangedSpy (
+    model_.get (), &ArrangerObjectListModel::contentChanged);
 
   // Get an existing object
   auto * obj =
@@ -236,15 +202,8 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedForObjectOnPropertyChange)
   // Change a property - this should trigger the signal
   obj->setPitch (65);
 
-  // Check that contentChangedForObject signal was emitted
-  EXPECT_EQ (contentChangedForObjectSpy.count (), 1);
-
-  // Verify signal contains correct object
-  auto objectArg =
-    contentChangedForObjectSpy.takeFirst ()
-      .at (0)
-      .value<const ArrangerObject *> ();
-  EXPECT_EQ (objectArg, obj);
+  // Check that contentChanged signal was emitted
+  EXPECT_EQ (contentChangedSpy.count (), 1);
 }
 
 // Test ExpandableTickRange calculation
@@ -300,8 +259,8 @@ TEST_F (ArrangerObjectListModelTest, NestedObjectSignalPropagation)
 // Test signal connections and disconnections
 TEST_F (ArrangerObjectListModelTest, SignalConnectionsAndDisconnections)
 {
-  QSignalSpy contentChangedForObjectSpy (
-    model_.get (), &ArrangerObjectListModel::contentChangedForObject);
+  QSignalSpy contentChangedSpy (
+    model_.get (), &ArrangerObjectListModel::contentChanged);
 
   // Get an object that will be removed
   auto obj_to_remove = objects_.get<random_access_index> ()[2];
@@ -310,14 +269,14 @@ TEST_F (ArrangerObjectListModelTest, SignalConnectionsAndDisconnections)
   model_->removeRows (2, 1);
 
   // Clear any signals from the removal
-  contentChangedForObjectSpy.clear ();
+  contentChangedSpy.clear ();
 
   // Change a property on the removed object - should NOT trigger signal
   // since the connection should have been disconnected
   obj_to_remove.get_object_as<MidiNote> ()->setPitch (70);
 
   // Verify no signal was emitted
-  EXPECT_EQ (contentChangedForObjectSpy.count (), 0);
+  EXPECT_EQ (contentChangedSpy.count (), 0);
 }
 
 // Test parent object functionality with ArrangerObjectListModel
@@ -482,6 +441,96 @@ TEST_F (ArrangerObjectListModelTest, SortedIndexSamePosition)
 
   ++it;
   EXPECT_EQ ((*it).get_object_as<MidiNote> ()->pitch (), 62); // Second inserted
+}
+
+// Test cache invalidation on object movement
+TEST_F (ArrangerObjectListModelTest, CacheInvalidationOnMovement)
+{
+  QSignalSpy contentChangedSpy (
+    model_.get (), &ArrangerObjectListModel::contentChanged);
+
+  // Get an existing object and set its initial position
+  auto * obj =
+    objects_.get<random_access_index> ()[0].get_object_as<MidiNote> ();
+  obj->position ()->setTicks (100.0);
+  obj->bounds ()->length ()->setTicks (50.0);
+
+  // Clear any signals from initial setup
+  contentChangedSpy.clear ();
+
+  // Move the object to a new position
+  obj->position ()->setTicks (200.0);
+
+  // Check that contentChanged signal was emitted
+  EXPECT_EQ (contentChangedSpy.count (), 1);
+
+  // Verify contentChanged signal contains expanded range covering both positions
+  auto rangeArg =
+    contentChangedSpy.takeFirst ().at (0).value<utils::ExpandableTickRange> ();
+  auto range = rangeArg.range ();
+  ASSERT_TRUE (range.has_value ());
+  EXPECT_EQ (range->first, 100.0);  // Previous position
+  EXPECT_EQ (range->second, 250.0); // New position end (200 + 50)
+}
+
+// Test cache invalidation on object resize
+TEST_F (ArrangerObjectListModelTest, CacheInvalidationOnResize)
+{
+  QSignalSpy contentChangedSpy (
+    model_.get (), &ArrangerObjectListModel::contentChanged);
+
+  // Get an existing object and set its initial position
+  auto * obj =
+    objects_.get<random_access_index> ()[0].get_object_as<MidiNote> ();
+  obj->position ()->setTicks (100.0);
+  obj->bounds ()->length ()->setTicks (50.0);
+
+  // Clear any signals from initial setup
+  contentChangedSpy.clear ();
+
+  // Resize the object
+  obj->bounds ()->length ()->setTicks (100.0);
+
+  // Check that contentChanged signal was emitted
+  EXPECT_EQ (contentChangedSpy.count (), 1);
+
+  // Verify contentChanged signal contains expanded range covering both sizes
+  auto rangeArg =
+    contentChangedSpy.takeFirst ().at (0).value<utils::ExpandableTickRange> ();
+  auto range = rangeArg.range ();
+  ASSERT_TRUE (range.has_value ());
+  EXPECT_EQ (range->first, 100.0);  // Position unchanged
+  EXPECT_EQ (range->second, 200.0); // New end position (100 + 100)
+}
+
+// Test cache invalidation with non-positional changes
+TEST_F (ArrangerObjectListModelTest, CacheInvalidationOnNonPositionalChange)
+{
+  QSignalSpy contentChangedSpy (
+    model_.get (), &ArrangerObjectListModel::contentChanged);
+
+  // Get an existing object and set its initial position
+  auto * obj =
+    objects_.get<random_access_index> ()[0].get_object_as<MidiNote> ();
+  obj->position ()->setTicks (100.0);
+  obj->bounds ()->length ()->setTicks (50.0);
+
+  // Clear any signals from initial setup
+  contentChangedSpy.clear ();
+
+  // Change a non-positional property (velocity)
+  obj->setVelocity (100);
+
+  // Check that contentChanged signal was emitted
+  EXPECT_EQ (contentChangedSpy.count (), 1);
+
+  // Verify contentChanged signal contains only current range (not expanded)
+  auto rangeArg =
+    contentChangedSpy.takeFirst ().at (0).value<utils::ExpandableTickRange> ();
+  auto range = rangeArg.range ();
+  ASSERT_TRUE (range.has_value ());
+  EXPECT_EQ (range->first, 100.0);  // Position unchanged
+  EXPECT_EQ (range->second, 150.0); // End position unchanged
 }
 
 } // namespace zrythm::structure::arrangement

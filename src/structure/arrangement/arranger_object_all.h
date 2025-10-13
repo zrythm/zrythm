@@ -249,7 +249,7 @@ get_frames_till_next_loop_or_end (
     frames_till_next_loop < frames_till_end);
 }
 
-inline std::pair<double, double>
+inline auto
 get_object_tick_range (const ArrangerObject * obj)
 {
   return std::make_pair (
