@@ -143,29 +143,14 @@ ColumnLayout {
 
           spacing: 1
 
-          ScrollView {
-            id: rulerScrollView
+          Ruler {
+            id: ruler
 
             Layout.fillWidth: true
-            Layout.preferredHeight: ruler.height
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-
-            Ruler {
-              id: ruler
-
-              editorSettings: root.project.timeline.editorSettings
-              height: root.rulerHeight
-              tempoMap: root.project.tempoMap
-              transport: root.project.transport
-            }
-
-            Synchronizer {
-              sourceObject: root.project.timeline.editorSettings
-              sourceProperty: "x"
-              targetObject: rulerScrollView.contentItem
-              targetProperty: "contentX"
-            }
+            Layout.preferredHeight: root.rulerHeight
+            editorSettings: root.project.timeline.editorSettings
+            tempoMap: root.project.tempoMap
+            transport: root.project.transport
           }
 
           Loader {

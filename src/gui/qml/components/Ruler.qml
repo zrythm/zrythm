@@ -7,12 +7,14 @@ import QtQuick.Shapes
 import ZrythmStyle
 import ZrythmDsp
 import ZrythmGui
+import Qt.labs.synchronizer
 
-Control {
-  id: control
+Item {
+  id: root
 
   readonly property real barLineOpacity: 0.8
   readonly property real beatLineOpacity: 0.6
+  readonly property alias contentWidth: scrollView.contentWidth
   readonly property real defaultPxPerTick: 0.03
   readonly property real detailMeasureLabelPxThreshold: 64 // threshold to show/hide labels for more detailed measures
   readonly property real detailMeasurePxThreshold: 32 // threshold to show/hide more detailed measures
@@ -37,108 +39,126 @@ Control {
 
   clip: true
   implicitHeight: 24
-  width: maxBars * pxPerBar
+  implicitWidth: 64
 
-  // Grid lines and time markers
-  Item {
-    id: timeGrid
+  ScrollView {
+    id: scrollView
 
-    height: parent.height
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    anchors.fill: parent
+    clip: true
+    contentHeight: scrollView.height
+    contentWidth: root.maxBars * root.pxPerBar
 
-    // Generate bars, beats, sixteenths based on zoom level
-    Repeater {
-      model: control.visibleBarCount
+    Synchronizer {
+      sourceObject: root.editorSettings
+      sourceProperty: "x"
+      targetObject: scrollView.contentItem
+      targetProperty: "contentX"
+    }
 
-      delegate: Item {
-        id: barItem
+    // Grid lines and time markers
+    Item {
+      id: timeGrid
 
-        readonly property int bar: control.startBar + index
-        required property int index
+      height: scrollView.height
 
-        Rectangle {
-          readonly property int barTick: control.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
+      // Generate bars, beats, sixteenths based on zoom level
+      Repeater {
+        model: root.visibleBarCount
 
-          color: control.palette.text
-          height: 14 // parent.height / 3
-          opacity: control.barLineOpacity
-          width: 2
-          x: barTick * control.pxPerTick
+        delegate: Item {
+          id: barItem
 
-          Text {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.right
-            anchors.leftMargin: 2
-            color: control.palette.text
-            font.family: Style.smallTextFont.family
-            font.pixelSize: Style.smallTextFont.pixelSize
-            font.weight: Font.Medium
-            text: barItem.bar
+          readonly property int bar: root.startBar + index
+          required property int index
+
+          Rectangle {
+            readonly property int barTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
+
+            color: root.palette.text
+            height: 14 // parent.height / 3
+            opacity: root.barLineOpacity
+            width: 2
+            x: barTick * root.pxPerTick
+
+            Text {
+              anchors.bottom: parent.bottom
+              anchors.left: parent.right
+              anchors.leftMargin: 2
+              color: root.palette.text
+              font.family: Style.smallTextFont.family
+              font.pixelSize: Style.smallTextFont.pixelSize
+              font.weight: Font.Medium
+              text: barItem.bar
+            }
           }
-        }
 
-        Loader {
-          active: control.pxPerBeat > control.detailMeasurePxThreshold
-          visible: active
+          Loader {
+            active: root.pxPerBeat > root.detailMeasurePxThreshold
+            visible: active
 
-          sourceComponent: Repeater {
-            model: control.tempoMap.timeSignatureNumeratorAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0))
+            sourceComponent: Repeater {
+              model: root.tempoMap.timeSignatureNumeratorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0))
 
-            delegate: Item {
-              id: beatItem
+              delegate: Item {
+                id: beatItem
 
-              readonly property int beat: index + 1
-              readonly property int beatTick: control.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
-              required property int index
+                readonly property int beat: index + 1
+                readonly property int beatTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
+                required property int index
 
-              Rectangle {
-                color: control.palette.text
-                height: 10
-                opacity: control.beatLineOpacity
-                visible: beatItem.beat !== 1
-                width: 1
-                x: beatItem.beatTick * control.pxPerTick
+                Rectangle {
+                  color: root.palette.text
+                  height: 10
+                  opacity: root.beatLineOpacity
+                  visible: beatItem.beat !== 1
+                  width: 1
+                  x: beatItem.beatTick * root.pxPerTick
 
-                Text {
-                  anchors.left: parent.right
-                  anchors.leftMargin: 2
-                  anchors.top: parent.top
-                  color: control.palette.text
-                  font: Style.xSmallTextFont
-                  text: `${barItem.bar}.${beatItem.beat}`
-                  visible: control.pxPerBeat > control.detailMeasureLabelPxThreshold
+                  Text {
+                    anchors.left: parent.right
+                    anchors.leftMargin: 2
+                    anchors.top: parent.top
+                    color: root.palette.text
+                    font: Style.xSmallTextFont
+                    text: `${barItem.bar}.${beatItem.beat}`
+                    visible: root.pxPerBeat > root.detailMeasureLabelPxThreshold
+                  }
                 }
-              }
 
-              Loader {
-                active: control.pxPerSixteenth > control.detailMeasurePxThreshold
-                visible: active
+                Loader {
+                  active: root.pxPerSixteenth > root.detailMeasurePxThreshold
+                  visible: active
 
-                sourceComponent: Repeater {
-                  model: 16 / control.tempoMap.timeSignatureDenominatorAtTick(control.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0))
+                  sourceComponent: Repeater {
+                    model: 16 / root.tempoMap.timeSignatureDenominatorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0))
 
-                  Rectangle {
-                    id: sixteenthRect
+                    Rectangle {
+                      id: sixteenthRect
 
-                    required property int index
-                    readonly property int sixteenth: index + 1
-                    readonly property int sixteenthTick: control.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
+                      required property int index
+                      readonly property int sixteenth: index + 1
+                      readonly property int sixteenthTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
 
-                    color: control.palette.text
-                    height: 8
-                    opacity: control.sixteenthLineOpacity
-                    visible: sixteenth !== 1
-                    width: 1
-                    x: sixteenthTick * control.pxPerTick
+                      color: root.palette.text
+                      height: 8
+                      opacity: root.sixteenthLineOpacity
+                      visible: sixteenth !== 1
+                      width: 1
+                      x: sixteenthTick * root.pxPerTick
 
-                    Text {
-                      anchors.left: parent.right
-                      anchors.leftMargin: 2
-                      anchors.top: parent.top
-                      color: control.palette.text
-                      font: Style.xxSmallTextFont
-                      text: `${barItem.bar}.${beatItem.beat}.
+                      Text {
+                        anchors.left: parent.right
+                        anchors.leftMargin: 2
+                        anchors.top: parent.top
+                        color: root.palette.text
+                        font: Style.xxSmallTextFont
+                        text: `${barItem.bar}.${beatItem.beat}.
 ${sixteenthRect.sixteenth}`
-                      visible: control.pxPerSixteenth > control.detailMeasureLabelPxThreshold
+                        visible: root.pxPerSixteenth > root.detailMeasureLabelPxThreshold
+                      }
                     }
                   }
                 }
@@ -148,131 +168,133 @@ ${sixteenthRect.sixteenth}`
         }
       }
     }
-  }
-
-  Item {
-    id: markers
-
-    height: parent.height
-
-    PlayheadTriangle {
-      id: playheadShape
-
-      height: 8
-      width: 12
-      x: control.transport.playhead.ticks * control.pxPerTick - width / 2
-      y: control.height - height
-    }
 
     Item {
-      id: loopRange
+      id: markers
 
-      readonly property real endX: control.transport.loopEndPosition.ticks * defaultPxPerTick * editorSettings.horizontalZoomLevel
-      readonly property real loopMarkerHeight: 8
-      readonly property real loopMarkerWidth: 10
-      readonly property real startX: control.transport.loopStartPosition.ticks * defaultPxPerTick * editorSettings.horizontalZoomLevel
+      height: parent.height
 
-      Shape {
-        id: loopStartShape
+      PlayheadTriangle {
+        id: playheadShape
 
-        antialiasing: true
-        height: loopRange.loopMarkerHeight
-        layer.enabled: true
-        layer.samples: 4
-        visible: control.transport.loopEnabled
-        width: loopRange.loopMarkerWidth
-        x: loopRange.startX
-        z: 10
+        height: 8
+        width: 12
+        x: root.transport.playhead.ticks * root.pxPerTick - width / 2
+        y: root.height - height
+      }
 
-        ShapePath {
-          fillColor: control.palette.accent
-          strokeColor: control.palette.accent
+      Item {
+        id: loopRange
 
-          PathLine {
-            x: 0
-            y: 0
-          }
+        readonly property real endX: root.transport.loopEndPosition.ticks * root.defaultPxPerTick * root.editorSettings.horizontalZoomLevel
+        readonly property real loopMarkerHeight: 8
+        readonly property real loopMarkerWidth: 10
+        readonly property real startX: root.transport.loopStartPosition.ticks * root.defaultPxPerTick * root.editorSettings.horizontalZoomLevel
 
-          PathLine {
-            x: loopStartShape.width
-            y: 0
-          }
+        Shape {
+          id: loopStartShape
 
-          PathLine {
-            x: 0
-            y: loopStartShape.height
+          antialiasing: true
+          height: loopRange.loopMarkerHeight
+          layer.enabled: true
+          layer.samples: 4
+          visible: root.transport.loopEnabled
+          width: loopRange.loopMarkerWidth
+          x: loopRange.startX
+          z: 10
+
+          ShapePath {
+            fillColor: root.palette.accent
+            strokeColor: root.palette.accent
+
+            PathLine {
+              x: 0
+              y: 0
+            }
+
+            PathLine {
+              x: loopStartShape.width
+              y: 0
+            }
+
+            PathLine {
+              x: 0
+              y: loopStartShape.height
+            }
           }
         }
-      }
 
-      Shape {
-        id: loopEndShape
+        Shape {
+          id: loopEndShape
 
-        antialiasing: true
-        height: loopRange.loopMarkerHeight
-        layer.enabled: true
-        layer.samples: 4
-        visible: control.transport.loopEnabled
-        width: loopRange.loopMarkerWidth
-        x: loopRange.endX - loopRange.loopMarkerWidth
-        z: 10
+          antialiasing: true
+          height: loopRange.loopMarkerHeight
+          layer.enabled: true
+          layer.samples: 4
+          visible: root.transport.loopEnabled
+          width: loopRange.loopMarkerWidth
+          x: loopRange.endX - loopRange.loopMarkerWidth
+          z: 10
 
-        ShapePath {
-          fillColor: control.palette.accent
-          strokeColor: control.palette.accent
+          ShapePath {
+            fillColor: root.palette.accent
+            strokeColor: root.palette.accent
 
-          PathLine {
-            x: 0
-            y: 0
-          }
+            PathLine {
+              x: 0
+              y: 0
+            }
 
-          PathLine {
-            x: loopEndShape.width
-            y: 0
-          }
+            PathLine {
+              x: loopEndShape.width
+              y: 0
+            }
 
-          PathLine {
-            x: loopEndShape.width
-            y: loopEndShape.height
+            PathLine {
+              x: loopEndShape.width
+              y: loopEndShape.height
+            }
           }
         }
-      }
 
-      Rectangle {
-        id: loopRangeRect
+        Rectangle {
+          id: loopRangeRect
 
-        color: Qt.alpha(control.palette.accent, 0.1)
-        height: control.height
-        visible: control.transport.loopEnabled
-        width: loopRange.endX - loopRange.startX
-        x: loopRange.startX
-      }
-    }
-  }
-
-  MouseArea {
-    property bool dragging: false
-
-    acceptedButtons: Qt.LeftButton | Qt.RightButton
-    anchors.fill: parent
-
-    onPositionChanged: mouse => {
-      if (dragging)
-        control.transport.playhead.ticks = mouse.x / (control.defaultPxPerTick * control.editorSettings.horizontalZoomLevel);
-    }
-    onPressed: mouse => {
-      if (mouse.button === Qt.LeftButton) {
-        dragging = true;
-        control.transport.playhead.ticks = mouse.x / (control.defaultPxPerTick * editorSettings.horizontalZoomLevel);
+          color: Qt.alpha(root.palette.accent, 0.1)
+          height: root.height
+          visible: root.transport.loopEnabled
+          width: loopRange.endX - loopRange.startX
+          x: loopRange.startX
+        }
       }
     }
-    onReleased: {
-      dragging = false;
-    }
-    onWheel: wheel => {
-      if (wheel.modifiers & Qt.ControlModifier) {
-        const multiplier = wheel.angleDelta.y > 0 ? 1.3 : 1 / 1.3;
-        control.editorSettings.horizontalZoomLevel = Math.min(Math.max(control.editorSettings.horizontalZoomLevel * multiplier, control.minZoomLevel), control.maxZoomLevel);
+
+    MouseArea {
+      property bool dragging: false
+
+      acceptedButtons: Qt.LeftButton | Qt.RightButton
+      anchors.fill: parent
+      preventStealing: true
+
+      onPositionChanged: mouse => {
+        if (dragging) {
+          root.transport.playhead.ticks = mouse.x / (root.defaultPxPerTick * root.editorSettings.horizontalZoomLevel);
+        }
+      }
+      onPressed: mouse => {
+        if (mouse.button === Qt.LeftButton) {
+          dragging = true;
+          root.transport.playhead.ticks = mouse.x / (root.defaultPxPerTick * root.editorSettings.horizontalZoomLevel);
+        }
+      }
+      onReleased: {
+        dragging = false;
+      }
+      onWheel: wheel => {
+        if (wheel.modifiers & Qt.ControlModifier) {
+          const multiplier = wheel.angleDelta.y > 0 ? 1.3 : 1 / 1.3;
+          root.editorSettings.horizontalZoomLevel = Math.min(Math.max(root.editorSettings.horizontalZoomLevel * multiplier, root.minZoomLevel), root.maxZoomLevel);
+        }
       }
     }
   }

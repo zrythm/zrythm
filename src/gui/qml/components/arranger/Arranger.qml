@@ -54,6 +54,7 @@ Item {
   }
 
   property bool altHeld
+  property alias arrangerContentHeight: arrangerContent.height
   required property ItemSelectionModel arrangerSelectionModel
   required property ClipEditor clipEditor
   default property alias content: extraContent.data
@@ -82,7 +83,6 @@ Item {
   required property var transport
   required property UndoStack undoStack
   required property UnifiedArrangerObjectsModel unifiedObjectsModel
-  property alias arrangerContentHeight: arrangerContent.height
 
   function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
@@ -181,8 +181,8 @@ Item {
   // console.log(tempQmlArrangerObjects);
   }
 
-  height: 100
-  width: ruler.width
+  implicitHeight: 100
+  implicitWidth: 64
 
   onHoveredObjectChanged: {
     console.log("hovered object changed:", hoveredObject);
@@ -219,20 +219,16 @@ Item {
       targetProperty: "contentX"
     }
 
-    Binding {
-      property: "contentY"
-      target: scrollView.contentItem
-      value: root.editorSettings.y
-      when: root.enableYScroll
-    }
+    Loader {
+      active: root.enableYScroll
+      enabled: active
 
-    Connections {
-      function onContentYChanged() {
-        root.editorSettings.y = scrollView.contentItem.contentY;
+      sourceComponent: Synchronizer {
+        sourceObject: root.editorSettings
+        sourceProperty: "y"
+        targetObject: scrollView.contentItem
+        targetProperty: "contentY"
       }
-
-      enabled: root.enableYScroll
-      target: scrollView.contentItem
     }
 
     Item {
@@ -240,7 +236,7 @@ Item {
 
       height: 600 // TODO: calculate height
 
-      width: root.ruler.width
+      width: root.ruler.contentWidth
 
       ContextMenu.menu: Menu {
         MenuItem {
@@ -510,7 +506,7 @@ Item {
           root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
           root.altHeld = mouse.modifiers & Qt.AltModifier;
           if (pressed) {
-            console.log("dragging inside arranger", currentCoordinates, "action:", action);
+            // console.log("dragging inside arranger", currentCoordinates, "action:", action);
             // handle action transitions
             if (action === Arranger.StartingSelection)
               action = Arranger.Selecting;
