@@ -353,13 +353,14 @@ TEST_F (ClipPlaybackDataProviderTest, ClearEvents)
   provider_->process_midi_events (time_info, output_buffer);
   EXPECT_GT (output_buffer.size (), 0);
 
-  // Clear events
-  provider_->clear_events ();
+  // Stop playback
+  provider_->queue_stop_playback (
+    structure::tracks::ClipQuantizeOption::Immediate);
 
-  // Test processing events again - should have no events
+  // Test processing events again - should have no events other than all notes off
   output_buffer.clear ();
   provider_->process_midi_events (time_info, output_buffer);
-  EXPECT_EQ (output_buffer.size (), 0);
+  EXPECT_EQ (output_buffer.size (), 16);
 }
 
 TEST_F (ClipPlaybackDataProviderTest, QuantizeOptions)
@@ -1098,8 +1099,9 @@ TEST_F (ClipPlaybackDataProviderTest, AudioClearEvents)
     }
   EXPECT_TRUE (has_audio_before);
 
-  // Clear events
-  provider_->clear_events ();
+  // Stop playback
+  provider_->queue_stop_playback (
+    structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing audio again - should have no audio
   std::ranges::fill (output_left, 0.0f);
@@ -1172,8 +1174,8 @@ TEST_F (ClipPlaybackDataProviderTest, AudioPreciseLoopingBehavior)
   // Process multiple buffers to trigger looping
   std::vector<std::vector<float>> loop_audio_left;
   std::vector<std::vector<float>> loop_audio_right;
-  std::vector<float>              output_left (256, 0.0f);
-  std::vector<float>              output_right (256, 0.0f);
+  std::vector<float>              output_left (2048, 0.0f);
+  std::vector<float>              output_right (2048, 0.0f);
 
   // Process first buffer
   EngineProcessTimeInfo time_info1 = create_time_info (0, 0, 0, 1024);
@@ -1416,7 +1418,8 @@ TEST_F (ClipPlaybackDataProviderTest, ProcessAudioEventsWithOffset)
   // Test processing audio with a global offset
   std::vector<float>    output_left (256, 0.0f);
   std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = create_time_info (10000, 10100, 100, 256);
+  EngineProcessTimeInfo time_info =
+    create_time_info (10000, 10100, 100, 256 - 100);
 
   provider_->process_audio_events (time_info, output_left, output_right);
 
@@ -1549,6 +1552,107 @@ TEST_F (ClipPlaybackDataProviderTest, AudioBasicFunctionality)
         }
     }
   EXPECT_TRUE (has_audio);
+}
+
+// ========== Transport State Tests ==========
+
+TEST_F (ClipPlaybackDataProviderTest, MidiAllNotesOffWhenClipStops)
+{
+  // Create a MIDI region
+  auto region = create_simple_region ();
+
+  // Generate events for the region
+  provider_->generate_midi_events (
+    *region, structure::tracks::ClipQuantizeOption::Immediate);
+
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = create_time_info (0, 0, 0, 256);
+
+  // First, process events to establish playing state
+  provider_->process_midi_events (time_info, output_buffer);
+  EXPECT_GT (output_buffer.size (), 0);
+  EXPECT_TRUE (provider_->playing ());
+
+  // Clear the queued events for next test
+  output_buffer.clear ();
+
+  // Stop playback
+  provider_->queue_stop_playback (
+    structure::tracks::ClipQuantizeOption::Immediate);
+
+  // Process events again - should send all-notes-off due to transition
+  provider_->process_midi_events (time_info, output_buffer);
+  EXPECT_FALSE (provider_->playing ());
+
+  // Should have exactly 16 events: all-notes-off on each channel
+  EXPECT_EQ (output_buffer.size (), 16);
+
+  // Verify they are all all-notes-off events (CC 123)
+  for (const auto &event : output_buffer)
+    {
+      EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0xB0); // Control change
+      EXPECT_EQ (event.raw_buffer_[1], 123);         // All notes off
+    }
+
+  // Clear the queued events for next test
+  output_buffer.clear ();
+
+  // Process events a third time - should have no events (transition already
+  // handled)
+  provider_->process_midi_events (time_info, output_buffer);
+  EXPECT_EQ (output_buffer.size (), 0);
+}
+
+TEST_F (ClipPlaybackDataProviderTest, AudioDoesNotGetStuckAfterClear)
+{
+  // Create a simple audio region
+  auto region = create_simple_audio_region ();
+
+  // Generate events for the region
+  provider_->generate_audio_events (
+    *region, structure::tracks::ClipQuantizeOption::Immediate);
+
+  std::vector<float>    output_left (256, 0.0f);
+  std::vector<float>    output_right (256, 0.0f);
+  EngineProcessTimeInfo time_info = create_time_info (0, 0, 0, 256);
+
+  // First, process audio to establish playing state
+  provider_->process_audio_events (time_info, output_left, output_right);
+
+  // Should have some audio output
+  bool has_audio_before = false;
+  for (size_t i = 0; i < output_left.size (); ++i)
+    {
+      if (
+        std::abs (output_left[i]) > 0.001f
+        || std::abs (output_right[i]) > 0.001f)
+        {
+          has_audio_before = true;
+          break;
+        }
+    }
+  EXPECT_TRUE (has_audio_before);
+  EXPECT_TRUE (provider_->playing ());
+
+  // Stop playback
+  provider_->queue_stop_playback (
+    structure::tracks::ClipQuantizeOption::Immediate);
+
+  // Clear buffers for next test
+  std::ranges::fill (output_left, 0.0f);
+  std::ranges::fill (output_right, 0.0f);
+
+  // Process audio again - should have no new audio (provider doesn't clear
+  // buffers)
+  provider_->process_audio_events (time_info, output_left, output_right);
+  EXPECT_FALSE (provider_->playing ());
+
+  // Buffers should remain unchanged (provider adds to existing content)
+  for (size_t i = 0; i < output_left.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (output_left[i], 0.0f);
+      EXPECT_FLOAT_EQ (output_right[i], 0.0f);
+    }
 }
 
 } // namespace zrythm::structure::scenes

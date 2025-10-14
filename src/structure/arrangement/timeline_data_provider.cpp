@@ -28,31 +28,68 @@ TimelineDataProvider::set_audio_regions (
 void
 TimelineDataProvider::process_midi_events (
   const EngineProcessTimeInfo &time_nfo,
-  dsp::MidiEventVector        &output_buffer)
+  dsp::ITransport::PlayState   transport_state,
+  dsp::MidiEventVector        &output_buffer) noexcept
 {
-  decltype (active_midi_playback_sequence_)::ScopedAccess<
-    farbot::ThreadType::realtime>
-             midi_seq{ active_midi_playback_sequence_ };
-  const auto first_idx = midi_seq->getNextIndexAtTime (
-    static_cast<double> (time_nfo.g_start_frame_w_offset_));
-  for (int i = first_idx; i < midi_seq->getNumEvents (); ++i)
-    {
-      const auto * event = midi_seq->getEventPointer (i);
-      const auto   timestamp_dbl = event->message.getTimeStamp ();
-      if (
-        timestamp_dbl >= static_cast<double> (
-          time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_))
-        {
-          break;
-        }
+  const bool transport_rolling =
+    transport_state == dsp::ITransport::PlayState::Rolling;
+  const auto current_transport_position =
+    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
 
-      const auto local_timestamp =
-        static_cast<decltype (time_nfo.g_start_frame_)> (timestamp_dbl)
-        - time_nfo.g_start_frame_;
-      output_buffer.add_raw (
-        event->message.getRawData (), event->message.getRawDataSize (),
-        static_cast<midi_time_t> (local_timestamp));
+  // Check for transport position jump (seek, loop, etc.)
+  const bool transport_position_jumped =
+    (next_expected_transport_position_ != units::samples (0))
+    && (current_transport_position != next_expected_transport_position_);
+
+  // Check for transport state change (rolling -> stopped)
+  const bool transport_stopped_rolling =
+    last_seen_transport_state_ == dsp::ITransport::PlayState::Rolling
+    && !transport_rolling;
+
+  // Send all-notes-off if transport stopped or position jumped
+  if (
+    transport_stopped_rolling
+    || (transport_rolling && transport_position_jumped))
+    {
+      for (int channel = 1; channel <= 16; ++channel)
+        {
+          output_buffer.add_all_notes_off (
+            channel, time_nfo.local_offset_, true); // All notes off
+        }
     }
+
+  // Only process MIDI events if transport is rolling
+  if (transport_rolling)
+    {
+      decltype (active_midi_playback_sequence_)::ScopedAccess<
+        farbot::ThreadType::realtime>
+                 midi_seq{ active_midi_playback_sequence_ };
+      const auto first_idx = midi_seq->getNextIndexAtTime (
+        static_cast<double> (time_nfo.g_start_frame_w_offset_));
+      for (int i = first_idx; i < midi_seq->getNumEvents (); ++i)
+        {
+          const auto * event = midi_seq->getEventPointer (i);
+          const auto   timestamp_dbl = event->message.getTimeStamp ();
+          if (
+            timestamp_dbl >= static_cast<double> (
+              time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_))
+            {
+              break;
+            }
+
+          const auto local_timestamp =
+            static_cast<decltype (time_nfo.g_start_frame_)> (timestamp_dbl)
+            - time_nfo.g_start_frame_;
+          output_buffer.add_raw (
+            event->message.getRawData (), event->message.getRawDataSize (),
+            static_cast<midi_time_t> (local_timestamp));
+        }
+    }
+
+  // Update tracking for next time
+  next_expected_transport_position_ =
+    current_transport_position + units::samples (time_nfo.nframes_);
+  last_seen_transport_state_ = transport_state;
 
   // output_buffer.print (); // debug
 }
@@ -60,15 +97,26 @@ TimelineDataProvider::process_midi_events (
 void
 TimelineDataProvider::process_audio_events (
   const EngineProcessTimeInfo &time_nfo,
+  dsp::ITransport::PlayState   transport_state,
   std::span<float>             output_left,
-  std::span<float>             output_right)
+  std::span<float>             output_right) noexcept
 {
   // Set to true to enable debug logging for timeline data provider
   static constexpr bool TIMELINE_DATA_PROVIDER_DEBUG = false;
 
-  // Clear output buffers first
-  utils::float_ranges::fill (output_left.data (), 0.f, output_left.size ());
-  utils::float_ranges::fill (output_right.data (), 0.f, output_right.size ());
+  const bool transport_rolling =
+    transport_state == dsp::ITransport::PlayState::Rolling;
+  const auto current_transport_position =
+    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
+
+  // Only process audio events if transport is rolling
+  if (!transport_rolling)
+    {
+      // Update tracking for next time
+      next_expected_transport_position_ =
+        current_transport_position + units::samples (time_nfo.nframes_);
+      return;
+    }
 
   decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::realtime>
     audio_regions{ active_audio_regions_ };
@@ -259,6 +307,10 @@ TimelineDataProvider::process_audio_events (
             }
         }
     }
+
+  // Update tracking for next time
+  next_expected_transport_position_ =
+    current_transport_position + units::samples (time_nfo.nframes_);
 }
 
 } // namespace zrythm::structure::arrangement

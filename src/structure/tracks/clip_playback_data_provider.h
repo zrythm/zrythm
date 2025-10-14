@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <atomic>
+
 #include "structure/tracks/track_fwd.h"
 #include "utils/types.h"
 
@@ -78,8 +80,6 @@ public:
     const arrangement::AudioRegion       &audio_region,
     structure::tracks::ClipQuantizeOption quantize_option);
 
-  void clear_events ();
-
   /**
    * @brief Requests that playback is stopped at the next quantization point.
    *
@@ -139,6 +139,14 @@ private:
     units::sample_t output_buffer_timestamp_offset,
     ProcessFunc     process_chunk);
 
+  /**
+   * @brief Clears the active buffers that are used for realtime playback.
+   *
+   * This will result in playback getting stopped on the next processing cycle.
+   */
+  void clear_active_buffers ();
+
+private:
   /** Active MIDI playback sequence for realtime access. */
   farbot::RealtimeObject<
     std::optional<MidiCache>,
@@ -161,7 +169,16 @@ private:
    * This is atomic because it may be accessed from the UI thread to update
    * the clip launcher visuals (e.g., to show play/pause state).
    */
-  std::atomic<bool> playing_;
+  std::atomic<bool> playing_{ false };
+
+  /**
+   * @brief Last known playing status to detect transitions from playing to
+   * stopped during processing.
+   *
+   * This is used to detect when we need to send all-notes-off when a clip stops
+   * playing.
+   */
+  bool was_playing_{ false };
 
   /**
    * @brief Current internal buffer position (offset within the clip)

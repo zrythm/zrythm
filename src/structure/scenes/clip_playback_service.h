@@ -220,11 +220,6 @@ private:
   }
 
   /**
-   * @brief Clear MIDI events for a track's clip launcher.
-   */
-  void clearClipEvents (tracks::Track * track);
-
-  /**
    * @brief Update clip slot state and emit appropriate signals.
    */
   void updateClipSlotState (ClipSlot * clipSlot, ClipSlot::ClipState newState);

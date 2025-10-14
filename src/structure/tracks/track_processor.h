@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/port.h"
+#include "dsp/processor_base.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/timeline_data_provider.h"
 #include "structure/tracks/clip_playback_data_provider.h"

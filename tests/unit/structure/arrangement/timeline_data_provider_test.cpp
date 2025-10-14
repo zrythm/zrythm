@@ -4,6 +4,7 @@
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/timeline_data_provider.h"
@@ -173,7 +174,8 @@ TEST_F (TimelineDataProviderTest, InitialState)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
@@ -188,7 +190,8 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithNoEvents)
     .nframes_ = 512
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
@@ -210,7 +213,8 @@ TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyRegions)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
@@ -236,7 +240,8 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have at least one event (the note on)
   EXPECT_GE (output_buffer.size (), 1);
@@ -276,7 +281,8 @@ TEST_F (TimelineDataProviderTest, ProcessEventsOutsideTimeRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the note is outside the time range
   EXPECT_EQ (output_buffer.size (), 0);
@@ -304,7 +310,8 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithOffset)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the note is at tick 0
   // and we're processing frames 10100-10356
@@ -347,7 +354,8 @@ TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have at least 3 events (the note ons)
   EXPECT_GE (output_buffer.size (), 3);
@@ -381,7 +389,8 @@ TEST_F (TimelineDataProviderTest, BasicFunctionality)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Paused, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 
   // Test that generate_midi_events can be called without crashing
@@ -391,7 +400,8 @@ TEST_F (TimelineDataProviderTest, BasicFunctionality)
   provider_->generate_midi_events (*tempo_map_, empty_regions, range);
 
   // Process again to ensure no crash
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Paused, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
@@ -421,7 +431,8 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from the MIDI region
   EXPECT_GE (output_buffer.size (), 1);
@@ -472,7 +483,8 @@ TEST_F (TimelineDataProviderTest, GenerateCacheOutsideAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since region is outside affected range
   EXPECT_EQ (output_buffer.size (), 0);
@@ -507,7 +519,8 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
     .nframes_ = 512
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events only from the first region
   EXPECT_GT (output_buffer.size (), 0);
@@ -551,7 +564,8 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the only note is muted
   EXPECT_EQ (output_buffer.size (), 0);
@@ -600,7 +614,8 @@ TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from all regions
   EXPECT_GE (output_buffer.size (), 3);
@@ -654,7 +669,8 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should still have events from the original region, not the zero-length one
   EXPECT_GT (output_buffer.size (), 0);
@@ -691,7 +707,8 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   const auto initial_event_count = output_buffer.size ();
   EXPECT_GT (initial_event_count, 0);
 
@@ -704,12 +721,13 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
 
   // Test processing events again
   output_buffer.clear ();
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should still have events
   EXPECT_GT (output_buffer.size (), 0);
-  EXPECT_LE (output_buffer.size (), initial_event_count); // Might be fewer due
-                                                          // to range filtering
+  // Account for possible all-notes-off event (16 extra events)
+  EXPECT_EQ (output_buffer.size (), initial_event_count + 16);
 }
 
 TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
@@ -742,7 +760,8 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from the MIDI region
   EXPECT_GE (output_buffer.size (), 1);
@@ -776,7 +795,8 @@ TEST_F (TimelineDataProviderTest, AudioInitialState)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Output should be all zeros
   for (size_t i = 0; i < output_left.size (); ++i)
@@ -805,7 +825,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyRegions)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Output should be all zeros
   for (size_t i = 0; i < output_left.size (); ++i)
@@ -838,7 +859,8 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioRegion)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have some audio output (not all zeros)
   bool has_audio = false;
@@ -878,7 +900,8 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsOutsideTimeRange)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since the region is outside the time range
   for (size_t i = 0; i < output_left.size (); ++i)
@@ -911,7 +934,8 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithOffset)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since the region is at tick 0
   // and we're processing frames 10100-10356
@@ -958,7 +982,8 @@ TEST_F (TimelineDataProviderTest, MultipleAudioRegionsInSequence)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have some audio output from overlapping regions
   bool has_audio = false;
@@ -1001,7 +1026,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio from the audio region
   bool has_audio = false;
@@ -1044,7 +1070,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheOutsideAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since region is outside affected range
   for (size_t i = 0; i < output_left.size (); ++i)
@@ -1084,7 +1111,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCachePartialOverlap)
     .nframes_ = 512
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio only from the first region
   bool has_audio = false;
@@ -1144,7 +1172,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheMultipleRegions)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio from all regions
   bool has_audio = false;
@@ -1202,7 +1231,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should still have audio from the original region, not the zero-length one
   bool has_audio = false;
@@ -1242,7 +1272,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio
   bool has_audio_initially = false;
@@ -1268,7 +1299,8 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
   // Test processing audio again
   std::fill (output_left.begin (), output_left.end (), 0.0f);
   std::fill (output_right.begin (), output_right.end (), 0.0f);
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should still have audio
   bool has_audio_after = false;
@@ -1316,7 +1348,8 @@ TEST_F (TimelineDataProviderTest, AudioPreciseTimingVerification)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio from the audio region
   bool has_audio = false;
@@ -1348,7 +1381,8 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should be all zeros initially
   for (size_t i = 0; i < output_left.size (); ++i)
@@ -1364,7 +1398,8 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
   provider_->generate_audio_events (*tempo_map_, empty_regions, range);
 
   // Process again to ensure no crash
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should still be all zeros
   for (size_t i = 0; i < output_left.size (); ++i)
@@ -1387,7 +1422,8 @@ TEST_F (TimelineDataProviderTest, ChordRegionInitialState)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
@@ -1421,7 +1457,8 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have some events from the chord region
   EXPECT_GE (output_buffer.size (), 0);
@@ -1467,7 +1504,8 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the chord region is outside the time range
   EXPECT_EQ (output_buffer.size (), 0);
@@ -1500,7 +1538,8 @@ TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the entire region is muted
   EXPECT_EQ (output_buffer.size (), 0);
@@ -1532,7 +1571,8 @@ TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (time_info, output_left, output_right);
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since the entire region is muted
   for (size_t i = 0; i < output_left.size (); ++i)
@@ -1575,7 +1615,8 @@ TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the entire chord region is muted
   EXPECT_EQ (output_buffer.size (), 0);
@@ -1616,7 +1657,8 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (time_info, output_buffer);
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from the unmuted note (pitch 64) but not from the muted
   // note (pitch 60)
@@ -1643,6 +1685,271 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
 
   EXPECT_FALSE (found_muted_note) << "Muted note (60) should not be present";
   EXPECT_TRUE (found_unmuted_note) << "Unmuted note (64) should be present";
+}
+
+// ========== Transport State Tests ==========
+
+TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
+{
+  // Create a MIDI region at tick 0
+  auto region = create_midi_region (0.0, 200.0);
+
+  // Create a vector of regions
+  std::vector<const MidiRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, regions, range);
+
+  // First, process with transport rolling - should generate MIDI events
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
+  EXPECT_GT (output_buffer.size (), 0);
+
+  // Clear the queued events for next test
+  output_buffer.clear ();
+
+  // Now process with transport stopped - should send all-notes-off
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Paused, output_buffer);
+
+  // Verify exactly 16 events were generated: the all-notes-off events
+  EXPECT_EQ (output_buffer.size (), 16);
+
+  // Verify it's the all-notes-off event
+  const auto &event = output_buffer.at (0);
+  EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0xB0); // Control change
+  EXPECT_EQ (event.raw_buffer_[1], 123);         // All notes off
+}
+
+TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
+{
+  // Create an audio region at tick 0
+  auto region = create_audio_region (0.0, 200.0);
+
+  // Create a vector of regions
+  std::vector<const AudioRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_audio_events (*tempo_map_, regions, range);
+
+  std::vector<float>    output_left (256, 0.0f);
+  std::vector<float>    output_right (256, 0.0f);
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  // First, process with transport rolling - should generate audio
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
+
+  // Should have some audio output
+  bool has_audio = false;
+  for (size_t i = 0; i < output_left.size (); ++i)
+    {
+      if (
+        std::abs (output_left[i]) > 0.001f
+        || std::abs (output_right[i]) > 0.001f)
+        {
+          has_audio = true;
+          break;
+        }
+    }
+  EXPECT_TRUE (has_audio);
+
+  // Clear buffers for next test
+  std::fill (output_left.begin (), output_left.end (), 0.0f);
+  std::fill (output_right.begin (), output_right.end (), 0.0f);
+
+  // Now process with transport stopped - should clear buffers
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Paused, output_left, output_right);
+
+  // Verify buffers are cleared
+  for (size_t i = 0; i < output_left.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (output_left[i], 0.0f);
+      EXPECT_FLOAT_EQ (output_right[i], 0.0f);
+    }
+}
+
+TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
+{
+  // Create a MIDI region at tick 0
+  auto region = create_midi_region (0.0, 200.0);
+
+  // Create a vector of regions
+  std::vector<const MidiRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, regions, range);
+
+  dsp::MidiEventVector output_buffer;
+
+  // First, process at position 0 with transport rolling
+  EngineProcessTimeInfo time_info1 = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (
+    time_info1, dsp::ITransport::PlayState::Rolling, output_buffer);
+  EXPECT_GT (output_buffer.size (), 0);
+
+  // Clear the queued events for next test
+  output_buffer.clear ();
+
+  // Now process at a different position (jump) with transport still rolling
+  EngineProcessTimeInfo time_info2 = {
+    .g_start_frame_ = 5120, // Jumped position
+    .g_start_frame_w_offset_ = 5120,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (
+    time_info2, dsp::ITransport::PlayState::Rolling, output_buffer);
+
+  // Verify exactly 16 events were generated: the all-notes-off events
+  EXPECT_EQ (output_buffer.size (), 16);
+
+  // Verify it's the all-notes-off event
+  const auto &event = output_buffer.at (0);
+  EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0xB0); // Control change
+  EXPECT_EQ (event.raw_buffer_[1], 123);         // All notes off
+}
+
+TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
+{
+  // Create a MIDI region at tick 0
+  auto region = create_midi_region (0.0, 400.0);
+
+  // Create a vector of regions
+  std::vector<const MidiRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, regions, range);
+
+  dsp::MidiEventVector output_buffer;
+
+  // First, process at position 0 with transport rolling
+  EngineProcessTimeInfo time_info1 = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (
+    time_info1, dsp::ITransport::PlayState::Rolling, output_buffer);
+  EXPECT_GT (output_buffer.size (), 0);
+
+  // Clear the queued events for next test
+  output_buffer.clear ();
+
+  // Now process at the expected next position with transport still rolling
+  EngineProcessTimeInfo time_info2 = {
+    .g_start_frame_ = 256, // Expected next position
+    .g_start_frame_w_offset_ = 256,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  provider_->process_midi_events (
+    time_info2, dsp::ITransport::PlayState::Rolling, output_buffer);
+
+  // Should have no events (no all-notes-off since position is continuous)
+  EXPECT_EQ (output_buffer.size (), 0);
+
+  // Should not have all-notes-off event
+  for (const auto &event : output_buffer)
+    {
+      EXPECT_FALSE (
+        (event.raw_buffer_[0] & 0xF0) == 0xB0 && event.raw_buffer_[1] == 123);
+    }
+}
+
+TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
+{
+  // Create a MIDI region at tick 0
+  auto region = create_midi_region (0.0, 200.0);
+
+  // Create a vector of regions
+  std::vector<const MidiRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_midi_events (*tempo_map_, regions, range);
+
+  dsp::MidiEventVector  output_buffer;
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  // Process with transport stopped (initial state) - should have no events
+  provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Paused, output_buffer);
+
+  // Should have no events since transport was never rolling
+  EXPECT_EQ (output_buffer.size (), 0);
+}
+
+TEST_F (TimelineDataProviderTest, NoAudioWhenTransportStopped)
+{
+  // Create an audio region at tick 0
+  auto region = create_audio_region (0.0, 200.0);
+
+  // Create a vector of regions
+  std::vector<const AudioRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  provider_->generate_audio_events (*tempo_map_, regions, range);
+
+  std::vector<float>    output_left (256, 0.0f);
+  std::vector<float>    output_right (256, 0.0f);
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  // Process with transport stopped - should clear buffers and not process audio
+  provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Paused, output_left, output_right);
+
+  // Verify buffers are cleared
+  for (size_t i = 0; i < output_left.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (output_left[i], 0.0f);
+      EXPECT_FLOAT_EQ (output_right[i], 0.0f);
+    }
 }
 
 } // namespace zrythm::structure::arrangement

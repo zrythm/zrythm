@@ -685,7 +685,8 @@ TrackProcessor::fill_midi_events (
 
   if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Timeline))
     {
-      timeline_data_provider_->process_midi_events (time_nfo, midi_events);
+      timeline_data_provider_->process_midi_events (
+        time_nfo, transport_.get_play_state (), midi_events);
     }
   if (
     ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::ClipLauncher))
@@ -714,7 +715,8 @@ TrackProcessor::fill_audio_events (
   if (ENUM_BITSET_TEST (active_providers, ActiveAudioProviders::Timeline))
     {
       timeline_data_provider_->process_audio_events (
-        time_nfo, stereo_ports.first, stereo_ports.second);
+        time_nfo, transport_.get_play_state (), stereo_ports.first,
+        stereo_ports.second);
     }
   if (ENUM_BITSET_TEST (active_providers, ActiveAudioProviders::ClipLauncher))
     {
@@ -737,35 +739,37 @@ TrackProcessor::fill_audio_events (
 void
 TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
+  // First, clear all output
+  if (is_audio ())
+    {
+      processing_caches_->audio_outs_rt_.front ()->buffers ()->clear ();
+    }
+  else if (is_midi ())
+    {
+      processing_caches_->midi_out_rt_->midi_events_.queued_events_.clear ();
+    }
+
   if (!enabled_provider_ ())
     {
       return;
     }
 
-  const bool should_fill_events =
-    transport_.get_play_state () == dsp::ITransport::PlayState::Rolling;
-
-  // fill ports based on arrangement (clip) contents
-  if (should_fill_events)
+  // Audio clips
+  if (is_audio ())
     {
-      // audio clips
-      if (is_audio ())
-        {
-          const auto &out_buf =
-            processing_caches_->audio_outs_rt_.front ()->buffers ();
-          fill_audio_events (
-            time_nfo,
-            std::make_pair (
-              std::span (out_buf->getWritePointer (0), out_buf->getNumSamples ()),
-              std::span (
-                out_buf->getWritePointer (1), out_buf->getNumSamples ())));
-        }
-      // MIDI clips
-      else if (has_piano_roll_port_)
-        {
-          auto &pr = get_piano_roll_port ();
-          fill_midi_events (time_nfo, pr.midi_events_.queued_events_);
-        }
+      const auto &out_buf =
+        processing_caches_->audio_outs_rt_.front ()->buffers ();
+      fill_audio_events (
+        time_nfo,
+        std::make_pair (
+          std::span (out_buf->getWritePointer (0), out_buf->getNumSamples ()),
+          std::span (out_buf->getWritePointer (1), out_buf->getNumSamples ())));
+    }
+  // MIDI clips
+  else if (has_piano_roll_port_)
+    {
+      auto &pr = get_piano_roll_port ();
+      fill_midi_events (time_nfo, pr.midi_events_.queued_events_);
     }
 
   // dequeue piano roll contents into MIDI output port

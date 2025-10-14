@@ -302,7 +302,7 @@ ClipPlaybackService::scheduleClipStop (
     return;
 
   // Queue stop playback with quantization in the clip launcher event
-  // provider Assuming this method exists as mentioned in the feedback
+  // provider
   processor->clip_playback_data_provider ().queue_stop_playback (quantize);
 
   // Start monitoring for the actual playback state change
@@ -310,20 +310,6 @@ ClipPlaybackService::scheduleClipStop (
 
   // Emit signal
   Q_EMIT clipStopped (track, clipSlot);
-}
-
-void
-ClipPlaybackService::clearClipEvents (tracks::Track * track)
-{
-  if (track == nullptr)
-    return;
-
-  auto * processor = track->get_track_processor ();
-  if (processor == nullptr)
-    return;
-
-  // Clear events using the clip launcher event provider
-  processor->clip_playback_data_provider ().clear_events ();
 }
 
 void

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/itransport.h"
 #include "dsp/timeline_data_cache.h"
 #include "structure/arrangement/region_serializer.h"
 #include "utils/expandable_tick_range.h"
@@ -173,23 +174,27 @@ public:
    * @brief Process MIDI events for the given time range.
    *
    * @param time_nfo Time information for processing.
+   * @param transport_state Current transport state.
    * @param output_buffer Output buffer for MIDI events.
    */
   void process_midi_events (
     const EngineProcessTimeInfo &time_nfo,
-    dsp::MidiEventVector        &output_buffer);
+    dsp::ITransport::PlayState   transport_state,
+    dsp::MidiEventVector        &output_buffer) noexcept [[clang::nonblocking]];
 
   /**
    * @brief Process audio events for the given time range.
    *
    * @param time_nfo Time information for processing.
+   * @param transport_state Current transport state.
    * @param output_left Left channel output buffer.
    * @param output_right Right channel output buffer.
    */
   void process_audio_events (
     const EngineProcessTimeInfo &time_nfo,
+    dsp::ITransport::PlayState   transport_state,
     std::span<float>             output_left,
-    std::span<float>             output_right);
+    std::span<float>             output_right) noexcept [[clang::nonblocking]];
 
 private:
   /**
@@ -273,6 +278,14 @@ private:
     active_audio_regions_;
 
   dsp::TimelineDataCache unified_playback_cache_;
+
+  /** Last transport state we've seen */
+  dsp::ITransport::PlayState last_seen_transport_state_{
+    dsp::ITransport::PlayState::Paused
+  };
+
+  /** Next expected transport position (for detecting jumps) */
+  units::sample_t next_expected_transport_position_;
 };
 
 } // namespace zrythm::structure::arrangement
