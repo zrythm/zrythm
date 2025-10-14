@@ -501,22 +501,24 @@ public:
     const auto    ticks_since_sig = tick - sigEvent.tick;
     const int64_t bars_since_sig =
       ticks_since_sig.in (units::ticks) / ticks_per_bar;
-    const int bar = cumulative_bars + bars_since_sig;
+    const auto bar = cumulative_bars + bars_since_sig;
 
     // Calculate position within current bar
     const int64_t ticks_in_bar =
       ticks_since_sig.in (units::ticks) % ticks_per_bar;
-    const int beat = 1 + static_cast<int> (ticks_in_bar / ticks_per_beat);
+    const auto beat = 1 + (ticks_in_bar / ticks_per_beat);
 
     // Calculate position within current beat
     const int64_t ticks_in_beat = ticks_in_bar % ticks_per_beat;
-    const int     sixteenth =
-      1
-      + static_cast<int> (ticks_in_beat / ticks_per_sixteenth_.in (units::ticks));
-    const int tick_in_sixteenth =
-      static_cast<int> (ticks_in_beat % ticks_per_sixteenth_.in (units::ticks));
+    const auto    sixteenth =
+      1 + (ticks_in_beat / ticks_per_sixteenth_.in (units::ticks));
+    const auto tick_in_sixteenth =
+      (ticks_in_beat % ticks_per_sixteenth_.in (units::ticks));
 
-    return { bar, beat, sixteenth, tick_in_sixteenth };
+    return {
+      static_cast<int> (bar), static_cast<int> (beat),
+      static_cast<int> (sixteenth), static_cast<int> (tick_in_sixteenth)
+    };
   }
 
   MusicalPosition samples_to_musical_position (units::sample_t samples) const

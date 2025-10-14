@@ -182,6 +182,8 @@ The architecture ensures real-time safety through:
 5. **Event Provider Pattern**: `TimelineDataProvider` abstracts the cache access pattern
 6. **Independent Copies**: Audio data is copied into the cache to prevent threading issues
 7. **Unified Processing**: Both MIDI and audio use the same threading and caching patterns
+8. **Transport State Handling**: Providers detect transport state transitions and send all-notes-off when stopping
+9. **Buffer Management**: Providers add to buffers rather than clearing them (caller's responsibility)
 
 ## Event Types Support
 
@@ -216,6 +218,8 @@ The architecture is designed to support additional event types:
 - **Provider Safety**: `TimelineDataProvider` handles edge cases in event processing
 - **Audio Buffer Independence**: Ensures cached audio buffers are independent copies
 - **Cross-Type Validation**: Consistent error handling across MIDI and audio event types
+- **Transport State Safety**: Providers handle transport state transitions safely, sending all-notes-off on all 16 MIDI channels when transport stops
+- **Buffer Clearing**: Audio/MIDI buffers are properly cleared by the TrackProcessor at the start of every cycle to prevent stuck audio
 
 ## Usage Examples
 

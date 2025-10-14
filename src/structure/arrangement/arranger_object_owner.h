@@ -90,7 +90,8 @@ public:
     auto       obj_ref = *it_to_remove;
     const auto remove_idx = std::distance (
       self.ArrangerObjectOwner<ChildT>::children_.begin (), it_to_remove);
-    self.ArrangerObjectOwner<ChildT>::list_model_->removeRows (remove_idx, 1);
+    self.ArrangerObjectOwner<ChildT>::list_model_->removeRows (
+      static_cast<int> (remove_idx), 1);
     return obj_ref;
   }
 
@@ -107,7 +108,8 @@ public:
   void add_object (this SelfT &self, const ArrangerObjectUuidReference &obj_ref)
   {
     self.ArrangerObjectOwner<ChildT>::insert_object (
-      obj_ref, self.ArrangerObjectOwner<ChildT>::children_.size ());
+      obj_ref,
+      static_cast<int> (self.ArrangerObjectOwner<ChildT>::children_.size ()));
   }
 
   void clear_objects () { list_model_->clear (); }

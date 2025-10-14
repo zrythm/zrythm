@@ -288,7 +288,7 @@ sequenceDiagram
 
 ### Transport Position Handling
 
-The ClipLauncherEventProvider tracks timeline position changes and recalculates the internal buffer position accordingly for both MIDI and audio:
+The ClipLauncherEventProvider tracks timeline position changes and recalculates the internal buffer position accordingly for both MIDI and audio. It also handles transport state transitions to prevent hanging notes:
 
 ```mermaid
 stateDiagram-v2
@@ -296,6 +296,13 @@ stateDiagram-v2
     Playing --> Playing: Normal playback
     Playing --> Recalculating: Transport position change
     Recalculating --> Playing: Position updated
+    Playing --> Stopped: Transport stops
+    Stopped --> Playing: Transport resumes
+
+    note right of Stopped
+        Send all-notes-off on all 16 MIDI channels
+        Reset internal playback state
+    end note
 
     note right of Recalculating
         Calculate time since launch
@@ -343,6 +350,8 @@ The system ensures realtime safety by:
 4. **Non-blocking Operations**: All operations that might block are performed outside the audio thread
 5. **Transport Position Tracking**: Efficient tracking of timeline position changes without blocking
 6. **Unified Event Processing**: Both MIDI and audio events use the same thread-safe caching mechanisms
+7. **Transport State Transitions**: Detect when transport stops/starts and send appropriate MIDI messages (all-notes-off)
+8. **Buffer Management**: Providers add to buffers while TrackProcessor handles clearing at cycle boundaries
 
 ## Data Serialization
 
