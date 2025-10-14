@@ -1041,6 +1041,9 @@ endif()
 configure_file(
   src/zrythm-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/zrythm-config.h)
 
+# Trick to automatically git-ignore any build dir
+file(WRITE ${CMAKE_BINARY_DIR}/.gitignore "*")
+
 # Plugins for testing
 set(ext_lv2_plugins
   "ams_lfo|AMS LFO|http://github.com/blablack/ams-lv2/lfo"
