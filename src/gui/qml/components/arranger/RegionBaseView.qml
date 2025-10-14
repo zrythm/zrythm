@@ -9,11 +9,14 @@ ArrangerObjectBaseView {
   id: root
 
   required property ClipEditor clipEditor   // FIXME: is this needed?
-  property alias regionContent: regionContent.data
-  property alias regionContentContainer: regionContent
-  property string regionName: arrangerObject.name.name
+  readonly property alias regionContent: regionContent.data
+  readonly property alias regionContentContainer: regionContent
+  readonly property string regionName: arrangerObject.name.name
   readonly property real regionTicks: arrangerObject.bounds.length.ticks
+  readonly property real contentHeight: regionContentContainer.height
+  readonly property real contentWidth: regionContentContainer.width
 
+  clip: true
   implicitHeight: 10
   implicitWidth: 10
 
@@ -23,7 +26,7 @@ ArrangerObjectBaseView {
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
-    color: QmlUtils.makeBrighter(root.objectColor, Style.darkMode ? 0.6 : 1.4)
+    color: QmlUtils.adjustOpacity(QmlUtils.makeBrighter(root.objectColor, Style.darkMode ? 0.6 : 1.4), 0.7)
     height: nameRect.height
     topLeftRadius: Style.toolButtonRadius
     topRightRadius: Style.toolButtonRadius
@@ -33,13 +36,9 @@ ArrangerObjectBaseView {
   Rectangle {
     id: bottomBackgroundRect
 
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    bottomLeftRadius: Style.toolButtonRadius
-    bottomRightRadius: Style.toolButtonRadius
+    anchors.fill: parent
+    radius: Style.toolButtonRadius
     color: root.objectColor
-    height: parent.height - topBackgroundRect.height
     z: 1
 
     Item {

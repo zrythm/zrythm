@@ -64,6 +64,8 @@ target_sources(zrythm_gui_lib
     ui.cpp
     unified_arranger_objects_model.h
     unified_arranger_objects_model.cpp
+    waveform_channel.h
+    waveform_channel.cpp
     waveform_viewer.h
     waveform_viewer.cpp
     zrythm_application.h

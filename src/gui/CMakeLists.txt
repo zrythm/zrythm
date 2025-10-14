@@ -195,6 +195,7 @@ set(rel_qml_file_paths
   components/basic/ZrythmResizablePanel.qml
   components/basic/SplitButton.qml
   components/basic/ZrythmToolBar.qml
+  components/arranger/AudioRegionContent.qml
   components/arranger/AudioRegionView.qml
   components/arranger/AutomationRegionView.qml
   components/arranger/Arranger.qml
@@ -204,6 +205,7 @@ set(rel_qml_file_paths
   components/arranger/MarkerView.qml
   components/arranger/MidiArranger.qml
   components/arranger/MidiNoteView.qml
+  components/arranger/MidiRegionContent.qml
   components/arranger/MidiRegionView.qml
   components/arranger/RegionBaseView.qml
   components/arranger/ScaleObjectView.qml

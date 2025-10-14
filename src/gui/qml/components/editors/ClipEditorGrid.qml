@@ -16,7 +16,7 @@ GridLayout {
   readonly property var region: clipEditor.region
   readonly property var track: clipEditor.track
 
-  columns: 3
+  columns: 2
   rows: 2
 
   RowLayout {
@@ -43,7 +43,6 @@ GridLayout {
   ZrythmToolBar {
     id: editorToolbar
 
-    Layout.columnSpan: 2
     Layout.fillWidth: true
 
     centerItems: [

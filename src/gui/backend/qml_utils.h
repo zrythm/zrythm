@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include "gui/backend/waveform_channel.h"
+
 #include <QObject>
+#include <QVector>
 #include <QtQmlIntegration>
 
 class QmlUtils : public QObject
@@ -23,4 +26,16 @@ public:
 
   Q_INVOKABLE static QColor saturate (const QColor &color, float perc);
   Q_INVOKABLE static QColor makeBrighter (const QColor &color, float perc);
+  Q_INVOKABLE static QColor
+  adjustOpacity (const QColor &color, float newOpacity);
+
+  /**
+   * @brief Generate waveform data for an AudioRegion
+   *
+   * @param audioRegion The AudioRegion object (as QObject*)
+   * @param pixelWidth The width in pixels to generate waveform data for
+   * @return Vector of WaveformChannel pointers (one per audio channel)
+   */
+  Q_INVOKABLE static QVector<gui::WaveformChannel *>
+  getAudioRegionWaveform (QObject * audioRegion, int pixelWidth);
 };

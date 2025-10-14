@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import Zrythm
@@ -28,6 +30,30 @@ Control {
       return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.activeFocus, tapHandler.pressed);
     }
     radius: Style.textFieldRadius
+
+    Loader {
+      active: root.clipSlot.region !== null && root.clipSlot.region.type === ArrangerObject.MidiRegion
+      anchors.fill: parent
+      visible: active
+
+      sourceComponent: MidiRegionContent {
+        contentHeight: parent.height
+        contentWidth: parent.width
+        region: root.clipSlot.region as MidiRegion
+      }
+    }
+
+    Loader {
+      active: root.clipSlot.region !== null && root.clipSlot.region.type === ArrangerObject.AudioRegion
+      anchors.fill: parent
+      visible: active
+
+      sourceComponent: AudioRegionContent {
+        contentHeight: parent.height
+        contentWidth: parent.width
+        region: root.clipSlot.region as AudioRegion
+      }
+    }
 
     ClipLaunchButton {
       id: playButton

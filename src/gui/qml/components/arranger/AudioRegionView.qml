@@ -1,13 +1,19 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
 
 RegionBaseView {
   id: root
 
   property bool isLanePart: false
-  required property var lane
+  required property TrackLane lane
+  readonly property AudioRegion region: arrangerObject as AudioRegion
+
+  regionContent: AudioRegionContent {
+    contentHeight: root.contentHeight
+    contentWidth: root.contentWidth
+    region: root.region
+  }
 }
