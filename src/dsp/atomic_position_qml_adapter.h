@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <functional>
+#include <optional>
+
 #include "dsp/atomic_position.h"
 
 #include <QtQmlIntegration>
@@ -22,10 +25,13 @@ class AtomicPositionQmlAdapter : public QObject
   QML_UNCREATABLE ("")
 
 public:
+  using ConstraintFunction =
+    std::function<units::precise_tick_t (units::precise_tick_t)>;
+
   explicit AtomicPositionQmlAdapter (
-    AtomicPosition &atomicPos,
-    bool            allowNegative,
-    QObject *       parent = nullptr);
+    AtomicPosition                   &atomicPos,
+    std::optional<ConstraintFunction> constraints = std::nullopt,
+    QObject *                         parent = nullptr);
 
   double           ticks () const;
   void             setTicks (double ticks);
@@ -58,10 +64,17 @@ private:
   AtomicPosition &atomic_pos_; // Reference to existing DSP object
 
   /**
-   * @brief Whether to allow negative positions.
+   * @brief Optional constraint function for position values.
    *
-   * If this is false, negative values will be clamped to 0.
+   * If provided, this function takes a tick value and returns the constrained
+   * tick value. This allows implementing complex constraints like:
+   * - Minimum/maximum values
+   * - Loop point constraints (loop end must be after loop start)
+   * - Minimum object lengths
+   * - Runtime-changing constraints
+   *
+   * If std::nullopt, no constraints are applied.
    */
-  bool allow_negative_;
+  std::optional<ConstraintFunction> constraints_;
 };
 } // namespace zrythm::dsp

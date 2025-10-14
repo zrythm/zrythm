@@ -25,7 +25,7 @@ protected:
       std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
     start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
-      *start_position, true, parent.get ());
+      *start_position, std::nullopt, parent.get ());
 
     // Create bounded object with proper parenting
     obj = std::make_unique<ArrangerObjectBounds> (*start_position_adapter);
@@ -142,7 +142,7 @@ TEST_F (ArrangerObjectBoundsTest, Serialization)
   // Create new object from serialized data
   dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
   dsp::AtomicPositionQmlAdapter new_start_adapter (
-    new_start_pos, false, parent.get ());
+    new_start_pos, std::nullopt, parent.get ());
   ArrangerObjectBounds new_obj (new_start_adapter);
   from_json (j, new_obj);
 
@@ -150,22 +150,41 @@ TEST_F (ArrangerObjectBoundsTest, Serialization)
   EXPECT_DOUBLE_EQ (new_obj.length ()->ticks (), 1920.0);
 }
 
+// Test minimum length constraint
+TEST_F (ArrangerObjectBoundsTest, MinimumLengthConstraint)
+{
+  // Test that length is constrained to at least 1 tick
+  obj->length ()->setTicks (0.0);
+  EXPECT_GT (obj->length ()->ticks (), 0.0); // Should be at least 1 tick
+  EXPECT_GE (obj->length ()->samples (), 1); // Should have at least 1 sample
+
+  // Test with very small values
+  obj->length ()->setTicks (0.1);
+  EXPECT_GE (obj->length ()->ticks (), 1.0); // Should be clamped to 1 tick
+
+  // Test with negative values
+  obj->length ()->setTicks (-100.0);
+  EXPECT_GE (obj->length ()->ticks (), 1.0); // Should be clamped to 1 tick
+
+  // Test with different units
+  obj->length ()->setSeconds (0.0);
+  EXPECT_GE (obj->length ()->ticks (), 1.0); // Should be at least 1 tick
+
+  // Test that values >= 1 tick work normally
+  obj->length ()->setTicks (2.0);
+  EXPECT_EQ (obj->length ()->ticks (), 2.0);
+
+  obj->length ()->setTicks (960.0); // 1 beat
+  EXPECT_EQ (obj->length ()->ticks (), 960.0);
+}
+
 // Test edge cases
 TEST_F (ArrangerObjectBoundsTest, EdgeCases)
 {
-  // Zero-length object
+  // Zero-length object (should be constrained to minimum)
   obj->length ()->setSamples (0);
-  EXPECT_FALSE (obj->is_hit (units::samples (1000)));
-  EXPECT_TRUE (obj->is_hit (units::samples (1000), true));
-  EXPECT_FALSE (obj->is_hit (units::samples (1001), true));
-
-  // Negative length (should clamp to 0)
-  obj->length ()->setSamples (-100);
-  EXPECT_EQ (obj->length ()->samples (), 0);
-  EXPECT_EQ (
-    obj->get_end_position_samples (false),
-    units::samples (999)); // Start position remains
-  EXPECT_EQ (obj->get_end_position_samples (true), units::samples (1000));
+  EXPECT_GT (obj->length ()->samples (), 0); // Should be at least 1 sample
+  EXPECT_TRUE (obj->is_hit (units::samples (1000)));
 
   // Large values
   obj->length ()->setSamples (1e9);

@@ -326,7 +326,7 @@ TEST_F (ArrangerObjectTest, SignalConnections)
   EXPECT_EQ (propertiesChangedSpy.count (), 1);
   propertiesChangedSpy.clear ();
 
-  // Test bounds length change signal (may produce > 1 signals due to trackLength)
+  // Test bounds length change signal (may produce > 1 signals due to trackBounds)
   signal_obj->bounds ()->length ()->setTicks (200.0);
   EXPECT_GE (propertiesChangedSpy.count (), 1);
   propertiesChangedSpy.clear ();

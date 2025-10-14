@@ -10,12 +10,22 @@ ArrangerObjectFadeRange::ArrangerObjectFadeRange (
   QObject *                                           parent)
     : QObject (parent), start_offset_ (time_conversion_funcs),
       start_offset_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (start_offset_, false, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          start_offset_,
+          // Fade offsets must be non-negative
+          [] (units::precise_tick_t ticks) {
+            return std::max (ticks, units::ticks (0.0));
+          },
+          this)),
       end_offset_ (time_conversion_funcs),
       end_offset_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (end_offset_, false, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          end_offset_,
+          // Fade offsets must be non-negative
+          [] (units::precise_tick_t ticks) {
+            return std::max (ticks, units::ticks (0.0));
+          },
+          this)),
       fade_in_opts_adapter_ (
         utils::make_qobject_unique<
           dsp::CurveOptionsQmlAdapter> (fade_in_opts_, this)),

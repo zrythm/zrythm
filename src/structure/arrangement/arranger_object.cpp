@@ -35,7 +35,7 @@ ArrangerObject::ArrangerObject (
       position_ (*time_conversion_funcs_),
       position_adapter_ (
         utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (position_, true, this))
+          dsp::AtomicPositionQmlAdapter> (position_, std::nullopt, this))
 {
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Bounds))
     {

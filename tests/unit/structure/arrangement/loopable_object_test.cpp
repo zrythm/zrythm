@@ -27,7 +27,7 @@ protected:
       std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
     start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
-      *start_position, true, parent.get ());
+      *start_position, std::nullopt, parent.get ());
 
     // Create bounded object for loop range
     bounds = std::make_unique<ArrangerObjectBounds> (*start_position_adapter);
@@ -56,43 +56,65 @@ TEST_F (ArrangerObjectLoopRangeTest, InitialState)
   EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0);
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 5000); // Should track
                                                                 // bounds length
-  EXPECT_TRUE (loop_range->trackLength ()); // Default should be true
+  EXPECT_TRUE (loop_range->trackBounds ()); // Default should be true
   EXPECT_FALSE (loop_range->is_looped ());
 }
 
-// Test trackLength property and behavior
-TEST_F (ArrangerObjectLoopRangeTest, TrackLengthBehavior)
+// Test trackBounds property and behavior
+TEST_F (ArrangerObjectLoopRangeTest, TrackBoundsBehavior)
 {
-  // Default behavior: loop end tracks bounds length
+  // Default behavior: all positions track bounds when enabled
   bounds->length ()->setSamples (6000);
-  EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 6000);
+  EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 0); // Should be 0
+  EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0); // Should be 0
+  EXPECT_EQ (
+    loop_range->loopEndPosition ()->samples (), 6000); // Should track bounds
 
-  // Change loop end manually
+  // Change positions manually
+  loop_range->clipStartPosition ()->setSamples (100);
+  loop_range->loopStartPosition ()->setSamples (200);
   loop_range->loopEndPosition ()->setSamples (4000);
+  EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 100);
+  EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 200);
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 4000);
 
-  // When trackLength is enabled, changing bounds length should update loop end
+  // When trackBounds is enabled, changing bounds length should reset all
+  // positions
   bounds->length ()->setSamples (7000);
-  EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 7000);
+  EXPECT_EQ (
+    loop_range->clipStartPosition ()->samples (), 0); // Should reset to 0
+  EXPECT_EQ (
+    loop_range->loopStartPosition ()->samples (), 0); // Should reset to 0
+  EXPECT_EQ (
+    loop_range->loopEndPosition ()->samples (), 7000); // Should track bounds
 
-  // Disable trackLength
-  loop_range->setTrackLength (false);
-  EXPECT_FALSE (loop_range->trackLength ());
+  // Disable trackBounds
+  loop_range->setTrackBounds (false);
+  EXPECT_FALSE (loop_range->trackBounds ());
 
-  // Changing bounds length should not affect loop end
+  // Changing bounds length should not affect positions
   bounds->length ()->setSamples (8000);
+  EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 0);
+  EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0);
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 7000);
 
-  // Manually change loop end while tracking disabled
+  // Manually change positions while tracking disabled
+  loop_range->clipStartPosition ()->setSamples (150);
+  loop_range->loopStartPosition ()->setSamples (250);
   loop_range->loopEndPosition ()->setSamples (7500);
+  EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 150);
+  EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 250);
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 7500);
 
-  // Re-enable trackLength
-  loop_range->setTrackLength (true);
-  EXPECT_TRUE (loop_range->trackLength ());
+  // Re-enable trackBounds
+  loop_range->setTrackBounds (true);
+  EXPECT_TRUE (loop_range->trackBounds ());
   EXPECT_EQ (
-    loop_range->loopEndPosition ()->samples (),
-    8000); // Should update to current bounds length
+    loop_range->clipStartPosition ()->samples (), 0); // Should reset to 0
+  EXPECT_EQ (
+    loop_range->loopStartPosition ()->samples (), 0); // Should reset to 0
+  EXPECT_EQ (
+    loop_range->loopEndPosition ()->samples (), 8000); // Should track bounds
 }
 
 // Test is_looped detection
@@ -116,8 +138,10 @@ TEST_F (ArrangerObjectLoopRangeTest, IsLooped)
   EXPECT_TRUE (loop_range->is_looped ());
 
   // Reset to default
-  loop_range->setTrackLength (true);
+  loop_range->setTrackBounds (true);
   bounds->length ()->setSamples (5000);
+  EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 0);
+  EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0);
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 5000);
   EXPECT_FALSE (loop_range->is_looped ());
 }
@@ -126,7 +150,7 @@ TEST_F (ArrangerObjectLoopRangeTest, IsLooped)
 TEST_F (ArrangerObjectLoopRangeTest, LengthCalculations)
 {
   // Disable tracking for manual setup
-  loop_range->setTrackLength (false);
+  loop_range->setTrackBounds (false);
 
   loop_range->loopStartPosition ()->setSamples (1000);
   loop_range->loopEndPosition ()->setSamples (3000);
@@ -142,7 +166,7 @@ TEST_F (ArrangerObjectLoopRangeTest, LengthCalculations)
 TEST_F (ArrangerObjectLoopRangeTest, PositionOperations)
 {
   // Disable tracking for manual setup
-  loop_range->setTrackLength (false);
+  loop_range->setTrackBounds (false);
 
   loop_range->clipStartPosition ()->setSamples (500);
   loop_range->loopStartPosition ()->setSamples (1000);
@@ -157,7 +181,7 @@ TEST_F (ArrangerObjectLoopRangeTest, PositionOperations)
 TEST_F (ArrangerObjectLoopRangeTest, GetNumLoops)
 {
   // Setup loop: 1000-2000 samples (loop length = 1000)
-  loop_range->setTrackLength (false);
+  loop_range->setTrackBounds (false);
   loop_range->loopStartPosition ()->setSamples (1000);
   loop_range->loopEndPosition ()->setSamples (2000);
   loop_range->clipStartPosition ()->setSamples (0);
@@ -181,7 +205,7 @@ TEST_F (ArrangerObjectLoopRangeTest, GetNumLoops)
 TEST_F (ArrangerObjectLoopRangeTest, Serialization)
 {
   // Set initial state
-  loop_range->setTrackLength (false);
+  loop_range->setTrackBounds (false);
   loop_range->clipStartPosition ()->setSamples (500);
   loop_range->loopStartPosition ()->setSamples (1000);
   loop_range->loopEndPosition ()->setSamples (2000);
@@ -193,7 +217,7 @@ TEST_F (ArrangerObjectLoopRangeTest, Serialization)
   // Create new object from serialized data
   dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
   dsp::AtomicPositionQmlAdapter new_start_adapter (
-    new_start_pos, true, parent.get ());
+    new_start_pos, std::nullopt, parent.get ());
   ArrangerObjectBounds    new_bounds (new_start_adapter);
   ArrangerObjectLoopRange new_loop_range (new_bounds);
   from_json (j, new_loop_range);
@@ -202,30 +226,30 @@ TEST_F (ArrangerObjectLoopRangeTest, Serialization)
   EXPECT_EQ (new_loop_range.clipStartPosition ()->samples (), 500);
   EXPECT_EQ (new_loop_range.loopStartPosition ()->samples (), 1000);
   EXPECT_EQ (new_loop_range.loopEndPosition ()->samples (), 2000);
-  EXPECT_FALSE (new_loop_range.trackLength ());
+  EXPECT_FALSE (new_loop_range.trackBounds ());
 }
 
-// Test trackLengthChanged signal
-TEST_F (ArrangerObjectLoopRangeTest, TrackLengthSignal)
+// Test trackBoundsChanged signal
+TEST_F (ArrangerObjectLoopRangeTest, TrackBoundsSignal)
 {
-  testing::MockFunction<void (bool)> mockTrackLengthChanged;
+  testing::MockFunction<void (bool)> mockTrackBoundsChanged;
 
   QObject::connect (
-    loop_range.get (), &ArrangerObjectLoopRange::trackLengthChanged,
-    parent.get (), mockTrackLengthChanged.AsStdFunction ());
+    loop_range.get (), &ArrangerObjectLoopRange::trackBoundsChanged,
+    parent.get (), mockTrackBoundsChanged.AsStdFunction ());
 
-  EXPECT_CALL (mockTrackLengthChanged, Call (false)).Times (1);
-  loop_range->setTrackLength (false);
+  EXPECT_CALL (mockTrackBoundsChanged, Call (false)).Times (1);
+  loop_range->setTrackBounds (false);
 
-  EXPECT_CALL (mockTrackLengthChanged, Call (true)).Times (1);
-  loop_range->setTrackLength (true);
+  EXPECT_CALL (mockTrackBoundsChanged, Call (true)).Times (1);
+  loop_range->setTrackBounds (true);
 }
 
 // Test edge cases
 TEST_F (ArrangerObjectLoopRangeTest, EdgeCases)
 {
   // Zero-length loop
-  loop_range->setTrackLength (false);
+  loop_range->setTrackBounds (false);
   loop_range->loopStartPosition ()->setSamples (0);
   loop_range->loopEndPosition ()->setSamples (0);
   EXPECT_EQ (
@@ -241,15 +265,23 @@ TEST_F (ArrangerObjectLoopRangeTest, EdgeCases)
   EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0);
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 0);
 
-  // Loop start > loop end
-  loop_range->loopStartPosition ()->setSamples (3000);
-  loop_range->loopEndPosition ()->setSamples (1000);
+  // Loop start > loop end (should be constrained)
+  loop_range->loopEndPosition ()->setSamples (3000); // Set loop end first
+  loop_range->loopStartPosition ()->setSamples (
+    4000); // Try to set loop start > loop end
+  EXPECT_EQ (
+    loop_range->loopStartPosition ()->samples (),
+    3000); // Should be clamped to loop end
   EXPECT_EQ (loop_range->get_loop_length_in_frames (), units::samples (0));
 
   // Enabling tracking with invalid bounds
   bounds->length ()->setSamples (-100);
-  loop_range->setTrackLength (true);
-  EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 0); // Should clamp to 0
+  loop_range->setTrackBounds (true);
+  EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 0); // Should be 0
+  EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0); // Should be 0
+  EXPECT_DOUBLE_EQ (
+    loop_range->loopEndPosition ()->ticks (),
+    1); // Should be min length (1 tick)
 }
 
 } // namespace zrythm::structure::arrangement

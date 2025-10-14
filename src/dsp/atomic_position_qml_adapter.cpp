@@ -6,10 +6,11 @@
 namespace zrythm::dsp
 {
 AtomicPositionQmlAdapter::AtomicPositionQmlAdapter (
-  AtomicPosition &atomicPos,
-  bool            allowNegative,
-  QObject *       parent)
-    : QObject (parent), atomic_pos_ (atomicPos), allow_negative_ (allowNegative)
+  AtomicPosition                   &atomicPos,
+  std::optional<ConstraintFunction> constraints,
+  QObject *                         parent)
+    : QObject (parent), atomic_pos_ (atomicPos),
+      constraints_ (std::move (constraints))
 {
 }
 
@@ -22,12 +23,13 @@ AtomicPositionQmlAdapter::ticks () const
 void
 AtomicPositionQmlAdapter::setTicks (double ticks)
 {
-  if (!allow_negative_ && ticks < 0.0)
+  auto tick_value = units::ticks (ticks);
+  if (constraints_)
     {
-      ticks = 0.0;
+      tick_value = (*constraints_) (tick_value);
     }
 
-  atomic_pos_.set_ticks (units::ticks (ticks));
+  atomic_pos_.set_ticks (tick_value);
   Q_EMIT positionChanged ();
 }
 
@@ -40,12 +42,18 @@ AtomicPositionQmlAdapter::seconds () const
 void
 AtomicPositionQmlAdapter::setSeconds (double seconds)
 {
-  if (!allow_negative_ && seconds < 0.0)
+  auto second_value = units::seconds (seconds);
+  if (constraints_)
     {
-      seconds = 0.0;
+      // Convert to ticks, apply constraint, convert back to seconds
+      auto tick_value =
+        atomic_pos_.time_conversion_functions ().seconds_to_tick (second_value);
+      tick_value = (*constraints_) (tick_value);
+      second_value =
+        atomic_pos_.time_conversion_functions ().tick_to_seconds (tick_value);
     }
 
-  atomic_pos_.set_seconds (units::seconds (seconds));
+  atomic_pos_.set_seconds (second_value);
   Q_EMIT positionChanged ();
 }
 
@@ -58,12 +66,18 @@ AtomicPositionQmlAdapter::samples () const
 void
 AtomicPositionQmlAdapter::setSamples (double samples)
 {
-  if (!allow_negative_ && samples < 0.0)
+  auto sample_value = units::samples (samples);
+  if (constraints_)
     {
-      samples = 0.0;
+      // Convert to ticks, apply constraint, convert back to samples
+      auto tick_value =
+        atomic_pos_.time_conversion_functions ().samples_to_tick (sample_value);
+      tick_value = (*constraints_) (tick_value);
+      sample_value =
+        atomic_pos_.time_conversion_functions ().tick_to_samples (tick_value);
     }
 
-  atomic_pos_.set_samples (units::samples (samples));
+  atomic_pos_.set_samples (sample_value);
   Q_EMIT positionChanged ();
 }
 

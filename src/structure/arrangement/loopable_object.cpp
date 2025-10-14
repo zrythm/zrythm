@@ -11,42 +11,65 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
     : QObject (parent), bounds_ (bounds),
       clip_start_pos_ (bounds.length ()->position ().time_conversion_functions ()),
       clip_start_pos_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (clip_start_pos_, false, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          clip_start_pos_,
+          // Clip start can be anywhere, just enforce non-negative
+          [] (units::precise_tick_t ticks) {
+            return std::max (ticks, units::ticks (0.0));
+          },
+          this)),
       loop_start_pos_ (bounds.length ()->position ().time_conversion_functions ()),
       loop_start_pos_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (loop_start_pos_, false, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          loop_start_pos_,
+          // Loop start must be before loop end and non-negative
+          [this] (units::precise_tick_t ticks) {
+            ticks = std::max (ticks, units::ticks (0.0));
+            ticks = std::min (ticks, loop_end_pos_.get_ticks ());
+            return ticks;
+          },
+          this)),
       loop_end_pos_ (bounds.length ()->position ().time_conversion_functions ()),
       loop_end_pos_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (loop_end_pos_, false, this))
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          loop_end_pos_,
+          // Loop end must be after loop start and non-negative
+          [this] (units::precise_tick_t ticks) {
+            ticks = std::max (ticks, units::ticks (0.0));
+            ticks = std::max (ticks, loop_start_pos_.get_ticks ());
+            return ticks;
+          },
+          this))
 {
   QObject::connect (
-    this, &ArrangerObjectLoopRange::trackLengthChanged, this,
+    this, &ArrangerObjectLoopRange::trackBoundsChanged, this,
     [this] (bool track) {
-      if (track && !track_length_connection_.has_value ())
+      if (track && !track_bounds_connection_.has_value ())
         {
-          track_length_connection_ = QObject::connect (
+          track_bounds_connection_ = QObject::connect (
             bounds_.length (), &dsp::AtomicPositionQmlAdapter::positionChanged,
-            this,
-            [this] () { loopEndPosition ()->setTicks (length ()->ticks ()); });
+            this, [this] () {
+              // Set all positions to defaults when tracking bounds
+              clipStartPosition ()->setTicks (0.0);
+              loopStartPosition ()->setTicks (0.0);
+              loopEndPosition ()->setTicks (length ()->ticks ());
+            });
 
-          // also emit the signal to update the loop end position since we are
+          // also emit the signal to update all positions since we are
           // now tracking the bounds
           Q_EMIT bounds_.length ()->positionChanged ();
         }
-      else if (!track && track_length_connection_.has_value ())
+      else if (!track && track_bounds_connection_.has_value ())
         {
-          QObject::disconnect (track_length_connection_.value ());
-          track_length_connection_.reset ();
+          QObject::disconnect (track_bounds_connection_.value ());
+          track_bounds_connection_.reset ();
         }
     });
 
-  Q_EMIT trackLengthChanged (track_length_);
+  Q_EMIT trackBoundsChanged (track_bounds_);
 
   QObject::connect (
-    this, &ArrangerObjectLoopRange::trackLengthChanged, this,
+    this, &ArrangerObjectLoopRange::trackBoundsChanged, this,
     &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
   QObject::connect (
     loopStartPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,

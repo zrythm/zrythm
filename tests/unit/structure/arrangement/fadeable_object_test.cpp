@@ -59,6 +59,31 @@ TEST_F (ArrangerObjectFadeRangeTest, SetOffsets)
   EXPECT_EQ (range->endOffset ()->samples (), 2000);
 }
 
+// Test non-negative constraint
+TEST_F (ArrangerObjectFadeRangeTest, NonNegativeConstraint)
+{
+  // Test that negative values are clamped to 0
+  range->startOffset ()->setSamples (-100);
+  EXPECT_EQ (range->startOffset ()->samples (), 0);
+
+  range->endOffset ()->setSamples (-200);
+  EXPECT_EQ (range->endOffset ()->samples (), 0);
+
+  // Test that positive values work normally
+  range->startOffset ()->setSamples (500);
+  EXPECT_EQ (range->startOffset ()->samples (), 500);
+
+  range->endOffset ()->setSamples (1000);
+  EXPECT_EQ (range->endOffset ()->samples (), 1000);
+
+  // Test with different units
+  range->startOffset ()->setSeconds (-1.0);
+  EXPECT_EQ (range->startOffset ()->samples (), 0);
+
+  range->endOffset ()->setTicks (-480.0);
+  EXPECT_EQ (range->endOffset ()->samples (), 0);
+}
+
 // Test curve options
 TEST_F (ArrangerObjectFadeRangeTest, CurveOptions)
 {

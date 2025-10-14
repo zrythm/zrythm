@@ -20,8 +20,8 @@ class ArrangerObjectLoopRange : public QObject
   Q_PROPERTY (
     dsp::AtomicPositionQmlAdapter * loopEndPosition READ loopEndPosition CONSTANT)
   Q_PROPERTY (
-    bool trackLength READ trackLength WRITE setTrackLength NOTIFY
-      trackLengthChanged)
+    bool trackBounds READ trackBounds WRITE setTrackBounds NOTIFY
+      trackBoundsChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -59,16 +59,16 @@ public:
   {
     return loop_end_pos_adapter_.get ();
   }
-  bool trackLength () const { return track_length_; }
-  void setTrackLength (bool track)
+  bool trackBounds () const { return track_bounds_; }
+  void setTrackBounds (bool track)
   {
-    if (track_length_ != track)
+    if (track_bounds_ != track)
       {
-        track_length_ = track;
-        Q_EMIT trackLengthChanged (track);
+        track_bounds_ = track;
+        Q_EMIT trackBoundsChanged (track);
       }
   }
-  Q_SIGNAL void trackLengthChanged (bool track);
+  Q_SIGNAL void trackBoundsChanged (bool track);
 
   Q_SIGNAL void loopableObjectPropertiesChanged ();
 
@@ -103,13 +103,13 @@ private:
   static constexpr auto kClipStartPosKey = "clipStartPos"sv;
   static constexpr auto kLoopStartPosKey = "loopStartPos"sv;
   static constexpr auto kLoopEndPosKey = "loopEndPos"sv;
-  static constexpr auto kTrackLengthKey = "trackLength"sv;
+  static constexpr auto kTrackBoundsKey = "trackBounds"sv;
   friend auto to_json (nlohmann::json &j, const ArrangerObjectLoopRange &object)
   {
     j[kClipStartPosKey] = object.clip_start_pos_;
     j[kLoopStartPosKey] = object.loop_start_pos_;
     j[kLoopEndPosKey] = object.loop_end_pos_;
-    j[kTrackLengthKey] = object.track_length_;
+    j[kTrackBoundsKey] = object.track_bounds_;
   }
   friend auto
   from_json (const nlohmann::json &j, ArrangerObjectLoopRange &object)
@@ -117,8 +117,8 @@ private:
     j.at (kClipStartPosKey).get_to (object.clip_start_pos_);
     j.at (kLoopStartPosKey).get_to (object.loop_start_pos_);
     j.at (kLoopEndPosKey).get_to (object.loop_end_pos_);
-    j.at (kTrackLengthKey).get_to (object.track_length_);
-    Q_EMIT object.trackLengthChanged (object.track_length_);
+    j.at (kTrackBoundsKey).get_to (object.track_bounds_);
+    Q_EMIT object.trackBoundsChanged (object.track_bounds_);
   }
 
   friend void init_from (
@@ -142,10 +142,13 @@ private:
   /**
    * @brief Whether to track ArrangerObjectBounds::length().
    *
-   * If true, loop end position will track (be set to) the object's length.
+   * If true, all loop positions will track the bounds:
+   * - Clip start position will be set to 0
+   * - Loop start position will be set to 0
+   * - Loop end position will be set to the object's length
    */
-  bool                                   track_length_{ true };
-  std::optional<QMetaObject::Connection> track_length_connection_;
+  bool                                   track_bounds_{ true };
+  std::optional<QMetaObject::Connection> track_bounds_connection_;
 
   const ArrangerObjectBounds &bounds_;
 

@@ -749,7 +749,7 @@ public:
           {
             get_derived_object (new_object2_ref)
               ->loopRange ()
-              ->setTrackLength (true);
+              ->setTrackBounds (true);
 
             /* if audio region, create a new region */
             if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)

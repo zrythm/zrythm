@@ -179,7 +179,7 @@ public:
 
       if constexpr (RegionObject<ObjT>)
         {
-          obj->loopRange ()->setTrackLength (true);
+          obj->loopRange ()->setTrackBounds (true);
         }
 
       if (start_ticks_)

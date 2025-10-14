@@ -11,8 +11,13 @@ ArrangerObjectBounds::ArrangerObjectBounds (
     : QObject (parent), position_ (start_position),
       length_ (start_position.position ().time_conversion_functions ()),
       length_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (length_, false, this))
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          length_,
+          // Length must be at least 1 tick
+          [] (units::precise_tick_t ticks) {
+            return std::max (ticks, units::ticks (1.0));
+          },
+          this))
 {
 }
 

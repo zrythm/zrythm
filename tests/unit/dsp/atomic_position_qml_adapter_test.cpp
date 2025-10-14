@@ -20,7 +20,8 @@ protected:
     // 120 BPM = 960 ticks per beat, 0.5 seconds per beat
     time_conversion_funcs = basic_conversion_providers ();
     atomic_pos = std::make_unique<AtomicPosition> (*time_conversion_funcs);
-    qml_pos = std::make_unique<AtomicPositionQmlAdapter> (*atomic_pos, true);
+    qml_pos =
+      std::make_unique<AtomicPositionQmlAdapter> (*atomic_pos, std::nullopt);
   }
 
   std::unique_ptr<AtomicPosition::TimeConversionFunctions> time_conversion_funcs;
@@ -135,33 +136,78 @@ TEST_F (AtomicPositionQmlAdapterTest, QmlPropertyBindings)
   qml_pos->setTicks (960.0);
   EXPECT_DOUBLE_EQ (qml_pos->property ("ticks").toDouble (), 960.0);
 }
-// Test allowNegative = false functionality
-TEST_F (AtomicPositionQmlAdapterTest, AllowNegativeFalse)
+// Test constraint function - non-negative values
+TEST_F (AtomicPositionQmlAdapterTest, NonNegativeConstraint)
 {
-  // Create a new adapter with allowNegative = false
-  AtomicPositionQmlAdapter qml_pos_no_negative (*atomic_pos, false);
+  // Create a new adapter with non-negative constraint
+  auto non_negative_constraint = [] (units::precise_tick_t ticks) {
+    return std::max (ticks, units::ticks (0.0));
+  };
+  AtomicPositionQmlAdapter qml_pos_constrained (
+    *atomic_pos, non_negative_constraint);
 
   // Test that negative values are clamped to 0
-  qml_pos_no_negative.setTicks (-100.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 0.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 0.0);
-  EXPECT_EQ (qml_pos_no_negative.samples (), 0);
+  qml_pos_constrained.setTicks (-100.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.seconds (), 0.0);
+  EXPECT_EQ (qml_pos_constrained.samples (), 0);
 
-  qml_pos_no_negative.setSeconds (-1.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 0.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 0.0);
-  EXPECT_EQ (qml_pos_no_negative.samples (), 0);
+  qml_pos_constrained.setSeconds (-1.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.seconds (), 0.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.ticks (), 0.0);
+  EXPECT_EQ (qml_pos_constrained.samples (), 0);
 
   // Test that positive values work normally
-  qml_pos_no_negative.setTicks (960.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 960.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 0.5);
-  EXPECT_EQ (qml_pos_no_negative.samples (), 22050);
+  qml_pos_constrained.setTicks (960.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.ticks (), 960.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.seconds (), 0.5);
+  EXPECT_EQ (qml_pos_constrained.samples (), 22050);
 
-  qml_pos_no_negative.setSeconds (1.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.seconds (), 1.0);
-  EXPECT_DOUBLE_EQ (qml_pos_no_negative.ticks (), 1920.0);
-  EXPECT_EQ (qml_pos_no_negative.samples (), 44100);
+  qml_pos_constrained.setSeconds (1.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.seconds (), 1.0);
+  EXPECT_DOUBLE_EQ (qml_pos_constrained.ticks (), 1920.0);
+  EXPECT_EQ (qml_pos_constrained.samples (), 44100);
+}
+
+// Test complex constraint function
+TEST_F (AtomicPositionQmlAdapterTest, ComplexConstraint)
+{
+  // Create a constraint that enforces minimum value of 480 ticks (1/8 note)
+  auto min_length_constraint = [] (units::precise_tick_t ticks) {
+    return std::max (ticks, units::ticks (480.0));
+  };
+  AtomicPositionQmlAdapter qml_pos_min_length (
+    *atomic_pos, min_length_constraint);
+
+  // Test that values below minimum are clamped
+  qml_pos_min_length.setTicks (100.0);
+  EXPECT_DOUBLE_EQ (qml_pos_min_length.ticks (), 480.0);
+
+  qml_pos_min_length.setSeconds (
+    0.1); // Should be converted to ticks then constrained
+  EXPECT_GE (qml_pos_min_length.ticks (), 480.0);
+
+  // Test that values above minimum work normally
+  qml_pos_min_length.setTicks (2000.0);
+  EXPECT_DOUBLE_EQ (qml_pos_min_length.ticks (), 2000.0);
+}
+
+// Test no constraint (optional)
+TEST_F (AtomicPositionQmlAdapterTest, NoConstraint)
+{
+  // Create adapter with no constraint (std::nullopt)
+  AtomicPositionQmlAdapter qml_pos_unconstrained (*atomic_pos, std::nullopt);
+
+  // Test that negative values are allowed
+  qml_pos_unconstrained.setTicks (-100.0);
+  EXPECT_DOUBLE_EQ (qml_pos_unconstrained.ticks (), -100.0);
+
+  qml_pos_unconstrained.setSeconds (-1.0);
+  EXPECT_DOUBLE_EQ (qml_pos_unconstrained.seconds (), -1.0);
+
+  // Test that positive values work normally
+  qml_pos_unconstrained.setTicks (960.0);
+  EXPECT_DOUBLE_EQ (qml_pos_unconstrained.ticks (), 960.0);
 }
 
 } // namespace zrythm::dsp
