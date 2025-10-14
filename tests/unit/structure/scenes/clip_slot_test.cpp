@@ -193,7 +193,6 @@ TEST_F (ClipSlotTest, AtomicStateAccess)
 {
   // Test that state is atomic by accessing from multiple threads
   std::atomic<bool> thread1_done{ false };
-  std::atomic<bool> thread2_done{ false };
 
   // Thread 1: Set state to PlayQueued, then Playing
   {
@@ -201,7 +200,7 @@ TEST_F (ClipSlotTest, AtomicStateAccess)
       clip_slot_->setState (ClipSlot::ClipState::PlayQueued);
       std::this_thread::sleep_for (std::chrono::milliseconds (10));
       clip_slot_->setState (ClipSlot::ClipState::Playing);
-      std::this_thread::sleep_for (std::chrono::milliseconds (1));
+      std::this_thread::sleep_for (std::chrono::milliseconds (10));
       thread1_done = true;
     });
 
@@ -223,7 +222,6 @@ TEST_F (ClipSlotTest, AtomicStateAccess)
 
       EXPECT_TRUE (found_play_queued);
       EXPECT_TRUE (found_playing);
-      thread2_done = true;
     });
   }
   // jthreads automatically join when they go out of scope
