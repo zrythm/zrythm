@@ -77,10 +77,11 @@ public:
   ArrangerObjectUuidReference
   remove_object (this SelfT &self, const ArrangerObject::Uuid &id)
   {
-    auto it_to_remove = std::ranges::find (
-      self.ArrangerObjectOwner<ChildT>::children_, id,
-      &ArrangerObjectUuidReference::id);
-    if (it_to_remove == self.ArrangerObjectOwner<ChildT>::children_.end ())
+    auto &container = self.ArrangerObjectOwner<ChildT>::children_;
+    auto &random_access_idx = container.template get<random_access_index> ();
+    auto  it_to_remove = std::ranges::find (
+      random_access_idx, id, &ArrangerObjectUuidReference::id);
+    if (it_to_remove == random_access_idx.end ())
       {
         throw std::runtime_error (
           fmt::format ("object to remove not found: {}", id));
@@ -88,10 +89,13 @@ public:
     z_trace ("removing object: {}", id);
 
     auto       obj_ref = *it_to_remove;
-    const auto remove_idx = std::distance (
-      self.ArrangerObjectOwner<ChildT>::children_.begin (), it_to_remove);
+    const auto remove_idx =
+      std::distance (random_access_idx.begin (), it_to_remove);
+
+    // Remove from model first to handle Qt signals properly
     self.ArrangerObjectOwner<ChildT>::list_model_->removeRows (
       static_cast<int> (remove_idx), 1);
+
     return obj_ref;
   }
 
