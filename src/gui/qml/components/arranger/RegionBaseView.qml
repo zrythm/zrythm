@@ -36,8 +36,12 @@ ArrangerObjectBaseView {
   Rectangle {
     id: bottomBackgroundRect
 
-    anchors.fill: parent
-    radius: Style.toolButtonRadius
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    bottomLeftRadius: Style.toolButtonRadius
+    bottomRightRadius: Style.toolButtonRadius
+    height: parent.height - topBackgroundRect.height
     color: root.objectColor
     z: 1
 
