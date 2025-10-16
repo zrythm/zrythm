@@ -15,7 +15,7 @@ Item {
   required property AudioRegion region
 
   // Store waveform data
-  property var waveformChannels: []
+  property list<WaveformChannel> waveformChannels: []
 
   // Generate waveform when region or size changes
   onRegionChanged: generateWaveform()
