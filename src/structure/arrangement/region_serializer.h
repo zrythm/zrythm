@@ -3,15 +3,13 @@
 
 #pragma once
 
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/units.h"
 
 #include <juce_wrapper.h>
 
 namespace zrythm::structure::arrangement
 {
-class MidiRegion;
-class AudioRegion;
-class ChordRegion;
 
 /**
  * @brief A class that converts region data to serialized formats.
@@ -95,6 +93,45 @@ public:
     serialize_audio_region (region, buffer, start, end, builtin_fade_frames);
   }
 
+  /**
+   * Serializes an Automation region to sample-accurate automation values.
+   *
+   * The output buffer always represents the full region length, with index 0
+   * corresponding to the region's start position. Automation point positions
+   * are relative to the region start.
+   *
+   * Values between automation points are interpolated using the curve algorithm
+   * defined on each automation point. The last automation point fills all
+   * remaining samples with its value.
+   *
+   * Playback behavior:
+   * - Starts from clip start (position 0 in output buffer)
+   * - Plays until loop end, then loops back to loop start
+   * - Automation points before loop start appear only once
+   * - Automation points within loop range (loop_start to loop_end) appear in
+   * each loop iteration
+   *
+   * Constraints (start/end) are global timeline positions and are applied by
+   * setting values outside the constraint range to -1.0. The output buffer size
+   * is always the full region length, regardless of constraints.
+   *
+   * @param region The Automation region to serialize
+   * @param[out] values Output vector of normalized automation values
+   * (sample-accurate). Values are resized to the full region length.
+   * Negative values (-1.0) indicate no automation present.
+   * @param start Optional global timeline start position in ticks for
+   * constraints
+   * @param end Optional global timeline end position in ticks for constraints
+   */
+  static void serialize_to_automation_values (
+    const AutomationRegion &region,
+    std::vector<float>     &values,
+    std::optional<double>   start = std::nullopt,
+    std::optional<double>   end = std::nullopt)
+  {
+    serialize_automation_region (region, values, start, end);
+  }
+
 private:
   /**
    * @brief Common loop parameters extracted from a region.
@@ -121,6 +158,15 @@ private:
     std::optional<double>      end,
     bool                       add_region_start,
     bool                       as_played);
+
+  /**
+   * Serializes an Automation region to sample-accurate automation values.
+   */
+  static void serialize_automation_region (
+    const AutomationRegion &region,
+    std::vector<float>     &values,
+    std::optional<double>   start,
+    std::optional<double>   end) [[clang::blocking]];
 
   /**
    * Serializes an Audio region to an audio sample buffer.

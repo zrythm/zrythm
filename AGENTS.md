@@ -105,6 +105,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use `std::numbers` instead of macros for number constants like `M_PI`
 - Use ranges (including `std::views::iota`) instead of C-style for-loops
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
+- Use `std::next` and `std::prev` instead of adding/subtracting to iterators directly
 
 ### Unit Safety
 

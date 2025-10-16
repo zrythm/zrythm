@@ -3,6 +3,7 @@
 
 #include "dsp/chord_descriptor.h"
 #include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region_serializer.h"
@@ -93,6 +94,263 @@ RegionSerializer::serialize_chord_region (
       process_chord_object (
         *chord_obj, loop_params, region_start_offset, start_opt, end_opt,
         as_played, events);
+    }
+}
+
+/**
+ * Serializes an Automation region to sample-accurate automation values.
+ */
+void
+RegionSerializer::serialize_automation_region (
+  const AutomationRegion &region,
+  std::vector<float>     &values,
+  std::optional<double>   start,
+  std::optional<double>   end)
+{
+  const auto start_opt =
+    start ? std::make_optional (units::ticks (*start)) : std::nullopt;
+  const auto end_opt =
+    end ? std::make_optional (units::ticks (*end)) : std::nullopt;
+  const LoopParameters loop_params (region);
+  const auto          &tempo_map = region.get_tempo_map ();
+
+  if constexpr (REGION_SERIALIZER_DEBUG)
+    {
+      z_debug (
+        "serialize_automation_region: start={}, end={}, values_size={}",
+        start_opt ? start_opt->in (units::ticks) : -1.0,
+        end_opt ? end_opt->in (units::ticks) : -1.0, values.size ());
+    }
+
+  // Get all automation points from the region
+  const auto &automation_points = region.get_sorted_children_view ();
+
+  // Always use the full region length for the output buffer
+  const auto total_length_samples =
+    tempo_map.tick_to_samples (loop_params.region_length);
+
+  // Resize the output buffer to the full region length
+  values.resize (static_cast<size_t> (total_length_samples.in (units::samples)));
+
+  // Initialize with default value (-1.0)
+  std::ranges::fill (values, -1.0f);
+
+  if constexpr (REGION_SERIALIZER_DEBUG)
+    {
+      z_debug (
+        "Processing {} automation points, loop_start={}, loop_end={}, region_length={}",
+        automation_points.size (), loop_params.loop_start.in (units::ticks),
+        loop_params.loop_end.in (units::ticks),
+        loop_params.region_length.in (units::ticks));
+    }
+
+  // Process each automation point and render directly to the output buffer
+  for (const auto * ap : automation_points)
+    {
+      const auto ap_pos = units::ticks (ap->position ()->ticks ());
+
+      if constexpr (REGION_SERIALIZER_DEBUG)
+        {
+          z_debug (
+            "Automation point at {} ticks (region starts at {})",
+            ap_pos.in (units::ticks), region.position ()->ticks ());
+        }
+
+      // Determine if point should be written once or looped
+      bool write_once = true;
+      if (ap_pos >= loop_params.loop_start && ap_pos < loop_params.loop_end)
+        write_once = false;
+
+      // Generate values for each loop iteration
+      const int max_loops = loop_params.num_loops;
+      for (int loop_idx = 0; loop_idx <= max_loops; ++loop_idx)
+        {
+          // For non-looped points, only process first iteration
+          if (write_once && loop_idx > 0)
+            break;
+
+          // Calculate point position for this loop iteration
+          auto looped_ap_pos = ap_pos;
+
+          // Adjust position for looped playback
+          looped_ap_pos = get_looped_position (ap_pos, loop_params, loop_idx);
+
+          // Skip if point is outside region bounds after adjustment
+          if (
+            looped_ap_pos < units::ticks (0.0)
+            || looped_ap_pos >= loop_params.region_length)
+            continue;
+
+          // Convert to sample position (relative to region start)
+          const auto sample_pos =
+            tempo_map.tick_to_samples_rounded (looped_ap_pos);
+
+          // Skip if outside the output buffer
+          if (
+            sample_pos < units::samples (0)
+            || sample_pos
+                 >= units::samples (static_cast<int64_t> (values.size ())))
+            continue;
+
+          // Get the next automation point for interpolation
+          const auto * next_ap = region.get_next_ap (*ap, true);
+
+          // Set the value at this point
+          const auto start_idx = static_cast<size_t> (
+            std::max (sample_pos.in (units::samples), int64_t{ 0 }));
+
+          if constexpr (REGION_SERIALIZER_DEBUG)
+            {
+              z_debug (
+                "Processing automation point at {} ticks, sample_idx={}, value={}, next_ap={}",
+                ap_pos.in (units::ticks), start_idx, ap->value (),
+                next_ap ? "exists" : "null");
+            }
+
+          if (start_idx < values.size ())
+            {
+              values[start_idx] = ap->value ();
+              if constexpr (REGION_SERIALIZER_DEBUG)
+                {
+                  z_debug (
+                    "  Set value at index {} to {}", start_idx, ap->value ());
+                }
+            }
+
+          if (next_ap == nullptr)
+            {
+              // Last point, set all remaining samples to this value
+              if (start_idx < values.size ())
+                {
+                  if constexpr (REGION_SERIALIZER_DEBUG)
+                    {
+                      z_debug (
+                        "  Last point: filling from index {} to {} with value {}",
+                        start_idx, values.size () - 1, ap->value ());
+                    }
+                  std::fill_n (
+                    std::next (values.data (), start_idx),
+                    values.size () - start_idx, ap->value ());
+                }
+              continue;
+            }
+
+          // Calculate the end position of this segment
+          const auto next_ap_pos = units::ticks (next_ap->position ()->ticks ());
+          auto looped_next_ap_pos =
+            get_looped_position (next_ap_pos, loop_params, loop_idx);
+
+          const auto next_sample_pos =
+            tempo_map.tick_to_samples_rounded (looped_next_ap_pos);
+
+          // Fill the segment from this point to the next point
+          const auto end_idx = static_cast<size_t> (std::min (
+            next_sample_pos.in (units::samples),
+            static_cast<int64_t> (values.size ())));
+
+          if (start_idx + 1 >= values.size () || start_idx + 1 >= end_idx)
+            continue;
+
+          const auto segment_length = end_idx - (start_idx + 1);
+          if (segment_length == 0)
+            continue;
+
+          // Interpolate values for this segment
+          if constexpr (REGION_SERIALIZER_DEBUG)
+            {
+              z_debug (
+                "  Interpolating from index {} to {} (segment_length={})",
+                start_idx + 1, end_idx - 1, segment_length);
+            }
+
+          for (size_t i = 0; i < segment_length; ++i)
+            {
+              const auto sample_offset =
+                static_cast<double> (i + 1)
+                / static_cast<double> (segment_length + 1);
+              const auto normalized_x = sample_offset;
+
+              // Get the curve value
+              const auto curve_val =
+                region.get_normalized_value_in_curve (*ap, normalized_x);
+
+              // Linearly interpolate between the two points
+              const auto interpolated_val =
+                ap->value () + (next_ap->value () - ap->value ()) * curve_val;
+
+              const auto output_idx = start_idx + 1 + i;
+              values[output_idx] = static_cast<float> (interpolated_val);
+
+              if (REGION_SERIALIZER_DEBUG && output_idx < 5)
+                {
+                  z_debug (
+                    "    Set interpolated value at index {} to {} (offset={})",
+                    output_idx, interpolated_val, sample_offset);
+                }
+            }
+        }
+    }
+
+  // Apply constraints in a second pass
+  if (start_opt || end_opt)
+    {
+      const auto region_start = units::ticks (region.position ()->ticks ());
+      const auto constraint_start = start_opt ? *start_opt : units::ticks (0.0);
+      const auto constraint_end =
+        end_opt ? *end_opt : units::ticks (std::numeric_limits<double>::max ());
+
+      if constexpr (REGION_SERIALIZER_DEBUG)
+        {
+          z_debug (
+            "Applying constraints: region_start={}, constraint_start={}, constraint_end={}",
+            region_start.in (units::ticks), constraint_start.in (units::ticks),
+            constraint_end.in (units::ticks));
+        }
+
+      // Calculate the sample range that corresponds to the constraint range
+      const auto constraint_start_offset =
+        std::max (units::ticks (0.0), constraint_start - region_start);
+      const auto constraint_end_offset =
+        std::max (units::ticks (0.0), constraint_end - region_start);
+
+      const auto constraint_start_samples = static_cast<size_t> (
+        tempo_map.tick_to_samples (constraint_start_offset).in (units::samples));
+      const auto constraint_end_samples = static_cast<size_t> (
+        tempo_map.tick_to_samples (constraint_end_offset).in (units::samples));
+
+      // Trim values outside the constraint range
+      for (size_t i = 0; i < values.size (); ++i)
+        {
+          if (i < constraint_start_samples || i >= constraint_end_samples)
+            {
+              values[i] = -1.0f;
+            }
+        }
+
+      if (REGION_SERIALIZER_DEBUG)
+        {
+          z_debug (
+            "Trimmed values outside constraint range: start_samples={}, end_samples={}",
+            constraint_start_samples, constraint_end_samples);
+          // Log some values from the middle of the output buffer where we
+          // expect to see the automation values
+          z_debug ("Output buffer middle values (around 1148):");
+          for (
+            size_t i = 1140; i < std::min (size_t{ 1150 }, values.size ()); ++i)
+            {
+              z_debug ("  [{}] = {}", i, values[i]);
+            }
+        }
+
+      if constexpr (REGION_SERIALIZER_DEBUG)
+        {
+          // Log some values from the output buffer to help debug
+          z_debug ("Output buffer first 10 values:");
+          for (size_t i = 0; i < std::min (size_t{ 10 }, values.size ()); ++i)
+            {
+              z_debug ("  [{}] = {}", i, values[i]);
+            }
+        }
     }
 }
 

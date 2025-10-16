@@ -63,6 +63,14 @@ public:
              &ArrangerObjectUuidReference::get_object_as<ChildT>);
   }
 
+  auto get_sorted_children_view () const
+  {
+    const auto &vec_ref = children_.get<sorted_index> ();
+    return vec_ref
+           | std::views::transform (
+             &ArrangerObjectUuidReference::get_object_as<ChildT>);
+  }
+
   void add_ticks_to_children (double ticks)
   {
     for (auto * child : get_children_view ())

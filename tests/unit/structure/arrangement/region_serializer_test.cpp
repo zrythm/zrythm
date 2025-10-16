@@ -3,6 +3,7 @@
 
 #include <cmath>
 
+#include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/region_serializer.h"
 
 #include <gtest/gtest.h>
@@ -28,6 +29,27 @@ protected:
 
     // Set up Audio region with proper audio source
     setup_audio_region ();
+
+    // Set up Automation region
+    automation_region = std::make_unique<AutomationRegion> (
+      *tempo_map, registry, file_audio_source_registry, nullptr);
+    automation_region->position ()->setTicks (100);
+    automation_region->bounds ()->length ()->setTicks (200);
+    automation_region->loopRange ()->loopStartPosition ()->setTicks (50);
+    automation_region->loopRange ()->loopEndPosition ()->setTicks (150);
+    automation_region->loopRange ()->clipStartPosition ()->setTicks (0);
+  }
+
+  void add_automation_point (float value, double position_ticks)
+  {
+    // Create AutomationPoint using registry
+    auto   ap_ref = registry.create_object<AutomationPoint> (*tempo_map);
+    auto * ap = ap_ref.get_object_as<AutomationPoint> ();
+    ap->setValue (value);
+    ap->position ()->setTicks (position_ticks);
+
+    // Add to region
+    automation_region->add_object (ap_ref);
   }
 
   void add_midi_note (
@@ -115,12 +137,13 @@ protected:
     };
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  ArrangerObjectRegistry         registry;
-  dsp::FileAudioSourceRegistry   file_audio_source_registry;
-  std::unique_ptr<MidiRegion>    midi_region;
-  std::unique_ptr<AudioRegion>   audio_region;
-  juce::AudioSampleBuffer        test_audio_buffer;
+  std::unique_ptr<dsp::TempoMap>    tempo_map;
+  ArrangerObjectRegistry            registry;
+  dsp::FileAudioSourceRegistry      file_audio_source_registry;
+  std::unique_ptr<MidiRegion>       midi_region;
+  std::unique_ptr<AudioRegion>      audio_region;
+  std::unique_ptr<AutomationRegion> automation_region;
+  juce::AudioSampleBuffer           test_audio_buffer;
 };
 
 // ========== MIDI Region Tests ==========
@@ -378,7 +401,8 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithConstraints)
   // Calculate expected sample count: 100 ticks at 120 BPM = 0.5 seconds
   // At 44100 Hz, that's 22050 samples
   const int expected_samples = static_cast<int> (
-    tempo_map->tick_to_samples (units::ticks (constraint_end - constraint_start))
+    tempo_map
+      ->tick_to_samples_rounded (units::ticks (constraint_end - constraint_start))
       .in (units::samples));
   EXPECT_EQ (buffer.getNumSamples (), expected_samples);
 
@@ -423,7 +447,8 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithLooping)
   auto *    left_channel = buffer.getReadPointer (0);
   auto *    right_channel = buffer.getReadPointer (1);
   const int loop_length_samples = static_cast<int> (
-    tempo_map->tick_to_samples (units::ticks (100.0)).in (units::samples));
+    tempo_map->tick_to_samples_rounded (units::ticks (100.0))
+      .in (units::samples));
 
   // First sample of second loop should match first sample of first loop
   // But both will be affected by built-in fade in
@@ -535,7 +560,8 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithClipStart)
     {
       // Get expected value at this position (accounting for clip start offset)
       const int clip_start_samples = static_cast<int> (
-        tempo_map->tick_to_samples (units::ticks (50)).in (units::samples));
+        tempo_map->tick_to_samples_rounded (units::ticks (50))
+          .in (units::samples));
       auto [expected_left, expected_right] = get_expected_sine_values (
         AudioRegion::BUILTIN_FADE_FRAMES + clip_start_samples);
 
@@ -957,6 +983,427 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionBeyondSourceLength)
     {
       EXPECT_FLOAT_EQ (left_channel[i], 0.0f);
       EXPECT_FLOAT_EQ (right_channel[i], 0.0f);
+    }
+}
+
+// ========== Automation Region Tests ==========
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionSimple)
+{
+  // Add a simple automation point
+  add_automation_point (0.5f, 100);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Calculate the sample position of the automation point
+  const auto point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (100)).in (units::samples));
+
+  // Verify values before the first point are -1.0
+  for (size_t i = 0; i < point_samples && i < values.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], -1.0f);
+    }
+
+  // Verify values from the first point onward are 0.5
+  for (size_t i = point_samples; i < values.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], 0.5f);
+    }
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionWithInterpolation)
+{
+  // Add two automation points
+  add_automation_point (0.0f, 50);
+  add_automation_point (1.0f, 150);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Verify interpolation
+  // First point at 50 ticks, second at 150 ticks
+  const auto first_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (50)).in (units::samples));
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (150)).in (units::samples));
+
+  // Before first point should be -1.0
+  for (size_t i = 0; i < first_point_samples; ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], -1.0f);
+    }
+
+  // After second point should be 1.0
+  for (size_t i = second_point_samples; i < values.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], 1.0f);
+    }
+
+  // Between points should interpolate
+  if (second_point_samples > first_point_samples + 1)
+    {
+      const size_t mid_point = (first_point_samples + second_point_samples) / 2;
+      EXPECT_GT (values[mid_point], 0.0f);
+      EXPECT_LT (values[mid_point], 1.0f);
+    }
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionWithLooping)
+{
+  // Add an automation point within the loop range
+  add_automation_point (0.7f, 75);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // With looping, the value should appear multiple times
+  // Loop range is 50-150 ticks (100 ticks)
+  // Region length is 200 ticks, so we get 2 loops
+  // The point is at 75 ticks, which is within the loop range (50-150)
+  // So the first occurrence is at 75 ticks (relative to region start)
+  const auto first_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (75)).in (units::samples));
+
+  // Check that values before the first point are -1.0
+  for (size_t i = 0; i < first_point_samples && i < values.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], -1.0f);
+    }
+
+  // Check that the value appears at the right positions in both loops
+  EXPECT_FLOAT_EQ (values[first_point_samples], 0.7f);
+
+  // Second occurrence should be one loop length later
+  // The loop starts at 50 ticks, so the second occurrence is at 75 + 100 = 175
+  // ticks
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (175)).in (units::samples));
+  if (second_point_samples < values.size ())
+    {
+      EXPECT_FLOAT_EQ (values[second_point_samples], 0.7f);
+    }
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionWithConstraints)
+{
+  // Add automation points
+  add_automation_point (0.0f, 50);
+  add_automation_point (1.0f, 150);
+
+  // Serialize with constraints
+  const double constraint_start = 100.0;
+  const double constraint_end = 200.0;
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, constraint_start, constraint_end);
+
+  // Verify the constraint range is respected
+  EXPECT_GT (values.size (), 0);
+
+  // The constraint starts at 100 ticks, which is between our two points
+  // The first point is at 150 ticks global (within constraint)
+  // The second point is at 250 ticks global (outside constraint)
+  // So we should see interpolated values but not the value 1.0
+  bool found_interpolated = false;
+  bool found_one = false;
+  for (float value : values)
+    {
+      if (value > 0.0f && value < 1.0f)
+        {
+          found_interpolated = true;
+        }
+      else if (value >= 0.999f) // Allow for floating point precision
+        {
+          found_one = true;
+        }
+    }
+  EXPECT_TRUE (found_interpolated);
+  EXPECT_FALSE (found_one); // The value 1.0 should be trimmed as it's outside
+                            // the constraint
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionEmpty)
+{
+  // Don't add any automation points
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // All values should be -1.0 (no automation points)
+  for (float value : values)
+    {
+      EXPECT_FLOAT_EQ (value, -1.0f);
+    }
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionWithCurve)
+{
+  // Add two automation points
+  add_automation_point (0.0f, 50);
+  add_automation_point (1.0f, 150);
+
+  // Set curve options on the first point
+  auto * first_ap = automation_region->get_children_view ()[0];
+  first_ap->curveOpts ()->setCurviness (0.5);
+  first_ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Exponent);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Verify that the curve affects the interpolation
+  const auto first_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (50)).in (units::samples));
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (150)).in (units::samples));
+
+  // Check a point in the middle - with exponential curve, it should be
+  // different from linear interpolation
+  if (second_point_samples > first_point_samples + 1)
+    {
+      const size_t mid_point = (first_point_samples + second_point_samples) / 2;
+      // With exponential curve and positive curviness, the value should be
+      // higher than linear interpolation (0.5)
+      EXPECT_GT (values[mid_point], 0.5f);
+      EXPECT_LT (values[mid_point], 1.0f);
+    }
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionNonOverlappingConstraints)
+{
+  // Add an automation point
+  add_automation_point (0.5f, 100);
+
+  // Use constraints that don't overlap the region
+  const double constraint_start = -100.0;
+  const double constraint_end = -50.0;
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, constraint_start, constraint_end);
+
+  // All values should be -1.0 (no automation points in constraint)
+  for (float value : values)
+    {
+      EXPECT_FLOAT_EQ (value, -1.0f);
+    }
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionLargeConstraints)
+{
+  // Add automation points
+  add_automation_point (0.0f, 50);
+  add_automation_point (1.0f, 150);
+
+  // Use large constraints that fully include the region
+  const auto region_pos = automation_region->position ()->ticks ();
+  const auto region_length = automation_region->bounds ()->length ()->ticks ();
+
+  const double constraint_start = region_pos - 50.0;
+  const double constraint_end = region_pos + region_length + 50.0;
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, constraint_start, constraint_end);
+
+  // Verify the constraint includes padding before and after the region
+  EXPECT_GT (values.size (), 0);
+
+  // Calculate where the region starts in the constraint
+  const auto region_start_offset = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (50.0)).in (units::samples));
+
+  // Before the region should be -1.0
+  for (size_t i = 0; i < region_start_offset && i < values.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], -1.0f);
+    }
+
+  // Within the region should have the automation values
+  // (More detailed checks would require knowing exact sample positions)
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionWithClipStart)
+{
+  // Set clip start
+  automation_region->loopRange ()->clipStartPosition ()->setTicks (25);
+
+  // Add an automation point before clip start
+  add_automation_point (0.3f, 30);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // With clip start, the point before clip start should not appear
+  // The output should start from the clip start position
+  EXPECT_GT (values.size (), 0);
+
+  // The values should reflect the clip start offset
+  // (Specific verification would depend on exact sample calculations)
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionEndingMidCurve)
+{
+  // Create a region that ends in the middle of a curve
+  // First point at 50 ticks, second point at 250 ticks (outside region)
+  add_automation_point (0.0f, 50);
+  add_automation_point (1.0f, 250);
+
+  // Set region length to 200 ticks (ends at 300 ticks, which is in the middle)
+  automation_region->bounds ()->length ()->setTicks (200);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Calculate sample positions
+  const auto first_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (50)).in (units::samples));
+  const auto region_end_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (300)).in (units::samples));
+
+  // Before first point should be -1.0
+  for (size_t i = 0; i < first_point_samples && i < values.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], -1.0f);
+    }
+
+  // Values should interpolate from first point toward the second point
+  // The region ends before reaching the second point
+  bool found_interpolation = false;
+  for (
+    size_t i = first_point_samples;
+    i < values.size () && i < region_end_samples; ++i)
+    {
+      if (values[i] > 0.0f && values[i] < 1.0f)
+        {
+          found_interpolation = true;
+        }
+    }
+  EXPECT_TRUE (found_interpolation);
+
+  // The last value should be the interpolated value at the region end
+  if (values.size () > 0)
+    {
+      const auto last_value = values[values.size () - 1];
+      EXPECT_GT (last_value, 0.0f); // Should be interpolated, not 0.0
+      EXPECT_LT (last_value, 1.0f); // Should be interpolated, not 1.0
+    }
+}
+
+TEST_F (RegionSerializerTest, SerializeAutomationRegionLoopedEndingMidCurve)
+{
+  // Create a looped region that ends in the middle of a curve
+  add_automation_point (0.0f, 25);  // Before loop
+  add_automation_point (0.5f, 75);  // Inside loop
+  add_automation_point (1.0f, 125); // Inside loop
+  add_automation_point (
+    0.2f, 175); // After loop (won't be reached in first loop)
+
+  // Set up looping: loop from 50-150 ticks
+  automation_region->loopRange ()->setTrackBounds (false);
+  automation_region->loopRange ()->loopStartPosition ()->setTicks (50);
+  automation_region->loopRange ()->loopEndPosition ()->setTicks (150);
+  // Set region length to 200 ticks (ends at 200 ticks, which is in the middle
+  // of interpolating from 0.5 to 1.0 in the second loop)
+  // Playback order: 0-150 (first iteration), 50-200 (second loop, ends mid-curve)
+  automation_region->bounds ()->length ()->setTicks (200);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionSerializer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Calculate sample positions
+  const auto first_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (25)).in (units::samples));
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (75)).in (units::samples));
+  const auto third_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (125)).in (units::samples));
+  const auto loop_length_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (100)).in (units::samples));
+
+  // Before first point should be -1.0
+  for (size_t i = 0; i < first_point_samples && i < values.size (); ++i)
+    {
+      EXPECT_FLOAT_EQ (values[i], -1.0f);
+    }
+
+  // Check that we have the expected values at each point
+  if (first_point_samples < values.size ())
+    EXPECT_FLOAT_EQ (values[first_point_samples], 0.0f);
+
+  if (second_point_samples < values.size ())
+    EXPECT_FLOAT_EQ (values[second_point_samples], 0.5f);
+
+  // The third point should appear in the second loop iteration
+  // In the second loop, the third point at 125 ticks appears at 125 + 100 = 225
+  // ticks relative to region start
+  const auto third_point_in_second_loop =
+    third_point_samples + loop_length_samples;
+  if (third_point_in_second_loop < values.size ())
+    EXPECT_FLOAT_EQ (values[third_point_in_second_loop], 1.0f);
+
+  // The fourth point at 175 ticks appears in the first loop only (at 175 ticks)
+  const auto fourth_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (175)).in (units::samples));
+  if (fourth_point_samples < values.size ())
+    EXPECT_FLOAT_EQ (values[fourth_point_samples], 0.2f);
+
+  // Check that values are interpolated from the third point (1.0) to the fourth
+  // point (0.2) in the first loop
+  if (
+    third_point_samples < values.size ()
+    && fourth_point_samples > third_point_samples)
+    {
+      // Check a point closer to the third point where interpolation is happening
+      const auto check_point = third_point_samples + 10;
+      if (check_point < values.size ())
+        {
+          // The value should be between 1.0 and 0.2 but closer to 1.0
+          const auto check_value = values[check_point];
+          EXPECT_GT (check_value, 0.2f); // Should be > 0.5 (closer to 1.0)
+          EXPECT_LT (check_value, 1.0f); // Should be < 1.0
+        }
+    }
+
+  // The fourth automation point at 175 ticks with value 0.2 is the last point
+  // so it fills all remaining samples with 0.2
+  // The last value should be 0.2
+  if (values.size () > 0)
+    {
+      const auto last_value = values[values.size () - 1];
+      EXPECT_FLOAT_EQ (last_value, 0.2f);
     }
 }
 
