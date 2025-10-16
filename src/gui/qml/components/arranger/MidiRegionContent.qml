@@ -30,7 +30,7 @@ Repeater {
     property MidiNote midiNote: arrangerObject
     readonly property real midiNoteEndX: x + 5
 
-    color: palette.text
+    color: Style.regionContentColor
     height: root.midiNoteHeight
     width: midiNoteEndX - x
     x: {

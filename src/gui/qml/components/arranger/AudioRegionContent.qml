@@ -17,10 +17,6 @@ Item {
   // Store waveform data
   property list<WaveformChannel> waveformChannels: []
 
-  // Generate waveform when region or size changes
-  onRegionChanged: generateWaveform()
-  onContentWidthChanged: generateWaveform()
-
   function generateWaveform() {
     if (!region || contentWidth <= 0) {
       waveformChannels = [];
@@ -33,12 +29,19 @@ Item {
     waveformCanvas.requestPaint();
   }
 
+  // Generate initial waveform
+  Component.onCompleted: generateWaveform()
+  onContentWidthChanged: generateWaveform()
+
+  // Generate waveform when region or size changes
+  onRegionChanged: generateWaveform()
+
   // Canvas for drawing the waveform
   Canvas {
     id: waveformCanvas
 
-    width: root.contentWidth
     height: root.contentHeight
+    width: root.contentWidth
 
     onPaint: {
       const ctx = getContext("2d");
@@ -51,8 +54,8 @@ Item {
       const numChannels = root.waveformChannels.length;
       const channelHeight = height / numChannels;
 
-      // Set the stroke color based on the region's color
-      const regionColor = Qt.color("white");//root.region.color.color;
+      // Set the stroke color
+      const regionColor = Style.regionContentColor;
       ctx.strokeStyle = regionColor;
       ctx.fillStyle = regionColor;
       ctx.lineWidth = 1;
@@ -60,7 +63,8 @@ Item {
       // Draw each channel in its own vertical section
       for (let ch = 0; ch < numChannels; ch++) {
         const channel = root.waveformChannels[ch];
-        if (!channel) continue;
+        if (!channel)
+          continue;
 
         const minValues = channel.minValues;
         const maxValues = channel.maxValues;
@@ -125,7 +129,4 @@ Item {
       }
     }
   }
-
-  // Generate initial waveform
-  Component.onCompleted: generateWaveform()
 }

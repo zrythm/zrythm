@@ -116,6 +116,7 @@ QtObject {
     duration: root.animationDuration
     easing.type: root.animationEasingType
   }
+  readonly property color regionContentColor: Qt.rgba(colorPalette.highlightedText.r, colorPalette.highlightedText.g, colorPalette.highlightedText.b, 0.85)
   readonly property real scrollLoaderBufferPx: 64
   readonly property font semiBoldTextFont: ({
       "family": root.fontFamily,
