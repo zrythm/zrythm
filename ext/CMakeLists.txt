@@ -62,6 +62,10 @@ target_compile_definitions(juce_lib
 if(ZRYTHM_WITH_JUCE_LV2_HOSTING)
   target_compile_definitions(juce_lib PUBLIC JUCE_PLUGINHOST_LV2=1)
 endif()
+if(ZRYTHM_WITH_ASIO)
+  target_compile_definitions(juce_lib PUBLIC JUCE_ASIO=1)
+  target_include_directories(juce_lib PRIVATE "${ZRYTHM_ASIO_SDK_PATH}\\common")
+endif()
 
 target_compile_definitions(juce_lib
   PUBLIC

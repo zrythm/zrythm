@@ -191,6 +191,7 @@ set(ZRYTHM_CARLA_BINARIES_DIR "" CACHE STRING "Location to collect carla discove
 if (WIN32)
   set(ZRYTHM_CARLA_BINARIES_32_BIT_DIR "" CACHE STRING "Location to collect carla discovery and bridge binaries for 32 bit")
 endif()
+set(ZRYTHM_ASIO_SDK_PATH "C:\\ASIOSDK\\2.3.4" CACHE STRING "Root path of ASIO SDK (there should be a 'common` directory here)" )
 option(ZRYTHM_CHECK_UPDATES "Check for updates on startup" ON)
 option(ZRYTHM_IS_FLATPAK "Whether building for a Flatpak" OFF)
 cmake_dependent_option(ZRYTHM_FOR_FLATHUB "Build for FlatHub (for packaging)" OFF "ZRYTHM_IS_FLATPAK" OFF)
@@ -205,8 +206,7 @@ option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 option(ZRYTHM_COVERAGE "Build with --coverage" OFF)
 
 # Dependency feature options
-option(ZRYTHM_WITH_RTMIDI "Build with RtMidi support" ON)
-option(ZRYTHM_WITH_RTAUDIO "Build with RtAudio support" ON)
+option(ZRYTHM_WITH_ASIO "Build with ASIO support (Windows only)" OFF) # ${WIN32})
 option(ZRYTHM_WITH_JACK "Build with JACK support" OFF) # ${OS_GNU})
 option(ZRYTHM_WITH_LIBDW "Build with libdw support (better backtraces)" OFF) # ${OS_GNU})
 option(ZRYTHM_WITH_VALGRIND "Compile with valgrind lib (only for debugging)" OFF)
