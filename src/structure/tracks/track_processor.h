@@ -268,7 +268,11 @@ public:
     return *get_input_ports ().at (1).get_object_as<dsp::MidiPort> ();
   }
 
-  auto &timeline_data_provider () { return *timeline_data_provider_; }
+  auto &timeline_audio_data_provider ()
+  {
+    return *timeline_audio_data_provider_;
+  }
+  auto &timeline_midi_data_provider () { return *timeline_midi_data_provider_; }
 
   auto &clip_playback_data_provider () { return *clip_playback_data_provider_; }
 
@@ -453,13 +457,20 @@ private:
   std::unique_ptr<TrackProcessorProcessingCaches> processing_caches_;
 
   /**
-   * @brief Data provider from the timeline.
+   * @brief MIDI data provider from the timeline.
    */
-  std::unique_ptr<arrangement::TimelineDataProvider> timeline_data_provider_;
+  std::unique_ptr<arrangement::MidiTimelineDataProvider>
+    timeline_midi_data_provider_;
+
+  /**
+   * @brief MIDI data provider from the timeline.
+   */
+  std::unique_ptr<arrangement::AudioTimelineDataProvider>
+    timeline_audio_data_provider_;
 
   std::unique_ptr<ClipPlaybackDataProvider> clip_playback_data_provider_;
 
-  // TODO: clip launcher, piano roll, recording
+  // TODO: piano roll, recording data providers
 
   farbot::RealtimeObject<
     std::optional<MidiEventProviderProcessFunc>,

@@ -127,7 +127,7 @@ RegionSerializer::serialize_automation_region (
 
   // Always use the full region length for the output buffer
   const auto total_length_samples =
-    tempo_map.tick_to_samples (loop_params.region_length);
+    tempo_map.tick_to_samples_rounded (loop_params.region_length);
 
   // Resize the output buffer to the full region length
   values.resize (static_cast<size_t> (total_length_samples.in (units::samples)));
@@ -314,9 +314,11 @@ RegionSerializer::serialize_automation_region (
         std::max (units::ticks (0.0), constraint_end - region_start);
 
       const auto constraint_start_samples = static_cast<size_t> (
-        tempo_map.tick_to_samples (constraint_start_offset).in (units::samples));
+        tempo_map.tick_to_samples_rounded (constraint_start_offset)
+          .in (units::samples));
       const auto constraint_end_samples = static_cast<size_t> (
-        tempo_map.tick_to_samples (constraint_end_offset).in (units::samples));
+        tempo_map.tick_to_samples_rounded (constraint_end_offset)
+          .in (units::samples));
 
       // Trim values outside the constraint range
       for (size_t i = 0; i < values.size (); ++i)

@@ -6,8 +6,11 @@
 namespace zrythm::structure::arrangement
 {
 
+// ========== MidiTimelineDataProvider Implementation ==========
+
 void
-TimelineDataProvider::set_midi_events (const juce::MidiMessageSequence &events)
+MidiTimelineDataProvider::set_midi_events (
+  const juce::MidiMessageSequence &events)
 {
   decltype (active_midi_playback_sequence_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
@@ -16,17 +19,30 @@ TimelineDataProvider::set_midi_events (const juce::MidiMessageSequence &events)
 }
 
 void
-TimelineDataProvider::set_audio_regions (
-  const std::vector<dsp::TimelineDataCache::AudioRegionEntry> &regions)
+MidiTimelineDataProvider::clear_all_caches ()
 {
-  decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::nonRealtime>
-    rt_regions{ active_audio_regions_ };
-  *rt_regions = regions;
+  midi_cache_.clear ();
+  decltype (active_midi_playback_sequence_)::ScopedAccess<
+    farbot::ThreadType::nonRealtime>
+    rt_events{ active_midi_playback_sequence_ };
+  rt_events->clear ();
 }
 
-// TrackEventProvider interface
 void
-TimelineDataProvider::process_midi_events (
+MidiTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
+  IntervalType interval)
+{
+  midi_cache_.remove_sequences_matching_interval (interval);
+}
+
+const juce::MidiMessageSequence &
+MidiTimelineDataProvider::get_midi_events () const
+{
+  return midi_cache_.get_midi_events ();
+}
+
+void
+MidiTimelineDataProvider::process_midi_events (
   const EngineProcessTimeInfo &time_nfo,
   dsp::ITransport::PlayState   transport_state,
   dsp::MidiEventVector        &output_buffer) noexcept
@@ -90,12 +106,43 @@ TimelineDataProvider::process_midi_events (
   next_expected_transport_position_ =
     current_transport_position + units::samples (time_nfo.nframes_);
   last_seen_transport_state_ = transport_state;
+}
 
-  // output_buffer.print (); // debug
+// ========== AudioTimelineDataProvider Implementation ==========
+
+void
+AudioTimelineDataProvider::set_audio_regions (
+  const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &regions)
+{
+  decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::nonRealtime>
+    rt_regions{ active_audio_regions_ };
+  *rt_regions = regions;
 }
 
 void
-TimelineDataProvider::process_audio_events (
+AudioTimelineDataProvider::clear_all_caches ()
+{
+  audio_cache_.clear ();
+  decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::nonRealtime>
+    rt_regions{ active_audio_regions_ };
+  rt_regions->clear ();
+}
+
+void
+AudioTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
+  IntervalType interval)
+{
+  audio_cache_.remove_sequences_matching_interval (interval);
+}
+
+const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &
+AudioTimelineDataProvider::get_audio_regions () const
+{
+  return audio_cache_.get_audio_regions ();
+}
+
+void
+AudioTimelineDataProvider::process_audio_events (
   const EngineProcessTimeInfo &time_nfo,
   dsp::ITransport::PlayState   transport_state,
   std::span<float>             output_left,
@@ -311,6 +358,114 @@ TimelineDataProvider::process_audio_events (
   // Update tracking for next time
   next_expected_transport_position_ =
     current_transport_position + units::samples (time_nfo.nframes_);
+}
+
+// ========== AutomationTimelineDataProvider Implementation ==========
+
+void
+AutomationTimelineDataProvider::set_automation_sequences (
+  const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry>
+    &sequences)
+{
+  decltype (active_automation_sequences_)::ScopedAccess<
+    farbot::ThreadType::nonRealtime>
+    rt_sequences{ active_automation_sequences_ };
+  *rt_sequences = sequences;
+}
+
+void
+AutomationTimelineDataProvider::clear_all_caches ()
+{
+  automation_cache_.clear ();
+  decltype (active_automation_sequences_)::ScopedAccess<
+    farbot::ThreadType::nonRealtime>
+    rt_sequences{ active_automation_sequences_ };
+  rt_sequences->clear ();
+}
+
+void
+AutomationTimelineDataProvider::
+  remove_sequences_matching_interval_from_all_caches (IntervalType interval)
+{
+  automation_cache_.remove_sequences_matching_interval (interval);
+}
+
+const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry> &
+AutomationTimelineDataProvider::get_automation_sequences () const
+{
+  return automation_cache_.get_automation_sequences ();
+}
+
+std::optional<float>
+AutomationTimelineDataProvider::get_automation_value_rt (
+  units::sample_t sample_position) noexcept
+{
+  decltype (active_automation_sequences_)::ScopedAccess<
+    farbot::ThreadType::realtime>
+    sequences{ active_automation_sequences_ };
+
+  std::optional<float> last_known_value;
+
+  // Find the automation sequence that contains the sample position
+  // or the last sequence before this position
+  for (const auto &sequence : *sequences)
+    {
+      // If the sample position is within this sequence, return the value
+      if (
+        sample_position >= sequence.start_sample
+        && sample_position < sequence.end_sample)
+        {
+          // Calculate the offset into the automation values array
+          const auto offset = sample_position - sequence.start_sample;
+          const auto idx = static_cast<size_t> (offset.in (units::samples));
+
+          // Ensure we're within bounds
+          if (idx < sequence.automation_values.size ())
+            {
+              return sequence.automation_values[idx];
+            }
+        }
+
+      // If this sequence ends before the sample position,
+      // update the last known value from the end of this sequence
+      if (
+        sequence.end_sample <= sample_position
+        && !sequence.automation_values.empty ())
+        {
+          last_known_value = sequence.automation_values.back ();
+        }
+    }
+
+  // Return the last known value if no automation found at this position
+  return last_known_value;
+}
+
+void
+AutomationTimelineDataProvider::process_automation_events (
+  const EngineProcessTimeInfo &time_nfo,
+  dsp::ITransport::PlayState   transport_state,
+  std::span<float>             output_values) noexcept
+{
+  const bool transport_rolling =
+    transport_state == dsp::ITransport::PlayState::Rolling;
+
+  // Only process automation events if transport is rolling
+  if (!transport_rolling)
+    {
+      return;
+    }
+
+  const auto start_frame =
+    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
+  const auto nframes = units::samples (static_cast<int64_t> (time_nfo.nframes_));
+
+  // Generate automation values for each sample in the time range
+  for (const auto i : std::views::iota (0, nframes.in (units::samples)))
+    {
+      const auto sample_position = start_frame + units::samples (i);
+      const auto automation_value = get_automation_value_rt (sample_position);
+      output_values[i] = automation_value.value_or (-1.f);
+    }
 }
 
 } // namespace zrythm::structure::arrangement

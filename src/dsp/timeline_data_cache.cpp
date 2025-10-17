@@ -7,16 +7,18 @@
 
 namespace zrythm::dsp
 {
+
+// ========== MidiTimelineDataCache Implementation ==========
+
 void
-TimelineDataCache::clear ()
+MidiTimelineDataCache::clear ()
 {
   midi_sequences_.clear ();
-  audio_regions_.clear ();
   merged_midi_events_.clear ();
 }
 
 void
-TimelineDataCache::remove_sequences_matching_interval (IntervalType interval)
+MidiTimelineDataCache::remove_sequences_matching_interval (IntervalType interval)
 {
   const auto [target_start, target_end] = interval;
 
@@ -27,22 +29,10 @@ TimelineDataCache::remove_sequences_matching_interval (IntervalType interval)
     // Remove sequences that overlap with any part of the target interval
     return !(existing_end < target_start || existing_start > target_end);
   });
-
-  // Remove audio regions that overlap with the interval
-  std::erase_if (audio_regions_, [&] (const AudioRegionEntry &entry) {
-    // Remove regions that overlap with any part of the target interval
-    return entry.end_sample >= target_start && entry.start_sample <= target_end;
-  });
 }
 
-/**
- * @brief Adds a MIDI sequence for the given interval.
- *
- * @param interval The time interval (in samples).
- * @param sequence The MIDI message sequence.
- */
 void
-TimelineDataCache::add_midi_sequence (
+MidiTimelineDataCache::add_midi_sequence (
   IntervalType                     interval,
   const juce::MidiMessageSequence &sequence)
 {
@@ -82,14 +72,47 @@ TimelineDataCache::add_midi_sequence (
   midi_sequences_[interval] = validated_sequence;
 }
 
-/**
- * @brief Adds an audio region for the given interval.
- *
- * @param interval The time interval (in samples).
- * @param audio_buffer The audio sample buffer to copy.
- */
 void
-TimelineDataCache::add_audio_region (
+MidiTimelineDataCache::finalize_changes ()
+{
+  // Finalize MIDI events
+  merged_midi_events_.clear ();
+  for (const auto &[interval, seq] : midi_sequences_)
+    {
+      merged_midi_events_.addSequence (seq, 0);
+      merged_midi_events_.updateMatchedPairs ();
+    }
+}
+
+bool
+MidiTimelineDataCache::has_content () const
+{
+  return merged_midi_events_.getNumEvents () > 0;
+}
+
+// ========== AudioTimelineDataCache Implementation ==========
+
+void
+AudioTimelineDataCache::clear ()
+{
+  audio_regions_.clear ();
+}
+
+void
+AudioTimelineDataCache::remove_sequences_matching_interval (
+  IntervalType interval)
+{
+  const auto [target_start, target_end] = interval;
+
+  // Remove audio regions that overlap with the interval
+  std::erase_if (audio_regions_, [&] (const AudioRegionEntry &entry) {
+    // Remove regions that overlap with any part of the target interval
+    return entry.end_sample >= target_start && entry.start_sample <= target_end;
+  });
+}
+
+void
+AudioTimelineDataCache::add_audio_region (
   IntervalType                   interval,
   const juce::AudioSampleBuffer &audio_buffer)
 {
@@ -104,27 +127,70 @@ TimelineDataCache::add_audio_region (
   audio_regions_.push_back (entry);
 }
 
-/**
- * @brief Finalizes changes and prepares cached data for access.
- *
- * This should be called after all modifications are complete to prepare the
- * cached data for real-time access.
- */
 void
-TimelineDataCache::finalize_changes ()
+AudioTimelineDataCache::finalize_changes ()
 {
-  // Finalize MIDI events
-  merged_midi_events_.clear ();
-  for (const auto &[interval, seq] : midi_sequences_)
-    {
-      merged_midi_events_.addSequence (seq, 0);
-      merged_midi_events_.updateMatchedPairs ();
-    }
-
   // Sort audio regions by start position for efficient processing
   std::ranges::sort (audio_regions_, {}, [] (const AudioRegionEntry &entry) {
     return entry.start_sample;
   });
+}
+
+bool
+AudioTimelineDataCache::has_content () const
+{
+  return !audio_regions_.empty ();
+}
+
+// ========== AutomationTimelineDataCache Implementation ==========
+
+void
+AutomationTimelineDataCache::clear ()
+{
+  automation_sequences_.clear ();
+}
+
+void
+AutomationTimelineDataCache::remove_sequences_matching_interval (
+  IntervalType interval)
+{
+  const auto [target_start, target_end] = interval;
+
+  // Remove automation sequences that overlap with the interval
+  std::erase_if (automation_sequences_, [&] (const AutomationCacheEntry &entry) {
+    // Remove sequences that overlap with any part of the target interval
+    return entry.end_sample >= target_start && entry.start_sample <= target_end;
+  });
+}
+
+void
+AutomationTimelineDataCache::add_automation_sequence (
+  IntervalType              interval,
+  const std::vector<float> &automation_values)
+{
+  const auto [start_sample, end_sample] = interval;
+
+  AutomationCacheEntry entry;
+  entry.automation_values = automation_values;
+  entry.start_sample = start_sample;
+  entry.end_sample = end_sample;
+
+  automation_sequences_.push_back (entry);
+}
+
+void
+AutomationTimelineDataCache::finalize_changes ()
+{
+  // Sort automation sequences by start position for efficient processing
+  std::ranges::sort (
+    automation_sequences_, {},
+    [] (const AutomationCacheEntry &entry) { return entry.start_sample; });
+}
+
+bool
+AutomationTimelineDataCache::has_content () const
+{
+  return !automation_sequences_.empty ();
 }
 
 } // namespace zrythm::dsp

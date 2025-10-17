@@ -66,13 +66,13 @@ TrackProcessor::TrackProcessor (
         }),
       transform_midi_inputs_func_(std::move(transform_midi_inputs_func ))
 {
-  timeline_data_provider_ =
-    std::make_unique<arrangement::TimelineDataProvider> ();
   clip_playback_data_provider_ =
     std::make_unique<ClipPlaybackDataProvider> (tempo_map);
 
   if (is_midi ())
     {
+      timeline_midi_data_provider_ =
+        std::make_unique<arrangement::MidiTimelineDataProvider> ();
       set_midi_providers_active (ActiveMidiEventProviders::Timeline, true);
 
       {
@@ -160,6 +160,8 @@ TrackProcessor::TrackProcessor (
     }
   else if (is_audio ())
     {
+      timeline_audio_data_provider_ =
+        std::make_unique<arrangement::AudioTimelineDataProvider> ();
       const auto init_stereo_out_ports = [&] (bool in) {
         auto port_ref = dependencies.port_registry_.create_object<dsp::AudioPort> (
           in ? u8"TP Stereo in" : u8"TP Stereo out",
@@ -685,7 +687,7 @@ TrackProcessor::fill_midi_events (
 
   if (ENUM_BITSET_TEST (active_providers, ActiveMidiEventProviders::Timeline))
     {
-      timeline_data_provider_->process_midi_events (
+      timeline_midi_data_provider_->process_midi_events (
         time_nfo, transport_.get_play_state (), midi_events);
     }
   if (
@@ -714,7 +716,7 @@ TrackProcessor::fill_audio_events (
 
   if (ENUM_BITSET_TEST (active_providers, ActiveAudioProviders::Timeline))
     {
-      timeline_data_provider_->process_audio_events (
+      timeline_audio_data_provider_->process_audio_events (
         time_nfo, transport_.get_play_state (), stereo_ports.first,
         stereo_ports.second);
     }

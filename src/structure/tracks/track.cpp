@@ -424,9 +424,24 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
       z_debug (
         "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
         name (), affectedRange);
-      processor_->timeline_data_provider ().generate_events<RegionT> (
-        base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
-        affectedRange);
+      if constexpr (std::is_same_v<RegionT, arrangement::MidiRegion>)
+        {
+          if (processor_->is_midi ())
+            {
+              processor_->timeline_midi_data_provider ().generate_midi_events (
+                base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
+                affectedRange);
+            }
+        }
+      else if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
+        {
+          if (processor_->is_audio ())
+            {
+              processor_->timeline_audio_data_provider ().generate_audio_events (
+                base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
+                affectedRange);
+            }
+        }
     };
   generate_events_for_region_type.operator()<arrangement::MidiRegion> ();
   generate_events_for_region_type.operator()<arrangement::AudioRegion> ();

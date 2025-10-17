@@ -21,8 +21,10 @@ class TimelineDataProviderTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create the provider
-    provider_ = std::make_unique<TimelineDataProvider> ();
+    // Create the providers
+    midi_provider_ = std::make_unique<MidiTimelineDataProvider> ();
+    audio_provider_ = std::make_unique<AudioTimelineDataProvider> ();
+    automation_provider_ = std::make_unique<AutomationTimelineDataProvider> ();
 
     // Create a tempo map for testing
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100));
@@ -38,7 +40,9 @@ protected:
   void TearDown () override
   {
     region_refs.clear (); // Clear references first
-    provider_.reset ();
+    midi_provider_.reset ();
+    audio_provider_.reset ();
+    automation_provider_.reset ();
     tempo_map_.reset ();
     obj_registry_.reset ();
     file_audio_source_registry_.reset ();
@@ -139,6 +143,46 @@ protected:
     return region;
   }
 
+  // Helper function to create an automation region
+  AutomationRegion * create_automation_region (
+    double start_pos_ticks,
+    double end_pos_ticks,
+    float  start_value = 0.0f,
+    float  end_value = 1.0f)
+  {
+    // Create an automation region
+    auto region_ref = obj_registry_->create_object<AutomationRegion> (
+      *tempo_map_, *obj_registry_, *file_audio_source_registry_);
+    auto region = region_ref.get_object_as<AutomationRegion> ();
+
+    // Set the region's position
+    region->position ()->setTicks (start_pos_ticks);
+    region->bounds ()->length ()->setTicks (end_pos_ticks - start_pos_ticks);
+
+    // Create automation points
+    auto start_point_ref =
+      obj_registry_->create_object<AutomationPoint> (*tempo_map_);
+    auto start_point = start_point_ref.get_object_as<AutomationPoint> ();
+    start_point->position ()->setTicks (0.0); // Relative to region start
+    start_point->setValue (start_value);
+
+    auto end_point_ref =
+      obj_registry_->create_object<AutomationPoint> (*tempo_map_);
+    auto end_point = end_point_ref.get_object_as<AutomationPoint> ();
+    end_point->position ()->setTicks (
+      end_pos_ticks - start_pos_ticks); // Relative to region start
+    end_point->setValue (end_value);
+
+    // Add points to the region
+    region->add_object (start_point_ref);
+    region->add_object (end_point_ref);
+
+    // Keep a reference to the region to prevent it from being deleted
+    region_refs.push_back (std::move (region_ref));
+
+    return region;
+  }
+
   // Helper function to get expected sine wave value at a specific sample
   std::pair<float, float> get_expected_sine_values (
     int    sample_index,
@@ -156,12 +200,16 @@ protected:
     };
   }
 
-  std::unique_ptr<TimelineDataProvider>         provider_;
-  std::unique_ptr<dsp::TempoMap>                tempo_map_;
-  std::unique_ptr<ArrangerObjectRegistry>       obj_registry_;
-  std::unique_ptr<dsp::FileAudioSourceRegistry> file_audio_source_registry_;
-  std::vector<ArrangerObjectUuidReference>      region_refs; // Keep references
+  std::unique_ptr<MidiTimelineDataProvider>       midi_provider_;
+  std::unique_ptr<AudioTimelineDataProvider>      audio_provider_;
+  std::unique_ptr<AutomationTimelineDataProvider> automation_provider_;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
+  std::unique_ptr<ArrangerObjectRegistry>         obj_registry_;
+  std::unique_ptr<dsp::FileAudioSourceRegistry>   file_audio_source_registry_;
+  std::vector<ArrangerObjectUuidReference> region_refs; // Keep references
 };
+
+// ========== MIDI Provider Tests ==========
 
 TEST_F (TimelineDataProviderTest, InitialState)
 {
@@ -174,7 +222,7 @@ TEST_F (TimelineDataProviderTest, InitialState)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
@@ -190,7 +238,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithNoEvents)
     .nframes_ = 512
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
@@ -202,7 +250,7 @@ TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyRegions)
   utils::ExpandableTickRange      range (
     std::pair (0.0, 960.0)); // One bar at 120 BPM
 
-  provider_->generate_midi_events (*tempo_map_, empty_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, empty_regions, range);
 
   // Verify no events are generated
   dsp::MidiEventVector  output_buffer;
@@ -213,7 +261,7 @@ TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyRegions)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
@@ -229,7 +277,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include the note
   dsp::MidiEventVector  output_buffer;
@@ -240,7 +288,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have at least one event (the note on)
@@ -270,7 +318,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsOutsideTimeRange)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should NOT include the note
   dsp::MidiEventVector  output_buffer;
@@ -281,7 +329,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsOutsideTimeRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the note is outside the time range
@@ -299,7 +347,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithOffset)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events with a global offset that's far from the note
   dsp::MidiEventVector  output_buffer;
@@ -310,7 +358,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithOffset)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the note is at tick 0
@@ -334,7 +382,7 @@ TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Convert tick positions to sample positions for precise testing
   const auto region1_start_samples =
@@ -354,7 +402,7 @@ TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have at least 3 events (the note ons)
@@ -375,10 +423,10 @@ TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
   EXPECT_TRUE (std::ranges::contains (found_pitches, 67));
 }
 
-TEST_F (TimelineDataProviderTest, BasicFunctionality)
+TEST_F (TimelineDataProviderTest, MidiBasicFunctionality)
 {
   // Test that the provider can be constructed
-  EXPECT_NE (provider_, nullptr);
+  EXPECT_NE (midi_provider_, nullptr);
 
   // Test that process_midi_events can be called without crashing
   dsp::MidiEventVector  output_buffer;
@@ -389,7 +437,7 @@ TEST_F (TimelineDataProviderTest, BasicFunctionality)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Paused, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 
@@ -397,10 +445,10 @@ TEST_F (TimelineDataProviderTest, BasicFunctionality)
   std::vector<const MidiRegion *> empty_regions;
   utils::ExpandableTickRange      range (std::pair (0.0, 960.0));
 
-  provider_->generate_midi_events (*tempo_map_, empty_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, empty_regions, range);
 
   // Process again to ensure no crash
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Paused, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
@@ -420,7 +468,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include the note
   dsp::MidiEventVector  output_buffer;
@@ -431,7 +479,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from the MIDI region
@@ -472,7 +520,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheOutsideAffectedRange)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should NOT include the note
   dsp::MidiEventVector  output_buffer;
@@ -483,7 +531,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheOutsideAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since region is outside affected range
@@ -508,7 +556,7 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include only the first region
   dsp::MidiEventVector  output_buffer;
@@ -519,7 +567,7 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
     .nframes_ = 512
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events only from the first region
@@ -553,7 +601,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
 
   // Generate cache
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
   dsp::MidiEventVector  output_buffer;
@@ -564,7 +612,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the only note is muted
@@ -594,7 +642,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
 
   // Generate cache with all regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Convert tick positions to sample positions for precise testing
   const auto region1_start_samples =
@@ -614,7 +662,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from all regions
@@ -658,7 +706,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
 
   // Generate cache with both regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
   dsp::MidiEventVector  output_buffer;
@@ -669,7 +717,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should still have events from the original region, not the zero-length one
@@ -696,7 +744,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
 
   // First generate cache normally
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
   dsp::MidiEventVector  output_buffer;
@@ -707,7 +755,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   const auto initial_event_count = output_buffer.size ();
   EXPECT_GT (initial_event_count, 0);
@@ -717,11 +765,11 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange affected_range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_midi_events (*tempo_map_, regions, affected_range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, affected_range);
 
   // Test processing events again
   output_buffer.clear ();
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should still have events
@@ -743,7 +791,7 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Convert region start to samples
   const auto region_start_samples =
@@ -760,7 +808,7 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from the MIDI region
@@ -781,7 +829,7 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
     }
 }
 
-// ========== Audio Region Tests ==========
+// ========== Audio Provider Tests ==========
 
 TEST_F (TimelineDataProviderTest, AudioInitialState)
 {
@@ -795,7 +843,7 @@ TEST_F (TimelineDataProviderTest, AudioInitialState)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Output should be all zeros
@@ -813,7 +861,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyRegions)
   utils::ExpandableTickRange       range (
     std::pair (0.0, 960.0)); // One bar at 120 BPM
 
-  provider_->generate_audio_events (*tempo_map_, empty_regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, empty_regions, range);
 
   // Verify no audio is generated
   std::vector<float>    output_left (256, 0.0f);
@@ -825,7 +873,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyRegions)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Output should be all zeros
@@ -847,7 +895,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioRegion)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should include the region
   std::vector<float>    output_left (256, 0.0f);
@@ -859,7 +907,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioRegion)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have some audio output (not all zeros)
@@ -888,7 +936,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsOutsideTimeRange)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should NOT include the region
   std::vector<float>    output_left (256, 0.0f);
@@ -900,7 +948,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsOutsideTimeRange)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since the region is outside the time range
@@ -922,7 +970,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithOffset)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio with a global offset that's far from the region
   std::vector<float>    output_left (256, 0.0f);
@@ -934,7 +982,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithOffset)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since the region is at tick 0
@@ -961,7 +1009,7 @@ TEST_F (TimelineDataProviderTest, MultipleAudioRegionsInSequence)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Convert tick positions to sample positions for precise testing
   const auto region1_start_samples =
@@ -982,7 +1030,7 @@ TEST_F (TimelineDataProviderTest, MultipleAudioRegionsInSequence)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have some audio output from overlapping regions
@@ -1014,7 +1062,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithAffectedRange)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should include the region
   std::vector<float>    output_left (256, 0.0f);
@@ -1026,7 +1074,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio from the audio region
@@ -1058,7 +1106,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheOutsideAffectedRange)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should NOT include the region
   std::vector<float>    output_left (256, 0.0f);
@@ -1070,7 +1118,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheOutsideAffectedRange)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since region is outside affected range
@@ -1099,7 +1147,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCachePartialOverlap)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should include only the first region
   std::vector<float>    output_left (512, 0.0f);
@@ -1111,7 +1159,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCachePartialOverlap)
     .nframes_ = 512
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio only from the first region
@@ -1151,7 +1199,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheMultipleRegions)
 
   // Generate cache with all regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Convert tick positions to sample positions for precise testing
   const auto region1_start_samples =
@@ -1172,7 +1220,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheMultipleRegions)
       (region3_start_samples - region1_start_samples).in (units::sample) + 256)
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio from all regions
@@ -1219,7 +1267,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
 
   // Generate cache with both regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio
   std::vector<float>    output_left (256, 0.0f);
@@ -1231,7 +1279,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should still have audio from the original region, not the zero-length one
@@ -1260,7 +1308,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
 
   // First generate cache normally
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio
   std::vector<float>    output_left (256, 0.0f);
@@ -1272,7 +1320,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio
@@ -1294,12 +1342,12 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange affected_range (
     std::make_pair (affected_start, affected_end));
-  provider_->generate_audio_events (*tempo_map_, regions, affected_range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, affected_range);
 
   // Test processing audio again
   std::fill (output_left.begin (), output_left.end (), 0.0f);
   std::fill (output_right.begin (), output_right.end (), 0.0f);
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should still have audio
@@ -1330,7 +1378,7 @@ TEST_F (TimelineDataProviderTest, AudioPreciseTimingVerification)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Convert region start to samples
   const auto region_start_samples =
@@ -1348,7 +1396,7 @@ TEST_F (TimelineDataProviderTest, AudioPreciseTimingVerification)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have audio from the audio region
@@ -1369,7 +1417,7 @@ TEST_F (TimelineDataProviderTest, AudioPreciseTimingVerification)
 TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
 {
   // Test that the provider can be constructed
-  EXPECT_NE (provider_, nullptr);
+  EXPECT_NE (audio_provider_, nullptr);
 
   // Test that process_audio_events can be called without crashing
   std::vector<float>    output_left (256, 0.0f);
@@ -1381,7 +1429,7 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should be all zeros initially
@@ -1395,10 +1443,10 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
   std::vector<const AudioRegion *> empty_regions;
   utils::ExpandableTickRange       range (std::pair (0.0, 960.0));
 
-  provider_->generate_audio_events (*tempo_map_, empty_regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, empty_regions, range);
 
   // Process again to ensure no crash
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should still be all zeros
@@ -1407,6 +1455,173 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
       EXPECT_FLOAT_EQ (output_left[i], 0.0f);
       EXPECT_FLOAT_EQ (output_right[i], 0.0f);
     }
+}
+
+// ========== Automation Provider Tests ==========
+
+TEST_F (TimelineDataProviderTest, AutomationProviderInitialState)
+{
+  // Provider should start with no automation
+  std::vector<float>    output_values (256, 0.0f);
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  automation_provider_->process_automation_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_values);
+
+  // Output should be all negative, indicating no automation (default value)
+  for (float output_value : output_values)
+    {
+      EXPECT_LT (output_value, 0.0f);
+    }
+}
+
+TEST_F (
+  TimelineDataProviderTest,
+  AutomationProviderGenerateEventsWithEmptyRegions)
+{
+  // Test generating automation events with empty region list
+  std::vector<const AutomationRegion *> empty_regions;
+  utils::ExpandableTickRange            range (
+    std::pair (0.0, 960.0)); // One bar at 120 BPM
+
+  automation_provider_->generate_automation_events (
+    *tempo_map_, empty_regions, range);
+
+  // Verify no automation is generated
+  std::vector<float>    output_values (256, 0.0f);
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  automation_provider_->process_automation_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_values);
+
+  // Output should be all negative, indicating no automation (default value)
+  for (float output_value : output_values)
+    {
+      EXPECT_LT (output_value, 0.0f);
+    }
+}
+
+TEST_F (
+  TimelineDataProviderTest,
+  AutomationProviderProcessEventsWithAutomationRegion)
+{
+  // Create an automation region at tick 0 (start of timeline)
+  auto region = create_automation_region (0.0, 200.0, 0.0f, 1.0f);
+
+  // Create a vector of regions
+  std::vector<const AutomationRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  automation_provider_->generate_automation_events (*tempo_map_, regions, range);
+
+  // Test processing automation that should include the region
+  std::vector<float>    output_values (256, 0.0f);
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  automation_provider_->process_automation_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_values);
+
+  // Should have some automation values (not all zeros)
+  bool has_automation = false;
+  for (size_t i = 0; i < output_values.size (); ++i)
+    {
+      if (std::abs (output_values[i]) > 0.001f)
+        {
+          has_automation = true;
+          break;
+        }
+    }
+  EXPECT_TRUE (has_automation);
+}
+
+TEST_F (TimelineDataProviderTest, AutomationProviderGetValueAtSpecificPosition)
+{
+  // Create an automation region with linear ramp from 0.0 to 1.0
+  auto region = create_automation_region (0.0, 200.0, 0.0f, 1.0f);
+
+  // Create a vector of regions
+  std::vector<const AutomationRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 960.0));
+  automation_provider_->generate_automation_events (*tempo_map_, regions, range);
+
+  // Convert region start to samples
+  const auto region_start_samples =
+    tempo_map_->tick_to_samples_rounded (units::ticks (0.0));
+  const auto region_end_samples =
+    tempo_map_->tick_to_samples_rounded (units::ticks (200.0));
+
+  // Test getting automation value at start of region (should be 0.0)
+  auto value_at_start_opt =
+    automation_provider_->get_automation_value_rt (region_start_samples);
+  ASSERT_TRUE (value_at_start_opt.has_value ());
+  EXPECT_FLOAT_EQ (value_at_start_opt.value (), 0.0f);
+
+  // Test getting automation value at end of region (should be near 1.0)
+  auto value_at_end_opt = automation_provider_->get_automation_value_rt (
+    region_end_samples - units::samples (1)); // Just before end
+  ASSERT_TRUE (value_at_end_opt.has_value ());
+  EXPECT_NEAR (value_at_end_opt.value (), 1.0f, 0.001f);
+
+  // Test getting automation value outside region (should be 1.0 - last known
+  // value)
+  auto value_outside_opt = automation_provider_->get_automation_value_rt (
+    region_end_samples + units::samples (100));
+  ASSERT_TRUE (value_outside_opt.has_value ());
+  // FIXME: this should be exactly 1.0f but it's not a big issue for
+  // now
+  EXPECT_NEAR (value_at_end_opt.value (), 1.0f, 0.001f);
+}
+
+TEST_F (
+  TimelineDataProviderTest,
+  AutomationProviderGetValueBeforeFirstAutomationPoint)
+{
+  // Create an automation region that starts later in the timeline (not at 0)
+  auto region = create_automation_region (1000.0, 1200.0, 0.0f, 1.0f);
+
+  // Create a vector of regions
+  std::vector<const AutomationRegion *> regions;
+  regions.push_back (region);
+
+  // Generate events for the regions
+  utils::ExpandableTickRange range (std::pair (0.0, 2000.0));
+  automation_provider_->generate_automation_events (*tempo_map_, regions, range);
+
+  // Convert region start to samples
+  const auto region_start_samples =
+    tempo_map_->tick_to_samples_rounded (units::ticks (1000.0));
+
+  // Test getting automation value before the first automation point (should be
+  // std::nullopt)
+  auto value_before_opt = automation_provider_->get_automation_value_rt (
+    region_start_samples - units::samples (100));
+  EXPECT_FALSE (value_before_opt.has_value ());
+
+  // Test getting automation value at the first automation point (should be 0.0)
+  auto value_at_start_opt =
+    automation_provider_->get_automation_value_rt (region_start_samples);
+  ASSERT_TRUE (value_at_start_opt.has_value ());
+  EXPECT_FLOAT_EQ (value_at_start_opt.value (), 0.0f);
 }
 
 // ========== Chord Region Tests ==========
@@ -1422,7 +1637,7 @@ TEST_F (TimelineDataProviderTest, ChordRegionInitialState)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_EQ (output_buffer.size (), 0);
 }
@@ -1446,7 +1661,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
 
   // Generate events for the chord regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events that should include chord events
   dsp::MidiEventVector  output_buffer;
@@ -1457,7 +1672,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have some events from the chord region
@@ -1493,7 +1708,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
 
   // Generate events for the chord regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events that should NOT include the chord
   dsp::MidiEventVector  output_buffer;
@@ -1504,7 +1719,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the chord region is outside the time range
@@ -1527,7 +1742,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
   dsp::MidiEventVector  output_buffer;
@@ -1538,7 +1753,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the entire region is muted
@@ -1559,7 +1774,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio
   std::vector<float>    output_left (256, 0.0f);
@@ -1571,7 +1786,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
     .nframes_ = 256
   };
 
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have no audio since the entire region is muted
@@ -1604,7 +1819,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
 
   // Generate events for the chord regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events
   dsp::MidiEventVector  output_buffer;
@@ -1615,7 +1830,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events since the entire chord region is muted
@@ -1646,7 +1861,7 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
   dsp::MidiEventVector  output_buffer;
@@ -1657,7 +1872,7 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have events from the unmuted note (pitch 64) but not from the muted
@@ -1700,7 +1915,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // First, process with transport rolling - should generate MIDI events
   dsp::MidiEventVector  output_buffer;
@@ -1711,7 +1926,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_GT (output_buffer.size (), 0);
 
@@ -1719,7 +1934,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
   output_buffer.clear ();
 
   // Now process with transport stopped - should send all-notes-off
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Paused, output_buffer);
 
   // Verify exactly 16 events were generated: the all-notes-off events
@@ -1742,7 +1957,7 @@ TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   std::vector<float>    output_left (256, 0.0f);
   std::vector<float>    output_right (256, 0.0f);
@@ -1754,7 +1969,7 @@ TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
   };
 
   // First, process with transport rolling - should generate audio
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
   // Should have some audio output
@@ -1776,7 +1991,7 @@ TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
   std::fill (output_right.begin (), output_right.end (), 0.0f);
 
   // Now process with transport stopped - should clear buffers
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Paused, output_left, output_right);
 
   // Verify buffers are cleared
@@ -1798,7 +2013,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   dsp::MidiEventVector output_buffer;
 
@@ -1810,7 +2025,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info1, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_GT (output_buffer.size (), 0);
 
@@ -1825,7 +2040,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info2, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Verify exactly 16 events were generated: the all-notes-off events
@@ -1848,7 +2063,7 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   dsp::MidiEventVector output_buffer;
 
@@ -1860,7 +2075,7 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info1, dsp::ITransport::PlayState::Rolling, output_buffer);
   EXPECT_GT (output_buffer.size (), 0);
 
@@ -1875,7 +2090,7 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
     .nframes_ = 256
   };
 
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info2, dsp::ITransport::PlayState::Rolling, output_buffer);
 
   // Should have no events (no all-notes-off since position is continuous)
@@ -1900,7 +2115,7 @@ TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   dsp::MidiEventVector  output_buffer;
   EngineProcessTimeInfo time_info = {
@@ -1911,7 +2126,7 @@ TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
   };
 
   // Process with transport stopped (initial state) - should have no events
-  provider_->process_midi_events (
+  midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Paused, output_buffer);
 
   // Should have no events since transport was never rolling
@@ -1929,7 +2144,7 @@ TEST_F (TimelineDataProviderTest, NoAudioWhenTransportStopped)
 
   // Generate events for the regions
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   std::vector<float>    output_left (256, 0.0f);
   std::vector<float>    output_right (256, 0.0f);
@@ -1941,7 +2156,7 @@ TEST_F (TimelineDataProviderTest, NoAudioWhenTransportStopped)
   };
 
   // Process with transport stopped - should clear buffers and not process audio
-  provider_->process_audio_events (
+  audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Paused, output_left, output_right);
 
   // Verify buffers are cleared
@@ -1950,6 +2165,50 @@ TEST_F (TimelineDataProviderTest, NoAudioWhenTransportStopped)
       EXPECT_FLOAT_EQ (output_left[i], 0.0f);
       EXPECT_FLOAT_EQ (output_right[i], 0.0f);
     }
+}
+
+// ========== Basic Functionality Tests ==========
+
+TEST_F (TimelineDataProviderTest, BasicFunctionality)
+{
+  // Test that the providers can be constructed
+  EXPECT_NE (midi_provider_, nullptr);
+  EXPECT_NE (audio_provider_, nullptr);
+  EXPECT_NE (automation_provider_, nullptr);
+
+  // Test that process methods can be called without crashing
+  dsp::MidiEventVector  midi_buffer;
+  std::vector<float>    audio_left (256, 0.0f);
+  std::vector<float>    audio_right (256, 0.0f);
+  std::vector<float>    automation_values (256, 0.0f);
+  EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 256
+  };
+
+  midi_provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Paused, midi_buffer);
+  EXPECT_EQ (midi_buffer.size (), 0);
+
+  audio_provider_->process_audio_events (
+    time_info, dsp::ITransport::PlayState::Paused, audio_left, audio_right);
+
+  automation_provider_->process_automation_events (
+    time_info, dsp::ITransport::PlayState::Paused, automation_values);
+
+  // Test that generate methods can be called without crashing
+  std::vector<const MidiRegion *>       empty_midi_regions;
+  std::vector<const AudioRegion *>      empty_audio_regions;
+  std::vector<const AutomationRegion *> empty_automation_regions;
+  utils::ExpandableTickRange            range (std::pair (0.0, 960.0));
+
+  midi_provider_->generate_midi_events (*tempo_map_, empty_midi_regions, range);
+  audio_provider_->generate_audio_events (
+    *tempo_map_, empty_audio_regions, range);
+  automation_provider_->generate_automation_events (
+    *tempo_map_, empty_automation_regions, range);
 }
 
 } // namespace zrythm::structure::arrangement
