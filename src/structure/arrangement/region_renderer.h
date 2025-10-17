@@ -17,7 +17,7 @@ namespace zrythm::structure::arrangement
  * This class provides methods to serialize both MIDI and Audio regions,
  * handling looped playback and various constraints.
  */
-class RegionSerializer final
+class RegionRenderer final
 {
 public:
   /**

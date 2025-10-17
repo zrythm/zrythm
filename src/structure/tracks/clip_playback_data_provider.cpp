@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/arrangement/region_serializer.h"
+#include "structure/arrangement/region_renderer.h"
 #include "structure/tracks/clip_playback_data_provider.h"
 
 namespace zrythm::structure::tracks
@@ -41,7 +41,7 @@ ClipPlaybackDataProvider::generate_midi_events (
   juce::MidiMessageSequence region_seq;
 
   // Serialize region (timings in ticks)
-  arrangement::RegionSerializer::serialize_to_sequence (
+  arrangement::RegionRenderer::serialize_to_sequence (
     midi_region, region_seq, std::nullopt, std::nullopt, false, true);
 
   // Convert timings to samples
@@ -71,8 +71,7 @@ ClipPlaybackDataProvider::generate_audio_events (
 {
   // Serialize region
   juce::AudioSampleBuffer audio_buffer;
-  arrangement::RegionSerializer::serialize_to_buffer (
-    audio_region, audio_buffer);
+  arrangement::RegionRenderer::serialize_to_buffer (audio_region, audio_buffer);
 
   decltype (active_audio_playback_buffer_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>

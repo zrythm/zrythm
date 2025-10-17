@@ -6,7 +6,7 @@
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_region.h"
-#include "structure/arrangement/region_serializer.h"
+#include "structure/arrangement/region_renderer.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -14,7 +14,7 @@ namespace zrythm::structure::arrangement
 // Define to enable debug logging for region serializer
 static constexpr bool REGION_SERIALIZER_DEBUG = false;
 
-RegionSerializer::LoopParameters::LoopParameters (const ArrangerObject &region)
+RegionRenderer::LoopParameters::LoopParameters (const ArrangerObject &region)
 {
   const auto * loop_range = region.loopRange ();
   loop_start = units::ticks (loop_range->loopStartPosition ()->ticks ());
@@ -30,7 +30,7 @@ RegionSerializer::LoopParameters::LoopParameters (const ArrangerObject &region)
 }
 
 void
-RegionSerializer::serialize_midi_region (
+RegionRenderer::serialize_midi_region (
   const MidiRegion          &region,
   juce::MidiMessageSequence &events,
   std::optional<double>      start,
@@ -66,7 +66,7 @@ RegionSerializer::serialize_midi_region (
 }
 
 void
-RegionSerializer::serialize_chord_region (
+RegionRenderer::serialize_chord_region (
   const ChordRegion         &region,
   juce::MidiMessageSequence &events,
   std::optional<double>      start,
@@ -101,7 +101,7 @@ RegionSerializer::serialize_chord_region (
  * Serializes an Automation region to sample-accurate automation values.
  */
 void
-RegionSerializer::serialize_automation_region (
+RegionRenderer::serialize_automation_region (
   const AutomationRegion &region,
   std::vector<float>     &values,
   std::optional<double>   start,
@@ -363,7 +363,7 @@ RegionSerializer::serialize_automation_region (
  * (with loops and clip start).
  */
 void
-RegionSerializer::serialize_audio_region (
+RegionRenderer::serialize_audio_region (
   const AudioRegion       &region,
   juce::AudioSampleBuffer &buffer,
   std::optional<double>    start,
@@ -532,7 +532,7 @@ RegionSerializer::serialize_audio_region (
  */
 template <typename ObjectType, typename EventGenerator>
 void
-RegionSerializer::process_arranger_object (
+RegionRenderer::process_arranger_object (
   const ObjectType                    &obj,
   const LoopParameters                &loop_params,
   units::precise_tick_t                region_start_offset,
@@ -601,7 +601,7 @@ RegionSerializer::process_arranger_object (
  * Processes a single MIDI note across all loop iterations.
  */
 void
-RegionSerializer::process_midi_note (
+RegionRenderer::process_midi_note (
   const MidiNote                      &note,
   const LoopParameters                &loop_params,
   units::precise_tick_t                region_start_offset,
@@ -630,7 +630,7 @@ RegionSerializer::process_midi_note (
 }
 
 void
-RegionSerializer::process_chord_object (
+RegionRenderer::process_chord_object (
   const arrangement::ChordObject      &chord_obj,
   const LoopParameters                &loop_params,
   units::precise_tick_t                region_start_offset,
@@ -679,7 +679,7 @@ RegionSerializer::process_chord_object (
  * (with loops and clip start).
  */
 void
-RegionSerializer::process_audio_loop (
+RegionRenderer::process_audio_loop (
   const AudioRegion                   &region,
   juce::PositionableAudioSource       &audio_source,
   const LoopParameters                &loop_params,
@@ -1011,7 +1011,7 @@ RegionSerializer::process_audio_loop (
  * Applies gain to the entire audio buffer as a separate pass.
  */
 void
-RegionSerializer::apply_gain_pass (
+RegionRenderer::apply_gain_pass (
   const AudioRegion       &region,
   juce::AudioSampleBuffer &buffer)
 {
@@ -1046,7 +1046,7 @@ RegionSerializer::apply_gain_pass (
  * Applies region (object) fades to the audio buffer as a separate pass.
  */
 void
-RegionSerializer::apply_region_fades_pass (
+RegionRenderer::apply_region_fades_pass (
   const AudioRegion       &region,
   juce::AudioSampleBuffer &buffer,
   const LoopParameters    &loop_params)
@@ -1164,7 +1164,7 @@ RegionSerializer::apply_region_fades_pass (
  * Applies built-in fades to the audio buffer as a separate pass.
  */
 void
-RegionSerializer::apply_builtin_fades_pass (
+RegionRenderer::apply_builtin_fades_pass (
   const AudioRegion       &region,
   juce::AudioSampleBuffer &buffer,
   int                      builtin_fade_frames)
@@ -1257,7 +1257,7 @@ RegionSerializer::apply_builtin_fades_pass (
  * Calculates the position of an event in looped playback.
  */
 units::precise_tick_t
-RegionSerializer::get_looped_position (
+RegionRenderer::get_looped_position (
   units::precise_tick_t original_pos,
   const LoopParameters &loop_params,
   int                   loop_index)
@@ -1285,7 +1285,7 @@ RegionSerializer::get_looped_position (
  * Checks if a position range falls within the specified constraints.
  */
 bool
-RegionSerializer::is_position_in_range (
+RegionRenderer::is_position_in_range (
   units::precise_tick_t                start_pos,
   units::precise_tick_t                end_pos,
   std::optional<units::precise_tick_t> range_start,
@@ -1302,7 +1302,7 @@ RegionSerializer::is_position_in_range (
  * Checks if a MIDI note is in a playable part of the region.
  */
 bool
-RegionSerializer::is_midi_note_playable (
+RegionRenderer::is_midi_note_playable (
   const MidiNote       &note,
   const LoopParameters &loop_params)
 {

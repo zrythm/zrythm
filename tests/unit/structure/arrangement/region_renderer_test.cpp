@@ -3,15 +3,14 @@
 
 #include <cmath>
 
-#include "structure/arrangement/automation_region.h"
-#include "structure/arrangement/region_serializer.h"
+#include "structure/arrangement/region_renderer.h"
 
 #include <gtest/gtest.h>
 #include <juce_audio_formats/juce_audio_formats.h>
 
 namespace zrythm::structure::arrangement
 {
-class RegionSerializerTest : public ::testing::Test
+class RegionRendererTest : public ::testing::Test
 {
 protected:
   void SetUp () override
@@ -148,13 +147,13 @@ protected:
 
 // ========== MIDI Region Tests ==========
 
-TEST_F (RegionSerializerTest, SerializeMidiEventsSimple)
+TEST_F (RegionRendererTest, SerializeMidiEventsSimple)
 {
   // Add a note within the region
   add_midi_note (60, 90, 100, 50);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, true, false);
 
   // Verify events
@@ -178,13 +177,13 @@ TEST_F (RegionSerializerTest, SerializeMidiEventsSimple)
     250); // 100 (position) + 50 (length) + 100 (region start)
 }
 
-TEST_F (RegionSerializerTest, SerializeMidiEventsWithLooping)
+TEST_F (RegionRendererTest, SerializeMidiEventsWithLooping)
 {
   // Add a note within the loop range
   add_midi_note (60, 90, 50, 50);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, true, true);
 
   // Should create multiple events due to looping
@@ -207,13 +206,13 @@ TEST_F (RegionSerializerTest, SerializeMidiEventsWithLooping)
     250); // 150 (first loop end) + 100 region start
 }
 
-TEST_F (RegionSerializerTest, SerializeMidiEventsWithStartEndConstraints)
+TEST_F (RegionRendererTest, SerializeMidiEventsWithStartEndConstraints)
 {
   // Add a note
   add_midi_note (60, 90, 100, 50);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, 150.0, 250.0, true, false);
 
   // Verify events
@@ -230,21 +229,21 @@ TEST_F (RegionSerializerTest, SerializeMidiEventsWithStartEndConstraints)
                                                             // constraint)
 }
 
-TEST_F (RegionSerializerTest, MutedMidiNoteNotSerialized)
+TEST_F (RegionRendererTest, MutedMidiNoteNotSerialized)
 {
   // Add a note and mute it
   add_midi_note (60, 90, 100, 50);
   midi_region->get_children_view ()[0]->mute ()->setMuted (true);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, true, true);
 
   // No events should be added for muted note
   EXPECT_EQ (events.getNumEvents (), 0);
 }
 
-TEST_F (RegionSerializerTest, MidiNoteOutsideLoopRangeNotSerialized)
+TEST_F (RegionRendererTest, MidiNoteOutsideLoopRangeNotSerialized)
 {
   // Adjust clip start
   midi_region->loopRange ()->clipStartPosition ()->setTicks (50);
@@ -253,14 +252,14 @@ TEST_F (RegionSerializerTest, MidiNoteOutsideLoopRangeNotSerialized)
   add_midi_note (60, 90, 40, 10); // At 40-50 ticks, loop starts at 50
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, true, true);
 
   // Should not be added when full=true
   EXPECT_EQ (events.getNumEvents (), 0);
 }
 
-TEST_F (RegionSerializerTest, SerializeMultipleMidiNotes)
+TEST_F (RegionRendererTest, SerializeMultipleMidiNotes)
 {
   // Add multiple notes
   add_midi_note (60, 90, 50, 30);
@@ -268,7 +267,7 @@ TEST_F (RegionSerializerTest, SerializeMultipleMidiNotes)
   add_midi_note (67, 100, 120, 20);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, true, true);
 
   // Should have events for all notes, including looped ones
@@ -283,13 +282,13 @@ TEST_F (RegionSerializerTest, SerializeMultipleMidiNotes)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeMidiWithoutRegionStart)
+TEST_F (RegionRendererTest, SerializeMidiWithoutRegionStart)
 {
   // Add a note
   add_midi_note (60, 90, 100, 50);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, false, false);
 
   // Verify positions are relative to region start (not global)
@@ -303,12 +302,12 @@ TEST_F (RegionSerializerTest, SerializeMidiWithoutRegionStart)
 
 // ========== Audio Region Tests ==========
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionSimple)
+TEST_F (RegionRendererTest, SerializeAudioRegionSimple)
 {
   juce::AudioSampleBuffer buffer;
 
   // Serialize the audio region
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // Verify buffer was created and has content
@@ -379,7 +378,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionSimple)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithConstraints)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithConstraints)
 {
   juce::AudioSampleBuffer buffer;
 
@@ -391,7 +390,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithConstraints)
   const double constraint_start = region_pos_ticks;
   const double constraint_end = region_pos_ticks + 50.0;
 
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, constraint_start, constraint_end);
 
   // Buffer should be created
@@ -429,12 +428,12 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithConstraints)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithLooping)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithLooping)
 {
   juce::AudioSampleBuffer buffer;
 
   // Serialize with full looping enabled
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // With looping, buffer should contain the looped pattern
@@ -496,13 +495,13 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithLooping)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithGain)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithGain)
 {
   // Set gain to 0.5
   audio_region->setGain (0.5f);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // Verify gain was applied
@@ -534,13 +533,13 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithGain)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithClipStart)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithClipStart)
 {
   // Set clip start to 50 ticks
   audio_region->loopRange ()->clipStartPosition ()->setTicks (50);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // Buffer should be created with clip start offset applied
@@ -573,14 +572,14 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithClipStart)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionZeroLengthLoop)
+TEST_F (RegionRendererTest, SerializeAudioRegionZeroLengthLoop)
 {
   // Set zero-length loop
   audio_region->loopRange ()->loopStartPosition ()->setTicks (100);
   audio_region->loopRange ()->loopEndPosition ()->setTicks (100);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // Should still work but without looping
@@ -611,19 +610,19 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionZeroLengthLoop)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithNegativeConstraints)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithNegativeConstraints)
 {
   juce::AudioSampleBuffer buffer;
 
   // Serialize with constraints that don't overlap the region
   // Region is at ~43.5 ticks, so -100 to -50 should definitely not overlap
-  RegionSerializer::serialize_to_buffer (*audio_region, buffer, -100.0, -50.0);
+  RegionRenderer::serialize_to_buffer (*audio_region, buffer, -100.0, -50.0);
 
   // Buffer should be empty since constraints don't include the region
   EXPECT_EQ (buffer.getNumSamples (), 0);
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionLargeConstraints)
+TEST_F (RegionRendererTest, SerializeAudioRegionLargeConstraints)
 {
   juce::AudioSampleBuffer buffer;
 
@@ -633,7 +632,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionLargeConstraints)
 
   // Serialize with large constraints that fully include the region
   // Start before the region and end after the region
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, region_pos_ticks - 10.0,
     region_pos_ticks + region_length_ticks + 10.0);
 
@@ -689,13 +688,13 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionLargeConstraints)
 
 // ========== Ported FillStereoPorts Tests ==========
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionGainAndFades)
+TEST_F (RegionRendererTest, SerializeAudioRegionGainAndFades)
 {
   // Set gain to 0.5
   audio_region->setGain (0.5f);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // Verify gain was applied to our test pattern
@@ -726,7 +725,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionGainAndFades)
   EXPECT_NEAR (right_channel[last_sample], 0.0f, 0.1f); // Affected by fade out
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeIn)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithBuiltinFadeIn)
 {
   // Create a small region to test built-in fade in
   // Create a new audio source with sine wave pattern
@@ -742,7 +741,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeIn)
   small_region->bounds ()->length ()->setTicks (100);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *small_region, buffer, std::nullopt, std::nullopt);
 
   // Verify built-in fade in was applied
@@ -759,7 +758,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeIn)
   EXPECT_GT (std::abs (right_channel[last_sample]), std::abs (right_channel[0]));
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeOut)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithBuiltinFadeOut)
 {
   // Create a region positioned near the end to test built-in fade out
   // Create a new audio source with sine wave pattern
@@ -775,7 +774,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeOut)
   fade_out_region->bounds ()->length ()->setTicks (200);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *fade_out_region, buffer, std::nullopt, std::nullopt);
 
   // Verify built-in fade out was applied
@@ -818,14 +817,14 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithBuiltinFadeOut)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionWithCustomFades)
+TEST_F (RegionRendererTest, SerializeAudioRegionWithCustomFades)
 {
   // Set custom fade positions
   audio_region->fadeRange ()->startOffset ()->setSamples (100);
   audio_region->fadeRange ()->endOffset ()->setSamples (100);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // Verify custom fades were applied
@@ -847,7 +846,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionWithCustomFades)
   EXPECT_LT (std::abs (right_channel[last_sample]), 0.5f);
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionFadesCombinedWithGain)
+TEST_F (RegionRendererTest, SerializeAudioRegionFadesCombinedWithGain)
 {
   // Set gain and custom fades
   audio_region->setGain (0.7f);
@@ -855,7 +854,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionFadesCombinedWithGain)
   audio_region->fadeRange ()->endOffset ()->setSamples (50);
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *audio_region, buffer, std::nullopt, std::nullopt);
 
   // Verify both gain and fades were applied
@@ -879,17 +878,17 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionFadesCombinedWithGain)
 
 // ========== Edge Case Tests ==========
 
-TEST_F (RegionSerializerTest, SerializeEmptyMidiRegion)
+TEST_F (RegionRendererTest, SerializeEmptyMidiRegion)
 {
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, true, true);
 
   // No events should be added for empty region
   EXPECT_EQ (events.getNumEvents (), 0);
 }
 
-TEST_F (RegionSerializerTest, SerializeMidiRegionWithZeroLengthLoop)
+TEST_F (RegionRendererTest, SerializeMidiRegionWithZeroLengthLoop)
 {
   // Set loop start and end to the same position (zero-length loop)
   midi_region->loopRange ()->loopStartPosition ()->setTicks (100);
@@ -898,38 +897,38 @@ TEST_F (RegionSerializerTest, SerializeMidiRegionWithZeroLengthLoop)
   add_midi_note (60, 90, 50, 30);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, std::nullopt, std::nullopt, true, true);
 
   // Should have events for the original note but no loops
   EXPECT_EQ (events.getNumEvents (), 2);
 }
 
-TEST_F (RegionSerializerTest, SerializeMidiRegionWithNegativeConstraints)
+TEST_F (RegionRendererTest, SerializeMidiRegionWithNegativeConstraints)
 {
   add_midi_note (60, 90, 100, 50);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, -50.0, 50.0, true, false);
 
   // Should not include any events as they're outside the constraint range
   EXPECT_EQ (events.getNumEvents (), 0);
 }
 
-TEST_F (RegionSerializerTest, SerializeMidiRegionWithLargeConstraints)
+TEST_F (RegionRendererTest, SerializeMidiRegionWithLargeConstraints)
 {
   add_midi_note (60, 90, 100, 50);
 
   juce::MidiMessageSequence events;
-  RegionSerializer::serialize_to_sequence (
+  RegionRenderer::serialize_to_sequence (
     *midi_region, events, 0.0, 1000.0, true, false);
 
   // Should include all events as they're within the large constraint range
   EXPECT_EQ (events.getNumEvents (), 2);
 }
 
-TEST_F (RegionSerializerTest, SerializeAudioRegionBeyondSourceLength)
+TEST_F (RegionRendererTest, SerializeAudioRegionBeyondSourceLength)
 {
   // Create a small audio source with sine wave (100 samples)
   auto audio_source_object_ref = create_sine_wave_audio_source (100);
@@ -944,7 +943,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionBeyondSourceLength)
     200); // 200 samples > 100 source
 
   juce::AudioSampleBuffer buffer;
-  RegionSerializer::serialize_to_buffer (
+  RegionRenderer::serialize_to_buffer (
     *large_region, buffer, std::nullopt, std::nullopt);
 
   // Buffer should be created
@@ -988,7 +987,7 @@ TEST_F (RegionSerializerTest, SerializeAudioRegionBeyondSourceLength)
 
 // ========== Automation Region Tests ==========
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionSimple)
+TEST_F (RegionRendererTest, SerializeAutomationRegionSimple)
 {
   // Add a simple automation point
   add_automation_point (0.5f, 100);
@@ -996,7 +995,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionSimple)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // Calculate the sample position of the automation point
@@ -1016,7 +1015,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionSimple)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionWithInterpolation)
+TEST_F (RegionRendererTest, SerializeAutomationRegionWithInterpolation)
 {
   // Add two automation points
   add_automation_point (0.0f, 50);
@@ -1025,7 +1024,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithInterpolation)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // Verify interpolation
@@ -1056,7 +1055,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithInterpolation)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionWithLooping)
+TEST_F (RegionRendererTest, SerializeAutomationRegionWithLooping)
 {
   // Add an automation point within the loop range
   add_automation_point (0.7f, 75);
@@ -1064,7 +1063,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithLooping)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // With looping, the value should appear multiple times
@@ -1095,7 +1094,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithLooping)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionWithConstraints)
+TEST_F (RegionRendererTest, SerializeAutomationRegionWithConstraints)
 {
   // Add automation points
   add_automation_point (0.0f, 50);
@@ -1108,7 +1107,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithConstraints)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, constraint_start, constraint_end);
 
   // Verify the constraint range is respected
@@ -1136,14 +1135,14 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithConstraints)
                             // the constraint
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionEmpty)
+TEST_F (RegionRendererTest, SerializeAutomationRegionEmpty)
 {
   // Don't add any automation points
 
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // All values should be -1.0 (no automation points)
@@ -1153,7 +1152,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionEmpty)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionWithCurve)
+TEST_F (RegionRendererTest, SerializeAutomationRegionWithCurve)
 {
   // Add two automation points
   add_automation_point (0.0f, 50);
@@ -1167,7 +1166,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithCurve)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // Verify that the curve affects the interpolation
@@ -1188,7 +1187,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithCurve)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionNonOverlappingConstraints)
+TEST_F (RegionRendererTest, SerializeAutomationRegionNonOverlappingConstraints)
 {
   // Add an automation point
   add_automation_point (0.5f, 100);
@@ -1200,7 +1199,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionNonOverlappingConstraints
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, constraint_start, constraint_end);
 
   // All values should be -1.0 (no automation points in constraint)
@@ -1210,7 +1209,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionNonOverlappingConstraints
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionLargeConstraints)
+TEST_F (RegionRendererTest, SerializeAutomationRegionLargeConstraints)
 {
   // Add automation points
   add_automation_point (0.0f, 50);
@@ -1226,7 +1225,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionLargeConstraints)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, constraint_start, constraint_end);
 
   // Verify the constraint includes padding before and after the region
@@ -1246,7 +1245,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionLargeConstraints)
   // (More detailed checks would require knowing exact sample positions)
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionWithClipStart)
+TEST_F (RegionRendererTest, SerializeAutomationRegionWithClipStart)
 {
   // Set clip start
   automation_region->loopRange ()->clipStartPosition ()->setTicks (25);
@@ -1257,7 +1256,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithClipStart)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // With clip start, the point before clip start should not appear
@@ -1268,7 +1267,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionWithClipStart)
   // (Specific verification would depend on exact sample calculations)
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionEndingMidCurve)
+TEST_F (RegionRendererTest, SerializeAutomationRegionEndingMidCurve)
 {
   // Create a region that ends in the middle of a curve
   // First point at 50 ticks, second point at 250 ticks (outside region)
@@ -1281,7 +1280,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionEndingMidCurve)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // Calculate sample positions
@@ -1319,7 +1318,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionEndingMidCurve)
     }
 }
 
-TEST_F (RegionSerializerTest, SerializeAutomationRegionLoopedEndingMidCurve)
+TEST_F (RegionRendererTest, SerializeAutomationRegionLoopedEndingMidCurve)
 {
   // Create a looped region that ends in the middle of a curve
   add_automation_point (0.0f, 25);  // Before loop
@@ -1340,7 +1339,7 @@ TEST_F (RegionSerializerTest, SerializeAutomationRegionLoopedEndingMidCurve)
   // Pass empty vector - the API will resize it appropriately
   std::vector<float> values;
 
-  RegionSerializer::serialize_to_automation_values (
+  RegionRenderer::serialize_to_automation_values (
     *automation_region, values, std::nullopt, std::nullopt);
 
   // Calculate sample positions

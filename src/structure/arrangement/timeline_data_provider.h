@@ -5,7 +5,7 @@
 
 #include "dsp/itransport.h"
 #include "dsp/timeline_data_cache.h"
-#include "structure/arrangement/region_serializer.h"
+#include "structure/arrangement/region_renderer.h"
 #include "utils/expandable_tick_range.h"
 #include "utils/types.h"
 
@@ -212,7 +212,7 @@ private:
     juce::MidiMessageSequence region_seq;
 
     // Serialize region (timings in ticks)
-    arrangement::RegionSerializer::serialize_to_sequence (
+    arrangement::RegionRenderer::serialize_to_sequence (
       region, region_seq, std::nullopt, std::nullopt, true, true);
 
     // Convert timings to samples
@@ -310,7 +310,7 @@ private:
     auto audio_buffer = std::make_unique<juce::AudioSampleBuffer> ();
 
     // Serialize the audio region
-    arrangement::RegionSerializer::serialize_to_buffer (region, *audio_buffer);
+    arrangement::RegionRenderer::serialize_to_buffer (region, *audio_buffer);
 
     // Add to cache with proper timing
     audio_cache_.add_audio_region (
@@ -415,7 +415,7 @@ private:
     std::vector<float> automation_values (num_samples.in (units::samples));
 
     // Serialize automation region to sample-accurate values
-    arrangement::RegionSerializer::serialize_to_automation_values (
+    arrangement::RegionRenderer::serialize_to_automation_values (
       region, automation_values, std::nullopt, std::nullopt);
 
     automation_cache_.add_automation_sequence (

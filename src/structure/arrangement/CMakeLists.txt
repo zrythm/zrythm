@@ -48,8 +48,8 @@ target_sources(zrythm_arrangement_lib
     muteable_object.h
     named_object.h
     named_object.cpp
-    region_serializer.h
-    region_serializer.cpp
+    region_renderer.h
+    region_renderer.cpp
     timeline_data_provider.h
     timeline_data_provider.cpp
     scale_object.h

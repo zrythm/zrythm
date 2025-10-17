@@ -7,7 +7,7 @@
 #include "gui/backend/qml_utils.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/audio_source_object.h"
-#include "structure/arrangement/region_serializer.h"
+#include "structure/arrangement/region_renderer.h"
 #include "utils/math.h"
 #include "utils/utf8_string.h"
 
@@ -142,7 +142,7 @@ QmlUtils::getAudioRegionWaveform (QObject * audioRegion, int pixelWidth)
 
       // Serialize the entire region to a buffer
       juce::AudioSampleBuffer buffer;
-      structure::arrangement::RegionSerializer::serialize_to_buffer (
+      structure::arrangement::RegionRenderer::serialize_to_buffer (
         *region, buffer);
 
       const int numChannels = buffer.getNumChannels ();
