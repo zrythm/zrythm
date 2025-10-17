@@ -733,8 +733,8 @@ if(ZRYTHM_STRICT)
       -Werror=abstract-final-class
       -Werror=null-dereference
       -Werror=defaulted-function-deleted
-      -Wexit-time-destructors
-      -Wglobal-constructors
+      # -Wexit-time-destructors
+      # -Wglobal-constructors
       -fsafe-buffer-usage-suggestions
 
       # For RealtimeSanitizer compile-time checks
