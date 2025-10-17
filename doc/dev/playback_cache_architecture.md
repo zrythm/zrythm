@@ -64,15 +64,14 @@ Located in [`src/utils/expandable_tick_range.h`](src/utils/expandable_tick_range
 
 Located in [`src/dsp/timeline_data_cache.h`](src/dsp/timeline_data_cache.h)
 
-**Purpose**: Unified cache holder that manages both MIDI and audio event sequences for playback.
+**Purpose**: Cache holder that manages event sequences for playback.
 
 **Key Features:**
-- Stores MIDI sequences and audio regions by interval for efficient updates
+- Stores MIDI, audio and automation sequences by interval for efficient updates
 - Validates event boundaries and ensures note completeness
 - Merges sequences for final playback
 - Creates independent copies of audio data for thread safety
-- Removes both MIDI and audio data that overlaps with specified intervals
-- Handles both MIDI note events and audio sample data with equal priority
+- Removes data that overlaps with specified intervals
 
 ```mermaid
 classDiagram
@@ -94,15 +93,16 @@ classDiagram
 
 Located in [`src/structure/arrangement/timeline_data_provider.h`](src/structure/arrangement/timeline_data_provider.h)
 
-**Purpose**: Unified bridge between the playback cache system and track processors, providing both MIDI and audio events for real-time playback.
+**Purpose**: Bridge between the playback cache system and track processors (or automation tracks), providing events for real-time playback.
 
 **Key Features:**
 - Generates MIDI event sequences from timeline regions
 - Generates audio region data from timeline regions
+- Generates sample-accurate automation data from automation regions
 - Manages thread-safe access to cached events using `farbot::RealtimeObject`
 - Processes events for specific time ranges during audio processing
 - Handles range-based cache updates for efficiency
-- Provides consistent interface for both MIDI and audio event processing
+- Provides consistent interface for event processing
 
 ```mermaid
 classDiagram
@@ -119,7 +119,7 @@ classDiagram
     }
 ```
 
-### 5. Track and TrackProcessor Integration
+### 5. Track, TrackProcessor, and AutomationTrack Integration
 
 **Track** ([`src/structure/tracks/track.h`](src/structure/tracks/track.h)):
 - Owns the `TimelineDataProvider` instance
@@ -132,9 +132,45 @@ classDiagram
 - Integrates with the track's event provider system
 - Provides unified processing for both MIDI and audio events
 
+**AutomationTrack** ([`src/structure/tracks/automation_track.h`](src/structure/tracks/automation_track.h)):
+- Owns an `AutomationTimelineDataProvider` instance for automation-specific caching
+- Contains its own `PlaybackCacheScheduler` for debouncing automation cache requests
+- Connects to automation region changes via `ArrangerObjectOwner` signals
+- Provides real-time automation value access through the parameter's automation provider
+- Handles automation mode (Read/Record/Off) and recording mode (Touch/Latch) logic
+- More self-contained than Track/TrackProcessor integration as it manages a single parameter's automation
+
+```mermaid
+classDiagram
+    class AutomationTrack {
+        +regeneratePlaybackCaches(range)
+        +automationObjectsNeedRecache(range) signal
+        +should_read_automation()
+        +should_be_recording(record_aps)
+        +get_normalized_value(position, search_only_enclosing)
+        -AutomationTimelineDataProvider automation_data_provider_
+        -PlaybackCacheScheduler automation_cache_request_debouncer_
+        -ProcessorParameterUuidReference param_id_
+        -AutomationMode automation_mode_
+        -AutomationRecordMode record_mode_
+    }
+
+    class AutomationTimelineDataProvider {
+        +generate_automation_events(tempo_map, regions, range)
+        +process_automation_events(time_info, transport_state, output)
+        +get_automation_value_rt(sample_position)
+        -AutomationTimelineDataCache automation_cache_
+        -RealtimeObject active_automation_sequences_
+    }
+
+    AutomationTrack --> AutomationTimelineDataProvider : owns
+    AutomationTrack --> PlaybackCacheScheduler : owns
+    ProcessorParameter --> AutomationTrack : provides automation values
+```
+
 ## Signal Flow
 
-The caching process follows this sequence:
+The caching process follows this sequence for Tracks:
 
 ```mermaid
 sequenceDiagram
@@ -171,6 +207,39 @@ sequenceDiagram
     Provider->>Processor: Return events for playback
 ```
 
+The caching process for AutomationTracks follows a similar but more self-contained sequence:
+
+```mermaid
+sequenceDiagram
+    participant UI as UI/Arranger Object
+    participant AOLM as ArrangerObjectListModel
+    participant Scheduler as PlaybackCacheScheduler
+    participant AT as AutomationTrack
+    participant Provider as AutomationTimelineDataProvider
+    participant Cache as AutomationTimelineDataCache
+    participant Param as ProcessorParameter
+
+    UI->>AOLM: Automation object changed
+    Note over AOLM: Track previous position<br/>Compare with current
+    alt Object moved or resized
+        AOLM->>AOLM: Create expanded range covering both positions
+    else Other property change
+        AOLM->>AOLM: Use current range only
+    end
+    AOLM->>Scheduler: contentChanged(expandedRange)
+    Scheduler->>Scheduler: Debounce and expand range
+    Scheduler->>AT: cacheRequested(finalRange)
+    AT->>Provider: generate_automation_events(tempo_map, regions, range)
+    Provider->>Cache: remove_sequences_matching_interval(range)
+    Provider->>Provider: Process automation regions in range
+    Provider->>Cache: add_automation_sequence(interval, values)
+    Provider->>Cache: finalize_changes()
+    Provider->>Provider: set_automation_sequences(cached_sequences())
+    Provider->>Provider: Swap realtime cache (thread-safe)
+    Param->>Provider: get_automation_value_rt(sample_position)
+    Provider->>Param: Return automation value
+```
+
 ## Real-time Safety
 
 The architecture ensures real-time safety through:
@@ -188,9 +257,9 @@ The architecture ensures real-time safety through:
 ## Event Types Support
 
 ### Currently Implemented
-- **MIDI Events**: Fully implemented with region-based caching via `TimelineDataProvider`
-- **Audio Events**: Fully implemented with region-based caching via `TimelineDataProvider`
-- **Automation Events**: Will be handled in AutomationTracks
+- **MIDI Events**: Fully implemented with region-based caching via `MidiTimelineDataProvider`
+- **Audio Events**: Fully implemented with region-based caching via `AudioTimelineDataProvider`
+- **Automation Events**: Fully implemented with region-based caching via `AutomationTimelineDataProvider` in AutomationTracks
 
 ### Future Extensibility
 
@@ -243,6 +312,17 @@ timeline_data_provider_->generate_audio_events(
 );
 ```
 
+### Automation Cache Generation
+```cpp
+// In AutomationTrack::regeneratePlaybackCaches
+auto children = get_children_view();
+automation_data_provider_.generate_automation_events(
+    tempo_map_.get_tempo_map(),
+    children,
+    affectedRange
+);
+```
+
 ### Real-time MIDI Cache Access
 ```cpp
 // In TrackProcessor::fill_midi_events
@@ -260,6 +340,16 @@ timeline_data_provider_->process_audio_events(
     output_left,
     output_right
 );
+```
+
+### Real-time Automation Cache Access
+```cpp
+// In AutomationTrack constructor - setting up automation provider
+parameter()->set_automation_provider([this](auto sample_position) {
+    return automation_mode_.load() == AutomationMode::Read
+        ? automation_data_provider_.get_automation_value_rt(sample_position)
+        : std::nullopt;
+});
 ```
 
 ## Cache Invalidation for Object Movement
@@ -287,8 +377,7 @@ A key feature of the playback cache architecture is intelligent cache invalidati
 
 - **ArrangerObjectListModel**: Propagates change notifications with intelligent cache invalidation
 - **TrackLaneList**: Contains MIDI regions and triggers cache updates
-- **MidiRegionSerializer**: Converts MIDI regions to message sequences
-- **AudioRegionSerializer**: Converts audio regions to sample buffers
+- **RegionRenderer**: Renders regions to plain data (MIDI sequences, audio buffers, sample-accurate automation)
 - **TempoMap**: Provides timing conversion between ticks and samples
 - **TimelineDataProvider**: Bridge between cache system and track processors
 - **ClipLauncherEventProvider**: Handles clip-based MIDI and audio event processing
@@ -296,6 +385,4 @@ A key feature of the playback cache architecture is intelligent cache invalidati
 
 ## Conclusion
 
-This caching architecture provides a robust solution for thread-safe playback. The addition of `TimelineDataProvider` with unified `TimelineDataCache` creates a clean separation between cache management and real-time event processing, improving maintainability and extensibility. The system balances performance, flexibility, and real-time safety while providing comprehensive support for MIDI and audio event caching, with a foundation for future expansion to support automation event caching.
-
-The unified approach to handling both MIDI and audio events ensures consistent behavior, performance characteristics, and threading safety across all event types. This architecture provides a solid foundation for professional-grade audio production with real-time clip launching and timeline playback capabilities.
+This caching architecture provides a robust solution for thread-safe playback. The addition of specialized timeline data providers (`MidiTimelineDataProvider`, `AudioTimelineDataProvider`, and `AutomationTimelineDataProvider`) with their respective caches creates a clean separation between cache management and real-time event processing, improving maintainability and extensibility. The system balances performance, flexibility, and real-time safety while providing comprehensive support for MIDI, audio, and automation event caching. The AutomationTrack integration demonstrates the architecture's flexibility in handling specialized use cases with a more self-contained approach compared to the broader Track/TrackProcessor integration.
