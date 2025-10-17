@@ -33,6 +33,7 @@ Track::Track (
   if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::Automation))
     {
       automation_tracklist_ = make_automation_tracklist ();
+      generate_basic_automation_tracks ();
     }
   if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::Lanes))
     {

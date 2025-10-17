@@ -101,6 +101,30 @@ TEST_F (AutomationTrackTest, AutomationModeChanges)
     AutomationTrack::AutomationRecordMode::Touch);
 }
 
+TEST_F (AutomationTrackTest, RegeneratePlaybackCaches)
+{
+  // Create a region with automation points
+  auto region = create_automation_region (100, 200);
+  automation_track->add_object (region);
+  auto * region_ptr = region.get_object_as<arrangement::AutomationRegion> ();
+
+  add_automation_point (region_ptr, 0.0, 0);
+  add_automation_point (
+    region_ptr, 1.0,
+    tempo_map->samples_to_tick (units::samples (200)).in (units::ticks));
+
+  // Test cache regeneration with specific range
+  utils::ExpandableTickRange range (std::make_pair (0.0, 500.0));
+  automation_track->regeneratePlaybackCaches (range);
+
+  // Verify the automation track still contains the automation
+  EXPECT_TRUE (automation_track->contains_automation ());
+
+  // Test with full content range
+  automation_track->regeneratePlaybackCaches ({});
+  EXPECT_TRUE (automation_track->contains_automation ());
+}
+
 TEST_F (AutomationTrackTest, ShouldReadAutomation)
 {
   automation_track->setAutomationMode (AutomationTrack::AutomationMode::Off);

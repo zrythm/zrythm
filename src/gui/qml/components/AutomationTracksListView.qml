@@ -47,7 +47,7 @@ ListView {
       anchors {
         bottomMargin: 6
         fill: parent
-        topMargin: control.contentTopMargins
+        topMargin: 1
       }
 
       RowLayout {
@@ -64,8 +64,8 @@ ListView {
           Layout.fillWidth: true
           font: automationColumnLayout.buttonFont
           icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
-          padding: control.buttonPadding
-          styleHeight: control.buttonHeight
+          padding: Style.buttonPadding
+          styleHeight: Style.buttonHeight
           text: automationTrackItem.automationTrackHolder.automationTrack.parameter.label
 
           Component.onCompleted: {
@@ -111,8 +111,8 @@ ListView {
             checkable: true
             checked: automationTrackItem.automationTrack.automationMode === 0
             font: automationColumnLayout.buttonFont
-            padding: control.buttonPadding
-            styleHeight: control.buttonHeight
+            padding: Style.buttonPadding
+            styleHeight: Style.buttonHeight
             text: qsTr("On")
 
             onClicked: {
@@ -123,31 +123,31 @@ ListView {
           Button {
             ButtonGroup.group: automationModeGroup
             checkable: true
-            checked: automationTrack.automationMode === 1
+            checked: automationTrackItem.automationTrack.automationMode === 1
             font: automationColumnLayout.buttonFont
-            padding: control.buttonPadding
-            styleHeight: control.buttonHeight
-            text: automationTrack.recordMode === 0 ? qsTr("Touch") : qsTr("Latch")
+            padding: Style.buttonPadding
+            styleHeight: Style.buttonHeight
+            text: automationTrackItem.automationTrack.recordMode === 0 ? qsTr("Touch") : qsTr("Latch")
 
             onClicked: {
-              if (automationTrack.automationMode === 1)
-                automationTrack.recordMode = automationTrack.recordMode === 0 ? 1 : 0;
+              if (automationTrackItem.automationTrack.automationMode === 1)
+                automationTrackItem.automationTrack.recordMode = automationTrackItem.automationTrack.recordMode === 0 ? 1 : 0;
 
-              automationTrack.automationMode = 1;
+              automationTrackItem.automationTrack.automationMode = 1;
             }
           }
 
           Button {
             ButtonGroup.group: automationModeGroup
             checkable: true
-            checked: automationTrack.automationMode === 2
+            checked: automationTrackItem.automationTrack.automationMode === 2
             font: automationColumnLayout.buttonFont
-            padding: control.buttonPadding
-            styleHeight: control.buttonHeight
+            padding: Style.buttonPadding
+            styleHeight: Style.buttonHeight
             text: qsTr("Off")
 
             onClicked: {
-              automationTrack.automationMode = 2;
+              automationTrackItem.automationTrack.automationMode = 2;
             }
           }
         }
@@ -168,14 +168,14 @@ ListView {
           Button {
             id: removeAutomationTrackButton
 
-            padding: control.buttonPadding
-            styleHeight: control.buttonHeight
+            padding: Style.buttonPadding
+            styleHeight: Style.buttonHeight
 
             // icon.source: ResourceManager.getIconUrl("zrythm-dark", "remove.svg")
             text: "-"
 
             onClicked: {
-              track.automationTracklist.hideAutomationTrack(automationTrack);
+              control.track.automationTracklist.hideAutomationTrack(automationTrackItem.automationTrack);
             }
 
             ToolTip {
@@ -192,8 +192,8 @@ ListView {
           Button {
             id: addAutomationTrackButton
 
-            padding: control.buttonPadding
-            styleHeight: control.buttonHeight
+            padding: Style.buttonPadding
+            styleHeight: Style.buttonHeight
 
             // icon.source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
             text: "+"
@@ -217,7 +217,7 @@ ListView {
     }
 
     Loader {
-      property var resizeTarget: automationTrackHolder
+      property var resizeTarget: automationTrackItem.automationTrackHolder
 
       anchors.bottom: parent.bottom
       anchors.left: parent.left
@@ -227,10 +227,10 @@ ListView {
 
     Connections {
       function onHeightChanged() {
-        track.fullVisibleHeightChanged();
+        control.track.fullVisibleHeightChanged();
       }
 
-      target: automationTrackHolder
+      target: automationTrackItem.automationTrackHolder
     }
   }
   Behavior on implicitHeight {

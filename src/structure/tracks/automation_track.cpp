@@ -17,16 +17,36 @@ AutomationTrack::AutomationTrack (
         file_audio_source_registry,
         *this),
       tempo_map_ (tempo_map), object_registry_ (obj_registry),
-      param_id_ (std::move (param_id))
+      param_id_ (std::move (param_id)),
+      automation_cache_request_debouncer_ (
+        utils::make_qobject_unique<utils::PlaybackCacheScheduler> ())
 {
-  parameter ()->set_automation_provider (
-    [this] (auto sample_position) -> std::optional<float> {
-      if (get_children_vector ().empty ())
-        {
-          return std::nullopt;
-        }
-      return get_normalized_value (sample_position, false);
-    });
+  parameter ()->set_automation_provider ([this] (auto sample_position) {
+    return automation_mode_.load () == AutomationMode::Read
+             ? automation_data_provider_.get_automation_value_rt (sample_position)
+             : std::nullopt;
+  });
+
+  // Connect signals for children region changes
+  QObject::connect (
+    get_model (), &arrangement::ArrangerObjectListModel::contentChanged, this,
+    &AutomationTrack::automationObjectsNeedRecache, Qt::QueuedConnection);
+
+  // Connect signals for sending cache requests
+  QObject::connect (
+    &tempo_map_, &dsp::TempoMapWrapper::tempoEventsChanged,
+    automation_cache_request_debouncer_.get (),
+    [this] () { automation_cache_request_debouncer_->queueCacheRequest ({}); });
+  QObject::connect (
+    this, &AutomationTrack::automationObjectsNeedRecache,
+    automation_cache_request_debouncer_.get (),
+    &utils::PlaybackCacheScheduler::queueCacheRequest);
+
+  // Connect signal for handling cache requests
+  QObject::connect (
+    automation_cache_request_debouncer_.get (),
+    &utils::PlaybackCacheScheduler::cacheRequested, this,
+    &AutomationTrack::regeneratePlaybackCaches);
 }
 
 // ========================================================================
@@ -39,7 +59,7 @@ AutomationTrack::setAutomationMode (AutomationMode automation_mode)
   if (automation_mode == automation_mode_)
     return;
 
-  automation_mode_ = automation_mode;
+  automation_mode_.store (automation_mode);
   Q_EMIT automationModeChanged (automation_mode);
 }
 
@@ -51,6 +71,15 @@ AutomationTrack::setRecordMode (AutomationRecordMode record_mode)
 
   record_mode_ = record_mode;
   Q_EMIT recordModeChanged (record_mode);
+}
+
+void
+AutomationTrack::regeneratePlaybackCaches (
+  utils::ExpandableTickRange affectedRange)
+{
+  auto children = get_children_view ();
+  automation_data_provider_.generate_automation_events (
+    tempo_map_.get_tempo_map (), children, affectedRange);
 }
 
 // ========================================================================
@@ -325,8 +354,28 @@ init_from (
     static_cast<AutomationTrack::ArrangerObjectOwner &> (obj),
     static_cast<const AutomationTrack::ArrangerObjectOwner &> (other),
     clone_type);
-  obj.automation_mode_ = other.automation_mode_;
+  obj.automation_mode_.store (other.automation_mode_.load ());
   obj.record_mode_ = other.record_mode_;
   obj.param_id_ = other.param_id_;
+}
+
+void
+to_json (nlohmann::json &j, const AutomationTrack &track)
+{
+  to_json (j, static_cast<const AutomationTrack::ArrangerObjectOwner &> (track));
+  j[AutomationTrack::kParamIdKey] = track.param_id_;
+  j[AutomationTrack::kAutomationModeKey] = track.automation_mode_.load ();
+  j[AutomationTrack::kRecordModeKey] = track.record_mode_;
+}
+
+void
+from_json (const nlohmann::json &j, AutomationTrack &track)
+{
+  from_json (j, static_cast<AutomationTrack::ArrangerObjectOwner &> (track));
+  j.at (AutomationTrack::kParamIdKey).get_to (track.param_id_);
+  AutomationTrack::AutomationMode automation_mode{};
+  j.at (AutomationTrack::kAutomationModeKey).get_to (automation_mode);
+  track.automation_mode_.store (automation_mode);
+  j.at (AutomationTrack::kRecordModeKey).get_to (track.record_mode_);
 }
 }

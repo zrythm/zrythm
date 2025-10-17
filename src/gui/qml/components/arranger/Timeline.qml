@@ -579,7 +579,7 @@ Arranger {
                 Loader {
                   id: laneRegionLoader
 
-                  required property var arrangerObject
+                  required property ArrangerObject arrangerObject
                   required property int index
                   property var region: arrangerObject
                   readonly property real regionEndX: regionX + regionWidth
@@ -714,12 +714,13 @@ Arranger {
                 delegate: Loader {
                   id: automationRegionLoader
 
-                  readonly property var automationTrack: automationTrackItem.automationTrack
+                  required property ArrangerObject arrangerObject
+                  readonly property AutomationTrack automationTrack: automationTrackItem.automationTrack
                   required property int index
-                  required property var region
-                  readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
+                  readonly property AutomationRegion region: arrangerObject as AutomationRegion
+                  readonly property real regionEndX: regionX + regionWidth
                   readonly property real regionHeight: parent.height
-                  readonly property real regionWidth: regionEndX - regionX
+                   readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
                   readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
 
                   active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)

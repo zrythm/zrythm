@@ -754,6 +754,9 @@ protected:
 
   utils::QObjectUniquePtr<PianoRollTrackMixin> piano_roll_track_mixin_;
 
+  /**
+   * @brief Debouncer/scheduler of audio/MIDI cache requests.
+   */
   utils::QObjectUniquePtr<utils::PlaybackCacheScheduler>
     playable_content_cache_request_debouncer_;
 

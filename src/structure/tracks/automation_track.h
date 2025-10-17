@@ -10,6 +10,8 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/automation_region.h"
+#include "structure/arrangement/timeline_data_provider.h"
+#include "utils/playback_cache_scheduler.h"
 #include "utils/units.h"
 
 #include <QtQmlIntegration>
@@ -77,7 +79,7 @@ public:
     return param_id_.get_object_as<dsp::ProcessorParameter> ();
   }
 
-  AutomationMode getAutomationMode () const { return automation_mode_; }
+  AutomationMode getAutomationMode () const { return automation_mode_.load (); }
   void           setAutomationMode (AutomationMode automation_mode);
   Q_SIGNAL void  automationModeChanged (AutomationMode automation_mode);
 
@@ -91,6 +93,21 @@ public:
     Q_EMIT recordModeChanged (record_mode_);
   }
   Q_SIGNAL void recordModeChanged (AutomationRecordMode record_mode);
+
+  /**
+   * @brief To be connected to to notify of any changes to the automation
+   * content.
+   *
+   * This will request new caches to be generated.
+   */
+  Q_INVOKABLE void
+  regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange);
+
+  /**
+   * @brief Fired when a new cache is required.
+   */
+  Q_SIGNAL void
+  automationObjectsNeedRecache (utils::ExpandableTickRange affectedRange);
 
   // ========================================================================
 
@@ -181,20 +198,8 @@ public:
 private:
   static constexpr auto kAutomationModeKey = "automationMode"sv;
   static constexpr auto kRecordModeKey = "recordMode"sv;
-  friend void to_json (nlohmann::json &j, const AutomationTrack &track)
-  {
-    to_json (j, static_cast<const ArrangerObjectOwner &> (track));
-    j[kParamIdKey] = track.param_id_;
-    j[kAutomationModeKey] = track.automation_mode_;
-    j[kRecordModeKey] = track.record_mode_;
-  }
-  friend void from_json (const nlohmann::json &j, AutomationTrack &track)
-  {
-    from_json (j, static_cast<ArrangerObjectOwner &> (track));
-    j.at (kParamIdKey).get_to (track.param_id_);
-    j.at (kAutomationModeKey).get_to (track.automation_mode_);
-    j.at (kRecordModeKey).get_to (track.record_mode_);
-  }
+  friend void to_json (nlohmann::json &j, const AutomationTrack &track);
+  friend void from_json (const nlohmann::json &j, AutomationTrack &track);
 
   friend void init_from (
     AutomationTrack       &obj,
@@ -209,10 +214,21 @@ private:
   dsp::ProcessorParameterUuidReference param_id_;
 
   /** Automation mode. */
-  AutomationMode automation_mode_ = AutomationMode::Read;
+  std::atomic<AutomationMode> automation_mode_{ AutomationMode::Read };
 
   /** Automation record mode, when @ref automation_mode_ is set to record. */
-  AutomationRecordMode record_mode_ = (AutomationRecordMode) 0;
+  AutomationRecordMode record_mode_{};
+
+  /**
+   * @brief Cached automation data provider.
+   */
+  arrangement::AutomationTimelineDataProvider automation_data_provider_;
+
+  /**
+   * @brief Debouncer/scheduler of automation cache requests.
+   */
+  utils::QObjectUniquePtr<utils::PlaybackCacheScheduler>
+    automation_cache_request_debouncer_;
 };
 
 /**

@@ -422,7 +422,8 @@ AutomationTimelineDataProvider::get_automation_value_rt (
           // Ensure we're within bounds
           if (idx < sequence.automation_values.size ())
             {
-              return sequence.automation_values[idx];
+              const auto value = sequence.automation_values[idx];
+              return value >= 0.f ? std::make_optional (value) : std::nullopt;
             }
         }
 

@@ -43,7 +43,6 @@ ColumnLayout {
       Button {
         id: soloingBtn
 
-        ToolTip.visible: hovered
         enabled: false
         icon.name: "unsolo"
 
