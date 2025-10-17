@@ -17,15 +17,14 @@
 template <template <typename...> class BaseTemplateT, typename DerivedT>
 struct is_derived_from_template
 {
-private:
   template <typename... Args>
-  static constexpr std::true_type test (const BaseTemplateT<Args...> *);
+  static constexpr std::true_type
+  internal_test (const BaseTemplateT<Args...> *);
 
-  static constexpr std::false_type test (...);
+  static constexpr std::false_type internal_test (...);
 
-public:
   static constexpr bool value =
-    decltype (test (std::declval<DerivedT *> ()))::value;
+    decltype (internal_test (std::declval<DerivedT *> ()))::value;
 };
 
 // Convenience variable template (C++17+)
