@@ -12,8 +12,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
 #include "utils/color.h"
-#include "utils/objects.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 UiCursor::UiCursor (std::string name, int offset_x, int offset_y)
     : name_ (std::move (name)), offset_x_ (offset_x), offset_y_ (offset_y)

@@ -3,9 +3,13 @@
 
 #pragma once
 
+#include <chrono>
+
 #include "utils/expandable_tick_range.h"
 
 #include <QTimer>
+
+using namespace std::chrono_literals;
 
 namespace zrythm::utils
 {

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/playhead.h"
+#include "utils/qt.h"
 
 #include <QtQmlIntegration>
 

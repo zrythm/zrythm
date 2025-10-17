@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <atomic>
+
 #include "dsp/tempo_map.h"
 
 namespace zrythm::dsp

@@ -9,8 +9,8 @@
 #include <source_location>
 
 #include "utils/qt.h"
-#include "utils/string.h"
 #include "utils/traits.h"
+#include "utils/utf8_string.h"
 
 #include <QObject>
 #include <QString>

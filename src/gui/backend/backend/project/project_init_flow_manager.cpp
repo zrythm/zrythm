@@ -20,8 +20,7 @@
 #include "utils/datetime.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
-#include "utils/objects.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include <yyjson.h>
 

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/audio_sample_processor.h"
+#include "dsp/tempo_map.h"
 #include "utils/types.h"
 
 #include <QtQmlIntegration>

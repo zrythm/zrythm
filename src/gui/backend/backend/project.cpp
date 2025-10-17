@@ -21,7 +21,6 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/logger.h"
-#include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "utils/views.h"
 

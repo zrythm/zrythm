@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/format.h"
+#include "utils/logger.h"
 
 #include <QtQmlIntegration>
 

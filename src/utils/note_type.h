@@ -5,6 +5,8 @@
 
 #include <string_view>
 
+#include <QtQmlIntegration>
+
 namespace zrythm::utils
 {
 Q_NAMESPACE

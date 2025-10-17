@@ -31,6 +31,7 @@
 #include "utils/rt_thread_id.h"
 
 #include <boost/unordered/concurrent_flat_set.hpp>
+#include <juce_wrapper.h>
 #include <moodycamel/lightweightsemaphore.h>
 
 namespace zrythm::dsp::graph

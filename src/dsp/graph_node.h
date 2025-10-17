@@ -29,7 +29,7 @@
 #pragma once
 
 #include "dsp/itransport.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include <QObject>
 

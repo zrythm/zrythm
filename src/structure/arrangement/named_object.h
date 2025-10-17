@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include <QtQmlIntegration>
 

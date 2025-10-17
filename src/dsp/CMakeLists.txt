@@ -5,89 +5,94 @@ qt_add_library(zrythm_dsp_lib STATIC)
 
 target_sources(zrythm_dsp_lib
   PRIVATE
-    atomic_position.h
-    atomic_position_qml_adapter.h
     atomic_position_qml_adapter.cpp
-    audio_pool.h
     audio_pool.cpp
-    audio_port.h
     audio_port.cpp
-    chord_descriptor.h
     chord_descriptor.cpp
-    curve.h
     curve.cpp
-    cv_port.h
     cv_port.cpp
-    ditherer.h
     ditherer.cpp
-    dsp.h
-    file_audio_source.h
     file_audio_source.cpp
-    graph.h
     graph.cpp
-    graph_builder.h
     graph_builder.cpp
-    graph_export.h
     graph_export.cpp
-    graph_node.h
     graph_node.cpp
-    graph_scheduler.h
     graph_scheduler.cpp
-    graph_thread.h
     graph_thread.cpp
-    itransport.h
-    kmeter_dsp.h
     kmeter_dsp.cpp
-    metronome.h
     metronome.cpp
-    midi_event.h
     midi_event.cpp
-    midi_panic_processor.h
-    midi_port.h
     midi_port.cpp
-    modulator_macro_processor.h
     modulator_macro_processor.cpp
-    musical_scale.h
     musical_scale.cpp
-    parameter.h
     parameter.cpp
-    panning.h
     panning.cpp
-    passthrough_processors.h
-    peak_dsp.h
     peak_dsp.cpp
-    peak_fall_smooth.h
     peak_fall_smooth.cpp
-    playhead.h
-    playhead_qml_adapter.h
     playhead_qml_adapter.cpp
-    port.h
     port.cpp
-    port_all.h
-    port_span.h
-    port_connection.h
     port_connection.cpp
-    port_connections_manager.h
     port_connections_manager.cpp
-    position.h
     position.cpp
-    processor_base.h
     processor_base.cpp
-    snap_grid.h
     snap_grid.cpp
-    stretcher.h
     stretcher.cpp
-    tempo_map.h
-    tempo_map_qml_adapter.h
     tempo_map_qml_adapter.cpp
-    timeline_data_cache.h
     timeline_data_cache.cpp
-    true_peak_dsp.h
     true_peak_dsp.cpp
+  PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS ".."
+    FILES
+      atomic_position.h
+      atomic_position_qml_adapter.h
+      audio_pool.h
+      audio_port.h
+      chord_descriptor.h
+      curve.h
+      cv_port.h
+      ditherer.h
+      dsp.h
+      file_audio_source.h
+      graph.h
+      graph_builder.h
+      graph_export.h
+      graph_node.h
+      graph_scheduler.h
+      graph_thread.h
+      itransport.h
+      kmeter_dsp.h
+      metronome.h
+      midi_event.h
+      midi_panic_processor.h
+      midi_port.h
+      modulator_macro_processor.h
+      musical_scale.h
+      parameter.h
+      panning.h
+      passthrough_processors.h
+      peak_dsp.h
+      peak_fall_smooth.h
+      playhead.h
+      playhead_qml_adapter.h
+      port.h
+      port_all.h
+      port_span.h
+      port_connection.h
+      port_connections_manager.h
+      position.h
+      processor_base.h
+      snap_grid.h
+      stretcher.h
+      tempo_map.h
+      tempo_map_qml_adapter.h
+      timeline_data_cache.h
+      true_peak_dsp.h
 )
 
 set_target_properties(zrythm_dsp_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+  VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
 target_precompile_headers(zrythm_dsp_lib PUBLIC

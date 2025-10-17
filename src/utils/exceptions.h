@@ -5,7 +5,7 @@
 
 #include <exception>
 
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 /**
  * @brief Exception handling utilities.

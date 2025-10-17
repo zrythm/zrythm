@@ -6,6 +6,7 @@
 #include <QObject>
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace zrythm::utils
 {

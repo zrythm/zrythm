@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_RESAMPLER_H__
-#define __UTILS_RESAMPLER_H__
+#pragma once
 
 #include "zrythm-config.h"
 
+#include "utils/audio.h"
 #include "utils/types.h"
 
 #include "juce_wrapper.h"
@@ -80,5 +80,3 @@ private:
 /**
  * @}
  */
-
-#endif

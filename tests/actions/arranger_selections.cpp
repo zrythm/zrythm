@@ -21,7 +21,7 @@
 #include "structure/tracks/tempo_track.h"
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include "tests/helpers/project_helper.h"
 

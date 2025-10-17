@@ -7,7 +7,7 @@
 #include "utils/format.h"
 #include "utils/io.h"
 #include "utils/logger.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 using namespace zrythm;
 

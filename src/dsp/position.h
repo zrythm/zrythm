@@ -5,7 +5,12 @@
 
 #include <limits>
 
+#include "utils/traits.h"
 #include "utils/types.h"
+
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
+#include <type_safe/strong_typedef.hpp>
 
 namespace zrythm::dsp
 {

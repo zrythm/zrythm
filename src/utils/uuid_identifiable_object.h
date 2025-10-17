@@ -10,7 +10,7 @@
 #include "utils/logger.h"
 #include "utils/rt_thread_id.h"
 #include "utils/serialization.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include <QUuid>
 

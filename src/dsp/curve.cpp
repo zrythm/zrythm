@@ -32,7 +32,7 @@
 #include "dsp/curve.h"
 #include "utils/debug.h"
 #include "utils/math.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::dsp
 {

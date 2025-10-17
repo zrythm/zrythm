@@ -4,8 +4,11 @@
 #pragma once
 
 #include "dsp/chord_descriptor.h"
+#include "utils/icloneable.h"
 
 #include <QtQmlIntegration>
+
+#include <boost/describe.hpp>
 
 namespace zrythm::dsp
 {

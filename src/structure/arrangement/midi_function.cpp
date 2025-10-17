@@ -6,7 +6,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_function.h"
 #include "utils/rt_thread_id.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::structure::arrangement
 {

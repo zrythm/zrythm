@@ -6,6 +6,7 @@
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
 #include "utils/icloneable.h"
+#include "utils/ring_buffer.h"
 
 namespace zrythm::dsp
 {

@@ -23,16 +23,6 @@ Color::Color (float r, float g, float b, float a) noexcept
 }
 
 Color &
-Color::operator= (const GdkRGBA &color)
-{
-  red_ = static_cast<float> (color.red);
-  green_ = static_cast<float> (color.green);
-  blue_ = static_cast<float> (color.blue);
-  alpha_ = static_cast<float> (color.alpha);
-  return *this;
-}
-
-Color &
 Color::operator= (const QColor &color)
 {
   red_ = color.redF ();
@@ -144,28 +134,6 @@ Color::morph (const Color &other, float amt) const
     (amt_inv * green_) + (amt * other.green_),
     (amt_inv * blue_) + (amt * other.blue_), alpha_
   };
-}
-
-GdkRGBA
-Color::to_gdk_rgba () const
-{
-  GdkRGBA color;
-  color.red = red_;
-  color.green = green_;
-  color.blue = blue_;
-  color.alpha = alpha_;
-  return color;
-}
-
-GdkRGBA
-Color::to_gdk_rgba_with_alpha (float alpha) const
-{
-  GdkRGBA color;
-  color.red = red_;
-  color.green = green_;
-  color.blue = blue_;
-  color.alpha = alpha;
-  return color;
 }
 
 QColor

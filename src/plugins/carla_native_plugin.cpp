@@ -23,7 +23,7 @@
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include "carla_wrapper.h"
 #include <fmt/format.h>

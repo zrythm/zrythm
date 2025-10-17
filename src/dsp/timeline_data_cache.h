@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/types.h"
+#include "utils/units.h"
 
 #include "juce_wrapper.h"
 

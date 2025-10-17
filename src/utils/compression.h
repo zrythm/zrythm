@@ -4,8 +4,8 @@
 #ifndef __UTILS_COMPRESSION_H__
 #define __UTILS_COMPRESSION_H__
 
-#include "utils/string.h"
 #include "utils/types.h"
+#include "utils/utf8_string.h"
 
 /**
  * @brief Compression utilities.

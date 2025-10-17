@@ -22,7 +22,7 @@
 #include "utils/exceptions.h"
 #include "utils/io.h"
 #include "utils/networking.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include "engine-process/audio_engine_application.h"
 

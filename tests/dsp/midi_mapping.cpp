@@ -8,7 +8,6 @@
 #include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/master_track.h"
 #include "utils/math.h"
-#include "utils/objects.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

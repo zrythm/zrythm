@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 /**
  * @addtogroup utils

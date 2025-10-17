@@ -33,7 +33,6 @@
 #include "./networking.h"
 #include "./note_type.h"
 #include "./object_pool.h"
-#include "./objects.h"
 #include "./pcg_rand.h"
 #include "./progress_info.h"
 #include "./qt.h"

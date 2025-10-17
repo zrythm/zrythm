@@ -14,7 +14,7 @@
 #  include "gui/dsp/carla_discovery.h"
 #  include "plugins/plugin_descriptor.h"
 #  include "utils/directory_manager.h"
-#  include "utils/string.h"
+#  include "utils/utf8_string.h"
 
 #  include "carla_wrapper.h"
 

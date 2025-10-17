@@ -5,8 +5,8 @@
 
 #include <filesystem>
 
-#include "utils/string.h"
 #include "utils/types.h"
+#include "utils/utf8_string.h"
 
 #include "juce_wrapper.h"
 

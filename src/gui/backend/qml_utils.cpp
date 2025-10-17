@@ -9,7 +9,7 @@
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/region_serializer.h"
 #include "utils/math.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include <QQmlEngine>
 #include <QRegularExpression>

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <atomic>
+#include <cassert>
 #include <semaphore>
 
 #include <moodycamel/lightweightsemaphore.h>

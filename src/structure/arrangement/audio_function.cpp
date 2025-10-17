@@ -12,7 +12,7 @@
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include <rubberband/rubberband-c.h>
 

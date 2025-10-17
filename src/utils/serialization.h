@@ -182,9 +182,10 @@ template <typename T> struct adl_serializer<std::shared_ptr<T>>
 };
 
 /// QObjectUniquePtr specialization
-template <typename T> struct adl_serializer<utils::QObjectUniquePtr<T>>
+template <typename T> struct adl_serializer<zrythm::utils::QObjectUniquePtr<T>>
 {
-  static void to_json (json &json_value, const utils::QObjectUniquePtr<T> &ptr)
+  static void
+  to_json (json &json_value, const zrythm::utils::QObjectUniquePtr<T> &ptr)
   {
     if (ptr.get ())
       {
@@ -196,7 +197,7 @@ template <typename T> struct adl_serializer<utils::QObjectUniquePtr<T>>
       }
   }
   static void
-  from_json (const json &json_value, utils::QObjectUniquePtr<T> &ptr)
+  from_json (const json &json_value, zrythm::utils::QObjectUniquePtr<T> &ptr)
     requires std::is_default_constructible_v<T>
   {
     ptr = new T ();

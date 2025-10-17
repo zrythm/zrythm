@@ -8,7 +8,7 @@
 
 #include <optional>
 
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include <QTemporaryDir>
 #include <QTemporaryFile>

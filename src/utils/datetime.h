@@ -10,7 +10,7 @@
 #ifndef __UTILS_DATETIME_H__
 #define __UTILS_DATETIME_H__
 
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::utils::datetime
 {

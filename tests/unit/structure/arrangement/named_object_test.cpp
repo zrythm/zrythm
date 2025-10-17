@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "structure/arrangement/named_object.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 #include "helpers/mock_qobject.h"
 

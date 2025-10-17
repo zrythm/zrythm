@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include "dsp/audio_port.h"
 #include "dsp/cv_port.h"
 #include "dsp/graph_node.h"
+#include "dsp/midi_port.h"
 #include "utils/format.h"
 #include "utils/math.h"
 #include "utils/serialization.h"

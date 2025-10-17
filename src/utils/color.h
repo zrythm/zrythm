@@ -7,14 +7,7 @@
 
 #include <QColor>
 
-struct _GdkRGBA
-{
-  double red = 0.0;
-  double green = 0.0;
-  double blue = 0.0;
-  double alpha = 1.0;
-};
-using GdkRGBA = _GdkRGBA;
+#include <boost/describe.hpp>
 
 namespace zrythm::utils
 {
@@ -25,7 +18,6 @@ public:
   static constexpr auto DEFAULT_BRIGHTEN_VAL = 0.1f;
 
   Color () noexcept = default;
-  Color (const GdkRGBA &color) noexcept { *this = color; }
   Color (const QColor &color) noexcept { *this = color; }
   Color (float r, float g, float b, float a = 1.0f) noexcept;
 
@@ -36,7 +28,6 @@ public:
    */
   Color (const std::string &str);
 
-  Color &operator= (const GdkRGBA &color);
   Color &operator= (const QColor &color);
 
   /**
@@ -126,9 +117,6 @@ public:
    * given color is dark enough or not.
    */
   Color get_contrast_color () const;
-
-  GdkRGBA to_gdk_rgba () const;
-  GdkRGBA to_gdk_rgba_with_alpha (float alpha) const;
 
   QColor to_qcolor () const;
 

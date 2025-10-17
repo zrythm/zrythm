@@ -5,7 +5,7 @@
 #include "gui/backend/backend/settings/chord_preset_pack.h"
 #include "gui/backend/backend/zrythm.h"
 #include "utils/rt_thread_id.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 ChordPresetPack::ChordPresetPack (QObject * parent) : QObject (parent) { }
 

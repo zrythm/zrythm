@@ -1,99 +1,102 @@
-# SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 qt_add_library(zrythm_utils_lib STATIC)
 
 target_sources(zrythm_utils_lib
   PRIVATE
-    algorithms.h
-    audio.h
     audio.cpp
-    audio_file.h
     audio_file.cpp
-    backtrace.h
     backtrace.cpp
-    base64.h
-    bidirectional_map.h
-    chromaprint.h
     chromaprint.cpp
-    color.h
     color.cpp
-    compression.h
     compression.cpp
-    concurrency.h
-    cpu_windows.h
     cpu_windows.cpp
-    datetime.h
     datetime.cpp
-    directory_manager.h
     directory_manager.cpp
-    dsp.h
     dsp.cpp
-    dsp_context.h
     dsp_context.cpp
-    env.h
     env.cpp
-    exceptions.h
     exceptions.cpp
-    expandable_tick_range.h
-    file_path_list.h
     file_path_list.cpp
-    gtest_wrapper.h
     gtest_wrapper.cpp
-    hash.h
     hash.cpp
-    io.h
     io.cpp
-    icloneable.h
-    jack.h
-    logger.h
     logger.cpp
-    math.h
     math.cpp
-    mem.h
     mem.cpp
-    midi.h
     midi.cpp
-    monotonic_time_provider.h
-    mpmc_queue.h
-    networking.h
     networking.cpp
-    note_type.h
     note_type.cpp
-    object_pool.h
-    objects.h
-    objects.cpp
-    pcg_rand.h
     pcg_rand.cpp
-    playback_cache_scheduler.h
-    progress_info.h
     progress_info.cpp
-    qt.h
-    resampler.h
     resampler.cpp
-    ring_buffer.h
-    rt_thread_id.h
     rt_thread_id.cpp
-    serialization.h
-    string.h
-    string.cpp
-    symap.h
+    utf8_string.cpp
     symap.cpp
-    thread_safe_fftw.h
-    traits.h
-    types.h
-    units.h
-    utils.h
-    uuid_identifiable_object.h
     uuid_identifiable_object.cpp
-    # vamp.h
     # vamp.cpp
-    variant_helpers.h
-    views.h
+  PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS ".."
+    FILES
+      algorithms.h
+      audio.h
+      audio_file.h
+      backtrace.h
+      base64.h
+      bidirectional_map.h
+      chromaprint.h
+      color.h
+      compression.h
+      concurrency.h
+      cpu_windows.h
+      datetime.h
+      directory_manager.h
+      dsp.h
+      dsp_context.h
+      env.h
+      exceptions.h
+      expandable_tick_range.h
+      file_path_list.h
+      gtest_wrapper.h
+      hash.h
+      io.h
+      icloneable.h
+      jack.h
+      logger.h
+      math.h
+      mem.h
+      midi.h
+      monotonic_time_provider.h
+      mpmc_queue.h
+      networking.h
+      note_type.h
+      object_pool.h
+      pcg_rand.h
+      playback_cache_scheduler.h
+      progress_info.h
+      qt.h
+      resampler.h
+      ring_buffer.h
+      rt_thread_id.h
+      serialization.h
+      utf8_string.h
+      symap.h
+      thread_safe_fftw.h
+      traits.h
+      types.h
+      units.h
+      utils.h
+      uuid_identifiable_object.h
+      # vamp.h
+      variant_helpers.h
+      views.h
 )
 
 set_target_properties(zrythm_utils_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+  VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
 target_precompile_headers(zrythm_utils_lib PUBLIC

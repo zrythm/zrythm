@@ -32,7 +32,7 @@
 #include "gui/backend/curve_preset.h"
 #include "utils/debug.h"
 #include "utils/math.h"
-#include "utils/string.h"
+#include "utils/utf8_string.h"
 
 using namespace zrythm::dsp;
 

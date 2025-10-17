@@ -11,7 +11,6 @@
 #include "plugins/plugin.h"
 #include "structure/tracks/fader.h"
 #include "structure/tracks/track.h"
-#include "utils/objects.h"
 
 #ifdef HAVE_CGRAPH
 #  include <graphviz/cgraph.h>
