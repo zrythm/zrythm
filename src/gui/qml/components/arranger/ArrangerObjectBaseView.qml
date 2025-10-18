@@ -13,13 +13,12 @@ Control {
   required property bool isSelected
   // readonly property alias down: dragArea.pressed
   readonly property color objectColor: {
-    let c = arrangerObject.hasColor ? arrangerObject.color : track.color;
+    let c = (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : track.color;
     if (root.isSelected)
       c = Style.getColorBlendedTowardsContrastByFactor(c, 1.1);
 
     return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
   }
-  required property real pxPerTick
   required property Track track
 
   signal selectionRequested(var mouse)
@@ -32,8 +31,7 @@ Control {
   font: root.isSelected ? Style.arrangerObjectBoldTextFont : Style.arrangerObjectTextFont
   height: track.height
   hoverEnabled: true
-  width: 100
-  x: arrangerObject.position.ticks * pxPerTick
+  implicitWidth: 20
 
   ContextMenu.menu: Menu {
     MenuItem {

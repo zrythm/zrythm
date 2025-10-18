@@ -9,12 +9,12 @@ ArrangerObjectBaseView {
   id: root
 
   required property ClipEditor clipEditor   // FIXME: is this needed?
+  readonly property real contentHeight: regionContentContainer.height
+  readonly property real contentWidth: regionContentContainer.width
   readonly property alias regionContent: regionContent.data
   readonly property alias regionContentContainer: regionContent
   readonly property string regionName: arrangerObject.name.name
   readonly property real regionTicks: arrangerObject.bounds.length.ticks
-  readonly property real contentHeight: regionContentContainer.height
-  readonly property real contentWidth: regionContentContainer.width
 
   clip: true
   implicitHeight: 10
@@ -41,8 +41,8 @@ ArrangerObjectBaseView {
     anchors.right: parent.right
     bottomLeftRadius: Style.toolButtonRadius
     bottomRightRadius: Style.toolButtonRadius
-    height: parent.height - topBackgroundRect.height
     color: root.objectColor
+    height: parent.height - topBackgroundRect.height
     z: 1
 
     Item {
@@ -117,6 +117,7 @@ ArrangerObjectBaseView {
 
       onPositionChanged: mouse => {
         if (drag.active) {
+          // FIXME: this should simply emit a signal and let the arranger handle the resize
           let ticksDiff = (root.x - startX) / root.pxPerTick;
           root.arrangerObject.position.ticks += ticksDiff;
           if (root.arrangerObject.hasLength) {
@@ -160,6 +161,7 @@ ArrangerObjectBaseView {
 
       onPositionChanged: mouse => {
         if (drag.active) {
+          // FIXME: this should simply emit a signal and let the arranger handle the resize
           let ticksDiff = (mouse.x - startX) / root.pxPerTick;
           root.arrangerObject.bounds.length.ticks += ticksDiff;
         }

@@ -76,36 +76,27 @@ Arranger {
     anchors.fill: parent
     model: root.clipEditor.region.midiNotes
 
-    delegate: Loader {
+    delegate: ArrangerObjectLoader {
       id: midiNoteLoader
 
-      required property var arrangerObject
-      required property int index
-      property MidiNote midiNote: arrangerObject
-      readonly property real midiNoteEndX: midiNoteX + midiNoteWidth
-      readonly property real midiNoteHeight: root.pianoRoll.keyHeight
-      readonly property real midiNoteWidth: midiNote.bounds.length.ticks * root.ruler.pxPerTick
-      readonly property real midiNoteX: (midiNote.position.ticks + midiNote.parentObject.position.ticks) * root.ruler.pxPerTick
-      readonly property real midiNoteY: (127 - midiNote.pitch) * root.pianoRoll.keyHeight
+      readonly property MidiNote midiNote: arrangerObject as MidiNote
 
-      active: midiNoteEndX + Style.scrollLoaderBufferPx >= root.scrollX && midiNoteX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-      asynchronous: true
-      height: midiNoteHeight
-      visible: status === Loader.Ready
-      width: midiNoteWidth
+      arrangerSelectionModel: root.arrangerSelectionModel
+      height: root.pianoRoll.keyHeight
+      model: root.clipEditor.region.midiNotes
+      pxPerTick: root.ruler.pxPerTick
+      scrollViewWidth: root.scrollViewWidth
+      scrollX: root.scrollX
+      unifiedObjectsModel: root.unifiedObjectsModel
+      y: (127 - midiNote.pitch) * root.pianoRoll.keyHeight
 
       sourceComponent: Component {
         MidiNoteView {
           id: midiNoteView
 
-          arrangerObject: midiNoteLoader.midiNote
-          height: midiNoteLoader.midiNoteHeight
-          isSelected: midiNoteSelelectionTracker.isSelected
-          pxPerTick: root.ruler.pxPerTick
+          arrangerObject: midiNoteLoader.arrangerObject
+          isSelected: midiNoteLoader.selectionTracker.isSelected
           track: root.clipEditor.track
-          width: midiNoteLoader.midiNoteWidth
-          x: midiNoteLoader.midiNoteX
-          y: midiNoteLoader.midiNoteY
 
           onHoveredChanged: {
             root.handleObjectHover(midiNoteView.hovered, midiNoteView);
@@ -114,16 +105,6 @@ Arranger {
             root.handleObjectSelection(midiNotesRepeater.model, midiNoteLoader.index, mouse);
           }
         }
-      }
-
-      SelectionTracker {
-        id: midiNoteSelelectionTracker
-
-        modelIndex: {
-          root.unifiedObjectsModel.addSourceModel(midiNotesRepeater.model);
-          return root.unifiedObjectsModel.mapFromSource(midiNotesRepeater.model.index(midiNoteLoader.index, 0));
-        }
-        selectionModel: root.arrangerSelectionModel
       }
     }
   }

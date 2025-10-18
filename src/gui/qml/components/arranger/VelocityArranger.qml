@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Zrythm 1.0
@@ -19,26 +21,42 @@ Arranger {
   enableYScroll: false
   scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 
-  content: ListView {
-    id: midiNotesListView
+  content: Repeater {
+    id: midiNotesRepeater
 
     anchors.fill: parent
-    interactive: false
-    model: region.midiNotes
+    model: root.clipEditor.region.midiNotes
 
-    delegate: Item {
-      id: midiNoteDelegate
+    delegate: ArrangerObjectLoader {
+      id: velocityLoader
 
-      TextMetrics {
-        id: arrangerObjectTextMetrics
+      arrangerSelectionModel: root.arrangerSelectionModel
+      model: midiNotesRepeater.model
+      pxPerTick: root.ruler.pxPerTick
+      scrollViewWidth: root.scrollViewWidth
+      scrollX: root.scrollX
+      unifiedObjectsModel: root.unifiedObjectsModel
+      height: 20
 
-        font: Style.arrangerObjectTextFont
-        text: "Some text"
-      }
+      sourceComponent: Component {
+        Rectangle {
+          id: velocityComponent
+          property MidiNote midiNote: velocityLoader.arrangerObject as MidiNote
 
-      Loader {
-        id: midiNotesLoader
+          anchors {
+            bottom: velocityLoader.bottom
+            left: velocityLoader.left
+          }
+          color: root.clipEditor.region.useColor ? root.clipEditor.region.color : root.clipEditor.track.color
+          width: 2
+          height: parent.height
 
+          Text {
+            anchors.centerIn: parent
+            text: velocityComponent.midiNote.velocity
+            color: palette.highlightedText
+          }
+        }
       }
     }
   }

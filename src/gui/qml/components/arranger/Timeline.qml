@@ -196,27 +196,23 @@ Arranger {
 
               model: track.scaleObjects
 
-              delegate: Loader {
+              delegate: ArrangerObjectLoader {
                 id: scaleLoader
 
-                required property var arrangerObject
-                required property int index
-                property var scaleObject: arrangerObject
-                readonly property real scaleX: scaleObject.position.ticks * root.ruler.pxPerTick
-
-                active: scaleX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && scaleX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                asynchronous: true
-                visible: status === Loader.Ready
+                arrangerSelectionModel: root.arrangerSelectionModel
+                model: scalesRepeater.model
+                pxPerTick: root.ruler.pxPerTick
+                scrollViewWidth: root.scrollViewWidth
+                scrollX: root.scrollX
+                unifiedObjectsModel: root.unifiedObjectsModel
 
                 sourceComponent: Component {
                   ScaleObjectView {
                     id: scaleItem
 
-                    arrangerObject: scaleLoader.scaleObject
-                    isSelected: scaleSelelectionTracker.isSelected
-                    pxPerTick: root.ruler.pxPerTick
+                    arrangerObject: scaleLoader.arrangerObject
+                    isSelected: scaleLoader.selectionTracker.isSelected
                     track: trackDelegate.track
-                    x: scaleLoader.scaleX
 
                     onHoveredChanged: {
                       root.handleObjectHover(scaleItem.hovered, scaleItem);
@@ -225,16 +221,6 @@ Arranger {
                       root.handleObjectSelection(scalesRepeater.model, scaleLoader.index, mouse);
                     }
                   }
-                }
-
-                SelectionTracker {
-                  id: scaleSelelectionTracker
-
-                  modelIndex: {
-                    root.unifiedObjectsModel.addSourceModel(scalesRepeater.model);
-                    return root.unifiedObjectsModel.mapFromSource(scalesRepeater.model.index(scaleLoader.index, 0));
-                  }
-                  selectionModel: root.arrangerSelectionModel
                 }
               }
             }
@@ -256,27 +242,23 @@ Arranger {
 
               model: track.markers
 
-              delegate: Loader {
+              delegate: ArrangerObjectLoader {
                 id: markerLoader
 
-                required property var arrangerObject
-                required property int index
-                property var marker: arrangerObject
-                readonly property real markerX: marker.position.ticks * root.ruler.pxPerTick
-
-                active: markerX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && markerX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                asynchronous: true
-                visible: status === Loader.Ready
+                arrangerSelectionModel: root.arrangerSelectionModel
+                model: markersRepeater.model
+                pxPerTick: root.ruler.pxPerTick
+                scrollViewWidth: root.scrollViewWidth
+                scrollX: root.scrollX
+                unifiedObjectsModel: root.unifiedObjectsModel
 
                 sourceComponent: Component {
                   MarkerView {
                     id: markerItem
 
-                    arrangerObject: markerLoader.marker
-                    isSelected: markerSelelectionTracker.isSelected
-                    pxPerTick: root.ruler.pxPerTick
+                    arrangerObject: markerLoader.arrangerObject
+                    isSelected: markerLoader.selectionTracker.isSelected
                     track: trackDelegate.track
-                    x: markerLoader.markerX
 
                     onHoveredChanged: {
                       root.handleObjectHover(markerItem.hovered, markerItem);
@@ -285,16 +267,6 @@ Arranger {
                       root.handleObjectSelection(markersRepeater.model, markerLoader.index, mouse);
                     }
                   }
-                }
-
-                SelectionTracker {
-                  id: markerSelelectionTracker
-
-                  modelIndex: {
-                    root.unifiedObjectsModel.addSourceModel(markersRepeater.model);
-                    return root.unifiedObjectsModel.mapFromSource(markersRepeater.model.index(markerLoader.index, 0));
-                  }
-                  selectionModel: root.arrangerSelectionModel
                 }
               }
             }
@@ -316,32 +288,25 @@ Arranger {
 
               model: track.chordRegions
 
-              delegate: Loader {
+              delegate: ArrangerObjectLoader {
                 id: chordRegionLoader
 
-                required property ArrangerObject arrangerObject
-                required property int index
-                readonly property ChordRegion region: arrangerObject as ChordRegion
-                readonly property real regionEndX: regionX + regionWidth
-                readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
-                readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
-
-                active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                asynchronous: true
-                visible: status === Loader.Ready
+                arrangerSelectionModel: root.arrangerSelectionModel
+                model: chordRegionsRepeater.model
+                pxPerTick: root.ruler.pxPerTick
+                scrollViewWidth: root.scrollViewWidth
+                scrollX: root.scrollX
+                unifiedObjectsModel: root.unifiedObjectsModel
 
                 sourceComponent: Component {
                   ChordRegionView {
                     id: chordRegionItem
 
-                    arrangerObject: chordRegionLoader.region
+                    arrangerObject: chordRegionLoader.arrangerObject
                     clipEditor: root.clipEditor
                     height: chordRegionsRepeater.height
-                    isSelected: chordRegionSelectionTracker.isSelected
-                    pxPerTick: root.ruler.pxPerTick
+                    isSelected: chordRegionLoader.selectionTracker.isSelected
                     track: trackDelegate.track
-                    width: chordRegionLoader.regionWidth
-                    x: chordRegionLoader.regionX
 
                     onHoveredChanged: {
                       root.handleObjectHover(hovered, chordRegionItem);
@@ -350,16 +315,6 @@ Arranger {
                       root.handleObjectSelection(chordRegionsRepeater.model, chordRegionLoader.index, mouse);
                     }
                   }
-                }
-
-                SelectionTracker {
-                  id: chordRegionSelectionTracker
-
-                  modelIndex: {
-                    root.unifiedObjectsModel.addSourceModel(chordRegionsRepeater.model);
-                    return root.unifiedObjectsModel.mapFromSource(chordRegionsRepeater.model.index(chordRegionLoader.index, 0));
-                  }
-                  selectionModel: root.arrangerSelectionModel
                 }
               }
             }
@@ -384,33 +339,18 @@ Arranger {
 
                 model: trackDelegate.track.type === Track.Audio ? trackLane.audioRegions : trackLane.midiRegions
 
-                delegate: Loader {
+                delegate: ArrangerObjectLoader {
                   id: mainTrackRegionLoader
 
-                  required property var arrangerObject
-                  required property int index
-                  property var region: arrangerObject
-                  readonly property real regionEndX: regionX + regionWidth
-                  readonly property real regionHeight: mainTrackLanedRegionsLoader.height
-                  readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
-                  readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
-                  readonly property var trackLane: mainTrackLaneRegionsRepeater.trackLane
+                  arrangerSelectionModel: root.arrangerSelectionModel
+                  model: mainTrackLaneRegionsRepeater.model
+                  pxPerTick: root.ruler.pxPerTick
+                  scrollViewWidth: root.scrollViewWidth
+                  scrollX: root.scrollX
+                  unifiedObjectsModel: root.unifiedObjectsModel
+                  height: mainTrackLanedRegionsLoader.height
 
-                  active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                  asynchronous: true
-                  height: regionHeight
-                  sourceComponent: region.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
-                  visible: status === Loader.Ready
-
-                  SelectionTracker {
-                    id: mainTrackRegionSelectionTracker
-
-                    modelIndex: {
-                      root.unifiedObjectsModel.addSourceModel(mainTrackLaneRegionsRepeater.model);
-                      return root.unifiedObjectsModel.mapFromSource(mainTrackLaneRegionsRepeater.model.index(mainTrackRegionLoader.index, 0));
-                    }
-                    selectionModel: root.arrangerSelectionModel
-                  }
+                  sourceComponent: mainTrackRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
 
                   Component {
                     id: midiRegionComponent
@@ -418,15 +358,11 @@ Arranger {
                     MidiRegionView {
                       id: mainMidiRegionItem
 
-                      arrangerObject: mainTrackRegionLoader.region
+                      arrangerObject: mainTrackRegionLoader.arrangerObject
                       clipEditor: root.clipEditor
-                      height: mainTrackRegionLoader.regionHeight
-                      isSelected: mainTrackRegionSelectionTracker.isSelected
+                      isSelected: mainTrackRegionLoader.selectionTracker.isSelected
                       lane: mainTrackLaneRegionsRepeater.trackLane
-                      pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
-                      width: mainTrackRegionLoader.regionWidth
-                      x: mainTrackRegionLoader.regionX
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, mainMidiRegionItem);
@@ -443,15 +379,12 @@ Arranger {
                     AudioRegionView {
                       id: mainAudioRegionItem
 
-                      arrangerObject: mainTrackRegionLoader.region
+                      arrangerObject: mainTrackRegionLoader.arrangerObject
                       clipEditor: root.clipEditor
-                      height: mainTrackRegionLoader.regionHeight
-                      isSelected: mainTrackRegionSelectionTracker.isSelected
+                      height: mainTrackRegionLoader.height
+                      isSelected: mainTrackRegionLoader.selectionTracker.isSelected
                       lane: mainTrackLaneRegionsRepeater.trackLane
-                      pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
-                      width: mainTrackRegionLoader.regionWidth
-                      x: mainTrackRegionLoader.regionX
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, mainAudioRegionItem);
@@ -498,33 +431,18 @@ Arranger {
               Component {
                 id: laneRegionLoaderComponent
 
-                Loader {
+                ArrangerObjectLoader {
                   id: laneRegionLoader
 
-                  required property ArrangerObject arrangerObject
-                  required property int index
-                  property var region: arrangerObject
-                  readonly property real regionEndX: regionX + regionWidth
-                  readonly property real regionHeight: trackLane.height
-                  readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
-                  readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
-                  readonly property var trackLane: laneItem.trackLane
+                  arrangerSelectionModel: root.arrangerSelectionModel
+                  model: arrangerObject.type === ArrangerObject.MidiRegion ? laneItem.trackLane.midiRegions : laneItem.trackLane.audioRegions
+                  pxPerTick: root.ruler.pxPerTick
+                  scrollViewWidth: root.scrollViewWidth
+                  scrollX: root.scrollX
+                  unifiedObjectsModel: root.unifiedObjectsModel
+                  height: laneItem.trackLane.height
 
-                  active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                  asynchronous: true
-                  height: regionHeight
-                  sourceComponent: region.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
-                  visible: status === Loader.Ready
-
-                  SelectionTracker {
-                    id: laneRegionSelectionTracker
-
-                    modelIndex: {
-                      root.unifiedObjectsModel.addSourceModel(laneMidiRegionsRepeater.model);
-                      return root.unifiedObjectsModel.mapFromSource(laneMidiRegionsRepeater.model.index(laneRegionLoader.index, 0));
-                    }
-                    selectionModel: root.arrangerSelectionModel
-                  }
+                  sourceComponent: laneRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
 
                   Component {
                     id: laneMidiRegionComponent
@@ -532,15 +450,11 @@ Arranger {
                     MidiRegionView {
                       id: laneMidiRegionItem
 
-                      arrangerObject: laneRegionLoader.region
+                      arrangerObject: laneRegionLoader.arrangerObject
                       clipEditor: root.clipEditor
-                      height: laneItem.trackLane.height
-                      isSelected: laneRegionSelectionTracker.isSelected
+                      isSelected: laneRegionLoader.selectionTracker.isSelected
                       lane: laneItem.trackLane
-                      pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
-                      width: laneRegionLoader.regionWidth
-                      x: laneRegionLoader.regionX
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, laneMidiRegionItem);
@@ -557,15 +471,11 @@ Arranger {
                     AudioRegionView {
                       id: laneAudioRegionItem
 
-                      arrangerObject: laneRegionLoader.region
+                      arrangerObject: laneRegionLoader.arrangerObject
                       clipEditor: root.clipEditor
-                      height: laneItem.trackLane.height
-                      isSelected: laneRegionSelectionTracker.isSelected
+                      isSelected: laneRegionLoader.selectionTracker.isSelected
                       lane: laneItem.trackLane
-                      pxPerTick: root.ruler.pxPerTick
                       track: trackDelegate.track
-                      width: laneRegionLoader.regionWidth
-                      x: laneRegionLoader.regionX
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, laneAudioRegionItem);
@@ -633,52 +543,34 @@ Arranger {
                 anchors.fill: parent
                 model: automationTrackItem.automationTrack.regions
 
-                delegate: Loader {
+                delegate: ArrangerObjectLoader {
                   id: automationRegionLoader
 
-                  required property ArrangerObject arrangerObject
-                  readonly property AutomationTrack automationTrack: automationTrackItem.automationTrack
-                  required property int index
-                  readonly property AutomationRegion region: arrangerObject as AutomationRegion
-                  readonly property real regionEndX: regionX + regionWidth
-                  readonly property real regionHeight: automationTrackItem.height
-                  readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
-                  readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
+                  arrangerSelectionModel: root.arrangerSelectionModel
+                  model: automationRegionsRepeater.model
+                  pxPerTick: root.ruler.pxPerTick
+                  scrollViewWidth: root.scrollViewWidth
+                  scrollX: root.scrollX
+                  unifiedObjectsModel: root.unifiedObjectsModel
+                  height: automationTrackItem.height
 
-                  active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
-                  asynchronous: true
-                  height: regionHeight
-                  visible: status === Loader.Ready
+                  sourceComponent: Component {
+                    AutomationRegionView {
+                      id: automationRegionItem
 
-                  sourceComponent: AutomationRegionView {
-                    id: automationRegionItem
+                      arrangerObject: automationRegionLoader.arrangerObject
+                      automationTrack: automationTrackItem.automationTrack
+                      clipEditor: root.clipEditor
+                      isSelected: automationRegionLoader.selectionTracker.isSelected
+                      track: trackDelegate.track
 
-                    arrangerObject: automationRegionLoader.region
-                    automationTrack: automationRegionLoader.automationTrack
-                    clipEditor: root.clipEditor
-                    height: automationTrackItem.automationTrackHolder.height
-                    isSelected: automationRegionSelectionTracker.isSelected
-                    pxPerTick: root.ruler.pxPerTick
-                    track: trackDelegate.track
-                    width: automationRegionLoader.regionWidth
-                    x: automationRegionLoader.regionX
-
-                    onHoveredChanged: {
-                      root.handleObjectHover(hovered, automationRegionItem);
+                      onHoveredChanged: {
+                        root.handleObjectHover(hovered, automationRegionItem);
+                      }
+                      onSelectionRequested: function (mouse) {
+                        root.handleObjectSelection(automationRegionsRepeater.model, automationRegionLoader.index, mouse);
+                      }
                     }
-                    onSelectionRequested: function (mouse) {
-                      root.handleObjectSelection(automationRegionsRepeater.model, automationRegionLoader.index, mouse);
-                    }
-                  }
-
-                  SelectionTracker {
-                    id: automationRegionSelectionTracker
-
-                    modelIndex: {
-                      root.unifiedObjectsModel.addSourceModel(automationRegionsRepeater.model);
-                      return root.unifiedObjectsModel.mapFromSource(automationRegionsRepeater.model.index(automationRegionLoader.index, 0));
-                    }
-                    selectionModel: root.arrangerSelectionModel
                   }
                 }
               }

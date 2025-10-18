@@ -1,13 +1,14 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 ArrangerObjectBaseView {
   id: root
+
+  readonly property ScaleObject scaleObject: arrangerObject as ScaleObject
 
   height: textMetrics.height + 2 * Style.buttonPadding
   width: textMetrics.width + 2 * Style.buttonPadding
@@ -26,9 +27,9 @@ ArrangerObjectBaseView {
     padding: Style.buttonPadding
     text: {
       // bindings
-      arrangerObject.scale.scaleType;
-      arrangerObject.scale.rootKey;
-      return arrangerObject.scale.toString();
+      root.scaleObject.scale.scaleType;
+      root.scaleObject.scale.rootKey;
+      return root.scaleObject.scale.toString();
     }
   }
 
