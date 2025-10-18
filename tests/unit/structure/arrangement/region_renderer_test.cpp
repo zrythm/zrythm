@@ -1360,10 +1360,14 @@ TEST_F (RegionRendererTest, SerializeAutomationRegionLoopedEndingMidCurve)
 
   // Check that we have the expected values at each point
   if (first_point_samples < values.size ())
-    EXPECT_FLOAT_EQ (values[first_point_samples], 0.0f);
+    {
+      EXPECT_FLOAT_EQ (values[first_point_samples], 0.0f);
+    }
 
   if (second_point_samples < values.size ())
-    EXPECT_FLOAT_EQ (values[second_point_samples], 0.5f);
+    {
+      EXPECT_FLOAT_EQ (values[second_point_samples], 0.5f);
+    }
 
   // The third point should appear in the second loop iteration
   // In the second loop, the third point at 125 ticks appears at 125 + 100 = 225
@@ -1371,13 +1375,17 @@ TEST_F (RegionRendererTest, SerializeAutomationRegionLoopedEndingMidCurve)
   const auto third_point_in_second_loop =
     third_point_samples + loop_length_samples;
   if (third_point_in_second_loop < values.size ())
-    EXPECT_FLOAT_EQ (values[third_point_in_second_loop], 1.0f);
+    {
+      EXPECT_FLOAT_EQ (values[third_point_in_second_loop], 1.0f);
+    }
 
   // The fourth point at 175 ticks appears in the first loop only (at 175 ticks)
   const auto fourth_point_samples = static_cast<size_t> (
     tempo_map->tick_to_samples_rounded (units::ticks (175)).in (units::samples));
   if (fourth_point_samples < values.size ())
-    EXPECT_FLOAT_EQ (values[fourth_point_samples], 0.2f);
+    {
+      EXPECT_FLOAT_EQ (values[fourth_point_samples], 0.2f);
+    }
 
   // Check that values are interpolated from the third point (1.0) to the fourth
   // point (0.2) in the first loop
