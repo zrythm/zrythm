@@ -47,6 +47,10 @@ Track::Track (
     {
       piano_roll_track_mixin_ = make_piano_roll_track_mixin ();
     }
+
+  // Listen to height changes
+  QObject::connect (
+    this, &Track::heightChanged, this, &Track::fullVisibleHeightChanged);
 }
 
 void
@@ -137,7 +141,7 @@ Track::make_track_processor (
 utils::QObjectUniquePtr<AutomationTracklist>
 Track::make_automation_tracklist ()
 {
-  return utils::make_qobject_unique<AutomationTracklist> (
+  auto atl = utils::make_qobject_unique<AutomationTracklist> (
     AutomationTrackHolder::Dependencies{
       .tempo_map_ = base_dependencies_.tempo_map_,
       .file_audio_source_registry_ =
@@ -146,6 +150,13 @@ Track::make_automation_tracklist ()
       .param_registry_ = base_dependencies_.param_registry_,
       .object_registry_ = base_dependencies_.obj_registry_ },
     this);
+
+  // Listen to height changes
+  QObject::connect (
+    atl.get (), &AutomationTracklist::automationVisibleChanged, this,
+    &Track::fullVisibleHeightChanged);
+
+  return atl;
 }
 
 utils::QObjectUniquePtr<Channel>
@@ -197,6 +208,11 @@ Track::make_lanes ()
     playable_content_cache_request_debouncer_.get (),
     &utils::PlaybackCacheScheduler::cacheRequested, this,
     &Track::regeneratePlaybackCaches);
+
+  // Listen to height changes
+  QObject::connect (
+    ret.get (), &TrackLaneList::lanesVisibleChanged, this,
+    &Track::fullVisibleHeightChanged);
 
   return ret;
 }

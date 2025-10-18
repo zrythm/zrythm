@@ -68,31 +68,26 @@ ArrangerObjectCreator::addEmptyChordRegion (
   undo_stack_.push (
     new commands::AddArrangerObjectCommand<structure::arrangement::ChordRegion> (
       *track, cr_ref));
-  return cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
+  return chord_region;
 }
 
 structure::arrangement::AutomationRegion *
 ArrangerObjectCreator::addEmptyAutomationRegion (
+  structure::tracks::Track *           track,
   structure::tracks::AutomationTrack * automationTrack,
   double                               startTicks)
-
 {
-  // TODO
-  return nullptr;
-#if 0
-    auto ar_ref =
-      get_builder<AutomationRegion> ()
-        .with_start_ticks (startTicks)
-        .build_in_registry ();
-    auto track_var = automationTrack->get_track ();
-    std::visit (
-      [&] (auto &&track) {
-        track->structure::tracks::Track::template add_region<AutomationRegion> (
-          ar_ref, automationTrack, std::nullopt, true);
-      },
-      track_var);
-    return std::get<AutomationRegion *> (ar_ref.get_object ());
-#endif
+  auto ar_ref =
+    arranger_object_factory_
+      .get_builder<structure::arrangement::AutomationRegion> ()
+      .with_start_ticks (startTicks)
+      .build_in_registry ();
+  auto * ar = ar_ref.get_object_as<structure::arrangement::AutomationRegion> ();
+  ar->name ()->setName (track->generate_name_for_region (*ar, automationTrack));
+  undo_stack_.push (
+    new commands::AddArrangerObjectCommand<
+      structure::arrangement::AutomationRegion> (*automationTrack, ar_ref));
+  return ar;
 }
 
 structure::arrangement::MidiRegion *

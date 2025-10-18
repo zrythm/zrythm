@@ -21,18 +21,33 @@ Arranger {
       return null;
     }
 
-    const automationTrack = getAutomationTrackAtY(y);
-    if (!automationTrack) {}
-    const trackLane = getTrackLaneAtY(y) as TrackLane;
-    if (!trackLane) {}
-    console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
-
     const tickPosition = x / root.ruler.pxPerTick;
+
+    const automationTrack = getAutomationTrackAtY(y);
+    if (automationTrack) {
+      console.log("Creating automation region");
+      let region = objectCreator.addEmptyAutomationRegion(track, automationTrack, tickPosition);
+      root.currentAction = Arranger.CreatingResizingR;
+      const regionOwner = automationTrack.regions;
+      root.selectSingleObject(regionOwner, regionOwner.rowCount() - 1);
+      CursorManager.setResizeEndCursor();
+      return region;
+    }
+
+    const trackLane = getTrackLaneAtY(y) as TrackLane;
+    console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
 
     switch (track.type) {
     case Track.Chord:
-      console.log("creating chord");
-      break;
+      {
+        console.log("creating chord region");
+        let region = objectCreator.addEmptyChordRegion(track, tickPosition);
+        root.currentAction = Arranger.CreatingResizingR;
+        const regionOwner = (track as ChordTrack).chordRegions;
+        root.selectSingleObject(regionOwner, regionOwner.rowCount() - 1);
+        CursorManager.setResizeEndCursor();
+        return region;
+      }
     case Track.Marker:
       console.log("creating marker", Track.Marker, ArrangerObject.Marker);
       root.undoStack.beginMacro("Create Marker");
@@ -57,10 +72,14 @@ Arranger {
     return null;
   }
 
-  function getAutomationTrackAtY(y: real): var {
+  function getAutomationTrackAtY(y: real): AutomationTrack {
     y += tracksListView.contentY;
     const trackItem = tracksListView.itemAt(0, y);
-    if (!trackItem?.track?.isAutomatable || !trackItem?.track?.automationVisible) {
+    if (!trackItem) {
+      return null;
+    }
+    const track = trackItem.track as Track;
+    if (track.automationTracklist === null || !track.automationTracklist.automationVisible) {
       return null;
     }
 
@@ -92,7 +111,11 @@ Arranger {
   function getTrackLaneAtY(y: real): TrackLane {
     // Get the track delegate
     const trackItem = tracksListView.itemAt(0, y + tracksListView.contentY);
-    if (!trackItem?.track?.hasLanes || !trackItem?.track?.lanesVisible) {
+    if (!trackItem) {
+      return null;
+    }
+    const track = trackItem.track as Track;
+    if (track.lanes === null || !track.lanes.lanesVisible) {
       return null;
     }
 
@@ -398,13 +421,14 @@ Arranger {
               delegate: Loader {
                 id: chordRegionLoader
 
-                readonly property real chordRegionEndX: region.endPosition.ticks * root.ruler.pxPerTick
-                readonly property real chordRegionWidth: chordRegionEndX - chordRegionX
-                readonly property real chordRegionX: region.position.ticks * root.ruler.pxPerTick
+                required property ArrangerObject arrangerObject
                 required property int index
-                required property var region
+                readonly property ChordRegion region: arrangerObject as ChordRegion
+                readonly property real regionEndX: regionX + regionWidth
+                readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
+                readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
 
-                active: chordRegionEndX + Style.scrollLoaderBufferPx >= root.scrollX && chordRegionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+                active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
                 asynchronous: true
                 visible: status === Loader.Ready
 
@@ -418,8 +442,8 @@ Arranger {
                     isSelected: chordRegionSelectionTracker.isSelected
                     pxPerTick: root.ruler.pxPerTick
                     track: trackDelegate.track
-                    width: chordRegionLoader.chordRegionWidth
-                    x: chordRegionLoader.chordRegionX
+                    width: chordRegionLoader.regionWidth
+                    x: chordRegionLoader.regionX
 
                     onHoveredChanged: {
                       root.handleObjectHover(hovered, chordRegionItem);
@@ -719,8 +743,8 @@ Arranger {
                   required property int index
                   readonly property AutomationRegion region: arrangerObject as AutomationRegion
                   readonly property real regionEndX: regionX + regionWidth
-                  readonly property real regionHeight: parent.height
-                   readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
+                  readonly property real regionHeight: automationTrackItem.height
+                  readonly property real regionWidth: region.bounds.length.ticks * root.ruler.pxPerTick
                   readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
 
                   active: regionEndX + Style.scrollLoaderBufferPx >= root.scrollX && regionX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)

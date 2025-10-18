@@ -7,8 +7,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.impl
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 Control {
   id: control
@@ -27,8 +27,9 @@ Control {
   required property Tracklist tracklist
   required property UndoStack undoStack
 
+  height: track.fullVisibleHeight
   hoverEnabled: true
-  implicitHeight: track.fullVisibleHeight
+  implicitHeight: 48
   implicitWidth: 200
   opacity: Style.getOpacity(track.enabled, control.Window.active)
 
@@ -227,7 +228,7 @@ Control {
       }
     }
   }
-  Behavior on implicitHeight {
+  Behavior on height {
     animation: Style.propertyAnimation
     // FIXME: stops working after some operations, not sure why
     enabled: !control.isResizing
@@ -239,23 +240,6 @@ Control {
     }
 
     target: control.trackSelectionManager
-  }
-
-  Connections {
-    function onAutomationVisibleChanged() {
-      control.track.fullVisibleHeightChanged();
-    }
-
-    function onHeightChanged() {
-      control.track.fullVisibleHeightChanged();
-    }
-
-    function onLanesVisibleChanged() {
-      control.track.fullVisibleHeightChanged();
-    }
-
-    ignoreUnknownSignals: true
-    target: control.track
   }
 
   Component {

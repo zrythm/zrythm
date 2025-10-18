@@ -86,6 +86,7 @@ public:
 
   Q_INVOKABLE structure::arrangement::AutomationRegion *
               addEmptyAutomationRegion (
+                structure::tracks::Track *           track,
                 structure::tracks::AutomationTrack * automationTrack,
                 double                               startTicks);
 
