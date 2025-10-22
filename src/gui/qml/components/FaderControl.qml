@@ -10,6 +10,9 @@ Item {
   id: root
 
   property real ampAtStart: 0.0
+  readonly property int bgRadius: Style.toolButtonRadius
+  property real currentAutomatedValue: faderValue
+  property real currentModulatedValue: faderValue
   readonly property real defaultFaderValue: 0.8
   property bool dragging: false
   required property ProcessorParameter faderGain
@@ -19,7 +22,6 @@ Item {
   property real lastX: 0
   property real lastY: 0
   required property UndoStack undoStack
-  readonly property int bgRadius: Style.toolButtonRadius
 
   signal bindMidiCC
   signal resetFader
@@ -51,6 +53,18 @@ Item {
     mouseArea.acceptedButtons = Qt.LeftButton | Qt.RightButton;
   }
 
+  // Update currently automated/modulated values
+  Timer {
+    interval: 16 // ~60fps
+    repeat: true
+    running: root.faderGain !== null
+
+    onTriggered: {
+      root.currentAutomatedValue = root.faderGain.valueAfterAutomationApplied();
+      root.currentModulatedValue = root.faderGain.currentValue();
+    }
+  }
+
   ProcessorParameterOperator {
     id: paramOp
 
@@ -76,14 +90,16 @@ Item {
 
     readonly property color endColor: Style.getColorBlendedTowardsContrast(palette.accent)
 
+    bottomLeftRadius: root.bgRadius
+    bottomRightRadius: root.bgRadius
     color: {
-      var intensity = root.faderValue;
-      var fgColor = palette.accent;
+      const intensity = root.faderValue;
+      const fgColor = palette.accent;
 
-      var r = (1.0 - intensity) * endColor.r + intensity * fgColor.r;
-      var g = (1.0 - intensity) * endColor.g + intensity * fgColor.g;
-      var b = (1.0 - intensity) * endColor.b + intensity * fgColor.b;
-      var a = (1.0 - intensity) * endColor.a + intensity * fgColor.a;
+      const r = (1.0 - intensity) * endColor.r + intensity * fgColor.r;
+      const g = (1.0 - intensity) * endColor.g + intensity * fgColor.g;
+      const b = (1.0 - intensity) * endColor.b + intensity * fgColor.b;
+      let a = (1.0 - intensity) * endColor.a + intensity * fgColor.a;
 
       if (!root.hovered) {
         a = 0.9;
@@ -94,12 +110,26 @@ Item {
     height: parent.height * root.faderValue
     topLeftRadius: 2
     topRightRadius: 2
-    bottomLeftRadius: root.bgRadius
-    bottomRightRadius: root.bgRadius
 
     anchors {
       bottom: parent.bottom
       left: parent.left
+      margins: 3
+      right: parent.right
+    }
+  }
+
+  Rectangle {
+    id: currentValueRect
+
+    bottomRightRadius: root.bgRadius
+    color: QmlUtils.adjustOpacity(palette.highlightedText, 0.8)
+    height: parent.height * root.currentModulatedValue
+    width: 3
+    visible: root.currentModulatedValue != root.faderValue
+
+    anchors {
+      bottom: parent.bottom
       margins: 3
       right: parent.right
     }

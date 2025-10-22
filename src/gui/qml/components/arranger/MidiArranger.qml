@@ -15,10 +15,10 @@ Arranger {
   readonly property MidiRegion region: clipEditor.region
   readonly property Track track: clipEditor.track
 
-  function beginObjectCreation(x: real, y: real): var {
-    const pitch = getPitchAtY(y);
-    console.log("Midi Arranger: beginObjectCreation", x, y, pitch);
-    const tickPosition = x / root.ruler.pxPerTick;
+  function beginObjectCreation(coordinates: point): MidiNote {
+    const pitch = getPitchAtY(coordinates.y);
+    console.log("Midi Arranger: beginObjectCreation", coordinates, pitch);
+    const tickPosition = coordinates.x / root.ruler.pxPerTick;
     const localTickPosition = tickPosition - region.position.ticks;
 
     let midiNote = objectCreator.addMidiNote(region, localTickPosition, pitch);
@@ -74,7 +74,7 @@ Arranger {
     id: midiNotesRepeater
 
     anchors.fill: parent
-    model: root.clipEditor.region.midiNotes
+    model: root.region.midiNotes
 
     delegate: ArrangerObjectLoader {
       id: midiNoteLoader
@@ -83,7 +83,7 @@ Arranger {
 
       arrangerSelectionModel: root.arrangerSelectionModel
       height: root.pianoRoll.keyHeight
-      model: root.clipEditor.region.midiNotes
+      model: midiNotesRepeater.model
       pxPerTick: root.ruler.pxPerTick
       scrollViewWidth: root.scrollViewWidth
       scrollX: root.scrollX
@@ -96,7 +96,7 @@ Arranger {
 
           arrangerObject: midiNoteLoader.arrangerObject
           isSelected: midiNoteLoader.selectionTracker.isSelected
-          track: root.clipEditor.track
+          track: root.track
 
           onHoveredChanged: {
             root.handleObjectHover(midiNoteView.hovered, midiNoteView);

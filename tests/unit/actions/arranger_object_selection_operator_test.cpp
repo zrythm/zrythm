@@ -97,10 +97,18 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
   EXPECT_EQ (undo_stack_->count (), 1);
 }
 
-// TODO: Test moveByTicks with negative delta
-#if 0
+// Test moveByTicks with negative delta
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 {
+  // Move objects to position 100 first to allow negative movement
+  for (const auto &obj_ref : test_objects_)
+    {
+      if (auto * obj = obj_ref.get_object_base ())
+        {
+          obj->position ()->setTicks (100.0);
+        }
+    }
+
   const double tick_delta = -50.0;
 
   bool result = operator_->moveByTicks (tick_delta);
@@ -109,17 +117,18 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
   // Objects should be moved backward by tick_delta
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (
+        auto * obj =
+          test_objects_.get<structure::arrangement::random_access_index> ()[i]
+            .get_object_base ())
         {
-          EXPECT_DOUBLE_EQ (
-            obj->position ()->ticks (), original_positions_[i] + tick_delta);
+          EXPECT_DOUBLE_EQ (obj->position ()->ticks (), 50);
         }
     }
 
   // Command should be pushed to undo stack
   EXPECT_EQ (undo_stack_->count (), 1);
 }
-#endif
 
 // Test moveByTicks with zero delta (no-op)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
@@ -309,6 +318,259 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
         },
         obj_ref.get_object ());
     }
+}
+
+// Test moveAutomationPointsByDelta functionality
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
+{
+  // Create an automation point for testing
+  auto automation_point_ref = object_registry.create_object<
+    structure::arrangement::AutomationPoint> (*tempo_map);
+
+  // Set initial value
+  automation_point_ref
+    .get_object_as<structure::arrangement::AutomationPoint> ()
+    ->setValue (0.5f);
+
+  // Add to test objects and select it
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    automation_point_ref);
+
+  // Update list model and select the automation point
+  selection_model_->select (
+    list_model_.index (2, 0), QItemSelectionModel::Select);
+
+  const double delta = 0.2;
+
+  bool result = operator_->moveAutomationPointsByDelta (delta);
+  EXPECT_TRUE (result);
+
+  // Automation point should be moved by delta
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint *>)
+            {
+              EXPECT_FLOAT_EQ (obj->value (), 0.7f); // 0.5 + 0.2
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Command should be pushed to undo stack
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  // Test undo/redo
+  undo_stack_->undo ();
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint *>)
+            {
+              EXPECT_FLOAT_EQ (obj->value (), 0.5f);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  undo_stack_->redo ();
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint *>)
+            {
+              EXPECT_FLOAT_EQ (obj->value (), 0.7f);
+            }
+        },
+        obj_ref.get_object ());
+    }
+}
+
+// Test moveNotesByPitch with no selection (no-op)
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchNoSelection)
+{
+  // Clear selection
+  selection_model_->clear ();
+
+  bool result = operator_->moveNotesByPitch (5);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed for no selection
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test moveNotesByPitch with zero delta (no-op)
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
+{
+  bool result = operator_->moveNotesByPitch (0);
+  EXPECT_TRUE (result);
+
+  // No command should be pushed for zero delta
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test moveNotesByPitch with invalid pitch (out of range)
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
+{
+  // Find the MIDI note and set its pitch to 125 (close to max)
+  int original_pitch = 0;
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              obj->setPitch (125);
+              original_pitch = 125;
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Try to move by 5 (would result in pitch 130, which is out of range)
+  bool result = operator_->moveNotesByPitch (5);
+  EXPECT_FALSE (result);
+
+  // Pitch should remain unchanged
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->pitch (), original_pitch);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // No command should be pushed for invalid movement
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test moveAutomationPointsByDelta with no selection (no-op)
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  MoveAutomationPointsByDeltaNoSelection)
+{
+  // Clear selection
+  selection_model_->clear ();
+
+  bool result = operator_->moveAutomationPointsByDelta (0.1);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed for no selection
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test moveAutomationPointsByDelta with zero delta (no-op)
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelta)
+{
+  bool result = operator_->moveAutomationPointsByDelta (0.0);
+  EXPECT_TRUE (result);
+
+  // No command should be pushed for zero delta
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test moveAutomationPointsByDelta with invalid value (out of range)
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  MoveAutomationPointsByDeltaInvalidValue)
+{
+  // Create an automation point with value 0.9
+  auto automation_point_ref = object_registry.create_object<
+    structure::arrangement::AutomationPoint> (*tempo_map);
+
+  automation_point_ref
+    .get_object_as<structure::arrangement::AutomationPoint> ()
+    ->setValue (0.9f);
+
+  // Add to test objects and select it
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    automation_point_ref);
+
+  // Update list model and select the automation point
+  selection_model_->select (
+    list_model_.index (2, 0), QItemSelectionModel::Select);
+
+  // Try to move by 0.2 (would result in value 1.1, which is out of range)
+  bool result = operator_->moveAutomationPointsByDelta (0.2);
+  EXPECT_FALSE (result);
+
+  // Value should remain unchanged
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+            {
+              EXPECT_FLOAT_EQ (obj->value (), 0.9f);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // No command should be pushed for invalid movement
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test moveByTicks without undo stack set (should return false)
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksWithoutUndoStack)
+{
+  auto operator_no_stack = std::make_unique<ArrangerObjectSelectionOperator> ();
+  operator_no_stack->setSelectionModel (selection_model_.get ());
+
+  bool result = operator_no_stack->moveByTicks (100.0);
+  EXPECT_FALSE (result);
+}
+
+// Test moveByTicks without selection model set (should return false)
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksWithoutSelectionModel)
+{
+  auto operator_no_selection =
+    std::make_unique<ArrangerObjectSelectionOperator> ();
+  operator_no_selection->setUndoStack (undo_stack_.get ());
+
+  bool result = operator_no_selection->moveByTicks (100.0);
+  EXPECT_FALSE (result);
+}
+
+// Test moveNotesByPitch without undo stack set (should return false)
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchWithoutUndoStack)
+{
+  auto operator_no_stack = std::make_unique<ArrangerObjectSelectionOperator> ();
+  operator_no_stack->setSelectionModel (selection_model_.get ());
+
+  bool result = operator_no_stack->moveNotesByPitch (5);
+  EXPECT_FALSE (result);
+}
+
+// Test moveAutomationPointsByDelta without undo stack set (should return false)
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  MoveAutomationPointsByDeltaWithoutUndoStack)
+{
+  auto operator_no_stack = std::make_unique<ArrangerObjectSelectionOperator> ();
+  operator_no_stack->setSelectionModel (selection_model_.get ());
+
+  bool result = operator_no_stack->moveAutomationPointsByDelta (0.1);
+  EXPECT_FALSE (result);
 }
 
 // Test setUndoStack with null (should throw)

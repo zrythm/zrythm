@@ -3,6 +3,7 @@
 
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
+#include "utils/math.h"
 
 namespace zrythm::actions
 {
@@ -60,13 +61,19 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
 }
 
 bool
-ArrangerObjectSelectionOperator::moveNotesByPitch (int tick_delta)
+ArrangerObjectSelectionOperator::moveNotesByPitch (int pitch_delta)
 {
-  return process_vertical_move (tick_delta);
+  return process_vertical_move (static_cast<double> (pitch_delta));
 }
 
 bool
-ArrangerObjectSelectionOperator::process_vertical_move (int delta)
+ArrangerObjectSelectionOperator::moveAutomationPointsByDelta (double delta)
+{
+  return process_vertical_move (delta);
+}
+
+bool
+ArrangerObjectSelectionOperator::process_vertical_move (double delta)
 {
   // Validation checks
   if (undo_stack_ == nullptr)
@@ -82,7 +89,7 @@ ArrangerObjectSelectionOperator::process_vertical_move (int delta)
       return false;
     }
 
-  if (delta == 0)
+  if (utils::math::floats_equal (delta, 0.0))
     {
       // No movement needed
       return true;
@@ -169,22 +176,27 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
 bool
 ArrangerObjectSelectionOperator::validateVerticalMovement (
   const SelectedObjectsVector &objects,
-  int                          delta)
+  double                       delta)
 {
   return std::ranges::all_of (objects, [delta] (const auto &obj_ref) {
-    std::visit (
+    return std::visit (
       [&] (auto &&obj) {
         using ObjectT = base_type<decltype (obj)>;
         if constexpr (std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
           {
-            const auto new_pitch = obj->pitch () + delta;
+            const auto new_pitch = obj->pitch () + static_cast<int> (delta);
             return new_pitch >= 0 && new_pitch < 128;
           }
-        return false;
+        if constexpr (
+          std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+          {
+            const auto new_value = obj->value () + static_cast<float> (delta);
+            return new_value >= 0.0 && new_value <= 1.0;
+          }
+
+        return true; // Skip objects that can't be accessed
       },
       obj_ref.get_object ());
-
-    return true; // Skip objects that can't be accessed
   });
 }
 

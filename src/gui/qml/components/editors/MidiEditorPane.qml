@@ -15,7 +15,7 @@ GridLayout {
   required property ClipEditor clipEditor
   required property PianoRoll pianoRoll
   required property Project project
-  required property var region
+  required property MidiRegion region
 
   columnSpacing: 0
   columns: 3
@@ -60,7 +60,7 @@ GridLayout {
     id: ruler
 
     Layout.fillWidth: true
-    editorSettings: root.project.clipEditor.pianoRoll.editorSettings
+    editorSettings: root.pianoRoll.editorSettings
     tempoMap: root.project.tempoMap
     transport: root.project.transport
   }

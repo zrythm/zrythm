@@ -34,9 +34,6 @@ protected:
       *tempo_map, registry, file_audio_source_registry, nullptr);
     automation_region->position ()->setTicks (100);
     automation_region->bounds ()->length ()->setTicks (200);
-    automation_region->loopRange ()->loopStartPosition ()->setTicks (50);
-    automation_region->loopRange ()->loopEndPosition ()->setTicks (150);
-    automation_region->loopRange ()->clipStartPosition ()->setTicks (0);
   }
 
   void add_automation_point (float value, double position_ticks)
@@ -535,8 +532,8 @@ TEST_F (RegionRendererTest, SerializeAudioRegionWithGain)
 
 TEST_F (RegionRendererTest, SerializeAudioRegionWithClipStart)
 {
-  // Set clip start to 50 ticks
-  audio_region->loopRange ()->clipStartPosition ()->setTicks (50);
+  // Set clip start to 50 samples
+  audio_region->loopRange ()->clipStartPosition ()->setSamples (50);
 
   juce::AudioSampleBuffer buffer;
   RegionRenderer::serialize_to_buffer (
@@ -558,9 +555,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionWithClipStart)
   if (buffer.getNumSamples () > AudioRegion::BUILTIN_FADE_FRAMES)
     {
       // Get expected value at this position (accounting for clip start offset)
-      const int clip_start_samples = static_cast<int> (
-        tempo_map->tick_to_samples_rounded (units::ticks (50))
-          .in (units::samples));
+      const int clip_start_samples = 50;
       auto [expected_left, expected_right] = get_expected_sine_values (
         AudioRegion::BUILTIN_FADE_FRAMES + clip_start_samples);
 
@@ -656,24 +651,24 @@ TEST_F (RegionRendererTest, SerializeAudioRegionLargeConstraints)
   // Check a sample in the middle that should be at full value
   if (buffer.getNumSamples () > AudioRegion::BUILTIN_FADE_FRAMES * 2)
     {
-      const int middle_sample = buffer.getNumSamples () / 2;
+      const auto middle_sample = buffer.getNumSamples () / 2;
 
       // For constraints, we need to account for the offset where the region
       // audio starts The constraint starts before the region, so there's
       // silence at the beginning
-      const int region_start_offset = static_cast<int> (
+      const auto region_start_offset =
         tempo_map
-          ->tick_to_samples (
+          ->tick_to_samples_rounded (
             units::ticks (region_pos_ticks - (region_pos_ticks - 10.0)))
-          .in (units::samples));
+          .in (units::samples);
 
       // Calculate the actual sample position in the audio source
-      const int actual_sample_pos = middle_sample - region_start_offset;
+      const auto actual_sample_pos = middle_sample - region_start_offset;
 
       if (actual_sample_pos >= 0)
         {
           auto [expected_left, expected_right] =
-            get_expected_sine_values (actual_sample_pos);
+            get_expected_sine_values (static_cast<int> (actual_sample_pos));
           EXPECT_NEAR (left_channel[middle_sample], expected_left, 0.01f);
           EXPECT_NEAR (right_channel[middle_sample], expected_right, 0.01f);
         }
@@ -1003,7 +998,7 @@ TEST_F (RegionRendererTest, SerializeAutomationRegionSimple)
     tempo_map->tick_to_samples_rounded (units::ticks (100)).in (units::samples));
 
   // Verify values before the first point are -1.0
-  for (size_t i = 0; i < point_samples && i < values.size (); ++i)
+  for (size_t i = 0; i < point_samples; ++i)
     {
       EXPECT_FLOAT_EQ (values[i], -1.0f);
     }
@@ -1349,8 +1344,8 @@ TEST_F (RegionRendererTest, SerializeAutomationRegionLoopedEndingMidCurve)
     tempo_map->tick_to_samples_rounded (units::ticks (75)).in (units::samples));
   const auto third_point_samples = static_cast<size_t> (
     tempo_map->tick_to_samples_rounded (units::ticks (125)).in (units::samples));
-  const auto loop_length_samples = static_cast<size_t> (
-    tempo_map->tick_to_samples_rounded (units::ticks (100)).in (units::samples));
+  const auto loop_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (150)).in (units::samples));
 
   // Before first point should be -1.0
   for (size_t i = 0; i < first_point_samples && i < values.size (); ++i)
@@ -1359,59 +1354,382 @@ TEST_F (RegionRendererTest, SerializeAutomationRegionLoopedEndingMidCurve)
     }
 
   // Check that we have the expected values at each point
-  if (first_point_samples < values.size ())
-    {
-      EXPECT_FLOAT_EQ (values[first_point_samples], 0.0f);
-    }
-
-  if (second_point_samples < values.size ())
-    {
-      EXPECT_FLOAT_EQ (values[second_point_samples], 0.5f);
-    }
-
-  // The third point should appear in the second loop iteration
-  // In the second loop, the third point at 125 ticks appears at 125 + 100 = 225
-  // ticks relative to region start
-  const auto third_point_in_second_loop =
-    third_point_samples + loop_length_samples;
-  if (third_point_in_second_loop < values.size ())
-    {
-      EXPECT_FLOAT_EQ (values[third_point_in_second_loop], 1.0f);
-    }
-
-  // The fourth point at 175 ticks appears in the first loop only (at 175 ticks)
-  const auto fourth_point_samples = static_cast<size_t> (
-    tempo_map->tick_to_samples_rounded (units::ticks (175)).in (units::samples));
-  if (fourth_point_samples < values.size ())
-    {
-      EXPECT_FLOAT_EQ (values[fourth_point_samples], 0.2f);
-    }
+  EXPECT_FLOAT_EQ (values[first_point_samples], 0.0f);
+  EXPECT_FLOAT_EQ (values[second_point_samples], 0.5f);
+  EXPECT_FLOAT_EQ (values[third_point_samples], 1.0f);
 
   // Check that values are interpolated from the third point (1.0) to the fourth
   // point (0.2) in the first loop
-  if (
-    third_point_samples < values.size ()
-    && fourth_point_samples > third_point_samples)
+  const auto check_point_after_third_point = third_point_samples + 10;
+  // The value should be between 1.0 and 0.2 but closer to 1.0
+  const auto check_value_after_third_point =
+    values[check_point_after_third_point];
+  EXPECT_GT (
+    check_value_after_third_point, 0.2f); // Should be > 0.5 (closer to 1.0)
+  EXPECT_LT (check_value_after_third_point, 1.0f); // Should be < 1.0
+
+  // Check just before we loop we're still interpolating
+  const auto check_point_before_loop_back = loop_point_samples - 1;
+  const auto check_value_before_loop_back = values[check_point_before_loop_back];
+  EXPECT_GT (
+    check_value_before_loop_back, 0.2f); // Should be > 0.5 (closer to 1.0)
+  EXPECT_LT (
+    check_value_before_loop_back,
+    check_value_after_third_point); // Should be < the previous value since we
+                                    // are curving downwards
+
+  // Check the parts after looping back
+  const auto samples_after_looping_back = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (150)).in (units::samples));
+  const auto samples_after_looping_back_plus_25 = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (175)).in (units::samples));
+  const auto samples_at_end = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (200)).in (units::samples));
+  EXPECT_NEAR (values[samples_after_looping_back], 0.25f, 0.0001f);
+  EXPECT_NEAR (values[samples_after_looping_back_plus_25], 0.5f, 0.0001f);
+  EXPECT_NEAR (values[samples_at_end - 1], 0.75f, 0.001f);
+}
+
+// Parameterized test fixture for automation curves with different curviness
+// values
+class RegionRendererTestAutomationCurvesTest
+    : public RegionRendererTest,
+      public ::testing::WithParamInterface<float>
+{
+};
+
+// Test parameters for curviness values
+INSTANTIATE_TEST_SUITE_P (
+  CurvinessValues,
+  RegionRendererTestAutomationCurvesTest,
+  ::testing::Values (-0.5f, 0.0f, 0.5f));
+
+TEST_P (
+  RegionRendererTestAutomationCurvesTest,
+  SerializeAutomationRegionCurveFromLowerToHigher)
+{
+  const float curviness = GetParam ();
+
+  // Create a curve that goes from a lower value to a higher value
+  // This is the specific case that was reported as broken
+  add_automation_point (0.2f, 50);  // Lower value at start
+  add_automation_point (0.8f, 150); // Higher value at end
+
+  // Set curve options on the first point to ensure we're testing the curve logic
+  auto * first_ap = automation_region->get_children_view ()[0];
+  first_ap->curveOpts ()->setCurviness (curviness);
+  first_ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Exponent);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionRenderer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Calculate sample positions
+  const auto first_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (50)).in (units::samples));
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (150)).in (units::samples));
+
+  // Verify the first point has the correct value
+  if (first_point_samples < values.size ())
     {
-      // Check a point closer to the third point where interpolation is happening
-      const auto check_point = third_point_samples + 10;
-      if (check_point < values.size ())
-        {
-          // The value should be between 1.0 and 0.2 but closer to 1.0
-          const auto check_value = values[check_point];
-          EXPECT_GT (check_value, 0.2f); // Should be > 0.5 (closer to 1.0)
-          EXPECT_LT (check_value, 1.0f); // Should be < 1.0
-        }
+      EXPECT_FLOAT_EQ (values[first_point_samples], 0.2f)
+        << "First automation point should have value 0.2f";
     }
 
-  // The fourth automation point at 175 ticks with value 0.2 is the last point
-  // so it fills all remaining samples with 0.2
-  // The last value should be 0.2
+  // Verify the second point has the correct value
+  if (second_point_samples < values.size ())
+    {
+      EXPECT_FLOAT_EQ (values[second_point_samples], 0.8f)
+        << "Second automation point should have value 0.8f";
+    }
+
+  // Check that interpolation is working correctly between the points
+  // The curve should go from lower (0.2) to higher (0.8)
+  if (second_point_samples > first_point_samples + 1 && values.size () > 0)
+    {
+      // Check a point in the middle of the curve
+      const size_t mid_point = (first_point_samples + second_point_samples) / 2;
+
+      // The value should be between 0.2 and 0.8
+      if (mid_point < values.size ())
+        {
+          const auto mid_value = values[mid_point];
+          EXPECT_GT (mid_value, 0.2f)
+            << "Middle value should be greater than start value (0.2f)";
+          EXPECT_LT (mid_value, 0.8f)
+            << "Middle value should be less than end value (0.8f)";
+
+          // Check curviness behavior
+          if (curviness > 0.0f)
+            {
+              // With positive curviness going from lower to higher, the curve
+              // should be above the linear interpolation line
+              EXPECT_GT (mid_value, 0.5f)
+                << "With positive curviness, the curve should be above linear interpolation (0.5f)";
+            }
+          else if (curviness < 0.0f)
+            {
+              // With negative curviness going from lower to higher, the curve
+              // should be below the linear interpolation line
+              EXPECT_LT (mid_value, 0.5f)
+                << "With negative curviness, the curve should be below linear interpolation (0.5f)";
+            }
+          else
+            {
+              // With zero curviness (linear), the value should be close to 0.5
+              EXPECT_NEAR (mid_value, 0.5f, 0.01f)
+                << "With zero curviness, the curve should be linear (0.5f)";
+            }
+        }
+
+      // Verify monotonic increase - values should always be increasing
+      // from the first point to the second point
+      bool  found_decrease = false;
+      float prev_value = values[first_point_samples];
+      for (
+        size_t i = first_point_samples + 1;
+        i < second_point_samples && i < values.size (); ++i)
+        {
+          if (values[i] < prev_value - 0.0001f) // Allow small floating point
+                                                // errors
+            {
+              found_decrease = true;
+              break;
+            }
+          prev_value = values[i];
+        }
+      EXPECT_FALSE (found_decrease)
+        << "Curve from lower to higher should be monotonically increasing";
+    }
+}
+
+TEST_P (
+  RegionRendererTestAutomationCurvesTest,
+  SerializeAutomationRegionCurveFromHigherToLower)
+{
+  const float curviness = GetParam ();
+
+  // Create a curve that goes from a higher value to a lower value
+  // This tests the opposite direction to ensure both cases work
+  add_automation_point (0.8f, 50);  // Higher value at start
+  add_automation_point (0.2f, 150); // Lower value at end
+
+  // Set curve options on the first point
+  auto * first_ap = automation_region->get_children_view ()[0];
+  first_ap->curveOpts ()->setCurviness (curviness);
+  first_ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Exponent);
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionRenderer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Calculate sample positions
+  const auto first_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (50)).in (units::samples));
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (150)).in (units::samples));
+
+  // Verify the first point has the correct value
+  if (first_point_samples < values.size ())
+    {
+      EXPECT_FLOAT_EQ (values[first_point_samples], 0.8f)
+        << "First automation point should have value 0.8f";
+    }
+
+  // Verify the second point has the correct value
+  if (second_point_samples < values.size ())
+    {
+      EXPECT_FLOAT_EQ (values[second_point_samples], 0.2f)
+        << "Second automation point should have value 0.2f";
+    }
+
+  // Check that interpolation is working correctly between the points
+  // The curve should go from higher (0.8) to lower (0.2)
+  if (second_point_samples > first_point_samples + 1 && values.size () > 0)
+    {
+      // Check a point in the middle of the curve
+      const size_t mid_point = (first_point_samples + second_point_samples) / 2;
+
+      // The value should be between 0.2 and 0.8
+      if (mid_point < values.size ())
+        {
+          const auto mid_value = values[mid_point];
+          EXPECT_LT (mid_value, 0.8f)
+            << "Middle value should be less than start value (0.8f)";
+          EXPECT_GT (mid_value, 0.2f)
+            << "Middle value should be greater than end value (0.2f)";
+
+          // Check curviness behavior
+          if (curviness > 0.0f)
+            {
+              // With positive curviness going from higher to lower, the curve
+              // should be above the linear interpolation line
+              EXPECT_GT (mid_value, 0.5f)
+                << "With positive curviness, the curve should be above linear interpolation (0.5f)";
+            }
+          else if (curviness < 0.0f)
+            {
+              // With negative curviness going from higher to lower, the curve
+              // should be below the linear interpolation line
+              EXPECT_LT (mid_value, 0.5f)
+                << "With negative curviness, the curve should be below linear interpolation (0.5f)";
+            }
+          else
+            {
+              // With zero curviness (linear), the value should be close to 0.5
+              EXPECT_NEAR (mid_value, 0.5f, 0.01f)
+                << "With zero curviness, the curve should be linear (0.5f)";
+            }
+        }
+
+      // Verify monotonic decrease - values should always be decreasing
+      // from the first point to the second point
+      bool  found_increase = false;
+      float prev_value = values[first_point_samples];
+      for (
+        size_t i = first_point_samples + 1;
+        i < second_point_samples && i < values.size (); ++i)
+        {
+          if (values[i] > prev_value + 0.0001f) // Allow small floating point
+                                                // errors
+            {
+              found_increase = true;
+              break;
+            }
+          prev_value = values[i];
+        }
+      EXPECT_FALSE (found_increase)
+        << "Curve from higher to lower should be monotonically decreasing";
+    }
+}
+
+TEST_F (RegionRendererTest, SerializeAutomationRegionWithPointBeforeRegion)
+{
+  // Add an automation point before the region start (negative position)
+  add_automation_point (0.2f, -25); // 25 ticks before region start
+  add_automation_point (0.8f, 150); // 150 ticks after region start
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionRenderer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Calculate sample positions
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (150)).in (units::samples));
+
+  // The region should start with an interpolated value from the first point
+  // Since the first point is at -25 ticks (before region), and the second at 150
+  // ticks, the region start (at 0 ticks relative to region start) should
+  // have an interpolated value between 0.2 and 0.8
   if (values.size () > 0)
     {
-      const auto last_value = values[values.size () - 1];
-      EXPECT_FLOAT_EQ (last_value, 0.2f);
+      const auto first_value = values[0];
+      // Should be interpolated, not the default -1.0
+      EXPECT_GT (first_value, 0.2f);
+      EXPECT_LT (first_value, 0.8f);
     }
+
+  // Values should continue interpolating toward the second point
+  bool found_interpolation = false;
+  for (size_t i = 0; i < values.size () && i < second_point_samples; ++i)
+    {
+      if (values[i] > 0.2f && values[i] < 0.8f)
+        {
+          found_interpolation = true;
+          break;
+        }
+    }
+  EXPECT_TRUE (found_interpolation);
+
+  // At the second point position, we should have the exact value
+  if (second_point_samples < values.size ())
+    {
+      EXPECT_FLOAT_EQ (values[second_point_samples], 0.8f);
+    }
+}
+
+TEST_F (RegionRendererTest, SerializeAutomationRegionLoopStartMidCurve)
+{
+  // Set up looping where loop start is in the middle of a curve
+  add_automation_point (0.0f, 25);  // Before loop start
+  add_automation_point (1.0f, 75);  // After loop start
+  add_automation_point (0.5f, 125); // Inside loop
+
+  // Set up looping: loop from 50-150 ticks
+  automation_region->loopRange ()->setTrackBounds (false);
+  automation_region->loopRange ()->loopStartPosition ()->setTicks (50);
+  automation_region->loopRange ()->loopEndPosition ()->setTicks (150);
+  // Set region length to 300 ticks
+  automation_region->bounds ()->length ()->setTicks (300);
+
+  // First part (0-150 ticks):
+  // * 0-25 ticks: No automation (values should be -1.0)
+  // * 25-75 ticks: Interpolation from point at 25 ticks (0.0) to point at 75
+  // ticks (1.0)
+  // * 75-125 ticks: Interpolation from point at 75 ticks (1.0) to
+  // point at 125 ticks (0.5)
+  // * 125-150 ticks: Flat at point 125's value (0.5)
+  //
+  // Second part (150-250 ticks - looped segment):
+  // * 150-175 ticks: Interpolation from point at 25 ticks (0.0) to point at 75
+  // ticks (1.0) - but only the portion equivalent to 50-75 ticks
+  // * 175-225 ticks: Interpolation from point at 75 ticks (1.0) to point at 125
+  // ticks (0.5)
+  // * 225-250 ticks: Flat at point 125's value (0.5)
+  //
+  // Third part (250-300 ticks - looped segment):
+  // * 250-275 ticks: Interpolation from point at 25 ticks (0.0) to point at 75
+  // ticks (1.0) - but only the portion equivalent to 50-75 ticks
+  // * 275-300 ticks: Interpolation from point at 75 ticks (1.0) to point at 125
+  // ticks (0.5) - but only for the portion equivalent to 75-100 ticks
+
+  // Pass empty vector - the API will resize it appropriately
+  std::vector<float> values;
+
+  RegionRenderer::serialize_to_automation_values (
+    *automation_region, values, std::nullopt, std::nullopt);
+
+  // Calculate sample positions
+  const auto loop_start_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (50)).in (units::samples));
+  const auto second_point_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (75)).in (units::samples));
+  const auto loop_length_samples = static_cast<size_t> (
+    tempo_map->tick_to_samples_rounded (units::ticks (100)).in (units::samples));
+
+  // At loop start (50 ticks), we should have an interpolated value
+  // between the first point (0.0 at 25 ticks) and second point (1.0 at 75 ticks)
+  const auto loop_start_value = values[loop_start_samples];
+  // Should be interpolated between 0.0 and 1.0
+  EXPECT_NEAR (loop_start_value, 0.5f, 0.001f);
+
+  // In the second loop iteration, the loop start should have the same
+  // interpolated value (continuing the curve from the previous loop)
+  {
+    const auto loop_start_in_second_loop =
+      loop_start_samples + loop_length_samples;
+    const auto second_loop_value = values[loop_start_in_second_loop];
+    // Should be the same interpolated value as the first loop start
+    EXPECT_NEAR (second_loop_value, loop_start_value, 0.001f);
+  }
+
+  // The second point should appear at the correct position in both loops
+  {
+    // at 75 ticks
+    EXPECT_FLOAT_EQ (values[second_point_samples], 1.0f);
+    const auto second_point_in_second_loop =
+      second_point_samples + loop_length_samples;
+
+    // at 175 ticks
+    EXPECT_FLOAT_EQ (values[second_point_in_second_loop], 1.0f);
+  }
 }
 
 } // namespace zrythm::structure::arrangement

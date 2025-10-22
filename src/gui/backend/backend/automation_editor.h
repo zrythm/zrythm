@@ -24,7 +24,7 @@ class AutomationEditor : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    gui::backend::EditorSettings * editorSettings READ getEditorSettings
+    zrythm::gui::backend::EditorSettings * editorSettings READ getEditorSettings
       CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ

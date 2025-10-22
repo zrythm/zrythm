@@ -582,7 +582,7 @@ Item {
           console.log("doubleClicked", action);
           // create an object at the mouse position
           if (mouse.button === Qt.LeftButton) {
-            let obj = beginObjectCreation(mouse.x, mouse.y);
+            let obj = root.beginObjectCreation(Qt.point(mouse.x, mouse.y));
             if (obj) {
               snapNewlyCreatedObjects();
             }
@@ -647,6 +647,7 @@ Item {
             } else if (action == Arranger.CreatingMoving) {
               const ticksToMove = calculateObjectMovementTicks();
               moveSelectionsX(ticksToMove);
+              moveSelectionsY(dy, prevCoordinates.y);
             } else if (action === Arranger.CreatingResizingR) {
               // Apply snapping to resize endpoint
               const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);

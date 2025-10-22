@@ -7,6 +7,7 @@
 #include "gui/backend/qml_utils.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/audio_source_object.h"
+#include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/region_renderer.h"
 #include "utils/math.h"
 #include "utils/utf8_string.h"
@@ -207,6 +208,95 @@ QmlUtils::getAudioRegionWaveform (QObject * audioRegion, int pixelWidth)
             channel, QQmlEngine::JavaScriptOwnership);
 
           result.append (channel);
+        }
+
+      return result;
+    }
+  catch (...)
+    {
+      // Return empty result on any error
+      return result;
+    }
+}
+
+QVector<float>
+QmlUtils::getAutomationRegionValues (QObject * automationRegion, int pixelWidth)
+{
+  QVector<float> result;
+
+  if (automationRegion == nullptr || pixelWidth <= 0)
+    {
+      return result;
+    }
+
+  // Cast to AutomationRegion
+  auto * region =
+    qobject_cast<structure::arrangement::AutomationRegion *> (automationRegion);
+  if (region == nullptr)
+    {
+      return result;
+    }
+
+  try
+    {
+      // Calculate total length in samples
+      auto totalLengthSamples = static_cast<unsigned_frame_t> (
+        region->bounds ()->length ()->samples ());
+
+      if (totalLengthSamples == 0)
+        {
+          return result;
+        }
+
+      // Serialize the entire region to a vector of automation values
+      std::vector<float> automationValues;
+      structure::arrangement::RegionRenderer::serialize_to_automation_values (
+        *region, automationValues);
+
+      const int numSamples = static_cast<int> (automationValues.size ());
+
+      if (numSamples == 0)
+        {
+          return result;
+        }
+
+      // Resize result vector
+      result.resize (pixelWidth);
+
+      // Calculate samples per pixel
+      const float samplesPerPixel =
+        static_cast<float> (numSamples) / static_cast<float> (pixelWidth);
+
+      // For each pixel, find the average value
+      for (int px = 0; px < pixelWidth; ++px)
+        {
+          const int startSample =
+            static_cast<int> (static_cast<float> (px) * samplesPerPixel);
+          const int endSample = std::min (
+            static_cast<int> (static_cast<float> (px + 1) * samplesPerPixel),
+            numSamples);
+
+          if (startSample >= numSamples)
+            break;
+
+          float sum = 0.0f;
+          int   count = 0;
+
+          // Find average value in this pixel range
+          for (int sample = startSample; sample < endSample; ++sample)
+            {
+              const float val = automationValues[sample];
+              // Skip default values (-1.0f)
+              if (val >= 0.0f)
+                {
+                  sum += val;
+                  count++;
+                }
+            }
+
+          // If we found any valid values, use the average
+          // Otherwise, use -1.0f to indicate no automation data
+          result[px] = (count > 0) ? (sum / static_cast<float> (count)) : -1.0f;
         }
 
       return result;

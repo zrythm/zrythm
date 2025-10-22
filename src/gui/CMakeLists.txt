@@ -197,6 +197,9 @@ set(rel_qml_file_paths
   components/basic/ZrythmToolBar.qml
   components/arranger/AudioRegionContent.qml
   components/arranger/AudioRegionView.qml
+  components/arranger/AutomationArranger.qml
+  components/arranger/AutomationPointView.qml
+  components/arranger/AutomationRegionContent.qml
   components/arranger/AutomationRegionView.qml
   components/arranger/Arranger.qml
   components/arranger/ArrangerObjectBaseView.qml
@@ -300,6 +303,8 @@ target_include_directories(zrythm
 qt_add_qml_module(zrythm
   URI Zrythm
   VERSION 1.0
+  DEPENDENCIES
+    QtCore # Needed for QAbstractItemModel-derived types
   IMPORTS
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib

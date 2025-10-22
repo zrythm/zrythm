@@ -19,7 +19,7 @@ public:
   MoveArrangerObjectsCommand (
     std::vector<structure::arrangement::ArrangerObjectUuidReference> objects,
     units::precise_tick_t                                            tick_delta,
-    int vertical_delta = 0)
+    double vertical_delta = 0.0)
       : QUndoCommand (QObject::tr ("Move Objects")),
         objects_ (std::move (objects)), tick_delta_ (tick_delta),
         vertical_delta_ (vertical_delta)
@@ -37,6 +37,11 @@ public:
               std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
               {
                 original_vertical_positions_.push_back (obj->pitch ());
+              }
+            else if constexpr (
+              std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+              {
+                original_vertical_positions_.push_back (obj->value ());
               }
             else
               {
@@ -100,7 +105,12 @@ public:
                 if constexpr (
                   std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
                   {
-                    obj->setPitch (original_vertical_pos);
+                    obj->setPitch (static_cast<int> (original_vertical_pos));
+                  }
+                else if constexpr (
+                  std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+                  {
+                    obj->setValue (static_cast<float> (original_vertical_pos));
                   }
               }
           },
@@ -125,7 +135,15 @@ public:
                 if constexpr (
                   std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
                   {
-                    obj->setPitch (original_vertical_pos + vertical_delta_);
+                    obj->setPitch (
+                      static_cast<int> (original_vertical_pos + vertical_delta_));
+                  }
+                else if constexpr (
+                  std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+                  {
+                    obj->setValue (
+                      static_cast<float> (
+                        original_vertical_pos + vertical_delta_));
                   }
               }
           },
@@ -137,9 +155,9 @@ public:
 private:
   std::vector<structure::arrangement::ArrangerObjectUuidReference> objects_;
   std::vector<units::precise_tick_t> original_positions_;
-  std::vector<int>                   original_vertical_positions_;
+  std::vector<double>                original_vertical_positions_;
   units::precise_tick_t              tick_delta_;
-  int                                vertical_delta_{};
+  double                             vertical_delta_{};
   std::chrono::time_point<std::chrono::steady_clock> last_redo_timestamp_;
 };
 

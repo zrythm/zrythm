@@ -7,6 +7,7 @@
 
 namespace zrythm::dsp
 {
+Q_NAMESPACE
 
 enum class MusicalNote : std::uint8_t
 {
@@ -23,6 +24,7 @@ enum class MusicalNote : std::uint8_t
   ASharp,
   B
 };
+Q_ENUM_NS (MusicalNote)
 
 /**
  * Chord type.
@@ -38,6 +40,7 @@ enum class ChordType : std::uint8_t
   Augmented,
   Custom,
 };
+Q_ENUM_NS (ChordType)
 
 /**
  * Chord accents.
@@ -66,6 +69,7 @@ enum class ChordAccent : std::uint8_t
   /** 9 and 21 semitones. */
   SixthThirteenth,
 };
+Q_ENUM_NS (ChordAccent)
 
 /**
  * A ChordDescriptor describes a chord and is not linked to any specific object

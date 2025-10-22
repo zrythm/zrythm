@@ -38,4 +38,7 @@ public:
    */
   Q_INVOKABLE static QVector<gui::WaveformChannel *>
   getAudioRegionWaveform (QObject * audioRegion, int pixelWidth);
+
+  Q_INVOKABLE static QVector<float>
+  getAutomationRegionValues (QObject * automationRegion, int pixelWidth);
 };

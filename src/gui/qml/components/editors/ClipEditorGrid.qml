@@ -110,6 +110,8 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 2
 
       sourceComponent: AutomationEditorPane {
+        clipEditor: root.clipEditor
+        automationEditor: root.clipEditor.automationEditor
         project: root.project
         region: root.region
       }

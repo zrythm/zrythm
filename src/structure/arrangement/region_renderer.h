@@ -288,8 +288,10 @@ private:
 
   /**
    * Calculates the position of an event in looped playback.
+   *
+   * @param original_pos Original position of the event inside the region.
    */
-  static units::precise_tick_t get_looped_position (
+  static units::precise_tick_t get_event_looped_position (
     units::precise_tick_t original_pos,
     const LoopParameters &loop_params,
     int                   loop_index);

@@ -118,9 +118,9 @@ TEST_F (AutomationRegionTest, GetPrevNextPoint)
   EXPECT_EQ (prev_point->position ()->ticks (), 100);
 }
 
-TEST_F (AutomationRegionTest, CurveCalculation)
+TEST_F (AutomationRegionTest, CurveCalculationLinearUp)
 {
-  // Add points
+  // Add points going from lower to higher
   add_automation_point (0.0, 100);
   add_automation_point (1.0, 200);
 
@@ -130,6 +130,28 @@ TEST_F (AutomationRegionTest, CurveCalculation)
 
   // Default curve is linear, so midpoint should be 0.5
   EXPECT_DOUBLE_EQ (value, 0.5);
+
+  // Test at other points
+  EXPECT_DOUBLE_EQ (region->get_normalized_value_in_curve (*point1, 0.0), 0.0);
+  EXPECT_DOUBLE_EQ (region->get_normalized_value_in_curve (*point1, 1.0), 1.0);
+}
+
+TEST_F (AutomationRegionTest, CurveCalculationLinearDown)
+{
+  // Add points going from higher to lower
+  add_automation_point (1.0, 100);
+  add_automation_point (0.0, 200);
+
+  // Get curve value at midpoint
+  auto   point1 = region->get_children_view ()[0];
+  double value = region->get_normalized_value_in_curve (*point1, 0.5);
+
+  // Default curve is linear, so midpoint should be 0.5
+  EXPECT_DOUBLE_EQ (value, 0.5);
+
+  // Test at other points
+  EXPECT_DOUBLE_EQ (region->get_normalized_value_in_curve (*point1, 0.0), 1.0);
+  EXPECT_DOUBLE_EQ (region->get_normalized_value_in_curve (*point1, 1.0), 0.0);
 }
 
 TEST_F (AutomationRegionTest, CurvesUp)

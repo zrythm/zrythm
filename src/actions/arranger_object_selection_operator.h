@@ -62,6 +62,8 @@ public:
 
   Q_INVOKABLE bool moveNotesByPitch (int pitch_delta);
 
+  Q_INVOKABLE bool moveAutomationPointsByDelta (double delta);
+
 private:
   auto extractSelectedObjects () const -> SelectedObjectsVector;
 
@@ -69,9 +71,9 @@ private:
     const SelectedObjectsVector &objects,
     double                       tick_delta);
   static bool
-  validateVerticalMovement (const SelectedObjectsVector &objects, int delta);
+  validateVerticalMovement (const SelectedObjectsVector &objects, double delta);
 
-  bool process_vertical_move (int delta);
+  bool process_vertical_move (double delta);
 
 private:
   undo::UndoStack *     undo_stack_{};

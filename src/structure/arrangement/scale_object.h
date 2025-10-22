@@ -13,7 +13,9 @@ namespace zrythm::structure::arrangement
 class ScaleObject final : public ArrangerObject
 {
   Q_OBJECT
-  Q_PROPERTY (MusicalScale * scale READ scale WRITE setScale NOTIFY scaleChanged)
+  Q_PROPERTY (
+    zrythm::dsp::MusicalScale * scale READ scale WRITE setScale NOTIFY
+      scaleChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 

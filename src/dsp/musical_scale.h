@@ -24,8 +24,10 @@ class MusicalScale : public QObject
   Q_PROPERTY (
     ScaleType scaleType READ scaleType WRITE setScaleType NOTIFY scaleTypeChanged)
   Q_PROPERTY (
-    MusicalNote rootKey READ rootKey WRITE setRootKey NOTIFY rootKeyChanged)
+    zrythm::dsp::MusicalNote rootKey READ rootKey WRITE setRootKey NOTIFY
+      rootKeyChanged)
   QML_ELEMENT
+  QML_EXTENDED_NAMESPACE (zrythm::dsp)
 
 public:
   /**
@@ -124,6 +126,7 @@ public:
     Tritone,
     UkranianDorian,
   };
+  Q_ENUM (ScaleType)
 
 public:
   MusicalScale (QObject * parent = nullptr) : QObject (parent) { }

@@ -15,15 +15,15 @@ Arranger {
   required property var timeline
   required property Tracklist tracklist
 
-  function beginObjectCreation(x: real, y: real): var {
-    const track = getTrackAtY(y);
+  function beginObjectCreation(coordinates: point): ArrangerObject {
+    const track = getTrackAtY(coordinates.y);
     if (!track) {
       return null;
     }
 
-    const tickPosition = x / root.ruler.pxPerTick;
+    const tickPosition = coordinates.x / root.ruler.pxPerTick;
 
-    const automationTrack = getAutomationTrackAtY(y);
+    const automationTrack = getAutomationTrackAtY(coordinates.y);
     if (automationTrack) {
       console.log("Creating automation region");
       let region = objectCreator.addEmptyAutomationRegion(track, automationTrack, tickPosition);
@@ -34,8 +34,8 @@ Arranger {
       return region;
     }
 
-    const trackLane = getTrackLaneAtY(y) as TrackLane;
-    console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
+    const trackLane = getTrackLaneAtY(coordinates.y) as TrackLane;
+    console.log("Timeline: beginObjectCreation", coordinates, track, trackLane, automationTrack);
 
     switch (track.type) {
     case Track.Chord:

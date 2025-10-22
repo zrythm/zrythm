@@ -25,7 +25,7 @@ AutomationRegion::get_normalized_value_in_curve (
   const AutomationPoint &ap,
   double                 x) const
 {
-  z_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
+  assert (x >= 0.0 && x <= 1.0);
 
   AutomationPoint * next_ap = get_next_ap (ap, true);
   if (next_ap == nullptr)

@@ -44,7 +44,7 @@ Fader::Fader (
         utils::Utf8String::from_utf8_encoded_string (amp_id_str)),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
-      utils::Utf8String::from_qstring (QObject::tr ("Fader Volume")));
+      utils::Utf8String::from_qstring (QObject::tr ("Fader Gain")));
     add_parameter (amp_id);
     amp_id_ = amp_id.id ();
     get_amp_param ().set_automatable (make_params_automatable);
