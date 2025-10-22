@@ -23,6 +23,7 @@ variables:
     -DCPM_DOWNLOAD_ALL=ON
     -DZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS=ON
     -DZRYTHM_VERIFY_INTERFACE_HEADER_SETS=ON
+    -DZRYTHM_BUILD_WITH_PIPE=ON
 
 stages:
   - setup
@@ -138,6 +139,7 @@ configure:gnu/linux:
       -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
       $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
+      $(if [ "${BUILD_TYPE}" = "Release" ]; then echo "-DCMAKE_CXX_FLAGS=\"-march=x86-64-v2 -mtune=generic\" -DCMAKE_C_FLAGS=\"-march=x86-64-v2 -mtune=generic\""; fi)
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -239,6 +241,7 @@ configure:windows:
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
       -DZRYTHM_VERIFY_INTERFACE_HEADER_SETS=ON
       -DZRYTHM_UNITY_BUILD=ON
+      -DZRYTHM_MSVC_RELEASE_ARCH=AVX
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]

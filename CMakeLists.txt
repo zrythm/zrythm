@@ -205,6 +205,8 @@ option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay
 option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 option(ZRYTHM_VERIFY_INTERFACE_HEADER_SETS OFF)
 option(ZRYTHM_COVERAGE "Build with --coverage" OFF)
+option(ZRYTHM_BUILD_WITH_PIPE "Compile with -fpipe where supported (faster but higher RAM requirement)" OFF)
+set(ZRYTHM_MSVC_RELEASE_ARCH "" CACHE STRING "/arch: flag to use when making release builds on MSVC")
 
 # Dependency feature options
 option(ZRYTHM_WITH_ASIO "Build with ASIO support (Windows only)" OFF) # ${WIN32})
@@ -470,6 +472,10 @@ if(compiler_gnulike)
   )
 endif()
 
+if(ZRYTHM_BUILD_WITH_PIPE AND compiler_gnulike)
+  add_compile_options(-pipe)
+endif()
+
 if(ZRYTHM_RECORD_SWITCHES AND compiler_is_gcc AND NOT WIN32)
   target_compile_options(_zrythm_compile_options INTERFACE -frecord-gcc-switches)
 endif()
@@ -500,7 +506,10 @@ if(ZRYTHM_EXTRA_OPTIMIZATIONS)
     # off on builds supposed to be debuggable
     # target_compile_options(_zrythm_compile_options INTERFACE -fno-omit-frame-pointer)
   elseif(MSVC)
-    target_compile_options(_zrythm_compile_options INTERFACE /fp:fast)
+    if(ZRYTHM_MSVC_RELEASE_ARCH)
+      add_compile_options(/arch:${ZRYTHM_MSVC_RELEASE_ARCH})
+    endif()
+    add_compile_options(/fp:fast)
   endif()
   if(compiler_is_gcc)
     target_compile_options(_zrythm_compile_options INTERFACE -fprefetch-loop-arrays)
