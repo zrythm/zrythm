@@ -69,7 +69,7 @@ stages:
   needs: []
   variables:
     BUILDDIR: "build_sanitizer"
-    SANITIZER_TYPE: "address"  # Default sanitizer
+    SANITIZER_TYPE: "address" # Default sanitizer
     RTSAN_OPTIONS: "suppressions=$CI_PROJECT_DIR/tools/rtsan_suppressions.supp"
   before_script:
     - *unix-activate-venv
@@ -139,7 +139,7 @@ configure:gnu/linux:
       -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
       $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
-      $(if [ "${BUILD_TYPE}" = "Release" ]; then echo '-DCMAKE_CXX_FLAGS="-march=x86-64-v2 -mtune=generic" -DCMAKE_C_FLAGS="-march=x86-64-v2 -mtune=generic"'; fi)
+      -DZRYTHM_GCC_X86_64_V2_OPTIMIZATIONS=ON
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -285,7 +285,7 @@ check:reuse:
   stage: check
   needs: []
   script:
-   - reuse lint
+    - reuse lint
 
 check:exif:
   extends: .gnu-linux-template
@@ -294,7 +294,7 @@ check:exif:
   stage: check
   needs: []
   script:
-   - scripts/exif_check.sh
+    - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
   - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -V -D NightlyTest || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
@@ -412,7 +412,7 @@ build:windows:
       artifacts: true
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
-    - if (! $?) { exit 1 }  # Check if the previous command failed
+    - if (! $?) { exit 1 } # Check if the previous command failed
     - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -V -D NightlyTest -D NightlySubmit; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
     - if ("${env:BUILD_TYPE}" -eq "Release") { cmake --build "${BUILDDIR}-${BUILD_TYPE}" --config "${env:BUILD_TYPE}" --target run_all_benchmarks }
     - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config ${env:BUILDDIR}-${env:BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${env:BUILD_TYPE}; if (-not $?) { Get-Content "package-${env:BUILD_TYPE}/_CPack_Packages/win64/INNOSETUP/ISCCOutput.log"; exit 1 }
