@@ -123,6 +123,8 @@ default:
 configure:gnu/linux:
   extends: .gnu-linux-template
   stage: setup
+  variables:
+    GIT_DEPTH: 0  # Fetch full history
   before_script:
     - python3 -m venv venv
     - *unix-activate-venv
@@ -188,6 +190,8 @@ configure-for-tools:gnu/linux:
 configure:mac-arm:
   extends: .mac-arm-template
   stage: setup
+  variables:
+    GIT_DEPTH: 0  # Fetch full history
   before_script:
     - python3 -m venv venv
     - *unix-activate-venv
@@ -220,6 +224,8 @@ configure:mac-arm:
 configure:windows:
   extends: .windows-template
   stage: setup
+  variables:
+    GIT_DEPTH: 0  # Fetch full history
   before_script:
     - *windows-enable-vs-env
     - python -m venv venv
@@ -470,3 +476,48 @@ update-dev-docs:
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - *unix-activate-venv
+
+deploy:windows:
+  extends: .windows-template
+  stage: deploy
+  only:
+    - master
+    - tags
+  needs:
+    - job: build:windows
+      artifacts: true
+  script:
+    - $windowsArtifact = Get-ChildItem -Path "package-Release/*.exe" | Select-Object -First 1 | ForEach-Object { $_.FullName }
+    - python scripts/deploy_file_to_s3.py --prefix "packages/v2/windows" "$windowsArtifact"
+  dependencies:
+    - build:windows
+
+deploy:mac-arm:
+  extends: .mac-arm-template
+  stage: deploy
+  only:
+    - master
+    - tags
+  needs:
+    - job: build:mac-arm
+      artifacts: true
+  script:
+    - macArtifact = $(find package-Release -name "*.dmg" | head -n 1)
+    - python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/mac" "$macArtifact"
+  dependencies:
+    - build:mac-arm
+
+deploy:gnu/linux:
+  extends: .gnu-linux-template
+  stage: deploy
+  only:
+    - master
+    - tags
+  needs:
+    - job: build:gnu/linux
+      artifacts: true
+  script:
+    - gnuLinuxArtifact = $(find package-Release -name "*.tar.xz" | head -n 1)
+    - python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/gnu-linux" "$gnuLinuxArtifact"
+  dependencies:
+    - build:gnu/linux
