@@ -174,7 +174,7 @@ option(ZRYTHM_BUNDLED_PLUGINS_WITH_STATIC_LINKING "Build bundled plugins with st
 option(ZRYTHM_MAINTAINER_MODE "Whether to enable maintainer options (only for use by Zrythm maintainers/developers)" OFF)
 cmake_dependent_option(ZRYTHM_IS_INSTALLER_VER "Build installer version" OFF "ZRYTHM_MAINTAINER_MODE" OFF)
 cmake_dependent_option(ZRYTHM_IS_TRIAL_VER "Build trial version" OFF "ZRYTHM_MAINTAINER_MODE" OFF)
-set(ZRYTHM_PACKAGE_VERSION "Version to use/force (when making an installer package)" "${ZRYTHM_VERSION_STRING_FULL_WITHOUT_V}")
+set(ZRYTHM_PACKAGE_VERSION "${ZRYTHM_VERSION_STRING_FULL_WITHOUT_V}" CACHE STRING "Version to use/force (when making an installer package)")
 option(ZRYTHM_PROFILING "Build with profiling (for gprof)" OFF)
 option(ZRYTHM_MANPAGE "Build and install manpage" ${OS_GNU})
 option(ZRYTHM_SHELL_COMPLETIONS "Build and install shell completions" ${UNIX})
