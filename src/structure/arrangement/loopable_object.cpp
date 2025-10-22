@@ -13,9 +13,11 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
       clip_start_pos_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           clip_start_pos_,
-          // Clip start can be anywhere, just enforce non-negative
-          [] (units::precise_tick_t ticks) {
-            return std::max (ticks, units::ticks (0.0));
+          // Clip start must be before loop end and non-negative
+          [this] (units::precise_tick_t ticks) {
+            ticks = std::max (ticks, units::ticks (0.0));
+            ticks = std::min (ticks, loop_end_pos_.get_ticks ());
+            return ticks;
           },
           this)),
       loop_start_pos_ (bounds.length ()->position ().time_conversion_functions ()),
@@ -33,10 +35,11 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
       loop_end_pos_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           loop_end_pos_,
-          // Loop end must be after loop start and non-negative
+          // Loop end must be after loop start and clip start and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::max (ticks, units::ticks (0.0));
             ticks = std::max (ticks, loop_start_pos_.get_ticks ());
+            ticks = std::max (ticks, clip_start_pos_.get_ticks ());
             return ticks;
           },
           this))
