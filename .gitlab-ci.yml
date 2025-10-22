@@ -139,7 +139,7 @@ configure:gnu/linux:
       -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
       $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
-      $(if [ "${BUILD_TYPE}" = "Release" ]; then echo "-DCMAKE_CXX_FLAGS=\"-march=x86-64-v2 -mtune=generic\" -DCMAKE_C_FLAGS=\"-march=x86-64-v2 -mtune=generic\""; fi)
+      $(if [ "${BUILD_TYPE}" = "Release" ]; then echo '-DCMAKE_CXX_FLAGS="-march=x86-64-v2 -mtune=generic" -DCMAKE_C_FLAGS="-march=x86-64-v2 -mtune=generic"'; fi)
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
