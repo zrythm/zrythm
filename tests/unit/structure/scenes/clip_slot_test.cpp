@@ -198,9 +198,9 @@ TEST_F (ClipSlotTest, AtomicStateAccess)
   {
     std::jthread thread1 ([&] (std::stop_token) {
       clip_slot_->setState (ClipSlot::ClipState::PlayQueued);
-      std::this_thread::sleep_for (std::chrono::milliseconds (10));
+      std::this_thread::sleep_for (std::chrono::milliseconds (50));
       clip_slot_->setState (ClipSlot::ClipState::Playing);
-      std::this_thread::sleep_for (std::chrono::milliseconds (10));
+      std::this_thread::sleep_for (std::chrono::milliseconds (50));
       thread1_done = true;
     });
 
@@ -217,7 +217,7 @@ TEST_F (ClipSlotTest, AtomicStateAccess)
           else if (state == ClipSlot::ClipState::Playing)
             found_playing = true;
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (1));
+          std::this_thread::sleep_for (std::chrono::milliseconds (5));
         }
 
       EXPECT_TRUE (found_play_queued);

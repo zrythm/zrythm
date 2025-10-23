@@ -6,6 +6,7 @@
 #include "dsp/audio_pool.h"
 #include "dsp/file_audio_source.h"
 #include "utils/io.h"
+#include "utils/utf8_string.h"
 
 #include <gtest/gtest.h>
 
@@ -16,10 +17,10 @@ class AudioPoolTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create temporary test directory
+    // Create temporary test directory using thread-safe temporary directory
+    temp_dir_obj = zrythm::utils::io::make_tmp_dir ();
     temp_dir =
-      std::filesystem::temp_directory_path () / "zrythm_audio_pool_test";
-    std::filesystem::create_directory (temp_dir);
+      utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path ();
 
     // Create sample audio clip
     clip_id_ref = registry.create_object<FileAudioSource> (
@@ -38,9 +39,10 @@ protected:
   void TearDown () override
   {
     audio_pool.reset ();
-    std::filesystem::remove_all (temp_dir);
+    // QTemporaryDir auto-removes when destroyed, no manual cleanup needed
   }
 
+  std::unique_ptr<QTemporaryDir>              temp_dir_obj;
   std::filesystem::path                       temp_dir;
   FileAudioSourceRegistry                     registry;
   std::optional<FileAudioSourceUuidReference> clip_id_ref;

@@ -6,12 +6,15 @@
 #include <thread>
 
 #include "utils/gtest_wrapper.h"
+#include "utils/io.h"
 #include "utils/networking.h"
+#include "utils/utf8_string.h"
 
 #include <httplib.h>
 
 using namespace std::chrono_literals;
-using namespace zrythm::networking;
+namespace zrythm::networking
+{
 
 class NetworkingTest : public ::testing::Test
 {
@@ -78,8 +81,10 @@ TEST_F (NetworkingTest, PostJsonNoAuth)
     res.set_content ("{\"received\": true}", "application/json");
   });
 
-  auto tmp_dir = fs::temp_directory_path () / "networking_test";
-  ASSERT_TRUE (fs::create_directory (tmp_dir));
+  // Create temporary test directory using thread-safe temporary directory
+  auto tmp_dir_obj = zrythm::utils::io::make_tmp_dir ();
+  auto tmp_dir =
+    utils::Utf8String::from_qstring (tmp_dir_obj->path ()).to_path ();
   auto test_file = tmp_dir / "test.txt";
   std::ofstream (test_file) << "test content";
 
@@ -91,7 +96,7 @@ TEST_F (NetworkingTest, PostJsonNoAuth)
     { networking::URL::MultiPartMimeObject ("file", test_file, "text/plain") });
   EXPECT_EQ (response, R"({"received": true})");
 
-  fs::remove_all (tmp_dir);
+  // QTemporaryDir auto-removes when destroyed, no manual cleanup needed
 }
 
 TEST_F (NetworkingTest, AsyncGetContents)
@@ -119,4 +124,5 @@ TEST_F (NetworkingTest, AsyncGetContents)
     });
 
   EXPECT_EQ (future.wait_for (10s), std::future_status::ready);
+}
 }
