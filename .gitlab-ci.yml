@@ -509,17 +509,17 @@ deploy:installers:
     # Deploy Windows installer
     - windowsArtifact=$(find package-Release -name "*.exe" | head -n 1)
     - if [ -n "$windowsArtifact" ]; then
-      python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/windows" "$windowsArtifact";
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/windows" "$windowsArtifact";
       fi
     # Deploy macOS DMG
     - macArtifact=$(find package-Release -name "*.dmg" | head -n 1)
     - if [ -n "$macArtifact" ]; then
-      python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/mac" "$macArtifact";
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/macos-universal" "$macArtifact";
       fi
     # Deploy Linux tarball
     - gnuLinuxArtifact=$(find package-Release -name "*.tar.xz" | head -n 1)
     - if [ -n "$gnuLinuxArtifact" ]; then
-      python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/gnu-linux" "$gnuLinuxArtifact";
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/gnu-linux-cpack" "$gnuLinuxArtifact";
       fi
     - python3 scripts/create_zrythm_accounts_product.py --version "$VERSION_WITHOUT_V"
   dependencies:
