@@ -488,6 +488,8 @@ update-dev-docs:
 deploy:installers:
   extends: .gnu-linux-template
   stage: deploy
+  variables:
+    GIT_DEPTH: 0 # Fetch full history
   only:
     - master
     - tags
