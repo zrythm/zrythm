@@ -5,6 +5,8 @@
 
 #include "dsp/file_audio_source.h"
 #include "utils/audio.h"
+#include "utils/io.h"
+#include "utils/utf8_string.h"
 
 #include <gtest/gtest.h>
 
@@ -15,9 +17,10 @@ class FileAudioSourceTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create temporary test file
-    temp_dir = std::filesystem::temp_directory_path () / "zrythm_test";
-    std::filesystem::create_directory (temp_dir);
+    // Create temporary test file using thread-safe temporary directory
+    temp_dir_obj = zrythm::utils::io::make_tmp_dir ();
+    temp_dir =
+      utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path ();
     test_wav = temp_dir / "test.wav";
 
     // Create minimal WAV file
@@ -49,12 +52,16 @@ protected:
     current_bpm = 120.0;
   }
 
-  void TearDown () override { std::filesystem::remove_all (temp_dir); }
+  void TearDown () override
+  {
+    // QTemporaryDir auto-removes when destroyed, no manual cleanup needed
+  }
 
-  std::filesystem::path temp_dir;
-  std::filesystem::path test_wav;
-  sample_rate_t         project_sample_rate;
-  bpm_t                 current_bpm;
+  std::unique_ptr<QTemporaryDir> temp_dir_obj;
+  std::filesystem::path          temp_dir;
+  std::filesystem::path          test_wav;
+  sample_rate_t                  project_sample_rate;
+  bpm_t                          current_bpm;
 };
 
 // Test constructors
