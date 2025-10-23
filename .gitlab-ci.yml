@@ -510,7 +510,7 @@ deploy:installers:
     - VERSION_AHEAD=$(git rev-list ${CURRENT_BRANCH} ${VERSION_STRING}^..HEAD --count)
     - VERSION_GIT_SHA=$(git rev-parse --short HEAD)
     - VERSION_FULL="${VERSION_STRING}+${VERSION_AHEAD}.${VERSION_GIT_SHA}"
-    - VERSION_WITHOUT_V=$(echo $VERSION_STRING | sed 's/^v//')
+    - VERSION_WITHOUT_V=$(echo $VERSION_FULL | sed 's/^v//')
     # Deploy Windows installer
     - windowsArtifact=$(find package-Release -name "*.exe" | head -n 1)
     - if [ -n "$windowsArtifact" ]; then
