@@ -37,6 +37,14 @@ ColumnLayout {
 
         ToolTip {
           text: qsTr("Currently soloed tracks")
+          visible: soloedTracksLabelMouseArea.containsMouse
+        }
+
+        MouseArea {
+          id: soloedTracksLabelMouseArea
+
+          anchors.fill: parent
+          hoverEnabled: true
         }
       }
 

@@ -32,7 +32,7 @@ Loader {
   x: objectX
 
   Binding on width {
-    value: root.arrangerObject.bounds.length.ticks * root.pxPerTick
+    value: root.arrangerObject.bounds ? root.arrangerObject.bounds.length.ticks * root.pxPerTick : 0
     when: root.arrangerObject.bounds
   }
 

@@ -17,6 +17,9 @@ Rectangle {
   width: 100
 
   Text {
-    text: ArrangerObjectHelpers.getObjectName(root.arrangerObject).name
+    text: {
+      const nameObj = ArrangerObjectHelpers.getObjectName(root.arrangerObject);
+      return nameObj ? nameObj.name : "";
+    }
   }
 }
