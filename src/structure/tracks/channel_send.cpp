@@ -147,4 +147,6 @@ from_json (const nlohmann::json &j, ChannelSend &p)
   j.at (ChannelSend::kSignalTypeKey).get_to (p.signal_type_);
   j.at (ChannelSend::kIsPrefaderKey).get_to (p.is_prefader_);
 }
+
+ChannelSend::~ChannelSend () = default;
 }

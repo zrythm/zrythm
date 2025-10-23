@@ -30,4 +30,7 @@ init_from (Tool &obj, const Tool &other, utils::ObjectCloneType clone_type)
 {
   obj.tool_ = other.tool_;
 }
+
+Tool::~Tool () = default;
+
 } // namespace zrythm::gui::backend

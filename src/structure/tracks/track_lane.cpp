@@ -11,4 +11,6 @@ TrackLane::generate_name (size_t index)
 {
   setName (format_qstr (QObject::tr (default_format_str), index + 1));
 }
+
+TrackLane::~TrackLane () = default;
 }

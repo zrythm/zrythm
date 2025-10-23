@@ -6,6 +6,14 @@
 
 namespace zrythm::dsp
 {
+
+ProcessorBase::ProcessorBase (
+  ProcessorBaseDependencies dependencies,
+  utils::Utf8String         name)
+    : dependencies_ (dependencies), name_ (std::move (name))
+{
+}
+
 void
 ProcessorBase::set_name (const utils::Utf8String &name)
 {
@@ -251,4 +259,43 @@ ProcessorGraphBuilder::add_connections (
         port_ref.get_object ());
     }
 }
+
+void
+to_json (nlohmann::json &j, const ProcessorBase &p)
+{
+  j[ProcessorBase::kProcessorNameKey] = p.name_;
+  j[ProcessorBase::kInputPortsKey] = p.input_ports_;
+  j[ProcessorBase::kOutputPortsKey] = p.output_ports_;
+  j[ProcessorBase::kParametersKey] = p.params_;
+}
+void
+from_json (const nlohmann::json &j, ProcessorBase &p)
+{
+  j.at (ProcessorBase::kProcessorNameKey).get_to (p.name_);
+  p.input_ports_.clear ();
+  for (const auto &input_port : j.at (ProcessorBase::kInputPortsKey))
+    {
+      auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
+      from_json (input_port, port_ref);
+      p.input_ports_.emplace_back (std::move (port_ref));
+    }
+  p.output_ports_.clear ();
+  for (const auto &output_port : j.at (ProcessorBase::kOutputPortsKey))
+    {
+      auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
+      from_json (output_port, port_ref);
+      p.output_ports_.emplace_back (std::move (port_ref));
+    }
+  p.params_.clear ();
+  for (const auto &param : j.at (ProcessorBase::kParametersKey))
+    {
+      auto param_ref =
+        dsp::ProcessorParameterUuidReference{ p.dependencies_.param_registry_ };
+      from_json (param, param_ref);
+      p.params_.emplace_back (std::move (param_ref));
+    }
+}
+
+ProcessorBase::~ProcessorBase () = default;
+
 } // namespace zrythm::dsp

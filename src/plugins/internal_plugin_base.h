@@ -32,7 +32,7 @@ public:
     StateDirectoryParentPathProvider              state_path_provider,
     QObject *                                     parent = nullptr);
 
-  ~InternalPluginBase () override = default;
+  ~InternalPluginBase () override;
 
 protected:
   // Plugin interface implementation

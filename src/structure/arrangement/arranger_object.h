@@ -79,7 +79,7 @@ public:
   Q_ENUM (Type)
 
 public:
-  ~ArrangerObject () noexcept override = default;
+  ~ArrangerObject () noexcept override;
   Z_DISABLE_COPY_MOVE (ArrangerObject)
 
   /**

@@ -3,9 +3,12 @@
 
 #pragma once
 
+#include "utils/icloneable.h"
 #include "utils/utf8_string.h"
 
 #include <QtQmlIntegration>
+
+#include <boost/describe.hpp>
 
 namespace zrythm::structure::arrangement
 {

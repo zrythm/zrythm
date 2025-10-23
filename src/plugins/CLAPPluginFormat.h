@@ -12,7 +12,7 @@ class CLAPPluginFormat final : public juce::AudioPluginFormat
 {
 public:
   CLAPPluginFormat () = default;
-  ~CLAPPluginFormat () override = default;
+  ~CLAPPluginFormat () override;
 
   /**
    * @brief Used for hashing CLAP IDs

@@ -40,4 +40,6 @@ InternalPluginBase::process_impl (EngineProcessTimeInfo time_info) noexcept
   // Simple pass-through implementation
 }
 
+InternalPluginBase::~InternalPluginBase () = default;
+
 } // namespace zrythm::plugins

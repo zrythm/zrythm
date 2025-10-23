@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_lane_list.h"
+#include "utils/views.h"
 
 #include <scn/scan.h>
 
@@ -264,4 +265,6 @@ init_from (
     }
 #endif
 }
+
+TrackLaneList::~TrackLaneList () = default;
 }

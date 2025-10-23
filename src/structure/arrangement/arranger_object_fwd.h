@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/debug.h"
+#include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::structure::arrangement

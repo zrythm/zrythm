@@ -5,6 +5,7 @@
 
 #include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/curve.h"
+#include "utils/icloneable.h"
 
 namespace zrythm::structure::arrangement
 {

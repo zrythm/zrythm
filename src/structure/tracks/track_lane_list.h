@@ -29,7 +29,7 @@ public:
     structure::arrangement::ArrangerObjectRegistry &obj_registry,
     dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
     QObject *                                       parent = nullptr);
-  ~TrackLaneList () override = default;
+  ~TrackLaneList () override;
   Z_DISABLE_COPY_MOVE (TrackLaneList)
 
   // ========================================================================

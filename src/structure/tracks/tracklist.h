@@ -44,7 +44,7 @@ public:
 public:
   explicit Tracklist (TrackRegistry &track_registry, QObject * parent = nullptr);
   Z_DISABLE_COPY_MOVE (Tracklist)
-  ~Tracklist () override = default;
+  ~Tracklist () override;
 
   // ========================================================================
   // QML Interface

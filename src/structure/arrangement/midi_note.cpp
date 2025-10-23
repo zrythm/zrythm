@@ -153,4 +153,7 @@ init_from (MidiNote &obj, const MidiNote &other, utils::ObjectCloneType clone_ty
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);
 }
+
+MidiNote::~MidiNote () = default;
+
 }

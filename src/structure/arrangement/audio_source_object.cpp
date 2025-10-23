@@ -59,4 +59,7 @@ from_json (const nlohmann::json &j, AudioSourceObject &obj)
   j.at (AudioSourceObject::kFileAudioSourceKey).get_to (obj.source_id_);
   obj.generate_audio_source ();
 }
+
+AudioSourceObject::~AudioSourceObject () = default;
+
 }

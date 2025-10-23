@@ -28,7 +28,7 @@ class MidiNote : public ArrangerObject
 public:
   MidiNote (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
   Z_DISABLE_COPY_MOVE (MidiNote)
-  ~MidiNote () override = default;
+  ~MidiNote () override;
 
   static constexpr midi_byte_t DEFAULT_VELOCITY = 90;
 

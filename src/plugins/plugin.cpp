@@ -187,4 +187,6 @@ from_json (const nlohmann::json &j, Plugin &p)
     }
 }
 
+Plugin::~Plugin () = default;
+
 } // namespace zrythm::gui::old_dsp::plugins

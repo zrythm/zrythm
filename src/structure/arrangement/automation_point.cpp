@@ -35,4 +35,7 @@ init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);
 }
+
+AutomationPoint::~AutomationPoint () = default;
+
 }

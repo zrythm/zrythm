@@ -40,7 +40,7 @@ public:
     dsp::FileAudioSourceUuidReference source,
     QObject *                         parent = nullptr);
   Z_DISABLE_COPY_MOVE (AudioSourceObject)
-  ~AudioSourceObject () override = default;
+  ~AudioSourceObject () override;
 
   // ========================================================================
   // QML Interface

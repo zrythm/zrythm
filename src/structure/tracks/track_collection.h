@@ -47,7 +47,7 @@ public:
   TrackCollection (
     TrackRegistry &track_registry,
     QObject *      parent = nullptr) noexcept;
-  ~TrackCollection () noexcept override = default;
+  ~TrackCollection () noexcept override;
   Z_DISABLE_COPY_MOVE (TrackCollection)
 
   // ========================================================================

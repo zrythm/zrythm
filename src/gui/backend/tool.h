@@ -32,8 +32,8 @@ public:
   Q_ENUM (ToolType)
 
   Tool (QObject * parent = nullptr);
-  Q_DISABLE_COPY_MOVE (Tool)
-  ~Tool () override = default;
+  Z_DISABLE_COPY_MOVE (Tool)
+  ~Tool () override;
 
   [[nodiscard]] int getToolValue () const;
   void              setToolValue (int tool);

@@ -309,4 +309,6 @@ CLAPPluginFormat::getDefaultLocationsToSearch ()
   return FileSearchPath{ "~/.clap/;/usr/lib/clap/" };
 #endif
 }
+
+CLAPPluginFormat::~CLAPPluginFormat () = default;
 }

@@ -77,7 +77,7 @@ public:
   {
   }
   Z_DISABLE_COPY_MOVE (TrackLane)
-  ~TrackLane () override = default;
+  ~TrackLane () override;
 
   // ========================================================================
   // QML Interface

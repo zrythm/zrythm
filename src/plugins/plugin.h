@@ -64,7 +64,7 @@ public:
   };
   Q_ENUM (InstantiationStatus)
 
-  ~Plugin () override = default;
+  ~Plugin () override;
 
   // ============================================================================
   // QML Interface

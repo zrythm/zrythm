@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/color.h"
+#include "utils/icloneable.h"
 
 #include <QtQmlIntegration>
 

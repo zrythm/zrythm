@@ -45,7 +45,7 @@ public:
     bool                                          is_prefader,
     QObject *                                     parent = nullptr);
   Z_DISABLE_COPY_MOVE (ChannelSend)
-  ~ChannelSend () override = default;
+  ~ChannelSend () override;
 
   // ============================================================================
   // QML Interface

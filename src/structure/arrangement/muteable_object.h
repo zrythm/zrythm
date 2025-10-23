@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "utils/icloneable.h"
 #include "utils/types.h"
 
 #include <QtQmlIntegration>

@@ -459,4 +459,6 @@ from_json (const nlohmann::json &j, TrackCollection &collection)
   j.at (TrackCollection::kExpandedMapKey).get_to (collection.track_expanded_);
 }
 
+TrackCollection::~TrackCollection () noexcept = default;
+
 } // namespace zrythm::structure::tracks

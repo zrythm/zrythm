@@ -33,7 +33,7 @@ public:
   using FullDesignationProvider =
     std::function<utils::Utf8String (const Port &port)>;
 
-  ~Port () override = default;
+  ~Port () override;
 
   void set_full_designation_provider (FullDesignationProvider provider)
   {
@@ -159,7 +159,7 @@ private:
 class RingBufferOwningPortMixin
 {
 public:
-  virtual ~RingBufferOwningPortMixin () = default;
+  virtual ~RingBufferOwningPortMixin ();
 
   /**
    * @brief Number of entities that want ring buffers to be written.
@@ -203,7 +203,7 @@ template <typename PortT> class PortConnectionsCacheMixin
     std::pair<const PortT *, std::unique_ptr<dsp::PortConnection>>;
 
 public:
-  virtual ~PortConnectionsCacheMixin () = default;
+  virtual ~PortConnectionsCacheMixin ();
   /**
    * @brief Caches filled when recalculating the graph.
    *

@@ -193,4 +193,6 @@ AutomationTimelineDataCache::has_content () const
   return !automation_sequences_.empty ();
 }
 
+TimelineDataCache::~TimelineDataCache () = default;
+
 } // namespace zrythm::dsp

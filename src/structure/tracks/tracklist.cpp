@@ -618,4 +618,6 @@ from_json (const nlohmann::json &j, Tracklist &t)
   // j.at (Tracklist::kTracksKey).get_to (t.tracks_);
   j.at (Tracklist::kTracksKey).get_to (*t.track_collection_);
 }
+
+Tracklist::~Tracklist () = default;
 }

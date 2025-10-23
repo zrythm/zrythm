@@ -229,4 +229,6 @@ from_json (const nlohmann::json &j, ArrangerObject &arranger_object)
     j.at (ArrangerObject::kFadeRangeKey).get_to (*arranger_object.fade_range_);
 }
 
+ArrangerObject::~ArrangerObject () noexcept = default;
+
 } // namespace zrythm::structure:arrangement

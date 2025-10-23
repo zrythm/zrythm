@@ -23,7 +23,7 @@ class TimelineDataCache
 public:
   using IntervalType = std::pair<units::sample_t, units::sample_t>;
 
-  virtual ~TimelineDataCache () = default;
+  virtual ~TimelineDataCache ();
 
   /**
    * @brief Clears all cached data.

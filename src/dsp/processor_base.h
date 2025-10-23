@@ -42,12 +42,9 @@ public:
 
   ProcessorBase (
     ProcessorBaseDependencies dependencies,
-    utils::Utf8String         name = { u8"ProcessorBase" })
-      : dependencies_ (dependencies), name_ (std::move (name))
-  {
-  }
+    utils::Utf8String         name = { u8"ProcessorBase" });
 
-  ~ProcessorBase () override = default;
+  ~ProcessorBase () override;
 
   /**
    * @brief Set a custom name to be used in the DSP graph.
@@ -108,40 +105,8 @@ private:
   static constexpr auto kInputPortsKey = "inputPorts"sv;
   static constexpr auto kOutputPortsKey = "outputPorts"sv;
   static constexpr auto kParametersKey = "parameters"sv;
-  friend void           to_json (nlohmann::json &j, const ProcessorBase &p)
-  {
-    j[kProcessorNameKey] = p.name_;
-    j[kInputPortsKey] = p.input_ports_;
-    j[kOutputPortsKey] = p.output_ports_;
-    j[kParametersKey] = p.params_;
-  }
-  friend void from_json (const nlohmann::json &j, ProcessorBase &p)
-  {
-    j.at (kProcessorNameKey).get_to (p.name_);
-    p.input_ports_.clear ();
-    for (const auto &input_port : j.at (kInputPortsKey))
-      {
-        auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
-        from_json (input_port, port_ref);
-        p.input_ports_.emplace_back (std::move (port_ref));
-      }
-    p.output_ports_.clear ();
-    for (const auto &output_port : j.at (kOutputPortsKey))
-      {
-        auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
-        from_json (output_port, port_ref);
-        p.output_ports_.emplace_back (std::move (port_ref));
-      }
-    p.params_.clear ();
-    for (const auto &param : j.at (kParametersKey))
-      {
-        auto param_ref = dsp::ProcessorParameterUuidReference{
-          p.dependencies_.param_registry_
-        };
-        from_json (param, param_ref);
-        p.params_.emplace_back (std::move (param_ref));
-      }
-  }
+  friend void           to_json (nlohmann::json &j, const ProcessorBase &p);
+  friend void           from_json (const nlohmann::json &j, ProcessorBase &p);
 
 private:
   ProcessorBaseDependencies                         dependencies_;

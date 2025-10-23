@@ -25,8 +25,9 @@ target_sources(zrythm_dsp_lib
     midi_port.cpp
     modulator_macro_processor.cpp
     musical_scale.cpp
-    parameter.cpp
     panning.cpp
+    parameter.cpp
+    passthrough_processors.cpp
     peak_dsp.cpp
     peak_fall_smooth.cpp
     playhead_qml_adapter.cpp

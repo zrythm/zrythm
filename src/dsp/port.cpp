@@ -20,6 +20,11 @@ init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type)
   // obj.id_ = utils::clone_unique (*other.id_);
 }
 
+Port::~Port () = default;
+RingBufferOwningPortMixin::~RingBufferOwningPortMixin () = default;
+template <typename PortT>
+PortConnectionsCacheMixin<PortT>::~PortConnectionsCacheMixin () = default;
+
 } // namespace zrythm::dsp
 
 struct PortRegistryBuilder

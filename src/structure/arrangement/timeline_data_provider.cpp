@@ -469,4 +469,6 @@ AutomationTimelineDataProvider::process_automation_events (
     }
 }
 
+TimelineDataProvider::~TimelineDataProvider () = default;
+
 } // namespace zrythm::structure::arrangement

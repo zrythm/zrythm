@@ -26,7 +26,7 @@ class TimelineDataProvider
 public:
   using IntervalType = std::pair<units::sample_t, units::sample_t>;
 
-  virtual ~TimelineDataProvider () = default;
+  virtual ~TimelineDataProvider ();
 
   /**
    * @brief Generate the event sequence to be used during realtime processing.
