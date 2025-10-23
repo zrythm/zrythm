@@ -369,8 +369,9 @@ build:gnu/linux:
   script:
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel --target all all_verify_interface_header_sets
     - *unix_test_cmd
+    # Run valgrind tests in parallel because they take a long time
     - >-
-      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE}
+      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} --parallel --test-load $(nproc)
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata"
       || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/MemoryChecker.*.log" && exit 1)
