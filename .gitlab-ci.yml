@@ -39,7 +39,7 @@ stages:
   - ./venv/Scripts/Activate.ps1
 
 # .mac-enable-brew-env: &mac-enable-brew-env
-  # - eval "$(/opt/homebrew/bin/brew shellenv)";
+# - eval "$(/opt/homebrew/bin/brew shellenv)";
 
 .windows-enable-vs-env: &windows-enable-vs-env
   - Import-Module "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
@@ -113,18 +113,18 @@ stages:
 
 default:
   cache:
-  # this number must be bumped every time these subprojects are updated
-  - key: cache-32-$CI_RUNNER_DESCRIPTION
-    paths:
-      - venv
-      - '${BUILDDIR}*/_deps/*-src'
+    # this number must be bumped every time these subprojects are updated
+    - key: cache-32-$CI_RUNNER_DESCRIPTION
+      paths:
+        - venv
+        - "${BUILDDIR}*/_deps/*-src"
 
 # (see build-aux/Dockerfile for Qt build flags)
 configure:gnu/linux:
   extends: .gnu-linux-template
   stage: setup
   variables:
-    GIT_DEPTH: 0  # Fetch full history
+    GIT_DEPTH: 0 # Fetch full history
   before_script:
     - python3 -m venv venv
     - *unix-activate-venv
@@ -191,7 +191,7 @@ configure:mac-arm:
   extends: .mac-arm-template
   stage: setup
   variables:
-    GIT_DEPTH: 0  # Fetch full history
+    GIT_DEPTH: 0 # Fetch full history
   before_script:
     - python3 -m venv venv
     - *unix-activate-venv
@@ -225,7 +225,7 @@ configure:windows:
   extends: .windows-template
   stage: setup
   variables:
-    GIT_DEPTH: 0  # Fetch full history
+    GIT_DEPTH: 0 # Fetch full history
   before_script:
     - *windows-enable-vs-env
     - python -m venv venv
@@ -421,7 +421,15 @@ build:windows:
     - if (! $?) { exit 1 } # Check if the previous command failed
     - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -V -D NightlyTest -D NightlySubmit; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
     - if ("${env:BUILD_TYPE}" -eq "Release") { cmake --build "${BUILDDIR}-${BUILD_TYPE}" --config "${env:BUILD_TYPE}" --target run_all_benchmarks }
-    - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config ${env:BUILDDIR}-${env:BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${env:BUILD_TYPE}; if (-not $?) { Get-Content "package-${env:BUILD_TYPE}/_CPack_Packages/win64/INNOSETUP/ISCCOutput.log"; exit 1 }
+    # Use shorter path for packaging to avoid Windows path length limitations
+    - $shortPackageDir = "C:\tmp\package-${env:BUILD_TYPE}"
+    - if (Test-Path $shortPackageDir) { Remove-Item -Recurse -Force $shortPackageDir }
+    - New-Item -ItemType Directory -Path $shortPackageDir -Force
+    - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config ${env:BUILDDIR}-${env:BUILD_TYPE}/CPackConfig.cmake --verbose -B $shortPackageDir; if (-not $?) { Get-Content "$shortPackageDir/_CPack_Packages/win64/INNOSETUP/ISCCOutput.log"; exit 1 }
+    # Move the resulting exe files to the expected location for artifacts
+    - if (Test-Path "package-${env:BUILD_TYPE}") { Remove-Item -Recurse -Force "package-${env:BUILD_TYPE}" }
+    - New-Item -ItemType Directory -Path "package-${env:BUILD_TYPE}" -Force
+    - Move-Item "$shortPackageDir\*.exe*" "package-${env:BUILD_TYPE}\"
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
@@ -477,8 +485,8 @@ update-dev-docs:
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - *unix-activate-venv
 
-deploy:windows:
-  extends: .windows-template
+deploy:installers:
+  extends: .gnu-linux-template
   stage: deploy
   only:
     - master
@@ -486,38 +494,35 @@ deploy:windows:
   needs:
     - job: build:windows
       artifacts: true
-  script:
-    - $windowsArtifact = Get-ChildItem -Path "package-Release/*.exe" | Select-Object -First 1 | ForEach-Object { $_.FullName }
-    - python scripts/deploy_file_to_s3.py --prefix "packages/v2/windows" "$windowsArtifact"
-  dependencies:
-    - build:windows
-
-deploy:mac-arm:
-  extends: .mac-arm-template
-  stage: deploy
-  only:
-    - master
-    - tags
-  needs:
     - job: build:mac-arm
       artifacts: true
-  script:
-    - macArtifact = $(find package-Release -name "*.dmg" | head -n 1)
-    - python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/mac" "$macArtifact"
-  dependencies:
-    - build:mac-arm
-
-deploy:gnu/linux:
-  extends: .gnu-linux-template
-  stage: deploy
-  only:
-    - master
-    - tags
-  needs:
     - job: build:gnu/linux
       artifacts: true
   script:
-    - gnuLinuxArtifact = $(find package-Release -name "*.tar.xz" | head -n 1)
-    - python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/gnu-linux" "$gnuLinuxArtifact"
+    # Get version using same logic as CMake's GetVersionFromGitTag.cmake
+    - VERSION_STRING=$(git describe --abbrev=0 --tags)
+    - CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    - VERSION_AHEAD=$(git rev-list ${CURRENT_BRANCH} ${VERSION_STRING}^..HEAD --count)
+    - VERSION_GIT_SHA=$(git rev-parse --short HEAD)
+    - VERSION_FULL="${VERSION_STRING}+${VERSION_AHEAD}.${VERSION_GIT_SHA}"
+    - VERSION_WITHOUT_V=$(echo $VERSION_STRING | sed 's/^v//')
+    # Deploy Windows installer
+    - windowsArtifact=$(find package-Release -name "*.exe" | head -n 1)
+    - if [ -n "$windowsArtifact" ]; then
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/windows" "$windowsArtifact";
+      fi
+    # Deploy macOS DMG
+    - macArtifact=$(find package-Release -name "*.dmg" | head -n 1)
+    - if [ -n "$macArtifact" ]; then
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/mac" "$macArtifact";
+      fi
+    # Deploy Linux tarball
+    - gnuLinuxArtifact=$(find package-Release -name "*.tar.xz" | head -n 1)
+    - if [ -n "$gnuLinuxArtifact" ]; then
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/v2/gnu-linux" "$gnuLinuxArtifact";
+      fi
+    - python3 scripts/create_zrythm_accounts_product.py --version "$VERSION_WITHOUT_V"
   dependencies:
+    - build:windows
+    - build:mac-arm
     - build:gnu/linux
