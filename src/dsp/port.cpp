@@ -22,8 +22,6 @@ init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type)
 
 Port::~Port () = default;
 RingBufferOwningPortMixin::~RingBufferOwningPortMixin () = default;
-template <typename PortT>
-PortConnectionsCacheMixin<PortT>::~PortConnectionsCacheMixin () = default;
 
 } // namespace zrythm::dsp
 

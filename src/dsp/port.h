@@ -203,7 +203,7 @@ template <typename PortT> class PortConnectionsCacheMixin
     std::pair<const PortT *, std::unique_ptr<dsp::PortConnection>>;
 
 public:
-  virtual ~PortConnectionsCacheMixin ();
+  virtual ~PortConnectionsCacheMixin () = default;
   /**
    * @brief Caches filled when recalculating the graph.
    *
