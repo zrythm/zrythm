@@ -2,62 +2,173 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="uk" sourcelanguage="en">
 <context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
+        <source>About Zrythm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
+        <source>Licensed under the GNU AGPLv3 License.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
+        <source>View License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
+        <source>Trademark Policy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
+        <source>Third Party Notices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
+        <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
+        <source>&amp;Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
+        <source>Select All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
+        <source>Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Arranger</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
+        <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
+        <source>Paste</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
+        <source>Delete</source>
+        <translation type="unfinished">Видалити</translation>
+    </message>
+</context>
+<context>
+    <name>ArrangerObjectBaseView</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="38"/>
+        <source>Test</source>
+        <translation type="unfinished">Тест</translation>
+    </message>
+</context>
+<context>
+    <name>AutomationEditorPane</name>
+    <message>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="33"/>
+        <source>Drum Notation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="56"/>
+        <source>Zoom In</source>
+        <translation type="unfinished">Збільшити</translation>
+    </message>
+</context>
+<context>
     <name>AutomationTracksListView</name>
     <message>
-        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="94"/>
+        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="77"/>
         <source>Change automatable</source>
         <translation>Автоматична зміна</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="126"/>
+        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="116"/>
         <source>On</source>
         <translation>Увімкнено</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
+        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="130"/>
         <source>Touch</source>
         <translation>Дотик</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="139"/>
+        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="130"/>
         <source>Latch</source>
         <translation>Засувка</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="155"/>
+        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="147"/>
         <source>Off</source>
         <translation>Вимкнено</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="194"/>
+        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="182"/>
         <source>Hide automation lane</source>
         <translation>Приховати смугу автоматизації</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="217"/>
+        <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="206"/>
         <source>Add automation lane</source>
         <translation>Додайте смугу автоматизації</translation>
     </message>
 </context>
 <context>
+    <name>BalanceControl</name>
+    <message>
+        <location filename="../src/gui/qml/components/BalanceControl.qml" line="32"/>
+        <source>Reset</source>
+        <translation type="unfinished">Скинути</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/BalanceControl.qml" line="40"/>
+        <source>Bind MIDI CC</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BottomDock</name>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="63"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="37"/>
+        <source>Select a clip from the timeline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="39"/>
+        <source>No clip selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="86"/>
         <source>Editor</source>
         <translation>Редактор</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="68"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="91"/>
         <source>Mixer</source>
         <translation>Міксер</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="73"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="96"/>
         <source>Modulators</source>
         <translation>Модулятори</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="78"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="101"/>
         <source>Chord Pad</source>
         <translation>Акордна панель</translation>
     </message>
@@ -65,393 +176,641 @@
 <context>
     <name>CenterDock</name>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="156"/>
         <source>Timeline</source>
-        <translation>Хронологія</translation>
+        <translation type="vanished">Хронологія</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="161"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="301"/>
+        <source>Arrangement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="306"/>
         <source>Port Connections</source>
         <translation>Підключення портів</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="166"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="311"/>
         <source>Midi CC Bindings</source>
         <translation>Прив&apos;язки Midi CC</translation>
     </message>
 </context>
 <context>
+    <name>ClipLaunchButton</name>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="80"/>
+        <source>Start Playback</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="80"/>
+        <source> (Right-click for quantization options)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="83"/>
+        <source>Stop Playback</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="91"/>
+        <source>Launch Quantization</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="94"/>
+        <source>Launch Immediately</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="100"/>
+        <source>Launch on Next Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="106"/>
+        <source>Launch on Next Beat</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ClipLauncherView</name>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="69"/>
+        <source>Stop Scenes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="106"/>
+        <source>Play Scene</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="131"/>
+        <source>Switch Playback to Timeline</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DemoView</name>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="153"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="334"/>
         <source>Editor</source>
         <translation>Редактор</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="159"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="340"/>
         <source>Mixer</source>
         <translation>Міксер</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="165"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="346"/>
         <source>Modulators</source>
         <translation>Модуляторів</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="182"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="361"/>
         <source>Track Inspector</source>
         <translation>Інспектор колії</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="187"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="366"/>
         <source>Plugin Inspector</source>
         <translation>Інспектор плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="199"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="377"/>
         <source>Plugin Browser</source>
         <translation>Браузер плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="208"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="385"/>
         <source>File Browser</source>
         <translation>Файловий браузер</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="217"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="393"/>
         <source>Monitor Section</source>
         <translation>Розділ монітора</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="226"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="401"/>
         <source>Chord Preset Browser</source>
         <translation>Браузер пресетів акордів</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="305"/>
-        <location filename="../src/gui/qml/DemoView.qml" line="358"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="80"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="122"/>
         <source>Undo</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="306"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="79"/>
         <source>Undo Multiple</source>
         <translation>Скасувати кілька</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="312"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="84"/>
         <source>Undo Move</source>
         <translation>Скасувати переміщення</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="316"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="88"/>
         <source>Undo Cut</source>
         <translation>Скасувати вирізання</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="326"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="99"/>
         <source>Redo</source>
         <translation>Повторити</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="327"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="98"/>
         <source>Redo Multiple</source>
         <translation>Повторити декілька</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="342"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="107"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="345"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="110"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
         <translation>Нове Довге Ім&apos;я</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="349"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="114"/>
         <source>Open</source>
         <translation>ВІДЧИНЕНО</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="355"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="119"/>
         <source>&amp;Edit</source>
         <translation>&amp;Редагувати</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="364"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="127"/>
         <source>&amp;View</source>
         <translation>&amp;Переглянути</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="367"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="130"/>
         <source>Appearance</source>
         <translation>Зовнішній вигляд</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="370"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="133"/>
         <source>Switch Light/Dark Theme</source>
         <translation>Перемикайте світлу/темну тему</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="377"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="141"/>
         <source>Theme Color</source>
         <translation>Колір теми</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="380"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="144"/>
         <source>Zrythm Orange</source>
         <translation>Zrythm Помаранчевий</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="386"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="152"/>
         <source>Celestial Blue</source>
         <translation>Небесна блакить</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="392"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="160"/>
         <source>Jonquil Yellow</source>
         <translation>Jonquil Жовтий</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="404"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="171"/>
         <source>&amp;Help</source>
         <translation>&amp;Довідка</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/DemoView.qml" line="407"/>
+        <location filename="../src/gui/qml/DemoView.qml" line="174"/>
         <source>Something</source>
         <translation>Щось</translation>
     </message>
 </context>
 <context>
+    <name>DspLoadIndicator</name>
+    <message>
+        <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
+        <source>DSP Load:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
+        <source>XRun Count:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FaderButtons</name>
+    <message>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="38"/>
+        <source>Mono compatibility</source>
+        <translation type="unfinished">Моно сумісність</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="55"/>
+        <source>Record</source>
+        <translation type="unfinished">Запис</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="71"/>
+        <source>Solo</source>
+        <translation type="unfinished">Соло</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
+        <source>Mute</source>
+        <translation type="unfinished">Вимкнути звук</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="124"/>
+        <source>Listen</source>
+        <translation type="unfinished">Слухати</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="147"/>
+        <source>Swap phase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
+        <source>Channel settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FaderControl</name>
+    <message>
+        <location filename="../src/gui/qml/components/FaderControl.qml" line="36"/>
+        <source>Reset</source>
+        <translation type="unfinished">Скинути</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/FaderControl.qml" line="44"/>
+        <source>Bind MIDI CC</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Greeter</name>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="61"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="78"/>
         <source>About Flatpak</source>
         <translation>Про Flatpak</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="62"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="76"/>
         <source>Only audio plugins installed via Flatpak are supported.</source>
         <translation>Підтримуються лише аудіоплагіни, встановлені через Flatpak.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="72"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
         <translation>Пожертвуйте</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="73"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="86"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
         <translation>Zrythm покладається на пожертви та покупки для підтримки розвитку. Якщо вам подобається програмне забезпечення, подумайте про %1пожертву%2 або %3купівлю інсталятора%2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="82"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="96"/>
         <source>All Ready!</source>
         <translation>Все готово!</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="85"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="99"/>
         <source>Proceed to Configuration</source>
         <translation>Перейдіть до конфігурації</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="103"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="123"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="133"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="155"/>
         <source>Welcome</source>
         <translation>Ласкаво просимо</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="124"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="153"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
         <translation>Ласкаво просимо до цифрової аудіостанції Zrythm. Щоб почати, перейдіть на наступну сторінку.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="132"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="163"/>
         <source>Read the Manual</source>
         <translation>Прочитайте посібник</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="133"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="161"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
         <translation>Якщо ви вперше використовуєте Zrythm, радимо переглянути розділ «Початок роботи» в %1посібнику користувача%2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="189"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="226"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="220"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="257"/>
         <source>Configuration</source>
         <translation>Конфігурація</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="192"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="265"/>
         <source>Initial Configuration</source>
         <translation>Початкова конфігурація</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="221"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="247"/>
         <source>‹</source>
         <translation>‹</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="246"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="233"/>
         <source>Continue</source>
         <translation>Продовжити</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="268"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="293"/>
         <source>Progress</source>
         <translation>Прогрес</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="284"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="310"/>
         <source>Scanning Plugins</source>
         <translation>Плагіни сканування</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="297"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="328"/>
         <source>Scanning:</source>
         <translation>Сканування:</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="323"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="380"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="346"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="369"/>
         <source>Open a Project</source>
         <translation>Відкрийте проект</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="397"/>
         <source>Preferences</source>
-        <translation>Уподобання</translation>
+        <translation type="vanished">Уподобання</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="405"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="392"/>
         <source>About Zrythm</source>
         <translation>Про Zrythm</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="423"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="352"/>
         <source>Create New Project...</source>
         <translation>Створити новий проект...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="427"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="358"/>
         <source>Open From Path...</source>
         <translation>Відкрити зі шляху...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="440"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="382"/>
+        <source>Device Selector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/Greeter.qml" line="455"/>
         <source>Create New Project</source>
         <translation>Створити новий проект</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="450"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="465"/>
         <source>Project Name</source>
         <translation>Назва проекту</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="451"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="466"/>
         <source>Untitled Project</source>
         <translation>Проект без назви</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="482"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="497"/>
         <source>Create Project</source>
         <translation>Створити проект</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="501"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="513"/>
         <source>Creating Project</source>
         <translation>Створення проекту</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="512"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="526"/>
         <source>Creating Project...</source>
         <translation>Створення проекту...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="539"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="548"/>
         <source>Project Loading Failed</source>
         <translation>Помилка завантаження проекту</translation>
     </message>
 </context>
 <context>
+    <name>Knob</name>
+    <message>
+        <location filename="../src/gui/qml/components/basic/Knob.qml" line="89"/>
+        <source>Reset</source>
+        <translation type="unfinished">Скинути</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/basic/Knob.qml" line="97"/>
+        <source>Bind MIDI CC</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LeftDock</name>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="19"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="28"/>
         <source>Track Inspector</source>
         <translation>Інспектор колії</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="28"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="36"/>
         <source>Plugin Inspector</source>
         <translation>Інспектор плагінів</translation>
     </message>
 </context>
 <context>
+    <name>MainMenuBar</name>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="18"/>
+        <source>&amp;File</source>
+        <translation type="unfinished">&amp;Файл</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="21"/>
+        <source>New Long Long Long Long Long Long Long Long Long Name</source>
+        <translation type="unfinished">Нове Довге Ім&apos;я</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="25"/>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
+        <source>&amp;Edit</source>
+        <translation type="unfinished">&amp;Редагувати</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
+        <source>Undo</source>
+        <translation type="unfinished">Скасувати</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
+        <source>&amp;View</source>
+        <translation type="unfinished">&amp;Переглянути</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
+        <source>Language</source>
+        <translation type="unfinished">Мова</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
+        <source>System</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
+        <source>Appearance</source>
+        <translation type="unfinished">Зовнішній вигляд</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="88"/>
+        <source>Switch Light/Dark Theme</source>
+        <translation type="unfinished">Перемикайте світлу/темну тему</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="96"/>
+        <source>Theme Color</source>
+        <translation type="unfinished">Колір теми</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
+        <source>Zrythm Orange</source>
+        <translation type="unfinished">Zrythm Помаранчевий</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="108"/>
+        <source>Celestial Blue</source>
+        <translation type="unfinished">Небесна блакить</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="117"/>
+        <source>Jonquil Yellow</source>
+        <translation type="unfinished">Jonquil Жовтий</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="126"/>
+        <source>Spring Green</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="135"/>
+        <source>Munsell Red</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="144"/>
+        <source>Gunmetal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
+        <source>Devices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
+        <source>Audio/MIDI Setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="167"/>
+        <source>&amp;Help</source>
+        <translation type="unfinished">&amp;Довідка</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
+        <source>About Zrythm</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainToolbar</name>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="28"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
         <source>Toggle Left Panel</source>
         <translation>Перемкнути ліву панель</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="88"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
         <source>Toggle Right Panel</source>
         <translation>Перемкнути праву панель</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="97"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
         <source>Menu</source>
         <translation>Меню</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="105"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="124"/>
         <source>Open a Project…</source>
         <translation>Відкрити проект…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="111"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Create New Project…</source>
         <translation>Створити новий проект…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="122"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Save</source>
         <translation>Зберегти</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Save As…</source>
         <translation>Зберегти як…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="160"/>
         <source>Export As…</source>
         <translation>Експортувати як…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Export Graph…</source>
-        <translation>Експорт графіка…</translation>
+        <translation type="vanished">Експорт графіка…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="158"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="169"/>
         <source>Fullscreen</source>
         <translation>Повний екран</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="170"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="182"/>
         <source>Preferences</source>
         <translation>Уподобання</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="178"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="190"/>
         <source>Keyboard Shortcuts</source>
         <translation>Комбінації клавіш</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="186"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="198"/>
         <source>About Zrythm Long Long Long Long Long Long Long</source>
         <translation>Про Zrythm Long Long Long Long Long Long Long Long</translation>
     </message>
@@ -459,2218 +818,2155 @@
 <context>
     <name>MarkerTrack</name>
     <message>
-        <location filename="../src/common/dsp/marker_track.cpp" line="14"/>
         <source>Markers</source>
-        <translation>Маркерів</translation>
+        <translation type="vanished">Маркерів</translation>
+    </message>
+</context>
+<context>
+    <name>MidiEditorPane</name>
+    <message>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="35"/>
+        <source>Drum Notation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
+        <source>Listen Notes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
+        <source>Show Automation Values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
+        <source>Zoom In</source>
+        <translation type="unfinished">Збільшити</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="157"/>
+        <source>Velocity</source>
+        <translation type="unfinished">Швидкість</translation>
+    </message>
+</context>
+<context>
+    <name>MonitorSection</name>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="35"/>
+        <source>%1 soloed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="39"/>
+        <source>Currently soloed tracks</source>
+        <translation type="unfinished">Сольні наразі доріжки</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="58"/>
+        <source>Unsolo all tracks</source>
+        <translation type="unfinished">Прибрати соло всіх доріжок/Unsolo all tracks</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="72"/>
+        <source>%1 muted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="76"/>
+        <source>Currently muted tracks</source>
+        <translation type="unfinished">Наразі приглушені доріжки</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="87"/>
+        <source>Unmute all tracks</source>
+        <translation type="unfinished">Увімкнути всі доріжки</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="101"/>
+        <source>%1 listened</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="105"/>
+        <source>Currently listened tracks</source>
+        <translation type="unfinished">Наразі прослухані доріжки</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="116"/>
+        <source>Unlisten all tracks</source>
+        <translation type="unfinished">Скасувати список усіх доріжок</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="138"/>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="220"/>
+        <source>Mute</source>
+        <translation type="unfinished">Вимкнути звук</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="157"/>
+        <source>Listen</source>
+        <translation type="unfinished">Слухати</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="175"/>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="209"/>
+        <source>Dim</source>
+        <translation type="unfinished">Зниж</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="198"/>
+        <source>Mono</source>
+        <translation type="unfinished">Моно</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="201"/>
+        <source>Sum to mono</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="212"/>
+        <source>Dim output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="223"/>
+        <source>Mute output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="238"/>
+        <source>Monitor</source>
+        <translation type="unfinished">Монітор</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MonitorSection.qml" line="254"/>
+        <source>Device Settings</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MusicalMode</name>
     <message>
-        <location filename="../src/common/dsp/region.h" line="599"/>
         <source>Inherit</source>
-        <translation>Успадкувати</translation>
+        <translation type="vanished">Успадкувати</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/region.h" line="600"/>
         <source>Off</source>
-        <translation>Вимкнено</translation>
+        <translation type="vanished">Вимкнено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/region.h" line="601"/>
         <source>On</source>
-        <translation>Увімкнено</translation>
+        <translation type="vanished">Увімкнено</translation>
     </message>
 </context>
 <context>
     <name>MusicalScale</name>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="399"/>
         <source>Chromatic</source>
-        <translation>Хроматичний</translation>
+        <translation type="vanished">Хроматичний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="400"/>
         <source>Major</source>
-        <translation>Майор</translation>
+        <translation type="vanished">Майор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="401"/>
         <source>Minor</source>
-        <translation>незначний</translation>
+        <translation type="vanished">незначний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="402"/>
         <source>Ionian</source>
-        <translation>іонійський</translation>
+        <translation type="vanished">іонійський</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="403"/>
         <source>Dorian</source>
-        <translation>Доріан</translation>
+        <translation type="vanished">Доріан</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="404"/>
         <source>Phrygian</source>
-        <translation>Фригійський</translation>
+        <translation type="vanished">Фригійський</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="405"/>
         <source>Lydian</source>
-        <translation>Лідійський</translation>
+        <translation type="vanished">Лідійський</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="406"/>
         <source>Mixolydian</source>
-        <translation>Міксолідійський</translation>
+        <translation type="vanished">Міксолідійський</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="407"/>
         <source>Aeolian</source>
-        <translation>Еоловий</translation>
+        <translation type="vanished">Еоловий</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="408"/>
         <source>Locrian</source>
-        <translation>Локрійський</translation>
+        <translation type="vanished">Локрійський</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="409"/>
         <source>Melodic Minor</source>
-        <translation>Мелодичний мінор</translation>
+        <translation type="vanished">Мелодичний мінор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="410"/>
         <source>Harmonic Minor</source>
-        <translation>Гармонічний мінор</translation>
+        <translation type="vanished">Гармонічний мінор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="411"/>
         <source>Whole Tone</source>
-        <translation>Цілий тон</translation>
+        <translation type="vanished">Цілий тон</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="412"/>
         <source>Major Pentatonic</source>
-        <translation>Мажорна пентатоніка</translation>
+        <translation type="vanished">Мажорна пентатоніка</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="413"/>
         <source>Minor Pentatonic</source>
-        <translation>Мінорна пентатоніка</translation>
+        <translation type="vanished">Мінорна пентатоніка</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="414"/>
         <source>Octatonic Half Whole</source>
-        <translation>Октатонічний Половина цілого</translation>
+        <translation type="vanished">Октатонічний Половина цілого</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="415"/>
         <source>Octatonic Whole Half</source>
-        <translation>Октатонічний Ціла половина</translation>
+        <translation type="vanished">Октатонічний Ціла половина</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="416"/>
         <source>Acoustic</source>
-        <translation>Акустичний</translation>
+        <translation type="vanished">Акустичний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="417"/>
         <source>Harmonic Major</source>
-        <translation>Гармонічний мажор</translation>
+        <translation type="vanished">Гармонічний мажор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="418"/>
         <source>Phrygian Dominant</source>
-        <translation>Фригійська домінанта</translation>
+        <translation type="vanished">Фригійська домінанта</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="419"/>
         <source>Major Locrian</source>
-        <translation>Локрійський мажор</translation>
+        <translation type="vanished">Локрійський мажор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="420"/>
         <source>Algerian</source>
-        <translation>Алжирський</translation>
+        <translation type="vanished">Алжирський</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="421"/>
         <source>Augmented</source>
-        <translation>Доповнений</translation>
+        <translation type="vanished">Доповнений</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="422"/>
         <source>Double Harmonic</source>
-        <translation>Подвійна гармоніка</translation>
+        <translation type="vanished">Подвійна гармоніка</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="423"/>
         <source>Chinese</source>
-        <translation>Китайська</translation>
+        <translation type="vanished">Китайська</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="424"/>
         <source>Diminished</source>
-        <translation>Зменшено</translation>
+        <translation type="vanished">Зменшено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="425"/>
         <source>Dominant Diminished</source>
-        <translation>Зменшена домінанта</translation>
+        <translation type="vanished">Зменшена домінанта</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="426"/>
         <source>Egyptian</source>
-        <translation>Єгипетська</translation>
+        <translation type="vanished">Єгипетська</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="427"/>
         <source>Eight Tone Spanish</source>
-        <translation>Восьмитонна іспанська</translation>
+        <translation type="vanished">Восьмитонна іспанська</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="428"/>
         <source>Enigmatic</source>
-        <translation>Енігматика</translation>
+        <translation type="vanished">Енігматика</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="429"/>
         <source>Geez</source>
-        <translation>Джіз</translation>
+        <translation type="vanished">Джіз</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="430"/>
         <source>Hindu</source>
-        <translation>Гінду</translation>
+        <translation type="vanished">Гінду</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="431"/>
         <source>Hirajoshi</source>
-        <translation>Гіраджоші</translation>
+        <translation type="vanished">Гіраджоші</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="432"/>
         <source>Hungarian Gypsy</source>
-        <translation>Угорський циган</translation>
+        <translation type="vanished">Угорський циган</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="433"/>
         <source>Insen</source>
-        <translation>Вставки</translation>
+        <translation type="vanished">Вставки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="434"/>
         <source>Neapolitan Major</source>
-        <translation>Неаполітанський мажор</translation>
+        <translation type="vanished">Неаполітанський мажор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="435"/>
         <source>Neapolitan Minor</source>
-        <translation>Неаполітанський мінор</translation>
+        <translation type="vanished">Неаполітанський мінор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="436"/>
         <source>Oriental</source>
-        <translation>Орієнталь</translation>
+        <translation type="vanished">Орієнталь</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="437"/>
         <source>Romanian Minor</source>
-        <translation>Румунський мінор</translation>
+        <translation type="vanished">Румунський мінор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="438"/>
         <source>Altered</source>
-        <translation>Змінено</translation>
+        <translation type="vanished">Змінено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="439"/>
         <source>Maqam</source>
-        <translation>Макам</translation>
+        <translation type="vanished">Макам</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="440"/>
         <source>Yo</source>
-        <translation>Йо</translation>
+        <translation type="vanished">Йо</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="441"/>
         <source>Bebop Locrian</source>
-        <translation>Локрійський бібоп</translation>
+        <translation type="vanished">Локрійський бібоп</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="442"/>
         <source>Bebop Dominant</source>
-        <translation>Бібоп домінант</translation>
+        <translation type="vanished">Бібоп домінант</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="443"/>
         <source>Bebop Major</source>
-        <translation>Бібоп мажор</translation>
+        <translation type="vanished">Бібоп мажор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="444"/>
         <source>Super Locrian</source>
-        <translation>Суперлокрійський</translation>
+        <translation type="vanished">Суперлокрійський</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="445"/>
         <source>Enigmatic Minor</source>
-        <translation>Еніґматік мінор</translation>
+        <translation type="vanished">Еніґматік мінор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="446"/>
         <source>Composite</source>
-        <translation>Композит</translation>
+        <translation type="vanished">Композит</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="447"/>
         <source>Bhairav</source>
-        <translation>Бхайрав</translation>
+        <translation type="vanished">Бхайрав</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="448"/>
         <source>Hungarian Minor</source>
-        <translation>Угорський мінор</translation>
+        <translation type="vanished">Угорський мінор</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="449"/>
         <source>Persian</source>
-        <translation>Перська</translation>
+        <translation type="vanished">Перська</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="450"/>
         <source>Iwato</source>
-        <translation>Івато</translation>
+        <translation type="vanished">Івато</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="451"/>
         <source>Kumoi</source>
-        <translation>Кумой</translation>
+        <translation type="vanished">Кумой</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="452"/>
         <source>Pelog</source>
-        <translation>Пелоґ</translation>
+        <translation type="vanished">Пелоґ</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="453"/>
         <source>Prometheus</source>
-        <translation>Прометей</translation>
+        <translation type="vanished">Прометей</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="454"/>
         <source>Prometheus Neapolitan</source>
-        <translation>Неаполітанський Прометей</translation>
+        <translation type="vanished">Неаполітанський Прометей</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="455"/>
         <source>Prometheus Liszt</source>
-        <translation>Прометей Лішт</translation>
+        <translation type="vanished">Прометей Лішт</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="456"/>
         <source>Balinese</source>
-        <translation>Балін&apos;єзе</translation>
+        <translation type="vanished">Балін&apos;єзе</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="457"/>
         <source>RagaTodi</source>
-        <translation>Раґатоді</translation>
+        <translation type="vanished">Раґатоді</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="458"/>
         <source>Japanese 1</source>
-        <translation>Японська 1</translation>
+        <translation type="vanished">Японська 1</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/scale.cpp" line="459"/>
         <source>Japanese 2</source>
-        <translation>Японська 2</translation>
+        <translation type="vanished">Японська 2</translation>
     </message>
 </context>
 <context>
     <name>MuteButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="13"/>
+        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="17"/>
         <source>Mute</source>
         <translation>Вимкнути звук</translation>
     </message>
 </context>
 <context>
+    <name>PluginSlotView</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
+        <source>Remove Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
+        <source>Add Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="45"/>
+        <source>Show Plugin UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
+        <source>Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ProjectWindow</name>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="115"/>
         <source>&amp;File</source>
-        <translation>&amp;Файл</translation>
+        <translation type="vanished">&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="118"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation>Нове Довге Ім&apos;я</translation>
+        <translation type="vanished">Нове Довге Ім&apos;я</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="122"/>
         <source>Open</source>
-        <translation>Відчинено</translation>
+        <translation type="vanished">Відчинено</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="128"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Редагувати</translation>
+        <translation type="vanished">&amp;Редагувати</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="131"/>
         <source>Undo</source>
-        <translation>Скасувати</translation>
+        <translation type="vanished">Скасувати</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="137"/>
         <source>&amp;View</source>
-        <translation>&amp;Переглянути</translation>
+        <translation type="vanished">&amp;Переглянути</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="140"/>
         <source>Appearance</source>
-        <translation>Зовнішній вигляд</translation>
+        <translation type="vanished">Зовнішній вигляд</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="143"/>
         <source>Switch Light/Dark Theme</source>
-        <translation>Перемикайте світлу/темну тему</translation>
+        <translation type="vanished">Перемикайте світлу/темну тему</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="151"/>
         <source>Theme Color</source>
-        <translation>Колір теми</translation>
+        <translation type="vanished">Колір теми</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="154"/>
         <source>Zrythm Orange</source>
-        <translation>Zrythm Помаранчевий</translation>
+        <translation type="vanished">Zrythm Помаранчевий</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="161"/>
         <source>Celestial Blue</source>
-        <translation>Небесна блакить</translation>
+        <translation type="vanished">Небесна блакить</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="168"/>
         <source>Jonquil Yellow</source>
-        <translation>Jonquil Жовтий</translation>
+        <translation type="vanished">Jonquil Жовтий</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="181"/>
         <source>&amp;Help</source>
-        <translation>&amp;Довідка</translation>
+        <translation type="vanished">&amp;Довідка</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="184"/>
         <source>About Zrythm</source>
-        <translation>про Zrythm</translation>
+        <translation type="vanished">про Zrythm</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/gui/backend/action_controller.cpp" line="28"/>
         <source>Failed to create track</source>
-        <translation>Не вдалося створити трек</translation>
+        <translation type="vanished">Не вдалося створити трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/curve.cpp" line="283"/>
+        <location filename="../src/gui/backend/curve_preset.cpp" line="125"/>
         <source>Linear</source>
         <translation>Лінійний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/curve.cpp" line="285"/>
+        <location filename="../src/gui/backend/curve_preset.cpp" line="127"/>
         <source>Exponential</source>
         <translation>Експоненціальний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/curve.cpp" line="288"/>
+        <location filename="../src/gui/backend/curve_preset.cpp" line="130"/>
         <source>Elliptic</source>
         <translation>Еліптичний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/curve.cpp" line="291"/>
+        <location filename="../src/gui/backend/curve_preset.cpp" line="133"/>
         <source>Logarithmic</source>
         <translation>Логарифмічний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/curve.cpp" line="294"/>
+        <location filename="../src/gui/backend/curve_preset.cpp" line="136"/>
         <source>Vital</source>
         <translation>життєво важливий</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="755"/>
         <source>Failed to add region</source>
-        <translation>Не вдалося додати регіон</translation>
+        <translation type="vanished">Не вдалося додати регіон</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/arranger_selections.cpp" line="799"/>
         <source>Failed to paste selections</source>
-        <translation>Не вдалося вставити виділені елементи</translation>
+        <translation type="vanished">Не вдалося вставити виділені елементи</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="75"/>
+        <location filename="../src/gui/backend/backend/file_manager.cpp" line="74"/>
         <source>Home</source>
         <translation>Додому</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="84"/>
+        <location filename="../src/gui/backend/backend/file_manager.cpp" line="83"/>
         <source>Desktop</source>
         <translation>Робочий стіл</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="329"/>
-        <location filename="../src/common/plugins/collections.cpp" line="63"/>
+        <location filename="../src/gui/backend/backend/file_manager.cpp" line="326"/>
+        <location filename="../src/gui/backend/plugin_collections.cpp" line="57"/>
         <source>Delete</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/mixer_selections.cpp" line="367"/>
         <source>Failed to paste plugins</source>
-        <translation>Не вдалося вставити плагіни</translation>
+        <translation type="vanished">Не вдалося вставити плагіни</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="294"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="43"/>
+        <source>&lt;no track&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/backend/project.cpp" line="516"/>
         <source>Failed to create backup directory {}</source>
         <translation>Не вдалося створити резервний каталог {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="556"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
+        <source>Markers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
         <source>Unable to read file at {}: {}</source>
         <translation>Неможливо прочитати файл на {}: {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="573"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="761"/>
         <source>Unable to decompress project file at {}</source>
         <translation>Не вдається розпакувати файл проекту на {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="676"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="864"/>
         <source>Failed to save the project</source>
         <translation>Не вдалося зберегти проект</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="779"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="969"/>
         <source>Failed to compress project file</source>
         <translation>Не вдалося стиснути файл проекту</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="959"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
         <translation>Не вдалося створити каталог резервного копіювання</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="1029"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
         <source>Failed to copy plugin states</source>
         <translation>Не вдалося скопіювати стани плагіна</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="140"/>
         <source>Failed to deserialize v1 project file</source>
-        <translation>Не вдалося десеріалізувати файл проекту v1</translation>
+        <translation type="vanished">Не вдалося десеріалізувати файл проекту v1</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="150"/>
         <source>Failed to serialize v1 project file</source>
-        <translation>Не вдалося серіалізувати файл проекту v1</translation>
+        <translation type="vanished">Не вдалося серіалізувати файл проекту v1</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="173"/>
         <source>Failed to deserialize v1/2/3 project file</source>
-        <translation>Не вдалося десеріалізувати файл проекту v1/2/3</translation>
+        <translation type="vanished">Не вдалося десеріалізувати файл проекту v1/2/3</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="209"/>
         <source>Failed to serialize v3 project file</source>
-        <translation>Не вдалося серіалізувати файл проекту v3</translation>
+        <translation type="vanished">Не вдалося серіалізувати файл проекту v3</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="238"/>
         <source>Failed to deserialize v4 project file</source>
-        <translation>Не вдалося десеріалізувати файл проекту v4</translation>
+        <translation type="vanished">Не вдалося десеріалізувати файл проекту v4</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="258"/>
         <source>Failed to serialize v4 project file</source>
-        <translation>Не вдалося серіалізувати файл проекту v4</translation>
+        <translation type="vanished">Не вдалося серіалізувати файл проекту v4</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="286"/>
         <source>Failed to deserialize v5 project file</source>
-        <translation>Не вдалося десеріалізувати файл проекту v5</translation>
+        <translation type="vanished">Не вдалося десеріалізувати файл проекту v5</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="293"/>
         <source>Failed to convert v5 YAML project file to JSON</source>
-        <translation>Не вдалося перетворити файл проекту YAML v5 на JSON</translation>
+        <translation type="vanished">Не вдалося перетворити файл проекту YAML v5 на JSON</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="471"/>
         <source>Invalid project: missing version</source>
-        <translation>Недійсний проект: відсутня версія</translation>
+        <translation type="vanished">Недійсний проект: відсутня версія</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="497"/>
         <source>Failed to upgrade YAML project schema</source>
-        <translation>Не вдалося оновити схему проекту YAML</translation>
+        <translation type="vanished">Не вдалося оновити схему проекту YAML</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="519"/>
         <source>Failed to upgrade project schema to JSON</source>
-        <translation>Не вдалося оновити схему проекту до JSON</translation>
+        <translation type="vanished">Не вдалося оновити схему проекту до JSON</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="546"/>
         <source>Failed to deserialize project YAML</source>
-        <translation>Не вдалося десеріалізувати проект YAML</translation>
+        <translation type="vanished">Не вдалося десеріалізувати проект YAML</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="560"/>
         <source>Could not load project: Corrupted project detected (missing FINISHED file at &apos;{}&apos;).</source>
-        <translation>Не вдалося завантажити проект: виявлено пошкоджений проект (відсутній файл FINISHED у &apos;{}&apos;).</translation>
+        <translation type="vanished">Не вдалося завантажити проект: виявлено пошкоджений проект (відсутній файл FINISHED у &apos;{}&apos;).</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="649"/>
         <source>Failed to initialize the audio file pool</source>
-        <translation>Не вдалося ініціалізувати пул аудіофайлів</translation>
+        <translation type="vanished">Не вдалося ініціалізувати пул аудіофайлів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="780"/>
         <source>Project Upgraded</source>
-        <translation>Проект оновлено</translation>
+        <translation type="vanished">Проект оновлено</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="781"/>
         <source>This project has been automatically upgraded to v{}.{}. Saving this project will overwrite the old one. If you would like to keep both, please use &apos;Save As...&apos;.</source>
-        <translation>Цей проект було автоматично оновлено до версії {}.{}. Збереження цього проекту призведе до перезапису старого. Якщо ви бажаєте зберегти обидва, скористайтеся функцією «Зберегти як...».</translation>
+        <translation type="vanished">Цей проект було автоматично оновлено до версії {}.{}. Збереження цього проекту призведе до перезапису старого. Якщо ви бажаєте зберегти обидва, скористайтеся функцією «Зберегти як...».</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="848"/>
         <source>Open Backup?</source>
-        <translation>Відкрити резервну копію?</translation>
+        <translation type="vanished">Відкрити резервну копію?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="850"/>
         <source>Newer backup found:
   %s.
 Use the newer backup?</source>
-        <translation>Знайдено новішу резервну копію:
+        <translation type="vanished">Знайдено новішу резервну копію:
   %s.
 Використовувати новішу резервну копію?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="853"/>
         <source>Open Backup</source>
-        <translation>Відкрийте резервну копію</translation>
+        <translation type="vanished">Відкрийте резервну копію</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project/project_init_flow_manager.cpp" line="854"/>
         <source>Ignore</source>
-        <translation>Ігнорувати</translation>
+        <translation type="vanished">Ігнорувати</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/tracklist_selections.cpp" line="575"/>
         <source>Failed to paste tracks</source>
-        <translation>Не вдалося вставити треки</translation>
+        <translation type="vanished">Не вдалося вставити треки</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="42"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="33"/>
         <source>Arranger selections contain an undeletable object</source>
         <translation>Вибір аранжувальника містить об’єкт, який не можна видалити</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="251"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="242"/>
         <source>Arranger selections contain an object that cannot be duplicated</source>
         <translation>Вибір аранжувальника містить об’єкт, який не можна скопіювати</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="307"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="293"/>
         <source>Cannot rename selected object(s)</source>
         <translation>Неможливо перейменувати вибрані об&apos;єкти</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="430"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="408"/>
         <source>Attempted to resize unresizable objects</source>
         <translation>Спроба змінити розмір об’єктів, розмір яких неможливо змінити</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="440"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="418"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
         <translation>Неможливо виконати зміну розміру {} – виділення містять об’єкти з циклом</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="451"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="429"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
         <translation>Неможливо виконати зміну розміру {} – виділення містять об’єкти, які не можна зациклювати</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2279"/>
         <source>Create timeline selections</source>
-        <translation>Створення виділень на часовій шкалі</translation>
+        <translation type="vanished">Створення виділень на часовій шкалі</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2283"/>
         <source>Create audio selections</source>
-        <translation>Створення добірок аудіо</translation>
+        <translation type="vanished">Створення добірок аудіо</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2287"/>
         <source>Create automation selections</source>
-        <translation>Створення автоматизованих виділень</translation>
+        <translation type="vanished">Створення автоматизованих виділень</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2291"/>
         <source>Create chord selections</source>
-        <translation>Створення виділених акордів</translation>
+        <translation type="vanished">Створення виділених акордів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2295"/>
         <source>Create MIDI selections</source>
-        <translation>Створіть виділення MIDI</translation>
+        <translation type="vanished">Створіть виділення MIDI</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2304"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2232"/>
+        <source>Create arranger objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2234"/>
         <source>Delete arranger selections</source>
         <translation>Видалити виділення аранжувальника</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2306"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2236"/>
         <source>Duplicate arranger selections</source>
         <translation>Дубльований вибір аранжувальника</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2308"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2238"/>
         <source>Move arranger selections</source>
         <translation>Перемістити виділення аранжувальника</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2310"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2240"/>
         <source>Link arranger selections</source>
         <translation>Вибір організатора посилань</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2312"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2242"/>
         <source>Record arranger selections</source>
         <translation>Вибір аранжувальника записів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2314"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2244"/>
         <source>Edit arranger selections</source>
         <translation>Редагувати вибір аранжувальника</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2316"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2246"/>
         <source>Automation fill</source>
         <translation>Автоматичне заповнення</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2318"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2248"/>
         <source>Split arranger selections</source>
         <translation>Розділити виділення аранжувальника</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2320"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2250"/>
         <source>Merge arranger selections</source>
         <translation>Об’єднати виділення аранжувальника</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2324"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2254"/>
         <source>Resize arranger selections - {}</source>
         <translation>Змінити розмір виділених аранжувальників - {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2327"/>
+        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2257"/>
         <source>Quantize arranger selections</source>
         <translation>Квантувати виділення аранжувальника</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="219"/>
+        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="244"/>
         <source>Connect sidechain</source>
         <translation>Підключіть сайдчейн</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="221"/>
+        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="246"/>
         <source>Connect stereo</source>
         <translation>Підключіть стерео</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="223"/>
+        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="248"/>
         <source>Connect MIDI</source>
         <translation>Підключіть MIDI</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="225"/>
+        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="250"/>
         <source>Disconnect</source>
         <translation>Відключити</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="227"/>
+        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="252"/>
         <source>Change amount</source>
         <translation>Змінити суму</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="229"/>
+        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="254"/>
         <source>Change ports</source>
         <translation>Змінити порти</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="231"/>
+        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="256"/>
         <source>Channel send connection</source>
         <translation>Підключення для надсилання каналу</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/chord_action.cpp" line="80"/>
+        <location filename="../src/gui/backend/backend/actions/chord_action.cpp" line="86"/>
         <source>Change chords</source>
         <translation>Міняйте акорди</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="136"/>
+        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="128"/>
         <source>MIDI mapping enable</source>
         <translation>Увімкнути відображення MIDI</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="138"/>
+        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="130"/>
         <source>MIDI mapping disable</source>
         <translation>Відображення MIDI вимкнено</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="140"/>
+        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="132"/>
         <source>MIDI mapping bind</source>
         <translation>MIDI прив&apos;язка відображення</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="142"/>
+        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="134"/>
         <source>MIDI mapping unbind</source>
         <translation>MIDI зіставлення розв&apos;язати</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="577"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="728"/>
         <source>Project Reload Needed</source>
         <translation>Потрібне перезавантаження проекту</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="578"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="729"/>
         <source>Plugin load behavior changes will only take effect after you save and re-load the project</source>
         <translation>Зміни в поведінці завантаження плагіна набудуть чинності лише після збереження та повторного завантаження проекту</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="937"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1165"/>
         <source>Create {}</source>
         <translation>Створити {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="942"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1170"/>
         <source>Create {} {}s</source>
         <translation>Створити {} {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="947"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1175"/>
         <source>Delete Plugin</source>
         <translation>Видалити плагін</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="952"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
         <source>Delete {} Plugins</source>
         <translation>Видалити {} плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="958"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1186"/>
         <source>Move {}</source>
         <translation>рухатися {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="963"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1192"/>
         <source>Move {} Plugins</source>
         <translation>Перемістити {} плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="969"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1198"/>
         <source>Copy {}</source>
         <translation>Копіювати {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="974"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1204"/>
         <source>Copy {} Plugins</source>
         <translation>Копіювати {} плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="980"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1210"/>
         <source>Paste {}</source>
         <translation>Вставити {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="985"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1216"/>
         <source>Paste {} Plugins</source>
         <translation>Вставте {} плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="991"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1222"/>
         <source>Change Status for {}</source>
         <translation>Змінити статус для {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="997"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1228"/>
         <source>Change Status for {} Plugins</source>
         <translation>Змінити статус для {} плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1002"/>
+        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1232"/>
         <source>Change Load Behavior for {}</source>
         <translation>Змінити поведінку завантаження для {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="80"/>
+        <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="92"/>
         <source>Set {} to {}</source>
         <translation>Установити для {} значення {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="122"/>
+        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="128"/>
         <source>Connect ports</source>
         <translation>Підключіть порти</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="124"/>
+        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="130"/>
         <source>Disconnect ports</source>
         <translation>Відключити порти</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="126"/>
+        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="132"/>
         <source>Enable port connection</source>
         <translation>Увімкнути підключення до порту</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="128"/>
+        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="134"/>
         <source>Disable port connection</source>
         <translation>Вимкнути підключення через порт</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="130"/>
+        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="136"/>
         <source>Change port connection</source>
         <translation>Змінити підключення порту</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="492"/>
+        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="468"/>
         <source>Insert silence</source>
         <translation>Вставте тишу</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="494"/>
+        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="470"/>
         <source>Delete range</source>
         <translation>Видалити діапазон</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="181"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
         <translation>Неможливо скопіювати доріжки: виділення містить доріжку, яку неможливо скопіювати</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="198"/>
         <source>Cannot delete tracks: selection contains an undeletable track</source>
         <translation>Неможливо видалити доріжки: виділення містить доріжку, яку неможливо видалити</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="290"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="300"/>
         <source>No tracks selected</source>
         <translation>Доріжки не вибрано</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="409"/>
+        <location filename="../src/structure/tracks/track_factory.h" line="43"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="461"/>
         <source>{} Track</source>
         <translation>{} Трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1487"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1676"/>
         <source>Copy Track inside</source>
         <translation>Скопіюйте доріжку всередину</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1489"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1678"/>
         <source>Copy Track</source>
         <translation>Копіювати трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1495"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
         <source>Copy {} Tracks inside</source>
         <translation>Скопіюйте {} композицій всередину</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1499"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1687"/>
         <source>Copy {} Tracks</source>
         <translation>Копіювати {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1506"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1694"/>
         <source>Create {} Track</source>
         <translation>Створити трек {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1511"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1699"/>
         <source>Create {} {} Tracks</source>
         <translation>Створіть {} {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1517"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1705"/>
         <source>Delete Track</source>
         <translation>Видалити трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1522"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1710"/>
         <source>Delete {} Tracks</source>
         <translation>Видалити {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1532"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1719"/>
         <source>Solo Track</source>
         <translation>Соло трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1534"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1721"/>
         <source>Unsolo Track</source>
         <translation>Unsolo Трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1537"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1724"/>
         <source>Solo Lane</source>
         <translation>Соло пров</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1539"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1726"/>
         <source>Unsolo Lane</source>
         <translation>Унсоло пров</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1542"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1729"/>
         <source>Mute Track</source>
         <translation>Вимкнути трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1544"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1731"/>
         <source>Unmute Track</source>
         <translation>Увімкнути трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1547"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1734"/>
         <source>Mute Lane</source>
         <translation>Німий пров</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1549"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1736"/>
         <source>Unmute Lane</source>
         <translation>Увімкнути звук Лейн</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1552"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1739"/>
         <source>Listen Track</source>
         <translation>Слухати трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1554"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1741"/>
         <source>Unlisten Track</source>
         <translation>Не слухати трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1557"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1744"/>
         <source>Enable Track</source>
         <translation>Увімкнути трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1559"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1746"/>
         <source>Disable Track</source>
         <translation>вимкнути трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1562"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1749"/>
         <source>Fold Track</source>
         <translation>Складіть Трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1564"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1751"/>
         <source>Unfold Track</source>
         <translation>Розгорнути трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1567"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1754"/>
         <source>Change Fader from {:.1f} to {:.1f}</source>
         <translation>Змінити фейдер з {:.1f} на {:.1f}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1571"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1758"/>
         <source>Change Pan from {:.1f} to {:.1f}</source>
         <translation>Змінити панорамування з {:.1f} на {:.1f}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1574"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1630"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1761"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1817"/>
         <source>Change direct out</source>
         <translation>Зміна безпосередньо</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1576"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1763"/>
         <source>Rename track</source>
         <translation>Перейменувати трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1578"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1765"/>
         <source>Rename lane</source>
         <translation>Перейменувати пров</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1580"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1626"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1767"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1813"/>
         <source>Change color</source>
         <translation>Змінити колір</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1582"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1769"/>
         <source>Change icon</source>
         <translation>Змінити значок</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1584"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1771"/>
         <source>Change comment</source>
         <translation>Змінити коментар</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1586"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1628"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1773"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1815"/>
         <source>Change MIDI fader mode</source>
         <translation>Змінити режим фейдера MIDI</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1595"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1782"/>
         <source>Solo {} Tracks</source>
         <translation>Соло {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1598"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1785"/>
         <source>Unsolo {} Tracks</source>
         <translation>Скасувати соло {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1601"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1788"/>
         <source>Mute {} Tracks</source>
         <translation>Вимкнути {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1604"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1791"/>
         <source>Unmute {} Tracks</source>
         <translation>Увімкнути {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1608"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1795"/>
         <source>Listen {} Tracks</source>
         <translation>Слухайте {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1611"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1798"/>
         <source>Unlisten {} Tracks</source>
         <translation>Скасувати прослуховування {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1615"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1802"/>
         <source>Enable {} Tracks</source>
         <translation>Увімкнути доріжки {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1618"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1805"/>
         <source>Disable {} Tracks</source>
         <translation>Вимкнути доріжки {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1621"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1808"/>
         <source>Fold {} Tracks</source>
         <translation>Складіть {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1624"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1811"/>
         <source>Unfold {} Tracks</source>
         <translation>Розгорніть {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1632"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1819"/>
         <source>Solo lanes</source>
         <translation>Соло доріжки</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1634"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1821"/>
         <source>Mute lanes</source>
         <translation>Приглушені смуги</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1636"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1823"/>
         <source>Edit tracks</source>
         <translation>Редагувати треки</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1645"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1831"/>
         <source>Move Track inside</source>
         <translation>Перемістіть доріжку всередину</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1649"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1832"/>
         <source>Move Track</source>
         <translation>Перемістити трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1657"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1839"/>
         <source>Move {} Tracks inside</source>
         <translation>Перемістіть {} треків усередину</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1663"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1843"/>
         <source>Move {} Tracks</source>
         <translation>Перемістити {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1669"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1848"/>
         <source>Pin Track</source>
         <translation>Закріпити трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1674"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1853"/>
         <source>Pin {} Tracks</source>
         <translation>Закріпити {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1679"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1858"/>
         <source>Unpin Track</source>
         <translation>Відкріпити трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
+        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1863"/>
         <source>Unpin {} Tracks</source>
         <translation>Відкріпити {} треків</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="181"/>
+        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="191"/>
         <source>Change BPM from {:.2f} to {:.2f}</source>
         <translation>Змінити BPM з {:.2f} на {:.2f}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="185"/>
+        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="195"/>
         <source>Change beats per bar from {} to {}</source>
         <translation>Змінити кількість ударів на такт з {} на {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="189"/>
+        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="199"/>
         <source>Change beat unit from {} to {}</source>
         <translation>Змінити одиницю такту з {} на {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="28"/>
-        <location filename="../src/common/dsp/chord_track.cpp" line="15"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="27"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="569"/>
         <source>Chords</source>
         <translation>Акорди</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="81"/>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="88"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="102"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="74"/>
         <source>_Rename</source>
         <translation>_Перейменувати</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="86"/>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="93"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="107"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="79"/>
         <source>_Delete</source>
         <translation>_Видалити</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="58"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="63"/>
         <source>Euro Pop</source>
         <translation>Євро-поп</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="61"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="66"/>
         <source>4 Chord Song</source>
         <translation>4 Акордова пісня</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="75"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="80"/>
         <source>Canon in D</source>
         <translation>Канон у Д</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="87"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="92"/>
         <source>Love Progression</source>
         <translation>Любовна прогресія</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="95"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="100"/>
         <source>Pop Chords 1</source>
         <translation>Поп-акорди 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="107"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="112"/>
         <source>Most Often Used Chords</source>
         <translation>Найчастіше використовувані акорди</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="122"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="127"/>
         <source>Eastern Pop</source>
         <translation>Східний поп</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="125"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="130"/>
         <source>Fight Together</source>
         <translation>Боріться разом</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="137"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="142"/>
         <source>Gee</source>
         <translation>Ну</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="154"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="159"/>
         <source>Daijiken</source>
         <translation>Дайдзікен</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="170"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="175"/>
         <source>Dance</source>
         <translation>Танець</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="174"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="179"/>
         <source>Idol 2</source>
         <translation>Ідол 2</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="185"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="190"/>
         <source>Ballad</source>
         <translation>Балада</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="189"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="194"/>
         <source>Snow Halation</source>
         <translation>Снігова галація</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="205"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="210"/>
         <source>Connect</source>
         <translation>Підключитися</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="221"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="226"/>
         <source>Secret Base</source>
         <translation>Секретна база</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="238"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="243"/>
         <source>Eurodance</source>
         <translation>євроденс</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="242"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="247"/>
         <source>What is Love</source>
         <translation>Що таке Любов</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="252"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="257"/>
         <source>Blue</source>
         <translation>Синій</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="268"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="273"/>
         <source>Eurobeat</source>
         <translation>Євробіт</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="271"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="276"/>
         <source>Burning Night</source>
         <translation>Палаюча ніч</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="285"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="290"/>
         <source>Dreamin&apos; Of You</source>
         <translation>Dreamin&apos; про вас</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="298"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="303"/>
         <source>Get Me Power</source>
         <translation>Принесіть мені силу</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="311"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="316"/>
         <source>Night of Fire</source>
         <translation>Ніч вогню</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="326"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="331"/>
         <source>Super Fever Night</source>
         <translation>Супер гарячкова ніч</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="341"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="346"/>
         <source>Break In2 The Nite</source>
         <translation>Перерва In2 Ніч</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="358"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="363"/>
         <source>Progressive Trance</source>
         <translation>Прогресивний транс</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="361"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="366"/>
         <source>Sajek Valley</source>
         <translation>Долина Саєк</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="383"/>
         <source>Rock</source>
         <translation>Рок</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="381"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="386"/>
         <source>Overdrive</source>
         <translation>Овердрайв</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="396"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="401"/>
         <source>Kokoro</source>
         <translation>Кокоро</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="409"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="414"/>
         <source>Pray</source>
         <translation>Моліться</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="423"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="428"/>
         <source>No Thank You</source>
         <translation>Ні, дякую</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="436"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="441"/>
         <source>Broken Dreams</source>
         <translation>Розбиті мрії</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="244"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="209"/>
         <source>{} Output</source>
         <translation>{} Вихід</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="324"/>
-        <location filename="../src/common/dsp/audio_function.cpp" line="113"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="301"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="108"/>
         <source>Failed to instantiate plugin</source>
         <translation>Не вдалося створити плагін</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
         <source>Stereo?</source>
         <translation>Стерео?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="360"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
         <source>Are the outputs stereo?</source>
         <translation>Виходи стерео?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
         <source>_Yes</source>
         <translation>_Так</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="363"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
         <source>_No</source>
         <translation>_Ні</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="393"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="374"/>
         <source>Auto-route?</source>
         <translation>Авто-маршрут?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_settings.cpp" line="397"/>
-        <location filename="../src/common/dsp/clip.cpp" line="497"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
         <source>_Cancel</source>
         <translation>_Скасувати</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/arranger_object.cpp" line="781"/>
         <source>Failed to edit object</source>
-        <translation>Не вдалося редагувати об&apos;єкт</translation>
+        <translation type="vanished">Не вдалося редагувати об&apos;єкт</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/audio_function.cpp" line="105"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="100"/>
         <source>Failed to create plugin</source>
         <translation>не вдалося створити плагін</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/audio_function.cpp" line="306"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="302"/>
         <source>Invalid positions - skipping function</source>
         <translation>Недійсні позиції - пропуск функції</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/audio_function.cpp" line="546"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="537"/>
         <source>Failed to apply plugin</source>
         <translation>Не вдалося застосувати плагін</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/audio_region.cpp" line="166"/>
         <source>Failed to duplicate audio clip</source>
-        <translation>Не вдалося скопіювати аудіозапис</translation>
+        <translation type="vanished">Не вдалося скопіювати аудіозапис</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
         <source>Invalid Value</source>
-        <translation>Недійсне значення</translation>
+        <translation type="vanished">Недійсне значення</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/automation_point.cpp" line="206"/>
         <source>Please enter a number between {:f} and {:f}</source>
-        <translation>Введіть число від {:f} до {:f}</translation>
+        <translation type="vanished">Введіть число від {:f} до {:f}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel.cpp" line="1039"/>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="935"/>
         <source>MIDI out</source>
-        <translation>MIDI вихід</translation>
+        <translation type="vanished">MIDI вихід</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel.cpp" line="1491"/>
         <source>Failed to move or copy plugins</source>
-        <translation>Не вдалося перемістити або скопіювати плагіни</translation>
+        <translation type="vanished">Не вдалося перемістити або скопіювати плагіни</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel.cpp" line="1517"/>
         <source>Failed to create plugin {}</source>
-        <translation>Не вдалося створити плагін {}</translation>
+        <translation type="vanished">Не вдалося створити плагін {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel.cpp" line="1538"/>
         <source>zrythm::plugins::Plugin {} cannot be added to this slot</source>
-        <translation>zrythm::plugins::Plugin {} не можна додати до цього слота</translation>
+        <translation type="vanished">zrythm::plugins::Plugin {} не можна додати до цього слота</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel.cpp" line="1540"/>
         <source>Failed to add plugin</source>
-        <translation>Не вдалося додати плагін</translation>
+        <translation type="vanished">Не вдалося додати плагін</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="42"/>
         <source>None</source>
-        <translation>Жодного</translation>
+        <translation type="vanished">Жодного</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="56"/>
-        <location filename="../src/common/dsp/channel_send.cpp" line="76"/>
         <source>Invalid</source>
-        <translation>Недійсний</translation>
+        <translation type="vanished">Недійсний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="102"/>
         <source>Channel Send {} enabled</source>
-        <translation>Надсилання каналу {} увімкнено</translation>
+        <translation type="vanished">Надсилання каналу {} увімкнено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="110"/>
         <source>Channel Send {} amount</source>
-        <translation>Сума надсилання каналу: {}</translation>
+        <translation type="vanished">Сума надсилання каналу: {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="121"/>
         <source>Channel Send {} audio in</source>
-        <translation>Канал Надіслати {} аудіо вхід</translation>
+        <translation type="vanished">Канал Надіслати {} аудіо вхід</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="126"/>
         <source>Channel Send {} MIDI in</source>
-        <translation>Надіслати канал в {} MIDI</translation>
+        <translation type="vanished">Надіслати канал в {} MIDI</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="134"/>
         <source>Channel Send {} audio out</source>
-        <translation>Надіслати канал {} аудіовихід</translation>
+        <translation type="vanished">Надіслати канал {} аудіовихід</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="140"/>
         <source>Channel Send {} MIDI out</source>
-        <translation>Надіслати канал поза {} MIDI</translation>
+        <translation type="vanished">Надіслати канал поза {} MIDI</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="374"/>
-        <location filename="../src/common/dsp/channel_send.cpp" line="416"/>
         <source>Ports cannot be connected</source>
-        <translation>Неможливо підключити порти</translation>
+        <translation type="vanished">Неможливо підключити порти</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="526"/>
         <source>Pre-fader send</source>
-        <translation>Перед фейдерним посилом</translation>
+        <translation type="vanished">Перед фейдерним посилом</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="528"/>
         <source>Post-fader send</source>
-        <translation>Надсилання після фейдера</translation>
+        <translation type="vanished">Надсилання після фейдера</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_send.cpp" line="556"/>
         <source>{} input</source>
-        <translation>{} введення</translation>
+        <translation type="vanished">{} введення</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_track.cpp" line="209"/>
         <source>New direct out</source>
-        <translation>Новий прямий вихід</translation>
+        <translation type="vanished">Новий прямий вихід</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_track.cpp" line="234"/>
         <source>Route Target</source>
-        <translation>Цільовий маршрут</translation>
+        <translation type="vanished">Цільовий маршрут</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/channel_track.cpp" line="240"/>
         <source>Direct Output</source>
-        <translation>Прямий вихід</translation>
+        <translation type="vanished">Прямий вихід</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/clip.cpp" line="495"/>
         <source>Edit in external app</source>
-        <translation>Редагувати у зовнішній програмі</translation>
+        <translation type="vanished">Редагувати у зовнішній програмі</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/clip.cpp" line="496"/>
-        <location filename="../src/common/utils/ui.cpp" line="138"/>
+        <location filename="../src/gui/backend/ui.cpp" line="135"/>
         <source>_OK</source>
         <translation>_ОК</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/clip.cpp" line="511"/>
         <source>Edit the file at &lt;u&gt;%s&lt;/u&gt;, then press OK</source>
-        <translation>Відредагуйте файл у &lt;u&gt;%s&lt;/u&gt;, потім натисніть OK</translation>
+        <translation type="vanished">Відредагуйте файл у &lt;u&gt;%s&lt;/u&gt;, потім натисніть OK</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/clip.cpp" line="519"/>
         <source>Launch</source>
-        <translation>Запуск</translation>
+        <translation type="vanished">Запуск</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="413"/>
-        <location filename="../src/common/dsp/engine.cpp" line="475"/>
         <source>Backend Initialization Failed</source>
-        <translation>Помилка ініціалізації серверної частини</translation>
+        <translation type="vanished">Помилка ініціалізації серверної частини</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="414"/>
         <source>Failed to initialize the %s audio backend. Will use the dummy backend instead. Please check your backend settings in the Preferences.</source>
-        <translation>Не вдалося ініціалізувати аудіосистему %s. Натомість буде використано фіктивний сервер. Перевірте налаштування серверної частини в налаштуваннях.</translation>
+        <translation type="vanished">Не вдалося ініціалізувати аудіосистему %s. Натомість буде використано фіктивний сервер. Перевірте налаштування серверної частини в налаштуваннях.</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="442"/>
         <source>Backend Error</source>
-        <translation>Помилка серверної частини</translation>
+        <translation type="vanished">Помилка серверної частини</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="443"/>
         <source>The JACK MIDI backend can only be used with the JACK audio backend (your current audio backend is %s). Will use the dummy MIDI backend instead.</source>
-        <translation>Сервер JACK MIDI можна використовувати лише з аудіо сервером JACK (ваш поточний аудіо сервер – %s). Натомість буде використано фіктивний сервер MIDI.</translation>
+        <translation type="vanished">Сервер JACK MIDI можна використовувати лише з аудіо сервером JACK (ваш поточний аудіо сервер – %s). Натомість буде використано фіктивний сервер MIDI.</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="476"/>
         <source>Failed to initialize the %s MIDI backend. Will use the dummy backend instead. Please check your backend settings in the Preferences.</source>
-        <translation>Не вдалося ініціалізувати серверну частину MIDI %s. Натомість буде використано фіктивний сервер. Перевірте налаштування серверної частини в налаштуваннях.</translation>
+        <translation type="vanished">Не вдалося ініціалізувати серверну частину MIDI %s. Натомість буде використано фіктивний сервер. Перевірте налаштування серверної частини в налаштуваннях.</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="511"/>
         <source>Invalid Backend Combination</source>
-        <translation>Недійсна комбінація серверної частини</translation>
+        <translation type="vanished">Недійсна комбінація серверної частини</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="512"/>
         <source>Your selected combination of backends may not work properly. If you want to use JACK, please select JACK as both your audio and MIDI backend.</source>
-        <translation>Вибрана вами комбінація серверних програм може не працювати належним чином. Якщо ви хочете використовувати JACK, будь ласка, виберіть JACK як аудіо та MIDI сервер.</translation>
+        <translation type="vanished">Вибрана вами комбінація серверних програм може не працювати належним чином. Якщо ви хочете використовувати JACK, будь ласка, виберіть JACK як аудіо та MIDI сервер.</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="654"/>
         <source>Selected Backend Not Found</source>
-        <translation>Вибраний бекенд не знайдено</translation>
+        <translation type="vanished">Вибраний бекенд не знайдено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine.cpp" line="655"/>
         <source>The selected MIDI/audio backend was not found in the version of %s you have installed. The audio and MIDI backends were set to &quot;Dummy&quot;. Please set your preferred backend from the preferences.</source>
-        <translation>Вибраний сервер MIDI/аудіо не знайдено у встановленій версії %s. Аудіо- та MIDI-системи було встановлено на &quot;Путка&quot;. Будь ласка, встановіть бажаний бекенд у налаштуваннях.</translation>
+        <translation type="vanished">Вибраний сервер MIDI/аудіо не знайдено у встановленій версії %s. Аудіо- та MIDI-системи було встановлено на &quot;Путка&quot;. Будь ласка, встановіть бажаний бекенд у налаштуваннях.</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="474"/>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="513"/>
         <source>JACK Error</source>
-        <translation>JACK Помилка</translation>
+        <translation type="vanished">JACK Помилка</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="569"/>
         <source>Overall operation failed</source>
-        <translation>Загальна операція не вдалася</translation>
+        <translation type="vanished">Загальна операція не вдалася</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="573"/>
         <source>The operation contained an invalid or unsupported option</source>
-        <translation>Операція містила недійсний або непідтримуваний параметр</translation>
+        <translation type="vanished">Операція містила недійсний або непідтримуваний параметр</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="578"/>
         <source>The desired client name was not unique</source>
-        <translation>Бажане ім’я клієнта не було унікальним</translation>
+        <translation type="vanished">Бажане ім’я клієнта не було унікальним</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="582"/>
         <source>Unable to connect to the JACK server</source>
-        <translation>Не вдається підключитися до сервера JACK</translation>
+        <translation type="vanished">Не вдається підключитися до сервера JACK</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="586"/>
         <source>Communication error with the JACK server</source>
-        <translation>Помилка зв&apos;язку з сервером JACK</translation>
+        <translation type="vanished">Помилка зв&apos;язку з сервером JACK</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="590"/>
         <source>Requested client does not exist</source>
-        <translation>Запитаний клієнт не існує</translation>
+        <translation type="vanished">Запитаний клієнт не існує</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="594"/>
         <source>Unable to load internal client</source>
-        <translation>Не вдалося завантажити внутрішній клієнт</translation>
+        <translation type="vanished">Не вдалося завантажити внутрішній клієнт</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="598"/>
         <source>Unable to initialize client</source>
-        <translation>Не вдалося ініціалізувати клієнта</translation>
+        <translation type="vanished">Не вдалося ініціалізувати клієнта</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="602"/>
         <source>Unable to access shared memory</source>
-        <translation>Неможливо отримати доступ до спільної пам&apos;яті</translation>
+        <translation type="vanished">Неможливо отримати доступ до спільної пам&apos;яті</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="606"/>
         <source>Client&apos;s protocol version does not match</source>
-        <translation>Версія протоколу клієнта не збігається</translation>
+        <translation type="vanished">Версія протоколу клієнта не збігається</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="610"/>
         <source>Backend error</source>
-        <translation>Помилка Серверної частини</translation>
+        <translation type="vanished">Помилка Серверної частини</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="614"/>
         <source>Client zombie</source>
-        <translation>Клієнт зомбі</translation>
+        <translation type="vanished">Клієнт зомбі</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="652"/>
         <source>JACK: Failed to disconnect monitor out: {}</source>
-        <translation>JACK: Не вдалося відключити вихід монітора: {}</translation>
+        <translation type="vanished">JACK: Не вдалося відключити вихід монітора: {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="687"/>
         <source>JACK: No physical playback ports found</source>
-        <translation>JACK: Фізичні порти відтворення не знайдено</translation>
+        <translation type="vanished">JACK: Фізичні порти відтворення не знайдено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="697"/>
         <source>JACK: Failed to connect monitor output [{}]: {}</source>
-        <translation>JACK: Не вдалося підключити вихід монітора [{}]: {}</translation>
+        <translation type="vanished">JACK: Не вдалося підключити вихід монітора [{}]: {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="698"/>
         <source>left</source>
-        <translation>зліва</translation>
+        <translation type="vanished">зліва</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="698"/>
         <source>right</source>
-        <translation>правильно</translation>
+        <translation type="vanished">правильно</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="749"/>
         <source>Failed to connect to left monitor output port</source>
-        <translation>Не вдалося підключитися до вихідного порту лівого монітора</translation>
+        <translation type="vanished">Не вдалося підключитися до вихідного порту лівого монітора</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_jack.cpp" line="761"/>
         <source>Failed to connect to right monitor output port</source>
-        <translation>Не вдалося підключитися до правого вихідного порту монітора</translation>
+        <translation type="vanished">Не вдалося підключитися до правого вихідного порту монітора</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_pa.cpp" line="194"/>
-        <location filename="../src/common/dsp/engine_pa.cpp" line="206"/>
-        <location filename="../src/common/dsp/engine_pa.cpp" line="214"/>
         <source>PortAudio Error: %s</source>
-        <translation>Помилка PortAudio: %s</translation>
+        <translation type="vanished">Помилка PortAudio: %s</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_pulse.cpp" line="86"/>
         <source>Buffer Underflow</source>
-        <translation>Переповнення буфера</translation>
+        <translation type="vanished">Переповнення буфера</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_pulse.cpp" line="87"/>
         <source>A buffer underflow has occurred. Try increasing the buffer size in the settings to avoid audio glitches.</source>
-        <translation>Сталося переповнення буфера. Спробуйте збільшити розмір буфера в налаштуваннях, щоб уникнути звукових збоїв.</translation>
+        <translation type="vanished">Сталося переповнення буфера. Спробуйте збільшити розмір буфера в налаштуваннях, щоб уникнути звукових збоїв.</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_pulse.cpp" line="207"/>
         <source>PulseAudio Error: %s</source>
-        <translation>Помилка PulseAudio: %s</translation>
+        <translation type="vanished">Помилка PulseAudio: %s</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/engine_pulse.cpp" line="417"/>
         <source>Pulseaudio Backend Test Failed</source>
-        <translation>Тест Pulseaudio Backend не пройшов</translation>
+        <translation type="vanished">Тест Pulseaudio Backend не пройшов</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/exporter.cpp" line="337"/>
+        <location filename="../src/engine/session/exporter.cpp" line="327"/>
         <source>The exported audio contains segments louder than 0 dB (max detected %.1f dB).</source>
         <translation>Експортоване аудіо містить сегменти, гучніші за 0 дБ (макс. виявлений %,1f дБ).</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/exporter.cpp" line="664"/>
+        <location filename="../src/engine/session/exporter.cpp" line="714"/>
         <source>Failed to create audio track</source>
         <translation>Не вдалося створити звукову доріжку</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/exporter.cpp" line="690"/>
+        <location filename="../src/engine/session/exporter.cpp" line="739"/>
         <source>Invalid time range</source>
         <translation>Недійсний діапазон часу</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/exporter.cpp" line="711"/>
+        <location filename="../src/engine/session/exporter.cpp" line="760"/>
         <source>Failed to export</source>
         <translation>Не вдалося експортувати</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="86"/>
         <source>Prefader Swap Phase</source>
-        <translation>Фаза заміни префадера</translation>
+        <translation type="vanished">Фаза заміни префадера</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="87"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="47"/>
+        <source>Fader Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/structure/tracks/fader.cpp" line="135"/>
         <source>Fader Swap Phase</source>
         <translation>Фаза обміну файлами</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="109"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="147"/>
+        <source>Fader input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/structure/tracks/fader.cpp" line="160"/>
+        <source>Fader output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Prefader Volume</source>
-        <translation>Гучність передфейдера</translation>
+        <translation type="vanished">Гучність передфейдера</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="110"/>
         <source>Fader Volume</source>
-        <translation>Гучність фейдера</translation>
+        <translation type="vanished">Гучність фейдера</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="129"/>
         <source>Prefader Balance</source>
-        <translation>Баланс префейдера</translation>
+        <translation type="vanished">Баланс префейдера</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="130"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="60"/>
         <source>Fader Balance</source>
         <translation>Баланс фейдерів</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="143"/>
         <source>Prefader Mute</source>
-        <translation>Вимкнути звук Prefader</translation>
+        <translation type="vanished">Вимкнути звук Prefader</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="144"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="74"/>
         <source>Fader Mute</source>
         <translation>Вимкнути звук Fader</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="158"/>
         <source>Prefader Solo</source>
-        <translation>Соло передфейдера</translation>
+        <translation type="vanished">Соло передфейдера</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="159"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="88"/>
         <source>Fader Solo</source>
         <translation>Фейдер Соло</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="169"/>
         <source>Prefader Listen</source>
-        <translation>Prefader Слухайте</translation>
+        <translation type="vanished">Prefader Слухайте</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="170"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="102"/>
         <source>Fader Listen</source>
         <translation>Фейдер Слухайте</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="180"/>
         <source>Prefader Mono Compat</source>
-        <translation>Prefader Моно Компат</translation>
+        <translation type="vanished">Prefader Моно Компат</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="181"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="120"/>
         <source>Fader Mono Compat</source>
         <translation>Фадер Моно Компат</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="204"/>
         <source>Ch Pre-Fader in</source>
-        <translation>Вхід передфейдера каналу</translation>
+        <translation type="vanished">Вхід передфейдера каналу</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="209"/>
         <source>Ch Fader in</source>
-        <translation>Х Фадер в</translation>
+        <translation type="vanished">Х Фадер в</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="215"/>
         <source>Sample Processor Fader in</source>
-        <translation>Приклад фейдера процесора</translation>
+        <translation type="vanished">Приклад фейдера процесора</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="220"/>
         <source>Monitor Fader in</source>
-        <translation>Вхід фейдера монітора</translation>
+        <translation type="vanished">Вхід фейдера монітора</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="234"/>
         <source>Ch Pre-Fader out</source>
-        <translation>Вихід передфейдера каналу</translation>
+        <translation type="vanished">Вихід передфейдера каналу</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="239"/>
         <source>Ch Fader out</source>
-        <translation>Х Захоплення</translation>
+        <translation type="vanished">Х Захоплення</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="245"/>
         <source>Sample Processor Fader out</source>
-        <translation>Зразок процесора Fader out</translation>
+        <translation type="vanished">Зразок процесора Fader out</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="250"/>
         <source>Monitor Fader out</source>
-        <translation>Монітор Fader out</translation>
+        <translation type="vanished">Монітор Fader out</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="268"/>
         <source>Ch MIDI Pre-Fader in</source>
-        <translation>Ch MIDI Перед фейдером в</translation>
+        <translation type="vanished">Ch MIDI Перед фейдером в</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="273"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="179"/>
         <source>Ch MIDI Fader in</source>
         <translation>Ch MIDI Фейдер вхід</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="283"/>
         <source>Ch MIDI Pre-Fader out</source>
-        <translation>Ch MIDI Передфейдерний вихід</translation>
+        <translation type="vanished">Ch MIDI Передфейдерний вихід</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="288"/>
+        <location filename="../src/structure/tracks/fader.cpp" line="192"/>
         <source>Ch MIDI Fader out</source>
         <translation>Ch MIDI Згасання</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="487"/>
         <source>Failed to change volume</source>
-        <translation>Не вдалося змінити гучність</translation>
+        <translation type="vanished">Не вдалося змінити гучність</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/fader.cpp" line="517"/>
         <source>Failed to set MIDI mode</source>
-        <translation>Не вдалося встановити режим MIDI</translation>
+        <translation type="vanished">Не вдалося встановити режим MIDI</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/foldable_track.cpp" line="146"/>
         <source>Cannot set track folded</source>
-        <translation>Неможливо встановити складену доріжку</translation>
+        <translation type="vanished">Неможливо встановити складену доріжку</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/marker_track.cpp" line="28"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="610"/>
         <source>start</source>
         <translation>початок</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/marker_track.cpp" line="36"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="625"/>
         <source>end</source>
         <translation>кінець</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/master_track.cpp" line="11"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="648"/>
         <source>Master</source>
         <translation>майстер</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="66"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="22"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="26"/>
         <source>Macro {}</source>
         <translation>макрос {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="79"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="40"/>
+        <source>Macro {} CV In</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="52"/>
+        <source>Macro {} CV Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Macro CV In {}</source>
-        <translation>Макрос CV в {}</translation>
+        <translation type="vanished">Макрос CV в {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/modulator_macro_processor.cpp" line="87"/>
         <source>Macro CV Out {}</source>
-        <translation>Вихід макроса CV {}</translation>
+        <translation type="vanished">Вихід макроса CV {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/modulator_track.cpp" line="19"/>
+        <location filename="../src/gui/backend/backend/project.cpp" line="598"/>
         <source>Modulators</source>
         <translation>Модуляторів</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/nameable_object.cpp" line="52"/>
         <source>Invalid object name %s</source>
-        <translation>Недійсне ім&apos;я об&apos;єкта %s</translation>
+        <translation type="vanished">Недійсне ім&apos;я об&apos;єкта %s</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/nameable_object.cpp" line="53"/>
         <source>Invalid Name</source>
-        <translation>Недійсне ім&apos;я</translation>
+        <translation type="vanished">Недійсне ім&apos;я</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/nameable_object.cpp" line="75"/>
         <source>Failed to rename object</source>
-        <translation>Не вдалося перейменувати об&apos;єкт</translation>
+        <translation type="vanished">Не вдалося перейменувати об&apos;єкт</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/recordable_track.cpp" line="15"/>
+        <location filename="../src/structure/tracks/recordable_track.cpp" line="23"/>
         <source>Track record</source>
         <translation>Послужний список</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/snap_grid.cpp" line="239"/>
         <source>Adaptive</source>
-        <translation>Адаптивний</translation>
+        <translation type="vanished">Адаптивний</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tempo_track.cpp" line="21"/>
         <source>Tempo</source>
-        <translation>Темп</translation>
+        <translation type="vanished">Темп</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tempo_track.cpp" line="47"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation type="vanished">BPM</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tempo_track.cpp" line="59"/>
         <source>Beats per bar</source>
-        <translation>Ударів на такт</translation>
+        <translation type="vanished">Ударів на такт</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tempo_track.cpp" line="72"/>
         <source>Beat unit</source>
-        <translation>Ударна одиниця</translation>
+        <translation type="vanished">Ударна одиниця</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tempo_track.cpp" line="165"/>
         <source>Failed to change BPM</source>
-        <translation>Не вдалося змінити BPM</translation>
+        <translation type="vanished">Не вдалося змінити BPM</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tempo_track.cpp" line="195"/>
         <source>Invalid BPM Value</source>
-        <translation>Недійсне значення BPM</translation>
+        <translation type="vanished">Недійсне значення BPM</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tempo_track.cpp" line="196"/>
         <source>Please enter a positive decimal number</source>
-        <translation>Введіть позитивне десяткове число</translation>
+        <translation type="vanished">Введіть позитивне десяткове число</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="549"/>
         <source>Failed creating audio clip from file at {}</source>
-        <translation>Не вдалося створити аудіозапис із файлу {}</translation>
+        <translation type="vanished">Не вдалося створити аудіозапис із файлу {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="901"/>
         <source>Failed to rename track</source>
-        <translation>Не вдалося перейменувати трек</translation>
+        <translation type="vanished">Не вдалося перейменувати трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1099"/>
         <source>Failed to set track comment</source>
-        <translation>Не вдалося встановити коментар до треку</translation>
+        <translation type="vanished">Не вдалося встановити коментар до треку</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1123"/>
         <source>Failed to set track color</source>
-        <translation>Не вдалося встановити колір доріжки</translation>
+        <translation type="vanished">Не вдалося встановити колір доріжки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1152"/>
         <source>Cannot set track icon</source>
-        <translation>Неможливо встановити значок доріжки</translation>
+        <translation type="vanished">Неможливо встановити значок доріжки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1351"/>
         <source>Cannot set track enabled status</source>
-        <translation>Неможливо встановити стан треку ввімкнено</translation>
+        <translation type="vanished">Неможливо встановити стан треку ввімкнено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1532"/>
         <source>_Delete Track</source>
-        <translation>_Видалити трек</translation>
+        <translation type="vanished">_Видалити трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1534"/>
         <source>_Delete Tracks</source>
-        <translation>_Видалити треки</translation>
+        <translation type="vanished">_Видалити треки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1544"/>
         <source>Duplicate Track</source>
-        <translation>Дубльований трек</translation>
+        <translation type="vanished">Дубльований трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1546"/>
         <source>Duplicate Tracks</source>
-        <translation>Дубльовані доріжки</translation>
+        <translation type="vanished">Дубльовані доріжки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Track</source>
-        <translation>Приховати трек</translation>
+        <translation type="vanished">Приховати трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1566"/>
         <source>Hide Tracks</source>
-        <translation>Приховати треки</translation>
+        <translation type="vanished">Приховати треки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Track</source>
-        <translation>Закріпити/відкріпити трек</translation>
+        <translation type="vanished">Закріпити/відкріпити трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1573"/>
         <source>Pin/Unpin Tracks</source>
-        <translation>Закріпити/відкріпити треки</translation>
+        <translation type="vanished">Закріпити/відкріпити треки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1579"/>
         <source>Change Color...</source>
-        <translation>Змінити колір...</translation>
+        <translation type="vanished">Змінити колір...</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track.cpp" line="1586"/>
         <source>Rename...</source>
-        <translation>Перейменувати...</translation>
+        <translation type="vanished">Перейменувати...</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track_lane.cpp" line="25"/>
         <source>Lane {}</source>
-        <translation>Пров {}</translation>
+        <translation type="vanished">Пров {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track_lane.cpp" line="74"/>
         <source>Failed to rename lane</source>
-        <translation>Не вдалося перейменувати смугу</translation>
+        <translation type="vanished">Не вдалося перейменувати смугу</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track_lane.cpp" line="99"/>
         <source>Cannot set track lane soloed</source>
-        <translation>Неможливо встановити доріжку окремо</translation>
+        <translation type="vanished">Неможливо встановити доріжку окремо</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/track_lane.cpp" line="129"/>
         <source>Could not mute/unmute track lane</source>
-        <translation>Не вдалося вимкнути/увімкнути звук доріжки</translation>
+        <translation type="vanished">Не вдалося вимкнути/увімкнути звук доріжки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1112"/>
         <source>No file was found</source>
-        <translation>Файл не знайдено</translation>
+        <translation type="vanished">Файл не знайдено</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1117"/>
         <source>Can only drop 1 file at a time on existing tracks</source>
-        <translation>Можна перекидати лише 1 файл за раз на наявні доріжки</translation>
+        <translation type="vanished">Можна перекидати лише 1 файл за раз на наявні доріжки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1127"/>
         <source>Can only drop audio files on audio tracks</source>
-        <translation>Можна перекидати аудіофайли лише на звукові доріжки</translation>
+        <translation type="vanished">Можна перекидати аудіофайли лише на звукові доріжки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1134"/>
         <source>Can only drop MIDI files on MIDI/instrument tracks</source>
-        <translation>Можна перекидати файли MIDI лише на треки MIDI/інструмент</translation>
+        <translation type="vanished">Можна перекидати файли MIDI лише на треки MIDI/інструмент</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1142"/>
         <source>Unsupported file type {}</source>
-        <translation>Непідтримуваний тип файлу {}</translation>
+        <translation type="vanished">Непідтримуваний тип файлу {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1170"/>
         <source>Failed to import file {}: {}</source>
-        <translation>Не вдалося імпортувати файл {}: {}</translation>
+        <translation type="vanished">Не вдалося імпортувати файл {}: {}</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1209"/>
         <source>Failed to move tracks after copying or moving inside folder</source>
-        <translation>Не вдалося перемістити доріжки після копіювання або переміщення всередині папки</translation>
+        <translation type="vanished">Не вдалося перемістити доріжки після копіювання або переміщення всередині папки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1273"/>
         <source>Failed to copy tracks inside</source>
-        <translation>Не вдалося скопіювати треки всередині</translation>
+        <translation type="vanished">Не вдалося скопіювати треки всередині</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1310"/>
         <source>Failed to copy track inside</source>
-        <translation>Не вдалося скопіювати доріжку всередину</translation>
+        <translation type="vanished">Не вдалося скопіювати доріжку всередину</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1325"/>
         <source>Failed to clone/add track</source>
-        <translation>Не вдалося клонувати/додати трек</translation>
+        <translation type="vanished">Не вдалося клонувати/додати трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1345"/>
         <source>Failed to copy tracks</source>
-        <translation>Не вдалося скопіювати треки</translation>
+        <translation type="vanished">Не вдалося скопіювати треки</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
-        <location filename="../src/common/utils/exceptions.cpp" line="30"/>
-        <location filename="../src/common/utils/exceptions.cpp" line="41"/>
+        <location filename="../src/utils/exceptions.cpp" line="43"/>
         <source>Error</source>
         <translation>Помилка</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1366"/>
         <source>Cannot drag folder into itself</source>
-        <translation>Неможливо перетягнути папку в себе</translation>
+        <translation type="vanished">Неможливо перетягнути папку в себе</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1382"/>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1420"/>
         <source>Failed to move track inside folder</source>
-        <translation>Не вдалося перемістити доріжку в папку</translation>
+        <translation type="vanished">Не вдалося перемістити доріжку в папку</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1441"/>
         <source>Failed to clone track</source>
-        <translation>Не вдалося клонувати трек</translation>
+        <translation type="vanished">Не вдалося клонувати трек</translation>
     </message>
     <message>
-        <location filename="../src/common/dsp/tracklist.cpp" line="1460"/>
         <source>Failed to move tracks</source>
-        <translation>Не вдалося перемістити треки</translation>
+        <translation type="vanished">Не вдалося перемістити треки</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_descriptor.cpp" line="187"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="187"/>
         <source>&lt;b&gt;{}&lt;/b&gt;
 Sample rate: {}
 Length: {}s {} ms | BPM: {:.1f}
@@ -2683,217 +2979,299 @@ Bit depth: {} bits</source>
 Бітова глибина: {} біт</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_descriptor.cpp" line="204"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="205"/>
         <source>Failed reading metadata for {}</source>
         <translation>Помилка читання метаданих для {}</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_import.cpp" line="72"/>
+        <location filename="../src/gui/backend/io/file_import.cpp" line="72"/>
         <source>Unsupported file type %s</source>
         <translation>Непідтримуваний тип файлу %s</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_import.cpp" line="85"/>
+        <location filename="../src/gui/backend/io/file_import.cpp" line="85"/>
         <source>The MIDI file at %s contains no data</source>
         <translation>Файл MIDI за адресою %s не містить даних</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_import.cpp" line="104"/>
+        <location filename="../src/gui/backend/io/file_import.cpp" line="104"/>
         <source>This MIDI file contains %d tracks. It cannot be dropped into an existing track</source>
         <translation>Цей файл MIDI містить %d треків. Його не можна перекинути в існуючу доріжку</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_import.cpp" line="119"/>
+        <location filename="../src/gui/backend/io/file_import.cpp" line="119"/>
         <source>Failed to get track from hash %u</source>
         <translation>Не вдалося отримати трек із хешу %u</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_import.cpp" line="151"/>
+        <location filename="../src/gui/backend/io/file_import.cpp" line="151"/>
         <source>Failed to create an audio region for file %s: %s</source>
         <translation>Не вдалося створити звуковий регіон для файлу %s: %s</translation>
     </message>
     <message>
-        <location filename="../src/common/io/file_import.cpp" line="172"/>
+        <location filename="../src/gui/backend/io/file_import.cpp" line="172"/>
         <source>Failed to create a MIDI region for file %s: %s</source>
         <translation>Не вдалося створити область MIDI для файлу %s: %s</translation>
     </message>
     <message>
-        <location filename="../src/common/io/midi_file.cpp" line="121"/>
+        <location filename="../src/gui/backend/io/midi_file.cpp" line="123"/>
         <source>Untitled Track {}</source>
         <translation>Доріжка без назви {}</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="504"/>
         <source>Default bank</source>
-        <translation>Банк за замовчуванням</translation>
+        <translation type="vanished">Банк за замовчуванням</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="508"/>
         <source>Init</source>
-        <translation>Ініціал</translation>
+        <translation type="vanished">Ініціал</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="521"/>
         <source>Preset {}</source>
-        <translation>Попереднє налаштування {}</translation>
+        <translation type="vanished">Попереднє налаштування {}</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="867"/>
         <source>Audio in</source>
-        <translation>Аудіовхід</translation>
+        <translation type="vanished">Аудіовхід</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="920"/>
         <source>Audio out</source>
-        <translation>Аудіовихід</translation>
+        <translation type="vanished">Аудіовихід</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="927"/>
         <source>MIDI in</source>
-        <translation>в MIDI</translation>
+        <translation type="vanished">в MIDI</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="943"/>
         <source>CV in</source>
-        <translation>в CV</translation>
+        <translation type="vanished">в CV</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="950"/>
         <source>CV out</source>
-        <translation>поза CV</translation>
+        <translation type="vanished">поза CV</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="1487"/>
         <source>Error adding carla plugin: {}</source>
-        <translation>Помилка додавання плагіна carla: {}</translation>
+        <translation type="vanished">Помилка додавання плагіна carla: {}</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/carla_native_plugin.cpp" line="1654"/>
         <source>Failed to load Carla state</source>
-        <translation>Не вдалося завантажити стан Carla</translation>
+        <translation type="vanished">Не вдалося завантажити стан Carla</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/collections.cpp" line="60"/>
+        <location filename="../src/gui/backend/plugin_collections.cpp" line="54"/>
         <source>Rename</source>
         <translation>Перейменувати</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin.cpp" line="194"/>
         <source>Instantiation failed for plugin &apos;{}&apos;. Disabling...</source>
-        <translation>Не вдалося створити екземпляр для плагіна &quot;{}&quot;. Вимкнення...</translation>
+        <translation type="vanished">Не вдалося створити екземпляр для плагіна &quot;{}&quot;. Вимкнення...</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin.cpp" line="222"/>
         <source>Enabled</source>
-        <translation>Увімкнено</translation>
+        <translation type="vanished">Увімкнено</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin.cpp" line="225"/>
+        <location filename="../src/plugins/plugin.cpp" line="34"/>
+        <source>Bypass</source>
+        <translation type="unfinished">Обхід</translation>
+    </message>
+    <message>
+        <location filename="../src/plugins/plugin.cpp" line="37"/>
         <source>Enables or disables the plugin</source>
         <translation>Вмикає або вимикає плагін</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin.cpp" line="241"/>
+        <location filename="../src/plugins/plugin.cpp" line="50"/>
         <source>Gain</source>
         <translation>Посилення</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin.cpp" line="243"/>
         <source>Plugin gain</source>
-        <translation>Приріст плагіна</translation>
+        <translation type="vanished">Приріст плагіна</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin_descriptor.cpp" line="375"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="373"/>
         <source>Add to project</source>
         <translation>Додати до проекту</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin_descriptor.cpp" line="390"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="388"/>
         <source>Add to project (bridged UI)</source>
         <translation>Додати до проекту (підключений інтерфейс користувача)</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin_descriptor.cpp" line="400"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="398"/>
         <source>Add to project (bridged full)</source>
         <translation>Додати до проекту (повний перехід)</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin_descriptor.cpp" line="436"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="434"/>
         <source>Add to collection</source>
         <translation>Додати до колекції</translation>
     </message>
     <message>
-        <location filename="../src/common/plugins/plugin_descriptor.cpp" line="462"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="460"/>
         <source>Remove from collection</source>
         <translation>Видалити з колекції</translation>
     </message>
     <message>
-        <location filename="../src/common/utils/exceptions.cpp" line="30"/>
+        <location filename="../src/utils/exceptions.cpp" line="32"/>
         <source>Details</source>
         <translation>Подробиці</translation>
     </message>
     <message>
-        <location filename="../src/common/utils/logger.cpp" line="162"/>
+        <location filename="../src/utils/logger.cpp" line="170"/>
         <source>%s has encountered an error
 </source>
         <translation>%s сталася помилка
 </translation>
     </message>
     <message>
-        <location filename="../src/common/utils/ui.cpp" line="669"/>
+        <location filename="../src/gui/backend/ui.cpp" line="455"/>
         <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
         <translation>Мова для вибраної мови ({}) недоступна. Спочатку встановіть один і перезапустіть {}</translation>
     </message>
     <message>
-        <location filename="../src/common/utils/ui.cpp" line="675"/>
+        <location filename="../src/gui/backend/ui.cpp" line="461"/>
         <source>A locale for the language you have selected is not available. Please enable one first using the steps below and try again.
 1. Uncomment any locale starting with the language code &lt;b&gt;{}&lt;/b&gt; in &lt;b&gt;/etc/locale.gen&lt;/b&gt; (needs root privileges)
 2. Run &lt;b&gt;locale-gen&lt;/b&gt; as root
 3. Restart {}</source>
-        <translation>Мова для вибраної вами мови недоступна. Будь ласка, спочатку ввімкніть один, виконавши наведені нижче дії, і повторіть спробу. 
-1. Розкоментуйте будь-яку мову, що починається з коду мови &lt;b&gt;{}&lt;/b&gt;, у &lt;b&gt;/etc/locale.gen&lt;/b&gt; (потрібні привілеї root) 
-2. Запустіть &lt;b&gt;locale-gen&lt;/b&gt; від імені користувача root 
+        <translation>Мова для вибраної вами мови недоступна. Будь ласка, спочатку ввімкніть один, виконавши наведені нижче дії, і повторіть спробу.
+1. Розкоментуйте будь-яку мову, що починається з коду мови &lt;b&gt;{}&lt;/b&gt;, у &lt;b&gt;/etc/locale.gen&lt;/b&gt; (потрібні привілеї root)
+2. Запустіть &lt;b&gt;locale-gen&lt;/b&gt; від імені користувача root
 3. Перезапустіть {}</translation>
     </message>
     <message>
-        <location filename="../src/common/utils/ui.cpp" line="701"/>
+        <location filename="../src/gui/backend/ui.cpp" line="488"/>
         <source>Experimental Feature</source>
         <translation>Експериментальна функція</translation>
     </message>
     <message>
-        <location filename="../src/common/utils/ui.cpp" line="702"/>
+        <location filename="../src/gui/backend/ui.cpp" line="489"/>
         <source>BPM and time signature automation is an experimental feature. Using it may corrupt your project.</source>
         <translation>BPM і автоматизація тактового розміру є експериментальною функцією. Його використання може пошкодити ваш проект.</translation>
     </message>
     <message>
-        <location filename="../tests/helpers/zrythm_helper.cpp" line="59"/>
         <source>Error - Backtrace:
 </source>
-        <translation>Помилка - зворотний шлях:
+        <translation type="vanished">Помилка - зворотний шлях:
 </translation>
     </message>
     <message>
-        <location filename="../tests/helpers/zrythm_helper.cpp" line="62"/>
         <source>Error: {} - Backtrace:
 </source>
-        <translation>Помилка: {} - зворотне трасування:
+        <translation type="vanished">Помилка: {} - зворотне трасування:
 </translation>
     </message>
     <message>
-        <location filename="../tests/helpers/zrythm_helper.cpp" line="87"/>
         <source>Failed to create pipe for communicating with child process (%s)</source>
-        <translation>Не вдалося створити канал для зв’язку з дочірнім процесом (%s)</translation>
+        <translation type="vanished">Не вдалося створити канал для зв’язку з дочірнім процесом (%s)</translation>
     </message>
     <message>
-        <location filename="../tests/helpers/zrythm_helper.cpp" line="96"/>
         <source>Pipes are not supported in this platform</source>
-        <translation>Канали не підтримуються на цій платформі</translation>
+        <translation type="vanished">Канали не підтримуються на цій платформі</translation>
+    </message>
+    <message>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
+        <source>Amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
+        <source>MIDI input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="64"/>
+        <source>MIDI output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/add_arranger_object_command.h" line="23"/>
+        <source>Add Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/add_region_to_clip_slot_command.h" line="22"/>
+        <source>Add Clip</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/add_track_command.h" line="22"/>
+        <location filename="../src/actions/track_creator.cpp" line="31"/>
+        <source>Add Track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/route_track_command.h" line="27"/>
+        <source>Route Track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/change_parameter_value_command.h" line="21"/>
+        <location filename="../tests/unit/commands/change_parameter_value_command_test.cpp" line="233"/>
+        <source>Change &apos;%1&apos; value to %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/change_track_color_command.h" line="19"/>
+        <source>Change Track Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/move_arranger_objects_command.h" line="23"/>
+        <source>Move Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/move_plugin_command.h" line="27"/>
+        <source>Move Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/relocate_arranger_object_command.h" line="22"/>
+        <source>Relocate Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/rename_track_command.h" line="19"/>
+        <source>Rename Track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>
+        <source>{}-{}
+{}
+
+{} comes with ABSOLUTELY NO WARRANTY!
+
+This is free software, and you are welcome to redistribute it
+under certain conditions. See the file &apos;COPYING&apos; for details.
+
+Write comments and bugs to {}
+Support this project at {}
+
+</source>
+        <translation type="unfinished">{}-{}
+{}
+
+{} не надає АБСОЛЮТНО ЖОДНИХ ГАРАНТІЙ!
+
+Це безкоштовне програмне забезпечення, і ви можете поширювати його
+за певних умов. Подробиці див. у файлі «КОПІЮВАННЯ».
+
+Пишіть коментарі та помилки до {}
+Підтримайте цей проект на {}
+
+</translation>
     </message>
 </context>
 <context>
     <name>RecordButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="18"/>
+        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="22"/>
         <source>Record</source>
         <translation>Запис</translation>
     </message>
@@ -2901,22 +3279,22 @@ Bit depth: {} bits</source>
 <context>
     <name>RightDock</name>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="19"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="24"/>
         <source>Plugin Browser</source>
         <translation>Браузер плагінів</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="28"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="32"/>
         <source>File Browser</source>
         <translation>Файловий браузер</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="37"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="40"/>
         <source>Monitor Section</source>
         <translation>Розділ монітора</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="46"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="48"/>
         <source>Chord Preset Browser</source>
         <translation>Браузер пресетів акордів</translation>
     </message>
@@ -2924,75 +3302,294 @@ Bit depth: {} bits</source>
 <context>
     <name>S:</name>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="74"/>
+        <location filename="../src/gui/backend/backend/file_manager.cpp" line="73"/>
         <source></source>
-        <comment>decibels</comment>
+        <comment>Home directory</comment>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/backend/file_manager.cpp" line="82"/>
+        <source></source>
+        <comment>Desktop directory</comment>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SnapGridButton</name>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="29"/>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="38"/>
+        <source>%1 - Last object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="41"/>
+        <source>%1 - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="52"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="73"/>
+        <source>Snap/Grid Settings</source>
+        <translation type="unfinished">Параметри прив&apos;язки/сітки / Snap/Grid options</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="79"/>
+        <source>Position Snap</source>
+        <translation type="unfinished">Позиція</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="89"/>
+        <source>Snap to Grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="103"/>
+        <source>Adaptive Snap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="118"/>
+        <source>Snap Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/16</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/64</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <source>1/128</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="160"/>
+        <source>Note Type</source>
+        <translation type="unfinished">тип ноти</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <source>Normal</source>
+        <translation type="unfinished">Нормальна</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <source>Triplet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <source>Dotted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="190"/>
+        <source>Keep Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="205"/>
+        <source>Snap to Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="221"/>
+        <source>Default Object Length</source>
+        <translation type="unfinished">Банк за замовчуванням</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="231"/>
+        <source>Length Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <source>Link to snap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <source>Last object</source>
+        <translation type="unfinished">Завантаження проєкту</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <source>Custom</source>
+        <translation type="unfinished">Спеціальний маркер</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="263"/>
+        <source>Custom Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="307"/>
+        <source>Custom Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="338"/>
+        <source>Close</source>
+        <translation type="unfinished">Закрити</translation>
     </message>
 </context>
 <context>
     <name>SoloButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="17"/>
+        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="21"/>
         <source>Solo</source>
         <translation>Соло</translation>
     </message>
 </context>
 <context>
+    <name>SpectrumAnalyzer</name>
+    <message>
+        <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="98"/>
+        <source>Master Output Spectrum</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SplitButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="53"/>
+        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="55"/>
         <source>More Options...</source>
         <translation>Більше параметрів...</translation>
     </message>
 </context>
 <context>
+    <name>TempoMapLegend</name>
+    <message>
+        <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="23"/>
+        <source>Tempo</source>
+        <translation type="unfinished">Темп</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
+        <source>Time Signature</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Timeline</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="54"/>
+        <source>Custom Marker</source>
+        <translation type="unfinished">Спеціальний маркер</translation>
+    </message>
+</context>
+<context>
     <name>ToolBox</name>
     <message>
-        <location filename="../src/gui/qml/components/ToolBox.qml" line="34"/>
+        <location filename="../src/gui/qml/components/ToolBox.qml" line="37"/>
         <source>Select tool</source>
         <translation>Виберіть інструмент</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ToolBox.qml" line="49"/>
+        <location filename="../src/gui/qml/components/ToolBox.qml" line="52"/>
         <source>Pencil tool</source>
         <translation>Олівець інструмент</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ToolBox.qml" line="64"/>
+        <location filename="../src/gui/qml/components/ToolBox.qml" line="67"/>
         <source>Scissors tool</source>
         <translation>Інструмент ножиці</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ToolBox.qml" line="79"/>
+        <location filename="../src/gui/qml/components/ToolBox.qml" line="82"/>
         <source>Eraser tool</source>
         <translation>Гумка інструмент</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ToolBox.qml" line="94"/>
+        <location filename="../src/gui/qml/components/ToolBox.qml" line="97"/>
         <source>Ramp tool</source>
         <translation>Інструмент рампи</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ToolBox.qml" line="109"/>
+        <location filename="../src/gui/qml/components/ToolBox.qml" line="112"/>
         <source>Audition tool</source>
         <translation>Інструмент прослуховування</translation>
     </message>
 </context>
 <context>
+    <name>TrackInspectorPage</name>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="79"/>
+        <source>Instrument</source>
+        <translation type="unfinished">Інструмент</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="100"/>
+        <source>Inserts</source>
+        <translation type="unfinished">Вставки</translation>
+    </message>
+</context>
+<context>
     <name>TrackView</name>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="152"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="379"/>
         <source>Scales</source>
         <translation>Ваги</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="184"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="413"/>
         <source>Show lanes</source>
         <translation>Показати смуги</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="201"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="430"/>
         <source>Show automation</source>
         <translation>Показати автоматизацію</translation>
     </message>
@@ -3000,87 +3597,125 @@ Bit depth: {} bits</source>
 <context>
     <name>Tracklist</name>
     <message>
-        <location filename="../src/gui/qml/components/Tracklist.qml" line="65"/>
         <source>Test</source>
-        <translation>Тест</translation>
+        <translation type="vanished">Тест</translation>
+    </message>
+</context>
+<context>
+    <name>TracklistDropArea</name>
+    <message>
+        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="23"/>
+        <source>Test</source>
+        <translation type="unfinished">Тест</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="51"/>
+        <source>Drop files and plugins here</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TracklistHeader</name>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="18"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="27"/>
         <source>Add track</source>
         <translation>Додати трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="29"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="34"/>
         <source>Add _MIDI Track</source>
         <translation>Додати _MIDI трек</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="34"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="40"/>
         <source>Add Audio Track</source>
         <translation>Додати звукову доріжку</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="42"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Import File...</source>
         <translation>Імпорт файлу...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="56"/>
         <source>Add Audio FX Track</source>
         <translation>Додати звукову доріжку ефектів</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="54"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
         <source>Add MIDI FX Track</source>
         <translation>Додати трек MIDI FX</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="71"/>
         <source>Add Audio Group Track</source>
         <translation>Додати звукову доріжку групи</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="67"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="77"/>
         <source>Add MIDI Group Track</source>
         <translation>Додати групову доріжку MIDI</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="75"/>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="86"/>
         <source>Add Folder Track</source>
         <translation>Додати доріжку папки</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="100"/>
+        <source>Clip Launcher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="111"/>
+        <source>Timeline</source>
+        <translation type="unfinished">Хронологія</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TracklistHeader.qml" line="122"/>
+        <source>BPM &amp; Time Signature</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>UndoSplitButton</name>
     <message>
-        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
+        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="17"/>
         <source>Undo</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="15"/>
+        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="17"/>
         <source>Redo</source>
         <translation>Повторити</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="18"/>
-        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="30"/>
-        <source>%1 %2</source>
-        <translation>%1 %2</translation>
+        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="21"/>
+        <source>Redo multiple</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="19"/>
+        <source>%1 %2</source>
+        <translation type="vanished">%1 %2</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="21"/>
         <source>Undo multiple</source>
         <translation>Скасувати Кілька</translation>
     </message>
 </context>
 <context>
+    <name>WaveformViewer</name>
+    <message>
+        <location filename="../src/gui/qml/components/WaveformViewer.qml" line="117"/>
+        <source>Master Output Visualizer</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ZrythmFilePicker</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/ZrythmFilePicker.qml" line="13"/>
+        <location filename="../src/gui/qml/components/basic/ZrythmFilePicker.qml" line="14"/>
         <source>Browse</source>
         <translation>переглядати</translation>
     </message>
@@ -13037,9 +13672,348 @@ Support this project at https://liberapay.com/Zrythm
     </message>
 </context>
 <context>
+    <name>zrythm::dsp::MusicalScale</name>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="399"/>
+        <source>Chromatic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="400"/>
+        <source>Major</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="401"/>
+        <source>Minor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="402"/>
+        <source>Ionian</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="403"/>
+        <source>Dorian</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="404"/>
+        <source>Phrygian</source>
+        <translation type="unfinished">Фригійський</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="405"/>
+        <source>Lydian</source>
+        <translation type="unfinished">Лідійський</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="406"/>
+        <source>Mixolydian</source>
+        <translation type="unfinished">Міксолідійський</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="407"/>
+        <source>Aeolian</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="408"/>
+        <source>Locrian</source>
+        <translation type="unfinished">Локрійський</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="409"/>
+        <source>Melodic Minor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="410"/>
+        <source>Harmonic Minor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="411"/>
+        <source>Whole Tone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="412"/>
+        <source>Major Pentatonic</source>
+        <translation type="unfinished">Мажорна пентатоніка</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="413"/>
+        <source>Minor Pentatonic</source>
+        <translation type="unfinished">Мінорна пентатоніка</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="414"/>
+        <source>Octatonic Half Whole</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="415"/>
+        <source>Octatonic Whole Half</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="416"/>
+        <source>Acoustic</source>
+        <translation type="unfinished">Акустичний</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="417"/>
+        <source>Harmonic Major</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="418"/>
+        <source>Phrygian Dominant</source>
+        <translation type="unfinished">Фригійська домінанта</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="419"/>
+        <source>Major Locrian</source>
+        <translation type="unfinished">Локрійський мажор</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="420"/>
+        <source>Algerian</source>
+        <translation type="unfinished">Алжирський</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="421"/>
+        <source>Augmented</source>
+        <translation type="unfinished">Доповнений</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="422"/>
+        <source>Double Harmonic</source>
+        <translation type="unfinished">Подвійна гармоніка</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="423"/>
+        <source>Chinese</source>
+        <translation type="unfinished">Китайська</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="424"/>
+        <source>Diminished</source>
+        <translation type="unfinished">Зменшено</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="425"/>
+        <source>Dominant Diminished</source>
+        <translation type="unfinished">Зменшена домінанта</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="426"/>
+        <source>Egyptian</source>
+        <translation type="unfinished">Єгипетська</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="427"/>
+        <source>Eight Tone Spanish</source>
+        <translation type="unfinished">Восьмитонна іспанська</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="428"/>
+        <source>Enigmatic</source>
+        <translation type="unfinished">Енігматика</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="429"/>
+        <source>Geez</source>
+        <translation type="unfinished">Джіз</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="430"/>
+        <source>Hindu</source>
+        <translation type="unfinished">Гінду</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="431"/>
+        <source>Hirajoshi</source>
+        <translation type="unfinished">Гіраджоші</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="432"/>
+        <source>Hungarian Gypsy</source>
+        <translation type="unfinished">Угорський циган</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="433"/>
+        <source>Insen</source>
+        <translation type="unfinished">Вставки</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="434"/>
+        <source>Neapolitan Major</source>
+        <translation type="unfinished">Неаполітанський мажор</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="435"/>
+        <source>Neapolitan Minor</source>
+        <translation type="unfinished">Неаполітанський мінор</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="436"/>
+        <source>Oriental</source>
+        <translation type="unfinished">Орієнталь</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="437"/>
+        <source>Romanian Minor</source>
+        <translation type="unfinished">Румунський мінор</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="438"/>
+        <source>Altered</source>
+        <translation type="unfinished">Змінено</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="439"/>
+        <source>Maqam</source>
+        <translation type="unfinished">Макам</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="440"/>
+        <source>Yo</source>
+        <translation type="unfinished">Йо</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="441"/>
+        <source>Bebop Locrian</source>
+        <translation type="unfinished">Локрійський бібоп</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="442"/>
+        <source>Bebop Dominant</source>
+        <translation type="unfinished">Бібоп домінант</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="443"/>
+        <source>Bebop Major</source>
+        <translation type="unfinished">Бібоп мажор</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="444"/>
+        <source>Super Locrian</source>
+        <translation type="unfinished">Суперлокрійський</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="445"/>
+        <source>Enigmatic Minor</source>
+        <translation type="unfinished">Еніґматік мінор</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="446"/>
+        <source>Composite</source>
+        <translation type="unfinished">Композит</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="447"/>
+        <source>Bhairav</source>
+        <translation type="unfinished">Бхайрав</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="448"/>
+        <source>Hungarian Minor</source>
+        <translation type="unfinished">Угорський мінор</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="449"/>
+        <source>Persian</source>
+        <translation type="unfinished">Перська</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="450"/>
+        <source>Iwato</source>
+        <translation type="unfinished">Івато</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="451"/>
+        <source>Kumoi</source>
+        <translation type="unfinished">Кумой</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="452"/>
+        <source>Pelog</source>
+        <translation type="unfinished">Пелоґ</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="453"/>
+        <source>Prometheus</source>
+        <translation type="unfinished">Прометей</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="454"/>
+        <source>Prometheus Neapolitan</source>
+        <translation type="unfinished">Неаполітанський Прометей</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="455"/>
+        <source>Prometheus Liszt</source>
+        <translation type="unfinished">Прометей Лішт</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="456"/>
+        <source>Balinese</source>
+        <translation type="unfinished">Балін&apos;єзе</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="457"/>
+        <source>RagaTodi</source>
+        <translation type="unfinished">Раґатоді</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="458"/>
+        <source>Japanese 1</source>
+        <translation type="unfinished">Японська 1</translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/musical_scale.cpp" line="459"/>
+        <source>Japanese 2</source>
+        <translation type="unfinished">Японська 2</translation>
+    </message>
+</context>
+<context>
+    <name>zrythm::dsp::SnapGrid</name>
+    <message>
+        <location filename="../src/dsp/snap_grid.cpp" line="173"/>
+        <source>Adaptive</source>
+        <translation type="unfinished">Адаптивний</translation>
+    </message>
+</context>
+<context>
+    <name>zrythm::engine::session</name>
+    <message>
+        <location filename="../src/engine/session/transport.h" line="38"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/engine/session/transport.h" line="39"/>
+        <source>1 bar</source>
+        <translation type="unfinished">1 такт (1 bar)</translation>
+    </message>
+    <message>
+        <location filename="../src/engine/session/transport.h" line="40"/>
+        <source>2 bars</source>
+        <translation type="unfinished">2 такти (2 bar)</translation>
+    </message>
+    <message>
+        <location filename="../src/engine/session/transport.h" line="41"/>
+        <source>4 bars</source>
+        <translation type="unfinished">4 такти (4 bar)</translation>
+    </message>
+</context>
+<context>
     <name>zrythm::gui::ProjectManager</name>
     <message>
-        <location filename="../src/gui/backend/project_manager.cpp" line="259"/>
+        <location filename="../src/gui/backend/project_manager.cpp" line="228"/>
         <source>Failed to load project</source>
         <translation>Не вдалося завантажити проект</translation>
     </message>
@@ -13047,8 +14021,8 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::gui::ProjectTemplatesModel</name>
     <message>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="23"/>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="59"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="28"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="63"/>
         <source>Blank Project</source>
         <translation>Пустий проект</translation>
     </message>
@@ -13056,7 +14030,6 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::gui::ZrythmApplication</name>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="72"/>
         <source>{}-{}
 {}
 
@@ -13069,46 +14042,97 @@ Write comments and bugs to {}
 Support this project at {}
 
 </source>
-        <translation>{}-{}
+        <translation type="vanished">{}-{}
 {}
 
-{} не надає АБСОЛЮТНО ЖОДНИХ ГАРАНТІЙ! 
+{} не надає АБСОЛЮТНО ЖОДНИХ ГАРАНТІЙ!
 
-Це безкоштовне програмне забезпечення, і ви можете поширювати його 
-за певних умов. Подробиці див. у файлі «КОПІЮВАННЯ». 
+Це безкоштовне програмне забезпечення, і ви можете поширювати його
+за певних умов. Подробиці див. у файлі «КОПІЮВАННЯ».
 
-Пишіть коментарі та помилки до {} 
+Пишіть коментарі та помилки до {}
 Підтримайте цей проект на {}
 
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="120"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="190"/>
         <source>Open project</source>
         <translation>Відкритий проект</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="121"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="191"/>
         <source>Create new project</source>
         <translation>створити новий проект</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="123"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="193"/>
         <source>Create new project with template</source>
         <translation>Створіть новий проект із шаблоном</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="126"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="196"/>
         <source>Use dummy audio/midi engine</source>
         <translation>Використовувати фальшивий механізм аудіо/міді</translation>
     </message>
 </context>
 <context>
+    <name>zrythm::plugins::PluginScanManager</name>
+    <message>
+        <location filename="../src/plugins/plugin_scan_manager.cpp" line="127"/>
+        <source>Scanning...</source>
+        <translation type="unfinished">Сканування...</translation>
+    </message>
+</context>
+<context>
     <name>zrythm::plugins::PluginScanner</name>
     <message>
-        <location filename="../src/common/plugins/plugin_scanner.cpp" line="262"/>
         <source>Scanning...</source>
-        <translation>Сканування...</translation>
+        <translation type="vanished">Сканування...</translation>
+    </message>
+</context>
+<context>
+    <name>zrythm::structure::tracks::TrackLane</name>
+    <message>
+        <location filename="../src/structure/tracks/track_lane.h" line="56"/>
+        <source>Lane {}</source>
+        <translation type="unfinished">Пров {}</translation>
+    </message>
+</context>
+<context>
+    <name>zrythm::utils</name>
+    <message>
+        <location filename="../src/utils/note_type.cpp" line="19"/>
+        <source>bar</source>
+        <translation type="unfinished">1 такт (1 bar)</translation>
+    </message>
+    <message>
+        <location filename="../src/utils/note_type.cpp" line="20"/>
+        <source>beat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/note_type.cpp" line="33"/>
+        <source>normal</source>
+        <translation type="unfinished">нормально</translation>
+    </message>
+    <message>
+        <location filename="../src/utils/note_type.cpp" line="34"/>
+        <source>dotted</source>
+        <translation type="unfinished">крапковано</translation>
+    </message>
+    <message>
+        <location filename="../src/utils/note_type.cpp" line="35"/>
+        <source>triplet</source>
+        <translation type="unfinished">триплет</translation>
+    </message>
+</context>
+<context>
+    <name>zrythm::utils::exceptions::ZrythmException</name>
+    <message>
+        <location filename="../src/utils/exceptions.cpp" line="32"/>
+        <source>Error</source>
+        <translation type="unfinished">Помилка</translation>
     </message>
 </context>
 </TS>
