@@ -528,3 +528,5 @@ deploy:installers:
     - build:windows
     - build:mac-arm
     - build:gnu/linux
+  before_script:
+    - *unix-activate-venv
