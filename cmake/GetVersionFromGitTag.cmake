@@ -65,7 +65,7 @@ if (should_use_git AND GIT_DESCRIBE_RESULT EQUAL 0)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   # Get current commit SHA from git
-  execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+  execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short=12 HEAD
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_GIT_SHA
     OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -101,19 +101,19 @@ else()
 
   # Git not available, get version from VERSION.txt file
   file(STRINGS ${CMAKE_SOURCE_DIR}/VERSION.txt VERSION_CONTENT)
-  
+
   # Parse the version string
   string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)(-([a-zA-Z0-9.]+))?" VERSION_MATCH ${VERSION_CONTENT})
-  
+
   set(${PROJECT_NAME}_VERSION_STRING ${VERSION_CONTENT})
   set(${PROJECT_NAME}_VERSION_MAJOR ${CMAKE_MATCH_1})
   set(${PROJECT_NAME}_VERSION_MINOR ${CMAKE_MATCH_2})
   set(${PROJECT_NAME}_VERSION_PATCH ${CMAKE_MATCH_3})
   set(${PROJECT_NAME}_VERSION_TWEAK ${CMAKE_MATCH_5})
-  
+
   # Set full version string (without commit info)
   set(${PROJECT_NAME}_VERSION_STRING_FULL ${VERSION_CONTENT})
-  
+
   # Set placeholder values for git-specific information
   set(${PROJECT_NAME}_VERSION_AHEAD "0")
   set(${PROJECT_NAME}_VERSION_GIT_SHA "unknown")

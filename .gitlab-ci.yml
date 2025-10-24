@@ -508,7 +508,7 @@ deploy:installers:
     - VERSION_STRING=$(git describe --abbrev=0 --tags)
     - CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
     - VERSION_AHEAD=$(git rev-list ${CURRENT_BRANCH} ${VERSION_STRING}^..HEAD --count)
-    - VERSION_GIT_SHA=$(git rev-parse --short HEAD)
+    - VERSION_GIT_SHA=$(git rev-parse --short=12 HEAD)
     - VERSION_FULL="${VERSION_STRING}+${VERSION_AHEAD}.${VERSION_GIT_SHA}"
     - VERSION_WITHOUT_V=$(echo $VERSION_FULL | sed 's/^v//')
     # Deploy Windows installer
