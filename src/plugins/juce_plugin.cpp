@@ -379,7 +379,8 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
           if (ev.time_ >= local_offset && ev.time_ < local_offset + nframes)
             {
               juce_midi_buffer_.addEvent (
-                ev.raw_buffer_.data (), ev.raw_buffer_.size (),
+                ev.raw_buffer_.data (),
+                static_cast<int> (ev.raw_buffer_.size ()),
                 static_cast<int> (ev.time_));
             }
         }

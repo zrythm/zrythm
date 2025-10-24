@@ -733,9 +733,11 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
   pimpl_->process_.out_events = pimpl_->evOut_.clapOutputEvents ();
 
   pimpl_->process_.audio_inputs = pimpl_->audio_in_clap_bufs_.data ();
-  pimpl_->process_.audio_inputs_count = pimpl_->audio_in_clap_bufs_.size ();
+  pimpl_->process_.audio_inputs_count =
+    static_cast<uint32_t> (pimpl_->audio_in_clap_bufs_.size ());
   pimpl_->process_.audio_outputs = pimpl_->audio_out_clap_bufs_.data ();
-  pimpl_->process_.audio_outputs_count = pimpl_->audio_out_clap_bufs_.size ();
+  pimpl_->process_.audio_outputs_count =
+    static_cast<uint32_t> (pimpl_->audio_out_clap_bufs_.size ());
 
   pimpl_->evOut_.clear ();
   pimpl_->generatePluginInputEvents ();
