@@ -371,7 +371,7 @@ build:gnu/linux:
     - *unix_test_cmd
     # Run valgrind tests in parallel because they take a long time
     - >-
-      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} --parallel --test-load $(nproc)
+      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} --parallel $(($(nproc) / 2)) --test-load $(($(nproc) / 2))
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata"
       || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/MemoryChecker.*.log" && exit 1)
