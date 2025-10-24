@@ -5,12 +5,12 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "dsp/fader.h"
 #include "dsp/midi_event.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
-#include "structure/tracks/fader.h"
 #include "structure/tracks/master_track.h"
 #include "structure/tracks/tracklist.h"
 

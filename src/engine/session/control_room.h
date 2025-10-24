@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "structure/tracks/fader.h"
+#include "dsp/fader.h"
 #include "utils/icloneable.h"
 
 #define CONTROL_ROOM (AUDIO_ENGINE->control_room_)
@@ -44,7 +44,7 @@ class ControlRoom : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
-  using Fader = structure::tracks::Fader;
+  using Fader = dsp::Fader;
   using AudioEngine = engine::device_io::AudioEngine;
 
   ControlRoom (

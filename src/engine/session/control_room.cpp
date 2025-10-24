@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/fader.h"
 #include "engine/session/control_room.h"
-#include "structure/tracks/fader.h"
 
 namespace zrythm::engine::session
 {

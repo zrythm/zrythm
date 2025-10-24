@@ -31,8 +31,6 @@ target_sources(zrythm_structure_tracks_lib
     chord_track.cpp
     clip_playback_data_provider.h
     clip_playback_data_provider.cpp
-    fader.h
-    fader.cpp
     folder_track.h
     folder_track.cpp
     instrument_track.h

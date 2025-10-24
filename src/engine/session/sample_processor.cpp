@@ -33,7 +33,7 @@ namespace zrythm::engine::session
 SampleProcessor::SampleProcessor (device_io::AudioEngine * engine)
     : audio_engine_ (engine)
 {
-  fader_ = std::make_unique<Fader> (
+  fader_ = std::make_unique<dsp::Fader> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = engine->get_port_registry (),
       .param_registry_ = engine->get_param_registry () },

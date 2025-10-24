@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/fader.h"
 #include "dsp/parameter.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
-#include "structure/tracks/fader.h"
 
 #include <QObject>
 
 #include <gtest/gtest.h>
 
-namespace zrythm::structure::tracks
+namespace zrythm::dsp
 {
 
 class FaderTest : public ::testing::Test

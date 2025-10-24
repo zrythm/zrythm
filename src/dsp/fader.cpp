@@ -4,15 +4,15 @@
 #include <utility>
 
 #include "dsp/audio_port.h"
+#include "dsp/fader.h"
 #include "dsp/midi_event.h"
 #include "dsp/panning.h"
 #include "dsp/port.h"
-#include "structure/tracks/fader.h"
 #include "utils/dsp.h"
 #include "utils/math.h"
 #include "utils/midi.h"
 
-namespace zrythm::structure::tracks
+namespace zrythm::dsp
 {
 
 static constexpr auto amp_id_str = "volume"sv;

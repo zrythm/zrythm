@@ -12,6 +12,7 @@ target_sources(zrythm_dsp_lib
     curve.cpp
     cv_port.cpp
     ditherer.cpp
+    fader.cpp
     file_audio_source.cpp
     graph.cpp
     graph_builder.cpp
@@ -54,6 +55,7 @@ target_sources(zrythm_dsp_lib
       cv_port.h
       ditherer.h
       dsp.h
+      fader.h
       file_audio_source.h
       graph.h
       graph_builder.h

@@ -11,6 +11,7 @@ add_executable(zrythm_dsp_unit_tests
   curve_test.cpp
   cv_port_test.cpp
   ditherer_test.cpp
+  fader_test.cpp
   file_audio_source_test.cpp
   kmeter_dsp_test.cpp
   graph_builder_test.cpp

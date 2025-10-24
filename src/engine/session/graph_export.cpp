@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/fader.h"
 #include "dsp/graph.h"
 #include "dsp/port.h"
 #include "engine/session/graph_dispatcher.h"
@@ -9,7 +10,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "plugins/plugin.h"
-#include "structure/tracks/fader.h"
 #include "structure/tracks/track.h"
 
 #ifdef HAVE_CGRAPH

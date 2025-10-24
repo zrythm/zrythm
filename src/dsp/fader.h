@@ -12,7 +12,7 @@
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
-namespace zrythm::structure::tracks
+namespace zrythm::dsp
 {
 /**
  * A Fader is a processor that is used for volume controls and pan.

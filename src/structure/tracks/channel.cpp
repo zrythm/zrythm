@@ -31,7 +31,7 @@ Channel::Channel (
   dsp::PortType                                 signal_type,
   NameProvider                                  name_provider,
   bool                                          hard_limit_fader_output,
-  Fader::ShouldBeMutedCallback                  should_be_muted_cb,
+  dsp::Fader::ShouldBeMutedCallback             should_be_muted_cb,
   QObject *                                     parent)
     : QObject (parent), dependencies_ (processor_dependencies),
       plugin_registry_ (plugin_registry),
@@ -42,7 +42,7 @@ Channel::Channel (
       inserts_ (
         utils::make_qobject_unique<plugins::PluginList> (plugin_registry, this)),
       fader_ (
-        utils::make_qobject_unique<Fader> (
+        utils::make_qobject_unique<dsp::Fader> (
           dependencies (),
           signal_type_,
           hard_limit_fader_output_,

@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "dsp/fader.h"
 #include "dsp/passthrough_processors.h"
 #include "plugins/plugin_list.h"
 #include "structure/tracks/channel_send.h"
-#include "structure/tracks/fader.h"
 #include "utils/icloneable.h"
 
 namespace zrythm::structure::tracks
@@ -57,7 +57,7 @@ class Channel : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (zrythm::structure::tracks::Fader * fader READ fader CONSTANT)
+  Q_PROPERTY (zrythm::dsp::Fader * fader READ fader CONSTANT)
   Q_PROPERTY (QVariant preFader READ preFader CONSTANT)
   Q_PROPERTY (zrythm::dsp::AudioPort * audioOutPort READ audioOutPort CONSTANT)
   Q_PROPERTY (zrythm::dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
@@ -83,15 +83,15 @@ public:
     dsp::PortType                                 signal_type,
     NameProvider                                  name_provider,
     bool                                          hard_limit_fader_output,
-    Fader::ShouldBeMutedCallback                  should_be_muted_cb,
+    dsp::Fader::ShouldBeMutedCallback             should_be_muted_cb,
     QObject *                                     parent = nullptr);
 
   // ============================================================================
   // QML Interface
   // ============================================================================
 
-  Fader *  fader () const { return fader_.get (); }
-  QVariant preFader () const
+  dsp::Fader * fader () const { return fader_.get (); }
+  QVariant     preFader () const
   {
     return is_midi () ? QVariant::fromValue (midi_prefader_.get ())
                       : QVariant::fromValue (audio_prefader_.get ());
@@ -155,11 +155,11 @@ public:
     const Channel         &other,
     utils::ObjectCloneType clone_type);
 
-  Fader &get_fader () const { return *fader_; }
-  auto  &get_midi_pre_fader () const { return *midi_prefader_; }
-  auto  &get_audio_pre_fader () const { return *audio_prefader_; }
-  auto  &get_midi_post_fader () const { return *midi_postfader_; }
-  auto  &get_audio_post_fader () const { return *audio_postfader_; }
+  dsp::Fader &get_fader () const { return *fader_; }
+  auto       &get_midi_pre_fader () const { return *midi_prefader_; }
+  auto       &get_audio_pre_fader () const { return *audio_prefader_; }
+  auto       &get_midi_post_fader () const { return *midi_postfader_; }
+  auto       &get_audio_post_fader () const { return *audio_postfader_; }
 
   auto &pre_fader_sends () const { return prefader_sends_; }
   auto &post_fader_sends () const { return postfader_sends_; }
@@ -219,7 +219,7 @@ private:
   std::vector<utils::QObjectUniquePtr<ChannelSend>> postfader_sends_;
 
   /** The channel fader. */
-  utils::QObjectUniquePtr<Fader> fader_;
+  utils::QObjectUniquePtr<dsp::Fader> fader_;
 
   /**
    * Prefader.

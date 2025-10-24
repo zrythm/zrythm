@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/fader.h"
 #include "dsp/parameter.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
@@ -9,7 +10,6 @@
 #include "plugins/plugin_list.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_send.h"
-#include "structure/tracks/fader.h"
 
 #include <QObject>
 
@@ -87,7 +87,7 @@ protected:
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
   std::unique_ptr<plugins::PluginRegistry>         plugin_registry_;
   Channel::NameProvider                            name_provider_;
-  Fader::ShouldBeMutedCallback                     should_be_muted_cb_;
+  dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
   sample_rate_t                                    sample_rate_{ 48000 };
   nframes_t                                        max_block_length_{ 1024 };
 

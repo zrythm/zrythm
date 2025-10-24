@@ -3,11 +3,11 @@
 
 #pragma once
 
+#include "dsp/fader.h"
 #include "dsp/graph.h"
 #include "dsp/midi_event.h"
 #include "dsp/position.h"
 #include "gui/dsp/sample_playback.h"
-#include "structure/tracks/fader.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/types.h"
 
@@ -132,7 +132,7 @@ public:
   std::unique_ptr<dsp::MidiEvents> midi_events_;
 
   /** Fader connected to the main output. */
-  std::unique_ptr<structure::tracks::Fader> fader_;
+  std::unique_ptr<dsp::Fader> fader_;
 
   /** Playhead for the tracklist (used when auditioning files). */
   Position playhead_;

@@ -20,7 +20,7 @@ process_track_connections (
   const Project                   &project,
   dsp::graph::GraphNode *          initial_processor_node,
   engine::device_io::AudioEngine * engine,
-  structure::tracks::Fader *       monitor_fader)
+  dsp::Fader *                     monitor_fader)
 {
   /* connect the track processor */
   auto *       track_processor = tr->get_track_processor ();

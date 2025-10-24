@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/panning.h"
 #include "dsp/port_all.h"
 #include "utils/dsp.h"
 
