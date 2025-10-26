@@ -667,9 +667,6 @@ if(ZRYTHM_STRICT)
       -Werror=inline
       -Werror=sizeof-array-argument
       -Werror=odr
-      # note: broken in gcc 14.2.1 and 15.1.1
-      # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99642
-      # -Werror=mismatched-tags
       -Werror=narrowing
 
       # these interfere with gbenchmark
@@ -753,6 +750,10 @@ if(ZRYTHM_STRICT)
       # -Wexit-time-destructors
       # -Wglobal-constructors
       -fsafe-buffer-usage-suggestions
+
+      # Note: broken in gcc 14.2.1 and 15.1.1 so moved to clang only
+      # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99642
+      -Werror=mismatched-tags
 
       # For RealtimeSanitizer compile-time checks
       # TODO: enable and convert to -Werror=
