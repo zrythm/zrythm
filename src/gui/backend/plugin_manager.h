@@ -26,7 +26,7 @@ class PluginManager : public QObject
     zrythm::plugins::discovery::PluginDescriptorList * pluginDescriptors READ
       getPluginDescriptors CONSTANT FINAL)
   Q_PROPERTY (
-    ::zrythm::plugins::PluginScanManager * scanner READ getScanner CONSTANT FINAL)
+    zrythm::plugins::PluginScanManager * scanner READ getScanner CONSTANT FINAL)
   Q_PROPERTY (
     QString currentlyScanningPlugin READ getCurrentlyScanningPlugin NOTIFY
       currentlyScanningPluginChanged FINAL)

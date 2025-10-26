@@ -13,40 +13,22 @@ import "config.js" as Config
 ApplicationWindow {
   id: root
 
+  readonly property AlertManager alertManager: app.alertManager
   readonly property ZrythmApplication app: GlobalState.application
-
-  function alertManager() {
-    return app.alertManager;
-  }
-
-  function deviceManager(): DeviceManager {
-    return app.deviceManager;
-  }
+  readonly property DeviceManager deviceManager: app.deviceManager
+  readonly property PluginManager pluginManager: GlobalState.zrythm.pluginManager
+  readonly property PluginScanManager pluginScanner: pluginManager.scanner
+  readonly property ProjectManager projectManager: app.projectManager
+  readonly property SettingsManager settingsManager: app.settingsManager
 
   function openProjectWindow(project) {
     let newWindow = projectWindowComponent.createObject(project, {
       "project": project,
-      "deviceManager": deviceManager(),
-      "settingsManager": settingsManager()
+      "deviceManager": deviceManager,
+      "settingsManager": settingsManager
     }) as ProjectWindow;
     newWindow.show();
     root.close();
-  }
-
-  function pluginManager() {
-    return GlobalState.zrythm.pluginManager;
-  }
-
-  function pluginScanner() {
-    return root.pluginManager().scanner;
-  }
-
-  function projectManager() {
-    return app.projectManager;
-  }
-
-  function settingsManager() {
-    return app.settingsManager;
   }
 
   font.family: Style.fontFamily
@@ -107,7 +89,7 @@ ApplicationWindow {
     id: stack
 
     anchors.fill: parent
-    initialItem: root.settingsManager().first_run ? firstRunPage : progressPage
+    initialItem: root.settingsManager.first_run ? firstRunPage : progressPage
 
     popExit: Transition {
       PropertyAnimation {
@@ -234,7 +216,7 @@ ApplicationWindow {
 
             onClicked: {
               console.log("Proceeding to next page...");
-              root.settingsManager().first_run = false;
+              root.settingsManager.first_run = false;
               stack.push(progressPage);
             }
           }
@@ -294,7 +276,7 @@ ApplicationWindow {
 
         StackView.onActivated: {
           // start the scan
-          root.pluginManager().beginScan();
+          root.pluginManager.beginScan();
         }
 
         Connections {
@@ -302,7 +284,7 @@ ApplicationWindow {
             stack.push(projectSelectorPage);
           }
 
-          target: root.pluginManager()
+          target: root.pluginManager
         }
 
         PlaceholderPage {
@@ -325,7 +307,7 @@ ApplicationWindow {
             font.pointSize: 8
             horizontalAlignment: Qt.AlignHCenter
             opacity: 0.6
-            text: qsTr("Scanning:") + " " + root.pluginManager().currentlyScanningPlugin
+            text: qsTr("Scanning:") + " " + root.pluginManager.currentlyScanningPlugin
             verticalAlignment: Qt.AlignVCenter
           }
 
@@ -382,7 +364,7 @@ ApplicationWindow {
                   text: qsTr("Device Selector")
 
                   onTriggered: {
-                    root.deviceManager().showDeviceSelector();
+                    root.deviceManager.showDeviceSelector();
                   }
                 }
 
@@ -443,7 +425,7 @@ ApplicationWindow {
 
           anchors.fill: parent
           delegate: projectDelegate
-          model: root.projectManager().recentProjects
+          model: root.projectManager.recentProjects
         }
       }
     }
@@ -469,7 +451,7 @@ ApplicationWindow {
           Binding {
             property: "text"
             target: projectNameField
-            value: root.projectManager().getNextAvailableProjectName(projectDirectoryField.selectedUrl, projectNameField.text)
+            value: root.projectManager.getNextAvailableProjectName(projectDirectoryField.selectedUrl, projectNameField.text)
             when: projectDirectoryField.selectedUrl.toString().length > 0
           }
 
@@ -478,7 +460,7 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             // placeholderText: qsTr("Parent Directory")
-            initialPath: root.settingsManager().new_project_directory
+            initialPath: root.settingsManager.new_project_directory
           }
 
           ComboBox {
@@ -498,7 +480,7 @@ ApplicationWindow {
 
             onClicked: {
               // start the project creation process asynchronusly
-              root.projectManager().createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue);
+              root.projectManager.createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue);
               stack.push(projectCreationProgressPage);
             }
           }
@@ -537,18 +519,18 @@ ApplicationWindow {
     Connections {
       function onProjectLoaded(project) {
         console.log("Project loaded: ", project.title);
-        root.projectManager().activeProject = project;
-        console.log("Opening project: ", root.projectManager().activeProject.title);
+        root.projectManager.activeProject = project;
+        console.log("Opening project: ", root.projectManager.activeProject.title);
         root.openProjectWindow(project);
       }
 
       function onProjectLoadingFailed(errorMessage) {
         console.log("Project loading failed: ", errorMessage);
         stack.pop();
-        root.alertManager().showAlert(qsTr("Project Loading Failed"), errorMessage);
+        root.alertManager.showAlert(qsTr("Project Loading Failed"), errorMessage);
       }
 
-      target: root.projectManager()
+      target: root.projectManager
     }
 
     Connections {
@@ -559,7 +541,7 @@ ApplicationWindow {
         alertDialog.open();
       }
 
-      target: root.alertManager()
+      target: root.alertManager
     }
 
     ZrythmAlertDialog {

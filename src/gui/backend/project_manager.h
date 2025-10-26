@@ -17,7 +17,8 @@ class ProjectManager : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    RecentProjectsModel * recentProjects READ getRecentProjects CONSTANT)
+    zrythm::gui::RecentProjectsModel * recentProjects READ getRecentProjects
+      CONSTANT)
   Q_PROPERTY (
     Project * activeProject READ getActiveProject WRITE setActiveProject NOTIFY
       activeProjectChanged)
