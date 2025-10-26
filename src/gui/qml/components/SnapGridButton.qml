@@ -60,6 +60,7 @@ Button {
     height: 500
     modal: true
     width: 400
+    popupType: Popup.Window
 
     ColumnLayout {
       anchors.fill: parent
