@@ -5,6 +5,8 @@
 
 #include "utils/utf8_string.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
 Q_NAMESPACE

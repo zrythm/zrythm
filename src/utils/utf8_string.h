@@ -15,7 +15,7 @@
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace juce
 {
@@ -53,11 +53,8 @@ public:
   Utf8String &operator= (Utf8String &&) = default;
   ~Utf8String () = default;
 
-  friend void to_json (nlohmann::json &j, const Utf8String &s) { j = s.str (); }
-  friend void from_json (const nlohmann::json &j, Utf8String &s)
-  {
-    s = from_utf8_encoded_string (j.get<std::string> ());
-  }
+  friend void to_json (nlohmann::json &j, const Utf8String &s);
+  friend void from_json (const nlohmann::json &j, Utf8String &s);
 
   static Utf8String from_path (const fs::path &path)
   {

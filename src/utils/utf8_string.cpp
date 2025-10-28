@@ -8,6 +8,8 @@
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::utils
 {
 
@@ -203,6 +205,17 @@ Utf8String::expand_env_vars () const
     }
 
   return result;
+}
+
+void
+to_json (nlohmann::json &j, const Utf8String &s)
+{
+  j = s.str ();
+}
+void
+from_json (const nlohmann::json &j, Utf8String &s)
+{
+  s = Utf8String::from_utf8_encoded_string (j.get<std::string> ());
 }
 
 } // namespace zrythm::utils

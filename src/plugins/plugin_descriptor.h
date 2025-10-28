@@ -13,7 +13,7 @@
 #include <QObject>
 
 #include <boost/describe.hpp>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 /**
  * @addtogroup plugins

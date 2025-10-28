@@ -13,7 +13,7 @@
 #include "utils/units.h"
 
 #include <fmt/format.h>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
 {
@@ -222,20 +222,8 @@ private:
 
   static constexpr auto kMode = "mode"sv;
   static constexpr auto kValue = "value"sv;
-  friend void           to_json (nlohmann::json &j, const AtomicPosition &pos)
-  {
-    const auto &[d, b] = pos.value_.load ();
-    j[kMode] = bool_to_format (b);
-    j[kValue] = d;
-  }
-  friend void from_json (const nlohmann::json &j, AtomicPosition &pos)
-  {
-    TimeFormat mode{};
-    double     value{};
-    j.at (kMode).get_to (mode);
-    j.at (kValue).get_to (value);
-    pos.value_.store (value, format_to_bool (mode));
-  }
+  friend void           to_json (nlohmann::json &j, const AtomicPosition &pos);
+  friend void from_json (const nlohmann::json &j, AtomicPosition &pos);
 
 private:
   const TimeConversionFunctions &conversion_funcs_;

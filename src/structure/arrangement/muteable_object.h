@@ -9,7 +9,7 @@
 #include <QtQmlIntegration>
 
 #include <boost/describe.hpp>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::arrangement
 {

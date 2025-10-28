@@ -5,6 +5,7 @@ qt_add_library(zrythm_dsp_lib STATIC)
 
 target_sources(zrythm_dsp_lib
   PRIVATE
+    atomic_position.cpp
     atomic_position_qml_adapter.cpp
     audio_pool.cpp
     audio_port.cpp

@@ -8,7 +8,7 @@
 #include "utils/monotonic_time_provider.h"
 #include "utils/ring_buffer.h"
 
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
 {

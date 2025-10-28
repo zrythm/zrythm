@@ -17,7 +17,7 @@
 #include "type_safe/strong_typedef.hpp"
 #include <boost/stl_interfaces/iterator_interface.hpp>
 #include <boost/unordered/unordered_flat_map.hpp>
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::utils
 {
