@@ -54,18 +54,10 @@ ColumnLayout {
     active: (root.track.type === Track.Instrument || root.track.type === Track.Midi) && root.track.channel !== null && root.track.channel.midiFx !== null
     visible: active
 
-    sourceComponent: ExpanderBox {
-      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
+    sourceComponent: PluginExpander {
+      iconName: "audio-insert.svg"
+      model: root.track.channel.midiFx
       title: "MIDI FX"
-
-      frameContentItem: ListView {
-        implicitHeight: contentHeight
-        model: root.track.channel.midiFx
-
-        delegate: PluginSlotView {
-          track: root.track
-        }
-      }
     }
   }
 
@@ -74,19 +66,10 @@ ColumnLayout {
     active: root.track.type === Track.Instrument
     visible: active
 
-    sourceComponent: ExpanderBox {
-      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
+    sourceComponent: PluginExpander {
+      iconName: "audio-insert.svg"
+      model: root.track.channel.instruments
       title: qsTr("Instrument")
-
-      frameContentItem: Loader {
-        active: root.track.channel !== null && root.track.channel.instrument !== null
-        visible: active
-
-        sourceComponent: PluginSlotView {
-          plugin: root.track.channel.instrument
-          track: root.track
-        }
-      }
     }
   }
 
@@ -95,18 +78,10 @@ ColumnLayout {
     active: root.track.channel !== null && root.track.channel.inserts !== null
     visible: active
 
-    sourceComponent: ExpanderBox {
-      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
+    sourceComponent: PluginExpander {
+      iconName: "audio-insert.svg"
+      model: root.track.channel.inserts
       title: qsTr("Inserts")
-
-      frameContentItem: ListView {
-        implicitHeight: contentHeight
-        model: root.track.channel.inserts
-
-        delegate: PluginSlotView {
-          track: root.track
-        }
-      }
     }
   }
 
@@ -174,6 +149,24 @@ ColumnLayout {
             }
           }
         }
+      }
+    }
+  }
+
+  component PluginExpander: ExpanderBox {
+    id: pluginExpander
+
+    required property string iconName
+    required property var model
+
+    icon.source: ResourceManager.getIconUrl("zrythm-dark", iconName)
+
+    frameContentItem: ListView {
+      implicitHeight: contentHeight
+      model: pluginExpander.model
+
+      delegate: PluginSlotView {
+        track: root.track
       }
     }
   }

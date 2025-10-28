@@ -73,22 +73,32 @@ variant_from_json_with_builder (
     Variant result{};
 
     auto create_type_if_current_index = [&]<size_t N> () {
-      using Type = std::remove_pointer_t<std::variant_alternative_t<N, Variant>>;
+      using Type = std::variant_alternative_t<N, Variant>;
+      using StrippedType = std::remove_pointer_t<Type>;
       if (N == index)
         {
-          auto object_ptr = builder.template build<Type> ();
-          j.at (zrythm::utils::serialization::kVariantValueKey)
-            .get_to (*object_ptr);
-          if constexpr (VariantOfPointers<Variant>)
+          auto object_ptr = builder.template build<StrippedType> ();
+          if constexpr (std::is_pointer_v<Type>)
             {
+              j.at (zrythm::utils::serialization::kVariantValueKey)
+                .get_to (*object_ptr);
               result = object_ptr.release ();
             }
           else if constexpr (std::is_copy_constructible_v<Type>)
             {
+              j.at (zrythm::utils::serialization::kVariantValueKey)
+                .get_to (*object_ptr);
               result = *object_ptr;
+            }
+          else if constexpr (is_derived_from_template_v<QObjectUniquePtr, Type>)
+            {
+              Type t = std::move (*object_ptr);
+              j.at (zrythm::utils::serialization::kVariantValueKey).get_to (*t);
+              result = std::move (t);
             }
           else
             {
+              DEBUG_TEMPLATE_PARAM (Type)
               static_assert (
                 false,
                 "Only variant of pointers or copy-constructible types is currently supported");

@@ -235,13 +235,13 @@ private:
    * @param value Either pitch (int), automation point value (double) or chord
    * ID.
    */
-template <structure::arrangement::RegionObject RegionT>
-auto add_editor_object (
-  RegionT                  &region,
-  double                    startTicks,
-  std::variant<int, double> value)
-  -> RegionT::ArrangerObjectChildType * requires (
-    !std::is_same_v<RegionT, structure::arrangement::AudioRegion>) {
+  template <structure::arrangement::RegionObject RegionT>
+  auto add_editor_object (
+    RegionT                  &region,
+    double                    startTicks,
+    std::variant<int, double> value) -> RegionT::ArrangerObjectChildType *
+    requires (!std::is_same_v<RegionT, structure::arrangement::AudioRegion>)
+  {
     using ChildT = typename RegionT::ArrangerObjectChildType;
     auto obj_ref = arranger_object_factory_.create_editor_object<RegionT> (
       startTicks, value);
@@ -251,9 +251,10 @@ auto add_editor_object (
     return obj;
   }
 
-private : structure::arrangement::ArrangerObjectFactory &arranger_object_factory_;
-  dsp::SnapGrid   &snap_grid_timeline_;
-  dsp::SnapGrid   &snap_grid_editor_;
-  undo::UndoStack &undo_stack_;
+private:
+  structure::arrangement::ArrangerObjectFactory &arranger_object_factory_;
+  dsp::SnapGrid                                 &snap_grid_timeline_;
+  dsp::SnapGrid                                 &snap_grid_editor_;
+  undo::UndoStack                               &undo_stack_;
 };
 } // namespace zrythm::actions

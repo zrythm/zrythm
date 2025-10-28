@@ -103,7 +103,7 @@ PluginManager::createPluginInstance (
           z_debug ("instantiation done");
           if (track->is_instrument ())
             {
-              track->channel ()->set_instrument (plugin_ref);
+              track->channel ()->instruments ()->append_plugin (plugin_ref);
             }
           else
             {

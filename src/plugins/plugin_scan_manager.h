@@ -41,6 +41,7 @@
 
 #include "plugins/plugin_protocol.h"
 #include "utils/file_path_list.h"
+#include "utils/qt.h"
 
 #include <QList>
 #include <QObject>

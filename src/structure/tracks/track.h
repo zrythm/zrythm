@@ -69,7 +69,7 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
     double fullVisibleHeight READ fullVisibleHeight NOTIFY
       fullVisibleHeightChanged)
   Q_PROPERTY (zrythm::structure::tracks::Channel * channel READ channel CONSTANT)
-  Q_PROPERTY (zrythm::plugins::PluginList * modulators READ modulators CONSTANT)
+  Q_PROPERTY (zrythm::plugins::PluginGroup * modulators READ modulators CONSTANT)
   Q_PROPERTY (
     zrythm::structure::tracks::TrackLaneList * lanes READ lanes CONSTANT)
   Q_PROPERTY (
@@ -434,7 +434,7 @@ public:
 
   Channel * channel () const { return channel_.get (); }
 
-  plugins::PluginList * modulators () const { return modulators_.get (); }
+  plugins::PluginGroup * modulators () const { return modulators_.get (); }
 
   TrackLaneList * lanes () const { return lanes_.get (); }
 
@@ -659,8 +659,9 @@ private:
   [[nodiscard]] utils::QObjectUniquePtr<AutomationTracklist>
                                                  make_automation_tracklist ();
   [[nodiscard]] utils::QObjectUniquePtr<Channel> make_channel ();
-  [[nodiscard]] utils::QObjectUniquePtr<plugins::PluginList> make_modulators ();
-  [[nodiscard]] utils::QObjectUniquePtr<TrackLaneList>       make_lanes ();
+  [[nodiscard]] utils::QObjectUniquePtr<plugins::PluginGroup>
+                                                       make_modulators ();
+  [[nodiscard]] utils::QObjectUniquePtr<TrackLaneList> make_lanes ();
   [[nodiscard]] utils::QObjectUniquePtr<RecordableTrackMixin>
   make_recordable_track_mixin ();
   [[nodiscard]] utils::QObjectUniquePtr<PianoRollTrackMixin>
@@ -742,7 +743,7 @@ protected:
   utils::QObjectUniquePtr<Channel> channel_;
 
   /** Modulators. */
-  utils::QObjectUniquePtr<plugins::PluginList> modulators_;
+  utils::QObjectUniquePtr<plugins::PluginGroup> modulators_;
 
   /** Modulator macros. */
   std::vector<utils::QObjectUniquePtr<dsp::ModulatorMacroProcessor>>

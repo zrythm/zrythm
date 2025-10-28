@@ -11,7 +11,8 @@ Control {
 
   property bool down: false
   property bool openPluginInspectorOnClick: false
-  required property Plugin plugin
+  required property var deviceGroupOrPlugin
+  readonly property Plugin plugin: deviceGroupOrPlugin as Plugin
   readonly property bool pluginEnabled: root.plugin && root.plugin.bypassParameter.baseValue < 0.5
   property bool selected: false
   required property Track track

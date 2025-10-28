@@ -38,9 +38,26 @@ Channel::Channel (
       name_provider_ (std::move (name_provider)), signal_type_ (signal_type),
       hard_limit_fader_output_ (hard_limit_fader_output),
       midi_fx_ (
-        utils::make_qobject_unique<plugins::PluginList> (plugin_registry, this)),
+        utils::make_qobject_unique<plugins::PluginGroup> (
+          dependencies_,
+          plugin_registry,
+          plugins::PluginGroup::DeviceGroupType::MIDI,
+          plugins::PluginGroup::ProcessingTypeHint::Serial,
+          this)),
+      instruments_ (
+        utils::make_qobject_unique<plugins::PluginGroup> (
+          dependencies_,
+          plugin_registry,
+          plugins::PluginGroup::DeviceGroupType::Instrument,
+          plugins::PluginGroup::ProcessingTypeHint::Serial,
+          this)),
       inserts_ (
-        utils::make_qobject_unique<plugins::PluginList> (plugin_registry, this)),
+        utils::make_qobject_unique<plugins::PluginGroup> (
+          dependencies_,
+          plugin_registry,
+          plugins::PluginGroup::DeviceGroupType::Audio,
+          plugins::PluginGroup::ProcessingTypeHint::Serial,
+          this)),
       fader_ (
         utils::make_qobject_unique<dsp::Fader> (
           dependencies (),
@@ -88,7 +105,7 @@ init_from (Channel &obj, const Channel &other, utils::ObjectCloneType clone_type
       // TODO
       // obj.midi_fx_ = other.midi_fx_;
       // obj.inserts_ = other.inserts_;
-      obj.instrument_ = other.instrument_;
+      // obj.instrument_ = other.instrument_;
       // TODO
       // utils::clone_unique_ptr_container (obj.sends_, other.sends_);
       // obj.fader_ = utils::clone_qobject (*other.fader_, &obj, clone_type);
@@ -126,23 +143,22 @@ plugins::PluginUuidReference
 Channel::remove_plugin (plugins::Plugin::Uuid id)
 {
   std::optional<plugins::PluginUuidReference> ret;
-  if (instrument_.has_value () && instrument_->id () == id)
-    {
-      ret = instrument_.value ();
-      instrument_.reset ();
-      Q_EMIT instrumentChanged (nullptr);
-    }
 
   const auto check_plugin_list = [id, &ret] (auto &container) {
-    auto it = std::ranges::find (
-      container->plugins (), id, &plugins::PluginUuidReference::id);
-    if (it != container->plugins ().end ())
+    std::vector<plugins::PluginPtrVariant> plugins;
+    container->get_plugins (plugins);
+    const auto plugin_id_getter = [] (const auto &p_var) {
+      return std::visit ([] (const auto &p) { return p->get_uuid (); }, p_var);
+    };
+    auto it = std::ranges::find (plugins, id, plugin_id_getter);
+    if (it != plugins.end ())
       {
-        ret = container->remove_plugin (it->id ());
+        ret = container->remove_plugin (plugin_id_getter (*it));
       }
   };
-  check_plugin_list (inserts_);
   check_plugin_list (midi_fx_);
+  check_plugin_list (instruments_);
+  check_plugin_list (inserts_);
   assert (ret.has_value ());
 
   std::visit (
@@ -157,23 +173,16 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
 void
 Channel::get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
 {
-  std::vector<plugins::PluginUuidReference> refs;
-  std::ranges::copy (midi_fx_->plugins (), std::back_inserter (refs));
-  std::ranges::copy (inserts_->plugins (), std::back_inserter (refs));
-  if (instrument_)
-    {
-      refs.push_back (*instrument_);
-    }
-
-  std::ranges::transform (
-    refs, std::back_inserter (plugins),
-    &plugins::PluginUuidReference::get_object);
+  midi_fx_->get_plugins (plugins);
+  instruments_->get_plugins (plugins);
+  inserts_->get_plugins (plugins);
 }
 
 void
 from_json (const nlohmann::json &j, Channel &c)
 {
   j.at (Channel::kMidiFxKey).get_to (*c.midi_fx_);
+  j.at (Channel::kInstrumentsKey).get_to (*c.instruments_);
   j.at (Channel::kInsertsKey).get_to (*c.inserts_);
   for (
     const auto &[index, send_json] :
@@ -192,11 +201,6 @@ from_json (const nlohmann::json &j, Channel &c)
         c.dependencies (), c.signal_type_, index, false);
       from_json (send_json, *send);
       c.postfader_sends_.at (index) = std::move (send);
-    }
-  if (j.contains (Channel::kInstrumentKey))
-    {
-      c.instrument_ = { c.plugin_registry_ };
-      j.at (Channel::kInstrumentKey).get_to (*c.instrument_);
     }
   // TODO: prefaders & fader
   // c.prefader_ = utils::make_qobject_unique<Fader> (&c);

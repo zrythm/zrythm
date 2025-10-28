@@ -318,16 +318,16 @@ protected:
     bool               create);
 };
 
-class CreateArrangerSelectionsAction
-  final : public CreateOrDeleteArrangerSelectionsAction
+class CreateArrangerSelectionsAction final
+    : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
   CreateArrangerSelectionsAction (ArrangerObjectSpan sel)
       : CreateOrDeleteArrangerSelectionsAction (sel, true) { };
 };
 
-class DeleteArrangerSelectionsAction
-  final : public CreateOrDeleteArrangerSelectionsAction
+class DeleteArrangerSelectionsAction final
+    : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
   DeleteArrangerSelectionsAction (ArrangerObjectSpan sel)

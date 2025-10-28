@@ -3,6 +3,7 @@
 
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track.h"
+#include "utils/views.h"
 
 namespace zrythm::structure::tracks
 {
@@ -176,11 +177,16 @@ Track::make_channel ()
     this);
 }
 
-utils::QObjectUniquePtr<plugins::PluginList>
+utils::QObjectUniquePtr<plugins::PluginGroup>
 Track::make_modulators ()
 {
-  return utils::make_qobject_unique<plugins::PluginList> (
-    base_dependencies_.plugin_registry_, this);
+  return utils::make_qobject_unique<plugins::PluginGroup> (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = base_dependencies_.port_registry_,
+      .param_registry_ = base_dependencies_.param_registry_ },
+    base_dependencies_.plugin_registry_,
+    plugins::PluginGroup::DeviceGroupType::CV,
+    plugins::PluginGroup::ProcessingTypeHint::Custom, this);
 }
 
 utils::QObjectUniquePtr<TrackLaneList>
@@ -472,10 +478,17 @@ Track::collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
       channel_->get_plugins (plugins);
     }
 
-  std::ranges::copy (
-    modulators_->plugins ()
-      | std::views::transform (&plugins::PluginUuidReference::get_object),
-    std::back_inserter (plugins));
+  const auto count = modulators_->rowCount ();
+  for (const auto i : std::views::iota (0, count))
+    {
+      auto element = modulators_->element_at_idx (i);
+      if (element.canConvert<plugins::Plugin *> ())
+        {
+          plugins.push_back (
+            plugins::plugin_base_to_ptr_variant (
+              element.value<plugins::Plugin *> ()));
+        }
+    }
 }
 
 bool

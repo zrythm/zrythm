@@ -187,14 +187,16 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             std::is_same_v<structure::tracks::ModulatorTrack, TrackT>)
             {
               /* add plugins */
-              for (const auto &pl_ref : tr->modulators ()->plugins ())
+              std::vector<plugins::PluginPtrVariant> plugins;
+              tr->modulators ()->get_plugins (plugins);
+              for (const auto &pl_var : plugins)
                 {
                   std::visit (
                     [&] (auto &&pl) {
                       dsp::ProcessorGraphBuilder::add_nodes (
                         graph, *transport, *pl);
                     },
-                    pl_ref.get_object ());
+                    pl_var);
                 }
 
               /* add macro processors */

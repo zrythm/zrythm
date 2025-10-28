@@ -42,6 +42,7 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
 #include "plugins/clap_plugin_param.h"
+#include "utils/views.h"
 
 #include <QLibrary>
 

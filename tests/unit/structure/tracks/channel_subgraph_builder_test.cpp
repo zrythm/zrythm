@@ -7,10 +7,11 @@
 #include "dsp/processor_base.h"
 #include "plugins/internal_plugin_base.h"
 #include "plugins/plugin.h"
-#include "plugins/plugin_list.h"
+#include "plugins/plugin_group.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/channel_subgraph_builder.h"
+#include "utils/gtest_wrapper.h"
 
 #include <QObject>
 
@@ -755,7 +756,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithInstrumentPlugin)
   // Add a plugin that takes MIDI input and produces audio output
   auto plugin = createMockPlugin (
     dsp::PortType::Midi, dsp::PortType::Audio, 0, 2, true, false);
-  audio_channel_->set_instrument (plugin);
+  audio_channel_->instruments ()->append_plugin (plugin);
 
   // Add nodes first
   ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);

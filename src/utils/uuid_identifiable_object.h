@@ -116,20 +116,14 @@ concept UuidIdentifiableQObject =
   { \
   template <> struct hash<UuidType> \
   { \
-    size_t operator() (const UuidType &uuid) const \
-    { \
-      return uuid.hash (); \
-    } \
+    size_t operator() (const UuidType &uuid) const { return uuid.hash (); } \
   }; \
   } \
   namespace boost \
   { \
   template <> struct hash<UuidType> \
   { \
-    size_t operator() (const UuidType &uuid) const \
-    { \
-      return uuid.hash (); \
-    } \
+    size_t operator() (const UuidType &uuid) const { return uuid.hash (); } \
   }; \
   }
 

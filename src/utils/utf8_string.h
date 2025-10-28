@@ -117,8 +117,8 @@ public:
     return Utf8String::from_utf8_encoded_string (str_ + other.str_);
   }
 
-  operator fs::path () const { return to_path (); }
-  operator QString () const { return to_qstring (); }
+                       operator fs::path () const { return to_path (); }
+                       operator QString () const { return to_qstring (); }
   friend std::ostream &operator<< (std::ostream &os, const Utf8String &str)
   {
     return os << str.view ();

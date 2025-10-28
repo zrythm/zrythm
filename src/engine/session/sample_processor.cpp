@@ -253,13 +253,14 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                     }
                   else if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
                     {
+                    // TODO
+#if 0
                       auto ins_var = track->channel ()->get_instrument ();
                       if (!ins_var)
                         return;
                       std::visit (
                         [&] (auto &&ins) {
-// TODO
-#if 0
+
                           ins->prepare_process (
                             AUDIO_ENGINE->get_block_length ());
                           ins->midi_in_port_->midi_events_.active_events_.append (
@@ -267,9 +268,9 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                           ins->process_block (inner_time_nfo);
                           audio_data_l = ins->l_out_->buf_.data ();
                           audio_data_r = ins->r_out_->buf_.data ();
-#endif
                         },
                         *ins_var);
+#endif
                     }
 
                   if (audio_data_l && audio_data_r)

@@ -5,7 +5,7 @@
 
 #include "dsp/fader.h"
 #include "dsp/passthrough_processors.h"
-#include "plugins/plugin_list.h"
+#include "plugins/plugin_group.h"
 #include "structure/tracks/channel_send.h"
 #include "utils/icloneable.h"
 
@@ -61,10 +61,10 @@ class Channel : public QObject
   Q_PROPERTY (QVariant preFader READ preFader CONSTANT)
   Q_PROPERTY (zrythm::dsp::AudioPort * audioOutPort READ audioOutPort CONSTANT)
   Q_PROPERTY (zrythm::dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
-  Q_PROPERTY (zrythm::plugins::PluginList * inserts READ inserts CONSTANT)
-  Q_PROPERTY (zrythm::plugins::PluginList * midiFx READ midiFx CONSTANT)
+  Q_PROPERTY (zrythm::plugins::PluginGroup * inserts READ inserts CONSTANT)
+  Q_PROPERTY (zrythm::plugins::PluginGroup * midiFx READ midiFx CONSTANT)
   Q_PROPERTY (
-    zrythm::plugins::Plugin * instrument READ instrument NOTIFY instrumentChanged)
+    zrythm::plugins::PluginGroup * instruments READ instruments CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
@@ -107,17 +107,9 @@ public:
     return is_midi () ? std::addressof (midi_postfader_->get_midi_out_port (0))
                       : nullptr;
   }
-  plugins::PluginList * midiFx () const { return midi_fx_.get (); }
-  plugins::PluginList * inserts () const { return inserts_.get (); }
-  plugins::Plugin *     instrument () const
-  {
-    return instrument_.has_value ()
-             ? std::visit (
-                 [] (const auto &pl) -> plugins::Plugin * { return pl; },
-                 instrument_.value ().get_object ())
-             : nullptr;
-  }
-  Q_SIGNAL void instrumentChanged (plugins::Plugin *);
+  plugins::PluginGroup * midiFx () const { return midi_fx_.get (); }
+  plugins::PluginGroup * inserts () const { return inserts_.get (); }
+  plugins::PluginGroup * instruments () const { return instruments_.get (); }
 
   // ============================================================================
 
@@ -130,17 +122,6 @@ public:
    * @param pls Vector to add plugins to.
    */
   void get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const;
-
-  std::optional<PluginPtrVariant> get_instrument () const
-  {
-    return instrument_ ? std::make_optional (instrument_->get_object ()) : std::nullopt;
-  }
-
-  void set_instrument (plugins::PluginUuidReference instrument_ref)
-  {
-    instrument_ = instrument_ref;
-    Q_EMIT instrumentChanged (instrument ());
-  }
 
   /**
    * @brief Removes the given plugin.
@@ -166,10 +147,10 @@ public:
 
 private:
   static constexpr auto kMidiFxKey = "midiFx"sv;
+  static constexpr auto kInstrumentsKey = "instruments"sv;
   static constexpr auto kInsertsKey = "inserts"sv;
   static constexpr auto kPreFaderSendsKey = "preFaderSends"sv;
   static constexpr auto kPostFaderSendsKey = "postFaderSends"sv;
-  static constexpr auto kInstrumentKey = "instrument"sv;
   static constexpr auto kMidiPrefaderKey = "midiPrefader"sv;
   static constexpr auto kAudioPrefaderKey = "audioPrefader"sv;
   static constexpr auto kFaderKey = "fader"sv;
@@ -180,7 +161,7 @@ private:
     j[kInsertsKey] = *c.inserts_;
     j[kPreFaderSendsKey] = c.prefader_sends_;
     j[kPostFaderSendsKey] = c.postfader_sends_;
-    j[kInstrumentKey] = c.instrument_;
+    j[kInstrumentsKey] = *c.instruments_;
     j[kMidiPrefaderKey] = c.midi_prefader_;
     j[kAudioPrefaderKey] = c.audio_prefader_;
     j[kFaderKey] = c.fader_;
@@ -207,13 +188,13 @@ private:
    *
    * This is processed before the instrument/inserts.
    */
-  utils::QObjectUniquePtr<plugins::PluginList> midi_fx_;
-
-  /** The channel insert strip. */
-  utils::QObjectUniquePtr<plugins::PluginList> inserts_;
+  utils::QObjectUniquePtr<plugins::PluginGroup> midi_fx_;
 
   /** The instrument plugin, if instrument track. */
-  std::optional<plugins::PluginUuidReference> instrument_;
+  utils::QObjectUniquePtr<plugins::PluginGroup> instruments_;
+
+  /** The channel insert strip. */
+  utils::QObjectUniquePtr<plugins::PluginGroup> inserts_;
 
   std::vector<utils::QObjectUniquePtr<ChannelSend>> prefader_sends_;
   std::vector<utils::QObjectUniquePtr<ChannelSend>> postfader_sends_;

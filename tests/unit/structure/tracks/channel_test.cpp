@@ -7,7 +7,7 @@
 #include "dsp/processor_base.h"
 #include "plugins/internal_plugin_base.h"
 #include "plugins/plugin.h"
-#include "plugins/plugin_list.h"
+#include "plugins/plugin_group.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_send.h"
 
@@ -257,55 +257,22 @@ TEST_F (ChannelTest, InstrumentManagement)
   midi_channel_ = createMidiChannel ();
 
   // Test initial instrument state
-  EXPECT_FALSE (midi_channel_->get_instrument ().has_value ());
-  EXPECT_EQ (midi_channel_->instrument (), nullptr);
+  EXPECT_EQ (midi_channel_->instruments ()->rowCount (), 0);
 
   // Test setting instrument with mock plugin
   auto mock_plugin_ref = createMockPlugin ();
-  midi_channel_->set_instrument (mock_plugin_ref);
+  midi_channel_->instruments ()->append_plugin (mock_plugin_ref);
 
   // Test that instrument is properly set
-  EXPECT_TRUE (midi_channel_->get_instrument ().has_value ());
-  EXPECT_NE (midi_channel_->instrument (), nullptr);
+  EXPECT_EQ (midi_channel_->instruments ()->rowCount (), 1);
 
   // Test instrument Q_PROPERTY
   EXPECT_EQ (
-    midi_channel_->instrument (),
+    midi_channel_->instruments ()->element_at_idx (0).value<plugins::Plugin *> (),
     std::get<plugins::InternalPluginBase *> (mock_plugin_ref.get_object ()));
 
-  // Test instrumentChanged signal
-  bool signal_emitted = false;
-  QObject::connect (
-    midi_channel_.get (), &Channel::instrumentChanged, midi_channel_.get (),
-    [&signal_emitted] (plugins::Plugin * plugin) { signal_emitted = true; });
-
-  // Change instrument to test signal
-  auto new_mock_plugin_ref = createMockPlugin ();
-  midi_channel_->set_instrument (new_mock_plugin_ref);
-  EXPECT_TRUE (signal_emitted);
-
   // Test removing instrument
-  signal_emitted = false;
-  midi_channel_->remove_plugin (new_mock_plugin_ref.id ());
-  EXPECT_TRUE (signal_emitted);
-  EXPECT_FALSE (midi_channel_->get_instrument ().has_value ());
-  EXPECT_EQ (midi_channel_->instrument (), nullptr);
+  midi_channel_->instruments ()->remove_plugin (mock_plugin_ref.id ());
+  EXPECT_EQ (midi_channel_->instruments ()->rowCount (), 0);
 }
-
-TEST_F (ChannelTest, InstrumentQmlProperty)
-{
-  midi_channel_ = createMidiChannel ();
-
-  // Test QML property accessibility
-  EXPECT_EQ (
-    midi_channel_->property ("instrument").value<plugins::Plugin *> (), nullptr);
-
-  // Set instrument and test property
-  auto mock_plugin_ref = createMockPlugin ();
-  midi_channel_->set_instrument (mock_plugin_ref);
-
-  EXPECT_NE (
-    midi_channel_->property ("instrument").value<plugins::Plugin *> (), nullptr);
-}
-
 } // namespace zrythm::structure::tracks

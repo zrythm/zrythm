@@ -5,7 +5,7 @@
 #include "dsp/parameter.h"
 #include "dsp/processor_base.h"
 #include "plugins/plugin.h"
-#include "plugins/plugin_list.h"
+#include "plugins/plugin_group.h"
 #include "structure/tracks/automation_tracklist.h"
 
 #include <gtest/gtest.h>
@@ -19,10 +19,16 @@ protected:
   void SetUp () override
   {
     // Create source and target plugin lists
-    source_plugin_list_ =
-      std::make_unique<plugins::PluginList> (plugin_registry_);
-    target_plugin_list_ =
-      std::make_unique<plugins::PluginList> (plugin_registry_);
+    source_plugin_list_ = std::make_unique<plugins::PluginGroup> (
+      dsp::ProcessorBase::ProcessorBaseDependencies{
+        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+      plugin_registry_, plugins::PluginGroup::DeviceGroupType::Audio,
+      plugins::PluginGroup::ProcessingTypeHint::Parallel);
+    target_plugin_list_ = std::make_unique<plugins::PluginGroup> (
+      dsp::ProcessorBase::ProcessorBaseDependencies{
+        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+      plugin_registry_, plugins::PluginGroup::DeviceGroupType::Audio,
+      plugins::PluginGroup::ProcessingTypeHint::Parallel);
 
     // Create source and target automation tracklists
     source_automation_tracklist_ = std::make_unique<
@@ -64,12 +70,18 @@ protected:
     source_plugin_list_->append_plugin (test_plugin_ref_);
   }
 
+  static auto
+  get_plugin_id_at_index (const plugins::PluginGroup &group, int idx)
+  {
+    return group.element_at_idx (idx).value<plugins::Plugin *> ()->get_uuid ();
+  }
+
   dsp::PortRegistry               port_registry_;
   dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
   plugins::PluginRegistry         plugin_registry_;
 
-  std::unique_ptr<plugins::PluginList> source_plugin_list_;
-  std::unique_ptr<plugins::PluginList> target_plugin_list_;
+  std::unique_ptr<plugins::PluginGroup> source_plugin_list_;
+  std::unique_ptr<plugins::PluginGroup> target_plugin_list_;
 
   // Automation tracklist dependencies
   dsp::TempoMap                tempo_map_{ units::sample_rate (44100) };
@@ -105,9 +117,10 @@ TEST_F (MovePluginCommandTest, InitialState)
   MovePluginCommand command (test_plugin_ref_, source_location, target_location);
 
   // Verify plugin is still in source list
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (source_plugin_list_->plugins ()[0].id (), test_plugin_ref_.id ());
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (
+    get_plugin_id_at_index (*source_plugin_list_, 0), test_plugin_ref_.id ());
 }
 
 // Test redo operation (move plugin from source to target)
@@ -123,16 +136,17 @@ TEST_F (MovePluginCommandTest, RedoOperation)
   MovePluginCommand command (test_plugin_ref_, source_location, target_location);
 
   // Initial state
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 
   // Execute redo
   command.redo ();
 
   // Plugin should be moved to target list
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ()[0].id (), test_plugin_ref_.id ());
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (
+    get_plugin_id_at_index (*target_plugin_list_, 0), test_plugin_ref_.id ());
 }
 
 // Test undo operation (move plugin back to source)
@@ -149,16 +163,17 @@ TEST_F (MovePluginCommandTest, UndoOperation)
 
   // First execute redo to move the plugin
   command.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
 
   // Then undo
   command.undo ();
 
   // Plugin should be back in source list
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (source_plugin_list_->plugins ()[0].id (), test_plugin_ref_.id ());
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (
+    get_plugin_id_at_index (*source_plugin_list_, 0), test_plugin_ref_.id ());
 }
 
 // Test undo/redo cycle
@@ -174,28 +189,28 @@ TEST_F (MovePluginCommandTest, UndoRedoCycle)
   MovePluginCommand command (test_plugin_ref_, source_location, target_location);
 
   // Initial state
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 
   // Redo
   command.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
 
   // Undo
   command.undo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 
   // Redo again
   command.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
 
   // Undo again
   command.undo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 }
 
 // Test move to specific index
@@ -230,10 +245,13 @@ TEST_F (MovePluginCommandTest, MoveToSpecificIndex)
   command.redo ();
 
   // Verify plugin is at correct position
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 3);
-  EXPECT_EQ (target_plugin_list_->plugins ()[0].id (), dummy_plugin1.id ());
-  EXPECT_EQ (target_plugin_list_->plugins ()[1].id (), test_plugin_ref_.id ());
-  EXPECT_EQ (target_plugin_list_->plugins ()[2].id (), dummy_plugin2.id ());
+  EXPECT_EQ (target_plugin_list_->rowCount (), 3);
+  EXPECT_EQ (
+    get_plugin_id_at_index (*target_plugin_list_, 0), dummy_plugin1.id ());
+  EXPECT_EQ (
+    get_plugin_id_at_index (*target_plugin_list_, 1), test_plugin_ref_.id ());
+  EXPECT_EQ (
+    get_plugin_id_at_index (*target_plugin_list_, 2), dummy_plugin2.id ());
 }
 
 // Test move with null automation tracklists
@@ -250,12 +268,12 @@ TEST_F (MovePluginCommandTest, MoveWithNullAutomationTracklists)
 
   // Should not crash with null automation tracklists
   command.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
 
   command.undo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 }
 
 // Test automation track movement (simplified test)
@@ -274,12 +292,12 @@ TEST_F (MovePluginCommandTest, AutomationTrackMovement)
 
   // Should not crash when automation tracklists are present
   command.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
 
   command.undo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 }
 
 // Test move from empty source list (should fail gracefully)
@@ -315,17 +333,19 @@ TEST_F (MovePluginCommandTest, MoveToSameList)
   MovePluginCommand command (test_plugin_ref_, source_location, target_location);
 
   // Initial state
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
 
   // Redo should not change anything
   command.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (source_plugin_list_->plugins ()[0].id (), test_plugin_ref_.id ());
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (
+    get_plugin_id_at_index (*source_plugin_list_, 0), test_plugin_ref_.id ());
 
   // Undo should also not change anything
   command.undo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (source_plugin_list_->plugins ()[0].id (), test_plugin_ref_.id ());
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (
+    get_plugin_id_at_index (*source_plugin_list_, 0), test_plugin_ref_.id ());
 }
 
 // Test move with index out of bounds
@@ -345,8 +365,9 @@ TEST_F (MovePluginCommandTest, MoveWithIndexOutOfBounds)
   command.redo ();
 
   // Plugin should be at the end
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ()[0].id (), test_plugin_ref_.id ());
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (
+    get_plugin_id_at_index (*target_plugin_list_, 0), test_plugin_ref_.id ());
 }
 
 // Test command text
@@ -379,25 +400,25 @@ TEST_F (MovePluginCommandTest, MultipleMoveOperations)
   MovePluginCommand command1 (
     test_plugin_ref_, source_location, target_location);
   command1.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
 
   // Move back to source
   MovePluginCommand command2 (
     test_plugin_ref_, target_location, source_location);
   command2.redo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 
   // Undo second move
   command2.undo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 0);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 1);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 0);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 1);
 
   // Undo first move
   command1.undo ();
-  EXPECT_EQ (source_plugin_list_->plugins ().size (), 1);
-  EXPECT_EQ (target_plugin_list_->plugins ().size (), 0);
+  EXPECT_EQ (source_plugin_list_->rowCount (), 1);
+  EXPECT_EQ (target_plugin_list_->rowCount (), 0);
 }
 
 } // namespace zrythm::commands

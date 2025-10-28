@@ -13,6 +13,7 @@ target_sources(zrythm_commands_lib
     change_track_color_command.h
     move_arranger_objects_command.h
     move_plugin_command.h
+    move_plugin_command.cpp
     relocate_arranger_object_command.h
     rename_track_command.h
 )

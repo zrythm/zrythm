@@ -7,10 +7,13 @@
 
 #include "plugins/plugin_protocol.h"
 #include "utils/icloneable.h"
+#include "utils/serialization.h"
+#include "utils/utf8_string.h"
 
 #include <QObject>
 
 #include <boost/describe.hpp>
+#include <nlohmann/json.hpp>
 
 /**
  * @addtogroup plugins
@@ -336,7 +339,8 @@ template <> struct hash<zrythm::plugins::PluginDescriptor>
       }
     else
       {
-        h = h ^ qHash (std::get<utils::Utf8String> (d.path_or_id_).str ());
+        h =
+          h ^ qHash (std::get<zrythm::utils::Utf8String> (d.path_or_id_).str ());
       }
     h = h ^ qHash (d.unique_id_);
     h = h ^ qHash (d.juce_compat_deprecated_unique_id_);
