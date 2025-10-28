@@ -10,6 +10,7 @@ function is_true(val) {
 }
 
 const VERSION = "@ZRYTHM_VERSION@";
+const VERSION_STRING_FULL_WITHOUT_V = "@ZRYTHM_VERSION_STRING_FULL_WITHOUT_V@";
 const COPYRIGHT_NAME = "@copyright_name@"
 const COPYRIGHT_YEARS = "@copyright_years@"
 const USER_MANUAL_URL = "@user_manual_url@";

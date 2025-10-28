@@ -74,7 +74,7 @@ Dialog {
 
       Label {
         Layout.alignment: Qt.AlignHCenter
-        text: "Version %1".arg(Config.VERSION)
+        text: "Version %1".arg(Config.VERSION_STRING_FULL_WITHOUT_V)
       }
 
       Label {
