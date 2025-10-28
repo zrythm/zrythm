@@ -13,17 +13,22 @@ QtObject {
 
   // Update function
   function updateSelection() {
-    if (selectionModel && selectionModel.model) {
-      isSelected = selectionModel.isSelected(modelIndex);
+    if (root.selectionModel && root.selectionModel.model) {
+      isSelected = root.selectionModel.isSelected(root.modelIndex);
     }
   }
 
   // Initialize and update when index changes
   Component.onCompleted: updateSelection()
+  Component.onDestruction: {
+    if (root.selectionModel) {
+      root.selectionModel.selectionChanged.disconnect(root.updateSelection);
+    }
+  }
   onModelIndexChanged: updateSelection()
   onSelectionModelChanged: {
-    if (selectionModel) {
-      selectionModel.selectionChanged.connect(root.updateSelection);
+    if (root.selectionModel) {
+      root.selectionModel.selectionChanged.connect(root.updateSelection);
     }
   }
 }
