@@ -4,6 +4,8 @@
 #include <utility>
 
 #include "plugins/juce_plugin.h"
+#include "utils/dsp.h"
+#include "utils/io.h"
 
 #include <juce_wrapper.h>
 
@@ -282,6 +284,9 @@ JucePlugin::create_parameters_from_juce_plugin ()
       param->addListener (mapping.juce_param_listener.get ());
       parameter_mappings_.emplace_back (std::move (mapping));
     }
+
+  // Sync initial parameter values from JUCE plugin to Zrythm
+  update_parameter_values ();
 }
 
 void
