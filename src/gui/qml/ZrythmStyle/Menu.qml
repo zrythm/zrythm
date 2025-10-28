@@ -21,7 +21,7 @@ T.Menu {
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
   margins: 0
   overlap: 1
-  popupType: Qt.platform.os === "windows" ? Popup.Window : Popup.Native // auto-fallbacks to Window, then normal (Native crashes on Windows)
+  // popupType: Qt.platform.os === "windows" ? Popup.Window : Popup.Native // auto-fallbacks to Window, then normal (Native crashes on Windows)
 
   T.Overlay.modal: Rectangle {
     color: Color.transparent(control.palette.shadow, 0.5)
