@@ -52,7 +52,7 @@ Button {
     text: qsTr("Snap/Grid Settings")
   }
 
-  Popup {
+  Dialog {
     id: snapDialog
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
