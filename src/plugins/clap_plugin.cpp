@@ -52,6 +52,9 @@
 #include <clap/helpers/plugin-proxy.hxx>
 #include <clap/helpers/reducing-param-queue.hh>
 #include <clap/helpers/reducing-param-queue.hxx>
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+#  include <sanitizer/rtsan_interface.h>
+#endif
 
 namespace zrythm::plugins
 {
@@ -781,7 +784,15 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
         }
 
       // Run plugin processing
-      status = pimpl_->plugin_->process (&pimpl_->process_);
+      {
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+        // Not our code, we don't care about RTSan violations here.
+        // TODO: add option to keep this enabled (we might want to test our own
+        // CLAP plugins in the future)
+        __rtsan::ScopedDisabler d;
+#endif
+        status = pimpl_->plugin_->process (&pimpl_->process_);
+      }
 
       // Copy output audio from JUCE buffer
       for (

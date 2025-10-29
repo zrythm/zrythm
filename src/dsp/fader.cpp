@@ -353,15 +353,16 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
             time_nfo);
         }
 
-      const auto &balance_param = get_balance_param ();
-      const auto &mono_compat_param = get_mono_compat_enabled_param ();
-      const auto &swap_phase_param = get_swap_phase_param ();
-      const float pan =
-        balance_param.range ().convertFrom0To1 (balance_param.currentValue ());
-      const bool mono_compat_enabled = mono_compat_param.range ().is_toggled (
-        mono_compat_param.currentValue ());
-      const bool swap_phase =
-        swap_phase_param.range ().is_toggled (swap_phase_param.currentValue ());
+      const auto &balance_param = processing_caches_->balance_param_;
+      const auto &mono_compat_param =
+        processing_caches_->mono_compat_enabled_param_;
+      const auto &swap_phase_param = processing_caches_->swap_phase_param_;
+      const float pan = balance_param->range ().convertFrom0To1 (
+        balance_param->currentValue ());
+      const bool mono_compat_enabled = mono_compat_param->range ().is_toggled (
+        mono_compat_param->currentValue ());
+      const bool swap_phase = swap_phase_param->range ().is_toggled (
+        swap_phase_param->currentValue ());
 
       // apply gain
       const auto &out_buf =
@@ -431,7 +432,7 @@ Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
     } // endif is_audio()
   else if (is_midi ())
     {
-      if (!effectively_muted ())
+      if (!effectively_muted_rt ())
         {
           auto &target_events =
             processing_caches_->midi_out_rt_->midi_events_.queued_events_;

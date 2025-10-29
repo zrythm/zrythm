@@ -206,6 +206,12 @@ public:
     return !bypass->range ().is_toggled (bypass->currentValue ());
   }
 
+  bool currently_enabled_rt () const noexcept [[clang::nonblocking]]
+  {
+    const auto * bypass = bypass_param_rt_;
+    return !bypass->range ().is_toggled (bypass->currentValue ());
+  }
+
   // ============================================================================
   // Implementation Interface
   // ============================================================================
@@ -325,12 +331,13 @@ protected:
    */
   std::optional<dsp::ProcessorParameter::Uuid> gain_id_;
 
-  /* Caches - avoid shared_ptr due to performance cost */
+  /* Realtime caches */
   std::vector<dsp::AudioPort *> audio_in_ports_;
   std::vector<dsp::AudioPort *> audio_out_ports_;
   std::vector<dsp::CVPort *>    cv_in_ports_;
   dsp::MidiPort *               midi_in_port_{};
   dsp::MidiPort *               midi_out_port_{};
+  dsp::ProcessorParameter *     bypass_param_rt_{};
 
   // ============================================================================
 

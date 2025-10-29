@@ -313,6 +313,18 @@ public:
     return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
+  auto currently_soloed_rt () const noexcept [[clang::nonblocking]]
+  {
+    return processing_caches_->solo_param_->range ().is_toggled (
+      processing_caches_->solo_param_->currentValue ());
+  };
+
+  bool currently_listened_rt () const noexcept [[clang::nonblocking]]
+  {
+    const auto &listened_param = processing_caches_->listen_param_;
+    return listened_param->range ().is_toggled (listened_param->currentValue ());
+  }
+
 private:
   static constexpr auto kMidiModeKey = "midiMode"sv;
   friend void           to_json (nlohmann::json &j, const Fader &fader)
@@ -346,10 +358,6 @@ private:
     const auto currently_muted_rt = [this] () {
       return processing_caches_->mute_param_->range ().is_toggled (
         processing_caches_->mute_param_->currentValue ());
-    };
-    const auto currently_soloed_rt = [this] () {
-      return processing_caches_->solo_param_->range ().is_toggled (
-        processing_caches_->solo_param_->currentValue ());
     };
 
     return currently_muted_rt () || should_be_muted_cb_ (currently_soloed_rt ());

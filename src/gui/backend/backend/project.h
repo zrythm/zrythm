@@ -691,6 +691,14 @@ public:
    */
   utils::QObjectUniquePtr<structure::tracks::Tracklist> tracklist_;
 
+  /**
+   * @brief Realtime cache of tracks
+   */
+  boost::unordered_flat_map<
+    structure::tracks::TrackUuid,
+    structure::tracks::TrackPtrVariant>
+    tracks_rt_;
+
   utils::QObjectUniquePtr<structure::scenes::ClipLauncher> clip_launcher_;
   utils::QObjectUniquePtr<structure::scenes::ClipPlaybackService>
     clip_playback_service_;

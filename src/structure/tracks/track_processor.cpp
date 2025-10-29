@@ -770,8 +770,9 @@ TrackProcessor::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
   // MIDI clips
   else if (has_piano_roll_port_)
     {
-      auto &pr = get_piano_roll_port ();
-      fill_midi_events (time_nfo, pr.midi_events_.queued_events_);
+      fill_midi_events (
+        time_nfo,
+        processing_caches_->piano_roll_rt_->midi_events_.queued_events_);
     }
 
   // dequeue piano roll contents into MIDI output port

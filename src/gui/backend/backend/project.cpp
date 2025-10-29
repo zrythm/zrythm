@@ -247,7 +247,7 @@ Project::Project (
         }
     });
 
-  // auto-select tracks when added to the project
+  // Auto-select tracks when added to the project
   QObject::connect (
     tracklist_->collection (), &structure::tracks::TrackCollection::rowsInserted,
     this, [this] (const QModelIndex &, int first, int last) {
@@ -295,6 +295,29 @@ Project::Project (
               .id ());
         }
     });
+
+  // Keep up-to-date realtime cache of tracks
+  QObject::connect (
+    tracklist_->collection (), &structure::tracks::TrackCollection::rowsInserted,
+    this, [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          const auto &track = tracklist_->collection ()->tracks ().at (i);
+          const auto  track_id = track.id ();
+          tracks_rt_[track_id] = track.get_object ();
+        }
+    });
+  QObject::connect (
+    tracklist_->collection (),
+    &structure::tracks::TrackCollection::rowsAboutToBeRemoved, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          const auto track_id =
+            tracklist_->collection ()->tracks ().at (i).id ();
+          tracks_rt_.erase (track_id);
+        }
+    });
 }
 
 Project::~Project ()
@@ -315,8 +338,15 @@ Project::get_final_track_dependencies () const
     *track_registry_,
     *transport_,
     [this] () {
-      return tracklist_->collection ()->get_track_span ().get_num_soloed_tracks ()
-             > 0;
+      return std::ranges::any_of (tracks_rt_, [] (const auto &track_var) {
+        const auto * track = structure::tracks::from_variant (track_var.second);
+        const auto * ch = track->channel ();
+        if (ch == nullptr)
+          {
+            return false;
+          }
+        return ch->fader ()->currently_soloed_rt ();
+      });
     }
   };
 }

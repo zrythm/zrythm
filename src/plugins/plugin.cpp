@@ -90,7 +90,7 @@ Plugin::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
   if (instantiation_failed_)
     return;
 
-  if (!currently_enabled ())
+  if (!currently_enabled_rt ())
     {
       process_passthrough_impl (time_nfo);
       return;
@@ -148,6 +148,8 @@ Plugin::init_param_caches ()
         },
         port_var.get_object ());
     }
+
+  bypass_param_rt_ = bypassParameter ();
 }
 
 void

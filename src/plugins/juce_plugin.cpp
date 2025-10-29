@@ -8,6 +8,9 @@
 #include "utils/io.h"
 
 #include <juce_wrapper.h>
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+#  include <sanitizer/rtsan_interface.h>
+#endif
 
 namespace zrythm::plugins
 {
@@ -323,6 +326,9 @@ JucePlugin::prepare_for_processing_impl (
         {
           output_channels_[i] = juce_audio_buffer_.getWritePointer (i);
         }
+
+      // Prepare MIDI buffer
+      juce_midi_buffer_.ensureSize (4096);
     }
   catch (const std::exception &e)
     {
@@ -399,7 +405,15 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
     juce_audio_buffer_.getArrayOfWritePointers (),
     juce_audio_buffer_.getNumChannels (), static_cast<int> (local_offset),
     static_cast<int> (nframes));
-  juce_plugin_->processBlock (temp_buffer_with_offset, juce_midi_buffer_);
+  {
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+    // RTSan violations are outside our control here.
+    // TODO: add option to keep this enabled (we might want to test our own
+    // CLAP plugins in the future)
+    __rtsan::ScopedDisabler d;
+#endif
+    juce_plugin_->processBlock (temp_buffer_with_offset, juce_midi_buffer_);
+  }
 
   // Copy output audio from JUCE buffer
   for (int ch = 0; ch < num_juce_plugin_outputs; ++ch)

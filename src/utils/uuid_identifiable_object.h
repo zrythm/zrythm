@@ -132,8 +132,6 @@ concept UuidIdentifiableQObject =
  *
  * Objects that refer to an object's UUID must use this wrapper.
  *
- * TODO: actually use this
- *
  * @tparam RegistryT
  */
 template <typename RegistryT> class UuidReference
@@ -394,7 +392,7 @@ public:
    * @return A non-owning pointer to the object.
    */
   [[gnu::hot]] std::optional<VariantT>
-  find_by_id (const UuidType &id) const noexcept [[clang::nonblocking]]
+  find_by_id (const UuidType &id) const noexcept [[clang::blocking]]
   {
     const auto it = get_iterator_for_id (id);
     if (it == objects_by_id_.end ())

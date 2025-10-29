@@ -3,6 +3,7 @@
 
 #include "dsp/fader.h"
 #include "engine/session/control_room.h"
+#include "gui/backend/backend/project.h"
 
 namespace zrythm::engine::session
 {
@@ -30,7 +31,18 @@ ControlRoom::ControlRoom (
       const float dim_amp = dim_volume_->baseValue ();
 
       /* if have listened tracks */
-      if (TRACKLIST->collection ()->get_track_span ().has_listened ())
+      const auto have_listened =
+        std::ranges::any_of (PROJECT->tracks_rt_, [] (const auto &track_var) {
+          const auto * track =
+            structure::tracks::from_variant (track_var.second);
+          const auto * ch = track->channel ();
+          if (ch == nullptr)
+            {
+              return false;
+            }
+          return ch->fader ()->currently_listened_rt ();
+        });
+      if (have_listened)
         {
           /* dim signal */
           utils::float_ranges::mul_k2 (
@@ -44,7 +56,7 @@ ControlRoom::ControlRoom (
           /* TODO add "listen" buffer on fader struct and add listened
            * tracks to it during processing instead of looping here */
           const float listen_amp = listen_volume_->baseValue ();
-          for (const auto &cur_t : TRACKLIST->collection ()->get_track_span ())
+          for (const auto &cur_t : PROJECT->tracks_rt_)
             {
               std::visit (
                 [&] (auto &&t) {
@@ -52,7 +64,7 @@ ControlRoom::ControlRoom (
                     {
                       if (
                         t->get_output_signal_type () == dsp::PortType::Audio
-                        && t->channel ()->fader ()->currently_listened ())
+                        && t->channel ()->fader ()->currently_listened_rt ())
                         {
                           auto * f = t->channel ()->fader ();
                           utils::float_ranges::product (
@@ -68,7 +80,7 @@ ControlRoom::ControlRoom (
                         }
                     }
                 },
-                cur_t);
+                cur_t.second);
             }
         } /* endif have listened tracks */
 
