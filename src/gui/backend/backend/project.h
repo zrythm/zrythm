@@ -221,8 +221,8 @@ public:
   gui::actions::UndoManager *              getUndoManager () const;
   undo::UndoStack *                        undoStack () const;
   PluginFactory *                          getPluginFactory () const;
-  actions::ArrangerObjectCreator *         arrangerObjectCreator () const;
-  actions::TrackCreator *                  trackCreator () const;
+  zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
+  zrythm::actions::TrackCreator *          trackCreator () const;
   gui::backend::FileImporter *             fileImporter () const;
   dsp::TempoMapWrapper *                   getTempoMap () const;
   dsp::SnapGrid *                          snapGridTimeline () const;
@@ -626,10 +626,6 @@ public:
   /** Audio file pool. */
   std::unique_ptr<dsp::AudioPool> pool_;
 
-  /** Zoom levels. TODO & move to clip_editor */
-  double piano_roll_zoom_ = 0;
-  double timeline_zoom_ = 0;
-
   /** Manager for region link groups. */
   // structure::arrangement::RegionLinkGroupManager region_link_group_manager_;
 
@@ -649,7 +645,7 @@ public:
   utils::QObjectUniquePtr<structure::arrangement::Timeline> timeline_;
 
   /** Backend for the widget. */
-  ClipEditor * clip_editor_;
+  utils::QObjectUniquePtr<ClipEditor> clip_editor_;
 
   /** MIDI bindings. */
   std::unique_ptr<engine::session::MidiMappings> midi_mappings_;
@@ -673,7 +669,7 @@ public:
   utils::QObjectUniquePtr<structure::scenes::ClipPlaybackService>
     clip_playback_service_;
 
-  gui::actions::UndoManager * undo_manager_{};
+  gui::actions::UndoManager * legacy_undo_manager_{};
 
   utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
 

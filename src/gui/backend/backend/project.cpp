@@ -103,12 +103,13 @@ Project::Project (
           this)),
       timeline_ (
         utils::make_qobject_unique<structure::arrangement::Timeline> (this)),
-      clip_editor_ (new ClipEditor (
-        *arranger_object_registry_,
-        [&] (const auto &id) {
-          return get_track_registry ().find_by_id_or_throw (id);
-        },
-        this)),
+      clip_editor_ (
+        utils::make_qobject_unique<ClipEditor> (
+          *arranger_object_registry_,
+          [&] (const auto &id) {
+            return get_track_registry ().find_by_id_or_throw (id);
+          },
+          this)),
       midi_mappings_ (
         std::make_unique<engine::session::MidiMappings> (*param_registry_)),
       tracklist_ (
@@ -124,7 +125,7 @@ Project::Project (
           *arranger_object_registry_,
           *tracklist_->collection (),
           this)),
-      undo_manager_ (new gui::actions::UndoManager (this)),
+      legacy_undo_manager_ (new gui::actions::UndoManager (this)),
       undo_stack_ (
         utils::make_qobject_unique<undo::UndoStack> (
           [&] (EngineState &state) {
@@ -553,7 +554,7 @@ Project::activate ()
 {
   z_debug ("Activating project {} ({:p})...", title_, fmt::ptr (this));
 
-  last_saved_action_ = undo_manager_->get_last_action ();
+  last_saved_action_ = legacy_undo_manager_->get_last_action ();
 
   audio_engine_->activate (true);
 
@@ -1019,7 +1020,7 @@ Project::SerializeProjectThread::run ()
   z_debug ("successfully saved project");
 
 serialize_end:
-  ctx_.main_project_->undo_manager_->action_sem_.release ();
+  ctx_.main_project_->legacy_undo_manager_->action_sem_.release ();
   ctx_.finished_.store (true);
 }
 
@@ -1148,7 +1149,7 @@ Project::save (
   /* if async, lock the undo manager */
   if (async)
     {
-      undo_manager_->action_sem_.acquire ();
+      legacy_undo_manager_->action_sem_.acquire ();
     }
 
   /* set the dir and create it if it doesn't exist */
@@ -1318,7 +1319,7 @@ Project::save (
     utils::io::touch_file (finished_file_path);
   }
 
-  auto last_action = undo_manager_->get_last_action ();
+  auto last_action = legacy_undo_manager_->get_last_action ();
   if (is_backup)
     {
       last_action_in_last_successful_autosave_ = last_action;
@@ -1343,7 +1344,7 @@ Project::has_unsaved_changes () const
 {
   /* simply check if the last performed action matches the last action when the
    * project was last saved/loaded */
-  auto last_performed_action = undo_manager_->get_last_action ();
+  auto last_performed_action = legacy_undo_manager_->get_last_action ();
   return last_performed_action != last_saved_action_;
 }
 
@@ -1386,7 +1387,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     utils::clone_qobject (*other.port_connections_manager_, &obj);
   obj.midi_mappings_ = utils::clone_unique (
     *other.midi_mappings_, clone_type, *obj.param_registry_);
-  obj.undo_manager_ = utils::clone_qobject (*other.undo_manager_, &obj);
+  obj.legacy_undo_manager_ =
+    utils::clone_qobject (*other.legacy_undo_manager_, &obj);
   obj.tool_ = utils::clone_qobject (*other.tool_, &obj);
 
   z_debug ("finished cloning project");
@@ -1483,13 +1485,13 @@ Project::getTool () const
 ClipEditor *
 Project::getClipEditor () const
 {
-  return clip_editor_;
+  return clip_editor_.get ();
 }
 
 gui::actions::UndoManager *
 Project::getUndoManager () const
 {
-  return undo_manager_;
+  return legacy_undo_manager_;
 }
 
 undo::UndoStack *
@@ -1504,13 +1506,13 @@ Project::getPluginFactory () const
   return plugin_factory_;
 }
 
-actions::ArrangerObjectCreator *
+zrythm::actions::ArrangerObjectCreator *
 Project::arrangerObjectCreator () const
 {
   return arranger_object_creator_.get ();
 }
 
-actions::TrackCreator *
+zrythm::actions::TrackCreator *
 Project::trackCreator () const
 {
   return track_creator_.get ();
@@ -1554,10 +1556,10 @@ Project::clone (bool for_backup) const
   if (for_backup)
     {
       /* no undo history in backups */
-      if (ret->undo_manager_ != nullptr)
+      if (ret->legacy_undo_manager_ != nullptr)
         {
-          delete ret->undo_manager_;
-          ret->undo_manager_ = nullptr;
+          delete ret->legacy_undo_manager_;
+          ret->legacy_undo_manager_ = nullptr;
         }
     }
   return ret;
@@ -1593,7 +1595,7 @@ to_json (nlohmann::json &j, const Project &project)
   // project.region_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
   j[Project::kMidiMappingsKey] = project.midi_mappings_;
-  j[Project::kUndoManagerKey] = project.undo_manager_;
+  j[Project::kUndoManagerKey] = project.legacy_undo_manager_;
   j[Project::kUndoStackKey] = project.undo_stack_;
   j[Project::kLastSelectionKey] = project.last_selection_;
 }
@@ -1730,7 +1732,7 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kPortConnectionsManagerKey)
     .get_to (*project.port_connections_manager_);
   j.at (Project::kMidiMappingsKey).get_to (*project.midi_mappings_);
-  j.at (Project::kUndoManagerKey).get_to (*project.undo_manager_);
+  j.at (Project::kUndoManagerKey).get_to (*project.legacy_undo_manager_);
   j.at (Project::kUndoStackKey).get_to (*project.undo_stack_);
   j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
 
