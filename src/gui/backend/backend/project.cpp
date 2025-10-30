@@ -101,7 +101,8 @@ Project::Project (
             return gui::SettingsManager::timelineLastCreatedObjectLengthInTicks ();
           },
           this)),
-      timeline_ (new Timeline (this)),
+      timeline_ (
+        utils::make_qobject_unique<structure::arrangement::Timeline> (this)),
       clip_editor_ (new ClipEditor (
         *arranger_object_registry_,
         [&] (const auto &id) {
@@ -1443,10 +1444,10 @@ Project::clipPlaybackService () const
   return clip_playback_service_.get ();
 }
 
-Timeline *
+structure::arrangement::Timeline *
 Project::getTimeline () const
 {
-  return timeline_;
+  return timeline_.get ();
 }
 
 gui::backend::TrackSelectionManager *

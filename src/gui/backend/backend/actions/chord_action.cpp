@@ -31,11 +31,13 @@ ChordAction::ChordAction (
   QObject *              parent)
     : ChordAction (parent)
 {
+#if 0
   type_ = Type::Single;
   chord_before_ = CHORD_EDITOR->get_chord_at_index (chord_idx);
 
   chord_after_ = chord;
   chord_idx_ = chord_idx;
+#endif
 }
 
 void
@@ -56,6 +58,7 @@ init_from (
 void
 ChordAction::do_or_undo (bool do_it)
 {
+#if 0
   switch (type_)
     {
     case Type::All:
@@ -66,6 +69,7 @@ ChordAction::do_or_undo (bool do_it)
         do_it ? chord_after_ : chord_before_, chord_idx_, false);
       break;
     }
+#endif
 }
 
 void

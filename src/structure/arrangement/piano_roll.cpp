@@ -1,13 +1,10 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/piano_roll.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/tracks/track.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/rt_thread_id.h"
+#include "structure/arrangement/piano_roll.h"
+
+namespace zrythm::structure::arrangement
+{
 
 static constexpr std::array<const char *, 47> drum_labels = {
   "Acoustic Bass Drum",
@@ -59,15 +56,9 @@ static constexpr std::array<const char *, 47> drum_labels = {
   "Open Triangle"
 };
 
-PianoRoll::PianoRoll (
-  const structure::arrangement::ArrangerObjectRegistry &registry,
-  QObject *                                             parent)
+PianoRoll::PianoRoll (QObject * parent)
     : QObject (parent),
-      editor_settings_ (
-        utils::make_qobject_unique<gui::backend::EditorSettings> (this)),
-      selection_manager_ (
-        utils::make_qobject_unique<
-          gui::backend::ArrangerObjectSelectionManager> (registry, this))
+      editor_settings_ (utils::make_qobject_unique<EditorSettings> (this))
 {
   // Center in middle
   editor_settings_->setY (note_height_ * 64.0);
@@ -167,7 +158,7 @@ int
 PianoRoll::getKeyAtY (double y) const
 {
   auto key = 127 - (static_cast<int> (y) / note_height_);
-  return key;
+  return std::clamp (key, 0, 127);
 }
 
 void
@@ -195,19 +186,6 @@ PianoRoll::contains_current_note (int note)
   return std::ranges::contains (current_notes_, note);
 }
 
-void
-PianoRoll::init_loaded ()
-{
-  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-    {
-      highlighting_ = ENUM_INT_TO_VALUE (
-        Highlighting,
-        zrythm::gui::SettingsManager::get_instance ()->get_pianoRollHighlight ());
-    }
-
-  init_descriptors ();
-}
-
 const MidiNoteDescriptor *
 PianoRoll::find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val)
 {
@@ -232,17 +210,11 @@ PianoRoll::set_highlighting (Highlighting highlighting)
 {
   highlighting_ = highlighting;
 
+// TODO
+#if 0
   zrythm::gui::SettingsManager::get_instance ()->set_pianoRollHighlight (
     ENUM_VALUE_TO_INT (highlighting));
-
-  /* EVENTS_PUSH (EventType::ET_PIANO_ROLL_HIGHLIGHTING_CHANGED, nullptr); */
-}
-
-structure::tracks::Track *
-PianoRoll::get_current_track () const
-{
-  /* TODO */
-  z_return_val_if_reached (nullptr);
+#endif
 }
 
 void
@@ -280,23 +252,6 @@ PianoRoll::init ()
 
   midi_modifier_ = MidiModifier::Velocity;
 
-  // ??? what was this code doing?
-  // {
-  //   PianoRoll tmp{ this };
-  //   editor_settings_ =
-  //     utils::clone_unique_qobject (*tmp.getEditorSettings (), this);
-  // }
-
-  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-    {
-      highlighting_ = ENUM_INT_TO_VALUE (
-        Highlighting,
-        zrythm::gui::SettingsManager::get_instance ()->get_pianoRollHighlight ());
-      midi_modifier_ = ENUM_INT_TO_VALUE (
-        MidiModifier,
-        zrythm::gui::SettingsManager::get_instance ()
-          ->get_pianoRollMidiModifier ());
-    }
-
   init_descriptors ();
+}
 }

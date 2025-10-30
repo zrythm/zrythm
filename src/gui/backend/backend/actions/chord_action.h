@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UNDO_CHORD_ACTION_H__
-#define __UNDO_CHORD_ACTION_H__
+#pragma once
 
 #include "dsp/chord_descriptor.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/chord_editor.h"
 
 namespace zrythm::gui::actions
 {
@@ -90,5 +88,3 @@ public:
 };
 
 }; // namespace zrythm::gui::actions
-
-#endif

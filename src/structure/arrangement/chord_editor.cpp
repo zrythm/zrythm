@@ -1,14 +1,15 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/chord_descriptor.h"
-#include "gui/backend/backend/actions/chord_action.h"
-#include "gui/backend/backend/chord_editor.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/chord_preset.h"
-#include "gui/backend/backend/zrythm.h"
-#include "utils/logger.h"
-#include "utils/rt_thread_id.h"
+#include "structure/arrangement/chord_editor.h"
+
+namespace zrythm::structure::arrangement
+{
+ChordEditor::ChordEditor (QObject * parent)
+    : QObject (parent),
+      editor_settings_ (utils::make_qobject_unique<EditorSettings> (this))
+{
+}
 
 void
 ChordEditor::init ()
@@ -28,6 +29,7 @@ ChordEditor::apply_single_chord (
   const int              idx,
   bool                   undoable)
 {
+#if 0
   if (undoable)
     {
       try
@@ -44,6 +46,7 @@ ChordEditor::apply_single_chord (
     {
       replace_chord_descriptor (idx, ChordDescriptor{ chord });
     }
+#endif
 }
 
 void
@@ -51,6 +54,7 @@ ChordEditor::apply_chords (
   const std::vector<ChordDescriptor> &chords,
   bool                                undoable)
 {
+#if 0
   if (undoable)
     {
       try
@@ -73,12 +77,7 @@ ChordEditor::apply_chords (
     }
 
   // /* EVENTS_PUSH (EventType::ET_CHORDS_UPDATED, nullptr); */
-}
-
-void
-ChordEditor::apply_preset (const ChordPreset &pset, bool undoable)
-{
-  apply_chords (pset.descr_, undoable);
+#endif
 }
 
 void
@@ -159,4 +158,5 @@ ChordEditor::get_chord_index (const ChordDescriptor &chord) const
     }
 
   z_return_val_if_reached (-1);
+}
 }

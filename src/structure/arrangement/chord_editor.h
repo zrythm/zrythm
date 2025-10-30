@@ -1,32 +1,17 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Chord editor backend.
- */
-
 #pragma once
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
-#include "gui/backend/arranger_object_selection_manager.h"
-#include "gui/backend/backend/editor_settings.h"
-#include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
 
 class ChordPreset;
 
-/**
- * @addtogroup gui_backend
- *
- * @{
- */
-
-using namespace zrythm;
-
-#define CHORD_EDITOR (CLIP_EDITOR->chord_editor_)
+namespace zrythm::structure::arrangement
+{
 
 constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 
@@ -37,11 +22,8 @@ class ChordEditor : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    gui::backend::EditorSettings * editorSettings READ getEditorSettings
-      CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
-      selectionManager CONSTANT)
+    zrythm::structure::arrangement::EditorSettings * editorSettings READ
+      getEditorSettings CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -52,29 +34,13 @@ public:
   using MusicalScale = dsp::MusicalScale;
   using MusicalNote = dsp::MusicalNote;
 
-  ChordEditor (
-    const structure::arrangement::ArrangerObjectRegistry &registry,
-    QObject *                                             parent = nullptr)
-      : QObject (parent),
-        selection_manager_ (
-          utils::make_qobject_unique<
-            gui::backend::ArrangerObjectSelectionManager> (registry, this))
-  {
-  }
+  ChordEditor (QObject * parent = nullptr);
 
   // =========================================================
   // QML interface
   // =========================================================
 
-  gui::backend::EditorSettings * getEditorSettings () const
-  {
-    return editor_settings_.get ();
-  }
-
-  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
-  {
-    return selection_manager_.get ();
-  }
+  auto getEditorSettings () const { return editor_settings_.get (); }
 
   // =========================================================
 
@@ -87,8 +53,6 @@ public:
   apply_single_chord (const ChordDescriptor &chord, int idx, bool undoable);
 
   void apply_chords (const std::vector<ChordDescriptor> &chords, bool undoable);
-
-  void apply_preset (const ChordPreset &pset, bool undoable);
 
   void apply_preset_from_scale (
     MusicalScale::ScaleType scale,
@@ -156,12 +120,7 @@ public:
   std::vector<ChordDescriptor> chords_;
 
 private:
-  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_;
-
-  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
-    selection_manager_;
+  utils::QObjectUniquePtr<EditorSettings> editor_settings_;
 };
 
-/**
- * @}
- */
+}

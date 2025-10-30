@@ -8,7 +8,7 @@
 
 #include <QtQmlIntegration>
 
-namespace zrythm::gui::backend
+namespace zrythm::structure::arrangement
 {
 
 /**
@@ -114,4 +114,4 @@ private:
   double hzoom_level_ = 1.0;
 };
 
-} // namespace zrythm::gui::backend
+}

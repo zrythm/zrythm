@@ -10,21 +10,22 @@ ClipEditor::ClipEditor (
   QObject *               parent)
     : QObject (parent), object_registry_ (reg),
       track_resolver_ (std::move (track_resolver)),
-      piano_roll_ (utils::make_qobject_unique<PianoRoll> (this)),
-      audio_clip_editor_ (utils::make_qobject_unique<AudioClipEditor> (this)),
-      automation_editor_ (utils::make_qobject_unique<AutomationEditor> (this)),
-      chord_editor_ (utils::make_qobject_unique<ChordEditor> (this))
+      piano_roll_ (
+        utils::make_qobject_unique<structure::arrangement::PianoRoll> (this)),
+      audio_clip_editor_ (
+        utils::make_qobject_unique<structure::arrangement::AudioClipEditor> (
+          this)),
+      automation_editor_ (
+        utils::make_qobject_unique<structure::arrangement::AutomationEditor> (
+          this)),
+      chord_editor_ (
+        utils::make_qobject_unique<structure::arrangement::ChordEditor> (this))
 {
 }
 
 void
 ClipEditor::init_loaded ()
 {
-  z_info ("Initializing clip editor backend...");
-
-  piano_roll_->init_loaded ();
-
-  z_info ("Done initializing clip editor backend");
 }
 
 void

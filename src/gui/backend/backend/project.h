@@ -12,7 +12,6 @@
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/backend/backend/timeline.h"
 #include "gui/backend/file_importer.h"
 #include "gui/backend/plugin_selection_manager.h"
 #include "gui/backend/tool.h"
@@ -21,6 +20,7 @@
 #include "gui/dsp/quantize_options.h"
 #include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "structure/arrangement/timeline.h"
 #include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
@@ -106,7 +106,9 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::gui::backend::TrackSelectionManager * trackSelectionManager READ
       trackSelectionManager CONSTANT)
-  Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::arrangement::Timeline * timeline READ getTimeline
+      CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::engine::device_io::AudioEngine * engine READ engine CONSTANT FINAL)
   Q_PROPERTY (
@@ -211,7 +213,7 @@ public:
   structure::scenes::ClipPlaybackService * clipPlaybackService () const;
   gui::backend::TrackSelectionManager *    trackSelectionManager () const;
   gui::backend::PluginSelectionManager *   pluginSelectionManager () const;
-  Timeline *                               getTimeline () const;
+  structure::arrangement::Timeline *       getTimeline () const;
   engine::session::Transport *             getTransport () const;
   engine::device_io::AudioEngine *         engine () const;
   gui::backend::Tool *                     getTool () const;
@@ -246,38 +248,6 @@ public:
   auto * getArrangerObjectFactory () const
   {
     return arranger_object_factory_.get ();
-  }
-
-  template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
-  auto get_selection_manager_for_object (const ObjT &obj) const
-  {
-    if constexpr (structure ::arrangement::TimelineObject<ObjT>)
-      {
-        return timeline_->selectionManager ();
-      }
-    else if constexpr (std::is_same_v<ObjT, structure ::arrangement::MidiNote>)
-      {
-        return clip_editor_->getPianoRoll ()->selectionManager ();
-      }
-    else if constexpr (
-      std::is_same_v<ObjT, structure ::arrangement::AutomationPoint>)
-      {
-        return clip_editor_->getAutomationEditor ()->selectionManager ();
-      }
-    else if constexpr (
-      std::is_same_v<ObjT, structure ::arrangement::ChordObject>)
-      {
-        return clip_editor_->getChordEditor ()->selectionManager ();
-      }
-    else if constexpr (
-      std::is_same_v<ObjT, structure ::arrangement::AudioSourceObject>)
-      {
-        return clip_editor_->getAudioClipEditor ()->selectionManager ();
-      }
-    else
-      {
-        static_assert (false);
-      }
   }
 
   /**
@@ -676,7 +646,7 @@ public:
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
 
   /** Timeline widget backend. */
-  Timeline * timeline_ = nullptr;
+  utils::QObjectUniquePtr<structure::arrangement::Timeline> timeline_;
 
   /** Backend for the widget. */
   ClipEditor * clip_editor_;

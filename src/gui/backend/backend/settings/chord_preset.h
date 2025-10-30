@@ -7,7 +7,7 @@
 #include "zrythm-config.h"
 
 #include "dsp/chord_descriptor.h"
-#include "gui/backend/backend/chord_editor.h"
+#include "structure/arrangement/chord_editor.h"
 #include "utils/types.h"
 
 #include <QtQmlIntegration>

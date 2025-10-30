@@ -16,11 +16,13 @@ add_executable(zrythm_structure_arrangement_unit_tests
   chord_object_test.cpp
   chord_region_test.cpp
   colored_object_test.cpp
+  editor_settings_test.cpp
   fadeable_object_test.cpp
   loopable_object_test.cpp
   marker_test.cpp
   midi_note_test.cpp
   midi_region_test.cpp
+  piano_roll_test.cpp
   region_renderer_test.cpp
   muteable_object_test.cpp
   named_object_test.cpp

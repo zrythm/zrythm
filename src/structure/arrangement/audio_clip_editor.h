@@ -3,20 +3,13 @@
 
 #pragma once
 
-#include "gui/backend/arranger_object_selection_manager.h"
-#include "gui/backend/backend/editor_settings.h"
+#include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
 
 #include <QtQmlIntegration>
 
-/**
- * @addtogroup gui_backend
- *
- * @{
- */
-
-#define AUDIO_CLIP_EDITOR (CLIP_EDITOR->audio_clip_editor_)
-
+namespace zrythm::structure::arrangement
+{
 /**
  * Audio clip editor serializable backend.
  *
@@ -27,11 +20,8 @@ class AudioClipEditor : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    zrythm::gui::backend::EditorSettings * editorSettings READ getEditorSettings
-      CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
-      selectionManager CONSTANT)
+    zrythm::structure::arrangement::EditorSettings * editorSettings READ
+      getEditorSettings CONSTANT FINAL)
 
 public:
   AudioClipEditor (QObject * parent = nullptr) : QObject (parent) { }
@@ -40,15 +30,7 @@ public:
   // QML interface
   // =========================================================
 
-  gui::backend::EditorSettings * getEditorSettings () const
-  {
-    return editor_settings_.get ();
-  }
-
-  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
-  {
-    return selection_manager_.get ();
-  }
+  auto getEditorSettings () const { return editor_settings_.get (); }
 
   // =========================================================
 
@@ -74,15 +56,8 @@ private:
   }
 
 private:
-  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_{
-    new gui::backend::EditorSettings{ this }
-  };
-
-  // unused? only added to satisfy ArrangerObjectFactory
-  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
-    selection_manager_;
+  utils::QObjectUniquePtr<EditorSettings> editor_settings_{ new EditorSettings{
+    this } };
 };
 
-/**
- * @}
- */
+}

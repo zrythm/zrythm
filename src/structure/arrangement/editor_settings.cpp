@@ -1,10 +1,9 @@
-// SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/editor_settings.h"
-#include "gui/backend/backend/project.h"
+#include "structure/arrangement/editor_settings.h"
 
-namespace zrythm::gui::backend
+namespace zrythm::structure::arrangement
 {
 double
 EditorSettings::clamp_scroll_start_x (double x)

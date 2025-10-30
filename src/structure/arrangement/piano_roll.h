@@ -3,24 +3,11 @@
 
 #pragma once
 
-#include "gui/backend/arranger_object_selection_manager.h"
-#include "gui/backend/backend/editor_settings.h"
-#include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
 
-namespace zrythm::structure::tracks
+namespace zrythm::structure::arrangement
 {
-class Track;
-}
-
-/**
- * @addtogroup gui_backend
- *
- * @{
- */
-
-#define PIANO_ROLL (CLIP_EDITOR->piano_roll_)
-
 /**
  * A MIDI modifier to use to display data for.
  */
@@ -89,11 +76,8 @@ class PianoRoll : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    zrythm::gui::backend::EditorSettings * editorSettings READ getEditorSettings
-      CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::gui::backend::ArrangerObjectSelectionManager * selectionManager READ
-      selectionManager CONSTANT)
+    zrythm::structure::arrangement::EditorSettings * editorSettings READ
+      getEditorSettings CONSTANT FINAL)
   Q_PROPERTY (int keyHeight READ getKeyHeight NOTIFY keyHeightChanged)
   QML_UNCREATABLE ("")
 
@@ -109,9 +93,7 @@ public:
     Both,
   };
 
-  PianoRoll (
-    const structure::arrangement::ArrangerObjectRegistry &registry,
-    QObject *                                             parent = nullptr);
+  PianoRoll (QObject * parent = nullptr);
 
 private:
   static constexpr std::array<bool, 12> BLACK_NOTES = {
@@ -124,15 +106,7 @@ public:
   // QML Interface
   // ============================================================================
 
-  gui::backend::EditorSettings * getEditorSettings () const
-  {
-    return editor_settings_.get ();
-  }
-
-  gui::backend::ArrangerObjectSelectionManager * selectionManager () const
-  {
-    return selection_manager_.get ();
-  }
+  auto getEditorSettings () const { return editor_settings_.get (); }
 
   int getKeyHeight () const { return note_height_; }
 
@@ -144,6 +118,7 @@ public:
    */
   Q_INVOKABLE static constexpr bool isBlackKey (int note)
   {
+    note = std::clamp (note, 0, 127);
     return BLACK_NOTES.at (static_cast<size_t> (note) % 12);
   }
   Q_INVOKABLE static constexpr bool isWhiteKey (int note)
@@ -186,17 +161,7 @@ public:
    */
   bool contains_current_note (int note);
 
-  /**
-   * Returns the current track whose regions are being shown in the piano roll.
-   */
-  structure::tracks::Track * get_current_track () const;
-
   void set_notes_zoom (float notes_zoom, bool fire_events);
-
-  /**
-   * Inits the PianoRoll after a Project has been loaded.
-   */
-  void init_loaded ();
 
   /**
    * Returns the MidiNoteDescriptor matching the value (0-127).
@@ -276,7 +241,7 @@ private:
   void init_descriptors ();
 
 public:
-  utils::QObjectUniquePtr<gui::backend::EditorSettings> editor_settings_;
+  utils::QObjectUniquePtr<EditorSettings> editor_settings_;
 
   /** Notes zoom level. */
   float notes_zoom_ = 1.0f;
@@ -314,7 +279,5 @@ public:
    */
   std::vector<MidiNoteDescriptor> drum_descriptors_ =
     std::vector<MidiNoteDescriptor> (128);
-
-  utils::QObjectUniquePtr<gui::backend::ArrangerObjectSelectionManager>
-    selection_manager_;
 };
+}

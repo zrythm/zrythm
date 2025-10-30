@@ -3,11 +3,12 @@
 
 #pragma once
 
-#include "gui/backend/backend/audio_clip_editor.h"
-#include "gui/backend/backend/automation_editor.h"
-#include "gui/backend/backend/chord_editor.h"
-#include "gui/backend/backend/piano_roll.h"
+#include "structure/arrangement/audio_clip_editor.h"
+#include "structure/arrangement/automation_editor.h"
+#include "structure/arrangement/chord_editor.h"
+#include "structure/arrangement/piano_roll.h"
 #include "structure/tracks/track.h"
+#include "structure/tracks/track_fwd.h"
 
 class ArrangerSelections;
 
@@ -27,12 +28,18 @@ class ClipEditor : public QObject
   Q_OBJECT
   Q_PROPERTY (QVariant region READ region NOTIFY regionChanged)
   Q_PROPERTY (QVariant track READ track NOTIFY regionChanged)
-  Q_PROPERTY (PianoRoll * pianoRoll READ getPianoRoll CONSTANT FINAL)
-  Q_PROPERTY (ChordEditor * chordEditor READ getChordEditor CONSTANT FINAL)
   Q_PROPERTY (
-    AudioClipEditor * audioEditor READ getAudioClipEditor CONSTANT FINAL)
+    zrythm::structure::arrangement::PianoRoll * pianoRoll READ getPianoRoll
+      CONSTANT FINAL)
   Q_PROPERTY (
-    AutomationEditor * automationEditor READ getAutomationEditor CONSTANT FINAL)
+    zrythm::structure::arrangement::ChordEditor * chordEditor READ
+      getChordEditor CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::arrangement::AudioClipEditor * audioEditor READ
+      getAudioClipEditor CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::arrangement::AutomationEditor * automationEditor READ
+      getAutomationEditor CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -54,13 +61,19 @@ public:
   // QML Interface
   // ============================================================================
 
-  PianoRoll *       getPianoRoll () const { return piano_roll_.get (); }
-  ChordEditor *     getChordEditor () const { return chord_editor_.get (); }
-  AudioClipEditor * getAudioClipEditor () const
+  structure::arrangement::PianoRoll * getPianoRoll () const
+  {
+    return piano_roll_.get ();
+  }
+  structure::arrangement::ChordEditor * getChordEditor () const
+  {
+    return chord_editor_.get ();
+  }
+  structure::arrangement::AudioClipEditor * getAudioClipEditor () const
   {
     return audio_clip_editor_.get ();
   }
-  AutomationEditor * getAutomationEditor () const
+  structure::arrangement::AutomationEditor * getAutomationEditor () const
   {
     return automation_editor_.get ();
   }
@@ -160,10 +173,12 @@ public:
   /** Region currently attached to the clip editor. */
   std::optional<std::pair<ArrangerObject::Uuid, TrackUuid>> region_id_;
 
-  utils::QObjectUniquePtr<PianoRoll>        piano_roll_;
-  utils::QObjectUniquePtr<AudioClipEditor>  audio_clip_editor_;
-  utils::QObjectUniquePtr<AutomationEditor> automation_editor_;
-  utils::QObjectUniquePtr<ChordEditor>      chord_editor_;
+  utils::QObjectUniquePtr<structure::arrangement::PianoRoll> piano_roll_;
+  utils::QObjectUniquePtr<structure::arrangement::AudioClipEditor>
+    audio_clip_editor_;
+  utils::QObjectUniquePtr<structure::arrangement::AutomationEditor>
+    automation_editor_;
+  utils::QObjectUniquePtr<structure::arrangement::ChordEditor> chord_editor_;
 };
 
 /**
