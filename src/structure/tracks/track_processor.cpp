@@ -311,25 +311,26 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 {
   assert (handle_recording_cb_.has_value ());
 
-  unsigned_frame_t start = time_nfo.g_start_frame_w_offset_;
-  unsigned_frame_t end = time_nfo.g_start_frame_ + time_nfo.nframes_;
-  const auto       loop = transport_.get_loop_range_positions ();
+  auto       start = units::samples (time_nfo.g_start_frame_w_offset_);
+  auto       end = units::samples (time_nfo.g_start_frame_ + time_nfo.nframes_);
+  const auto loop = transport_.get_loop_range_positions ();
 
   // split point + nframes pairs
-  boost::container::static_vector<std::pair<unsigned_frame_t, nframes_t>, 6>
+  boost::container::static_vector<std::pair<units::sample_t, units::sample_t>, 6>
     ranges;
-  ranges.emplace_back (start, time_nfo.nframes_);
+  ranges.emplace_back (start, units::samples (time_nfo.nframes_));
 
   const bool loop_hit = transport_.loop_enabled () && loop.second == end;
 
   // Handle loop case
   if (loop_hit)
     {
-      nframes_t pre_loop = loop.second - start;
+      auto pre_loop = loop.second - start;
       ranges.clear ();
       ranges.emplace_back (start, pre_loop);
-      ranges.emplace_back (loop.second, 0); // loop end pause
-      ranges.emplace_back (loop.first, time_nfo.nframes_ - pre_loop);
+      ranges.emplace_back (loop.second, units::samples (0)); // loop end pause
+      ranges.emplace_back (
+        loop.first, units::samples (time_nfo.nframes_) - pre_loop);
     }
   // Handle punch points
   if (transport_.punch_enabled ())
@@ -367,7 +368,8 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
                   // add pause
                   ranges.insert (
                     ranges.begin () + 3,
-                    std::make_pair (ranges[2].first + ranges[2].second, 0));
+                    std::make_pair (
+                      ranges[2].first + ranges[2].second, units::samples (0)));
 
                   // adjust frames of previous split
                   ranges[1].second -= ranges[2].second;
@@ -382,7 +384,8 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
                   // add pause
                   ranges.insert (
                     ranges.begin () + 2,
-                    std::make_pair (ranges[1].first + ranges[1].second, 0));
+                    std::make_pair (
+                      ranges[1].first + ranges[1].second, units::samples (0)));
 
                   // adjust frames of previous split
                   ranges[0].second -= ranges[1].second;
@@ -409,7 +412,8 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
                   ranges.emplace_back (punch.second, end - punch.second);
 
                   // add pause
-                  ranges.emplace_back (ranges[2].first + ranges[2].second, 0);
+                  ranges.emplace_back (
+                    ranges[2].first + ranges[2].second, units::samples (0));
 
                   // adjust frames of previous split
                   ranges[1].second -= ranges[2].second;
@@ -420,7 +424,8 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
                   ranges.emplace_back (punch.second, end - punch.second);
 
                   // add pause
-                  ranges.emplace_back (ranges[1].first + ranges[1].second, 0);
+                  ranges.emplace_back (
+                    ranges[1].first + ranges[1].second, units::samples (0));
 
                   // adjust frames of previous split
                   ranges[0].second -= ranges[1].second;
@@ -437,10 +442,11 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
         continue;
 
       EngineProcessTimeInfo cur_time_nfo = {
-        .g_start_frame_ = range.first,
-        .g_start_frame_w_offset_ = range.first,
+        .g_start_frame_ = range.first.in<unsigned_frame_t> (units::samples),
+        .g_start_frame_w_offset_ =
+          range.first.in<unsigned_frame_t> (units::samples),
         .local_offset_ = 0,
-        .nframes_ = range.second
+        .nframes_ = range.second.in<nframes_t> (units::samples)
       };
       if (is_midi ())
         {

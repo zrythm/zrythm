@@ -14,6 +14,7 @@
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/ui.h"
+#include "gui/dsp/plugin_span.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
@@ -125,7 +126,6 @@ Project::Project (
           *arranger_object_registry_,
           *tracklist_->collection (),
           this)),
-      legacy_undo_manager_ (new gui::actions::UndoManager (this)),
       undo_stack_ (
         utils::make_qobject_unique<undo::UndoStack> (
           [&] (EngineState &state) {
@@ -196,14 +196,14 @@ Project::Project (
         std::make_unique<structure::tracks::TrackFactory> (
           get_final_track_dependencies ())),
       arranger_object_creator_ (
-        utils::make_qobject_unique<actions::ArrangerObjectCreator> (
+        utils::make_qobject_unique<zrythm::actions::ArrangerObjectCreator> (
           *undo_stack_,
           *arranger_object_factory_,
           *snap_grid_timeline_,
           *snap_grid_editor_,
           this)),
       track_creator_ (
-        utils::make_qobject_unique<actions::TrackCreator> (
+        utils::make_qobject_unique<zrythm::actions::TrackCreator> (
           *undo_stack_,
           *track_factory_,
           *tracklist_->collection (),
@@ -554,7 +554,8 @@ Project::activate ()
 {
   z_debug ("Activating project {} ({:p})...", title_, fmt::ptr (this));
 
-  last_saved_action_ = legacy_undo_manager_->get_last_action ();
+  // TODO
+  // last_saved_action_ = legacy_undo_manager_->get_last_action ();
 
   audio_engine_->activate (true);
 
@@ -635,16 +636,12 @@ Project::add_default_tracks ()
     add_track.operator()<MarkerTrack> (QObject::tr ("Markers"));
   tracklist_->singletonTracks ()->setMarkerTrack (marker_track);
   const auto add_default_markers =
-    [] (
-      auto &marker_track_inner, const auto &factory, const int ticks_per_bar,
-      const auto frames_per_tick) {
+    [] (auto &marker_track_inner, const auto &factory, const auto &tempo_map) {
       {
-        auto          marker_name = fmt::format ("[{}]", QObject::tr ("start"));
-        dsp::Position pos;
-        pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
+        auto marker_name = fmt::format ("[{}]", QObject::tr ("start"));
         auto marker_ref =
           factory->template get_builder<structure::arrangement::Marker> ()
-            .with_start_ticks (pos.ticks_)
+            .with_start_ticks (0)
             .with_name (
               utils::Utf8String::from_utf8_encoded_string (marker_name)
                 .to_qstring ())
@@ -654,12 +651,12 @@ Project::add_default_tracks ()
       }
 
       {
-        auto          marker_name = fmt::format ("[{}]", QObject::tr ("end"));
-        dsp::Position pos;
-        pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
+        auto       marker_name = fmt::format ("[{}]", QObject::tr ("end"));
+        const auto pos = tempo_map.musical_position_to_tick (
+          { .bar = 129, .beat = 1, .sixteenth = 1, .tick = 0 });
         auto marker_ref =
           factory->template get_builder<structure::arrangement::Marker> ()
-            .with_start_ticks (pos.ticks_)
+            .with_start_ticks (pos.in (units::ticks))
             .with_name (
               utils::Utf8String::from_utf8_encoded_string (marker_name)
                 .to_qstring ())
@@ -668,9 +665,7 @@ Project::add_default_tracks ()
         marker_track_inner->add_object (marker_ref);
       }
     };
-  add_default_markers (
-    marker_track, arranger_object_factory_, transport_->ticks_per_bar_,
-    audio_engine_->frames_per_tick_);
+  add_default_markers (marker_track, arranger_object_factory_, tempo_map_);
 
   tracklist_->setPinnedTracksCutoff (
     static_cast<int> (tracklist_->collection ()->track_count ()));
@@ -1020,7 +1015,7 @@ Project::SerializeProjectThread::run ()
   z_debug ("successfully saved project");
 
 serialize_end:
-  ctx_.main_project_->legacy_undo_manager_->action_sem_.release ();
+  // ctx_.main_project_->legacy_undo_manager_->action_sem_.release ();
   ctx_.finished_.store (true);
 }
 
@@ -1149,7 +1144,7 @@ Project::save (
   /* if async, lock the undo manager */
   if (async)
     {
-      legacy_undo_manager_->action_sem_.acquire ();
+      // legacy_undo_manager_->action_sem_.acquire ();
     }
 
   /* set the dir and create it if it doesn't exist */
@@ -1319,6 +1314,8 @@ Project::save (
     utils::io::touch_file (finished_file_path);
   }
 
+// TODO
+#if 0
   auto last_action = legacy_undo_manager_->get_last_action ();
   if (is_backup)
     {
@@ -1328,6 +1325,7 @@ Project::save (
     {
       last_saved_action_ = last_action;
     }
+#endif
 
   if (engine_paused)
     {
@@ -1344,8 +1342,12 @@ Project::has_unsaved_changes () const
 {
   /* simply check if the last performed action matches the last action when the
    * project was last saved/loaded */
+// TODO
+#if 0
   auto last_performed_action = legacy_undo_manager_->get_last_action ();
   return last_performed_action != last_saved_action_;
+#endif
+  return true;
 }
 
 void
@@ -1387,8 +1389,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     utils::clone_qobject (*other.port_connections_manager_, &obj);
   obj.midi_mappings_ = utils::clone_unique (
     *other.midi_mappings_, clone_type, *obj.param_registry_);
-  obj.legacy_undo_manager_ =
-    utils::clone_qobject (*other.legacy_undo_manager_, &obj);
+  // obj.legacy_undo_manager_ =
+  //   utils::clone_qobject (*other.legacy_undo_manager_, &obj);
   obj.tool_ = utils::clone_qobject (*other.tool_, &obj);
 
   z_debug ("finished cloning project");
@@ -1488,12 +1490,6 @@ Project::getClipEditor () const
   return clip_editor_.get ();
 }
 
-gui::actions::UndoManager *
-Project::getUndoManager () const
-{
-  return legacy_undo_manager_;
-}
-
 undo::UndoStack *
 Project::undoStack () const
 {
@@ -1556,11 +1552,14 @@ Project::clone (bool for_backup) const
   if (for_backup)
     {
       /* no undo history in backups */
+// TODO
+#if 0
       if (ret->legacy_undo_manager_ != nullptr)
         {
           delete ret->legacy_undo_manager_;
           ret->legacy_undo_manager_ = nullptr;
         }
+#endif
     }
   return ret;
 }
@@ -1595,7 +1594,7 @@ to_json (nlohmann::json &j, const Project &project)
   // project.region_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
   j[Project::kMidiMappingsKey] = project.midi_mappings_;
-  j[Project::kUndoManagerKey] = project.legacy_undo_manager_;
+  // j[Project::kUndoManagerKey] = project.legacy_undo_manager_;
   j[Project::kUndoStackKey] = project.undo_stack_;
   j[Project::kLastSelectionKey] = project.last_selection_;
 }
@@ -1732,7 +1731,7 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kPortConnectionsManagerKey)
     .get_to (*project.port_connections_manager_);
   j.at (Project::kMidiMappingsKey).get_to (*project.midi_mappings_);
-  j.at (Project::kUndoManagerKey).get_to (*project.legacy_undo_manager_);
+  // j.at (Project::kUndoManagerKey).get_to (*project.legacy_undo_manager_);
   j.at (Project::kUndoStackKey).get_to (*project.undo_stack_);
   j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
 

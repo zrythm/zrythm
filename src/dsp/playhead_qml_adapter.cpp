@@ -8,7 +8,7 @@ namespace zrythm::dsp
 
 PlayheadQmlWrapper::PlayheadQmlWrapper (Playhead &playhead, QObject * parent)
     : QObject (parent), playhead_ (playhead),
-      last_ticks_ (playhead_.position_ticks ())
+      last_ticks_ (playhead_.position_ticks ().in (units::ticks))
 {
   // Set up timer to update at ~60Hz (16ms) on the main thread
   QMetaObject::invokeMethod (
@@ -32,7 +32,7 @@ PlayheadQmlWrapper::ticks () const
 void
 PlayheadQmlWrapper::setTicks (double ticks)
 {
-  playhead_.set_position_ticks (ticks);
+  playhead_.set_position_ticks (units::ticks (ticks));
   updateTicks ();
 }
 
@@ -40,7 +40,7 @@ void
 PlayheadQmlWrapper::updateTicks ()
 {
   playhead_.update_ticks_from_samples ();
-  const double current_ticks = playhead_.position_ticks ();
+  const double current_ticks = playhead_.position_ticks ().in (units::ticks);
 
   // Only update if changed significantly
   if (std::abs (current_ticks - last_ticks_) > 1e-6)

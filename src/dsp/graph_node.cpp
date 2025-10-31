@@ -84,11 +84,12 @@ GraphNode::compensate_latency (
   const auto playhead_pos = transport_.get_playhead_position_in_audio_thread ();
   auto       adjusted_playhead_position =
     transport_.get_playhead_position_after_adding_frames_in_audio_thread (
-      playhead_pos, route_playback_latency_ - remaining_preroll_frames);
+      playhead_pos,
+      units::samples (route_playback_latency_ - remaining_preroll_frames));
   time_nfo.g_start_frame_ =
-    static_cast<unsigned_frame_t> (adjusted_playhead_position);
+    adjusted_playhead_position.in<unsigned_frame_t> (units::samples);
   time_nfo.g_start_frame_w_offset_ =
-    static_cast<unsigned_frame_t> (adjusted_playhead_position)
+    adjusted_playhead_position.in<unsigned_frame_t> (units::samples)
     + time_nfo.local_offset_;
 }
 
@@ -100,9 +101,13 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
   for (
     nframes_t num_processable_frames = 0;
     (num_processable_frames = std::min (
-       transport_.is_loop_point_met_in_audio_thread (
-         (signed_frame_t) time_nfo.g_start_frame_w_offset_, time_nfo.nframes_),
-       time_nfo.nframes_))
+       transport_
+         .is_loop_point_met_in_audio_thread (
+           units::samples (time_nfo.g_start_frame_w_offset_),
+
+           units::samples (time_nfo.nframes_))
+         .in<signed_frame_t> (units::samples),
+       static_cast<signed_frame_t> (time_nfo.nframes_)))
     != 0;)
     {
       // z_debug (
@@ -124,8 +129,8 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
       auto [transport_loop_start_pos, transport_loop_end_pos] =
         transport_.get_loop_range_positions ();
       unsigned_frame_t frames_to_add =
-        (num_processable_frames + (unsigned_frame_t) transport_loop_start_pos)
-        - (unsigned_frame_t) transport_loop_end_pos;
+        (num_processable_frames + transport_loop_start_pos.in (units::samples))
+        - transport_loop_end_pos.in (units::samples);
       time_nfo.g_start_frame_w_offset_ += frames_to_add;
       time_nfo.g_start_frame_ += frames_to_add;
       time_nfo.local_offset_ += num_processable_frames;

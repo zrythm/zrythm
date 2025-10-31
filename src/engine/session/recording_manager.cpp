@@ -6,7 +6,6 @@
 #include "engine/session/recording_event.h"
 #include "engine/session/recording_manager.h"
 #include "engine/session/transport.h"
-#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/arranger_object.h"
@@ -266,10 +265,8 @@ RecordingManager::handle_recording (
 
   if (TRANSPORT->punch_mode_)
     {
-      dsp::Position tmp (
-        (signed_frame_t) time_nfo.g_start_frame_w_offset_,
-        AUDIO_ENGINE->ticks_per_frame_);
-      inside_punch_range = TRANSPORT->position_is_inside_punch_range (tmp);
+      inside_punch_range = TRANSPORT->position_is_inside_punch_range (
+        units::samples (time_nfo.g_start_frame_w_offset_));
     }
   else
     {

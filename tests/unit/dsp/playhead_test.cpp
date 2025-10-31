@@ -33,7 +33,7 @@ protected:
       {
         if (sampleCallback)
           sampleCallback (i, playhead_->position_during_processing_precise ());
-        playhead_->advance_processing (1);
+        playhead_->advance_processing (units::samples (1));
       }
   }
 
@@ -44,9 +44,9 @@ protected:
 // Test initial state
 TEST_F (PlayheadTest, InitialState)
 {
-  EXPECT_DOUBLE_EQ (playhead_->position_ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (playhead_->position_ticks ().in (units::ticks), 0.0);
   EXPECT_DOUBLE_EQ (
-    playhead_->position_samples_FOR_TESTING (),
+    playhead_->position_samples_FOR_TESTING ().in (units::samples),
     0.0); // Assuming we add this getter
 }
 
@@ -56,10 +56,10 @@ TEST_F (PlayheadTest, SetPositionFromGUI)
   const double testTicks = 1920.0; // 2 beats at 120 BPM
   const double expectedStartSamples =
     tempo_map_->tick_to_samples (units::ticks (testTicks)).in (units::sample);
-  playhead_->set_position_ticks (testTicks);
+  playhead_->set_position_ticks (units::ticks (testTicks));
 
   // Verify GUI thread access
-  EXPECT_DOUBLE_EQ (playhead_->position_ticks (), testTicks);
+  EXPECT_DOUBLE_EQ (playhead_->position_ticks ().in (units::ticks), testTicks);
 
   // Verify audio thread sees correct starting position
   uint32_t frameCount = 0;
@@ -94,7 +94,8 @@ TEST_F (PlayheadTest, AudioProcessingAdvance)
 
   // Final position should be start + blockSize
   EXPECT_DOUBLE_EQ (
-    playhead_->position_samples_FOR_TESTING (), startPos + blockSize);
+    playhead_->position_samples_FOR_TESTING ().in (units::samples),
+    startPos + blockSize);
 }
 
 // Test tick update from samples
@@ -102,7 +103,7 @@ TEST_F (PlayheadTest, UpdateTicksFromSamples)
 {
   const double testSamples = 22050.0; // 0.5 seconds at 44.1kHz
   playhead_->set_position_ticks (
-    tempo_map_->samples_to_tick (units::samples (testSamples)).in (units::tick));
+    tempo_map_->samples_to_tick (units::samples (testSamples)));
 
   // Modify samples directly (simulate audio thread advance)
   simulateAudioProcessing (100);
@@ -111,18 +112,17 @@ TEST_F (PlayheadTest, UpdateTicksFromSamples)
   playhead_->update_ticks_from_samples ();
 
   const double expectedTicks =
-    tempo_map_
-      ->samples_to_tick (
-        units::samples (playhead_->position_samples_FOR_TESTING ()))
+    tempo_map_->samples_to_tick (playhead_->position_samples_FOR_TESTING ())
       .in (units::tick);
-  EXPECT_NEAR (playhead_->position_ticks (), expectedTicks, 1e-6);
+  EXPECT_NEAR (
+    playhead_->position_ticks ().in (units::ticks), expectedTicks, 1e-6);
 }
 
 // Test serialization/deserialization
 TEST_F (PlayheadTest, Serialization)
 {
   const double testTicks = 3840.0; // 4 beats
-  playhead_->set_position_ticks (testTicks);
+  playhead_->set_position_ticks (units::ticks (testTicks));
 
   // Serialize
   nlohmann::json j;
@@ -133,14 +133,14 @@ TEST_F (PlayheadTest, Serialization)
   j.get_to (new_playhead);
 
   // Verify position
-  EXPECT_DOUBLE_EQ (new_playhead.position_ticks (), testTicks);
+  EXPECT_DOUBLE_EQ (new_playhead.position_ticks ().in (units::ticks), testTicks);
 }
 
 // Test concurrent access (simulated)
 TEST_F (PlayheadTest, ConcurrentAccess)
 {
   const double guiTicks = 960.0;
-  playhead_->set_position_ticks (guiTicks);
+  playhead_->set_position_ticks (units::ticks (guiTicks));
 
   // Simulate GUI thread access during audio processing
   simulateAudioProcessing (1024, [&] (uint32_t frame, double) {
@@ -148,25 +148,28 @@ TEST_F (PlayheadTest, ConcurrentAccess)
       {
         // GUI thread operation (would normally lock mutex)
         playhead_->update_ticks_from_samples ();
-        EXPECT_GT (playhead_->position_ticks (), 0.0);
+        EXPECT_GT (playhead_->position_ticks ().in (units::ticks), 0.0);
       }
   });
 
   // Should not crash and should maintain reasonable state
-  EXPECT_GT (playhead_->position_samples_FOR_TESTING (), 0.0);
-  EXPECT_GT (playhead_->position_ticks (), 0.0);
+  EXPECT_GT (
+    playhead_->position_samples_FOR_TESTING ().in (units::samples), 0.0);
+  EXPECT_GT (playhead_->position_ticks ().in (units::ticks), 0.0);
 }
 
 // Test large block processing
 TEST_F (PlayheadTest, LargeBlockProcessing)
 {
   const uint32_t largeBlock = 65536;
-  const double   startPos = playhead_->position_samples_FOR_TESTING ();
+  const double   startPos =
+    playhead_->position_samples_FOR_TESTING ().in (units::samples);
 
   simulateAudioProcessing (largeBlock);
 
   EXPECT_DOUBLE_EQ (
-    playhead_->position_samples_FOR_TESTING (), startPos + largeBlock);
+    playhead_->position_samples_FOR_TESTING ().in (units::samples),
+    startPos + largeBlock);
 }
 
 // Test position consistency during processing
@@ -191,7 +194,8 @@ TEST_F (PlayheadTest, PositionConsistency)
 TEST_F (PlayheadTest, ZeroLengthBlock)
 {
   simulateAudioProcessing (0);
-  EXPECT_DOUBLE_EQ (playhead_->position_samples_FOR_TESTING (), 0.0);
+  EXPECT_DOUBLE_EQ (
+    playhead_->position_samples_FOR_TESTING ().in (units::samples), 0.0);
 }
 
 } // namespace zrythm::dsp

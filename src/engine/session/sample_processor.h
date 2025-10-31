@@ -6,7 +6,6 @@
 #include "dsp/fader.h"
 #include "dsp/graph.h"
 #include "dsp/midi_event.h"
-#include "dsp/position.h"
 #include "gui/dsp/sample_playback.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/types.h"
@@ -35,7 +34,6 @@ class SampleProcessor final : public QObject, public dsp::graph::IProcessable
 {
   Q_OBJECT
 public:
-  using Position = zrythm::dsp::Position;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
 public:
@@ -135,7 +133,7 @@ public:
   std::unique_ptr<dsp::Fader> fader_;
 
   /** Playhead for the tracklist (used when auditioning files). */
-  Position playhead_;
+  // Position playhead_;
 
   /**
    * Position the file ends at.
@@ -143,7 +141,7 @@ public:
    * Once this position is reached,
    * SampleProcessor.roll will be set to false.
    */
-  Position file_end_pos_;
+  // Position file_end_pos_;
 
   /** Whether to roll or not. */
   bool roll_ = false;

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "dsp/position.h"
 #include "utils/note_type.h"
 #include "utils/pcg_rand.h"
+#include "utils/units.h"
 
 #define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
   (PROJECT->quantize_opts_editor_.get () == qo)
@@ -28,7 +28,6 @@ public:
   static constexpr auto MAX_SNAP_POINTS = 120096;
   using NoteLength = utils::NoteLength;
   using NoteType = utils::NoteType;
-  using Position = zrythm::dsp::Position;
 
 public:
   QuantizeOptions () = default;
@@ -71,7 +70,8 @@ public:
    * @return The resulting position and amount of ticks moved (negative for
    *   backwards).
    */
-  std::pair<dsp::Position, double> quantize_position (const Position &pos);
+  std::pair<units::precise_tick_t, double>
+  quantize_position (units::precise_tick_t pos);
 
 private:
   static constexpr auto kNoteLengthKey = "noteLength"sv;
@@ -104,8 +104,8 @@ private:
     j.at (kRandomizationTicksKey).get_to (p.randomization_ticks_);
   }
 
-  const Position * get_prev_point (const Position &pos) const;
-  const Position * get_next_point (const Position &pos) const;
+  units::precise_tick_t get_prev_point (units::precise_tick_t pos) const;
+  units::precise_tick_t get_next_point (units::precise_tick_t pos) const;
 
 public:
   /**
@@ -116,7 +116,7 @@ public:
    *
    * Not to be serialized.
    */
-  std::vector<Position> q_points_;
+  std::vector<units::precise_tick_t> q_points_;
 
   /** See SnapGrid. */
   NoteLength note_length_{};

@@ -79,9 +79,9 @@ private:
    * @param loffset Local offset (this is where @p start_pos starts at).
    */
   void find_and_queue_metronome_samples (
-    signed_frame_t start_pos,
-    signed_frame_t end_pos,
-    nframes_t      loffset);
+    units::sample_t start_pos,
+    units::sample_t end_pos,
+    units::sample_t loffset);
 
   /**
    * Queues metronome events for preroll count-in.
@@ -95,7 +95,7 @@ private:
    */
   void queue_metronome (
     bool                 emphasis,
-    nframes_t            offset,
+    units::sample_t      offset,
     std::source_location loc = std::source_location::current ());
 
 private:

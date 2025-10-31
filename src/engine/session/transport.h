@@ -9,8 +9,6 @@
 #include "dsp/playhead.h"
 #include "dsp/playhead_qml_adapter.h"
 #include "dsp/port.h"
-#include "dsp/position.h"
-#include "gui/backend/position_proxy.h"
 #include "structure/arrangement/arranger_object_span.h"
 #include "utils/types.h"
 
@@ -28,10 +26,10 @@ namespace zrythm::engine::session
 {
 enum class PrerollCountBars
 {
-  PREROLL_COUNT_BARS_NONE,
-  PREROLL_COUNT_BARS_ONE,
-  PREROLL_COUNT_BARS_TWO,
-  PREROLL_COUNT_BARS_FOUR,
+  None,
+  One,
+  Two,
+  Four,
 };
 
 static const char * preroll_count_bars_str[] = {
@@ -59,14 +57,21 @@ class Transport : public QObject, public dsp::ITransport
   Q_PROPERTY (
     PlayState playState READ getPlayState WRITE setPlayState NOTIFY
       playStateChanged)
+  Q_PROPERTY (zrythm::dsp::PlayheadQmlWrapper * playhead READ playhead CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::PlayheadQmlWrapper * playhead READ getPlayhead CONSTANT)
-  Q_PROPERTY (PositionProxy * cuePosition READ getCuePosition CONSTANT)
+    zrythm::dsp::AtomicPositionQmlAdapter * cuePosition READ cuePosition CONSTANT)
   Q_PROPERTY (
-    PositionProxy * loopStartPosition READ getLoopStartPosition CONSTANT)
-  Q_PROPERTY (PositionProxy * loopEndPosition READ getLoopEndPosition CONSTANT)
-  Q_PROPERTY (PositionProxy * punchInPosition READ getPunchInPosition CONSTANT)
-  Q_PROPERTY (PositionProxy * punchOutPosition READ getPunchOutPosition CONSTANT)
+    zrythm::dsp::AtomicPositionQmlAdapter * loopStartPosition READ
+      loopStartPosition CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::AtomicPositionQmlAdapter * loopEndPosition READ loopEndPosition
+      CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::AtomicPositionQmlAdapter * punchInPosition READ punchInPosition
+      CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::AtomicPositionQmlAdapter * punchOutPosition READ
+      punchOutPosition CONSTANT)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   QML_UNCREATABLE ("")
 
@@ -127,7 +132,6 @@ public:
   };
   Q_ENUM (RecordingMode)
 
-  using Position = dsp::Position;
   using PortFlow = dsp::PortFlow;
 
 public:
@@ -147,17 +151,30 @@ public:
   void          setPlayState (PlayState state);
   Q_SIGNAL void playStateChanged (PlayState state);
 
-  dsp::PlayheadQmlWrapper * getPlayhead () const;
-
-  PositionProxy * getCuePosition () const;
-
-  PositionProxy * getLoopStartPosition () const;
-
-  PositionProxy * getLoopEndPosition () const;
-
-  PositionProxy * getPunchInPosition () const;
-
-  PositionProxy * getPunchOutPosition () const;
+  dsp::PlayheadQmlWrapper * playhead () const
+  {
+    return playhead_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * cuePosition () const
+  {
+    return cue_position_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * loopStartPosition () const
+  {
+    return loop_start_position_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * loopEndPosition () const
+  {
+    return loop_end_position_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * punchInPosition () const
+  {
+    return punch_in_position_adapter_.get ();
+  }
+  dsp::AtomicPositionQmlAdapter * punchOutPosition () const
+  {
+    return punch_out_position_adapter_.get ();
+  }
 
   dsp::Metronome * metronome () const { return metronome_.get (); }
 
@@ -170,40 +187,39 @@ public:
   // ITransport Interface
   // ==================================================================
 
-  signed_frame_t
+  units::sample_t
   get_playhead_position_in_audio_thread () const noexcept override
   {
-    return static_cast<signed_frame_t> (
-      playhead_.position_during_processing_rounded ());
+    return playhead_.position_during_processing_rounded ();
   }
 
-  nframes_t is_loop_point_met_in_audio_thread (
-    const unsigned_frame_t g_start_frames,
-    const nframes_t        nframes) const noexcept override
+  units::sample_t is_loop_point_met_in_audio_thread (
+    const units::sample_t g_start_frames,
+    const units::sample_t nframes) const noexcept override
   {
     auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
     bool loop_end_between_start_and_end =
-      (loop_end_pos > g_start_frames
-       && loop_end_pos <= g_start_frames + (long) nframes);
+      (loop_end_pos > g_start_frames && loop_end_pos <= g_start_frames + nframes);
 
     if (loop_end_between_start_and_end && loop_enabled ()) [[unlikely]]
       {
-        return (nframes_t) (loop_end_pos - g_start_frames);
+        return loop_end_pos - g_start_frames;
       }
-    return 0;
+    return units::samples (0);
   }
 
-  std::pair<unsigned_frame_t, unsigned_frame_t>
+  std::pair<units::sample_t, units::sample_t>
   get_loop_range_positions () const noexcept override
   {
-    return std::make_pair (loop_start_pos_->frames_, loop_end_pos_->frames_);
+    return std::make_pair (
+      loop_start_position_.get_samples (), loop_end_position_.get_samples ());
   }
 
-  std::pair<unsigned_frame_t, unsigned_frame_t>
+  std::pair<units::sample_t, units::sample_t>
   get_punch_range_positions () const noexcept override
   {
     return std::make_pair (
-      punch_in_pos_->getFrames (), punch_out_pos_->getFrames ());
+      punch_in_position_.get_samples (), punch_out_position_.get_samples ());
   }
 
   PlayState get_play_state () const noexcept override { return play_state_; }
@@ -211,11 +227,11 @@ public:
   bool loop_enabled () const noexcept override { return loop_; }
   bool punch_enabled () const noexcept override { return punch_mode_; }
   bool recording_enabled () const noexcept override { return recording_; }
-  unsigned_frame_t recording_preroll_frames_remaining () const noexcept override
+  units::sample_t recording_preroll_frames_remaining () const noexcept override
   {
     return recording_preroll_frames_remaining_;
   }
-  unsigned_frame_t metronome_countin_frames_remaining () const noexcept override
+  units::sample_t metronome_countin_frames_remaining () const noexcept override
   {
     return countin_frames_remaining_;
   }
@@ -231,13 +247,13 @@ public:
   {
     switch (bars)
       {
-      case PrerollCountBars::PREROLL_COUNT_BARS_NONE:
+      case PrerollCountBars::None:
         return 0;
-      case PrerollCountBars::PREROLL_COUNT_BARS_ONE:
+      case PrerollCountBars::One:
         return 1;
-      case PrerollCountBars::PREROLL_COUNT_BARS_TWO:
+      case PrerollCountBars::Two:
         return 2;
-      case PrerollCountBars::PREROLL_COUNT_BARS_FOUR:
+      case PrerollCountBars::Four:
         return 4;
       }
     return -1;
@@ -309,7 +325,7 @@ public:
    * Moves the playhead by the time corresponding to given samples, taking into
    * account the loop end point.
    */
-  void add_to_playhead_in_audio_thread (signed_frame_t nframes);
+  void add_to_playhead_in_audio_thread (units::sample_t nframes);
 
   /**
    * Request pause.
@@ -332,10 +348,6 @@ public:
   Q_INVOKABLE void requestRoll (bool with_wait);
 
   void set_play_state_rt_safe (PlayState state);
-
-  [[deprecated (
-    "Use the Playhead API to get ticks instead. Optionally convert via the TempoMap API")]]
-  Position get_playhead_position_in_gui_thread () const;
 
   /**
    * Move to the previous snap point on the timeline.
@@ -364,7 +376,7 @@ public:
    * @param target_ticks Position to set to.
    * @param set_cue_point Also set the cue point at this position.
    */
-  void move_playhead (double target_ticks, bool set_cue_point);
+  void move_playhead (units::precise_tick_t target_ticks, bool set_cue_point);
 
   /**
    * Enables or disables loop.
@@ -392,28 +404,6 @@ public:
   void goto_next_marker ();
 
   /**
-   * Updates the frames in all transport positions
-   *
-   * @param update_from_ticks Whether to update the positions based on ticks
-   * (true) or frames (false).
-   */
-  void update_positions (bool update_from_ticks);
-
-#if 0
-/**
- * Adds frames to the given global frames, while
- * adjusting the new frames to loop back if the
- * loop point was crossed.
- *
- * @return The new frames adjusted.
- */
-long
-frames_add_frames (
-  const long        gframes,
-  const nframes_t   frames);
-#endif
-
-  /**
    * Returns the PPQN (Parts/Ticks Per Quarter Note).
    */
   double get_ppqn () const;
@@ -421,7 +411,8 @@ frames_add_frames (
   /**
    * Returns the selected range positions.
    */
-  std::pair<Position, Position> get_range_positions () const;
+  std::pair<units::precise_tick_t, units::precise_tick_t>
+  get_range_positions () const;
 
   /**
    * Sets if the project has range and updates UI.
@@ -434,10 +425,10 @@ frames_add_frames (
    * @param range1 True to set range1, false to set range2.
    */
   void set_range (
-    bool             range1,
-    const Position * start_pos,
-    const Position * pos,
-    bool             snap);
+    bool                  range1,
+    units::precise_tick_t start_pos,
+    units::precise_tick_t pos,
+    bool                  snap);
 
   /**
    * Set the loop range.
@@ -445,12 +436,12 @@ frames_add_frames (
    * @param start True to set start pos, false to set end pos.
    */
   void set_loop_range (
-    bool             start,
-    const Position * start_pos,
-    const Position * pos,
-    bool             snap);
+    bool                  start,
+    units::precise_tick_t start_pos,
+    units::precise_tick_t pos,
+    bool                  snap);
 
-  bool position_is_inside_punch_range (Position pos);
+  bool position_is_inside_punch_range (units::sample_t pos);
 
   /**
    * Recalculates the total bars based on the last object's position.
@@ -499,48 +490,8 @@ private:
   static constexpr auto kForwardKey = "forward"sv;
   static constexpr auto kLoopToggleKey = "loopToggle"sv;
   static constexpr auto kRecToggleKey = "recToggle"sv;
-  friend void           to_json (nlohmann::json &j, const Transport &transport)
-  {
-    j = nlohmann::json{
-      { kTotalBarsKey,    transport.total_bars_     },
-      { kPlayheadKey,     transport.playhead_       },
-      { kCuePosKey,       transport.cue_pos_        },
-      { kLoopStartPosKey, transport.loop_start_pos_ },
-      { kLoopEndPosKey,   transport.loop_end_pos_   },
-      { kPunchInPosKey,   transport.punch_in_pos_   },
-      { kPunchOutPosKey,  transport.punch_out_pos_  },
-      { kRange1Key,       transport.range_1_        },
-      { kRange2Key,       transport.range_2_        },
-      { kHasRangeKey,     transport.has_range_      },
-      { kPositionKey,     transport.position_       },
-      { kRollKey,         transport.roll_           },
-      { kStopKey,         transport.stop_           },
-      { kBackwardKey,     transport.backward_       },
-      { kForwardKey,      transport.forward_        },
-      { kLoopToggleKey,   transport.loop_toggle_    },
-      { kRecToggleKey,    transport.rec_toggle_     },
-    };
-  }
-  friend void from_json (const nlohmann::json &j, Transport &transport)
-  {
-    j.at (kTotalBarsKey).get_to (transport.total_bars_);
-    j.at (kPlayheadKey).get_to (transport.playhead_);
-    j.at (kCuePosKey).get_to (*transport.cue_pos_);
-    j.at (kLoopStartPosKey).get_to (*transport.loop_start_pos_);
-    j.at (kLoopEndPosKey).get_to (*transport.loop_end_pos_);
-    j.at (kPunchInPosKey).get_to (*transport.punch_in_pos_);
-    j.at (kPunchOutPosKey).get_to (*transport.punch_out_pos_);
-    j.at (kRange1Key).get_to (transport.range_1_);
-    j.at (kRange2Key).get_to (transport.range_2_);
-    j.at (kHasRangeKey).get_to (transport.has_range_);
-    j.at (kPositionKey).get_to (transport.position_);
-    j.at (kRollKey).get_to (*transport.roll_);
-    j.at (kStopKey).get_to (*transport.stop_);
-    j.at (kBackwardKey).get_to (*transport.backward_);
-    j.at (kForwardKey).get_to (*transport.forward_);
-    j.at (kLoopToggleKey).get_to (*transport.loop_toggle_);
-    j.at (kRecToggleKey).get_to (*transport.rec_toggle_);
-  }
+  friend void           to_json (nlohmann::json &j, const Transport &transport);
+  friend void from_json (const nlohmann::json &j, Transport &transport);
 
   void init_common ();
 
@@ -549,7 +500,7 @@ private:
    */
   void move_to_marker_or_pos_and_fire_events (
     const structure::arrangement::Marker * marker,
-    std::optional<double>                  pos_ticks);
+    std::optional<units::precise_tick_t>   pos_ticks);
 
   // static void
   // foreach_arranger_handle_playhead_auto_scroll (ArrangerWidget * arranger);
@@ -565,20 +516,32 @@ public:
   /** The metronome. */
   utils::QObjectUniquePtr<dsp::Metronome> metronome_;
 
+  std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
+    time_conversion_funcs_;
+
   /** Cue point position. */
-  PositionProxy * cue_pos_ = nullptr;
+  dsp::AtomicPosition                                    cue_position_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> cue_position_adapter_;
 
   /** Loop start position. */
-  PositionProxy * loop_start_pos_ = nullptr;
+  dsp::AtomicPosition loop_start_position_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
+    loop_start_position_adapter_;
 
   /** Loop end position. */
-  PositionProxy * loop_end_pos_ = nullptr;
+  dsp::AtomicPosition loop_end_position_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
+    loop_end_position_adapter_;
 
   /** Punch in position. */
-  PositionProxy * punch_in_pos_ = nullptr;
+  dsp::AtomicPosition punch_in_position_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
+    punch_in_position_adapter_;
 
   /** Punch out position. */
-  PositionProxy * punch_out_pos_ = nullptr;
+  dsp::AtomicPosition punch_out_position_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
+    punch_out_position_adapter_;
 
   /**
    * Selected range.
@@ -588,8 +551,10 @@ public:
    *
    * Should be compared each time to see which one is first.
    */
-  Position range_1_;
-  Position range_2_;
+  dsp::AtomicPosition                                    range_1_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> range_1_adapter_;
+  dsp::AtomicPosition                                    range_2_;
+  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> range_2_adapter_;
 
   /** Whether range should be displayed or not. */
   bool has_range_ = false;
@@ -604,10 +569,6 @@ public:
 
   /* ------------------------------- */
 
-  /** Transport position in frames.
-   * FIXME is this used? */
-  nframes_t position_ = 0;
-
   /** Looping or not. */
   std::atomic_bool loop_ = false;
 
@@ -619,10 +580,10 @@ public:
   std::atomic_bool recording_ = false;
 
   /** Recording preroll frames remaining. */
-  signed_frame_t recording_preroll_frames_remaining_ = 0;
+  units::sample_t recording_preroll_frames_remaining_;
 
   /** Metronome countin frames remaining. */
-  signed_frame_t countin_frames_remaining_ = 0;
+  units::sample_t countin_frames_remaining_;
 
   /** Whether to start playback on MIDI input. */
   bool start_playback_on_midi_input_ = false;
@@ -634,7 +595,7 @@ public:
    *
    * Used by UndoableAction.
    */
-  double playhead_before_pause_{};
+  units::precise_tick_t playhead_before_pause_;
 
   /**
    * Roll/play MIDI port.

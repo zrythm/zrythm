@@ -13,25 +13,7 @@ ArrangerObject::ArrangerObject (
   QObject *              parent) noexcept
     : QObject (parent), type_ (type), tempo_map_ (tempo_map),
       time_conversion_funcs_ (
-        std::make_unique<dsp::AtomicPosition::TimeConversionFunctions> (
-          dsp::AtomicPosition::TimeConversionFunctions{
-            .tick_to_seconds =
-              [&] (units::precise_tick_t ticks) {
-                return tempo_map_.tick_to_seconds (ticks);
-              },
-            .seconds_to_tick =
-              [&] (units::precise_second_t seconds) {
-                return tempo_map_.seconds_to_tick (seconds);
-              },
-            .tick_to_samples =
-              [&] (units::precise_tick_t ticks) {
-                return tempo_map_.tick_to_samples (ticks);
-              },
-            .samples_to_tick =
-              [&] (units::precise_sample_t samples) {
-                return tempo_map_.samples_to_tick (samples);
-              },
-          })),
+        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (tempo_map_)),
       position_ (*time_conversion_funcs_),
       position_adapter_ (
         utils::make_qobject_unique<
@@ -141,22 +123,16 @@ ArrangerObject::setParentObject (ArrangerObject * object)
   else
     {
       // otherwise use tempo map as-is (this is a timeline object)
-      time_conversion_funcs_
-        ->tick_to_seconds = [&] (units::precise_tick_t ticks) {
-        return tempo_map_.tick_to_seconds (ticks);
-      };
-      time_conversion_funcs_
-        ->seconds_to_tick = [&] (units::precise_second_t seconds) {
-        return tempo_map_.seconds_to_tick (seconds);
-      };
-      time_conversion_funcs_
-        ->tick_to_samples = [&] (units::precise_tick_t ticks) {
-        return tempo_map_.tick_to_samples (ticks);
-      };
-      time_conversion_funcs_
-        ->samples_to_tick = [&] (units::precise_sample_t samples) {
-        return tempo_map_.samples_to_tick (samples);
-      };
+      const auto time_conv_funcs =
+        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (tempo_map_);
+      time_conversion_funcs_->tick_to_seconds =
+        std::move (time_conv_funcs->tick_to_seconds);
+      time_conversion_funcs_->seconds_to_tick =
+        std::move (time_conv_funcs->seconds_to_tick);
+      time_conversion_funcs_->tick_to_samples =
+        std::move (time_conv_funcs->tick_to_samples);
+      time_conversion_funcs_->samples_to_tick =
+        std::move (time_conv_funcs->samples_to_tick);
     }
 
   Q_EMIT parentObjectChanged (parent_object_);

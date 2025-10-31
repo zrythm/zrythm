@@ -269,23 +269,14 @@ public:
   }
 
 private:
-  static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
+  // static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
   static constexpr auto kMonitorOutKey = "monitorOut"sv;
   static constexpr auto kMidiInKey = "midiIn"sv;
   static constexpr auto kControlRoomKey = "controlRoom"sv;
   static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
   static constexpr auto kHwInProcessorKey = "hwInProcessor"sv;
   static constexpr auto kHwOutProcessorKey = "hwOutProcessor"sv;
-  friend void           to_json (nlohmann::json &j, const AudioEngine &engine)
-  {
-    j = nlohmann::json{
-      { kFramesPerTickKey,   engine.frames_per_tick_  },
-      { kMonitorOutKey,      engine.monitor_out_      },
-      { kMidiInKey,          engine.midi_in_          },
-      { kControlRoomKey,     engine.control_room_     },
-      { kSampleProcessorKey, engine.sample_processor_ },
-    };
-  }
+  friend void           to_json (nlohmann::json &j, const AudioEngine &engine);
   friend void from_json (const nlohmann::json &j, AudioEngine &engine);
 
   [[gnu::cold]] void init_common ();
@@ -312,12 +303,12 @@ public:
   std::atomic_uint64_t cycle_ = 0;
 
   /** Number of frames/samples per tick. */
-  dsp::FramesPerTick frames_per_tick_;
+  // dsp::FramesPerTick frames_per_tick_;
 
   /**
    * Reciprocal of @ref frames_per_tick_.
    */
-  dsp::TicksPerFrame ticks_per_frame_;
+  // dsp::TicksPerFrame ticks_per_frame_;
 
   /** True iff buffer size callback fired. */
   bool buf_size_set_{};
@@ -485,7 +476,7 @@ public:
    *
    * See engine_update_frames_per_tick().
    */
-  bool updating_frames_per_tick_ = false;
+  // bool updating_frames_per_tick_ = false;
 
   /**
    * Position info at the end of the previous cycle before moving the

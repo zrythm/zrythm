@@ -11,8 +11,7 @@
 namespace zrythm::structure::arrangement
 {
 auto
-ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
-  -> ArrangerObjectUuidReference
+ArrangerObjectSpan::merge () const -> ArrangerObjectUuidReference
 {
   bool is_timeline = std::ranges::all_of (*this, is_region_projection);
   [[maybe_unused]] bool is_midi =
@@ -25,11 +24,10 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
           throw ZrythmException ("selections not on same lane");
         }
 
-      auto                  ticks_length = get_length_in_ticks ();
-      [[maybe_unused]] auto num_frames = static_cast<unsigned_frame_t> (
-        ceil (type_safe::get (frames_per_tick) * ticks_length));
+      auto ticks_length = units::ticks (get_length_in_ticks ());
       auto [first_obj_var, pos] = get_first_object_and_pos ();
-      Position end_pos{ pos + ticks_length, frames_per_tick };
+      auto start_pos = units::ticks (pos);
+      auto end_pos = start_pos + ticks_length;
 
       return std::visit (
         [&] (auto &&first_r) -> ArrangerObjectUuidReference {
@@ -46,7 +44,7 @@ ArrangerObjectSpan::merge (dsp::FramesPerTick frames_per_tick) const
                     PROJECT->getArrangerObjectFactory ()
                       ->get_builder<MidiRegion> ()
                       .with_start_ticks (pos)
-                      .with_end_ticks (end_pos.ticks_)
+                      .with_end_ticks (end_pos.in (units::ticks))
                       .build_in_registry ();
                   for (const auto &obj : *this)
                     {

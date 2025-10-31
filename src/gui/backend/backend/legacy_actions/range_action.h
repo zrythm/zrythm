@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "dsp/position.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "structure/arrangement/arranger_object_span.h"

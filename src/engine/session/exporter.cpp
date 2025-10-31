@@ -5,7 +5,6 @@
 
 #include "dsp/ditherer.h"
 #include "dsp/midi_event.h"
-#include "dsp/position.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/exporter.h"
 #include "engine/session/graph_dispatcher.h"
@@ -99,8 +98,8 @@ Exporter::Settings::get_export_time_range () const
       }
     case Exporter::TimeRange::Loop:
       return {
-        TRANSPORT->loop_start_pos_->get_position ().ticks_,
-        TRANSPORT->loop_end_pos_->get_position ().ticks_
+        TRANSPORT->loop_start_position_.get_ticks ().in (units::ticks),
+        TRANSPORT->loop_end_position_.get_ticks ().in (units::ticks)
       };
     case Exporter::TimeRange::Custom:
       return { custom_start_, custom_end_ };
@@ -192,7 +191,7 @@ Exporter::export_audio (Settings &info)
   float clip_amp = 0.f;
 
   const auto prev_playhead_ticks = TRANSPORT->playhead_.position_ticks ();
-  TRANSPORT->playhead_.set_position_ticks (start_pos_ticks);
+  TRANSPORT->playhead_.set_position_ticks (units::ticks (start_pos_ticks));
   {
     dsp::PlayheadProcessingGuard guard (TRANSPORT->playhead_);
 
@@ -223,16 +222,22 @@ Exporter::export_audio (Settings &info)
       {
         /* calculate number of frames to process this time */
         const nframes_t nframes =
-          end_pos_frames - TRANSPORT->get_playhead_position_in_audio_thread ();
+          end_pos_frames
+          - TRANSPORT->get_playhead_position_in_audio_thread ().in (
+            units::samples);
         assert (nframes > 0);
 
         /* run process code */
         AUDIO_ENGINE->process_prepare (nframes);
         EngineProcessTimeInfo time_nfo = {
           .g_start_frame_ =
-            (unsigned_frame_t) TRANSPORT->get_playhead_position_in_audio_thread (),
+            (unsigned_frame_t) TRANSPORT
+              ->get_playhead_position_in_audio_thread ()
+              .in (units::samples),
           .g_start_frame_w_offset_ =
-            (unsigned_frame_t) TRANSPORT->get_playhead_position_in_audio_thread (),
+            (unsigned_frame_t) TRANSPORT
+              ->get_playhead_position_in_audio_thread ()
+              .in (units::samples),
           .local_offset_ = 0,
           .nframes_ = nframes,
         };
@@ -285,12 +290,14 @@ Exporter::export_audio (Settings &info)
         covered_frames += nframes;
 
         progress_info_->update_progress (
-          (TRANSPORT->get_playhead_position_in_audio_thread () - start_pos_frames)
+          (TRANSPORT->get_playhead_position_in_audio_thread ().in (
+            units::samples) -start_pos_frames)
             / total_frames,
           {});
       }
     while (
-      TRANSPORT->get_playhead_position_in_audio_thread () < end_pos_frames
+      TRANSPORT->get_playhead_position_in_audio_thread ().in (units::samples)
+        < end_pos_frames
       && !progress_info_->pending_cancellation ());
 
     writer.reset ();

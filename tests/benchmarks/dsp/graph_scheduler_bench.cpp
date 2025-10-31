@@ -40,10 +40,10 @@ protected:
       .WillRepeatedly (Return (dsp::ITransport::PlayState::Rolling));
     EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
       .Times (::testing::AnyNumber ())
-      .WillRepeatedly (Return (0));
+      .WillRepeatedly (Return (units::samples (0)));
     EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
       .Times (::testing::AnyNumber ())
-      .WillRepeatedly (Return (0));
+      .WillRepeatedly (Return (units::samples (0)));
     EXPECT_CALL (*transport_, loop_enabled ())
       .Times (::testing::AnyNumber ())
       .WillRepeatedly (Return (false));

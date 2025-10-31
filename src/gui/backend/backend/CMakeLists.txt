@@ -16,5 +16,5 @@ target_sources(zrythm_gui_lib
     zrythm.cpp
     )
 
-add_subdirectory(actions)
+# add_subdirectory(actions)
 add_subdirectory(settings)

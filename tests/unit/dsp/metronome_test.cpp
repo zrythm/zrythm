@@ -275,7 +275,9 @@ TEST_F (MetronomeTest, LoopCrossing)
   EXPECT_CALL (*transport_, loop_enabled ())
     .WillRepeatedly (::testing::Return (true));
   EXPECT_CALL (*transport_, get_loop_range_positions ())
-    .WillRepeatedly (::testing::Return (std::make_pair (0u, 44100u)));
+    .WillRepeatedly (
+      ::testing::Return (
+        std::make_pair (units::samples (0u), units::samples (44100u))));
 
   const nframes_t samples_per_beat = 22050; // 120 BPM
 
@@ -317,7 +319,8 @@ TEST_F (MetronomeTest, CountinTicks)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
   EXPECT_CALL (*transport_, metronome_countin_frames_remaining ())
-    .WillRepeatedly (::testing::Return (88200)); // 2 seconds (1 bar) countin
+    .WillRepeatedly (
+      ::testing::Return (units::samples (88200))); // 2 seconds (1 bar) countin
 
   const nframes_t samples_per_beat = 22050; // 120 BPM
 

@@ -10,7 +10,6 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/file_importer.h"
 #include "gui/backend/plugin_selection_manager.h"
@@ -116,9 +115,6 @@ class Project final : public QObject
       FINAL)
   Q_PROPERTY (zrythm::gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT
-      FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
   Q_PROPERTY (
@@ -218,7 +214,6 @@ public:
   engine::device_io::AudioEngine *         engine () const;
   gui::backend::Tool *                     getTool () const;
   ClipEditor *                             getClipEditor () const;
-  gui::actions::UndoManager *              getUndoManager () const;
   undo::UndoStack *                        undoStack () const;
   PluginFactory *                          getPluginFactory () const;
   zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
@@ -562,14 +557,14 @@ public:
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
 
-  std::optional<gui::actions::UndoableActionPtrVariant>
-    last_action_in_last_successful_autosave_;
+  // std::optional<gui::actions::UndoableActionPtrVariant>
+  // last_action_in_last_successful_autosave_;
 
   /** Last successful autosave timestamp. */
   SteadyTimePoint last_successful_autosave_time_;
 
   /** Used to check if the project has unsaved changes. */
-  std::optional<gui::actions::UndoableActionPtrVariant> last_saved_action_;
+  // std::optional<gui::actions::UndoableActionPtrVariant> last_saved_action_;
 
   /** Semaphore used to block saving. */
   std::binary_semaphore save_sem_{ 1 };
@@ -668,8 +663,6 @@ public:
   utils::QObjectUniquePtr<structure::scenes::ClipLauncher> clip_launcher_;
   utils::QObjectUniquePtr<structure::scenes::ClipPlaybackService>
     clip_playback_service_;
-
-  gui::actions::UndoManager * legacy_undo_manager_{};
 
   utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
 

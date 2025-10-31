@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 
 #include "./plugin_span.h"

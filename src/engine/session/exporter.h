@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "dsp/port_connections_manager.h"
-#include "dsp/position.h"
 #include "engine/device_io/engine.h"
 #include "utils/audio.h"
 

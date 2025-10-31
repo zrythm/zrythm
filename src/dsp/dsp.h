@@ -30,7 +30,6 @@
 #include "./port_all.h"
 #include "./port_connection.h"
 #include "./port_span.h"
-#include "./position.h"
 #include "./stretcher.h"
 #include "./tempo_map.h"
 #include "./tempo_map_qml_adapter.h"

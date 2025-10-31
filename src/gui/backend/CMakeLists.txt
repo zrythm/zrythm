@@ -33,8 +33,8 @@ target_sources(zrythm_gui_lib
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
     plugin_selection_manager.h
-    position_proxy.h
-    position_proxy.cpp
+    # position_proxy.h
+    # position_proxy.cpp
     project_info.h
     project_info.cpp
     project_manager.h

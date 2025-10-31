@@ -28,18 +28,18 @@ class MockTransport : public zrythm::dsp::ITransport
 {
 public:
   MOCK_METHOD (
-    (std::pair<unsigned_frame_t, unsigned_frame_t>),
+    (std::pair<units::sample_t, units::sample_t>),
     get_loop_range_positions,
     (),
     (const, noexcept, override));
   MOCK_METHOD (
-    (std::pair<unsigned_frame_t, unsigned_frame_t>),
+    (std::pair<units::sample_t, units::sample_t>),
     get_punch_range_positions,
     (),
     (const, noexcept, override));
   MOCK_METHOD (PlayState, get_play_state, (), (const, noexcept, override));
   MOCK_METHOD (
-    signed_frame_t,
+    units::sample_t,
     get_playhead_position_in_audio_thread,
     (),
     (const, noexcept, override));
@@ -47,19 +47,19 @@ public:
   MOCK_METHOD (bool, punch_enabled, (), (const, noexcept, override));
   MOCK_METHOD (bool, recording_enabled, (), (const, noexcept, override));
   MOCK_METHOD (
-    unsigned_frame_t,
+    units::sample_t,
     recording_preroll_frames_remaining,
     (),
     (const, noexcept, override));
   MOCK_METHOD (
-    unsigned_frame_t,
+    units::sample_t,
     metronome_countin_frames_remaining,
     (),
     (const, noexcept, override));
   MOCK_METHOD (
-    nframes_t,
+    units::sample_t,
     is_loop_point_met_in_audio_thread,
-    (unsigned_frame_t g_start_frames, nframes_t nframes),
+    (units::sample_t g_start_frames, units::sample_t nframes),
     (const, noexcept, override));
 };
 }

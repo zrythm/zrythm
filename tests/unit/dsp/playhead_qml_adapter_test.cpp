@@ -55,7 +55,7 @@ TEST_F (PlayheadQmlWrapperTest, TicksProperty)
   EXPECT_EQ (spy.count (), 1);
 
   // Verify underlying playhead was updated
-  EXPECT_DOUBLE_EQ (playhead_->position_ticks (), testTicks);
+  EXPECT_DOUBLE_EQ (playhead_->position_ticks ().in (units::ticks), testTicks);
 }
 
 // Test no signal on insignificant change
@@ -76,7 +76,7 @@ TEST_F (PlayheadQmlWrapperTest, PeriodicUpdates)
   QSignalSpy spy (wrapper_.get (), &PlayheadQmlWrapper::ticksChanged);
 
   // Advance playhead
-  playhead_->set_position_ticks (960.0);
+  playhead_->set_position_ticks (units::ticks (960.0));
 
   // Wait for timer to trigger
   spy.wait (50);
@@ -99,7 +99,7 @@ TEST_F (PlayheadQmlWrapperTest, ConcurrentAccess)
   // Simulate audio thread activity
   std::thread audioThread ([this] () {
     // Advance playhead
-    playhead_->set_position_ticks (1920.0);
+    playhead_->set_position_ticks (units::ticks (1920.0));
   });
 
   audioThread.join ();

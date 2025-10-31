@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object.h"
 #include "utils/format.h"
 #include "utils/logger.h"
@@ -79,13 +78,11 @@ audio_function_get_icon_name_for_type (AudioFunctionType type);
  */
 void
 audio_function_apply (
-  ArrangerObject::Uuid             region_id,
-  const dsp::Position             &sel_start,
-  const dsp::Position             &sel_end,
-  AudioFunctionType                type,
-  AudioFunctionOpts                opts,
-  std::optional<utils::Utf8String> uri);
-
+  ArrangerObject::Uuid                                    region_id,
+  std::pair<units::precise_tick_t, units::precise_tick_t> selected_range,
+  AudioFunctionType                                       type,
+  AudioFunctionOpts                                       opts,
+  std::optional<utils::Utf8String>                        uri);
 }
 
 DEFINE_ENUM_FORMATTER (

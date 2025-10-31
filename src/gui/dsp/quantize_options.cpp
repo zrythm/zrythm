@@ -1,11 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/position.h"
 #include "dsp/snap_grid.h"
 #include "engine/session/transport.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/quantize_options.h"
 #include "utils/algorithms.h"
 #include "utils/pcg_rand.h"
@@ -17,6 +15,8 @@ void
 QuantizeOptions::update_quantize_points (
   const engine::session::Transport &transport)
 {
+// TODO
+#if 0
   auto    &audio_engine = transport.project_->audio_engine_;
   Position tmp, end_pos;
   end_pos.set_to_bar (
@@ -40,6 +40,7 @@ QuantizeOptions::update_quantize_points (
 
       q_points_.push_back (tmp);
     }
+#endif
 }
 
 void
@@ -98,14 +99,14 @@ QuantizeOptions::to_string (NoteLength note_length, NoteType note_type)
     dsp::SnapGrid::stringize_length_and_type (note_length, note_type));
 }
 
-const QuantizeOptions::Position *
-QuantizeOptions::get_prev_point (const Position &pos) const
+units::precise_tick_t
+QuantizeOptions::get_prev_point (units::precise_tick_t pos) const
 {
-  z_return_val_if_fail (pos.is_positive (), nullptr);
+  assert (pos > units::ticks (0));
 
   auto result = utils::algorithms::binary_search_nearby (
     pos, std::span (q_points_), true, true);
-  return result ? &result->get () : nullptr;
+  return result ? result->get () : units::ticks (0);
   // Position * prev_point = (Position *) algorithms_binary_search_nearby (
   //   pos, q_points_.data (), q_points_.size (), sizeof (Position),
   //   Position::compare_frames_cmpfunc, true, true);
@@ -113,22 +114,21 @@ QuantizeOptions::get_prev_point (const Position &pos) const
   // return prev_point;
 }
 
-const QuantizeOptions::Position *
-QuantizeOptions::get_next_point (const Position &pos) const
+units::precise_tick_t
+QuantizeOptions::get_next_point (units::precise_tick_t pos) const
 {
-  z_return_val_if_fail (pos.is_positive (), nullptr);
+  assert (pos > units::ticks (0));
 
   auto result = utils::algorithms::binary_search_nearby (
     pos, std::span (q_points_), false, true);
-  return result ? &result->get () : nullptr;
+  return result ? result->get () : units::ticks (0);
 }
 
-std::pair<dsp::Position, double>
-QuantizeOptions::quantize_position (const Position &pos)
+std::pair<units::precise_tick_t, double>
+QuantizeOptions::quantize_position (units::precise_tick_t pos)
 {
   auto prev_point = get_prev_point (pos);
   auto next_point = get_next_point (pos);
-  assert (prev_point && next_point);
 
   const double upper = randomization_ticks_;
   const double lower = -randomization_ticks_;
@@ -136,28 +136,27 @@ QuantizeOptions::quantize_position (const Position &pos)
   double       rand_ticks = fmod (rand_double, (upper - lower + 1.0)) + lower;
 
   /* if previous point is closer */
-  double diff;
-  if (pos.ticks_ - prev_point->ticks_ <= next_point->ticks_ - pos.ticks_)
+  units::precise_tick_t diff;
+  if (pos - prev_point <= next_point - pos)
     {
-      diff = prev_point->ticks_ - pos.ticks_;
+      diff = prev_point - pos;
     }
   /* if next point is closer */
   else
     {
-      diff = next_point->ticks_ - pos.ticks_;
+      diff = next_point - pos;
     }
 
   /* multiply by amount */
   diff = (diff * (double) (amount_ / 100.f));
 
   /* add random ticks */
-  diff += rand_ticks;
+  diff += units::ticks (rand_ticks);
 
   /* quantize position */
-  auto ret_pos = pos;
-  ret_pos.add_ticks (diff, AUDIO_ENGINE->frames_per_tick_);
+  auto ret_pos = pos + diff;
 
-  return { ret_pos, diff };
+  return { ret_pos, diff.in (units::ticks) };
 }
 
 } // namespace zrythm::gui::old_dsp

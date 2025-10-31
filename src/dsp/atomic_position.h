@@ -8,6 +8,7 @@
 #include <functional>
 #include <limits>
 
+#include "dsp/tempo_map.h"
 #include "utils/format.h"
 #include "utils/types.h"
 #include "utils/units.h"
@@ -85,6 +86,31 @@ public:
       tick_to_samples;
     std::function<units::precise_tick_t (units::precise_sample_t)>
       samples_to_tick;
+
+    static std::unique_ptr<TimeConversionFunctions>
+    from_tempo_map (const dsp::TempoMap &tempo_map)
+    {
+      return std::make_unique<
+        dsp::AtomicPosition::
+          TimeConversionFunctions> (dsp::AtomicPosition::TimeConversionFunctions{
+        .tick_to_seconds =
+          [&] (units::precise_tick_t ticks) {
+            return tempo_map.tick_to_seconds (ticks);
+          },
+        .seconds_to_tick =
+          [&] (units::precise_second_t seconds) {
+            return tempo_map.seconds_to_tick (seconds);
+          },
+        .tick_to_samples =
+          [&] (units::precise_tick_t ticks) {
+            return tempo_map.tick_to_samples (ticks);
+          },
+        .samples_to_tick =
+          [&] (units::precise_sample_t samples) {
+            return tempo_map.samples_to_tick (samples);
+          },
+      });
+    }
   };
 
   /**

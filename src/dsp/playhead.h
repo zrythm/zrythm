@@ -83,7 +83,7 @@ private:
   {
     // Copy current position before processing
     position_samples_processing_.store (
-      position_samples_.load (std::memory_order_acquire),
+      position_samples_.load (std::memory_order_acquire).in (units::samples),
       std::memory_order_release);
   }
 
@@ -95,15 +95,17 @@ public:
    *
    * @warning Must only be called from the system audio callback thread.
    */
-  void advance_processing (int64_t nframes) noexcept
+  void advance_processing (units::sample_t nframes) noexcept
   {
-    if (nframes >= 0) [[likely]]
+    if (nframes >= units::samples (0)) [[likely]]
       {
-        position_samples_processing_.fetch_add (static_cast<double> (nframes));
+        position_samples_processing_.fetch_add (
+          nframes.in<double> (units::samples));
       }
     else
       {
-        position_samples_processing_.fetch_sub (static_cast<double> (-nframes));
+        position_samples_processing_.fetch_sub (
+          -nframes.in<double> (units::samples));
       }
   }
 
@@ -117,10 +119,11 @@ public:
   {
     return position_samples_processing_.load (std::memory_order_acquire);
   }
-  auto position_during_processing_rounded () const noexcept
+  units::sample_t position_during_processing_rounded () const noexcept
   {
-    return static_cast<uint64_t> (std::round (
-      position_samples_processing_.load (std::memory_order_acquire)));
+    return units::samples (
+      static_cast<int64_t> (std::round (
+        position_samples_processing_.load (std::memory_order_acquire))));
   }
 
 private:
@@ -134,7 +137,8 @@ private:
   {
     // Commit position only at end of block
     position_samples_.store (
-      position_samples_processing_.load (std::memory_order_acquire),
+      units::samples (
+        position_samples_processing_.load (std::memory_order_acquire)),
       std::memory_order_release);
   }
 
@@ -147,20 +151,19 @@ public:
    *
    * @note Uses mutex to synchronize with GUI thread
    */
-  void set_position_ticks (double ticks) [[clang::blocking]]
+  void set_position_ticks (units::precise_tick_t ticks) [[clang::blocking]]
   {
     std::lock_guard lock (position_mutex_);
     position_ticks_ = ticks;
     position_samples_.store (
-      tempo_map_.tick_to_samples (units::ticks (ticks)).in (units::sample),
-      std::memory_order_release);
+      tempo_map_.tick_to_samples (ticks), std::memory_order_release);
   }
 
   /**
    * @brief Get current playhead position in ticks (GUI thread only)
    * @return Position in ticks
    */
-  double position_ticks () const [[clang::blocking]]
+  auto position_ticks () const [[clang::blocking]]
   {
     std::lock_guard lock (position_mutex_);
     return position_ticks_;
@@ -177,11 +180,8 @@ public:
   void update_ticks_from_samples () [[clang::blocking]]
   {
     std::lock_guard lock (position_mutex_);
-    position_ticks_ =
-      tempo_map_
-        .samples_to_tick (
-          units::samples (position_samples_.load (std::memory_order_acquire)))
-        .in (units::tick);
+    position_ticks_ = tempo_map_.samples_to_tick (
+      position_samples_.load (std::memory_order_acquire));
   }
 
   const auto &get_tempo_map () const { return tempo_map_; }
@@ -190,7 +190,7 @@ public:
    * @brief Get current playhead position in samples (non-RT)
    * @note For testing and debugging only
    */
-  double position_samples_FOR_TESTING () const noexcept
+  auto position_samples_FOR_TESTING () const noexcept
   {
     return position_samples_.load (std::memory_order_acquire);
   }
@@ -199,13 +199,13 @@ private:
   static constexpr auto kTicks = "ticks"sv;
   friend void           to_json (nlohmann::json &j, const Playhead &pos)
   {
-    j[kTicks] = pos.position_ticks ();
+    j[kTicks] = pos.position_ticks ().in (units::ticks);
   }
   friend void from_json (const nlohmann::json &j, Playhead &pos)
   {
     double ticks{};
     j.at (kTicks).get_to (ticks);
-    pos.set_position_ticks (ticks);
+    pos.set_position_ticks (units::ticks (ticks));
   }
 
 private:
@@ -215,9 +215,11 @@ private:
   std::atomic<double> position_samples_processing_ = 0.0;
 
   // Shared state (protected)
-  std::atomic<double> position_samples_{ 0.0 };
-  double              position_ticks_ = 0.0;
-  mutable std::mutex  position_mutex_;
+  std::atomic<units::precise_sample_t> position_samples_;
+  units::precise_tick_t                position_ticks_;
+  mutable std::mutex                   position_mutex_;
+
+  static_assert (decltype (position_samples_)::is_always_lock_free);
 };
 
 /**

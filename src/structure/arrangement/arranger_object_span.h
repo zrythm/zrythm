@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "dsp/position.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/debug.h"
 #include "utils/uuid_identifiable_object.h"
@@ -302,8 +301,6 @@ public:
   using ArrangerObjectUuid = typename Base::UuidType;
   using Base::Base; // Inherit constructors
 
-  using Position = dsp::Position;
-
   static auto name_projection (const VariantType &obj_var)
   {
     return std::visit (
@@ -501,11 +498,6 @@ public:
   }
 
   /**
-   * Pastes the given selections to the given Position.
-   */
-  void paste_to_pos (const Position &pos, bool undoable);
-
-  /**
    * Returns if the selections contain an undeletable object (such as the
    * start marker).
    */
@@ -543,8 +535,7 @@ public:
    *
    * @note All selections must be on the same lane.
    */
-  auto merge (dsp::FramesPerTick frames_per_tick) const
-    -> ArrangerObjectUuidReference;
+  auto merge () const -> ArrangerObjectUuidReference;
 
   /**
    * Returns if the selections can be pasted at the current place/playhead.
@@ -552,14 +543,6 @@ public:
   bool can_be_pasted () const;
 
   bool all_on_same_lane () const;
-
-  /**
-   * Returns if the selections can be pasted at the given position/region.
-   *
-   * @param pos Position to paste to.
-   * @param idx Track index to start pasting to, if applicable.
-   */
-  bool can_be_pasted_at (Position pos, int idx = -1) const;
 
   bool contains_looped () const
   {
@@ -574,8 +557,6 @@ public:
     auto [_2, p2] = get_last_object_and_pos (true);
     return p2 - p1;
   }
-
-  bool can_split_at_pos (Position pos) const;
 
   /**
    * Returns the region at the given position, or NULL.

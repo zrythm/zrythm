@@ -130,6 +130,7 @@ SampleProcessor::remove_sample_playback (SamplePlayback &in_sp)
 void
 SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
 {
+#if 0
   const auto    cycle_offset = time_nfo.local_offset_;
   const auto    nframes = time_nfo.nframes_;
   SemaphoreRAII lock (rebuilding_sem_);
@@ -254,7 +255,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                   else if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
                     {
                     // TODO
-#if 0
+#  if 0
                       auto ins_var = track->channel ()->get_instrument ();
                       if (!ins_var)
                         return;
@@ -270,7 +271,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
                           audio_data_r = ins->r_out_->buf_.data ();
                         },
                         *ins_var);
-#endif
+#  endif
                     }
 
                   if (audio_data_l && audio_data_r)
@@ -297,6 +298,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo) noexcept
   // Stop rolling if no more material
   if (playhead_ > file_end_pos_)
     roll_ = false;
+#endif
 }
 
 void
@@ -586,10 +588,12 @@ SampleProcessor::queue_chord_preset (const ChordPreset &chord_pset)
 void
 SampleProcessor::stop_file_playback ()
 {
+#if 0
   roll_ = false;
   auto * transport = audio_engine_->project_->transport_;
   playhead_.set_to_bar (
     1, transport->ticks_per_bar_, audio_engine_->frames_per_tick_);
+#endif
 }
 
 void

@@ -139,7 +139,6 @@ init_from (
   const AudioEngine     &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.frames_per_tick_ = other.frames_per_tick_;
   obj.monitor_out_ = other.monitor_out_;
 // TODO
 #if 0
@@ -181,20 +180,21 @@ AudioEngine::update_frames_per_tick (
   bool                bpm_change)
 {
 #if 0
+#  if 0
   if (ZRYTHM_IS_QT_THREAD)
     {
-#endif
+#  endif
   z_debug (
     "updating frames per tick: beats per bar {}, bpm {:f}, sample rate {}",
     beats_per_bar, static_cast<double> (bpm), sample_rate);
-#if 0
+#  if 0
     }
   else if (thread_check)
     {
       z_error ("Called from non-GTK thread");
       return;
     }
-#endif
+#  endif
 
   updating_frames_per_tick_ = true;
 
@@ -224,6 +224,7 @@ AudioEngine::update_frames_per_tick (
   project_->transport_->update_positions (update_from_ticks);
 
   updating_frames_per_tick_ = false;
+#endif
 }
 
 void
@@ -410,9 +411,11 @@ AudioEngine::
 
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame_ = static_cast<unsigned_frame_t> (
-          project_->transport_->get_playhead_position_in_audio_thread ()),
+          project_->transport_->get_playhead_position_in_audio_thread ().in (
+            units::samples)),
         .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
-          project_->transport_->get_playhead_position_in_audio_thread ()),
+          project_->transport_->get_playhead_position_in_audio_thread ().in (
+            units::samples)),
         .local_offset_ = 0,
         .nframes_ = 1,
       };
@@ -552,31 +555,21 @@ AudioEngine::update_position_info (
   auto      &tempo_map = project_->get_tempo_map ();
   const auto playhead_frames_before =
     transport_->get_playhead_position_in_audio_thread ();
-  auto playhead =
-    dsp::Position{ playhead_frames_before, AUDIO_ENGINE->ticks_per_frame_ };
-  playhead.add_frames (frames_to_add, ticks_per_frame_);
+  auto playhead = playhead_frames_before + units::samples (frames_to_add);
   pos_nfo.is_rolling_ = transport_->isRolling ();
   pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map.tempo_at_tick (
-    units::ticks (static_cast<int64_t> (playhead.ticks_))));
-  pos_nfo.bar_ = playhead.get_bars (true, transport_->ticks_per_bar_);
-  pos_nfo.beat_ = playhead.get_beats (
-    true,
-    tempo_map
-      .time_signature_at_tick (
-        units::ticks (static_cast<int64_t> (playhead.ticks_)))
-      .numerator,
-    transport_->ticks_per_beat_);
-  pos_nfo.sixteenth_ = playhead.get_sixteenths (
-    true,
-    tempo_map
-      .time_signature_at_tick (
-        units::ticks (static_cast<int64_t> (playhead.ticks_)))
-      .numerator,
-    transport_->sixteenths_per_beat_, frames_per_tick_);
+    tempo_map.samples_to_tick (playhead).as<int64_t> (units::ticks)));
+  const auto musical_pos = tempo_map.samples_to_musical_position (playhead);
+  pos_nfo.bar_ = musical_pos.bar;
+  pos_nfo.beat_ = musical_pos.beat;
+  pos_nfo.sixteenth_ = musical_pos.sixteenth;
   pos_nfo.sixteenth_within_bar_ =
-    pos_nfo.sixteenth_ + (pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_;
+    pos_nfo.sixteenth_
+    + ((pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_);
+// TODO/delete
+#if 0
   pos_nfo.sixteenth_within_song_ =
-    playhead.get_total_sixteenths (false, frames_per_tick_);
+  playhead.get_total_sixteenths (false, frames_per_tick_);
   dsp::Position bar_start;
   bar_start.set_to_bar (
     playhead.get_bars (true, transport_->ticks_per_bar_),
@@ -590,6 +583,7 @@ AudioEngine::update_position_info (
   pos_nfo.playhead_ticks_ = playhead.ticks_;
   pos_nfo.ninetysixth_notes_ = static_cast<int32_t> (std::floor (
     playhead.ticks_ / dsp::Position::TICKS_PER_NINETYSIXTH_NOTE_DBL));
+#endif
 }
 
 bool
@@ -618,7 +612,7 @@ AudioEngine::process_prepare (
     }
   else if (
     transport_->play_state_ == session::Transport::PlayState::RollRequested
-    && transport_->countin_frames_remaining_ == 0)
+    && transport_->countin_frames_remaining_ == units::samples (0))
     {
       transport_->set_play_state_rt_safe (
         session::Transport::PlayState::Rolling);
@@ -715,9 +709,11 @@ AudioEngine::process (const nframes_t total_frames_to_process)
   auto *                transport_ = project_->transport_;
   EngineProcessTimeInfo split_time_nfo = {
     .g_start_frame_ =
-      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread (),
+      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread ()
+        .in (units::samples),
     .g_start_frame_w_offset_ =
-      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread (),
+      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread ()
+        .in (units::samples),
     .local_offset_ = 0,
     .nframes_ = 0,
   };
@@ -782,11 +778,12 @@ AudioEngine::process (const nframes_t total_frames_to_process)
       nframes_t cur_offset = total_frames_to_process - total_frames_remaining;
 
       /* split at countin */
-      if (transport_->countin_frames_remaining_ > 0)
+      if (transport_->countin_frames_remaining_ > units::samples (0))
         {
           const auto countin_frames = std::min (
             total_frames_remaining,
-            static_cast<nframes_t> (transport_->countin_frames_remaining_));
+            static_cast<nframes_t> (
+              transport_->countin_frames_remaining_.in (units::samples)));
 
           /* process for countin frames */
           split_time_nfo.g_start_frame_w_offset_ =
@@ -794,7 +791,8 @@ AudioEngine::process (const nframes_t total_frames_to_process)
           split_time_nfo.local_offset_ = cur_offset;
           split_time_nfo.nframes_ = countin_frames;
           router_->start_cycle (split_time_nfo);
-          transport_->countin_frames_remaining_ -= countin_frames;
+          transport_->countin_frames_remaining_ -=
+            units::samples (countin_frames);
 
           /* adjust total frames remaining to process and current offset */
           total_frames_remaining -= countin_frames;
@@ -805,13 +803,14 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
       /* split at preroll */
       if (
-        transport_->countin_frames_remaining_ == 0
+        transport_->countin_frames_remaining_ == units::samples (0)
         && transport_->has_recording_preroll_frames_remaining ())
         {
           nframes_t preroll_frames = std::min (
             total_frames_remaining,
             static_cast<nframes_t> (
-              transport_->recording_preroll_frames_remaining ()));
+              transport_->recording_preroll_frames_remaining ().in (
+                units::samples)));
 
           /* process for preroll frames */
           split_time_nfo.g_start_frame_w_offset_ =
@@ -819,7 +818,8 @@ AudioEngine::process (const nframes_t total_frames_to_process)
           split_time_nfo.local_offset_ = cur_offset;
           split_time_nfo.nframes_ = preroll_frames;
           router_->start_cycle (split_time_nfo);
-          transport_->recording_preroll_frames_remaining_ -= preroll_frames;
+          transport_->recording_preroll_frames_remaining_ -=
+            units::samples (preroll_frames);
 
           /* process for remaining frames */
           cur_offset += preroll_frames;
@@ -878,7 +878,8 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   auto * transport_ = project_->transport_;
   if (transport_->isRolling () && remaining_latency_preroll_ == 0)
     {
-      transport_->add_to_playhead_in_audio_thread (roll_nframes);
+      transport_->add_to_playhead_in_audio_thread (
+        units::samples (roll_nframes));
     }
 }
 
@@ -926,6 +927,18 @@ AudioEngine::get_active_instance ()
       return prj->audio_engine_.get ();
     }
   return nullptr;
+}
+
+void
+to_json (nlohmann::json &j, const AudioEngine &engine)
+{
+  j = nlohmann::json{
+    // { kFramesPerTickKey,   engine.frames_per_tick_  },
+    { AudioEngine::kMonitorOutKey,      engine.monitor_out_      },
+    { AudioEngine::kMidiInKey,          engine.midi_in_          },
+    { AudioEngine::kControlRoomKey,     engine.control_room_     },
+    { AudioEngine::kSampleProcessorKey, engine.sample_processor_ },
+  };
 }
 
 void
