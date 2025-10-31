@@ -616,7 +616,7 @@ public:
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  engine::session::Transport * transport_;
+  utils::QObjectUniquePtr<engine::session::Transport> transport_;
 
   /** Audio file pool. */
   std::unique_ptr<dsp::AudioPool> pool_;

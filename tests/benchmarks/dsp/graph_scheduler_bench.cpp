@@ -106,7 +106,7 @@ protected:
     for (size_t i = 0; i < num_nodes; i++)
       {
         auto proc = create_processable ();
-        nodes.push_back (std::make_unique<GraphNode> (i, *transport_, *proc));
+        nodes.push_back (std::make_unique<GraphNode> (i, *proc));
         if (i > 0)
           {
             nodes[i - 1]->connect_to (*nodes[i]);
@@ -129,7 +129,7 @@ protected:
     GraphNodeCollection collection;
 
     auto   root_proc = create_processable ();
-    auto   root = std::make_unique<GraphNode> (0, *transport_, *root_proc);
+    auto   root = std::make_unique<GraphNode> (0, *root_proc);
     auto * root_ptr = root.get ();
     collection.graph_nodes_.push_back (std::move (root));
     processables_.push_back (std::move (root_proc));
@@ -141,7 +141,7 @@ protected:
           {
             auto proc = create_processable ();
             auto node = std::make_unique<GraphNode> (
-              collection.graph_nodes_.size (), *transport_, *proc);
+              collection.graph_nodes_.size (), *proc);
             prev->connect_to (*node);
             prev = node.get ();
             collection.graph_nodes_.push_back (std::move (node));
@@ -163,7 +163,7 @@ protected:
       {
         auto proc = create_processable ();
         collection.graph_nodes_.push_back (
-          std::make_unique<GraphNode> (i, *transport_, *proc));
+          std::make_unique<GraphNode> (i, *proc));
         processables_.push_back (std::move (proc));
       }
 
@@ -223,7 +223,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, LinearChain)
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0);
+      scheduler_->run_cycle (time_info, 0, *transport_);
     }
 
   scheduler_->terminate_threads ();
@@ -248,7 +248,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, SplitChain)
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0);
+      scheduler_->run_cycle (time_info, 0, *transport_);
     }
 
   scheduler_->terminate_threads ();
@@ -273,7 +273,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, ComplexGraph)
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0);
+      scheduler_->run_cycle (time_info, 0, *transport_);
     }
 
   scheduler_->terminate_threads ();

@@ -74,13 +74,19 @@ Project::Project (
       audio_engine_ (
         utils::make_qobject_unique<
           engine::device_io::AudioEngine> (this, device_manager)),
-      transport_ (new engine::session::Transport (this)),
+      transport_ (
+        utils::make_qobject_unique<engine::session::Transport> (
+          *audio_engine_,
+          dsp::ProcessorBase::ProcessorBaseDependencies{
+            .port_registry_ = *port_registry_,
+            .param_registry_ = *param_registry_
+},
+          tempo_map_,
+          this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
-          [this] (bool backup) {
-            return get_path (ProjectPath::POOL, backup);
-},
+          [this] (bool backup) { return get_path (ProjectPath::POOL, backup); },
           [this] () { return audio_engine_->get_sample_rate (); })),
       quantize_opts_editor_ (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
@@ -607,9 +613,9 @@ Project::add_default_tracks ()
   });
 
   /* tempo */
-  transport_->update_caches (
-    get_tempo_map ().time_signature_at_tick (units::ticks (0)).numerator,
-    get_tempo_map ().time_signature_at_tick (units::ticks (0)).denominator);
+  // transport_->update_caches (
+  //   get_tempo_map ().time_signature_at_tick (units::ticks (0)).numerator,
+  //   get_tempo_map ().time_signature_at_tick (units::ticks (0)).denominator);
   audio_engine_->update_frames_per_tick (
     get_tempo_map ().time_signature_at_tick (units::ticks (0)).numerator,
     static_cast<bpm_t> (get_tempo_map ().tempo_at_tick (units::ticks (0))),
@@ -1359,7 +1365,7 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   obj.title_ = other.title_;
   obj.datetime_str_ = other.datetime_str_;
   obj.version_ = other.version_;
-  obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
+  // obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
   obj.audio_engine_ = utils::clone_qobject (
     *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
   obj.pool_ = utils::clone_unique (
@@ -1469,7 +1475,7 @@ Project::pluginSelectionManager () const
 engine::session::Transport *
 Project::getTransport () const
 {
-  return transport_;
+  return transport_.get ();
 }
 
 engine::device_io::AudioEngine *

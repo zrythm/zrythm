@@ -270,13 +270,17 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
 void
 GraphScheduler::run_cycle (
   const EngineProcessTimeInfo time_nfo,
-  const nframes_t             remaining_preroll_frames)
+  const nframes_t             remaining_preroll_frames,
+  const dsp::ITransport      &transport)
 {
   time_nfo_ = time_nfo;
   remaining_preroll_frames_ = remaining_preroll_frames;
+  current_transport_ = transport;
 
   callback_start_sem_.signal ();
   callback_done_sem_.wait ();
+
+  current_transport_.reset ();
 }
 
 void

@@ -46,24 +46,12 @@ Transport::init_common ()
       : ENUM_INT_TO_VALUE (RecordingMode, gui::SettingsManager::recordingMode ());
 }
 
-void
-Transport::init_loaded (Project * project)
-{
-  project_ = project;
-
-  z_return_if_fail_cmp (total_bars_, >, 0);
-
-  init_common ();
-
-  int beats_per_bar =
-    project->get_tempo_map ().time_signature_at_tick (units::ticks (0)).numerator;
-  int beat_unit =
-    project->get_tempo_map ().time_signature_at_tick (units::ticks (0)).denominator;
-  update_caches (beats_per_bar, beat_unit);
-}
-
-Transport::Transport (Project * parent)
-    : QObject (parent), playhead_ (parent->get_tempo_map ()),
+Transport::Transport (
+  device_io::AudioEngine                       &audio_engine,
+  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+  const dsp::TempoMap                          &tempo_map,
+  QObject *                                     parent)
+    : QObject (parent), playhead_ (tempo_map),
       playhead_adapter_ (new dsp::PlayheadQmlWrapper (playhead_, this)),
       time_conversion_funcs_ (
         dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (
@@ -96,7 +84,8 @@ Transport::Transport (Project * parent)
       range_2_adapter_ (
         utils::make_qobject_unique<
           dsp::AtomicPositionQmlAdapter> (range_2_, std::nullopt, this)),
-      project_ (parent), property_notification_timer_ (new QTimer (this))
+      audio_engine_ (audio_engine),
+      property_notification_timer_ (new QTimer (this))
 {
   z_debug ("Creating transport...");
 
@@ -118,7 +107,6 @@ Transport::Transport (Project * parent)
   /* set initial total number of beats this is applied to the ruler */
   total_bars_ = TRANSPORT_DEFAULT_TOTAL_BARS;
 
-  const auto &tempo_map = playhead_.get_tempo_map ();
   loop_end_position_.set_ticks (tempo_map.musical_position_to_tick (
     { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
   punch_in_position_.set_ticks (tempo_map.musical_position_to_tick (
@@ -131,34 +119,35 @@ Transport::Transport (Project * parent)
     { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 }));
 
   /* create ports */
-  roll_ = std::make_unique<dsp::MidiPort> (u8"Roll", PortFlow::Input);
+  roll_ = std::make_unique<dsp::MidiPort> (u8"Roll", dsp::PortFlow::Input);
   roll_->set_symbol (u8"roll");
   roll_->set_full_designation_provider (this);
   // roll_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
-  stop_ = std::make_unique<dsp::MidiPort> (u8"Stop", PortFlow::Input);
+  stop_ = std::make_unique<dsp::MidiPort> (u8"Stop", dsp::PortFlow::Input);
   stop_->set_symbol (u8"stop");
   stop_->set_full_designation_provider (this);
   // stop_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
-  backward_ = std::make_unique<dsp::MidiPort> (u8"Backward", PortFlow::Input);
+  backward_ =
+    std::make_unique<dsp::MidiPort> (u8"Backward", dsp::PortFlow::Input);
   backward_->set_symbol (u8"backward");
   backward_->set_full_designation_provider (this);
   // backward_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
-  forward_ = std::make_unique<dsp::MidiPort> (u8"Forward", PortFlow::Input);
+  forward_ = std::make_unique<dsp::MidiPort> (u8"Forward", dsp::PortFlow::Input);
   forward_->set_symbol (u8"forward");
   forward_->set_full_designation_provider (this);
   // forward_->id_->flags_ |= PortIdentifier::Flags::Trigger;
 
   loop_toggle_ =
-    std::make_unique<dsp::MidiPort> (u8"Loop toggle", PortFlow::Input);
+    std::make_unique<dsp::MidiPort> (u8"Loop toggle", dsp::PortFlow::Input);
   loop_toggle_->set_symbol (u8"loop_toggle");
   loop_toggle_->set_full_designation_provider (this);
   // loop_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
 
   rec_toggle_ =
-    std::make_unique<dsp::MidiPort> (u8"Rec toggle", PortFlow::Input);
+    std::make_unique<dsp::MidiPort> (u8"Rec toggle", dsp::PortFlow::Input);
   rec_toggle_->set_symbol (u8"rec_toggle");
   rec_toggle_->set_full_designation_provider (this);
   // rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
@@ -190,10 +179,7 @@ Transport::Transport (Project * parent)
     return buffer;
   };
   metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = project_->get_port_registry (),
-      .param_registry_ = project_->get_param_registry () },
-    *this, project_->get_tempo_map (),
+    dependencies, *this, tempo_map,
     load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
     load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
     zrythm::gui::SettingsManager::get_instance ()->get_metronomeEnabled (),
@@ -452,34 +438,25 @@ Transport::set_recording_mode (RecordingMode mode)
 }
 
 void
-Transport::update_caches (int beats_per_bar, int beat_unit)
-{
-  /**
-   * Regarding calculation:
-   * 3840 = TICKS_PER_QUARTER_NOTE * 4 to get the ticks per full note.
-   * Divide by beat unit (e.g. if beat unit is 2, it means it is a 1/2th note,
-   * so multiply 1/2 with the ticks per note
-   */
-  ticks_per_beat_ = 3840 / beat_unit;
-  ticks_per_bar_ = ticks_per_beat_ * beats_per_bar;
-  sixteenths_per_beat_ = 16 / beat_unit;
-  sixteenths_per_bar_ = (sixteenths_per_beat_ * beats_per_bar);
-  z_warn_if_fail (ticks_per_bar_ > 0.0);
-  z_warn_if_fail (ticks_per_beat_ > 0.0);
-}
-
-void
 Transport::requestPause (bool with_wait)
 {
-  auto * audio_engine_ = project_->audio_engine_.get ();
   /* can only be called from the gtk thread or when preparing to export */
   z_return_if_fail (
-    !audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD
-    || audio_engine_->preparing_to_export_);
+    !audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD
+    || audio_engine_.preparing_to_export_);
 
+  /////////////////////////////////////////////////////
+  // FIXME: instead of using locks and trying to synchronize with
+  // AudioEngine::process, get a cache of the playhead and play state inside
+  // AudioEngine::process and use the cache throughout processing. This would
+  // remove the need for locks here. Maybe we can use farbot::RealtimeObject for
+  // this. Need to change some zrythm::dsp::graph classes too because they take
+  // an ITransport reference (or maybe make the reference be for the engine's
+  // copy?)
+  /////////////////////////////////////////////////////
   if (with_wait)
     {
-      audio_engine_->port_operation_lock_.wait ();
+      audio_engine_.port_operation_lock_.wait ();
     }
 
   set_play_state_rt_safe (PlayState::PauseRequested);
@@ -494,23 +471,21 @@ Transport::requestPause (bool with_wait)
 
   if (with_wait)
     {
-      audio_engine_->port_operation_lock_.signal ();
+      audio_engine_.port_operation_lock_.signal ();
     }
 }
 
 void
 Transport::requestRoll (bool with_wait)
 {
-  auto * audio_engine_ = project_->audio_engine_.get ();
-
   /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
+  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
+  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>>
     wait_sem;
   if (with_wait)
     {
-      wait_sem.emplace (audio_engine_->port_operation_lock_);
+      wait_sem.emplace (audio_engine_.port_operation_lock_);
     }
 
   if (gZrythm && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
@@ -566,8 +541,8 @@ bool
 Transport::can_user_move_playhead () const
 {
   if (
-    recording_ && play_state_ == PlayState::Rolling && project_->audio_engine_
-    && project_->audio_engine_->run_.load ())
+    recording_ && play_state_ == PlayState::Rolling
+    && audio_engine_.run_.load ())
     return false;
   else
     return true;
@@ -758,16 +733,13 @@ Transport::goto_next_marker ()
 void
 Transport::set_loop (bool enabled, bool with_wait)
 {
-  auto * audio_engine_ = project_->audio_engine_.get ();
-
   /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
+  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
-    sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
   if (with_wait)
     {
-      sem.emplace (audio_engine_->port_operation_lock_);
+      sem.emplace (audio_engine_.port_operation_lock_);
     }
 
   loop_ = enabled;
@@ -935,16 +907,13 @@ Transport::update_total_bars (int total_bars, bool fire_events)
 void
 Transport::move_backward (bool with_wait)
 {
-  auto * audio_engine_ = project_->audio_engine_.get ();
-
   /* can only be called from the gtk thread */
   z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
-    sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
   if (with_wait)
     {
-      sem.emplace (audio_engine_->port_operation_lock_);
+      sem.emplace (audio_engine_.port_operation_lock_);
     }
 
   const auto &tempo_map = playhead_.get_tempo_map ();
@@ -969,16 +938,13 @@ Transport::move_backward (bool with_wait)
 void
 Transport::move_forward (bool with_wait)
 {
-  auto * audio_engine_ = project_->audio_engine_.get ();
-
   /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
+  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
-    sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
   if (with_wait)
     {
-      sem.emplace (audio_engine_->port_operation_lock_);
+      sem.emplace (audio_engine_.port_operation_lock_);
     }
 
   double pos_ticks = SNAP_GRID_TIMELINE->nextSnapPoint (
@@ -992,16 +958,13 @@ Transport::move_forward (bool with_wait)
 void
 Transport::set_recording (bool record, bool with_wait)
 {
-  auto * audio_engine_ = project_->audio_engine_.get ();
-
   /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
+  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
 
-  std::optional<SemaphoreRAII<decltype (audio_engine_->port_operation_lock_)>>
-    sem;
+  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
   if (with_wait)
     {
-      sem.emplace (audio_engine_->port_operation_lock_);
+      sem.emplace (audio_engine_.port_operation_lock_);
     }
 
   recording_ = record;

@@ -282,7 +282,7 @@ RecordingManager::handle_recording (
         {
           /*  if not recording at all (recording stopped) */
           if (
-            !TRANSPORT->is_recording ()
+            !TRANSPORT->recordEnabled ()
             || !tr->recordableTrackMixin ()->recording ()
             || !TRANSPORT->isRolling ())
             {

@@ -271,12 +271,10 @@ TEST_F (ProcessorBaseTest, GraphBuilderIntegration)
 {
   processor_->prepare_for_processing (sample_rate_, max_block_length_);
 
-  // Create graph and transport
-  graph_test::MockTransport transport;
-  graph::Graph              graph;
+  graph::Graph graph;
 
   // Add processor to graph
-  ProcessorGraphBuilder::add_nodes (graph, transport, *processor_);
+  ProcessorGraphBuilder::add_nodes (graph, *processor_);
   ProcessorGraphBuilder::add_connections (graph, *processor_);
   graph.finalize_nodes ();
 

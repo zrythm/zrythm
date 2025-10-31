@@ -382,7 +382,7 @@ AudioEngine::
       else
         {
           while (
-            project_->transport_->play_state_
+            project_->transport_->getPlayState ()
             == session::Transport::PlayState::PauseRequested)
             {
               std::this_thread::sleep_for (std::chrono::microseconds (100));
@@ -551,7 +551,7 @@ AudioEngine::update_position_info (
   PositionInfo   &pos_nfo,
   const nframes_t frames_to_add)
 {
-  auto       transport_ = project_->transport_;
+  auto       transport_ = project_->getTransport ();
   auto      &tempo_map = project_->get_tempo_map ();
   const auto playhead_frames_before =
     transport_->get_playhead_position_in_audio_thread ();
@@ -605,13 +605,14 @@ AudioEngine::process_prepare (
 
   nframes_ = nframes;
 
-  auto transport_ = project_->transport_;
-  if (transport_->play_state_ == session::Transport::PlayState::PauseRequested)
+  auto transport_ = project_->getTransport ();
+  if (
+    transport_->getPlayState () == session::Transport::PlayState::PauseRequested)
     {
       transport_->set_play_state_rt_safe (session::Transport::PlayState::Paused);
     }
   else if (
-    transport_->play_state_ == session::Transport::PlayState::RollRequested
+    transport_->getPlayState () == session::Transport::PlayState::RollRequested
     && transport_->countin_frames_remaining_ == units::samples (0))
     {
       transport_->set_play_state_rt_safe (
@@ -706,7 +707,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   /* --- handle preroll --- */
 
-  auto *                transport_ = project_->transport_;
+  auto *                transport_ = project_->getTransport ();
   EngineProcessTimeInfo split_time_nfo = {
     .g_start_frame_ =
       (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread ()
@@ -875,7 +876,7 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   update_position_info (pos_nfo_before_, 0);
 
   /* move the playhead if rolling and not pre-rolling */
-  auto * transport_ = project_->transport_;
+  auto * transport_ = project_->getTransport ();
   if (transport_->isRolling () && remaining_latency_preroll_ == 0)
     {
       transport_->add_to_playhead_in_audio_thread (

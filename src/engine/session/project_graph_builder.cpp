@@ -121,11 +121,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   auto * tracklist = project_.tracklist ();
   auto * monitor_fader = engine->control_room_->monitor_fader_.get ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
-  auto * transport = project.transport_;
+  auto * transport = project.getTransport ();
   auto  &metronome = *transport->metronome_;
 
   const auto add_node_for_processable = [&] (auto &processable) {
-    return graph.add_node_for_processable (processable, *transport);
+    return graph.add_node_for_processable (processable);
   };
 
   const auto connect_ports =
@@ -152,17 +152,16 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 #endif
 
   // add metronome processor
-  dsp::ProcessorGraphBuilder::add_nodes (graph, *transport, metronome);
+  dsp::ProcessorGraphBuilder::add_nodes (graph, metronome);
 
   /* add the monitor fader */
-  dsp::ProcessorGraphBuilder::add_nodes (graph, *transport, *monitor_fader);
+  dsp::ProcessorGraphBuilder::add_nodes (graph, *monitor_fader);
 
   /* add the initial processor */
-  auto * initial_processor_node = graph.add_initial_processor (*transport);
+  auto * initial_processor_node = graph.add_initial_processor ();
 
   // add midi panic processor
-  dsp::ProcessorGraphBuilder::add_nodes (
-    graph, *transport, *engine->midi_panic_processor_);
+  dsp::ProcessorGraphBuilder::add_nodes (graph, *engine->midi_panic_processor_);
 
   /* add the hardware input processor */
   // add_node_for_processable (*hw_in_processor);
@@ -179,7 +178,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             {
               /* add the track processor */
               dsp::ProcessorGraphBuilder::add_nodes (
-                graph, *transport, *tr->get_track_processor ());
+                graph, *tr->get_track_processor ());
             }
 
           /* handle modulator track */
@@ -193,8 +192,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 {
                   std::visit (
                     [&] (auto &&pl) {
-                      dsp::ProcessorGraphBuilder::add_nodes (
-                        graph, *transport, *pl);
+                      dsp::ProcessorGraphBuilder::add_nodes (graph, *pl);
                     },
                     pl_var);
                 }
@@ -202,14 +200,14 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               /* add macro processors */
               for (const auto &mp : tr->get_modulator_macro_processors ())
                 {
-                  dsp::ProcessorGraphBuilder::add_nodes (graph, *transport, *mp);
+                  dsp::ProcessorGraphBuilder::add_nodes (graph, *mp);
                 }
             }
 
           if (auto * channel = tr->channel ())
             {
               structure::tracks::ChannelSubgraphBuilder::add_nodes (
-                graph, *transport, *channel);
+                graph, *channel);
             }
         },
         cur_tr);

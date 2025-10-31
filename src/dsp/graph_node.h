@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -125,10 +125,7 @@ class GraphNode
 public:
   using NodeId = int;
 
-  GraphNode (
-    NodeId                 id,
-    const dsp::ITransport &transport,
-    IProcessable          &processable);
+  GraphNode (NodeId id, IProcessable &processable);
   Z_DISABLE_COPY_MOVE (GraphNode)
   ~GraphNode () noexcept = default;
 
@@ -150,9 +147,10 @@ public:
    * opposed to being called before/after a processing cycle (e.g., for some
    * special nodes that are processed before/after the actual processing).
    */
-  [[gnu::hot]] void
-  process (EngineProcessTimeInfo time_nfo, nframes_t remaining_preroll_frames)
-    const;
+  [[gnu::hot]] void process (
+    EngineProcessTimeInfo  time_nfo,
+    nframes_t              remaining_preroll_frames,
+    const dsp::ITransport &transport) const;
 
   nframes_t get_single_playback_latency () const
   {
@@ -198,7 +196,8 @@ private:
    */
   [[gnu::hot]] void compensate_latency (
     EngineProcessTimeInfo &time_nfo,
-    nframes_t              remaining_preroll_frames) const;
+    nframes_t              remaining_preroll_frames,
+    const dsp::ITransport &transport) const;
 
   /**
    * Processes audio in chunks when loop points are encountered.
@@ -210,7 +209,8 @@ private:
    * @param time_nfo Time info containing frame counts and offsets
    */
   [[gnu::hot]] void process_chunks_after_splitting_at_loop_points (
-    EngineProcessTimeInfo &time_nfo) const;
+    EngineProcessTimeInfo &time_nfo,
+    const dsp::ITransport &transport) const;
 
 public:
   /** Incoming node count. */
@@ -261,8 +261,6 @@ private:
    * latencies.
    */
   std::vector<std::reference_wrapper<GraphNode>> parentnodes_;
-
-  const dsp::ITransport &transport_;
 
   IProcessable &processable_;
 

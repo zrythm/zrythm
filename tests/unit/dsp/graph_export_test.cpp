@@ -17,7 +17,6 @@ class GraphExportTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    transport_ = std::make_unique<MockTransport> ();
     processable1_ = std::make_unique<MockProcessable> ();
     processable2_ = std::make_unique<MockProcessable> ();
 
@@ -25,7 +24,6 @@ protected:
     ON_CALL (*processable2_, get_node_name ()).WillByDefault (Return (u8"node2"));
   }
 
-  std::unique_ptr<MockTransport>   transport_;
   std::unique_ptr<MockProcessable> processable1_;
   std::unique_ptr<MockProcessable> processable2_;
 };
@@ -43,7 +41,7 @@ TEST_F (GraphExportTest, EmptyGraphExport)
 TEST_F (GraphExportTest, SingleNodeExport)
 {
   Graph graph;
-  graph.add_node_for_processable (*processable1_, *transport_);
+  graph.add_node_for_processable (*processable1_);
   graph.finalize_nodes ();
 
   auto dot = GraphExport::export_to_dot (graph, false);
@@ -55,8 +53,8 @@ TEST_F (GraphExportTest, SingleNodeExport)
 TEST_F (GraphExportTest, ConnectedNodesExport)
 {
   Graph  graph;
-  auto * node1 = graph.add_node_for_processable (*processable1_, *transport_);
-  auto * node2 = graph.add_node_for_processable (*processable2_, *transport_);
+  auto * node1 = graph.add_node_for_processable (*processable1_);
+  auto * node2 = graph.add_node_for_processable (*processable2_);
   node1->connect_to (*node2);
   graph.finalize_nodes ();
 
@@ -75,7 +73,7 @@ TEST_F (GraphExportTest, ConnectedNodesExport)
 TEST_F (GraphExportTest, ClassNameInclusion)
 {
   Graph graph;
-  graph.add_node_for_processable (*processable1_, *transport_);
+  graph.add_node_for_processable (*processable1_);
   graph.finalize_nodes ();
 
   auto dot = GraphExport::export_to_dot (graph, true);

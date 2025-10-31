@@ -131,7 +131,12 @@ DspGraphDispatcher::start_cycle (EngineProcessTimeInfo time_nfo)
 
   preprocess_at_start_of_cycle (time_nfo_);
 
-  scheduler_->run_cycle (time_nfo_, audio_engine_->remaining_latency_preroll_);
+  scheduler_->run_cycle (
+    time_nfo_, audio_engine_->remaining_latency_preroll_,
+    // FIXME: create a temporary ITransport snapshot and inject it here (graph
+    // nodes will use this instead of the main Transport instance, thus avoiding
+    // the need to synchronize access to it)
+    *TRANSPORT);
   callback_in_progress_ = false;
 }
 

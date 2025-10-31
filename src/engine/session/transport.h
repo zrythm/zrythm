@@ -26,18 +26,28 @@ namespace zrythm::engine::session
 {
 enum class PrerollCountBars
 {
-  None,
-  One,
-  Two,
-  Four,
+  PrerollNone,
+  PrerollOne,
+  PrerollTwo,
+  PrerollFour,
 };
 
-static const char * preroll_count_bars_str[] = {
-  QT_TR_NOOP_UTF8 ("None"),
-  QT_TR_NOOP_UTF8 ("1 bar"),
-  QT_TR_NOOP_UTF8 ("2 bars"),
-  QT_TR_NOOP_UTF8 ("4 bars"),
-};
+inline int
+preroll_count_bars_enum_to_int (PrerollCountBars bars)
+{
+  switch (bars)
+    {
+    case PrerollCountBars::PrerollNone:
+      return 0;
+    case PrerollCountBars::PrerollOne:
+      return 1;
+    case PrerollCountBars::PrerollTwo:
+      return 2;
+    case PrerollCountBars::PrerollFour:
+      return 4;
+    }
+  return -1;
+}
 
 /**
  * The Transport class represents the transport controls and state for an audio
@@ -49,10 +59,10 @@ class Transport : public QObject, public dsp::ITransport
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    bool loopEnabled READ is_looping WRITE setLoopEnabled NOTIFY
+    bool loopEnabled READ loopEnabled WRITE setLoopEnabled NOTIFY
       loopEnabledChanged)
   Q_PROPERTY (
-    bool recordEnabled READ is_recording WRITE setRecordEnabled NOTIFY
+    bool recordEnabled READ recordEnabled WRITE setRecordEnabled NOTIFY
       recordEnabledChanged)
   Q_PROPERTY (
     PlayState playState READ getPlayState WRITE setPlayState NOTIFY
@@ -132,18 +142,22 @@ public:
   };
   Q_ENUM (RecordingMode)
 
-  using PortFlow = dsp::PortFlow;
-
 public:
-  Transport (Project * parent = nullptr);
+  Transport (
+    device_io::AudioEngine                       &audio_engine,
+    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+    const dsp::TempoMap                          &tempo_map,
+    QObject *                                     parent = nullptr);
 
   // ==================================================================
   // QML Interface
   // ==================================================================
 
+  bool          loopEnabled () const { return loop_enabled (); }
   void          setLoopEnabled (bool enabled);
   Q_SIGNAL void loopEnabledChanged (bool enabled);
 
+  bool          recordEnabled () const { return recording_enabled (); }
   void          setRecordEnabled (bool enabled);
   Q_SIGNAL void recordEnabledChanged (bool enabled);
 
@@ -238,27 +252,6 @@ public:
 
   // ==================================================================
 
-  static const char * preroll_count_to_str (PrerollCountBars bars)
-  {
-    return preroll_count_bars_str[static_cast<int> (bars)];
-  }
-
-  static int preroll_count_bars_enum_to_int (PrerollCountBars bars)
-  {
-    switch (bars)
-      {
-      case PrerollCountBars::None:
-        return 0;
-      case PrerollCountBars::One:
-        return 1;
-      case PrerollCountBars::Two:
-        return 2;
-      case PrerollCountBars::Four:
-        return 4;
-      }
-    return -1;
-  }
-
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
   Q_INVOKABLE bool isRolling () const
@@ -270,18 +263,6 @@ public:
   {
     return play_state_ == PlayState::Paused;
   }
-
-  bool is_looping () const { return loop_; }
-
-  bool is_recording () const { return recording_; }
-  /**
-   * Initialize loaded transport.
-   *
-   * @param engine Owner engine, if any.
-   * @param tempo_track Tempo track, used to initialize the caches. Only needed
-   * on the active project transport.
-   */
-  void init_loaded (Project * project);
 
   /**
    * Prepares audio regions for stretching (sets the
@@ -460,8 +441,6 @@ public:
    */
   void update_total_bars (int total_bars, bool fire_events);
 
-  void update_caches (int beats_per_bar, int beat_unit);
-
   /**
    * Sets recording on/off.
    */
@@ -623,16 +602,15 @@ public:
   /** Rec toggle MIDI port. */
   std::unique_ptr<dsp::MidiPort> rec_toggle_;
 
+private:
   /** Play state. */
   PlayState play_state_ = {};
 
   /** Last timestamp the playhead position was changed manually. */
   RtTimePoint last_manual_playhead_change_ = 0;
 
-  /** Pointer to owner, if any. */
-  Project * project_ = nullptr;
+  device_io::AudioEngine &audio_engine_;
 
-private:
   /**
    * @brief Timer used to notify the property system of changes (e.g.
    * playhead position).

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -36,11 +36,8 @@
 namespace zrythm::dsp::graph
 {
 
-GraphNode::GraphNode (
-  NodeId                 id,
-  const dsp::ITransport &transport,
-  IProcessable          &processable)
-    : node_id_ (id), transport_ (transport), processable_ (processable)
+GraphNode::GraphNode (NodeId id, IProcessable &processable)
+    : node_id_ (id), processable_ (processable)
 {
 }
 
@@ -71,7 +68,8 @@ GraphNode::print_node () const
 void
 GraphNode::compensate_latency (
   EngineProcessTimeInfo &time_nfo,
-  const nframes_t        remaining_preroll_frames) const
+  const nframes_t        remaining_preroll_frames,
+  const dsp::ITransport &transport) const
 {
   /* if the playhead is before the loop-end point and the
    * latency-compensated position is after the loop-end point it means
@@ -81,9 +79,9 @@ GraphNode::compensate_latency (
    * loop end (there is a loop inside the range), that should be handled
    * by the ports/processors instead */
   z_return_if_fail (route_playback_latency_ >= remaining_preroll_frames);
-  const auto playhead_pos = transport_.get_playhead_position_in_audio_thread ();
+  const auto playhead_pos = transport.get_playhead_position_in_audio_thread ();
   auto       adjusted_playhead_position =
-    transport_.get_playhead_position_after_adding_frames_in_audio_thread (
+    transport.get_playhead_position_after_adding_frames_in_audio_thread (
       playhead_pos,
       units::samples (route_playback_latency_ - remaining_preroll_frames));
   time_nfo.g_start_frame_ =
@@ -95,13 +93,14 @@ GraphNode::compensate_latency (
 
 void
 GraphNode::process_chunks_after_splitting_at_loop_points (
-  EngineProcessTimeInfo &time_nfo) const
+  EngineProcessTimeInfo &time_nfo,
+  const dsp::ITransport &transport) const
 {
   /* split at loop points */
   for (
     nframes_t num_processable_frames = 0;
     (num_processable_frames = std::min (
-       transport_
+       transport
          .is_loop_point_met_in_audio_thread (
            units::samples (time_nfo.g_start_frame_w_offset_),
 
@@ -127,7 +126,7 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
 
       /* loop back to loop start */
       auto [transport_loop_start_pos, transport_loop_end_pos] =
-        transport_.get_loop_range_positions ();
+        transport.get_loop_range_positions ();
       unsigned_frame_t frames_to_add =
         (num_processable_frames + transport_loop_start_pos.in (units::samples))
         - transport_loop_end_pos.in (units::samples);
@@ -139,8 +138,9 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
 
 void
 GraphNode::process (
-  EngineProcessTimeInfo time_nfo,
-  const nframes_t       remaining_preroll_frames) const
+  EngineProcessTimeInfo  time_nfo,
+  const nframes_t        remaining_preroll_frames,
+  const dsp::ITransport &transport) const
 {
   // if node is bypassed, skip processing
   if (bypass_) [[unlikely]]
@@ -157,12 +157,12 @@ GraphNode::process (
     }
 
   /* compensate latency when rolling */
-  if (transport_.get_play_state () == dsp::ITransport::PlayState::Rolling)
+  if (transport.get_play_state () == dsp::ITransport::PlayState::Rolling)
     {
-      compensate_latency (time_nfo, remaining_preroll_frames);
+      compensate_latency (time_nfo, remaining_preroll_frames, transport);
     }
 
-  process_chunks_after_splitting_at_loop_points (time_nfo);
+  process_chunks_after_splitting_at_loop_points (time_nfo, transport);
 
   z_return_if_fail_cmp (
     time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);

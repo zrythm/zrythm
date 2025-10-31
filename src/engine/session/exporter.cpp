@@ -512,7 +512,7 @@ Exporter::prepare_tracks_for_export (
   AUDIO_ENGINE->wait_for_pause (*state_, false, true);
   z_info ("engine paused");
 
-  TRANSPORT->play_state_ = Transport::PlayState::Rolling;
+  TRANSPORT->setPlayState (Transport::PlayState::Rolling);
 
   AUDIO_ENGINE->exporting_ = true;
   AUDIO_ENGINE->preparing_to_export_ = false;

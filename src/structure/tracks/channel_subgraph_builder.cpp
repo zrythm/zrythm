@@ -7,28 +7,23 @@
 namespace zrythm::structure::tracks
 {
 void
-ChannelSubgraphBuilder::
-  add_nodes (dsp::graph::Graph &graph, dsp::ITransport &transport, Channel &ch)
+ChannelSubgraphBuilder::add_nodes (dsp::graph::Graph &graph, Channel &ch)
 {
   // prefader & post-fader
   if (ch.is_audio ())
     {
-      dsp::ProcessorGraphBuilder::add_nodes (
-        graph, transport, ch.get_audio_pre_fader ());
-      dsp::ProcessorGraphBuilder::add_nodes (
-        graph, transport, ch.get_audio_post_fader ());
+      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_audio_pre_fader ());
+      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_audio_post_fader ());
     }
   else if (ch.is_midi ())
     {
-      dsp::ProcessorGraphBuilder::add_nodes (
-        graph, transport, ch.get_midi_pre_fader ());
-      dsp::ProcessorGraphBuilder::add_nodes (
-        graph, transport, ch.get_midi_post_fader ());
+      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_pre_fader ());
+      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_post_fader ());
     }
 
   // fader
   {
-    dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *ch.fader ());
+    dsp::ProcessorGraphBuilder::add_nodes (graph, *ch.fader ());
   }
 
   // plugins
@@ -38,17 +33,17 @@ ChannelSubgraphBuilder::
     auto * pl :
     plugins | std::views::transform (&plugins::plugin_ptr_variant_to_base))
     {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *pl);
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *pl);
     }
 
   // sends
   for (const auto &send : ch.pre_fader_sends ())
     {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *send);
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *send);
     }
   for (const auto &send : ch.post_fader_sends ())
     {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, transport, *send);
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *send);
     }
 }
 

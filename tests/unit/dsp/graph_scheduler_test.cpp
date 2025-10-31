@@ -40,9 +40,9 @@ protected:
   GraphNodeCollection create_test_collection ()
   {
     GraphNodeCollection collection;
-    auto node1 = std::make_unique<GraphNode> (1, *transport_, *processable_);
-    auto node2 = std::make_unique<GraphNode> (2, *transport_, *processable_);
-    auto node3 = std::make_unique<GraphNode> (3, *transport_, *processable_);
+    auto                node1 = std::make_unique<GraphNode> (1, *processable_);
+    auto                node2 = std::make_unique<GraphNode> (2, *processable_);
+    auto                node3 = std::make_unique<GraphNode> (3, *processable_);
 
     node1->connect_to (*node2);
     node2->connect_to (*node3);
@@ -81,7 +81,7 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0);
+  scheduler_->run_cycle (time_info, 0, *transport_);
 
   scheduler_->terminate_threads ();
 }
@@ -102,7 +102,7 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0);
+  scheduler_->run_cycle (time_info, 0, *transport_);
 
   EXPECT_EQ (process_count, 3);
   scheduler_->terminate_threads ();
@@ -125,7 +125,7 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0);
+  scheduler_->run_cycle (time_info, 0, *transport_);
 
   EXPECT_THAT (process_order, ElementsAre (0, 1, 2));
   scheduler_->terminate_threads ();
@@ -178,7 +178,7 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = new_block_length;
-  scheduler_->run_cycle (time_info, 0);
+  scheduler_->run_cycle (time_info, 0, *transport_);
 
   scheduler_->terminate_threads ();
 }

@@ -19,10 +19,8 @@ public:
   using MockTransport = zrythm::dsp::graph_test::MockTransport;
   using MockProcessable = zrythm::dsp::graph_test::MockProcessable;
 
-  TestGraphBuilder (
-    MockTransport                              &transport,
-    std::span<std::unique_ptr<MockProcessable>> processables)
-      : transport_ (transport), processables_ (processables)
+  TestGraphBuilder (std::span<std::unique_ptr<MockProcessable>> processables)
+      : processables_ (processables)
   {
   }
 
@@ -30,32 +28,25 @@ protected:
   void build_graph_impl (Graph &graph) override
   {
     // Create a simple chain of 3 nodes
-    auto * node1 =
-      graph.add_node_for_processable (*processables_[0], transport_);
-    auto * node2 =
-      graph.add_node_for_processable (*processables_[1], transport_);
-    auto * node3 =
-      graph.add_node_for_processable (*processables_[2], transport_);
+    auto * node1 = graph.add_node_for_processable (*processables_[0]);
+    auto * node2 = graph.add_node_for_processable (*processables_[1]);
+    auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
     node1->connect_to (*node2);
     node2->connect_to (*node3);
   }
 
 private:
-  MockTransport                              &transport_;
   std::span<std::unique_ptr<MockProcessable>> processables_;
 };
 
 class GraphBuilderTest : public ::testing::Test
 {
 protected:
-  using MockTransport = zrythm::dsp::graph_test::MockTransport;
   using MockProcessable = zrythm::dsp::graph_test::MockProcessable;
 
   void SetUp () override
   {
-    transport_ = std::make_unique<MockTransport> ();
-
     // Create 3 test processables
     for (const auto _ : std::views::iota (0, 3))
       {
@@ -65,13 +56,12 @@ protected:
       }
   }
 
-  std::unique_ptr<MockTransport>                transport_;
   std::vector<std::unique_ptr<MockProcessable>> processables_;
 };
 
 TEST_F (GraphBuilderTest, BuildsValidGraph)
 {
-  TestGraphBuilder builder (*transport_, std::span (processables_));
+  TestGraphBuilder builder (std::span{ processables_ });
   Graph            graph;
 
   builder.build_graph (graph);
@@ -84,7 +74,7 @@ TEST_F (GraphBuilderTest, BuildsValidGraph)
 
 TEST_F (GraphBuilderTest, NodesProperlyConnected)
 {
-  TestGraphBuilder builder (*transport_, std::span (processables_));
+  TestGraphBuilder builder (std::span{ processables_ });
   Graph            graph;
 
   builder.build_graph (graph);
@@ -103,7 +93,7 @@ TEST_F (GraphBuilderTest, LatenciesUpdated)
         .WillRepeatedly (Return (128));
     }
 
-  TestGraphBuilder builder (*transport_, std::span (processables_));
+  TestGraphBuilder builder (std::span{ processables_ });
   Graph            graph;
 
   builder.build_graph (graph);

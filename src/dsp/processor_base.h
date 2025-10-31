@@ -132,10 +132,7 @@ private:
 class ProcessorGraphBuilder
 {
 public:
-  static void add_nodes (
-    dsp::graph::Graph &graph,
-    dsp::ITransport   &transport,
-    ProcessorBase     &processor);
+  static void add_nodes (dsp::graph::Graph &graph, ProcessorBase &processor);
   static void
   add_connections (dsp::graph::Graph &graph, ProcessorBase &processor);
 };

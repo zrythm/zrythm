@@ -30,14 +30,12 @@ public:
    * be added, this method will return the existing node without adding a new
    * node.
    */
-  GraphNode *
-  add_node_for_processable (IProcessable &node, const dsp::ITransport &transport);
+  GraphNode * add_node_for_processable (IProcessable &node);
 
-  GraphNode * add_initial_processor (const dsp::ITransport &transport)
+  GraphNode * add_initial_processor ()
   {
     setup_nodes_.initial_processor_ = std::make_unique<InitialProcessor> ();
-    return add_node_for_processable (
-      *setup_nodes_.initial_processor_, transport);
+    return add_node_for_processable (*setup_nodes_.initial_processor_);
   };
 
   /**

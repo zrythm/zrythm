@@ -54,9 +54,7 @@ Graph::print () const
 }
 
 GraphNode *
-Graph::add_node_for_processable (
-  IProcessable          &node,
-  const dsp::ITransport &transport)
+Graph::add_node_for_processable (IProcessable &node)
 {
   if (auto * node_ptr = setup_nodes_.find_node_for_processable (node);
       node_ptr != nullptr)
@@ -65,8 +63,7 @@ Graph::add_node_for_processable (
       return node_ptr;
     }
   setup_nodes_.graph_nodes_.emplace_back (
-    std::make_unique<GraphNode> (
-      setup_nodes_.graph_nodes_.size (), transport, node));
+    std::make_unique<GraphNode> (setup_nodes_.graph_nodes_.size (), node));
   return setup_nodes_.graph_nodes_.back ().get ();
 }
 

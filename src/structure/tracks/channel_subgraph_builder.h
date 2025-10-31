@@ -16,8 +16,7 @@ namespace zrythm::structure::tracks
 class ChannelSubgraphBuilder
 {
 public:
-  static void
-  add_nodes (dsp::graph::Graph &graph, dsp::ITransport &transport, Channel &ch);
+  static void add_nodes (dsp::graph::Graph &graph, Channel &ch);
 
   /**
    * @brief Adds connections for the nodes already in the graph.

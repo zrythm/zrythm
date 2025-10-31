@@ -207,11 +207,10 @@ ProcessorBase::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
 void
 ProcessorGraphBuilder::add_nodes (
   dsp::graph::Graph &graph,
-  dsp::ITransport   &transport,
   ProcessorBase     &processor)
 {
   const auto add_node_for_processable = [&] (auto &processable) {
-    return graph.add_node_for_processable (processable, transport);
+    return graph.add_node_for_processable (processable);
   };
   const auto port_visitor = [&] (auto * port) -> void {
     add_node_for_processable (*port);

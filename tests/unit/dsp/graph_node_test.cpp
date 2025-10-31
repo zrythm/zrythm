@@ -45,7 +45,7 @@ protected:
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
   }
 
-  GraphNode create_test_node () { return { 1, *transport_, *processable_ }; }
+  GraphNode create_test_node () { return { 1, *processable_ }; }
 
   std::unique_ptr<MockTransport>   transport_;
   std::unique_ptr<MockProcessable> processable_;
@@ -69,7 +69,7 @@ TEST_F (GraphNodeTest, ProcessingBasics)
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0);
+  node.process (time_info, 0, *transport_);
 }
 
 TEST_F (GraphNodeTest, LatencyHandling)
@@ -107,7 +107,7 @@ TEST_F (GraphNodeTest, SkipProcessing)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0);
+  node.process (time_info, 0, *transport_);
 }
 
 TEST_F (GraphNodeTest, ProcessingWithTransport)
@@ -119,7 +119,7 @@ TEST_F (GraphNodeTest, ProcessingWithTransport)
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0);
+  node.process (time_info, 0, *transport_);
 }
 
 TEST_F (GraphNodeTest, LoopPointProcessing)
@@ -133,7 +133,7 @@ TEST_F (GraphNodeTest, LoopPointProcessing)
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0);
+  node.process (time_info, 0, *transport_);
 }
 
 // New test for multiple node connections
@@ -185,7 +185,7 @@ TEST_F (GraphNodeTest, ProcessingWithLoopAndLatency)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 64);
+  node.process (time_info, 64, *transport_);
 }
 
 TEST_F (GraphNodeTest, ComplexGraphTopology)
@@ -218,9 +218,9 @@ TEST_F (GraphNodeTest, NodeCollection)
 {
   GraphNodeCollection collection;
 
-  auto node1 = std::make_unique<GraphNode> (1, *transport_, *processable_);
-  auto node2 = std::make_unique<GraphNode> (2, *transport_, *processable_);
-  auto node3 = std::make_unique<GraphNode> (3, *transport_, *processable_);
+  auto node1 = std::make_unique<GraphNode> (1, *processable_);
+  auto node2 = std::make_unique<GraphNode> (2, *processable_);
+  auto node3 = std::make_unique<GraphNode> (3, *processable_);
 
   node1->connect_to (*node2);
   node2->connect_to (*node3);
@@ -242,8 +242,8 @@ TEST_F (GraphNodeTest, LatencyPropagationInCollection)
   EXPECT_CALL (*processable_, get_single_playback_latency ())
     .WillRepeatedly (Return (128));
 
-  auto node1 = std::make_unique<GraphNode> (1, *transport_, *processable_);
-  auto node2 = std::make_unique<GraphNode> (2, *transport_, *processable_);
+  auto node1 = std::make_unique<GraphNode> (1, *processable_);
+  auto node2 = std::make_unique<GraphNode> (2, *processable_);
 
   node1->connect_to (*node2);
   collection.graph_nodes_.push_back (std::move (node1));
@@ -259,7 +259,7 @@ TEST_F (GraphNodeTest, ProcessableSearch)
 {
   GraphNodeCollection collection;
 
-  auto  node = std::make_unique<GraphNode> (1, *transport_, *processable_);
+  auto  node = std::make_unique<GraphNode> (1, *processable_);
   auto &node_ref = *node;
   collection.graph_nodes_.push_back (std::move (node));
 

@@ -124,8 +124,10 @@ public:
    * @param time_nfo
    * @param remaining_preroll_frames
    */
-  void
-  run_cycle (EngineProcessTimeInfo time_nfo, nframes_t remaining_preroll_frames);
+  void run_cycle (
+    EngineProcessTimeInfo  time_nfo,
+    nframes_t              remaining_preroll_frames,
+    const dsp::ITransport &transport);
 
   /**
    * @brief Returns whether the given thread is one of the graph threads.
@@ -136,6 +138,18 @@ public:
   auto get_remaining_preroll_frames () const
   {
     return remaining_preroll_frames_;
+  }
+
+  /**
+   * @brief Returns the ITransport instance to be used in this cycle.
+   *
+   * To be called during processing for example by GraphNode's.
+   * @return auto&
+   */
+  auto &get_transport_for_this_cycle () const
+  {
+    assert (current_transport_.has_value ());
+    return current_transport_->get ();
   }
 
 private:
@@ -164,6 +178,11 @@ private:
    * @brief Time info for the current process cycle.
    */
   EngineProcessTimeInfo time_nfo_;
+
+  /**
+   * @brief Transport for the current process cycle.
+   */
+  std::optional<std::reference_wrapper<const dsp::ITransport>> current_transport_;
 
   /**
    * @brief Number of preroll frames remaining in the current process cycle.

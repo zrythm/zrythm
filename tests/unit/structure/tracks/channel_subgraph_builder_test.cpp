@@ -166,7 +166,6 @@ protected:
   std::unique_ptr<plugins::PluginRegistry>         plugin_registry_;
   Channel::NameProvider                            name_provider_;
   dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
-  dsp::graph_test::MockTransport                   transport_;
   dsp::graph::Graph                                graph_;
   sample_rate_t                                    sample_rate_{ 48000 };
   nframes_t                                        max_block_length_{ 1024 };
@@ -238,12 +237,12 @@ protected:
     bool                connect = true)
   {
     auto track_processor_node =
-      graph_.add_node_for_processable (track_processor, transport_);
+      graph_.add_node_for_processable (track_processor);
     for (const auto &port_ref : track_processor.get_output_ports ())
       {
         std::visit (
           [&] (auto &&port) {
-            auto * node = graph_.add_node_for_processable (*port, transport_);
+            auto * node = graph_.add_node_for_processable (*port);
             if (connect)
               {
                 track_processor_node->connect_to (*node);
@@ -366,7 +365,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesForEmptyAudioChannel)
   ASSERT_NE (audio_channel_, nullptr);
 
   EXPECT_NO_THROW ({
-    ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+    ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
   });
 
   // Verify that nodes were added for pre-fader, fader, and post-fader
@@ -379,7 +378,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesForEmptyMidiChannel)
   ASSERT_NE (midi_channel_, nullptr);
 
   EXPECT_NO_THROW ({
-    ChannelSubgraphBuilder::add_nodes (graph_, transport_, *midi_channel_);
+    ChannelSubgraphBuilder::add_nodes (graph_, *midi_channel_);
   });
 
   // Verify that nodes were added for pre-fader, fader, and post-fader
@@ -401,7 +400,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesWithAudioPlugins)
   audio_channel_->inserts ()->append_plugin (plugin2);
 
   EXPECT_NO_THROW ({
-    ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+    ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
   });
 
   // Verify nodes for plugins were added
@@ -425,7 +424,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesWithMidiPlugins)
   midi_channel_->midiFx ()->append_plugin (plugin2);
 
   EXPECT_NO_THROW ({
-    ChannelSubgraphBuilder::add_nodes (graph_, transport_, *midi_channel_);
+    ChannelSubgraphBuilder::add_nodes (graph_, *midi_channel_);
   });
 
   // Verify nodes for plugins were added
@@ -441,7 +440,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesWithSends)
 
   // The channel already has pre and post fader sends by default
   EXPECT_NO_THROW ({
-    ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+    ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
   });
 
   // Verify nodes for sends were added
@@ -462,7 +461,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyAudioChannel)
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
-    ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+    ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
   });
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
@@ -485,7 +484,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyMidiChannel)
   addTrackProcessorToGraph (*track_processor);
 
   EXPECT_NO_THROW ({
-    ChannelSubgraphBuilder::add_nodes (graph_, transport_, *midi_channel_);
+    ChannelSubgraphBuilder::add_nodes (graph_, *midi_channel_);
   });
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
@@ -510,7 +509,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAudioPlugins)
   audio_channel_->inserts ()->append_plugin (plugin2);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -558,7 +557,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithMidiPlugins)
   midi_channel_->midiFx ()->append_plugin (plugin2);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *midi_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *midi_channel_);
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
@@ -597,7 +596,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
   ASSERT_NE (audio_channel_, nullptr);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -626,7 +625,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
   ASSERT_NE (audio_channel_, nullptr);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -659,7 +658,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)
   audio_channel_->inserts ()->append_plugin (plugin);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 1);
@@ -706,7 +705,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAsymmetricAudioPlugins)
   audio_channel_->inserts ()->append_plugin (plugin2);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -759,7 +758,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithInstrumentPlugin)
   audio_channel_->instruments ()->append_plugin (plugin);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor (MIDI)
   auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
@@ -797,7 +796,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithEmptyTrackProcessorOutputs
   ASSERT_NE (audio_channel_, nullptr);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor with no outputs
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 0);
@@ -819,7 +818,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsThrowsWhenOutputsNotInGraph)
   ASSERT_NE (audio_channel_, nullptr);
 
   // Add nodes first
-  ChannelSubgraphBuilder::add_nodes (graph_, transport_, *audio_channel_);
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Create mock track processor but DON'T add its outputs to the graph
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
