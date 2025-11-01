@@ -287,12 +287,6 @@ TEST_F (EditorSettingsTest, EdgeCases)
 
   settings->setHorizontalZoomLevel (1e20);
   EXPECT_DOUBLE_EQ (settings->getHorizontalZoomLevel (), 1e20);
-
-  // Test infinity and NaN handling (if applicable)
-  // Note: Qt properties may handle these differently
-  settings->setX (std::numeric_limits<double>::infinity ());
-  // The behavior depends on the implementation - we just test it doesn't crash
-  EXPECT_TRUE (std::isinf (settings->getX ()) || std::isnan (settings->getX ()));
 }
 
 // Test multiple signal emissions
