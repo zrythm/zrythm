@@ -229,7 +229,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
 #endif
 
   /* disarm transport record button */
-  TRANSPORT->set_recording (false, true);
+  TRANSPORT->setRecordEnabled (false);
 
   num_active_recordings_--;
   recorded_ids_.clear ();

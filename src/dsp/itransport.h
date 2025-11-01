@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "utils/types.h"
 #include "utils/units.h"
 
@@ -14,7 +16,7 @@ namespace zrythm::dsp
 class ITransport
 {
 public:
-  enum class PlayState
+  enum class PlayState : std::uint8_t
   {
     RollRequested,
     Rolling,
@@ -67,11 +69,10 @@ public:
         const auto loop_points = get_loop_range_positions ();
         const auto loop_start = loop_points.first;
         const auto loop_end = loop_points.second;
-        if (current_playhead_position < loop_end && new_pos >= loop_end)
+        while (current_playhead_position < loop_end && new_pos >= loop_end)
           {
             /* adjust the new frames */
             new_pos += loop_start - loop_end;
-            assert (new_pos < loop_end);
           }
       }
 
@@ -116,9 +117,20 @@ public:
    * point as a positive number (>= 1) if the loop point was met between
    * g_start_frames and (g_start_frames + nframes), otherwise returns 0;
    */
-  virtual units::sample_t is_loop_point_met_in_audio_thread (
+  units::sample_t is_loop_point_met_in_audio_thread (
     units::sample_t g_start_frames,
-    units::sample_t nframes) const noexcept [[clang::nonblocking]] = 0;
+    units::sample_t nframes) const noexcept [[clang::nonblocking]]
+  {
+    auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
+    bool loop_end_between_start_and_end =
+      (loop_end_pos > g_start_frames && loop_end_pos <= g_start_frames + nframes);
+
+    if (loop_end_between_start_and_end && loop_enabled ()) [[unlikely]]
+      {
+        return loop_end_pos - g_start_frames;
+      }
+    return units::samples (0);
+  }
 };
 
 } // namespace zrythm::dsp

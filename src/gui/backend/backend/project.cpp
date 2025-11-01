@@ -76,12 +76,19 @@ Project::Project (
           engine::device_io::AudioEngine> (this, device_manager)),
       transport_ (
         utils::make_qobject_unique<engine::session::Transport> (
-          *audio_engine_,
           dsp::ProcessorBase::ProcessorBaseDependencies{
             .port_registry_ = *port_registry_,
             .param_registry_ = *param_registry_
 },
           tempo_map_,
+          engine::session::Transport::ConfigProvider{
+            .return_to_cue_on_pause_ =
+              [] () { return gui::SettingsManager::transportReturnToCue (); },
+            .metronome_countin_bars_ =
+              [] () { return gui::SettingsManager::metronomeCountIn (); },
+            .recording_preroll_bars_ =
+              [] () { return gui::SettingsManager::recordingPreroll (); },
+          },
           this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (

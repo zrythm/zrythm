@@ -372,7 +372,7 @@ AudioEngine::
 
   if (state.playing_)
     {
-      project_->transport_->requestPause (true);
+      project_->transport_->requestPause ();
 
       if (force_pause)
         {
@@ -420,7 +420,7 @@ AudioEngine::
         .nframes_ = 1,
       };
 
-      router_->start_cycle (time_nfo);
+      router_->start_cycle (time_nfo, false);
       post_process (0, 1);
     }
 }
@@ -440,11 +440,11 @@ AudioEngine::resume (EngineState &state)
     {
       project_->transport_->move_playhead (
         project_->transport_->playhead_before_pause_, false);
-      project_->transport_->requestRoll (true);
+      project_->transport_->requestRoll ();
     }
   else
     {
-      project_->transport_->requestPause (true);
+      project_->transport_->requestPause ();
     }
 
   // z_debug ("restarting engine: setting fade in samples");
@@ -563,11 +563,11 @@ AudioEngine::update_position_info (
   pos_nfo.bar_ = musical_pos.bar;
   pos_nfo.beat_ = musical_pos.beat;
   pos_nfo.sixteenth_ = musical_pos.sixteenth;
+  // TODO/delete
+#if 0
   pos_nfo.sixteenth_within_bar_ =
     pos_nfo.sixteenth_
     + ((pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_);
-// TODO/delete
-#if 0
   pos_nfo.sixteenth_within_song_ =
   playhead.get_total_sixteenths (false, frames_per_tick_);
   dsp::Position bar_start;
@@ -761,7 +761,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         split_time_nfo.g_start_frame_ + preroll_offset;
       split_time_nfo.local_offset_ = preroll_offset;
       split_time_nfo.nframes_ = num_preroll_frames;
-      router_->start_cycle (split_time_nfo);
+      router_->start_cycle (split_time_nfo, true);
 
       remaining_latency_preroll_ -= num_preroll_frames;
       total_frames_remaining -= num_preroll_frames;
@@ -791,7 +791,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
             split_time_nfo.g_start_frame_ + cur_offset;
           split_time_nfo.local_offset_ = cur_offset;
           split_time_nfo.nframes_ = countin_frames;
-          router_->start_cycle (split_time_nfo);
+          router_->start_cycle (split_time_nfo, true);
           transport_->countin_frames_remaining_ -=
             units::samples (countin_frames);
 
@@ -818,7 +818,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
             split_time_nfo.g_start_frame_ + cur_offset;
           split_time_nfo.local_offset_ = cur_offset;
           split_time_nfo.nframes_ = preroll_frames;
-          router_->start_cycle (split_time_nfo);
+          router_->start_cycle (split_time_nfo, true);
           transport_->recording_preroll_frames_remaining_ -=
             units::samples (preroll_frames);
 
@@ -831,7 +831,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
                 split_time_nfo.g_start_frame_ + cur_offset;
               split_time_nfo.local_offset_ = cur_offset;
               split_time_nfo.nframes_ = remaining_frames;
-              router_->start_cycle (split_time_nfo);
+              router_->start_cycle (split_time_nfo, true);
             }
         }
       else
@@ -842,7 +842,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
             split_time_nfo.g_start_frame_ + cur_offset;
           split_time_nfo.local_offset_ = cur_offset;
           split_time_nfo.nframes_ = total_frames_remaining;
-          router_->start_cycle (split_time_nfo);
+          router_->start_cycle (split_time_nfo, true);
         }
     }
 

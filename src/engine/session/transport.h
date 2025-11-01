@@ -65,6 +65,9 @@ class Transport : public QObject, public dsp::ITransport
     bool recordEnabled READ recordEnabled WRITE setRecordEnabled NOTIFY
       recordEnabledChanged)
   Q_PROPERTY (
+    bool punchEnabled READ punchEnabled WRITE setPunchEnabled NOTIFY
+      punchEnabledChanged)
+  Q_PROPERTY (
     PlayState playState READ getPlayState WRITE setPlayState NOTIFY
       playStateChanged)
   Q_PROPERTY (zrythm::dsp::PlayheadQmlWrapper * playhead READ playhead CONSTANT)
@@ -143,10 +146,31 @@ public:
   Q_ENUM (RecordingMode)
 
 public:
+  struct ConfigProvider
+  {
+    /**
+     * @brief Whether to return to cue position on pause.
+     */
+    std::function<bool ()> return_to_cue_on_pause_;
+
+    /**
+     * @brief Number of bars to count-in when requesting playback with metronome
+     * enabled.
+     */
+    std::function<int ()> metronome_countin_bars_;
+
+    /**
+     * @brief Number of bars to pre-roll before recording.
+     *
+     * FIXME: add more details here.
+     */
+    std::function<int ()> recording_preroll_bars_;
+  };
+
   Transport (
-    device_io::AudioEngine                       &audio_engine,
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
     const dsp::TempoMap                          &tempo_map,
+    ConfigProvider                                config_provider,
     QObject *                                     parent = nullptr);
 
   // ==================================================================
@@ -160,6 +184,10 @@ public:
   bool          recordEnabled () const { return recording_enabled (); }
   void          setRecordEnabled (bool enabled);
   Q_SIGNAL void recordEnabledChanged (bool enabled);
+
+  bool          punchEnabled () const { return punch_enabled (); }
+  void          setPunchEnabled (bool enabled);
+  Q_SIGNAL void punchEnabledChanged (bool enabled);
 
   PlayState     getPlayState () const;
   void          setPlayState (PlayState state);
@@ -192,8 +220,18 @@ public:
 
   dsp::Metronome * metronome () const { return metronome_.get (); }
 
-  Q_INVOKABLE void moveBackward ();
-  Q_INVOKABLE void moveForward ();
+  Q_INVOKABLE void moveBackward () [[clang::blocking]];
+  Q_INVOKABLE void moveForward () [[clang::blocking]];
+
+  /**
+   * Request pause.
+   */
+  Q_INVOKABLE void requestPause () [[clang::blocking]];
+
+  /**
+   * Request playback.
+   */
+  Q_INVOKABLE void requestRoll () [[clang::blocking]];
 
   // ==================================================================
 
@@ -205,21 +243,6 @@ public:
   get_playhead_position_in_audio_thread () const noexcept override
   {
     return playhead_.position_during_processing_rounded ();
-  }
-
-  units::sample_t is_loop_point_met_in_audio_thread (
-    const units::sample_t g_start_frames,
-    const units::sample_t nframes) const noexcept override
-  {
-    auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
-    bool loop_end_between_start_and_end =
-      (loop_end_pos > g_start_frames && loop_end_pos <= g_start_frames + nframes);
-
-    if (loop_end_between_start_and_end && loop_enabled ()) [[unlikely]]
-      {
-        return loop_end_pos - g_start_frames;
-      }
-    return units::samples (0);
   }
 
   std::pair<units::sample_t, units::sample_t>
@@ -296,55 +319,13 @@ public:
     double                                                    time_ratio,
     bool                                                      force);
 
-  void set_punch_mode_enabled (bool enabled);
-
-  void set_start_playback_on_midi_input (bool enabled);
-
-  void set_recording_mode (RecordingMode mode);
-
   /**
    * Moves the playhead by the time corresponding to given samples, taking into
    * account the loop end point.
    */
   void add_to_playhead_in_audio_thread (units::sample_t nframes);
 
-  /**
-   * Request pause.
-   *
-   * Must only be called in-between engine processing
-   * calls.
-   *
-   * @param with_wait Wait for lock before requesting.
-   */
-  Q_INVOKABLE void requestPause (bool with_wait);
-
-  /**
-   * Request playback.
-   *
-   * Must only be called in-between engine processing
-   * calls.
-   *
-   * @param with_wait Wait for lock before requesting.
-   */
-  Q_INVOKABLE void requestRoll (bool with_wait);
-
   void set_play_state_rt_safe (PlayState state);
-
-  /**
-   * Move to the previous snap point on the timeline.
-   */
-  void move_backward (bool with_wait);
-
-  /**
-   * Move to the next snap point on the timeline.
-   */
-  void move_forward (bool with_wait);
-
-  /**
-   * Returns whether the user can currently move the playhead
-   * (eg, via the UI or via scripts).
-   */
-  bool can_user_move_playhead () const;
 
   /**
    * Moves playhead to given pos.
@@ -358,11 +339,6 @@ public:
    * @param set_cue_point Also set the cue point at this position.
    */
   void move_playhead (units::precise_tick_t target_ticks, bool set_cue_point);
-
-  /**
-   * Enables or disables loop.
-   */
-  void set_loop (bool enabled, bool with_wait);
 
   /**
    * Moves the playhead to the start Marker.
@@ -383,33 +359,6 @@ public:
    * Moves the playhead to the next Marker.
    */
   void goto_next_marker ();
-
-  /**
-   * Returns the PPQN (Parts/Ticks Per Quarter Note).
-   */
-  double get_ppqn () const;
-
-  /**
-   * Returns the selected range positions.
-   */
-  std::pair<units::precise_tick_t, units::precise_tick_t>
-  get_range_positions () const;
-
-  /**
-   * Sets if the project has range and updates UI.
-   */
-  void set_has_range (bool has_range);
-
-  /**
-   * Set the range1 or range2 position.
-   *
-   * @param range1 True to set range1, false to set range2.
-   */
-  void set_range (
-    bool                  range1,
-    units::precise_tick_t start_pos,
-    units::precise_tick_t pos,
-    bool                  snap);
 
   /**
    * Set the loop range.
@@ -441,11 +390,6 @@ public:
    */
   void update_total_bars (int total_bars, bool fire_events);
 
-  /**
-   * Sets recording on/off.
-   */
-  void set_recording (bool record, bool with_wait);
-
   friend void init_from (
     Transport             &obj,
     const Transport       &other,
@@ -459,9 +403,6 @@ private:
   static constexpr auto kLoopEndPosKey = "loopEndPos"sv;
   static constexpr auto kPunchInPosKey = "punchInPos"sv;
   static constexpr auto kPunchOutPosKey = "punchOutPos"sv;
-  static constexpr auto kRange1Key = "range1"sv;
-  static constexpr auto kRange2Key = "range2"sv;
-  static constexpr auto kHasRangeKey = "hasRange"sv;
   static constexpr auto kPositionKey = "position"sv;
   static constexpr auto kRollKey = "roll"sv;
   static constexpr auto kStopKey = "stop"sv;
@@ -472,8 +413,6 @@ private:
   friend void           to_json (nlohmann::json &j, const Transport &transport);
   friend void from_json (const nlohmann::json &j, Transport &transport);
 
-  void init_common ();
-
   /**
    * One of @param marker or @param pos must be non-NULL.
    */
@@ -483,6 +422,12 @@ private:
 
   // static void
   // foreach_arranger_handle_playhead_auto_scroll (ArrangerWidget * arranger);
+
+  /**
+   * Returns whether the user can currently move the playhead
+   * (eg, via the UI or via scripts).
+   */
+  bool can_user_move_playhead () const;
 
 public:
   /** Total bars in the song. */
@@ -522,41 +467,15 @@ public:
   utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
     punch_out_position_adapter_;
 
-  /**
-   * Selected range.
-   *
-   * This is 2 points instead of start/end because the 2nd point can be dragged
-   * past the 1st point so the order gets swapped.
-   *
-   * Should be compared each time to see which one is first.
-   */
-  dsp::AtomicPosition                                    range_1_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> range_1_adapter_;
-  dsp::AtomicPosition                                    range_2_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> range_2_adapter_;
-
-  /** Whether range should be displayed or not. */
-  bool has_range_ = false;
-
-  // TimeSignature time_sig;
-
-  /* ---------- CACHE -------------- */
-  int ticks_per_beat_ = 0;
-  int ticks_per_bar_ = 0;
-  int sixteenths_per_beat_ = 0;
-  int sixteenths_per_bar_ = 0;
-
-  /* ------------------------------- */
-
   /** Looping or not. */
-  std::atomic_bool loop_ = false;
+  bool loop_{ true };
 
   /** Whether punch in/out mode is enabled. */
-  std::atomic_bool punch_mode_ = false;
+  bool punch_mode_{ false };
 
   /** Whether MIDI/audio recording is enabled (recording toggle in transport
    * bar). */
-  std::atomic_bool recording_ = false;
+  bool recording_{ false };
 
   /** Recording preroll frames remaining. */
   units::sample_t recording_preroll_frames_remaining_;
@@ -566,8 +485,6 @@ public:
 
   /** Whether to start playback on MIDI input. */
   bool start_playback_on_midi_input_ = false;
-
-  RecordingMode recording_mode_ = (RecordingMode) 0;
 
   /**
    * Position of the playhead before pausing, in ticks.
@@ -604,12 +521,10 @@ public:
 
 private:
   /** Play state. */
-  PlayState play_state_ = {};
+  PlayState play_state_{ PlayState::Paused };
 
   /** Last timestamp the playhead position was changed manually. */
   RtTimePoint last_manual_playhead_change_ = 0;
-
-  device_io::AudioEngine &audio_engine_;
 
   /**
    * @brief Timer used to notify the property system of changes (e.g.
@@ -620,5 +535,7 @@ private:
    */
   QTimer *          property_notification_timer_ = nullptr;
   std::atomic<bool> needs_property_notification_{ false };
+
+  ConfigProvider config_provider_;
 };
 }

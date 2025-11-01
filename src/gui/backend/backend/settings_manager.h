@@ -60,16 +60,16 @@ class SettingsManager : public QObject
     zrythm_user_path,
     QStandardPaths::writableLocation (QStandardPaths::AppDataLocation))
   DEFINE_SETTING_PROPERTY (bool, first_run, true)
-  DEFINE_SETTING_PROPERTY (bool, transportLoop, true)
+  // DEFINE_SETTING_PROPERTY (bool, transportLoop, true)
   DEFINE_SETTING_PROPERTY (bool, transportReturnToCue, true)
   // note: in amplitude (0 to 2)
   DEFINE_SETTING_PROPERTY (double, metronomeVolume, 1.0)
   DEFINE_SETTING_PROPERTY (bool, metronomeEnabled, -1)
-  DEFINE_SETTING_PROPERTY (int, metronomeCountIn, 0) // none
-  DEFINE_SETTING_PROPERTY (bool, punchModeEnabled, false)
+  DEFINE_SETTING_PROPERTY (int, metronomeCountIn, 0) // number of bars
+  // DEFINE_SETTING_PROPERTY (bool, punchModeEnabled, false)
   DEFINE_SETTING_PROPERTY (bool, startPlaybackOnMidiInput, false)
   DEFINE_SETTING_PROPERTY (int, recordingMode, 2)     // takes
-  DEFINE_SETTING_PROPERTY (int, recordingPreroll, 0)  // none
+  DEFINE_SETTING_PROPERTY (int, recordingPreroll, 0)  // number of bars
   DEFINE_SETTING_PROPERTY (int, jackTransportType, 0) // timebase master
   DEFINE_SETTING_PROPERTY (QString, icon_theme, u"zrythm-dark"_s)
   DEFINE_SETTING_PROPERTY (QStringList, recent_projects, QStringList ())

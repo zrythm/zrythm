@@ -27,7 +27,6 @@
 #pragma once
 
 #include <atomic>
-#include <semaphore>
 
 #include "dsp/graph_scheduler.h"
 #include "engine/device_io/engine.h"
@@ -62,26 +61,13 @@ public:
   void recalc_graph (bool soft);
 
   /**
-   * @brief Global cycle pre-processing logic that does not require rebuilding
-   * the graph.
-   *
-   * Some examples of what could go here:
-   * 1. live piano-roll keys
-   * 2. transport (start/stop/seek/loop/tempo)
-   * 3. global panic
-   * 4. external clock/time-sig
-   * 5. one-shot automation jumps
-   *
-   * Everything else (plugins, clips, faders) lives inside the graph.
-   *
-   * @param time_nfo Current cycle time info.
-   */
-  void preprocess_at_start_of_cycle (const EngineProcessTimeInfo &time_nfo);
-
-  /**
    * Starts a new cycle.
+   *
+   * @param realtime_context Whether this is called in a realtime context.
    */
-  void start_cycle (EngineProcessTimeInfo time_nfo);
+  void
+  start_cycle (EngineProcessTimeInfo time_nfo, bool realtime_context) noexcept
+    [[clang::nonblocking]];
 
   /**
    * Returns the max playback latency of the trigger
@@ -131,11 +117,60 @@ public:
     return false;
   }
 
+private:
+  /**
+   * @brief Try to acquire graph access (real-time safe).
+   * @return true if access was acquired, false if already locked
+   */
+  [[gnu::hot]] bool try_acquire_graph_access () noexcept
+  {
+    bool expected = false;
+    return graph_access_locked_.compare_exchange_strong (
+      expected, true, std::memory_order_acquire, std::memory_order_relaxed);
+  }
+
+  /**
+   * @brief Release graph access (real-time safe).
+   */
+  [[gnu::hot]] void release_graph_access () noexcept
+  {
+    graph_access_locked_.store (false, std::memory_order_release);
+  }
+
+  /**
+   * @brief Wait for graph access to be available (non-real-time safe).
+   * Only to be used from non-real-time contexts.
+   */
+  void wait_for_graph_access ()
+  {
+    while (graph_access_locked_.load (std::memory_order_acquire))
+      {
+        std::this_thread::sleep_for (std::chrono::microseconds (100));
+      }
+  }
+
+  /**
+   * @brief Global cycle pre-processing logic that does not require rebuilding
+   * the graph.
+   *
+   * Some examples of what could go here:
+   * 1. live piano-roll keys
+   * 2. transport (start/stop/seek/loop/tempo)
+   * 3. global panic
+   * 4. external clock/time-sig
+   * 5. one-shot automation jumps
+   *
+   * Everything else (plugins, clips, faders) lives inside the graph.
+   *
+   * @param time_nfo Current cycle time info.
+   */
+  void preprocess_at_start_of_cycle (const EngineProcessTimeInfo &time_nfo);
+
 public:
   std::unique_ptr<dsp::graph::GraphScheduler> scheduler_;
 
-  /** An atomic variable to check if the graph is currently being setup (so that
-   * we can avoid accessing buffers changed by this). */
+  /** An atomic variable to check if the graph is currently being setup (so
+   * that we can avoid accessing buffers changed by this). */
   std::atomic<bool> graph_setup_in_progress_ = false;
 
   /** Time info for this processing cycle. */
@@ -149,8 +184,8 @@ public:
    * engine). */
   nframes_t global_offset_ = 0;
 
-  /** Used when recalculating the graph. */
-  std::binary_semaphore graph_access_sem_{ 1 };
+  /** Used when recalculating the graph - atomic flag for real-time safety. */
+  std::atomic<bool> graph_access_locked_{ false };
 
   std::atomic_bool callback_in_progress_ = false;
 

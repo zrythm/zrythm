@@ -2,17 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <utility>
 
-#include "engine/device_io/engine.h"
 #include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/marker.h"
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/tracklist.h"
-#include "utils/debug.h"
-#include "utils/gtest_wrapper.h"
 
 namespace zrythm::engine::session
 {
@@ -25,31 +22,10 @@ namespace zrythm::engine::session
  * backward position. */
 constexpr auto REPEATED_BACKWARD_MS = au::milli (units::seconds) (240);
 
-void
-Transport::init_common ()
-{
-  /* set playstate */
-  play_state_ = PlayState::Paused;
-
-  const bool testing_or_benchmarking = ZRYTHM_TESTING || ZRYTHM_BENCHMARKING;
-  loop_ =
-    testing_or_benchmarking ? true : gui::SettingsManager::transportLoop ();
-  punch_mode_ =
-    testing_or_benchmarking ? true : gui::SettingsManager::punchModeEnabled ();
-  start_playback_on_midi_input_ =
-    testing_or_benchmarking
-      ? false
-      : gui::SettingsManager::startPlaybackOnMidiInput ();
-  recording_mode_ =
-    testing_or_benchmarking
-      ? RecordingMode::Takes
-      : ENUM_INT_TO_VALUE (RecordingMode, gui::SettingsManager::recordingMode ());
-}
-
 Transport::Transport (
-  device_io::AudioEngine                       &audio_engine,
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
   const dsp::TempoMap                          &tempo_map,
+  ConfigProvider                                config_provider,
   QObject *                                     parent)
     : QObject (parent), playhead_ (tempo_map),
       playhead_adapter_ (new dsp::PlayheadQmlWrapper (playhead_, this)),
@@ -76,16 +52,8 @@ Transport::Transport (
       punch_out_position_adapter_ (
         utils::make_qobject_unique<
           dsp::AtomicPositionQmlAdapter> (punch_out_position_, std::nullopt, this)),
-      range_1_ (*time_conversion_funcs_),
-      range_1_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (range_1_, std::nullopt, this)),
-      range_2_ (*time_conversion_funcs_),
-      range_2_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (range_2_, std::nullopt, this)),
-      audio_engine_ (audio_engine),
-      property_notification_timer_ (new QTimer (this))
+      property_notification_timer_ (new QTimer (this)),
+      config_provider_ (std::move (config_provider))
 {
   z_debug ("Creating transport...");
 
@@ -100,7 +68,6 @@ Transport::Transport (
 
   if (parent == nullptr)
     {
-      init_common ();
       return;
     }
 
@@ -113,10 +80,6 @@ Transport::Transport (
     { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 }));
   punch_out_position_.set_ticks (tempo_map.musical_position_to_tick (
     { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
-  range_1_.set_ticks (tempo_map.musical_position_to_tick (
-    { .bar = 2, .beat = 1, .sixteenth = 1, .tick = 0 }));
-  range_2_.set_ticks (tempo_map.musical_position_to_tick (
-    { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 }));
 
   /* create ports */
   roll_ = std::make_unique<dsp::MidiPort> (u8"Roll", dsp::PortFlow::Input);
@@ -202,8 +165,6 @@ Transport::Transport (
     zrythm::gui::SettingsManager::get_instance (),
     &zrythm::gui::SettingsManager::metronomeEnabled_changed, metronome_.get (),
     [this] (bool val) { metronome_->setEnabled (val); });
-
-  init_common ();
 }
 
 void
@@ -214,7 +175,8 @@ Transport::setLoopEnabled (bool enabled)
       return;
     }
 
-  set_loop (enabled, true);
+  loop_ = enabled;
+  Q_EMIT (loopEnabledChanged (loop_));
 }
 
 void
@@ -225,7 +187,18 @@ Transport::setRecordEnabled (bool enabled)
       return;
     }
 
-  set_recording (enabled, true);
+  recording_ = enabled;
+  Q_EMIT recordEnabledChanged (recording_);
+}
+
+void
+Transport::setPunchEnabled (bool enabled)
+{
+  if (punch_mode_ == enabled)
+    return;
+
+  punch_mode_ = enabled;
+  Q_EMIT punchEnabledChanged (enabled);
 }
 
 Transport::PlayState
@@ -247,26 +220,12 @@ Transport::setPlayState (PlayState state)
 }
 
 void
-Transport::moveBackward ()
-{
-  move_backward (true);
-}
-
-void
-Transport::moveForward ()
-{
-  move_forward (true);
-}
-
-void
 init_from (
   Transport             &obj,
   const Transport       &other,
   utils::ObjectCloneType clone_type)
 {
   obj.total_bars_ = other.total_bars_;
-  obj.has_range_ = other.has_range_;
-  // obj.position_ = other.position_;
 
   obj.loop_start_position_.set_ticks (other.loop_start_position_.get_ticks ());
   obj.playhead_.set_position_ticks (other.playhead_.position_ticks ());
@@ -274,8 +233,6 @@ init_from (
   obj.cue_position_.set_ticks (other.cue_position_.get_ticks ());
   obj.punch_in_position_.set_ticks (other.punch_in_position_.get_ticks ());
   obj.punch_out_position_.set_ticks (other.punch_out_position_.get_ticks ());
-  obj.range_1_.set_ticks (other.range_1_.get_ticks ());
-  obj.range_2_.set_ticks (other.range_2_.get_ticks ());
 
   // TODO
 #if 0
@@ -408,121 +365,50 @@ Transport::stretch_regions (
 }
 
 void
-Transport::set_punch_mode_enabled (bool enabled)
+Transport::requestPause ()
 {
-  punch_mode_ = enabled;
-
-  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-    {
-      gui::SettingsManager::get_instance ()->set_punchModeEnabled (enabled);
-    }
-}
-
-void
-Transport::set_start_playback_on_midi_input (bool enabled)
-{
-  start_playback_on_midi_input_ = enabled;
-  gui::SettingsManager::get_instance ()->set_startPlaybackOnMidiInput (enabled);
-}
-
-void
-Transport::set_recording_mode (RecordingMode mode)
-{
-  recording_mode_ = mode;
-
-  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-    {
-      gui::SettingsManager::get_instance ()->set_recordingMode (
-        ENUM_VALUE_TO_INT (mode));
-    }
-}
-
-void
-Transport::requestPause (bool with_wait)
-{
-  /* can only be called from the gtk thread or when preparing to export */
-  z_return_if_fail (
-    !audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD
-    || audio_engine_.preparing_to_export_);
-
-  /////////////////////////////////////////////////////
-  // FIXME: instead of using locks and trying to synchronize with
-  // AudioEngine::process, get a cache of the playhead and play state inside
-  // AudioEngine::process and use the cache throughout processing. This would
-  // remove the need for locks here. Maybe we can use farbot::RealtimeObject for
-  // this. Need to change some zrythm::dsp::graph classes too because they take
-  // an ITransport reference (or maybe make the reference be for the engine's
-  // copy?)
-  /////////////////////////////////////////////////////
-  if (with_wait)
-    {
-      audio_engine_.port_operation_lock_.wait ();
-    }
-
   set_play_state_rt_safe (PlayState::PauseRequested);
 
   playhead_before_pause_ = playhead_.position_ticks ();
-  if (
-    !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING
-    && gui::SettingsManager::transportReturnToCue ())
+  if (config_provider_.return_to_cue_on_pause_ ())
     {
       move_playhead (cue_position_.get_ticks (), false);
-    }
-
-  if (with_wait)
-    {
-      audio_engine_.port_operation_lock_.signal ();
     }
 }
 
 void
-Transport::requestRoll (bool with_wait)
+Transport::requestRoll ()
 {
-  /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
-
-  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>>
-    wait_sem;
-  if (with_wait)
-    {
-      wait_sem.emplace (audio_engine_.port_operation_lock_);
-    }
-
-  if (gZrythm && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-    {
-      /* handle countin */
-      PrerollCountBars bars = ENUM_INT_TO_VALUE (
-        PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
-      int num_bars = preroll_count_bars_enum_to_int (bars);
+  {
+    /* handle countin */
+    // int num_bars = config_provider_.metronome_countin_bars_ ();
 // TODO: convert num bars to countin frames
 #if 0
       countin_frames_remaining_ =
         units::samples ((long) ((double) num_bars * frames_per_bar));
 #endif
 
-      if (recording_)
-        {
-          /* handle preroll */
-          bars = ENUM_INT_TO_VALUE (
-            PrerollCountBars, gui::SettingsManager::recordingPreroll ());
-          num_bars = preroll_count_bars_enum_to_int (bars);
-          auto       pos_tick = playhead_.position_ticks ();
-          const auto pos_musical =
-            playhead_.get_tempo_map ().tick_to_musical_position (
-              au::round_as<int64_t> (units::ticks, pos_tick));
-          auto new_pos_musical = pos_musical;
-          new_pos_musical.bar = std::max (new_pos_musical.bar - num_bars, 1);
-          pos_tick = playhead_.get_tempo_map ().musical_position_to_tick (
-            new_pos_musical);
-          auto pos_frame =
-            playhead_.get_tempo_map ().tick_to_samples_rounded (pos_tick);
-          recording_preroll_frames_remaining_ =
-            playhead_.get_tempo_map ().tick_to_samples_rounded (
-              playhead_.position_ticks ())
-            - pos_frame;
-          playhead_adapter_->setTicks (pos_tick.in (units::ticks));
-        }
-    }
+    if (recording_)
+      {
+        /* handle preroll */
+        int        num_bars = config_provider_.recording_preroll_bars_ ();
+        auto       pos_tick = playhead_.position_ticks ();
+        const auto pos_musical =
+          playhead_.get_tempo_map ().tick_to_musical_position (
+            au::round_as<int64_t> (units::ticks, pos_tick));
+        auto new_pos_musical = pos_musical;
+        new_pos_musical.bar = std::max (new_pos_musical.bar - num_bars, 1);
+        pos_tick =
+          playhead_.get_tempo_map ().musical_position_to_tick (new_pos_musical);
+        auto pos_frame =
+          playhead_.get_tempo_map ().tick_to_samples_rounded (pos_tick);
+        recording_preroll_frames_remaining_ =
+          playhead_.get_tempo_map ().tick_to_samples_rounded (
+            playhead_.position_ticks ())
+          - pos_frame;
+        playhead_adapter_->setTicks (pos_tick.in (units::ticks));
+      }
+  }
 
   setPlayState (PlayState::RollRequested);
 }
@@ -540,12 +426,7 @@ Transport::add_to_playhead_in_audio_thread (const units::sample_t nframes)
 bool
 Transport::can_user_move_playhead () const
 {
-  if (
-    recording_ && play_state_ == PlayState::Rolling
-    && audio_engine_.run_.load ())
-    return false;
-  else
-    return true;
+  return !recording_ || play_state_ != PlayState::Rolling;
 }
 
 void
@@ -607,12 +488,6 @@ Transport::move_playhead (units::precise_tick_t target_ticks, bool set_cue_point
     }
 }
 
-double
-Transport::get_ppqn () const
-{
-  return dsp::TempoMap::get_ppq ();
-}
-
 #if 0
 void
 Transport::foreach_arranger_handle_playhead_auto_scroll (
@@ -631,10 +506,9 @@ Transport::move_to_marker_or_pos_and_fire_events (
     (marker != nullptr) ? units::ticks (marker->position ()->ticks ()) : *pos_ticks,
     true);
 
-  if (ZRYTHM_HAVE_UI)
-    {
-      // arranger_widget_foreach (foreach_arranger_handle_playhead_auto_scroll);
-    }
+  {
+    // arranger_widget_foreach (foreach_arranger_handle_playhead_auto_scroll);
+  }
 }
 
 /**
@@ -727,73 +601,6 @@ Transport::goto_next_marker ()
     }
 }
 
-/**
- * Enables or disables loop.
- */
-void
-Transport::set_loop (bool enabled, bool with_wait)
-{
-  /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
-
-  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
-  if (with_wait)
-    {
-      sem.emplace (audio_engine_.port_operation_lock_);
-    }
-
-  loop_ = enabled;
-
-  if (gZrythm && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-    {
-      gui::SettingsManager::get_instance ()->set_transportLoop (enabled);
-    }
-
-  Q_EMIT (loopEnabledChanged (loop_));
-}
-
-void
-Transport::set_has_range (bool has_range)
-{
-  has_range_ = has_range;
-
-  // EVENTS_PUSH (EventType::ET_RANGE_SELECTION_CHANGED, nullptr);
-}
-
-std::pair<units::precise_tick_t, units::precise_tick_t>
-Transport::get_range_positions () const
-{
-  return range_1_.get_ticks () <= range_2_.get_ticks ()
-           ? std::make_pair (range_1_.get_ticks (), range_2_.get_ticks ())
-           : std::make_pair (range_2_.get_ticks (), range_1_.get_ticks ());
-}
-
-void
-Transport::set_range (
-  bool                  range1,
-  units::precise_tick_t start_pos,
-  units::precise_tick_t pos,
-  bool                  snap)
-{
-  auto * pos_to_set = range1 ? &range_1_ : &range_2_;
-
-  if (pos < units::ticks (0))
-    {
-      pos_to_set->set_ticks (units::ticks (0));
-    }
-  else
-    {
-      pos_to_set->set_ticks (pos);
-    }
-
-  if (snap)
-    {
-      // TODO
-      // *pos_to_set = SNAP_GRID_TIMELINE->snap (
-      // *pos_to_set, start_pos);
-    }
-}
-
 void
 Transport::set_loop_range (
   bool                  range1,
@@ -833,8 +640,6 @@ Transport::recalculate_total_bars (
 {
 // TODO
 #if 0
-  if (!ZRYTHM_HAVE_UI)
-    return;
 
   int total_bars = total_bars_;
   if (sel_var)
@@ -905,17 +710,8 @@ Transport::update_total_bars (int total_bars, bool fire_events)
 }
 
 void
-Transport::move_backward (bool with_wait)
+Transport::moveBackward ()
 {
-  /* can only be called from the gtk thread */
-  z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_IS_QT_THREAD);
-
-  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
-  if (with_wait)
-    {
-      sem.emplace (audio_engine_.port_operation_lock_);
-    }
-
   const auto &tempo_map = playhead_.get_tempo_map ();
   auto        pos_ticks = units::ticks (SNAP_GRID_TIMELINE->prevSnapPoint (
     playhead_.position_ticks ().in (units::ticks)));
@@ -936,40 +732,11 @@ Transport::move_backward (bool with_wait)
 }
 
 void
-Transport::move_forward (bool with_wait)
+Transport::moveForward ()
 {
-  /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
-
-  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
-  if (with_wait)
-    {
-      sem.emplace (audio_engine_.port_operation_lock_);
-    }
-
   double pos_ticks = SNAP_GRID_TIMELINE->nextSnapPoint (
     playhead_.position_ticks ().in (units::ticks));
   move_playhead (units::ticks (pos_ticks), true);
-}
-
-/**
- * Sets recording on/off.
- */
-void
-Transport::set_recording (bool record, bool with_wait)
-{
-  /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_.run_.load () || ZRYTHM_IS_QT_THREAD);
-
-  std::optional<SemaphoreRAII<decltype (audio_engine_.port_operation_lock_)>> sem;
-  if (with_wait)
-    {
-      sem.emplace (audio_engine_.port_operation_lock_);
-    }
-
-  recording_ = record;
-
-  Q_EMIT recordEnabledChanged (recording_);
 }
 
 void
@@ -983,10 +750,6 @@ to_json (nlohmann::json &j, const Transport &transport)
     { Transport::kLoopEndPosKey,   transport.loop_end_position_   },
     { Transport::kPunchInPosKey,   transport.punch_in_position_   },
     { Transport::kPunchOutPosKey,  transport.punch_out_position_  },
-    { Transport::kRange1Key,       transport.range_1_             },
-    { Transport::kRange2Key,       transport.range_2_             },
-    { Transport::kHasRangeKey,     transport.has_range_           },
-    // { kPositionKey,     transport.position_       },
     { Transport::kRollKey,         transport.roll_                },
     { Transport::kStopKey,         transport.stop_                },
     { Transport::kBackwardKey,     transport.backward_            },
@@ -1005,10 +768,6 @@ from_json (const nlohmann::json &j, Transport &transport)
   j.at (Transport::kLoopEndPosKey).get_to (transport.loop_end_position_);
   j.at (Transport::kPunchInPosKey).get_to (transport.punch_in_position_);
   j.at (Transport::kPunchOutPosKey).get_to (transport.punch_out_position_);
-  j.at (Transport::kRange1Key).get_to (transport.range_1_);
-  j.at (Transport::kRange2Key).get_to (transport.range_2_);
-  j.at (Transport::kHasRangeKey).get_to (transport.has_range_);
-  // j.at (kPositionKey).get_to (transport.position_);
   j.at (Transport::kRollKey).get_to (*transport.roll_);
   j.at (Transport::kStopKey).get_to (*transport.stop_);
   j.at (Transport::kBackwardKey).get_to (*transport.backward_);

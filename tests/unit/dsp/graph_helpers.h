@@ -56,10 +56,5 @@ public:
     metronome_countin_frames_remaining,
     (),
     (const, noexcept, override));
-  MOCK_METHOD (
-    units::sample_t,
-    is_loop_point_met_in_audio_thread,
-    (units::sample_t g_start_frames, units::sample_t nframes),
-    (const, noexcept, override));
 };
 }

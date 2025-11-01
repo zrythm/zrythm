@@ -78,9 +78,9 @@ ApplicationWindow {
     onActivated: {
       // Toggle play/pause regardless of focus
       if (root.project.transport.isRolling()) {
-        root.project.transport.requestPause(true);
+        root.project.transport.requestPause();
       } else {
-        root.project.transport.requestRoll(true);
+        root.project.transport.requestRoll();
       }
     }
   }

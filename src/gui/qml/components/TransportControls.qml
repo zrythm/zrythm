@@ -34,7 +34,7 @@ RowLayout {
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", (root.transport.playState == 1 ? "pause" : "play") + "-large-symbolic.svg")
 
       onClicked: {
-        root.transport.isRolling() ? root.transport.requestPause(true) : root.transport.requestRoll(true);
+        root.transport.isRolling() ? root.transport.requestPause() : root.transport.requestRoll();
       }
     }
 

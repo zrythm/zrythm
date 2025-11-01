@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -23,6 +23,8 @@
  * ---
  */
 
+#include <utility>
+
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
 #include "utils/audio.h"
@@ -36,8 +38,8 @@ GraphScheduler::GraphScheduler (
   nframes_t                                    max_block_length,
   std::optional<juce::Thread::RealtimeOptions> rt_options,
   std::optional<juce::AudioWorkgroup>          thread_workgroup)
-    : thread_workgroup_ (thread_workgroup), sample_rate_ (sample_rate),
-      max_block_length_ (max_block_length)
+    : thread_workgroup_ (std::move (thread_workgroup)),
+      sample_rate_ (sample_rate), max_block_length_ (max_block_length)
 {
   if (rt_options)
     {
@@ -50,7 +52,7 @@ GraphScheduler::GraphScheduler (
     }
   realtime_thread_options_ =
     realtime_thread_options_.withApproximateAudioProcessingTime (
-      max_block_length, sample_rate);
+      static_cast<int> (max_block_length), sample_rate);
 }
 
 void

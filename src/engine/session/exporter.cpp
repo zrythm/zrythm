@@ -241,7 +241,7 @@ Exporter::export_audio (Settings &info)
           .local_offset_ = 0,
           .nframes_ = nframes,
         };
-        ROUTER->start_cycle (time_nfo);
+        ROUTER->start_cycle (time_nfo, false);
         AUDIO_ENGINE->post_process (nframes, nframes);
 
         /* by this time, the Master channel should have its Stereo Out ports

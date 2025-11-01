@@ -82,9 +82,10 @@ private:
   void prepare_for_processing () noexcept
   {
     // Copy current position before processing
-    position_samples_processing_.store (
-      position_samples_.load (std::memory_order_acquire).in (units::samples),
-      std::memory_order_release);
+    const auto samples =
+      position_samples_.load (std::memory_order_acquire).in (units::samples);
+    position_samples_at_start_of_processing_ = samples;
+    position_samples_processing_.store (samples, std::memory_order_release);
   }
 
 public:
@@ -136,10 +137,16 @@ private:
   void finalize_processing () noexcept
   {
     // Commit position only at end of block
-    position_samples_.store (
-      units::samples (
-        position_samples_processing_.load (std::memory_order_acquire)),
-      std::memory_order_release);
+    const auto processing_samples =
+      position_samples_processing_.load (std::memory_order_acquire);
+
+    // Atomically compare and exchange - only update if current value matches
+    // start value (otherwise the position was changed by the user meanwhile and
+    // we should honor that change)
+    auto expected = units::samples (position_samples_at_start_of_processing_);
+    position_samples_.compare_exchange_strong (
+      expected, units::samples (processing_samples), std::memory_order_acq_rel,
+      std::memory_order_acquire);
   }
 
   // GUI thread ONLY ------------------------------------------------------
@@ -213,6 +220,7 @@ private:
 
   // Audio thread state
   std::atomic<double> position_samples_processing_ = 0.0;
+  double              position_samples_at_start_of_processing_{};
 
   // Shared state (protected)
   std::atomic<units::precise_sample_t> position_samples_;

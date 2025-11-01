@@ -125,9 +125,11 @@ TEST_F (GraphNodeTest, ProcessingWithTransport)
 TEST_F (GraphNodeTest, LoopPointProcessing)
 {
   EXPECT_CALL (*transport_, loop_enabled ()).WillRepeatedly (Return (true));
-  EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
-    .WillOnce (Return (units::samples (128)))
-    .WillOnce (Return (units::samples (0)));
+  EXPECT_CALL (*transport_, get_loop_range_positions ())
+    .WillRepeatedly (
+      Return (std::make_pair (units::samples (0), units::samples (128))));
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillRepeatedly (Return (ITransport::PlayState::Rolling));
   EXPECT_CALL (*processable_, process_block (_)).Times (2);
 
   auto                  node = create_test_node ();
@@ -175,9 +177,13 @@ TEST_F (GraphNodeTest, ProcessingWithLoopAndLatency)
   EXPECT_CALL (*transport_, loop_enabled ()).WillRepeatedly (Return (true));
   EXPECT_CALL (*processable_, get_single_playback_latency ())
     .WillRepeatedly (Return (128));
-  EXPECT_CALL (*transport_, is_loop_point_met_in_audio_thread (_, _))
-    .WillOnce (Return (units::samples (64)))
-    .WillOnce (Return (units::samples (0)));
+  EXPECT_CALL (*transport_, get_loop_range_positions ())
+    .WillRepeatedly (
+      Return (std::make_pair (units::samples (0), units::samples (192))));
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillRepeatedly (Return (ITransport::PlayState::Rolling));
+  EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
+    .WillRepeatedly (Return (units::samples (0)));
   EXPECT_CALL (*processable_, process_block (_)).Times (2);
 
   auto node = create_test_node ();
