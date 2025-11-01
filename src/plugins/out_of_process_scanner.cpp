@@ -42,7 +42,7 @@ using namespace std::chrono_literals;
 
 #include "plugins/out_of_process_scanner.h"
 
-constexpr auto PLUGIN_SCAN_TIMEOUT = 4s;
+constexpr auto PLUGIN_SCAN_TIMEOUT = 6s;
 
 using namespace zrythm::plugins::discovery;
 
