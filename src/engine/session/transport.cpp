@@ -551,10 +551,14 @@ Transport::goto_prev_marker ()
   marker_ticks.emplace_back ();
   std::ranges::sort (marker_ticks);
 
-  for (
-    const auto &[index, marker_tick] :
-    marker_ticks | std::views::enumerate | std::views::reverse)
+  // Iterate backwards through marker_ticks with manual index.
+  // Equivalent to (but can't use enumerate yet on AppleClang):
+  // marker_ticks | std::views::enumerate | std::views::reverse
+  for (size_t i = 0; i < marker_ticks.size (); ++i)
     {
+      const auto  index = marker_ticks.size () - 1 - i;
+      const auto &marker_tick = marker_ticks[index];
+
       if (marker_tick >= playhead_.position_ticks ())
         continue;
 
