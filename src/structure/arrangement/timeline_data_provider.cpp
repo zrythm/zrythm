@@ -63,6 +63,7 @@ MidiTimelineDataProvider::process_midi_events (
     && !transport_rolling;
 
   // Send all-notes-off if transport stopped or position jumped
+  // TODO: keep track of current note-ons and send note offs instead
   if (
     transport_stopped_rolling
     || (transport_rolling && transport_position_jumped))

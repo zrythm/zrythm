@@ -9,18 +9,8 @@
 #include "dsp/playhead.h"
 #include "dsp/playhead_qml_adapter.h"
 #include "dsp/port.h"
-#include "structure/arrangement/arranger_object_span.h"
+#include "dsp/snap_grid.h"
 #include "utils/types.h"
-
-class Project;
-
-namespace zrythm::structure::arrangement
-{
-class Marker;
-}
-
-#define TRANSPORT (PROJECT->transport_)
-constexpr int TRANSPORT_DEFAULT_TOTAL_BARS = 128;
 
 namespace zrythm::engine::session
 {
@@ -87,6 +77,10 @@ class Transport : public QObject, public dsp::ITransport
       punchOutPosition CONSTANT)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   QML_UNCREATABLE ("")
+
+  /** Millisec to allow moving further backward when very close to the
+   * calculated backward position. */
+  static constexpr auto REPEATED_BACKWARD_MS = au::milli (units::seconds) (240);
 
 public:
   Q_ENUM (PlayState)
@@ -170,6 +164,7 @@ public:
   Transport (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
     const dsp::TempoMap                          &tempo_map,
+    const dsp::SnapGrid                          &snap_grid,
     ConfigProvider                                config_provider,
     QObject *                                     parent = nullptr);
 
@@ -288,38 +283,6 @@ public:
   }
 
   /**
-   * Prepares audio regions for stretching (sets the
-   * @ref Region.before_length).
-   *
-   * @param selections If nullptr, all audio regions
-   *   are used. If non-nullptr, only the regions in the
-   *   selections are used.
-   */
-  void prepare_audio_regions_for_stretch (
-    std::optional<structure::arrangement::ArrangerObjectSpan> sel_var);
-
-  /**
-   * Stretches regions.
-   *
-   * @param selections If nullptr, all regions
-   *   are used. If non-nullptr, only the regions in the
-   *   selections are used.
-   * @param with_fixed_ratio Stretch all regions with
-   *   a fixed ratio. If this is off, the current
-   *   region length and @ref Region.before_length
-   *   will be used to calculate the ratio.
-   * @param force Force stretching, regardless of
-   *   musical mode.
-   *
-   * @throw ZrythmException if stretching fails.
-   */
-  void stretch_regions (
-    std::optional<structure::arrangement::ArrangerObjectSpan> sel_var,
-    bool                                                      with_fixed_ratio,
-    double                                                    time_ratio,
-    bool                                                      force);
-
-  /**
    * Moves the playhead by the time corresponding to given samples, taking into
    * account the loop end point.
    */
@@ -341,24 +304,62 @@ public:
   void move_playhead (units::precise_tick_t target_ticks, bool set_cue_point);
 
   /**
-   * Moves the playhead to the start Marker.
+   * @brief Moves the playhead to the previous or next marker.
+   *
+   * @param prev True for previous, false for next.
    */
-  void goto_start_marker ();
+  void goto_prev_or_next_marker (
+    bool                                  prev,
+    RangeOf<units::precise_tick_t> auto &&extra_markers)
+  {
+    /* gather all markers */
+    std::vector<units::precise_tick_t> marker_ticks;
+    marker_ticks.append_range (extra_markers);
+    marker_ticks.emplace_back (cue_position_.get_ticks ());
+    marker_ticks.emplace_back (loop_start_position_.get_ticks ());
+    marker_ticks.emplace_back (loop_end_position_.get_ticks ());
+    marker_ticks.emplace_back ();
+    std::ranges::sort (marker_ticks);
 
-  /**
-   * Moves the playhead to the end Marker.
-   */
-  void goto_end_marker ();
+    if (prev)
+      {
+        // Iterate backwards through marker_ticks with manual index.
+        // Equivalent to (but can't use enumerate yet on AppleClang):
+        // marker_ticks | std::views::enumerate | std::views::reverse
+        for (size_t i = 0; i < marker_ticks.size (); ++i)
+          {
+            const auto  index = marker_ticks.size () - 1 - i;
+            const auto &marker_tick = marker_ticks[index];
 
-  /**
-   * Moves the playhead to the prev Marker.
-   */
-  void goto_prev_marker ();
+            if (marker_tick >= playhead_.position_ticks ())
+              continue;
 
-  /**
-   * Moves the playhead to the next Marker.
-   */
-  void goto_next_marker ();
+            if (
+              isRolling () && index > 0
+              && (playhead_.get_tempo_map ().tick_to_seconds (
+                    playhead_.position_ticks ())
+                  - playhead_.get_tempo_map ().tick_to_seconds (marker_tick))
+                   < REPEATED_BACKWARD_MS)
+              {
+                continue;
+              }
+
+            move_playhead (marker_tick, true);
+            break;
+          }
+      }
+    else
+      {
+        for (auto &marker : marker_ticks)
+          {
+            if (marker > playhead_.position_ticks ())
+              {
+                move_playhead (marker, true);
+                break;
+              }
+          }
+      }
+  }
 
   /**
    * Set the loop range.
@@ -373,30 +374,12 @@ public:
 
   bool position_is_inside_punch_range (units::sample_t pos);
 
-  /**
-   * Recalculates the total bars based on the last object's position.
-   *
-   * @param sel If given, only these objects will be checked, otherwise every
-   * object in the project will be checked.
-   *
-   * FIXME: use signals to update the total bars.
-   */
-  void recalculate_total_bars (
-    std::optional<structure::arrangement::ArrangerObjectSpan> objects =
-      std::nullopt);
-
-  /**
-   * Updates the total bars.
-   */
-  void update_total_bars (int total_bars, bool fire_events);
-
   friend void init_from (
     Transport             &obj,
     const Transport       &other,
     utils::ObjectCloneType clone_type);
 
 private:
-  static constexpr auto kTotalBarsKey = "totalBars"sv;
   static constexpr auto kPlayheadKey = "playhead"sv;
   static constexpr auto kCuePosKey = "cuePos"sv;
   static constexpr auto kLoopStartPosKey = "loopStartPos"sv;
@@ -414,25 +397,12 @@ private:
   friend void from_json (const nlohmann::json &j, Transport &transport);
 
   /**
-   * One of @param marker or @param pos must be non-NULL.
-   */
-  void move_to_marker_or_pos_and_fire_events (
-    const structure::arrangement::Marker * marker,
-    std::optional<units::precise_tick_t>   pos_ticks);
-
-  // static void
-  // foreach_arranger_handle_playhead_auto_scroll (ArrangerWidget * arranger);
-
-  /**
    * Returns whether the user can currently move the playhead
    * (eg, via the UI or via scripts).
    */
   bool can_user_move_playhead () const;
 
 public:
-  /** Total bars in the song. */
-  int total_bars_ = 0;
-
   /** Playhead position. */
   dsp::Playhead                                    playhead_;
   utils::QObjectUniquePtr<dsp::PlayheadQmlWrapper> playhead_adapter_;
@@ -537,5 +507,7 @@ private:
   std::atomic<bool> needs_property_notification_{ false };
 
   ConfigProvider config_provider_;
+
+  const dsp::SnapGrid &snap_grid_;
 };
 }

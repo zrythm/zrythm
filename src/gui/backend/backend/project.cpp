@@ -74,13 +74,29 @@ Project::Project (
       audio_engine_ (
         utils::make_qobject_unique<
           engine::device_io::AudioEngine> (this, device_manager)),
+      snap_grid_editor_ (
+        utils::make_qobject_unique<dsp::SnapGrid> (
+          tempo_map_,
+          utils::NoteLength::Note_1_8,
+          [] {
+            return gui::SettingsManager::editorLastCreatedObjectLengthInTicks ();
+},
+          this)),
+      snap_grid_timeline_ (
+        utils::make_qobject_unique<dsp::SnapGrid> (
+          tempo_map_,
+          utils::NoteLength::Bar,
+          [] {
+            return gui::SettingsManager::timelineLastCreatedObjectLengthInTicks ();
+          },
+          this)),
       transport_ (
         utils::make_qobject_unique<engine::session::Transport> (
           dsp::ProcessorBase::ProcessorBaseDependencies{
             .port_registry_ = *port_registry_,
-            .param_registry_ = *param_registry_
-},
+            .param_registry_ = *param_registry_ },
           tempo_map_,
+          *snap_grid_timeline_,
           engine::session::Transport::ConfigProvider{
             .return_to_cue_on_pause_ =
               [] () { return gui::SettingsManager::transportReturnToCue (); },
@@ -99,22 +115,6 @@ Project::Project (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
       quantize_opts_timeline_ (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_1)),
-      snap_grid_editor_ (
-        utils::make_qobject_unique<dsp::SnapGrid> (
-          tempo_map_,
-          utils::NoteLength::Note_1_8,
-          [] {
-            return gui::SettingsManager::editorLastCreatedObjectLengthInTicks ();
-          },
-          this)),
-      snap_grid_timeline_ (
-        utils::make_qobject_unique<dsp::SnapGrid> (
-          tempo_map_,
-          utils::NoteLength::Bar,
-          [] {
-            return gui::SettingsManager::timelineLastCreatedObjectLengthInTicks ();
-          },
-          this)),
       timeline_ (
         utils::make_qobject_unique<structure::arrangement::Timeline> (this)),
       clip_editor_ (

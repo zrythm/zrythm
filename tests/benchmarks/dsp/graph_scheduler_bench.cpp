@@ -44,6 +44,10 @@ protected:
     EXPECT_CALL (*transport_, loop_enabled ())
       .Times (::testing::AnyNumber ())
       .WillRepeatedly (Return (false));
+    EXPECT_CALL (*transport_, get_loop_range_positions ())
+      .Times (::testing::AnyNumber ())
+      .WillRepeatedly (
+        Return (std::make_pair (units::samples (0), units::samples (960))));
   }
 
   void TearDown (benchmark::State &state) override

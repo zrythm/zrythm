@@ -108,15 +108,16 @@ public:
   // QML Invokable Methods
   Q_INVOKABLE double snapWithoutStartTicks (double ticks)
   {
-    return snap (ticks);
+    return snap (units::ticks (ticks)).in (units::ticks);
   }
   Q_INVOKABLE double snapWithStartTicks (double ticks, double startTicks)
   {
-    return snap (ticks, startTicks);
+    return snap (units::ticks (ticks), units::ticks (startTicks))
+      .in (units::ticks);
   }
-  Q_INVOKABLE double nextSnapPoint (double ticks);
-  Q_INVOKABLE double prevSnapPoint (double ticks);
-  Q_INVOKABLE double closestSnapPoint (double ticks);
+  Q_INVOKABLE double nextSnapPoint (double ticks) const;
+  Q_INVOKABLE double prevSnapPoint (double ticks) const;
+  Q_INVOKABLE double closestSnapPoint (double ticks) const;
   Q_INVOKABLE double snapTicks (int64_t ticks) const;
   Q_INVOKABLE double defaultTicks (int64_t ticks) const;
 
@@ -126,7 +127,9 @@ public:
    * @param ticks
    * @param start_ticks Used when "keep offset" is enabled.
    */
-  double snap (double ticks, std::optional<double> start_ticks = std::nullopt);
+  units::precise_tick_t snap (
+    units::precise_tick_t                ticks,
+    std::optional<units::precise_tick_t> start_ticks = std::nullopt) const;
 
   // Callback configuration
   void set_event_callback (SnapEventCallback callback);

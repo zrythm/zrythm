@@ -9,6 +9,7 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/arranger_object.h"
+#include "structure/arrangement/arranger_object_span.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/chord_region.h"

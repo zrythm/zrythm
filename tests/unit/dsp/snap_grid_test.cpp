@@ -145,10 +145,16 @@ TEST_F (SnapGridTest, SnapFunction)
   const double quarter_ticks = TempoMap::get_ppq ();
 
   // Test basic snapping
-  EXPECT_DOUBLE_EQ (snap_grid->snap (0), 0);
-  EXPECT_DOUBLE_EQ (snap_grid->snap (quarter_ticks / 2 - 1), 0);
-  EXPECT_DOUBLE_EQ (snap_grid->snap (quarter_ticks / 2 + 1), quarter_ticks);
-  EXPECT_DOUBLE_EQ (snap_grid->snap (quarter_ticks), quarter_ticks);
+  EXPECT_DOUBLE_EQ (snap_grid->snap (units::ticks (0)).in (units::ticks), 0.0);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snap (units::ticks (quarter_ticks / 2 - 1)).in (units::ticks),
+    0.0);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snap (units::ticks (quarter_ticks / 2 + 1)).in (units::ticks),
+    quarter_ticks);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snap (units::ticks (quarter_ticks)).in (units::ticks),
+    quarter_ticks);
 }
 
 // Test keep offset functionality
@@ -161,13 +167,13 @@ TEST_F (SnapGridTest, KeepOffset)
   const double quarter_ticks = TempoMap::get_ppq ();
 
   // Start at 100 ticks offset from grid
-  double start_ticks = 100;
-  double current_ticks =
-    start_ticks + (quarter_ticks / 2); // Move to middle of next quarter
+  auto start_ticks = units::ticks (100);
+  auto current_ticks =
+    units::ticks (100 + (quarter_ticks / 2)); // Move to middle of next quarter
 
   // Should maintain 100 tick offset from grid
-  double snapped = snap_grid->snap (current_ticks, start_ticks);
-  EXPECT_DOUBLE_EQ (snapped, quarter_ticks + 100);
+  auto snapped = snap_grid->snap (current_ticks, start_ticks);
+  EXPECT_DOUBLE_EQ (snapped.in (units::ticks), quarter_ticks + 100);
 }
 
 // Test event snapping
@@ -325,12 +331,13 @@ TEST_F (SnapGridTest, PropertySignals)
 TEST_F (SnapGridTest, EdgeCases)
 {
   // Test negative ticks
-  EXPECT_DOUBLE_EQ (snap_grid->snap (-100), 0);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snap (units::ticks (-100)).in (units::ticks), 0.0);
 
   // Test very large ticks
-  double large_ticks = 1000000.0;
-  double snapped = snap_grid->snap (large_ticks);
-  EXPECT_NEAR (snapped, large_ticks, TempoMap::get_ppq ());
+  auto large_ticks = units::ticks (1000000.0);
+  auto snapped = snap_grid->snap (large_ticks);
+  EXPECT_NEAR (snapped.in (units::ticks), 1000000.0, TempoMap::get_ppq ());
 
   // Test empty event callback
   snap_grid->setSnapToGrid (false);

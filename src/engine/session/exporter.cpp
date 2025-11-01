@@ -13,6 +13,7 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
+#include "structure/arrangement/arranger_object_span.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/master_track.h"

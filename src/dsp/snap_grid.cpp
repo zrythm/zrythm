@@ -258,7 +258,7 @@ SnapGrid::get_event_snap_points (double start_ticks, double end_ticks) const
 }
 
 double
-SnapGrid::nextSnapPoint (double ticks)
+SnapGrid::nextSnapPoint (double ticks) const
 {
   double result{};
   get_prev_or_next_snap_point (ticks, result, false);
@@ -266,7 +266,7 @@ SnapGrid::nextSnapPoint (double ticks)
 }
 
 double
-SnapGrid::prevSnapPoint (double ticks)
+SnapGrid::prevSnapPoint (double ticks) const
 {
   double result{};
   get_prev_or_next_snap_point (ticks, result, true);
@@ -274,7 +274,7 @@ SnapGrid::prevSnapPoint (double ticks)
 }
 
 double
-SnapGrid::closestSnapPoint (double ticks)
+SnapGrid::closestSnapPoint (double ticks) const
 {
   double prev = prevSnapPoint (ticks);
   double next = nextSnapPoint (ticks);
@@ -282,36 +282,40 @@ SnapGrid::closestSnapPoint (double ticks)
   return (std::abs (ticks - prev) <= std::abs (ticks - next)) ? prev : next;
 }
 
-double
-SnapGrid::snap (double ticks, std::optional<double> start_ticks)
+units::precise_tick_t
+SnapGrid::snap (
+  units::precise_tick_t                ticks,
+  std::optional<units::precise_tick_t> start_ticks) const
 {
   /* this should only be called if snap is on. the check should be done before
    * calling */
   assert (snap_to_grid_ || snap_to_events_);
 
   /* position must be positive - only global positions allowed */
-  if (ticks < 0)
-    return 0;
+  if (ticks < units::ticks (0))
+    return units::ticks (0);
 
   if (snap_to_grid_keep_offset_)
     {
       assert (start_ticks.has_value ());
 
       /* get previous snap point from start position */
-      double prev_sp_from_start = prevSnapPoint (start_ticks.value ());
+      const auto prev_sp_from_start =
+        units::ticks (prevSnapPoint (start_ticks.value ().in (units::ticks)));
 
       /* get diff from previous snap point */
-      double ticks_delta = start_ticks.value () - prev_sp_from_start;
+      const auto ticks_delta = start_ticks.value () - prev_sp_from_start;
 
       /* subtract offset and find closest snap point */
       // double temp_ticks = ticks - ticks_delta;
-      double closest_sp = closestSnapPoint (ticks);
+      const auto closest_sp =
+        units::ticks (closestSnapPoint (ticks.in (units::ticks)));
 
       /* re-add offset */
       return closest_sp + ticks_delta;
     }
 
-  return closestSnapPoint (ticks);
+  return units::ticks (closestSnapPoint (ticks.in (units::ticks)));
 }
 
 void

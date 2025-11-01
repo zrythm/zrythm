@@ -37,6 +37,7 @@ using namespace zrythm;
 #define PROJECT (Project::get_active_instance ())
 #define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_.get ())
 #define AUDIO_POOL (PROJECT->audio_pool_.get ())
+#define TRANSPORT (PROJECT->transport_)
 
 #define TRACKLIST (PROJECT->tracklist_)
 #define P_CHORD_TRACK (TRACKLIST->singletonTracks ()->chordTrack ())
@@ -613,6 +614,12 @@ public:
    */
   utils::QObjectUniquePtr<engine::device_io::AudioEngine> audio_engine_;
 
+  /** Snap/Grid info for the editor. */
+  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
+
+  /** Snap/Grid info for the timeline. */
+  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
+
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
@@ -629,12 +636,6 @@ public:
 
   /** Quantize info for the timeline. */
   std::unique_ptr<QuantizeOptions> quantize_opts_timeline_;
-
-  /** Snap/Grid info for the editor. */
-  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
-
-  /** Snap/Grid info for the timeline. */
-  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
 
   /** Timeline widget backend. */
   utils::QObjectUniquePtr<structure::arrangement::Timeline> timeline_;
