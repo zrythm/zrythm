@@ -406,7 +406,8 @@ AudioEngine::
       dsp::PlayheadProcessingGuard playhead_processing_guard{
         project_->transport_->playhead ()->playhead ()
       };
-      process_prepare (1, &sem);
+      auto current_transport_state = TRANSPORT->get_snapshot ();
+      process_prepare (current_transport_state, 1, &sem);
 
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame_ = static_cast<unsigned_frame_t> (
@@ -419,8 +420,9 @@ AudioEngine::
         .nframes_ = 1,
       };
 
-      router_->start_cycle (time_nfo, false);
-      post_process (0, 1);
+      router_->start_cycle (
+        current_transport_state, time_nfo, remaining_latency_preroll_, false);
+      post_process (current_transport_state, 0, 1);
     }
 }
 
@@ -587,33 +589,34 @@ AudioEngine::update_position_info (
 
 bool
 AudioEngine::process_prepare (
+  dsp::Transport::TransportSnapshot                &transport_snapshot,
   nframes_t                                         nframes,
   SemaphoreRAII<moodycamel::LightweightSemaphore> * sem)
 {
   const auto block_length = get_block_length ();
 
-  if (denormal_prevention_val_positive_)
-    {
-      denormal_prevention_val_ = -1e-20f;
-    }
-  else
-    {
-      denormal_prevention_val_ = 1e-20f;
-    }
-  denormal_prevention_val_positive_ = !denormal_prevention_val_positive_;
-
   nframes_ = nframes;
 
-  auto transport_ = project_->getTransport ();
-  if (transport_->getPlayState () == dsp::Transport::PlayState::PauseRequested)
+  const auto update_transport_play_state =
+    [&] (dsp::ITransport::PlayState play_state) {
+      auto * transport_ = project_->getTransport ();
+      transport_->set_play_state_rt_safe (play_state);
+      transport_snapshot.set_play_state (play_state);
+    };
+
+  if (
+    transport_snapshot.get_play_state ()
+    == dsp::Transport::PlayState::PauseRequested)
     {
-      transport_->set_play_state_rt_safe (dsp::Transport::PlayState::Paused);
+      update_transport_play_state (dsp::Transport::PlayState::Paused);
     }
   else if (
-    transport_->getPlayState () == dsp::Transport::PlayState::RollRequested
-    && transport_->metronome_countin_frames_remaining () == units::samples (0))
+    transport_snapshot.get_play_state ()
+      == dsp::Transport::PlayState::RollRequested
+    && transport_snapshot.metronome_countin_frames_remaining ()
+         == units::samples (0))
     {
-      transport_->set_play_state_rt_safe (dsp::Transport::PlayState::Rolling);
+      update_transport_play_state (dsp::Transport::PlayState::Rolling);
       remaining_latency_preroll_ = router_->get_max_route_playback_latency ();
     }
 
@@ -629,7 +632,9 @@ AudioEngine::process_prepare (
   update_position_info (pos_nfo_current_, 0);
   {
     nframes_t frames_to_add = 0;
-    if (transport_->isRolling ())
+    if (
+      transport_snapshot.get_play_state ()
+      == dsp::ITransport::PlayState::Rolling)
       {
         if (remaining_latency_preroll_ < nframes)
           {
@@ -667,14 +672,25 @@ AudioEngine::process (const nframes_t total_frames_to_process)
   AtomicBoolRAII cycle_running (cycle_running_);
   SemaphoreRAII  port_operation_sem (port_operation_lock_);
 
+  // We create a temporary ITransport snapshot and inject it here (graph
+  // nodes will use this instead of the main Transport instance, thus
+  // avoiding the need to synchronize access to it)
+  auto current_transport_state = project_->getTransport ()->get_snapshot ();
+
+  const auto consume_metronome_countin_samples =
+    [&] (const units::sample_t samples) {
+      project_->getTransport ()->consume_metronome_countin_samples (samples);
+      current_transport_state.consume_metronome_countin_samples (samples);
+    };
+
+  const auto consume_recording_preroll_samples =
+    [&] (const units::sample_t samples) {
+      project_->getTransport ()->consume_recording_preroll_samples (samples);
+      current_transport_state.consume_recording_preroll_samples (samples);
+    };
+
   z_return_val_if_fail (
     total_frames_to_process > 0, ProcessReturnStatus::ProcessFailed);
-
-  /* calculate timestamps (used for synchronizing external events like Windows
-   * MME MIDI) */
-  timestamp_start_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-  // timestamp_end_ = timestamp_start_ + (total_frames_to_process * 1000000) /
-  // sample_rate_;
 
   if (!run_.load ()) [[unlikely]]
     {
@@ -684,8 +700,8 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     }
 
   /* run pre-process code */
-  bool skip_cycle =
-    process_prepare (total_frames_to_process, &port_operation_sem);
+  bool skip_cycle = process_prepare (
+    current_transport_state, total_frames_to_process, &port_operation_sem);
 
   if (skip_cycle) [[unlikely]]
     {
@@ -704,13 +720,14 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   /* --- handle preroll --- */
 
-  auto *                transport_ = project_->getTransport ();
   EngineProcessTimeInfo split_time_nfo = {
     .g_start_frame_ =
-      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread ()
+      (unsigned_frame_t) current_transport_state
+        .get_playhead_position_in_audio_thread ()
         .in (units::samples),
     .g_start_frame_w_offset_ =
-      (unsigned_frame_t) transport_->get_playhead_position_in_audio_thread ()
+      (unsigned_frame_t) current_transport_state
+        .get_playhead_position_in_audio_thread ()
         .in (units::samples),
     .local_offset_ = 0,
     .nframes_ = 0,
@@ -758,7 +775,9 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         split_time_nfo.g_start_frame_ + preroll_offset;
       split_time_nfo.local_offset_ = preroll_offset;
       split_time_nfo.nframes_ = num_preroll_frames;
-      router_->start_cycle (split_time_nfo, true);
+      router_->start_cycle (
+        current_transport_state, split_time_nfo, remaining_latency_preroll_,
+        true);
 
       remaining_latency_preroll_ -= num_preroll_frames;
       total_frames_remaining -= num_preroll_frames;
@@ -777,22 +796,24 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
         /* split at countin */
         if (
-          transport_->metronome_countin_frames_remaining () > units::samples (0))
+          current_transport_state.metronome_countin_frames_remaining ()
+          > units::samples (0))
           {
             const auto countin_frames = std::min (
               total_frames_remaining,
               static_cast<nframes_t> (
-                transport_->metronome_countin_frames_remaining ().in (
-                  units::samples)));
+                current_transport_state.metronome_countin_frames_remaining ()
+                  .in (units::samples)));
 
             /* process for countin frames */
             split_time_nfo.g_start_frame_w_offset_ =
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = countin_frames;
-            router_->start_cycle (split_time_nfo, true);
-            transport_->consume_metronome_countin_samples (
-              units::samples (countin_frames));
+            router_->start_cycle (
+              current_transport_state, split_time_nfo,
+              remaining_latency_preroll_, true);
+            consume_metronome_countin_samples (units::samples (countin_frames));
 
             /* adjust total frames remaining to process and current offset */
             total_frames_remaining -= countin_frames;
@@ -803,23 +824,25 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
         /* split at preroll */
         if (
-          transport_->metronome_countin_frames_remaining () == units::samples (0)
-          && transport_->has_recording_preroll_frames_remaining ())
+          current_transport_state.metronome_countin_frames_remaining ()
+            == units::samples (0)
+          && current_transport_state.has_recording_preroll_frames_remaining ())
           {
             nframes_t preroll_frames = std::min (
               total_frames_remaining,
               static_cast<nframes_t> (
-                transport_->recording_preroll_frames_remaining ().in (
-                  units::samples)));
+                current_transport_state.recording_preroll_frames_remaining ()
+                  .in (units::samples)));
 
             /* process for preroll frames */
             split_time_nfo.g_start_frame_w_offset_ =
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = preroll_frames;
-            router_->start_cycle (split_time_nfo, true);
-            transport_->consume_recording_preroll_samples (
-              units::samples (preroll_frames));
+            router_->start_cycle (
+              current_transport_state, split_time_nfo,
+              remaining_latency_preroll_, true);
+            consume_recording_preroll_samples (units::samples (preroll_frames));
 
             /* process for remaining frames */
             cur_offset += preroll_frames;
@@ -831,7 +854,9 @@ AudioEngine::process (const nframes_t total_frames_to_process)
                   split_time_nfo.g_start_frame_ + cur_offset;
                 split_time_nfo.local_offset_ = cur_offset;
                 split_time_nfo.nframes_ = remaining_frames;
-                router_->start_cycle (split_time_nfo, true);
+                router_->start_cycle (
+                  current_transport_state, split_time_nfo,
+                  remaining_latency_preroll_, true);
               }
           }
         else
@@ -842,44 +867,41 @@ AudioEngine::process (const nframes_t total_frames_to_process)
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = total_frames_remaining;
-            router_->start_cycle (split_time_nfo, true);
+            router_->start_cycle (
+              current_transport_state, split_time_nfo,
+              remaining_latency_preroll_, true);
           }
       }();
     }
 
   /* run post-process code for the number of frames remaining after handling
    * preroll (if any) */
-  post_process (total_frames_remaining, total_frames_to_process);
+  post_process (
+    current_transport_state, total_frames_remaining, total_frames_to_process);
 
   cycle_.fetch_add (1);
 
-  if (ZRYTHM_TESTING)
-    {
-      /*z_debug ("engine process ended...");*/
-    }
-
-  last_timestamp_start_ = timestamp_start_;
-  // self->last_timestamp_end = Zrythm::getInstance ()->get_monotonic_time_usecs
-  // ();
-
-  /*
-   * processing finished, return 0 (OK)
-   */
   return ProcessReturnStatus::ProcessCompleted;
 }
 
 void
-AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes)
+AudioEngine::post_process (
+  dsp::Transport::TransportSnapshot &transport_snapshot,
+  const nframes_t                    roll_nframes,
+  const nframes_t                    nframes)
 {
   /* remember current position info */
   update_position_info (pos_nfo_before_, 0);
 
   /* move the playhead if rolling and not pre-rolling */
-  auto * transport_ = project_->getTransport ();
-  if (transport_->isRolling () && remaining_latency_preroll_ == 0)
+  if (
+    transport_snapshot.get_play_state () == dsp::ITransport::PlayState::Rolling
+    && remaining_latency_preroll_ == 0)
     {
-      transport_->add_to_playhead_in_audio_thread (
+      project_->getTransport ()->add_to_playhead_in_audio_thread (
         units::samples (roll_nframes));
+      transport_snapshot.set_position (
+        project_->getTransport ()->get_playhead_position_in_audio_thread ());
     }
 }
 

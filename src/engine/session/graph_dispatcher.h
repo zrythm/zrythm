@@ -64,10 +64,14 @@ public:
    * Starts a new cycle.
    *
    * @param realtime_context Whether this is called in a realtime context.
+   * @param remaining_latency_preroll Remaining number of playback latency
+   * preroll samples for this cycle.
    */
-  void
-  start_cycle (EngineProcessTimeInfo time_nfo, bool realtime_context) noexcept
-    [[clang::nonblocking]];
+  void start_cycle (
+    const dsp::ITransport &current_transport_state,
+    EngineProcessTimeInfo  time_nfo,
+    nframes_t              remaining_latency_preroll,
+    bool                   realtime_context) noexcept [[clang::nonblocking]];
 
   /**
    * Returns the max playback latency of the trigger

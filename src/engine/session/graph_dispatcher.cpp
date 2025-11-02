@@ -26,15 +26,12 @@
  * ---
  */
 
-#include "zrythm-config.h"
-
 #include "dsp/graph.h"
 #include "dsp/port.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
 #include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/tracks/track_processor.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
@@ -103,76 +100,12 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
   }
 }
 
-class CurrentCycleTransportState final : public dsp::ITransport
-{
-public:
-  CurrentCycleTransportState (
-    std::pair<units::sample_t, units::sample_t> loop_range,
-    std::pair<units::sample_t, units::sample_t> punch_range,
-    units::sample_t                             playhead_position,
-    units::sample_t recording_preroll_frames_remaining,
-    units::sample_t metronome_countin_frames_remaining,
-    PlayState       play_state,
-    bool            loop_enabled,
-    bool            punch_enabled,
-    bool            recording_enabled)
-      : loop_range_ (loop_range), punch_range_ (punch_range),
-        playhead_position_ (playhead_position),
-        recording_preroll_frames_remaining_ (recording_preroll_frames_remaining),
-        metronome_countin_frames_remaining_ (metronome_countin_frames_remaining),
-        play_state_ (play_state), loop_enabled_ (loop_enabled),
-        punch_enabled_ (punch_enabled), recording_enabled_ (recording_enabled)
-  {
-  }
-
-  std::pair<units::sample_t, units::sample_t>
-  get_loop_range_positions () const noexcept override
-  {
-    return loop_range_;
-  }
-  std::pair<units::sample_t, units::sample_t>
-  get_punch_range_positions () const noexcept override
-  {
-    return punch_range_;
-  }
-  PlayState get_play_state () const noexcept override { return play_state_; }
-  units::sample_t
-  get_playhead_position_in_audio_thread () const noexcept override
-  {
-    return playhead_position_;
-  }
-  bool loop_enabled () const noexcept override { return loop_enabled_; }
-
-  bool punch_enabled () const noexcept override { return punch_enabled_; }
-  bool recording_enabled () const noexcept override
-  {
-    return recording_enabled_;
-  }
-  units::sample_t recording_preroll_frames_remaining () const noexcept override
-  {
-    return recording_preroll_frames_remaining_;
-  }
-  units::sample_t metronome_countin_frames_remaining () const noexcept override
-  {
-    return metronome_countin_frames_remaining_;
-  }
-
-private:
-  std::pair<units::sample_t, units::sample_t> loop_range_;
-  std::pair<units::sample_t, units::sample_t> punch_range_;
-  units::sample_t                             playhead_position_;
-  units::sample_t recording_preroll_frames_remaining_;
-  units::sample_t metronome_countin_frames_remaining_;
-  PlayState       play_state_;
-  bool            loop_enabled_;
-  bool            punch_enabled_;
-  bool            recording_enabled_;
-};
-
 void
 DspGraphDispatcher::start_cycle (
-  EngineProcessTimeInfo time_nfo,
-  bool                  realtime_context) noexcept
+  const dsp::ITransport &current_transport_state,
+  EngineProcessTimeInfo  time_nfo,
+  nframes_t              remaining_latency_preroll,
+  bool                   realtime_context) noexcept
 {
   assert (scheduler_);
   assert (time_nfo.local_offset_ + time_nfo.nframes_ <= audio_engine_->nframes_);
@@ -189,34 +122,17 @@ DspGraphDispatcher::start_cycle (
       return;
     }
 
-  global_offset_ =
-    max_route_playback_latency_ - audio_engine_->remaining_latency_preroll_;
+  global_offset_ = max_route_playback_latency_ - remaining_latency_preroll;
   time_nfo_ = time_nfo;
   z_return_if_fail_cmp (
     time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
 
   callback_in_progress_ = true;
 
-  // We create a temporary ITransport snapshot and inject it here (graph
-  // nodes will use this instead of the main Transport instance, thus
-  // avoiding the need to synchronize access to it)
-  CurrentCycleTransportState current_transport_state{
-    TRANSPORT->get_loop_range_positions (),
-    TRANSPORT->get_punch_range_positions (),
-    TRANSPORT->get_playhead_position_in_audio_thread (),
-    TRANSPORT->recording_preroll_frames_remaining (),
-    TRANSPORT->metronome_countin_frames_remaining (),
-    TRANSPORT->get_play_state (),
-    TRANSPORT->loop_enabled (),
-    TRANSPORT->punch_enabled (),
-    TRANSPORT->recording_enabled ()
-  };
-
   preprocess_at_start_of_cycle (time_nfo_);
 
   scheduler_->run_cycle (
-    time_nfo_, audio_engine_->remaining_latency_preroll_,
-    current_transport_state);
+    time_nfo_, remaining_latency_preroll, current_transport_state);
   callback_in_progress_ = false;
 
   release_graph_access ();

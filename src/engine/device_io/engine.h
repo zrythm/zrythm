@@ -19,8 +19,6 @@
 #define AUDIO_ENGINE \
   (zrythm::engine::device_io::AudioEngine::get_active_instance ())
 
-#define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val_)
-
 class Project;
 
 namespace zrythm::engine::device_io
@@ -53,6 +51,7 @@ class AudioEngine : public QObject
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
+
 public:
   struct PositionInfo
   {
@@ -196,6 +195,7 @@ public:
    * @return Whether the cycle should be skipped.
    */
   [[gnu::hot]] bool process_prepare (
+    dsp::Transport::TransportSnapshot                &transport_snapshot,
     nframes_t                                         nframes,
     SemaphoreRAII<moodycamel::LightweightSemaphore> * sem = nullptr);
 
@@ -224,7 +224,10 @@ public:
    * rolling).
    * @param nframes Total frames for this processing cycle.
    */
-  [[gnu::hot]] void post_process (nframes_t roll_nframes, nframes_t nframes);
+  [[gnu::hot]] void post_process (
+    dsp::Transport::TransportSnapshot &transport_snapshot,
+    nframes_t                          roll_nframes,
+    nframes_t                          nframes);
 
   /**
    * Reset the bounce mode on the engine, all tracks and regions to OFF.
@@ -405,18 +408,6 @@ public:
 
   juce::AudioProcessLoadMeasurer load_measurer_;
 
-  /** Timestamp at the start of the current cycle. */
-  RtTimePoint timestamp_start_{};
-
-  /** Expected timestamp at the end of the current cycle. */
-  // SteadyTimePoint timestamp_end_{};
-
-  /** Timestamp at start of previous cycle. */
-  RtTimePoint last_timestamp_start_{};
-
-  /** Timestamp at end of previous cycle. */
-  // SteadyTimePoint last_timestamp_end_{};
-
   /** When first set, it is equal to the max
    * playback latency of all initial trigger
    * nodes. */
@@ -431,18 +422,6 @@ public:
 
   /** Last MIDI CC captured. */
   std::array<midi_byte_t, 3> last_cc_captured_{};
-
-  /**
-   * Whether the denormal prevention value (1e-12 ~ 1e-20) is positive.
-   *
-   * This should be swapped often to avoid DC offset prevention algorithms
-   * removing it.
-   *
-   * See https://www.earlevel.com/main/2019/04/19/floating-point-denormals/
-   * for details.
-   */
-  bool  denormal_prevention_val_positive_ = true;
-  float denormal_prevention_val_ = 1e-12f;
 
   /**
    * If this is on, only tracks/regions marked as "for bounce" will be

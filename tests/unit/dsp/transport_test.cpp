@@ -496,6 +496,202 @@ TEST_F (TransportTest, PrerollEnumConversion)
   EXPECT_EQ (preroll_count_bars_enum_to_int (PrerollCountBars::PrerollFour), 4);
 }
 
+// Test TransportSnapshot creation and initial state
+TEST_F (TransportTest, TransportSnapshotCreation)
+{
+  // Create a snapshot with known values
+  auto loop_range =
+    std::make_pair (units::samples (1000), units::samples (2000));
+  auto punch_range =
+    std::make_pair (units::samples (1500), units::samples (2500));
+  auto playhead_pos = units::samples (1200);
+  auto preroll_frames = units::samples (500);
+  auto countin_frames = units::samples (300);
+  auto play_state = Transport::PlayState::Rolling;
+  bool loop_enabled = true;
+  bool punch_enabled = false;
+  bool recording_enabled = true;
+
+  auto snapshot = Transport::TransportSnapshot{
+    loop_range, punch_range,  playhead_pos,  preroll_frames,   countin_frames,
+    play_state, loop_enabled, punch_enabled, recording_enabled
+  };
+
+  // Test all getters return expected values
+  EXPECT_EQ (snapshot.get_loop_range_positions (), loop_range);
+  EXPECT_EQ (snapshot.get_punch_range_positions (), punch_range);
+  EXPECT_EQ (snapshot.get_playhead_position_in_audio_thread (), playhead_pos);
+  EXPECT_EQ (snapshot.recording_preroll_frames_remaining (), preroll_frames);
+  EXPECT_EQ (snapshot.metronome_countin_frames_remaining (), countin_frames);
+  EXPECT_EQ (snapshot.get_play_state (), play_state);
+  EXPECT_EQ (snapshot.loop_enabled (), loop_enabled);
+  EXPECT_EQ (snapshot.punch_enabled (), punch_enabled);
+  EXPECT_EQ (snapshot.recording_enabled (), recording_enabled);
+}
+
+// Test TransportSnapshot mutable operations
+TEST_F (TransportTest, TransportSnapshotMutableOperations)
+{
+  auto snapshot = transport_->get_snapshot ();
+
+  // Test play state modification
+  EXPECT_EQ (snapshot.get_play_state (), Transport::PlayState::Paused);
+  snapshot.set_play_state (Transport::PlayState::Rolling);
+  EXPECT_EQ (snapshot.get_play_state (), Transport::PlayState::Rolling);
+
+  // Test position modification
+  auto original_pos = snapshot.get_playhead_position_in_audio_thread ();
+  auto new_pos = units::samples (original_pos.in (units::samples) + 1000);
+  snapshot.set_position (new_pos);
+  EXPECT_EQ (snapshot.get_playhead_position_in_audio_thread (), new_pos);
+}
+
+// Test TransportSnapshot frame consumption
+TEST_F (TransportTest, TransportSnapshotFrameConsumption)
+{
+  // Create snapshot with known frame counts
+  auto preroll_frames = units::samples (1000);
+  auto countin_frames = units::samples (500);
+
+  auto snapshot = Transport::TransportSnapshot{
+    std::make_pair (units::samples (0), units::samples (2000)),
+    std::make_pair (units::samples (500), units::samples (1500)),
+    units::samples (100),
+    preroll_frames,
+    countin_frames,
+    Transport::PlayState::Rolling,
+    true,
+    false,
+    true
+  };
+
+  // Test metronome count-in consumption
+  auto consume_amount = units::samples (200);
+  snapshot.consume_metronome_countin_samples (consume_amount);
+  EXPECT_EQ (
+    snapshot.metronome_countin_frames_remaining (),
+    units::samples (
+      countin_frames.in (units::samples) -consume_amount.in (units::samples)));
+
+  // Test recording preroll consumption
+  snapshot.consume_recording_preroll_samples (consume_amount);
+  EXPECT_EQ (
+    snapshot.recording_preroll_frames_remaining (),
+    units::samples (
+      preroll_frames.in (units::samples) -consume_amount.in (units::samples)));
+}
+
+// Test TransportSnapshot edge cases
+TEST_F (TransportTest, TransportSnapshotEdgeCases)
+{
+  // Test with zero values
+  auto zero_snapshot = Transport::TransportSnapshot{
+    std::make_pair (units::samples (0), units::samples (0)),
+    std::make_pair (units::samples (0), units::samples (0)),
+    units::samples (0),
+    units::samples (0),
+    units::samples (0),
+    Transport::PlayState::Paused,
+    false,
+    false,
+    false
+  };
+
+  EXPECT_EQ (
+    zero_snapshot.get_playhead_position_in_audio_thread (), units::samples (0));
+  EXPECT_EQ (
+    zero_snapshot.recording_preroll_frames_remaining (), units::samples (0));
+  EXPECT_EQ (
+    zero_snapshot.metronome_countin_frames_remaining (), units::samples (0));
+
+  // Test consuming more frames than available (should not go negative in
+  // practice)
+  auto snapshot = Transport::TransportSnapshot{
+    std::make_pair (units::samples (0), units::samples (2000)),
+    std::make_pair (units::samples (500), units::samples (1500)),
+    units::samples (100),
+    units::samples (100),
+    units::samples (50),
+    Transport::PlayState::Rolling,
+    true,
+    false,
+    true
+  };
+
+  // Consume exact amount available
+  snapshot.consume_metronome_countin_samples (units::samples (50));
+  EXPECT_EQ (snapshot.metronome_countin_frames_remaining (), units::samples (0));
+
+  snapshot.consume_recording_preroll_samples (units::samples (100));
+  EXPECT_EQ (snapshot.recording_preroll_frames_remaining (), units::samples (0));
+}
+
+// Test TransportSnapshot with large values
+TEST_F (TransportTest, TransportSnapshotLargeValues)
+{
+  // Test with large sample values (simulating long projects)
+  auto large_position = units::samples (
+    static_cast<int64_t> (44100.0 * 60.0 * 10.0)); // 10 minutes at 44.1kHz
+  auto large_preroll =
+    units::samples (static_cast<int64_t> (44100.0 * 4.0)); // 4 seconds preroll
+
+  auto snapshot = Transport::TransportSnapshot{
+    std::make_pair (
+      units::samples (0),
+      units::samples (static_cast<int64_t> (44100.0 * 60.0 * 5.0))), // 5 minute
+                                                                     // loop
+    std::make_pair (
+      units::samples (static_cast<int64_t> (44100.0 * 60.0)),
+      units::samples (static_cast<int64_t> (44100.0 * 60.0 * 2.0))), // 1-2
+                                                                     // minute
+                                                                     // punch
+    large_position, large_preroll,
+    units::samples (static_cast<int64_t> (44100.0 * 2.0)), // 2 second count-in
+    Transport::PlayState::Rolling, true, true, true
+  };
+
+  EXPECT_EQ (snapshot.get_playhead_position_in_audio_thread (), large_position);
+  EXPECT_EQ (snapshot.recording_preroll_frames_remaining (), large_preroll);
+
+  // Test consumption with large values
+  auto consume_frames =
+    units::samples (static_cast<int64_t> (44100.0)); // 1 second
+  snapshot.consume_recording_preroll_samples (consume_frames);
+  EXPECT_EQ (
+    snapshot.recording_preroll_frames_remaining (),
+    units::samples (
+      large_preroll.in (units::samples) -consume_frames.in (units::samples)));
+}
+
+// Test TransportSnapshot from actual Transport
+TEST_F (TransportTest, TransportSnapshotFromTransport)
+{
+  // Set up transport with specific state
+  transport_->setLoopEnabled (true);
+  transport_->setRecordEnabled (true);
+  transport_->setPunchEnabled (false);
+  transport_->setPlayState (Transport::PlayState::Rolling);
+  transport_->move_playhead (units::ticks (4800.0), true); // 5 beats
+
+  // Get snapshot
+  auto snapshot = transport_->get_snapshot ();
+
+  // Verify snapshot matches transport state
+  EXPECT_EQ (snapshot.loop_enabled (), transport_->loop_enabled ());
+  EXPECT_EQ (snapshot.recording_enabled (), transport_->recording_enabled ());
+  EXPECT_EQ (snapshot.punch_enabled (), transport_->punch_enabled ());
+  EXPECT_EQ (snapshot.get_play_state (), transport_->get_play_state ());
+  EXPECT_EQ (
+    snapshot.get_playhead_position_in_audio_thread (),
+    transport_->get_playhead_position_in_audio_thread ());
+  EXPECT_EQ (
+    snapshot.get_loop_range_positions (),
+    transport_->get_loop_range_positions ());
+  EXPECT_EQ (
+    snapshot.get_punch_range_positions (),
+    transport_->get_punch_range_positions ());
+}
+
 // Test QML adapters are accessible
 TEST_F (TransportTest, QMLAdapters)
 {

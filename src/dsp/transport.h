@@ -157,6 +157,91 @@ public:
     std::function<int ()> recording_preroll_bars_;
   };
 
+  class TransportSnapshot : public dsp::ITransport
+  {
+  public:
+    TransportSnapshot (
+      std::pair<units::sample_t, units::sample_t> loop_range,
+      std::pair<units::sample_t, units::sample_t> punch_range,
+      units::sample_t                             playhead_position,
+      units::sample_t recording_preroll_frames_remaining,
+      units::sample_t metronome_countin_frames_remaining,
+      PlayState       play_state,
+      bool            loop_enabled,
+      bool            punch_enabled,
+      bool            recording_enabled)
+        : loop_range_ (loop_range), punch_range_ (punch_range),
+          playhead_position_ (playhead_position),
+          recording_preroll_frames_remaining_ (recording_preroll_frames_remaining),
+          metronome_countin_frames_remaining_ (metronome_countin_frames_remaining),
+          play_state_ (play_state), loop_enabled_ (loop_enabled),
+          punch_enabled_ (punch_enabled), recording_enabled_ (recording_enabled)
+    {
+    }
+
+    std::pair<units::sample_t, units::sample_t>
+    get_loop_range_positions () const noexcept override
+    {
+      return loop_range_;
+    }
+    std::pair<units::sample_t, units::sample_t>
+    get_punch_range_positions () const noexcept override
+    {
+      return punch_range_;
+    }
+    PlayState get_play_state () const noexcept override { return play_state_; }
+    units::sample_t
+    get_playhead_position_in_audio_thread () const noexcept override
+    {
+      return playhead_position_;
+    }
+    bool loop_enabled () const noexcept override { return loop_enabled_; }
+
+    bool punch_enabled () const noexcept override { return punch_enabled_; }
+    bool recording_enabled () const noexcept override
+    {
+      return recording_enabled_;
+    }
+    units::sample_t
+    recording_preroll_frames_remaining () const noexcept override
+    {
+      return recording_preroll_frames_remaining_;
+    }
+    units::sample_t
+    metronome_countin_frames_remaining () const noexcept override
+    {
+      return metronome_countin_frames_remaining_;
+    }
+
+    void set_play_state (dsp::ITransport::PlayState play_state)
+    {
+      play_state_ = play_state;
+    }
+    void set_position (units::sample_t position)
+    {
+      playhead_position_ = position;
+    }
+    void consume_metronome_countin_samples (units::sample_t samples)
+    {
+      metronome_countin_frames_remaining_ -= samples;
+    }
+    void consume_recording_preroll_samples (units::sample_t samples)
+    {
+      recording_preroll_frames_remaining_ -= samples;
+    }
+
+  private:
+    std::pair<units::sample_t, units::sample_t> loop_range_;
+    std::pair<units::sample_t, units::sample_t> punch_range_;
+    units::sample_t                             playhead_position_;
+    units::sample_t recording_preroll_frames_remaining_;
+    units::sample_t metronome_countin_frames_remaining_;
+    PlayState       play_state_;
+    bool            loop_enabled_;
+    bool            punch_enabled_;
+    bool            recording_enabled_;
+  };
+
   Transport (
     const dsp::TempoMap &tempo_map,
     const dsp::SnapGrid &snap_grid,
@@ -390,6 +475,21 @@ public:
   {
     assert (recording_preroll_frames_remaining_ >= samples);
     recording_preroll_frames_remaining_ -= samples;
+  }
+
+  auto get_snapshot () const
+  {
+    return TransportSnapshot{
+      get_loop_range_positions (),
+      get_punch_range_positions (),
+      get_playhead_position_in_audio_thread (),
+      recording_preroll_frames_remaining (),
+      metronome_countin_frames_remaining (),
+      get_play_state (),
+      loop_enabled (),
+      punch_enabled (),
+      recording_enabled ()
+    };
   }
 
   friend void init_from (

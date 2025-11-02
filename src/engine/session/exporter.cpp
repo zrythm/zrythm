@@ -223,31 +223,42 @@ Exporter::export_audio (Settings &info)
     zrythm::utils::audio::AudioBuffer buffer (
       EXPORT_CHANNELS, AUDIO_ENGINE->get_block_length ());
 
+    auto transport_snapshot = TRANSPORT->get_snapshot ();
+    auto latency_preroll_frames = ROUTER->get_max_route_playback_latency ();
     do
       {
         /* calculate number of frames to process this time */
         const nframes_t nframes =
           end_pos_frames
-          - TRANSPORT->get_playhead_position_in_audio_thread ().in (
+          - transport_snapshot.get_playhead_position_in_audio_thread ().in (
             units::samples);
         assert (nframes > 0);
 
         /* run process code */
-        AUDIO_ENGINE->process_prepare (nframes);
+        transport_snapshot.set_play_state (dsp::ITransport::PlayState::Rolling);
         EngineProcessTimeInfo time_nfo = {
           .g_start_frame_ =
-            (unsigned_frame_t) TRANSPORT
-              ->get_playhead_position_in_audio_thread ()
+            (unsigned_frame_t) transport_snapshot
+              .get_playhead_position_in_audio_thread ()
               .in (units::samples),
           .g_start_frame_w_offset_ =
-            (unsigned_frame_t) TRANSPORT
-              ->get_playhead_position_in_audio_thread ()
+            (unsigned_frame_t) transport_snapshot
+              .get_playhead_position_in_audio_thread ()
               .in (units::samples),
           .local_offset_ = 0,
           .nframes_ = nframes,
         };
-        ROUTER->start_cycle (time_nfo, false);
-        AUDIO_ENGINE->post_process (nframes, nframes);
+        ROUTER->start_cycle (
+          transport_snapshot, time_nfo, latency_preroll_frames, false);
+        if (latency_preroll_frames == 0)
+          {
+            transport_snapshot.set_position (
+              transport_snapshot
+                .get_playhead_position_after_adding_frames_in_audio_thread (
+                  transport_snapshot.get_playhead_position_in_audio_thread (),
+                  units::samples (nframes)));
+          }
+        latency_preroll_frames -= nframes;
 
         /* by this time, the Master channel should have its Stereo Out ports
          * filled - pass its buffers to the output */

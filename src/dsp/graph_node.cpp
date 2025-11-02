@@ -164,8 +164,7 @@ GraphNode::process (
 
   process_chunks_after_splitting_at_loop_points (time_nfo, transport);
 
-  z_return_if_fail_cmp (
-    time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
+  assert (time_nfo.g_start_frame_w_offset_ >= time_nfo.g_start_frame_);
 
   if (time_nfo.nframes_ > 0)
     {
