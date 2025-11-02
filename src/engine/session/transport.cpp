@@ -5,16 +5,14 @@
 #include <utility>
 
 #include "engine/session/transport.h"
-#include "gui/backend/backend/settings_manager.h"
 
 namespace zrythm::engine::session
 {
 Transport::Transport (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  const dsp::TempoMap                          &tempo_map,
-  const dsp::SnapGrid                          &snap_grid,
-  ConfigProvider                                config_provider,
-  QObject *                                     parent)
+  const dsp::TempoMap &tempo_map,
+  const dsp::SnapGrid &snap_grid,
+  ConfigProvider       config_provider,
+  QObject *            parent)
     : QObject (parent), playhead_ (tempo_map),
       playhead_adapter_ (new dsp::PlayheadQmlWrapper (playhead_, this)),
       time_conversion_funcs_ (
@@ -65,57 +63,6 @@ Transport::Transport (
     { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 }));
   punch_out_position_.set_ticks (tempo_map.musical_position_to_tick (
     { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
-
-  const auto load_metronome_sample = [] (QFile f) {
-    if (!f.open (QFile::ReadOnly | QFile::Text))
-      {
-        throw std::runtime_error (
-          fmt::format ("Failed to open file at {}", f.fileName ()));
-      }
-    const QByteArray                         wavBytes = f.readAll ();
-    std::unique_ptr<juce::AudioFormatReader> reader;
-    {
-      auto stream = std::make_unique<juce::MemoryInputStream> (
-        wavBytes.constData (), static_cast<size_t> (wavBytes.size ()), false);
-      juce::WavAudioFormat wavFormat;
-      reader.reset (wavFormat.createReaderFor (stream.release (), false));
-    }
-    if (!reader)
-      throw std::runtime_error ("Not a valid WAV");
-
-    const int numChannels = static_cast<int> (reader->numChannels);
-    const int numSamples = static_cast<int> (reader->lengthInSamples);
-
-    juce::AudioBuffer<float> buffer;
-    buffer.setSize (numChannels, numSamples);
-
-    reader->read (&buffer, 0, numSamples, 0, true, numChannels > 1);
-    return buffer;
-  };
-  metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-    dependencies, *this, tempo_map,
-    load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
-    load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
-    zrythm::gui::SettingsManager::get_instance ()->get_metronomeEnabled (),
-    zrythm::gui::SettingsManager::get_instance ()->get_metronomeVolume (), this);
-  QObject::connect (
-    metronome_.get (), &dsp::Metronome::volumeChanged,
-    zrythm::gui::SettingsManager::get_instance (), [] (float val) {
-      zrythm::gui::SettingsManager::get_instance ()->set_metronomeVolume (val);
-    });
-  QObject::connect (
-    zrythm::gui::SettingsManager::get_instance (),
-    &zrythm::gui::SettingsManager::metronomeVolume_changed, metronome_.get (),
-    [this] (float val) { metronome_->setVolume (val); });
-  QObject::connect (
-    metronome_.get (), &dsp::Metronome::enabledChanged,
-    zrythm::gui::SettingsManager::get_instance (), [] (bool val) {
-      zrythm::gui::SettingsManager::get_instance ()->set_metronomeEnabled (val);
-    });
-  QObject::connect (
-    zrythm::gui::SettingsManager::get_instance (),
-    &zrythm::gui::SettingsManager::metronomeEnabled_changed, metronome_.get (),
-    [this] (bool val) { metronome_->setEnabled (val); });
 }
 
 void

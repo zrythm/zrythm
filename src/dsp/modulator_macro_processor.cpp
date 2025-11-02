@@ -61,7 +61,8 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 
 void
 ModulatorMacroProcessor::custom_process_block (
-  const EngineProcessTimeInfo time_nfo) noexcept
+  EngineProcessTimeInfo  time_nfo,
+  const dsp::ITransport &transport) noexcept
 {
   /* if there are inputs, multiply by the knob value */
   if (!processing_caches_->cv_in_->port_sources_.empty ())

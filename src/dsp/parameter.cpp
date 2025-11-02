@@ -24,7 +24,9 @@ ProcessorParameter::ProcessorParameter (
 }
 
 void
-ProcessorParameter::process_block (const EngineProcessTimeInfo time_nfo) noexcept
+ProcessorParameter::process_block (
+  EngineProcessTimeInfo  time_nfo,
+  const dsp::ITransport &transport) noexcept
 {
   float current_val = base_value_.load ();
 

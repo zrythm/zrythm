@@ -3,6 +3,7 @@
 
 #include "dsp/cv_port.h"
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -21,6 +22,9 @@ protected:
     output_port = std::make_unique<CVPort> (
       utils::Utf8String::from_utf8_encoded_string ("CV Out"), PortFlow::Output);
 
+    // Set up mock transport
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+
     input_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
     output_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
 
@@ -35,8 +39,9 @@ protected:
       }
   }
 
-  std::unique_ptr<CVPort> input_port;
-  std::unique_ptr<CVPort> output_port;
+  std::unique_ptr<CVPort>                    input_port;
+  std::unique_ptr<CVPort>                    output_port;
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
 };
 
 TEST_F (CVPortTest, BasicProperties)
@@ -70,7 +75,7 @@ TEST_F (CVPortTest, SignalProcessing)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  output_port->process_block (time_info);
+  output_port->process_block (time_info, *mock_transport_);
 
   // Verify signal was processed
   EXPECT_NE (output_port->buf_[0], 0.0f);
@@ -88,7 +93,7 @@ TEST_F (CVPortTest, RingBufferWriting)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  output_port->process_block (time_info);
+  output_port->process_block (time_info, *mock_transport_);
 
   // Check ring buffer contents
   float sample = 0.0f;

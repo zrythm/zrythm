@@ -239,8 +239,9 @@ public:
 
   void custom_release_resources () override;
 
-  [[gnu::hot]] void
-  custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+  [[gnu::hot]] void custom_process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept override;
 
   // ============================================================================
 

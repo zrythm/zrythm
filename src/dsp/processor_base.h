@@ -73,7 +73,9 @@ public:
    * owning processor as intended and to avoid mistakes by leaving it up to
    * processor implementations to do.
    */
-  void process_block (EngineProcessTimeInfo time_nfo) noexcept final;
+  void process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept final;
   void
   prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
     final;
@@ -87,8 +89,9 @@ protected:
    *
    * By default, this does passthrough to same-type ports.
    */
-  virtual void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
-    [[clang::nonblocking]];
+  virtual void custom_process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept [[clang::nonblocking]];
 
   virtual void custom_prepare_for_processing (
     sample_rate_t sample_rate,

@@ -181,8 +181,9 @@ public:
     sample_rate_t sample_rate,
     nframes_t     max_block_length) final;
 
-  [[gnu::hot]] void
-  custom_process_block (EngineProcessTimeInfo time_nfo) noexcept final;
+  [[gnu::hot]] void custom_process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept final;
 
   void custom_release_resources () final;
 
@@ -252,8 +253,9 @@ private:
    * A default implementation is provided in case the derived class doesn't
    * override this.
    */
-  [[gnu::hot]] virtual void
-  process_passthrough_impl (EngineProcessTimeInfo time_nfo) noexcept;
+  [[gnu::hot]] virtual void process_passthrough_impl (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept;
 
   // ============================================================================
 

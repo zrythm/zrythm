@@ -92,9 +92,6 @@ Project::Project (
           this)),
       transport_ (
         utils::make_qobject_unique<engine::session::Transport> (
-          dsp::ProcessorBase::ProcessorBaseDependencies{
-            .port_registry_ = *port_registry_,
-            .param_registry_ = *param_registry_ },
           tempo_map_,
           *snap_grid_timeline_,
           engine::session::Transport::ConfigProvider{
@@ -237,6 +234,65 @@ Project::Project (
           gui::backend::PluginSelectionManager> (*plugin_registry_, this)),
       device_manager_ (device_manager)
 {
+  const auto setup_metronome = [&] () {
+    const auto load_metronome_sample = [] (QFile f) {
+      if (!f.open (QFile::ReadOnly | QFile::Text))
+        {
+          throw std::runtime_error (
+            fmt::format ("Failed to open file at {}", f.fileName ()));
+        }
+      const QByteArray                         wavBytes = f.readAll ();
+      std::unique_ptr<juce::AudioFormatReader> reader;
+      {
+        auto stream = std::make_unique<juce::MemoryInputStream> (
+          wavBytes.constData (), static_cast<size_t> (wavBytes.size ()), false);
+        juce::WavAudioFormat wavFormat;
+        reader.reset (wavFormat.createReaderFor (stream.release (), false));
+      }
+      if (!reader)
+        throw std::runtime_error ("Not a valid WAV");
+
+      const int numChannels = static_cast<int> (reader->numChannels);
+      const int numSamples = static_cast<int> (reader->lengthInSamples);
+
+      juce::AudioBuffer<float> buffer;
+      buffer.setSize (numChannels, numSamples);
+
+      reader->read (&buffer, 0, numSamples, 0, true, numChannels > 1);
+      return buffer;
+    };
+    metronome_ = utils::make_qobject_unique<dsp::Metronome> (
+      dsp::ProcessorBase::ProcessorBaseDependencies{
+        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+      get_tempo_map (),
+      load_metronome_sample (
+        QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
+      load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
+      zrythm::gui::SettingsManager::get_instance ()->get_metronomeEnabled (),
+      zrythm::gui::SettingsManager::get_instance ()->get_metronomeVolume (),
+      this);
+    QObject::connect (
+      metronome_.get (), &dsp::Metronome::volumeChanged,
+      zrythm::gui::SettingsManager::get_instance (), [] (float val) {
+        zrythm::gui::SettingsManager::get_instance ()->set_metronomeVolume (val);
+      });
+    QObject::connect (
+      zrythm::gui::SettingsManager::get_instance (),
+      &zrythm::gui::SettingsManager::metronomeVolume_changed, metronome_.get (),
+      [this] (float val) { metronome_->setVolume (val); });
+    QObject::connect (
+      metronome_.get (), &dsp::Metronome::enabledChanged,
+      zrythm::gui::SettingsManager::get_instance (), [] (bool val) {
+        zrythm::gui::SettingsManager::get_instance ()->set_metronomeEnabled (
+          val);
+      });
+    QObject::connect (
+      zrythm::gui::SettingsManager::get_instance (),
+      &zrythm::gui::SettingsManager::metronomeEnabled_changed,
+      metronome_.get (), [this] (bool val) { metronome_->setEnabled (val); });
+  };
+  setup_metronome ();
+
   // auto-arm management
   QObject::connect (
     track_selection_manager_.get (),
@@ -1477,6 +1533,12 @@ gui::backend::PluginSelectionManager *
 Project::pluginSelectionManager () const
 {
   return plugin_selection_manager_.get ();
+}
+
+dsp::Metronome *
+Project::metronome () const
+{
+  return metronome_.get ();
 }
 
 engine::session::Transport *

@@ -8,6 +8,7 @@
 
 #include <QObject>
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -35,6 +36,9 @@ protected:
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
       dsp::PortType::Midi, false, false, [] { return u8"Test MIDI Track"; },
       [] (bool solo_status) { return false; });
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
   }
 
   void TearDown () override
@@ -55,6 +59,7 @@ protected:
   nframes_t                                        max_block_length_{ 1024 };
   std::unique_ptr<Fader>                           audio_fader_;
   std::unique_ptr<Fader>                           midi_fader_;
+  std::unique_ptr<graph_test::MockTransport>       mock_transport_;
 };
 
 TEST_F (FaderTest, ConstructionAndBasicProperties)
@@ -195,7 +200,7 @@ TEST_F (FaderTest, AudioProcessing)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 2.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // After smoothing, should be close to target
@@ -213,7 +218,7 @@ TEST_F (FaderTest, AudioProcessing)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 2.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -230,7 +235,7 @@ TEST_F (FaderTest, AudioProcessing)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 2.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -261,7 +266,7 @@ TEST_F (FaderTest, MidiProcessing)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  midi_fader_->process_block (time_nfo);
+  midi_fader_->process_block (time_nfo, *mock_transport_);
 
   // Verify MIDI events are copied (fader doesn't modify MIDI events)
   EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
@@ -298,7 +303,7 @@ TEST_F (FaderTest, MuteFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // After smoothing, should be close to target
@@ -315,7 +320,7 @@ TEST_F (FaderTest, MuteFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // After smoothing, should be close to 0
@@ -357,7 +362,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // Test center balance (0.5)
@@ -367,7 +372,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -383,7 +388,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -399,7 +404,7 @@ TEST_F (FaderTest, BalanceFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -423,13 +428,13 @@ TEST_F (FaderTest, SoloAndListenFunctionality)
   // Test solo functionality
   EXPECT_FALSE (audio_fader_->currently_soloed ());
   audio_fader_->solo ()->setBaseValue (1.0f);
-  audio_fader_->process_block (time_nfo);
+  audio_fader_->process_block (time_nfo, *mock_transport_);
   EXPECT_TRUE (audio_fader_->currently_soloed ());
 
   // Test listen functionality
   EXPECT_FALSE (audio_fader_->currently_listened ());
   audio_fader_->listen ()->setBaseValue (1.0f);
-  audio_fader_->process_block (time_nfo);
+  audio_fader_->process_block (time_nfo, *mock_transport_);
   EXPECT_TRUE (audio_fader_->currently_listened ());
 }
 
@@ -466,7 +471,7 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 0.5f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -482,7 +487,7 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 0.5f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -528,7 +533,7 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -544,7 +549,7 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -699,7 +704,7 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      fader_with_callback->process_block (time_nfo);
+      fader_with_callback->process_block (time_nfo, *mock_transport_);
     }
   for (int i = 0; i < 512; i++)
     {
@@ -712,7 +717,7 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      fader_with_callback->process_block (time_nfo);
+      fader_with_callback->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -769,7 +774,7 @@ TEST_F (FaderTest, PreProcessAudioCallback)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   EXPECT_TRUE (callback_called);
@@ -817,7 +822,7 @@ TEST_F (FaderTest, MuteGainCallback)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
   EXPECT_FALSE (mute_gain_called);
 
@@ -826,7 +831,7 @@ TEST_F (FaderTest, MuteGainCallback)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
   EXPECT_TRUE (mute_gain_called);
 
@@ -848,11 +853,11 @@ TEST_F (FaderTest, EdgeCases)
     .local_offset_ = 0,
     .nframes_ = 0
   };
-  EXPECT_NO_THROW (audio_fader_->process_block (time_nfo));
+  EXPECT_NO_THROW (audio_fader_->process_block (time_nfo, *mock_transport_));
 
   // Test with maximum gain
   audio_fader_->gain ()->setBaseValue (1.0f); // 0-1 range for parameter
-  EXPECT_NO_THROW (audio_fader_->process_block (time_nfo));
+  EXPECT_NO_THROW (audio_fader_->process_block (time_nfo, *mock_transport_));
 
   // Test with zero gain (silence)
   audio_fader_->gain ()->setBaseValue (0.0f);
@@ -872,7 +877,7 @@ TEST_F (FaderTest, EdgeCases)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 10; i++)
@@ -898,21 +903,21 @@ TEST_F (FaderTest, DbStringGetter)
   };
 
   // Test default value (0 dB)
-  audio_fader_->process_block (time_nfo);
+  audio_fader_->process_block (time_nfo, *mock_transport_);
   std::string db_str = audio_fader_->db_string_getter ();
   EXPECT_TRUE (db_str.find ("0.0") != std::string::npos);
 
   // Test -6 dB
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (0.5f));
-  audio_fader_->process_block (time_nfo);
+  audio_fader_->process_block (time_nfo, *mock_transport_);
   db_str = audio_fader_->db_string_getter ();
   EXPECT_TRUE (db_str.find ("-6.0") != std::string::npos);
 
   // Test +6 dB
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (2.0f));
-  audio_fader_->process_block (time_nfo);
+  audio_fader_->process_block (time_nfo, *mock_transport_);
   db_str = audio_fader_->db_string_getter ();
   EXPECT_TRUE (db_str.find ("6.0") != std::string::npos);
 }
@@ -956,7 +961,7 @@ TEST_F (FaderTest, HardLimitingFunctionality)
   for (int block = 0; block < 15; block++)
     {
       fill_inputs (5.f, -5.f);
-      hard_limit_fader->process_block (time_nfo);
+      hard_limit_fader->process_block (time_nfo, *mock_transport_);
     }
 
   // Verify hard limiting is applied
@@ -976,7 +981,7 @@ TEST_F (FaderTest, HardLimitingFunctionality)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, -1.f);
-      hard_limit_fader->process_block (time_nfo);
+      hard_limit_fader->process_block (time_nfo, *mock_transport_);
     }
 
   for (int i = 0; i < 512; i++)
@@ -1017,7 +1022,7 @@ TEST_F (FaderTest, GainSmoothing)
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // Verify we're at 0
@@ -1034,7 +1039,7 @@ TEST_F (FaderTest, GainSmoothing)
   // Test that gain increases gradually over multiple blocks
   std::vector<float> first_block_values;
   fill_inputs (1.f, 1.f);
-  audio_fader_->process_block (time_nfo);
+  audio_fader_->process_block (time_nfo, *mock_transport_);
   for (int i = 0; i < 512; i++)
     {
       first_block_values.push_back (stereo_out.buffers ()->getSample (0, i));
@@ -1048,7 +1053,7 @@ TEST_F (FaderTest, GainSmoothing)
   for (int block = 0; block < 20; block++)
     {
       fill_inputs (1.f, 1.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // After sufficient blocks, should be close to target
@@ -1069,7 +1074,7 @@ TEST_F (FaderTest, GainSmoothing)
       prev_values.push_back (stereo_out.buffers ()->getSample (0, i));
     }
   fill_inputs (1.f, 1.f);
-  audio_fader_->process_block (time_nfo);
+  audio_fader_->process_block (time_nfo, *mock_transport_);
   EXPECT_FLOAT_EQ (stereo_out.buffers ()->getSample (0, 0), prev_values[0]);
   for (int i = 1; i < 10; ++i)
     {
@@ -1109,7 +1114,7 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
   for (int block = 0; block < 10; block++)
     {
       fill_input_bufs (1.f, 2.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // Verify first cycle processed correctly
@@ -1123,7 +1128,7 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
   for (int block = 0; block < 10; block++)
     {
       fill_input_bufs (3.f, 4.f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // Verify second cycle processed correctly
@@ -1140,7 +1145,7 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
   for (int block = 0; block < 10; block++)
     {
       fill_input_bufs (0.1f, 0.1f);
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // Verify third cycle processed correctly (should be silent)
@@ -1205,7 +1210,7 @@ TEST_F (FaderTest, BufferOverflowWithNonZeroOffset)
       // Fill entire input buffer with test pattern
       fill_inputs (1.0f, 2.0f);
 
-      audio_fader_->process_block (time_nfo);
+      audio_fader_->process_block (time_nfo, *mock_transport_);
     }
 
   // Verify that only the intended range (offset to offset + nframes) is

@@ -31,8 +31,9 @@ class CVPort final
 public:
   CVPort (utils::Utf8String label, PortFlow flow);
 
-  [[gnu::hot]] void
-  process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+  [[gnu::hot]] void process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept override;
 
   void clear_buffer (std::size_t offset, std::size_t nframes) override;
 

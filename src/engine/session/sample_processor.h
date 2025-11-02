@@ -59,7 +59,9 @@ public:
   /**
    * Process the samples for the given number of frames.
    */
-  void process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+  void process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept override;
 
   utils::Utf8String get_node_name () const override
   {

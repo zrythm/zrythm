@@ -5,6 +5,7 @@
 #include "dsp/midi_port.h"
 #include "utils/icloneable.h"
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -28,10 +29,14 @@ protected:
     // Prepare for processing
     input_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
     output_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
   }
 
-  std::unique_ptr<MidiPort> input_port;
-  std::unique_ptr<MidiPort> output_port;
+  std::unique_ptr<MidiPort>                  input_port;
+  std::unique_ptr<MidiPort>                  output_port;
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
 };
 
 TEST_F (MidiPortTest, BasicProperties)
@@ -57,7 +62,7 @@ TEST_F (MidiPortTest, MidiEventHandling)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  input_port->process_block (time_info);
+  input_port->process_block (time_info, *mock_transport_);
 
   // Verify event was processed
   EXPECT_TRUE (input_port->midi_events_.queued_events_.empty ());
@@ -79,7 +84,7 @@ TEST_F (MidiPortTest, RingBufferFunctionality)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  output_port->process_block (time_info);
+  output_port->process_block (time_info, *mock_transport_);
 
   // Verify event was added to ring buffer
   EXPECT_NE (output_port->midi_ring_, nullptr);

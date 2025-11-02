@@ -4,13 +4,9 @@
 #pragma once
 
 #include "dsp/itransport.h"
-#include "dsp/metronome.h"
-#include "dsp/midi_port.h"
 #include "dsp/playhead.h"
 #include "dsp/playhead_qml_adapter.h"
-#include "dsp/port.h"
 #include "dsp/snap_grid.h"
-#include "utils/types.h"
 
 namespace zrythm::engine::session
 {
@@ -75,7 +71,6 @@ class Transport : public QObject, public dsp::ITransport
   Q_PROPERTY (
     zrythm::dsp::AtomicPositionQmlAdapter * punchOutPosition READ
       punchOutPosition CONSTANT)
-  Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   QML_UNCREATABLE ("")
 
   /** Millisec to allow moving further backward when very close to the
@@ -162,11 +157,10 @@ public:
   };
 
   Transport (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    const dsp::TempoMap                          &tempo_map,
-    const dsp::SnapGrid                          &snap_grid,
-    ConfigProvider                                config_provider,
-    QObject *                                     parent = nullptr);
+    const dsp::TempoMap &tempo_map,
+    const dsp::SnapGrid &snap_grid,
+    ConfigProvider       config_provider,
+    QObject *            parent = nullptr);
 
   // ==================================================================
   // QML Interface
@@ -212,8 +206,6 @@ public:
   {
     return punch_out_position_adapter_.get ();
   }
-
-  dsp::Metronome * metronome () const { return metronome_.get (); }
 
   Q_INVOKABLE void moveBackward () [[clang::blocking]];
   Q_INVOKABLE void moveForward () [[clang::blocking]];
@@ -425,9 +417,6 @@ private:
   /** Playhead position. */
   dsp::Playhead                                    playhead_;
   utils::QObjectUniquePtr<dsp::PlayheadQmlWrapper> playhead_adapter_;
-
-  /** The metronome. */
-  utils::QObjectUniquePtr<dsp::Metronome> metronome_;
 
   std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
     time_conversion_funcs_;

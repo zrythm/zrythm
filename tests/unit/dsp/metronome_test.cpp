@@ -5,7 +5,7 @@
 #include "dsp/metronome.h"
 #include "dsp/tempo_map.h"
 
-#include "../dsp/graph_helpers.h"
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -52,8 +52,7 @@ protected:
     auto metronome = std::make_unique<Metronome> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      *transport_, *tempo_map_, emphasis_sample_, normal_sample_, true,
-      initial_volume);
+      *tempo_map_, emphasis_sample_, normal_sample_, true, initial_volume);
     metronome->set_queue_sample_callback (
       [this] (AudioSampleProcessor::PlayableSampleSingleChannel sample) {
         queued_samples_.push_back (sample);
@@ -188,7 +187,7 @@ TEST_F (MetronomeTest, BasicPlaybackNoTicks)
   };
 
   metronome->prepare_for_processing (44100, 256);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // No samples should be queued when not rolling
   EXPECT_TRUE (queued_samples_.empty ());
@@ -210,7 +209,7 @@ TEST_F (MetronomeTest, BasicPlaybackWithTicks)
   };
 
   metronome->prepare_for_processing (44100, 256);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have queued an emphasis sample
   EXPECT_EQ (queued_samples_.size (), 2);
@@ -242,7 +241,7 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat * 4);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have exactly 4 ticks: 1 bar tick + 3 beat ticks
   EXPECT_EQ (queued_samples_.size (), 8);
@@ -289,7 +288,7 @@ TEST_F (MetronomeTest, LoopCrossing)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat * 2);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should handle loop crossing correctly
 
@@ -332,7 +331,7 @@ TEST_F (MetronomeTest, CountinTicks)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat * 2);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should queue countin ticks
   EXPECT_EQ (queued_samples_.size (), 4);
@@ -365,7 +364,7 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have queued samples with correct volume
   ASSERT_EQ (queued_samples_.size (), 2);
@@ -389,7 +388,7 @@ TEST_F (MetronomeTest, EmptyRangeHandling)
   };
 
   metronome->prepare_for_processing (44100, 256);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should handle empty range gracefully
   EXPECT_TRUE (queued_samples_.empty ());
@@ -418,7 +417,7 @@ TEST_F (MetronomeTest, DifferentTimeSignatures)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat * 3);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have 3 ticks: 1 bar tick + 2 beat ticks
   EXPECT_EQ (queued_samples_.size (), 6);
@@ -447,7 +446,7 @@ TEST_F (MetronomeTest, HighTempo)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat * 4);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have 4 ticks at high tempo
   EXPECT_EQ (queued_samples_.size (), 8);
@@ -487,7 +486,7 @@ TEST_F (MetronomeTest, EnabledFalsePreventsTicks)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat * 4);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have no ticks when disabled
   EXPECT_TRUE (queued_samples_.empty ());
@@ -519,7 +518,7 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
   };
 
   metronome->prepare_for_processing (44100, samples_per_beat * 4);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have ticks when enabled
   EXPECT_EQ (queued_samples_.size (), 8);
@@ -551,7 +550,7 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
 
   // First process with enabled=true (default)
   metronome->prepare_for_processing (44100, samples_per_beat * 2);
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have ticks
   EXPECT_EQ (queued_samples_.size (), 4);
@@ -563,7 +562,7 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
   metronome->setEnabled (false);
 
   // Process again
-  metronome->process_block (time_nfo);
+  metronome->process_block (time_nfo, *transport_);
 
   // Should have no ticks when disabled
   EXPECT_TRUE (queued_samples_.empty ());

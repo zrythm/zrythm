@@ -108,7 +108,9 @@ public:
 
   auto get_output_audio_port_rt () const { return audio_out_; }
 
-  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override
+  void custom_process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept override
   {
     const auto cycle_offset = time_nfo.local_offset_;
     const auto nframes = time_nfo.nframes_;

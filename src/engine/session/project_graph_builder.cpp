@@ -122,7 +122,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   auto * monitor_fader = engine->control_room_->monitor_fader_.get ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project.getTransport ();
-  auto  &metronome = *transport->metronome ();
+  auto  &metronome = *project.metronome ();
 
   const auto add_node_for_processable = [&] (auto &processable) {
     return graph.add_node_for_processable (processable);

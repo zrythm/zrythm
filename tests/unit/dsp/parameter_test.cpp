@@ -9,6 +9,7 @@
 
 #include <QSignalSpy>
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -58,6 +59,9 @@ protected:
             2.0f * std::numbers::pi_v<float>
             * static_cast<float> (i) / BLOCK_LENGTH);
       }
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
   }
 
   dsp::PortRegistry               port_registry;
@@ -67,6 +71,7 @@ protected:
   CVPort *                                       param_mod_input{};
   std::optional<PortUuidReference>               mod_source_ref;
   CVPort *                                       mod_source{};
+  std::unique_ptr<graph_test::MockTransport>     mock_transport_;
 };
 
 TEST_F (ProcessorParameterTest, BasicParameterSetup)
@@ -88,7 +93,8 @@ TEST_F (ProcessorParameterTest, AutomationValueApplication)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
 
   EXPECT_FLOAT_EQ (param->currentValue (), auto_value);
   EXPECT_FLOAT_EQ (param->valueAfterAutomationApplied (), auto_value);
@@ -112,7 +118,8 @@ TEST_F (ProcessorParameterTest, ModulationApplication)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
 
   // Verify modulation applied (0.5 base + 0.5 * 1.0 = 1.0)
   EXPECT_NEAR (param->currentValue (), 1.0f, 1e-5f);
@@ -132,7 +139,8 @@ TEST_F (ProcessorParameterTest, ModulationWithMultiplier)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
 
   // Verify scaled modulation (0.5 base + 0.5 * 0.5 = 0.75)
   EXPECT_NEAR (param->currentValue (), 0.75f, 1e-5f);
@@ -152,7 +160,8 @@ TEST_F (ProcessorParameterTest, BipolarModulation)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
 
   // 0.5 CV value becomes 0 after bipolar conversion
   // Modulation amount: (0.5 * 2 - 1) * 0.5 = 0
@@ -175,7 +184,8 @@ TEST_F (ProcessorParameterTest, ModulationWithAutomation)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
 
   // Verify automation + modulation (0.7 auto + 0.5 mod = 1.2 -> clamped to 1.0)
   EXPECT_NEAR (param->currentValue (), 1.0f, 1e-5f);
@@ -211,7 +221,8 @@ TEST_F (ProcessorParameterTest, MultipleModulationSources)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
 
   // Verify combined modulation:
   // Source1: 0.5 * 1.0 = 0.5
@@ -229,7 +240,8 @@ TEST_F (ProcessorParameterTest, GestureBlocksAutomation)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
   param->endUserGesture ();
 
   EXPECT_FLOAT_EQ (param->currentValue (), initial_value);
@@ -247,7 +259,8 @@ TEST_F (ProcessorParameterTest, GestureBlocksModulation)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = BLOCK_LENGTH });
+      .nframes_ = BLOCK_LENGTH },
+    *mock_transport_);
 
   // During gesture, modulation should not be applied
   EXPECT_FLOAT_EQ (param->currentValue (), 0.5f);
@@ -351,7 +364,7 @@ TEST_F (ProcessorParameterTest, UnitConversion)
 TEST_F (ProcessorParameterTest, DisabledAutomation)
 {
   param->unset_automation_provider ();
-  param->process_block ({});
+  param->process_block ({}, *mock_transport_);
   EXPECT_FLOAT_EQ (param->valueAfterAutomationApplied (), param->baseValue ());
 }
 
@@ -359,7 +372,7 @@ TEST_F (ProcessorParameterTest, NoModulationSources)
 {
   param_mod_input->port_sources_.clear ();
   param->setBaseValue (0.5f);
-  param->process_block ({});
+  param->process_block ({}, *mock_transport_);
   EXPECT_FLOAT_EQ (param->currentValue (), 0.5f);
 }
 TEST_F (ProcessorParameterTest, ParameterRegistryLifecycle)

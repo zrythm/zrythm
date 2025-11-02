@@ -6,6 +6,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::plugins
@@ -95,6 +96,9 @@ protected:
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
       [] () { return fs::path{ "/tmp/test_state" }; });
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
   }
 
   void TearDown () override
@@ -110,6 +114,7 @@ protected:
   sample_rate_t                                    sample_rate_{ 48000 };
   nframes_t                                        max_block_length_{ 1024 };
   std::unique_ptr<TestPlugin>                      plugin_;
+  std::unique_ptr<dsp::graph_test::MockTransport>  mock_transport_;
 };
 
 TEST_F (PluginTest, ConstructionAndBasicProperties)
@@ -229,7 +234,7 @@ TEST_F (PluginTest, ProcessingWhenEnabled)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  plugin_->process_block (time_nfo);
+  plugin_->process_block (time_nfo, *mock_transport_);
 
   EXPECT_TRUE (plugin_->process_called_);
   EXPECT_EQ (plugin_->last_time_info_.nframes_, 512);
@@ -258,7 +263,7 @@ TEST_F (PluginTest, ProcessingWhenBypassed)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  plugin_->process_block (time_nfo);
+  plugin_->process_block (time_nfo, *mock_transport_);
 
   EXPECT_FALSE (plugin_->process_called_);
 }
@@ -285,7 +290,7 @@ TEST_F (PluginTest, ProcessingWhenInstantiationFailed)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  plugin_->process_block (time_nfo);
+  plugin_->process_block (time_nfo, *mock_transport_);
 
   EXPECT_FALSE (plugin_->process_called_);
 }
@@ -314,12 +319,12 @@ TEST_F (PluginTest, CurrentlyEnabled)
 
   // Test enabled
   bypass->setBaseValue (0.0f);
-  plugin_->process_block (time_nfo);
+  plugin_->process_block (time_nfo, *mock_transport_);
   EXPECT_TRUE (plugin_->currently_enabled ());
 
   // Test bypassed
   bypass->setBaseValue (1.0f);
-  plugin_->process_block (time_nfo);
+  plugin_->process_block (time_nfo, *mock_transport_);
   EXPECT_FALSE (plugin_->currently_enabled ());
 }
 
@@ -468,7 +473,7 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  plugin_->process_block (time_nfo);
+  plugin_->process_block (time_nfo, *mock_transport_);
 
   // Verify passthrough
   for (size_t i = 0; i < 512; i++)

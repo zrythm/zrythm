@@ -6,6 +6,7 @@
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -26,6 +27,9 @@ protected:
 
     sample_rate_ = 48000;
     max_block_length_ = 1024;
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
   }
 
   void TearDown () override
@@ -46,6 +50,7 @@ protected:
   std::unique_ptr<AudioSampleProcessor>       processor_;
   sample_rate_t                               sample_rate_;
   nframes_t                                   max_block_length_;
+  std::unique_ptr<graph_test::MockTransport>  mock_transport_;
 };
 
 TEST_F (AudioSampleProcessorTest, ConstructionAndBasicProperties)
@@ -133,7 +138,7 @@ TEST_F (AudioSampleProcessorTest, BasicAudioProcessing)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // Check that the sample was processed
   for (size_t i = 0; i < 5; ++i)
@@ -168,7 +173,7 @@ TEST_F (AudioSampleProcessorTest, VolumeScaling)
     .nframes_ = 3
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   for (size_t i = 0; i < 3; ++i)
     {
@@ -201,7 +206,7 @@ TEST_F (AudioSampleProcessorTest, StartOffset)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // First 2 frames should be 0 (due to start offset)
   EXPECT_NEAR (port->buffers ()->getSample (0, 0), 0.0f, 0.001f);
@@ -247,7 +252,7 @@ TEST_F (AudioSampleProcessorTest, MultipleSamples)
     .nframes_ = 3
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // Check both channels
   for (size_t i = 0; i < 3; ++i)
@@ -283,7 +288,7 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo1);
+  processor_->process_block (time_nfo1, *mock_transport_);
 
   // Check first 5 frames
   for (size_t i = 0; i < 5; ++i)
@@ -299,7 +304,7 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo2);
+  processor_->process_block (time_nfo2, *mock_transport_);
 
   // Check next 5 frames
   for (size_t i = 0; i < 5; ++i)
@@ -333,7 +338,7 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // All frames should be 0 (sample hasn't started yet)
   for (size_t i = 0; i < 5; ++i)
@@ -350,7 +355,7 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo2);
+  processor_->process_block (time_nfo2, *mock_transport_);
 
   // All frames should still be 0 (sample starts at frame 10)
   for (size_t i = 0; i < 5; ++i)
@@ -366,7 +371,7 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo3);
+  processor_->process_block (time_nfo3, *mock_transport_);
 
   // Now we should have sample data starting from frame 10
   EXPECT_NEAR (port->buffers ()->getSample (0, 0), 1.0f, 0.001f);
@@ -401,7 +406,7 @@ TEST_F (AudioSampleProcessorTest, ChannelIndexValidation)
     .nframes_ = 3
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // Should not crash and should not modify output
   for (size_t i = 0; i < 3; ++i)
@@ -435,7 +440,7 @@ TEST_F (AudioSampleProcessorTest, EmptyBuffer)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // Should not crash and should not modify output
   for (size_t i = 0; i < 5; ++i)
@@ -467,7 +472,7 @@ TEST_F (AudioSampleProcessorTest, ZeroFrames)
   };
 
   // Should not crash
-  EXPECT_NO_THROW (processor_->process_block (time_nfo));
+  EXPECT_NO_THROW (processor_->process_block (time_nfo, *mock_transport_));
 }
 
 TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
@@ -498,7 +503,7 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
     .nframes_ = 5
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // Should not have any sample data
   for (size_t i = 0; i < 5; ++i)
@@ -541,7 +546,7 @@ TEST_F (AudioSampleProcessorTest, ConcurrentSampleProcessing)
     .nframes_ = 4
   };
 
-  processor_->process_block (time_nfo);
+  processor_->process_block (time_nfo, *mock_transport_);
 
   // Check mixed results
   EXPECT_NEAR (port->buffers ()->getSample (0, 0), 0.5f, 0.001f); // Only sample1

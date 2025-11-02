@@ -19,7 +19,11 @@ public:
   }
 
   MOCK_METHOD (void, clear_buffer, (std::size_t, std::size_t), (override));
-  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (noexcept, override));
+  MOCK_METHOD (
+    void,
+    process_block,
+    (EngineProcessTimeInfo, const dsp::ITransport &),
+    (noexcept, override));
 };
 
 class PortTest : public ::testing::Test

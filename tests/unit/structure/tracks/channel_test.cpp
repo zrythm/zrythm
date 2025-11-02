@@ -13,6 +13,7 @@
 
 #include <QObject>
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::structure::tracks
@@ -30,6 +31,9 @@ protected:
 
     name_provider_ = [] { return u8"Test Channel"; };
     should_be_muted_cb_ = [] (bool solo_status) { return false; };
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
   }
 
   void TearDown () override
@@ -90,6 +94,7 @@ protected:
   dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
   sample_rate_t                                    sample_rate_{ 48000 };
   nframes_t                                        max_block_length_{ 1024 };
+  std::unique_ptr<dsp::graph_test::MockTransport>  mock_transport_;
 
   std::unique_ptr<Channel> audio_channel_;
   std::unique_ptr<Channel> midi_channel_;
@@ -248,7 +253,8 @@ TEST_F (ChannelTest, ShouldBeMutedCallback)
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
-      .nframes_ = max_block_length_ });
+      .nframes_ = max_block_length_ },
+    *mock_transport_);
   EXPECT_TRUE (callback_called);
 }
 

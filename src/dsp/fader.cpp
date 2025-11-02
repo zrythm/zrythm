@@ -327,7 +327,9 @@ Fader::custom_release_resources ()
 }
 
 void
-Fader::custom_process_block (const EngineProcessTimeInfo time_nfo) noexcept
+Fader::custom_process_block (
+  EngineProcessTimeInfo  time_nfo,
+  const dsp::ITransport &transport) noexcept
 {
   current_gain_.setTargetValue (calculate_target_gain_rt ());
 

@@ -78,9 +78,9 @@ public:
   {
   }
 
-  [[gnu::hot]] virtual void
-  process_block (EngineProcessTimeInfo time_nfo) noexcept
-    [[clang::nonblocking]] { };
+  [[gnu::hot]] virtual void process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept [[clang::nonblocking]] { };
 
   /**
    * @brief Called to release resources allocated by @ref

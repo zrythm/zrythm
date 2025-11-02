@@ -9,7 +9,6 @@ namespace zrythm::dsp
 {
 Metronome::Metronome (
   ProcessorBaseDependencies dependencies,
-  const dsp::ITransport    &transport,
   const dsp::TempoMap      &tempo_map,
   juce::AudioSampleBuffer   emphasis_sample,
   juce::AudioSampleBuffer   normal_sample,
@@ -17,7 +16,7 @@ Metronome::Metronome (
   float                     initial_volume,
   QObject *                 parent)
     : QObject (parent), dsp::AudioSampleProcessor (dependencies),
-      transport_ (transport), tempo_map_ (tempo_map),
+      tempo_map_ (tempo_map),
       emphasis_sample_buffer_ (std::move (emphasis_sample)),
       normal_sample_buffer_ (std::move (normal_sample)),
       volume_ (initial_volume), enabled_ (initially_enabled)
@@ -77,15 +76,17 @@ Metronome::find_and_queue_metronome_samples (
 }
 
 void
-Metronome::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
+Metronome::custom_process_block (
+  EngineProcessTimeInfo  time_nfo,
+  const dsp::ITransport &transport) noexcept
 {
   if (!enabled_.load ())
     return;
 
   // find and queue normal metronome events
   if (
-    transport_.get_play_state () == dsp::ITransport::PlayState::Rolling
-    && transport_.metronome_countin_frames_remaining () == units::samples (0))
+    transport.get_play_state () == dsp::ITransport::PlayState::Rolling
+    && transport.metronome_countin_frames_remaining () == units::samples (0))
     {
       const auto loffset = units::samples (time_nfo.local_offset_);
       const auto nframes = units::samples (time_nfo.nframes_);
@@ -93,14 +94,14 @@ Metronome::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
         units::samples (time_nfo.g_start_frame_w_offset_);
       const auto playhead_after_ignoring_loops = playhead_before + nframes;
       const auto playhead_after_taking_loops_into_account =
-        transport_.get_playhead_position_after_adding_frames_in_audio_thread (
+        transport.get_playhead_position_after_adding_frames_in_audio_thread (
           playhead_before, nframes);
       const bool loop_crossed =
         playhead_after_ignoring_loops
         != playhead_after_taking_loops_into_account;
       if (loop_crossed)
         {
-          const auto loop_points = transport_.get_loop_range_positions ();
+          const auto loop_points = transport.get_loop_range_positions ();
           const auto loop_start = loop_points.first;
           const auto loop_end = loop_points.second;
           /* find each bar / beat change until loop end */
@@ -119,12 +120,12 @@ Metronome::custom_process_block (EngineProcessTimeInfo time_nfo) noexcept
         }
     }
   // find and queue events for countin
-  else if (transport_.metronome_countin_frames_remaining () > units::samples (0))
+  else if (transport.metronome_countin_frames_remaining () > units::samples (0))
     {
-      queue_metronome_countin (time_nfo);
+      queue_metronome_countin (time_nfo, transport);
     }
 
-  AudioSampleProcessor::custom_process_block (time_nfo);
+  AudioSampleProcessor::custom_process_block (time_nfo, transport);
 }
 
 void
@@ -175,10 +176,12 @@ Metronome::queue_metronome (
 }
 
 void
-Metronome::queue_metronome_countin (const EngineProcessTimeInfo &time_nfo)
+Metronome::queue_metronome_countin (
+  const EngineProcessTimeInfo &time_nfo,
+  const dsp::ITransport       &transport)
 {
   const auto countin_frames_remaining =
-    transport_.metronome_countin_frames_remaining ();
+    transport.metronome_countin_frames_remaining ();
 
   const auto frame_to_tick = [this] (const auto frame) {
     return static_cast<signed_frame_t> (std::round (

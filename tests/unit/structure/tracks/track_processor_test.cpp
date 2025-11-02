@@ -211,7 +211,7 @@ TEST_F (TrackProcessorTest, DisabledTrackProcessing)
     }
 
   // Should not process when disabled
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify output buffers are cleared (no processing occurred)
   auto &stereo_out = processor.get_stereo_out_port ();
@@ -249,7 +249,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMonitoringOff)
       stereo_in.buffers ()->setSample (1, i, 0.5f);
     }
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify output is empty
   auto &stereo_out = processor.get_stereo_out_port ();
@@ -298,7 +298,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithInputGain)
       stereo_in.buffers ()->setSample (1, i, 0.5f);
     }
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify output is scaled by input gain
   auto &stereo_out = processor.get_stereo_out_port ();
@@ -344,7 +344,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMono)
       stereo_in.buffers ()->setSample (1, i, 0.5f);
     }
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify both outputs use left channel data
   auto &stereo_out = processor.get_stereo_out_port ();
@@ -395,7 +395,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithOutputGain)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify output is scaled by output gain
   auto &stereo_out = processor.get_stereo_out_port ();
@@ -449,7 +449,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransform)
   midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
   midi_in.midi_events_.active_events_.add_note_off (1, 60, 20);
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify events were transformed
   auto &midi_out = processor.get_midi_out_port ();
@@ -627,7 +627,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
   midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
   midi_in.midi_events_.active_events_.add_note_off (1, 60, 20);
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify events were appended and transformed
   auto &midi_out = processor.get_midi_out_port ();
@@ -708,7 +708,7 @@ TEST_F (TrackProcessorTest, RecordingCallback)
 
   processor.prepare_for_processing (sample_rate_, block_length_);
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   EXPECT_TRUE (recording_called);
   EXPECT_EQ (recorded_start_frame, 44100);
@@ -749,7 +749,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
   auto &piano_roll = processor.get_piano_roll_port ();
   piano_roll.midi_events_.active_events_.add_note_on (1, 72, 100, 0);
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify events were processed
   auto &midi_out = processor.get_midi_out_port ();
@@ -802,7 +802,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
         1, i, 0.6f + 0.3f * std::cos (static_cast<float> (i) * 0.1f));
     }
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   EXPECT_TRUE (recording_called);
   EXPECT_EQ (recorded_start_frame, 88200);
@@ -859,7 +859,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyInput)
   processor.prepare_for_processing (sample_rate_, block_length_);
 
   // Process with no input events
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Should complete without errors
   auto &midi_out = processor.get_midi_out_port ();
@@ -889,7 +889,7 @@ TEST_F (TrackProcessorTest, AudioBusTrackProcessingWithLargeBuffer)
       stereo_in.buffers ()->setSample (1, i, 0.3f);
     }
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify processing completed
   auto &stereo_out = processor.get_stereo_out_port ();
@@ -921,7 +921,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
   midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
   midi_in.midi_events_.active_events_.add_note_on (1, 67, 80, 20);
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify events were processed
   auto &midi_out = processor.get_midi_out_port ();
@@ -1002,7 +1002,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
   midi_in.midi_events_.active_events_.add_note_on (1, 64, 80, 10);
   midi_in.midi_events_.active_events_.add_note_off (1, 60, 20);
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify events were both transformed and appended
   auto &midi_out = processor.get_midi_out_port ();
@@ -1085,7 +1085,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithCustomMidiEventProvider)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify events were processed and output
   auto &midi_out = processor.get_midi_out_port ();
@@ -1159,7 +1159,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyCustomMidiEventProvider)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify no events were produced from empty sequence
   auto &midi_out = processor.get_midi_out_port ();
@@ -1208,7 +1208,7 @@ TEST_F (
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify multiple events were processed
   auto &midi_out = processor.get_midi_out_port ();
@@ -1258,7 +1258,7 @@ TEST_F (
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  processor.process_block (time_nfo);
+  processor.process_block (time_nfo, *transport_);
 
   // Verify overlapping events were processed correctly
   auto &midi_out = processor.get_midi_out_port ();

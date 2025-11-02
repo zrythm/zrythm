@@ -37,7 +37,9 @@ CVPort::release_resources ()
 }
 
 void
-CVPort::process_block (const EngineProcessTimeInfo time_nfo) noexcept
+CVPort::process_block (
+  EngineProcessTimeInfo  time_nfo,
+  const dsp::ITransport &transport) noexcept
 {
   for (const auto &[src_port, conn] : port_sources_)
     {

@@ -27,7 +27,6 @@ class Metronome : public QObject, public AudioSampleProcessor
 public:
   Metronome (
     ProcessorBaseDependencies dependencies,
-    const dsp::ITransport    &transport,
     const dsp::TempoMap      &tempo_map,
     juce::AudioSampleBuffer   emphasis_sample,
     juce::AudioSampleBuffer   normal_sample,
@@ -63,7 +62,9 @@ public:
 
   // ============================================================================
 
-  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+  void custom_process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept override;
 
   void custom_prepare_for_processing (
     sample_rate_t sample_rate,
@@ -86,7 +87,9 @@ private:
   /**
    * Queues metronome events for preroll count-in.
    */
-  void queue_metronome_countin (const EngineProcessTimeInfo &time_nfo);
+  void queue_metronome_countin (
+    const EngineProcessTimeInfo &time_nfo,
+    const dsp::ITransport       &transport);
 
   /**
    * Queues a metronomem tick at the given local offset.
@@ -99,8 +102,7 @@ private:
     std::source_location loc = std::source_location::current ());
 
 private:
-  const dsp::ITransport &transport_;
-  const dsp::TempoMap   &tempo_map_;
+  const dsp::TempoMap &tempo_map_;
 
   /** The emphasis sample. */
   juce::AudioSampleBuffer emphasis_sample_buffer_;

@@ -5,6 +5,7 @@
 #include "dsp/port.h"
 #include "dsp/port_connection.h"
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -44,6 +45,9 @@ protected:
       {
         mod_source->buf_[i] = 0.5f;
       }
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
   }
 
   dsp::PortRegistry                        port_registry;
@@ -56,8 +60,9 @@ protected:
   ProcessorParameter * macro_param{};
 
   // Modulation source
-  std::optional<PortUuidReference> mod_source_ref;
-  CVPort *                         mod_source{};
+  std::optional<PortUuidReference>           mod_source_ref;
+  CVPort *                                   mod_source{};
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
 };
 
 TEST_F (ModulatorMacroProcessorTest, BasicConstruction)
@@ -80,7 +85,7 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockNoInput)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  macro_processor->process_block (time_nfo);
+  macro_processor->process_block (time_nfo, *mock_transport_);
 
   // Verify output is macro value (0.8f) since no input
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -106,8 +111,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  cv_in->process_block (time_nfo);
-  macro_processor->process_block (time_nfo);
+  cv_in->process_block (time_nfo, *mock_transport_);
+  macro_processor->process_block (time_nfo, *mock_transport_);
 
   // Verify output is input * macro (0.5 * 0.5 = 0.25)
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -148,8 +153,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  cv_in->process_block (time_nfo);
-  macro_processor->process_block (time_nfo);
+  cv_in->process_block (time_nfo, *mock_transport_);
+  macro_processor->process_block (time_nfo, *mock_transport_);
 
   // Verify output is (input1 + input2) * macro
   // (0.5 + 0.25) * 0.5 = 0.375
@@ -176,7 +181,7 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockZeroMacro)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  macro_processor->process_block (time_nfo);
+  macro_processor->process_block (time_nfo, *mock_transport_);
 
   // Verify output is zero
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)

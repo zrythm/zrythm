@@ -6,6 +6,7 @@
 #include "actions/arranger_object_creator.h"
 #include "actions/track_creator.h"
 #include "dsp/audio_pool.h"
+#include "dsp/metronome.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "engine/device_io/engine.h"
@@ -111,6 +112,7 @@ class Project final : public QObject
       CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::engine::device_io::AudioEngine * engine READ engine CONSTANT FINAL)
+  Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
     zrythm::engine::session::Transport * transport READ getTransport CONSTANT
       FINAL)
@@ -211,6 +213,7 @@ public:
   gui::backend::TrackSelectionManager *    trackSelectionManager () const;
   gui::backend::PluginSelectionManager *   pluginSelectionManager () const;
   structure::arrangement::Timeline *       getTimeline () const;
+  dsp::Metronome *                         metronome () const;
   engine::session::Transport *             getTransport () const;
   engine::device_io::AudioEngine *         engine () const;
   gui::backend::Tool *                     getTool () const;
@@ -619,6 +622,8 @@ public:
 
   /** Snap/Grid info for the timeline. */
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
+
+  utils::QObjectUniquePtr<dsp::Metronome> metronome_;
 
   /**
    * Timeline metadata like BPM, time signature, etc.

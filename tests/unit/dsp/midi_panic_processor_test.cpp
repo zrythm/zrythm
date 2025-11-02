@@ -5,6 +5,7 @@
 
 #include <QObject>
 
+#include "unit/dsp/graph_helpers.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -29,6 +30,9 @@ protected:
 
     midi_out_ =
       panic_proc_->get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+
+    // Set up mock transport
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
   }
 
   void TearDown () override
@@ -44,6 +48,7 @@ protected:
   nframes_t                                                 max_block_length_;
   std::unique_ptr<MidiPanicProcessor>                       panic_proc_;
   dsp::MidiPort *                                           midi_out_;
+  std::unique_ptr<graph_test::MockTransport>                mock_transport_;
 };
 
 TEST_F (MidiPanicProcessorTest, BasicPanicOperation)
@@ -51,7 +56,7 @@ TEST_F (MidiPanicProcessorTest, BasicPanicOperation)
   // Request panic and process block
   panic_proc_->request_panic ();
   EngineProcessTimeInfo time_nfo{ 0, 0, 0, 512 };
-  panic_proc_->process_block (time_nfo);
+  panic_proc_->process_block (time_nfo, *mock_transport_);
 
   // Verify 16 channels worth of All Notes Off messages
   ASSERT_EQ (midi_out_->midi_events_.queued_events_.size (), 16);
@@ -77,20 +82,20 @@ TEST_F (MidiPanicProcessorTest, MultiplePanicRequests)
 
   // First panic request
   panic_proc_->request_panic ();
-  panic_proc_->process_block (time_nfo);
-  midi_out_->process_block (time_nfo);
+  panic_proc_->process_block (time_nfo, *mock_transport_);
+  midi_out_->process_block (time_nfo, *mock_transport_);
   ASSERT_EQ (midi_out_->midi_events_.active_events_.size (), 16);
 
   // Second request without processing
   panic_proc_->request_panic ();
   panic_proc_->request_panic ();
-  panic_proc_->process_block (time_nfo);
-  midi_out_->process_block (time_nfo);
+  panic_proc_->process_block (time_nfo, *mock_transport_);
+  midi_out_->process_block (time_nfo, *mock_transport_);
   ASSERT_EQ (midi_out_->midi_events_.active_events_.size (), 16);
 
   // No new requests - should be empty
-  panic_proc_->process_block (time_nfo);
-  midi_out_->process_block (time_nfo);
+  panic_proc_->process_block (time_nfo, *mock_transport_);
+  midi_out_->process_block (time_nfo, *mock_transport_);
   EXPECT_TRUE (midi_out_->midi_events_.active_events_.empty ());
 }
 
@@ -107,7 +112,7 @@ TEST_F (MidiPanicProcessorTest, ResourceManagement)
   // Reinitialize and test functionality
   panic_proc_->prepare_for_processing (sample_rate_, max_block_length_);
   panic_proc_->request_panic ();
-  panic_proc_->process_block ({ 0, 0, 0, 512 });
+  panic_proc_->process_block ({ 0, 0, 0, 512 }, *mock_transport_);
   EXPECT_EQ (midi_out_->midi_events_.queued_events_.size (), 16);
 }
 
@@ -115,7 +120,7 @@ TEST_F (MidiPanicProcessorTest, ZeroFramesProcessing)
 {
   panic_proc_->request_panic ();
   EngineProcessTimeInfo time_nfo{ 0, 0, 0, 0 };
-  panic_proc_->process_block (time_nfo);
+  panic_proc_->process_block (time_nfo, *mock_transport_);
 
   // Should still process panic even with 0 frames
   ASSERT_EQ (midi_out_->midi_events_.queued_events_.size (), 16);
@@ -128,7 +133,7 @@ TEST_F (MidiPanicProcessorTest, LargeBufferHandling)
 
   panic_proc_->request_panic ();
   EngineProcessTimeInfo time_nfo{ 0, 0, 0, large_size };
-  panic_proc_->process_block (time_nfo);
+  panic_proc_->process_block (time_nfo, *mock_transport_);
 
   // Verify all 16 channels processed
   ASSERT_EQ (midi_out_->midi_events_.queued_events_.size (), 16);

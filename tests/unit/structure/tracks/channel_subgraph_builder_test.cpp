@@ -34,7 +34,7 @@ public:
   MOCK_METHOD (
     void,
     custom_process_block,
-    (EngineProcessTimeInfo),
+    (EngineProcessTimeInfo, const dsp::ITransport &),
     (noexcept, override));
   MOCK_METHOD (
     void,

@@ -177,7 +177,9 @@ public:
    * - handle recording (create events in regions and automation, including
    *   MIDI CC automation, based on the MIDI CC control ports)
    */
-  void custom_process_block (EngineProcessTimeInfo time_nfo) noexcept override;
+  void custom_process_block (
+    EngineProcessTimeInfo  time_nfo,
+    const dsp::ITransport &transport) noexcept override;
 
   void custom_prepare_for_processing (
     sample_rate_t sample_rate,

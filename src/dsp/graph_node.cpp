@@ -119,7 +119,7 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
       time_nfo.nframes_ = num_processable_frames;
 
       // process current chunk
-      processable_.process_block (time_nfo);
+      processable_.process_block (time_nfo, transport);
 
       /* calculate the remaining frames */
       time_nfo.nframes_ = orig_nframes - num_processable_frames;
@@ -169,7 +169,7 @@ GraphNode::process (
 
   if (time_nfo.nframes_ > 0)
     {
-      processable_.process_block (time_nfo);
+      processable_.process_block (time_nfo, transport);
     }
 }
 

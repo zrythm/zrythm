@@ -20,7 +20,11 @@ public:
     prepare_for_processing,
     (sample_rate_t, nframes_t),
     (override));
-  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (noexcept, override));
+  MOCK_METHOD (
+    void,
+    process_block,
+    (EngineProcessTimeInfo, const dsp::ITransport &),
+    (noexcept, override));
   MOCK_METHOD (void, release_resources, (), (override));
 };
 
