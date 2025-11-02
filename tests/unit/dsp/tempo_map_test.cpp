@@ -630,4 +630,120 @@ TEST_F (TempoMapTest, SamplesToMusicalPosition)
   EXPECT_EQ (pos.sixteenth, 1);
   EXPECT_EQ (pos.tick, 0);
 }
+
+// Test TimeSignatureEvent utility methods
+TEST_F (TempoMapTest, TimeSignatureEventUtilityMethods)
+{
+  // Test 4/4 time signature
+  TempoMap::TimeSignatureEvent ts4_4{ units::ticks (0), 4, 4 };
+  EXPECT_EQ (ts4_4.quarters_per_bar (), 4);
+  EXPECT_EQ (ts4_4.ticks_per_bar ().in (units::ticks), 4 * 960);
+  EXPECT_EQ (ts4_4.ticks_per_beat ().in (units::ticks), 960);
+
+  // Test 3/4 time signature
+  TempoMap::TimeSignatureEvent ts3_4{ units::ticks (0), 3, 4 };
+  EXPECT_EQ (ts3_4.quarters_per_bar (), 3);
+  EXPECT_EQ (ts3_4.ticks_per_bar ().in (units::ticks), 3 * 960);
+  EXPECT_EQ (ts3_4.ticks_per_beat ().in (units::ticks), 960);
+
+  // Test 6/8 time signature
+  TempoMap::TimeSignatureEvent ts6_8{ units::ticks (0), 6, 8 };
+  EXPECT_EQ (ts6_8.quarters_per_bar (), 3); // (6 * 4) / 8 = 3
+  EXPECT_EQ (ts6_8.ticks_per_bar ().in (units::ticks), 3 * 960);
+  EXPECT_EQ (ts6_8.ticks_per_beat ().in (units::ticks), 480); // 2880 / 6
+
+  // Test 5/8 time signature
+  TempoMap::TimeSignatureEvent ts5_8{ units::ticks (0), 5, 8 };
+  EXPECT_EQ (
+    ts5_8.quarters_per_bar (), 2); // (5 * 4) / 8 = 2.5, but integer division
+  EXPECT_EQ (ts5_8.ticks_per_bar ().in (units::ticks), 2 * 960);
+  EXPECT_EQ (ts5_8.ticks_per_beat ().in (units::ticks), 384); // 1920 / 5
+
+  // Test 7/16 time signature
+  TempoMap::TimeSignatureEvent ts7_16{ units::ticks (0), 7, 16 };
+  EXPECT_EQ (
+    ts7_16.quarters_per_bar (), 1); // (7 * 4) / 16 = 1.75, but integer division
+  EXPECT_EQ (ts7_16.ticks_per_bar ().in (units::ticks), 1 * 960);
+  EXPECT_EQ (
+    ts7_16.ticks_per_beat ().in (units::ticks), 137); // 960 / 7 (integer
+                                                      // division)
+
+  // Test 2/2 time signature (cut time)
+  TempoMap::TimeSignatureEvent ts2_2{ units::ticks (0), 2, 2 };
+  EXPECT_EQ (ts2_2.quarters_per_bar (), 4); // (2 * 4) / 2 = 4
+  EXPECT_EQ (ts2_2.ticks_per_bar ().in (units::ticks), 4 * 960);
+  EXPECT_EQ (ts2_2.ticks_per_beat ().in (units::ticks), 1920); // 3840 / 2
+
+  // Test 12/8 time signature
+  TempoMap::TimeSignatureEvent ts12_8{ units::ticks (0), 12, 8 };
+  EXPECT_EQ (ts12_8.quarters_per_bar (), 6); // (12 * 4) / 8 = 6
+  EXPECT_EQ (ts12_8.ticks_per_bar ().in (units::ticks), 6 * 960);
+  EXPECT_EQ (ts12_8.ticks_per_beat ().in (units::ticks), 480); // 5760 / 12
+}
+
+// Test TimeSignatureEvent utility methods with time_signature_at_tick
+TEST_F (TempoMapTest, TimeSignatureEventUtilityMethodsIntegration)
+{
+  // Add various time signatures to the tempo map
+  map->add_time_signature_event (units::ticks (0), 4, 4);        // Bar 1: 4/4
+  const auto bar3Start = units::ticks (2 * 4 * 960);             // Bar 3 start
+  map->add_time_signature_event (bar3Start, 3, 4);               // Bar 3: 3/4
+  const auto bar5Start = bar3Start + units::ticks (2 * 3 * 960); // Bar 5 start
+  map->add_time_signature_event (bar5Start, 6, 8);               // Bar 5: 6/8
+
+  // Test 4/4 section
+  auto ts = map->time_signature_at_tick (units::ticks (0));
+  EXPECT_EQ (ts.quarters_per_bar (), 4);
+  EXPECT_EQ (ts.ticks_per_bar ().in (units::ticks), 3840);
+  EXPECT_EQ (ts.ticks_per_beat ().in (units::ticks), 960);
+
+  // Test 3/4 section
+  ts = map->time_signature_at_tick (bar3Start);
+  EXPECT_EQ (ts.quarters_per_bar (), 3);
+  EXPECT_EQ (ts.ticks_per_bar ().in (units::ticks), 2880);
+  EXPECT_EQ (ts.ticks_per_beat ().in (units::ticks), 960);
+
+  // Test 6/8 section
+  ts = map->time_signature_at_tick (bar5Start);
+  EXPECT_EQ (ts.quarters_per_bar (), 3); // (6 * 4) / 8 = 3
+  EXPECT_EQ (ts.ticks_per_bar ().in (units::ticks), 2880);
+  EXPECT_EQ (ts.ticks_per_beat ().in (units::ticks), 480); // 2880 / 6
+
+  // Verify consistency with musical position calculations
+  // In 6/8 time, 6 beats should equal one bar
+  const auto sixBeatsIn6_8 =
+    units::ticks (6 * ts.ticks_per_beat ().in (units::ticks));
+  EXPECT_EQ (
+    sixBeatsIn6_8.in (units::ticks), ts.ticks_per_bar ().in (units::ticks));
+
+  // In 3/4 time, 3 beats should equal one bar
+  ts = map->time_signature_at_tick (bar3Start);
+  const auto threeBeatsIn3_4 =
+    units::ticks (3 * ts.ticks_per_beat ().in (units::ticks));
+  EXPECT_EQ (
+    threeBeatsIn3_4.in (units::ticks), ts.ticks_per_bar ().in (units::ticks));
+}
+
+// Test edge cases for TimeSignatureEvent utility methods
+TEST_F (TempoMapTest, TimeSignatureEventUtilityMethodsEdgeCases)
+{
+  // Test with numerator = 1
+  TempoMap::TimeSignatureEvent ts1_4{ units::ticks (0), 1, 4 };
+  EXPECT_EQ (ts1_4.quarters_per_bar (), 1);
+  EXPECT_EQ (ts1_4.ticks_per_bar ().in (units::ticks), 960);
+  EXPECT_EQ (ts1_4.ticks_per_beat ().in (units::ticks), 960);
+
+  // Test with large numbers
+  TempoMap::TimeSignatureEvent tsLarge{ units::ticks (0), 32, 32 };
+  EXPECT_EQ (tsLarge.quarters_per_bar (), 4); // (32 * 4) / 32 = 4
+  EXPECT_EQ (tsLarge.ticks_per_bar ().in (units::ticks), 3840);
+  EXPECT_EQ (tsLarge.ticks_per_beat ().in (units::ticks), 120); // 3840 / 32
+
+  // Test with denominator larger than numerator
+  TempoMap::TimeSignatureEvent ts3_16{ units::ticks (0), 3, 16 };
+  EXPECT_EQ (
+    ts3_16.quarters_per_bar (), 0); // (3 * 4) / 16 = 0 (integer division)
+  EXPECT_EQ (ts3_16.ticks_per_bar ().in (units::ticks), 0);
+  EXPECT_EQ (ts3_16.ticks_per_beat ().in (units::ticks), 0); // 0 / 3 = 0
+}
 }

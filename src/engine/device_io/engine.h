@@ -12,7 +12,6 @@
 #include "engine/session/control_room.h"
 #include "engine/session/graph_dispatcher.h"
 #include "engine/session/sample_processor.h"
-#include "engine/session/transport.h"
 #include "utils/audio.h"
 #include "utils/concurrency.h"
 #include "utils/types.h"

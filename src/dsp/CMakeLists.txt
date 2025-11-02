@@ -42,6 +42,7 @@ target_sources(zrythm_dsp_lib
     stretcher.cpp
     tempo_map_qml_adapter.cpp
     timeline_data_cache.cpp
+    transport.cpp
     true_peak_dsp.cpp
   PUBLIC
     FILE_SET HEADERS
@@ -91,6 +92,7 @@ target_sources(zrythm_dsp_lib
       tempo_map.h
       tempo_map_qml_adapter.h
       timeline_data_cache.h
+      transport.h
       true_peak_dsp.h
 )
 

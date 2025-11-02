@@ -6,9 +6,9 @@
 #include <filesystem>
 
 #include "dsp/port_connections_manager.h"
+#include "dsp/transport.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_host_window.h"
@@ -91,10 +91,10 @@ Project::Project (
           },
           this)),
       transport_ (
-        utils::make_qobject_unique<engine::session::Transport> (
+        utils::make_qobject_unique<dsp::Transport> (
           tempo_map_,
           *snap_grid_timeline_,
-          engine::session::Transport::ConfigProvider{
+          dsp::Transport::ConfigProvider{
             .return_to_cue_on_pause_ =
               [] () { return gui::SettingsManager::transportReturnToCue (); },
             .metronome_countin_bars_ =
@@ -1541,7 +1541,7 @@ Project::metronome () const
   return metronome_.get ();
 }
 
-engine::session::Transport *
+dsp::Transport *
 Project::getTransport () const
 {
   return transport_.get ();

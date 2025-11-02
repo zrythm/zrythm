@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/transport.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/transport.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"

@@ -7,8 +7,8 @@
 
 #include "dsp/cv_port.h"
 #include "dsp/midi_event.h"
+#include "dsp/transport.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/carla_discovery.h"

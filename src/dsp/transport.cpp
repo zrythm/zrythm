@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "engine/session/transport.h"
+#include "dsp/transport.h"
 
-namespace zrythm::engine::session
+namespace zrythm::dsp
 {
 Transport::Transport (
   const dsp::TempoMap &tempo_map,
@@ -158,36 +158,50 @@ Transport::requestPause ()
 void
 Transport::requestRoll ()
 {
-  {
-    /* handle countin */
-    // int num_bars = config_provider_.metronome_countin_bars_ ();
-// TODO: convert num bars to countin frames
-#if 0
-      countin_frames_remaining_ =
-        units::samples ((long) ((double) num_bars * frames_per_bar));
-#endif
+  // Generic lambda to calculate target position for bars
+  auto calculate_target_position_for_n_bars_before =
+    [this] (int num_bars) -> units::sample_t {
+    if (num_bars <= 0)
+      return playhead_.get_tempo_map ().tick_to_samples_rounded (
+        playhead_.position_ticks ());
 
-    if (recording_)
-      {
-        /* handle preroll */
-        int        num_bars = config_provider_.recording_preroll_bars_ ();
-        auto       pos_tick = playhead_.position_ticks ();
-        const auto pos_musical =
-          playhead_.get_tempo_map ().tick_to_musical_position (
-            au::round_as<int64_t> (units::ticks, pos_tick));
-        auto new_pos_musical = pos_musical;
-        new_pos_musical.bar = std::max (new_pos_musical.bar - num_bars, 1);
-        pos_tick =
-          playhead_.get_tempo_map ().musical_position_to_tick (new_pos_musical);
-        auto pos_frame =
-          playhead_.get_tempo_map ().tick_to_samples_rounded (pos_tick);
-        recording_preroll_frames_remaining_ =
-          playhead_.get_tempo_map ().tick_to_samples_rounded (
-            playhead_.position_ticks ())
-          - pos_frame;
-        playhead_adapter_->setTicks (pos_tick.in (units::ticks));
-      }
-  }
+    // Get time signature at current position to calculate ticks per bar
+    const auto time_sig = playhead_.get_tempo_map ().time_signature_at_tick (
+      au::round_as<int64_t> (units::ticks, playhead_.position_ticks ()));
+    const int64_t ticks_per_bar = time_sig.ticks_per_bar ().in (units::ticks);
+
+    // Calculate target position: current position - (num_bars * ticks_per_bar)
+    const auto target_ticks =
+      playhead_.position_ticks () - units::ticks (num_bars * ticks_per_bar);
+    return target_ticks < units::ticks (0.0)
+             ? -playhead_.get_tempo_map ().tick_to_samples_rounded (-target_ticks)
+             : playhead_.get_tempo_map ().tick_to_samples_rounded (target_ticks);
+  };
+
+  // Get current position in samples for calculations
+  const auto current_samples =
+    playhead_.get_tempo_map ().tick_to_samples_rounded (
+      playhead_.position_ticks ());
+
+  /* handle countin */
+  const auto countin_target_pos = calculate_target_position_for_n_bars_before (
+    config_provider_.metronome_countin_bars_ ());
+  countin_frames_remaining_ = current_samples - countin_target_pos;
+
+  if (recording_)
+    {
+      /* handle preroll */
+      const auto preroll_target_pos =
+        calculate_target_position_for_n_bars_before (
+          config_provider_.recording_preroll_bars_ ());
+      recording_preroll_frames_remaining_ = current_samples - preroll_target_pos;
+
+      // Move playhead to preroll position
+      playhead_adapter_->setTicks (
+        playhead_.get_tempo_map ()
+          .samples_to_tick (preroll_target_pos)
+          .in (units::ticks));
+    }
 
   setPlayState (PlayState::RollRequested);
 }
@@ -307,6 +321,8 @@ void
 from_json (const nlohmann::json &j, Transport &transport)
 {
   j.at (Transport::kPlayheadKey).get_to (transport.playhead_);
+  transport.playhead ()->setTicks (
+    transport.playhead_.position_ticks ().in (units::ticks));
   j.at (Transport::kCuePosKey).get_to (transport.cue_position_);
   j.at (Transport::kLoopStartPosKey).get_to (transport.loop_start_position_);
   j.at (Transport::kLoopEndPosKey).get_to (transport.loop_end_position_);

@@ -9,6 +9,7 @@
 #include "dsp/metronome.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
+#include "dsp/transport.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/clip_editor.h"
@@ -114,8 +115,7 @@ class Project final : public QObject
     zrythm::engine::device_io::AudioEngine * engine READ engine CONSTANT FINAL)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
-    zrythm::engine::session::Transport * transport READ getTransport CONSTANT
-      FINAL)
+    zrythm::dsp::Transport * transport READ getTransport CONSTANT FINAL)
   Q_PROPERTY (zrythm::gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
@@ -214,7 +214,7 @@ public:
   gui::backend::PluginSelectionManager *   pluginSelectionManager () const;
   structure::arrangement::Timeline *       getTimeline () const;
   dsp::Metronome *                         metronome () const;
-  engine::session::Transport *             getTransport () const;
+  dsp::Transport *                         getTransport () const;
   engine::device_io::AudioEngine *         engine () const;
   gui::backend::Tool *                     getTool () const;
   ClipEditor *                             getClipEditor () const;
@@ -628,7 +628,7 @@ public:
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  utils::QObjectUniquePtr<engine::session::Transport> transport_;
+  utils::QObjectUniquePtr<dsp::Transport> transport_;
 
   /** Audio file pool. */
   std::unique_ptr<dsp::AudioPool> pool_;

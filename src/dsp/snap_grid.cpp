@@ -113,9 +113,8 @@ SnapGrid::snapTicks (int64_t ticks) const
     }
 
   auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
-  int  ticks_per_bar =
-    (time_sig.numerator * TempoMap::get_ppq () * 4) / time_sig.denominator;
-  int ticks_per_beat = ticks_per_bar / time_sig.numerator;
+  int  ticks_per_bar = time_sig.ticks_per_bar ().in (units::ticks);
+  int  ticks_per_beat = ticks_per_bar / time_sig.numerator;
 
   return get_ticks_from_length_and_type (
     snap_note_length_, snap_note_type_, ticks_per_bar, ticks_per_beat);

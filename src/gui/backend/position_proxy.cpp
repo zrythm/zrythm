@@ -67,7 +67,7 @@ PositionProxy::setTicks (double ticks)
 
 QString
 PositionProxy::getStringDisplay (
-  const engine::session::Transport *   transport,
+  const dsp::Transport *               transport,
   const zrythm::dsp::TempoMapWrapper * tempo_map) const
 {
   return utils::Utf8String::from_utf8_encoded_string (

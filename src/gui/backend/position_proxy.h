@@ -20,8 +20,8 @@ class Transport;
 
 using namespace zrythm;
 
-Q_DECLARE_OPAQUE_POINTER (zrythm::engine::session::Transport *)
-Q_DECLARE_OPAQUE_POINTER (const zrythm::engine::session::Transport *)
+Q_DECLARE_OPAQUE_POINTER (zrythm::dsp::Transport *)
+Q_DECLARE_OPAQUE_POINTER (const zrythm::dsp::Transport *)
 
 /**
  * @brief QML-friendly position representation with real-time safety.
@@ -71,8 +71,8 @@ public:
   Q_INVOKABLE void addTicks (double ticks) { setTicks (getTicks () + ticks); }
 
   Q_INVOKABLE QString getStringDisplay (
-    const zrythm::engine::session::Transport * transport,
-    const zrythm::dsp::TempoMapWrapper *       tempo_map) const;
+    const zrythm::dsp::Transport *       transport,
+    const zrythm::dsp::TempoMapWrapper * tempo_map) const;
 
 public:
   // RT-safe wrappers

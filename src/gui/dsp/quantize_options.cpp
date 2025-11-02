@@ -3,7 +3,7 @@
 
 #include "dsp/position.h"
 #include "dsp/snap_grid.h"
-#include "engine/session/transport.h"
+#include "dsp/transport.h"
 #include "gui/dsp/quantize_options.h"
 #include "utils/algorithms.h"
 #include "utils/pcg_rand.h"
@@ -12,8 +12,7 @@ namespace zrythm::gui::old_dsp
 {
 
 void
-QuantizeOptions::update_quantize_points (
-  const engine::session::Transport &transport)
+QuantizeOptions::update_quantize_points (const dsp::Transport &transport)
 {
 // TODO
 #if 0

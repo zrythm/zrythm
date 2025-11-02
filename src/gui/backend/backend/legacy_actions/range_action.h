@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "engine/session/transport.h"
+#include "dsp/transport.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "structure/arrangement/arranger_object_span.h"
 
@@ -18,7 +18,7 @@ class RangeAction : public QObject, public UndoableAction
 
   using ArrangerObjectSpan = structure::arrangement::ArrangerObjectSpan;
   using ArrangerObject = structure::arrangement::ArrangerObject;
-  using Transport = engine::session::Transport;
+  using Transport = dsp::Transport;
 
 public:
   enum class Type

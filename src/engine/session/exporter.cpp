@@ -5,10 +5,10 @@
 
 #include "dsp/ditherer.h"
 #include "dsp/midi_event.h"
+#include "dsp/transport.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/exporter.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -517,7 +517,7 @@ Exporter::prepare_tracks_for_export (
   AUDIO_ENGINE->wait_for_pause (*state_, false, true);
   z_info ("engine paused");
 
-  TRANSPORT->setPlayState (Transport::PlayState::Rolling);
+  TRANSPORT->setPlayState (dsp::ITransport::PlayState::Rolling);
 
   AUDIO_ENGINE->exporting_ = true;
   AUDIO_ENGINE->preparing_to_export_ = false;

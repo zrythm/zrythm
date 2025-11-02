@@ -6,7 +6,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "engine/session/transport.h"
+#include "dsp/transport.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

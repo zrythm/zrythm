@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/file_audio_source.h"
+#include "dsp/transport.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/recording_event.h"
 #include "engine/session/recording_manager.h"
-#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/arranger_object.h"

@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "engine/session/transport.h"
+#include "dsp/transport.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

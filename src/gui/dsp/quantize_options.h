@@ -38,8 +38,7 @@ public:
   /**
    * Updates snap points.
    */
-  void
-  update_quantize_points (const zrythm::engine::session::Transport &transport);
+  void update_quantize_points (const zrythm::dsp::Transport &transport);
 
   float get_swing () const;
 

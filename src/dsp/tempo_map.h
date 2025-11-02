@@ -67,6 +67,15 @@ public:
     int           numerator{};   ///< Beats per bar
     int           denominator{}; ///< Beat unit (2,4,8,16)
 
+    auto quarters_per_bar () const { return (numerator * 4) / denominator; }
+
+    auto ticks_per_bar () const
+    {
+      return units::ticks (quarters_per_bar () * FixedPpqTempoMap::get_ppq ());
+    }
+
+    auto ticks_per_beat () const { return ticks_per_bar () / numerator; }
+
     NLOHMANN_DEFINE_TYPE_INTRUSIVE (
       TimeSignatureEvent,
       tick,

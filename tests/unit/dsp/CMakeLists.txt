@@ -44,6 +44,7 @@ add_executable(zrythm_dsp_unit_tests
   tempo_map_test.cpp
   tempo_map_qml_adapter_test.cpp
   timeline_data_cache_test.cpp
+  transport_test.cpp
   true_peak_dsp_test.cpp
 )
 

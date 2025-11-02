@@ -8,7 +8,7 @@
 #include "dsp/playhead_qml_adapter.h"
 #include "dsp/snap_grid.h"
 
-namespace zrythm::engine::session
+namespace zrythm::dsp
 {
 enum class PrerollCountBars
 {

@@ -21,6 +21,4 @@ target_sources(zrythm_gui_lib
     recording_manager.cpp
     sample_processor.h
     sample_processor.cpp
-    transport.h
-    transport.cpp
 )

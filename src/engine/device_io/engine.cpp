@@ -35,12 +35,12 @@
 #include "dsp/graph_scheduler.h"
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
+#include "dsp/transport.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
 #include "engine/session/recording_manager.h"
 #include "engine/session/sample_processor.h"
-#include "engine/session/transport.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -376,14 +376,13 @@ AudioEngine::
 
       if (force_pause)
         {
-          project_->transport_->setPlayState (
-            session::Transport::PlayState::Paused);
+          project_->transport_->setPlayState (dsp::Transport::PlayState::Paused);
         }
       else
         {
           while (
             project_->transport_->getPlayState ()
-            == session::Transport::PlayState::PauseRequested)
+            == dsp::Transport::PlayState::PauseRequested)
             {
               std::this_thread::sleep_for (std::chrono::microseconds (100));
             }
@@ -606,17 +605,15 @@ AudioEngine::process_prepare (
   nframes_ = nframes;
 
   auto transport_ = project_->getTransport ();
-  if (
-    transport_->getPlayState () == session::Transport::PlayState::PauseRequested)
+  if (transport_->getPlayState () == dsp::Transport::PlayState::PauseRequested)
     {
-      transport_->set_play_state_rt_safe (session::Transport::PlayState::Paused);
+      transport_->set_play_state_rt_safe (dsp::Transport::PlayState::Paused);
     }
   else if (
-    transport_->getPlayState () == session::Transport::PlayState::RollRequested
+    transport_->getPlayState () == dsp::Transport::PlayState::RollRequested
     && transport_->metronome_countin_frames_remaining () == units::samples (0))
     {
-      transport_->set_play_state_rt_safe (
-        session::Transport::PlayState::Rolling);
+      transport_->set_play_state_rt_safe (dsp::Transport::PlayState::Rolling);
       remaining_latency_preroll_ = router_->get_max_route_playback_latency ();
     }
 
