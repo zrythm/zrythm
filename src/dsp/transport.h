@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/itransport.h"
-#include "dsp/playhead.h"
 #include "dsp/playhead_qml_adapter.h"
 #include "dsp/snap_grid.h"
+#include "utils/icloneable.h"
 
 namespace zrythm::dsp
 {
