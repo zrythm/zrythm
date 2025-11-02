@@ -82,7 +82,7 @@ AudioEngine::AudioEngine (
               load_measurer_
             };
             dsp::PlayheadProcessingGuard guard{
-              this->project_->transport_->playhead_
+              this->project_->transport_->playhead ()->playhead ()
             };
 
             const auto process_status = this->process (numSamples);
@@ -335,7 +335,7 @@ AudioEngine::
 
   state.running_ = run_.load ();
   state.playing_ = project_->transport_->isRolling ();
-  state.looping_ = project_->transport_->loop_;
+  state.looping_ = project_->transport_->loopEnabled ();
   if (!state.running_)
     {
       z_debug ("engine not running - won't wait for pause");
@@ -405,7 +405,7 @@ AudioEngine::
       /* run 1 more time to flush panic messages */
       SemaphoreRAII                sem (port_operation_lock_, true);
       dsp::PlayheadProcessingGuard playhead_processing_guard{
-        project_->transport_->playhead_
+        project_->transport_->playhead ()->playhead ()
       };
       process_prepare (1, &sem);
 
@@ -435,11 +435,11 @@ AudioEngine::resume (EngineState &state)
       z_debug ("engine was not running - won't resume");
       return;
     }
-  project_->transport_->loop_ = state.looping_;
+  project_->transport_->setLoopEnabled (state.looping_);
   if (state.playing_)
     {
       project_->transport_->move_playhead (
-        project_->transport_->playhead_before_pause_, false);
+        project_->transport_->playhead_ticks_before_pause (), false);
       project_->transport_->requestRoll ();
     }
   else
@@ -613,7 +613,7 @@ AudioEngine::process_prepare (
     }
   else if (
     transport_->getPlayState () == session::Transport::PlayState::RollRequested
-    && transport_->countin_frames_remaining_ == units::samples (0))
+    && transport_->metronome_countin_frames_remaining () == units::samples (0))
     {
       transport_->set_play_state_rt_safe (
         session::Transport::PlayState::Rolling);
@@ -771,82 +771,84 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
     } /* while latency preroll frames remaining */
 
-  /* if we still have frames to process (i.e., if
-   * preroll finished completely and can start
-   * processing normally) */
+  /* if we still have frames to process (i.e., if preroll finished completely
+   * and can start processing normally) */
   if (total_frames_remaining > 0)
     {
-      nframes_t cur_offset = total_frames_to_process - total_frames_remaining;
+      [&] () {
+        nframes_t cur_offset = total_frames_to_process - total_frames_remaining;
 
-      /* split at countin */
-      if (transport_->countin_frames_remaining_ > units::samples (0))
-        {
-          const auto countin_frames = std::min (
-            total_frames_remaining,
-            static_cast<nframes_t> (
-              transport_->countin_frames_remaining_.in (units::samples)));
+        /* split at countin */
+        if (
+          transport_->metronome_countin_frames_remaining () > units::samples (0))
+          {
+            const auto countin_frames = std::min (
+              total_frames_remaining,
+              static_cast<nframes_t> (
+                transport_->metronome_countin_frames_remaining ().in (
+                  units::samples)));
 
-          /* process for countin frames */
-          split_time_nfo.g_start_frame_w_offset_ =
-            split_time_nfo.g_start_frame_ + cur_offset;
-          split_time_nfo.local_offset_ = cur_offset;
-          split_time_nfo.nframes_ = countin_frames;
-          router_->start_cycle (split_time_nfo, true);
-          transport_->countin_frames_remaining_ -=
-            units::samples (countin_frames);
+            /* process for countin frames */
+            split_time_nfo.g_start_frame_w_offset_ =
+              split_time_nfo.g_start_frame_ + cur_offset;
+            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.nframes_ = countin_frames;
+            router_->start_cycle (split_time_nfo, true);
+            transport_->consume_metronome_countin_samples (
+              units::samples (countin_frames));
 
-          /* adjust total frames remaining to process and current offset */
-          total_frames_remaining -= countin_frames;
-          if (total_frames_remaining == 0)
-            goto finalize_processing;
-          cur_offset += countin_frames;
-        }
+            /* adjust total frames remaining to process and current offset */
+            total_frames_remaining -= countin_frames;
+            if (total_frames_remaining == 0)
+              return;
+            cur_offset += countin_frames;
+          }
 
-      /* split at preroll */
-      if (
-        transport_->countin_frames_remaining_ == units::samples (0)
-        && transport_->has_recording_preroll_frames_remaining ())
-        {
-          nframes_t preroll_frames = std::min (
-            total_frames_remaining,
-            static_cast<nframes_t> (
-              transport_->recording_preroll_frames_remaining ().in (
-                units::samples)));
+        /* split at preroll */
+        if (
+          transport_->metronome_countin_frames_remaining () == units::samples (0)
+          && transport_->has_recording_preroll_frames_remaining ())
+          {
+            nframes_t preroll_frames = std::min (
+              total_frames_remaining,
+              static_cast<nframes_t> (
+                transport_->recording_preroll_frames_remaining ().in (
+                  units::samples)));
 
-          /* process for preroll frames */
-          split_time_nfo.g_start_frame_w_offset_ =
-            split_time_nfo.g_start_frame_ + cur_offset;
-          split_time_nfo.local_offset_ = cur_offset;
-          split_time_nfo.nframes_ = preroll_frames;
-          router_->start_cycle (split_time_nfo, true);
-          transport_->recording_preroll_frames_remaining_ -=
-            units::samples (preroll_frames);
+            /* process for preroll frames */
+            split_time_nfo.g_start_frame_w_offset_ =
+              split_time_nfo.g_start_frame_ + cur_offset;
+            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.nframes_ = preroll_frames;
+            router_->start_cycle (split_time_nfo, true);
+            transport_->consume_recording_preroll_samples (
+              units::samples (preroll_frames));
 
-          /* process for remaining frames */
-          cur_offset += preroll_frames;
-          const auto remaining_frames = total_frames_remaining - preroll_frames;
-          if (remaining_frames > 0)
-            {
-              split_time_nfo.g_start_frame_w_offset_ =
-                split_time_nfo.g_start_frame_ + cur_offset;
-              split_time_nfo.local_offset_ = cur_offset;
-              split_time_nfo.nframes_ = remaining_frames;
-              router_->start_cycle (split_time_nfo, true);
-            }
-        }
-      else
-        {
-          /* run the cycle for the remaining frames - this will also play the
-           * queued metronome events (if any) */
-          split_time_nfo.g_start_frame_w_offset_ =
-            split_time_nfo.g_start_frame_ + cur_offset;
-          split_time_nfo.local_offset_ = cur_offset;
-          split_time_nfo.nframes_ = total_frames_remaining;
-          router_->start_cycle (split_time_nfo, true);
-        }
+            /* process for remaining frames */
+            cur_offset += preroll_frames;
+            const auto remaining_frames =
+              total_frames_remaining - preroll_frames;
+            if (remaining_frames > 0)
+              {
+                split_time_nfo.g_start_frame_w_offset_ =
+                  split_time_nfo.g_start_frame_ + cur_offset;
+                split_time_nfo.local_offset_ = cur_offset;
+                split_time_nfo.nframes_ = remaining_frames;
+                router_->start_cycle (split_time_nfo, true);
+              }
+          }
+        else
+          {
+            /* run the cycle for the remaining frames - this will also play the
+             * queued metronome events (if any) */
+            split_time_nfo.g_start_frame_w_offset_ =
+              split_time_nfo.g_start_frame_ + cur_offset;
+            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.nframes_ = total_frames_remaining;
+            router_->start_cycle (split_time_nfo, true);
+          }
+      }();
     }
-
-finalize_processing:
 
   /* run post-process code for the number of frames remaining after handling
    * preroll (if any) */

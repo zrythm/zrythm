@@ -109,7 +109,6 @@ public:
   CurrentCycleTransportState (
     std::pair<units::sample_t, units::sample_t> loop_range,
     std::pair<units::sample_t, units::sample_t> punch_range,
-    units::sample_t                             loop_end,
     units::sample_t                             playhead_position,
     units::sample_t recording_preroll_frames_remaining,
     units::sample_t metronome_countin_frames_remaining,
@@ -118,7 +117,7 @@ public:
     bool            punch_enabled,
     bool            recording_enabled)
       : loop_range_ (loop_range), punch_range_ (punch_range),
-        loop_end_ (loop_end), playhead_position_ (playhead_position),
+        playhead_position_ (playhead_position),
         recording_preroll_frames_remaining_ (recording_preroll_frames_remaining),
         metronome_countin_frames_remaining_ (metronome_countin_frames_remaining),
         play_state_ (play_state), loop_enabled_ (loop_enabled),
@@ -161,7 +160,6 @@ public:
 private:
   std::pair<units::sample_t, units::sample_t> loop_range_;
   std::pair<units::sample_t, units::sample_t> punch_range_;
-  units::sample_t                             loop_end_;
   units::sample_t                             playhead_position_;
   units::sample_t recording_preroll_frames_remaining_;
   units::sample_t metronome_countin_frames_remaining_;
@@ -205,7 +203,6 @@ DspGraphDispatcher::start_cycle (
   CurrentCycleTransportState current_transport_state{
     TRANSPORT->get_loop_range_positions (),
     TRANSPORT->get_punch_range_positions (),
-    TRANSPORT->loop_end_position_.get_samples (),
     TRANSPORT->get_playhead_position_in_audio_thread (),
     TRANSPORT->recording_preroll_frames_remaining (),
     TRANSPORT->metronome_countin_frames_remaining (),

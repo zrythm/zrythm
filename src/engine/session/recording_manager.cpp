@@ -264,7 +264,7 @@ RecordingManager::handle_recording (
     time_nfo.local_offset_ + time_nfo.nframes_, <=,
     AUDIO_ENGINE->get_block_length ());
 
-  if (TRANSPORT->punch_mode_)
+  if (TRANSPORT->punchEnabled ())
     {
       inside_punch_range = TRANSPORT->position_is_inside_punch_range (
         units::samples (time_nfo.g_start_frame_w_offset_));

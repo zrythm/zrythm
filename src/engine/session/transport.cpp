@@ -66,40 +66,6 @@ Transport::Transport (
   punch_out_position_.set_ticks (tempo_map.musical_position_to_tick (
     { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
 
-  /* create ports */
-  roll_ = std::make_unique<dsp::MidiPort> (u8"Roll", dsp::PortFlow::Input);
-  roll_->set_symbol (u8"roll");
-  roll_->set_full_designation_provider (this);
-  // roll_->id_->flags_ |= PortIdentifier::Flags::Trigger;
-
-  stop_ = std::make_unique<dsp::MidiPort> (u8"Stop", dsp::PortFlow::Input);
-  stop_->set_symbol (u8"stop");
-  stop_->set_full_designation_provider (this);
-  // stop_->id_->flags_ |= PortIdentifier::Flags::Trigger;
-
-  backward_ =
-    std::make_unique<dsp::MidiPort> (u8"Backward", dsp::PortFlow::Input);
-  backward_->set_symbol (u8"backward");
-  backward_->set_full_designation_provider (this);
-  // backward_->id_->flags_ |= PortIdentifier::Flags::Trigger;
-
-  forward_ = std::make_unique<dsp::MidiPort> (u8"Forward", dsp::PortFlow::Input);
-  forward_->set_symbol (u8"forward");
-  forward_->set_full_designation_provider (this);
-  // forward_->id_->flags_ |= PortIdentifier::Flags::Trigger;
-
-  loop_toggle_ =
-    std::make_unique<dsp::MidiPort> (u8"Loop toggle", dsp::PortFlow::Input);
-  loop_toggle_->set_symbol (u8"loop_toggle");
-  loop_toggle_->set_full_designation_provider (this);
-  // loop_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-
-  rec_toggle_ =
-    std::make_unique<dsp::MidiPort> (u8"Rec toggle", dsp::PortFlow::Input);
-  rec_toggle_->set_symbol (u8"rec_toggle");
-  rec_toggle_->set_full_designation_provider (this);
-  // rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-
   const auto load_metronome_sample = [] (QFile f) {
     if (!f.open (QFile::ReadOnly | QFile::Text))
       {
@@ -216,21 +182,6 @@ init_from (
   obj.cue_position_.set_ticks (other.cue_position_.get_ticks ());
   obj.punch_in_position_.set_ticks (other.punch_in_position_.get_ticks ());
   obj.punch_out_position_.set_ticks (other.punch_out_position_.get_ticks ());
-
-  // TODO
-#if 0
-  // Clone ports if they exit using a lambda
-  auto clone_port = [] (const auto &port) {
-    return port ? utils::clone_unique (*port) : nullptr;
-  };
-
-  obj.roll_ = clone_port (other.roll_);
-  obj.stop_ = clone_port (other.stop_);
-  obj.backward_ = clone_port (other.backward_);
-  obj.forward_ = clone_port (other.forward_);
-  obj.loop_toggle_ = clone_port (other.loop_toggle_);
-  obj.rec_toggle_ = clone_port (other.rec_toggle_);
-#endif
 }
 
 void
@@ -362,13 +313,6 @@ Transport::position_is_inside_punch_range (const units::sample_t pos)
          && pos < punch_out_position_.get_samples ();
 }
 
-utils::Utf8String
-Transport::get_full_designation_for_port (const dsp::Port &port) const
-{
-  return utils::Utf8String::from_utf8_encoded_string (
-    fmt::format ("Transport/{}", port.get_label ()));
-}
-
 void
 Transport::moveBackward ()
 {
@@ -409,12 +353,6 @@ to_json (nlohmann::json &j, const Transport &transport)
     { Transport::kLoopEndPosKey,   transport.loop_end_position_   },
     { Transport::kPunchInPosKey,   transport.punch_in_position_   },
     { Transport::kPunchOutPosKey,  transport.punch_out_position_  },
-    { Transport::kRollKey,         transport.roll_                },
-    { Transport::kStopKey,         transport.stop_                },
-    { Transport::kBackwardKey,     transport.backward_            },
-    { Transport::kForwardKey,      transport.forward_             },
-    { Transport::kLoopToggleKey,   transport.loop_toggle_         },
-    { Transport::kRecToggleKey,    transport.rec_toggle_          },
   };
 }
 
@@ -427,11 +365,5 @@ from_json (const nlohmann::json &j, Transport &transport)
   j.at (Transport::kLoopEndPosKey).get_to (transport.loop_end_position_);
   j.at (Transport::kPunchInPosKey).get_to (transport.punch_in_position_);
   j.at (Transport::kPunchOutPosKey).get_to (transport.punch_out_position_);
-  j.at (Transport::kRollKey).get_to (*transport.roll_);
-  j.at (Transport::kStopKey).get_to (*transport.stop_);
-  j.at (Transport::kBackwardKey).get_to (*transport.backward_);
-  j.at (Transport::kForwardKey).get_to (*transport.forward_);
-  j.at (Transport::kLoopToggleKey).get_to (*transport.loop_toggle_);
-  j.at (Transport::kRecToggleKey).get_to (*transport.rec_toggle_);
 }
 }

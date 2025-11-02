@@ -98,10 +98,13 @@ Exporter::Settings::get_export_time_range () const
         return { start->position ()->ticks (), end->position ()->ticks () };
       }
     case Exporter::TimeRange::Loop:
-      return {
-        TRANSPORT->loop_start_position_.get_ticks ().in (units::ticks),
-        TRANSPORT->loop_end_position_.get_ticks ().in (units::ticks)
-      };
+      {
+        const auto &tempo_map = PROJECT->get_tempo_map ();
+        const auto  loop_range = TRANSPORT->get_loop_range_positions ();
+        return std::make_pair (
+          tempo_map.samples_to_tick (loop_range.first).in (units::ticks),
+          tempo_map.samples_to_tick (loop_range.second).in (units::ticks));
+      }
     case Exporter::TimeRange::Custom:
       return { custom_start_, custom_end_ };
     default:
@@ -191,10 +194,11 @@ Exporter::export_audio (Settings &info)
   bool  clipped = false;
   float clip_amp = 0.f;
 
-  const auto prev_playhead_ticks = TRANSPORT->playhead_.position_ticks ();
-  TRANSPORT->playhead_.set_position_ticks (units::ticks (start_pos_ticks));
+  const auto prev_playhead_ticks =
+    units::ticks (TRANSPORT->playhead ()->ticks ());
+  TRANSPORT->playhead ()->setTicks (start_pos_ticks);
   {
-    dsp::PlayheadProcessingGuard guard (TRANSPORT->playhead_);
+    dsp::PlayheadProcessingGuard guard (TRANSPORT->playhead ()->playhead ());
 
     AUDIO_ENGINE->bounce_mode_ =
       info.mode_ == Mode::Full
@@ -517,7 +521,7 @@ Exporter::prepare_tracks_for_export (
 
   AUDIO_ENGINE->exporting_ = true;
   AUDIO_ENGINE->preparing_to_export_ = false;
-  TRANSPORT->loop_ = false;
+  TRANSPORT->setLoopEnabled (false);
 
   z_info ("deactivating and reactivating plugins");
 

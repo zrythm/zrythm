@@ -270,8 +270,6 @@ public:
 
   // ==================================================================
 
-  utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
-
   Q_INVOKABLE bool isRolling () const
   {
     return play_state_ == PlayState::Rolling;
@@ -374,6 +372,33 @@ public:
 
   bool position_is_inside_punch_range (units::sample_t pos);
 
+  auto playhead_ticks_before_pause () const [[clang::blocking]]
+  {
+    return playhead_before_pause_;
+  }
+
+  /**
+   * @brief For engine use only.
+   *
+   * @param samples Samples to consume.
+   */
+  void consume_metronome_countin_samples (units::sample_t samples)
+  {
+    assert (countin_frames_remaining_ >= samples);
+    countin_frames_remaining_ -= samples;
+  }
+
+  /**
+   * @brief For engine use only.
+   *
+   * @param samples Samples to consume.
+   */
+  void consume_recording_preroll_samples (units::sample_t samples)
+  {
+    assert (recording_preroll_frames_remaining_ >= samples);
+    recording_preroll_frames_remaining_ -= samples;
+  }
+
   friend void init_from (
     Transport             &obj,
     const Transport       &other,
@@ -387,12 +412,6 @@ private:
   static constexpr auto kPunchInPosKey = "punchInPos"sv;
   static constexpr auto kPunchOutPosKey = "punchOutPos"sv;
   static constexpr auto kPositionKey = "position"sv;
-  static constexpr auto kRollKey = "roll"sv;
-  static constexpr auto kStopKey = "stop"sv;
-  static constexpr auto kBackwardKey = "backward"sv;
-  static constexpr auto kForwardKey = "forward"sv;
-  static constexpr auto kLoopToggleKey = "loopToggle"sv;
-  static constexpr auto kRecToggleKey = "recToggle"sv;
   friend void           to_json (nlohmann::json &j, const Transport &transport);
   friend void from_json (const nlohmann::json &j, Transport &transport);
 
@@ -402,7 +421,7 @@ private:
    */
   bool can_user_move_playhead () const;
 
-public:
+private:
   /** Playhead position. */
   dsp::Playhead                                    playhead_;
   utils::QObjectUniquePtr<dsp::PlayheadQmlWrapper> playhead_adapter_;
@@ -453,9 +472,6 @@ public:
   /** Metronome countin frames remaining. */
   units::sample_t countin_frames_remaining_;
 
-  /** Whether to start playback on MIDI input. */
-  bool start_playback_on_midi_input_ = false;
-
   /**
    * Position of the playhead before pausing, in ticks.
    *
@@ -463,38 +479,8 @@ public:
    */
   units::precise_tick_t playhead_before_pause_;
 
-  /**
-   * Roll/play MIDI port.
-   *
-   * Any event received on this port will request a roll.
-   */
-  std::unique_ptr<dsp::MidiPort> roll_;
-
-  /**
-   * Stop MIDI port.
-   *
-   * Any event received on this port will request a stop/pause.
-   */
-  std::unique_ptr<dsp::MidiPort> stop_;
-
-  /** Backward MIDI port. */
-  std::unique_ptr<dsp::MidiPort> backward_;
-
-  /** Forward MIDI port. */
-  std::unique_ptr<dsp::MidiPort> forward_;
-
-  /** Loop toggle MIDI port. */
-  std::unique_ptr<dsp::MidiPort> loop_toggle_;
-
-  /** Rec toggle MIDI port. */
-  std::unique_ptr<dsp::MidiPort> rec_toggle_;
-
-private:
   /** Play state. */
   PlayState play_state_{ PlayState::Paused };
-
-  /** Last timestamp the playhead position was changed manually. */
-  RtTimePoint last_manual_playhead_change_ = 0;
 
   /**
    * @brief Timer used to notify the property system of changes (e.g.

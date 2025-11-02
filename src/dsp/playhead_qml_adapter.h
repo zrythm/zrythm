@@ -25,6 +25,8 @@ public:
 
   Q_SIGNAL void ticksChanged ();
 
+  auto &playhead () const { return playhead_; }
+
 private:
   Q_SLOT void updateTicks ();
 
