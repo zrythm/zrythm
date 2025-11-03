@@ -292,6 +292,16 @@ JucePlugin::create_parameters_from_juce_plugin ()
   update_parameter_values ();
 }
 
+nframes_t
+JucePlugin::get_single_playback_latency () const
+{
+  if (juce_plugin_)
+    {
+      return juce_plugin_->getLatencySamples ();
+    }
+  return 0;
+}
+
 void
 JucePlugin::prepare_for_processing_impl (
   sample_rate_t sample_rate,
