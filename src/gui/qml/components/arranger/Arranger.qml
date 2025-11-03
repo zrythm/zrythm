@@ -162,8 +162,10 @@ Item {
   }
 
   function selectObjectsInRectangle() {
-    // Clear current selection first
-    root.arrangerSelectionModel.clear();
+    if (!root.ctrlHeld) {
+      // Clear current selection first
+      root.arrangerSelectionModel.clear();
+    }
 
     // Use recursive search to find child objects in the selection rectangle
     const selectionRect = Qt.rect(selectionRectangle.x, selectionRectangle.y, selectionRectangle.width, selectionRectangle.height);
@@ -652,7 +654,9 @@ Item {
             // handle action transitions
             if (action === Arranger.StartingSelection) {
               action = Arranger.Selecting;
-              root.arrangerSelectionModel.clear();
+              if (!root.ctrlHeld) {
+                root.arrangerSelectionModel.clear();
+              }
             } else if (action === Arranger.StartingPanning)
               action = Arranger.Panning;
             else if (action === Arranger.StartingMoving) {
