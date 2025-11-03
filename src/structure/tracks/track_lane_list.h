@@ -23,6 +23,7 @@ public:
   {
     TrackLanePtrRole = Qt::UserRole + 1,
   };
+  Q_ENUM (Roles)
 
 public:
   TrackLaneList (

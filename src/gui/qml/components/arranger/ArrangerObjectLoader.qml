@@ -39,10 +39,28 @@ Loader {
   SelectionTracker {
     id: selectionTracker
 
-    modelIndex: {
-      root.unifiedObjectsModel.addSourceModel(root.model);
-      return root.unifiedObjectsModel.mapFromSource(root.model.index(root.index, 0));
-    }
+    // Dummy property to force the unifiedModelIndex to be recalculated
+    property bool dummy: false
+
     selectionModel: root.arrangerSelectionModel
+    unifiedModelIndex: {
+      root.unifiedObjectsModel.addSourceModel(root.model);
+      const ret = root.unifiedObjectsModel.mapFromSource(root.model.index(root.index, 0));
+      dummy;
+      return ret;
+    }
+  }
+
+  // When objects are added to previous source models in the unified model, the unifiedModelIndex above is not updated, so we force an update here when objects are added/removed
+  Connections {
+    function onRowsInserted() {
+      selectionTracker.dummy = !selectionTracker.dummy;
+    }
+
+    function onRowsRemoved() {
+      selectionTracker.dummy = !selectionTracker.dummy;
+    }
+
+    target: root.unifiedObjectsModel
   }
 }

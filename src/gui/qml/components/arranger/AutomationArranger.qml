@@ -37,6 +37,10 @@ Arranger {
     return getYAtNormalizedValue(obj.value);
   }
 
+  function getObjectHeight(obj: AutomationPoint): real {
+    return 2 * Style.buttonPadding; // Height of automation points
+  }
+
   function getYAtNormalizedValue(normalizedValue: real): real {
     return (1.0 - normalizedValue) * root.height;
   }

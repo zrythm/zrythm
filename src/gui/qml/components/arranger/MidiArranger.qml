@@ -33,6 +33,10 @@ Arranger {
     return getYAtPitch(obj.pitch);
   }
 
+  function getObjectHeight(obj: MidiNote): real {
+    return root.pianoRoll.keyHeight; // Height of MIDI notes
+  }
+
   function getPitchAtY(y: real): int {
     return pianoRoll.getKeyAtY(y);
   }

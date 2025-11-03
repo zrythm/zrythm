@@ -99,6 +99,32 @@ Item {
     root.tempQmlArrangerObjects = [];
   }
 
+  function findArrangerObjectLoadersInRectRecursive(item: Item, rect: rect, recursive: bool): var {
+    var hitChildren = [];
+    recursive = recursive || false;
+
+    function checkChildren(currentItem) {
+      currentItem.children.forEach(child => {
+        if (child && child.visible && child.width > 0 && child.height > 0) {
+          if (child instanceof ArrangerObjectBaseView) {
+            const childRect = child.mapToItem(arrangerMouseArea, Qt.rect(child.x, child.y, child.width, child.height));
+            if (QmlUtils.rectanglesIntersect(rect, childRect)) {
+              hitChildren.push(child.parent as ArrangerObjectLoader);
+            }
+          }
+
+          // Recursively check children if requested
+          if (recursive && child.children.length > 0) {
+            checkChildren(child);
+          }
+        }
+      });
+    }
+
+    checkChildren(item);
+    return hitChildren;
+  }
+
   function getObjectAtCurrentIndex(): ArrangerObject {
     const unifiedIndex = root.arrangerSelectionModel.currentIndex;
     const sourceIndex = root.unifiedObjectsModel.mapToSource(unifiedIndex);
@@ -133,6 +159,22 @@ Item {
       }
       root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
     }
+  }
+
+  function selectObjectsInRectangle() {
+    // Clear current selection first
+    root.arrangerSelectionModel.clear();
+
+    // Use recursive search to find child objects in the selection rectangle
+    const selectionRect = Qt.rect(selectionRectangle.x, selectionRectangle.y, selectionRectangle.width, selectionRectangle.height);
+    const hitChildren = findArrangerObjectLoadersInRectRecursive(arrangerContent, selectionRect, true);
+
+    // Select each found object
+    hitChildren.forEach(arrangerObjectLoader => {
+      const sourceModelIndex = arrangerObjectLoader.model.index(arrangerObjectLoader.index, 0);
+      const unifiedModelIndex = root.unifiedObjectsModel.mapFromSource(sourceModelIndex);
+      arrangerObjectLoader.arrangerSelectionModel.select(unifiedModelIndex, ItemSelectionModel.Select);
+    });
   }
 
   function selectSingleObject(sourceModel: var, index: int) {
@@ -266,6 +308,7 @@ Item {
             "width": Math.max((objectTimelineEndTicks - objectTimelineTicks) * root.ruler.pxPerTick, 20),
             "y": root.getObjectY(object),
             "coordinatesOnConstruction": Qt.point(objectTimelineTicks * root.ruler.pxPerTick, root.getObjectY(object)),
+            "height": root.getObjectHeight(object),
             "z": 100
           });
 
@@ -607,9 +650,10 @@ Item {
           if (pressed) {
             // console.log("dragging inside arranger", currentCoordinates, "action:", action);
             // handle action transitions
-            if (action === Arranger.StartingSelection)
+            if (action === Arranger.StartingSelection) {
               action = Arranger.Selecting;
-            else if (action === Arranger.StartingPanning)
+              root.arrangerSelectionModel.clear();
+            } else if (action === Arranger.StartingPanning)
               action = Arranger.Panning;
             else if (action === Arranger.StartingMoving) {
               if (root.altHeld) {
@@ -634,7 +678,10 @@ Item {
             }
 
             // process current action
-            if (action === Arranger.Selecting) {} else if (action === Arranger.Panning) {
+            if (action === Arranger.Selecting) {
+              // Select all objects within the selection rectangle
+              root.selectObjectsInRectangle();
+            } else if (action === Arranger.Panning) {
               currentCoordinates.x -= dx;
               root.editorSettings.x -= dx;
               if (root.enableYScroll) {

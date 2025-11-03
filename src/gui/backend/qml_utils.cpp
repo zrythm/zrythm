@@ -307,3 +307,15 @@ QmlUtils::getAutomationRegionValues (QObject * automationRegion, int pixelWidth)
       return result;
     }
 }
+
+bool
+QmlUtils::rectanglesIntersect (QRectF a, QRectF b)
+{
+  return a.intersects (b);
+}
+
+bool
+QmlUtils::rectanglesIntersect (QRect a, QRect b)
+{
+  return a.intersects (b);
+}

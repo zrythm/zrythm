@@ -41,4 +41,7 @@ public:
 
   Q_INVOKABLE static QVector<float>
   getAutomationRegionValues (QObject * automationRegion, int pixelWidth);
+
+  Q_INVOKABLE static bool rectanglesIntersect (QRectF a, QRectF b);
+  Q_INVOKABLE static bool rectanglesIntersect (QRect a, QRect b);
 };

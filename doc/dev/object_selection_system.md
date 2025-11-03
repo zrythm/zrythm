@@ -33,7 +33,7 @@ Zrythm uses a unified selection system that handles multiple arranger object typ
 Each arranger object view integrates selection through:
 ```qml
 SelectionTracker {
-    modelIndex: unifiedObjectsModel.mapFromSource(sourceModel.index(index, 0))
+    unifiedModelIndex: unifiedObjectsModel.mapFromSource(sourceModel.index(index, 0))
     selectionModel: arrangerSelectionModel
 }
 ```

@@ -99,18 +99,106 @@ Arranger {
     return automationItem?.automationTrack ?? null;
   }
 
+  function getObjectHeight(obj: ArrangerObject): real {
+    // Determine height based on object type
+    if (obj.type === ArrangerObject.ScaleObject) {
+      return arrangerObjectTextMetrics.height + 2 * Style.buttonPadding;
+    } else if (obj.type === ArrangerObject.Marker) {
+      return arrangerObjectTextMetrics.height + 2 * Style.buttonPadding;
+    } else if (obj.type === ArrangerObject.ChordRegion) {
+      // Chord regions use the main track height minus scale objects height
+      const track = getTrackForObject(obj);
+      if (track) {
+        return track.height - (arrangerObjectTextMetrics.height + 2 * Style.buttonPadding);
+      }
+    } else if (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion) {
+      // For regions, check if lanes are visible
+      const track = getTrackForObject(obj);
+      if (track && track.lanes && track.lanes.lanesVisible) {
+        // Use lane height if lanes are visible
+        const lane = getTrackLaneForObject(obj);
+        if (lane) {
+          return lane.height;
+        }
+      }
+      // Use main track height if lanes not visible
+      if (track) {
+        return track.height;
+      }
+      return 60; // Fallback region height
+    } else {
+      return 20; // Fallback height
+    }
+  }
+
+  /**
+   * @brief Gets the Y position of an object relative to the whole timeline.
+   *
+   * This function calculates the absolute Y position of an object within the timeline,
+   * taking into account track offsets and lane positions. The returned position
+   * is relative to the entire timeline, not just the track.
+   *
+   * @param obj The arranger object to get Y position for.
+   * @return The Y position relative to the whole timeline.
+   */
   function getObjectY(obj: ArrangerObject): real {
-    return 0;
+    const track = getTrackForObject(obj);
+    if (!track)
+      return 0;
+
+    let relativeY = 0;
+
+    // Determine Y position relative to track
+    if (obj.type === ArrangerObject.ScaleObject) {
+      // Scale objects are at the bottom of the track
+      relativeY = track.height - (arrangerObjectTextMetrics.height + 2 * Style.buttonPadding);
+    } else if (obj.type === ArrangerObject.Marker) {
+      // Markers are at the top of the track
+      relativeY = track.height - (arrangerObjectTextMetrics.height + 2 * Style.buttonPadding);
+    } else if (obj.type === ArrangerObject.ChordRegion) {
+      // Chord regions are in the main track area
+      relativeY = 0;
+    } else if (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion) {
+      if (track.lanes && track.lanes.lanesVisible) {
+        const lane = getTrackLaneForObject(obj, track);
+        const trackItem = getTrackItem(track);
+        const trackLaneItem = getTrackLaneItem(lane, trackItem);
+        if (trackLaneItem) {
+          const relativePoint = trackLaneItem.mapToItem(trackItem, Qt.point(0, 0));
+          relativeY = relativePoint.y;
+        }
+      }
+    }
+
+    // Add track offset from tracksListView at the end
+    return getTrackY(track) + relativeY;
   }
 
   function getTrackAtY(y: real): Track {
-    const item = tracksListView.itemAt(0, y + tracksListView.contentY);
-    return item?.track ?? null;
+    return getTrackItemAtY(y)?.track ?? null;
+  }
+
+  // Find the track that contains this object
+  function getTrackForObject(obj: ArrangerObject): Track {
+    return tracklist.getTrackForTimelineObject(obj);
+  }
+
+  function getTrackItem(track: Track): Item {
+    for (let i = 0; i < tracksListView.count; i++) {
+      const trackDelegate = tracksListView.itemAtIndex(i);
+      if (trackDelegate?.track === track) {
+        return trackDelegate;
+      }
+    }
+  }
+
+  function getTrackItemAtY(y: real): Item {
+    return tracksListView.itemAt(0, y + tracksListView.contentY);
   }
 
   function getTrackLaneAtY(y: real): TrackLane {
     // Get the track delegate
-    const trackItem = tracksListView.itemAt(0, y + tracksListView.contentY);
+    const trackItem = getTrackItemAtY(y);
     if (!trackItem) {
       return null;
     }
@@ -136,6 +224,67 @@ Arranger {
     return laneItem?.trackLane ?? null;
   }
 
+  function getTrackLaneForObject(obj: ArrangerObject, track: Track): TrackLane {
+    // Find the lane that contains this object
+    if (!track) {
+      track = getTrackForObject(obj);
+    }
+    if (track && track.lanes) {
+      for (let i = 0; i < track.lanes.rowCount(); ++i) {
+        const lane = track.lanes.data(track.lanes.index(i, 0), TrackLaneList.TrackLanePtrRole);
+        return lane;
+      }
+    }
+    return null;
+  }
+
+  function getTrackLanesListView(trackItem: Item) : ListView
+  {
+    // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
+    const columnLayout = trackItem.children[0];
+    const laneLoader = columnLayout.children[1]; // laneRegionsLoader is second child
+    return laneLoader?.item as ListView;
+  }
+
+  function getTrackLaneItem(trackLane: TrackLane, trackItem: Item): Item {
+      const track = trackItem.track as Track;
+      if (track.lanes === null || !track.lanes.lanesVisible) {
+          return null;
+      }
+
+      const lanesListView = getTrackLanesListView(trackItem);
+      if (!lanesListView) {
+        return null;
+      }
+
+      for (let i = 0; i < lanesListView.count; ++i) {
+        const laneItem = lanesListView.itemAtIndex(i);
+        const currentLane = laneItem?.trackLane;
+        if (currentLane === trackLane) {
+          return laneItem;
+        }
+      }
+  }
+
+  /**
+   * @brief Gets the Y coordinate of a track within the arranger.
+   *
+   * @param track The track to get Y coordinate for.
+   * @return The Y coordinate relative to the whole arranger.
+   */
+  function getTrackY(track: Track): real {
+    let totalHeight = 0;
+    for (let i = 0; i < tracksListView.count; i++) {
+      const trackDelegate = tracksListView.itemAtIndex(i);
+      if (trackDelegate && trackDelegate.track === track) {
+        return totalHeight;
+      }
+      totalHeight += trackDelegate.height;
+    }
+    console.warn("Track not found");
+    return 0;
+  }
+
   function moveSelectionsY(dy: real, prevY: real) {
   }
 
@@ -159,13 +308,6 @@ Arranger {
 
       height: track.fullVisibleHeight
       width: tracksListView.width
-
-      TextMetrics {
-        id: arrangerObjectTextMetrics
-
-        font: Style.arrangerObjectTextFont
-        text: "Some text"
-      }
 
       ColumnLayout {
         id: trackSectionRows
@@ -343,14 +485,13 @@ Arranger {
                   id: mainTrackRegionLoader
 
                   arrangerSelectionModel: root.arrangerSelectionModel
+                  height: mainTrackLanedRegionsLoader.height
                   model: mainTrackLaneRegionsRepeater.model
                   pxPerTick: root.ruler.pxPerTick
                   scrollViewWidth: root.scrollViewWidth
                   scrollX: root.scrollX
-                  unifiedObjectsModel: root.unifiedObjectsModel
-                  height: mainTrackLanedRegionsLoader.height
-
                   sourceComponent: mainTrackRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
+                  unifiedObjectsModel: root.unifiedObjectsModel
 
                   Component {
                     id: midiRegionComponent
@@ -435,14 +576,13 @@ Arranger {
                   id: laneRegionLoader
 
                   arrangerSelectionModel: root.arrangerSelectionModel
+                  height: laneItem.trackLane.height
                   model: arrangerObject.type === ArrangerObject.MidiRegion ? laneItem.trackLane.midiRegions : laneItem.trackLane.audioRegions
                   pxPerTick: root.ruler.pxPerTick
                   scrollViewWidth: root.scrollViewWidth
                   scrollX: root.scrollX
-                  unifiedObjectsModel: root.unifiedObjectsModel
-                  height: laneItem.trackLane.height
-
                   sourceComponent: laneRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
+                  unifiedObjectsModel: root.unifiedObjectsModel
 
                   Component {
                     id: laneMidiRegionComponent
@@ -547,12 +687,12 @@ Arranger {
                   id: automationRegionLoader
 
                   arrangerSelectionModel: root.arrangerSelectionModel
+                  height: automationTrackItem.height
                   model: automationRegionsRepeater.model
                   pxPerTick: root.ruler.pxPerTick
                   scrollViewWidth: root.scrollViewWidth
                   scrollX: root.scrollX
                   unifiedObjectsModel: root.unifiedObjectsModel
-                  height: automationTrackItem.height
 
                   sourceComponent: Component {
                     AutomationRegionView {
@@ -592,5 +732,12 @@ Arranger {
         addPinnedFilter(root.pinned);
       }
     }
+  }
+
+  TextMetrics {
+    id: arrangerObjectTextMetrics
+
+    font: Style.arrangerObjectTextFont
+    text: "Some text"
   }
 }
