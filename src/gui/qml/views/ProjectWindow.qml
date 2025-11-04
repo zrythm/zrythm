@@ -13,6 +13,20 @@ import ZrythmStyle 1.0
 ApplicationWindow {
   id: root
 
+  property Arranger activeArranger: null
+  readonly property Action deleteAction: Action {
+    id: deleteAction
+
+    enabled: root.activeArranger !== null
+    shortcut: StandardKey.Delete
+    text: qsTr("&Delete")
+
+    onTriggered: {
+      if (root.activeArranger) {
+        root.activeArranger.deleteSelectedObjects();
+      }
+    }
+  }
   required property DeviceManager deviceManager
   required property Project project
   required property SettingsManager settingsManager

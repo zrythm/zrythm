@@ -99,6 +99,10 @@ Item {
     root.tempQmlArrangerObjects = [];
   }
 
+  function deleteSelectedObjects() {
+    console.log("Delete triggered on", root);
+  }
+
   function findArrangerObjectLoadersInRectRecursive(item: Item, rect: rect, recursive: bool): var {
     var hitChildren = [];
     recursive = recursive || false;
@@ -378,11 +382,23 @@ Item {
     Item {
       id: arrangerContent
 
+      readonly property var appWindow: ApplicationWindow.window
+      property bool arrangerIsActive: activeFocus
+
       height: 600 // TODO: calculate height
 
       width: root.ruler.contentWidth
 
       ContextMenu.menu: Menu {
+        onAboutToHide: {
+          arrangerContent.arrangerIsActive = Qt.binding(function () {
+            return arrangerContent.activeFocus;
+          });
+        }
+        onAboutToShow: {
+          arrangerContent.arrangerIsActive = true;
+        }
+
         MenuItem {
           text: qsTr("Copy")
 
@@ -396,10 +412,15 @@ Item {
         }
 
         MenuItem {
-          text: qsTr("Delete")
-
-          onTriggered: {}
+          action: arrangerContent.appWindow.deleteAction
         }
+      }
+
+      onActiveFocusChanged: {
+        console.log("active focus", activeFocus, root);
+      }
+      onArrangerIsActiveChanged: {
+        appWindow.activeArranger = arrangerIsActive ? root : null;
       }
 
       Image {
@@ -718,6 +739,7 @@ Item {
           startCoordinates = Qt.point(mouse.x, mouse.y);
           currentCoordinates = startCoordinates;
           console.log("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
+          arrangerContent.forceActiveFocus();
           if (action === Arranger.None) {
             if (mouse.button === Qt.MiddleButton) {
               action = Arranger.StartingPanning;
