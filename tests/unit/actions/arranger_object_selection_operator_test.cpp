@@ -590,10 +590,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
   for (const auto &id : deleted_object_ids)
     {
       // Check if the object exists in either owner
-      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::Marker>::contains_object (id);
+      bool found_in_midi_note_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::Marker>::contains_object (id);
       EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner);
     }
 
@@ -608,10 +610,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
   for (const auto &id : deleted_object_ids)
     {
       // Check if the object exists in either owner
-      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::Marker>::contains_object (id);
+      bool found_in_midi_note_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::Marker>::contains_object (id);
       EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
         << "Object should have been deleted";
     }
@@ -702,10 +706,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
   for (const auto &id : deleted_object_ids)
     {
       // Check if the object exists in either owner
-      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::Marker>::contains_object (id);
+      bool found_in_midi_note_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::Marker>::contains_object (id);
       EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner);
     }
 
@@ -723,10 +729,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
   for (const auto &id : deleted_object_ids)
     {
       // Check if the object exists in either owner
-      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::Marker>::contains_object (id);
+      bool found_in_midi_note_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::Marker>::contains_object (id);
       EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
         << "Object should have been deleted";
     }
@@ -739,10 +747,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
   for (const auto &id : deleted_object_ids)
     {
       // Check if the object exists in either owner
-      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::Marker>::contains_object (id);
+      bool found_in_midi_note_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::Marker>::contains_object (id);
       EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner)
         << "Object should have been restored after undo";
     }
@@ -755,10 +765,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
   for (const auto &id : deleted_object_ids)
     {
       // Check if the object exists in either owner
-      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
-        structure::arrangement::Marker>::contains_object (id);
+      bool found_in_midi_note_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner =
+        mock_owner_->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::Marker>::contains_object (id);
       EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
         << "Object should have been deleted again after redo";
     }
