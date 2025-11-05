@@ -75,6 +75,7 @@ QtObject {
   readonly property color jonquilYellowColor: "#FFD100"
   readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
   readonly property color munsellRed: "#FF0040"
+  readonly property color electricPurple: "#A654F7"
   readonly property font normalTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 12,

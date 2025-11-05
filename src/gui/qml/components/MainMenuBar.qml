@@ -10,16 +10,12 @@ import ZrythmStyle 1.0
 MenuBar {
   id: root
 
+  required property AboutDialog aboutDialog
   required property DeviceManager deviceManager
   required property Project project
-  required property AboutDialog aboutDialog
 
   Menu {
     title: qsTr("&File")
-
-    Action {
-      text: qsTr("New Long Long Long Long Long Long Long Long Long Name")
-    }
 
     Action {
       text: qsTr("Open")
@@ -145,6 +141,14 @@ MenuBar {
 
           onTriggered: {
             Style.primaryColor = Style.gunmetalColor;
+          }
+        }
+
+        Action {
+          text: qsTr("Electric Purple")
+
+          onTriggered: {
+            Style.primaryColor = Style.electricPurple;
           }
         }
       }
