@@ -3,33 +3,28 @@
 
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
+#include "commands/remove_arranger_object_command.h"
+#include "structure/tracks/tracklist.h"
+#include "utils/logger.h"
 #include "utils/math.h"
 
 namespace zrythm::actions
 {
-ArrangerObjectSelectionOperator::ArrangerObjectSelectionOperator (
-  QObject * parent)
-    : QObject (parent)
+
+ArrangerObjectSelectionOperator ::ArrangerObjectSelectionOperator (
+  undo::UndoStack     &undoStack,
+  QItemSelectionModel &selectionModel,
+  ObjectOwnerProvider  objectOwnerProvider,
+  QObject *            parent)
+    : QObject (parent), undo_stack_ (undoStack),
+      selection_model_ (selectionModel),
+      object_owner_provider_ (std::move (objectOwnerProvider))
 {
 }
 
 bool
 ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
 {
-  // Validation checks
-  if (undo_stack_ == nullptr)
-    {
-      qWarning () << "UndoStack not set for ArrangerObjectSelectionOperator";
-      return false;
-    }
-
-  if (selection_model_ == nullptr)
-    {
-      qWarning ()
-        << "SelectionModel not set for ArrangerObjectSelectionOperator";
-      return false;
-    }
-
   if (tick_delta == 0.0)
     {
       // No movement needed
@@ -40,22 +35,22 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
   auto selected_objects = extractSelectedObjects ();
   if (selected_objects.empty ())
     {
-      qWarning () << "No objects selected for movement";
+      z_warning ("No objects selected for movement");
       return false;
     }
 
   // Validate object bounds (don't move objects before timeline start)
   if (!validateHorizontalMovement (selected_objects, tick_delta))
     {
-      qWarning ()
-        << "Movement validation failed - objects would be moved before timeline start";
+      z_warning (
+        "Movement validation failed - objects would be moved before timeline start");
       return false;
     }
 
   // Create and push command
   auto * command = new commands::MoveArrangerObjectsCommand (
     std::move (selected_objects), units::ticks (tick_delta));
-  undo_stack_->push (command);
+  undo_stack_.push (command);
 
   return true;
 }
@@ -67,6 +62,57 @@ ArrangerObjectSelectionOperator::moveNotesByPitch (int pitch_delta)
 }
 
 bool
+ArrangerObjectSelectionOperator::deleteObjects ()
+{
+
+  // Extract selected objects from selection model
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected to delete");
+      return false;
+    }
+
+  // Check for undeletable objects
+  const auto all_deletable =
+    std::ranges::all_of (selected_objects, [] (const auto &obj_ref) {
+      return std::visit (
+        [] (const auto &obj) {
+          return structure::arrangement::is_arranger_object_deletable (*obj);
+        },
+        obj_ref.get_object ());
+    });
+  if (!all_deletable)
+    {
+      z_warning ("Some selected objects cannot be deleted");
+      return false;
+    }
+
+  // Create and push command
+  undo_stack_.beginMacro (
+    QObject::tr ("Delete %1 Objects").arg (selected_objects.size ()));
+  for (const auto &obj_ref : selected_objects)
+    {
+      auto owner_var = object_owner_provider_ (obj_ref.get_object ());
+      std::visit (
+        [&] (auto &owner) {
+          if (owner == nullptr)
+            {
+              z_warning ("No owner found for object {}", obj_ref.id ());
+              return;
+            }
+          auto * command =
+            new commands::RemoveArrangerObjectCommand (*owner, obj_ref);
+          undo_stack_.push (command);
+        },
+        owner_var);
+    }
+  undo_stack_.endMacro ();
+
+  return true;
+}
+
+bool
 ArrangerObjectSelectionOperator::moveAutomationPointsByDelta (double delta)
 {
   return process_vertical_move (delta);
@@ -75,19 +121,6 @@ ArrangerObjectSelectionOperator::moveAutomationPointsByDelta (double delta)
 bool
 ArrangerObjectSelectionOperator::process_vertical_move (double delta)
 {
-  // Validation checks
-  if (undo_stack_ == nullptr)
-    {
-      qWarning () << "UndoStack not set for ArrangerObjectSelectionOperator";
-      return false;
-    }
-
-  if (selection_model_ == nullptr)
-    {
-      qWarning ()
-        << "SelectionModel not set for ArrangerObjectSelectionOperator";
-      return false;
-    }
 
   if (utils::math::floats_equal (delta, 0.0))
     {
@@ -99,22 +132,22 @@ ArrangerObjectSelectionOperator::process_vertical_move (double delta)
   auto selected_objects = extractSelectedObjects ();
   if (selected_objects.empty ())
     {
-      qWarning () << "No objects selected for movement";
+      z_warning ("No objects selected for movement");
       return false;
     }
 
   // Validate object vertical bounds
   if (!validateVerticalMovement (selected_objects, delta))
     {
-      qWarning ()
-        << "Movement validation failed - objects would be moved outside bounds";
+      z_warning (
+        "Movement validation failed - objects would be moved outside bounds");
       return false;
     }
 
   // Create and push command
   auto * command = new commands::MoveArrangerObjectsCommand (
     std::move (selected_objects), units::ticks (0), delta);
-  undo_stack_->push (command);
+  undo_stack_.push (command);
 
   return true;
 }
@@ -125,12 +158,7 @@ ArrangerObjectSelectionOperator::extractSelectedObjects () const
 {
   SelectedObjectsVector objects;
 
-  if (selection_model_ == nullptr)
-    {
-      return objects;
-    }
-
-  const auto selected_indexes = selection_model_->selectedIndexes ();
+  const auto selected_indexes = selection_model_.selectedIndexes ();
   for (const auto &index : selected_indexes)
     {
       // Get the object from the model index

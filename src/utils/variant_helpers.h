@@ -182,3 +182,25 @@ template <class... Ts> struct overload : Ts...
 {
   using Ts::operator()...;
 };
+
+/** @brief Helper struct to convert a variant to a variant of
+ * ArrangerObjectOwner<T> */
+template <typename Variant, template <typename> class Wrapper>
+struct wrap_variant_impl;
+
+/** @brief Specialization for std::variant */
+template <typename... Ts, template <typename> class Wrapper>
+struct wrap_variant_impl<std::variant<Ts...>, Wrapper>
+{
+  /** @brief The resulting variant type with wrapped types */
+  using type = std::variant<Wrapper<Ts>...>;
+};
+
+/**
+ * @brief Converts a variant to a variant where each type is wrapped by
+ * Wrapper<T>
+ * @tparam Variant The original variant type
+ * @tparam Wrapper The template class to wrap each type with
+ */
+template <typename Variant, template <typename> class Wrapper>
+using wrap_variant_t = typename wrap_variant_impl<Variant, Wrapper>::type;

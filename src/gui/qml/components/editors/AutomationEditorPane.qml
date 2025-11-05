@@ -14,6 +14,7 @@ GridLayout {
   required property ClipEditor clipEditor
   required property Project project
   required property AutomationRegion region
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.project.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
   columnSpacing: 0
   columns: 3
@@ -89,13 +90,6 @@ GridLayout {
     }
   }
 
-  ArrangerObjectSelectionOperator {
-    id: selectionOperator
-
-    selectionModel: arrangerSelectionModel
-    undoStack: root.project.undoStack
-  }
-
   AutomationArranger {
     id: automationArranger
 
@@ -107,7 +101,7 @@ GridLayout {
     clipEditor: root.clipEditor
     objectCreator: root.project.arrangerObjectCreator
     ruler: ruler
-    selectionOperator: selectionOperator
+    selectionOperator: root.selectionOperator
     snapGrid: root.project.snapGridEditor
     tempoMap: root.project.tempoMap
     tool: root.project.tool

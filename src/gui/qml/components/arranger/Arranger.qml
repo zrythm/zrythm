@@ -80,7 +80,7 @@ Item {
   property var tempQmlArrangerObjects: []
   required property TempoMap tempoMap
   required property var tool
-  required property var transport
+  required property Transport transport
   required property UndoStack undoStack
   required property UnifiedArrangerObjectsModel unifiedObjectsModel
 
@@ -97,10 +97,6 @@ Item {
 
     // Clear the current array
     root.tempQmlArrangerObjects = [];
-  }
-
-  function deleteSelectedObjects() {
-    console.log("Delete triggered on", root);
   }
 
   function findArrangerObjectLoadersInRectRecursive(item: Item, rect: rect, recursive: bool): var {

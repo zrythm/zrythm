@@ -33,15 +33,12 @@ Tracklist::getTrackForTimelineObject (
         auto * chord_track = singleton_tracks_->chordTrack ();
         if (chord_track != nullptr)
           {
-            for (
-              auto * chord_region :
-              chord_track->arrangement::ArrangerObjectOwner<
-                arrangement::ChordRegion>::get_children_view ())
+            if (
+              chord_track->arrangement::
+                ArrangerObjectOwner<arrangement::ChordRegion>::contains_object (
+                  arrangerObject->get_uuid ()))
               {
-                if (chord_region->get_uuid () == arrangerObject->get_uuid ())
-                  {
-                    return chord_track;
-                  }
+                return chord_track;
               }
           }
         break;
@@ -52,15 +49,12 @@ Tracklist::getTrackForTimelineObject (
         auto * chord_track = singleton_tracks_->chordTrack ();
         if (chord_track != nullptr)
           {
-            for (
-              auto * scale_object :
-              chord_track->arrangement::ArrangerObjectOwner<
-                arrangement::ScaleObject>::get_children_view ())
+            if (
+              chord_track->arrangement::
+                ArrangerObjectOwner<arrangement::ScaleObject>::contains_object (
+                  arrangerObject->get_uuid ()))
               {
-                if (scale_object->get_uuid () == arrangerObject->get_uuid ())
-                  {
-                    return chord_track;
-                  }
+                return chord_track;
               }
           }
         break;
@@ -71,12 +65,11 @@ Tracklist::getTrackForTimelineObject (
         auto * marker_track = singleton_tracks_->markerTrack ();
         if (marker_track != nullptr)
           {
-            for (auto * marker : marker_track->get_children_view ())
+            if (
+              marker_track->arrangement::ArrangerObjectOwner<arrangement::Marker>::
+                contains_object (arrangerObject->get_uuid ()))
               {
-                if (marker->get_uuid () == arrangerObject->get_uuid ())
-                  {
-                    return marker_track;
-                  }
+                return marker_track;
               }
           }
         break;
@@ -93,30 +86,20 @@ Tracklist::getTrackForTimelineObject (
                 for (auto * lane : track->lanes ()->lanes_view ())
                   {
                     // Check MIDI regions
-                    for (
-                      auto * midi_region :
+                    if (
                       lane->arrangement::ArrangerObjectOwner<
-                        arrangement::MidiRegion>::get_children_view ())
+                        arrangement::MidiRegion>::
+                        contains_object (arrangerObject->get_uuid ()))
                       {
-                        if (
-                          midi_region->get_uuid ()
-                          == arrangerObject->get_uuid ())
-                          {
-                            return track;
-                          }
+                        return track;
                       }
                     // Check Audio regions
-                    for (
-                      auto * audio_region :
+                    if (
                       lane->arrangement::ArrangerObjectOwner<
-                        arrangement::AudioRegion>::get_children_view ())
+                        arrangement::AudioRegion>::
+                        contains_object (arrangerObject->get_uuid ()))
                       {
-                        if (
-                          audio_region->get_uuid ()
-                          == arrangerObject->get_uuid ())
-                          {
-                            return track;
-                          }
+                        return track;
                       }
                   }
               }
@@ -135,17 +118,12 @@ Tracklist::getTrackForTimelineObject (
                   auto * automation_track :
                   track->automationTracklist ()->automation_tracks ())
                   {
-                    for (
-                      auto * automation_region :
+                    if (
                       automation_track->arrangement::ArrangerObjectOwner<
-                        arrangement::AutomationRegion>::get_children_view ())
+                        arrangement::AutomationRegion>::
+                        contains_object (arrangerObject->get_uuid ()))
                       {
-                        if (
-                          automation_region->get_uuid ()
-                          == arrangerObject->get_uuid ())
-                          {
-                            return track;
-                          }
+                        return track;
                       }
                   }
               }
@@ -180,6 +158,50 @@ Tracklist::getTrackForTimelineObject (
         // track
         break;
       }
+    }
+  return nullptr;
+}
+
+TrackLane *
+Tracklist::getTrackLaneForObject (
+  const arrangement::ArrangerObject * timelineObject) const
+{
+  switch (timelineObject->type ())
+    {
+    case arrangement::ArrangerObject::Type::MidiRegion:
+    case arrangement::ArrangerObject::Type::AudioRegion:
+      {
+        // Search through all tracks with lanes for this region
+        for (const auto &track_var : collection ()->get_track_span ())
+          {
+            auto * track = tracks::from_variant (track_var);
+            if (track->lanes () != nullptr)
+              {
+                for (auto * lane : track->lanes ()->lanes_view ())
+                  {
+                    // Check MIDI regions
+                    if (
+                      lane->arrangement::ArrangerObjectOwner<
+                        arrangement::MidiRegion>::
+                        contains_object (timelineObject->get_uuid ()))
+                      {
+                        return lane;
+                      }
+                    // Check Audio regions
+                    if (
+                      lane->arrangement::ArrangerObjectOwner<
+                        arrangement::AudioRegion>::
+                        contains_object (timelineObject->get_uuid ()))
+                      {
+                        return lane;
+                      }
+                  }
+              }
+          }
+        break;
+      }
+    default:
+      break;
     }
   return nullptr;
 }

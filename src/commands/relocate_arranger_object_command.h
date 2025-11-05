@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
 
 #include <QUndoCommand>

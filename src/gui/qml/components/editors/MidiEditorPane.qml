@@ -16,6 +16,7 @@ GridLayout {
   required property PianoRoll pianoRoll
   required property Project project
   required property MidiRegion region
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.project.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
   columnSpacing: 0
   columns: 3
@@ -89,8 +90,8 @@ GridLayout {
     PianoRollKeys {
       id: pianoRollKeys
 
-      pianoRoll: root.pianoRoll
       height: implicitHeight
+      pianoRoll: root.pianoRoll
     }
 
     Synchronizer {
@@ -125,31 +126,24 @@ GridLayout {
     }
   }
 
-  ArrangerObjectSelectionOperator {
-    id: selectionOperator
-
-    selectionModel: arrangerSelectionModel
-    undoStack: root.project.undoStack
-  }
-
   MidiArranger {
     id: midiArranger
 
     Layout.fillHeight: true
     Layout.fillWidth: true
+    arrangerContentHeight: pianoRollKeys.height
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
     objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
-    selectionOperator: selectionOperator
+    selectionOperator: root.selectionOperator
     snapGrid: root.project.snapGridEditor
     tempoMap: root.project.tempoMap
     tool: root.project.tool
     transport: root.project.transport
     undoStack: root.project.undoStack
     unifiedObjectsModel: unifiedObjectsModel
-    arrangerContentHeight: pianoRollKeys.height
   }
 
   Rectangle {
@@ -168,7 +162,7 @@ GridLayout {
     objectCreator: root.project.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
-    selectionOperator: selectionOperator
+    selectionOperator: root.selectionOperator
     snapGrid: root.project.snapGridEditor
     tempoMap: root.project.tempoMap
     tool: root.project.tool

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "actions/arranger_object_creator.h"
+#include "actions/arranger_object_selection_operator.h"
 #include "actions/track_creator.h"
 #include "dsp/audio_pool.h"
 #include "dsp/metronome.h"
@@ -358,6 +359,10 @@ public:
    *
    */
   Q_INVOKABLE void activate ();
+
+  Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
+              createArrangerObjectSelectionOperator (
+                QItemSelectionModel * selectionModel) const;
 
   /**
    * @brief Adds the default undeletable tracks to the project.

@@ -275,20 +275,6 @@ stretch_region_contents (RegionT &r, double ratio)
 #endif
 }
 
-template <FinalArrangerObjectSubclass ObjT>
-bool
-is_arranger_object_deletable (const ObjT &obj)
-{
-  if constexpr (std::is_same_v<ObjT, Marker>)
-    {
-      return obj.markerType () == Marker::MarkerType::Custom;
-    }
-  else
-    {
-      return true;
-    }
-}
-
 /**
  * @brief Track span that offers helper methods on a range of tracks.
  */

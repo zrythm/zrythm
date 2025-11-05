@@ -1639,6 +1639,44 @@ Project::clone (bool for_backup) const
   return ret;
 }
 
+actions::ArrangerObjectSelectionOperator *
+Project::createArrangerObjectSelectionOperator (
+  QItemSelectionModel * selectionModel) const
+{
+  // FIXME: this method should be someplace else - Project has too many concerns
+  // currently
+  auto * sel_operator = new actions::ArrangerObjectSelectionOperator (
+    *undo_stack_, *selectionModel,
+    [this] (structure::arrangement::ArrangerObjectPtrVariant obj_var) {
+      return std::visit (
+        [&] (const auto &obj)
+          -> actions::ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+          using ObjT = base_type<decltype (obj)>;
+          if constexpr (structure::arrangement::LaneOwnedObject<ObjT>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                ObjT> *> (tracklist ()->getTrackLaneForObject (obj));
+            }
+          else if constexpr (structure::arrangement::TimelineObject<ObjT>)
+            {
+              return dynamic_cast<structure::arrangement::ArrangerObjectOwner<
+                ObjT> *> (tracklist ()->getTrackForTimelineObject (obj));
+            }
+          else
+            {
+              return dynamic_cast<structure::arrangement::ArrangerObjectOwner<
+                ObjT> *> (obj->parentObject ());
+            }
+        },
+        obj_var);
+    });
+
+  // Transfer ownership to QML JavaScript engine for proper cleanup
+  QQmlEngine::setObjectOwnership (sel_operator, QQmlEngine::JavaScriptOwnership);
+
+  return sel_operator;
+}
+
 void
 to_json (nlohmann::json &j, const Project &project)
 {

@@ -15,6 +15,21 @@
 
 namespace zrythm::structure::arrangement
 {
+
+template <FinalArrangerObjectSubclass ObjT>
+bool
+is_arranger_object_deletable (const ObjT &obj)
+{
+  if constexpr (std::is_same_v<ObjT, Marker>)
+    {
+      return obj.markerType () == Marker::MarkerType::Custom;
+    }
+  else
+    {
+      return true;
+    }
+}
+
 /**
  * @brief Fills MIDI event queue from this MIDI or Chord region.
  *

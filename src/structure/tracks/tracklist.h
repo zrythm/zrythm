@@ -59,6 +59,8 @@ public:
 
   Q_INVOKABLE Track * getTrackForTimelineObject (
     const arrangement::ArrangerObject * timelineObject) const;
+  Q_INVOKABLE TrackLane * getTrackLaneForObject (
+    const arrangement::ArrangerObject * timelineObject) const;
 
   TrackRouting * trackRouting () const { return track_routing_.get (); }
 

@@ -141,6 +141,8 @@ ColumnLayout {
         sourceComponent: ColumnLayout {
           id: timelinePane
 
+          readonly property ArrangerObjectSelectionOperator selectionOperator: root.project.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+
           spacing: 1
 
           Ruler {
@@ -191,7 +193,7 @@ ColumnLayout {
             objectCreator: root.project.arrangerObjectCreator
             pinned: true
             ruler: ruler
-            selectionOperator: selectionOperator
+            selectionOperator: timelinePane.selectionOperator
             snapGrid: root.project.snapGridTimeline
             tempoMap: root.project.tempoMap
             timeline: root.project.timeline
@@ -245,13 +247,6 @@ ColumnLayout {
             }
           }
 
-          ArrangerObjectSelectionOperator {
-            id: selectionOperator
-
-            selectionModel: arrangerSelectionModel
-            undoStack: root.project.undoStack
-          }
-
           Timeline {
             id: unpinnedTimelineArranger
 
@@ -262,7 +257,7 @@ ColumnLayout {
             objectCreator: root.project.arrangerObjectCreator
             pinned: false
             ruler: ruler
-            selectionOperator: selectionOperator
+            selectionOperator: timelinePane.selectionOperator
             snapGrid: root.project.snapGridTimeline
             tempoMap: root.project.tempoMap
             timeline: root.project.timeline

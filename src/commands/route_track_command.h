@@ -5,7 +5,7 @@
 
 #include <utility>
 
-#include "structure/tracks/track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/track_routing.h"
 
 #include <QUndoCommand>

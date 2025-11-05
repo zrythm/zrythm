@@ -5,6 +5,7 @@
 
 #include "structure/arrangement/arranger_object.h"
 #include "undo/undo_stack.h"
+#include "utils/variant_helpers.h"
 
 #include <QItemSelectionModel>
 #include <QtQmlIntegration>
@@ -14,55 +15,31 @@ namespace zrythm::actions
 class ArrangerObjectSelectionOperator : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY (
-    zrythm::undo::UndoStack * undoStack READ undoStack WRITE setUndoStack NOTIFY
-      undoStackChanged)
-  Q_PROPERTY (
-    QItemSelectionModel * selectionModel READ selectionModel WRITE
-      setSelectionModel NOTIFY selectionModelChanged)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
   using SelectedObjectsVector =
     std::vector<structure::arrangement::ArrangerObjectUuidReference>;
+  using ArrangerObjectOwnerPtrVariant = to_pointer_variant<wrap_variant_t<
+    structure::arrangement::ArrangerObjectVariant,
+    structure::arrangement::ArrangerObjectOwner>>;
+  using ObjectOwnerProvider = std::function<ArrangerObjectOwnerPtrVariant (
+    structure::arrangement::ArrangerObjectPtrVariant)>;
 
-  explicit ArrangerObjectSelectionOperator (QObject * parent = nullptr);
-
-  undo::UndoStack * undoStack () const { return undo_stack_; }
-  void              setUndoStack (undo::UndoStack * undoStack)
-  {
-    if (undoStack == nullptr)
-      {
-        throw std::invalid_argument ("UndoStack cannot be null");
-      }
-    if (undo_stack_ != undoStack)
-      {
-        undo_stack_ = undoStack;
-        Q_EMIT undoStackChanged ();
-      }
-  }
-  Q_SIGNAL void undoStackChanged ();
-
-  QItemSelectionModel * selectionModel () const { return selection_model_; }
-  void                  setSelectionModel (QItemSelectionModel * selectionModel)
-  {
-    if (selectionModel == nullptr)
-      {
-        throw std::invalid_argument ("SelectionModel cannot be null");
-      }
-    if (selection_model_ != selectionModel)
-      {
-        selection_model_ = selectionModel;
-        Q_EMIT selectionModelChanged ();
-      }
-  }
-  Q_SIGNAL void selectionModelChanged ();
+  explicit ArrangerObjectSelectionOperator (
+    undo::UndoStack     &undoStack,
+    QItemSelectionModel &selectionModel,
+    ObjectOwnerProvider  objectOwnerProvider,
+    QObject *            parent = nullptr);
 
   Q_INVOKABLE bool moveByTicks (double tick_delta);
 
   Q_INVOKABLE bool moveNotesByPitch (int pitch_delta);
 
   Q_INVOKABLE bool moveAutomationPointsByDelta (double delta);
+
+  Q_INVOKABLE bool deleteObjects ();
 
 private:
   auto extractSelectedObjects () const -> SelectedObjectsVector;
@@ -76,8 +53,9 @@ private:
   bool process_vertical_move (double delta);
 
 private:
-  undo::UndoStack *     undo_stack_{};
-  QItemSelectionModel * selection_model_{};
+  undo::UndoStack     &undo_stack_;
+  QItemSelectionModel &selection_model_;
+  ObjectOwnerProvider  object_owner_provider_;
 };
 
 } // namespace zrythm::actions

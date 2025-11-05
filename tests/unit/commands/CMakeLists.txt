@@ -10,6 +10,7 @@ add_executable(zrythm_commands_unit_tests
   move_arranger_objects_command_test.cpp
   move_plugin_command_test.cpp
   relocate_arranger_object_command_test.cpp
+  remove_arranger_object_command_test.cpp
   rename_track_command_test.cpp
   route_track_command_test.cpp
 )

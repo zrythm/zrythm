@@ -5,21 +5,27 @@ qt_add_library(zrythm_commands_lib STATIC)
 
 target_sources(zrythm_commands_lib
   PRIVATE
-    add_arranger_object_command.h
-    add_region_to_clip_slot_command.h
-    add_track_command.h
-    route_track_command.h
-    change_parameter_value_command.h
-    change_track_color_command.h
-    move_arranger_objects_command.h
-    move_plugin_command.h
     move_plugin_command.cpp
-    relocate_arranger_object_command.h
-    rename_track_command.h
+  PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS ".."
+    FILES
+      add_arranger_object_command.h
+      add_region_to_clip_slot_command.h
+      add_track_command.h
+      route_track_command.h
+      change_parameter_value_command.h
+      change_track_color_command.h
+      move_arranger_objects_command.h
+      move_plugin_command.h
+      relocate_arranger_object_command.h
+      remove_arranger_object_command.h
+      rename_track_command.h
 )
 
 set_target_properties(zrythm_commands_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+  VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
 target_precompile_headers(zrythm_commands_lib PUBLIC

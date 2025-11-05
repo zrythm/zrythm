@@ -4,8 +4,11 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
+#include "structure/arrangement/arranger_object_owner.h"
 
+#include "unit/actions/arranger_object_selection_operator_test.h"
 #include "unit/actions/mock_undo_stack.h"
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 namespace zrythm::actions
@@ -39,13 +42,54 @@ protected:
     // Create undo stack
     undo_stack_ = create_mock_undo_stack ();
 
-    // Create operator
-    operator_ = std::make_unique<ArrangerObjectSelectionOperator> ();
-    operator_->setUndoStack (undo_stack_.get ());
-
     // Create selection model and set up with test objects
     selection_model_ = std::make_unique<QItemSelectionModel> (&list_model_);
-    operator_->setSelectionModel (selection_model_.get ());
+
+    // Create mock owner for testing
+    mock_owner_ = std::make_unique<MockArrangerObjectOwner> (
+      object_registry,
+      // Note: We need a FileAudioSourceRegistry, but for testing purposes
+      // we can create a dummy one or use a dependency injection approach
+      [] () -> dsp::FileAudioSourceRegistry & {
+        static dsp::FileAudioSourceRegistry dummy_registry;
+        return dummy_registry;
+      }());
+
+    // Add the objects to the mock owner
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::add_object (marker_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::add_object (note_ref);
+
+    // Create mock object owner provider that returns our mock owner
+    auto mock_owner_provider =
+      [this] (structure::arrangement::ArrangerObjectPtrVariant obj_var)
+      -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+      return std::visit (
+        [&] (auto &&obj)
+          -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                ObjectT> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::Marker *>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                ObjectT> *> (mock_owner_.get ());
+            }
+          return static_cast<
+            structure::arrangement::ArrangerObjectOwner<ObjectT> *> (nullptr);
+        },
+        obj_var);
+    };
+
+    // Create operator
+    operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
+      *undo_stack_, *selection_model_, mock_owner_provider);
 
     // Select all objects
     selection_model_->select (
@@ -62,13 +106,12 @@ protected:
   std::unique_ptr<ArrangerObjectSelectionOperator> operator_;
   structure::arrangement::ArrangerObjectListModel  list_model_{ test_objects_ };
   std::unique_ptr<QItemSelectionModel>             selection_model_;
+  std::unique_ptr<MockArrangerObjectOwner>         mock_owner_;
 };
 
 // Test initial state after construction
 TEST_F (ArrangerObjectSelectionOperatorTest, InitialState)
 {
-  EXPECT_EQ (operator_->undoStack (), undo_stack_.get ());
-  EXPECT_EQ (operator_->selectionModel (), selection_model_.get ());
   EXPECT_EQ (undo_stack_->count (), 0);
 }
 
@@ -94,7 +137,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
     }
 
   // Command should be pushed to undo stack
-  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 1);
 }
 
 // Test moveByTicks with negative delta
@@ -127,7 +170,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
     }
 
   // Command should be pushed to undo stack
-  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 1);
 }
 
 // Test moveByTicks with zero delta (no-op)
@@ -149,7 +192,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
     }
 
   // No command should be pushed for zero delta
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test moveByTicks with no selection (no-op)
@@ -162,7 +205,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNoSelection)
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test moveByTicks with invalid movement (before timeline start)
@@ -192,7 +235,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
     }
 
   // No command should be pushed for invalid movement
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test undo/redo functionality
@@ -203,7 +246,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   // Move objects
   bool result = operator_->moveByTicks (tick_delta);
   EXPECT_TRUE (result);
-  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 1);
 
   // Verify objects moved
   for (size_t i = 0; i < test_objects_.size (); ++i)
@@ -286,7 +329,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
     }
 
   // Command should be pushed to undo stack
-  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 1);
 
   // Test undo/redo
   undo_stack_->undo ();
@@ -336,7 +379,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
   test_objects_.get<structure::arrangement::random_access_index> ().push_back (
     automation_point_ref);
 
-  // Update list model and select the automation point
+  // Update list model and select automation point
   selection_model_->select (
     list_model_.index (2, 0), QItemSelectionModel::Select);
 
@@ -361,7 +404,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
     }
 
   // Command should be pushed to undo stack
-  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 1);
 
   // Test undo/redo
   undo_stack_->undo ();
@@ -405,7 +448,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchNoSelection)
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test moveNotesByPitch with zero delta (no-op)
@@ -415,13 +458,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
   EXPECT_TRUE (result);
 
   // No command should be pushed for zero delta
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test moveNotesByPitch with invalid pitch (out of range)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
 {
-  // Find the MIDI note and set its pitch to 125 (close to max)
+  // Find MIDI note and set its pitch to 125 (close to max)
   int original_pitch = 0;
   for (const auto &obj_ref : test_objects_)
     {
@@ -458,7 +501,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
     }
 
   // No command should be pushed for invalid movement
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test moveAutomationPointsByDelta with no selection (no-op)
@@ -473,7 +516,7 @@ TEST_F (
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test moveAutomationPointsByDelta with zero delta (no-op)
@@ -483,7 +526,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelt
   EXPECT_TRUE (result);
 
   // No command should be pushed for zero delta
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
 // Test moveAutomationPointsByDelta with invalid value (out of range)
@@ -503,7 +546,7 @@ TEST_F (
   test_objects_.get<structure::arrangement::random_access_index> ().push_back (
     automation_point_ref);
 
-  // Update list model and select the automation point
+  // Update list model and select automation point
   selection_model_->select (
     list_model_.index (2, 0), QItemSelectionModel::Select);
 
@@ -527,87 +570,198 @@ TEST_F (
     }
 
   // No command should be pushed for invalid movement
-  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
 }
 
-// Test moveByTicks without undo stack set (should return false)
-TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksWithoutUndoStack)
+// Test deleteObjects with valid selection
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
 {
-  auto operator_no_stack = std::make_unique<ArrangerObjectSelectionOperator> ();
-  operator_no_stack->setSelectionModel (selection_model_.get ());
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
 
-  bool result = operator_no_stack->moveByTicks (100.0);
+  // Store the UUIDs of objects to be deleted
+  std::vector<structure::arrangement::ArrangerObject::Uuid> deleted_object_ids;
+  for (const auto &obj_ref : test_objects_)
+    {
+      deleted_object_ids.push_back (obj_ref.id ());
+    }
+
+  // Verify objects exist before deletion
+  for (const auto &id : deleted_object_ids)
+    {
+      // Check if the object exists in either owner
+      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::Marker>::contains_object (id);
+      EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner);
+    }
+
+  // Delete selected objects
+  bool result = operator_->deleteObjects ();
+  EXPECT_TRUE (result);
+
+  // Should have created a macro command with individual remove commands
+  EXPECT_GT (undo_stack_->count (), initial_count);
+
+  // Verify objects are no longer in their owners
+  for (const auto &id : deleted_object_ids)
+    {
+      // Check if the object exists in either owner
+      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::Marker>::contains_object (id);
+      EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
+        << "Object should have been deleted";
+    }
+}
+
+// Test deleteObjects with no selection
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsNoSelection)
+{
+  // Clear selection
+  selection_model_->clear ();
+
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
+
+  // Attempt to delete with no selection
+  bool result = operator_->deleteObjects ();
   EXPECT_FALSE (result);
+
+  // No commands should be pushed
+  EXPECT_EQ (undo_stack_->index (), initial_count);
 }
 
-// Test moveByTicks without selection model set (should return false)
-TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksWithoutSelectionModel)
-{
-  auto operator_no_selection =
-    std::make_unique<ArrangerObjectSelectionOperator> ();
-  operator_no_selection->setUndoStack (undo_stack_.get ());
+// Test deleteObjects with undeletable objects
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
+{ // Create a non-deletable marker (start marker)
+  auto start_marker_ref =
+    object_registry.create_object<structure::arrangement::Marker> (
+      *tempo_map, structure::arrangement::Marker::MarkerType::Start);
 
-  bool result = operator_no_selection->moveByTicks (100.0);
+  // Clear existing objects and add only non-deletable marker
+  test_objects_.get<structure::arrangement::random_access_index> ().clear ();
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    start_marker_ref);
+
+  // Update selection to only include non-deletable marker
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
+
+  // Attempt to delete non-deletable object
+  bool result = operator_->deleteObjects ();
   EXPECT_FALSE (result);
+
+  // No commands should be pushed for undeletable objects
+  EXPECT_EQ (undo_stack_->index (), initial_count);
 }
 
-// Test moveNotesByPitch without undo stack set (should return false)
-TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchWithoutUndoStack)
-{
-  auto operator_no_stack = std::make_unique<ArrangerObjectSelectionOperator> ();
-  operator_no_stack->setSelectionModel (selection_model_.get ());
+// Test deleteObjects with mixed deletable and undeletable objects
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
+{ // Create a non-deletable marker (start marker)
+  auto start_marker_ref =
+    object_registry.create_object<structure::arrangement::Marker> (
+      *tempo_map, structure::arrangement::Marker::MarkerType::Start);
 
-  bool result = operator_no_stack->moveNotesByPitch (5);
+  // Add non-deletable marker to existing objects
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    start_marker_ref);
+
+  // Update selection to include all objects
+  selection_model_->select (
+    list_model_.index (2, 0), QItemSelectionModel::Select);
+
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
+
+  // Attempt to delete mixed objects
+  bool result = operator_->deleteObjects ();
   EXPECT_FALSE (result);
+
+  // No commands should be pushed when any object is undeletable
+  EXPECT_EQ (undo_stack_->index (), initial_count);
 }
 
-// Test moveAutomationPointsByDelta without undo stack set (should return false)
-TEST_F (
-  ArrangerObjectSelectionOperatorTest,
-  MoveAutomationPointsByDeltaWithoutUndoStack)
+// Test deleteObjects undo/redo functionality
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
 {
-  auto operator_no_stack = std::make_unique<ArrangerObjectSelectionOperator> ();
-  operator_no_stack->setSelectionModel (selection_model_.get ());
+  // Store the UUIDs of objects to be deleted
+  std::vector<structure::arrangement::ArrangerObject::Uuid> deleted_object_ids;
+  for (const auto &obj_ref : test_objects_)
+    {
+      deleted_object_ids.push_back (obj_ref.id ());
+    }
 
-  bool result = operator_no_stack->moveAutomationPointsByDelta (0.1);
-  EXPECT_FALSE (result);
-}
+  // Verify objects exist before deletion
+  for (const auto &id : deleted_object_ids)
+    {
+      // Check if the object exists in either owner
+      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::Marker>::contains_object (id);
+      EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner);
+    }
 
-// Test setUndoStack with null (should throw)
-TEST_F (ArrangerObjectSelectionOperatorTest, SetNullUndoStackThrows)
-{
-  EXPECT_THROW (operator_->setUndoStack (nullptr), std::invalid_argument);
-}
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
 
-// Test setSelectionModel with null (should throw)
-TEST_F (ArrangerObjectSelectionOperatorTest, SetNullSelectionModelThrows)
-{
-  EXPECT_THROW (operator_->setSelectionModel (nullptr), std::invalid_argument);
-}
+  // Delete objects
+  bool result = operator_->deleteObjects ();
+  EXPECT_TRUE (result);
 
-// Test signal emissions
-TEST_F (ArrangerObjectSelectionOperatorTest, SignalEmissions)
-{
-  // Test undoStackChanged signal
-  bool stack_changed = false;
-  QObject::connect (
-    operator_.get (), &ArrangerObjectSelectionOperator::undoStackChanged,
-    operator_.get (), [&] () { stack_changed = true; });
+  const int after_delete_count = undo_stack_->count ();
+  EXPECT_GT (after_delete_count, initial_count);
 
-  auto new_stack = create_mock_undo_stack ();
-  operator_->setUndoStack (new_stack.get ());
-  EXPECT_TRUE (stack_changed);
+  // Verify objects are deleted
+  for (const auto &id : deleted_object_ids)
+    {
+      // Check if the object exists in either owner
+      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::Marker>::contains_object (id);
+      EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
+        << "Object should have been deleted";
+    }
 
-  // Test selectionModelChanged signal
-  bool selection_changed = false;
-  QObject::connect (
-    operator_.get (), &ArrangerObjectSelectionOperator::selectionModelChanged,
-    operator_.get (), [&] () { selection_changed = true; });
+  // Undo the deletion
+  undo_stack_->undo ();
+  EXPECT_EQ (undo_stack_->index (), after_delete_count - 1);
 
-  auto new_selection_model =
-    std::make_unique<QItemSelectionModel> (&list_model_);
-  operator_->setSelectionModel (new_selection_model.get ());
-  EXPECT_TRUE (selection_changed);
+  // Verify objects are restored after undo
+  for (const auto &id : deleted_object_ids)
+    {
+      // Check if the object exists in either owner
+      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::Marker>::contains_object (id);
+      EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner)
+        << "Object should have been restored after undo";
+    }
+
+  // Redo the deletion
+  undo_stack_->redo ();
+  EXPECT_EQ (undo_stack_->index (), after_delete_count);
+
+  // Verify objects are deleted again after redo
+  for (const auto &id : deleted_object_ids)
+    {
+      // Check if the object exists in either owner
+      bool found_in_midi_note_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::contains_object (id);
+      bool found_in_marker_owner = mock_owner_->ArrangerObjectOwner<
+        structure::arrangement::Marker>::contains_object (id);
+      EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
+        << "Object should have been deleted again after redo";
+    }
 }
 
 } // namespace zrythm::actions

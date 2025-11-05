@@ -3,6 +3,7 @@
 
 add_executable(zrythm_actions_unit_tests
   arranger_object_creator_test.cpp
+  arranger_object_selection_operator_test.h
   arranger_object_selection_operator_test.cpp
   mock_undo_stack.h
   parameter_operator_test.cpp
@@ -11,7 +12,7 @@ add_executable(zrythm_actions_unit_tests
 )
 
 set_target_properties(zrythm_actions_unit_tests PROPERTIES
-  AUTOMOC OFF
+  AUTOMOC ON
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
 

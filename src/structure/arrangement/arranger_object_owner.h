@@ -28,7 +28,7 @@ public:
     structure::arrangement::ArrangerObjectListModel;
 
   template <typename T>
-  ArrangerObjectOwner (
+  explicit ArrangerObjectOwner (
     ArrangerObjectRegistry       &registry,
     dsp::FileAudioSourceRegistry &file_audio_source_registry,
     T                            &derived)
@@ -77,6 +77,14 @@ public:
       {
         child->position ()->setTicks (child->position ()->ticks () + ticks);
       }
+  }
+
+  /**
+   * @brief O(1) lookup if an object with the given ID exists.
+   */
+  bool contains_object (const ArrangerObject::Uuid &id) const
+  {
+    return children_.get<uuid_hash_index> ().contains (id);
   }
 
   ArrangerObjectListModel * get_model () const { return list_model_.get (); }
