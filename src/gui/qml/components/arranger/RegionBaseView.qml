@@ -59,11 +59,11 @@ ArrangerObjectBaseView {
     color: "transparent" // palette.button
     height: Math.min(textMetrics.height + 2 * (Style.buttonPadding / 2), root.height - Style.toolButtonRadius)
     topLeftRadius: Style.toolButtonRadius
-    width: Math.min(textMetrics.width + 2 * Style.buttonPadding, root.width - Style.toolButtonRadius)
     z: 5
 
     anchors {
       left: parent.left
+      right: parent.right
       top: parent.top
     }
 
