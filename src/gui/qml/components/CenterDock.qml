@@ -27,6 +27,8 @@ ColumnLayout {
     currentIndex: centerTabBar.currentIndex
 
     SplitView {
+      readonly property alias unpinnedTracklist: unpinnedTracklist
+
       Layout.fillHeight: true
       Layout.fillWidth: true
       orientation: Qt.Horizontal
@@ -84,7 +86,6 @@ ColumnLayout {
 
           Layout.fillHeight: true
           Layout.fillWidth: true
-          footerPositioning: ListView.PullBackFooter
           pinned: false
           trackSelectionManager: root.project.trackSelectionManager
           tracklist: root.project.tracklist
@@ -93,6 +94,7 @@ ColumnLayout {
           footer: TracklistDropArea {
             id: tracklistDropArea
 
+            height: 120
             width: unpinnedTracklist.width
 
             onFilesDropped: filePaths => {
@@ -266,6 +268,11 @@ ColumnLayout {
             transport: root.project.transport
             undoStack: root.project.undoStack
             unifiedObjectsModel: unifiedObjectsModel
+
+            Synchronizer on arrangerContentHeight {
+              sourceObject: unpinnedTracklist
+              sourceProperty: "contentHeight"
+            }
           }
         }
       }
