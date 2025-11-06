@@ -81,7 +81,11 @@ Metronome::custom_process_block (
   const dsp::ITransport &transport) noexcept
 {
   if (!enabled_.load ())
-    return;
+    {
+      // Still need to call parent to clear the output buffer
+      AudioSampleProcessor::custom_process_block (time_nfo, transport);
+      return;
+    }
 
   // find and queue normal metronome events
   if (

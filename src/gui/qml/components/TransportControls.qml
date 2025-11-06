@@ -12,6 +12,7 @@ RowLayout {
 
   required property TempoMap tempoMap
   required property Transport transport
+  required property Metronome metronome
 
   LinkedButtons {
     Button {
@@ -90,6 +91,11 @@ RowLayout {
         const timeSigDenominator = root.tempoMap.timeSignatureDenominatorAtTick(root.transport.playhead.ticks);
         return `${timeSigNumerator}/${timeSigDenominator}`;
       }
+    }
+
+    MetronomeSplitButton {
+      id: metronomeSplitButton
+      metronome: root.metronome
     }
   }
 }

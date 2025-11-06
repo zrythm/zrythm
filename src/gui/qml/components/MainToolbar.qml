@@ -18,6 +18,7 @@ ZrythmToolBar {
 
       tempoMap: root.project.tempoMap
       transport: root.project.transport
+      metronome: root.project.metronome
     }
   ]
   leftItems: [

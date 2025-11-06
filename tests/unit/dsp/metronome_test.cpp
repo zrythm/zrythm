@@ -568,4 +568,65 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
   EXPECT_TRUE (queued_samples_.empty ());
 }
 
+TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
+{
+  auto metronome = create_metronome ();
+
+  // Setup 4/4 time signature
+  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_tempo_event (
+    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+
+  // Setup transport
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  constexpr nframes_t samples_per_beat = 22050; // 120 BPM
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = samples_per_beat
+  };
+
+  // First, enable metronome and process to queue samples
+  metronome->prepare_for_processing (44100, samples_per_beat);
+  metronome->process_block (time_nfo, *transport_);
+
+  // Should have queued samples
+  EXPECT_EQ (queued_samples_.size (), 2);
+
+  // Get the output port to check buffer contents
+  auto out_port = metronome->get_output_audio_port_non_rt ();
+  ASSERT_NE (out_port, nullptr);
+
+  // Manually add some audio data to the output buffer to simulate
+  // a partially processed sample that would be stuck if not cleared
+  auto * out_l = out_port->buffers ()->getWritePointer (0);
+  auto * out_r = out_port->buffers ()->getWritePointer (1);
+
+  // Fill with non-zero data to simulate stuck audio
+  std::fill_n (out_l, time_nfo.nframes_, 0.5f);
+  std::fill_n (out_r, time_nfo.nframes_, 0.5f);
+
+  // Now disable metronome
+  metronome->setEnabled (false);
+
+  // Process again - this should clear the buffer even though disabled
+  metronome->process_block (time_nfo, *transport_);
+
+  // Verify the buffer was cleared (should be all zeros)
+  for (nframes_t i = 0; i < time_nfo.nframes_; ++i)
+    {
+      EXPECT_FLOAT_EQ (out_l[i], 0.0f)
+        << "Left channel not cleared at sample " << i;
+      EXPECT_FLOAT_EQ (out_r[i], 0.0f)
+        << "Right channel not cleared at sample " << i;
+    }
+
+  // No new samples should be queued when disabled
+  EXPECT_EQ (queued_samples_.size (), 2); // Still only the original samples
+}
+
 } // namespace zrythm::dsp

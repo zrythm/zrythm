@@ -239,6 +239,7 @@ set(rel_qml_file_paths
   components/LeftDock.qml
   components/MainMenuBar.qml
   components/Meter.qml
+  components/MetronomeSplitButton.qml
   components/MixerView.qml
   components/MonitorSection.qml
   components/PlayheadTriangle.qml

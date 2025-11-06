@@ -16,6 +16,7 @@ ColumnLayout {
   property alias menuTooltipText: arrowButtonTooltip.text
   property alias text: mainButton.text
   property alias tooltipText: mainButtonTooltip.text
+  readonly property alias mainButton: mainButton
 
   signal clicked
 
