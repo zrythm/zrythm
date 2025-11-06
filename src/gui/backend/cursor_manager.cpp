@@ -121,9 +121,11 @@ CursorManager::setAuditionCursor ()
 void
 CursorManager::setOpenHandCursor ()
 {
-  auto icon =
-    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"move-cursor.svg"_s);
-  setCursorWithSize (icon.toString (), 12, 11, 24);
+  // auto icon =
+  //   ResourceManager::getIconUrl (u"zrythm-dark"_s, u"move-cursor.svg"_s);
+  // setCursorWithSize (icon.toString (), 12, 11, 24);
+  QCursor cursor (Qt::CursorShape::OpenHandCursor);
+  set_cursor (QString::fromUtf8 (__func__), cursor);
 }
 
 void

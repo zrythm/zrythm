@@ -185,12 +185,37 @@ Item {
     root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
   }
 
+  function shouldResizeBeLoopResize(object: ArrangerObjectBaseView): bool {
+    // Note: should probably check all selected objects if loopable
+    const isObjectHoveredInBottomHalf = root.hoveredObject.hoveredPoint.y > ((root.hoveredObject.height * 2) / 3);
+    return object.arrangerObject.loopRange !== null && isObjectHoveredInBottomHalf;
+  }
+
   function updateCursor() {
     switch (root.currentAction) {
     case Arranger.None:
       switch (root.tool.toolValue) {
       case Tool.Select:
-        CursorManager.setPointerCursor();
+        if (root.hoveredObject !== null) {
+          const shouldBeLoopResize = shouldResizeBeLoopResize(root.hoveredObject);
+          if (root.hoveredObject.isResizeLHovered) {
+            if (shouldBeLoopResize) {
+              CursorManager.setResizeLoopStartCursor();
+            } else {
+              CursorManager.setResizeStartCursor();
+            }
+          } else if (root.hoveredObject.isResizeRHovered) {
+            if (shouldBeLoopResize) {
+              CursorManager.setResizeLoopEndCursor();
+            } else {
+              CursorManager.setResizeEndCursor();
+            }
+          } else {
+            CursorManager.setOpenHandCursor();
+          }
+        } else {
+          CursorManager.setPointerCursor();
+        }
         return;
       case Tool.Edit:
         CursorManager.setPencilCursor();
@@ -330,6 +355,15 @@ Item {
 
   onHoveredObjectChanged: {
     console.log("hovered object changed:", hoveredObject);
+  }
+
+  Connections {
+    function onHoveredPointChanged() {
+      root.updateCursor();
+    }
+
+    enabled: root.hoveredObject !== null
+    target: root.hoveredObject
   }
 
   Component {
@@ -667,7 +701,6 @@ Item {
           root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
           root.altHeld = mouse.modifiers & Qt.AltModifier;
           if (pressed) {
-            // console.log("dragging inside arranger", currentCoordinates, "action:", action);
             // handle action transitions
             if (action === Arranger.StartingSelection) {
               action = Arranger.Selecting;
@@ -698,7 +731,7 @@ Item {
               action = Arranger.Moving;
             }
 
-            // process current action
+            // Process current action
             if (action === Arranger.Selecting) {
               // Select all objects within the selection rectangle
               root.selectObjectsInRectangle();
@@ -709,22 +742,28 @@ Item {
                 currentCoordinates.y -= dy;
                 root.editorSettings.y -= dy;
               }
-            } else if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
+            } else if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
               moveTemporaryObjectsX();
               moveTemporaryObjectsY(dy, prevCoordinates.y);
             } else if (action == Arranger.CreatingMoving) {
               const ticksToMove = calculateObjectMovementTicks();
               moveSelectionsX(ticksToMove);
               moveSelectionsY(dy, prevCoordinates.y);
-            } else if (action === Arranger.CreatingResizingR) {
+            } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
+              // Apply snapping to resize endpoint
+              const startTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+              console.log("resize L");
+            } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
+              if (action === Arranger.CreatingResizingMovingR) {
+                moveSelectionsY(dy, prevCoordinates.y);
+              }
               // Apply snapping to resize endpoint
               const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
-              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.getObjectAtCurrentIndex(), endTicks);
-            } else if (action === Arranger.CreatingResizingMovingR) {
-              moveSelectionsY(dy, prevCoordinates.y);
-              // Apply snapping to resize endpoint
-              const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
-              ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.getObjectAtCurrentIndex(), endTicks);
+              if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
+                ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.getObjectAtCurrentIndex(), endTicks);
+              } else {
+                console.log("resize R");
+              }
             }
           }
 
@@ -742,7 +781,23 @@ Item {
             } else if (mouse.button === Qt.LeftButton) {
               if (root.hoveredObject) {
                 root.hoveredObject.requestSelection(mouse);
-                action = Arranger.StartingMoving;
+                if (root.hoveredObject.isResizingL) {
+                  if (root.shouldResizeBeLoopResize(root.hoveredObject)) {
+                    action = Arranger.ResizingLLoop;
+                  } else {
+                    action = Arranger.ResizingL;
+                  }
+                  root.hoveredObject.isResizingL = false;
+                } else if (root.hoveredObject.isResizingR) {
+                  if (root.shouldResizeBeLoopResize(root.hoveredObject)) {
+                    action = Arranger.ResizingRLoop;
+                  } else {
+                    action = Arranger.ResizingR;
+                  }
+                  root.hoveredObject.isResizingR = false;
+                } else {
+                  action = Arranger.StartingMoving;
+                }
               } else {
                 action = Arranger.StartingSelection;
               }
@@ -776,14 +831,20 @@ Item {
         }
 
         StateGroup {
-          states: State {
-            name: "unsetCursor"
-            when: !arrangerMouseArea.hovered && arrangerMouseArea.action === Arranger.CurrentAction.None
+          id: stateGroup
 
-            StateChangeScript {
-              script: CursorManager.unsetCursor()
+          states: [
+            State {
+              name: "unsetCursor"
+              when: !arrangerMouseArea.hovered && arrangerMouseArea.action === Arranger.CurrentAction.None && root.hoveredObject === null
+
+              StateChangeScript {
+                script: {
+                  CursorManager.unsetCursor();
+                }
+              }
             }
-          }
+          ]
         }
       }
     }
