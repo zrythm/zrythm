@@ -13,10 +13,12 @@ class ArrangerObjectFadeRange : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    dsp::AtomicPositionQmlAdapter * startOffset READ startOffset CONSTANT)
-  Q_PROPERTY (dsp::AtomicPositionQmlAdapter * endOffset READ endOffset CONSTANT)
+    zrythm::dsp::AtomicPositionQmlAdapter * startOffset READ startOffset CONSTANT)
   Q_PROPERTY (
-    dsp::CurveOptionsQmlAdapter * fadeInCurveOpts READ fadeInCurveOpts CONSTANT)
+    zrythm::dsp::AtomicPositionQmlAdapter * endOffset READ endOffset CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::CurveOptionsQmlAdapter * fadeInCurveOpts READ fadeInCurveOpts
+      CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 

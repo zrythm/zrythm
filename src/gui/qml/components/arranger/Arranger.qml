@@ -185,10 +185,10 @@ Item {
     root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
   }
 
-  function shouldResizeBeLoopResize(object: ArrangerObjectBaseView): bool {
+  function shouldResizeBeLoopResize(object: ArrangerObjectBaseView, fromStart: bool): bool {
     // Note: should probably check all selected objects if loopable
     const isObjectHoveredInBottomHalf = root.hoveredObject.hoveredPoint.y > ((root.hoveredObject.height * 2) / 3);
-    return object.arrangerObject.loopRange !== null && isObjectHoveredInBottomHalf;
+    return !fromStart && object.arrangerObject.loopRange !== null && isObjectHoveredInBottomHalf;
   }
 
   function updateCursor() {
@@ -197,7 +197,7 @@ Item {
       switch (root.tool.toolValue) {
       case Tool.Select:
         if (root.hoveredObject !== null) {
-          const shouldBeLoopResize = shouldResizeBeLoopResize(root.hoveredObject);
+          const shouldBeLoopResize = shouldResizeBeLoopResize(root.hoveredObject, root.hoveredObject.isResizeLHovered);
           if (root.hoveredObject.isResizeLHovered) {
             if (shouldBeLoopResize) {
               CursorManager.setResizeLoopStartCursor();
@@ -752,7 +752,40 @@ Item {
             } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
               // Apply snapping to resize endpoint
               const startTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
-              console.log("resize L");
+
+              // Calculate delta in ticks based on the resize type and direction
+              let resizeType = ArrangerObjectSelectionOperator.Bounds;
+              let delta = 0;
+              const obj = root.getObjectAtCurrentIndex();
+
+              // Determine resize type based on current action
+              if (action === Arranger.ResizingLLoop) {
+                resizeType = ArrangerObjectSelectionOperator.LoopPoints;
+              } else if (action === Arranger.ResizingLFade) {
+                resizeType = ArrangerObjectSelectionOperator.Fades;
+              }
+
+              // Calculate delta based on the resize type
+              if (resizeType === ArrangerObjectSelectionOperator.Bounds) {
+                // For bounds resize, delta is the difference in position ticks
+                const originalPosTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
+                delta = startTicks - originalPosTicks;
+              } else if (resizeType === ArrangerObjectSelectionOperator.LoopPoints) {
+                // For loop points resize, calculate based on the specific loop point being resized
+                if (obj.loopRange) {
+                  const originalLoopStart = obj.loopRange.loopStartPosition.ticks;
+                  delta = startTicks - originalLoopStart;
+                }
+              } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
+                // For fades resize, delta is in ticks (will be converted internally)
+                if (obj.fadeRange) {
+                  const originalFadeIn = obj.fadeRange.startOffset.ticks;
+                  delta = startTicks - originalFadeIn;
+                }
+              }
+
+              root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
+              console.log("undoable resize L with delta:", delta);
             } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
               if (action === Arranger.CreatingResizingMovingR) {
                 moveSelectionsY(dy, prevCoordinates.y);
@@ -762,7 +795,39 @@ Item {
               if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
                 ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.getObjectAtCurrentIndex(), endTicks);
               } else {
-                console.log("resize R");
+                // Calculate delta in ticks based on the resize type and direction
+                let resizeType = ArrangerObjectSelectionOperator.Bounds;
+                let delta = 0;
+                const obj = root.getObjectAtCurrentIndex();
+
+                // Determine resize type based on current action
+                if (action === Arranger.ResizingRLoop) {
+                  resizeType = ArrangerObjectSelectionOperator.LoopPoints;
+                } else if (action === Arranger.ResizingRFade) {
+                  resizeType = ArrangerObjectSelectionOperator.Fades;
+                }
+
+                // Calculate delta based on the resize type
+                if (resizeType === ArrangerObjectSelectionOperator.Bounds) {
+                  // For bounds resize, delta is the difference in ticks
+                  const originalEndTicks = ArrangerObjectHelpers.getObjectEndInTimelineTicks(obj);
+                  delta = endTicks - originalEndTicks;
+                } else if (resizeType === ArrangerObjectSelectionOperator.LoopPoints) {
+                  // For loop points resize, calculate based on the specific loop point being resized
+                  if (obj.loopRange) {
+                    const originalLoopEnd = obj.loopRange.loopEndPosition.ticks;
+                    delta = endTicks - originalLoopEnd;
+                  }
+                } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
+                  // For fades resize, delta is in ticks (will be converted internally)
+                  if (obj.fadeRange) {
+                    const originalFadeOut = obj.fadeRange.endOffset.ticks;
+                    delta = endTicks - originalFadeOut;
+                  }
+                }
+
+                root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
+                console.log("undoable resize R with delta:", delta);
               }
             }
           }
@@ -782,14 +847,14 @@ Item {
               if (root.hoveredObject) {
                 root.hoveredObject.requestSelection(mouse);
                 if (root.hoveredObject.isResizingL) {
-                  if (root.shouldResizeBeLoopResize(root.hoveredObject)) {
+                  if (root.shouldResizeBeLoopResize(root.hoveredObject, true)) {
                     action = Arranger.ResizingLLoop;
                   } else {
                     action = Arranger.ResizingL;
                   }
                   root.hoveredObject.isResizingL = false;
                 } else if (root.hoveredObject.isResizingR) {
-                  if (root.shouldResizeBeLoopResize(root.hoveredObject)) {
+                  if (root.shouldResizeBeLoopResize(root.hoveredObject, false)) {
                     action = Arranger.ResizingRLoop;
                   } else {
                     action = Arranger.ResizingR;

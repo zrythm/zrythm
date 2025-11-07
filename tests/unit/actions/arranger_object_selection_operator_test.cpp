@@ -22,22 +22,67 @@ protected:
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
     // Create test objects
-    auto marker_ref =
-      object_registry.create_object<structure::arrangement::Marker> (
-        *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
-    auto note_ref = object_registry.create_object<
-      structure::arrangement::MidiNote> (*tempo_map);
+    marker_ref = object_registry.create_object<structure::arrangement::Marker> (
+      *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
+    note_ref = object_registry.create_object<structure::arrangement::MidiNote> (
+      *tempo_map);
+    midi_region_ref =
+      object_registry.create_object<structure::arrangement::MidiRegion> (
+        *tempo_map, object_registry, file_audio_source_registry);
+    audio_region_ref = object_registry.create_object<
+      structure::arrangement::AudioRegion> (
+      *tempo_map, object_registry, file_audio_source_registry,
+      [] () { return true; });
 
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (marker_ref);
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (note_ref);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (midi_region_ref);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (audio_region_ref);
 
-    // Store original positions
+    // Store original positions and set initial values for testing
+    marker_ref.get_object_base ()->position ()->setTicks (0.0);
+    note_ref.get_object_base ()->position ()->setTicks (1000.0);
+    midi_region_ref.get_object_base ()->position ()->setTicks (2000.0);
+    audio_region_ref.get_object_base ()->position ()->setTicks (3000.0);
+
+    // Set initial length for resize tests
+    note_ref.get_object_as<structure::arrangement::MidiNote> ()
+      ->bounds ()
+      ->length ()
+      ->setTicks (4000.0);
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
+      ->bounds ()
+      ->length ()
+      ->setTicks (4000.0);
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
+      ->loopRange ()
+      ->clipStartPosition ()
+      ->setTicks (500.0);
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
+      ->loopRange ()
+      ->loopStartPosition ()
+      ->setTicks (1000.0);
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
+      ->loopRange ()
+      ->loopEndPosition ()
+      ->setTicks (3000.0);
+    audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ()
+      ->fadeRange ()
+      ->endOffset ()
+      ->setTicks (300.0);
+
     original_positions_.push_back (
       marker_ref.get_object_base ()->position ()->ticks ());
     original_positions_.push_back (
       note_ref.get_object_base ()->position ()->ticks ());
+    original_positions_.push_back (
+      midi_region_ref.get_object_base ()->position ()->ticks ());
+    original_positions_.push_back (
+      audio_region_ref.get_object_base ()->position ()->ticks ());
 
     // Create undo stack
     undo_stack_ = create_mock_undo_stack ();
@@ -47,19 +92,17 @@ protected:
 
     // Create mock owner for testing
     mock_owner_ = std::make_unique<MockArrangerObjectOwner> (
-      object_registry,
-      // Note: We need a FileAudioSourceRegistry, but for testing purposes
-      // we can create a dummy one or use a dependency injection approach
-      [] () -> dsp::FileAudioSourceRegistry & {
-        static dsp::FileAudioSourceRegistry dummy_registry;
-        return dummy_registry;
-      }());
+      object_registry, file_audio_source_registry);
 
     // Add the objects to the mock owner
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::Marker>::add_object (marker_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::MidiNote>::add_object (note_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiRegion>::add_object (midi_region_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioRegion>::add_object (audio_region_ref);
 
     // Create mock object owner provider that returns our mock owner
     auto mock_owner_provider =
@@ -70,16 +113,34 @@ protected:
           -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
           using ObjectT = base_type<decltype (obj)>;
           if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjectT> *> (mock_owner_.get ());
+                structure::arrangement::MidiNote> *> (mock_owner_.get ());
             }
           else if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::Marker *>)
+            std::is_same_v<ObjectT, structure::arrangement::Marker>)
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjectT> *> (mock_owner_.get ());
+                structure::arrangement::Marker> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiRegion>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::MidiRegion> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AudioRegion>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::AudioRegion> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::AutomationPoint> *> (mock_owner_.get ());
             }
           return static_cast<
             structure::arrangement::ArrangerObjectOwner<ObjectT> *> (nullptr);
@@ -91,15 +152,16 @@ protected:
     operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
       *undo_stack_, *selection_model_, mock_owner_provider);
 
-    // Select all objects
+    // Select first two objects (marker and note) for movement tests
     selection_model_->select (
       list_model_.index (0, 0), QItemSelectionModel::Select);
     selection_model_->select (
       list_model_.index (1, 0), QItemSelectionModel::Select);
   }
 
-  std::unique_ptr<dsp::TempoMap>                               tempo_map;
-  structure::arrangement::ArrangerObjectRegistry               object_registry;
+  std::unique_ptr<dsp::TempoMap>                 tempo_map;
+  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
+  structure::arrangement::ArrangerObjectRegistry object_registry;
   structure::arrangement::ArrangerObjectRefMultiIndexContainer test_objects_;
   std::vector<double>                              original_positions_;
   std::unique_ptr<undo::UndoStack>                 undo_stack_;
@@ -107,6 +169,18 @@ protected:
   structure::arrangement::ArrangerObjectListModel  list_model_{ test_objects_ };
   std::unique_ptr<QItemSelectionModel>             selection_model_;
   std::unique_ptr<MockArrangerObjectOwner>         mock_owner_;
+  structure::arrangement::ArrangerObjectUuidReference note_ref{
+    object_registry
+  };
+  structure::arrangement::ArrangerObjectUuidReference marker_ref{
+    object_registry
+  };
+  structure::arrangement::ArrangerObjectUuidReference audio_region_ref{
+    object_registry
+  };
+  structure::arrangement::ArrangerObjectUuidReference midi_region_ref{
+    object_registry
+  };
 };
 
 // Test initial state after construction
@@ -123,17 +197,18 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
   bool result = operator_->moveByTicks (tick_delta);
   EXPECT_TRUE (result);
 
-  // Objects should be moved by tick_delta
-  for (size_t i = 0; i < test_objects_.size (); ++i)
+  // Only selected objects (marker and note) should be moved by tick_delta
+  // Check marker (index 0)
+  if (auto * marker_obj = marker_ref.get_object_base ())
     {
-      if (
-        auto * obj =
-          test_objects_.get<structure::arrangement::random_access_index> ()[i]
-            .get_object_base ())
-        {
-          EXPECT_DOUBLE_EQ (
-            obj->position ()->ticks (), original_positions_[i] + tick_delta);
-        }
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
+    }
+  // Check note (index 1)
+  if (auto * note_obj = note_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        note_obj->position ()->ticks (), original_positions_[1] + tick_delta);
     }
 
   // Command should be pushed to undo stack
@@ -157,16 +232,16 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
   bool result = operator_->moveByTicks (tick_delta);
   EXPECT_TRUE (result);
 
-  // Objects should be moved backward by tick_delta
-  for (size_t i = 0; i < test_objects_.size (); ++i)
+  // Only selected objects (marker and note) should be moved backward by
+  // tick_delta Check marker (index 0)
+  if (auto * marker_obj = marker_ref.get_object_base ())
     {
-      if (
-        auto * obj =
-          test_objects_.get<structure::arrangement::random_access_index> ()[i]
-            .get_object_base ())
-        {
-          EXPECT_DOUBLE_EQ (obj->position ()->ticks (), 50);
-        }
+      EXPECT_DOUBLE_EQ (marker_obj->position ()->ticks (), 50);
+    }
+  // Check note (index 1)
+  if (auto * note_obj = note_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), 50);
     }
 
   // Command should be pushed to undo stack
@@ -179,16 +254,17 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
   bool result = operator_->moveByTicks (0.0);
   EXPECT_TRUE (result);
 
-  // Objects should remain at original positions
-  for (size_t i = 0; i < test_objects_.size (); ++i)
+  // Only selected objects (marker and note) should remain at original positions
+  // Check marker (index 0)
+  if (auto * marker_obj = marker_ref.get_object_base ())
     {
-      if (
-        auto * obj =
-          test_objects_.get<structure::arrangement::random_access_index> ()[i]
-            .get_object_base ())
-        {
-          EXPECT_DOUBLE_EQ (obj->position ()->ticks (), original_positions_[i]);
-        }
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0]);
+    }
+  // Check note (index 1)
+  if (auto * note_obj = note_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), original_positions_[1]);
     }
 
   // No command should be pushed for zero delta
@@ -225,13 +301,16 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
   bool result = operator_->moveByTicks (tick_delta);
   EXPECT_FALSE (result);
 
-  // Objects should remain at position 0 (no movement)
-  for (auto &obj_ref : test_objects_)
+  // Only selected objects (marker and note) should remain at position 0 (no
+  // movement) Check marker (index 0)
+  if (auto * marker_obj = marker_ref.get_object_base ())
     {
-      if (auto * obj = obj_ref.get_object_base ())
-        {
-          EXPECT_DOUBLE_EQ (obj->position ()->ticks (), 0.0);
-        }
+      EXPECT_DOUBLE_EQ (marker_obj->position ()->ticks (), 0.0);
+    }
+  // Check note (index 1)
+  if (auto * note_obj = note_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), 0.0);
     }
 
   // No command should be pushed for invalid movement
@@ -248,44 +327,49 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   EXPECT_TRUE (result);
   EXPECT_EQ (undo_stack_->index (), 1);
 
-  // Verify objects moved
-  for (size_t i = 0; i < test_objects_.size (); ++i)
+  // Verify only selected objects moved
+  // Check marker (index 0)
+  if (auto * marker_obj = marker_ref.get_object_base ())
     {
-      if (
-        auto * obj =
-          test_objects_.get<structure::arrangement::random_access_index> ()[i]
-            .get_object_base ())
-        {
-          EXPECT_DOUBLE_EQ (
-            obj->position ()->ticks (), original_positions_[i] + tick_delta);
-        }
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
+    }
+  // Check note (index 1)
+  if (auto * note_obj = note_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        note_obj->position ()->ticks (), original_positions_[1] + tick_delta);
     }
 
   // Undo
   undo_stack_->undo ();
-  for (size_t i = 0; i < test_objects_.size (); ++i)
+  // Verify only selected objects restored
+  // Check marker (index 0)
+  if (auto * marker_obj = marker_ref.get_object_base ())
     {
-      if (
-        auto * obj =
-          test_objects_.get<structure::arrangement::random_access_index> ()[i]
-            .get_object_base ())
-        {
-          EXPECT_DOUBLE_EQ (obj->position ()->ticks (), original_positions_[i]);
-        }
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0]);
+    }
+  // Check note (index 1)
+  if (auto * note_obj = note_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), original_positions_[1]);
     }
 
   // Redo
   undo_stack_->redo ();
-  for (size_t i = 0; i < test_objects_.size (); ++i)
+  // Verify only selected objects moved again
+  // Check marker (index 0)
+  if (auto * marker_obj = marker_ref.get_object_base ())
     {
-      if (
-        auto * obj =
-          test_objects_.get<structure::arrangement::random_access_index> ()[i]
-            .get_object_base ())
-        {
-          EXPECT_DOUBLE_EQ (
-            obj->position ()->ticks (), original_positions_[i] + tick_delta);
-        }
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
+    }
+  // Check note (index 1)
+  if (auto * note_obj = note_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        note_obj->position ()->ticks (), original_positions_[1] + tick_delta);
     }
 }
 
@@ -379,28 +463,26 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
   test_objects_.get<structure::arrangement::random_access_index> ().push_back (
     automation_point_ref);
 
+  // Add to mock owner as well
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
+
   // Update list model and select automation point
   selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+    list_model_.index (4, 0), QItemSelectionModel::Select);
 
   const double delta = 0.2;
 
   bool result = operator_->moveAutomationPointsByDelta (delta);
   EXPECT_TRUE (result);
 
-  // Automation point should be moved by delta
-  for (const auto &obj_ref : test_objects_)
+  // Only selected automation point should be moved by delta
+  if (
+    auto * auto_obj =
+      automation_point_ref
+        .get_object_as<structure::arrangement::AutomationPoint> ())
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint *>)
-            {
-              EXPECT_FLOAT_EQ (obj->value (), 0.7f); // 0.5 + 0.2
-            }
-        },
-        obj_ref.get_object ());
+      EXPECT_FLOAT_EQ (auto_obj->value (), 0.7f); // 0.5 + 0.2
     }
 
   // Command should be pushed to undo stack
@@ -408,34 +490,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
 
   // Test undo/redo
   undo_stack_->undo ();
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint *>)
-            {
-              EXPECT_FLOAT_EQ (obj->value (), 0.5f);
-            }
-        },
-        obj_ref.get_object ());
-    }
+
+  const auto * auto_obj = automation_point_ref.get_object_as<
+    structure::arrangement::AutomationPoint> ();
+  EXPECT_FLOAT_EQ (auto_obj->value (), 0.5f);
 
   undo_stack_->redo ();
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint *>)
-            {
-              EXPECT_FLOAT_EQ (obj->value (), 0.7f);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_FLOAT_EQ (auto_obj->value (), 0.7f);
 }
 
 // Test moveNotesByPitch with no selection (no-op)
@@ -546,28 +607,22 @@ TEST_F (
   test_objects_.get<structure::arrangement::random_access_index> ().push_back (
     automation_point_ref);
 
+  // Add to mock owner as well
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
+
   // Update list model and select automation point
   selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+    list_model_.index (4, 0), QItemSelectionModel::Select);
 
   // Try to move by 0.2 (would result in value 1.1, which is out of range)
   bool result = operator_->moveAutomationPointsByDelta (0.2);
   EXPECT_FALSE (result);
 
   // Value should remain unchanged
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
-            {
-              EXPECT_FLOAT_EQ (obj->value (), 0.9f);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  const auto * auto_obj = automation_point_ref.get_object_as<
+    structure::arrangement::AutomationPoint> ();
+  EXPECT_FLOAT_EQ (auto_obj->value (), 0.9f);
 
   // No command should be pushed for invalid movement
   EXPECT_EQ (undo_stack_->index (), 0);
@@ -579,25 +634,19 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
 
-  // Store the UUIDs of objects to be deleted
-  std::vector<structure::arrangement::ArrangerObject::Uuid> deleted_object_ids;
-  for (const auto &obj_ref : test_objects_)
-    {
-      deleted_object_ids.push_back (obj_ref.id ());
-    }
+  // Store the UUIDs of the selected objects (marker and note)
+  const auto marker_id = marker_ref.id ();
+  const auto note_id = note_ref.id ();
 
   // Verify objects exist before deletion
-  for (const auto &id : deleted_object_ids)
-    {
-      // Check if the object exists in either owner
-      bool found_in_midi_note_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::Marker>::contains_object (id);
-      EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner);
-    }
+  bool marker_found_before =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_before =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_TRUE (marker_found_before);
+  EXPECT_TRUE (note_found_before);
 
   // Delete selected objects
   bool result = operator_->deleteObjects ();
@@ -607,18 +656,14 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
   EXPECT_GT (undo_stack_->count (), initial_count);
 
   // Verify objects are no longer in their owners
-  for (const auto &id : deleted_object_ids)
-    {
-      // Check if the object exists in either owner
-      bool found_in_midi_note_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::Marker>::contains_object (id);
-      EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
-        << "Object should have been deleted";
-    }
+  bool marker_found_after =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_after =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_FALSE (marker_found_after) << "Marker should have been deleted";
+  EXPECT_FALSE (note_found_after) << "Note should have been deleted";
 }
 
 // Test deleteObjects with no selection
@@ -668,18 +713,21 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
 
 // Test deleteObjects with mixed deletable and undeletable objects
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
-{ // Create a non-deletable marker (start marker)
+{
+  // Create a non-deletable marker (start marker)
   auto start_marker_ref =
     object_registry.create_object<structure::arrangement::Marker> (
       *tempo_map, structure::arrangement::Marker::MarkerType::Start);
 
-  // Add non-deletable marker to existing objects
+  // Add non-deletable marker to existing objects and to mock owner
   test_objects_.get<structure::arrangement::random_access_index> ().push_back (
     start_marker_ref);
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::Marker>::add_object (start_marker_ref);
 
   // Update selection to include all objects
   selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+    list_model_.index (4, 0), QItemSelectionModel::Select);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -695,25 +743,19 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
 // Test deleteObjects undo/redo functionality
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
 {
-  // Store the UUIDs of objects to be deleted
-  std::vector<structure::arrangement::ArrangerObject::Uuid> deleted_object_ids;
-  for (const auto &obj_ref : test_objects_)
-    {
-      deleted_object_ids.push_back (obj_ref.id ());
-    }
+  // Store the UUIDs of the selected objects (marker and note)
+  const auto marker_id = marker_ref.id ();
+  const auto note_id = note_ref.id ();
 
   // Verify objects exist before deletion
-  for (const auto &id : deleted_object_ids)
-    {
-      // Check if the object exists in either owner
-      bool found_in_midi_note_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::Marker>::contains_object (id);
-      EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner);
-    }
+  bool marker_found_before =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_before =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_TRUE (marker_found_before);
+  EXPECT_TRUE (note_found_before);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -726,54 +768,260 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
   EXPECT_GT (after_delete_count, initial_count);
 
   // Verify objects are deleted
-  for (const auto &id : deleted_object_ids)
-    {
-      // Check if the object exists in either owner
-      bool found_in_midi_note_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::Marker>::contains_object (id);
-      EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
-        << "Object should have been deleted";
-    }
+  bool marker_found_after_delete =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_after_delete =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_FALSE (marker_found_after_delete) << "Marker should have been deleted";
+  EXPECT_FALSE (note_found_after_delete) << "Note should have been deleted";
 
   // Undo the deletion
   undo_stack_->undo ();
   EXPECT_EQ (undo_stack_->index (), after_delete_count - 1);
 
   // Verify objects are restored after undo
-  for (const auto &id : deleted_object_ids)
-    {
-      // Check if the object exists in either owner
-      bool found_in_midi_note_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::Marker>::contains_object (id);
-      EXPECT_TRUE (found_in_midi_note_owner || found_in_marker_owner)
-        << "Object should have been restored after undo";
-    }
+  bool marker_found_after_undo =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_after_undo =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_TRUE (marker_found_after_undo)
+    << "Marker should have been restored after undo";
+  EXPECT_TRUE (note_found_after_undo)
+    << "Note should have been restored after undo";
 
   // Redo the deletion
   undo_stack_->redo ();
   EXPECT_EQ (undo_stack_->index (), after_delete_count);
 
   // Verify objects are deleted again after redo
-  for (const auto &id : deleted_object_ids)
+  bool marker_found_after_redo =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_after_redo =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_FALSE (marker_found_after_redo)
+    << "Marker should have been deleted again after redo";
+  EXPECT_FALSE (note_found_after_redo)
+    << "Note should have been deleted again after redo";
+}
+
+// Test resizeObjects with bounds resize from end
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromEnd)
+{
+  const double delta = 500.0;
+
+  // Clear selection and only select objects that support bounds resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (1, 0),
+    QItemSelectionModel::Select); // Select only MidiNote
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify objects were resized by checking the object directly
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  EXPECT_DOUBLE_EQ (
+    note_obj->bounds ()->length ()->ticks (), 4500.0); // 4000 + 500
+}
+
+// Test resizeObjects with bounds resize from start
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromStart)
+{
+  const double delta = -200.0;
+
+  // Clear selection and only select objects that support bounds resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (1, 0),
+    QItemSelectionModel::Select); // Select only MidiNote
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify objects were resized by checking the object directly
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), 800.0); // 1000 - 200
+  EXPECT_DOUBLE_EQ (
+    note_obj->bounds ()->length ()->ticks (), 4200.0); // 4000 + 200
+}
+
+// Test resizeObjects with loop points resize
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPoints)
+{
+  const double delta = 100.0;
+
+  // Clear selection and only select objects that support loop points resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (2, 0),
+    QItemSelectionModel::Select); // Select only MidiRegion
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::LoopPoints, commands::ResizeDirection::FromStart,
+    delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify objects were resized by checking the object directly
+  auto * midi_region_obj =
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  EXPECT_DOUBLE_EQ (
+    midi_region_obj->loopRange ()->clipStartPosition ()->ticks (),
+    600.0); // 500 + 100
+  EXPECT_DOUBLE_EQ (
+    midi_region_obj->loopRange ()->loopStartPosition ()->ticks (),
+    1100.0); // 1000 + 100
+}
+
+// Test resizeObjects with fades resize
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
+{
+  const double delta = 50.0;
+
+  // Clear selection and only select objects that support fades resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (3, 0),
+    QItemSelectionModel::Select); // Select only AudioRegion
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify objects were resized by checking the object directly
+  auto * audio_region_obj =
+    audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ();
+  EXPECT_DOUBLE_EQ (
+    audio_region_obj->fadeRange ()->endOffset ()->ticks (), 350.0); // 300 + 50
+}
+
+// Test resizeObjects with zero delta (no-op)
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsZeroDelta)
+{
+  const double delta = 0.0;
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+  EXPECT_TRUE (result);
+
+  // No command should be pushed for zero delta
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test resizeObjects with no selection
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsNoSelection)
+{
+  // Clear selection
+  selection_model_->clear ();
+
+  const double delta = 100.0;
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed for no selection
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test resizeObjects undo/redo functionality
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsUndoRedo)
+{
+  const double delta = 300.0;
+
+  // Clear selection and only select objects that support bounds resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (1, 0),
+    QItemSelectionModel::Select); // Select only MidiNote
+
+  // Perform resize
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+  EXPECT_TRUE (result);
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify resize by checking the object directly
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  EXPECT_DOUBLE_EQ (
+    note_obj->bounds ()->length ()->ticks (), 4300.0); // 4000 + 300
+
+  // Undo
+  undo_stack_->undo ();
+  EXPECT_EQ (undo_stack_->index (), 0);
+
+  // Verify undo
+  EXPECT_DOUBLE_EQ (
+    note_obj->bounds ()->length ()->ticks (), 4000.0); // Original restored
+
+  // Redo
+  undo_stack_->redo ();
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify redo
+  EXPECT_DOUBLE_EQ (
+    note_obj->bounds ()->length ()->ticks (), 4300.0); // Applied again
+}
+
+// Test that non-timeline objects (MIDI notes) can be resized to negative local
+// positions
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ResizeObjectsNonTimelineObjectNegativePosition)
+{
+  // Clear selection and only select MIDI note (non-timeline object)
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (1, 0),
+    QItemSelectionModel::Select); // Select only MidiNote
+
+  // Set MIDI note position to a small positive value first
+  if (auto * note_obj = note_ref.get_object_base ())
     {
-      // Check if the object exists in either owner
-      bool found_in_midi_note_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::MidiNote>::contains_object (id);
-      bool found_in_marker_owner =
-        mock_owner_->structure::arrangement::ArrangerObjectOwner<
-          structure::arrangement::Marker>::contains_object (id);
-      EXPECT_FALSE (found_in_midi_note_owner && found_in_marker_owner)
-        << "Object should have been deleted again after redo";
+      note_obj->position ()->setTicks (10.0);
     }
+
+  const double delta = -20.0; // Would put MIDI note start position at -10 ticks
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
+
+  // This should succeed for non-timeline objects (MIDI notes)
+  // The test will currently fail, but we expect it to pass after implementation
+  // fix
+  EXPECT_TRUE (result)
+    << "Non-timeline objects (MIDI notes) should be allowed to have negative local positions when resized from start";
+
+  // Check that MIDI note was resized to negative position
+  if (
+    auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ())
+    {
+      EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), -10.0); // 10 - 20
+      EXPECT_DOUBLE_EQ (
+        note_obj->bounds ()->length ()->ticks (), 4020.0); // 4000 + 20
+    }
+
+  // Command should be pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
 }
 
 } // namespace zrythm::actions

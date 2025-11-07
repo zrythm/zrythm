@@ -15,6 +15,14 @@ QtObject {
     }
   }
 
+  function getObjectEndInTimelineTicks(obj: ArrangerObject): real {
+    let endTicks = getObjectEndTicks(obj);
+    if (obj.parentObject) {
+      endTicks += obj.parentObject.position.ticks;
+    }
+    return endTicks;
+  }
+
   function getObjectEndTicks(obj: ArrangerObject): real {
     let bounds = getObjectBounds(obj);
     if (bounds) {

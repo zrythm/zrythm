@@ -17,6 +17,7 @@ target_sources(zrythm_commands_lib
       change_parameter_value_command.h
       change_track_color_command.h
       move_arranger_objects_command.h
+      resize_arranger_objects_command.h
       move_plugin_command.h
       relocate_arranger_object_command.h
       remove_arranger_object_command.h

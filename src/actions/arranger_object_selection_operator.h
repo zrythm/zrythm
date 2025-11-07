@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "commands/resize_arranger_objects_command.h"
 #include "structure/arrangement/arranger_object.h"
 #include "undo/undo_stack.h"
 #include "utils/variant_helpers.h"
@@ -17,6 +18,7 @@ class ArrangerObjectSelectionOperator : public QObject
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
+  QML_EXTENDED_NAMESPACE (zrythm::commands)
 
 public:
   using SelectedObjectsVector =
@@ -39,6 +41,11 @@ public:
 
   Q_INVOKABLE bool moveAutomationPointsByDelta (double delta);
 
+  Q_INVOKABLE bool resizeObjects (
+    commands::ResizeType      type,
+    commands::ResizeDirection direction,
+    double                    delta);
+
   Q_INVOKABLE bool deleteObjects ();
 
 private:
@@ -49,6 +56,23 @@ private:
     double                       tick_delta);
   static bool
   validateVerticalMovement (const SelectedObjectsVector &objects, double delta);
+  static bool validateResize (
+    const SelectedObjectsVector &objects,
+    commands::ResizeType         type,
+    commands::ResizeDirection    direction,
+    double                       delta);
+  static bool validateBoundsResize (
+    structure::arrangement::ArrangerObjectPtrVariant obj_var,
+    commands::ResizeDirection                        direction,
+    double                                           delta);
+  static bool validateLoopPointsResize (
+    const structure::arrangement::ArrangerObject &obj,
+    commands::ResizeDirection                     direction,
+    double                                        delta);
+  static bool validateFadesResize (
+    const structure::arrangement::ArrangerObject &obj,
+    commands::ResizeDirection                     direction,
+    double                                        delta);
 
   bool process_vertical_move (double delta);
 

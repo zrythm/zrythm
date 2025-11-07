@@ -4,6 +4,7 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
+#include "commands/resize_arranger_objects_command.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
 #include "utils/math.h"
@@ -152,6 +153,41 @@ ArrangerObjectSelectionOperator::process_vertical_move (double delta)
   return true;
 }
 
+bool
+ArrangerObjectSelectionOperator::resizeObjects (
+  commands::ResizeType      type,
+  commands::ResizeDirection direction,
+  double                    delta)
+{
+  if (utils::math::floats_equal (delta, 0.0))
+    {
+      // No resize needed
+      return true;
+    }
+
+  // Extract selected objects from selection model
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_warning ("No objects selected for resize");
+      return false;
+    }
+
+  // Validate resize operation
+  if (!validateResize (selected_objects, type, direction, delta))
+    {
+      z_warning ("Resize validation failed");
+      return false;
+    }
+
+  // Create and push command
+  auto * command = new commands::ResizeArrangerObjectsCommand (
+    std::move (selected_objects), type, direction, delta);
+  undo_stack_.push (command);
+
+  return true;
+}
+
 auto
 ArrangerObjectSelectionOperator::extractSelectedObjects () const
   -> SelectedObjectsVector
@@ -226,6 +262,136 @@ ArrangerObjectSelectionOperator::validateVerticalMovement (
       },
       obj_ref.get_object ());
   });
+}
+
+bool
+ArrangerObjectSelectionOperator::validateResize (
+  const SelectedObjectsVector &objects,
+  commands::ResizeType         type,
+  commands::ResizeDirection    direction,
+  double                       delta)
+{
+  return std::ranges::all_of (
+    objects, [type, direction, delta] (const auto &obj_ref) {
+      const auto &obj = obj_ref.get_object_base ();
+      assert (obj != nullptr);
+      switch (type)
+        {
+        case commands::ResizeType::Bounds:
+          return validateBoundsResize (obj_ref.get_object (), direction, delta);
+        case commands::ResizeType::LoopPoints:
+          return validateLoopPointsResize (*obj, direction, delta);
+        case commands::ResizeType::Fades:
+          return validateFadesResize (*obj, direction, delta);
+        default:
+          return false;
+        }
+    });
+}
+
+bool
+ArrangerObjectSelectionOperator::validateBoundsResize (
+  structure::arrangement::ArrangerObjectPtrVariant obj_var,
+  commands::ResizeDirection                        direction,
+  double                                           delta)
+{
+  return std::visit (
+    [&] (const auto &obj) {
+      using ObjectT = base_type<decltype (obj)>;
+      if (obj->bounds () == nullptr)
+        return false; // Object doesn't support bounds
+
+      if (direction == commands::ResizeDirection::FromStart)
+        {
+          if constexpr (structure::arrangement::TimelineObject<ObjectT>)
+            {
+              // Check that new position won't be negative
+              const double new_position = obj->position ()->ticks () + delta;
+              if (new_position < 0.0)
+                return false;
+            }
+        }
+
+      // Check that new length won't be less than minimum (1 tick)
+      const double current_length = obj->bounds ()->length ()->ticks ();
+      const double new_length =
+        (direction == commands::ResizeDirection::FromStart)
+          ? std::max (current_length - delta, 1.0)
+          : std::max (current_length + delta, 1.0);
+
+      return new_length >= 1.0;
+    },
+    obj_var);
+}
+
+bool
+ArrangerObjectSelectionOperator::validateLoopPointsResize (
+  const structure::arrangement::ArrangerObject &obj,
+  commands::ResizeDirection                     direction,
+  double                                        delta)
+{
+  if (obj.loopRange () == nullptr)
+    return false; // Object doesn't support loop points
+
+  const double clip_start = obj.loopRange ()->clipStartPosition ()->ticks ();
+  const double loop_start = obj.loopRange ()->loopStartPosition ()->ticks ();
+  const double loop_end = obj.loopRange ()->loopEndPosition ()->ticks ();
+
+  if (direction == commands::ResizeDirection::FromStart)
+    {
+      // Check that new clip start and loop start won't be negative
+      const double new_clip_start = std::max (clip_start + delta, 0.0);
+      const double new_loop_start = std::max (loop_start + delta, 0.0);
+
+      if (new_clip_start < 0.0 || new_loop_start < 0.0)
+        return false;
+
+      // Check that new positions won't exceed loop end
+      if (new_clip_start > loop_end || new_loop_start > loop_end)
+        return false;
+    }
+  else // FromEnd
+    {
+      // Check that new loop end won't be before loop start or clip start
+      const double new_loop_end = std::max (loop_end + delta, 0.0);
+
+      if (new_loop_end < std::max (clip_start, loop_start))
+        return false;
+    }
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::validateFadesResize (
+  const structure::arrangement::ArrangerObject &obj,
+  commands::ResizeDirection                     direction,
+  double                                        delta)
+{
+  if (obj.fadeRange () == nullptr)
+    return false; // Object doesn't support fades
+
+  const double fade_in = obj.fadeRange ()->startOffset ()->ticks ();
+  const double fade_out = obj.fadeRange ()->endOffset ()->ticks ();
+
+  if (direction == commands::ResizeDirection::FromStart)
+    {
+      // Check that new fade-in offset won't be negative
+      const double new_fade_in = std::max (fade_in + delta, 0.0);
+
+      if (new_fade_in < 0.0)
+        return false;
+    }
+  else // FromEnd
+    {
+      // Check that new fade-out offset won't be negative
+      const double new_fade_out = std::max (fade_out + delta, 0.0);
+
+      if (new_fade_out < 0.0)
+        return false;
+    }
+
+  return true;
 }
 
 } // namespace zrythm::actions

@@ -12,13 +12,14 @@ class ArrangerObjectLoopRange : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    dsp::AtomicPositionQmlAdapter * clipStartPosition READ clipStartPosition
-      CONSTANT)
+    zrythm::dsp::AtomicPositionQmlAdapter * clipStartPosition READ
+      clipStartPosition CONSTANT)
   Q_PROPERTY (
-    dsp::AtomicPositionQmlAdapter * loopStartPosition READ loopStartPosition
-      CONSTANT)
+    zrythm::dsp::AtomicPositionQmlAdapter * loopStartPosition READ
+      loopStartPosition CONSTANT)
   Q_PROPERTY (
-    dsp::AtomicPositionQmlAdapter * loopEndPosition READ loopEndPosition CONSTANT)
+    zrythm::dsp::AtomicPositionQmlAdapter * loopEndPosition READ loopEndPosition
+      CONSTANT)
   Q_PROPERTY (
     bool trackBounds READ trackBounds WRITE setTrackBounds NOTIFY
       trackBoundsChanged)
