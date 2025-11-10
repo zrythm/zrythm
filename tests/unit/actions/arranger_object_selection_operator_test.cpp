@@ -859,8 +859,34 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromStart)
     note_obj->bounds ()->length ()->ticks (), 4200.0); // 4000 + 200
 }
 
-// Test resizeObjects with loop points resize
-TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPoints)
+// Test resizeObjects with loop points resize from end
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromEnd)
+{
+  const double delta = 100.0;
+
+  // Clear selection and only select objects that support loop points resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (2, 0),
+    QItemSelectionModel::Select); // Select only MidiRegion
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::LoopPoints, commands::ResizeDirection::FromEnd, delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Just verify bounds - actual logic is tested by the command class
+  auto * midi_region_obj =
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  EXPECT_DOUBLE_EQ (
+    midi_region_obj->bounds ()->length ()->ticks (),
+    4100.0); // 4000 + 100
+}
+
+// Test resizeObjects with loop points resize from start
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromStart)
 {
   const double delta = 100.0;
 
@@ -878,15 +904,14 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPoints)
   // Check that command was pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
 
-  // Verify objects were resized by checking the object directly
+  // Just verify bounds - actual logic is tested by the command class
   auto * midi_region_obj =
     midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
   EXPECT_DOUBLE_EQ (
-    midi_region_obj->loopRange ()->clipStartPosition ()->ticks (),
-    600.0); // 500 + 100
+    midi_region_obj->position ()->ticks (), 2100.0); // 2000 + 100
   EXPECT_DOUBLE_EQ (
-    midi_region_obj->loopRange ()->loopStartPosition ()->ticks (),
-    1100.0); // 1000 + 100
+    midi_region_obj->bounds ()->length ()->ticks (),
+    3900.0); // 4000 - 100
 }
 
 // Test resizeObjects with fades resize
@@ -1022,6 +1047,73 @@ TEST_F (
 
   // Command should be pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test resizeObjects with bounds resize from start that would make length zero
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ResizeObjectsBoundsFromStartZeroLength)
+{
+  // Clear selection and only select objects that support bounds resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (1, 0),
+    QItemSelectionModel::Select); // Select only MidiNote
+
+  // Set initial length to 100 ticks
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  note_obj->bounds ()->length ()->setTicks (100.0);
+
+  // Try to resize by delta that would make length zero or negative
+  const double delta = 150.0; // Would make length -50 (100 - 150)
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
+
+  // This should fail because it would make length zero/negative
+  EXPECT_FALSE (result)
+    << "Resize from start should not allow length to become zero or negative";
+
+  // No command should be pushed for invalid resize
+  EXPECT_EQ (undo_stack_->index (), 0);
+
+  // Length should remain unchanged
+  EXPECT_DOUBLE_EQ (note_obj->bounds ()->length ()->ticks (), 100.0);
+}
+
+// Test resizeObjects with loop points resize from start that would make length
+// zero
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ResizeObjectsLoopPointsFromStartZeroLength)
+{
+  // Clear selection and only select objects that support loop points resize
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (2, 0),
+    QItemSelectionModel::Select); // Select only MidiRegion
+
+  // Set initial length to 100 ticks
+  auto * midi_region_obj =
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  midi_region_obj->bounds ()->length ()->setTicks (100.0);
+
+  // Try to resize by delta that would make length zero or negative
+  const double delta = 150.0; // Would make length -50 (100 - 150)
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::LoopPoints, commands::ResizeDirection::FromStart,
+    delta);
+
+  // This should fail because it would make length zero/negative
+  EXPECT_FALSE (result)
+    << "Loop points resize from start should not allow length to become zero or negative";
+
+  // No command should be pushed for invalid resize
+  EXPECT_EQ (undo_stack_->index (), 0);
+
+  // Length should remain unchanged
+  EXPECT_DOUBLE_EQ (midi_region_obj->bounds ()->length ()->ticks (), 100.0);
 }
 
 } // namespace zrythm::actions

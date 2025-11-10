@@ -57,7 +57,7 @@ Item {
     target: root.region
   }
 
-    Connections {
+  Connections {
     function onContentChanged() {
       root.generateAutomationCurve();
     }

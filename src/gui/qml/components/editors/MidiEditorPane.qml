@@ -64,6 +64,8 @@ GridLayout {
     editorSettings: root.pianoRoll.editorSettings
     tempoMap: root.project.tempoMap
     transport: root.project.transport
+    region: root.region
+    track: root.project.tracklist.getTrackForTimelineObject(root.region)
   }
 
   ColumnLayout {

@@ -9,6 +9,8 @@
 #include "structure/arrangement/bounded_object.h"
 #include "structure/arrangement/loopable_object.h"
 
+#include <QSignalSpy>
+
 #include "helpers/mock_qobject.h"
 
 #include "unit/dsp/atomic_position_helpers.h"
@@ -57,7 +59,7 @@ TEST_F (ArrangerObjectLoopRangeTest, InitialState)
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 5000); // Should track
                                                                 // bounds length
   EXPECT_TRUE (loop_range->trackBounds ()); // Default should be true
-  EXPECT_FALSE (loop_range->is_looped ());
+  EXPECT_FALSE (loop_range->looped ());
 }
 
 // Test trackBounds property and behavior
@@ -121,21 +123,21 @@ TEST_F (ArrangerObjectLoopRangeTest, TrackBoundsBehavior)
 TEST_F (ArrangerObjectLoopRangeTest, IsLooped)
 {
   // Default state (not looped)
-  EXPECT_FALSE (loop_range->is_looped ());
+  EXPECT_FALSE (loop_range->looped ());
 
   // Modify clip start
   loop_range->clipStartPosition ()->setSamples (100);
-  EXPECT_TRUE (loop_range->is_looped ());
+  EXPECT_TRUE (loop_range->looped ());
   loop_range->clipStartPosition ()->setSamples (0);
 
   // Modify loop start
   loop_range->loopStartPosition ()->setSamples (100);
-  EXPECT_TRUE (loop_range->is_looped ());
+  EXPECT_TRUE (loop_range->looped ());
   loop_range->loopStartPosition ()->setSamples (0);
 
   // Modify loop end (with tracking enabled)
   loop_range->loopEndPosition ()->setSamples (4000);
-  EXPECT_TRUE (loop_range->is_looped ());
+  EXPECT_TRUE (loop_range->looped ());
 
   // Reset to default
   loop_range->setTrackBounds (true);
@@ -143,7 +145,7 @@ TEST_F (ArrangerObjectLoopRangeTest, IsLooped)
   EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 0);
   EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0);
   EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 5000);
-  EXPECT_FALSE (loop_range->is_looped ());
+  EXPECT_FALSE (loop_range->looped ());
 }
 
 // Test length calculations
@@ -232,17 +234,53 @@ TEST_F (ArrangerObjectLoopRangeTest, Serialization)
 // Test trackBoundsChanged signal
 TEST_F (ArrangerObjectLoopRangeTest, TrackBoundsSignal)
 {
-  testing::MockFunction<void (bool)> mockTrackBoundsChanged;
+  QSignalSpy spy (
+    loop_range.get (), &ArrangerObjectLoopRange::trackBoundsChanged);
 
-  QObject::connect (
-    loop_range.get (), &ArrangerObjectLoopRange::trackBoundsChanged,
-    parent.get (), mockTrackBoundsChanged.AsStdFunction ());
-
-  EXPECT_CALL (mockTrackBoundsChanged, Call (false)).Times (1);
+  // Initially trackBounds is true, changing to false should emit signal
   loop_range->setTrackBounds (false);
+  EXPECT_EQ (spy.count (), 1);
+  EXPECT_EQ (spy.at (0).at (0).toBool (), false);
 
-  EXPECT_CALL (mockTrackBoundsChanged, Call (true)).Times (1);
+  // Changing back to true should emit signal again
   loop_range->setTrackBounds (true);
+  EXPECT_EQ (spy.count (), 2);
+  EXPECT_EQ (spy.at (1).at (0).toBool (), true);
+
+  // Setting to same value should not emit signal
+  loop_range->setTrackBounds (true);
+  EXPECT_EQ (spy.count (), 2); // Should still be 2
+}
+
+// Test loopedChanged signal
+TEST_F (ArrangerObjectLoopRangeTest, LoopedSignal)
+{
+  QSignalSpy spy (loop_range.get (), &ArrangerObjectLoopRange::loopedChanged);
+
+  // Initially not looped, so changing to looped should emit signal
+  loop_range->clipStartPosition ()->setSamples (100);
+  EXPECT_EQ (spy.count (), 1);
+  EXPECT_TRUE (loop_range->looped ());
+
+  // Reset to not looped state
+  loop_range->clipStartPosition ()->setSamples (0);
+  EXPECT_EQ (spy.count (), 2);
+  EXPECT_FALSE (loop_range->looped ());
+
+  // Test with loop start position
+  loop_range->loopStartPosition ()->setSamples (100);
+  EXPECT_EQ (spy.count (), 3);
+  EXPECT_TRUE (loop_range->looped ());
+
+  // Reset
+  loop_range->loopStartPosition ()->setSamples (0);
+  EXPECT_EQ (spy.count (), 4);
+  EXPECT_FALSE (loop_range->looped ());
+
+  // Test with loop end position
+  loop_range->loopEndPosition ()->setSamples (4000);
+  EXPECT_EQ (spy.count (), 5);
+  EXPECT_TRUE (loop_range->looped ());
 }
 
 // Test edge cases

@@ -65,10 +65,6 @@ private:
     structure::arrangement::ArrangerObjectPtrVariant obj_var,
     commands::ResizeDirection                        direction,
     double                                           delta);
-  static bool validateLoopPointsResize (
-    const structure::arrangement::ArrangerObject &obj,
-    commands::ResizeDirection                     direction,
-    double                                        delta);
   static bool validateFadesResize (
     const structure::arrangement::ArrangerObject &obj,
     commands::ResizeDirection                     direction,

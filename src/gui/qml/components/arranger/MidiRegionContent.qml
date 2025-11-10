@@ -19,27 +19,36 @@ Repeater {
   required property MidiRegion region
   readonly property real regionTicks: region.bounds.length.ticks
 
-  model: root.region.midiNotes
+  model: {
+    // Collect all MIDI notes
+    const notes = [];
+    for (let i = 0; i < root.region.midiNotes.rowCount(); i++) {
+      const midiNote = root.region.midiNotes.data(root.region.midiNotes.index(i, 0), ArrangerObjectListModel.ArrangerObjectPtrRole);
+      notes.push(midiNote);
+    }
 
-  // TODO: nested repeater based on number of loops
+    // Process through loop segments
+    return ArrangerObjectHelpers.processLoopedItems(root.region.loopRange, root.regionTicks, root.contentWidth, notes, function (note, absStart, absEnd) {
+      const relativeStart = absStart / root.regionTicks;
+      const relativeEnd = absEnd / root.regionTicks;
+      const x = relativeStart * root.contentWidth;
+      const width = (relativeEnd - relativeStart) * root.contentWidth;
+      const relativePitch = ((note.pitch - root.minVisiblePitch) + 1);
+      const y = root.contentHeight - (relativePitch * root.midiNoteHeight);
+
+      return Qt.rect(x, y, width, root.midiNoteHeight);
+    });
+  }
+
   delegate: Rectangle {
     id: midiNoteRect
 
-    required property var arrangerObject
-    required property int index
-    property MidiNote midiNote: arrangerObject
-    readonly property real midiNoteEndX: x + 5
+    required property rect modelData
 
     color: Style.regionContentColor
-    height: root.midiNoteHeight
-    width: midiNoteEndX - x
-    x: {
-      const relativePosition = midiNote.position.ticks / root.regionTicks;
-      return relativePosition * root.contentWidth;
-    }
-    y: {
-      const relativePitch = ((midiNote.pitch - root.minVisiblePitch) + 1);
-      return root.contentHeight - (relativePitch * root.midiNoteHeight);
-    }
+    height: modelData.height
+    width: modelData.width
+    x: modelData.x
+    y: modelData.y
   }
 }

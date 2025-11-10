@@ -23,6 +23,7 @@ class ArrangerObjectLoopRange : public QObject
   Q_PROPERTY (
     bool trackBounds READ trackBounds WRITE setTrackBounds NOTIFY
       trackBoundsChanged)
+  Q_PROPERTY (bool looped READ looped NOTIFY loopedChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -30,13 +31,6 @@ public:
   ArrangerObjectLoopRange (
     const ArrangerObjectBounds &bounds,
     QObject *                   parent = nullptr);
-
-  bool is_looped () const
-  {
-    return loopStartPosition ()->samples () > 0
-           || clipStartPosition ()->samples () > 0
-           || length ()->samples () != loopEndPosition ()->samples ();
-  }
 
   /**
    * Returns the number of loops in the ArrangerObject, optionally including
@@ -70,6 +64,14 @@ public:
       }
   }
   Q_SIGNAL void trackBoundsChanged (bool track);
+
+  bool looped () const
+  {
+    return loopStartPosition ()->samples () > 0
+           || clipStartPosition ()->samples () > 0
+           || length ()->samples () != loopEndPosition ()->samples ();
+  }
+  Q_SIGNAL void loopedChanged ();
 
   Q_SIGNAL void loopableObjectPropertiesChanged ();
 

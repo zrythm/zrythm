@@ -28,6 +28,8 @@ Item {
   readonly property real pxPerBeat: pxPerSixteenth * 4
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
   readonly property real pxPerTick: defaultPxPerTick * editorSettings.horizontalZoomLevel
+  property ArrangerObject region: null
+  property Track track: null
   readonly property real sixteenthLineOpacity: 0.4
   readonly property int startBar: tempoMap.getMusicalPosition(visibleStartTick).bar
   required property TempoMap tempoMap
@@ -44,8 +46,8 @@ Item {
   ScrollView {
     id: scrollView
 
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     anchors.fill: parent
     clip: true
     contentHeight: scrollView.height
@@ -181,6 +183,59 @@ ${sixteenthRect.sixteenth}`
         width: 12
         x: root.transport.playhead.ticks * root.pxPerTick - width / 2
         y: root.height - height
+      }
+
+      Loader {
+        id: regionMarkersLoader
+
+        active: root.region !== null
+        anchors.fill: parent
+        enabled: active
+        visible: active
+
+        sourceComponent: Item {
+          x: root.region.position.ticks * root.pxPerTick
+
+          Rectangle {
+            id: regionBackground
+
+            anchors.bottom: parent.bottom
+            color: root.region.color.useColor ? root.region.color.color : root.track.color
+            height: 8
+            opacity: 0.6
+            width: root.region.bounds.length.ticks * root.pxPerTick
+          }
+
+          Rectangle {
+            id: regionClipStartRect
+
+            anchors.bottom: parent.bottom
+            color: "red"
+            height: 12
+            width: 2
+            x: root.region.loopRange.clipStartPosition.ticks * root.pxPerTick - width / 2
+          }
+
+          Rectangle {
+            id: regionLoopStartRect
+
+            anchors.bottom: parent.bottom
+            color: "green"
+            height: 12
+            width: 2
+            x: root.region.loopRange.loopStartPosition.ticks * root.pxPerTick - width / 2
+          }
+
+          Rectangle {
+            id: regionLoopEndRect
+
+            anchors.bottom: parent.bottom
+            color: "green"
+            height: 12
+            width: 2
+            x: root.region.loopRange.loopEndPosition.ticks * root.pxPerTick - width / 2
+          }
+        }
       }
 
       Item {

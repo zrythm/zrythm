@@ -352,7 +352,7 @@ public:
         using ObjT = base_type<decltype (obj)>;
         if constexpr (RegionObject<ObjT>)
           {
-            return obj->loopRange ()->is_looped ();
+            return obj->loopRange ()->looped ();
           }
         else
           return false;

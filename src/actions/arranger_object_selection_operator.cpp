@@ -278,9 +278,8 @@ ArrangerObjectSelectionOperator::validateResize (
       switch (type)
         {
         case commands::ResizeType::Bounds:
-          return validateBoundsResize (obj_ref.get_object (), direction, delta);
         case commands::ResizeType::LoopPoints:
-          return validateLoopPointsResize (*obj, direction, delta);
+          return validateBoundsResize (obj_ref.get_object (), direction, delta);
         case commands::ResizeType::Fades:
           return validateFadesResize (*obj, direction, delta);
         default:
@@ -316,50 +315,12 @@ ArrangerObjectSelectionOperator::validateBoundsResize (
       const double current_length = obj->bounds ()->length ()->ticks ();
       const double new_length =
         (direction == commands::ResizeDirection::FromStart)
-          ? std::max (current_length - delta, 1.0)
-          : std::max (current_length + delta, 1.0);
+          ? current_length - delta
+          : current_length + delta;
 
       return new_length >= 1.0;
     },
     obj_var);
-}
-
-bool
-ArrangerObjectSelectionOperator::validateLoopPointsResize (
-  const structure::arrangement::ArrangerObject &obj,
-  commands::ResizeDirection                     direction,
-  double                                        delta)
-{
-  if (obj.loopRange () == nullptr)
-    return false; // Object doesn't support loop points
-
-  const double clip_start = obj.loopRange ()->clipStartPosition ()->ticks ();
-  const double loop_start = obj.loopRange ()->loopStartPosition ()->ticks ();
-  const double loop_end = obj.loopRange ()->loopEndPosition ()->ticks ();
-
-  if (direction == commands::ResizeDirection::FromStart)
-    {
-      // Check that new clip start and loop start won't be negative
-      const double new_clip_start = std::max (clip_start + delta, 0.0);
-      const double new_loop_start = std::max (loop_start + delta, 0.0);
-
-      if (new_clip_start < 0.0 || new_loop_start < 0.0)
-        return false;
-
-      // Check that new positions won't exceed loop end
-      if (new_clip_start > loop_end || new_loop_start > loop_end)
-        return false;
-    }
-  else // FromEnd
-    {
-      // Check that new loop end won't be before loop start or clip start
-      const double new_loop_end = std::max (loop_end + delta, 0.0);
-
-      if (new_loop_end < std::max (clip_start, loop_start))
-        return false;
-    }
-
-  return true;
 }
 
 bool

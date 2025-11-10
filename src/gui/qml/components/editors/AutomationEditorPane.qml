@@ -42,7 +42,9 @@ GridLayout {
 
     Layout.fillWidth: true
     editorSettings: root.automationEditor.editorSettings
+    region: root.region
     tempoMap: root.project.tempoMap
+    track: root.project.tracklist.getTrackForTimelineObject(root.region)
     transport: root.project.transport
   }
 

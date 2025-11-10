@@ -69,6 +69,19 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
         }
     });
 
+  QObject::connect (
+    loopStartPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopedChanged);
+  QObject::connect (
+    loopEndPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopedChanged);
+  QObject::connect (
+    clipStartPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopedChanged);
+  QObject::connect (
+    length (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopedChanged);
+
   Q_EMIT trackBoundsChanged (track_bounds_);
 
   QObject::connect (
@@ -82,6 +95,9 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
     &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
   QObject::connect (
     clipStartPosition (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
+  QObject::connect (
+    this, &ArrangerObjectLoopRange::loopedChanged, this,
     &ArrangerObjectLoopRange::loopableObjectPropertiesChanged);
 }
 

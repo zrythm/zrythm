@@ -38,9 +38,6 @@ protected:
         midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ())
       {
         region->bounds ()->length ()->setTicks (4000.0);
-        region->loopRange ()->clipStartPosition ()->setTicks (500.0);
-        region->loopRange ()->loopStartPosition ()->setTicks (1000.0);
-        region->loopRange ()->loopEndPosition ()->setTicks (3500.0);
       }
 
     audio_region_ref.get_object_base ()->position ()->setTicks (3000.0);
@@ -168,14 +165,60 @@ TEST_F (ResizeArrangerObjectsCommandTest, BoundsResizeFromStart)
 TEST_F (ResizeArrangerObjectsCommandTest, LoopPointsResizeFromStart)
 {
   std::vector<structure::arrangement::ArrangerObjectUuidReference> objects = {
-    midi_region_ref
+    audio_region_ref
   };
   const double delta = 100.0;
 
-  EXPECT_THROW (
-    ResizeArrangerObjectsCommand command (
-      objects, ResizeType::LoopPoints, ResizeDirection::FromStart, delta),
-    std::invalid_argument);
+  auto * region =
+    audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ();
+
+  // Set up initial loop state
+  region->loopRange ()->setTrackBounds (false);
+  region->loopRange ()->clipStartPosition ()->setTicks (500.0);
+  region->loopRange ()->loopStartPosition ()->setTicks (1000.0);
+  region->loopRange ()->loopEndPosition ()->setTicks (4000.0);
+
+  ResizeArrangerObjectsCommand command (
+    objects, ResizeType::LoopPoints, ResizeDirection::FromStart, delta);
+
+  // Execute resize
+  command.redo ();
+
+  // Check that trackBounds is still false
+  EXPECT_FALSE (region->loopRange ()->trackBounds ());
+
+  // Check that position was adjusted and length decreased to maintain end
+  EXPECT_DOUBLE_EQ (region->position ()->ticks (), 3100.0); // 3000 + 100
+  EXPECT_DOUBLE_EQ (
+    region->bounds ()->length ()->ticks (), 4900.0); // 5000 - 100
+
+  // Check that clip start was adjusted
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->clipStartPosition ()->ticks (), 600.0); // 500 + 100
+
+  // Loop start and end should remain unchanged
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopStartPosition ()->ticks (), 1000.0); // Unchanged
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopEndPosition ()->ticks (), 4000.0); // Unchanged
+
+  // Undo should restore original state
+  command.undo ();
+
+  // Check that original state was restored
+  EXPECT_FALSE (region->loopRange ()->trackBounds ());
+  EXPECT_DOUBLE_EQ (region->position ()->ticks (), 3000.0); // Original restored
+  EXPECT_DOUBLE_EQ (
+    region->bounds ()->length ()->ticks (), 5000.0); // Original restored
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->clipStartPosition ()->ticks (),
+    500.0); // Original restored
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopStartPosition ()->ticks (),
+    1000.0); // Original restored
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopEndPosition ()->ticks (),
+    4000.0); // Original restored
 }
 
 // Test loop points resize from end
@@ -186,43 +229,53 @@ TEST_F (ResizeArrangerObjectsCommandTest, LoopPointsResizeFromEnd)
   };
   const double delta = 500.0;
 
+  auto * region =
+    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  region->loopRange ()->setTrackBounds (false);
+  region->loopRange ()->clipStartPosition ()->setTicks (500.0);
+  region->loopRange ()->loopStartPosition ()->setTicks (1000.0);
+  region->loopRange ()->loopEndPosition ()->setTicks (3500.0);
+
   ResizeArrangerObjectsCommand command (
     objects, ResizeType::LoopPoints, ResizeDirection::FromEnd, delta);
 
   // Execute resize
   command.redo ();
 
-  // Check that loop end was adjusted
-  if (
-    auto * region =
-      midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ())
-    {
-      EXPECT_DOUBLE_EQ (
-        region->loopRange ()->clipStartPosition ()->ticks (), 500.0); // Unchanged
-      EXPECT_DOUBLE_EQ (
-        region->loopRange ()->loopStartPosition ()->ticks (),
-        1000.0); // Unchanged
-      EXPECT_DOUBLE_EQ (
-        region->loopRange ()->loopEndPosition ()->ticks (),
-        4000.0); // 3500 + 500
-    }
+  // Check that trackBounds was set to false and loop end was adjusted
 
-  // Undo should restore original
+  // Loop-related positions should remain unchanged
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->clipStartPosition ()->ticks (), 500.0); // Unchanged
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopStartPosition ()->ticks (),
+    1000.0); // Unchanged
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopEndPosition ()->ticks (),
+    3500.0); // Unchanged
+
+  // Length should be adjusted by the delta
+  EXPECT_DOUBLE_EQ (
+    region->bounds ()->length ()->ticks (),
+    4500.0); // 4000 + 500
+
+  // Undo should restore original state including trackBounds
   command.undo ();
-  if (
-    auto * region =
-      midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ())
-    {
-      EXPECT_DOUBLE_EQ (
-        region->loopRange ()->clipStartPosition ()->ticks (),
-        500.0); // Original restored
-      EXPECT_DOUBLE_EQ (
-        region->loopRange ()->loopStartPosition ()->ticks (),
-        1000.0); // Original restored
-      EXPECT_DOUBLE_EQ (
-        region->loopRange ()->loopEndPosition ()->ticks (),
-        3500.0); // Original restored
-    }
+
+  // Loop positions should remain unchanged
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->clipStartPosition ()->ticks (),
+    500.0); // Original restored
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopStartPosition ()->ticks (),
+    1000.0); // Original restored
+  EXPECT_DOUBLE_EQ (
+    region->loopRange ()->loopEndPosition ()->ticks (),
+    3500.0); // Original restored
+
+  // Region length should be restored
+  EXPECT_DOUBLE_EQ (
+    region->bounds ()->length ()->ticks (), 4000.0); // Original restored
 }
 
 // Test fades resize from start
@@ -290,7 +343,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, FadesResizeFromEnd)
     auto * region =
       audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ())
     {
-      if (region->fadeRange ())
+      if (region->fadeRange () != nullptr)
         {
           EXPECT_DOUBLE_EQ (
             region->fadeRange ()->startOffset ()->ticks (), 200.0); // Unchanged
@@ -305,7 +358,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, FadesResizeFromEnd)
     auto * region =
       audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ())
     {
-      if (region->fadeRange ())
+      if (region->fadeRange () != nullptr)
         {
           EXPECT_DOUBLE_EQ (
             region->fadeRange ()->startOffset ()->ticks (),
@@ -361,7 +414,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, FadeNonNegativeConstraint)
     auto * region =
       audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ())
     {
-      if (region->fadeRange ())
+      if (region->fadeRange () != nullptr)
         {
           EXPECT_DOUBLE_EQ (
             region->fadeRange ()->startOffset ()->ticks (),

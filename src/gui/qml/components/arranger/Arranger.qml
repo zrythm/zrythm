@@ -188,7 +188,7 @@ Item {
   function shouldResizeBeLoopResize(object: ArrangerObjectBaseView, fromStart: bool): bool {
     // Note: should probably check all selected objects if loopable
     const isObjectHoveredInBottomHalf = root.hoveredObject.hoveredPoint.y > ((root.hoveredObject.height * 2) / 3);
-    return !fromStart && object.arrangerObject.loopRange !== null && isObjectHoveredInBottomHalf;
+    return object.arrangerObject.loopRange !== null && (object.arrangerObject.loopRange.looped || isObjectHoveredInBottomHalf);
   }
 
   function updateCursor() {
@@ -766,16 +766,10 @@ Item {
               }
 
               // Calculate delta based on the resize type
-              if (resizeType === ArrangerObjectSelectionOperator.Bounds) {
+              if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
                 // For bounds resize, delta is the difference in position ticks
                 const originalPosTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
                 delta = startTicks - originalPosTicks;
-              } else if (resizeType === ArrangerObjectSelectionOperator.LoopPoints) {
-                // For loop points resize, calculate based on the specific loop point being resized
-                if (obj.loopRange) {
-                  const originalLoopStart = obj.loopRange.loopStartPosition.ticks;
-                  delta = startTicks - originalLoopStart;
-                }
               } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
                 // For fades resize, delta is in ticks (will be converted internally)
                 if (obj.fadeRange) {
@@ -785,7 +779,6 @@ Item {
               }
 
               root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
-              console.log("undoable resize L with delta:", delta);
             } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
               if (action === Arranger.CreatingResizingMovingR) {
                 moveSelectionsY(dy, prevCoordinates.y);
@@ -808,16 +801,10 @@ Item {
                 }
 
                 // Calculate delta based on the resize type
-                if (resizeType === ArrangerObjectSelectionOperator.Bounds) {
+                if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
                   // For bounds resize, delta is the difference in ticks
                   const originalEndTicks = ArrangerObjectHelpers.getObjectEndInTimelineTicks(obj);
                   delta = endTicks - originalEndTicks;
-                } else if (resizeType === ArrangerObjectSelectionOperator.LoopPoints) {
-                  // For loop points resize, calculate based on the specific loop point being resized
-                  if (obj.loopRange) {
-                    const originalLoopEnd = obj.loopRange.loopEndPosition.ticks;
-                    delta = endTicks - originalLoopEnd;
-                  }
                 } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
                   // For fades resize, delta is in ticks (will be converted internally)
                   if (obj.fadeRange) {
@@ -827,7 +814,6 @@ Item {
                 }
 
                 root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
-                console.log("undoable resize R with delta:", delta);
               }
             }
           }

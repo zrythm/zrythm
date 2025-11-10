@@ -133,6 +133,7 @@ Zrythm makes extensive use of modern C++ features:
   2. The source object signal
   3. The target object instance (as a context that lets Qt auto-remove this signal if the target is deleted - this is always required)
   4. The target object slot, or a lambda
+- In QML JavaScript, prefer `let` and `const` over `var` when declaring variables if possible
 
 ## Key Classes
 
