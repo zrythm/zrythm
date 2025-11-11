@@ -7,6 +7,7 @@
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region_renderer.h"
+#include "utils/views.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -30,130 +31,209 @@ RegionRenderer::LoopParameters::LoopParameters (const ArrangerObject &region)
 }
 
 void
-RegionRenderer::serialize_midi_region (
-  const MidiRegion          &region,
-  juce::MidiMessageSequence &events,
-  std::optional<double>      start,
-  std::optional<double>      end,
-  bool                       add_region_start,
-  bool                       as_played)
+RegionRenderer::handle_midi_region_range (
+  const MidiRegion                                       &region,
+  juce::MidiMessageSequence                              &events,
+  std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+  units::precise_tick_t                                   absolute_start)
 {
-  const auto region_start_offset =
-    add_region_start
-      ? units::ticks (region.position ()->ticks ())
-      : units::ticks (0.0);
-  const auto start_opt =
-    start ? std::make_optional (units::ticks (*start)) : std::nullopt;
-  const auto end_opt =
-    end ? std::make_optional (units::ticks (*end)) : std::nullopt;
-  const LoopParameters loop_params (region);
+  const auto virtual_range_length = virtual_range.second - virtual_range.first;
+  const auto absolute_end = absolute_start + virtual_range_length;
 
-  // Process each MIDI note in the region
-  for (const auto * note : region.get_children_view ())
+  // Add notes for this loop segment
+  for (
+    const auto * note :
+    region.get_children_view () | std::views::filter ([] (const auto * n) {
+      // Only check unmuted notes
+      return !n->mute ()->muted ();
+    }))
     {
-      // Skip muted notes when processing full playback
-      if (as_played && note->mute ()->muted ())
+      const auto note_virtual_start = units::ticks (note->position ()->ticks ());
+      const auto note_virtual_end =
+        note_virtual_start + units::ticks (note->bounds ()->length ()->ticks ());
+
+      // Only include notes that fall within the loop range
+      if (
+        note_virtual_start >= virtual_range.second
+        || note_virtual_end <= virtual_range.first)
         continue;
 
-      // For as_played, check if note is in playable part of region
-      if (as_played && !is_midi_note_playable (*note, loop_params))
-        continue;
+      // Calculate position in current loop segment
+      const auto note_absolute_start = std::max (
+        absolute_start,
+        absolute_start + (note_virtual_start - virtual_range.first));
+      const auto note_absolute_end = std::min (
+        absolute_end, absolute_start + (note_virtual_end - virtual_range.first));
 
-      process_midi_note (
-        *note, loop_params, region_start_offset, start_opt, end_opt, as_played,
-        events);
+      // Add note on and note off events
+      events.addEvent (
+        juce::MidiMessage::noteOn (
+          1, note->pitch (), static_cast<std::uint8_t> (note->velocity ())),
+        note_absolute_start.in (units::ticks));
+      events.addEvent (
+        juce::MidiMessage::noteOff (
+          1, note->pitch (), static_cast<std::uint8_t> (note->velocity ())),
+        note_absolute_end.in (units::ticks));
     }
 }
 
 void
-RegionRenderer::serialize_chord_region (
-  const ChordRegion         &region,
-  juce::MidiMessageSequence &events,
-  std::optional<double>      start,
-  std::optional<double>      end,
-  bool                       add_region_start,
-  bool                       as_played)
+RegionRenderer::handle_audio_region_range (
+  const AudioRegion                                      &region,
+  juce::AudioSampleBuffer                                &buffer,
+  std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+  units::precise_tick_t                                   absolute_start)
 {
-  const auto region_start_offset =
-    add_region_start
-      ? units::ticks (region.position ()->ticks ())
-      : units::ticks (0.0);
-  const auto start_opt =
-    start ? std::make_optional (units::ticks (*start)) : std::nullopt;
-  const auto end_opt =
-    end ? std::make_optional (units::ticks (*end)) : std::nullopt;
-  const LoopParameters loop_params (region);
+  const auto virtual_range_length = virtual_range.second - virtual_range.first;
+  const auto absolute_end = absolute_start + virtual_range_length;
 
-  // Process each chord object in the region
-  for (const auto * chord_obj : region.get_children_view ())
+  // Get the audio source from the region
+  auto &audio_source = region.get_audio_source ();
+
+  // Convert tick positions to sample positions
+  const auto &tempo_map = region.get_tempo_map ();
+  const auto  absolute_start_samples =
+    tempo_map.tick_to_samples_rounded (absolute_start);
+  const auto absolute_end_samples =
+    tempo_map.tick_to_samples_rounded (absolute_end);
+  const auto segment_length_samples =
+    absolute_end_samples - absolute_start_samples;
+
+  assert (segment_length_samples > units::samples (0));
+
+  // Create a temporary buffer for this segment
+  const auto segment_length_samples_int =
+    static_cast<int> (segment_length_samples.in (units::samples));
+  juce::AudioSampleBuffer temp_buffer (
+    buffer.getNumChannels (), segment_length_samples_int);
+  temp_buffer.clear ();
+
+  // Calculate the read position in the audio source
+  const auto virtual_start_samples =
+    tempo_map.tick_to_samples_rounded (virtual_range.first);
+
+  // Read audio data from the source
+  const auto source_length = audio_source.getTotalLength ();
+  const auto virtual_start_samples_int =
+    static_cast<int> (virtual_start_samples.in (units::samples));
+
+  if (virtual_start_samples_int < source_length)
     {
-      // Skip muted chord objects when processing full playback
-      if (as_played && chord_obj->mute ()->muted ())
-        continue;
+      const auto readable_length = std::min (
+        segment_length_samples_int,
+        static_cast<int> (source_length - virtual_start_samples_int));
 
-      process_chord_object (
-        *chord_obj, loop_params, region_start_offset, start_opt, end_opt,
-        as_played, events);
+      audio_source.setNextReadPosition (virtual_start_samples_int);
+
+      juce::AudioSourceChannelInfo source_ch_nfo{
+        &temp_buffer, 0, readable_length
+      };
+      audio_source.getNextAudioBlock (source_ch_nfo);
+    }
+
+  // Mix into the output buffer at the correct position
+  const auto absolute_start_samples_int =
+    static_cast<int> (absolute_start_samples.in (units::samples));
+
+  // Ensure the output buffer is large enough
+  if (
+    absolute_start_samples_int + segment_length_samples_int
+    > buffer.getNumSamples ())
+    {
+      buffer.setSize (
+        buffer.getNumChannels (),
+        absolute_start_samples_int + segment_length_samples_int, true, true,
+        false);
+    }
+
+  // Mix the temporary buffer into the output buffer
+  for (int channel = 0; channel < buffer.getNumChannels (); ++channel)
+    {
+      buffer.addFrom (
+        channel, absolute_start_samples_int, temp_buffer, channel, 0,
+        segment_length_samples_int);
     }
 }
 
-/**
- * Serializes an Automation region to sample-accurate automation values.
- */
 void
-RegionRenderer::serialize_automation_region (
-  const AutomationRegion &region,
-  std::vector<float>     &values,
-  std::optional<double>   start,
-  std::optional<double>   end)
+RegionRenderer::handle_chord_region_range (
+  const ChordRegion                                      &region,
+  juce::MidiMessageSequence                              &events,
+  std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+  units::precise_tick_t                                   absolute_start)
 {
-  const auto start_opt =
-    start ? std::make_optional (units::ticks (*start)) : std::nullopt;
-  const auto end_opt =
-    end ? std::make_optional (units::ticks (*end)) : std::nullopt;
-  const LoopParameters loop_params (region);
-  const auto          &tempo_map = region.get_tempo_map ();
+  const auto virtual_range_length = virtual_range.second - virtual_range.first;
+  const auto absolute_end = absolute_start + virtual_range_length;
 
-  if constexpr (REGION_SERIALIZER_DEBUG)
+  // Add chord objects for this loop segment
+  for (
+    const auto * chord_object :
+    region.get_children_view () | std::views::filter ([] (const auto * co) {
+      // Only check unmuted chord objects
+      return !co->mute ()->muted ();
+    }))
     {
-      z_debug (
-        "serialize_automation_region: start={}, end={}, values_size={}",
-        start_opt ? *start_opt : units::ticks (-1.0),
-        end_opt ? *end_opt : units::ticks (-1.0), values.size ());
+      const auto chord_object_virtual_start =
+        units::ticks (chord_object->position ()->ticks ());
+
+      // Only include objects that fall within the loop range
+      if (
+        chord_object_virtual_start >= virtual_range.second
+        || chord_object_virtual_start < virtual_range.first)
+        continue;
+
+      // Calculate position in current loop segment
+      const auto chord_object_absolute_start = std::max (
+        absolute_start,
+        absolute_start + (chord_object_virtual_start - virtual_range.first));
+
+      // Get the chord descriptor from the chord object
+      // TODO: Implement a proper way to get the chord descriptor
+      // For now, create a simple C major chord as an example
+      dsp::ChordDescriptor chord_descr (
+        dsp::MusicalNote::C, false, dsp::MusicalNote::C, dsp::ChordType::Major,
+        dsp::ChordAccent::None, 0);
+      chord_descr.update_notes ();
+
+      // Add note on events for all notes in the chord
+      for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+        {
+          if (chord_descr.notes_.at (i))
+            {
+              const auto note = static_cast<midi_byte_t> (36 + i); // C2 + offset
+              events.addEvent (
+                juce::MidiMessage::noteOn (1, note, MidiNote::DEFAULT_VELOCITY),
+                chord_object_absolute_start.in (units::ticks));
+              events.addEvent (
+                juce::MidiMessage::noteOff (1, note, MidiNote::DEFAULT_VELOCITY),
+                absolute_end.in (units::ticks) -1.0);
+            }
+        }
     }
+}
 
-  // Get all automation points from the region
-  const auto &automation_points = region.get_sorted_children_view ();
+void
+RegionRenderer::handle_automation_region_range (
+  const AutomationRegion                                 &region,
+  std::vector<float>                                     &values,
+  std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+  units::precise_tick_t                                   absolute_start)
+{
+  const auto virtual_range_length = virtual_range.second - virtual_range.first;
+  const auto absolute_end = absolute_start + virtual_range_length;
 
-  // Always use the full region length for the output buffer
-  const auto region_length_samples =
-    tempo_map.tick_to_samples_rounded (loop_params.region_length);
+  const auto get_ap_virtual_position = [] (const auto * given_ap) {
+    assert (given_ap != nullptr);
+    return units::ticks (given_ap->position ()->ticks ());
+  };
 
-  // Resize the output buffer to the full region length
-  values.resize (
-    static_cast<size_t> (region_length_samples.in (units::samples)));
-
-  // Initialize with default value (-1.0)
-  utils::float_ranges::fill (values.data (), -1, values.size ());
-
-  if constexpr (REGION_SERIALIZER_DEBUG)
-    {
-      z_debug (
-        "Processing {} automation points, loop_start={}, loop_end={}, region_length={}",
-        automation_points.size (), loop_params.loop_start, loop_params.loop_end,
-        loop_params.region_length);
-    }
+  const auto &tempo_map = region.get_tempo_map ();
 
   // Helper lambda to interpolate values between two automation points
-  // using the curve's interpolation method and to fill the output buffer in the
-  // given range.
-  // prev_point_start_offset: Position of @p prev_point relative to region start
-  // (after loops are applied, so could be different from
-  // `prev_point->position()->ticks()`)
   const auto interpolate_values =
     [&] (
       const AutomationPoint &prev_point, const AutomationPoint &next_point,
-      units::precise_tick_t prev_point_start_offset,
+      units::precise_tick_t prev_point_absolute_start,
       std::pair<units::precise_tick_t, units::precise_tick_t>
         range_in_output_buffer) {
       const auto start_idx = static_cast<size_t> (
@@ -162,17 +242,13 @@ RegionRenderer::serialize_automation_region (
       if (start_idx >= values.size ())
         return;
 
-      const auto prev_pos = prev_point_start_offset;
       const auto distance_between_points = units::ticks (
         next_point.position ()->ticks () - prev_point.position ()->ticks ());
-      const auto next_pos = prev_pos + distance_between_points;
-
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        {
-          z_debug (
-            "Interpolating: prev_pos={}, next_pos={}, range_in_output_buffer={}",
-            prev_pos, next_pos, range_in_output_buffer);
-        }
+      const auto next_point_absolute_start =
+        prev_point_absolute_start + distance_between_points;
+      const auto distance_between_points_in_segment =
+        std::min (next_point_absolute_start, range_in_output_buffer.second)
+        - std::max (prev_point_absolute_start, range_in_output_buffer.first);
 
       const auto start_val = prev_point.value ();
       const auto end_val = next_point.value ();
@@ -181,7 +257,8 @@ RegionRenderer::serialize_automation_region (
 
       // Calculate the offset from the previous point to the start position
       const auto start_offset_ratio =
-        (range_in_output_buffer.first - prev_pos).as<float> (units::ticks)
+        (range_in_output_buffer.first - prev_point_absolute_start)
+          .as<float> (units::ticks)
         / distance_between_points.as<float> (units::ticks);
       assert (start_offset_ratio >= 0.f && start_offset_ratio <= 1.f);
 
@@ -195,13 +272,8 @@ RegionRenderer::serialize_automation_region (
       // correctly
       const auto sample_distance_between_points =
         tempo_map.tick_to_samples (distance_between_points);
-
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        {
-          z_debug (
-            "  start_offset_ratio={}, segment_length_samples={}",
-            start_offset_ratio, segment_length_samples);
-        }
+      [[maybe_unused]] const auto sample_distance_between_points_in_segment =
+        tempo_map.tick_to_samples (distance_between_points_in_segment);
 
       if (
         segment_length_samples > 0 && distance_between_points > units::ticks (0)
@@ -264,122 +336,145 @@ RegionRenderer::serialize_automation_region (
         }
     };
 
-  // Process each automation point and render directly to the output buffer
-  for (const auto * ap : automation_points)
+  // Add automation for this loop segment
+  auto automation_points = region.get_sorted_children_view ();
+  for (const auto &[index, ap] : utils::views::enumerate (automation_points))
     {
-      const auto ap_pos = units::ticks (ap->position ()->ticks ());
+      const auto * prev_ap =
+        index > 0
+          ? *std::next (automation_points.begin (), static_cast<int> (index) - 1)
+          : nullptr;
+      const auto * next_ap =
+        index < (automation_points.size () - 1)
+          ? *std::next (automation_points.begin (), static_cast<int> (index) + 1)
+          : nullptr;
 
-      if constexpr (REGION_SERIALIZER_DEBUG)
+      const auto ap_virtual_start = get_ap_virtual_position (ap);
+
+      // Whether the current automation point influences the current loop
+      // segment (i.e., participates in interpolation)
+      const auto ap_influences_segment = (ap_virtual_start >= virtual_range.first && ap_virtual_start <= virtual_range.second)
+      || (next_ap != nullptr && get_ap_virtual_position(next_ap) > virtual_range.first && get_ap_virtual_position(next_ap) <= virtual_range.second) || (prev_ap != nullptr && get_ap_virtual_position(prev_ap) >= virtual_range.first && get_ap_virtual_position(prev_ap) < virtual_range.second);
+
+      if (!ap_influences_segment)
+        continue;
+
+      // Calculate absolute position for this automation point
+      const auto ap_absolute_start =
+        absolute_start + (ap_virtual_start - virtual_range.first);
+
+      // Handle interpolation from this point to next point
+      if (next_ap != nullptr)
         {
-          z_debug (
-            "Automation point at {} (region starts at {})", ap_pos,
-            region.position ()->ticks ());
-        }
+          const auto next_ap_virtual_start = get_ap_virtual_position (next_ap);
 
-      // Get the next & prev automation point
-      const auto * next_ap = region.get_next_ap (*ap, true);
-      const auto * prev_ap = region.get_prev_ap (*ap);
-
-      // Generate values for each loop iteration
-      for (const auto loop_idx : std::views::iota (0, loop_params.num_loops))
-        {
-          // Calculate point positions (relative to region start) for this loop
-          // iteration
-          const auto looped_ap_pos_ticks =
-            get_event_looped_position (ap_pos, loop_params, loop_idx);
-          const auto looped_ap_pos_samples =
-            tempo_map.tick_to_samples_rounded (looped_ap_pos_ticks);
-
-          // Calculate this loop's bounds relative to region start (FIXME: these
-          // don't take into account clip start?)
-          const auto current_loop_start_ticks = get_event_looped_position (
-            loop_idx == 0 ? units::ticks (0) : loop_params.loop_start,
-            loop_params, loop_idx);
-          [[maybe_unused]] const auto current_loop_start_samples =
-            tempo_map.tick_to_samples_rounded (current_loop_start_ticks);
-          const auto current_loop_end_ticks = get_event_looped_position (
-            loop_params.loop_end, loop_params, loop_idx);
-          const auto current_loop_end_samples =
-            tempo_map.tick_to_samples_rounded (current_loop_end_ticks);
-
-          // Skip if point is outside loop bounds after adjustment
+          // If next point is within this virtual range, interpolate to it
           if (
-            looped_ap_pos_ticks < current_loop_start_ticks
-            || looped_ap_pos_ticks >= current_loop_end_ticks)
-            continue;
-
-          // First, handle special case for when there is a previous point
-          // before this loop segment that should be used to interpolate up to
-          // this point
-          if (prev_ap != nullptr)
+            next_ap_virtual_start > virtual_range.first
+            && next_ap_virtual_start <= virtual_range.second)
             {
-              // Calculate the would-be looped position of the previous point
-              const auto looped_prev_ap_pos_ticks = get_event_looped_position (
-                units::ticks (prev_ap->position ()->ticks ()), loop_params,
-                loop_idx);
+              const auto next_ap_absolute_start =
+                absolute_start + (next_ap_virtual_start - virtual_range.first);
 
-              if (looped_prev_ap_pos_ticks < current_loop_start_ticks)
-                {
-                  // Interpolate values for this segment
-                  interpolate_values (
-                    *prev_ap, *ap, looped_prev_ap_pos_ticks,
-                    std::make_pair (
-                      current_loop_start_ticks, looped_ap_pos_ticks));
-                }
+              interpolate_values (
+                *ap, *next_ap, ap_absolute_start,
+                std::make_pair (
+                  std::max (ap_absolute_start, absolute_start),
+                  next_ap_absolute_start));
             }
-
-          if constexpr (REGION_SERIALIZER_DEBUG)
+          // If next point is beyond this virtual range, interpolate to range end
+          else if (next_ap_virtual_start > virtual_range.second)
             {
-              z_debug (
-                "Processing automation point at {} ticks, looped_ap_pos_ticks={}, value={}, next_ap={}",
-                ap_pos, looped_ap_pos_ticks, ap->value (),
-                next_ap ? "exists" : "null");
+              interpolate_values (
+                *ap, *next_ap, ap_absolute_start,
+                std::make_pair (
+                  std::max (ap_absolute_start, absolute_start), absolute_end));
             }
+        }
+      else
+        {
+          // This is the last point, fill remaining samples with its value
+          const auto start_idx = static_cast<size_t> (
+            tempo_map.tick_to_samples_rounded (ap_absolute_start)
+              .in (units::samples));
+          const auto end_idx = static_cast<size_t> (
+            tempo_map.tick_to_samples_rounded (absolute_end).in (units::samples));
 
-          if (next_ap == nullptr)
+          if (start_idx < values.size () && end_idx > start_idx)
             {
-              // Last point, set all remaining samples to this value
-              if constexpr (REGION_SERIALIZER_DEBUG)
-                {
-                  z_debug (
-                    "  Last point: filling from index {} to {} with value {}",
-                    looped_ap_pos_ticks, current_loop_end_ticks, ap->value ());
-                }
               utils::float_ranges::fill (
-                &values[looped_ap_pos_samples.in (units::samples)], ap->value (),
-                (current_loop_end_samples - looped_ap_pos_samples)
-                  .in (units::samples));
-              continue;
+                &values[start_idx], ap->value (), end_idx - start_idx);
             }
-
-          // Calculate the end position of this segment
-          const auto looped_next_ap_pos_ticks = get_event_looped_position (
-            units::ticks (next_ap->position ()->ticks ()), loop_params,
-            loop_idx);
-          [[maybe_unused]] const auto looped_next_ap_pos_samples =
-            tempo_map.tick_to_samples_rounded (looped_next_ap_pos_ticks);
-
-          // Fill the segment from this point to the next point
-          const auto start_ticks = looped_ap_pos_ticks;
-          auto       end_ticks = looped_next_ap_pos_ticks;
-
-          // If the next point is beyond the current loop end and we're in a
-          // looped region, we should interpolate to the loop end instead of
-          // stopping at the next point
-          if (end_ticks > current_loop_end_ticks)
-            {
-              end_ticks = current_loop_end_ticks;
-            }
-
-          if (start_ticks >= end_ticks)
-            continue;
-
-          // Interpolate values
-          interpolate_values (
-            *ap, *next_ap, looped_ap_pos_ticks,
-            std::make_pair (looped_ap_pos_ticks, end_ticks));
         }
     }
+}
+
+void
+RegionRenderer::serialize_to_sequence (
+  const MidiRegion                        &region,
+  juce::MidiMessageSequence               &events,
+  std::optional<std::pair<double, double>> timeline_range_ticks)
+{
+  serialize_region (region, events, timeline_range_ticks);
+}
+
+void
+RegionRenderer::serialize_to_sequence (
+  const ChordRegion                       &region,
+  juce::MidiMessageSequence               &events,
+  std::optional<std::pair<double, double>> timeline_range_ticks)
+{
+  serialize_region (region, events, timeline_range_ticks);
+}
+
+/**
+ * Serializes an Automation region to sample-accurate automation values.
+ */
+void
+RegionRenderer::serialize_to_automation_values (
+  const AutomationRegion                  &region,
+  std::vector<float>                      &values,
+  std::optional<std::pair<double, double>> timeline_range_ticks)
+{
+  const auto start_opt =
+    timeline_range_ticks
+      ? std::make_optional (units::ticks (timeline_range_ticks->first))
+      : std::nullopt;
+  const auto end_opt =
+    timeline_range_ticks
+      ? std::make_optional (units::ticks (timeline_range_ticks->second))
+      : std::nullopt;
+  const LoopParameters loop_params (region);
+  const auto          &tempo_map = region.get_tempo_map ();
+
+  if constexpr (REGION_SERIALIZER_DEBUG)
+    {
+      z_debug (
+        "serialize_automation_region: start={}, end={}, values_size={}",
+        start_opt ? *start_opt : units::ticks (-1.0),
+        end_opt ? *end_opt : units::ticks (-1.0), values.size ());
+    }
+
+  // Always use the full region length for the output buffer
+  const auto region_length_samples =
+    tempo_map.tick_to_samples_rounded (loop_params.region_length);
+
+  // Resize the output buffer to the full region length
+  values.resize (
+    static_cast<size_t> (region_length_samples.in (units::samples)));
+
+  // Initialize with default value (-1.0)
+  utils::float_ranges::fill (values.data (), -1, values.size ());
+
+  if constexpr (REGION_SERIALIZER_DEBUG)
+    {
+      z_debug (
+        "Processing automation region with loop_start={}, loop_end={}, region_length={}",
+        loop_params.loop_start, loop_params.loop_end, loop_params.region_length);
+    }
+
+  // Use the serialize_region template to handle the looping and automation data
+  serialize_region (region, values, timeline_range_ticks);
 
   // Apply constraints in a second pass
   if (start_opt || end_opt)
@@ -452,17 +547,19 @@ RegionRenderer::serialize_automation_region (
  * (with loops and clip start).
  */
 void
-RegionRenderer::serialize_audio_region (
-  const AudioRegion       &region,
-  juce::AudioSampleBuffer &buffer,
-  std::optional<double>    start,
-  std::optional<double>    end,
-  int                      builtin_fade_frames)
+RegionRenderer::serialize_to_buffer (
+  const AudioRegion                       &region,
+  juce::AudioSampleBuffer                 &buffer,
+  std::optional<std::pair<double, double>> timeline_range_ticks)
 {
   const auto start_opt =
-    start ? std::make_optional (units::ticks (*start)) : std::nullopt;
+    timeline_range_ticks
+      ? std::make_optional (units::ticks (timeline_range_ticks->first))
+      : std::nullopt;
   const auto end_opt =
-    end ? std::make_optional (units::ticks (*end)) : std::nullopt;
+    timeline_range_ticks
+      ? std::make_optional (units::ticks (timeline_range_ticks->second))
+      : std::nullopt;
   const LoopParameters loop_params (region);
 
   if constexpr (REGION_SERIALIZER_DEBUG)
@@ -470,7 +567,8 @@ RegionRenderer::serialize_audio_region (
       z_debug (
         "serialize_audio_region: start={}, end={}, builtin_fade_frames={}",
         start_opt ? *start_opt : units::ticks (-1.0),
-        end_opt ? *end_opt : units::ticks (-1.0), builtin_fade_frames);
+        end_opt ? *end_opt : units::ticks (-1.0),
+        AudioRegion::BUILTIN_FADE_FRAMES);
       z_debug (
         "Loop params: loop_start={}, loop_end={}, clip_start={}, region_length={}, num_loops={}",
         loop_params.loop_start, loop_params.loop_end, loop_params.clip_start,
@@ -480,9 +578,6 @@ RegionRenderer::serialize_audio_region (
         region.get_tempo_map ().tick_to_samples (
           units::ticks (region.position ()->ticks ())));
     }
-
-  // Get the audio source from the region
-  auto &audio_source = region.get_audio_source ();
 
   // Calculate the total number of samples needed
   units::precise_tick_t total_length_ticks;
@@ -529,20 +624,13 @@ RegionRenderer::serialize_audio_region (
         total_length_ticks, total_length_samples);
     }
 
-  // Process each loop iteration - first pass: copy raw audio data
-  for (int loop_idx = 0; loop_idx <= loop_params.num_loops; ++loop_idx)
-    {
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        z_debug ("Processing loop iteration {}", loop_idx);
-      process_audio_loop (
-        region, audio_source, loop_params, loop_idx, units::samples (0),
-        start_opt, end_opt, buffer);
-    }
+  // Use the serialize_region template to handle the looping and audio data
+  serialize_region (region, buffer, timeline_range_ticks);
 
   if constexpr (REGION_SERIALIZER_DEBUG)
     {
       z_debug (
-        "After all loops: first sample L={}, R={}, last sample L={}, R={}",
+        "After serialize_region: first sample L={}, R={}, last sample L={}, R={}",
         buffer.getSample (0, 0), buffer.getSample (1, 0),
         buffer.getNumSamples () > 0
           ? buffer.getSample (0, buffer.getNumSamples () - 1)
@@ -569,7 +657,7 @@ RegionRenderer::serialize_audio_region (
     }
 
   // Third pass: apply region fades (object fades)
-  apply_region_fades_pass (region, buffer, loop_params);
+  apply_region_fades_pass (region, buffer);
 
   if constexpr (REGION_SERIALIZER_DEBUG)
     {
@@ -585,7 +673,7 @@ RegionRenderer::serialize_audio_region (
     }
 
   // Fourth pass: apply built-in fades
-  apply_builtin_fades_pass (region, buffer, builtin_fade_frames);
+  apply_builtin_fades_pass (region, buffer, AudioRegion::BUILTIN_FADE_FRAMES);
 
   if constexpr (REGION_SERIALIZER_DEBUG)
     {
@@ -598,439 +686,6 @@ RegionRenderer::serialize_audio_region (
         buffer.getNumSamples () > 0
           ? buffer.getSample (1, buffer.getNumSamples () - 1)
           : 0.0f);
-    }
-}
-
-/**
- * Processes a single arranger object across all loop iterations.
- *
- * @tparam ObjectType The type of arranger object (MidiNote or ChordObject)
- * @tparam EventGenerator Function that generates MIDI events for the object
- * @param obj The arranger object to process
- * @param loop_params Loop parameters for the region
- * @param region_start_offset Offset to add to positions for global timeline
- * @param start Optional start position constraint
- * @param end Optional end position constraint
- * @param as_played Whether to process as played (with loops)
- * @param events Output MIDI message sequence
- * @param event_generator Function that generates events for the object
- */
-template <typename ObjectType, typename EventGenerator>
-void
-RegionRenderer::process_arranger_object (
-  const ObjectType                    &obj,
-  const LoopParameters                &loop_params,
-  units::precise_tick_t                region_start_offset,
-  std::optional<units::precise_tick_t> start,
-  std::optional<units::precise_tick_t> end,
-  bool                                 as_played,
-  juce::MidiMessageSequence           &events,
-  EventGenerator                       event_generator)
-{
-  const auto obj_pos = units::ticks (obj.position ()->ticks ());
-  const auto obj_length = units::ticks (obj.bounds ()->length ()->ticks ());
-  const auto obj_end = obj_pos + obj_length;
-
-  // Determine if object should be written once or looped
-  bool write_once = true;
-  if (
-    as_played && obj_pos >= loop_params.loop_start
-    && obj_pos < loop_params.loop_end)
-    write_once = false;
-
-  // Generate events for each loop iteration
-  const int max_loops = as_played ? loop_params.num_loops : 0;
-  for (int loop_idx = 0; loop_idx <= max_loops; ++loop_idx)
-    {
-      // For non-looped objects, only process first iteration
-      if (write_once && loop_idx > 0)
-        break;
-
-      // Calculate object positions for this loop iteration
-      auto looped_obj_pos = obj_pos;
-      auto looped_obj_end = obj_end;
-
-      if (as_played)
-        {
-          // Adjust positions for looped playback
-          looped_obj_pos =
-            get_event_looped_position (obj_pos, loop_params, loop_idx);
-          looped_obj_end =
-            get_event_looped_position (obj_end, loop_params, loop_idx);
-
-          // Skip if object is outside region bounds after adjustment
-          if (
-            looped_obj_pos < units::ticks (0.0)
-            || looped_obj_pos >= loop_params.region_length)
-            continue;
-        }
-
-      // Convert to global timeline positions
-      const auto global_start_pos = looped_obj_pos + region_start_offset;
-      const auto global_end_pos = looped_obj_end + region_start_offset;
-
-      // Check if object is within the requested time range
-      if (is_position_in_range (global_start_pos, global_end_pos, start, end))
-        {
-          // Adjust for start constraint
-          const auto adjusted_start =
-            start ? (global_start_pos - *start) : global_start_pos;
-          const auto adjusted_end =
-            start ? (global_end_pos - *start) : global_end_pos;
-
-          // Generate events using the provided generator function
-          event_generator (obj, adjusted_start, adjusted_end, events);
-        }
-    }
-}
-
-/**
- * Processes a single MIDI note across all loop iterations.
- */
-void
-RegionRenderer::process_midi_note (
-  const MidiNote                      &note,
-  const LoopParameters                &loop_params,
-  units::precise_tick_t                region_start_offset,
-  std::optional<units::precise_tick_t> start,
-  std::optional<units::precise_tick_t> end,
-  bool                                 as_played,
-  juce::MidiMessageSequence           &events)
-{
-  process_arranger_object (
-    note, loop_params, region_start_offset, start, end, as_played, events,
-    [] (
-      const MidiNote &midi_note, units::precise_tick_t start_pos,
-      units::precise_tick_t end_pos, juce::MidiMessageSequence &evs) {
-      // Add note on and note off events
-      evs.addEvent (
-        juce::MidiMessage::noteOn (
-          1, midi_note.pitch (),
-          static_cast<std::uint8_t> (midi_note.velocity ())),
-        start_pos.in (units::ticks));
-      evs.addEvent (
-        juce::MidiMessage::noteOff (
-          1, midi_note.pitch (),
-          static_cast<std::uint8_t> (midi_note.velocity ())),
-        end_pos.in (units::ticks));
-    });
-}
-
-void
-RegionRenderer::process_chord_object (
-  const arrangement::ChordObject      &chord_obj,
-  const LoopParameters                &loop_params,
-  units::precise_tick_t                region_start_offset,
-  std::optional<units::precise_tick_t> start,
-  std::optional<units::precise_tick_t> end,
-  bool                                 as_played,
-  juce::MidiMessageSequence           &events)
-{
-  // For chord objects, we need to override the length since they don't have
-  // a meaningful bounds length. Use a default duration of 1 beat.
-  process_arranger_object (
-    chord_obj, loop_params, region_start_offset, start, end, as_played, events,
-    [] (
-      const arrangement::ChordObject &chord_object,
-      units::precise_tick_t start_pos, units::precise_tick_t end_pos,
-      juce::MidiMessageSequence &evs) {
-      // Get the chord descriptor from the chord object
-      // TODO: Implement a proper way to get the chord descriptor
-      // For now, create a simple C major chord as an example
-      dsp::ChordDescriptor chord_descr (
-        dsp::MusicalNote::C, false, dsp::MusicalNote::C, dsp::ChordType::Major,
-        dsp::ChordAccent::None, 0);
-      chord_descr.update_notes ();
-
-      // Add note on events for all notes in the chord
-      for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
-        {
-          if (chord_descr.notes_.at (i))
-            {
-              const auto note = static_cast<midi_byte_t> (36 + i); // C2 + offset
-              evs.addEvent (
-                juce::MidiMessage::noteOn (1, note, MidiNote::DEFAULT_VELOCITY),
-                start_pos.in (units::ticks));
-              evs.addEvent (
-                juce::MidiMessage::noteOff (1, note, MidiNote::DEFAULT_VELOCITY),
-                end_pos.in (units::ticks));
-            }
-        }
-    });
-}
-
-/**
- * Processes a single audio loop iteration.
- *
- * Audio regions are always processed as they would be played in the timeline
- * (with loops and clip start).
- */
-void
-RegionRenderer::process_audio_loop (
-  const AudioRegion                   &region,
-  juce::PositionableAudioSource       &audio_source,
-  const LoopParameters                &loop_params,
-  int                                  loop_idx,
-  units::precise_sample_t              buffer_offset_samples,
-  std::optional<units::precise_tick_t> start,
-  std::optional<units::precise_tick_t> end,
-  juce::AudioSampleBuffer             &buffer)
-{
-  // Calculate the time range for this loop iteration
-  // Always adjust for looped playback (as_played=true)
-  auto loop_start_pos =
-    get_event_looped_position (units::ticks (0.0), loop_params, loop_idx);
-  auto loop_end_pos = get_event_looped_position (
-    loop_params.region_length, loop_params, loop_idx);
-
-  if constexpr (REGION_SERIALIZER_DEBUG)
-    {
-      z_debug (
-        "process_audio_loop[{}]: loop_start_pos={}, loop_end_pos={}", loop_idx,
-        loop_start_pos, loop_end_pos);
-    }
-
-  // Convert to sample positions
-  const auto &tempo_map = region.get_tempo_map ();
-  const auto start_samples = tempo_map.tick_to_samples_rounded (loop_start_pos);
-  const auto end_samples = tempo_map.tick_to_samples_rounded (loop_end_pos);
-
-  // Note: clip start is already accounted for in the loop position calculation
-  // so we don't need to add it again here
-  const auto adjusted_start_samples = start_samples;
-
-  // Check if this loop iteration is within the requested time range
-  const auto global_start_pos =
-    loop_start_pos + units::ticks (region.position ()->ticks ());
-  const auto global_end_pos =
-    loop_end_pos + units::ticks (region.position ()->ticks ());
-
-  // When constraints are used, we need to check if any part of this loop
-  // overlaps with the requested range
-  if (start || end)
-    {
-      // For constraints, we need to check if the loop iteration overlaps
-      // with the constraint range, not if it's fully contained
-      const auto constraint_start = start ? *start : units::ticks (0.0);
-      const auto constraint_end =
-        end ? *end : units::ticks (std::numeric_limits<double>::max ());
-
-      // Check if there's any overlap between the loop iteration and the
-      // constraint range
-      const bool has_overlap = !(
-        global_end_pos <= constraint_start
-        || global_start_pos >= constraint_end);
-
-      if (!has_overlap)
-        {
-          if constexpr (REGION_SERIALIZER_DEBUG)
-            {
-              z_debug (
-                "Loop iteration {} is outside time range, skipping (loop: {}-{}, constraint: {}-{})",
-                loop_idx, global_start_pos, global_end_pos, constraint_start,
-                constraint_end);
-            }
-          return;
-        }
-    }
-
-  // Calculate the actual range to process
-  auto actual_start = adjusted_start_samples;
-  auto actual_end = end_samples;
-
-  // When constraints are used, we need to adjust the range to only include
-  // the portion that overlaps with the constraint range
-  if (start || end)
-    {
-      const auto constraint_start = start ? *start : units::ticks (0.0);
-      const auto constraint_end =
-        end ? *end : units::ticks (std::numeric_limits<double>::max ());
-
-      // Convert constraint positions to samples relative to the region start
-      const auto region_start_ticks =
-        units::ticks (region.position ()->ticks ());
-      const auto constraint_start_samples =
-        region.get_tempo_map ().tick_to_samples_rounded (
-          std::max (constraint_start - region_start_ticks, units::ticks (0.0)));
-      const auto constraint_end_samples =
-        region.get_tempo_map ().tick_to_samples_rounded (
-          std::max (constraint_end - region_start_ticks, units::ticks (0.0)));
-
-      // Adjust the actual range to only include the overlap
-      actual_start = std::max (actual_start, constraint_start_samples);
-      actual_end = std::min (actual_end, constraint_end_samples);
-    }
-
-  const auto actual_length = actual_end - actual_start;
-
-  if (actual_length <= units::samples (0))
-    {
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        z_debug (
-          "Loop iteration {} has non-positive length, skipping", loop_idx);
-      return;
-    }
-  // Calculate the offset into the output buffer
-  units::sample_t output_offset;
-
-  if (start || end)
-    {
-      // With constraints: calculate offset from constraint start to loop start
-      const auto constraint_start = start ? *start : units::ticks (0.0);
-      const auto global_start =
-        units::ticks (region.position ()->ticks ()) + loop_start_pos;
-      const auto offset_from_constraint_start = global_start - constraint_start;
-      output_offset =
-        tempo_map.tick_to_samples_rounded (offset_from_constraint_start);
-    }
-  else
-    {
-      // Without constraints: calculate sequential position for this loop
-      // iteration
-      units::precise_tick_t playback_pos = units::ticks (0.0);
-
-      if (loop_idx > 0)
-        {
-          const auto loop_length = loop_params.loop_end - loop_params.loop_start;
-          const auto num_full_loops = std::max (0, loop_idx - 1);
-
-          if (loop_params.clip_start > units::ticks (0.0))
-            {
-              // With clip start: position after initial part
-              const auto first_part_length = std::min (
-                loop_params.loop_end - loop_params.clip_start,
-                loop_params.region_length);
-              playback_pos = first_part_length + (num_full_loops * loop_length);
-            }
-          else
-            {
-              // Without clip start: normal loop positioning
-              playback_pos =
-                loop_params.loop_start + (num_full_loops * loop_length);
-            }
-        }
-
-      output_offset = tempo_map.tick_to_samples_rounded (playback_pos);
-    }
-
-  // Skip if offset exceeds buffer size
-  if (output_offset >= units::samples (buffer.getNumSamples ()))
-    {
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        {
-          z_debug (
-            "Loop iteration {}: output_offset {} exceeds buffer size {}, skipping",
-            loop_idx, output_offset, buffer.getNumSamples ());
-        }
-      return;
-    }
-
-  if constexpr (REGION_SERIALIZER_DEBUG)
-    {
-      z_debug (
-        "Loop iteration {}: actual_start={}, actual_end={}, actual_length={}, output_offset={}",
-        loop_idx, actual_start.in (units::samples),
-        actual_end.in (units::samples), actual_length.in (units::samples),
-        output_offset.in (units::samples));
-    }
-
-  // Read audio data from the source
-  // Check if we're reading beyond the audio source length
-  const auto source_length = audio_source.getTotalLength ();
-  const auto read_pos = actual_start.in (units::samples);
-  const auto actual_length_int =
-    static_cast<int> (actual_length.in (units::samples));
-
-  // Create a temporary buffer for this loop iteration
-  juce::AudioSampleBuffer temp_buffer (2, actual_length_int);
-  temp_buffer.clear (); // Start with silence
-
-  if (read_pos < source_length)
-    {
-      // We can read some data from the source
-      const auto readable_length = std::min (
-        actual_length_int, static_cast<int> (source_length - read_pos));
-
-      audio_source.setNextReadPosition (read_pos);
-
-      juce::AudioSourceChannelInfo source_ch_nfo{
-        &temp_buffer, 0, readable_length
-      };
-      audio_source.getNextAudioBlock (source_ch_nfo);
-
-      // The rest of the buffer (if any) remains silent (zeros)
-    }
-  // If read_pos >= source_length, the entire buffer remains silent
-
-  if constexpr (REGION_SERIALIZER_DEBUG)
-    {
-      z_debug (
-        "Read {} samples from audio source, first sample L={}, R={}",
-        actual_length, temp_buffer.getSample (0, 0),
-        temp_buffer.getSample (1, 0));
-    }
-
-  // Note: Processing (gain and fades) will be applied in separate passes
-  // later For now, just copy the raw audio data
-
-  // Ensure we don't exceed the output buffer bounds
-  const auto buffer_size = units::samples (buffer.getNumSamples ());
-  const auto output_offset_int =
-    static_cast<int> (output_offset.in (units::samples));
-
-  // Calculate how many samples we can actually write
-  const auto samples_to_write = std::min (
-    actual_length_int,
-    static_cast<int> ((buffer_size - output_offset).in (units::samples)));
-
-  if (samples_to_write > 0 && output_offset_int >= 0)
-    {
-      // Ensure buffer is large enough
-      if (output_offset_int + samples_to_write > buffer.getNumSamples ())
-        {
-          buffer.setSize (
-            buffer.getNumChannels (), output_offset_int + samples_to_write,
-            false, true, false);
-        }
-
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        {
-          z_debug (
-            "Writing {} samples to output buffer at offset {}",
-            samples_to_write, output_offset_int);
-        }
-
-      // Mix into the output buffer
-      for (int channel = 0; channel < 2; ++channel)
-        {
-          buffer.addFrom (
-            channel, output_offset_int, temp_buffer, channel, 0,
-            samples_to_write);
-        }
-
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        {
-          z_debug (
-            "After writing: output buffer first sample L={}, R={}, last sample L={}, R={}",
-            buffer.getSample (0, output_offset_int),
-            buffer.getSample (1, output_offset_int),
-            buffer.getSample (0, output_offset_int + samples_to_write - 1),
-            buffer.getSample (1, output_offset_int + samples_to_write - 1));
-          z_debug (
-            "Output buffer status: first sample L={}, R={}, last sample L={}, R={}",
-            buffer.getSample (0, 0), buffer.getSample (1, 0),
-            buffer.getSample (0, buffer.getNumSamples () - 1),
-            buffer.getSample (1, buffer.getNumSamples () - 1));
-        }
-    }
-  else
-    {
-      if constexpr (REGION_SERIALIZER_DEBUG)
-        {
-          z_debug (
-            "Skipping write: samples_to_write={}, output_offset_int={}",
-            samples_to_write, output_offset_int);
-        }
     }
 }
 
@@ -1075,8 +730,7 @@ RegionRenderer::apply_gain_pass (
 void
 RegionRenderer::apply_region_fades_pass (
   const AudioRegion       &region,
-  juce::AudioSampleBuffer &buffer,
-  const LoopParameters    &loop_params)
+  juce::AudioSampleBuffer &buffer)
 {
   const auto region_length_in_frames = region.bounds ()->length ()->samples ();
   const auto fade_in_pos_in_frames =
@@ -1278,64 +932,6 @@ RegionRenderer::apply_builtin_fades_pass (
             buffer.getSample (1, non_fade_start));
         }
     }
-}
-
-units::precise_tick_t
-RegionRenderer::get_event_looped_position (
-  units::precise_tick_t original_pos,
-  const LoopParameters &loop_params,
-  int                   loop_index)
-{
-  // Clamp to loop end
-  auto adjusted_pos = std::min (original_pos, loop_params.loop_end);
-
-  // Calculate loop offset
-  const auto loop_offset =
-    loop_params.loop_length * loop_index + loop_params.clip_start;
-
-  // Apply loop offset and clamp to region bounds
-  adjusted_pos += loop_offset;
-  adjusted_pos = std::min (adjusted_pos, loop_params.region_length);
-
-  return adjusted_pos;
-}
-
-/**
- * Checks if a position range falls within the specified constraints.
- */
-bool
-RegionRenderer::is_position_in_range (
-  units::precise_tick_t                start_pos,
-  units::precise_tick_t                end_pos,
-  std::optional<units::precise_tick_t> range_start,
-  std::optional<units::precise_tick_t> range_end)
-{
-  if (range_start && end_pos <= *range_start)
-    return false;
-  if (range_end && start_pos >= *range_end)
-    return false;
-  return true;
-}
-
-/**
- * Checks if a MIDI note is in a playable part of the region.
- */
-bool
-RegionRenderer::is_midi_note_playable (
-  const MidiNote       &note,
-  const LoopParameters &loop_params)
-{
-  const auto note_pos = units::ticks (note.position ()->ticks ());
-
-  // Note is playable if it's in the loop range
-  if (note_pos >= loop_params.loop_start && note_pos < loop_params.loop_end)
-    return true;
-
-  // Or if it's between clip start and loop start
-  if (note_pos >= loop_params.clip_start && note_pos < loop_params.loop_start)
-    return true;
-
-  return false;
 }
 
 } // namespace zrythm::structure::arrangement

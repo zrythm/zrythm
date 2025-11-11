@@ -211,9 +211,9 @@ private:
     // MIDI region processing
     juce::MidiMessageSequence region_seq;
 
-    // Serialize region (timings in ticks)
-    arrangement::RegionRenderer::serialize_to_sequence (
-      region, region_seq, std::nullopt, std::nullopt, true, true);
+    // Serialize region (timings in timeline ticks)
+    arrangement::RegionRenderer::serialize_to_sequence (region, region_seq);
+    region_seq.addTimeToMessages (region.position ()->ticks ());
 
     // Convert timings to samples
     for (auto &event : region_seq)
@@ -416,7 +416,7 @@ private:
 
     // Serialize automation region to sample-accurate values
     arrangement::RegionRenderer::serialize_to_automation_values (
-      region, automation_values, std::nullopt, std::nullopt);
+      region, automation_values);
 
     automation_cache_.add_automation_sequence (
       std::make_pair (start_sample, end_sample), automation_values);

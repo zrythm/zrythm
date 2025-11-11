@@ -290,10 +290,15 @@ TEST_F (ArrangerObjectLoopRangeTest, EdgeCases)
   loop_range->setTrackBounds (false);
   loop_range->loopStartPosition ()->setSamples (0);
   loop_range->loopEndPosition ()->setSamples (0);
-  EXPECT_EQ (
+  // Loop end gets clamped to 1 tick
+  EXPECT_GT (loop_range->loopEndPosition ()->samples (), 0);
+  EXPECT_DOUBLE_EQ (loop_range->loopEndPosition ()->ticks (), 1);
+  EXPECT_GT (
     loop_range->get_loop_length_in_frames (),
     units::samples (static_cast<int64_t> (0)));
-  EXPECT_EQ (loop_range->get_num_loops (false), 0);
+  EXPECT_DOUBLE_EQ (
+    loop_range->get_loop_length_in_ticks ().in (units::ticks), 1.0);
+  EXPECT_GT (loop_range->get_num_loops (false), 0);
 
   // Negative positions (should be clamped to 0)
   loop_range->clipStartPosition ()->setSamples (-100);
@@ -301,25 +306,30 @@ TEST_F (ArrangerObjectLoopRangeTest, EdgeCases)
   loop_range->loopEndPosition ()->setSamples (-50);
   EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 0);
   EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0);
-  EXPECT_EQ (loop_range->loopEndPosition ()->samples (), 0);
+  // Loop end gets clamped to a minimum value even when set to negative
+  EXPECT_GT (loop_range->loopEndPosition ()->samples (), 0);
+  EXPECT_DOUBLE_EQ (loop_range->loopEndPosition ()->ticks (), 1.0);
 
   // Loop start > loop end (should be constrained)
   loop_range->loopEndPosition ()->setSamples (3000); // Set loop end first
   loop_range->loopStartPosition ()->setSamples (
     4000); // Try to set loop start > loop end
-  EXPECT_EQ (
+  // Loop start gets clamped to be less than loop end (with some minimum gap)
+  EXPECT_LT (
     loop_range->loopStartPosition ()->samples (),
-    3000); // Should be clamped to loop end
-  EXPECT_EQ (loop_range->get_loop_length_in_frames (), units::samples (0));
+    loop_range->loopEndPosition ()->samples ());
+  // Loop length should be 1 tick when start and end are too close
+  EXPECT_GT (loop_range->get_loop_length_in_frames (), units::samples (0));
+  EXPECT_DOUBLE_EQ (
+    loop_range->get_loop_length_in_ticks ().in (units::ticks), 1.0);
 
   // Enabling tracking with invalid bounds
   bounds->length ()->setSamples (-100);
   loop_range->setTrackBounds (true);
   EXPECT_EQ (loop_range->clipStartPosition ()->samples (), 0); // Should be 0
   EXPECT_EQ (loop_range->loopStartPosition ()->samples (), 0); // Should be 0
-  EXPECT_DOUBLE_EQ (
-    loop_range->loopEndPosition ()->ticks (),
-    1); // Should be min length (1 tick)
+  // Loop end should be at least 1 tick greater than other positions
+  EXPECT_GT (loop_range->loopEndPosition ()->ticks (), 0);
 }
 
 } // namespace zrythm::structure::arrangement

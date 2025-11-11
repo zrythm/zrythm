@@ -15,8 +15,9 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
           clip_start_pos_,
           // Clip start must be before loop end and non-negative
           [this] (units::precise_tick_t ticks) {
+            ticks = std::min (
+              ticks, loop_end_pos_.get_ticks () - units::ticks (-1.0));
             ticks = std::max (ticks, units::ticks (0.0));
-            ticks = std::min (ticks, loop_end_pos_.get_ticks ());
             return ticks;
           },
           this)),
@@ -27,7 +28,8 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
           // Loop start must be before loop end and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::max (ticks, units::ticks (0.0));
-            ticks = std::min (ticks, loop_end_pos_.get_ticks ());
+            ticks =
+              std::min (ticks, loop_end_pos_.get_ticks () - units::ticks (1.0));
             return ticks;
           },
           this)),
@@ -37,9 +39,11 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
           loop_end_pos_,
           // Loop end must be after loop start and clip start and non-negative
           [this] (units::precise_tick_t ticks) {
+            ticks = std::max (
+              ticks, loop_start_pos_.get_ticks () + units::ticks (1.0));
+            ticks = std::max (
+              ticks, clip_start_pos_.get_ticks () + units::ticks (1.0));
             ticks = std::max (ticks, units::ticks (0.0));
-            ticks = std::max (ticks, loop_start_pos_.get_ticks ());
-            ticks = std::max (ticks, clip_start_pos_.get_ticks ());
             return ticks;
           },
           this))

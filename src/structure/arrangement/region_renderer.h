@@ -29,21 +29,14 @@ public:
    * @param events Output MIDI message sequence
    * @param start Optional timeline start position in ticks
    * @param end Optional timeline end position in ticks
-   * @param add_region_start Add region start offset to positions
+   * @param add_region_start Add region start offset to positions (false)
    * @param as_played Serialize as it would be played in the timeline (with
-   * loops and clip start)
+   * loops and clip start) (true)
    */
   static void serialize_to_sequence (
     const MidiRegion          &region,
     juce::MidiMessageSequence &events,
-    std::optional<double>      start = std::nullopt,
-    std::optional<double>      end = std::nullopt,
-    bool                       add_region_start = true,
-    bool                       as_played = true)
-  {
-    serialize_midi_region (
-      region, events, start, end, add_region_start, as_played);
-  }
+    std::optional<std::pair<double, double>> timeline_range_ticks = std::nullopt);
 
   /**
    * Serializes a Chord region to a MIDI message sequence.
@@ -61,14 +54,7 @@ public:
   static void serialize_to_sequence (
     const ChordRegion         &region,
     juce::MidiMessageSequence &events,
-    std::optional<double>      start = std::nullopt,
-    std::optional<double>      end = std::nullopt,
-    bool                       add_region_start = true,
-    bool                       as_played = true)
-  {
-    serialize_chord_region (
-      region, events, start, end, add_region_start, as_played);
-  }
+    std::optional<std::pair<double, double>> timeline_range_ticks = std::nullopt);
 
   /**
    * Serializes an Audio region to an audio sample buffer.
@@ -86,12 +72,7 @@ public:
   static void serialize_to_buffer (
     const AudioRegion       &region,
     juce::AudioSampleBuffer &buffer,
-    std::optional<double>    start = std::nullopt,
-    std::optional<double>    end = std::nullopt,
-    int builtin_fade_frames = AudioRegion::BUILTIN_FADE_FRAMES)
-  {
-    serialize_audio_region (region, buffer, start, end, builtin_fade_frames);
-  }
+    std::optional<std::pair<double, double>> timeline_range_ticks = std::nullopt);
 
   /**
    * Serializes an Automation region to sample-accurate automation values.
@@ -126,11 +107,8 @@ public:
   static void serialize_to_automation_values (
     const AutomationRegion &region,
     std::vector<float>     &values,
-    std::optional<double>   start = std::nullopt,
-    std::optional<double>   end = std::nullopt)
-  {
-    serialize_automation_region (region, values, start, end);
-  }
+    std::optional<std::pair<double, double>> timeline_range_ticks = std::nullopt)
+    [[clang::blocking]];
 
 private:
   /**
@@ -148,121 +126,110 @@ private:
     LoopParameters (const ArrangerObject &region);
   };
 
-  /**
-   * Serializes a MIDI region to a MIDI message sequence.
-   */
-  static void serialize_midi_region (
-    const MidiRegion          &region,
-    juce::MidiMessageSequence &events,
-    std::optional<double>      start,
-    std::optional<double>      end,
-    bool                       add_region_start,
-    bool                       as_played);
+  template <RegionObject RegionT, typename EventsT>
+  static void serialize_region (
+    const RegionT &region,
+    EventsT       &events,
+    // currently unused
+    std::optional<std::pair<double, double>> timeline_range_ticks = std::nullopt)
+  {
+    const auto * loop_range = region.loopRange ();
+    const auto   loop_length = loop_range->get_loop_length_in_ticks ();
+    const auto   region_length =
+      units::ticks (region.bounds ()->length ()->ticks ());
 
-  /**
-   * Serializes an Automation region to sample-accurate automation values.
-   */
-  static void serialize_automation_region (
-    const AutomationRegion &region,
-    std::vector<float>     &values,
-    std::optional<double>   start,
-    std::optional<double>   end) [[clang::blocking]];
+    auto loop_segment_virtual_start =
+      units::ticks (loop_range->clipStartPosition ()->ticks ());
+    auto loop_segment_virtual_end =
+      units::ticks (loop_range->loopEndPosition ()->ticks ());
+    auto loop_segment_absolute_start = units::ticks (0.0);
+    auto loop_segment_absolute_end =
+      loop_segment_virtual_end - loop_segment_virtual_start;
+    if (loop_segment_absolute_end > region_length)
+      {
+        const auto delta = loop_segment_absolute_end - region_length;
+        loop_segment_virtual_end -= delta;
+        loop_segment_absolute_end -= delta;
+      }
 
-  /**
-   * Serializes an Audio region to an audio sample buffer.
-   *
-   * Audio regions are always serialized as they would be played in the timeline
-   * (with loops and clip start).
-   */
-  static void serialize_audio_region (
-    const AudioRegion       &region,
-    juce::AudioSampleBuffer &buffer,
-    std::optional<double>    start,
-    std::optional<double>    end,
-    int                      builtin_fade_frames);
+    while (loop_segment_absolute_start < region_length)
+      {
+        if constexpr (std::is_same_v<RegionT, MidiRegion>)
+          {
+            handle_midi_region_range (
+              region, events,
+              std::make_pair (
+                loop_segment_virtual_start, loop_segment_virtual_end),
+              loop_segment_absolute_start);
+          }
+        else if constexpr (std::is_same_v<RegionT, ChordRegion>)
+          {
+            handle_chord_region_range (
+              region, events,
+              std::make_pair (
+                loop_segment_virtual_start, loop_segment_virtual_end),
+              loop_segment_absolute_start);
+          }
+        else if constexpr (std::is_same_v<RegionT, AudioRegion>)
+          {
+            handle_audio_region_range (
+              region, events,
+              std::make_pair (
+                loop_segment_virtual_start, loop_segment_virtual_end),
+              loop_segment_absolute_start);
+          }
+        else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
+          {
+            handle_automation_region_range (
+              region, events,
+              std::make_pair (
+                loop_segment_virtual_start, loop_segment_virtual_end),
+              loop_segment_absolute_start);
+          }
 
-  /**
-   * Serializes a Chord region to a MIDI message sequence.
-   *
-   * @param region The Chord region to serialize
-   * @param events Output MIDI message sequence
-   * @param start Optional timeline start position in ticks
-   * @param end Optional timeline end position in ticks
-   * @param add_region_start Add region start offset to positions
-   * @param as_played Serialize as it would be played in the timeline
-   */
-  static void serialize_chord_region (
-    const ChordRegion         &region,
-    juce::MidiMessageSequence &events,
-    std::optional<double>      start,
-    std::optional<double>      end,
-    bool                       add_region_start,
-    bool                       as_played);
+        // Advance to next segment
+        const auto currentLen =
+          loop_segment_absolute_end - loop_segment_absolute_start;
+        loop_segment_virtual_start =
+          units::ticks (loop_range->loopStartPosition ()->ticks ());
+        loop_segment_virtual_end =
+          units::ticks (loop_range->loopEndPosition ()->ticks ());
+        loop_segment_absolute_start += currentLen;
+        loop_segment_absolute_end += loop_length;
 
-  /**
-   * Processes a single MIDI note across all loop iterations.
-   */
-  static void process_midi_note (
-    const MidiNote                      &note,
-    const LoopParameters                &loop_params,
-    units::precise_tick_t                region_start_offset,
-    std::optional<units::precise_tick_t> start,
-    std::optional<units::precise_tick_t> end,
-    bool                                 as_played,
-    juce::MidiMessageSequence           &events);
+        // Clip final segment to region bounds
+        if (loop_segment_absolute_end > region_length)
+          {
+            const auto delta = loop_segment_absolute_end - region_length;
+            loop_segment_virtual_end -= delta;
+            loop_segment_absolute_end -= delta;
+          }
+      }
+  }
 
-  /**
-   * Processes a single chord object across all loop iterations.
-   */
-  static void process_chord_object (
-    const arrangement::ChordObject      &chord_obj,
-    const LoopParameters                &loop_params,
-    units::precise_tick_t                region_start_offset,
-    std::optional<units::precise_tick_t> start,
-    std::optional<units::precise_tick_t> end,
-    bool                                 as_played,
-    juce::MidiMessageSequence           &events);
+  static void handle_midi_region_range (
+    const MidiRegion                                       &region,
+    juce::MidiMessageSequence                              &events,
+    std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+    units::precise_tick_t                                   absolute_start);
 
-  /**
-   * Processes a single arranger object across all loop iterations.
-   *
-   * @tparam ObjectType The type of arranger object (MidiNote or ChordObject)
-   * @tparam EventGenerator Function that generates MIDI events for the object
-   * @param obj The arranger object to process
-   * @param loop_params Loop parameters for the region
-   * @param region_start_offset Offset to add to positions for global timeline
-   * @param start Optional start position constraint
-   * @param end Optional end position constraint
-   * @param as_played Whether to process as played (with loops)
-   * @param events Output MIDI message sequence
-   * @param event_generator Function that generates events for the object
-   */
-  template <typename ObjectType, typename EventGenerator>
-  static void process_arranger_object (
-    const ObjectType                    &obj,
-    const LoopParameters                &loop_params,
-    units::precise_tick_t                region_start_offset,
-    std::optional<units::precise_tick_t> start,
-    std::optional<units::precise_tick_t> end,
-    bool                                 as_played,
-    juce::MidiMessageSequence           &events,
-    EventGenerator                       event_generator);
+  static void handle_chord_region_range (
+    const ChordRegion                                      &region,
+    juce::MidiMessageSequence                              &events,
+    std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+    units::precise_tick_t                                   absolute_start);
 
-  /**
-   * Processes a single audio loop iteration.
-   *
-   * Audio regions are always processed as they would be played in the timeline
-   * (with loops and clip start).
-   */
-  static void process_audio_loop (
-    const AudioRegion                   &region,
-    juce::PositionableAudioSource       &audio_source,
-    const LoopParameters                &loop_params,
-    int                                  loop_idx,
-    units::precise_sample_t              buffer_offset_samples,
-    std::optional<units::precise_tick_t> start,
-    std::optional<units::precise_tick_t> end,
-    juce::AudioSampleBuffer             &buffer);
+  static void handle_audio_region_range (
+    const AudioRegion                                      &region,
+    juce::AudioSampleBuffer                                &buffer,
+    std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+    units::precise_tick_t                                   absolute_start);
+
+  static void handle_automation_region_range (
+    const AutomationRegion                                 &region,
+    std::vector<float>                                     &values,
+    std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
+    units::precise_tick_t                                   absolute_start);
 
   /**
    * Applies gain to the entire audio buffer as a separate pass.
@@ -275,8 +242,7 @@ private:
    */
   static void apply_region_fades_pass (
     const AudioRegion       &region,
-    juce::AudioSampleBuffer &buffer,
-    const LoopParameters    &loop_params);
+    juce::AudioSampleBuffer &buffer);
 
   /**
    * Applies built-in fades to the audio buffer as a separate pass.
@@ -285,31 +251,6 @@ private:
     const AudioRegion       &region,
     juce::AudioSampleBuffer &buffer,
     int                      builtin_fade_frames);
-
-  /**
-   * Calculates the position of an event in looped playback.
-   *
-   * @param original_pos Original position of the event inside the region.
-   */
-  static units::precise_tick_t get_event_looped_position (
-    units::precise_tick_t original_pos,
-    const LoopParameters &loop_params,
-    int                   loop_index);
-
-  /**
-   * Checks if a position range falls within the specified constraints.
-   */
-  static bool is_position_in_range (
-    units::precise_tick_t                start_pos,
-    units::precise_tick_t                end_pos,
-    std::optional<units::precise_tick_t> range_start,
-    std::optional<units::precise_tick_t> range_end);
-
-  /**
-   * Checks if a MIDI note is in a playable part of the region.
-   */
-  static bool
-  is_midi_note_playable (const MidiNote &note, const LoopParameters &loop_params);
 };
 
 } // namespace zrythm::structure::arrangement

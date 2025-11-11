@@ -218,7 +218,7 @@ MidiFile::export_midi_region_to_midi_file (
       / static_cast<int> (tempo_map.tempo_at_tick (units::ticks (0)))));
 
   structure::arrangement::RegionRenderer::serialize_to_sequence (
-    region, sequence, std::nullopt, std::nullopt, false, export_full);
+    region, sequence);
 
   juce::MidiFile mf;
   mf.setTicksPerQuarterNote (dsp::TempoMap::get_ppq ());

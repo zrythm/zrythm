@@ -41,8 +41,7 @@ ClipPlaybackDataProvider::generate_midi_events (
   juce::MidiMessageSequence region_seq;
 
   // Serialize region (timings in ticks)
-  arrangement::RegionRenderer::serialize_to_sequence (
-    midi_region, region_seq, std::nullopt, std::nullopt, false, true);
+  arrangement::RegionRenderer::serialize_to_sequence (midi_region, region_seq);
 
   // Convert timings to samples
   for (auto &event : region_seq)
