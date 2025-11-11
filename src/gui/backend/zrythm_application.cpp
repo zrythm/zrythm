@@ -391,8 +391,15 @@ ZrythmApplication::notify (QObject * receiver, QEvent * event)
 #ifdef __linux__
   if (juce_message_handler_initializer_)
     {
-      // we need to do this on GNU/Linux otherwise plugin UIs appear blank
-      juce::detail::dispatchNextMessageOnSystemQueue (true);
+      // Note: This notify() method may be called from the QML Debug server
+      // thread as well as the main thread (thread 0), which causes issues with
+      // the JUCE dispatcher, which expects to only be called in the main
+      // thread. Thus, we only dispatch JUCE messages if this is the main thread
+      if (current_thread_id.get () == qt_thread_id_)
+        {
+          // We need to do this on GNU/Linux otherwise plugin UIs appear blank
+          juce::detail::dispatchNextMessageOnSystemQueue (true);
+        }
     }
 #endif
 
