@@ -42,10 +42,10 @@ stages:
 # - eval "$(/opt/homebrew/bin/brew shellenv)";
 
 .windows-enable-vs-env: &windows-enable-vs-env
-  - Import-Module "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+  - Import-Module "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
   - >-
     Enter-VsDevShell
-    -VsInstallPath "C:\Program Files\Microsoft Visual Studio\2022\Community"
+    -VsInstallPath "C:\Program Files\Microsoft Visual Studio\18\Community"
     -SkipAutomaticLocation
     -DevCmdArguments -arch=x64
   #- chcp 65001 # UTF-8
