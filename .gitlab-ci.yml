@@ -37,6 +37,7 @@ stages:
 
 .windows-activate-venv: &windows-activate-venv
   - ./venv/Scripts/Activate.ps1
+  # Temporary solution until cmake 4.2.0 release
   - $Env:PATH = "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin$([System.IO.Path]::PathSeparator)$Env:PATH"
 
 # .mac-enable-brew-env: &mac-enable-brew-env
@@ -415,6 +416,7 @@ build:mac-arm:
 build:windows:
   extends: .windows-template
   stage: build
+  timeout: 2h # release build takes >1h
   needs:
     - job: configure:windows
       artifacts: true
