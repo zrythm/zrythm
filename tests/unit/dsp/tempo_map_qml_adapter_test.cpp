@@ -63,8 +63,7 @@ TEST_F (TempoMapWrapperTest, TempoEventManagement)
   QSignalSpy spy (wrapper_.get (), &TempoMapWrapper::tempoEventsChanged);
 
   // Add tempo event
-  wrapper_->addTempoEvent (
-    1920, 140.0, static_cast<int> (TempoMap::CurveType::Constant));
+  wrapper_->addTempoEvent (1920, 140.0, TempoEventWrapper::CurveType::Constant);
   EXPECT_EQ (spy.count (), 1);
 
   // Verify wrapper count
@@ -120,10 +119,8 @@ TEST_F (TempoMapWrapperTest, ListPropertyAccess)
   // Add multiple events
   wrapper_->addTimeSignatureEvent (1920, 3, 4);
   wrapper_->addTimeSignatureEvent (3840, 5, 8);
-  wrapper_->addTempoEvent (
-    1920, 140.0, static_cast<int> (TempoMap::CurveType::Constant));
-  wrapper_->addTempoEvent (
-    3840, 160.0, static_cast<int> (TempoMap::CurveType::Linear));
+  wrapper_->addTempoEvent (1920, 140.0, TempoEventWrapper::CurveType::Constant);
+  wrapper_->addTempoEvent (3840, 160.0, TempoEventWrapper::CurveType::Linear);
 
   // Verify tempo events
   auto tempo_events = wrapper_->tempoEvents ();
@@ -235,6 +232,173 @@ TEST_F (TempoMapWrapperTest, TickFromMusicalPosition)
     pos3.bar, pos3.beat, pos3.sixteenth, pos3.tick);
   tickDirect = tempo_map_->musical_position_to_tick (pos3);
   EXPECT_EQ (tickWrapper, tickDirect.in (units::ticks));
+}
+
+// Test clearing tempo events via wrapper
+TEST_F (TempoMapWrapperTest, ClearTempoEvents)
+{
+  QSignalSpy spy (wrapper_.get (), &TempoMapWrapper::tempoEventsChanged);
+
+  // Add some tempo events first
+  wrapper_->addTempoEvent (960, 140.0, TempoEventWrapper::CurveType::Constant);
+  wrapper_->addTempoEvent (1920, 160.0, TempoEventWrapper::CurveType::Linear);
+  wrapper_->addTempoEvent (3840, 180.0, TempoEventWrapper::CurveType::Constant);
+
+  // Verify events were added
+  auto tempo_events = wrapper_->tempoEvents ();
+  EXPECT_EQ (tempo_events.count (&tempo_events), 4); // 3 + default
+
+  // Clear tempo events
+  wrapper_->clearTempoEvents ();
+  EXPECT_EQ (spy.count (), 4); // Signal emitted during rebuild
+
+  // Verify all tempo events are cleared (only default remains)
+  tempo_events = wrapper_->tempoEvents ();
+  EXPECT_EQ (tempo_events.count (&tempo_events), 0); // No explicit events
+
+  // Verify tempo lookup returns default
+  EXPECT_DOUBLE_EQ (wrapper_->tempoAtTick (960), 120.0);
+  EXPECT_DOUBLE_EQ (wrapper_->tempoAtTick (1920), 120.0);
+  EXPECT_DOUBLE_EQ (wrapper_->tempoAtTick (3840), 120.0);
+}
+
+// Test clearing time signature events via wrapper
+TEST_F (TempoMapWrapperTest, ClearTimeSignatureEvents)
+{
+  QSignalSpy spy (wrapper_.get (), &TempoMapWrapper::timeSignatureEventsChanged);
+
+  // Add some time signature events first
+  wrapper_->addTimeSignatureEvent (1920, 3, 4);
+  wrapper_->addTimeSignatureEvent (3840, 5, 8);
+  wrapper_->addTimeSignatureEvent (5760, 7, 16);
+
+  // Verify events were added
+  auto time_sig_events = wrapper_->timeSignatureEvents ();
+  EXPECT_EQ (time_sig_events.count (&time_sig_events), 4); // 3 + default
+
+  // Clear time signature events
+  wrapper_->clearTimeSignatureEvents ();
+  EXPECT_EQ (spy.count (), 4); // Signal emitted during rebuild
+
+  // Verify all time signature events are cleared (only default remains)
+  time_sig_events = wrapper_->timeSignatureEvents ();
+  EXPECT_EQ (time_sig_events.count (&time_sig_events), 0); // No explicit events
+
+  // Verify time signature lookup returns default
+  EXPECT_EQ (wrapper_->timeSignatureNumeratorAtTick (1920), 4);
+  EXPECT_EQ (wrapper_->timeSignatureDenominatorAtTick (1920), 4);
+  EXPECT_EQ (wrapper_->timeSignatureNumeratorAtTick (3840), 4);
+  EXPECT_EQ (wrapper_->timeSignatureDenominatorAtTick (3840), 4);
+  EXPECT_EQ (wrapper_->timeSignatureNumeratorAtTick (5760), 4);
+  EXPECT_EQ (wrapper_->timeSignatureDenominatorAtTick (5760), 4);
+}
+
+// Test clearing both types of events
+TEST_F (TempoMapWrapperTest, ClearBothEventTypes)
+{
+  QSignalSpy tempoSpy (wrapper_.get (), &TempoMapWrapper::tempoEventsChanged);
+  QSignalSpy timeSigSpy (
+    wrapper_.get (), &TempoMapWrapper::timeSignatureEventsChanged);
+
+  // Add events (time signature first)
+  wrapper_->addTimeSignatureEvent (1920, 3, 4);
+  wrapper_->addTempoEvent (960, 140.0, TempoEventWrapper::CurveType::Constant);
+
+  // Clear both types
+  wrapper_->clearTempoEvents ();
+  wrapper_->clearTimeSignatureEvents ();
+
+  EXPECT_EQ (tempoSpy.count (), 2);   // Each clear emits 2 signals
+  EXPECT_EQ (timeSigSpy.count (), 2); // Each clear emits 2 signals
+
+  // Verify both are cleared
+  auto tempoEvents = wrapper_->tempoEvents ();
+  auto timeSigEvents = wrapper_->timeSignatureEvents ();
+  EXPECT_EQ (tempoEvents.count (&tempoEvents), 0);
+  EXPECT_EQ (timeSigEvents.count (&timeSigEvents), 0);
+
+  // Verify musical position still works with defaults
+  auto pos = wrapper_->getMusicalPosition (1920);
+  EXPECT_EQ (pos->bar (), 1); // Should be bar 1 in default 4/4 time (1920 ticks
+                              // = 0.5 bar)
+  EXPECT_EQ (pos->beat (), 3); // 1920 ticks = 2 beats = beat 3
+  EXPECT_EQ (pos->sixteenth (), 1);
+  EXPECT_EQ (pos->tick (), 0);
+  delete pos;
+}
+
+// Test clearing empty map
+TEST_F (TempoMapWrapperTest, ClearEmptyMap)
+{
+  QSignalSpy tempoSpy (wrapper_.get (), &TempoMapWrapper::tempoEventsChanged);
+  QSignalSpy timeSigSpy (
+    wrapper_.get (), &TempoMapWrapper::timeSignatureEventsChanged);
+
+  // Clear empty map - should still emit signals
+  wrapper_->clearTempoEvents ();
+  wrapper_->clearTimeSignatureEvents ();
+
+  EXPECT_EQ (tempoSpy.count (), 1);
+  EXPECT_EQ (timeSigSpy.count (), 1);
+
+  // Should still work with defaults
+  EXPECT_DOUBLE_EQ (wrapper_->tempoAtTick (0), 120.0);
+  EXPECT_EQ (wrapper_->timeSignatureNumeratorAtTick (0), 4);
+  EXPECT_EQ (wrapper_->timeSignatureDenominatorAtTick (0), 4);
+}
+
+// Test clearing and adding new events
+TEST_F (TempoMapWrapperTest, ClearAndAddNewEvents)
+{
+  // Add initial events (time signature first)
+  wrapper_->addTimeSignatureEvent (1920, 3, 4);
+  wrapper_->addTempoEvent (960, 140.0, TempoEventWrapper::CurveType::Constant);
+
+  // Clear events
+  wrapper_->clearTempoEvents ();
+  wrapper_->clearTimeSignatureEvents ();
+
+  // Add new events after clearing (time signature first)
+  wrapper_->addTimeSignatureEvent (960, 6, 8);
+  wrapper_->addTempoEvent (480, 130.0, TempoEventWrapper::CurveType::Linear);
+
+  // Verify new events work
+  EXPECT_DOUBLE_EQ (wrapper_->tempoAtTick (480), 130.0);
+  EXPECT_EQ (wrapper_->timeSignatureNumeratorAtTick (960), 6);
+  EXPECT_EQ (wrapper_->timeSignatureDenominatorAtTick (960), 8);
+
+  // Verify wrapper counts
+  auto tempoEvents = wrapper_->tempoEvents ();
+  auto timeSigEvents = wrapper_->timeSignatureEvents ();
+  EXPECT_EQ (tempoEvents.count (&tempoEvents), 2);     // 1 + default
+  EXPECT_EQ (timeSigEvents.count (&timeSigEvents), 2); // 1 + default
+}
+
+// Test musical position after clearing
+TEST_F (TempoMapWrapperTest, MusicalPositionAfterClearing)
+{
+  // Add time signature change
+  wrapper_->addTimeSignatureEvent (1920, 3, 4);
+
+  // Verify position before clearing
+  auto pos = wrapper_->getMusicalPosition (3840);
+  EXPECT_EQ (pos->bar (), 1); // Bar 1 in 4/4 time (3840 ticks = 1 bar)
+  delete pos;
+
+  // Clear time signature events
+  wrapper_->clearTimeSignatureEvents ();
+
+  // Verify position after clearing (should be in default 4/4 time)
+  pos = wrapper_->getMusicalPosition (3840);
+  EXPECT_EQ (pos->bar (), 2); // Bar 2 in 4/4 time (3840 ticks = 1 bar)
+  EXPECT_EQ (pos->beat (), 1);
+  EXPECT_EQ (pos->sixteenth (), 1);
+  EXPECT_EQ (pos->tick (), 0);
+  delete pos;
+
+  // Test tick from position after clearing
+  auto tick = wrapper_->getTickFromMusicalPosition (1, 1, 1, 0);
+  EXPECT_EQ (tick, 0);
 }
 
 } // namespace zrythm::dsp

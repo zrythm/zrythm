@@ -28,9 +28,9 @@ public:
   using UndoCommand = QUndoCommand;
 
   explicit UndoStack (
-    GraphStopRequester   graph_stop_requester,
-    GraphResumeRequester graph_resume_requester,
-    QObject *            parent = nullptr);
+    EngineStopRequester   engine_stop_requester,
+    EngineResumeRequester engine_resume_requester,
+    QObject *             parent = nullptr);
 
   // all users of the undo stack should use these wrappers instead of
   // QUndoStack's push/undo/redo. all other functionality should handed off to
@@ -41,6 +41,11 @@ public:
 
   bool canUndo () const { return stack_->canUndo (); }
   bool canRedo () const { return stack_->canRedo (); }
+
+  const QUndoCommand * command (int index) const
+  {
+    return stack_->command (index);
+  }
 
   Q_INVOKABLE void beginMacro (const QString &text)
   {
@@ -73,14 +78,22 @@ private:
   /**
    * @brief Returns whether any of the command's nested children requires
    * pausing the graph.
+   *
+   * This implies the engine should be paused as well.
    */
   bool command_or_children_require_graph_pause (const UndoCommand &cmd) const;
+
+  /**
+   * @brief Returns whether any of the command's nested children requires
+   * pausing the engine (but not the graph).
+   */
+  bool command_or_children_require_engine_pause (const UndoCommand &cmd) const;
 
 private:
   utils::QObjectUniquePtr<QUndoStack> stack_;
 
-  // Graph operations
-  GraphStopRequester   graph_stop_requester_;
-  GraphResumeRequester graph_resume_requester_;
+  // Engine operations
+  EngineStopRequester   engine_stop_requester_;
+  EngineResumeRequester engine_resume_requester_;
 };
 };

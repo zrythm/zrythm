@@ -5,16 +5,22 @@ qt_add_library(zrythm_actions_lib STATIC)
 
 target_sources(zrythm_actions_lib
   PRIVATE
-    arranger_object_creator.h
     arranger_object_creator.cpp
-    arranger_object_selection_operator.h
     arranger_object_selection_operator.cpp
-    parameter_operator.h
+    qobject_property_operator.cpp
     parameter_operator.cpp
-    track_creator.h
     track_creator.cpp
-    track_operator.h
     track_operator.cpp
+  PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS ".."
+    FILES
+      arranger_object_creator.h
+      arranger_object_selection_operator.h
+      qobject_property_operator.h
+      parameter_operator.h
+      track_creator.h
+      track_operator.h
 )
 
 target_include_directories(zrythm_actions_lib
@@ -23,6 +29,7 @@ target_include_directories(zrythm_actions_lib
 
 set_target_properties(zrythm_actions_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+  VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
 target_precompile_headers(zrythm_actions_lib PUBLIC

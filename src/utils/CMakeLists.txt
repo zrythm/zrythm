@@ -77,6 +77,7 @@ target_sources(zrythm_utils_lib
       playback_cache_scheduler.h
       progress_info.h
       qt.h
+      ranges.h
       resampler.h
       ring_buffer.h
       rt_thread_id.h

@@ -23,6 +23,7 @@ add_executable(zrythm_utils_unit_tests
   object_pool_test.cpp
   playback_cache_scheduler_test.cpp
   qt_test.cpp
+  ranges_test.cpp
   ring_buffer_test.cpp
   string_test.cpp
   units_test.cpp

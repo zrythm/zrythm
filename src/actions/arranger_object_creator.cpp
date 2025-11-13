@@ -52,6 +52,77 @@ ArrangerObjectCreator::add_object_to_clip_slot (
     obj_ref.get_object ());
 }
 
+structure::arrangement::Marker *
+ArrangerObjectCreator::addMarker (
+  structure::arrangement::Marker::MarkerType markerType,
+  structure::tracks::MarkerTrack *           markerTrack,
+  const QString                             &name,
+  double                                     startTicks)
+{
+  auto marker_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::Marker> ()
+      .with_start_ticks (startTicks)
+      .with_name (name)
+      .with_marker_type (markerType)
+      .build_in_registry ();
+  undo_stack_.push (
+    new commands::AddArrangerObjectCommand<structure::arrangement::Marker> (
+      *markerTrack, marker_ref));
+  return marker_ref.get_object_as<structure::arrangement::Marker> ();
+}
+
+structure::arrangement::TempoObject *
+ArrangerObjectCreator::addTempoObject (
+  structure::arrangement::TempoObjectManager *   tempoObjectManager,
+  double                                         bpm,
+  structure::arrangement::TempoObject::CurveType curveType,
+  double                                         startTicks)
+{
+  auto tempo_object_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::TempoObject> ()
+      .with_start_ticks (startTicks)
+      .build_in_registry ();
+  undo_stack_.push (
+    new commands::AddTempoMapAffectingArrangerObjectCommand<
+      structure::arrangement::TempoObject> (
+      *tempoObjectManager, tempo_object_ref));
+  return tempo_object_ref.get_object_as<structure::arrangement::TempoObject> ();
+}
+
+structure::arrangement::TimeSignatureObject *
+ArrangerObjectCreator::addTimeSignatureObject (
+  structure::arrangement::TempoObjectManager * tempoObjectManager,
+  int                                          numerator,
+  int                                          denominator,
+  double                                       startTicks)
+{
+  auto time_signature_object_ref =
+    arranger_object_factory_
+      .get_builder<structure::arrangement::TimeSignatureObject> ()
+      .with_start_ticks (startTicks)
+      .build_in_registry ();
+  undo_stack_.push (
+    new commands::AddTempoMapAffectingArrangerObjectCommand<
+      structure::arrangement::TimeSignatureObject> (
+      *tempoObjectManager, time_signature_object_ref));
+  return time_signature_object_ref
+    .get_object_as<structure::arrangement::TimeSignatureObject> ();
+}
+
+structure::arrangement::MidiRegion *
+ArrangerObjectCreator::addEmptyMidiRegion (
+  structure::tracks::Track *     track,
+  structure::tracks::TrackLane * lane,
+  double                         startTicks)
+{
+  auto mr_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::MidiRegion> ()
+      .with_start_ticks (startTicks)
+      .build_in_registry ();
+  add_laned_object (*track, *lane, mr_ref);
+  return mr_ref.get_object_as<structure::arrangement::MidiRegion> ();
+}
+
 structure::arrangement::ChordRegion *
 ArrangerObjectCreator::addEmptyChordRegion (
   structure::tracks::ChordTrack * track,

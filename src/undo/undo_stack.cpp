@@ -3,7 +3,10 @@
 
 #include <utility>
 
+#include "commands/add_arranger_object_command.h"
 #include "commands/add_track_command.h"
+#include "commands/change_qobject_property_command.h"
+#include "commands/move_arranger_objects_command.h"
 #include "commands/route_track_command.h"
 #include "undo/undo_stack.h"
 
@@ -12,12 +15,12 @@
 namespace zrythm::undo
 {
 UndoStack::UndoStack (
-  GraphStopRequester   graph_stop_requester,
-  GraphResumeRequester graph_resume_requester,
-  QObject *            parent)
+  EngineStopRequester   engine_stop_requester,
+  EngineResumeRequester engine_resume_requester,
+  QObject *             parent)
     : QObject (parent), stack_ (utils::make_qobject_unique<QUndoStack> (this)),
-      graph_stop_requester_ (std::move (graph_stop_requester)),
-      graph_resume_requester_ (std::move (graph_resume_requester))
+      engine_stop_requester_ (std::move (engine_stop_requester)),
+      engine_resume_requester_ (std::move (engine_resume_requester))
 {
   connect (stack_.get (), &QUndoStack::indexChanged, this, [this] () {
     Q_EMIT undoActionsChanged ();
@@ -61,6 +64,36 @@ UndoStack::command_or_children_require_graph_pause (const QUndoCommand &cmd) con
   return false;
 }
 
+bool
+UndoStack::command_or_children_require_engine_pause (
+  const QUndoCommand &cmd) const
+{
+  static constexpr std::array<int, 3> command_ids_with_graph_pause = {
+    commands::AddTempoMapAffectingArrangerObjectCommand<
+      structure::arrangement::TempoObject>::CommandId,
+    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId,
+    commands::ChangeTempoMapAffectingQObjectPropertyCommand::CommandId,
+  };
+
+  // return if command itself requires graph pause
+  if (
+    cmd.id () >= 0
+    && std::ranges::contains (command_ids_with_graph_pause, cmd.id ()))
+    {
+      return true;
+    }
+
+  // return if any of its children (recursively) requires pause
+  return std::ranges::any_of (
+    std::views::iota (0, cmd.childCount ())
+      | std::views::transform ([&cmd] (const auto i) { return cmd.child (i); }),
+    [this] (const auto * child) {
+      return command_or_children_require_engine_pause (*child);
+    });
+
+  return false;
+}
+
 void
 UndoStack::push (UndoCommand * cmd)
 {
@@ -68,14 +101,15 @@ UndoStack::push (UndoCommand * cmd)
 
   EngineState state{};
   const auto  pause_graph = command_or_children_require_graph_pause (*cmd);
-  if (pause_graph)
+  const auto  pause_engine = command_or_children_require_engine_pause (*cmd);
+  if (pause_graph || pause_engine)
     {
-      graph_stop_requester_ (state);
+      engine_stop_requester_ (state);
     }
   stack_->push (cmd);
-  if (pause_graph)
+  if (pause_graph || pause_engine)
     {
-      graph_resume_requester_ (state);
+      engine_resume_requester_ (state, pause_graph);
     }
 }
 
@@ -88,14 +122,15 @@ UndoStack::redo ()
   const auto * cmd = stack_->command (stack_->index ());
   EngineState  state{};
   const auto   pause_graph = command_or_children_require_graph_pause (*cmd);
-  if (pause_graph)
+  const auto   pause_engine = command_or_children_require_engine_pause (*cmd);
+  if (pause_graph || pause_engine)
     {
-      graph_stop_requester_ (state);
+      engine_stop_requester_ (state);
     }
   stack_->redo ();
-  if (pause_graph)
+  if (pause_graph || pause_engine)
     {
-      graph_resume_requester_ (state);
+      engine_resume_requester_ (state, pause_graph);
     }
 }
 
@@ -108,14 +143,15 @@ UndoStack::undo ()
   assert (cmd != nullptr);
   EngineState state{};
   const auto  pause_graph = command_or_children_require_graph_pause (*cmd);
-  if (pause_graph)
+  const auto  pause_engine = command_or_children_require_engine_pause (*cmd);
+  if (pause_graph || pause_engine)
     {
-      graph_stop_requester_ (state);
+      engine_stop_requester_ (state);
     }
   stack_->undo ();
-  if (pause_graph)
+  if (pause_graph || pause_engine)
     {
-      graph_resume_requester_ (state);
+      engine_resume_requester_ (state, pause_graph);
     }
 }
 

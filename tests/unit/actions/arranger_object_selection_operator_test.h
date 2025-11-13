@@ -22,7 +22,11 @@ class MockArrangerObjectOwner
       public structure::arrangement::ArrangerObjectOwner<
         structure::arrangement::AudioRegion>,
       public structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::AutomationPoint>
+        structure::arrangement::AutomationPoint>,
+      public structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::TempoObject>,
+      public structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::TimeSignatureObject>
 {
   Q_OBJECT
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
@@ -45,6 +49,14 @@ class MockArrangerObjectOwner
     MockArrangerObjectOwner,
     automationPoints,
     zrythm::structure::arrangement::AutomationPoint)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    MockArrangerObjectOwner,
+    tempoObjects,
+    zrythm::structure::arrangement::TempoObject)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    MockArrangerObjectOwner,
+    timeSignatureObjects,
+    zrythm::structure::arrangement::TimeSignatureObject)
 
 public:
   MockArrangerObjectOwner (
@@ -69,6 +81,14 @@ public:
           file_audio_source_registry,
           *this),
         ArrangerObjectOwner<structure::arrangement::AutomationPoint> (
+          registry,
+          file_audio_source_registry,
+          *this),
+        ArrangerObjectOwner<structure::arrangement::TempoObject> (
+          registry,
+          file_audio_source_registry,
+          *this),
+        ArrangerObjectOwner<structure::arrangement::TimeSignatureObject> (
           registry,
           file_audio_source_registry,
           *this)
@@ -99,6 +119,16 @@ public:
     std::string,
     get_field_name_for_serialization,
     (const structure::arrangement::AutomationPoint * obj),
+    (const override));
+  MOCK_METHOD (
+    std::string,
+    get_field_name_for_serialization,
+    (const structure::arrangement::TempoObject * obj),
+    (const override));
+  MOCK_METHOD (
+    std::string,
+    get_field_name_for_serialization,
+    (const structure::arrangement::TimeSignatureObject * obj),
     (const override));
 };
 

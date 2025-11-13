@@ -238,32 +238,31 @@ Arranger {
     return null;
   }
 
-  function getTrackLanesListView(trackItem: Item) : ListView
-  {
+  function getTrackLaneItem(trackLane: TrackLane, trackItem: Item): Item {
+    const track = trackItem.track as Track;
+    if (track.lanes === null || !track.lanes.lanesVisible) {
+      return null;
+    }
+
+    const lanesListView = getTrackLanesListView(trackItem);
+    if (!lanesListView) {
+      return null;
+    }
+
+    for (let i = 0; i < lanesListView.count; ++i) {
+      const laneItem = lanesListView.itemAtIndex(i);
+      const currentLane = laneItem?.trackLane;
+      if (currentLane === trackLane) {
+        return laneItem;
+      }
+    }
+  }
+
+  function getTrackLanesListView(trackItem: Item): ListView {
     // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
     const columnLayout = trackItem.children[0];
     const laneLoader = columnLayout.children[1]; // laneRegionsLoader is second child
     return laneLoader?.item as ListView;
-  }
-
-  function getTrackLaneItem(trackLane: TrackLane, trackItem: Item): Item {
-      const track = trackItem.track as Track;
-      if (track.lanes === null || !track.lanes.lanesVisible) {
-          return null;
-      }
-
-      const lanesListView = getTrackLanesListView(trackItem);
-      if (!lanesListView) {
-        return null;
-      }
-
-      for (let i = 0; i < lanesListView.count; ++i) {
-        const laneItem = lanesListView.itemAtIndex(i);
-        const currentLane = laneItem?.trackLane;
-        if (currentLane === trackLane) {
-          return laneItem;
-        }
-      }
   }
 
   /**
@@ -355,6 +354,7 @@ Arranger {
                     arrangerObject: scaleLoader.arrangerObject
                     isSelected: scaleLoader.selectionTracker.isSelected
                     track: trackDelegate.track
+                    undoStack: root.undoStack
 
                     onHoveredChanged: {
                       root.handleObjectHover(scaleItem.hovered, scaleItem);
@@ -401,6 +401,7 @@ Arranger {
                     arrangerObject: markerLoader.arrangerObject
                     isSelected: markerLoader.selectionTracker.isSelected
                     track: trackDelegate.track
+                    undoStack: root.undoStack
 
                     onHoveredChanged: {
                       root.handleObjectHover(markerItem.hovered, markerItem);
@@ -449,6 +450,7 @@ Arranger {
                     height: chordRegionsRepeater.height
                     isSelected: chordRegionLoader.selectionTracker.isSelected
                     track: trackDelegate.track
+                    undoStack: root.undoStack
 
                     onHoveredChanged: {
                       root.handleObjectHover(hovered, chordRegionItem);
@@ -504,6 +506,7 @@ Arranger {
                       isSelected: mainTrackRegionLoader.selectionTracker.isSelected
                       lane: mainTrackLaneRegionsRepeater.trackLane
                       track: trackDelegate.track
+                      undoStack: root.undoStack
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, mainMidiRegionItem);
@@ -595,6 +598,7 @@ Arranger {
                       isSelected: laneRegionLoader.selectionTracker.isSelected
                       lane: laneItem.trackLane
                       track: trackDelegate.track
+                      undoStack: root.undoStack
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, laneMidiRegionItem);
@@ -703,6 +707,7 @@ Arranger {
                       clipEditor: root.clipEditor
                       isSelected: automationRegionLoader.selectionTracker.isSelected
                       track: trackDelegate.track
+                      undoStack: root.undoStack
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, automationRegionItem);

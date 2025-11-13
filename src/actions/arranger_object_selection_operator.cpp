@@ -8,6 +8,7 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
 #include "utils/math.h"
+#include "utils/ranges.h"
 
 namespace zrythm::actions
 {
@@ -43,15 +44,34 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
   // Validate object bounds (don't move objects before timeline start)
   if (!validateHorizontalMovement (selected_objects, tick_delta))
     {
-      z_warning (
-        "Movement validation failed - objects would be moved before timeline start");
+      z_warning ("Horizontal movement validation failed");
       return false;
     }
 
   // Create and push command
-  auto * command = new commands::MoveArrangerObjectsCommand (
-    std::move (selected_objects), units::ticks (tick_delta));
-  undo_stack_.push (command);
+  auto command = [&selected_objects, tick_delta] ()
+    -> std::unique_ptr<commands::MoveArrangerObjectsCommand> {
+    if (
+      std::ranges::any_of (selected_objects, [] (auto &&object_ref) {
+        return std::visit (
+          [] (const auto &obj) {
+            using ObjectT = base_type<decltype (obj)>;
+            return std::is_same_v<ObjectT, structure::arrangement::TempoObject>
+                   || std::is_same_v<
+                     ObjectT, structure::arrangement::TimeSignatureObject>;
+          },
+          object_ref.get_object ());
+      }))
+      {
+        return std::make_unique<
+          commands::MoveTempoMapAffectingArrangerObjectsCommand> (
+          std::move (selected_objects), units::ticks (tick_delta));
+      }
+
+    return std::make_unique<commands::MoveArrangerObjectsCommand> (
+      std::move (selected_objects), units::ticks (tick_delta));
+  }();
+  undo_stack_.push (command.release ());
 
   return true;
 }
@@ -140,8 +160,7 @@ ArrangerObjectSelectionOperator::process_vertical_move (double delta)
   // Validate object vertical bounds
   if (!validateVerticalMovement (selected_objects, delta))
     {
-      z_warning (
-        "Movement validation failed - objects would be moved outside bounds");
+      z_warning ("Vertical movement validation failed");
       return false;
     }
 
@@ -220,8 +239,10 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
   double                       tick_delta)
 {
   return std::ranges::all_of (objects, [tick_delta] (const auto &obj_ref) {
-    if (auto * obj = obj_ref.get_object_base ())
-      {
+    const auto obj_var = obj_ref.get_object ();
+    return std::visit (
+      [&] (auto &&obj) {
+        using ObjectT = base_type<decltype (obj)>;
         const double new_position = obj->position ()->ticks () + tick_delta;
         const auto   timeline_position = [&] () {
           const auto * parent_obj = obj->parentObject ();
@@ -231,9 +252,24 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
             }
           return new_position;
         }();
+        if constexpr (
+          std::is_same_v<ObjectT, structure::arrangement::TimeSignatureObject>)
+          {
+            // Time Signature objects are only allowed at bar boundaries
+            const auto &tempo_map = obj->get_tempo_map ();
+            const auto  musical_pos = tempo_map.tick_to_musical_position (
+              au::round_as<int64_t> (
+                units::ticks, units::ticks (timeline_position)));
+            if (
+              musical_pos.beat != 1 || musical_pos.sixteenth != 1
+              || musical_pos.tick != 0)
+              {
+                return false;
+              }
+          }
         return timeline_position >= 0.0;
-      }
-    return true; // Skip objects that can't be accessed
+      },
+      obj_var);
   });
 }
 
@@ -242,26 +278,35 @@ ArrangerObjectSelectionOperator::validateVerticalMovement (
   const SelectedObjectsVector &objects,
   double                       delta)
 {
-  return std::ranges::all_of (objects, [delta] (const auto &obj_ref) {
-    return std::visit (
-      [&] (auto &&obj) {
-        using ObjectT = base_type<decltype (obj)>;
-        if constexpr (std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-          {
-            const auto new_pitch = obj->pitch () + static_cast<int> (delta);
-            return new_pitch >= 0 && new_pitch < 128;
-          }
-        if constexpr (
-          std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
-          {
-            const auto new_value = obj->value () + static_cast<float> (delta);
-            return new_value >= 0.0 && new_value <= 1.0;
-          }
+  return zrythm::ranges::all_equal (
+           objects,
+           [] (const auto &obj_ref) {
+             return obj_ref.get_object_base ()->type ();
+           })
+         && std::ranges::all_of (objects, [delta] (const auto &obj_ref) {
+              return std::visit (
+                [&] (auto &&obj) {
+                  using ObjectT = base_type<decltype (obj)>;
+                  if constexpr (
+                    std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+                    {
+                      const auto new_pitch =
+                        obj->pitch () + static_cast<int> (delta);
+                      return new_pitch >= 0 && new_pitch < 128;
+                    }
+                  if constexpr (
+                    std::is_same_v<
+                      ObjectT, structure::arrangement::AutomationPoint>)
+                    {
+                      const auto new_value =
+                        obj->value () + static_cast<float> (delta);
+                      return new_value >= 0.0 && new_value <= 1.0;
+                    }
 
-        return true; // Skip objects that can't be accessed
-      },
-      obj_ref.get_object ());
-  });
+                  return false; // Object unsupported for delta moving
+                },
+                obj_ref.get_object ());
+            });
 }
 
 bool

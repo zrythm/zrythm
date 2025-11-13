@@ -214,7 +214,9 @@ set(rel_qml_file_paths
   components/arranger/RegionBaseView.qml
   components/arranger/ScaleObjectView.qml
   components/arranger/TempoMapArranger.qml
+  components/arranger/TempoObjectView.qml
   components/arranger/Timeline.qml
+  components/arranger/TimeSignatureObjectView.qml
   components/arranger/VelocityArranger.qml
   components/editors/AudioEditorPane.qml
   components/editors/AutomationEditorPane.qml

@@ -20,6 +20,8 @@ class ScaleObject;
 class AutomationPoint;
 class Marker;
 class AudioSourceObject;
+class TempoObject;
+class TimeSignatureObject;
 
 template <typename T>
 concept RegionObject =
@@ -28,7 +30,8 @@ concept RegionObject =
 
 template <typename T>
 concept TimelineObject =
-  RegionObject<T> || std::is_same_v<T, ScaleObject> || std::is_same_v<T, Marker>;
+  RegionObject<T> || std::is_same_v<T, ScaleObject> || std::is_same_v<T, Marker>
+  || std::is_same_v<T, TempoObject> || std::is_same_v<T, TimeSignatureObject>;
 
 template <typename T>
 concept LaneOwnedObject =
@@ -53,7 +56,9 @@ using ArrangerObjectVariant = std::variant<
   AutomationRegion,
   AutomationPoint,
   Marker,
-  AudioSourceObject>;
+  AudioSourceObject,
+  TempoObject,
+  TimeSignatureObject>;
 using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
 
 using ArrangerObjectUuid = utils::UuidIdentifiableObject<ArrangerObject>::Uuid;

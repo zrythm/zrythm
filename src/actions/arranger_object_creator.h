@@ -10,6 +10,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/tempo_object_manager.h"
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_all.h"
 #include "undo/undo_stack.h"
@@ -39,33 +40,25 @@ public:
     structure::arrangement::Marker::MarkerType markerType,
     structure::tracks::MarkerTrack *           markerTrack,
     const QString                             &name,
-    double                                     startTicks)
-  {
-    auto marker_ref =
-      arranger_object_factory_.get_builder<structure::arrangement::Marker> ()
-        .with_start_ticks (startTicks)
-        .with_name (name)
-        .with_marker_type (markerType)
-        .build_in_registry ();
-    undo_stack_.push (
-      new commands::AddArrangerObjectCommand<structure::arrangement::Marker> (
-        *markerTrack, marker_ref));
-    return marker_ref.get_object_as<structure::arrangement::Marker> ();
-  }
+    double                                     startTicks);
+
+  Q_INVOKABLE structure::arrangement::TempoObject * addTempoObject (
+    structure::arrangement::TempoObjectManager *   tempoObjectManager,
+    double                                         bpm,
+    structure::arrangement::TempoObject::CurveType curveType,
+    double                                         startTicks);
+
+  Q_INVOKABLE structure::arrangement::TimeSignatureObject *
+              addTimeSignatureObject (
+                structure::arrangement::TempoObjectManager * tempoObjectManager,
+                int                                          numerator,
+                int                                          denominator,
+                double                                       startTicks);
 
   Q_INVOKABLE structure::arrangement::MidiRegion * addEmptyMidiRegion (
     structure::tracks::Track *     track,
     structure::tracks::TrackLane * lane,
-    double                         startTicks)
-  {
-    auto mr_ref =
-      arranger_object_factory_
-        .get_builder<structure::arrangement::MidiRegion> ()
-        .with_start_ticks (startTicks)
-        .build_in_registry ();
-    add_laned_object (*track, *lane, mr_ref);
-    return mr_ref.get_object_as<structure::arrangement::MidiRegion> ();
-  }
+    double                         startTicks);
 
   Q_INVOKABLE structure::arrangement::MidiRegion * addEmptyMidiRegionToClip (
     structure::tracks::Track *    track,

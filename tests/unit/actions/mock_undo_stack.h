@@ -11,6 +11,6 @@ static inline std::unique_ptr<undo::UndoStack>
 create_mock_undo_stack ()
 {
   return std::make_unique<undo::UndoStack> (
-    [] (EngineState &) { }, [] (EngineState &) { });
+    [] (EngineState &) { }, [] (EngineState &, bool) { });
 }
 }

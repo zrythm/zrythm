@@ -75,6 +75,8 @@ public:
     Marker,
     AutomationPoint,
     AudioSourceObject,
+    TempoObject,
+    TimeSignatureObject
   };
   Q_ENUM (Type)
 

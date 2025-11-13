@@ -420,4 +420,108 @@ TEST_F (SnapGridTest, NoteLengthTypeProperties)
   EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq () * 2.0 / 3.0);
 }
 
+// Test that demonstrates the bug: snap points don't respect time signature
+// changes
+TEST_F (SnapGridTest, SnapPointsRespectTimeSignatureChanges)
+{
+  // Set up time signature change: 4/4 for first 2 bars, then 3/4
+  // Bar 1: ticks 0-3839 (4/4)
+  // Bar 2: ticks 3840-7679 (4/4)
+  // Bar 3 onwards: ticks 7680-10559 (3/4)
+  tempo_map->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map->add_time_signature_event (units::ticks (7680), 3, 4);
+
+  snap_grid->setSnapAdaptive (false);
+  snap_grid->setSnapToGrid (true);
+  snap_grid->setSnapNoteLength (utils::NoteLength::Beat);
+  snap_grid->setSnapNoteType (utils::NoteType::Normal);
+
+  // In 4/4 time: each beat is 960 ticks
+  // In 3/4 time: each beat is also 960 ticks (same denominator)
+  // But bar boundaries are different: 4/4 = 3840 ticks/bar, 3/4 = 2880 ticks/bar
+
+  // Test before time signature change - should snap to beat 0, 960, 1920, 2880,
+  // 3840
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (0), 960);
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (500), 960);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (500), 0);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (960), 960);
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (960), 1920);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (1920), 1920);
+
+  // Test at bar boundary (tick 3840) - should snap to beat 4 of bar 2
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (3840), 4800); // 3840 + 960
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (3840), 3840); // 3840
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (3839), 2880); // 3840 - 960
+
+  // Test across time signature change at tick 7680
+  // At tick 7680, we're at the start of a 3/4 bar
+  // The next beat should be at 8640 (7680 + 960)
+  // The previous beat should be at 6720 (7680 - 960)
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (7680), 8640);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (7680), 7680);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (7679), 6720);
+
+  // Test within the 3/4 section - should still snap to proper beat boundaries
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (8000), 8640);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (8000), 7680);
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (8640), 9600);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (8640), 8640);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (8639), 7680);
+
+  // Test at the end of the 3/4 bar (tick 10560)
+  // Bar 3: 7680-10559 (3 beats: 7680, 8640, 9600)
+  // Next bar starts at 10560
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (9600), 10560); // Next bar start
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (10560), 10560);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (10559), 9600); // Previous beat
+}
+
+// Test that demonstrates the bug with more complex time signature changes
+TEST_F (SnapGridTest, SnapPointsWithComplexTimeSignatureChanges)
+{
+  // Set up: 4/4 for 1 bar, then 6/8 for 2 bars, then 5/4
+  // 4/4: 4 quarter notes per bar = 3840 ticks/bar, 960 ticks/beat
+  // 6/8: 6 eighth notes per bar = 2880 ticks/bar, 480 ticks/beat (eighth note
+  // gets the beat) 5/4: 5 quarter notes per bar = 4800 ticks/bar, 960 ticks/beat
+
+  tempo_map->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map->add_time_signature_event (units::ticks (3840), 6, 8);
+  tempo_map->add_time_signature_event (
+    units::ticks (3840 + 5760), 5, 4); // 3840 + 2*2880
+
+  snap_grid->setSnapAdaptive (false);
+  snap_grid->setSnapToGrid (true);
+  snap_grid->setSnapNoteLength (utils::NoteLength::Beat);
+  snap_grid->setSnapNoteType (utils::NoteType::Normal);
+
+  // Test in 4/4 section - beats at 0, 960, 1920, 2880
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (0), 960);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (1000), 960);
+
+  // Test at 4/4 to 6/8 transition at tick 3840
+  // In 6/8, beats are at 3840, 4320, 4800, 5280, 5760, 6240 (every 480 ticks)
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (3840), 4320);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (3840), 3840);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->prevSnapPoint (3839), 2880); // Last beat of previous 4/4 bar
+
+  // Test within 6/8 section
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (4000), 4320);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (4000), 3840);
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (4320), 4800);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (4320), 4320);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (4319), 3840);
+
+  // Test at 6/8 to 5/4 transition
+  // 6/8 section: 3840-9599 (2 bars * 2880 ticks/bar)
+  // 5/4 section starts at 9600
+  // In 5/4, beats are at 9600, 10560, 11520, 12480, 13440 (every 960 ticks)
+  EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (9600), 10560);
+  EXPECT_DOUBLE_EQ (snap_grid->prevSnapPoint (9600), 9600);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->prevSnapPoint (9599),
+    9120); // Last beat of 6/8 section (3840 + 5760 + 480)
+}
+
 } // namespace zrythm::dsp

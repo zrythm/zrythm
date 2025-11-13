@@ -6,6 +6,7 @@ add_executable(zrythm_actions_unit_tests
   arranger_object_selection_operator_test.h
   arranger_object_selection_operator_test.cpp
   mock_undo_stack.h
+  qobject_property_operator_test.cpp
   parameter_operator_test.cpp
   track_creator_test.cpp
   track_operator_test.cpp

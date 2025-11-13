@@ -19,7 +19,10 @@ Item {
   readonly property real detailMeasureLabelPxThreshold: 64 // threshold to show/hide labels for more detailed measures
   readonly property real detailMeasurePxThreshold: 32 // threshold to show/hide more detailed measures
   required property EditorSettings editorSettings
-  readonly property int endBar: tempoMap.getMusicalPosition(visibleEndTick).bar + 1 // +1 for padding
+  readonly property int endBar: {
+    root.tempoMapChangedFlag; // binding
+    return tempoMap.getMusicalPosition(visibleEndTick).bar + 1; // +1 for padding
+  }
   readonly property int markerSize: 8
   readonly property int maxBars: 256
   readonly property real maxZoomLevel: 1800
@@ -29,11 +32,15 @@ Item {
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
   readonly property real pxPerTick: defaultPxPerTick * editorSettings.horizontalZoomLevel
   property ArrangerObject region: null
-  property Track track: null
   readonly property real sixteenthLineOpacity: 0.4
-  readonly property int startBar: tempoMap.getMusicalPosition(visibleStartTick).bar
+  readonly property int startBar: {
+    tempoMapChangedFlag; // binding
+    return tempoMap.getMusicalPosition(visibleStartTick).bar;
+  }
   required property TempoMap tempoMap
+  property bool tempoMapChangedFlag: false
   readonly property real ticksPerSixteenth: tempoMap.getPpq() / 4
+  property Track track: null
   required property Transport transport
   readonly property int visibleBarCount: endBar - startBar + 1
   readonly property real visibleEndTick: visibleStartTick + (parent.width / pxPerTick)
@@ -42,6 +49,14 @@ Item {
   clip: true
   implicitHeight: 24
   implicitWidth: 64
+
+  Connections {
+    function onTimeSignatureEventsChanged() {
+      root.tempoMapChangedFlag = !root.tempoMapChangedFlag;
+    }
+
+    target: root.tempoMap
+  }
 
   ScrollView {
     id: scrollView
@@ -77,7 +92,10 @@ Item {
           required property int index
 
           Rectangle {
-            readonly property int barTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
+            readonly property int barTick: {
+              root.tempoMapChangedFlag; // binding
+              return root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0);
+            }
 
             color: root.palette.text
             height: 14 // parent.height / 3
@@ -102,13 +120,19 @@ Item {
             visible: active
 
             sourceComponent: Repeater {
-              model: root.tempoMap.timeSignatureNumeratorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0))
+              model: {
+                root.tempoMapChangedFlag; // binding
+                return root.tempoMap.timeSignatureNumeratorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0));
+              }
 
               delegate: Item {
                 id: beatItem
 
                 readonly property int beat: index + 1
-                readonly property int beatTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
+                readonly property int beatTick: {
+                  root.tempoMapChangedFlag; // binding
+                  return root.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0);
+                }
                 required property int index
 
                 Rectangle {
@@ -135,14 +159,20 @@ Item {
                   visible: active
 
                   sourceComponent: Repeater {
-                    model: 16 / root.tempoMap.timeSignatureDenominatorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0))
+                    model: {
+                      root.tempoMapChangedFlag; // binding
+                      return 16 / root.tempoMap.timeSignatureDenominatorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0));
+                    }
 
                     Rectangle {
                       id: sixteenthRect
 
                       required property int index
                       readonly property int sixteenth: index + 1
-                      readonly property int sixteenthTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
+                      readonly property int sixteenthTick: {
+                        root.tempoMapChangedFlag; // binding
+                        return root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0);
+                      }
 
                       color: root.palette.text
                       height: 8

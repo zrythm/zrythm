@@ -34,6 +34,9 @@ target_sources(zrythm_arrangement_lib
     piano_roll.cpp
     region_renderer.cpp
     scale_object.cpp
+    tempo_object.cpp
+    tempo_object_manager.cpp
+    time_signature_object.cpp
     timeline.cpp
     timeline_data_provider.cpp
   PUBLIC
@@ -68,6 +71,9 @@ target_sources(zrythm_arrangement_lib
       piano_roll.h
       region_renderer.h
       scale_object.h
+      tempo_object.h
+      tempo_object_manager.h
+      time_signature_object.h
       timeline.h
       timeline_data_provider.h
 )

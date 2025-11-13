@@ -29,12 +29,12 @@ Arranger {
     return midiNote;
   }
 
-  function getObjectY(obj: MidiNote): real {
-    return getYAtPitch(obj.pitch);
-  }
-
   function getObjectHeight(obj: MidiNote): real {
     return root.pianoRoll.keyHeight; // Height of MIDI notes
+  }
+
+  function getObjectY(obj: MidiNote): real {
+    return getYAtPitch(obj.pitch);
   }
 
   function getPitchAtY(y: real): int {
@@ -101,6 +101,7 @@ Arranger {
           arrangerObject: midiNoteLoader.arrangerObject
           isSelected: midiNoteLoader.selectionTracker.isSelected
           track: root.track
+          undoStack: root.undoStack
 
           onHoveredChanged: {
             root.handleObjectHover(midiNoteView.hovered, midiNoteView);

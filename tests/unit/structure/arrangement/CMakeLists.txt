@@ -27,6 +27,9 @@ add_executable(zrythm_structure_arrangement_unit_tests
   muteable_object_test.cpp
   named_object_test.cpp
   scale_object_test.cpp
+  tempo_object_test.cpp
+  tempo_object_manager_test.cpp
+  time_signature_object_test.cpp
   timeline_data_provider_test.cpp
 )
 

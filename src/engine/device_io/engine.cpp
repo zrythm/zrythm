@@ -672,6 +672,16 @@ AudioEngine::process (const nframes_t total_frames_to_process)
   AtomicBoolRAII cycle_running (cycle_running_);
   SemaphoreRAII  port_operation_sem (port_operation_lock_);
 
+  z_return_val_if_fail (
+    total_frames_to_process > 0, ProcessReturnStatus::ProcessFailed);
+
+  if (!run_.load ()) [[unlikely]]
+    {
+      // z_info ("skipping processing...");
+      clear_output_buffers (total_frames_to_process);
+      return ProcessReturnStatus::ProcessSkipped;
+    }
+
   // We create a temporary ITransport snapshot and inject it here (graph
   // nodes will use this instead of the main Transport instance, thus
   // avoiding the need to synchronize access to it)
@@ -688,16 +698,6 @@ AudioEngine::process (const nframes_t total_frames_to_process)
       project_->getTransport ()->consume_recording_preroll_samples (samples);
       current_transport_state.consume_recording_preroll_samples (samples);
     };
-
-  z_return_val_if_fail (
-    total_frames_to_process > 0, ProcessReturnStatus::ProcessFailed);
-
-  if (!run_.load ()) [[unlikely]]
-    {
-      // z_info ("skipping processing...");
-      clear_output_buffers (total_frames_to_process);
-      return ProcessReturnStatus::ProcessSkipped;
-    }
 
   /* run pre-process code */
   bool skip_cycle = process_prepare (

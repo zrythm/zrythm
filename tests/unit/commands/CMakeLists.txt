@@ -5,6 +5,7 @@ add_executable(zrythm_commands_unit_tests
   add_arranger_object_command_test.cpp
   add_region_to_clip_slot_command_test.cpp
   add_track_command_test.cpp
+  change_qobject_property_command_test.cpp
   change_parameter_value_command_test.cpp
   change_track_color_command_test.cpp
   move_arranger_objects_command_test.cpp

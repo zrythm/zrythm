@@ -6,9 +6,10 @@
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/chord_object.h"
 
+#include <QSignalSpy>
+
 #include "helpers/mock_qobject.h"
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 namespace zrythm::structure::arrangement
@@ -45,31 +46,28 @@ TEST_F (ChordObjectTest, ChordDescriptorIndex)
   EXPECT_EQ (chord_obj->chordDescriptorIndex (), 3);
 
   // Set same index (should be no-op)
-  testing::MockFunction<void (int)> mockIndexChanged;
-  QObject::connect (
-    chord_obj.get (), &ChordObject::chordDescriptorIndexChanged, parent.get (),
-    mockIndexChanged.AsStdFunction ());
-
-  EXPECT_CALL (mockIndexChanged, Call (3)).Times (0);
+  QSignalSpy spy (chord_obj.get (), &ChordObject::chordDescriptorIndexChanged);
   chord_obj->setChordDescriptorIndex (3);
+  EXPECT_EQ (spy.count (), 0);
 }
 
 // Test chordDescriptorIndexChanged signal
 TEST_F (ChordObjectTest, ChordDescriptorIndexChangedSignal)
 {
-  // Setup signal watcher
-  testing::MockFunction<void (int)> mockIndexChanged;
-  QObject::connect (
-    chord_obj.get (), &ChordObject::chordDescriptorIndexChanged, parent.get (),
-    mockIndexChanged.AsStdFunction ());
+  // Setup signal spy
+  QSignalSpy spy (chord_obj.get (), &ChordObject::chordDescriptorIndexChanged);
 
   // First set
-  EXPECT_CALL (mockIndexChanged, Call (2)).Times (1);
   chord_obj->setChordDescriptorIndex (2);
+  EXPECT_EQ (spy.count (), 1);
+  QList<QVariant> arguments = spy.takeFirst ();
+  EXPECT_EQ (arguments.at (0).toInt (), 2);
 
   // Change index
-  EXPECT_CALL (mockIndexChanged, Call (4)).Times (1);
   chord_obj->setChordDescriptorIndex (4);
+  EXPECT_EQ (spy.count (), 1);
+  arguments = spy.takeFirst ();
+  EXPECT_EQ (arguments.at (0).toInt (), 4);
 }
 
 // Test mute functionality

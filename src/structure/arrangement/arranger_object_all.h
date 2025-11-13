@@ -12,6 +12,8 @@
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/scale_object.h"
+#include "structure/arrangement/tempo_object.h"
+#include "structure/arrangement/time_signature_object.h"
 
 namespace zrythm::structure::arrangement
 {

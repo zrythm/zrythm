@@ -33,12 +33,12 @@ Arranger {
     return 1.0 - y / root.height;
   }
 
-  function getObjectY(obj: AutomationPoint): real {
-    return getYAtNormalizedValue(obj.value);
-  }
-
   function getObjectHeight(obj: AutomationPoint): real {
     return 2 * Style.buttonPadding; // Height of automation points
+  }
+
+  function getObjectY(obj: AutomationPoint): real {
+    return getYAtNormalizedValue(obj.value);
   }
 
   function getYAtNormalizedValue(normalizedValue: real): real {
@@ -99,6 +99,7 @@ Arranger {
           arrangerObject: automationPointLoader.arrangerObject
           isSelected: automationPointLoader.selectionTracker.isSelected
           track: root.clipEditor.track
+          undoStack: root.undoStack
 
           onHoveredChanged: {
             root.handleObjectHover(automationPointView.hovered, automationPointView);

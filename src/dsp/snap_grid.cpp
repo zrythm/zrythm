@@ -28,15 +28,16 @@ SnapGrid::get_ticks_from_length_and_type (
   int               ticks_per_bar,
   int               ticks_per_beat)
 {
+  assert (ticks_per_beat > 0);
+  assert (ticks_per_bar > 0);
+
   int ticks = 0;
   switch (length)
     {
     case utils::NoteLength::Bar:
-      z_return_val_if_fail (ticks_per_bar > 0, -1);
       ticks = ticks_per_bar;
       break;
     case utils::NoteLength::Beat:
-      z_return_val_if_fail (ticks_per_beat > 0, -1);
       ticks = ticks_per_beat;
       break;
     case utils::NoteLength::Note_2_1:
@@ -76,12 +77,12 @@ SnapGrid::get_ticks_from_length_and_type (
       break;
     case utils::NoteType::Dotted:
       ticks = 3 * ticks;
-      z_return_val_if_fail (ticks % 2 == 0, -1);
+      assert (ticks % 2 == 0);
       ticks = ticks / 2;
       break;
     case utils::NoteType::Triplet:
       ticks = 2 * ticks;
-      z_return_val_if_fail (ticks % 3 == 0, -1);
+      assert (ticks % 3 == 0);
       ticks = ticks / 3;
       break;
     }
@@ -92,32 +93,13 @@ SnapGrid::get_ticks_from_length_and_type (
 double
 SnapGrid::snapTicks (int64_t ticks) const
 {
-  if (snap_adaptive_)
-    {
-      if (sixteenths_visible_)
-        {
-          return get_ticks_from_length_and_type (
-            utils::NoteLength::Note_1_16, snap_note_type_,
-            TempoMap::get_ppq () * 4, TempoMap::get_ppq ());
-        }
-      if (beats_visible_)
-        {
-          return get_ticks_from_length_and_type (
-            utils::NoteLength::Beat, snap_note_type_, TempoMap::get_ppq () * 4,
-            TempoMap::get_ppq ());
-        }
-
-      return get_ticks_from_length_and_type (
-        utils::NoteLength::Bar, snap_note_type_, TempoMap::get_ppq () * 4,
-        TempoMap::get_ppq ());
-    }
-
   auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
-  int  ticks_per_bar = time_sig.ticks_per_bar ().in (units::ticks);
-  int  ticks_per_beat = ticks_per_bar / time_sig.numerator;
+  auto ticks_per_bar = time_sig.ticks_per_bar ().in (units::ticks);
+  auto ticks_per_beat = ticks_per_bar / time_sig.numerator;
 
+  const auto length = get_effective_note_length ();
   return get_ticks_from_length_and_type (
-    snap_note_length_, snap_note_type_, ticks_per_bar, ticks_per_beat);
+    length, snap_note_type_, ticks_per_bar, ticks_per_beat);
 }
 
 double
@@ -193,8 +175,13 @@ SnapGrid::get_prev_or_next_snap_point (
   // Grid snapping
   if (snap_to_grid_)
     {
-      double snap_ticks = snapTicks (static_cast<int64_t> (out_ticks));
-      double ticks_from_prev = std::fmod (pivot_ticks, snap_ticks);
+      const auto pivot_ticks_rounded =
+        units::ticks (static_cast<int64_t> (std::round (pivot_ticks)));
+      const auto time_signature_at_pivot_ticks =
+        tempo_map_.time_signature_at_tick (pivot_ticks_rounded);
+
+      const double snap_ticks = snapTicks (static_cast<int64_t> (out_ticks));
+      const double ticks_from_prev = std::fmod (pivot_ticks, snap_ticks);
       if (get_prev_point)
         {
           out_ticks = pivot_ticks - ticks_from_prev;
@@ -202,6 +189,17 @@ SnapGrid::get_prev_or_next_snap_point (
       else
         {
           out_ticks = pivot_ticks + (snap_ticks - ticks_from_prev);
+        }
+
+      const auto out_ticks_rounded =
+        units::ticks (static_cast<int64_t> (std::round (out_ticks)));
+      const auto time_signature_after =
+        tempo_map_.time_signature_at_tick (out_ticks_rounded);
+      if (time_signature_after.is_different_time_signature (
+            time_signature_at_pivot_ticks))
+        {
+          // Always snap at boundary of time signature changes
+          out_ticks = std::round (time_signature_after.tick.in (units::ticks));
         }
       snapped = true;
     }

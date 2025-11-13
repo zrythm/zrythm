@@ -4,15 +4,12 @@
 #pragma once
 
 #include "dsp/parameter.h"
-#include "utils/monotonic_time_provider.h"
 
 #include <QUndoCommand>
 
 namespace zrythm::commands
 {
-class ChangeParameterValueCommand
-    : public QUndoCommand,
-      public utils::QElapsedTimeProvider
+class ChangeParameterValueCommand : public QUndoCommand
 {
 
 public:

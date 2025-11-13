@@ -172,15 +172,21 @@ ColumnLayout {
               id: tempoMapArranger
 
               anchors.fill: parent
+              arrangerSelectionModel: arrangerSelectionModel
               clipEditor: root.project.clipEditor
               editorSettings: root.project.timeline.editorSettings
               laneHeight: root.tempoMapLaneHeight
               laneSpacing: root.tempoMapLaneSpacing
               objectCreator: root.project.arrangerObjectCreator
               ruler: ruler
+              selectionOperator: timelinePane.selectionOperator
+              snapGrid: root.project.snapGridTimeline
               tempoMap: root.project.tempoMap
+              tempoObjectManager: root.project.tempoObjectManager
               tool: root.project.tool
               transport: root.project.transport
+              undoStack: root.project.undoStack
+              unifiedObjectsModel: unifiedObjectsModel
             }
           }
 

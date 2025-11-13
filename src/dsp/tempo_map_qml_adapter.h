@@ -152,12 +152,13 @@ public:
     Q_EMIT sampleRateChanged ();
   }
 
-  Q_INVOKABLE void addTempoEvent (qint64 tick, double bpm, int curveType)
+  Q_INVOKABLE void
+  addTempoEvent (qint64 tick, double bpm, TempoEventWrapper::CurveType curveType)
   {
     tempo_map_.add_tempo_event (
       units::ticks (tick), bpm, static_cast<TempoMap::CurveType> (curveType));
-    Q_EMIT tempoEventsChanged ();
     rebuildTempoWrappers ();
+    Q_EMIT tempoEventsChanged ();
   }
 
   Q_INVOKABLE void
@@ -165,8 +166,22 @@ public:
   {
     tempo_map_.add_time_signature_event (
       units::ticks (tick), numerator, denominator);
-    Q_EMIT timeSignatureEventsChanged ();
     rebuildTimeSigWrappers ();
+    Q_EMIT timeSignatureEventsChanged ();
+  }
+
+  Q_INVOKABLE void clearTempoEvents ()
+  {
+    tempo_map_.clear_tempo_events ();
+    rebuildTempoWrappers ();
+    Q_EMIT tempoEventsChanged ();
+  }
+
+  Q_INVOKABLE void clearTimeSignatureEvents ()
+  {
+    tempo_map_.clear_time_signature_events ();
+    rebuildTimeSigWrappers ();
+    Q_EMIT timeSignatureEventsChanged ();
   }
 
   Q_INVOKABLE MusicalPositionWrapper * getMusicalPosition (int64_t tick) const

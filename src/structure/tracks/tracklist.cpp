@@ -152,12 +152,11 @@ Tracklist::getTrackForTimelineObject (
         // infrastructure
         break;
       }
+    // Special objects that may not be directly owned by a track
     case arrangement::ArrangerObject::Type::AudioSourceObject:
-      {
-        // Audio source objects are special and may not be directly owned by a
-        // track
-        break;
-      }
+    case arrangement::ArrangerObject::Type::TimeSignatureObject:
+    case arrangement::ArrangerObject::Type::TempoObject:
+      break;
     }
   return nullptr;
 }

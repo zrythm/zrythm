@@ -264,7 +264,7 @@ public:
         {
           if constexpr (std::is_same_v<ObjT, AutomationPoint>)
             {
-              obj->setValue (*automatable_value_);
+              obj->setValue (static_cast<float> (*automatable_value_));
             }
         }
 

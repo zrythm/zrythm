@@ -199,6 +199,22 @@ private:
   std::vector<double>
   get_event_snap_points (double start_ticks, double end_ticks) const;
 
+  /**
+   * @brief Returns the currently active note length.
+   *
+   * If adaptive snap is turned on, it calculates the corresponding note length,
+   * otherwise returns the specified note length as-is.
+   */
+  utils::NoteLength get_effective_note_length () const
+  {
+    return snap_adaptive_
+             ? (sixteenths_visible_
+                  ? utils::NoteLength::Note_1_16
+                  : (beats_visible_ ? utils::NoteLength::Beat : utils::NoteLength::Bar))
+             : snap_note_length_;
+  }
+
+private:
   bool              snap_adaptive_ = false;
   utils::NoteLength snap_note_length_{ utils::NoteLength::Note_1_4 };
   utils::NoteType   snap_note_type_{ utils::NoteType::Normal };

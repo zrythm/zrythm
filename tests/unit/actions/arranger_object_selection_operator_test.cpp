@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_object_selection_operator.h"
+#include "commands/move_arranger_objects_command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
@@ -33,6 +34,10 @@ protected:
       structure::arrangement::AudioRegion> (
       *tempo_map, object_registry, file_audio_source_registry,
       [] () { return true; });
+    tempo_ref = object_registry.create_object<
+      structure::arrangement::TempoObject> (*tempo_map);
+    time_signature_ref = object_registry.create_object<
+      structure::arrangement::TimeSignatureObject> (*tempo_map);
 
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (marker_ref);
@@ -42,12 +47,18 @@ protected:
       .push_back (midi_region_ref);
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (audio_region_ref);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (tempo_ref);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (time_signature_ref);
 
     // Store original positions and set initial values for testing
     marker_ref.get_object_base ()->position ()->setTicks (0.0);
     note_ref.get_object_base ()->position ()->setTicks (1000.0);
     midi_region_ref.get_object_base ()->position ()->setTicks (2000.0);
     audio_region_ref.get_object_base ()->position ()->setTicks (3000.0);
+    tempo_ref.get_object_base ()->position ()->setTicks (4000.0);
+    time_signature_ref.get_object_base ()->position ()->setTicks (5000.0);
 
     // Set initial length for resize tests
     note_ref.get_object_as<structure::arrangement::MidiNote> ()
@@ -83,6 +94,10 @@ protected:
       midi_region_ref.get_object_base ()->position ()->ticks ());
     original_positions_.push_back (
       audio_region_ref.get_object_base ()->position ()->ticks ());
+    original_positions_.push_back (
+      tempo_ref.get_object_base ()->position ()->ticks ());
+    original_positions_.push_back (
+      time_signature_ref.get_object_base ()->position ()->ticks ());
 
     // Create undo stack
     undo_stack_ = create_mock_undo_stack ();
@@ -103,6 +118,11 @@ protected:
       structure::arrangement::MidiRegion>::add_object (midi_region_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::AudioRegion>::add_object (audio_region_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::TempoObject>::add_object (tempo_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::TimeSignatureObject>::
+      add_object (time_signature_ref);
 
     // Create mock object owner provider that returns our mock owner
     auto mock_owner_provider =
@@ -142,6 +162,19 @@ protected:
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 structure::arrangement::AutomationPoint> *> (mock_owner_.get ());
             }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::TempoObject>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::TempoObject> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::TimeSignatureObject>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::TimeSignatureObject> *> (
+                mock_owner_.get ());
+            }
           return static_cast<
             structure::arrangement::ArrangerObjectOwner<ObjectT> *> (nullptr);
         },
@@ -151,12 +184,6 @@ protected:
     // Create operator
     operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
       *undo_stack_, *selection_model_, mock_owner_provider);
-
-    // Select first two objects (marker and note) for movement tests
-    selection_model_->select (
-      list_model_.index (0, 0), QItemSelectionModel::Select);
-    selection_model_->select (
-      list_model_.index (1, 0), QItemSelectionModel::Select);
   }
 
   std::unique_ptr<dsp::TempoMap>                 tempo_map;
@@ -181,6 +208,12 @@ protected:
   structure::arrangement::ArrangerObjectUuidReference midi_region_ref{
     object_registry
   };
+  structure::arrangement::ArrangerObjectUuidReference tempo_ref{
+    object_registry
+  };
+  structure::arrangement::ArrangerObjectUuidReference time_signature_ref{
+    object_registry
+  };
 };
 
 // Test initial state after construction
@@ -192,6 +225,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, InitialState)
 // Test moveByTicks with positive delta
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 {
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   const double tick_delta = 100.0;
 
   bool result = operator_->moveByTicks (tick_delta);
@@ -218,6 +257,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 // Test moveByTicks with negative delta
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 {
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   // Move objects to position 100 first to allow negative movement
   for (const auto &obj_ref : test_objects_)
     {
@@ -251,6 +296,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 // Test moveByTicks with zero delta (no-op)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
 {
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   bool result = operator_->moveByTicks (0.0);
   EXPECT_TRUE (result);
 
@@ -320,6 +371,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
 // Test undo/redo functionality
 TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
 {
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   const double tick_delta = 100.0;
 
   // Move objects
@@ -376,6 +433,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
 // Test moveNotesByPitch functionality
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
 {
+  // Select note for testing
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   const int pitch_delta = 5;
 
   // Store original pitch for MIDI note
@@ -469,7 +530,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
 
   // Update list model and select automation point
   selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
+    list_model_.index (6, 0), QItemSelectionModel::Select);
 
   const double delta = 0.2;
 
@@ -515,6 +576,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchNoSelection)
 // Test moveNotesByPitch with zero delta (no-op)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
 {
+  // Select note for testing
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   bool result = operator_->moveNotesByPitch (0);
   EXPECT_TRUE (result);
 
@@ -525,6 +590,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
 // Test moveNotesByPitch with invalid pitch (out of range)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
 {
+  // Select note for testing
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   // Find MIDI note and set its pitch to 125 (close to max)
   int original_pitch = 0;
   for (const auto &obj_ref : test_objects_)
@@ -583,6 +652,26 @@ TEST_F (
 // Test moveAutomationPointsByDelta with zero delta (no-op)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelta)
 {
+  // Create an automation point with value 0.9
+  auto automation_point_ref = object_registry.create_object<
+    structure::arrangement::AutomationPoint> (*tempo_map);
+
+  automation_point_ref
+    .get_object_as<structure::arrangement::AutomationPoint> ()
+    ->setValue (0.9f);
+
+  // Add to test objects and select it
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    automation_point_ref);
+
+  // Add to mock owner as well
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
+
+  // Update list model and select automation point
+  selection_model_->select (
+    list_model_.index (6, 0), QItemSelectionModel::Select);
+
   bool result = operator_->moveAutomationPointsByDelta (0.0);
   EXPECT_TRUE (result);
 
@@ -613,7 +702,7 @@ TEST_F (
 
   // Update list model and select automation point
   selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
+    list_model_.index (6, 0), QItemSelectionModel::Select);
 
   // Try to move by 0.2 (would result in value 1.1, which is out of range)
   bool result = operator_->moveAutomationPointsByDelta (0.2);
@@ -631,6 +720,12 @@ TEST_F (
 // Test deleteObjects with valid selection
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
 {
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
 
@@ -725,9 +820,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
   mock_owner_->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::Marker>::add_object (start_marker_ref);
 
-  // Update selection to include all objects
+  // Update selection to include multiple objects
   selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (6, 0), QItemSelectionModel::Select);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -743,6 +842,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
 // Test deleteObjects undo/redo functionality
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
 {
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
   // Store the UUIDs of the selected objects (marker and note)
   const auto marker_id = marker_ref.id ();
   const auto note_id = note_ref.id ();
@@ -1114,6 +1219,219 @@ TEST_F (
 
   // Length should remain unchanged
   EXPECT_DOUBLE_EQ (midi_region_obj->bounds ()->length ()->ticks (), 100.0);
+}
+
+// Test moveByTicks with TempoObject - should create
+// MoveTempoMapAffectingArrangerObjectsCommand
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTempoObject)
+{
+  // Clear selection and only select tempo object
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (4, 0), QItemSelectionModel::Select); // Tempo object
+
+  const double tick_delta = 100.0;
+
+  bool result = operator_->moveByTicks (tick_delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
+  const auto * cmd = undo_stack_->command (0);
+  EXPECT_EQ (
+    cmd->id (),
+    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+
+  // Verify tempo object was moved
+  if (auto * tempo_obj = tempo_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        tempo_obj->position ()->ticks (), original_positions_[4] + tick_delta);
+    }
+}
+
+// Test moveByTicks with TimeSignatureObject at valid bar boundary
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTimeSignatureObjectValid)
+{
+  // Clear selection and only select time signature object
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (5, 0),
+    QItemSelectionModel::Select); // Time signature object
+
+  // Set time signature to position 0 (bar boundary)
+  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+
+  const double tick_delta = 3840.0; // Move to next bar (assuming 4/4, 120 BPM)
+
+  bool result = operator_->moveByTicks (tick_delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
+  const auto * cmd = undo_stack_->command (0);
+  EXPECT_EQ (
+    cmd->id (),
+    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+
+  // Verify time signature object was moved
+  if (auto * ts_obj = time_signature_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), tick_delta);
+    }
+}
+
+// Test moveByTicks with TimeSignatureObject at invalid position (not bar
+// boundary)
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  MoveByTicksTimeSignatureObjectInvalid)
+{
+  // Clear selection and only select time signature object
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (5, 0),
+    QItemSelectionModel::Select); // Time signature object
+
+  // Set time signature to position 0 (bar boundary)
+  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+
+  const double tick_delta = 100.0; // Move to non-bar boundary position
+
+  bool result = operator_->moveByTicks (tick_delta);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed for invalid movement
+  EXPECT_EQ (undo_stack_->index (), 0);
+
+  // Verify time signature object was not moved
+  if (auto * ts_obj = time_signature_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), 0.0);
+    }
+}
+
+// Test moveByTicks with mixed selection including tempo map affecting objects
+TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksMixedWithTempoObjects)
+{
+  // Clear selection and select regular object + tempo object
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
+  selection_model_->select (
+    list_model_.index (4, 0), QItemSelectionModel::Select); // Tempo object
+
+  const double tick_delta = 100.0;
+
+  bool result = operator_->moveByTicks (tick_delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
+  // (because tempo object is in selection)
+  const auto * cmd = undo_stack_->command (0);
+  EXPECT_EQ (
+    cmd->id (),
+    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+
+  // Verify both objects were moved
+  if (auto * marker_obj = marker_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
+    }
+  if (auto * tempo_obj = tempo_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        tempo_obj->position ()->ticks (), original_positions_[4] + tick_delta);
+    }
+}
+
+// Test moveByTicks with mixed selection including time signature object at
+// valid position
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  MoveByTicksMixedWithTimeSignatureValid)
+{
+  // Clear selection and select regular object + time signature object
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
+  selection_model_->select (
+    list_model_.index (5, 0),
+    QItemSelectionModel::Select); // Time signature object
+
+  // Set time signature to position 0 (bar boundary)
+  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+
+  const double tick_delta = 3840.0; // Move to next bar
+
+  bool result = operator_->moveByTicks (tick_delta);
+  EXPECT_TRUE (result);
+
+  // Check that command was pushed to undo stack
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
+  // (because time signature object is in selection)
+  const auto * cmd = undo_stack_->command (0);
+  EXPECT_EQ (
+    cmd->id (),
+    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+
+  // Verify both objects were moved
+  if (auto * marker_obj = marker_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
+    }
+  if (auto * ts_obj = time_signature_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), tick_delta);
+    }
+}
+
+// Test moveByTicks with mixed selection including time signature object at
+// invalid position
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  MoveByTicksMixedWithTimeSignatureInvalid)
+{
+  // Clear selection and select regular object + time signature object
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
+  selection_model_->select (
+    list_model_.index (5, 0),
+    QItemSelectionModel::Select); // Time signature object
+
+  // Set time signature to position 0 (bar boundary)
+  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+
+  const double tick_delta = 100.0; // Move to non-bar boundary position
+
+  bool result = operator_->moveByTicks (tick_delta);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed for invalid movement
+  EXPECT_EQ (undo_stack_->index (), 0);
+
+  // Verify neither object was moved
+  if (auto * marker_obj = marker_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (
+        marker_obj->position ()->ticks (), original_positions_[0]);
+    }
+  if (auto * ts_obj = time_signature_ref.get_object_base ())
+    {
+      EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), 0.0);
+    }
 }
 
 } // namespace zrythm::actions

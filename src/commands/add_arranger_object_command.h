@@ -33,4 +33,20 @@ private:
   structure::arrangement::ArrangerObjectUuidReference   object_ref_;
 };
 
+/**
+ * @brief Specialization of AddArrangerObjectCommand with a custom ID to be used
+ * for special handling by the undo stack (for example to require the engine to
+ * be stopped).
+ */
+template <structure::arrangement::FinalArrangerObjectSubclass ObjectT>
+class AddTempoMapAffectingArrangerObjectCommand
+    : public AddArrangerObjectCommand<ObjectT>
+{
+public:
+  static constexpr auto CommandId = 1762954668;
+  using AddArrangerObjectCommand<ObjectT>::AddArrangerObjectCommand;
+
+  int id () const override { return CommandId; }
+};
+
 } // namespace zrythm::commands

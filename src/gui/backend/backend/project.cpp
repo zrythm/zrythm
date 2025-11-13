@@ -141,8 +141,11 @@ Project::Project (
           [&] (EngineState &state) {
             audio_engine_->wait_for_pause (state, false, true);
           },
-          [&] (EngineState &state) {
-            audio_engine_->router_->recalc_graph (false);
+          [&] (EngineState &state, bool recalculate_graph) {
+            if (recalculate_graph)
+              {
+                audio_engine_->router_->recalc_graph (false);
+              }
             audio_engine_->resume (state);
           },
           this)),
@@ -232,6 +235,11 @@ Project::Project (
       plugin_selection_manager_ (
         utils::make_qobject_unique<
           gui::backend::PluginSelectionManager> (*plugin_registry_, this)),
+      tempo_object_manager_ (
+        utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
+          *arranger_object_registry_,
+          *file_audio_source_registry_,
+          this)),
       device_manager_ (device_manager)
 {
   const auto setup_metronome = [&] () {
@@ -389,6 +397,41 @@ Project::Project (
           tracks_rt_.erase (track_id);
         }
     });
+
+  // Sync changes from tempo-related arranger objects to tempo map
+  const auto rebuild_tempo_map = [this] () {
+    // This must never be called while the engine is running
+    assert (!audio_engine_->run_.load ());
+
+    tempo_map_wrapper_->clearTimeSignatureEvents ();
+    tempo_map_wrapper_->clearTempoEvents ();
+    for (
+      const auto * tempo_obj :
+      tempo_object_manager_->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::TimeSignatureObject>::get_sorted_children_view ())
+      {
+        tempo_map_wrapper_->addTimeSignatureEvent (
+          static_cast<int64_t> (std::round (tempo_obj->position ()->ticks ())),
+          tempo_obj->numerator (), tempo_obj->denominator ());
+      }
+    for (
+      const auto * tempo_obj :
+      tempo_object_manager_->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::TempoObject>::get_sorted_children_view ())
+      {
+        tempo_map_wrapper_->addTempoEvent (
+          static_cast<int64_t> (std::round (tempo_obj->position ()->ticks ())),
+          tempo_obj->tempo (), tempo_obj->curve ());
+      }
+  };
+  QObject::connect (
+    tempo_object_manager_->tempoObjects (),
+    &structure::arrangement::ArrangerObjectListModel::contentChanged,
+    tempo_map_wrapper_.get (), rebuild_tempo_map);
+  QObject::connect (
+    tempo_object_manager_->timeSignatureObjects (),
+    &structure::arrangement::ArrangerObjectListModel::contentChanged,
+    tempo_map_wrapper_.get (), rebuild_tempo_map);
 }
 
 Project::~Project ()
@@ -1601,6 +1644,12 @@ Project::getTempoMap () const
   return tempo_map_wrapper_.get ();
 }
 
+structure::arrangement::TempoObjectManager *
+Project::tempoObjectManager () const
+{
+  return tempo_object_manager_.get ();
+}
+
 dsp::SnapGrid *
 Project::snapGridTimeline () const
 {
@@ -1710,6 +1759,7 @@ to_json (nlohmann::json &j, const Project &project)
   // j[Project::kUndoManagerKey] = project.legacy_undo_manager_;
   j[Project::kUndoStackKey] = project.undo_stack_;
   j[Project::kLastSelectionKey] = project.last_selection_;
+  j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
 }
 
 struct ArrangerObjectBuilderForDeserialization
@@ -1847,6 +1897,7 @@ from_json (const nlohmann::json &j, Project &project)
   // j.at (Project::kUndoManagerKey).get_to (*project.legacy_undo_manager_);
   j.at (Project::kUndoStackKey).get_to (*project.undo_stack_);
   j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
+  j.at (Project::kTempoObjectManagerKey).get_to (*project.tempo_object_manager_);
 
   project.tracklist_->singletonTracks ()
     ->chordTrack ()

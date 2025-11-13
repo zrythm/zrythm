@@ -22,6 +22,7 @@
 #include "gui/dsp/quantize_options.h"
 #include "plugins/plugin.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "structure/arrangement/tempo_object_manager.h"
 #include "structure/arrangement/timeline.h"
 #include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
@@ -132,6 +133,9 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::structure::arrangement::TempoObjectManager * tempoObjectManager READ
+      tempoObjectManager CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::dsp::SnapGrid * snapGridTimeline READ snapGridTimeline CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
@@ -210,23 +214,24 @@ public:
   void                              setDirectory (const QString &directory);
   structure::tracks::Tracklist *    tracklist () const;
   structure::scenes::ClipLauncher * clipLauncher () const;
-  structure::scenes::ClipPlaybackService * clipPlaybackService () const;
-  gui::backend::TrackSelectionManager *    trackSelectionManager () const;
-  gui::backend::PluginSelectionManager *   pluginSelectionManager () const;
-  structure::arrangement::Timeline *       getTimeline () const;
-  dsp::Metronome *                         metronome () const;
-  dsp::Transport *                         getTransport () const;
-  engine::device_io::AudioEngine *         engine () const;
-  gui::backend::Tool *                     getTool () const;
-  ClipEditor *                             getClipEditor () const;
-  undo::UndoStack *                        undoStack () const;
-  PluginFactory *                          getPluginFactory () const;
-  zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
-  zrythm::actions::TrackCreator *          trackCreator () const;
-  gui::backend::FileImporter *             fileImporter () const;
-  dsp::TempoMapWrapper *                   getTempoMap () const;
-  dsp::SnapGrid *                          snapGridTimeline () const;
-  dsp::SnapGrid *                          snapGridEditor () const;
+  structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
+  gui::backend::TrackSelectionManager *        trackSelectionManager () const;
+  gui::backend::PluginSelectionManager *       pluginSelectionManager () const;
+  structure::arrangement::Timeline *           getTimeline () const;
+  dsp::Metronome *                             metronome () const;
+  dsp::Transport *                             getTransport () const;
+  engine::device_io::AudioEngine *             engine () const;
+  gui::backend::Tool *                         getTool () const;
+  ClipEditor *                                 getClipEditor () const;
+  undo::UndoStack *                            undoStack () const;
+  PluginFactory *                              getPluginFactory () const;
+  zrythm::actions::ArrangerObjectCreator *     arrangerObjectCreator () const;
+  zrythm::actions::TrackCreator *              trackCreator () const;
+  gui::backend::FileImporter *                 fileImporter () const;
+  dsp::TempoMapWrapper *                       getTempoMap () const;
+  dsp::SnapGrid *                              snapGridTimeline () const;
+  dsp::SnapGrid *                              snapGridEditor () const;
+  structure::arrangement::TempoObjectManager * tempoObjectManager () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -530,6 +535,7 @@ private:
   static constexpr auto kUndoManagerKey = "undoManager"sv;
   static constexpr auto kUndoStackKey = "undoStack"sv;
   static constexpr auto kLastSelectionKey = "lastSelection"sv;
+  static constexpr auto kTempoObjectManagerKey = "tempoObjectManager"sv;
   static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
   static constexpr auto FORMAT_MAJOR_VER = 2;
   static constexpr auto FORMAT_MINOR_VER = 1;
@@ -692,6 +698,9 @@ public:
     track_selection_manager_;
   utils::QObjectUniquePtr<gui::backend::PluginSelectionManager>
     plugin_selection_manager_;
+
+  utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
+    tempo_object_manager_;
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

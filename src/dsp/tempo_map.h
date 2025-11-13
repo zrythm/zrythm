@@ -76,6 +76,11 @@ public:
 
     auto ticks_per_beat () const { return ticks_per_bar () / numerator; }
 
+    auto is_different_time_signature (const TimeSignatureEvent &other) const
+    {
+      return numerator != other.numerator || denominator != other.denominator;
+    }
+
     NLOHMANN_DEFINE_TYPE_INTRUSIVE (
       TimeSignatureEvent,
       tick,
@@ -224,6 +229,16 @@ public:
         time_sig_events_.erase (it);
       }
   }
+
+  /// Clear all tempo events
+  void clear_tempo_events ()
+  {
+    events_.clear ();
+    cumulative_seconds_.clear ();
+  }
+
+  /// Clear all time signature events
+  void clear_time_signature_events () { time_sig_events_.clear (); }
 
   /// Convert fractional ticks to seconds
   auto

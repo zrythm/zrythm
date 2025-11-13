@@ -19,8 +19,9 @@ Control {
   property bool isResizingL: false // simple flag to be turned off immediately after checked by the interested party (Arranger)
   property bool isResizingR: false // ditto
   required property bool isSelected
+  required property UndoStack undoStack
   readonly property color objectColor: {
-    let c = (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : track.color;
+    let c = (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : (track ? track.color : palette.button);
     if (root.isSelected)
       c = Style.getColorBlendedTowardsContrastByFactor(c, 1.1);
 

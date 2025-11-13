@@ -161,4 +161,14 @@ private:
   std::chrono::time_point<std::chrono::steady_clock> last_redo_timestamp_;
 };
 
+class MoveTempoMapAffectingArrangerObjectsCommand
+    : public MoveArrangerObjectsCommand
+{
+public:
+  static constexpr int CommandId = 1762956469;
+  using MoveArrangerObjectsCommand::MoveArrangerObjectsCommand;
+
+  int id () const override { return CommandId; }
+};
+
 } // namespace zrythm::commands
