@@ -37,6 +37,7 @@ stages:
 
 .windows-activate-venv: &windows-activate-venv
   - ./venv/Scripts/Activate.ps1
+  - $Env:PATH = "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin$([System.IO.Path]::PathSeparator)$Env:PATH"
 
 # .mac-enable-brew-env: &mac-enable-brew-env
 # - eval "$(/opt/homebrew/bin/brew shellenv)";
