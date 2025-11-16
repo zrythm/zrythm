@@ -58,6 +58,7 @@ ColumnLayout {
     PluginBrowserPage {
       id: pluginBrowserPage
 
+      pluginImporter: root.project.pluginImporter
       pluginManager: GlobalState.zrythm.pluginManager
     }
 
@@ -69,6 +70,7 @@ ColumnLayout {
 
     MonitorSection {
       id: monitorSection
+
       trackCollection: root.project.tracklist.collection
     }
 

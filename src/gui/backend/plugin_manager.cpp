@@ -1,46 +1,17 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * ---
- *
- * Copyright (C) 2008-2012 Paul Davis
- * Copyright (C) David Robillard
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * ---
- */
 
 #include "zrythm-config.h"
 
-#include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/settings/plugin_configuration_manager.h"
-#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/out_of_process_scanner.h"
-#include "utils/directory_manager.h"
-#include "utils/gtest_wrapper.h"
 
 #include <QtConcurrent>
+
+using namespace Qt::StringLiterals;
 
 using namespace zrythm::gui::old_dsp::plugins;
 
@@ -71,72 +42,6 @@ PluginManager *
 PluginManager::get_active_instance ()
 {
   return Zrythm::getInstance ()->getPluginManager ();
-}
-
-void
-PluginManager::createPluginInstance (
-  const zrythm::plugins::PluginDescriptor * descr)
-{
-  // FIXME: this is temporary test code that adds the plugin to the master's
-  // first index slot
-
-  auto state_ptr = new EngineState ();
-  AUDIO_ENGINE->wait_for_pause (*state_ptr, false, true);
-
-  z_debug ("creating plugin instance for: {}", descr->getName ());
-  const auto * track = [&] () -> structure::tracks::Track * {
-    if (descr->is_instrument ())
-      {
-        return PROJECT->trackCreator ()
-          ->addEmptyTrackFromType (structure::tracks::Track::Type::Instrument)
-          .value<structure::tracks::InstrumentTrack *> ();
-      }
-    return P_MASTER_TRACK;
-  }();
-  auto juce_desc = descr->to_juce_description ();
-  auto config = PluginConfiguration::create_new_for_descriptor (*descr);
-  PROJECT->getPluginFactory ()->create_plugin_from_setting (
-    *config,
-    PluginFactory::InstantiationFinishOptions{
-      .handler_ =
-        [state_ptr, track] (::zrythm::plugins::PluginUuidReference plugin_ref) {
-          z_debug ("instantiation done");
-          if (track->is_instrument ())
-            {
-              track->channel ()->instruments ()->append_plugin (plugin_ref);
-            }
-          else
-            {
-              track->channel ()->inserts ()->append_plugin (plugin_ref);
-            }
-          ROUTER->recalc_graph (false);
-          zrythm::plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ())
-            ->setUiVisible (true);
-
-          AUDIO_ENGINE->resume (*state_ptr);
-        },
-      .handler_context_ = this });
-
-// below some test code for plugin states
-#if 0
-  QTimer::singleShot (10000, this, [] () {
-    EngineState state{};
-    AUDIO_ENGINE->wait_for_pause (state, false, true);
-    auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
-      track->channel ()->inserts ()->plugins ().front ().get_object ());
-    pl->save_state ("/tmp/test_clap_state");
-    AUDIO_ENGINE->resume (state);
-  });
-
-  QTimer::singleShot (20000, this, [] () {
-    EngineState state{};
-    AUDIO_ENGINE->wait_for_pause (state, false, true);
-    auto * pl = ::zrythm::plugins::plugin_ptr_variant_to_base (
-      track->channel ()->inserts ()->plugins ().front ().get_object ());
-    pl->load_state ("/tmp/test_clap_state");
-    AUDIO_ENGINE->resume (state);
-  });
-#endif
 }
 
 void

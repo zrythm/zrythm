@@ -35,9 +35,6 @@ public:
   Q_INVOKABLE QVariant
   addEmptyTrackFromType (structure::tracks::Track::Type trackType) const;
 
-  Q_INVOKABLE void
-  importPlugin (const plugins::PluginDescriptor * descriptor) const;
-
 private:
   /**
    * Returns a unique name for a new track based on the given name.

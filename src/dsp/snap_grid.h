@@ -139,11 +139,71 @@ public:
   }
   void clear_callbacks ();
 
-  static int get_ticks_from_length_and_type (
+  static constexpr int get_ticks_from_length_and_type (
     utils::NoteLength length,
     utils::NoteType   type,
     int               ticks_per_bar,
-    int               ticks_per_beat);
+    int               ticks_per_beat)
+  {
+    assert (ticks_per_beat > 0);
+    assert (ticks_per_bar > 0);
+
+    int ticks = 0;
+    switch (length)
+      {
+      case utils::NoteLength::Bar:
+        ticks = ticks_per_bar;
+        break;
+      case utils::NoteLength::Beat:
+        ticks = ticks_per_beat;
+        break;
+      case utils::NoteLength::Note_2_1:
+        ticks = 8 * TempoMap::get_ppq ();
+        break;
+      case utils::NoteLength::Note_1_1:
+        ticks = 4 * TempoMap::get_ppq ();
+        break;
+      case utils::NoteLength::Note_1_2:
+        ticks = 2 * TempoMap::get_ppq ();
+        break;
+      case utils::NoteLength::Note_1_4:
+        ticks = TempoMap::get_ppq ();
+        break;
+      case utils::NoteLength::Note_1_8:
+        ticks = TempoMap::get_ppq () / 2;
+        break;
+      case utils::NoteLength::Note_1_16:
+        ticks = TempoMap::get_ppq () / 4;
+        break;
+      case utils::NoteLength::Note_1_32:
+        ticks = TempoMap::get_ppq () / 8;
+        break;
+      case utils::NoteLength::Note_1_64:
+        ticks = TempoMap::get_ppq () / 16;
+        break;
+      case utils::NoteLength::Note_1_128:
+        ticks = TempoMap::get_ppq () / 32;
+        break;
+      }
+
+    switch (type)
+      {
+      case utils::NoteType::Normal:
+        break;
+      case utils::NoteType::Dotted:
+        ticks = 3 * ticks;
+        assert (ticks % 2 == 0);
+        ticks = ticks / 2;
+        break;
+      case utils::NoteType::Triplet:
+        ticks = 2 * ticks;
+        assert (ticks % 3 == 0);
+        ticks = ticks / 3;
+        break;
+      }
+
+    return ticks;
+  }
 
   static QString stringize_length_and_type (
     utils::NoteLength note_length,
@@ -205,7 +265,7 @@ private:
    * If adaptive snap is turned on, it calculates the corresponding note length,
    * otherwise returns the specified note length as-is.
    */
-  utils::NoteLength get_effective_note_length () const
+  constexpr utils::NoteLength get_effective_note_length () const
   {
     return snap_adaptive_
              ? (sixteenths_visible_

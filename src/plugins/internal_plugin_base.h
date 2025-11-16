@@ -44,6 +44,17 @@ protected:
     nframes_t     max_block_length) override;
 
   void process_impl (EngineProcessTimeInfo time_info) noexcept override;
+
+private Q_SLOTS:
+  /**
+   * @brief Handle configuration changes.
+   */
+  void on_configuration_changed ();
+
+  /**
+   * @brief Handle visibility changes.
+   */
+  void on_ui_visibility_changed ();
 };
 
 } // namespace zrythm::plugins

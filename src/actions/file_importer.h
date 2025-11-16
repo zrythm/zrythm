@@ -9,7 +9,7 @@
 
 #include <juce_wrapper.h>
 
-namespace zrythm::gui::backend
+namespace zrythm::actions
 {
 
 class FileImporter : public QObject

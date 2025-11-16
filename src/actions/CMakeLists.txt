@@ -7,8 +7,10 @@ target_sources(zrythm_actions_lib
   PRIVATE
     arranger_object_creator.cpp
     arranger_object_selection_operator.cpp
+    file_importer.cpp
     qobject_property_operator.cpp
     parameter_operator.cpp
+    plugin_importer.cpp
     track_creator.cpp
     track_operator.cpp
   PUBLIC
@@ -17,8 +19,10 @@ target_sources(zrythm_actions_lib
     FILES
       arranger_object_creator.h
       arranger_object_selection_operator.h
+      file_importer.h
       qobject_property_operator.h
       parameter_operator.h
+      plugin_importer.h
       track_creator.h
       track_operator.h
 )

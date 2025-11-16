@@ -8,6 +8,7 @@ add_executable(zrythm_utils_unit_tests
   compression_test.cpp
   concurrency_test.cpp
   datetime_test.cpp
+  debouncer_test.cpp
   directory_manager_test.cpp
   dsp_test.cpp
   expandable_tick_range_test.cpp

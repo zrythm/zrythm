@@ -54,9 +54,6 @@ public:
 
   Q_INVOKABLE void beginScan ();
 
-  Q_INVOKABLE void
-  createPluginInstance (const zrythm::plugins::PluginDescriptor * descr);
-
   auto &get_format_manager () const { return format_manager_; }
 
   /**

@@ -10,6 +10,7 @@
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
@@ -175,36 +176,38 @@ Project::Project (
               } },
           [&] () { return audio_engine_->get_sample_rate (); },
           [&] () { return get_tempo_map ().tempo_at_tick (units::ticks (0)); })),
-      plugin_factory_ (new PluginFactory (
-        PluginFactory::CommonFactoryDependencies{
-          .plugin_registry_ = *plugin_registry_,
-          .processor_base_dependencies_ =
-            dsp::ProcessorBase::ProcessorBaseDependencies{
-              .port_registry_ = *port_registry_,
-              .param_registry_ = *param_registry_ },
-          .state_dir_path_provider_ =
-            [this] () { return get_path (ProjectPath::PluginStates, false); },
-          .create_plugin_instance_async_func_ =
-            [] (
-              const juce::PluginDescription                  &description,
-              double                                          initialSampleRate,
-              int                                             initialBufferSize,
-              juce::AudioPluginFormat::PluginCreationCallback callback) {
-              Zrythm::getInstance ()
-                ->getPluginManager ()
-                ->get_format_manager ()
-                ->createPluginInstanceAsync (
-                  description, initialSampleRate, initialBufferSize, callback);
-            },
-          .sample_rate_provider_ =
-            [this] () { return audio_engine_->get_sample_rate (); },
-          .buffer_size_provider_ =
-            [this] () { return audio_engine_->get_block_length (); },
-          .top_level_window_provider_ = plugin_toplevel_window_provider,
-          .audio_thread_checker_ =
-            [this] () { return audio_engine_->router_->is_processing_thread (); } },
-        *gui::SettingsManager::get_instance (),
-        this)),
+      plugin_factory_ (
+        utils::make_qobject_unique<plugins::PluginFactory> (
+          plugins::PluginFactory::CommonFactoryDependencies{
+            .plugin_registry_ = *plugin_registry_,
+            .processor_base_dependencies_ =
+              dsp::ProcessorBase::ProcessorBaseDependencies{
+                .port_registry_ = *port_registry_,
+                .param_registry_ = *param_registry_ },
+            .state_dir_path_provider_ =
+              [this] () { return get_path (ProjectPath::PluginStates, false); },
+            .create_plugin_instance_async_func_ =
+              [] (
+                const juce::PluginDescription &description,
+                double                         initialSampleRate,
+                int                            initialBufferSize,
+                juce::AudioPluginFormat::PluginCreationCallback callback) {
+                Zrythm::getInstance ()
+                  ->getPluginManager ()
+                  ->get_format_manager ()
+                  ->createPluginInstanceAsync (
+                    description, initialSampleRate, initialBufferSize, callback);
+              },
+            .sample_rate_provider_ =
+              [this] () { return audio_engine_->get_sample_rate (); },
+            .buffer_size_provider_ =
+              [this] () { return audio_engine_->get_block_length (); },
+            .top_level_window_provider_ = plugin_toplevel_window_provider,
+            .audio_thread_checker_ =
+              [this] () {
+                return audio_engine_->router_->is_processing_thread ();
+              } },
+          this)),
       track_factory_ (
         std::make_unique<structure::tracks::TrackFactory> (
           get_final_track_dependencies ())),
@@ -223,8 +226,21 @@ Project::Project (
           *tracklist_->trackRouting (),
           *tracklist_->singletonTracks (),
           this)),
+      plugin_importer_ (
+        utils::make_qobject_unique<actions::PluginImporter> (
+          *undo_stack_,
+          *plugin_factory_,
+          *track_creator_,
+          [] (plugins::PluginUuidReference plugin_ref) {
+            // Show UI by default when importing plugins
+            z_debug ("Plugin instantiation completed");
+            zrythm::plugins::plugin_ptr_variant_to_base (
+              plugin_ref.get_object ())
+              ->setUiVisible (true);
+          },
+          this)),
       file_importer_ (
-        utils::make_qobject_unique<gui::backend::FileImporter> (
+        utils::make_qobject_unique<actions::FileImporter> (
           *undo_stack_,
           *arranger_object_creator_,
           *track_creator_,
@@ -1614,25 +1630,25 @@ Project::undoStack () const
   return undo_stack_.get ();
 }
 
-PluginFactory *
-Project::getPluginFactory () const
-{
-  return plugin_factory_;
-}
-
-zrythm::actions::ArrangerObjectCreator *
+actions::ArrangerObjectCreator *
 Project::arrangerObjectCreator () const
 {
   return arranger_object_creator_.get ();
 }
 
-zrythm::actions::TrackCreator *
+actions::TrackCreator *
 Project::trackCreator () const
 {
   return track_creator_.get ();
 }
 
-gui::backend::FileImporter *
+actions::PluginImporter *
+Project::pluginImporter () const
+{
+  return plugin_importer_.get ();
+}
+
+actions::FileImporter *
 Project::fileImporter () const
 {
   return file_importer_.get ();

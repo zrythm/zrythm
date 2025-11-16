@@ -12,6 +12,38 @@ InternalPluginBase::InternalPluginBase (
   QObject *                                     parent)
     : Plugin (dependencies, std::move (state_path_provider), parent)
 {
+  // Connect to configuration changes
+  connect (
+    this, &Plugin::configurationChanged, this,
+    &InternalPluginBase::on_configuration_changed);
+
+  // Connect to UI visibility changes
+  connect (
+    this, &Plugin::uiVisibleChanged, this,
+    &InternalPluginBase::on_ui_visibility_changed);
+
+  auto bypass_ref = generate_default_bypass_param ();
+  add_parameter (bypass_ref);
+  bypass_id_ = bypass_ref.id ();
+  auto gain_ref = generate_default_gain_param ();
+  add_parameter (gain_ref);
+  gain_id_ = gain_ref.id ();
+}
+
+void
+InternalPluginBase::on_configuration_changed ()
+{
+  z_debug ("configuration changed");
+
+  // Reinitialize plugin with new configuration
+
+  Q_EMIT instantiationFinished (true, {});
+}
+
+void
+InternalPluginBase::on_ui_visibility_changed ()
+{
+  // TODO
 }
 
 void

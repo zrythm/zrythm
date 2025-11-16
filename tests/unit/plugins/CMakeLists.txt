@@ -5,6 +5,8 @@ add_executable(zrythm_plugins_unit_tests
   juce_plugin_test.cpp
   plugin_test.cpp
   plugin_descriptor_test.cpp
+  plugin_descriptor_list_test.cpp
+  plugin_factory_test.cpp
   plugin_group_test.cpp
   plugin_protocol_test.cpp
   plugin_scan_manager_test.cpp

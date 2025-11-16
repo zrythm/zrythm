@@ -36,6 +36,7 @@ target_sources(zrythm_plugins_lib
       plugin_all.h
       plugin_configuration.h
       plugin_descriptor.h
+      plugin_factory.h
       plugin_group.h
       plugin_protocol.h
       plugin_slot.h

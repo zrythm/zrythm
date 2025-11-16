@@ -3,7 +3,6 @@
 
 target_sources(zrythm_gui_lib
   PRIVATE
-    plugin_factory.h
     plugin_span.h
     plugin_span.cpp
     quantize_options.h

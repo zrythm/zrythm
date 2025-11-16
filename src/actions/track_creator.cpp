@@ -47,11 +47,6 @@ TrackCreator::addEmptyTrackFromType (
   return QVariant::fromStdVariant (track_ref.get_object ());
 }
 
-void
-TrackCreator::importPlugin (const plugins::PluginDescriptor * config) const
-{
-}
-
 utils::Utf8String
 TrackCreator::get_unique_name_for_track (
   const structure::tracks::Track::Uuid &track_to_skip,

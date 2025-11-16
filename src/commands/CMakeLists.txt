@@ -12,6 +12,7 @@ target_sources(zrythm_commands_lib
     BASE_DIRS ".."
     FILES
       add_arranger_object_command.h
+      add_plugin_command.h
       add_region_to_clip_slot_command.h
       add_track_command.h
       route_track_command.h

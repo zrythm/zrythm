@@ -5,9 +5,9 @@
 
 #include <chrono>
 
+#include "utils/debouncer.h"
 #include "utils/expandable_tick_range.h"
-
-#include <QTimer>
+#include "utils/qt.h"
 
 using namespace std::chrono_literals;
 
@@ -28,61 +28,28 @@ class PlaybackCacheScheduler : public QObject
   Q_OBJECT
 
 public:
-  PlaybackCacheScheduler (QObject * parent = nullptr) : QObject (parent)
-  {
-    timer_.setSingleShot (true);
-    connect (
-      &timer_, &QTimer::timeout, this,
-      &PlaybackCacheScheduler::executePendingCall);
-  }
+  PlaybackCacheScheduler (QObject * parent = nullptr);
 
   Q_INVOKABLE void
-  queueCacheRequestForRange (double affectedTickStart, double affectedTickEnd)
-  {
-    queueCacheRequest ({ std::make_pair (affectedTickStart, affectedTickEnd) });
-  }
+  queueCacheRequestForRange (double affectedTickStart, double affectedTickEnd);
 
-  Q_INVOKABLE void queueFullCacheRequest () { queueCacheRequest ({}); }
+  Q_INVOKABLE void queueFullCacheRequest ();
 
-  Q_INVOKABLE void queueCacheRequest (utils::ExpandableTickRange affectedRange)
-  {
-    pending_call_ = true;
-    if (affected_range_.has_value ())
-      {
-        affected_range_->expand (affectedRange);
-      }
-    else
-      {
-        affected_range_.emplace (affectedRange);
-      }
-
-    // If already pending, the timer will reset with the new delay
-    timer_.start (delay_);
-  }
+  Q_INVOKABLE void queueCacheRequest (utils::ExpandableTickRange affectedRange);
 
   /**
    * @brief Sets the delay to be used starting from the next cache request.
    */
-  void setDelay (std::chrono::milliseconds delay) { delay_ = delay; }
+  void setDelay (std::chrono::milliseconds delay);
 
 Q_SIGNALS:
   void cacheRequested (utils::ExpandableTickRange affectedRange);
 
-private Q_SLOTS:
-  void executePendingCall ()
-  {
-    if (pending_call_)
-      {
-        pending_call_ = false;
-        Q_EMIT cacheRequested (affected_range_.value ());
-        affected_range_.reset ();
-      }
-  }
+private:
+  void execute_pending_request ();
 
 private:
-  QTimer                                    timer_;
-  std::chrono::milliseconds                 delay_{ 100ms };
-  bool                                      pending_call_{ false };
+  utils::QObjectUniquePtr<utils::Debouncer> debouncer_;
   std::optional<utils::ExpandableTickRange> affected_range_;
 };
 }

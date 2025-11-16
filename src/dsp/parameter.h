@@ -106,7 +106,7 @@ public:
     return { Type::GainAmplitude, 0.f, max_val, 0.f, 1.f };
   }
 
-  float clamp_to_range (float val) const
+  constexpr float clamp_to_range (float val) const
   {
     return std::clamp (val, minf_, maxf_);
   }

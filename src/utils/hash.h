@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_HASH_H__
-#define __UTILS_HASH_H__
+#pragma once
 
 #include "utils/types.h"
 
@@ -45,5 +44,3 @@ std::string
 to_string (HashT hash);
 
 }; // namespace zrythm::utils::hash
-
-#endif

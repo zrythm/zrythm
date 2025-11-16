@@ -275,16 +275,9 @@ ApplicationWindow {
         title: qsTr("Progress")
 
         StackView.onActivated: {
-          // start the scan
+          // start the scan in the background and move on to project selection page immediately
           root.pluginManager.beginScan();
-        }
-
-        Connections {
-          function onScanFinished() {
-            stack.push(projectSelectorPage);
-          }
-
-          target: root.pluginManager
+          stack.push(projectSelectorPage);
         }
 
         PlaceholderPage {

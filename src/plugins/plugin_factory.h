@@ -5,9 +5,10 @@
 
 #include <utility>
 
-#include "gui/backend/backend/settings_manager.h"
 #include "plugins/plugin_all.h"
-#include "structure/tracks/track_all.h"
+
+namespace zrythm::plugins
+{
 
 /**
  * @brief Factory for plugins.
@@ -59,15 +60,12 @@ public:
   PluginFactory () = delete;
   PluginFactory (
     CommonFactoryDependencies dependencies,
-    gui::SettingsManager     &settings_mgr,
     QObject *                 parent = nullptr)
-      : QObject (parent), dependencies_ (std::move (dependencies)),
-        settings_manager_ (settings_mgr)
+      : QObject (parent), dependencies_ (std::move (dependencies))
   {
   }
 
-  static PluginFactory * get_instance ();
-
+private:
   template <typename PluginT> class Builder
   {
     friend class PluginFactory;
@@ -76,12 +74,6 @@ public:
     explicit Builder (CommonFactoryDependencies dependencies)
         : dependencies_ (std::move (dependencies))
     {
-    }
-
-    Builder &with_settings_manager (gui::SettingsManager &settings_manager)
-    {
-      settings_manager_ = settings_manager;
-      return *this;
     }
 
     Builder &with_setting (const PluginConfiguration &setting)
@@ -152,21 +144,23 @@ public:
           obj_ref.template get_object_as<PluginT> ()->set_configuration (
             *setting_);
         }
+      else
+        {
+          throw std::logic_error ("PluginConfiguration required");
+        }
 
       return obj_ref;
     }
 
   private:
     CommonFactoryDependencies                 dependencies_;
-    OptionalRef<gui::SettingsManager>         settings_manager_;
     OptionalRef<const PluginConfiguration>    setting_;
     std::optional<InstantiationFinishOptions> instantiation_finish_options_;
   };
 
   template <typename PluginT> auto get_builder () const
   {
-    auto builder =
-      Builder<PluginT> (dependencies_).with_settings_manager (settings_manager_);
+    auto builder = Builder<PluginT> (dependencies_);
     return builder;
   }
 
@@ -175,7 +169,13 @@ public:
     const PluginConfiguration &setting,
     InstantiationFinishOptions instantiation_finish_options) const
   {
-    const auto protocol = setting.descriptor ()->protocol_;
+    const auto * descriptor = setting.descriptor ();
+    if (descriptor == nullptr)
+      {
+        throw std::invalid_argument ("Setting with valid descriptor required");
+      }
+
+    const auto protocol = descriptor->protocol_;
     if (protocol == plugins::Protocol::ProtocolType::CLAP)
       {
         return get_builder<plugins::ClapPlugin> ()
@@ -218,5 +218,5 @@ public:
 
 private:
   CommonFactoryDependencies dependencies_;
-  gui::SettingsManager     &settings_manager_;
 };
+}

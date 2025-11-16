@@ -19,8 +19,6 @@ target_sources(zrythm_gui_lib
     device_manager.cpp
     file_system_model.h
     file_system_model.cpp
-    file_importer.h
-    file_importer.cpp
     global_state.h
     meter.h
     meter.cpp

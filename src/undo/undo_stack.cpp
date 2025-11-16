@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "commands/add_arranger_object_command.h"
+#include "commands/add_plugin_command.h"
 #include "commands/add_track_command.h"
 #include "commands/change_qobject_property_command.h"
 #include "commands/move_arranger_objects_command.h"
@@ -40,8 +41,9 @@ UndoStack::UndoStack (
 bool
 UndoStack::command_or_children_require_graph_pause (const QUndoCommand &cmd) const
 {
-  static constexpr std::array<int, 2> command_ids_with_graph_pause = {
+  static constexpr std::array<int, 3> command_ids_with_graph_pause = {
     commands::AddEmptyTrackCommand::CommandId,
+    commands::AddPluginCommand::CommandId,
     commands::RouteTrackCommand::CommandId,
   };
 

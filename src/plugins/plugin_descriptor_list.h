@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "plugins/plugin_descriptor.h"
+#include "utils/debouncer.h"
 
 #include <QtQmlIntegration>
 
@@ -18,64 +19,65 @@ class PluginDescriptorList : public QAbstractListModel
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
+  // TODO: move this somewhere else as a general util that allows using a lambda
+  // for juce callback listeners
+  class KnownPluginListChangeListener final : public juce::ChangeListener
+  {
+  public:
+    using CallbackFunc = std::function<void (juce::ChangeBroadcaster *)>;
+
+    KnownPluginListChangeListener (CallbackFunc callback);
+
+  private:
+    void changeListenerCallback (juce::ChangeBroadcaster * source) override
+    {
+      callback_ (source);
+    }
+
+  private:
+    CallbackFunc callback_;
+  };
+
 public:
   explicit PluginDescriptorList (
     std::shared_ptr<juce::KnownPluginList> known_plugin_list,
-    QObject *                              parent = nullptr)
-      : QAbstractListModel (parent),
-        known_plugin_list_ (std::move (known_plugin_list))
-  {
-  }
+    QObject *                              parent = nullptr);
 
   enum PluginDescriptorRole
   {
     DescriptorRole = Qt::UserRole + 1,
+    DescriptorNameRole,
   };
 
-  QHash<int, QByteArray> roleNames () const override
-  {
-    return {
-      { DescriptorRole, "descriptor" },
-    };
-  }
+  QHash<int, QByteArray> roleNames () const override;
 
   QModelIndex
   index (int row, int column, const QModelIndex &parent = QModelIndex ())
-    const override
-  {
-    if (row < 0 || row >= known_plugin_list_->getNumTypes ())
-      return {};
-    return createIndex (row, column);
-  }
+    const override;
 
-  QModelIndex parent (const QModelIndex &child) const override { return {}; }
+  QModelIndex parent (const QModelIndex &child) const override;
 
-  int rowCount (const QModelIndex &parent = QModelIndex ()) const override
-  {
-    return known_plugin_list_->getNumTypes ();
-  }
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
 
-  int columnCount (const QModelIndex &parent = QModelIndex ()) const override
-  {
-    return 1;
-  }
-
-  auto at (int index) const
-  {
-    return PluginDescriptor::from_juce_description (
-      known_plugin_list_->getTypes ().getReference (index));
-  }
+  int columnCount (const QModelIndex &parent = QModelIndex ()) const override;
 
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-  void reset_model ()
-  {
-    beginResetModel ();
-    endResetModel ();
-  }
+  void reset_model ();
 
 private:
+  /** Updates the cached plugin descriptors from the known plugin list. */
+  void update_cache ();
+
+  /** Schedules an update of the cache with debouncing to avoid excessive
+   * updates. */
+  void schedule_update_cache ();
+
+private:
+  KnownPluginListChangeListener          known_plugin_list_change_listener_;
   std::shared_ptr<juce::KnownPluginList> known_plugin_list_;
+  std::vector<utils::QObjectUniquePtr<PluginDescriptor>> cached_descriptors_;
+  utils::QObjectUniquePtr<utils::Debouncer>              update_debouncer_;
 };
 }

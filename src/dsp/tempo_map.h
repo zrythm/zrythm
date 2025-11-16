@@ -67,16 +67,23 @@ public:
     int           numerator{};   ///< Beats per bar
     int           denominator{}; ///< Beat unit (2,4,8,16)
 
-    auto quarters_per_bar () const { return (numerator * 4) / denominator; }
+    constexpr auto quarters_per_bar () const
+    {
+      return (numerator * 4) / denominator;
+    }
 
-    auto ticks_per_bar () const
+    constexpr auto ticks_per_bar () const
     {
       return units::ticks (quarters_per_bar () * FixedPpqTempoMap::get_ppq ());
     }
 
-    auto ticks_per_beat () const { return ticks_per_bar () / numerator; }
+    constexpr auto ticks_per_beat () const
+    {
+      return ticks_per_bar () / numerator;
+    }
 
-    auto is_different_time_signature (const TimeSignatureEvent &other) const
+    constexpr auto
+    is_different_time_signature (const TimeSignatureEvent &other) const
     {
       return numerator != other.numerator || denominator != other.denominator;
     }
@@ -229,16 +236,6 @@ public:
         time_sig_events_.erase (it);
       }
   }
-
-  /// Clear all tempo events
-  void clear_tempo_events ()
-  {
-    events_.clear ();
-    cumulative_seconds_.clear ();
-  }
-
-  /// Clear all time signature events
-  void clear_time_signature_events () { time_sig_events_.clear (); }
 
   /// Convert fractional ticks to seconds
   auto
@@ -727,6 +724,16 @@ private:
 
     return std::span{ time_sig_events_.data (), time_sig_events_.size () };
   }
+
+  /// Clear all tempo events
+  void clear_tempo_events ()
+  {
+    events_.clear ();
+    cumulative_seconds_.clear ();
+  }
+
+  /// Clear all time signature events
+  void clear_time_signature_events () { time_sig_events_.clear (); }
 
   static constexpr auto kEventsKey = "events"sv;
   static constexpr auto kTimeSigEventsKey = "timeSigEvents"sv;

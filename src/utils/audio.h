@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <algorithm>
+#include <array>
+
 #include "utils/format.h"
 #include "utils/logger.h"
 #include "utils/types.h"
@@ -15,41 +18,39 @@ namespace zrythm::utils::audio
  */
 enum class BitDepth
 {
+  BIT_DEPTH_8,
   BIT_DEPTH_16,
   BIT_DEPTH_24,
   BIT_DEPTH_32
 };
 
-static inline int
+/**
+ * constexpr map for bit depth conversions.
+ * Shared single source of truth for enum-to-int mappings.
+ */
+constexpr std::array<std::pair<int, BitDepth>, 4> bit_depth_map = {
+  std::pair{ 8,  BitDepth::BIT_DEPTH_8  },
+  std::pair{ 16, BitDepth::BIT_DEPTH_16 },
+  std::pair{ 24, BitDepth::BIT_DEPTH_24 },
+  std::pair{ 32, BitDepth::BIT_DEPTH_32 }
+};
+
+constexpr int
 bit_depth_enum_to_int (BitDepth depth)
 {
-  switch (depth)
-    {
-    case BitDepth::BIT_DEPTH_16:
-      return 16;
-    case BitDepth::BIT_DEPTH_24:
-      return 24;
-    case BitDepth::BIT_DEPTH_32:
-      return 32;
-    default:
-      z_return_val_if_reached (-1);
-    }
+  auto it =
+    std::ranges::find (bit_depth_map, depth, &std::pair<int, BitDepth>::second);
+  z_return_val_if_fail (it != bit_depth_map.end (), -1);
+  return it->first;
 }
 
-static inline BitDepth
+constexpr BitDepth
 bit_depth_int_to_enum (int depth)
 {
-  switch (depth)
-    {
-    case 16:
-      return BitDepth::BIT_DEPTH_16;
-    case 24:
-      return BitDepth::BIT_DEPTH_24;
-    case 32:
-      return BitDepth::BIT_DEPTH_32;
-    default:
-      z_return_val_if_reached (BitDepth::BIT_DEPTH_16);
-    }
+  auto it =
+    std::ranges::find (bit_depth_map, depth, &std::pair<int, BitDepth>::first);
+  z_return_val_if_fail (it != bit_depth_map.end (), BitDepth::BIT_DEPTH_16);
+  return it->second;
 }
 
 enum class BounceStep
@@ -161,6 +162,7 @@ public:
 DEFINE_ENUM_FORMATTER (
   zrythm::utils::audio::BitDepth,
   BitDepth,
+  QT_TR_NOOP_UTF8 ("8 bit"),
   QT_TR_NOOP_UTF8 ("16 bit"),
   QT_TR_NOOP_UTF8 ("24 bit"),
   QT_TR_NOOP_UTF8 ("32 bit"));

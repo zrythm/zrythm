@@ -12,20 +12,47 @@ import ZrythmStyle
 ColumnLayout {
   id: root
 
+  required property PluginImporter pluginImporter
   required property PluginManager pluginManager
 
   signal pluginDescriptorActivated(PluginDescriptor descriptor)
 
-  onPluginDescriptorActivated: descriptor => pluginManager.createPluginInstance(descriptor)
+  onPluginDescriptorActivated: descriptor => pluginImporter.importPlugin(descriptor)
 
   Item {
     id: filters
 
   }
 
-  Item {
-    id: searchBar
+  SortFilterProxyModel {
+    id: pluginFilter
 
+    model: root.pluginManager.pluginDescriptors
+
+    filters: [
+      FunctionFilter {
+        property var regExp: new RegExp(searchText, "i")
+        property string searchText: pluginSearch.text
+
+        function filter(data: RoleData): bool {
+          return regExp.test(data.name);
+        }
+
+        onRegExpChanged: invalidate()
+      }
+    ]
+    sorters: [
+      RoleSorter {
+        priority: 0
+        roleName: "name"
+      }
+    ]
+  }
+
+  SearchField {
+    id: pluginSearch
+
+    Layout.fillWidth: true
   }
 
   ListView {
@@ -41,7 +68,7 @@ ColumnLayout {
     boundsBehavior: Flickable.StopAtBounds
     clip: true
     focus: true
-    model: root.pluginManager.pluginDescriptors
+    model: pluginFilter
 
     ScrollBar.vertical: ScrollBar {
     }
@@ -52,7 +79,7 @@ ColumnLayout {
       required property int index
 
       highlighted: ListView.isCurrentItem
-      text: descriptor.name
+      text: descriptor?.name
       width: pluginListView.width
 
       action: Action {
@@ -92,5 +119,9 @@ ColumnLayout {
 
     Layout.fillWidth: true
     text: descriptor ? "Plugin Info:\n" + descriptor.name + "\n" + descriptor.format : "No plugin selected"
+  }
+
+  component RoleData: QtObject {
+    property string name
   }
 }

@@ -5,6 +5,8 @@
 
 #include "actions/arranger_object_creator.h"
 #include "actions/arranger_object_selection_operator.h"
+#include "actions/file_importer.h"
+#include "actions/plugin_importer.h"
 #include "actions/track_creator.h"
 #include "dsp/audio_pool.h"
 #include "dsp/metronome.h"
@@ -14,13 +16,12 @@
 #include "engine/device_io/engine.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/backend/file_importer.h"
 #include "gui/backend/plugin_selection_manager.h"
 #include "gui/backend/tool.h"
 #include "gui/backend/track_selection_manager.h"
-#include "gui/dsp/plugin_factory.h"
 #include "gui/dsp/quantize_options.h"
 #include "plugins/plugin.h"
+#include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/arrangement/timeline.h"
@@ -121,15 +122,16 @@ class Project final : public QObject
   Q_PROPERTY (zrythm::gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
-  Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
       arrangerObjectCreator CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::TrackCreator * trackCreator READ trackCreator CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::gui::backend::FileImporter * fileImporter READ fileImporter CONSTANT
-      FINAL)
+    zrythm::actions::PluginImporter * pluginImporter READ pluginImporter
+      CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::actions::FileImporter * fileImporter READ fileImporter CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
   Q_PROPERTY (
@@ -224,10 +226,10 @@ public:
   gui::backend::Tool *                         getTool () const;
   ClipEditor *                                 getClipEditor () const;
   undo::UndoStack *                            undoStack () const;
-  PluginFactory *                              getPluginFactory () const;
   zrythm::actions::ArrangerObjectCreator *     arrangerObjectCreator () const;
   zrythm::actions::TrackCreator *              trackCreator () const;
-  gui::backend::FileImporter *                 fileImporter () const;
+  actions::FileImporter *                      fileImporter () const;
+  actions::PluginImporter *                    pluginImporter () const;
   dsp::TempoMapWrapper *                       getTempoMap () const;
   dsp::SnapGrid *                              snapGridTimeline () const;
   dsp::SnapGrid *                              snapGridEditor () const;
@@ -685,14 +687,14 @@ public:
 
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
                                                    arranger_object_factory_;
-  PluginFactory *                                  plugin_factory_{};
+  utils::QObjectUniquePtr<plugins::PluginFactory>  plugin_factory_;
   std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
 
   utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
-                                                 arranger_object_creator_;
-  utils::QObjectUniquePtr<actions::TrackCreator> track_creator_;
-
-  utils::QObjectUniquePtr<gui::backend::FileImporter> file_importer_;
+                                                   arranger_object_creator_;
+  utils::QObjectUniquePtr<actions::TrackCreator>   track_creator_;
+  utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
+  utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
 
   utils::QObjectUniquePtr<gui::backend::TrackSelectionManager>
     track_selection_manager_;

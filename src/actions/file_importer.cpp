@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/file_importer.h"
+#include "actions/file_importer.h"
 
-namespace zrythm::gui::backend
+namespace zrythm::actions
 {
 FileImporter::FileImporter (
   undo::UndoStack                          &undo_stack,

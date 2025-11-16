@@ -191,8 +191,7 @@ get_fader_val_from_amp (audio_sample_type_t amp)
     }
   audio_sample_type_t fader =
     std::powf (
-      /* note: don't use fast_log here - it causes
-       * weirdness in faders */
+      // note: don't use fast_log here - it causes weirdness in faders
       (6.f * std::logf (amp)) + fader_coefficient1, 8.f)
     / fader_coefficient2;
   return fader;

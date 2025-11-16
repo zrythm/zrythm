@@ -13,6 +13,7 @@ target_sources(zrythm_utils_lib
     compression.cpp
     cpu_windows.cpp
     datetime.cpp
+    debouncer.cpp
     directory_manager.cpp
     dsp.cpp
     dsp_context.cpp
@@ -29,6 +30,7 @@ target_sources(zrythm_utils_lib
     networking.cpp
     note_type.cpp
     pcg_rand.cpp
+    playback_cache_scheduler.cpp
     progress_info.cpp
     resampler.cpp
     rt_thread_id.cpp
@@ -52,6 +54,7 @@ target_sources(zrythm_utils_lib
       concurrency.h
       cpu_windows.h
       datetime.h
+      debouncer.h
       directory_manager.h
       dsp.h
       dsp_context.h
