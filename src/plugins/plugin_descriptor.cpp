@@ -79,6 +79,14 @@ PluginDescriptor::to_juce_description () const
 }
 
 QString
+PluginDescriptor::serializeToString () const
+{
+  return utils::Utf8String::
+    from_juce_string (to_juce_description ()->createXml ()->toString ())
+      .to_qstring ();
+}
+
+QString
 PluginDescriptor::getFormat () const
 {
   return utils::Utf8String::

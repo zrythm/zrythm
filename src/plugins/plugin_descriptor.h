@@ -127,6 +127,13 @@ public:
   static PluginCategory    string_to_category (const utils::Utf8String &str);
   static utils::Utf8String category_to_string (PluginCategory category);
 
+  /**
+   * @brief Serializes the descriptor to a string.
+   *
+   * This is intended to be used in the UI for eg, drag n drop as a MIME type.
+   */
+  Q_INVOKABLE QString serializeToString () const;
+
   bool is_instrument () const;
   bool is_effect () const;
   bool is_modulator () const;

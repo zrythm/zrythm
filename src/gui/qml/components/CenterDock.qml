@@ -100,6 +100,9 @@ ColumnLayout {
             onFilesDropped: filePaths => {
               root.project.fileImporter.importFiles(filePaths, 0, null);
             }
+            onPluginDescriptorDropped: descriptor => {
+              root.project.pluginImporter.importPlugin(descriptor);
+            }
           }
 
           Synchronizer {

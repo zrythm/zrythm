@@ -58,8 +58,9 @@ ColumnLayout {
     PluginBrowserPage {
       id: pluginBrowserPage
 
-      pluginImporter: root.project.pluginImporter
       pluginManager: GlobalState.zrythm.pluginManager
+
+      onPluginDescriptorActivated: descriptor => root.project.pluginImporter.importPlugin(descriptor)
     }
 
     FileBrowserPage {

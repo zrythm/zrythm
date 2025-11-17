@@ -3,7 +3,6 @@
   "cmake.installPrefix": "${workspaceFolder}/_installed_cmake",
   "cmake.configureArgs": [
     "-DQT_QML_GENERATE_QMLLS_INI=ON",
-    // "-DCMAKE_PREFIX_PATH=/home/alex/opt/Qt6.9-Release",
     "-DCMAKE_C_COMPILER=clang",
     "-DCMAKE_CXX_COMPILER=clang++",
     // "-DCMAKE_CXX_FLAGS=-ftime-trace",

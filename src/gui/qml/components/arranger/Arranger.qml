@@ -479,8 +479,8 @@ Item {
 
           onContainsDragChanged: {
             if (containsDrag) {
-              let item = arrangerDropArea.drag.source as Item;
-              let size = Qt.size(item.width, item.height);
+              const item = arrangerDropArea.drag.source as Item;
+              const size = Qt.size(item.width, item.height);
               dropRectImage.width = item.width;
               dropRectImage.height = item.height;
               item.grabToImage(function (result) {

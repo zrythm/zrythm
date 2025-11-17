@@ -9,20 +9,12 @@ import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle
 
-ColumnLayout {
+Item {
   id: root
 
-  required property PluginImporter pluginImporter
   required property PluginManager pluginManager
 
   signal pluginDescriptorActivated(PluginDescriptor descriptor)
-
-  onPluginDescriptorActivated: descriptor => pluginImporter.importPlugin(descriptor)
-
-  Item {
-    id: filters
-
-  }
 
   SortFilterProxyModel {
     id: pluginFilter
@@ -49,78 +41,112 @@ ColumnLayout {
     ]
   }
 
-  SearchField {
-    id: pluginSearch
+  Image {
+    id: draggable
 
-    Layout.fillWidth: true
+    property PluginDescriptor descriptor
+
+    Drag.dragType: Drag.Automatic
+    visible: Drag.active
+
+    Drag.onDragFinished: {}
+    Drag.onDragStarted: {
+      console.log("drag started", Drag.mimeData);
+    }
   }
 
-  ListView {
-    id: pluginListView
+  ColumnLayout {
+    anchors.fill: parent
 
-    readonly property var selectionModel: ItemSelectionModel {
-      model: pluginListView.model
+    SearchField {
+      id: pluginSearch
+
+      Layout.fillWidth: true
     }
 
-    Layout.fillHeight: true
-    Layout.fillWidth: true
-    activeFocusOnTab: true
-    boundsBehavior: Flickable.StopAtBounds
-    clip: true
-    focus: true
-    model: pluginFilter
+    ListView {
+      id: pluginListView
 
-    ScrollBar.vertical: ScrollBar {
-    }
-    delegate: ItemDelegate {
-      id: itemDelegate
-
-      required property PluginDescriptor descriptor
-      required property int index
-
-      highlighted: ListView.isCurrentItem
-      text: descriptor?.name
-      width: pluginListView.width
-
-      action: Action {
-        text: "Activate"
-
-        onTriggered: {
-          console.log("activated", itemDelegate.descriptor, itemDelegate.descriptor.name);
-          root.pluginDescriptorActivated(itemDelegate.descriptor);
-        }
+      readonly property var selectionModel: ItemSelectionModel {
+        model: pluginListView.model
       }
 
-      // This avoids the delegate onClicked triggering the action
-      MouseArea {
-        anchors.fill: parent
+      Layout.fillHeight: true
+      Layout.fillWidth: true
+      activeFocusOnTab: true
+      boundsBehavior: Flickable.StopAtBounds
+      clip: true
+      focus: true
+      model: pluginFilter
 
-        onClicked: {
-          pluginListView.currentIndex = itemDelegate.index;
-        }
-        onDoubleClicked: itemDelegate.animateClick()
+      ScrollBar.vertical: ScrollBar {
+      }
+      delegate: PluginDescriptorRow {
+        width: pluginListView.width
+      }
+
+      Keys.onDownPressed: incrementCurrentIndex()
+      Keys.onUpPressed: decrementCurrentIndex()
+
+      Binding {
+        property: "descriptor"
+        target: pluginInfoLabel
+        value: pluginListView.currentItem ? (pluginListView.currentItem as PluginDescriptorRow).descriptor : null
       }
     }
 
-    Keys.onDownPressed: incrementCurrentIndex()
-    Keys.onUpPressed: decrementCurrentIndex()
+    Label {
+      id: pluginInfoLabel
 
-    Binding {
-      property: "descriptor"
-      target: pluginInfoLabel
-      value: pluginListView.currentItem ? pluginListView.currentItem.descriptor : null
+      property var descriptor
+
+      Layout.fillWidth: true
+      text: descriptor ? "Plugin Info:\n" + descriptor.name + "\n" + descriptor.format : "No plugin selected"
     }
   }
 
-  Label {
-    id: pluginInfoLabel
+  component PluginDescriptorRow: ItemDelegate {
+    id: pluginDescriptorItemDelegate
 
-    property var descriptor
+    required property PluginDescriptor descriptor
+    required property int index
 
-    Layout.fillWidth: true
-    text: descriptor ? "Plugin Info:\n" + descriptor.name + "\n" + descriptor.format : "No plugin selected"
+    highlighted: ListView.isCurrentItem
+    icon.height: 16
+    icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
+    icon.width: 16
+    text: descriptor?.name
+
+    DragHandler {
+      id: dragHandler
+
+      target: draggable
+
+      onActiveChanged: {
+        if (active) {
+          pluginListView.currentIndex = pluginDescriptorItemDelegate.index;
+          target.width = parent.width;
+          target.height = parent.height;
+          const size = Qt.size(parent.width, parent.height);
+          parent.grabToImage(function (result) {
+            target.source = result.url;
+            target.Drag.mimeData = {
+              "application/x-plugin-descriptor": pluginDescriptorItemDelegate.descriptor.serializeToString()
+            };
+            target.descriptor = parent.descriptor;
+            target.Drag.active = true;
+          }, size);
+        } else {
+          target.Drag.active = false;
+        }
+      }
+    }
+
+    TapHandler {
+      onDoubleTapped: root.pluginDescriptorActivated(pluginDescriptorItemDelegate.descriptor)
+      onTapped: pluginListView.currentIndex = pluginDescriptorItemDelegate.index
+    }
   }
-
   component RoleData: QtObject {
     property string name
   }
