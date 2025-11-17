@@ -349,6 +349,7 @@ check:sanitizer-thread:
   extends: .sanitizer-template
   variables:
     SANITIZER_TYPE: "THREAD"
+    INSTALLED_QT_PREFIX: "/opt/Qt-6.10.0/Debug-tsan"
 
 check:sanitizer-realtime:
   extends: .sanitizer-template
@@ -390,6 +391,7 @@ build:gnu/linux:
 build:mac-arm:
   extends: .mac-arm-template
   stage: build
+  timeout: 2h # Takes slightly longer than 1h
   needs:
     - job: configure:mac-arm
       artifacts: true
