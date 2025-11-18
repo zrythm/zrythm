@@ -210,7 +210,7 @@ TEST_F (DebouncerTest, VeryShortDelay)
   short_delay_debouncer.debounce ();
 
   // Process events
-  QTest::qWait (50ms);
+  QTest::qWait (get_reasonable_time_after_default_delay ());
 
   // Should still only execute once
   EXPECT_EQ (callback_count_, 1);

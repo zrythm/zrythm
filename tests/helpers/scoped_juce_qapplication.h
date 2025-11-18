@@ -23,7 +23,7 @@ public:
   ScopedJuceQApplication ()
   {
     QObject::connect (&timer_, &QTimer::timeout, qApp, [] () {
-      juce::MessageManager::getInstance ()->runDispatchLoopUntil (0);
+      juce::MessageManager::getInstance ()->runDispatchLoopUntil (10);
     });
     timer_.start ();
     juce::MessageManager::getInstance ()->runDispatchLoopUntil (0);
