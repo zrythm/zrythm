@@ -184,7 +184,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 ### Reusable Utilities
 
 - [ScopedQCoreApplication](tests/helpers/scoped_qcoreapplication.h) (only needed when using QSignalSpy or other facilities that require an active Qt application)
-- [ScopedJuceMessageThread](tests/helpers/scoped_juce_message_thread.h)
+- [ScopedJuceQApplication](tests/helpers/scoped_juce_qapplication.h): Inherits from ScopedQCoreApplication and also runs the JUCE message loop inside Qt's event loop. Only to be used when we can't avoid dependence on JUCE's message loop.
 - [MockProcessable, MockTransport](tests/unit/dsp/graph_helpers.h)
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
 

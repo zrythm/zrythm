@@ -27,10 +27,15 @@ function(zrythm_discover_tests TARGET_NAME)
   endif()
 endfunction()
 
-add_library(zrythm_test_helpers_lib STATIC
-  helpers/mock_qobject.h
-  helpers/scoped_qcoreapplication.h
-  helpers/scoped_juce_message_thread.h
+add_library(zrythm_test_helpers_lib STATIC)
+
+target_sources(zrythm_test_helpers_lib
+  PUBLIC
+    FILE_SET HEADERS
+    FILES
+      helpers/mock_qobject.h
+      helpers/scoped_qcoreapplication.h
+      helpers/scoped_juce_qapplication.h
 )
 target_link_libraries(zrythm_test_helpers_lib
   PUBLIC
@@ -44,6 +49,10 @@ target_link_libraries(zrythm_test_helpers_lib
 target_include_directories(zrythm_test_helpers_lib
   INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set_target_properties(zrythm_test_helpers_lib PROPERTIES
+  VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
 set(test_lv2_plugins)

@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include <memory>
+
+#include <QCoreApplication>
+
 namespace zrythm::test_helpers
 {
 /**

@@ -8,7 +8,7 @@
 #include <QTest>
 #include <QtConcurrent>
 
-#include "helpers/scoped_juce_message_thread.h"
+#include "helpers/scoped_juce_qapplication.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include <gmock/gmock.h>
@@ -81,8 +81,7 @@ public:
 
 class PluginScannerTest
     : public ::testing::TestWithParam<bool>,
-      private ScopedQCoreApplication,
-      private ScopedJuceApplication
+      private ScopedJuceQApplication
 {
 protected:
   void SetUp () override

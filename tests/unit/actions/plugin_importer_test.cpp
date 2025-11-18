@@ -8,8 +8,7 @@
 
 #include <QSignalSpy>
 
-#include "helpers/scoped_juce_message_thread.h"
-#include "helpers/scoped_qcoreapplication.h"
+#include "helpers/scoped_juce_qapplication.h"
 
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
@@ -21,7 +20,7 @@ namespace zrythm::actions
 
 class PluginImporterTest
     : public ::testing::Test,
-      protected test_helpers::ScopedJuceApplication
+      private test_helpers::ScopedJuceQApplication
 {
 protected:
   void SetUp () override
@@ -192,11 +191,10 @@ protected:
     return std::make_unique<plugins::PluginFactory> (std::move (factory_deps));
   }
 
-  test_helpers::ScopedQCoreApplication scoped_qapplication_;
-  dsp::PortRegistry                    port_registry_;
-  dsp::ProcessorParameterRegistry      param_registry_{ port_registry_ };
-  plugins::PluginRegistry              plugin_registry_;
-  structure::tracks::TrackRegistry     track_registry_;
+  dsp::PortRegistry                port_registry_;
+  dsp::ProcessorParameterRegistry  param_registry_{ port_registry_ };
+  plugins::PluginRegistry          plugin_registry_;
+  structure::tracks::TrackRegistry track_registry_;
   std::unique_ptr<structure::tracks::SingletonTracks> singleton_tracks_;
   std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
   std::unique_ptr<structure::tracks::TrackRouting>    track_routing_;

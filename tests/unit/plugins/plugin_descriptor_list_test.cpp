@@ -8,7 +8,7 @@
 #include <QTest>
 #include <QtConcurrent>
 
-#include "helpers/scoped_juce_message_thread.h"
+#include "helpers/scoped_juce_qapplication.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include <gmock/gmock.h>
@@ -19,7 +19,7 @@ using namespace std::chrono_literals;
 namespace zrythm::plugins::discovery
 {
 
-class PluginDescriptorListTest : public ::testing::Test, private ScopedJuceApplication
+class PluginDescriptorListTest : public ::testing::Test, private ScopedJuceQApplication
 {
 protected:
   // Debouncer delay in the implementation (150ms)
@@ -31,21 +31,13 @@ protected:
 protected:
   void SetUp () override
   {
-    scoped_qapplication_ = std::make_unique<ScopedQCoreApplication> ();
     plugin_list_ = std::make_shared<juce::KnownPluginList> ();
-
-    // Create PluginDescriptorList with message manager lock to satisfy JUCE
-    // assertions
-    juce::MessageManagerLock lock;
     descriptor_list_ = std::make_unique<PluginDescriptorList> (plugin_list_);
   }
 
   void TearDown () override
   {
-    {
-      juce::MessageManagerLock lock;
-      descriptor_list_.reset ();
-    }
+    descriptor_list_.reset ();
     plugin_list_.reset ();
   }
 
@@ -90,9 +82,8 @@ protected:
       }
   }
 
-  std::unique_ptr<ScopedQCoreApplication> scoped_qapplication_;
-  std::shared_ptr<juce::KnownPluginList>  plugin_list_;
-  std::unique_ptr<PluginDescriptorList>   descriptor_list_;
+  std::shared_ptr<juce::KnownPluginList> plugin_list_;
+  std::unique_ptr<PluginDescriptorList>  descriptor_list_;
 };
 
 // Test basic construction

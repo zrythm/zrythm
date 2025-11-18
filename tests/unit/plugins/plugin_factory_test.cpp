@@ -5,7 +5,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
 
-#include "helpers/scoped_juce_message_thread.h"
+#include "helpers/scoped_juce_qapplication.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -15,7 +15,7 @@ namespace zrythm::plugins
 
 class PluginFactoryTest
     : public ::testing::Test,
-      public test_helpers::ScopedJuceApplication
+      private test_helpers::ScopedJuceQApplication
 {
 protected:
   void SetUp () override

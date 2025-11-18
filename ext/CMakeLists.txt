@@ -58,6 +58,10 @@ target_compile_definitions(juce_lib
     JUCE_PLUGINHOST_LADSPA=1
     JUCE_PLUGINHOST_AU=1
     JUCE_DISABLE_JUCE_VERSION_PRINTING=1
+    # This is only needed for tests, but we're enabling it everywhere for
+    # simplicity. If it causes issues, create a separate juce library target
+    # for tests only.
+    JUCE_MODAL_LOOPS_PERMITTED=1
 )
 if(ZRYTHM_WITH_JUCE_LV2_HOSTING)
   target_compile_definitions(juce_lib PUBLIC JUCE_PLUGINHOST_LV2=1)

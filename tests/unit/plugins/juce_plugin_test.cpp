@@ -10,7 +10,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "utils/serialization.h"
 
-#include "helpers/scoped_juce_message_thread.h"
+#include "helpers/scoped_juce_qapplication.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gmock/gmock.h>
@@ -82,7 +82,7 @@ public:
 
 class JucePluginTest
     : public ::testing::Test,
-      public test_helpers::ScopedJuceApplication
+      private test_helpers::ScopedJuceQApplication
 {
 protected:
   void SetUp () override
