@@ -305,7 +305,7 @@ check:exif:
     - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyTest || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/LastTest.log" && exit 1)
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyTest || (cat "${BUILDDIR}-${BUILD_TYPE}"/Testing/Temporary/LastTest_*.log && exit 1)
   - if [ "${BUILD_TYPE}" = "Debug" ]; then
       ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyCoverage ;
     fi

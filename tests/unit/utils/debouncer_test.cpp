@@ -94,7 +94,7 @@ TEST_F (DebouncerTest, TimerResetOnNewCall)
   EXPECT_EQ (callback_count_, 0);
 
   // Wait for the remaining time - should fire now
-  QTest::qWait (custom_delay / 2 + 50ms);
+  QTest::qWait (get_reasonable_time_after_delay (custom_delay));
   EXPECT_EQ (callback_count_, 1);
 }
 

@@ -7,6 +7,7 @@
 #include <QSignalSpy>
 #include <QTest>
 #include <QtConcurrent>
+#include <QtSystemDetection>
 
 #include "helpers/scoped_juce_qapplication.h"
 #include "helpers/scoped_qcoreapplication.h"
@@ -22,8 +23,13 @@ namespace zrythm::plugins::discovery
 class PluginDescriptorListTest : public ::testing::Test, private ScopedJuceQApplication
 {
 protected:
+  // On Mac there are some issues...
+#ifdef Q_OS_MACOS
+  static constexpr auto DEBOUNCER_DELAY = 1500ms;
+#else
   // Debouncer delay in the implementation (150ms)
   static constexpr auto DEBOUNCER_DELAY = 150ms;
+#endif
 
   // Conservative wait time - use 1.5x multiplier like playback cache scheduler
   static constexpr auto CONSERVATIVE_WAIT = DEBOUNCER_DELAY * 3 / 2;
