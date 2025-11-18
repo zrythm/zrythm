@@ -11,6 +11,7 @@ ColumnLayout {
   id: root
 
   required property Channel channel
+  required property PluginImporter pluginImporter
   required property Track track
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -28,29 +29,27 @@ ColumnLayout {
     text: root.track.name
   }
 
-  ListView {
+  PluginSlotList {
     Layout.fillHeight: true
     Layout.fillWidth: true
     Layout.preferredHeight: 100
-    model: root.channel.midiFx
+    pluginGroup: root.channel.midiFx
+    pluginImporter: root.pluginImporter
+    track: root.track
 
-    delegate: PluginSlotView {
-      track: root.track
-    }
     header: Label {
       text: "MIDI FX"
     }
   }
 
-  ListView {
+  PluginSlotList {
     Layout.fillHeight: true
     Layout.fillWidth: true
     Layout.preferredHeight: 100
-    model: root.channel.inserts
+    pluginGroup: root.channel.inserts
+    pluginImporter: root.pluginImporter
+    track: root.track
 
-    delegate: PluginSlotView {
-      track: root.track
-    }
     header: Label {
       text: "Inserts"
     }

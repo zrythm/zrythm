@@ -31,12 +31,35 @@ public:
   /**
    * @brief Imports a plugin instance from a descriptor.
    *
+   * @param descriptor The plugin descriptor to import.
+   */
+  Q_INVOKABLE void
+  importPluginToNewTrack (const plugins::PluginDescriptor * descriptor);
+
+  Q_INVOKABLE void importPluginToGroup (
+    const plugins::PluginDescriptor * descriptor,
+    plugins::PluginGroup *            group);
+
+  Q_INVOKABLE void importPluginToTrack (
+    const plugins::PluginDescriptor * descriptor,
+    structure::tracks::Track *        track);
+
+private:
+  /**
+   * @brief Imports the plugin into the given plugin group, or a plugin group in
+   * the given track based on the plugin type, or creates a new track based on
+   * @p descriptor if @p track_or_group is empty.
+   *
    * This method creates a plugin instance from the given descriptor and
    * adds it to the appropriate track's plugin group using the AddPluginCommand.
    *
-   * @param descriptor The plugin descriptor to import.
+   * @param descriptor
+   * @param track_or_group
    */
-  Q_INVOKABLE void importPlugin (const plugins::PluginDescriptor * descriptor);
+  void import (
+    const plugins::PluginDescriptor * descriptor,
+    std::optional<std::variant<plugins::PluginGroup *, structure::tracks::Track *>>
+      track_or_group);
 
 private:
   undo::UndoStack        &undo_stack_;

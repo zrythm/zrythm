@@ -123,7 +123,7 @@ init_from (
 }
 
 bool
-PluginDescriptor::is_instrument () const
+PluginDescriptor::isInstrument () const
 {
   if (this->num_midi_ins_ == 0 || this->num_audio_outs_ == 0)
     {
@@ -144,7 +144,7 @@ PluginDescriptor::is_instrument () const
 }
 
 bool
-PluginDescriptor::is_effect () const
+PluginDescriptor::isEffect () const
 {
   constexpr std::array<PluginCategory, 37> effect_categories = {
     PluginCategory::Delay,
@@ -191,7 +191,7 @@ PluginDescriptor::is_effect () const
 }
 
 bool
-PluginDescriptor::is_modulator () const
+PluginDescriptor::isModulator () const
 {
   constexpr std::array<PluginCategory, 37> modulator_categories = {
     PluginCategory::ENVELOPE,  PluginCategory::GENERATOR,
@@ -205,7 +205,7 @@ PluginDescriptor::is_modulator () const
 }
 
 bool
-PluginDescriptor::is_midi_modifier () const
+PluginDescriptor::isMidiModifier () const
 {
   return (category_ > PluginCategory::None && category_ == PluginCategory::MIDI)
          || (category_ == PluginCategory::None && num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != Protocol::ProtocolType::VST);
@@ -329,19 +329,19 @@ PluginDescriptor::get_min_bridge_mode () const
 utils::Utf8String
 PluginDescriptor::get_icon_name () const
 {
-  if (is_instrument ())
+  if (isInstrument ())
     {
       return u8"instrument";
     }
-  else if (is_modulator ())
+  else if (isModulator ())
     {
       return u8"modulator";
     }
-  else if (is_midi_modifier ())
+  else if (isMidiModifier ())
     {
       return u8"signal-midi";
     }
-  else if (is_effect ())
+  else if (isEffect ())
     {
       return u8"bars";
     }

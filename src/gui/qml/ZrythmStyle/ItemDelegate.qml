@@ -11,17 +11,13 @@ T.ItemDelegate {
   id: control
 
   font: Style.semiBoldTextFont
-  icon.color: control.palette.text
+  icon.color: control.highlighted ? control.palette.highlightedText : control.palette.text
   icon.height: 24
   icon.width: 24
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
   padding: 4
   spacing: 4
-
-  HoverHandler {
-      id: hoverHandler
-  }
 
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? control.palette.highlight : control.palette.button
@@ -45,5 +41,10 @@ T.ItemDelegate {
     mirrored: control.mirrored
     spacing: control.spacing
     text: control.text
+  }
+
+  HoverHandler {
+    id: hoverHandler
+
   }
 }

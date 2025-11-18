@@ -21,7 +21,33 @@ PluginImporter::PluginImporter (
 }
 
 void
-PluginImporter::importPlugin (const plugins::PluginDescriptor * descriptor)
+PluginImporter::importPluginToNewTrack (
+  const plugins::PluginDescriptor * descriptor)
+{
+  import (descriptor, std::nullopt);
+}
+
+void
+PluginImporter::importPluginToGroup (
+  const plugins::PluginDescriptor * descriptor,
+  plugins::PluginGroup *            group)
+{
+  import (descriptor, group);
+}
+
+void
+PluginImporter::importPluginToTrack (
+  const plugins::PluginDescriptor * descriptor,
+  structure::tracks::Track *        track)
+{
+  import (descriptor, track);
+}
+
+void
+PluginImporter::import (
+  const plugins::PluginDescriptor * descriptor,
+  std::optional<std::variant<plugins::PluginGroup *, structure::tracks::Track *>>
+    track_or_group)
 {
   if (descriptor == nullptr)
     {
@@ -42,7 +68,7 @@ PluginImporter::importPlugin (const plugins::PluginDescriptor * descriptor)
     *config,
     plugins::PluginFactory::InstantiationFinishOptions{
       .handler_ =
-        [this] (plugins::PluginUuidReference inner_plugin_ref) {
+        [this, track_or_group] (plugins::PluginUuidReference inner_plugin_ref) {
           const auto * descr =
             inner_plugin_ref.get_object_base ()->configuration ()->descriptor ();
           z_debug ("Plugin instance ready. Importing {}", descr->getName ());
@@ -51,32 +77,55 @@ PluginImporter::importPlugin (const plugins::PluginDescriptor * descriptor)
           undo_stack_.beginMacro (
             QObject::tr ("Import %1").arg (descr->getName ()));
 
-          // Determine target track based on plugin type
-          const auto &[_, plugin_group] = [&] ()
-            -> std::pair<structure::tracks::Track *, plugins::PluginGroup *> {
-            if (descr->is_instrument ())
+          // Determine target group
+          auto * plugin_group = [&] () -> plugins::PluginGroup * {
+            structure::tracks::Track * track = nullptr;
+
+            if (track_or_group.has_value ())
               {
-                auto * t =
-                  track_creator_
-                    .addEmptyTrackFromType (
-                      structure::tracks::Track::Type::Instrument)
-                    .value<structure::tracks::InstrumentTrack *> ();
-                return std::make_pair (t, t->channel ()->instruments ());
+                if (std::holds_alternative<plugins::PluginGroup *> (
+                      track_or_group.value ()))
+                  {
+                    return std::get<plugins::PluginGroup *> (
+                      track_or_group.value ());
+                  }
+                if (std::holds_alternative<structure::tracks::Track *> (
+                      track_or_group.value ()))
+                  {
+                    track = std::get<structure::tracks::Track *> (
+                      track_or_group.value ());
+                  }
               }
-            if (descr->is_midi_modifier ())
+
+            if (descr->isInstrument ())
               {
                 auto * t =
-                  track_creator_
-                    .addEmptyTrackFromType (
-                      structure::tracks::Track::Type::MidiBus)
-                    .value<structure::tracks::MidiBusTrack *> ();
-                return std::make_pair (t, t->channel ()->midiFx ());
+                  track != nullptr
+                    ? track
+                    : track_creator_
+                        .addEmptyTrackFromType (
+                          structure::tracks::Track::Type::Instrument)
+                        .value<structure::tracks::InstrumentTrack *> ();
+                return t->channel ()->instruments ();
+              }
+            if (descr->isMidiModifier ())
+              {
+                auto * t =
+                  track != nullptr
+                    ? track
+                    : track_creator_
+                        .addEmptyTrackFromType (
+                          structure::tracks::Track::Type::MidiBus)
+                        .value<structure::tracks::MidiBusTrack *> ();
+                return t->channel ()->midiFx ();
               }
             auto * t =
-              track_creator_
-                .addEmptyTrackFromType (structure::tracks::Track::Type::AudioBus)
-                .value<structure::tracks::AudioBusTrack *> ();
-            return std::make_pair (t, t->channel ()->inserts ());
+              track != nullptr
+                ? track
+                : track_creator_
+                    .addEmptyTrackFromType (structure::tracks::Track::Type::AudioBus)
+                    .value<structure::tracks::AudioBusTrack *> ();
+            return t->channel ()->inserts ();
           }();
 
           // Add plugin to the group using AddPluginCommand

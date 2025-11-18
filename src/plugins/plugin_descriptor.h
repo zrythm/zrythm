@@ -134,10 +134,10 @@ public:
    */
   Q_INVOKABLE QString serializeToString () const;
 
-  bool is_instrument () const;
-  bool is_effect () const;
-  bool is_modulator () const;
-  bool is_midi_modifier () const;
+  Q_INVOKABLE bool isInstrument () const;
+  Q_INVOKABLE bool isEffect () const;
+  Q_INVOKABLE bool isModulator () const;
+  Q_INVOKABLE bool isMidiModifier () const;
 
   /**
    * Returns whether the two descriptors describe the same plugin, ignoring

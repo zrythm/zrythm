@@ -12,6 +12,7 @@ ColumnLayout {
 
   required property Track track
   required property UndoStack undoStack
+  required property PluginImporter pluginImporter
 
   TrackOperator {
     id: trackOperator
@@ -157,17 +158,15 @@ ColumnLayout {
     id: pluginExpander
 
     required property string iconName
-    required property var model
+    required property PluginGroup model
 
     icon.source: ResourceManager.getIconUrl("zrythm-dark", iconName)
 
-    frameContentItem: ListView {
+    frameContentItem: PluginSlotList {
       implicitHeight: contentHeight
-      model: pluginExpander.model
-
-      delegate: PluginSlotView {
-        track: root.track
-      }
+      pluginGroup: pluginExpander.model
+      track: root.track
+      pluginImporter: root.pluginImporter
     }
   }
 }

@@ -32,29 +32,29 @@ create_test_descriptor (
 TEST (PluginDescriptorTest, TypeDetection)
 {
   auto instrument = create_test_descriptor (PluginCategory::Instrument);
-  EXPECT_TRUE (instrument->is_instrument ());
-  EXPECT_FALSE (instrument->is_effect ());
-  EXPECT_FALSE (instrument->is_modulator ());
-  EXPECT_FALSE (instrument->is_midi_modifier ());
+  EXPECT_TRUE (instrument->isInstrument ());
+  EXPECT_FALSE (instrument->isEffect ());
+  EXPECT_FALSE (instrument->isModulator ());
+  EXPECT_FALSE (instrument->isMidiModifier ());
 
   auto effect = create_test_descriptor (PluginCategory::Delay);
-  EXPECT_FALSE (effect->is_instrument ());
-  EXPECT_TRUE (effect->is_effect ());
-  EXPECT_FALSE (effect->is_modulator ());
-  EXPECT_FALSE (effect->is_midi_modifier ());
+  EXPECT_FALSE (effect->isInstrument ());
+  EXPECT_TRUE (effect->isEffect ());
+  EXPECT_FALSE (effect->isModulator ());
+  EXPECT_FALSE (effect->isMidiModifier ());
 
   auto modulator = create_test_descriptor (PluginCategory::MODULATOR);
   modulator->num_cv_outs_ = 1;
-  EXPECT_FALSE (modulator->is_instrument ());
-  EXPECT_TRUE (modulator->is_effect ());
-  EXPECT_TRUE (modulator->is_modulator ());
-  EXPECT_FALSE (modulator->is_midi_modifier ());
+  EXPECT_FALSE (modulator->isInstrument ());
+  EXPECT_TRUE (modulator->isEffect ());
+  EXPECT_TRUE (modulator->isModulator ());
+  EXPECT_FALSE (modulator->isMidiModifier ());
 
   auto midi_mod = create_test_descriptor (PluginCategory::MIDI);
-  EXPECT_FALSE (midi_mod->is_instrument ());
-  EXPECT_FALSE (midi_mod->is_effect ());
-  EXPECT_FALSE (midi_mod->is_modulator ());
-  EXPECT_TRUE (midi_mod->is_midi_modifier ());
+  EXPECT_FALSE (midi_mod->isInstrument ());
+  EXPECT_FALSE (midi_mod->isEffect ());
+  EXPECT_FALSE (midi_mod->isModulator ());
+  EXPECT_TRUE (midi_mod->isMidiModifier ());
 }
 
 TEST (PluginDescriptorTest, CategoryConversion)

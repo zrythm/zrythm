@@ -413,7 +413,7 @@ TEST_F (PluginDescriptorListTest, InstrumentPlugins)
   EXPECT_NE (descriptor, nullptr);
 
   // Should be recognized as an instrument
-  EXPECT_TRUE (descriptor->is_instrument ());
+  EXPECT_TRUE (descriptor->isInstrument ());
 }
 
 // Test debounced update functionality

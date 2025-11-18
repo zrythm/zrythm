@@ -57,6 +57,7 @@ ColumnLayout {
         anchors.fill: parent
         track: trackInspectorLoader.track
         undoStack: root.undoStack
+        pluginImporter: root.project.pluginImporter
       }
 
       Connections {

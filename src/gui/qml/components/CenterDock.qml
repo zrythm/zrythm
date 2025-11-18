@@ -101,7 +101,7 @@ ColumnLayout {
               root.project.fileImporter.importFiles(filePaths, 0, null);
             }
             onPluginDescriptorDropped: descriptor => {
-              root.project.pluginImporter.importPlugin(descriptor);
+              root.project.pluginImporter.importPluginToNewTrack(descriptor);
             }
           }
 

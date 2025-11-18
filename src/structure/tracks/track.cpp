@@ -89,9 +89,9 @@ Track::Type
 Track::type_get_from_plugin_descriptor (
   const zrythm::plugins::PluginDescriptor &descr)
 {
-  if (descr.is_instrument ())
+  if (descr.isInstrument ())
     return Track::Type::Instrument;
-  else if (descr.is_midi_modifier ())
+  else if (descr.isMidiModifier ())
     return Track::Type::Midi;
   else
     return Track::Type::AudioBus;
@@ -512,7 +512,7 @@ Track::is_plugin_descriptor_valid_for_slot_type (
       return descr.num_midi_outs_ > 0;
       break;
     case zrythm::plugins::PluginSlotType::Instrument:
-      return track_type == Track::Type::Instrument && descr.is_instrument ();
+      return track_type == Track::Type::Instrument && descr.isInstrument ();
     default:
       break;
     }

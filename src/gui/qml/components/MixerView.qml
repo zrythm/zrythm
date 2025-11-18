@@ -12,6 +12,7 @@ RowLayout {
 
   required property Tracklist tracklist
   required property UndoStack undoStack
+  required property PluginImporter pluginImporter
 
   Repeater {
     id: allChannels
@@ -22,6 +23,7 @@ RowLayout {
       channel: track.channel
       tracklist: root.tracklist
       undoStack: root.undoStack
+      pluginImporter: root.pluginImporter
     }
     model: TrackFilterProxyModel {
       sourceModel: root.tracklist.collection

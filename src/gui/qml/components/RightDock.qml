@@ -60,7 +60,8 @@ ColumnLayout {
 
       pluginManager: GlobalState.zrythm.pluginManager
 
-      onPluginDescriptorActivated: descriptor => root.project.pluginImporter.importPlugin(descriptor)
+      // TODO: import to current track
+      onPluginDescriptorActivated: descriptor => root.project.pluginImporter.importPluginToNewTrack(descriptor)
     }
 
     FileBrowserPage {

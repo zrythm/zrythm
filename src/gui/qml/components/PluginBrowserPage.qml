@@ -50,9 +50,7 @@ Item {
     visible: Drag.active
 
     Drag.onDragFinished: {}
-    Drag.onDragStarted: {
-      console.log("drag started", Drag.mimeData);
-    }
+    Drag.onDragStarted: {}
   }
 
   ColumnLayout {
@@ -113,7 +111,15 @@ Item {
 
     highlighted: ListView.isCurrentItem
     icon.height: 16
-    icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
+    icon.source: {
+      if (descriptor.isInstrument()) {
+        return ResourceManager.getIconUrl("zrythm-dark", "instrument.svg");
+      } else if (descriptor.isMidiModifier()) {
+        return ResourceManager.getIconUrl("zrythm-dark", "signal-midi.svg");
+      } else {
+        return ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg");
+      }
+    }
     icon.width: 16
     text: descriptor?.name
 
