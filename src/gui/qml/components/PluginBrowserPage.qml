@@ -93,13 +93,64 @@ Item {
       }
     }
 
-    Label {
+    // Plugin Description Area
+    ColumnLayout {
       id: pluginInfoLabel
 
-      property var descriptor
+      property PluginDescriptor descriptor
+      readonly property color fadedColor: QmlUtils.adjustOpacity(palette.text, 0.6)
 
-      Layout.fillWidth: true
-      text: descriptor ? "Plugin Info:\n" + descriptor.name + "\n" + descriptor.format : "No plugin selected"
+      Layout.leftMargin: 4
+      Layout.rightMargin: 4
+
+      ColumnLayout {
+        spacing: 1
+
+        // Plugin author and type labels
+        Label {
+          id: pluginAuthorLabel
+
+          Layout.fillWidth: true
+          elide: Text.ElideRight
+          font.bold: true
+          horizontalAlignment: Text.AlignHCenter
+          text: pluginInfoLabel.descriptor?.name
+        }
+
+        Label {
+          id: pluginTypeLabel
+
+          Layout.fillWidth: true
+          color: pluginInfoLabel.fadedColor
+          font.bold: true
+          horizontalAlignment: Text.AlignHCenter
+          text: pluginInfoLabel.descriptor?.category + " • " + pluginInfoLabel.descriptor?.format
+        }
+      }
+
+      // Plugin key-value grid
+      GridLayout {
+        Layout.fillWidth: true
+        columns: 2
+        rowSpacing: 4
+
+        // Vendor
+        Label {
+          Layout.fillWidth: false
+          color: pluginInfoLabel.fadedColor
+          horizontalAlignment: Text.AlignRight
+          text: qsTr("Vendor")
+        }
+
+        Label {
+          id: plugin_audio_label
+
+          Layout.fillWidth: true
+          elide: Text.ElideRight
+          horizontalAlignment: Text.AlignLeft
+          text: pluginInfoLabel.descriptor?.vendor
+        }
+      }
     }
   }
 

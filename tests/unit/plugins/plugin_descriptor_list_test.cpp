@@ -159,7 +159,7 @@ TEST_F (PluginDescriptorListTest, SinglePlugin)
   auto * descriptor = qobject_cast<plugins::PluginDescriptor *> (
     descriptor_data.value<QObject *> ());
   EXPECT_NE (descriptor, nullptr);
-  EXPECT_EQ (descriptor->getName (), QString ("Test Plugin 0"));
+  EXPECT_EQ (descriptor->name (), QString ("Test Plugin 0"));
 }
 
 // Test model with multiple plugins
@@ -308,7 +308,7 @@ TEST_F (PluginDescriptorListTest, DescriptorCreation)
   auto * descriptor = qobject_cast<plugins::PluginDescriptor *> (
     descriptor_data.value<QObject *> ());
   EXPECT_NE (descriptor, nullptr);
-  EXPECT_EQ (descriptor->getName (), QString ("Specific Test Plugin"));
+  EXPECT_EQ (descriptor->name (), QString ("Specific Test Plugin"));
   EXPECT_EQ (
     descriptor->author_.to_qstring (), QString ("Specific Manufacturer"));
 }
@@ -365,7 +365,7 @@ TEST_F (PluginDescriptorListTest, DifferentPluginFormats)
         descriptor_data.value<QObject *> ());
       EXPECT_NE (descriptor, nullptr);
 
-      auto format = descriptor->getFormat ();
+      auto format = descriptor->format ();
       if (format == QString ("VST3"))
         {
           found_vst3 = true;

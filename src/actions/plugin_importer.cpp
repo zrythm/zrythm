@@ -55,7 +55,7 @@ PluginImporter::import (
       return;
     }
 
-  z_debug ("Importing plugin: {}", descriptor->getName ());
+  z_debug ("Importing plugin: {}", descriptor->name ());
 
   // Create plugin configuration from descriptor
   auto config =
@@ -71,11 +71,11 @@ PluginImporter::import (
         [this, track_or_group] (plugins::PluginUuidReference inner_plugin_ref) {
           const auto * descr =
             inner_plugin_ref.get_object_base ()->configuration ()->descriptor ();
-          z_debug ("Plugin instance ready. Importing {}", descr->getName ());
+          z_debug ("Plugin instance ready. Importing {}", descr->name ());
 
           // Begin macro for undo/redo
           undo_stack_.beginMacro (
-            QObject::tr ("Import %1").arg (descr->getName ()));
+            QObject::tr ("Import %1").arg (descr->name ()));
 
           // Determine target group
           auto * plugin_group = [&] () -> plugins::PluginGroup * {

@@ -44,7 +44,7 @@ plugin_toplevel_window_provider (plugins::Plugin &plugin)
           ? structure::tracks::from_variant (track_ref->get_object ())->name ()
           : QObject::tr ("<no track>"),
         plugin.get_node_name (),
-        plugin.configuration ()->descriptor ()->getFormat ())),
+        plugin.configuration ()->descriptor ()->format ())),
     [&plugin] () {
       z_debug (
         "close button pressed on '{}' plugin window", plugin.get_node_name ());

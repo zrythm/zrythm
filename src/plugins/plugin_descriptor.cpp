@@ -44,6 +44,8 @@ PluginDescriptor::from_juce_description (
       descr->category_ = PluginCategory::Instrument;
       descr->num_midi_ins_ = 1;
     }
+  descr->category_str_ =
+    utils::Utf8String::from_juce_string (juce_desc.category);
 
   descr->num_audio_ins_ = juce_desc.numInputChannels;
   descr->num_audio_outs_ = juce_desc.numOutputChannels;
@@ -87,11 +89,23 @@ PluginDescriptor::serializeToString () const
 }
 
 QString
-PluginDescriptor::getFormat () const
+PluginDescriptor::format () const
 {
   return utils::Utf8String::
     from_juce_string (to_juce_description ()->pluginFormatName)
       .to_qstring ();
+}
+
+QString
+PluginDescriptor::vendor () const
+{
+  return author_.to_qstring ();
+}
+
+QString
+PluginDescriptor::category () const
+{
+  return category_str_.to_qstring ();
 }
 
 void

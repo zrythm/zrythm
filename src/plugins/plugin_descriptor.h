@@ -114,8 +114,10 @@ class PluginDescriptor : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (QString name READ getName CONSTANT FINAL)
-  Q_PROPERTY (QString format READ getFormat CONSTANT FINAL)
+  Q_PROPERTY (QString name READ name CONSTANT FINAL)
+  Q_PROPERTY (QString vendor READ vendor CONSTANT FINAL)
+  Q_PROPERTY (QString format READ format CONSTANT FINAL)
+  Q_PROPERTY (QString category READ category CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
 public:
@@ -126,6 +128,15 @@ public:
 
   static PluginCategory    string_to_category (const utils::Utf8String &str);
   static utils::Utf8String category_to_string (PluginCategory category);
+
+  // =========================================================
+  // QML interface
+  // =========================================================
+
+  [[nodiscard]] QString name () const { return name_.to_qstring (); }
+  QString               format () const;
+  QString               vendor () const;
+  QString               category () const;
 
   /**
    * @brief Serializes the descriptor to a string.
@@ -138,6 +149,8 @@ public:
   Q_INVOKABLE bool isEffect () const;
   Q_INVOKABLE bool isModulator () const;
   Q_INVOKABLE bool isMidiModifier () const;
+
+  // =========================================================
 
   /**
    * Returns whether the two descriptors describe the same plugin, ignoring
@@ -161,9 +174,6 @@ public:
   utils::Utf8String get_icon_name () const;
 
   // GMenuModel * generate_context_menu () const;
-
-  [[nodiscard]] QString getName () const { return name_.to_qstring (); }
-  QString               getFormat () const;
 
   friend void init_from (
     PluginDescriptor       &obj,
