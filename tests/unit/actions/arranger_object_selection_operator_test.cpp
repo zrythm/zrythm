@@ -22,6 +22,23 @@ protected:
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
+    // Setup providers for factory
+    sample_rate_provider = [] () { return 44100.0; };
+    bpm_provider = [] () { return 120.0; };
+
+    // Create factory
+    factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
+      structure::arrangement::ArrangerObjectFactory::Dependencies{
+        .tempo_map_ = *tempo_map,
+        .object_registry_ = object_registry,
+        .file_audio_source_registry_ = file_audio_source_registry,
+        .musical_mode_getter_ = [] () { return true; },
+        .last_timeline_obj_len_provider_ = [] () { return 100.0; },
+        .last_editor_obj_len_provider_ = [] () { return 50.0; },
+        .automation_curve_algorithm_provider_ =
+          [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
+      sample_rate_provider, bpm_provider);
+
     // Create test objects
     marker_ref = object_registry.create_object<structure::arrangement::Marker> (
       *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
@@ -183,7 +200,7 @@ protected:
 
     // Create operator
     operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
-      *undo_stack_, *selection_model_, mock_owner_provider);
+      *undo_stack_, *selection_model_, mock_owner_provider, *factory);
   }
 
   std::unique_ptr<dsp::TempoMap>                 tempo_map;
@@ -196,7 +213,11 @@ protected:
   structure::arrangement::ArrangerObjectListModel  list_model_{ test_objects_ };
   std::unique_ptr<QItemSelectionModel>             selection_model_;
   std::unique_ptr<MockArrangerObjectOwner>         mock_owner_;
-  structure::arrangement::ArrangerObjectUuidReference note_ref{
+  structure::arrangement::ArrangerObjectFactory::SampleRateProvider
+    sample_rate_provider;
+  structure::arrangement::ArrangerObjectFactory::BpmProvider     bpm_provider;
+  std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
+  structure::arrangement::ArrangerObjectUuidReference            note_ref{
     object_registry
   };
   structure::arrangement::ArrangerObjectUuidReference marker_ref{
@@ -1432,6 +1453,242 @@ TEST_F (
     {
       EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), 0.0);
     }
+}
+
+// Test cloneObjects with valid selection
+TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsValidSelection)
+{
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
+
+  // Store UUIDs of original objects
+  const auto marker_id = marker_ref.id ();
+  const auto note_id = note_ref.id ();
+
+  // Verify objects exist before cloning
+  bool marker_found_before =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_before =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_TRUE (marker_found_before);
+  EXPECT_TRUE (note_found_before);
+
+  // Clone selected objects
+  bool result = operator_->cloneObjects ();
+  EXPECT_TRUE (result);
+
+  // Should have created a macro command with individual add commands
+  EXPECT_GT (undo_stack_->count (), initial_count);
+
+  // Verify original objects still exist
+  bool marker_found_after_original =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_id);
+  bool note_found_after_original =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id);
+  EXPECT_TRUE (marker_found_after_original);
+  EXPECT_TRUE (note_found_after_original);
+
+  // Verify cloned objects were added (they should have new UUIDs)
+  // We can't easily verify the exact cloned objects without exposing more
+  // internals, but we can verify that more objects exist in the owners
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::Marker>::get_children_vector ()
+      .size (),
+    2);
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_children_vector ()
+      .size (),
+    2);
+}
+
+// Test cloneObjects with no selection
+TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsNoSelection)
+{
+  // Clear selection
+  selection_model_->clear ();
+
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
+
+  // Attempt to clone with no selection
+  bool result = operator_->cloneObjects ();
+  EXPECT_FALSE (result);
+
+  // No commands should be pushed for no selection
+  EXPECT_EQ (undo_stack_->index (), initial_count);
+}
+
+// Test cloneObjects with uncloneable objects
+TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
+{
+  // Create a non-deletable marker (start marker) - using same logic as
+  // cloneable check
+  auto start_marker_ref =
+    object_registry.create_object<structure::arrangement::Marker> (
+      *tempo_map, structure::arrangement::Marker::MarkerType::Start);
+
+  // Clear existing objects and add only uncloneable marker
+  test_objects_.get<structure::arrangement::random_access_index> ().clear ();
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    start_marker_ref);
+
+  // Update list model and selection
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+
+  // Store initial undo stack count
+  const int initial_count = undo_stack_->count ();
+
+  // Attempt to clone uncloneable object
+  bool result = operator_->cloneObjects ();
+  EXPECT_FALSE (result);
+
+  // No commands should be pushed for uncloneable objects
+  EXPECT_EQ (undo_stack_->index (), initial_count);
+}
+
+// Test cloneObjects undo/redo functionality
+TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUndoRedo)
+{
+  // Select marker and note for testing
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
+  // Store initial counts
+  const int  initial_undo_count = undo_stack_->count ();
+  const auto initial_marker_count =
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::Marker>::get_children_vector ()
+      .size ();
+  const auto initial_note_count =
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_children_vector ()
+      .size ();
+
+  // Clone objects
+  bool result = operator_->cloneObjects ();
+  EXPECT_TRUE (result);
+
+  const int after_clone_count = undo_stack_->count ();
+  EXPECT_GT (after_clone_count, initial_undo_count);
+
+  // Verify cloned objects were added
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::Marker>::get_children_vector ()
+      .size (),
+    initial_marker_count * 2);
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_children_vector ()
+      .size (),
+    initial_note_count * 2);
+
+  // Undo cloning
+  undo_stack_->undo ();
+  EXPECT_EQ (undo_stack_->index (), after_clone_count - 1);
+
+  // Verify objects are back to original count after undo
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::Marker>::get_children_vector ()
+      .size (),
+    initial_marker_count);
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_children_vector ()
+      .size (),
+    initial_note_count);
+
+  // Redo cloning
+  undo_stack_->redo ();
+  EXPECT_EQ (undo_stack_->index (), after_clone_count);
+
+  // Verify objects are cloned again after redo
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::Marker>::get_children_vector ()
+      .size (),
+    initial_marker_count * 2);
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_children_vector ()
+      .size (),
+    initial_note_count * 2);
+}
+
+// Test cloneObjects with audio region to verify audio source cloning
+TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioRegion)
+{
+  // Select audio region for testing
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (3, 0), QItemSelectionModel::Select);
+
+  // Store initial counts
+  const int  initial_undo_count = undo_stack_->count ();
+  const auto initial_audio_region_count =
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioRegion>::get_children_vector ()
+      .size ();
+
+  // Clone audio region
+  bool result = operator_->cloneObjects ();
+  EXPECT_TRUE (result);
+
+  // Verify command was pushed
+  EXPECT_GT (undo_stack_->count (), initial_undo_count);
+
+  // Verify audio region was cloned
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioRegion>::get_children_vector ()
+      .size (),
+    initial_audio_region_count * 2);
+
+  // Test undo/redo to ensure proper audio source handling
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioRegion>::get_children_vector ()
+      .size (),
+    initial_audio_region_count);
+
+  undo_stack_->redo ();
+  EXPECT_GT (
+    mock_owner_
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioRegion>::get_children_vector ()
+      .size (),
+    initial_audio_region_count);
 }
 
 } // namespace zrythm::actions

@@ -30,10 +30,11 @@ public:
     structure::arrangement::ArrangerObjectPtrVariant)>;
 
   explicit ArrangerObjectSelectionOperator (
-    undo::UndoStack     &undoStack,
-    QItemSelectionModel &selectionModel,
-    ObjectOwnerProvider  objectOwnerProvider,
-    QObject *            parent = nullptr);
+    undo::UndoStack                               &undoStack,
+    QItemSelectionModel                           &selectionModel,
+    ObjectOwnerProvider                            objectOwnerProvider,
+    structure::arrangement::ArrangerObjectFactory &objectFactory,
+    QObject *                                      parent = nullptr);
 
   Q_INVOKABLE bool moveByTicks (double tick_delta);
 
@@ -47,6 +48,8 @@ public:
     double                    delta);
 
   Q_INVOKABLE bool deleteObjects ();
+
+  Q_INVOKABLE bool cloneObjects ();
 
 private:
   auto extractSelectedObjects () const -> SelectedObjectsVector;
@@ -73,9 +76,10 @@ private:
   bool process_vertical_move (double delta);
 
 private:
-  undo::UndoStack     &undo_stack_;
-  QItemSelectionModel &selection_model_;
-  ObjectOwnerProvider  object_owner_provider_;
+  undo::UndoStack                               &undo_stack_;
+  QItemSelectionModel                           &selection_model_;
+  ObjectOwnerProvider                            object_owner_provider_;
+  structure::arrangement::ArrangerObjectFactory &object_factory_;
 };
 
 } // namespace zrythm::actions

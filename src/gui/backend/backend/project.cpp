@@ -1734,7 +1734,8 @@ Project::createArrangerObjectSelectionOperator (
             }
         },
         obj_var);
-    });
+    },
+    *arranger_object_factory_);
 
   // Transfer ownership to QML JavaScript engine for proper cleanup
   QQmlEngine::setObjectOwnership (sel_operator, QQmlEngine::JavaScriptOwnership);

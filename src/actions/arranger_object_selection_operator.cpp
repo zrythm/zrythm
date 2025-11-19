@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_object_selection_operator.h"
+#include "commands/add_arranger_object_command.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
@@ -14,13 +15,15 @@ namespace zrythm::actions
 {
 
 ArrangerObjectSelectionOperator ::ArrangerObjectSelectionOperator (
-  undo::UndoStack     &undoStack,
-  QItemSelectionModel &selectionModel,
-  ObjectOwnerProvider  objectOwnerProvider,
-  QObject *            parent)
+  undo::UndoStack                               &undoStack,
+  QItemSelectionModel                           &selectionModel,
+  ObjectOwnerProvider                            objectOwnerProvider,
+  structure::arrangement::ArrangerObjectFactory &objectFactory,
+  QObject *                                      parent)
     : QObject (parent), undo_stack_ (undoStack),
       selection_model_ (selectionModel),
-      object_owner_provider_ (std::move (objectOwnerProvider))
+      object_owner_provider_ (std::move (objectOwnerProvider)),
+      object_factory_ (objectFactory)
 {
 }
 
@@ -85,7 +88,6 @@ ArrangerObjectSelectionOperator::moveNotesByPitch (int pitch_delta)
 bool
 ArrangerObjectSelectionOperator::deleteObjects ()
 {
-
   // Extract selected objects from selection model
   auto selected_objects = extractSelectedObjects ();
   if (selected_objects.empty ())
@@ -124,6 +126,62 @@ ArrangerObjectSelectionOperator::deleteObjects ()
             }
           auto * command =
             new commands::RemoveArrangerObjectCommand (*owner, obj_ref);
+          undo_stack_.push (command);
+        },
+        owner_var);
+    }
+  undo_stack_.endMacro ();
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::cloneObjects ()
+{
+  // Extract selected objects from selection model
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected to clone");
+      return false;
+    }
+
+  // Check for uncloneable objects
+  const auto all_cloneable =
+    std::ranges::all_of (selected_objects, [] (const auto &obj_ref) {
+      return std::visit (
+        [] (const auto &obj) {
+          return structure::arrangement::is_arranger_object_deletable (*obj);
+        },
+        obj_ref.get_object ());
+    });
+  if (!all_cloneable)
+    {
+      z_warning ("Some selected objects cannot be cloned");
+      return false;
+    }
+
+  // Create and push command
+  undo_stack_.beginMacro (
+    QObject::tr ("Copy %1 Objects").arg (selected_objects.size ()));
+  for (const auto &obj_ref : selected_objects)
+    {
+      auto new_obj_ref = std::visit (
+        [&] (const auto &obj) {
+          return object_factory_.clone_new_object_identity (*obj);
+        },
+        obj_ref.get_object ());
+
+      auto owner_var = object_owner_provider_ (obj_ref.get_object ());
+      std::visit (
+        [&] (auto &owner) {
+          if (owner == nullptr)
+            {
+              z_warning ("No owner found for object {}", obj_ref.id ());
+              return;
+            }
+          auto * command =
+            new commands::AddArrangerObjectCommand (*owner, new_obj_ref);
           undo_stack_.push (command);
         },
         owner_var);

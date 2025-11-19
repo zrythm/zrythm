@@ -240,4 +240,264 @@ TEST_F (ArrangerObjectFactoryTest, BuildEmptyObjects)
   EXPECT_FALSE (object_registry.contains (empty_audio_region->get_uuid ()));
 }
 
+// Test clone_new_object_identity for different object types
+TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentity)
+{
+  // Test cloning MidiNote
+  auto original_midi_note_ref =
+    factory->get_builder<MidiNote> ()
+      .with_start_ticks (100.0)
+      .with_end_ticks (500.0)
+      .with_pitch (60)
+      .with_velocity (80)
+      .build_in_registry ();
+
+  auto * original_midi_note = original_midi_note_ref.get_object_as<MidiNote> ();
+  EXPECT_NE (original_midi_note, nullptr);
+  const auto original_midi_note_uuid = original_midi_note->get_uuid ();
+
+  // Clone the midi note
+  auto cloned_midi_note_ref =
+    factory->clone_new_object_identity (*original_midi_note);
+  auto * cloned_midi_note = cloned_midi_note_ref.get_object_as<MidiNote> ();
+  EXPECT_NE (cloned_midi_note, nullptr);
+  const auto cloned_midi_note_uuid = cloned_midi_note->get_uuid ();
+
+  // Verify cloned object has same properties but different UUID
+  EXPECT_NE (original_midi_note_uuid, cloned_midi_note_uuid);
+  EXPECT_DOUBLE_EQ (
+    cloned_midi_note->position ()->ticks (),
+    original_midi_note->position ()->ticks ());
+  EXPECT_DOUBLE_EQ (
+    cloned_midi_note->bounds ()->length ()->ticks (),
+    original_midi_note->bounds ()->length ()->ticks ());
+  EXPECT_EQ (cloned_midi_note->pitch (), original_midi_note->pitch ());
+  EXPECT_EQ (cloned_midi_note->velocity (), original_midi_note->velocity ());
+  EXPECT_TRUE (object_registry.contains (cloned_midi_note_uuid));
+
+  // Test cloning Marker
+  auto original_marker_ref =
+    factory->get_builder<Marker> ()
+      .with_start_ticks (200.0)
+      .with_name ("Test Marker")
+      .with_marker_type (Marker::MarkerType::Custom)
+      .build_in_registry ();
+
+  auto * original_marker = original_marker_ref.get_object_as<Marker> ();
+  EXPECT_NE (original_marker, nullptr);
+  const auto original_marker_uuid = original_marker->get_uuid ();
+
+  // Clone the marker
+  auto cloned_marker_ref = factory->clone_new_object_identity (*original_marker);
+  auto * cloned_marker = cloned_marker_ref.get_object_as<Marker> ();
+  EXPECT_NE (cloned_marker, nullptr);
+  const auto cloned_marker_uuid = cloned_marker->get_uuid ();
+
+  // Verify cloned object has same properties but different UUID
+  EXPECT_NE (original_marker_uuid, cloned_marker_uuid);
+  EXPECT_DOUBLE_EQ (
+    cloned_marker->position ()->ticks (),
+    original_marker->position ()->ticks ());
+  EXPECT_EQ (cloned_marker->name ()->name (), original_marker->name ()->name ());
+  EXPECT_EQ (cloned_marker->markerType (), original_marker->markerType ());
+  EXPECT_TRUE (object_registry.contains (cloned_marker_uuid));
+
+  // Test cloning AutomationPoint
+  auto original_automation_point_ref =
+    factory->get_builder<AutomationPoint> ()
+      .with_start_ticks (300.0)
+      .with_automatable_value (0.75)
+      .build_in_registry ();
+
+  auto * original_automation_point =
+    original_automation_point_ref.get_object_as<AutomationPoint> ();
+  EXPECT_NE (original_automation_point, nullptr);
+  const auto original_automation_point_uuid =
+    original_automation_point->get_uuid ();
+
+  // Clone the automation point
+  auto cloned_automation_point_ref =
+    factory->clone_new_object_identity (*original_automation_point);
+  auto * cloned_automation_point =
+    cloned_automation_point_ref.get_object_as<AutomationPoint> ();
+  EXPECT_NE (cloned_automation_point, nullptr);
+  const auto cloned_automation_point_uuid = cloned_automation_point->get_uuid ();
+
+  // Verify cloned object has same properties but different UUID
+  EXPECT_NE (original_automation_point_uuid, cloned_automation_point_uuid);
+  EXPECT_DOUBLE_EQ (
+    cloned_automation_point->position ()->ticks (),
+    original_automation_point->position ()->ticks ());
+  EXPECT_FLOAT_EQ (
+    cloned_automation_point->value (), original_automation_point->value ());
+  EXPECT_TRUE (object_registry.contains (cloned_automation_point_uuid));
+}
+
+// Test clone_new_object_identity for AudioRegion using public API
+TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioRegion)
+{
+  // First create a dummy audio source
+  auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
+  auto source_ref = file_audio_source_registry.create_object<
+    dsp::FileAudioSource> (
+    *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32, 44100, 120.0,
+    u8"TestSource");
+
+  // Create audio region
+  auto original_audio_region_ref =
+    factory->create_audio_region_with_clip (source_ref, 1000.0);
+  auto * original_audio_region =
+    original_audio_region_ref.get_object_as<AudioRegion> ();
+  EXPECT_NE (original_audio_region, nullptr);
+  const auto original_audio_region_uuid = original_audio_region->get_uuid ();
+
+  // Clone the audio region
+  auto cloned_audio_region_ref =
+    factory->clone_new_object_identity (*original_audio_region);
+  auto * cloned_audio_region =
+    cloned_audio_region_ref.get_object_as<AudioRegion> ();
+  EXPECT_NE (cloned_audio_region, nullptr);
+  const auto cloned_audio_region_uuid = cloned_audio_region->get_uuid ();
+
+  // Verify cloned object has same properties but different UUID
+  EXPECT_NE (original_audio_region_uuid, cloned_audio_region_uuid);
+  EXPECT_DOUBLE_EQ (
+    cloned_audio_region->position ()->ticks (),
+    original_audio_region->position ()->ticks ());
+  EXPECT_DOUBLE_EQ (
+    cloned_audio_region->bounds ()->length ()->ticks (),
+    original_audio_region->bounds ()->length ()->ticks ());
+  EXPECT_TRUE (object_registry.contains (cloned_audio_region_uuid));
+}
+
+// Test clone_new_object_identity for MidiRegion
+TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityMidiRegion)
+{
+  auto original_midi_region_ref =
+    factory->get_builder<MidiRegion> ()
+      .with_start_ticks (500.0)
+      .with_end_ticks (1500.0)
+      .build_in_registry ();
+
+  auto * original_midi_region =
+    original_midi_region_ref.get_object_as<MidiRegion> ();
+  EXPECT_NE (original_midi_region, nullptr);
+  const auto original_midi_region_uuid = original_midi_region->get_uuid ();
+
+  // Clone the midi region
+  auto cloned_midi_region_ref =
+    factory->clone_new_object_identity (*original_midi_region);
+  auto * cloned_midi_region =
+    cloned_midi_region_ref.get_object_as<MidiRegion> ();
+  EXPECT_NE (cloned_midi_region, nullptr);
+  const auto cloned_midi_region_uuid = cloned_midi_region->get_uuid ();
+
+  // Verify cloned object has same properties but different UUID
+  EXPECT_NE (original_midi_region_uuid, cloned_midi_region_uuid);
+  EXPECT_DOUBLE_EQ (
+    cloned_midi_region->position ()->ticks (),
+    original_midi_region->position ()->ticks ());
+  EXPECT_DOUBLE_EQ (
+    cloned_midi_region->bounds ()->length ()->ticks (),
+    original_midi_region->bounds ()->length ()->ticks ());
+  EXPECT_DOUBLE_EQ (
+    cloned_midi_region->loopRange ()->clipStartPosition ()->ticks (),
+    original_midi_region->loopRange ()->clipStartPosition ()->ticks ());
+  EXPECT_DOUBLE_EQ (
+    cloned_midi_region->loopRange ()->loopStartPosition ()->ticks (),
+    original_midi_region->loopRange ()->loopStartPosition ()->ticks ());
+  EXPECT_DOUBLE_EQ (
+    cloned_midi_region->loopRange ()->loopEndPosition ()->ticks (),
+    original_midi_region->loopRange ()->loopEndPosition ()->ticks ());
+  EXPECT_TRUE (object_registry.contains (cloned_midi_region_uuid));
+}
+
+// Test clone_new_object_identity for AudioSourceObject
+TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioSourceObject)
+{
+  // First create a dummy audio source
+  auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
+  auto source_ref = file_audio_source_registry.create_object<
+    dsp::FileAudioSource> (
+    *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32, 44100, 120.0,
+    u8"TestSource");
+
+  auto original_audio_source_obj_ref =
+    factory->get_builder<AudioSourceObject> ().build_in_registry ();
+
+  auto * original_audio_source_obj =
+    original_audio_source_obj_ref.get_object_as<AudioSourceObject> ();
+  EXPECT_NE (original_audio_source_obj, nullptr);
+  const auto original_audio_source_obj_uuid =
+    original_audio_source_obj->get_uuid ();
+
+  // Clone the audio source object
+  auto cloned_audio_source_obj_ref =
+    factory->clone_new_object_identity (*original_audio_source_obj);
+  auto * cloned_audio_source_obj =
+    cloned_audio_source_obj_ref.get_object_as<AudioSourceObject> ();
+  EXPECT_NE (cloned_audio_source_obj, nullptr);
+  const auto cloned_audio_source_obj_uuid = cloned_audio_source_obj->get_uuid ();
+
+  // Verify cloned object has different UUID
+  EXPECT_NE (original_audio_source_obj_uuid, cloned_audio_source_obj_uuid);
+  EXPECT_TRUE (object_registry.contains (cloned_audio_source_obj_uuid));
+
+  // Verify that the audio source reference is preserved (should have same
+  // reference)
+  const auto original_source_ref =
+    original_audio_source_obj->audio_source_ref ();
+  const auto cloned_source_ref = cloned_audio_source_obj->audio_source_ref ();
+  EXPECT_EQ (original_source_ref.id (), cloned_source_ref.id ());
+}
+
+// Test clone_new_object_identity for TempoObject
+TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityTempoObject)
+{
+  auto original_tempo_obj_ref =
+    factory->get_builder<TempoObject> ().build_in_registry ();
+
+  auto * original_tempo_obj =
+    original_tempo_obj_ref.get_object_as<TempoObject> ();
+  EXPECT_NE (original_tempo_obj, nullptr);
+  const auto original_tempo_obj_uuid = original_tempo_obj->get_uuid ();
+
+  // Clone the tempo object
+  auto cloned_tempo_obj_ref =
+    factory->clone_new_object_identity (*original_tempo_obj);
+  auto * cloned_tempo_obj = cloned_tempo_obj_ref.get_object_as<TempoObject> ();
+  EXPECT_NE (cloned_tempo_obj, nullptr);
+  const auto cloned_tempo_obj_uuid = cloned_tempo_obj->get_uuid ();
+
+  // Verify cloned object has different UUID
+  EXPECT_NE (original_tempo_obj_uuid, cloned_tempo_obj_uuid);
+  EXPECT_TRUE (object_registry.contains (cloned_tempo_obj_uuid));
+}
+
+// Test clone_new_object_identity for TimeSignatureObject
+TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityTimeSignatureObject)
+{
+  auto original_time_signature_obj_ref =
+    factory->get_builder<TimeSignatureObject> ().build_in_registry ();
+
+  auto * original_time_signature_obj =
+    original_time_signature_obj_ref.get_object_as<TimeSignatureObject> ();
+  EXPECT_NE (original_time_signature_obj, nullptr);
+  const auto original_time_signature_obj_uuid =
+    original_time_signature_obj->get_uuid ();
+
+  // Clone the time signature object
+  auto cloned_time_signature_obj_ref =
+    factory->clone_new_object_identity (*original_time_signature_obj);
+  auto * cloned_time_signature_obj =
+    cloned_time_signature_obj_ref.get_object_as<TimeSignatureObject> ();
+  EXPECT_NE (cloned_time_signature_obj, nullptr);
+  const auto cloned_time_signature_obj_uuid =
+    cloned_time_signature_obj->get_uuid ();
+
+  // Verify cloned object has different UUID
+  EXPECT_NE (original_time_signature_obj_uuid, cloned_time_signature_obj_uuid);
+  EXPECT_TRUE (object_registry.contains (cloned_time_signature_obj_uuid));
+}
+
 } // namespace zrythm::structure::arrangement

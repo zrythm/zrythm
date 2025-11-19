@@ -50,6 +50,8 @@ public:
 
   juce::PositionableAudioSource &get_audio_source () const;
 
+  dsp::FileAudioSourceUuidReference audio_source_ref () const;
+
 private:
   friend void init_from (
     AudioSourceObject       &obj,

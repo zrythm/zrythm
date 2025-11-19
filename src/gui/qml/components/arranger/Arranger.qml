@@ -858,13 +858,19 @@ Item {
         }
         onReleased: {
           if (action != Arranger.None && action != Arranger.StartingSelection) {
-            if (action === Arranger.Moving || action === Arranger.MovingCopy || action === Arranger.MovingLink) {
+            if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
               if (root.tempQmlArrangerObjects.length > 0) {
                 const firstTempObj = root.tempQmlArrangerObjects[0];
                 // Calculate the final snapped position difference
                 const finalTicksDiff = (firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick;
+                root.undoStack.beginMacro(qsTr("Copy Objects"));
+                if (action === Arranger.MovingCopy) {
+                  // This creates new object clones at the original positions, and the following move operations move the original objects
+                  root.selectionOperator.cloneObjects();
+                }
                 moveSelectionsX(finalTicksDiff);
                 moveSelectionsY(firstTempObj.y - firstTempObj.coordinatesOnConstruction.y, firstTempObj.coordinatesOnConstruction.y);
+                root.undoStack.endMacro();
               }
             } else if (action === Arranger.CreatingMoving) {
               root.undoStack.endMacro();

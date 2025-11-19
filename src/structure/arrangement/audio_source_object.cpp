@@ -22,6 +22,12 @@ AudioSourceObject::get_audio_source () const
   return *source_;
 }
 
+dsp::FileAudioSourceUuidReference
+AudioSourceObject::audio_source_ref () const
+{
+  return source_id_;
+}
+
 void
 AudioSourceObject::generate_audio_source ()
 {
@@ -40,15 +46,8 @@ init_from (
   const AudioSourceObject &other,
   utils::ObjectCloneType   clone_type)
 {
-  if (clone_type == utils::ObjectCloneType::NewIdentity)
-    {
-      obj.source_id_ = obj.registry_.clone_object (
-        *other.source_id_.get_object_as<dsp::FileAudioSource> ());
-    }
-  else if (clone_type == utils::ObjectCloneType::Snapshot)
-    {
-      obj.source_id_ = other.source_id_;
-    }
+  // Always preserved
+  obj.source_id_ = other.source_id_;
 }
 
 void

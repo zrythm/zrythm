@@ -529,6 +529,7 @@ Arranger {
                       isSelected: mainTrackRegionLoader.selectionTracker.isSelected
                       lane: mainTrackLaneRegionsRepeater.trackLane
                       track: trackDelegate.track
+                      undoStack: root.undoStack
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, mainAudioRegionItem);
@@ -620,6 +621,7 @@ Arranger {
                       isSelected: laneRegionLoader.selectionTracker.isSelected
                       lane: laneItem.trackLane
                       track: trackDelegate.track
+                      undoStack: root.undoStack
 
                       onHoveredChanged: {
                         root.handleObjectHover(hovered, laneAudioRegionItem);

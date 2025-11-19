@@ -160,15 +160,9 @@ public:
             std::optional<ArrangerObjectUuidReference> clone_ref;
             if constexpr (std::is_same_v<ChildT, AudioSourceObject>)
               {
-                auto dummy_file_source_ref =
-                  obj.file_audio_source_registry_.create_object<
-                    dsp::FileAudioSource> (
-                    utils::audio::AudioBuffer (2, 16),
-                    utils::audio::BitDepth::BIT_DEPTH_32, 44100, 120.0,
-                    u8"Unused dummy Audio Source");
                 clone_ref = obj.registry_.clone_object (
                   *child, child->get_tempo_map (),
-                  obj.file_audio_source_registry_, dummy_file_source_ref);
+                  obj.file_audio_source_registry_, child->audio_source_ref ());
                 obj.children_.get<sequenced_index> ().emplace_back (
                   std::move (*clone_ref));
               }

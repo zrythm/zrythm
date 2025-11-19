@@ -151,10 +151,12 @@ public:
         }
       else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
         {
+          auto file_audio_source =
+            dependencies_.file_audio_source_registry_
+              .create_object<dsp::FileAudioSource> (1, 1, 44100, 120, u8"dummy");
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.file_audio_source_registry_,
-            dsp::FileAudioSourceUuidReference{
-              dependencies_.file_audio_source_registry_ });
+            file_audio_source);
         }
       else
         {
@@ -417,6 +419,12 @@ public:
       {
         return dependencies_.object_registry_.clone_object (
           other, dependencies_.tempo_map_, other.markerType ());
+      }
+    else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
+      {
+        return dependencies_.object_registry_.clone_object (
+          other, dependencies_.tempo_map_,
+          dependencies_.file_audio_source_registry_, other.audio_source_ref ());
       }
     else
       {
