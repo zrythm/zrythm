@@ -4,7 +4,7 @@
 #pragma once
 
 #include "commands/resize_arranger_objects_command.h"
-#include "structure/arrangement/arranger_object.h"
+#include "structure/arrangement/arranger_object_factory.h"
 #include "undo/undo_stack.h"
 #include "utils/variant_helpers.h"
 
