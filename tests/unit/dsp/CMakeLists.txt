@@ -37,7 +37,6 @@ add_executable(zrythm_dsp_unit_tests
   port_connections_manager_test.cpp
   port_span_test.cpp
   port_test.cpp
-  position_test.cpp
   processor_base_test.cpp
   snap_grid_test.cpp
   stretcher_test.cpp

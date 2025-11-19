@@ -5,9 +5,7 @@
 
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/realtime_updater.h"
 #include "utils/directory_manager.h"
-#include "utils/pcg_rand.h"
 #include "utils/thread_safe_fftw.h"
 
 #include <QFontDatabase>
@@ -79,7 +77,6 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   project_manager_ = utils::make_qobject_unique<ProjectManager> (this);
   translation_manager_ = utils::make_qobject_unique<TranslationManager> (this);
   file_system_model_ = utils::make_qobject_unique<FileSystemModel> (this);
-  RealtimeUpdater::instance ();
 
   launch_engine_process ();
 

@@ -31,8 +31,6 @@ target_sources(zrythm_gui_lib
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
     plugin_selection_manager.h
-    # position_proxy.h
-    # position_proxy.cpp
     project_info.h
     project_info.cpp
     project_manager.h
@@ -42,8 +40,6 @@ target_sources(zrythm_gui_lib
     qml_utils.h
     qml_utils.cpp
     realtime_property.h
-    realtime_updater.h
-    realtime_updater.cpp
     recent_projects_model.h
     recent_projects_model.cpp
     resource_manager.h

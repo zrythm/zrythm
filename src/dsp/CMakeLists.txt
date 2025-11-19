@@ -36,7 +36,6 @@ target_sources(zrythm_dsp_lib
     port.cpp
     port_connection.cpp
     port_connections_manager.cpp
-    position.cpp
     processor_base.cpp
     snap_grid.cpp
     stretcher.cpp
@@ -85,7 +84,6 @@ target_sources(zrythm_dsp_lib
       port_span.h
       port_connection.h
       port_connections_manager.h
-      position.h
       processor_base.h
       snap_grid.h
       stretcher.h

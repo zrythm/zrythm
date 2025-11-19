@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/position.h"
 #include "dsp/snap_grid.h"
 #include "dsp/transport.h"
 #include "gui/dsp/quantize_options.h"
