@@ -11,6 +11,12 @@
 int
 main (int argc, char ** argv)
 {
+  // GLib integration causes issues so disable (but honor env variable if set)
+  if (!qEnvironmentVariableIsSet ("QT_NO_GLIB"))
+    {
+      qputenv ("QT_NO_GLIB", "1");
+    }
+
   zrythm::gui::ZrythmApplication app (argc, argv);
   return app.exec ();
 }
