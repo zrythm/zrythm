@@ -26,50 +26,47 @@
  * ---
  */
 
-#include "zrythm-config.h"
-
 #include <algorithm>
-#include <cmath>
 #include <utility>
 
 #include "dsp/graph_scheduler.h"
-#include "dsp/midi_event.h"
-#include "dsp/port.h"
 #include "dsp/transport.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/recording_manager.h"
 #include "engine/session/sample_processor.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "plugins/plugin.h"
-#include "structure/tracks/channel.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/gtest_wrapper.h"
 
 namespace zrythm::engine::device_io
 {
 
 AudioEngine::AudioEngine (
-  Project *                                 project,
-  std::shared_ptr<juce::AudioDeviceManager> device_mgr)
-    : QObject (project), port_registry_ (project->get_port_registry ()),
-      param_registry_ (project->get_param_registry ()), project_ (project),
-      device_manager_ (std::move (device_mgr)),
+  dsp::Transport                           &transport,
+  const dsp::TempoMap                      &tempo_map,
+  dsp::PortRegistry                        &port_registry,
+  dsp::ProcessorParameterRegistry          &param_registry,
+  dsp::PanLaw                               pan_law,
+  dsp::PanAlgorithm                         pan_algorithm,
+  std::shared_ptr<juce::AudioDeviceManager> device_mgr,
+  QObject *                                 parent)
+    : QObject (parent), port_registry_ (port_registry),
+      param_registry_ (param_registry), transport_ (transport),
+      tempo_map_ (tempo_map), device_manager_ (std::move (device_mgr)),
       control_room_ (
-        std::make_unique<session::ControlRoom> (
-          project->get_port_registry (),
-          project->get_param_registry (),
-          this)),
-      port_connections_manager_ (project->port_connections_manager_),
+        utils::make_qobject_unique<
+          session::ControlRoom> (port_registry_, param_registry_, this, this)),
+      monitor_out_ (
+        u8"Monitor Out",
+        dsp::PortFlow::Output,
+        dsp::AudioPort::BusLayout::Stereo,
+        2),
+      pan_law_ (pan_law), pan_algo_ (pan_algorithm),
       sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
       midi_panic_processor_ (
         utils::make_qobject_unique<dsp::MidiPanicProcessor> (
           dsp::MidiPanicProcessor::ProcessorBaseDependencies{
-            .port_registry_ = *port_registry_,
-            .param_registry_ = *param_registry_ })),
+            .port_registry_ = port_registry_,
+            .param_registry_ = param_registry_ })),
       audio_callback_ (
         std::make_unique<AudioCallback> (
           [this] (
@@ -82,7 +79,7 @@ AudioEngine::AudioEngine (
               load_measurer_
             };
             dsp::PlayheadProcessingGuard guard{
-              this->project_->transport_->playhead ()->playhead ()
+              this->transport_.playhead ()->playhead ()
             };
 
             const auto process_status = this->process (numSamples);
@@ -95,42 +92,34 @@ AudioEngine::AudioEngine (
                   {
                     utils::float_ranges::copy (
                       outputChannelData[0],
-                      monitor_out_port_->buffers ()->getReadPointer (0),
-                      numSamples);
+                      monitor_out_.buffers ()->getReadPointer (0), numSamples);
                   }
                 if (numOutputChannels > 1)
                   {
                     utils::float_ranges::copy (
                       outputChannelData[1],
-                      monitor_out_port_->buffers ()->getReadPointer (1),
-                      numSamples);
+                      monitor_out_.buffers ()->getReadPointer (1), numSamples);
                   }
               }
           },
           [this] (juce::AudioIODevice * dev) {
-            monitor_out_port_ = &get_monitor_out_port ();
             router_->recalc_graph (false);
-            monitor_out_port_->prepare_for_processing (
+            monitor_out_.prepare_for_processing (
               static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
               dev->getCurrentBufferSizeSamples ());
           },
-          [this] () { monitor_out_port_->release_resources (); }))
+          [this] () { monitor_out_.release_resources (); }))
 {
   z_debug ("Creating audio engine...");
 
   midi_in_ = std::make_unique<dsp::MidiPort> (u8"MIDI in", dsp::PortFlow::Input);
   midi_in_->set_symbol (u8"midi_in");
 
-  {
-    monitor_out_ = project->get_port_registry ().create_object<dsp::AudioPort> (
-      u8"Monitor Out", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo,
-      2);
-    monitor_out_->get_object_as<dsp::AudioPort> ()->set_symbol (u8"monitor_out");
-  }
+  monitor_out_.set_symbol (u8"monitor_out");
 
-  init_common ();
+  router_ = std::make_unique<session::DspGraphDispatcher> (this);
 
-  z_debug ("finished creating audio engine");
+  z_debug ("Audio engine created");
 }
 
 void
@@ -139,7 +128,6 @@ init_from (
   const AudioEngine     &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.monitor_out_ = other.monitor_out_;
 // TODO
 #if 0
   obj.midi_in_ = utils::clone_unique (*other.midi_in_);
@@ -150,92 +138,10 @@ init_from (
 #endif
 }
 
-dsp::AudioPort &
-AudioEngine::get_monitor_out_port ()
-{
-  if (!monitor_out_)
-    {
-      throw std::runtime_error ("No monitor outputs");
-    }
-  return *monitor_out_->get_object_as<dsp::AudioPort> ();
-}
-
-dsp::AudioPort &
-AudioEngine::get_dummy_input_port ()
-{
-  if (!dummy_audio_input_)
-    {
-      throw std::runtime_error ("No dummy inputs");
-    }
-  return *dummy_audio_input_->get_object_as<dsp::AudioPort> ();
-}
-
-void
-AudioEngine::update_frames_per_tick (
-  const int           beats_per_bar,
-  const bpm_t         bpm,
-  const sample_rate_t sample_rate,
-  bool                thread_check,
-  bool                update_from_ticks,
-  bool                bpm_change)
-{
-#if 0
-#  if 0
-  if (ZRYTHM_IS_QT_THREAD)
-    {
-#  endif
-  z_debug (
-    "updating frames per tick: beats per bar {}, bpm {:f}, sample rate {}",
-    beats_per_bar, static_cast<double> (bpm), sample_rate);
-#  if 0
-    }
-  else if (thread_check)
-    {
-      z_error ("Called from non-GTK thread");
-      return;
-    }
-#  endif
-
-  updating_frames_per_tick_ = true;
-
-  /* process all recording events */
-  RECORDING_MANAGER->process_events ();
-
-  z_return_if_fail (
-    beats_per_bar > 0 && bpm > 0 && sample_rate > 0
-    && project_->transport_->ticks_per_bar_ > 0);
-
-  z_debug (
-    "frames per tick before: {:f} | ticks per frame before: {:f}",
-    type_safe::get (frames_per_tick_), type_safe::get (ticks_per_frame_));
-
-  frames_per_tick_ = dsp::FramesPerTick (
-    (static_cast<double> (sample_rate) * 60.0
-     * static_cast<double> (beats_per_bar))
-    / (static_cast<double> (bpm) * static_cast<double> (project_->transport_->ticks_per_bar_)));
-  z_return_if_fail (type_safe::get (frames_per_tick_) > 1.0);
-  ticks_per_frame_ = dsp::to_ticks_per_frame (frames_per_tick_);
-
-  z_debug (
-    "frames per tick after: {:f} | ticks per frame after: {:f}",
-    type_safe::get (frames_per_tick_), type_safe::get (ticks_per_frame_));
-
-  /* update positions */
-  project_->transport_->update_positions (update_from_ticks);
-
-  updating_frames_per_tick_ = false;
-#endif
-}
-
 void
 AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter)
 {
   z_debug ("Setting up...");
-  buf_size_set_ = false;
-
-  update_frames_per_tick (
-    beats_per_bar_getter (), bpm_getter (), get_sample_rate (), true, true,
-    false);
 
   setup_ = true;
 
@@ -243,88 +149,17 @@ AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter
 }
 
 void
-AudioEngine::init_common ()
-{
-  router_ = std::make_unique<session::DspGraphDispatcher> (this);
-
-  pan_law_ =
-    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-      ? zrythm::dsp::PanLaw::Minus3dB
-      : static_cast<zrythm::dsp::PanLaw> (
-          zrythm::gui::SettingsManager::get_instance ()->get_panLaw ());
-  pan_algo_ =
-    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-      ? zrythm::dsp::PanAlgorithm::SineLaw
-      : static_cast<zrythm::dsp::PanAlgorithm> (
-          zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ());
-
-// TODO: this should be a separate processor
-#if 0
-  midi_clock_out_ =
-    std::make_unique<MidiPort> (u8"MIDI Clock Out", dsp::PortFlow::Output);
-  midi_clock_out_->set_owner (*this);
-  midi_clock_out_->id_->flags_ |= dsp::PortIdentifier::Flags::MidiClock;
-#endif
-}
-
-void
-AudioEngine::init_loaded (Project * project)
+AudioEngine::init_loaded ()
 {
   z_debug ("Initializing...");
 
-  project_ = project;
-  port_registry_ = project->get_port_registry ();
-
   // FIXME this shouldn't be here
-  project->pool_->init_loaded ();
+  // project->pool_->init_loaded ();
 
-  control_room_->init_loaded (*port_registry_, *param_registry_, this);
+  control_room_->init_loaded (port_registry_, param_registry_, this);
   sample_processor_->init_loaded (this);
 
-  init_common ();
-
-  // TODO
-#if 0
-  for (auto * port : ports)
-    {
-
-      auto &id = *port->id_;
-      if (id.owner_type_ == dsp::PortIdentifier::OwnerType::AudioEngine)
-        {
-          port->init_loaded (*this);
-        }
-      else if (
-        id.owner_type_ == dsp::PortIdentifier::OwnerType::HardwareProcessor)
-        {
-// FIXME? this has been either broken or unused for a while
-#  if 0
-          if (id.is_output ())
-            port->init_loaded (*hw_in_processor_);
-          else if (id.is_input ())
-            port->init_loaded (*hw_out_processor_);
-#  endif
-        }
-      else if (id.owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
-        {
-          if (ENUM_BITSET_TEST (
-                id.flags_, dsp::PortIdentifier::Flags::MonitorFader))
-            port->init_loaded (*control_room_->monitor_fader_);
-        }
-      }
-#endif
-
   z_debug ("done initializing loaded engine");
-}
-
-structure::tracks::TrackRegistry &
-AudioEngine::get_track_registry ()
-{
-  return project_->get_track_registry ();
-}
-structure::tracks::TrackRegistry &
-AudioEngine::get_track_registry () const
-{
-  return project_->get_track_registry ();
 }
 
 void
@@ -334,8 +169,8 @@ AudioEngine::
   z_debug ("waiting for engine to pause...");
 
   state.running_ = run_.load ();
-  state.playing_ = project_->transport_->isRolling ();
-  state.looping_ = project_->transport_->loopEnabled ();
+  state.playing_ = transport_.isRolling ();
+  state.looping_ = transport_.loopEnabled ();
   if (!state.running_)
     {
       z_debug ("engine not running - won't wait for pause");
@@ -372,16 +207,16 @@ AudioEngine::
 
   if (state.playing_)
     {
-      project_->transport_->requestPause ();
+      transport_.requestPause ();
 
       if (force_pause)
         {
-          project_->transport_->setPlayState (dsp::Transport::PlayState::Paused);
+          transport_.setPlayState (dsp::Transport::PlayState::Paused);
         }
       else
         {
           while (
-            project_->transport_->getPlayState ()
+            transport_.getPlayState ()
             == dsp::Transport::PlayState::PauseRequested)
             {
               std::this_thread::sleep_for (std::chrono::microseconds (100));
@@ -399,31 +234,28 @@ AudioEngine::
 
   // control_room_->monitor_fader_->abort_fade_out ();
 
-  if ((project_ != nullptr) && project_->loaded_)
-    {
-      /* run 1 more time to flush panic messages */
-      SemaphoreRAII                sem (port_operation_lock_, true);
-      dsp::PlayheadProcessingGuard playhead_processing_guard{
-        project_->transport_->playhead ()->playhead ()
-      };
-      auto current_transport_state = TRANSPORT->get_snapshot ();
-      process_prepare (current_transport_state, 1, &sem);
+  {
+    /* run 1 more time to flush panic messages */
+    SemaphoreRAII                sem (port_operation_lock_, true);
+    dsp::PlayheadProcessingGuard playhead_processing_guard{
+      transport_.playhead ()->playhead ()
+    };
+    auto current_transport_state = TRANSPORT->get_snapshot ();
+    process_prepare (current_transport_state, 1, &sem);
 
-      EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ = static_cast<unsigned_frame_t> (
-          project_->transport_->get_playhead_position_in_audio_thread ().in (
-            units::samples)),
-        .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
-          project_->transport_->get_playhead_position_in_audio_thread ().in (
-            units::samples)),
-        .local_offset_ = 0,
-        .nframes_ = 1,
-      };
+    EngineProcessTimeInfo time_nfo = {
+      .g_start_frame_ = static_cast<unsigned_frame_t> (
+        transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
+      .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
+        transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
+      .local_offset_ = 0,
+      .nframes_ = 1,
+    };
 
-      router_->start_cycle (
-        current_transport_state, time_nfo, remaining_latency_preroll_, false);
-      post_process (current_transport_state, 0, 1);
-    }
+    router_->start_cycle (
+      current_transport_state, time_nfo, remaining_latency_preroll_, false);
+    post_process (current_transport_state, 0, 1);
+  }
 }
 
 void
@@ -436,16 +268,16 @@ AudioEngine::resume (EngineState &state)
       z_debug ("engine was not running - won't resume");
       return;
     }
-  project_->transport_->setLoopEnabled (state.looping_);
+  transport_.setLoopEnabled (state.looping_);
   if (state.playing_)
     {
-      project_->transport_->move_playhead (
-        project_->transport_->playhead_ticks_before_pause (), false);
-      project_->transport_->requestRoll ();
+      transport_.move_playhead (
+        transport_.playhead_ticks_before_pause (), false);
+      transport_.requestRoll ();
     }
   else
     {
-      project_->transport_->requestPause ();
+      transport_.requestPause ();
     }
 
   // z_debug ("restarting engine: setting fade in samples");
@@ -477,8 +309,6 @@ AudioEngine::activate (bool activate)
           return;
         }
 
-      realloc_port_buffers (get_block_length ());
-
       sample_processor_->load_instrument_if_empty ();
     }
   else
@@ -507,25 +337,6 @@ AudioEngine::activate (bool activate)
 
   activated_ = activate;
 
-  if (ZRYTHM_HAVE_UI && project_->loaded_)
-    {
-      // EVENTS_PUSH (EventType::ET_ENGINE_ACTIVATE_CHANGED, nullptr);
-    }
-
-  z_debug ("done");
-}
-
-void
-AudioEngine::realloc_port_buffers (nframes_t nframes)
-{
-  buf_size_set_ = true;
-  z_info (
-    "Block length changed to {}. reallocating buffers...", get_block_length ());
-
-  nframes_ = nframes;
-
-  ROUTER->recalc_graph (false);
-
   z_debug ("done");
 }
 
@@ -552,15 +363,13 @@ AudioEngine::update_position_info (
   PositionInfo   &pos_nfo,
   const nframes_t frames_to_add)
 {
-  auto       transport_ = project_->getTransport ();
-  auto      &tempo_map = project_->get_tempo_map ();
   const auto playhead_frames_before =
-    transport_->get_playhead_position_in_audio_thread ();
+    transport_.get_playhead_position_in_audio_thread ();
   auto playhead = playhead_frames_before + units::samples (frames_to_add);
-  pos_nfo.is_rolling_ = transport_->isRolling ();
-  pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map.tempo_at_tick (
-    tempo_map.samples_to_tick (playhead).as<int64_t> (units::ticks)));
-  const auto musical_pos = tempo_map.samples_to_musical_position (playhead);
+  pos_nfo.is_rolling_ = transport_.isRolling ();
+  pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map_.tempo_at_tick (
+    tempo_map_.samples_to_tick (playhead).as<int64_t> (units::ticks)));
+  const auto musical_pos = tempo_map_.samples_to_musical_position (playhead);
   pos_nfo.bar_ = musical_pos.bar;
   pos_nfo.beat_ = musical_pos.beat;
   pos_nfo.sixteenth_ = musical_pos.sixteenth;
@@ -595,12 +404,9 @@ AudioEngine::process_prepare (
 {
   const auto block_length = get_block_length ();
 
-  nframes_ = nframes;
-
   const auto update_transport_play_state =
     [&] (dsp::ITransport::PlayState play_state) {
-      auto * transport_ = project_->getTransport ();
-      transport_->set_play_state_rt_safe (play_state);
+      transport_.set_play_state_rt_safe (play_state);
       transport_snapshot.set_play_state (play_state);
     };
 
@@ -624,8 +430,6 @@ AudioEngine::process_prepare (
 
   if (!exporting_ && !sem->is_acquired ())
     {
-      if (ZRYTHM_TESTING)
-        z_debug ("port operation lock is busy, skipping cycle...");
       return true;
     }
 
@@ -685,17 +489,17 @@ AudioEngine::process (const nframes_t total_frames_to_process)
   // We create a temporary ITransport snapshot and inject it here (graph
   // nodes will use this instead of the main Transport instance, thus
   // avoiding the need to synchronize access to it)
-  auto current_transport_state = project_->getTransport ()->get_snapshot ();
+  auto current_transport_state = transport_.get_snapshot ();
 
   const auto consume_metronome_countin_samples =
     [&] (const units::sample_t samples) {
-      project_->getTransport ()->consume_metronome_countin_samples (samples);
+      transport_.consume_metronome_countin_samples (samples);
       current_transport_state.consume_metronome_countin_samples (samples);
     };
 
   const auto consume_recording_preroll_samples =
     [&] (const units::sample_t samples) {
-      project_->getTransport ()->consume_recording_preroll_samples (samples);
+      transport_.consume_recording_preroll_samples (samples);
       current_transport_state.consume_recording_preroll_samples (samples);
     };
 
@@ -769,7 +573,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
       /* offset to start processing at in this cycle */
       nframes_t preroll_offset =
         total_frames_to_process - total_frames_remaining;
-      z_warn_if_fail (preroll_offset + num_preroll_frames <= nframes_);
+      assert (preroll_offset + num_preroll_frames <= total_frames_to_process);
 
       split_time_nfo.g_start_frame_w_offset_ =
         split_time_nfo.g_start_frame_ + preroll_offset;
@@ -898,10 +702,9 @@ AudioEngine::post_process (
     transport_snapshot.get_play_state () == dsp::ITransport::PlayState::Rolling
     && remaining_latency_preroll_ == 0)
     {
-      project_->getTransport ()->add_to_playhead_in_audio_thread (
-        units::samples (roll_nframes));
+      transport_.add_to_playhead_in_audio_thread (units::samples (roll_nframes));
       transport_snapshot.set_position (
-        project_->getTransport ()->get_playhead_position_in_audio_thread ());
+        transport_.get_playhead_position_in_audio_thread ());
     }
 }
 
@@ -925,12 +728,6 @@ AudioEngine::~AudioEngine ()
 {
   z_debug ("freeing engine...");
   destroying_ = true;
-
-  // if (router_ && router_->scheduler_)
-  // {
-  /* terminate graph threads */
-  // router_->scheduler_->terminate_threads ();
-  // }
 
   if (activated_)
     {
@@ -956,7 +753,6 @@ to_json (nlohmann::json &j, const AudioEngine &engine)
 {
   j = nlohmann::json{
     // { kFramesPerTickKey,   engine.frames_per_tick_  },
-    { AudioEngine::kMonitorOutKey,      engine.monitor_out_      },
     { AudioEngine::kMidiInKey,          engine.midi_in_          },
     { AudioEngine::kControlRoomKey,     engine.control_room_     },
     { AudioEngine::kSampleProcessorKey, engine.sample_processor_ },
@@ -968,9 +764,6 @@ from_json (const nlohmann::json &j, AudioEngine &engine)
 {
 // TODO
 #if 0
-  j.at (AudioEngine::kFramesPerTickKey).get_to (engine.frames_per_tick_);
-  j.at (AudioEngine::kMonitorOutLKey).get_to (engine.monitor_out_left_);
-  j.at (AudioEngine::kMonitorOutRKey).get_to (engine.monitor_out_right_);
   j.at (AudioEngine::kMidiInKey).get_to (engine.midi_in_);
   j.at (AudioEngine::kControlRoomKey).get_to (engine.control_room_);
   j.at (AudioEngine::kSampleProcessorKey).get_to (engine.sample_processor_);

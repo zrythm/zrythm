@@ -10,8 +10,9 @@ namespace zrythm::engine::session
 ControlRoom::ControlRoom (
   dsp::PortRegistry               &port_registry,
   dsp::ProcessorParameterRegistry &param_registry,
-  AudioEngine *                    engine)
-    : audio_engine_ (engine), port_registry_ (port_registry),
+  AudioEngine *                    engine,
+  QObject *                        parent)
+    : QObject (parent), audio_engine_ (engine), port_registry_ (port_registry),
       param_registry_ (param_registry)
 {
   monitor_fader_ = std::make_unique<Fader> (

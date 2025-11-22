@@ -7,7 +7,7 @@
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
 #include "dsp/panning.h"
-#include "dsp/port_connections_manager.h"
+#include "dsp/transport.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/session/control_room.h"
 #include "engine/session/graph_dispatcher.h"
@@ -19,7 +19,7 @@
 #define AUDIO_ENGINE \
   (zrythm::engine::device_io::AudioEngine::get_active_instance ())
 
-class Project;
+#define ROUTER (AUDIO_ENGINE->graph_dispatcher ())
 
 namespace zrythm::engine::device_io
 {
@@ -99,14 +99,23 @@ public:
    * This only initializes the engine and does not connect to any backend.
    */
   AudioEngine (
-    Project *                                 project = nullptr,
-    std::shared_ptr<juce::AudioDeviceManager> device_mgr =
-      std::make_shared<juce::AudioDeviceManager> ());
+    dsp::Transport                           &transport,
+    const dsp::TempoMap                      &tempo_map,
+    dsp::PortRegistry                        &port_registry,
+    dsp::ProcessorParameterRegistry          &param_registry,
+    dsp::PanLaw                               pan_law,
+    dsp::PanAlgorithm                         pan_algorithm,
+    std::shared_ptr<juce::AudioDeviceManager> device_mgr,
+    QObject *                                 parent = nullptr);
 
   /**
    * Closes any connections and free's data.
    */
   ~AudioEngine () override;
+
+  // =========================================================
+  // QML interface
+  // =========================================================
 
   Q_INVOKABLE int xRunCount () const { return load_measurer_.getXRunCount (); }
   Q_INVOKABLE double loadPercentage () const
@@ -114,12 +123,7 @@ public:
     return load_measurer_.getLoadAsPercentage ();
   }
 
-  auto &get_port_registry () { return *port_registry_; }
-  auto &get_port_registry () const { return *port_registry_; }
-  auto &get_param_registry () { return *param_registry_; }
-  auto &get_param_registry () const { return *param_registry_; }
-  structure::tracks::TrackRegistry &get_track_registry ();
-  structure::tracks::TrackRegistry &get_track_registry () const;
+  // =========================================================
 
   /**
    * @param force_pause Whether to force transport
@@ -128,15 +132,13 @@ public:
    */
   void wait_for_pause (EngineState &state, bool force_pause, bool with_fadeout);
 
-  void realloc_port_buffers (nframes_t buf_size);
-
   /**
    * @brief
    *
    * @param project
    * @throw ZrythmError if failed to initialize.
    */
-  [[gnu::cold]] void init_loaded (Project * project);
+  [[gnu::cold]] void init_loaded ();
 
   void resume (EngineState &state);
 
@@ -152,9 +154,6 @@ public:
 
   /**
    * Sets up the audio engine after the project is initialized/loaded.
-   *
-   * This also calls update_frames_per_tick() which requires the project to be
-   * initialized/loaded.
    */
   void setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter);
 
@@ -166,23 +165,6 @@ public:
    * @param activate Activate or deactivate.
    */
   [[gnu::cold]] void activate (bool activate);
-
-  /**
-   * Updates frames per tick based on the time sig, the BPM, and the sample rate
-   *
-   * @param thread_check Whether to throw a warning if not called from GTK
-   * thread.
-   * @param update_from_ticks Whether to update the positions based on ticks
-   * (true) or frames (false).
-   * @param bpm_change Whether this is a BPM change.
-   */
-  void update_frames_per_tick (
-    int           beats_per_bar,
-    bpm_t         bpm,
-    sample_rate_t sample_rate,
-    bool          thread_check,
-    bool          update_from_ticks,
-    bool          bpm_change);
 
   /**
    * To be called by each implementation to prepare the structures before
@@ -239,8 +221,8 @@ public:
     const AudioEngine     &other,
     utils::ObjectCloneType clone_type);
 
-  dsp::AudioPort &get_monitor_out_port ();
-  dsp::AudioPort &get_dummy_input_port ();
+  auto &get_monitor_out_port () { return monitor_out_; }
+  auto &get_monitor_out_port () const { return monitor_out_; }
 
   /**
    * Queues MIDI note off to event queues.
@@ -255,6 +237,12 @@ public:
   void clear_output_buffers (nframes_t nframes);
 
   auto get_device_manager () const { return device_manager_; }
+
+  bool activated () const { return activated_; }
+  bool running () const { return run_.load (); }
+  void set_running (bool run) { run_.store (run); }
+  auto graph_dispatcher () const { return router_.get (); }
+  auto control_room () const { return control_room_.get (); }
 
   nframes_t get_block_length () const
   {
@@ -271,8 +259,6 @@ public:
   }
 
 private:
-  // static constexpr auto kFramesPerTickKey = "framesPerTick"sv;
-  static constexpr auto kMonitorOutKey = "monitorOut"sv;
   static constexpr auto kMidiInKey = "midiIn"sv;
   static constexpr auto kControlRoomKey = "controlRoom"sv;
   static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
@@ -281,19 +267,16 @@ private:
   friend void           to_json (nlohmann::json &j, const AudioEngine &engine);
   friend void from_json (const nlohmann::json &j, AudioEngine &engine);
 
-  [[gnu::cold]] void init_common ();
-
   void update_position_info (PositionInfo &pos_nfo, nframes_t frames_to_add);
 
   void receive_midi_events (uint32_t nframes);
 
 private:
-  OptionalRef<dsp::PortRegistry>               port_registry_;
-  OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
+  dsp::PortRegistry               &port_registry_;
+  dsp::ProcessorParameterRegistry &param_registry_;
 
-public:
-  /** Pointer to owner project, if any. */
-  Project * project_ = nullptr;
+  dsp::Transport      &transport_;
+  const dsp::TempoMap &tempo_map_;
 
   std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
@@ -302,60 +285,23 @@ public:
    *
    * Useful for debugging.
    */
-  std::atomic_uint64_t cycle_ = 0;
-
-  /** Number of frames/samples per tick. */
-  // dsp::FramesPerTick frames_per_tick_;
-
-  /**
-   * Reciprocal of @ref frames_per_tick_.
-   */
-  // dsp::TicksPerFrame ticks_per_frame_;
-
-  /** True iff buffer size callback fired. */
-  bool buf_size_set_{};
+  std::atomic_uint64_t cycle_{ 0 };
 
   /** The processing graph router. */
   std::unique_ptr<session::DspGraphDispatcher> router_;
 
-// TODO: these should be separate processors
-#if 0
-  /**
-   * MIDI Clock input TODO.
-   *
-   * This port is exposed to the backend.
-   */
-  std::unique_ptr<MidiPort> midi_clock_in_;
-
-  /**
-   * MIDI Clock output.
-   *
-   * This port is exposed to the backend.
-   */
-  std::unique_ptr<MidiPort> midi_clock_out_;
-#endif
-
   /** The ControlRoom. */
-  std::unique_ptr<session::ControlRoom> control_room_;
+  utils::QObjectUniquePtr<session::ControlRoom> control_room_;
 
   /**
-   * Used during tests to pass input data for recording.
+   * @brief The last audio output in the signal chain.
    *
-   * Will be ignored if NULL.
+   * The contents of this port will be passed on to the audio output device at
+   * the end of every processing cycle.
    */
-  std::optional<dsp::PortUuidReference> dummy_audio_input_;
+  dsp::AudioPort monitor_out_;
 
-  /**
-   * Monitor - these should be the last ports in the signal
-   * chain.
-   *
-   * The L/R ports are exposed to the backend.
-   */
-  std::optional<dsp::PortUuidReference> monitor_out_;
-
-  // Realtime caches
-  dsp::AudioPort * monitor_out_port_{};
-
+public:
   /**
    * Manual note press events from the piano roll.
    *
@@ -371,6 +317,7 @@ public:
    */
   dsp::MidiEventVector midi_editor_manual_press_;
 
+private:
   /**
    * Port used for receiving MIDI in messages for binding CC and other
    * non-recording purposes.
@@ -380,13 +327,6 @@ public:
   std::unique_ptr<dsp::MidiPort> midi_in_;
 
   /**
-   * Number of frames/samples in the current cycle, per channel.
-   *
-   * @note This is used by the engine internally.
-   */
-  nframes_t nframes_ = 0;
-
-  /**
    * Semaphore for blocking DSP while a plugin and its ports are deleted.
    */
   moodycamel::LightweightSemaphore port_operation_lock_{ 1 };
@@ -394,26 +334,24 @@ public:
   /** Ok to process or not. */
   std::atomic_bool run_{ false };
 
-  /** To be set to true when preparing to export. */
-  bool preparing_to_export_ = false;
-
+public:
   /** Whether currently exporting. */
   std::atomic_bool exporting_{ false };
 
+private:
   /* note: these 2 are ignored at the moment */
   /** Pan law. */
-  dsp::PanLaw pan_law_ = {};
+  dsp::PanLaw pan_law_{};
   /** Pan algorithm */
-  dsp::PanAlgorithm pan_algo_ = {};
+  dsp::PanAlgorithm pan_algo_{};
 
   juce::AudioProcessLoadMeasurer load_measurer_;
 
-  /** When first set, it is equal to the max
-   * playback latency of all initial trigger
-   * nodes. */
-  nframes_t remaining_latency_preroll_ = 0;
-
-  QPointer<dsp::PortConnectionsManager> port_connections_manager_;
+  /**
+   * @brief When first set, it is equal to the max playback latency of all
+   * initial trigger nodes.
+   */
+  nframes_t remaining_latency_preroll_{};
 
   std::unique_ptr<session::SampleProcessor> sample_processor_;
 
@@ -423,6 +361,7 @@ public:
   /** Last MIDI CC captured. */
   std::array<midi_byte_t, 3> last_cc_captured_{};
 
+public:
   /**
    * If this is on, only tracks/regions marked as "for bounce" will be
    * allowed to make sound.
@@ -440,6 +379,7 @@ public:
   /** Whether the cycle is currently running. */
   std::atomic_bool cycle_running_{ false };
 
+private:
   /** Whether the engine is already set up. */
   bool setup_ = false;
 
@@ -448,13 +388,6 @@ public:
 
   /** Whether the engine is currently undergoing destruction. */
   bool destroying_ = false;
-
-  /**
-   * True while updating frames per tick.
-   *
-   * See engine_update_frames_per_tick().
-   */
-  // bool updating_frames_per_tick_ = false;
 
   /**
    * Position info at the end of the previous cycle before moving the
@@ -472,8 +405,10 @@ public:
    */
   PositionInfo pos_nfo_at_end_ = {};
 
+public:
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
+private:
   std::unique_ptr<AudioCallback> audio_callback_;
 };
 }

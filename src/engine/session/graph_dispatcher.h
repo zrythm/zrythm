@@ -33,8 +33,6 @@
 #include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
-#define ROUTER (AUDIO_ENGINE->router_)
-
 namespace zrythm::engine::session
 {
 

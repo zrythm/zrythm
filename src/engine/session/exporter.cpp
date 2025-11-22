@@ -522,7 +522,6 @@ Exporter::prepare_tracks_for_export (
   engine::device_io::AudioEngine &engine,
   Transport                      &transport)
 {
-  AUDIO_ENGINE->preparing_to_export_ = true;
   state_ = std::make_unique<EngineState> ();
 
   AUDIO_ENGINE->wait_for_pause (*state_, false, true);
@@ -531,7 +530,6 @@ Exporter::prepare_tracks_for_export (
   TRANSPORT->setPlayState (dsp::ITransport::PlayState::Rolling);
 
   AUDIO_ENGINE->exporting_ = true;
-  AUDIO_ENGINE->preparing_to_export_ = false;
   TRANSPORT->setLoopEnabled (false);
 
   z_info ("deactivating and reactivating plugins");

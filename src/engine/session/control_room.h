@@ -50,7 +50,8 @@ public:
   ControlRoom (
     dsp::PortRegistry               &port_registry,
     dsp::ProcessorParameterRegistry &param_registry,
-    AudioEngine *                    engine);
+    AudioEngine *                    engine,
+    QObject *                        parent = nullptr);
 
   // ========================================================================
   // QML Interface

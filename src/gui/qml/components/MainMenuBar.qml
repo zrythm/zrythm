@@ -20,6 +20,10 @@ MenuBar {
     Action {
       text: qsTr("Open")
     }
+
+    Action {
+      text: qsTr("Export...")
+    }
   }
 
   Menu {

@@ -33,13 +33,14 @@ namespace zrythm::engine::session
 SampleProcessor::SampleProcessor (device_io::AudioEngine * engine)
     : audio_engine_ (engine)
 {
-  fader_ = std::make_unique<dsp::Fader> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = engine->get_port_registry (),
-      .param_registry_ = engine->get_param_registry () },
-    dsp::PortType::Audio, true, false,
-    [] () -> utils::Utf8String { return u8"Sample Processor"; },
-    [] (bool fader_solo_status) { return false; });
+  // TODO
+  // fader_ = std::make_unique<dsp::Fader> (
+  //   dsp::ProcessorBase::ProcessorBaseDependencies{
+  //     .port_registry_ = engine->get_port_registry (),
+  //     .param_registry_ = engine->get_param_registry () },
+  //   dsp::PortType::Audio, true, false,
+  //   [] () -> utils::Utf8String { return u8"Sample Processor"; },
+  //   [] (bool fader_solo_status) { return false; });
 
   init_common ();
 }
@@ -96,8 +97,9 @@ SampleProcessor::load_instrument_if_empty ()
 void
 SampleProcessor::init_common ()
 {
-  tracklist_ =
-    std::make_unique<Tracklist> (audio_engine_->get_track_registry (), this);
+  // TODO
+  // tracklist_ =
+  //   std::make_unique<Tracklist> (audio_engine_->get_track_registry (), this);
   midi_events_ = std::make_unique<dsp::MidiEvents> ();
   current_samples_.reserve (256);
 }
@@ -608,14 +610,5 @@ init_from (
   // obj.fader_ = utils::clone_unique (*other.fader_);
 }
 
-const dsp::TempoMap &
-SampleProcessor::get_tempo_map () const
-{
-  return audio_engine_->project_->get_tempo_map ();
-}
-
-SampleProcessor::~SampleProcessor ()
-{
-  disconnect ();
-}
+SampleProcessor::~SampleProcessor () = default;
 }

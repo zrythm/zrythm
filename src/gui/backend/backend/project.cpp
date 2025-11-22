@@ -72,9 +72,6 @@ Project::Project (
       version_ (Zrythm::get_version (false)),
       tool_ (new gui::backend::Tool (this)),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
-      audio_engine_ (
-        utils::make_qobject_unique<
-          engine::device_io::AudioEngine> (this, device_manager)),
       snap_grid_editor_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
           tempo_map_,
@@ -103,6 +100,18 @@ Project::Project (
             .recording_preroll_bars_ =
               [] () { return gui::SettingsManager::recordingPreroll (); },
           },
+          this)),
+      audio_engine_ (
+        utils::make_qobject_unique<engine::device_io::AudioEngine> (
+          *transport_,
+          tempo_map_,
+          *port_registry_,
+          *param_registry_,
+          static_cast<zrythm::dsp::PanLaw> (
+            zrythm::gui::SettingsManager::get_instance ()->get_panLaw ()),
+          static_cast<zrythm::dsp::PanAlgorithm> (
+            zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ()),
+          device_manager,
           this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
@@ -145,7 +154,7 @@ Project::Project (
           [&] (EngineState &state, bool recalculate_graph) {
             if (recalculate_graph)
               {
-                audio_engine_->router_->recalc_graph (false);
+                audio_engine_->graph_dispatcher ()->recalc_graph (false);
               }
             audio_engine_->resume (state);
           },
@@ -205,7 +214,8 @@ Project::Project (
             .top_level_window_provider_ = plugin_toplevel_window_provider,
             .audio_thread_checker_ =
               [this] () {
-                return audio_engine_->router_->is_processing_thread ();
+                return audio_engine_->graph_dispatcher ()
+                  ->is_processing_thread ();
               } },
           this)),
       track_factory_ (
@@ -417,7 +427,7 @@ Project::Project (
   // Sync changes from tempo-related arranger objects to tempo map
   const auto rebuild_tempo_map = [this] () {
     // This must never be called while the engine is running
-    assert (!audio_engine_->run_.load ());
+    assert (!audio_engine_->running ());
 
     tempo_map_wrapper_->clearTimeSignatureEvents ();
     tempo_map_wrapper_->clearTempoEvents ();
@@ -697,7 +707,7 @@ Project::activate ()
   // track_span.reconnect_ext_input_ports (*audio_engine_);
 
   /* reconnect graph */
-  audio_engine_->router_->recalc_graph (false);
+  audio_engine_->graph_dispatcher ()->recalc_graph (false);
 
   /* fix audio regions in case running under a new sample rate */
   // fix_audio_regions ();
@@ -733,15 +743,6 @@ Project::add_default_tracks ()
     return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
       note_pitch);
   });
-
-  /* tempo */
-  // transport_->update_caches (
-  //   get_tempo_map ().time_signature_at_tick (units::ticks (0)).numerator,
-  //   get_tempo_map ().time_signature_at_tick (units::ticks (0)).denominator);
-  audio_engine_->update_frames_per_tick (
-    get_tempo_map ().time_signature_at_tick (units::ticks (0)).numerator,
-    static_cast<bpm_t> (get_tempo_map ().tempo_at_tick (units::ticks (0))),
-    audio_engine_->get_sample_rate (), true, true, false);
 
   /* add a scale */
   auto scale_ref =
@@ -1263,7 +1264,7 @@ Project::save (
   EngineState state{};
   bool        engine_paused = false;
   z_return_if_fail (audio_engine_);
-  if (audio_engine_->activated_)
+  if (audio_engine_->activated ())
     {
       audio_engine_->wait_for_pause (state, false, true);
       engine_paused = true;
@@ -1488,8 +1489,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   obj.datetime_str_ = other.datetime_str_;
   obj.version_ = other.version_;
   // obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
-  obj.audio_engine_ = utils::clone_qobject (
-    *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
+  // obj.audio_engine_ = utils::clone_qobject (
+  //   *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
   obj.pool_ = utils::clone_unique (
     *other.pool_, clone_type, *obj.file_audio_source_registry_,
     [&obj] (bool backup) { return obj.get_path (ProjectPath::POOL, backup); },
@@ -1836,7 +1837,8 @@ struct PluginBuilderForDeserialization
             return project_.get_path (ProjectPath::PluginStates, false);
           },
           [this] () {
-            return project_.audio_engine_->router_->is_processing_thread ();
+            return project_.audio_engine_->graph_dispatcher ()
+              ->is_processing_thread ();
           },
           plugin_toplevel_window_provider);
       }
@@ -1897,7 +1899,8 @@ from_json (const nlohmann::json &j, Project &project)
     .get_to (project.quantize_opts_timeline_);
   j.at (Project::kQuantizeOptsEditorKey).get_to (project.quantize_opts_editor_);
   j.at (Project::kTransportKey).get_to (*project.transport_);
-  j.at (Project::kAudioEngineKey).get_to (project.audio_engine_);
+  // TODO
+  // j.at (Project::kAudioEngineKey).get_to (project.audio_engine_);
   project.pool_ = std::make_unique<dsp::AudioPool> (
     *project.file_audio_source_registry_,
     [&project] (bool backup) {

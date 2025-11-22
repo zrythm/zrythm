@@ -95,12 +95,6 @@ public:
    */
   void stop_file_playback ();
 
-  /**
-   * @brief Get the tempo track from the actual project, using @ref
-   * audio_engine_.
-   */
-  const dsp::TempoMap &get_tempo_map () const;
-
 private:
   static constexpr auto kFaderKey = "fader"sv;
   friend void           to_json (nlohmann::json &j, const SampleProcessor &sp)

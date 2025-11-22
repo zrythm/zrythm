@@ -10,6 +10,7 @@
 #include "actions/track_creator.h"
 #include "dsp/audio_pool.h"
 #include "dsp/metronome.h"
+#include "dsp/port_connections_manager.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
@@ -625,11 +626,6 @@ public:
    */
   utils::QObjectUniquePtr<dsp::PortConnectionsManager> port_connections_manager_;
 
-  /**
-   * The audio backend.
-   */
-  utils::QObjectUniquePtr<engine::device_io::AudioEngine> audio_engine_;
-
   /** Snap/Grid info for the editor. */
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
 
@@ -642,6 +638,11 @@ public:
    * Timeline metadata like BPM, time signature, etc.
    */
   utils::QObjectUniquePtr<dsp::Transport> transport_;
+
+  /**
+   * The audio backend.
+   */
+  utils::QObjectUniquePtr<engine::device_io::AudioEngine> audio_engine_;
 
   /** Audio file pool. */
   std::unique_ptr<dsp::AudioPool> pool_;

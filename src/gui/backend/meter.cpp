@@ -126,7 +126,7 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
       return;
     }
 
-  if (!AUDIO_ENGINE->activated_ || !AUDIO_ENGINE->run_.load ())
+  if (!AUDIO_ENGINE->activated () || !AUDIO_ENGINE->running ())
     {
       z_warning ("engine not running");
       return;

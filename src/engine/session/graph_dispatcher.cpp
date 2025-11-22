@@ -109,7 +109,6 @@ DspGraphDispatcher::start_cycle (
   bool                   realtime_context) noexcept
 {
   assert (scheduler_);
-  assert (time_nfo.local_offset_ + time_nfo.nframes_ <= audio_engine_->nframes_);
 
   /* only set the kickoff thread when called from a realtime context during
    * audio processing (sometimes this method is called from the UI thread to
@@ -281,14 +280,14 @@ DspGraphDispatcher::recalc_graph (bool soft)
     }
   else
     {
-      bool running = AUDIO_ENGINE->run_.load ();
-      AUDIO_ENGINE->run_.store (false);
+      bool running = AUDIO_ENGINE->running ();
+      AUDIO_ENGINE->set_running (false);
       while (AUDIO_ENGINE->cycle_running_.load ())
         {
           std::this_thread::sleep_for (std::chrono::milliseconds (1));
         }
       rebuild_graph ();
-      AUDIO_ENGINE->run_.store (running);
+      AUDIO_ENGINE->set_running (running);
     }
 
   z_info ("done");

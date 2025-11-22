@@ -201,8 +201,8 @@ ProjectManager::createNewProject (
           [this, project] {
             project->setParent (this);
             setActiveProject (project);
-            project->audio_engine_->router_->recalc_graph (false);
-            project->audio_engine_->run_.store (true);
+            project->audio_engine_->graph_dispatcher ()->recalc_graph (false);
+            project->audio_engine_->set_running (true);
             Q_EMIT projectLoaded (project);
           },
           Qt::BlockingQueuedConnection);

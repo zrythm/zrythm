@@ -119,7 +119,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   const auto &engine = project_.audio_engine_;
   // auto *      sample_processor = engine->sample_processor_.get ();
   auto * tracklist = project_.tracklist ();
-  auto * monitor_fader = engine->control_room_->monitor_fader_.get ();
+  auto * monitor_fader = engine->control_room ()->monitor_fader_.get ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project.getTransport ();
   auto  &metronome = *project.metronome ();
@@ -279,11 +279,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // connect monitor fader output to engine monitor output
   {
     const auto &mf_out = monitor_fader->get_output_ports ().front ();
-    const auto  monitor_out = engine->monitor_out_.value ();
+    const auto &monitor_out = engine->get_monitor_out_port ();
     auto *      mf_out_node = graph.get_nodes ().find_node_for_processable (
       *mf_out.get_object_as<dsp::AudioPort> ());
-    auto * monitor_out_node = graph.get_nodes ().find_node_for_processable (
-      *monitor_out.get_object_as<dsp::AudioPort> ());
+    auto * monitor_out_node =
+      graph.get_nodes ().find_node_for_processable (monitor_out);
     mf_out_node->connect_to (*monitor_out_node);
   }
 
