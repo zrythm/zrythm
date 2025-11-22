@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph_builder.h"
-#include "dsp/itransport.h"
-#include "utils/gtest_wrapper.h"
 
 #include "./graph_helpers.h"
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace testing;
 
-using namespace zrythm::dsp::graph;
+namespace zrythm::dsp::graph
+{
 
 // Simple test implementation of IGraphBuilder
 class TestGraphBuilder : public IGraphBuilder
@@ -80,9 +80,9 @@ TEST_F (GraphBuilderTest, NodesProperlyConnected)
   builder.build_graph (graph);
 
   const auto &nodes = graph.get_nodes ().graph_nodes_;
-  EXPECT_EQ (nodes.at (0)->childnodes_.size (), 1);
-  EXPECT_EQ (nodes.at (1)->childnodes_.size (), 1);
-  EXPECT_EQ (nodes.at (2)->childnodes_.size (), 0);
+  EXPECT_EQ (nodes.at (0)->feeds ().size (), 1);
+  EXPECT_EQ (nodes.at (1)->feeds ().size (), 1);
+  EXPECT_EQ (nodes.at (2)->feeds ().size (), 0);
 }
 
 TEST_F (GraphBuilderTest, LatenciesUpdated)
@@ -100,4 +100,5 @@ TEST_F (GraphBuilderTest, LatenciesUpdated)
   graph.get_nodes ().update_latencies ();
 
   EXPECT_EQ (graph.get_nodes ().get_max_route_playback_latency (), 128);
+}
 }

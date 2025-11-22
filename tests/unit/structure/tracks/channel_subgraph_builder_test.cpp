@@ -192,7 +192,7 @@ protected:
 
     // Check if to_node is in from_node's childnodes_
     return std::ranges::any_of (
-      from_node->childnodes_,
+      from_node->feeds (),
       [to_node] (const auto &child) { return &child.get () == to_node; });
   }
 
@@ -355,7 +355,7 @@ protected:
     ASSERT_NE (postfader_node, nullptr);
 
     // For now, just verify we have connections from post-fader
-    EXPECT_FALSE (postfader_node->childnodes_.empty ());
+    EXPECT_FALSE (postfader_node->feeds ().empty ());
   }
 };
 

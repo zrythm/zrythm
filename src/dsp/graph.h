@@ -54,6 +54,8 @@ public:
 
   auto &get_nodes () { return setup_nodes_; }
 
+  auto &get_nodes () const { return setup_nodes_; }
+
   void finalize_nodes () { setup_nodes_.finalize_nodes (); }
 
 private:

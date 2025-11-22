@@ -27,6 +27,7 @@
  */
 
 #include "dsp/graph.h"
+#include "dsp/graph_pruner.h"
 #include "dsp/port.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
@@ -162,7 +163,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
               [&] (auto &&port) {
                 using PortT = base_type<decltype (port)>;
                 port->port_sources_.clear ();
-                for (const auto &child_node : node->childnodes_)
+                for (const auto &child_node : node->feeds ())
                   {
                     auto * dest_port = dynamic_cast<PortT *> (
                       &child_node.get ().get_processable ());
@@ -227,9 +228,29 @@ DspGraphDispatcher::recalc_graph (bool soft)
 
   const auto rebuild_graph = [&] () {
     graph_setup_in_progress_.store (true);
-    ProjectGraphBuilder builder (*PROJECT);
-    dsp::graph::Graph   graph;
-    builder.build_graph (graph);
+    dsp::graph::Graph graph;
+
+    // Build graph
+    {
+      ProjectGraphBuilder builder (*PROJECT);
+      builder.build_graph (graph);
+      z_debug (
+        "Built graph (before pruning): {}",
+        dsp::graph::GraphExport::export_to_dot (graph, true));
+    }
+
+    // Prune graph
+    {
+      std::vector<std::reference_wrapper<dsp::graph::GraphNode>> terminals;
+      auto  &monitor_out = PROJECT->engine ()->get_monitor_out_port ();
+      auto * monitor_out_node =
+        graph.get_nodes ().find_node_for_processable (monitor_out);
+      terminals.emplace_back (*monitor_out_node);
+      dsp::graph::GraphPruner::prune_graph_to_terminals (graph, terminals);
+      z_debug (
+        "Built graph (pruned): {}",
+        dsp::graph::GraphExport::export_to_dot (graph, true));
+    }
 
     set_caches_on_graph_nodes (graph.get_nodes ().graph_nodes_);
 

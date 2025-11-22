@@ -180,6 +180,19 @@ public:
 
   IProcessable &get_processable () { return processable_; }
 
+  /**
+   * @brief Read-only access to child nodes (outgoing connections).
+   */
+  auto &feeds () const { return childnodes_; }
+
+  /**
+   * @brief Read-only access to parent nodes (incoming connections).
+   */
+  auto &depends () const { return parentnodes_; }
+
+  bool remove_feed (const GraphNode &feed);
+  bool remove_depend (const GraphNode &depend);
+
 private:
   void add_feeds (GraphNode &dest);
   void add_depends (GraphNode &src);
@@ -233,13 +246,6 @@ public:
    */
   nframes_t capture_latency_ = 0;
 
-  /**
-   * @brief Outgoing nodes.
-   *
-   * Downstream nodes to activate when this node has completed processing.
-   */
-  std::vector<std::reference_wrapper<GraphNode>> childnodes_;
-
   /** Initial incoming node count. */
   int init_refcount_ = 0;
 
@@ -261,6 +267,13 @@ private:
    * latencies.
    */
   std::vector<std::reference_wrapper<GraphNode>> parentnodes_;
+
+  /**
+   * @brief Outgoing nodes.
+   *
+   * Downstream nodes to activate when this node has completed processing.
+   */
+  std::vector<std::reference_wrapper<GraphNode>> childnodes_;
 
   IProcessable &processable_;
 

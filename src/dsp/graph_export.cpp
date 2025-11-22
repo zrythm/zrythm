@@ -45,7 +45,7 @@ GraphExport::export_to_dot (const graph::Graph &graph, bool include_class_names)
       ss << "\"];\n";
 
       // Connections
-      for (const auto &child : node->childnodes_)
+      for (const auto &child : node->feeds ())
         {
           ss << "  " << node->get_id () << " -> " << child.get ().get_id ()
              << ";\n";

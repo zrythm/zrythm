@@ -304,28 +304,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     }
 #endif
 
-  /* connect the transport ports */
-  {
-// TODO
-#if 0
-    auto node = graph.get_nodes ().find_node_for_processable (*transport->roll_);
-    node->connect_to (*initial_processor_node);
-    node = graph.get_nodes ().find_node_for_processable (*transport->stop_);
-    node->connect_to (*initial_processor_node);
-    node = graph.get_nodes ().find_node_for_processable (*transport->backward_);
-    node->connect_to (*initial_processor_node);
-    node = graph.get_nodes ().find_node_for_processable (*transport->forward_);
-    node->connect_to (*initial_processor_node);
-    node =
-      graph.get_nodes ().find_node_for_processable (*transport->loop_toggle_);
-    node->connect_to (*initial_processor_node);
-    node =
-      graph.get_nodes ().find_node_for_processable (*transport->rec_toggle_);
-    node->connect_to (*initial_processor_node);
-#endif
-  }
-
   /* connect tracks */
+  const auto * master_track = tracklist->singletonTracks ()->masterTrack ();
   for (const auto &cur_tr : tracklist->collection ()->get_track_span ())
     {
       std::visit (
@@ -396,6 +376,27 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                           .get_uuid (),
                         monitor_fader_in.get_uuid ());
                     }
+                  // Connect all track outputs to master processor:
+                  // 1. track faders are checked for
+                  // solo/mute/listen status regardless of whether they are
+                  // actually part of the final pruned graph
+                  // 2. outputs are used in meters
+                  else
+                    {
+                      auto * ch_out_port =
+                        graph.get_nodes ().find_node_for_processable (*(
+                          ch->fader ()->is_audio ()
+                            ? static_cast<dsp::graph::IProcessable *> (
+                                ch->audioOutPort ())
+                            : static_cast<dsp::graph::IProcessable *> (
+                                ch->getMidiOut ())));
+                      assert (ch_out_port != nullptr);
+                      auto * master_track_processor =
+                        graph.get_nodes ().find_node_for_processable (
+                          *master_track->get_track_processor ());
+                      assert (master_track_processor != nullptr);
+                      ch_out_port->connect_to (*master_track_processor);
+                    }
                 }
             }
         },
@@ -425,10 +426,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           src_port_var, dest_port_var);
       }
   }
-
-  z_debug (
-    "done building graph: {}",
-    dsp::graph::GraphExport::export_to_dot (graph, true));
 }
 
 bool

@@ -18,12 +18,12 @@ Graph::is_valid () const
 
   while (!triggers.empty ())
     {
-      const auto trigger = triggers.back ();
+      auto trigger = triggers.back ();
       triggers.pop_back ();
 
-      for (const auto child : trigger.get ().childnodes_)
+      for (const auto child : trigger.get ().feeds ())
         {
-          trigger.get ().childnodes_.pop_back ();
+          trigger.get ().remove_feed (child.get ());
           child.get ().init_refcount_--;
           if (child.get ().init_refcount_ == 0)
             {
@@ -33,7 +33,7 @@ Graph::is_valid () const
     }
 
   return std::ranges::none_of (setup_nodes_.graph_nodes_, [] (const auto &node) {
-    return !node->childnodes_.empty () || node->init_refcount_ > 0;
+    return !node->feeds ().empty () || node->init_refcount_ > 0;
   });
 }
 

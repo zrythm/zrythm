@@ -200,6 +200,26 @@ GraphNode::add_depends (GraphNode &src)
   initial_ = false;
 }
 
+bool
+GraphNode::remove_feed (const GraphNode &feed)
+{
+  const auto erased_elements =
+    std::erase_if (childnodes_, [&] (const auto &child_node) {
+      return std::addressof (child_node.get ()) == std::addressof (feed);
+    });
+  return erased_elements > 0;
+}
+
+bool
+GraphNode::remove_depend (const GraphNode &depend)
+{
+  const auto erased_elements =
+    std::erase_if (parentnodes_, [&] (const auto &parent_node) {
+      return std::addressof (parent_node.get ()) == std::addressof (depend);
+    });
+  return erased_elements > 0;
+}
+
 void
 GraphNode::set_route_playback_latency (nframes_t dest_latency)
 {
@@ -244,7 +264,7 @@ GraphNode::connect_to (GraphNode &target)
   add_feeds (target);
   target.add_depends (*this);
 
-  z_warn_if_fail (!terminal_ && !target.initial_);
+  assert (!terminal_ && !target.initial_);
 }
 
 nframes_t
@@ -311,7 +331,7 @@ GraphNodeCollection::set_initial_and_terminal_nodes ()
   trigger_nodes_.clear ();
   for (const auto &node : graph_nodes_)
     {
-      if (node->childnodes_.empty ())
+      if (node->feeds ().empty ())
         {
           /* terminal node */
           node->terminal_ = true;

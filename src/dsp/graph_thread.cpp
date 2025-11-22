@@ -242,7 +242,7 @@ GraphThread::run_worker () noexcept
         scheduler_.get_transport_for_this_cycle ());
 
       /* if there are no outgoing edges, this is a terminal node */
-      if (to_run->childnodes_.empty ())
+      if (to_run->feeds ().empty ())
         {
           /* notify parent graph */
           on_reached_terminal_node ();
@@ -250,7 +250,7 @@ GraphThread::run_worker () noexcept
       else
         {
           /* notify downstream nodes that depend on this node */
-          for (const auto child_node : to_run->childnodes_)
+          for (const auto child_node : to_run->feeds ())
             {
               scheduler->trigger_node (child_node);
             }

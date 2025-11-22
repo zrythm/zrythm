@@ -57,7 +57,7 @@ TEST_F (GraphNodeTest, Construction)
 
   auto node = create_test_node ();
   EXPECT_EQ (node.get_processable ().get_node_name (), "test_node");
-  EXPECT_TRUE (node.childnodes_.empty ());
+  EXPECT_TRUE (node.feeds ().empty ());
   EXPECT_FALSE (node.terminal_);
   EXPECT_FALSE (node.initial_);
 }
@@ -91,7 +91,7 @@ TEST_F (GraphNodeTest, NodeConnections)
 
   node1.connect_to (node2);
 
-  EXPECT_EQ (node1.childnodes_.size (), 1);
+  EXPECT_EQ (node1.feeds ().size (), 1);
   EXPECT_FALSE (node1.terminal_);
   EXPECT_FALSE (node2.initial_);
   EXPECT_EQ (node2.init_refcount_, 1);
@@ -149,9 +149,9 @@ TEST_F (GraphNodeTest, MultipleNodeConnections)
   node1.connect_to (node3);
   node2.connect_to (node3);
 
-  EXPECT_EQ (node1.childnodes_.size (), 2);
-  EXPECT_EQ (node2.childnodes_.size (), 1);
-  EXPECT_EQ (node3.childnodes_.size (), 0);
+  EXPECT_EQ (node1.feeds ().size (), 2);
+  EXPECT_EQ (node2.feeds ().size (), 1);
+  EXPECT_EQ (node3.feeds ().size (), 0);
   EXPECT_EQ (node3.init_refcount_, 2);
 }
 
@@ -208,10 +208,10 @@ TEST_F (GraphNodeTest, ComplexGraphTopology)
   node3.connect_to (node4);
 
   // Verify graph structure
-  EXPECT_EQ (node1.childnodes_.size (), 2);
-  EXPECT_EQ (node2.childnodes_.size (), 1);
-  EXPECT_EQ (node3.childnodes_.size (), 1);
-  EXPECT_EQ (node4.childnodes_.size (), 0);
+  EXPECT_EQ (node1.feeds ().size (), 2);
+  EXPECT_EQ (node2.feeds ().size (), 1);
+  EXPECT_EQ (node3.feeds ().size (), 1);
+  EXPECT_EQ (node4.feeds ().size (), 0);
 
   // Verify reference counts
   EXPECT_EQ (node1.init_refcount_, 0);
