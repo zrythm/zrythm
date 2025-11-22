@@ -61,7 +61,7 @@ Item {
   property bool ctrlHeld
   property int currentAction: Arranger.CurrentAction.None
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
-  required property var editorSettings
+  required property EditorSettings editorSettings
   property bool enableYScroll: false
   property ArrangerObjectBaseView hoveredObject: null
   required property ArrangerObjectCreator objectCreator

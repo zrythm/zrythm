@@ -3,7 +3,6 @@
 
 pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Layouts
 import Zrythm
 
 ListView {
@@ -13,9 +12,8 @@ ListView {
   required property PluginImporter pluginImporter
   required property Track track
 
-  Layout.fillHeight: true
-  Layout.fillWidth: true
-  Layout.preferredHeight: 100
+  implicitHeight: contentHeight
+  interactive: false
   model: pluginGroup
 
   delegate: PluginSlotView {

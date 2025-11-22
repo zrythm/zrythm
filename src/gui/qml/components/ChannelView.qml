@@ -30,9 +30,8 @@ ColumnLayout {
   }
 
   PluginSlotList {
-    Layout.fillHeight: true
     Layout.fillWidth: true
-    Layout.preferredHeight: 100
+    Layout.minimumHeight: contentHeight
     pluginGroup: root.channel.midiFx
     pluginImporter: root.pluginImporter
     track: root.track
@@ -43,9 +42,8 @@ ColumnLayout {
   }
 
   PluginSlotList {
-    Layout.fillHeight: true
     Layout.fillWidth: true
-    Layout.preferredHeight: 100
+    Layout.minimumHeight: contentHeight
     pluginGroup: root.channel.inserts
     pluginImporter: root.pluginImporter
     track: root.track
