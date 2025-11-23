@@ -18,8 +18,6 @@
 #define AUDIO_ENGINE \
   (zrythm::engine::device_io::AudioEngine::get_active_instance ())
 
-#define ROUTER (AUDIO_ENGINE->graph_dispatcher ())
-
 namespace zrythm::engine::device_io
 {
 /**
@@ -236,10 +234,10 @@ public:
 
   auto get_device_manager () const { return device_manager_; }
 
-  bool activated () const { return activated_; }
-  bool running () const { return run_.load (); }
-  void set_running (bool run) { run_.store (run); }
-  auto graph_dispatcher () const { return router_.get (); }
+  bool  activated () const { return activated_; }
+  bool  running () const { return run_.load (); }
+  void  set_running (bool run) { run_.store (run); }
+  auto &graph_dispatcher () { return router_; }
 
   nframes_t get_block_length () const
   {
@@ -282,9 +280,6 @@ private:
    * Useful for debugging.
    */
   std::atomic_uint64_t cycle_{ 0 };
-
-  /** The processing graph router. */
-  std::unique_ptr<session::DspGraphDispatcher> router_;
 
   /**
    * @brief The last audio output in the signal chain.
@@ -403,5 +398,8 @@ public:
 
 private:
   std::unique_ptr<AudioCallback> audio_callback_;
+
+  /** The processing graph router. */
+  std::unique_ptr<engine::session::DspGraphDispatcher> router_;
 };
 }

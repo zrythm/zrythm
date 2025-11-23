@@ -69,9 +69,9 @@ Item {
   property alias scrollView: scrollView
   readonly property real scrollViewHeight: scrollView.height
   readonly property real scrollViewWidth: scrollView.width
-  readonly property real scrollX: root.editorSettings.x
+  readonly property real scrollX: root.editorSettings?.x ?? 0
   readonly property real scrollXPlusWidth: scrollX + scrollViewWidth
-  readonly property real scrollY: root.editorSettings.y
+  readonly property real scrollY: root.editorSettings?.y ?? 0
   readonly property real scrollYPlusHeight: scrollY + scrollViewHeight
   required property ArrangerObjectSelectionOperator selectionOperator
   property bool shiftHeld

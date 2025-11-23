@@ -79,6 +79,9 @@ ProjectManager::init_templates ()
 ProjectManager *
 ProjectManager::get_instance ()
 {
+  if (dynamic_cast<ZrythmApplication *> (qApp) == nullptr)
+    return nullptr;
+
   return dynamic_cast<ZrythmApplication *> (qApp)->projectManager ();
 }
 
@@ -159,8 +162,6 @@ ProjectManager::create_default (
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;
   prj->make_project_dirs (false);
-
-  prj->loaded_ = true;
 
   prj->clip_editor_->init ();
 

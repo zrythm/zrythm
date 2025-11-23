@@ -22,7 +22,7 @@ Control {
   required property bool foldable
   property bool isResizing: false
   required property Track track // connected automatically when used as a delegate for a Tracklist model
-  property bool trackSelected: control.trackSelectionManager.isSelected(control.track)
+  property bool trackSelected: control.trackSelectionManager?.isSelected(control.track) ?? false
   required property TrackSelectionManager trackSelectionManager
   required property Tracklist tracklist
   required property UndoStack undoStack

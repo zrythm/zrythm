@@ -105,7 +105,8 @@ AudioEngine::AudioEngine (
               static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
               dev->getCurrentBufferSizeSamples ());
           },
-          [this] () { monitor_out_.release_resources (); }))
+          [this] () { monitor_out_.release_resources (); })),
+      router_ (std::make_unique<engine::session::DspGraphDispatcher> (this))
 {
   z_debug ("Creating audio engine...");
 
@@ -113,8 +114,6 @@ AudioEngine::AudioEngine (
   midi_in_->set_symbol (u8"midi_in");
 
   monitor_out_.set_symbol (u8"monitor_out");
-
-  router_ = std::make_unique<session::DspGraphDispatcher> (this);
 
   z_debug ("Audio engine created");
 }
@@ -229,28 +228,29 @@ AudioEngine::
 
   // control_room_->monitor_fader_->abort_fade_out ();
 
-  {
-    /* run 1 more time to flush panic messages */
-    SemaphoreRAII                sem (port_operation_lock_, true);
-    dsp::PlayheadProcessingGuard playhead_processing_guard{
-      transport_.playhead ()->playhead ()
-    };
-    auto current_transport_state = TRANSPORT->get_snapshot ();
-    process_prepare (current_transport_state, 1, &sem);
+  if (device_manager_->getCurrentAudioDevice () != nullptr)
+    {
+      /* run 1 more time to flush panic messages */
+      SemaphoreRAII                sem (port_operation_lock_, true);
+      dsp::PlayheadProcessingGuard playhead_processing_guard{
+        transport_.playhead ()->playhead ()
+      };
+      auto current_transport_state = transport_.get_snapshot ();
+      process_prepare (current_transport_state, 1, &sem);
 
-    EngineProcessTimeInfo time_nfo = {
-      .g_start_frame_ = static_cast<unsigned_frame_t> (
-        transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
-      .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
-        transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
-      .local_offset_ = 0,
-      .nframes_ = 1,
-    };
+      EngineProcessTimeInfo time_nfo = {
+        .g_start_frame_ = static_cast<unsigned_frame_t> (
+          transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
+        .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
+          transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
+        .local_offset_ = 0,
+        .nframes_ = 1,
+      };
 
-    router_->start_cycle (
-      current_transport_state, time_nfo, remaining_latency_preroll_, false);
-    post_process (current_transport_state, 0, 1);
-  }
+      router_->start_cycle (
+        current_transport_state, time_nfo, remaining_latency_preroll_, false);
+      post_process (current_transport_state, 0, 1);
+    }
 }
 
 void

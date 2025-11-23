@@ -54,6 +54,7 @@ using namespace zrythm;
 #define SNAP_GRID_TIMELINE (PROJECT->snapGridTimeline ())
 #define SNAP_GRID_EDITOR (PROJECT->snapGridEditor ())
 #define MONITOR_FADER (PROJECT->controlRoom ()->monitor_fader_)
+#define ROUTER (PROJECT->engine ()->graph_dispatcher ().get ())
 
 enum class ProjectPath
 {
@@ -601,15 +602,7 @@ public:
    *
    * Used in inspector_widget_refresh.
    */
-  Project::SelectionType last_selection_ = (SelectionType) 0;
-
-  /**
-   * If a project is currently loaded or not.
-   *
-   * This is useful so that we know if we need to tear down when loading a
-   * new project while another one is loaded.
-   */
-  bool loaded_ = false;
+  Project::SelectionType last_selection_{};
 
   /**
    * Whether the current is currently being loaded from a backup file.
@@ -618,6 +611,8 @@ public:
    * to false after the project is loaded.
    */
   bool loading_from_backup_ = false;
+
+  std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
   /**
    * Currently selected tool (select - normal,
@@ -716,8 +711,6 @@ public:
   /** Used when deserializing projects. */
   int format_major_ = 0;
   int format_minor_ = 0;
-
-  std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 };
 
 /**

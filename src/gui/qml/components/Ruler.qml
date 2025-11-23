@@ -30,7 +30,7 @@ Item {
   readonly property real pxPerBar: pxPerSixteenth * 16
   readonly property real pxPerBeat: pxPerSixteenth * 4
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
-  readonly property real pxPerTick: defaultPxPerTick * editorSettings.horizontalZoomLevel
+  readonly property real pxPerTick: defaultPxPerTick * (editorSettings?.horizontalZoomLevel ?? 1)
   property ArrangerObject region: null
   readonly property real sixteenthLineOpacity: 0.4
   readonly property int startBar: {
@@ -44,7 +44,7 @@ Item {
   required property Transport transport
   readonly property int visibleBarCount: endBar - startBar + 1
   readonly property real visibleEndTick: visibleStartTick + (parent.width / pxPerTick)
-  readonly property real visibleStartTick: editorSettings.x / pxPerTick
+  readonly property real visibleStartTick: (editorSettings?.x ?? 1) / pxPerTick
 
   clip: true
   implicitHeight: 24

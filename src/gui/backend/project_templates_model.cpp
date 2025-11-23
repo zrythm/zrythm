@@ -19,18 +19,21 @@ ProjectTemplatesModel::ProjectTemplatesModel (QObject * parent)
 std::vector<std::unique_ptr<ProjectInfo>>
 ProjectTemplatesModel::get_templates ()
 {
-  const auto &list = ProjectManager::get_instance ()->get_templates ();
-
   std::vector<std::unique_ptr<ProjectInfo>> ret;
 
   // add blank template
   ret.emplace_back (std::make_unique<ProjectInfo> ());
   ret.back ()->setName (tr ("Blank Project"));
 
-  std::ranges::transform (
-    list, std::back_inserter (ret), [] (const auto &pathstr) {
-      return std::make_unique<ProjectInfo> (pathstr);
-    });
+  const auto * pm = ProjectManager::get_instance ();
+  if (pm != nullptr)
+    {
+      const auto &list = pm->get_templates ();
+      std::ranges::transform (
+        list, std::back_inserter (ret), [] (const auto &pathstr) {
+          return std::make_unique<ProjectInfo> (pathstr);
+        });
+    }
 
   return ret;
 }

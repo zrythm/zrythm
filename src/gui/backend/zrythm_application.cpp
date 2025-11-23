@@ -445,4 +445,6 @@ ZrythmApplication::~ZrythmApplication ()
           engine_process_->kill ();
         }
     }
+
+  Zrythm::deleteInstance ();
 }

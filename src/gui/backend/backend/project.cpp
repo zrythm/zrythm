@@ -64,7 +64,7 @@ Project::Project (
       arranger_object_registry_ (
         new structure::arrangement::ArrangerObjectRegistry (this)),
       track_registry_ (new structure::tracks::TrackRegistry (this)),
-      version_ (Zrythm::get_version (false)),
+      version_ (Zrythm::get_version (false)), device_manager_ (device_manager),
       tool_ (new gui::backend::Tool (this)),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       snap_grid_editor_ (
@@ -266,8 +266,7 @@ Project::Project (
         utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
           *arranger_object_registry_,
           *file_audio_source_registry_,
-          this)),
-      device_manager_ (device_manager)
+          this))
 {
   const auto setup_metronome = [&] () {
     const auto load_metronome_sample = [] (QFile f) {
@@ -534,7 +533,8 @@ Project::Project (
 
 Project::~Project ()
 {
-  loaded_ = false;
+  // Graph dispatcher needs to be deleted first
+  audio_engine_->graph_dispatcher ().reset ();
 }
 
 structure::tracks::FinalTrackDependencies

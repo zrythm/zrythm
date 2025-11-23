@@ -241,7 +241,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
     // Prune graph
     {
       std::vector<std::reference_wrapper<dsp::graph::GraphNode>> terminals;
-      auto  &monitor_out = PROJECT->engine ()->get_monitor_out_port ();
+      auto  &monitor_out = audio_engine_->get_monitor_out_port ();
       auto * monitor_out_node =
         graph.get_nodes ().find_node_for_processable (monitor_out);
       terminals.emplace_back (*monitor_out_node);

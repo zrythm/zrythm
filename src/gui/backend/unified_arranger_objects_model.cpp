@@ -13,6 +13,9 @@ UnifiedArrangerObjectsModel::UnifiedArrangerObjectsModel (QObject * parent)
 void
 UnifiedArrangerObjectsModel::addSourceModel (QAbstractItemModel * model)
 {
+  if (model == nullptr)
+    return;
+
   if (QConcatenateTablesProxyModel::sourceModels ().contains (model))
     return;
 

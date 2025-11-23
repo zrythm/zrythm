@@ -61,7 +61,11 @@ ApplicationWindow {
     project.aboutToBeDeleted.connect(closeAndDestroy);
     project.activate();
   }
-  onClosing: {}
+  onClosing: {
+    console.log("Application shutting down");
+    closeAndDestroy();
+    Qt.quit();
+  }
 
   AboutDialog {
     id: aboutDialog
