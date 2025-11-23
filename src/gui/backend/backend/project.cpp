@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "zrythm-config.h"
-
 #include <filesystem>
 
 #include "dsp/port_connections_manager.h"
@@ -14,12 +12,9 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
-#include "gui/backend/ui.h"
 #include "gui/dsp/plugin_span.h"
-#include "structure/arrangement/audio_region.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
-#include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/logger.h"
@@ -99,6 +94,12 @@ Project::Project (
               [] () { return gui::SettingsManager::metronomeCountIn (); },
             .recording_preroll_bars_ =
               [] () { return gui::SettingsManager::recordingPreroll (); },
+          },
+          this)),
+      control_room_ (
+        utils::make_qobject_unique<engine::session::ControlRoom> (
+          [this] () -> const engine::session::ControlRoom::RealtimeTracks & {
+            return tracks_rt_;
           },
           this)),
       audio_engine_ (
@@ -458,6 +459,77 @@ Project::Project (
     tempo_object_manager_->timeSignatureObjects (),
     &structure::arrangement::ArrangerObjectListModel::contentChanged,
     tempo_map_wrapper_.get (), rebuild_tempo_map);
+
+  // Initialize and connect up control room values
+  {
+    auto * control_room = control_room_.get ();
+    control_room->setDimOutput (gui::SettingsManager::monitorDimEnabled ());
+    QObject::connect (
+      control_room, &engine::session::ControlRoom::dimOutputChanged,
+      gui::SettingsManager::get_instance (),
+      &gui::SettingsManager::set_monitorDimEnabled);
+
+    control_room->muteVolume ()->setBaseValue (
+      control_room->muteVolume ()->range ().convertTo0To1 (
+        gui::SettingsManager::monitorMuteVolume ()));
+    QObject::connect (
+      control_room->muteVolume (), &dsp::ProcessorParameter::baseValueChanged,
+      gui::SettingsManager::get_instance (), [&] (float value) {
+        gui::SettingsManager::get_instance ()->set_monitorMuteVolume (
+          control_room->muteVolume ()->range ().convertFrom0To1 (value));
+      });
+
+    control_room->listenVolume ()->setBaseValue (
+      control_room->listenVolume ()->range ().convertTo0To1 (
+        gui::SettingsManager::monitorListenVolume ()));
+    QObject::connect (
+      control_room->listenVolume (), &dsp::ProcessorParameter::baseValueChanged,
+      gui::SettingsManager::get_instance (), [&] (float value) {
+        gui::SettingsManager::get_instance ()->set_monitorListenVolume (
+          control_room->listenVolume ()->range ().convertFrom0To1 (value));
+      });
+
+    control_room->dimVolume ()->setBaseValue (
+      control_room->dimVolume ()->range ().convertTo0To1 (
+        gui::SettingsManager::monitorDimVolume ()));
+    QObject::connect (
+      control_room->dimVolume (), &dsp::ProcessorParameter::baseValueChanged,
+      gui::SettingsManager::get_instance (), [&] (float value) {
+        gui::SettingsManager::get_instance ()->set_monitorDimVolume (
+          control_room->dimVolume ()->range ().convertFrom0To1 (value));
+      });
+
+    {
+      auto * monitor_fader = control_room->monitorFader ();
+      monitor_fader->gain ()->setBaseValue (
+        monitor_fader->gain ()->range ().convertTo0To1 (
+          gui::SettingsManager::monitorVolume ()));
+      QObject::connect (
+        monitor_fader->gain (), &dsp::ProcessorParameter::baseValueChanged,
+        gui::SettingsManager::get_instance (), [&] (float value) {
+          gui::SettingsManager::get_instance ()->set_monitorVolume (
+            monitor_fader->gain ()->range ().convertFrom0To1 (value));
+        });
+
+      monitor_fader->monoToggle ()->setBaseValue (
+        gui::SettingsManager::monitorMonoEnabled () ? 1.f : 0.f);
+      QObject::connect (
+        monitor_fader->monoToggle (), &dsp::ProcessorParameter::baseValueChanged,
+        gui::SettingsManager::get_instance (), [&] (float value) {
+          gui::SettingsManager::get_instance ()->set_monitorMonoEnabled (
+            monitor_fader->monoToggle ()->range ().is_toggled (value));
+        });
+
+      monitor_fader->mute ()->setBaseValue (
+        gui::SettingsManager::monitorMuteEnabled () ? 1.f : 0.f);
+      QObject::connect (
+        monitor_fader->mute (), &dsp::ProcessorParameter::baseValueChanged,
+        gui::SettingsManager::get_instance (), [&] (float value) {
+          gui::SettingsManager::get_instance ()->set_monitorMuteEnabled (
+            monitor_fader->mute ()->range ().is_toggled (value));
+        });
+    }
+  }
 }
 
 Project::~Project ()
@@ -1605,6 +1677,12 @@ dsp::Transport *
 Project::getTransport () const
 {
   return transport_.get ();
+}
+
+engine::session::ControlRoom *
+Project::controlRoom () const
+{
+  return control_room_.get ();
 }
 
 engine::device_io::AudioEngine *

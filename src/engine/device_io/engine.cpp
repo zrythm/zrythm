@@ -52,9 +52,6 @@ AudioEngine::AudioEngine (
     : QObject (parent), port_registry_ (port_registry),
       param_registry_ (param_registry), transport_ (transport),
       tempo_map_ (tempo_map), device_manager_ (std::move (device_mgr)),
-      control_room_ (
-        utils::make_qobject_unique<
-          session::ControlRoom> (port_registry_, param_registry_, this, this)),
       monitor_out_ (
         u8"Monitor Out",
         dsp::PortFlow::Output,
@@ -131,7 +128,6 @@ init_from (
 // TODO
 #if 0
   obj.midi_in_ = utils::clone_unique (*other.midi_in_);
-  obj.control_room_ = utils::clone_unique (*other.control_room_);
   obj.sample_processor_ = utils::clone_unique (*other.sample_processor_);
   obj.sample_processor_->audio_engine_ = &obj;
   // obj.midi_clock_out_ = utils::clone_unique (*other.midi_clock_out_);
@@ -156,7 +152,6 @@ AudioEngine::init_loaded ()
   // FIXME this shouldn't be here
   // project->pool_->init_loaded ();
 
-  control_room_->init_loaded (port_registry_, param_registry_, this);
   sample_processor_->init_loaded (this);
 
   z_debug ("done initializing loaded engine");
@@ -752,9 +747,7 @@ void
 to_json (nlohmann::json &j, const AudioEngine &engine)
 {
   j = nlohmann::json{
-    // { kFramesPerTickKey,   engine.frames_per_tick_  },
     { AudioEngine::kMidiInKey,          engine.midi_in_          },
-    { AudioEngine::kControlRoomKey,     engine.control_room_     },
     { AudioEngine::kSampleProcessorKey, engine.sample_processor_ },
   };
 }
@@ -765,7 +758,6 @@ from_json (const nlohmann::json &j, AudioEngine &engine)
 // TODO
 #if 0
   j.at (AudioEngine::kMidiInKey).get_to (engine.midi_in_);
-  j.at (AudioEngine::kControlRoomKey).get_to (engine.control_room_);
   j.at (AudioEngine::kSampleProcessorKey).get_to (engine.sample_processor_);
 #endif
 }

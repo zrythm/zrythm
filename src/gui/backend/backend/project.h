@@ -15,6 +15,7 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 #include "engine/device_io/engine.h"
+#include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/plugin_selection_manager.h"
@@ -52,6 +53,7 @@ using namespace zrythm;
 #define P_MODULATOR_TRACK (TRACKLIST->singletonTracks ()->modulatorTrack ())
 #define SNAP_GRID_TIMELINE (PROJECT->snapGridTimeline ())
 #define SNAP_GRID_EDITOR (PROJECT->snapGridEditor ())
+#define MONITOR_FADER (PROJECT->controlRoom ()->monitor_fader_)
 
 enum class ProjectPath
 {
@@ -115,6 +117,9 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::structure::arrangement::Timeline * timeline READ getTimeline
       CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::engine::session::ControlRoom * controlRoom READ controlRoom CONSTANT
+      FINAL)
   Q_PROPERTY (
     zrythm::engine::device_io::AudioEngine * engine READ engine CONSTANT FINAL)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
@@ -223,6 +228,7 @@ public:
   structure::arrangement::Timeline *           getTimeline () const;
   dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
+  engine::session::ControlRoom *               controlRoom () const;
   engine::device_io::AudioEngine *             engine () const;
   gui::backend::Tool *                         getTool () const;
   ClipEditor *                                 getClipEditor () const;
@@ -638,6 +644,8 @@ public:
    * Timeline metadata like BPM, time signature, etc.
    */
   utils::QObjectUniquePtr<dsp::Transport> transport_;
+
+  utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
 
   /**
    * The audio backend.

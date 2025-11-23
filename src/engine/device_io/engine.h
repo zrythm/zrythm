@@ -9,7 +9,6 @@
 #include "dsp/panning.h"
 #include "dsp/transport.h"
 #include "engine/device_io/audio_callback.h"
-#include "engine/session/control_room.h"
 #include "engine/session/graph_dispatcher.h"
 #include "engine/session/sample_processor.h"
 #include "utils/audio.h"
@@ -222,7 +221,6 @@ public:
     utils::ObjectCloneType clone_type);
 
   auto &get_monitor_out_port () { return monitor_out_; }
-  auto &get_monitor_out_port () const { return monitor_out_; }
 
   /**
    * Queues MIDI note off to event queues.
@@ -242,7 +240,6 @@ public:
   bool running () const { return run_.load (); }
   void set_running (bool run) { run_.store (run); }
   auto graph_dispatcher () const { return router_.get (); }
-  auto control_room () const { return control_room_.get (); }
 
   nframes_t get_block_length () const
   {
@@ -260,7 +257,6 @@ public:
 
 private:
   static constexpr auto kMidiInKey = "midiIn"sv;
-  static constexpr auto kControlRoomKey = "controlRoom"sv;
   static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
   static constexpr auto kHwInProcessorKey = "hwInProcessor"sv;
   static constexpr auto kHwOutProcessorKey = "hwOutProcessor"sv;
@@ -289,9 +285,6 @@ private:
 
   /** The processing graph router. */
   std::unique_ptr<session::DspGraphDispatcher> router_;
-
-  /** The ControlRoom. */
-  utils::QObjectUniquePtr<session::ControlRoom> control_room_;
 
   /**
    * @brief The last audio output in the signal chain.

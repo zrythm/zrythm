@@ -4,31 +4,20 @@
 #pragma once
 
 #include "dsp/fader.h"
-#include "utils/icloneable.h"
+#include "structure/tracks/track_fwd.h"
 
-#define CONTROL_ROOM (AUDIO_ENGINE->control_room_)
-
-#define MONITOR_FADER (CONTROL_ROOM->monitor_fader_)
-
-namespace zrythm
-{
-namespace structure::tracks
-{
-class Fader;
-}
-namespace engine::device_io
-{
-class AudioEngine;
-}
-}
+#include <boost/unordered/unordered_flat_map_fwd.hpp>
 
 namespace zrythm::engine::session
 {
 
 /**
- * The control room allows to specify how Listen will work on each Channel and
- * to set overall volume after the Master Channel so you can change the volume
- * without touching the Master Fader.
+ * @brief Abstraction to control the signal coming in from Master and going out
+ * into the speakers.
+ *
+ * For example, the control room allows to specify how Listen will work on each
+ * Channel and to set overall volume after the Master Channel so you can change
+ * the volume without touching the Master Fader.
  */
 class ControlRoom : public QObject
 {
@@ -41,17 +30,19 @@ class ControlRoom : public QObject
     zrythm::dsp::ProcessorParameter * listenVolume READ muteVolume CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::ProcessorParameter * dimVolume READ muteVolume CONSTANT)
+  Q_PROPERTY (zrythm::dsp::Fader * monitorFader READ monitorFader CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
+
 public:
-  using Fader = dsp::Fader;
-  using AudioEngine = engine::device_io::AudioEngine;
+  using RealtimeTracks = boost::unordered_flat_map<
+    structure::tracks::TrackUuid,
+    structure::tracks::TrackPtrVariant>;
+  using RealtimeTracksProvider = std::function<const RealtimeTracks &()>;
 
   ControlRoom (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    AudioEngine *                    engine,
-    QObject *                        parent = nullptr);
+    RealtimeTracksProvider rt_tracks_provider,
+    QObject *              parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -74,42 +65,17 @@ public:
     return listen_volume_.get ();
   }
   dsp::ProcessorParameter * dimVolume () const { return dim_volume_.get (); }
+  auto * monitorFader () const { return monitor_fader_.get (); }
 
   // ========================================================================
 
-  /**
-   * Inits the control room from a project.
-   */
-  void init_loaded (
-    dsp::PortRegistry               &port_registry,
-    dsp::ProcessorParameterRegistry &param_registry,
-    AudioEngine *                    engine);
-
-  /**
-   * Sets dim_output to on/off and notifies interested parties.
-   */
-  void set_dim_output (bool dim_output) { dim_output_ = dim_output; }
-
-  friend void init_from (
-    ControlRoom           &obj,
-    const ControlRoom     &other,
-    utils::ObjectCloneType clone_type);
-
 private:
-  static constexpr auto kMonitorFaderKey = "monitorFader"sv;
-  friend void to_json (nlohmann::json &j, const ControlRoom &control_room)
-  {
-    j[kMonitorFaderKey] = *control_room.monitor_fader_;
-  }
-  friend void from_json (const nlohmann::json &j, ControlRoom &control_room)
-  {
-    // TODO
-    // j.at (kMonitorFaderKey).get_to (control_room.listen_fader_);
-  }
+  /**
+   * @brief Self-contained registries (just to satisfy port/fader requirements).
+   */
+  dsp::PortRegistry               port_registry_;
+  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
 
-  void init_common ();
-
-public:
   /**
    * The volume to set muted channels to when
    * soloing/muting.
@@ -136,16 +102,10 @@ public:
    * Monitor fader.
    *
    * The Master stereo out should connect to this.
-   *
-   * @note This needs to be serialized because some ports connect to it.
    */
-  std::unique_ptr<Fader> monitor_fader_;
+  utils::QObjectUniquePtr<dsp::Fader> monitor_fader_;
 
-  /** Pointer to owner audio engine, if any. */
-  AudioEngine * audio_engine_ = nullptr;
-
-  OptionalRef<dsp::PortRegistry>               port_registry_;
-  OptionalRef<dsp::ProcessorParameterRegistry> param_registry_;
+  RealtimeTracksProvider rt_tracks_provider_;
 };
 
 }
