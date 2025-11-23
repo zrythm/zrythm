@@ -62,8 +62,7 @@ DeviceManager::createAudioDeviceTypes (
     juce::AudioIODeviceType::createAudioIODeviceType_WASAPI (
       juce::WASAPIDeviceMode::sharedLowLatency));
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_DirectSound ());
-  // cannot distribute builds with ASIO support for legal reasons
-  // add_device (juce::AudioIODeviceType::createAudioIODeviceType_ASIO ());
+  add_device (juce::AudioIODeviceType::createAudioIODeviceType_ASIO ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_CoreAudio ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_iOSAudio ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_Bela ());
