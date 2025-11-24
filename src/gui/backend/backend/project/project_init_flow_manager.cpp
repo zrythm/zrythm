@@ -537,7 +537,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   z_debug ("project loaded");
 
   /* recalculate the routing graph */
-  engine->router_->recalc_graph (false);
+  engine->graph_dispatcher_->recalc_graph (false);
 
 #if 0
   z_debug ("setting up main window...");

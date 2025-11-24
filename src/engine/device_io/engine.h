@@ -131,19 +131,12 @@ public:
    */
   void panic_all ();
 
-  /**
-   * Clears the underlying backend's output buffers.
-   *
-   * Used when returning early.
-   */
-  void clear_output_buffers (nframes_t nframes);
-
   auto get_device_manager () const { return device_manager_; }
 
   bool  activated () const { return state_ == State::Active; }
   bool  running () const { return run_.load (); }
   void  set_running (bool run) { run_.store (run); }
-  auto &graph_dispatcher () { return router_; }
+  auto &graph_dispatcher () { return graph_dispatcher_; }
 
   bool exporting () const { return exporting_; }
   void set_exporting (bool exporting) { exporting_.store (exporting); }
@@ -188,6 +181,11 @@ private:
    *
    * The contents of this port will be passed on to the audio output device at
    * the end of every processing cycle.
+   *
+   * @note Since the audio engine runs (but finishes early) even while the
+   * graph gets recalculated, this port's buffers can be re-allocated by the
+   * graph, so we need to make sure we don't use its buffers unless processing
+   * is successful (no early finish). See the AudioCallback lambda for details.
    */
   dsp::AudioPort monitor_out_;
 
@@ -232,6 +230,6 @@ private:
   std::unique_ptr<AudioCallback> audio_callback_;
 
   /** The processing graph router. */
-  std::unique_ptr<engine::session::DspGraphDispatcher> router_;
+  std::unique_ptr<engine::session::DspGraphDispatcher> graph_dispatcher_;
 };
 }

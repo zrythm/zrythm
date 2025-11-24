@@ -93,13 +93,14 @@ AudioEngine::AudioEngine (
               }
           },
           [this] (juce::AudioIODevice * dev) {
-            router_->recalc_graph (false);
+            graph_dispatcher_->recalc_graph (false);
             monitor_out_.prepare_for_processing (
               static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
               dev->getCurrentBufferSizeSamples ());
           },
           [this] () { monitor_out_.release_resources (); })),
-      router_ (std::make_unique<engine::session::DspGraphDispatcher> (this))
+      graph_dispatcher_ (
+        std::make_unique<engine::session::DspGraphDispatcher> (this))
 {
   midi_in_->set_symbol (u8"midi_in");
   monitor_out_.set_symbol (u8"monitor_out");
@@ -193,7 +194,7 @@ AudioEngine::
         .nframes_ = 1,
       };
 
-      router_->start_cycle (
+      graph_dispatcher_->start_cycle (
         current_transport_state, time_nfo, remaining_latency_preroll_, false);
       post_process (current_transport_state, 0, 1);
     }
@@ -257,24 +258,6 @@ AudioEngine::activate (const bool activate)
   z_debug ("New engine status: {}", new_state);
 }
 
-void
-AudioEngine::clear_output_buffers (nframes_t nframes)
-{
-  /* if graph setup in progress, monitor buffers may be re-allocated so avoid
-   * accessing them */
-  if (router_->graph_setup_in_progress_.load ()) [[unlikely]]
-    return;
-
-  /* clear the monitor output (used by rtaudio) */
-
-  get_monitor_out_port ().clear_buffer (0, get_block_length ());
-  // midi_clock_out_->clear_buffer (get_block_length ());
-
-  /* if not running, do not attempt to access any possibly deleted ports */
-  if (!run_.load ()) [[unlikely]]
-    return;
-}
-
 bool
 AudioEngine::process_prepare (
   dsp::Transport::TransportSnapshot               &transport_snapshot,
@@ -302,18 +285,17 @@ AudioEngine::process_prepare (
          == units::samples (0))
     {
       update_transport_play_state (dsp::Transport::PlayState::Rolling);
-      remaining_latency_preroll_ = router_->get_max_route_playback_latency ();
+      remaining_latency_preroll_ =
+        graph_dispatcher_->get_max_route_playback_latency ();
     }
-
-  clear_output_buffers (nframes);
 
   if (!exporting_ && !sem.is_acquired ())
     {
       return true;
     }
 
-  /* reset all buffers */
-  // control_room_->monitor_fader_->clear_buffers (block_length);
+  // Clear all buffers
+  monitor_out_.clear_buffer (0, block_length);
   midi_in_->clear_buffer (0, block_length);
 
   return false;
@@ -332,7 +314,6 @@ AudioEngine::process (const nframes_t total_frames_to_process)
   if (!run_.load ()) [[unlikely]]
     {
       // z_info ("skipping processing...");
-      clear_output_buffers (total_frames_to_process);
       return ProcessReturnStatus::ProcessSkipped;
     }
 
@@ -360,7 +341,6 @@ AudioEngine::process (const nframes_t total_frames_to_process)
   if (skip_cycle) [[unlikely]]
     {
       // z_info ("skip cycle");
-      clear_output_buffers (total_frames_to_process);
       return ProcessReturnStatus::ProcessSkipped;
     }
 
@@ -393,8 +373,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         std::min (total_frames_remaining, remaining_latency_preroll_);
 
       /* loop through each route */
-      for (
-        const auto start_node : router_->scheduler_->get_nodes ().trigger_nodes_)
+      for (const auto start_node : graph_dispatcher_->current_trigger_nodes ())
         {
           const auto route_latency = start_node.get ().route_playback_latency_;
 
@@ -429,7 +408,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         split_time_nfo.g_start_frame_ + preroll_offset;
       split_time_nfo.local_offset_ = preroll_offset;
       split_time_nfo.nframes_ = num_preroll_frames;
-      router_->start_cycle (
+      graph_dispatcher_->start_cycle (
         current_transport_state, split_time_nfo, remaining_latency_preroll_,
         true);
 
@@ -464,7 +443,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = countin_frames;
-            router_->start_cycle (
+            graph_dispatcher_->start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true);
             consume_metronome_countin_samples (units::samples (countin_frames));
@@ -493,7 +472,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = preroll_frames;
-            router_->start_cycle (
+            graph_dispatcher_->start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true);
             consume_recording_preroll_samples (units::samples (preroll_frames));
@@ -508,7 +487,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
                   split_time_nfo.g_start_frame_ + cur_offset;
                 split_time_nfo.local_offset_ = cur_offset;
                 split_time_nfo.nframes_ = remaining_frames;
-                router_->start_cycle (
+                graph_dispatcher_->start_cycle (
                   current_transport_state, split_time_nfo,
                   remaining_latency_preroll_, true);
               }
@@ -521,7 +500,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = total_frames_remaining;
-            router_->start_cycle (
+            graph_dispatcher_->start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true);
           }

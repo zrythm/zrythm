@@ -1,32 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * ---
- *
- * Copyright (C) 2017, 2019 Robin Gareus <robin@gareus.org>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * ---
- */
 
 #pragma once
-
-#include <atomic>
 
 #include "dsp/graph_scheduler.h"
 #include "engine/device_io/engine.h"
@@ -119,38 +94,18 @@ public:
     return false;
   }
 
+  /**
+   * @brief Accessor for currently active trigger nodes.
+   *
+   * @note This must only be called outside of start_cycle() calls (TODO:
+   * enforce this).
+   */
+  auto &current_trigger_nodes () const
+  {
+    return scheduler_->get_nodes ().trigger_nodes_;
+  }
+
 private:
-  /**
-   * @brief Try to acquire graph access (real-time safe).
-   * @return true if access was acquired, false if already locked
-   */
-  [[gnu::hot]] bool try_acquire_graph_access () noexcept
-  {
-    bool expected = false;
-    return graph_access_locked_.compare_exchange_strong (
-      expected, true, std::memory_order_acquire, std::memory_order_relaxed);
-  }
-
-  /**
-   * @brief Release graph access (real-time safe).
-   */
-  [[gnu::hot]] void release_graph_access () noexcept
-  {
-    graph_access_locked_.store (false, std::memory_order_release);
-  }
-
-  /**
-   * @brief Wait for graph access to be available (non-real-time safe).
-   * Only to be used from non-real-time contexts.
-   */
-  void wait_for_graph_access ()
-  {
-    while (graph_access_locked_.load (std::memory_order_acquire))
-      {
-        std::this_thread::sleep_for (std::chrono::microseconds (100));
-      }
-  }
-
   /**
    * @brief Global cycle pre-processing logic that does not require rebuilding
    * the graph.
@@ -166,30 +121,23 @@ private:
    *
    * @param time_nfo Current cycle time info.
    */
-  void preprocess_at_start_of_cycle (const EngineProcessTimeInfo &time_nfo);
+  void
+  preprocess_at_start_of_cycle (const EngineProcessTimeInfo &time_nfo) noexcept
+    [[clang::nonblocking]];
 
-public:
+private:
   std::unique_ptr<dsp::graph::GraphScheduler> scheduler_;
-
-  /** An atomic variable to check if the graph is currently being setup (so
-   * that we can avoid accessing buffers changed by this). */
-  std::atomic<bool> graph_setup_in_progress_ = false;
-
-  /** Time info for this processing cycle. */
-  EngineProcessTimeInfo time_nfo_;
 
   /** Stored for the currently processing cycle */
   nframes_t max_route_playback_latency_ = 0;
 
-  /** Current global latency offset (max latency
-   * of all routes - remaining latency from
-   * engine). */
+  /**
+   * @brief Current global latency offset.
+   *
+   * Calculated as [max latency of all routes] minus [remaining latency from
+   * engine].
+   */
   nframes_t global_offset_ = 0;
-
-  /** Used when recalculating the graph - atomic flag for real-time safety. */
-  std::atomic<bool> graph_access_locked_{ false };
-
-  std::atomic_bool callback_in_progress_ = false;
 
   /** ID of the thread that calls kicks off the cycle. */
   unsigned int process_kickoff_thread_ = 0;

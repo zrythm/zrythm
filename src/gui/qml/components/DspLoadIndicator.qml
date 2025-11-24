@@ -23,7 +23,7 @@ Control {
   implicitWidth: 8
 
   ToolTip {
-    text: qsTr("DSP Load: %1%%\nXRun Count: %2").arg(Math.round(root.loadValue)).arg(root.xRuns)
+    text: qsTr("DSP Load: %1%\nXRun Count: %2").arg(Math.round(root.loadValue)).arg(root.xRuns)
   }
 
   // Vertical progress bar
