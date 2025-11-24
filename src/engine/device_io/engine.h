@@ -6,39 +6,14 @@
 #include "dsp/audio_port.h"
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
-#include "dsp/panning.h"
 #include "dsp/transport.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/sample_processor.h"
-#include "utils/audio.h"
 #include "utils/concurrency.h"
 #include "utils/types.h"
 
-#define AUDIO_ENGINE \
-  (zrythm::engine::device_io::AudioEngine::get_active_instance ())
-
 namespace zrythm::engine::device_io
 {
-/**
- * Mode used when bouncing, either during exporting
- * or when bouncing tracks or regions to audio.
- */
-enum class BounceMode : basic_enum_base_type_t
-{
-  /** Don't bounce. */
-  Off,
-
-  /** Bounce. */
-  On,
-
-  /**
-   * Bounce if parent is bouncing.
-   *
-   * To be used on regions to bounce if their track is bouncing.
-   */
-  Inherit,
-};
 
 /**
  * The audio engine.
@@ -50,43 +25,11 @@ class AudioEngine : public QObject
   QML_UNCREATABLE ("")
 
 public:
-  struct PositionInfo
+  enum class State : std::uint8_t
   {
-    /** Transport is rolling. */
-    bool is_rolling_ = false;
-
-    /** BPM. */
-    float bpm_ = 120.f;
-
-    /** Exact playhead position (in ticks). */
-    double playhead_ticks_ = 0.0;
-
-    /* - below are used as cache to avoid re-calculations - */
-
-    /** Current bar. */
-    int32_t bar_ = 1;
-
-    /** Current beat (within bar). */
-    int32_t beat_ = 1;
-
-    /** Current sixteenth (within beat). */
-    int32_t sixteenth_ = 1;
-
-    /** Current sixteenth (within bar). */
-    int32_t sixteenth_within_bar_ = 1;
-
-    /** Current sixteenth (within song, ie, total
-     * sixteenths). */
-    int32_t sixteenth_within_song_ = 1;
-
-    /** Current tick-within-beat. */
-    double tick_within_beat_ = 0.0;
-
-    /** Current tick (within bar). */
-    double tick_within_bar_ = 0.0;
-
-    /** Total 1/96th notes completed up to current pos. */
-    int32_t ninetysixth_notes_ = 0;
+    Uninitialized,
+    Initialized,
+    Active,
   };
 
 public:
@@ -98,10 +41,6 @@ public:
   AudioEngine (
     dsp::Transport                           &transport,
     const dsp::TempoMap                      &tempo_map,
-    dsp::PortRegistry                        &port_registry,
-    dsp::ProcessorParameterRegistry          &param_registry,
-    dsp::PanLaw                               pan_law,
-    dsp::PanAlgorithm                         pan_algorithm,
     std::shared_ptr<juce::AudioDeviceManager> device_mgr,
     QObject *                                 parent = nullptr);
 
@@ -129,32 +68,7 @@ public:
    */
   void wait_for_pause (EngineState &state, bool force_pause, bool with_fadeout);
 
-  /**
-   * @brief
-   *
-   * @param project
-   * @throw ZrythmError if failed to initialize.
-   */
-  [[gnu::cold]] void init_loaded ();
-
   void resume (EngineState &state);
-
-  /**
-   * Waits for n processing cycles to finish.
-   *
-   * Used during tests.
-   */
-  void wait_n_cycles (int n);
-
-  using BeatsPerBarGetter = std::function<int ()>;
-  using BpmGetter = std::function<bpm_t ()>;
-
-  /**
-   * Sets up the audio engine after the project is initialized/loaded.
-   */
-  void setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter);
-
-  static AudioEngine * get_active_instance ();
 
   /**
    * Activates the audio engine to start processing and receiving events.
@@ -174,11 +88,11 @@ public:
    * @return Whether the cycle should be skipped.
    */
   [[gnu::hot]] bool process_prepare (
-    dsp::Transport::TransportSnapshot                &transport_snapshot,
-    nframes_t                                         nframes,
-    SemaphoreRAII<moodycamel::LightweightSemaphore> * sem = nullptr);
+    dsp::Transport::TransportSnapshot               &transport_snapshot,
+    nframes_t                                        nframes,
+    SemaphoreRAII<moodycamel::LightweightSemaphore> &sem);
 
-  enum class ProcessReturnStatus
+  enum class ProcessReturnStatus : std::uint8_t
   {
     // Process completed normally
     ProcessCompleted,
@@ -208,17 +122,9 @@ public:
     nframes_t                          roll_nframes,
     nframes_t                          nframes);
 
-  /**
-   * Reset the bounce mode on the engine, all tracks and regions to OFF.
-   */
-  void reset_bounce_mode ();
-
-  friend void init_from (
-    AudioEngine           &obj,
-    const AudioEngine     &other,
-    utils::ObjectCloneType clone_type);
-
   auto &get_monitor_out_port () { return monitor_out_; }
+
+  auto * midi_panic_processor () const { return midi_panic_processor_.get (); }
 
   /**
    * Queues MIDI note off to event queues.
@@ -234,10 +140,18 @@ public:
 
   auto get_device_manager () const { return device_manager_; }
 
-  bool  activated () const { return activated_; }
+  bool  activated () const { return state_ == State::Active; }
   bool  running () const { return run_.load (); }
   void  set_running (bool run) { run_.store (run); }
   auto &graph_dispatcher () { return router_; }
+
+  bool exporting () const { return exporting_; }
+  void set_exporting (bool exporting) { exporting_.store (exporting); }
+
+  auto get_processing_lock () [[clang::blocking]]
+  {
+    return SemaphoreRAII (process_lock_, true);
+  }
 
   nframes_t get_block_length () const
   {
@@ -254,20 +168,8 @@ public:
   }
 
 private:
-  static constexpr auto kMidiInKey = "midiIn"sv;
-  static constexpr auto kSampleProcessorKey = "sampleProcessor"sv;
-  static constexpr auto kHwInProcessorKey = "hwInProcessor"sv;
-  static constexpr auto kHwOutProcessorKey = "hwOutProcessor"sv;
-  friend void           to_json (nlohmann::json &j, const AudioEngine &engine);
-  friend void from_json (const nlohmann::json &j, AudioEngine &engine);
-
-  void update_position_info (PositionInfo &pos_nfo, nframes_t frames_to_add);
-
-  void receive_midi_events (uint32_t nframes);
-
-private:
-  dsp::PortRegistry               &port_registry_;
-  dsp::ProcessorParameterRegistry &param_registry_;
+  dsp::PortRegistry               port_registry_;
+  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
 
   dsp::Transport      &transport_;
   const dsp::TempoMap &tempo_map_;
@@ -289,23 +191,6 @@ private:
    */
   dsp::AudioPort monitor_out_;
 
-public:
-  /**
-   * Manual note press events from the piano roll.
-   *
-   * The events from here should be fed to the corresponding track
-   * processor's MIDI in port (TrackProcessor.midi_in). To avoid having to
-   * recalculate the graph to reattach this port to the correct track
-   * processor, only connect this port to the initial processor in the
-   * routing graph and fetch the events manually when processing the
-   * corresponding track processor (or just do this at the start of each
-   * processing cycle).
-   *
-   * @see DspGraphDispatcher.
-   */
-  dsp::MidiEventVector midi_editor_manual_press_;
-
-private:
   /**
    * Port used for receiving MIDI in messages for binding CC and other
    * non-recording purposes.
@@ -315,23 +200,15 @@ private:
   std::unique_ptr<dsp::MidiPort> midi_in_;
 
   /**
-   * Semaphore for blocking DSP while a plugin and its ports are deleted.
+   * Semaphore acquired during processing.
    */
-  moodycamel::LightweightSemaphore port_operation_lock_{ 1 };
+  moodycamel::LightweightSemaphore process_lock_{ 1 };
 
   /** Ok to process or not. */
   std::atomic_bool run_{ false };
 
-public:
   /** Whether currently exporting. */
   std::atomic_bool exporting_{ false };
-
-private:
-  /* note: these 2 are ignored at the moment */
-  /** Pan law. */
-  dsp::PanLaw pan_law_{};
-  /** Pan algorithm */
-  dsp::PanAlgorithm pan_algo_{};
 
   juce::AudioProcessLoadMeasurer load_measurer_;
 
@@ -341,62 +218,17 @@ private:
    */
   nframes_t remaining_latency_preroll_{};
 
-  std::unique_ptr<session::SampleProcessor> sample_processor_;
-
   /** To be set to 1 when the CC from the Midi in port should be captured. */
   std::atomic_bool capture_cc_{ false };
 
   /** Last MIDI CC captured. */
   std::array<midi_byte_t, 3> last_cc_captured_{};
 
-public:
-  /**
-   * If this is on, only tracks/regions marked as "for bounce" will be
-   * allowed to make sound.
-   *
-   * Automation and everything else will work as normal.
-   */
-  BounceMode bounce_mode_ = BounceMode::Off;
+  std::atomic<State> state_{ State::Uninitialized };
+  static_assert (decltype (state_)::is_always_lock_free);
 
-  /** Bounce step cache. */
-  utils::audio::BounceStep bounce_step_ = {};
-
-  /** Whether currently bouncing with parents (cache). */
-  bool bounce_with_parents_ = false;
-
-  /** Whether the cycle is currently running. */
-  std::atomic_bool cycle_running_{ false };
-
-private:
-  /** Whether the engine is already set up. */
-  bool setup_ = false;
-
-  /** Whether the engine is currently activated. */
-  bool activated_ = false;
-
-  /** Whether the engine is currently undergoing destruction. */
-  bool destroying_ = false;
-
-  /**
-   * Position info at the end of the previous cycle before moving the
-   * transport.
-   */
-  PositionInfo pos_nfo_before_ = {};
-
-  /**
-   * Position info at the start of the current cycle.
-   */
-  PositionInfo pos_nfo_current_ = {};
-
-  /**
-   * Expected position info at the end of the current cycle.
-   */
-  PositionInfo pos_nfo_at_end_ = {};
-
-public:
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
-private:
   std::unique_ptr<AudioCallback> audio_callback_;
 
   /** The processing graph router. */

@@ -13,14 +13,14 @@ using namespace zrythm;
 template <typename TrackT>
 static void
 process_track_connections (
-  TrackT *                         tr,
-  dsp::graph::Graph               &graph,
-  ProjectGraphBuilder             &self,
-  const dsp::ITransport           &transport,
-  const Project                   &project,
-  dsp::graph::GraphNode *          initial_processor_node,
-  engine::device_io::AudioEngine * engine,
-  dsp::Fader *                     monitor_fader)
+  TrackT *                 tr,
+  dsp::graph::Graph       &graph,
+  ProjectGraphBuilder     &self,
+  const dsp::ITransport   &transport,
+  const Project           &project,
+  dsp::graph::GraphNode *  initial_processor_node,
+  dsp::MidiPanicProcessor &midi_panic_processor,
+  dsp::Fader *             monitor_fader)
 {
   /* connect the track processor */
   auto *       track_processor = tr->get_track_processor ();
@@ -47,7 +47,7 @@ process_track_connections (
                 {
                   graph.get_nodes ()
                     .find_node_for_processable (
-                      *engine->midi_panic_processor_->get_output_ports ()
+                      *midi_panic_processor.get_output_ports ()
                          .front ()
                          .get_object_as<dsp::MidiPort> ())
                     ->connect_to (*graph.get_nodes ().find_node_for_processable (
@@ -123,6 +123,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project.getTransport ();
   auto  &metronome = *project.metronome ();
+  auto * midi_panic_processor = engine->midi_panic_processor ();
 
   const auto add_node_for_processable = [&] (auto &processable) {
     return graph.add_node_for_processable (processable);
@@ -158,7 +159,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   auto * initial_processor_node = graph.add_initial_processor ();
 
   // add midi panic processor
-  dsp::ProcessorGraphBuilder::add_nodes (graph, *engine->midi_panic_processor_);
+  dsp::ProcessorGraphBuilder::add_nodes (graph, *midi_panic_processor);
 
   /* add the hardware input processor */
   // add_node_for_processable (*hw_in_processor);
@@ -243,11 +244,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   // connect midi panic processor
   {
-    dsp::ProcessorGraphBuilder::add_connections (
-      graph, *engine->midi_panic_processor_);
+    dsp::ProcessorGraphBuilder::add_connections (graph, *midi_panic_processor);
     auto * midi_panic_processor_node =
-      graph.get_nodes ().find_node_for_processable (
-        *engine->midi_panic_processor_);
+      graph.get_nodes ().find_node_for_processable (*midi_panic_processor);
     initial_processor_node->connect_to (*midi_panic_processor_node);
   }
 
@@ -316,7 +315,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               {
                 process_track_connections (
                   tr, graph, *this, *transport, project, initial_processor_node,
-                  engine.get (), monitor_fader);
+                  *midi_panic_processor, monitor_fader);
               }
 
               // connect the channel

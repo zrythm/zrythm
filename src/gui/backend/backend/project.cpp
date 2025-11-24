@@ -103,17 +103,9 @@ Project::Project (
           },
           this)),
       audio_engine_ (
-        utils::make_qobject_unique<engine::device_io::AudioEngine> (
-          *transport_,
-          tempo_map_,
-          *port_registry_,
-          *param_registry_,
-          static_cast<zrythm::dsp::PanLaw> (
-            zrythm::gui::SettingsManager::get_instance ()->get_panLaw ()),
-          static_cast<zrythm::dsp::PanAlgorithm> (
-            zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ()),
-          device_manager,
-          this)),
+        utils::make_qobject_unique<
+          engine::device_io::
+            AudioEngine> (*transport_, tempo_map_, device_manager, this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
@@ -1845,7 +1837,6 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kQuantizeOptsTimelineKey] = project.quantize_opts_timeline_;
   j[Project::kQuantizeOptsEditorKey] = project.quantize_opts_editor_;
   j[Project::kTransportKey] = project.transport_;
-  j[Project::kAudioEngineKey] = project.audio_engine_;
   j[Project::kAudioPoolKey] = project.pool_;
   j[Project::kTracklistKey] = project.tracklist_;
   // j[Project::kRegionLinkGroupManagerKey] =
@@ -1977,8 +1968,6 @@ from_json (const nlohmann::json &j, Project &project)
     .get_to (project.quantize_opts_timeline_);
   j.at (Project::kQuantizeOptsEditorKey).get_to (project.quantize_opts_editor_);
   j.at (Project::kTransportKey).get_to (*project.transport_);
-  // TODO
-  // j.at (Project::kAudioEngineKey).get_to (project.audio_engine_);
   project.pool_ = std::make_unique<dsp::AudioPool> (
     *project.file_audio_source_registry_,
     [&project] (bool backup) {

@@ -43,21 +43,6 @@ MarkerTrack::get_end_marker () const -> Marker *
 }
 
 void
-MarkerTrack::set_playback_caches ()
-{
-  // TODO
-#if 0
-  marker_snapshots_.clear ();
-  marker_snapshots_.reserve (markers_.size ());
-
-  for (const auto &marker : markers_)
-    {
-      marker_snapshots_.push_back (marker->clone_unique ());
-    }
-#endif
-}
-
-void
 init_from (
   MarkerTrack           &obj,
   const MarkerTrack     &other,

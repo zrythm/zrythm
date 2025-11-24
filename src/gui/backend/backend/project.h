@@ -55,6 +55,7 @@ using namespace zrythm;
 #define SNAP_GRID_EDITOR (PROJECT->snapGridEditor ())
 #define MONITOR_FADER (PROJECT->controlRoom ()->monitor_fader_)
 #define ROUTER (PROJECT->engine ()->graph_dispatcher ().get ())
+#define AUDIO_ENGINE (PROJECT->engine ())
 
 enum class ProjectPath
 {
@@ -536,7 +537,6 @@ private:
   static constexpr auto kQuantizeOptsTimelineKey = "quantizeOptsTimeline"sv;
   static constexpr auto kQuantizeOptsEditorKey = "quantizeOptsEditor"sv;
   static constexpr auto kTransportKey = "transport"sv;
-  static constexpr auto kAudioEngineKey = "audioEngine"sv;
   static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
   static constexpr auto kRegionLinkGroupManagerKey = "regionLinkGroupManager"sv;

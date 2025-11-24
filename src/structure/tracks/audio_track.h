@@ -55,8 +55,6 @@ private:
 
   bool initialize ();
 
-  void set_playback_caches () override;
-
 private:
   /** Real-time time stretcher. */
   std::unique_ptr<zrythm::dsp::Stretcher> rt_stretcher_;

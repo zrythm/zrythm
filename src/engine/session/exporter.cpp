@@ -200,12 +200,15 @@ Exporter::export_audio (Settings &info)
   {
     dsp::PlayheadProcessingGuard guard (TRANSPORT->playhead ()->playhead ());
 
+// TODO
+#if 0
     AUDIO_ENGINE->bounce_mode_ =
       info.mode_ == Mode::Full
         ? engine::device_io::BounceMode::Off
         : engine::device_io::BounceMode::On;
     AUDIO_ENGINE->bounce_step_ = info.bounce_step_;
     AUDIO_ENGINE->bounce_with_parents_ = info.bounce_with_parents_;
+#endif
 
     /* init ditherer */
     zrythm::dsp::Ditherer ditherer;
@@ -327,8 +330,11 @@ Exporter::export_audio (Settings &info)
 
     progress_info_->update_progress (1.0, {});
 
+// TODO
+#if 0
     AUDIO_ENGINE->bounce_mode_ = engine::device_io::BounceMode::Off;
     AUDIO_ENGINE->bounce_with_parents_ = false;
+#endif
   }
   TRANSPORT->move_playhead (prev_playhead_ticks, false);
 
@@ -529,7 +535,7 @@ Exporter::prepare_tracks_for_export (
 
   TRANSPORT->setPlayState (dsp::ITransport::PlayState::Rolling);
 
-  AUDIO_ENGINE->exporting_ = true;
+  AUDIO_ENGINE->set_exporting (true);
   TRANSPORT->setLoopEnabled (false);
 
   z_info ("deactivating and reactivating plugins");
@@ -631,7 +637,7 @@ Exporter::post_export ()
 #endif
 
   /* restart engine */
-  AUDIO_ENGINE->exporting_ = false;
+  AUDIO_ENGINE->set_exporting (false);
   AUDIO_ENGINE->resume (*state_);
   state_.reset ();
 }
@@ -675,10 +681,10 @@ Exporter::Settings::print () const
     "dither: {}\n"
     "file: {}\n"
     "num files: {}\n",
-    Exporter_Format_to_string (format_), artist_, title_, genre_,
-    utils::audio::bit_depth_enum_to_int (depth_), time_range,
-    Exporter_Mode_to_string (mode_), disable_after_bounce_, bounce_with_parents_,
-    BounceStep_to_string (bounce_step_), dither_, file_uri_, num_files_);
+    format_, artist_, title_, genre_,
+    utils::audio::bit_depth_enum_to_int (depth_), time_range, mode_,
+    disable_after_bounce_, bounce_with_parents_, bounce_step_, dither_,
+    file_uri_, num_files_);
 }
 
 void
@@ -687,7 +693,7 @@ Exporter::create_audio_track_after_bounce (double pos_ticks)
 // TODO
 #if 0
   /* assert exporting is finished */
-  z_return_if_fail (!AUDIO_ENGINE->exporting_);
+  assert (!AUDIO_ENGINE->exporting());
 
   FileDescriptor descr (settings_.file_uri_);
 

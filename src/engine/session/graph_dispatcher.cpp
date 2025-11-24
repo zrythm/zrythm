@@ -59,15 +59,14 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
   const EngineProcessTimeInfo &time_nfo)
 {
 
-  // fill live key-press events for the currently active piano roll
+  // TODO: fill live key-press events for the currently active piano roll
   {
-    [[maybe_unused]] auto &midi_events =
-      audio_engine_->midi_editor_manual_press_;
+#if 0
+    [[maybe_unused]] auto &midi_events = piano_roll_events_;
     if (time_nfo.local_offset_ == 0 && CLIP_EDITOR->has_region ())
       {
 // FIXME!!!! threading bug here. clip editor region & track may be
 // changed in the main (UI) thread while this is attempted
-#if 0
         auto clip_editor_track_var =
           CLIP_EDITOR->get_region_and_track ()->second;
         std::visit (
@@ -96,8 +95,8 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
               }
           },
           clip_editor_track_var);
+        }
 #endif
-      }
   }
 }
 
@@ -141,7 +140,7 @@ DspGraphDispatcher::start_cycle (
 void
 DspGraphDispatcher::recalc_graph (bool soft)
 {
-  z_info ("Recalculating{}...", soft ? " (soft)" : "");
+  z_info ("Recalculating processing graph{}...", soft ? " (soft)" : "");
 
   auto       device_mgr = audio_engine_->get_device_manager ();
   const auto current_device = device_mgr->getCurrentAudioDevice ();
@@ -280,16 +279,13 @@ DspGraphDispatcher::recalc_graph (bool soft)
     }
   else
     {
-      bool running = AUDIO_ENGINE->running ();
-      AUDIO_ENGINE->set_running (false);
-      while (AUDIO_ENGINE->cycle_running_.load ())
-        {
-          std::this_thread::sleep_for (std::chrono::milliseconds (1));
-        }
+      bool running = audio_engine_->running ();
+      audio_engine_->set_running (false);
+      auto lock = audio_engine_->get_processing_lock ();
       rebuild_graph ();
-      AUDIO_ENGINE->set_running (running);
+      audio_engine_->set_running (running);
     }
 
-  z_info ("done");
+  z_info ("Processing graph ready");
 }
 }

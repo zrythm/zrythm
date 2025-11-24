@@ -149,16 +149,6 @@ ProjectManager::create_default (
     Qt::BlockingQueuedConnection);
   prj->moveToThread (this->thread ());
 
-  /* setup engine */
-  auto * engine = prj->audio_engine_.get ();
-  assert (engine != nullptr);
-  const auto * tempo_map = &prj->get_tempo_map ();
-  engine->setup (
-    [tempo_map] () {
-      return tempo_map->time_signature_at_tick (units::ticks (0)).numerator;
-    },
-    [tempo_map] () { return tempo_map->tempo_at_tick (units::ticks (0)); });
-
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;
   prj->make_project_dirs (false);

@@ -63,11 +63,6 @@ AudioTrack::timestretch_buf (
 }
 
 void
-AudioTrack::set_playback_caches ()
-{
-}
-
-void
 init_from (
   AudioTrack            &obj,
   const AudioTrack      &other,

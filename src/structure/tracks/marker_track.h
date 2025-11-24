@@ -70,9 +70,6 @@ private:
     from_json (j, static_cast<Track &> (track));
     from_json (j, static_cast<ArrangerObjectOwner &> (track));
   }
-
-private:
-  void set_playback_caches () override;
 };
 
 }

@@ -21,7 +21,33 @@ class Exporter final : public QObject
 
 public:
   using BitDepth = utils::audio::BitDepth;
-  using BounceStep = utils::audio::BounceStep;
+
+  enum class BounceStep
+  {
+    BeforeInserts,
+    PreFader,
+    PostFader,
+  };
+
+  /**
+   * Mode used when bouncing, either during exporting
+   * or when bouncing tracks or regions to audio.
+   */
+  enum class BounceMode : basic_enum_base_type_t
+  {
+    /** Don't bounce. */
+    Off,
+
+    /** Bounce. */
+    On,
+
+    /**
+     * Bounce if parent is bouncing.
+     *
+     * To be used on regions to bounce if their track is bouncing.
+     */
+    Inherit,
+  };
 
   /**
    * Export format.

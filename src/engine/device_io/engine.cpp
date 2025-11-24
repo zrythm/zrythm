@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * This file incorporates work covered by the following copyright and
- * permission notice:
+ * This file incorporates work (namely, the preroll-related cycle splitting
+ * logic) covered by the following copyright and permission notice:
  *
  * ---
  *
@@ -34,8 +34,6 @@
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/sample_processor.h"
-#include "gui/backend/backend/project.h"
 
 namespace zrythm::engine::device_io
 {
@@ -43,22 +41,17 @@ namespace zrythm::engine::device_io
 AudioEngine::AudioEngine (
   dsp::Transport                           &transport,
   const dsp::TempoMap                      &tempo_map,
-  dsp::PortRegistry                        &port_registry,
-  dsp::ProcessorParameterRegistry          &param_registry,
-  dsp::PanLaw                               pan_law,
-  dsp::PanAlgorithm                         pan_algorithm,
   std::shared_ptr<juce::AudioDeviceManager> device_mgr,
   QObject *                                 parent)
-    : QObject (parent), port_registry_ (port_registry),
-      param_registry_ (param_registry), transport_ (transport),
-      tempo_map_ (tempo_map), device_manager_ (std::move (device_mgr)),
+    : QObject (parent), transport_ (transport), tempo_map_ (tempo_map),
+      device_manager_ (std::move (device_mgr)),
       monitor_out_ (
         u8"Monitor Out",
         dsp::PortFlow::Output,
         dsp::AudioPort::BusLayout::Stereo,
         2),
-      pan_law_ (pan_law), pan_algo_ (pan_algorithm),
-      sample_processor_ (std::make_unique<session::SampleProcessor> (this)),
+      midi_in_ (
+        std::make_unique<dsp::MidiPort> (u8"MIDI in", dsp::PortFlow::Input)),
       midi_panic_processor_ (
         utils::make_qobject_unique<dsp::MidiPanicProcessor> (
           dsp::MidiPanicProcessor::ProcessorBaseDependencies{
@@ -108,52 +101,9 @@ AudioEngine::AudioEngine (
           [this] () { monitor_out_.release_resources (); })),
       router_ (std::make_unique<engine::session::DspGraphDispatcher> (this))
 {
-  z_debug ("Creating audio engine...");
-
-  midi_in_ = std::make_unique<dsp::MidiPort> (u8"MIDI in", dsp::PortFlow::Input);
   midi_in_->set_symbol (u8"midi_in");
-
   monitor_out_.set_symbol (u8"monitor_out");
-
   z_debug ("Audio engine created");
-}
-
-void
-init_from (
-  AudioEngine           &obj,
-  const AudioEngine     &other,
-  utils::ObjectCloneType clone_type)
-{
-// TODO
-#if 0
-  obj.midi_in_ = utils::clone_unique (*other.midi_in_);
-  obj.sample_processor_ = utils::clone_unique (*other.sample_processor_);
-  obj.sample_processor_->audio_engine_ = &obj;
-  // obj.midi_clock_out_ = utils::clone_unique (*other.midi_clock_out_);
-#endif
-}
-
-void
-AudioEngine::setup (BeatsPerBarGetter beats_per_bar_getter, BpmGetter bpm_getter)
-{
-  z_debug ("Setting up...");
-
-  setup_ = true;
-
-  z_debug ("done");
-}
-
-void
-AudioEngine::init_loaded ()
-{
-  z_debug ("Initializing...");
-
-  // FIXME this shouldn't be here
-  // project->pool_->init_loaded ();
-
-  sample_processor_->init_loaded (this);
-
-  z_debug ("done initializing loaded engine");
 }
 
 void
@@ -193,11 +143,8 @@ AudioEngine::
 #endif
     }
 
-  if (!destroying_)
-    {
-      /* send panic */
-      panic_all ();
-    }
+  /* send panic */
+  panic_all ();
 
   if (state.playing_)
     {
@@ -220,10 +167,9 @@ AudioEngine::
 
   z_debug ("setting run to false and waiting for cycle to finish...");
   run_.store (false);
-  while (cycle_running_.load ())
-    {
-      std::this_thread::sleep_for (std::chrono::microseconds (100));
-    }
+  {
+    auto lock = get_processing_lock ();
+  }
   z_debug ("cycle finished");
 
   // control_room_->monitor_fader_->abort_fade_out ();
@@ -231,12 +177,12 @@ AudioEngine::
   if (device_manager_->getCurrentAudioDevice () != nullptr)
     {
       /* run 1 more time to flush panic messages */
-      SemaphoreRAII                sem (port_operation_lock_, true);
+      auto                         lock = get_processing_lock ();
       dsp::PlayheadProcessingGuard playhead_processing_guard{
         transport_.playhead ()->playhead ()
       };
       auto current_transport_state = transport_.get_snapshot ();
-      process_prepare (current_transport_state, 1, &sem);
+      process_prepare (current_transport_state, 1, lock);
 
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame_ = static_cast<unsigned_frame_t> (
@@ -282,57 +228,33 @@ AudioEngine::resume (EngineState &state)
 }
 
 void
-AudioEngine::wait_n_cycles (int n)
+AudioEngine::activate (const bool activate)
 {
-
-  auto expected_cycle = cycle_.load () + static_cast<unsigned long> (n);
-  while (cycle_.load () < expected_cycle)
+  const auto new_state = activate ? State::Active : State::Initialized;
+  if (state_.load () == new_state)
     {
-      std::this_thread::sleep_for (std::chrono::microseconds (12));
-    }
-}
-
-void
-AudioEngine::activate (bool activate)
-{
-  z_debug (activate ? "Activating..." : "Deactivating...");
-  if (activate)
-    {
-      if (activated_)
-        {
-          z_debug ("engine already activated");
-          return;
-        }
-
-      sample_processor_->load_instrument_if_empty ();
-    }
-  else
-    {
-      if (!activated_)
-        {
-          z_debug ("engine already deactivated");
-          return;
-        }
-
-      EngineState state{};
-      wait_for_pause (state, true, true);
-      activated_ = false;
+      return;
     }
 
+  z_debug ("Setting engine status to: {}", new_state);
   if (activate)
     {
       load_measurer_.reset (
         get_sample_rate (), static_cast<int> (get_block_length ()));
+
       device_manager_->addAudioCallback (audio_callback_.get ());
     }
   else
     {
+      EngineState state{};
+      wait_for_pause (state, true, true);
+
       device_manager_->removeAudioCallback (audio_callback_.get ());
     }
 
-  activated_ = activate;
+  state_ = new_state;
 
-  z_debug ("done");
+  z_debug ("New engine status: {}", new_state);
 }
 
 void
@@ -353,49 +275,11 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
     return;
 }
 
-void
-AudioEngine::update_position_info (
-  PositionInfo   &pos_nfo,
-  const nframes_t frames_to_add)
-{
-  const auto playhead_frames_before =
-    transport_.get_playhead_position_in_audio_thread ();
-  auto playhead = playhead_frames_before + units::samples (frames_to_add);
-  pos_nfo.is_rolling_ = transport_.isRolling ();
-  pos_nfo.bpm_ = static_cast<bpm_t> (tempo_map_.tempo_at_tick (
-    tempo_map_.samples_to_tick (playhead).as<int64_t> (units::ticks)));
-  const auto musical_pos = tempo_map_.samples_to_musical_position (playhead);
-  pos_nfo.bar_ = musical_pos.bar;
-  pos_nfo.beat_ = musical_pos.beat;
-  pos_nfo.sixteenth_ = musical_pos.sixteenth;
-  // TODO/delete
-#if 0
-  pos_nfo.sixteenth_within_bar_ =
-    pos_nfo.sixteenth_
-    + ((pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_);
-  pos_nfo.sixteenth_within_song_ =
-  playhead.get_total_sixteenths (false, frames_per_tick_);
-  dsp::Position bar_start;
-  bar_start.set_to_bar (
-    playhead.get_bars (true, transport_->ticks_per_bar_),
-    transport_->ticks_per_bar_, frames_per_tick_);
-  dsp::Position beat_start;
-  beat_start = bar_start;
-  beat_start.add_beats (
-    pos_nfo.beat_ - 1, transport_->ticks_per_beat_, frames_per_tick_);
-  pos_nfo.tick_within_beat_ = playhead.ticks_ - beat_start.ticks_;
-  pos_nfo.tick_within_bar_ = playhead.ticks_ - bar_start.ticks_;
-  pos_nfo.playhead_ticks_ = playhead.ticks_;
-  pos_nfo.ninetysixth_notes_ = static_cast<int32_t> (std::floor (
-    playhead.ticks_ / dsp::Position::TICKS_PER_NINETYSIXTH_NOTE_DBL));
-#endif
-}
-
 bool
 AudioEngine::process_prepare (
-  dsp::Transport::TransportSnapshot                &transport_snapshot,
-  nframes_t                                         nframes,
-  SemaphoreRAII<moodycamel::LightweightSemaphore> * sem)
+  dsp::Transport::TransportSnapshot               &transport_snapshot,
+  nframes_t                                        nframes,
+  SemaphoreRAII<moodycamel::LightweightSemaphore> &sem)
 {
   const auto block_length = get_block_length ();
 
@@ -423,25 +307,10 @@ AudioEngine::process_prepare (
 
   clear_output_buffers (nframes);
 
-  if (!exporting_ && !sem->is_acquired ())
+  if (!exporting_ && !sem.is_acquired ())
     {
       return true;
     }
-
-  update_position_info (pos_nfo_current_, 0);
-  {
-    nframes_t frames_to_add = 0;
-    if (
-      transport_snapshot.get_play_state ()
-      == dsp::ITransport::PlayState::Rolling)
-      {
-        if (remaining_latency_preroll_ < nframes)
-          {
-            frames_to_add = nframes - remaining_latency_preroll_;
-          }
-      }
-    update_position_info (pos_nfo_at_end_, frames_to_add);
-  }
 
   /* reset all buffers */
   // control_room_->monitor_fader_->clear_buffers (block_length);
@@ -450,26 +319,12 @@ AudioEngine::process_prepare (
   return false;
 }
 
-void
-AudioEngine::receive_midi_events (uint32_t nframes)
-{
-// TODO
-#if 0
-  if (midi_in_->backend_ && midi_in_->backend_->is_exposed ())
-    {
-      midi_in_->backend_->sum_midi_data (
-        midi_in_->midi_events_, { .start_frame = 0, .nframes = nframes });
-    }
-#endif
-}
-
 auto
 AudioEngine::process (const nframes_t total_frames_to_process)
   -> ProcessReturnStatus
 {
   /* RAIIs */
-  AtomicBoolRAII cycle_running (cycle_running_);
-  SemaphoreRAII  port_operation_sem (port_operation_lock_);
+  SemaphoreRAII process_sem (process_lock_);
 
   z_return_val_if_fail (
     total_frames_to_process > 0, ProcessReturnStatus::ProcessFailed);
@@ -500,7 +355,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   /* run pre-process code */
   bool skip_cycle = process_prepare (
-    current_transport_state, total_frames_to_process, &port_operation_sem);
+    current_transport_state, total_frames_to_process, process_sem);
 
   if (skip_cycle) [[unlikely]]
     {
@@ -510,7 +365,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
     }
 
   /* puts MIDI in events in the MIDI in port */
-  receive_midi_events (total_frames_to_process);
+  // receive_midi_events (total_frames_to_process);
 
   /* process HW processor to get audio/MIDI data from hardware */
   // hw_in_processor_->process (total_frames_to_process);
@@ -689,9 +544,6 @@ AudioEngine::post_process (
   const nframes_t                    roll_nframes,
   const nframes_t                    nframes)
 {
-  /* remember current position info */
-  update_position_info (pos_nfo_before_, 0);
-
   /* move the playhead if rolling and not pre-rolling */
   if (
     transport_snapshot.get_play_state () == dsp::ITransport::PlayState::Rolling
@@ -710,56 +562,16 @@ AudioEngine::panic_all ()
   midi_panic_processor_->request_panic ();
 }
 
-void
-AudioEngine::reset_bounce_mode ()
-{
-  bounce_mode_ = BounceMode::Off;
-
-  // TODO
-  // TRACKLIST->mark_all_tracks_for_bounce (false);
-}
-
 AudioEngine::~AudioEngine ()
 {
-  z_debug ("freeing engine...");
-  destroying_ = true;
+  z_debug ("Destroying audio engine...");
 
-  if (activated_)
+  if (state_ == State::Active)
     {
       activate (false);
     }
 
-  z_debug ("finished freeing engine");
-}
-
-AudioEngine *
-AudioEngine::get_active_instance ()
-{
-  auto prj = Project::get_active_instance ();
-  if (prj != nullptr)
-    {
-      return prj->audio_engine_.get ();
-    }
-  return nullptr;
-}
-
-void
-to_json (nlohmann::json &j, const AudioEngine &engine)
-{
-  j = nlohmann::json{
-    { AudioEngine::kMidiInKey,          engine.midi_in_          },
-    { AudioEngine::kSampleProcessorKey, engine.sample_processor_ },
-  };
-}
-
-void
-from_json (const nlohmann::json &j, AudioEngine &engine)
-{
-// TODO
-#if 0
-  j.at (AudioEngine::kMidiInKey).get_to (engine.midi_in_);
-  j.at (AudioEngine::kSampleProcessorKey).get_to (engine.sample_processor_);
-#endif
+  z_debug ("Audio engine destroyed");
 }
 }
 
