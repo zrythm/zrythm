@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include <juce_wrapper.h>
 
 namespace zrythm::test_helpers

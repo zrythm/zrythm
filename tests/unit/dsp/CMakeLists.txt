@@ -4,6 +4,7 @@
 add_executable(zrythm_dsp_unit_tests
   atomic_position_qml_adapter_test.cpp
   atomic_position_test.cpp
+  audio_callback_test.cpp
   audio_pool_test.cpp
   audio_port_test.cpp
   audio_sample_processor_test.cpp
@@ -11,6 +12,7 @@ add_executable(zrythm_dsp_unit_tests
   curve_test.cpp
   cv_port_test.cpp
   ditherer_test.cpp
+  engine_test.cpp
   fader_test.cpp
   file_audio_source_test.cpp
   kmeter_dsp_test.cpp

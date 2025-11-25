@@ -7,12 +7,14 @@ target_sources(zrythm_dsp_lib
   PRIVATE
     atomic_position.cpp
     atomic_position_qml_adapter.cpp
+    audio_callback.cpp
     audio_pool.cpp
     audio_port.cpp
     chord_descriptor.cpp
     curve.cpp
     cv_port.cpp
     ditherer.cpp
+    engine.cpp
     fader.cpp
     file_audio_source.cpp
     graph.cpp
@@ -51,6 +53,7 @@ target_sources(zrythm_dsp_lib
     FILES
       atomic_position.h
       atomic_position_qml_adapter.h
+      audio_callback.h
       audio_pool.h
       audio_port.h
       chord_descriptor.h
@@ -58,6 +61,7 @@ target_sources(zrythm_dsp_lib
       cv_port.h
       ditherer.h
       dsp.h
+      engine.h
       fader.h
       file_audio_source.h
       graph.h

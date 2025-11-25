@@ -1,13 +1,8 @@
 // SPDX-FileCopyrightText: © 2020, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/device_io/engine.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/automation_function.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::structure::arrangement
 {

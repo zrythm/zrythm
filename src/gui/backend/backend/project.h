@@ -9,12 +9,12 @@
 #include "actions/plugin_importer.h"
 #include "actions/track_creator.h"
 #include "dsp/audio_pool.h"
+#include "dsp/engine.h"
 #include "dsp/metronome.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
-#include "engine/device_io/engine.h"
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/clip_editor.h"
@@ -122,8 +122,7 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::engine::session::ControlRoom * controlRoom READ controlRoom CONSTANT
       FINAL)
-  Q_PROPERTY (
-    zrythm::engine::device_io::AudioEngine * engine READ engine CONSTANT FINAL)
+  Q_PROPERTY (zrythm::dsp::AudioEngine * engine READ engine CONSTANT FINAL)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::Transport * transport READ getTransport CONSTANT FINAL)
@@ -231,7 +230,7 @@ public:
   dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
   engine::session::ControlRoom *               controlRoom () const;
-  engine::device_io::AudioEngine *             engine () const;
+  dsp::AudioEngine *                           engine () const;
   gui::backend::Tool *                         getTool () const;
   ClipEditor *                                 getClipEditor () const;
   undo::UndoStack *                            undoStack () const;
@@ -645,7 +644,7 @@ public:
   /**
    * The audio backend.
    */
-  utils::QObjectUniquePtr<engine::device_io::AudioEngine> audio_engine_;
+  utils::QObjectUniquePtr<dsp::AudioEngine> audio_engine_;
 
   /** Audio file pool. */
   std::unique_ptr<dsp::AudioPool> pool_;

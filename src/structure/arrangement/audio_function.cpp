@@ -1,17 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/device_io/engine.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/audio_function.h"
-#include "structure/arrangement/audio_region.h"
-#include "utils/debug.h"
-#include "utils/dsp.h"
-#include "utils/exceptions.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/rt_thread_id.h"
 #include "utils/utf8_string.h"
 
 #include <rubberband/rubberband-c.h>

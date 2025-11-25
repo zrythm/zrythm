@@ -140,6 +140,7 @@ AudioPort::copy_source_rt (
 void
 AudioPort::clear_buffer (std::size_t offset, std::size_t nframes)
 {
+  assert (buf_ != nullptr);
   buf_->clear (static_cast<int> (offset), static_cast<int> (nframes));
 }
 

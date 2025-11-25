@@ -5,11 +5,6 @@
 
 #include "structure/tracks/track_all.h"
 
-namespace zrythm::engine::device_io
-{
-class AudioEngine;
-}
-
 namespace zrythm::structure::tracks
 {
 /**

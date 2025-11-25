@@ -3,9 +3,9 @@
 
 #include <utility>
 
-#include "engine/device_io/audio_callback.h"
+#include "dsp/audio_callback.h"
 
-namespace zrythm::engine::device_io
+namespace zrythm::dsp
 {
 AudioCallback::AudioCallback (
   EngineProcessCallback      process_cb,
@@ -64,6 +64,6 @@ AudioCallback::audioDeviceStopped ()
 void
 AudioCallback::audioDeviceError (const juce::String &errorMessage)
 {
-  z_error ("audio device error: {}", errorMessage);
+  z_warning ("audio device error: {}", errorMessage);
 }
 } // namespace zrythm::engine::device_io

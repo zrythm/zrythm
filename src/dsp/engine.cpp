@@ -29,11 +29,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "dsp/transport.h"
-#include "engine/device_io/audio_callback.h"
-#include "engine/device_io/engine.h"
+#include "dsp/engine.h"
 
-namespace zrythm::engine::device_io
+namespace zrythm::dsp
 {
 
 AudioEngine::AudioEngine (
@@ -58,47 +56,50 @@ AudioEngine::AudioEngine (
             .port_registry_ = port_registry_,
             .param_registry_ = param_registry_ })),
       audio_callback_ (
-        std::make_unique<AudioCallback> (
-          [this] (
-            const float * const * inputChannelData,
-            int                   numInputChannels,
-            float * const *       outputChannelData,
-            int                   numOutputChannels,
-            int                   numSamples) {
-            juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
-              load_measurer_
-            };
-            dsp::PlayheadProcessingGuard guard{
-              this->transport_.playhead ()->playhead ()
-            };
+        [this] (
+          const float * const * inputChannelData,
+          int                   numInputChannels,
+          float * const *       outputChannelData,
+          int                   numOutputChannels,
+          int                   numSamples) {
+          juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
+            load_measurer_
+          };
+          dsp::PlayheadProcessingGuard guard{
+            this->transport_.playhead ()->playhead ()
+          };
 
-            const auto process_status = this->process (numSamples);
-            if (process_status == ProcessReturnStatus::ProcessCompleted)
-              {
-                // Note: the monitor output ports below require the processing
-                // graph to be operational. We are guarding against other cases
-                // by checking the process() return status
-                if (numOutputChannels > 0)
-                  {
-                    utils::float_ranges::copy (
-                      outputChannelData[0],
-                      monitor_out_.buffers ()->getReadPointer (0), numSamples);
-                  }
-                if (numOutputChannels > 1)
-                  {
-                    utils::float_ranges::copy (
-                      outputChannelData[1],
-                      monitor_out_.buffers ()->getReadPointer (1), numSamples);
-                  }
-              }
-          },
-          [this] (juce::AudioIODevice * dev) {
-            graph_dispatcher_.recalc_graph (false);
-            monitor_out_.prepare_for_processing (
-              nullptr, static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
-              dev->getCurrentBufferSizeSamples ());
-          },
-          [this] () { monitor_out_.release_resources (); }))
+          const auto process_status = this->process (guard, numSamples);
+          if (process_status == ProcessReturnStatus::ProcessCompleted)
+            {
+              // Note: the monitor output ports below require the processing
+              // graph to be operational. We are guarding against other cases
+              // by checking the process() return status
+              if (numOutputChannels > 0)
+                {
+                  utils::float_ranges::copy (
+                    outputChannelData[0],
+                    monitor_out_.buffers ()->getReadPointer (0), numSamples);
+                }
+              if (numOutputChannels > 1)
+                {
+                  utils::float_ranges::copy (
+                    outputChannelData[1],
+                    monitor_out_.buffers ()->getReadPointer (1), numSamples);
+                }
+            }
+        },
+        [this] (juce::AudioIODevice * dev) {
+          graph_dispatcher_.recalc_graph (false);
+          monitor_out_.prepare_for_processing (
+            nullptr, static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
+            dev->getCurrentBufferSizeSamples ());
+          callback_running_ = true;
+        },
+        [this] () {
+          monitor_out_.release_resources ();
+          callback_running_ = false;
+        })
 {
   midi_in_->set_symbol (u8"midi_in");
   monitor_out_.set_symbol (u8"monitor_out");
@@ -173,7 +174,7 @@ AudioEngine::
 
   // control_room_->monitor_fader_->abort_fade_out ();
 
-  if (device_manager_->getCurrentAudioDevice () != nullptr)
+  if (callback_running_)
     {
       /* run 1 more time to flush panic messages */
       auto                         lock = get_processing_lock ();
@@ -194,7 +195,7 @@ AudioEngine::
 
       graph_dispatcher_.start_cycle (
         current_transport_state, time_nfo, remaining_latency_preroll_, false);
-      post_process (current_transport_state, 0, 1);
+      post_process (current_transport_state, playhead_processing_guard, 0, 1);
     }
 }
 
@@ -241,14 +242,14 @@ AudioEngine::activate (const bool activate)
       load_measurer_.reset (
         get_sample_rate (), static_cast<int> (get_block_length ()));
 
-      device_manager_->addAudioCallback (audio_callback_.get ());
+      device_manager_->addAudioCallback (&audio_callback_);
     }
   else
     {
       EngineState state{};
       wait_for_pause (state, true, true);
 
-      device_manager_->removeAudioCallback (audio_callback_.get ());
+      device_manager_->removeAudioCallback (&audio_callback_);
     }
 
   state_ = new_state;
@@ -260,7 +261,7 @@ bool
 AudioEngine::process_prepare (
   dsp::Transport::TransportSnapshot               &transport_snapshot,
   nframes_t                                        nframes,
-  SemaphoreRAII<moodycamel::LightweightSemaphore> &sem)
+  SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
 {
   const auto block_length = get_block_length ();
 
@@ -300,14 +301,17 @@ AudioEngine::process_prepare (
 }
 
 auto
-AudioEngine::process (const nframes_t total_frames_to_process)
-  -> ProcessReturnStatus
+AudioEngine::process (
+  const dsp::PlayheadProcessingGuard &playhead_guard,
+  const nframes_t total_frames_to_process) noexcept -> ProcessReturnStatus
 {
+  if (total_frames_to_process == 0)
+    {
+      return ProcessReturnStatus::ProcessFailed;
+    }
+
   /* RAIIs */
   SemaphoreRAII process_sem (process_lock_);
-
-  z_return_val_if_fail (
-    total_frames_to_process > 0, ProcessReturnStatus::ProcessFailed);
 
   if (!run_.load ()) [[unlikely]]
     {
@@ -508,7 +512,8 @@ AudioEngine::process (const nframes_t total_frames_to_process)
   /* run post-process code for the number of frames remaining after handling
    * preroll (if any) */
   post_process (
-    current_transport_state, total_frames_remaining, total_frames_to_process);
+    current_transport_state, playhead_guard, total_frames_remaining,
+    total_frames_to_process);
 
   cycle_.fetch_add (1);
 
@@ -517,9 +522,10 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
 void
 AudioEngine::post_process (
-  dsp::Transport::TransportSnapshot &transport_snapshot,
-  const nframes_t                    roll_nframes,
-  const nframes_t                    nframes)
+  dsp::Transport::TransportSnapshot  &transport_snapshot,
+  const dsp::PlayheadProcessingGuard &playhead_guard,
+  const nframes_t                     roll_nframes,
+  const nframes_t                     nframes) noexcept
 {
   /* move the playhead if rolling and not pre-rolling */
   if (

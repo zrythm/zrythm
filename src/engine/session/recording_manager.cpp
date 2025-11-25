@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/engine.h"
 #include "dsp/file_audio_source.h"
 #include "dsp/transport.h"
-#include "engine/device_io/engine.h"
 #include "engine/session/recording_event.h"
 #include "engine/session/recording_manager.h"
 #include "gui/backend/backend/project.h"

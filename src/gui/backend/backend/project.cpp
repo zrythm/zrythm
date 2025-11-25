@@ -3,9 +3,9 @@
 
 #include <filesystem>
 
+#include "dsp/engine.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/transport.h"
-#include "engine/device_io/engine.h"
 #include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -103,7 +103,7 @@ Project::Project (
           },
           this)),
       audio_engine_ (
-        utils::make_qobject_unique<engine::device_io::AudioEngine> (
+        utils::make_qobject_unique<dsp::AudioEngine> (
           *transport_,
           tempo_map_,
           device_manager,
@@ -1688,7 +1688,7 @@ Project::controlRoom () const
   return control_room_.get ();
 }
 
-engine::device_io::AudioEngine *
+dsp::AudioEngine *
 Project::engine () const
 {
   return audio_engine_.get ();

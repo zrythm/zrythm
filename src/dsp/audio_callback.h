@@ -3,7 +3,11 @@
 
 #pragma once
 
-namespace zrythm::engine::device_io
+#include <functional>
+
+#include <juce_wrapper.h>
+
+namespace zrythm::dsp
 {
 class AudioCallback : public juce::AudioIODeviceCallback
 {

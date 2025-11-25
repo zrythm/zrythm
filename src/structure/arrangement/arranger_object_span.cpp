@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/device_io/engine.h"
 #include "structure/arrangement/arranger_object_factory.h"
-#include "structure/tracks/track_span.h"
-#include "utils/debug.h"
-
-#include "./arranger_object_span.h"
+#include "structure/arrangement/arranger_object_span.h"
 
 namespace zrythm::structure::arrangement
 {

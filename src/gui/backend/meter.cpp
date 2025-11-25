@@ -4,10 +4,10 @@
 #include <algorithm>
 
 #include "dsp/audio_port.h"
+#include "dsp/engine.h"
 #include "dsp/kmeter_dsp.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_port.h"
-#include "engine/device_io/engine.h"
 #include "gui/backend/meter.h"
 #include "structure/tracks/track.h"
 #include "utils/math.h"

@@ -3,10 +3,10 @@
 
 #include "dsp/graph.h"
 #include "dsp/itransport.h"
-#include "utils/gtest_wrapper.h"
 
 #include "./graph_helpers.h"
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace testing;
 

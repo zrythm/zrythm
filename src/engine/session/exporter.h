@@ -6,8 +6,8 @@
 #include <memory>
 #include <utility>
 
+#include "dsp/engine.h"
 #include "dsp/port_connections_manager.h"
-#include "engine/device_io/engine.h"
 #include "utils/audio.h"
 
 class ProgressInfo;
@@ -210,9 +210,8 @@ public:
    * marked for bounce and before exporting.
    */
 
-  void prepare_tracks_for_export (
-    device_io::AudioEngine &engine,
-    Transport              &transport);
+  void
+  prepare_tracks_for_export (dsp::AudioEngine &engine, Transport &transport);
 
   /**
    * This must be called on the main thread after the export is completed.

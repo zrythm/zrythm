@@ -6,7 +6,6 @@
 #include "dsp/ditherer.h"
 #include "dsp/midi_event.h"
 #include "dsp/transport.h"
-#include "engine/device_io/engine.h"
 #include "engine/session/exporter.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -524,8 +523,8 @@ Exporter::Settings::set_bounce_defaults (
 
 void
 Exporter::prepare_tracks_for_export (
-  engine::device_io::AudioEngine &engine,
-  Transport                      &transport)
+  dsp::AudioEngine &engine,
+  Transport        &transport)
 {
   state_ = std::make_unique<EngineState> ();
 

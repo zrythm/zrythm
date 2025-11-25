@@ -3,16 +3,16 @@
 
 #pragma once
 
+#include "dsp/audio_callback.h"
 #include "dsp/audio_port.h"
 #include "dsp/graph_dispatcher.h"
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
 #include "dsp/transport.h"
-#include "engine/device_io/audio_callback.h"
 #include "utils/concurrency.h"
 #include "utils/types.h"
 
-namespace zrythm::engine::device_io
+namespace zrythm::dsp
 {
 
 /**
@@ -91,7 +91,8 @@ public:
   [[gnu::hot]] bool process_prepare (
     dsp::Transport::TransportSnapshot               &transport_snapshot,
     nframes_t                                        nframes,
-    SemaphoreRAII<moodycamel::LightweightSemaphore> &sem);
+    SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
+    [[clang::nonblocking]];
 
   enum class ProcessReturnStatus : std::uint8_t
   {
@@ -108,8 +109,10 @@ public:
    *
    * To be called by each implementation in its callback.
    */
-  [[gnu::hot]] auto
-  process (nframes_t total_frames_to_process) -> ProcessReturnStatus;
+  [[gnu::hot]] auto process (
+    const dsp::PlayheadProcessingGuard &playhead_guard,
+    nframes_t total_frames_to_process) noexcept [[clang::nonblocking]]
+  -> ProcessReturnStatus;
 
   /**
    * To be called after processing for common logic.
@@ -119,9 +122,10 @@ public:
    * @param nframes Total frames for this processing cycle.
    */
   [[gnu::hot]] void post_process (
-    dsp::Transport::TransportSnapshot &transport_snapshot,
-    nframes_t                          roll_nframes,
-    nframes_t                          nframes);
+    dsp::Transport::TransportSnapshot  &transport_snapshot,
+    const dsp::PlayheadProcessingGuard &playhead_guard,
+    nframes_t                           roll_nframes,
+    nframes_t nframes) noexcept [[clang::nonblocking]];
 
   auto &get_monitor_out_port () { return monitor_out_; }
 
@@ -231,6 +235,11 @@ private:
 
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
-  std::unique_ptr<AudioCallback> audio_callback_;
+  AudioCallback audio_callback_;
+
+  /**
+   * @brief Whether the audio callback is currently periodically getting called.
+   */
+  bool callback_running_{};
 };
 }

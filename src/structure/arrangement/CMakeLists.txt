@@ -96,6 +96,7 @@ qt_add_qml_module(zrythm_arrangement_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmArrangement
 )
 
+# TODO: port these too
 target_sources(zrythm_gui_lib
   PRIVATE
     audio_function.h
