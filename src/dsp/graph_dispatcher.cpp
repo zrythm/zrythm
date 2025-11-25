@@ -88,11 +88,6 @@ DspGraphDispatcher::start_cycle (
 {
   if (scheduler_ == nullptr)
     {
-      if (!realtime_context)
-        {
-          z_warning (
-            "Scheduler not initialized - did you forget to recalculate the graph?");
-        }
       return;
     }
   assert (time_nfo.g_start_frame_w_offset_ >= time_nfo.g_start_frame_);

@@ -5,6 +5,8 @@
 
 #include <juce_wrapper.h>
 
+namespace zrythm::test_helpers
+{
 class MockAudioIODevice : public juce::AudioIODevice
 {
 public:
@@ -135,3 +137,26 @@ public:
     return new MockAudioIODevice ();
   }
 };
+
+static inline std::unique_ptr<juce::AudioDeviceManager>
+create_audio_device_manager_with_dummy_device ()
+{
+  auto audio_device_manager = std::make_unique<juce::AudioDeviceManager> ();
+  audio_device_manager->addAudioDeviceType (
+    std::make_unique<MockAudioIODeviceType> ());
+
+  // Initialize with a dummy audio device setup for testing
+  juce::AudioDeviceManager::AudioDeviceSetup setup;
+  setup.sampleRate = 48000.0;
+  setup.bufferSize = 256;
+  setup.inputDeviceName = "Mock Audio Device";
+  setup.outputDeviceName = "Mock Audio Device";
+  const auto error = audio_device_manager->setAudioDeviceSetup (setup, true);
+  assert (error.isEmpty ());
+  audio_device_manager->initialise (0, 2, nullptr, true, {}, nullptr);
+  // Need to call this again for the setup to take effect...
+  // https://forum.juce.com/t/setaudiodevicesetup/3275
+  audio_device_manager->setAudioDeviceSetup (setup, true);
+  return audio_device_manager;
+}
+}

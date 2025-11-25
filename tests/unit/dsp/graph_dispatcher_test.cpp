@@ -82,22 +82,8 @@ protected:
     };
 
     // Create audio device manager with dummy device
-    audio_device_manager_ = std::make_unique<juce::AudioDeviceManager> ();
-    audio_device_manager_->addAudioDeviceType (
-      std::make_unique<MockAudioIODeviceType> ());
-
-    // Initialize with a dummy audio device setup for testing
-    juce::AudioDeviceManager::AudioDeviceSetup setup;
-    setup.sampleRate = 48000.0;
-    setup.bufferSize = 256;
-    setup.inputDeviceName = "Mock Audio Device";
-    setup.outputDeviceName = "Mock Audio Device";
-    const auto error = audio_device_manager_->setAudioDeviceSetup (setup, true);
-    ASSERT_TRUE (error.isEmpty ());
-    audio_device_manager_->initialise (0, 2, nullptr, true, {}, nullptr);
-    // Need to call this again for the setup to take effect...
-    // https://forum.juce.com/t/setaudiodevicesetup/3275
-    audio_device_manager_->setAudioDeviceSetup (setup, true);
+    audio_device_manager_ =
+      test_helpers::create_audio_device_manager_with_dummy_device ();
   }
 
   void create_dispatcher ()
